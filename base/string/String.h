@@ -19,13 +19,48 @@
 #include <base/OutOfDomain.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
-#include <base/string/FormatOutputStream.h>
+#include <base/io/IOException.h>
+//#include <base/string/FormatOutputStream.h>
 #include <base/string/StringException.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Primitives.h>
-#include <ctype.h>
+#include <ctype.h> // TAG: alien header
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+class FormatOutputStream;
+
+/**
+  This class binds together a string literal and its length. Use the macro
+  MESSAGE to generate an object of this class for a given string literal (e.g.
+  MESSAGE("Hello World")). Do not call the constructor directly.
+
+  @short String literal
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.1
+*/
+
+class StringLiteral {
+private:
+
+  /** The number of characters occupied by the message without the terminator. */
+  const unsigned int length;
+  /** NULL-terminated message. */
+  const char* message;
+public:
+
+  /** Initializes message. Automatically invocated by the macro MESSAGE. */
+  inline StringLiteral(unsigned int _length, const char* _message) throw() : length(_length), message(_message) {}
+  /** Cast to the usual message type. */
+  inline operator const char*() const throw() {return message;}
+  /** Returns the length of the string literal. */
+  inline unsigned int getLength() const throw() {return length;}
+};
+
+/** This macro returns a StringLiteral object from a string literal (e.g. MESSAGE("Hello, World")). */
+#define MESSAGE(msg) StringLiteral(sizeof(msg) - 1, msg) // TAG: replace with symbol LITERAL
+
+
 
 /**
   Default character manipulators.
@@ -39,7 +74,7 @@ public:
   
   /** The type of a single character. */
   typedef char Character;
-  /** Specifies the terminator for null-terminated strings. */
+  /** Specifies the terminator for NULL-terminated strings. */
   static const char TERMINATOR = '\0';
 
   /** Returns true if the character an alphabetic character. */
@@ -168,7 +203,7 @@ protected:
   }
 
   /**
-    Compare two null-terminated strings.
+    Compare two NULL-terminated strings.
   */
   static int compareToIgnoreCase(const char* left, const char* right) throw();
 public:
@@ -593,7 +628,7 @@ public:
   int compareTo(const String& str) const throw();
 
   /**
-    Compare this string with null-terminated string.
+    Compare this string with NULL-terminated string.
 
     @param str The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
@@ -609,7 +644,7 @@ public:
   int compareToIgnoreCase(const String& str) const throw();
 
   /**
-    Compares this string with null-terminated string ignoring the case of the characters.
+    Compares this string with NULL-terminated string ignoring the case of the characters.
 
     @param str The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
@@ -769,17 +804,26 @@ public:
 // *******************************************************************************************
 
   /**
-    Returns null-terminated string for modifying access.
+    Returns NULL-terminated string for modifying access.
   */
   Character* getElements() throw();
 
   /**
-    Returns null-terminated string.
+    Returns NULL-terminated string.
   */
   inline const Character* getElements() const throw() {
-    Character* result = elements->getElements(); // no need to copy on write 'cause we only add terminator
+    // no need to copy on write 'cause we only add terminator
+    Character* result = elements->getElements();
     result[getLength()] = Traits::TERMINATOR;
     return result;
+  }
+
+  /**
+    Returns the characters of the string for non-modifying access. The elements
+    may not be NULL-terminated. Avoid this method if you can.
+  */
+  inline const Character* getBytes() const throw() {
+    return elements->getElements();
   }
 
 // *******************************************************************************************

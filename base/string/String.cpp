@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/string/String.h>
+#include <base/string/FormatOutputStream.h>
 #include <base/Functor.h>
 #include <base/mem/DynamicMemory.h>
 #include <string.h>

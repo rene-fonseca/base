@@ -44,7 +44,7 @@ public:
     register unsigned int previous;
     asm volatile ("xchgl %0, %1" : "=&r" (previous), "=m" (value) : "0" (1));
     return !previous;
-#elif defined(sparc) // sparc V9 has cas instruction
+#elif defined(sparc)
     register unsigned int previous;
     asm volatile ("swap %1, %0" : "=&r" (previous), "=m" (value) : "0" (1));
     return !previous;
@@ -63,7 +63,6 @@ public:
       : "=&r" (success), "=m" (value) // outputs
     );
     return success;
-#else
 #endif
   }
 

@@ -4,13 +4,11 @@
  ***************************************************************************/
 
 #include <config.h>
-
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/MutualExclusion.h>
 
 #if defined(__win32__)
   #include <windows.h>
-  #include <stdio.h>
 #else // pthread
   #include <pthread.h>
   #include <signal.h>
@@ -85,7 +83,7 @@ void* Thread::entry(Thread* thread) throw() {
   try {
     ThreadLocal local(thread);
 #if !defined(__win32__)
-    thread->event.wait(); // wait until signaled
+    thread->event.wait(); // wait until signaled - win32 uses suspend/resume
 #endif
     try {
       thread->getRunnable()->run();

@@ -3,7 +3,7 @@ AC_INIT(Makefile.am)
 
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(ellert,0.91)
+AM_INIT_AUTOMAKE(ellert,0.92)
 
 AC_LIBTOOL_WIN32_DLL()
 AM_PROG_LIBTOOL()
@@ -17,6 +17,7 @@ base_define_xopen=no
 
 case "$host_os" in
 cygwin)
+  dnl check version of cygwin here and report if too old
   base_system=win32
   CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }"'-mno-cygwin -mthreads'
   LIBS="${LIBS}${LIBS:+ }"'-lws2_32'
@@ -65,6 +66,24 @@ AC_CHECK_PROGS(CXX, $CCC c++ g++ gcc CC cxx cc++ cl, gcc)
 
 
 dnl Manual configuration
+
+base_explicit_debug=no
+AC_ARG_ENABLE(
+  debug,[
+  --enable-debug=[yes|no]
+      This feature enables additional runtime checks. The feature is
+      disabled by default.],
+  if test "$enableval" = no; then
+    base_explicit_debug=no
+  elif test "$enableval" = yes; then
+    base_explicit_debug=yes
+  else
+    AC_MSG_ERROR(The debug flag must be either 'yes' or 'no'.)
+  fi
+)
+if test "$base_explicit_debug" = yes; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__DEBUG, 1, Specifies that debug mode is enabled.)
+fi
 
 base_explicit_trace=no
 AC_ARG_ENABLE(
@@ -595,7 +614,62 @@ AC_BASE_ADDLIB($base_cv_pthread_rwlock_libs)
 
 fi dnl POSIX thread support
 
-#AC_CHECK_FUNCS(memchr memcmp memmove)
+
+
+AC_BASE_CHECK(
+  checking whether memchr is available,
+  AC_BASE_CACHE(
+    base_cv_function_memchr,
+    AC_BASE_TRY_CXX_LINK(base_cv_function_memchr, config/memchr.c)
+  ),
+  base_cv_function_memchr)
+if test "$base_cv_function_memchr" = yes; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__HAVE_MEMCHR, 1, Specifies that the function memchr is available)
+fi
+
+AC_BASE_CHECK(
+  checking whether memcmp is available,
+  AC_BASE_CACHE(
+    base_cv_function_memcmp,
+    AC_BASE_TRY_CXX_LINK(base_cv_function_memcmp, config/memcmp.c)
+  ),
+  base_cv_function_memcmp)
+if test "$base_cv_function_memcmp" = yes; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__HAVE_MEMCMP, 1, Specifies that the function memcmp is available)
+fi
+
+AC_BASE_CHECK(
+  checking whether memcpy is available,
+  AC_BASE_CACHE(
+    base_cv_function_memcpy,
+    AC_BASE_TRY_CXX_LINK(base_cv_function_memcpy, config/memcpy.c)
+  ),
+  base_cv_function_memcpy)
+if test "$base_cv_function_memcpy" = yes; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__HAVE_MEMCPY, 1, Specifies that the function memcpy is available)
+fi
+
+AC_BASE_CHECK(
+  checking whether memmove is available,
+  AC_BASE_CACHE(
+    base_cv_function_memmove,
+    AC_BASE_TRY_CXX_LINK(base_cv_function_memmove, config/memmove.c)
+  ),
+  base_cv_function_memmove)
+if test "$base_cv_function_memmove" = yes; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__HAVE_MEMMOVE, 1, Specifies that the function memmove is available)
+fi
+
+AC_BASE_CHECK(
+  checking whether memset is available,
+  AC_BASE_CACHE(
+    base_cv_function_memset,
+    AC_BASE_TRY_CXX_LINK(base_cv_function_memset, config/memset.c)
+  ),
+  base_cv_function_memset)
+if test "$base_cv_function_memset" = yes; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__HAVE_MEMSET, 1, Specifies that the function memset is available)
+fi
 
 
 
@@ -603,4 +677,4 @@ CPPFLAGS="${CPPFLAGS}${CPPFLAGS:+ }"'-I${top_srcdir}/ellert'
 
 
 
-AC_OUTPUT(Makefile ellert/Makefile ellert/docs/Makefile ellert/docs/en/Makefile ellert/base/Makefile ellert/vehicle/Makefile ellert/base/concurrency/Makefile ellert/base/mathematics/Makefile ellert/io/Makefile ellert/base/io/Makefile ellert/base/string/Makefile ellert/base/mem/Makefile ellert/base/net/Makefile ellert/control/Makefile ellert/base/collection/Makefile ellert/test/Makefile )
+AC_OUTPUT(Makefile ellert/Makefile ellert/docs/Makefile ellert/docs/en/Makefile ellert/base/Makefile ellert/vehicle/Makefile ellert/base/concurrency/Makefile ellert/base/mathematics/Makefile ellert/io/Makefile ellert/base/io/Makefile ellert/base/string/Makefile ellert/base/mem/Makefile ellert/base/net/Makefile ellert/control/Makefile ellert/base/collection/Makefile ellert/test/Makefile ellert/base/filesystem/Makefile )

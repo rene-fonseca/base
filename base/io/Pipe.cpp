@@ -45,7 +45,7 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
 Pipe::PipeImpl::~PipeImpl() throw(PipeException) {
 #if defined(__win32__)
   if (getHandle() != -1) {
-    if (::CloseHandle((HANDLE)getHandle()) {
+    if (::CloseHandle((HANDLE)getHandle())) {
       throw PipeException("Unable to close pipe");
     }
   }
@@ -85,7 +85,7 @@ bool Pipe::atEnd() const throw(PipeException) {
 unsigned int Pipe::available() const throw(PipeException) {
 #if defined(__win32__)
   DWORD bytesAvailable;
-  if (!::PeekNamedPipe((HANDLE)fd->getHandle(), NULL, 0, NULL, bytesAvailable, NULL)) {
+  if (!::PeekNamedPipe((HANDLE)fd->getHandle(), NULL, 0, NULL, &bytesAvailable, NULL)) {
     throw PipeException("Unable to get available bytes");
   }
   return bytesAvailable;
@@ -118,7 +118,7 @@ unsigned int Pipe::skip(unsigned int count) throw(PipeException) {
 
 void Pipe::flush() throw(PipeException) {
 #if defined(__win32__)
-  if (!FlushFileBuffers((HANDLE)fd->getHandle()) {
+  if (!FlushFileBuffers((HANDLE)fd->getHandle())) {
     throw PipeException("Unable to flush pipe");
   }
 #else // __unix__
@@ -138,7 +138,7 @@ unsigned int Pipe::read(char* buffer, unsigned int size, bool nonblocking) throw
     DWORD result;
     BOOL success = ::ReadFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
     if (!success) { // has error occured
-      if (::GetLastError() == ERROR_BROKEN_PIPE)) {
+      if (::GetLastError() == ERROR_BROKEN_PIPE) {
         result = 0;
       } else {
         throw PipeException("Unable to read from pipe");

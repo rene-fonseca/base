@@ -7,6 +7,7 @@
 #include <base/concurrency/Process.h>
 
 #if defined(__win32__)
+  #include <windows.h>
 #else // __unix__
   #include <sys/types.h>
   #include <sys/wait.h>
@@ -41,10 +42,66 @@ Process Process::fork() throw(Exception) {
 #endif
 }
 
-void Process::nice(int value) throw(Exception) {
-  if (::nice(value)) {
-    throw Exception("Unable to change priority of process");
+#if !defined(BELOW_NORMAL_PRIORITY_CLASS) // should have been in winbase.h
+  #define BELOW_NORMAL_PRIORITY_CLASS 0x00004000
+#endif
+
+#if !defined(ABOVE_NORMAL_PRIORITY_CLASS) // should have been in winbase.h
+  #define ABOVE_NORMAL_PRIORITY_CLASS 0x00008000
+#endif
+
+int Process::getPriority() throw(ProcessException) {
+#if defined(__win32__)
+  switch (GetPriorityClass(GetCurrentProcess())) { // no need to close handle
+  case 0:
+    throw ProcessException("Unable to get priority of process");
+  case REALTIME_PRIORITY_CLASS:
+    return -20;
+  case HIGH_PRIORITY_CLASS:
+    return -10;
+  case ABOVE_NORMAL_PRIORITY_CLASS: // w2k or later
+    return -5;
+  case NORMAL_PRIORITY_CLASS:
+    return 0;
+  case BELOW_NORMAL_PRIORITY_CLASS: // w2k or later
+    return 5;
+  case IDLE_PRIORITY_CLASS:
+    return 19;
   }
+#else // __unix__
+  errno = 0;
+  int priority = ::getpriority(PRIO_PROCESS, getpid());
+  if ((priority == -1) && (errno != 0)) {
+    throw ProcessException("Unable to get priority of process");
+  }
+  return priority;
+#endif
+}
+
+void Process::setPriority(int priority) throw(ProcessException) {
+#if defined(__win32__)
+  DWORD priorityClass;
+  if (priority <= -20) {
+    priorityClass = REALTIME_PRIORITY_CLASS;
+  } else if (priority <= -10) {
+    priorityClass = HIGH_PRIORITY_CLASS;
+  } else if (priority <= -5) {
+    priorityClass = ABOVE_NORMAL_PRIORITY_CLASS; // w2k or later
+  } else if (priority < 5) {
+    priorityClass = NORMAL_PRIORITY_CLASS;
+  } else if (priority <= 10) {
+    priorityClass = BELOW_NORMAL_PRIORITY_CLASS; // w2k or later
+  } else {
+    priorityClass = IDLE_PRIORITY_CLASS;
+  }
+  if (!SetPriorityClass(GetCurrentProcess(), priorityClass)) {
+    throw ProcessException("Unable to set priority of process");
+  }
+#else // __unix__
+  if (::setpriority(PRIO_PROCESS, getpid(), priority)) {
+    ProcessException("Unable to set priority");
+  }
+#endif
 }
 
 void Process::execute(const String& name) throw() {
@@ -68,8 +125,11 @@ Process& Process::operator=(const Process& eq) throw() {
 }
 
 void Process::wait() throw() {
+#if defined(__win32__)
+#else // __unix__
   int status;
   ::waitpid(id, &status, 0);
+#endif
 }
 
 void Process::kill() throw() {

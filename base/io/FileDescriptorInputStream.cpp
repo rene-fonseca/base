@@ -77,7 +77,7 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int size, bo
     DWORD result;
     BOOL success = ::ReadFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
     if (!success) { // has error occured
-      if (::GetLastError() == ERROR_BROKEN_PIPE)) {
+      if (::GetLastError() == ERROR_BROKEN_PIPE) {
         result = 0;
       } else {
         throw IOException("Unable to read from object");

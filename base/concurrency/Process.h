@@ -12,6 +12,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+typedef Exception ProcessException;
+
 /**
   Process.
 
@@ -40,10 +42,15 @@ public:
   static Process fork() throw(Exception);
 
   /**
+    Returns the priority of the process.
+  */
+  static int getPriority() throw(ProcessException);
+
+  /**
     Sets the priority of the process.
   */
-  static void nice(int value) throw(Exception);
-
+  static void setPriority(int priority) throw(ProcessException);
+ 
   /**
     Executes the specified application.
   */

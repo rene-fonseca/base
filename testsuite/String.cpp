@@ -112,6 +112,16 @@ public:
     fout << MESSAGE("str2: ") << str2 << ENDL;
 
     fout << MESSAGE("Concatenation: ") << String("first") + String("SECOND") << ENDL;
+    fout << ENDL;
+
+    String string(MESSAGE("This is a string"));
+    const char* temp1 = string.getElements();
+    fout << MESSAGE("Testing direct read access (This is a string): ") << temp1 << ENDL;
+
+    char* temp2 = string.getElements();
+    fout << MESSAGE("Testing direct read and write access (This is a string): ") << temp2 << ENDL;
+
+    fout << MESSAGE("Test: ") << Application::getApplication()->getFormalName().getElements() << ENDL;
   }
 };
 

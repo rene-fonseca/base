@@ -107,7 +107,6 @@ ProcessPreinitialization::ProcessPreinitialization() throw() {
     Trace::message("Type mismatch detected.");
     exit(Application::EXIT_CODE_INITIALIZATION);
   }
-  
   // memory
   internal::specific::processHeap = ::GetProcessHeap(); // never fails
   

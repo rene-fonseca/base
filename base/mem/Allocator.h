@@ -268,6 +268,7 @@ public:
         // no need to destroy or initialize elements
         elements = Heap::resize(elements, size);
       } else {
+        
         if (size < this->size) { // are we about to reduce the array
           destroy(elements + size, this->size - size);
           elements = Heap::resize(elements, size);

@@ -110,7 +110,6 @@ namespace internal {
 };
 
 Application* Application::application(0); // initialize application as uninitialized
-
 const String String::DEFAULT_STRING(MESSAGE(""));
 const WideString WideString::DEFAULT_STRING(WIDEMESSAGE(""));
 

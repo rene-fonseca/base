@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -43,90 +43,114 @@ public:
 class V3MultiVendorABIDemangler {
 private:
 
-  struct Substitution {
-    /** The index of the first char */
-    unsigned int begin;
-    /** The index of the end char */
-    unsigned int end;
+  struct CandidateRange {
+    unsigned int begin; // The index of the first char
+    unsigned int end; // The index of the end char
   };
 
+  /* The current position within the mangled string. */
   const char* p;
+  /* The end of the mangled string. */
   const char* end;
-  bool templateArgumentsAvailable;
-  Substitution className;
-  Array<Substitution> substitutions;
+  /* The current class name. */
+  CandidateRange className;
+  /* Candidates for normal substitution. */
+  Array<CandidateRange> candidates;
+  /* Candidates for template substitution. */
+  Array<CandidateRange> templateCandidates;
+  /* The demangled string. */
   String demangled;
 public:
 
   inline V3MultiVendorABIDemangler(const char* mangled) throw() : p(mangled) {
-    templateArgumentsAvailable = false;
     end = find<char>(mangled, 1024, 0); // find terminator
     assert(end, ManglingException());
     encoding();
   }
 
-  inline void addSubstitutionCandidate(unsigned int begin) throw() {
-    Substitution substitution;
-    substitution.begin = begin;
-    substitution.end = demangled.getLength();
-    unsigned int length = substitution.end - substitution.begin;
-    for (int s = substitutions.getSize() - 1; s >= 0; --s) { // for all candidates do
-      if ((static_cast<Substitution>(substitutions[s]).end - static_cast<Substitution>(substitutions[s]).begin) == length) {
-        if (compare<char>(demangled.getElements() + static_cast<Substitution>(substitutions[s]).begin, demangled.getElements() + substitution.begin, length) == 0) {
+  inline void addCandidate(unsigned int begin) throw() {
+    CandidateRange range;
+    range.begin = begin;
+    range.end = demangled.getLength();
+    unsigned int length = range.end - range.begin;
+    for (int s = candidates.getSize() - 1; s >= 0; --s) { // for all candidates do
+      if ((static_cast<CandidateRange>(candidates[s]).end - static_cast<CandidateRange>(candidates[s]).begin) == length) {
+        if (compare<char>(demangled.getElements() + static_cast<CandidateRange>(candidates[s]).begin, demangled.getElements() + range.begin, length) == 0) {
           return; // candidate already in dictionary
         }
       }
     }
-    substitutions.append(substitution); // add new candidate
+    candidates.append(range); // add new candidate
   }
 
-  inline void dump(unsigned int substitution) throw(ManglingException) {
-    assert(substitution < substitutions.getSize(), ManglingException());
-    demangled.append(demangled.substring(static_cast<Substitution>(substitutions[substitution]).begin, static_cast<Substitution>(substitutions[substitution]).end));
+  inline void addTemplateCandidate(unsigned int begin) throw() {
+    CandidateRange range;
+    range.begin = begin;
+    range.end = demangled.getLength();
+    unsigned int length = range.end - range.begin;
+    Array<CandidateRange>::ReadEnumerator enu = templateCandidates.getReadEnumerator();
+    while (enu.hasNext()) {
+      const CandidateRange* candidate = enu.next();
+      if ((candidate->end - candidate->begin) == length) {
+        if (compare<char>(demangled.getElements() + candidate->begin, demangled.getElements() + begin, length) == 0) {
+          return; // candidate already in dictionary
+        }
+      }
+    }
+    templateCandidates.append(range); // add new candidate
   }
+
 
   inline void dump(const StringLiteral& literal) throw() {
     demangled.append(literal);
   }
 
   inline void encoding() throw() {
-    assert(name(), ManglingException());
-    if (p < end) {
-      // remove substitution for function (if present)
-      if (substitutions.getSize() > 0) {
-      if (static_cast<Substitution>(substitutions[substitutions.getSize() - 1]).end = demangled.getLength()) {
-        substitutions.remove(substitutions.getSize() - 1);
-      }}
-      if (templateArgumentsAvailable) { // handle return type // TAG: are there other cases
-        String temp = demangled;
-        demangled = String();
-        assert(type(), ManglingException()); // FIXME: does not work with substitutions
-        dump(MESSAGE(" "));
-        for (unsigned int s = 0; s < substitutions.getSize(); ++s) { // remap substitutions
-          Substitution substitution(substitutions[s]);
-          substitution.begin += demangled.getLength();
-          substitution.end += demangled.getLength();
-          substitutions[s] = substitution;
+    if (name()) {
+      if (p < end) {
+        // remove candidate for function (if present)
+        if (candidates.getSize() > 0) {
+          if (static_cast<CandidateRange>(candidates[candidates.getSize() - 1]).end = demangled.getLength()) {
+            candidates.remove(candidates.getSize() - 1);
+          }
         }
-        demangled.append(temp);
-      }
-      dump(MESSAGE("("));
-      if (*p == 'v') { // special case
-        ++p;
-        assert(p == end, ManglingException());
-      } else {
-        assert(type(), ManglingException());
-        while (p < end) {
-          dump(MESSAGE(", "));
+        if (demangled[demangled.getLength() - 1] == '>') { // handle return type // TAG: are there other cases
+          unsigned int beginReturnType = demangled.getLength();
           assert(type(), ManglingException());
-        }
-      }
-      dump(MESSAGE(")"));
+          dump(MESSAGE(" "));
+          String returnTypeString(demangled.substring(beginReturnType));
+          demangled.removeFrom(beginReturnType);
+          demangled.prepend(returnTypeString);
 
-/*    for (unsigned int i = 0; i < substitutions.getSize(); ++i) {
-        dump(MESSAGE("#S"));
-        dump(i);
-      }*/
+          Array<CandidateRange>::Enumerator enu = candidates.getEnumerator(); // remap candidates
+          while (enu.hasNext()) {
+            CandidateRange* range(enu.next());
+            range->begin += returnTypeString.getLength();
+            range->end += returnTypeString.getLength();
+          }
+          Array<CandidateRange>::Enumerator enuTemplateCandidate = templateCandidates.getEnumerator(); // remap candidates
+          while (enuTemplateCandidate.hasNext()) {
+            CandidateRange* range(enuTemplateCandidate.next());
+            range->begin += returnTypeString.getLength();
+            range->end += returnTypeString.getLength();
+          }
+        }
+        dump(MESSAGE("("));
+        if (*p == 'v') { // special case
+          ++p;
+          assert(p == end, ManglingException());
+        } else {
+          assert(type(), ManglingException());
+          while (p < end) {
+            dump(MESSAGE(", "));
+            assert(type(), ManglingException());
+          }
+        }
+        dump(MESSAGE(")"));
+      }
+    } else if (specialName()) {
+    } else {
+      throw ManglingException();
     }
   }
 
@@ -164,7 +188,9 @@ public:
       ++p; // skip E
       break;
     default:
+      unsigned int beginTemplateArgument = demangled.getLength();
       assert(type(), ManglingException());
+      addTemplateCandidate(beginTemplateArgument);
       return true;
     }
     return false;
@@ -185,14 +211,12 @@ public:
         demangled += '>';
       }
       ++p; // skip E
-      templateArgumentsAvailable = true; // last thing to do
       return true;
     }
     return false;
   }
 
   inline bool name() throw() {
-    templateArgumentsAvailable = false;
     unsigned int begin = demangled.getLength();
     if (nested()) {
       // FIXME: insert candidate?
@@ -201,15 +225,13 @@ public:
       className.begin = begin;
       className.end = demangled.getLength();
       templateArguments(); // not required
-addSubstitutionCandidate(begin);
-      // FIXME: insert candidate?
+      addCandidate(begin);
       return true;
     } else if (substitution()) {
       className.begin = begin;
       className.end = demangled.getLength();
       assert(templateArguments(), ManglingException());
-addSubstitutionCandidate(begin);
-      // FIXME: insert candidate?
+      addCandidate(begin);
       return true;
     } else {
       return false;
@@ -235,7 +257,7 @@ addSubstitutionCandidate(begin);
       ++p; // skip N
       CVQualifier(); // not required
 
-      unsigned int begin = demangled.getLength(); // substitution
+      unsigned int begin = demangled.getLength(); // beginning of substitution range
 
       if (substitution()) { // not required
         dump(MESSAGE("::"));
@@ -246,14 +268,14 @@ addSubstitutionCandidate(begin);
         if (sourceName()) {
           className.begin = beginClassName;
           className.end = demangled.getLength();
-          addSubstitutionCandidate(begin);
+          addCandidate(begin);
         } else if (operatorName()) {
         } else if (constructorAndDestructorName()) {
         } else {
           throw ManglingException();
         }
         if (templateArguments()) {
-          addSubstitutionCandidate(begin);
+          addCandidate(begin);
         }
         if (*p == 'E') {
           break;
@@ -297,20 +319,47 @@ addSubstitutionCandidate(begin);
     } else {
       return false;
     }
-    templateArgumentsAvailable = false;
     return true;
+  }
+
+  inline bool specialName() throw() {
+    if (*p == 'T') {
+      ++p; // skip T
+      switch (*p) {
+      case 'V':
+        ++p; // skip V
+        dump(MESSAGE("virtual table for "));
+        assert(type(), ManglingException());
+        return true;
+      case 'T':
+        ++p; // skip T
+        dump(MESSAGE("VTT for "));
+        assert(type(), ManglingException());
+        return true;
+      case 'I':
+        ++p; // skip I
+        dump(MESSAGE("typeinfo for "));
+        assert(type(), ManglingException());
+        return true;
+      case 'S':
+        ++p; // skip S
+        dump(MESSAGE("typeinfo name for "));
+        assert(type(), ManglingException());
+        return true;
+      }
+    }
+    return false;
   }
 
   inline bool unqualifiedName() throw() {
     unsigned int begin = demangled.getLength();
     if (operatorName()) {
     } else if (sourceName()) {
-      addSubstitutionCandidate(begin);
+      addCandidate(begin);
     } else if (constructorAndDestructorName()) {
     } else {
       return false;
     }
-    templateArgumentsAvailable = false;
     return true;
   }
 
@@ -397,21 +446,53 @@ addSubstitutionCandidate(begin);
     case 'M': // pointer to member type
       {
         ++p; // skip M
-        String temp(demangled);
-        demangled = String();
-        assert(name(), ManglingException()); // FIXME: does not work with substitution
-        String ownerName(demangled);
-        demangled = temp;
+
+        unsigned int beginName = demangled.getLength();
+        assert(name(), ManglingException());
+        String nameString = demangled.substring(beginName);
+
         if (*p == 'F') { // special case
           ++p; // skip F
           if (*p == 'Y') {
             ++p; // skip Y
             dump(MESSAGE("extern \"C\" "));
           }
+
+          unsigned int beginType = demangled.getLength();
           assert(type(), ManglingException()); // return type
+
+          unsigned int lengthOfName = beginType - beginName;
+          unsigned int lengthOfType = demangled.getLength() - beginType;
+
+          Array<CandidateRange>::Enumerator enu = candidates.getEnumerator();
+          while (enu.hasNext()) {
+            CandidateRange* range(enu.next());
+            if (range->begin >= beginType) { // is range within type
+              range->begin -= lengthOfName;
+              range->end -= lengthOfName;
+            } else if ((range->begin >= beginName) && (range->end < beginType)) { // is range within name
+              range->begin += lengthOfType;
+              range->end += lengthOfType;
+            }
+          }
+          Array<CandidateRange>::Enumerator enuTemplateCandidate = templateCandidates.getEnumerator(); // remap candidates
+          while (enuTemplateCandidate.hasNext()) {
+            CandidateRange* range(enuTemplateCandidate.next());
+            if (range->begin >= beginType) { // is range within type
+              range->begin -= lengthOfName;
+              range->end -= lengthOfName;
+            } else if ((range->begin >= beginName) && (range->end < beginType)) { // is range within name
+              range->begin += lengthOfType;
+              range->end += lengthOfType;
+            }
+          }
+
+          demangled.remove(beginName, beginType); // remove old name
+
           dump(MESSAGE(" ("));
-          demangled.append(ownerName);
+          demangled.append(nameString);
           dump(MESSAGE("::*)("));
+
           assert(type(), ManglingException());
           while (*p != 'E') {
             dump(MESSAGE(", "));
@@ -420,9 +501,27 @@ addSubstitutionCandidate(begin);
           dump(MESSAGE(")"));
           ++p; // skip E
         } else {
+          unsigned int beginType = demangled.getLength();
           assert(type(), ManglingException());
+
+          unsigned int lengthOfName = beginType - beginName;
+          unsigned int lengthOfType = demangled.getLength() - beginType;
+
+          Array<CandidateRange>::Enumerator enu = candidates.getEnumerator();
+          while (enu.hasNext()) {
+            CandidateRange* range(enu.next());
+            if (range->begin >= beginType) { // is range within type
+              range->begin -= lengthOfName;
+              range->end -= lengthOfName;
+            } else if ((range->begin >= beginName) && (range->end < beginType)) { // is range within name
+              range->begin += lengthOfType;
+              range->end += lengthOfType;
+            }
+          }
+
+          demangled.remove(beginName, beginType); // remove old name
           dump(MESSAGE(" "));
-          demangled.append(ownerName);
+          demangled.append(nameString);
           dump(MESSAGE("::*"));
         }
       }
@@ -523,11 +622,13 @@ addSubstitutionCandidate(begin);
         templateArguments(); // not required
       } else if (substitution()) {
         templateArguments(); // name rule - not required
+      } else if (templateParameter()) {
+        templateArguments(); // not required
       } else {
         return false;
       }
     }
-    addSubstitutionCandidate(begin);
+    addCandidate(begin);
     return true;
   }
 
@@ -673,11 +774,9 @@ addSubstitutionCandidate(begin);
     } else if ((*p == 's') && (p[1] == 'z')) {
       p += 2;
       dump(MESSAGE("sizeof"));
-    } else if ((*p == 's') && (p[1] == 'r')) {
-/*
-  ::= sr	# scope resolution (::), see below
-*/
-      dump(MESSAGE("")); // ???
+//    } else if ((*p == 's') && (p[1] == 'r')) {
+// FIXME: ::= sr # scope resolution (::), see below
+//      dump(MESSAGE("???"));
     } else if ((*p == 'c') && (p[1] == 'v')) { // cast
       p += 2; // skip cv
       dump(MESSAGE("operator "));
@@ -706,13 +805,55 @@ addSubstitutionCandidate(begin);
     return true;
   }
 
-  inline bool substitution() throw() {
+  inline void appendTemplateCandidate(unsigned int candidate) throw(ManglingException) {
+    assert(candidate < templateCandidates.getSize(), ManglingException());
+    demangled.append(demangled.substring(static_cast<CandidateRange>(templateCandidates[candidate]).begin, static_cast<CandidateRange>(templateCandidates[candidate]).end));
+  }
+
+  inline bool templateParameter() throw(ManglingException) {
+    if (*p == 'T') {
+      ++p; // skip T
+      switch (*p) {
+      case '_':
+        ++p; // skip underscore
+        appendTemplateCandidate(0);
+        return true;
+      case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
+      case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': case 'G': case 'H': case 'I': case 'J':
+      case 'K': case 'L': case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R': case 'S': case 'T':
+      case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z':
+        // base 36 encoding
+        {
+          unsigned int id = 0;
+          while ((*p >= '0') && (*p <= '9') || (*p >= 'A') && (*p <= 'Z')) {
+            if ((*p >= '0') && (*p <= '9')) {
+              id += id * 36 + (*p - '0');
+            } else {
+              id += id * 36 + (*p - 'A');
+            }
+            ++p;
+          }
+          assert(*p++ == '_', ManglingException()); // skip underscore
+          appendTemplateCandidate(id + 1);
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
+  inline void appendCandidate(unsigned int candidate) throw(ManglingException) {
+    assert(candidate < candidates.getSize(), ManglingException());
+    demangled.append(demangled.substring(static_cast<CandidateRange>(candidates[candidate]).begin, static_cast<CandidateRange>(candidates[candidate]).end));
+  }
+
+  inline bool substitution() throw(ManglingException) {
     if (*p == 'S') {
       ++p; // skip S
       switch (*p) {
       case '_':
         ++p; // skip underscore
-        dump(0);
+        appendCandidate(0);
         break;
       case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
       case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': case 'G': case 'H': case 'I': case 'J':
@@ -730,7 +871,7 @@ addSubstitutionCandidate(begin);
             ++p;
           }
           assert(*p++ == '_', ManglingException()); // skip underscore
-          dump(id + 1);
+          appendCandidate(id + 1);
         }
         break;
       case 't':
@@ -747,19 +888,23 @@ addSubstitutionCandidate(begin);
         break;
       case 's':
         ++p; // skip s
-        dump(MESSAGE("std::basic_string<char, std::char_traits<char>, std::allocator<char> >"));
+        dump(MESSAGE("std::string"));
+        //dump(MESSAGE("std::basic_string<char, std::char_traits<char>, std::allocator<char> >"));
         break;
       case 'i':
         ++p; // skip i
-        dump(MESSAGE("std::basic_istream<char, std::char_traits<char> >"));
+        dump(MESSAGE("std::istream"));
+        //dump(MESSAGE("std::basic_istream<char, std::char_traits<char> >"));
         break;
       case 'o':
         ++p; // skip o
-        dump(MESSAGE("std::basic_ostream<char, std::char_traits<char> >"));
+        dump(MESSAGE("std::ostream"));
+        //dump(MESSAGE("std::basic_ostream<char, std::char_traits<char> >"));
         break;
       case 'd':
         ++p; // skip d
-        dump(MESSAGE("std::basic_iostream<char, std::char_traits<char> >"));
+        dump(MESSAGE("std::iostream"));
+        //dump(MESSAGE("std::basic_iostream<char, std::char_traits<char> >"));
         break;
       default:
         return false;
@@ -783,7 +928,7 @@ String demangleTypename(const char* mangled) throw() {
 #elif defined(_DK_SDU_MIP__BASE__DEMANGLE_GCCV3)
 
 String demangleTypename(const char* mangled) throw() {
-  static const String prefix("_Z");
+  static const String prefix(MESSAGE("_Z"));
   String temp = prefix;
   temp.append(mangled);
   char* demangled = cplus_demangle_v3(temp.getElements());
@@ -798,7 +943,7 @@ String demangleTypename(const char* mangled) throw() {
 #elif defined(_DK_SDU_MIP__BASE__DEMANGLE_GCCV23)
 
 String demangleTypename(const char* mangled) throw() {
-  static const String prefix("_Z");
+  static const String prefix(MESSAGE("_Z"));
   String temp = prefix;
   temp.append(mangled);
   char* demangled = cplus_demangle_new_abi(temp.getElements());
@@ -813,8 +958,8 @@ String demangleTypename(const char* mangled) throw() {
 #elif defined(_DK_SDU_MIP__BASE__DEMANGLE_GCCV2)
 
 String demangleTypename(const char* mangled) throw() {
-  static const String prefix("a__");
-  static const String suffix("::a");
+  static const String prefix(MESSAGE("a__"));
+  static const String suffix(MESSAGE("::a"));
   // cplus_demangle only demangles function names - need alternative demangler
   String temp = prefix; // make function name
   temp.append(mangled);

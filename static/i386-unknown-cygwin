@@ -32,3 +32,6 @@ functions="memchr memcmp memcpy memmove memset"
 
 # apis
 apis="pthread regexp"
+
+# libraries
+libraries="X11"

@@ -19,3 +19,5 @@ libcommunication_la_SOURCES = CommunicationsException.cpp CommunicationsPort.cpp
 
 sectiondir = $(includedir)/base/communication
 section_HEADERS = CommunicationsException.h CommunicationsPort.h DummyIEEE1394.h EUI64.h IEEE1394.h IEEE1394Exception.h IEEE1394Common.h IEEE1394Impl.h SerialPort.h
+
+EXTRA_DIST = LinuxRawIEEE1394.h LinuxRawIEEE1394.cpp

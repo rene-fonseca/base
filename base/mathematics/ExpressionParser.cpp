@@ -201,7 +201,7 @@ void ExpressionParser::readIdentifier() throw(ExpressionException) {
       // internal knowledge - not returned by ExpressionProvider
       throw ExpressionException(index, "Identifier registered as unsupported type");
     }
-  } catch(InvalidKey e) {
+  } catch (InvalidKey e) {
     throw ExpressionException(begin, "Identifier not recognized");
 //    if (autoRegisterAsVariable) {
 //      unknowns[name] = makeVariable(id???);

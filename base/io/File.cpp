@@ -48,9 +48,11 @@
 #  if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) || \
        (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX))
 #    include <sys/acl.h> // solaris and irix
-#    define _COM_SUN__ACL_USER USER
+enum {
+  _COM_SUN__ACL_USER = USER,
+  _COM_SUN__ACL_GROUP = GROUP
+};
 #    undef USER
-#    define _COM_SUN__ACL_GROUP GROUP
 #    undef GROUP
 #  endif
 
@@ -412,27 +414,27 @@ AccessControlList File::getACL() const throw(FileException) {
   throw NotImplemented(this);
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   aclent_t entries[MAX_ACL_ENTRIES];
-  int numerOfEntries = ::facl(fd->getHandle(), GETACL, MAX_ACL_ENTRIES, &entries);
-  assert(numerOfEntries >= 0, FileException("Unable to get ACL", this));
+  int numberOfEntries = ::facl(fd->getHandle(), GETACL, MAX_ACL_ENTRIES, entries);
+  assert(numberOfEntries >= 0, FileException("Unable to get ACL", this));
   
   AccessControlList result;
-  for (int i = 0; i < numberOfEnties; ++i) {
-    const unsigned int mode = ((entries[i].a_perm & S_IRGRP) ? AccessControl::READ : 0) |
-      ((entries[i].a_perm & S_IWGRP) ? AccessControl::WRITE : 0) |
-      ((entries[i].a_perm & S_IXGRP) ? AccessControl::EXECUTE : 0);
+  for (int i = 0; i < numberOfEntries; ++i) {
+    const unsigned int mode = ((entries[i].a_perm & S_IRGRP) ? AccessControlEntry::READ : 0) |
+      ((entries[i].a_perm & S_IWGRP) ? AccessControlEntry::WRITE : 0) |
+      ((entries[i].a_perm & S_IXGRP) ? AccessControlEntry::EXECUTE : 0);
     const int type = entries[i].a_type;
     if (type & USER_OBJ) {
-      result.add(AccessControlEntry(Trustee(Trustee::USER, entries[i].a_id), AccessControl::ALLOW, mode));
-    } else if (type & USER) {
-      result.add(AccessControlEntry(Trustee(Trustee::USER, entries[i].a_id), AccessControl::ALLOW, mode));
+      result.add(AccessControlEntry(Trustee(Trustee::USER, (void*)(MemoryDiff)entries[i].a_id), ((mode & S_IRUSR) ? AccessControlEntry::READ : 0) | ((mode & S_IWUSR) ? AccessControlEntry::WRITE : 0) | ((mode & S_IXUSR) ? AccessControlEntry::EXECUTE : 0)));
+    } else if (type & _COM_SUN__ACL_USER) {
+      result.add(AccessControlEntry(Trustee(Trustee::USER, (void*)(MemoryDiff)entries[i].a_id), ((mode & S_IRUSR) ? AccessControlEntry::READ : 0) | ((mode & S_IWUSR) ? AccessControlEntry::WRITE : 0) | ((mode & S_IXUSR) ? AccessControlEntry::EXECUTE : 0)));
     } else if (type & GROUP_OBJ) {
-      result.add(AccessControlEntry(Trustee(Trustee::GROUP, entries[i].a_id), AccessControl::ALLOW, mode));
-    } else if (type & GROUP) {
-      result.add(AccessControlEntry(Trustee(Trustee::GROUP, entries[i].a_id), AccessControl::ALLOW, mode));
+      result.add(AccessControlEntry(Trustee(Trustee::GROUP, (void*)(MemoryDiff)entries[i].a_id), ((mode & S_IRGRP) ? AccessControlEntry::READ : 0) | ((mode & S_IWGRP) ? AccessControlEntry::WRITE : 0) | ((mode & S_IXGRP) ? AccessControlEntry::EXECUTE : 0)));
+    } else if (type & _COM_SUN__ACL_GROUP) {
+      result.add(AccessControlEntry(Trustee(Trustee::GROUP, (void*)(MemoryDiff)entries[i].a_id), ((mode & S_IRGRP) ? AccessControlEntry::READ : 0) | ((mode & S_IWGRP) ? AccessControlEntry::WRITE : 0) | ((mode & S_IXGRP) ? AccessControlEntry::EXECUTE : 0)));
     } else if (type & CLASS_OBJ) {
-      result.add(AccessControlEntry(Trustee(Trustee::CLASS, entries[i].a_id), AccessControl::ALLOW, mode));
+      result.add(AccessControlEntry(Trustee(Trustee::CLASS, (void*)(MemoryDiff)entries[i].a_id), mode));
     } else if (type & OTHER_OBJ) {
-      result.add(AccessControlEntry(Trustee::EVERYONE, AccessControl::ALLOW, mode));
+      result.add(AccessControlEntry(Trustee(Trustee::EVERYONE, 0), ((mode & S_IROTH) ? AccessControlEntry::READ : 0) | ((mode & S_IWOTH) ? AccessControlEntry::WRITE : 0) | ((mode & S_IXOTH) ? AccessControlEntry::EXECUTE : 0)));
     }
   }
   return result;

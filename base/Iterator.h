@@ -25,7 +25,7 @@ template<class VALUE>
 class IteratorTraits {
 public:
 
-  typedef IteratorTraits Traits;
+  typedef IteratorTraits SelfIteratorTraits;
   typedef VALUE Value;
   typedef VALUE& Reference;
   typedef VALUE* Pointer;
@@ -39,7 +39,7 @@ template<class VALUE>
 class ReadIteratorTraits {
 public:
 
-  typedef ReadIteratorTraits Traits;
+  typedef ReadIteratorTraits SelfIteratorTraits;
   typedef VALUE Value;
   typedef const VALUE& Reference;
   typedef const VALUE* Pointer;
@@ -56,8 +56,8 @@ template<class TRAITS>
 class Iterator {
 private:
 
-  /** Used to ensure that the specified traits template argument isn't an iterator. */
-  typedef typename TRAITS::Traits ValidTraits;
+  /** Used to ensure that the specified traits template argument is an iterator. */
+  typedef typename TRAITS::SelfIteratorTraits ValidTraits;
 public:
 
   /** The type of the element. */

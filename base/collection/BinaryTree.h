@@ -15,13 +15,19 @@
 
 /**
   Enumeration of all the elements of a binary tree traversed in prefix order.
+
+  @author René Møller Fonseca
+  @version 1.0
 */
 template<class TYPE, class REF, class PTR>
 class PrefixOrderEnumeration : Enumeration<TYPE, REF, PTR> {
 public:
 
+  /** The type of the value. */
   typedef TYPE Value;
+  /** The type of a reference to value. */
   typedef REF Reference;
+  /** The type of a pointer to value. */
   typedef PTR Pointer;
 private:
 
@@ -38,7 +44,7 @@ public:
 
     @param n The root node of the binary tree.
   */
-  PrefixOrderEnumeration(Pointer n) throw() : root(n), node(n), more(!n) {}
+  PrefixOrderEnumeration(Pointer n) throw() : root(n), node(n), more(n != 0) {}
 
   /**
     Returns true if there is more elements in this enumeration.
@@ -74,6 +80,214 @@ public:
       node = node->getRight(); // traverse right subtree - which we know exists
     }
 
+    return result;
+  }
+};
+
+
+
+/**
+  Enumeration of all the elements of a binary tree traversed in infix order.
+
+  @author René Møller Fonseca
+  @version 1.0
+*/
+template<class TYPE, class REF, class PTR>
+class InfixOrderEnumeration : Enumeration<TYPE, REF, PTR> {
+public:
+
+  /** The type of the value. */
+  typedef TYPE Value;
+  /** The type of a reference to value. */
+  typedef REF Reference;
+  /** The type of a pointer to value. */
+  typedef PTR Pointer;
+private:
+
+  /** The states of the infix order traversal state machine */
+  typedef enum {TRAVERSE_SUBTREE, RETURN_LEFT, RETURN_RIGHT} Traverse;
+  /** The root of the binary tree. */
+  Pointer root;
+  /** The current position in the enumeration. */
+  Pointer node;
+  /** Specifies that more elements are available. */
+  bool more;
+  /** Specifies that subtree should be traversed. */
+  Traverse traverse;
+public:
+
+  /**
+    Initializes enumeration of binary tree specified by the node.
+
+    @param n The root node of the binary tree.
+  */
+  InfixOrderEnumeration(Pointer n) throw() : root(n), node(n), more(n != 0), traverse(TRAVERSE_SUBTREE) {}
+
+  /**
+    Returns true if there is more elements in this enumeration.
+  */
+  inline bool hasNext() const throw() {return more;}
+
+  /**
+    Returns the current value and increments the position. Throws
+    'EndOfEnumeration' if the end has been reached.
+  */
+  Pointer next() throw(EndOfEnumeration) {
+    if (!more) {
+      throw EndOfEnumeration();
+    }
+
+    Pointer result = 0; // indicate no result
+
+    while (true) { // keep looking until we know if end has been reached
+
+      switch (traverse) {
+      case TRAVERSE_SUBTREE:
+        while (node->getLeft()) { // optimized version
+          node = node->getLeft();
+        }
+        traverse = RETURN_LEFT; // required
+
+//        if (node->getLeft()) {
+//          node = node->getLeft();
+//          traverse = TRAVERSE_SUBTREE;
+//        } else {
+//          traverse = RETURN_LEFT;
+//        }
+//        break;
+
+      case RETURN_LEFT:
+        if (result) { // stop if we already have found a result
+          return result;
+        }
+        result = node; // this node is the next result
+        if (node->getRight()) { // has right node
+          node = node->getRight();
+          traverse = TRAVERSE_SUBTREE;
+          break;
+        }
+
+//        if (result) { // stop if we already have found a result
+//          return result;
+//        }
+//        result = node; // this node is the next result
+//        if (node->getRight()) { // has right node
+//          node = node->getRight();
+//          traverse = TRAVERSE_SUBTREE;
+//        } else {
+//          if (node == root) {
+//            more = false; // we have reached the end of the enumeration
+//            return result;
+//          }
+//          Pointer child = node;
+//          node = node->getParent();
+//          if (child == node->getLeft()) {
+//            traverse = RETURN_LEFT;
+//          } else {
+//            traverse = RETURN_RIGHT;
+//          }
+//        }
+//        break;
+
+      case RETURN_RIGHT:
+        Pointer child;
+        do {
+          if (node == root) {
+            more = false; // we have reached the end of the enumeration
+            return result;
+          }
+          child = node;
+          node = node->getParent();
+        } while (child == node->getRight());
+        traverse = RETURN_LEFT;
+
+//        if (node == root) {
+//          more = false; // we have reached the end of the enumeration
+//          return result;
+//        }
+//        Pointer child = node;
+//        node = node->getParent();
+//        if (child == node->getLeft()) {
+//          traverse = RETURN_LEFT;
+//        } else {
+//          traverse = RETURN_RIGHT;
+//        }
+//        break;
+      }
+    }
+  }
+};
+
+
+
+/**
+  Enumeration of all the elements of a binary tree traversed in infix order.
+
+  @author René Møller Fonseca
+  @version 1.0
+*/
+template<class TYPE, class REF, class PTR>
+class PostfixOrderEnumeration : Enumeration<TYPE, REF, PTR> {
+public:
+
+  /** The type of the value. */
+  typedef TYPE Value;
+  /** The type of a reference to value. */
+  typedef REF Reference;
+  /** The type of a pointer to value. */
+  typedef PTR Pointer;
+private:
+
+  /** The root of the binary tree. */
+  Pointer root;
+  /** The current position in the enumeration. */
+  Pointer node;
+  /** Specifies that more elements are available. */
+  bool more;
+public:
+
+  /**
+    Initializes enumeration of binary tree specified by the node.
+
+    @param n The root node of the binary tree.
+  */
+  PostfixOrderEnumeration(Pointer n) throw() : root(n), node(n), more(n != 0) {}
+
+  /**
+    Returns true if there is more elements in this enumeration.
+  */
+  inline bool hasNext() const throw() {return more;}
+
+  /**
+    Returns the current value and increments the position. Throws
+    'EndOfEnumeration' if the end has been reached.
+  */
+  Pointer next() throw(EndOfEnumeration) {
+    if (!more) {
+      throw EndOfEnumeration();
+    }
+
+    Pointer result = 0;
+while (!result) {
+    if (node->getLeft()) { // traverse left subtree
+      node = node->getLeft();
+    } else if (node->getRight()) { // traverse right subtree
+      node = node->getRight();
+    } else {
+      Pointer temp;
+      do { // return from subtree
+        result = node;
+        if (node == root) {
+          more = false;
+          return result;
+        }
+        temp = node;
+        node = node->getParent();
+      } while ((!node->getRight()) || (temp == node->getRight()));
+
+      node = node->getRight(); // traverse right subtree - which we know exists
+    }
+}
     return result;
   }
 };
@@ -263,7 +477,14 @@ public:
     /**
       Initialize an empty binary tree.
     */
-    inline BinaryTreeImpl() throw() : root(0) {}
+    explicit inline BinaryTreeImpl() throw() : root(0) {}
+
+    /**
+      Initialize a binary tree with the specified root node.
+
+      @param node The root node of the tree.
+    */
+    explicit inline BinaryTreeImpl(Node* node) throw() : root(node) {}
 
     /**
       Initialize binary tree from other binary tree.
@@ -272,9 +493,19 @@ public:
       root(copySubtree(copy.root)) {}
 
     /**
+      Returns true if the binary tree is empty.
+    */
+    inline bool isEmpty() const throw() {return root == 0;}
+
+    /**
       Returns the root node of the binary tree.
     */
     inline Node* getRoot() throw() {return root;}
+
+    /**
+      Sets the root of the binary tree.
+    */
+    inline void setRoot(Node* node) throw() {root = node;}
 
     /**
       Makes a left child node.
@@ -363,12 +594,19 @@ public:
   /**
     Initializes an empty binary tree.
   */
-  BinaryTree() throw() {}
+  BinaryTree() throw() : elements(new BinaryTreeImpl()) {}
 
   /**
     Initializes binary tree from other binary tree.
   */
   BinaryTree(const BinaryTree& copy) throw() : elements(copy.elements) {}
+
+  /**
+    Returns true if the tree has a root node.
+  */
+  inline bool isEmpty() const throw() {
+    return elements->isEmpty();
+  }
 
   /**
     Returns the root node of the binary tree for modifying access.
@@ -386,10 +624,19 @@ public:
   }
 
   /**
+    Sets the binary tree.
+
+    @param node The root of the tree.
+  */
+  void setRoot(Node* node) throw() {
+    elements = new BinaryTreeImpl(node); // no need to copy
+  }
+
+  /**
     Removes all the nodes from the binary tree.
   */
   void removeAll() throw() {
-    elements = 0; // no need to copy
+    elements = new BinaryTreeImpl(); // no need to copy
   }
 };
 

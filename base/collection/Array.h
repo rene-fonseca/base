@@ -58,10 +58,13 @@ public:
     ReadOnlyEnumeration(const Array& array) throw() :
       AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(array.getElements(), array.getElements() + array.getSize()) {}
   };
-protected:
+private:
 
   /** The elements of the array. */
   ReferenceCountedObjectPointer<ReferenceCountedAllocator<TYPE> > elements;
+  /** The number of elements in the array. */
+  unsigned int size;
+protected:
 
   /**
     Returns the elements of the array for modifying access.
@@ -84,10 +87,10 @@ protected:
   inline void setSize(unsigned int size) throw(MemoryException) {
     if (size != this->size) {
       this->size = size;
-      if (elements.isNULL()) {
-        elements = new ReferenceCountedAllocator<TYPE>(size);
-      } else {
+      if (elements.isValid()) {
         elements->setSize(size);
+      } else {
+        elements = new ReferenceCountedAllocator<TYPE>(size);
       }
     }
   }
@@ -96,12 +99,12 @@ public:
   /**
     Initializes an empty array.
   */
-  Array() throw() {}
+  Array() throw() : elements(new ReferenceCountedAllocator<TYPE>()), size(0) {}
 
   /**
     Initializes array from other array.
   */
-  Array(const Array& copy) throw(MemoryException) : elements(copy.elements) {}
+  Array(const Array& copy) throw(MemoryException) : elements(copy.elements), size(copy.size) {}
 
   /**
     Assignment of array to array.
@@ -109,17 +112,28 @@ public:
   Array& operator=(const Array& eq) throw(MemoryException) {
     if (&eq != this) {
       elements = eq.elements;
+      size = eq.size;
     }
     return *this;
   }
 
   /**
+    Returns the number fo elements in the array.
+  */
+  inline unsigned int getSize() const throw() {return size;}
+
+  /**
+    Returns true if the array is empty.
+  */
+  inline bool isEmpty() const throw() {return size == 0;}
+
+  /**
     Appends the value to this array.
   */
   void append(const TYPE& value) throw(MemoryException) {
-    TYPE* elements = getElements();
     unsigned int size = getSize();
     setSize(size + 1);
+    TYPE* elements = getElements(); // size must be set before
     elements[size] = value;
   }
 
@@ -127,9 +141,9 @@ public:
     Prepends the value to this array.
   */
   void prepend(const TYPE& value) throw(MemoryException) {
-    TYPE* elements = getElements();
     setSize(getSize() + 1);
-    copy(elements + 1, elements, getSize());
+    TYPE* elements = getElements(); // size must be set before
+    move(elements + 1, elements, getSize());
     elements[0] = value;
   }
 
@@ -144,9 +158,9 @@ public:
     if (index > getSize()) {
       throw OutOfRange();
     }
-    TYPE* elements = getElements();
     setSize(getSize() + 1);
-    copy(elements + index + 1, elements + index, getSize() - index);
+    TYPE* elements = getElements(); // size must be set before
+    move(elements + index + 1, elements + index, getSize() - index);
     elements[index] = value;
   }
 
@@ -159,8 +173,8 @@ public:
     if (index >= getSize()) {
       throw OutOfRange();
     }
-    TYPE* elements = getElements();
-    copy(elements + index, elements + index + 1, getSize() - index - 1);
+    TYPE* elements = getElements(); // size must be set after
+    move(elements + index, elements + index + 1, getSize() - index - 1);
     setSize(getSize() - 1);
   }
 
@@ -168,7 +182,8 @@ public:
     Removes all the elements from this array.
   */
   void removeAll() throw() {
-    elements = 0; // no need to copy
+    elements = new ReferenceCountedAllocator<TYPE>(); // no need to copy
+    size = 0;
   }
 
   // Friend section

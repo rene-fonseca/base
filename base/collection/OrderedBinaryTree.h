@@ -27,7 +27,7 @@ public:
     @author René Møller Fonseca
     @version 1.0
   */
-  class Enumeration : public PrefixOrderEnumeration<Node, Node&, Node*> {
+  class Enumeration : public InfixOrderEnumeration<Node, Node&, Node*> {
   public:
 
     /**
@@ -37,7 +37,7 @@ public:
       @param tree The ordered binary tree being enumerated.
     */
     inline Enumeration(OrderedBinaryTree& tree) throw() :
-      PrefixOrderEnumeration<Node, Node&, Node*>(tree.getRoot()) {}
+      InfixOrderEnumeration<Node, Node&, Node*>(tree.getRoot()) {}
   };
 
   /**
@@ -46,7 +46,7 @@ public:
     @author René Møller Fonseca
     @version 1.0
   */
-  class ReadOnlyEnumeration : public PrefixOrderEnumeration<Node, const Node&, const Node*> {
+  class ReadOnlyEnumeration : public InfixOrderEnumeration<Node, const Node&, const Node*> {
   public:
 
     /**
@@ -56,7 +56,7 @@ public:
       @param tree The ordered binary tree being enumerated.
     */
     inline ReadOnlyEnumeration(const OrderedBinaryTree& tree) throw() :
-      PrefixOrderEnumeration<Node, const Node&, const Node*>(tree.getRoot()) {}
+      InfixOrderEnumeration<Node, const Node&, const Node*>(tree.getRoot()) {}
   };
 
   /**
@@ -80,9 +80,9 @@ public:
     Node* node = BinaryTree<TYPE>::getRoot();
 
     while (node) {
-      if (*node->getValue() > value) {
+      if (value < *node->getValue()) {
         node = node->getLeft();
-      } else if (*node->getValue() < value) {
+      } else if (value > *node->getValue()) {
         node = node->getRight();
       } else {
         return node;
@@ -102,9 +102,9 @@ public:
     const Node* node = BinaryTree<TYPE>::getRoot();
 
     while (node) {
-      if (*node->getValue() > value) {
+      if (value < *node->getValue()) {
         node = node->getLeft();
-      } else if (*node->getValue() < value) {
+      } else if (value > *node->getValue()) {
         node = node->getRight();
       } else {
         return node;
@@ -122,15 +122,20 @@ public:
   Value* add(const TYPE& value) throw(MemoryException) {
     Node* node = BinaryTree<TYPE>::getRoot();
 
+    if (!node) {
+      BinaryTree<TYPE>::setRoot(new Node(0, 0, 0, value)); // attach root node
+      return 0;
+    }
+
     while (true) {
-      if (*node->getValue() < value) {
+      if (value < *node->getValue()) {
         if (node->getLeft()) {
           node = node->getLeft();
         } else { // attach left child node
           node->setLeft(new Node(node, 0, 0, value));
           return 0;
         }
-      } else if (*node->getValue() > value) {
+      } else if (value > *node->getValue()) {
         if (node->getRight()) {
           node = node->getRight();
         } else { // attach right child node

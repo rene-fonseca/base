@@ -50,6 +50,9 @@ protected:
     inline Enumeration(Map& map) throw() :
       OrderedBinaryTree<Node>::Enumeration(map.elements) {}
 
+    /**
+      Returns the next element of the enumeration.
+    */
 //    inline Node* next() throw(EndOfEnumeration) {
 //      return OrderedBinaryTree<Node>::next()->getValue();
 //    }
@@ -91,7 +94,7 @@ public:
   /**
     Initializes an empty map.
   */
-  Map() throw() {}
+  Map() throw() : size(0) {}
 
   /**
     Initializes map from other map.
@@ -180,8 +183,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>
   Map<KEY, VALUE>::ReadOnlyEnumeration enu(value);
   stream << '{';
   while (enu.hasNext()) {
-    Map<KEY, VALUE>::Node* node = enu.next();
-    stream << *node->getKey() << "->" << *node->getValue();
+    stream << *enu.next()->getValue();
     if (enu.hasNext()) {
       stream << ";";
     }

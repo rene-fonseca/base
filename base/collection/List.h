@@ -46,58 +46,58 @@ public:
 
 
 
-template<class TYPE>
-class ListNodePointer {
-private:
-
-  ListNode<TYPE>* node;
-public:
-
-  ListNodePointer(ListNode<TYPE>* node) : node(node) {}
-
-  ListNodePointer(const ListNodePointer& copy) : node(copy.node) {}
-
-  ListNodePointer& operator=(const ListNodePointer& eq) {
-    node = eq.node;
-    return *this;
-  }
-
-  void operator--() {
-    node = node->getPrevious();
-  }
-
-  void operator--(int) {
-    ListNode<TYPE>* temp = node;
-    node = node->getPrevious();
-    return temp;
-  }
-
-  void operator++() {
-    node = node->getNext();
-  }
-
-  void operator++(int) {
-    ListNode<TYPE>* temp = node;
-    node = node->getNext();
-    return temp;
-  }
-
-  TYPE* operator*() {
-    return node->getValue();
-  }
-
-  TYPE* operator->() {
-    return node->getValue();
-  }
-
-  inline bool operator==(const ListNodePointer& eq) const throw() {
-    return node == eq.node;
-  }
-
-  inline bool operator!=(const ListNodePointer& eq) const throw() {
-    return node != eq.node;
-  }
-};
+//template<class TYPE>
+//class ListNodePointer {
+//private:
+//
+//  ListNode<TYPE>* node;
+//public:
+//
+//  ListNodePointer(ListNode<TYPE>* node) : node(node) {}
+//
+//  ListNodePointer(const ListNodePointer& copy) : node(copy.node) {}
+//
+//  ListNodePointer& operator=(const ListNodePointer& eq) {
+//    node = eq.node;
+//    return *this;
+//  }
+//
+//  void operator--() {
+//    node = node->getPrevious();
+//  }
+//
+//  void operator--(int) {
+//    ListNode<TYPE>* temp = node;
+//    node = node->getPrevious();
+//    return temp;
+//  }
+//
+//  void operator++() {
+//    node = node->getNext();
+//  }
+//
+//  void operator++(int) {
+//    ListNode<TYPE>* temp = node;
+//    node = node->getNext();
+//    return temp;
+//  }
+//
+//  TYPE* operator*() {
+//    return node->getValue();
+//  }
+//
+//  TYPE* operator->() {
+//    return node->getValue();
+//  }
+//
+//  inline bool operator==(const ListNodePointer& eq) const throw() {
+//    return node == eq.node;
+//  }
+//
+//  inline bool operator!=(const ListNodePointer& eq) const throw() {
+//    return node != eq.node;
+//  }
+//};
 
 
 
@@ -108,55 +108,46 @@ public:
   @version 1.0
 */
 
-template<class TYPE, class REF, class PTR, class NODEPTR>
+template<class TYPE, class REF, class PTR>
 class ListEnumeration : public Enumeration<TYPE, REF, PTR> {
 public:
 
-  /** The type of the values being enumerated. */
-  typedef TYPE Value;
-  /** The type of a reference to a value. */
-  typedef REF Reference;
   /** The type of a pointer to a value. */
   typedef PTR Pointer;
-  /** The type of a pointer to a value. */
-  typedef NODEPTR NodePointer;
 protected:
 
   /** The current position in the enumeration. */
-  NodePointer current;
-  /** The end of the enumeration. */
-  NodePointer end;
+  ListNode<TYPE>* current;
 public:
 
   /**
-    Initializes an enumeration of all the elements specified by 'begin' and 'end'.
+    Initializes an enumeration of all the elements of a list.
 
     @param begin Specifies the beginning of the enumeration.
-    @param end Specifies the end of the enumeration.
   */
-  inline ListEnumeration(NodePointer begin, NodePointer end) throw() : current(begin), end(end) {}
+  explicit inline ListEnumeration(ListNode<TYPE>* begin) throw() : current(begin) {}
 
   /**
     Initializes enumeration from other enumeration.
   */
-  inline ListEnumeration(const ListEnumeration& copy) throw() : current(copy.current), end(copy.end) {}
+  inline ListEnumeration(const ListEnumeration& copy) throw() : current(copy.current) {}
 
   /**
     Returns true if the enumeration still contains elements.
   */
   inline bool hasNext() const throw() {
-    return current != end;
+    return current != 0;
   }
 
   /**
     Returns the next element and advances the position of this enumeration.
   */
   inline Pointer next() throw(EndOfEnumeration) {
-    if (current == end) {
+    if (current == 0) {
       throw EndOfEnumeration();
     }
     Pointer temp = current->getValue();
-    ++current;
+    current = current->getNext();
     return temp;
   }
 
@@ -171,6 +162,71 @@ public:
     Returns true if the enumerations aren't pointing to the same position.
   */
   inline bool operator!=(const ListEnumeration& eq) const throw() {
+    return current != eq.current;
+  }
+};
+
+/**
+  Enumeration of elements in a list.
+
+  @author René Møller Fonseca
+  @version 1.0
+*/
+
+template<class TYPE, class REF, class PTR>
+class ListReadOnlyEnumeration : public Enumeration<TYPE, REF, PTR> {
+public:
+
+  /** The type of a pointer to a value. */
+  typedef PTR Pointer;
+protected:
+
+  /** The current position in the enumeration. */
+  const ListNode<TYPE>* current;
+public:
+
+  /**
+    Initializes an enumeration of all the elements of a list.
+
+    @param begin Specifies the beginning of the enumeration.
+  */
+  explicit inline ListReadOnlyEnumeration(const ListNode<TYPE>* begin) throw() : current(begin) {}
+
+  /**
+    Initializes enumeration from other enumeration.
+  */
+  inline ListReadOnlyEnumeration(const ListReadOnlyEnumeration& copy) throw() : current(copy.current) {}
+
+  /**
+    Returns true if the enumeration still contains elements.
+  */
+  inline bool hasNext() const throw() {
+    return current != 0;
+  }
+
+  /**
+    Returns the next element and advances the position of this enumeration.
+  */
+  inline Pointer next() throw(EndOfEnumeration) {
+    if (current == 0) {
+      throw EndOfEnumeration();
+    }
+    Pointer temp = current->getValue();
+    current = current->getNext();
+    return temp;
+  }
+
+  /**
+    Returns true if the enumerations are pointing to the same position.
+  */
+  inline bool operator==(const ListReadOnlyEnumeration& eq) const throw() {
+    return current == eq.current;
+  }
+
+  /**
+    Returns true if the enumerations aren't pointing to the same position.
+  */
+  inline bool operator!=(const ListReadOnlyEnumeration& eq) const throw() {
     return current != eq.current;
   }
 };
@@ -197,13 +253,15 @@ template<class TYPE>
 class List : public Collection {
 public:
 
+  /** The type of a value. */
   typedef TYPE Value;
+  /** The type of a node. */
   typedef ListNode<Value> Node;
 
   /**
     Enumeration of all the elements of an array.
   */
-  class Enumeration : public ListEnumeration<Value, Value&, Value*, Node*> {
+  class Enumeration : public ListEnumeration<Value, Value&, Value*> {
   public:
 
     /**
@@ -212,13 +270,13 @@ public:
       @param list The list being enumerated.
     */
     Enumeration(List& list) throw() :
-      ListEnumeration<Value, Value&, Value*, Node*>(list.getFirst(), list.getLast()) {}
+      ListEnumeration<Value, Value&, Value*>(list.getFirst()) {}
   };
 
   /**
     Non-modifying enumeration of all the elements of an array.
   */
-  class ReadOnlyEnumeration : public ListEnumeration<Value, const Value&, const Value*, const Node*> {
+  class ReadOnlyEnumeration : public ListReadOnlyEnumeration<Value, const Value&, const Value*> {
   public:
 
     /**
@@ -227,7 +285,7 @@ public:
       @param list The list being enumerated.
     */
     ReadOnlyEnumeration(const List& list) throw() :
-      ListEnumeration<Value, const Value&, const Value*, const Node*>(list.getFirst(), list.getLast()) {}
+      ListReadOnlyEnumeration<Value, const Value&, const Value*>(list.getFirst()) {}
   };
 protected:
 
@@ -335,7 +393,7 @@ protected:
     /**
       Appends the value to the end of this list.
     */
-    void append(const TYPE& value) throw() {
+    void append(const TYPE& value) throw(MemoryException) {
       if (size) {
         Node* node = new Node(0, last, value);
         last->setNext(node);
@@ -352,7 +410,7 @@ protected:
     /**
       Prepends the value to the beginning of this list.
     */
-    void prepend(const TYPE& value) throw() {
+    void prepend(const TYPE& value) throw(MemoryException) {
       if (size) {
         Node* node = new Node(first, 0, value);
         first->setPrevious(node);
@@ -413,21 +471,10 @@ protected:
   ReferenceCountedObjectPointer<ListImpl<TYPE> > elements;
 
   /**
-    Makes a new copy of the internal representation of the elements if shared
-    by several lists. This member function must be called explicitly before
-    most modifications to the list.
-  */
-  inline void copyOnWrite() throw(MemoryException) {
-    if (elements.isMultiReferenced()) { // do we have the elements for our self
-      elements = new ListImpl<TYPE>(*elements); // make a copy of the elements
-    }
-  }
-
-  /**
     Returns the first node of the list.
   */
-  inline Node* getFirst() throw() {
-    copyOnWrite();
+  inline Node* getFirst() throw(MemoryException) {
+    elements.copyOnWrite();
     return elements->getFirst();
   }
 
@@ -441,8 +488,8 @@ protected:
   /**
     Returns the last node of the list.
   */
-  inline Node* getLast() throw() {
-    copyOnWrite();
+  inline Node* getLast() throw(MemoryException) {
+    elements.copyOnWrite();
     return elements->getLast();
   }
 
@@ -457,7 +504,7 @@ public:
   /**
     Initializes an empty list.
   */
-  List() throw() {}
+  List() throw() : elements(new ListImpl()) {}
 
   /**
     Initializes list from other list.
@@ -501,7 +548,7 @@ public:
     @param value The value to be appended to the list.
   */
   void append(const TYPE& value) throw(MemoryException) {
-    copyOnWrite();
+    elements.copyOnWrite();
     elements->append(value);
   }
 
@@ -511,7 +558,7 @@ public:
     @param value The value to be prepended to the list.
   */
   void prepend(const TYPE& value) throw(MemoryException) {
-    copyOnWrite();
+    elements.copyOnWrite();
     elements->prepend(value);
   }
 
@@ -521,7 +568,7 @@ public:
     @param value The value to be appended to the list.
   */
   void add(const TYPE& value) throw(MemoryException) {
-    copyOnWrite();
+    elements.copyOnWrite();
     elements->append(value);
   }
 
@@ -532,7 +579,7 @@ public:
     @param value The value to be inserted.
   */
 /*  void insert(Enumeration& enu, const TYPE& value) throw(InvalidEnumeration) {
-    copyOnWrite();
+    elements.copyOnWrite();
     if (enu.getOwner() != this) {
       throw InvalidEnumeration();
     }
@@ -543,7 +590,7 @@ public:
     Removes this first node of this list.
   */
   void removeFirst() throw(InvalidNode) {
-    copyOnWrite();
+    elements.copyOnWrite();
     elements->removeFirst();
   }
 
@@ -551,7 +598,7 @@ public:
     Removes the last node of this list.
   */
   void removeLast() throw(InvalidNode) {
-    copyOnWrite();
+    elements.copyOnWrite();
     elements->removeLast();
   }
 
@@ -559,7 +606,7 @@ public:
     Removes all the elements from this list.
   */
   void removeAll() throw() {
-    elements = 0; // copyOnWrite is not required
+    elements = new ListImpl(); // copyOnWrite is not required
   }
 
   /**
@@ -585,7 +632,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const List<TYPE>& val
   List<TYPE>::ReadOnlyEnumeration enu(value);
   stream << "{";
   while (enu.hasNext()) {
-    stream << *enu.next()->getValue();
+    stream << *enu.next();
     if (enu.hasNext()) {
       stream << ";";
     }

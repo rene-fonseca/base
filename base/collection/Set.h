@@ -7,6 +7,7 @@
 #define _DK_SDU_MIP__BASE_COLLECTION__SET_H
 
 #include <base/collection/OrderedBinaryTree.h>
+#include <base/string/FormatOutputStream.h>
 
 /**
   Set collection implemented using an ordered binary tree.
@@ -98,8 +99,10 @@ public:
     @param key The key to be added to the set.
   */
   void add(const KEY& key) throw(MemoryException) {
-    elements.add(key);
-    ++size; // not if already exists
+    KEY* result = elements.add(key);
+    if (!result) {
+      ++size; // key did not exist
+    }
   }
 
   /**
@@ -122,13 +125,12 @@ public:
   }
 };
 
-/**
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Set<TYPE>& value) {
   Set<TYPE>::ReadOnlyEnumeration enu(value);
   stream << '{';
   while (enu.hasNext()) {
-    stream << *enu.next();
+    stream << *enu.next()->getValue();
     if (enu.hasNext()) {
       stream << ";";
     }
@@ -136,6 +138,5 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Set<TYPE>& valu
   stream << '}';
   return stream;
 }
-*/
 
 #endif

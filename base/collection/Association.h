@@ -6,6 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__ASSOCIATION_H
 #define _DK_SDU_MIP__BASE_COLLECTION__ASSOCIATION_H
 
+#include <base/string/FormatOutputStream.h>
+
 /**
   Association of value with other value. The particular property of an
   association is that the key is the only significant when comparing
@@ -72,5 +74,13 @@ public:
   */
   inline bool operator==(const Association& eq) const throw() {return key == eq.key;}
 };
+
+/**
+  Writes association to format output stream.
+*/
+template<class KEY, class VALUE>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Association<KEY, VALUE>& value) {
+  return stream << '[' << value.getKey() << ']' << '=' << value.getValue();
+}
 
 #endif

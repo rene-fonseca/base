@@ -36,6 +36,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   </pre>
 
   @short MD5 message-digest.
+  @see SHA1
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

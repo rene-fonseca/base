@@ -13,17 +13,17 @@
 
 #include <base/communication/IEEE1394Impl.h>
 
-// TAG: does not belong here
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define _DK_SDU_MIP__BASE__IEEE_1394_IMPL UnibrainIEEE1394
-#  include <base/communication/UnibrainIEEE1394.cpp>
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-#  define _DK_SDU_MIP__BASE__IEEE_1394_IMPL LinuxRawIEEE1394
-#  include <base/communication/LinuxRawIEEE1394.cpp>
-#else
-#  define _DK_SDU_MIP__BASE__IEEE_1394_IMPL DummyIEEE1394
-#  include <base/communication/DummyIEEE1394.h>
+#if (!defined(_DK_SDU_MIP__BASE__IEEE_1394_IMPL))
+#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#    define _DK_SDU_MIP__BASE__IEEE_1394_IMPL LinuxRawIEEE1394
+#    define _DK_SDU_MIP__BASE__IEEE_1394_IMPL_HEADER "base/communication/LinuxRawIEEE1394.h"
+#  else
+#    define _DK_SDU_MIP__BASE__IEEE_1394_IMPL DummyIEEE1394
+#    define _DK_SDU_MIP__BASE__IEEE_1394_IMPL_HEADER "base/communication/DummyIEEE1394.h"
+#  endif
 #endif
+
+#include _DK_SDU_MIP__BASE__IEEE_1394_IMPL_HEADER
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

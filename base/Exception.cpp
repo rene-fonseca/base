@@ -11,9 +11,44 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+// TAG: need config test (private)
+// #if (__GNUC__ == 3)
+//   #define _DK_SDU_MIP__BASE__HAVE_CXA_CURRENT_EXCEPTION_TYPE
+// #endif
+
 #include <base/Exception.h>
 
+#if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
+  #include <base/platforms/compiler/v3mv/exception.h>
+#endif
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+bool Exception::isUnwinding() throw() {
+#if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
+  // TAG: exception handling does not have to be "fast"
+  const __cxa_eh_globals* globals = __cxa_get_globals_fast(); // __cxa_get_globals is called in Thread.cpp
+  const __cxa_exception* caughtException = globals->caughtExceptions;
+  return caughtException != 0;
+#else
+  return false;
+#endif
+}
+
+Type Exception::getExceptionType() throw() {
+#if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
+  // TAG: exception handling does not have to be "fast"
+  const __cxa_eh_globals* globals = __cxa_get_globals_fast(); // __cxa_get_globals is called in Thread.cpp
+  const __cxa_exception* caughtException = globals->caughtExceptions;
+  if (caughtException) {
+    return Type(header->exceptionType);
+  } else {
+    return Type();
+  }
+#else
+  return Type();
+#endif
+}
 
 Exception::Exception() throw() : message(0) {
 }

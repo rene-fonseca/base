@@ -26,7 +26,6 @@ os=LINUX
 features="_GNU_SOURCE=1 lfs:_LARGEFILE64_SOURCE=1"
 
 # functions
-function_memchr=yes
 functions="memchr memcmp memcpy memmove memset nanosleep pselect readdir_r mbrtowc mbsrtowcs pthread_yield"
 
 # api

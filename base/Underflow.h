@@ -6,11 +6,15 @@
 #ifndef _DK_SDU_MIP__BASE__UNDERFLOW_H
 #define _DK_SDU_MIP__BASE__UNDERFLOW_H
 
-#include "Exception.h"
+#include <base/Exception.h>
 
 /**
-  Thrown on value less than minimum valid value.
+  This exception indicates that a resulting value is less than the maximum
+  negative representable value using a given format/type. An underflow
+  condition will occur if the result of subtracting two 32 bit signed integers
+  is less than -2^31.
 
+  @see Overflow
   @author René Møller Fonseca
   @version 1.0
 */

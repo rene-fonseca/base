@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "DeviceException.h"
+#include <base/DeviceException.h>
 
 DeviceException::DeviceException() throw() {
 }

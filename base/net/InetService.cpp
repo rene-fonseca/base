@@ -3,54 +3,42 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "InetService.h"
+#include <base/net/InetService.h>
 #include <netdb.h>
 #include <netinet/in.h>
 
 unsigned short InetService::getByName(const String<>& name, const String<>& protocol) throw() {
-#ifdef __linux__
+  struct servent* sp;
+#if defined(__irix__) || defined(__solaris__)
   struct servent result;
-  struct servent* pResult;
   char buffer[1024]; // how big should this buffer be
-  getservbyname_r((const char*)name, (const char*)protocol, &result, buffer, sizeof(buffer), &pResult);
-  return pResult ? ntohs(result.s_port) : 0;
-#elif __solaris__
+  sp = getservbyname_r((const char*)name, (const char*)protocol, &result, buffer, sizeof(buffer));
+#elif defined(__linux__)
   struct servent result;
-  struct servent* pResult;
   char buffer[1024]; // how big should this buffer be
-  pResult = getservbyname_r((const char*)name, (const char*)protocol, &result, buffer, sizeof(buffer));
-  return pResult ? ntohs(pResult->s_port) : 0;
-#elif __CYGWIN__
-  // WARNING: NOT MT-SAFE
-  struct servent* pResult;
-  pResult = getservbyname((const char*)name, (const char*)protocol);
-  return pResult ? ntohs(pResult->s_port) : 0;
+  getservbyname_r((const char*)name, (const char*)protocol, &result, buffer, sizeof(buffer), &sp);
 #else
-  #err "Operating system not supported"
+  #warning Using MT-unsafe getservbyname
+  sp = getservbyname((const char*)name, (const char*)protocol);
 #endif
+  return sp ? ntohs(sp->s_port) : 0;
 }
 
 String<> InetService::getByPort(unsigned short port, const String<>& protocol) throw() {
-#ifdef __linux__
+  struct servent* sp;
+#if defined(__irix__) || defined(__solaris__)
   struct servent result;
-  struct servent* pResult;
   char buffer[1024]; // how big should this buffer be
-  getservbyport_r(htons(port), (const char*)protocol, &result, buffer, sizeof(buffer), &pResult);
-  return pResult ? String<>(result.s_name) : String<>();
-#elif __solaris__
+  sp = getservbyport_r(htons(port), (const char*)protocol, &result, buffer, sizeof(buffer));
+#elif defined(__linux__)
   struct servent result;
-  struct servent* pResult;
   char buffer[1024]; // how big should this buffer be
-  pResult = getservbyport_r(htons(port), (const char*)protocol, &result, buffer, sizeof(buffer));
-  return pResult ? String<>(pResult->s_name) : String<>();
-#elif __CYGWIN__
-  // WARNING: NOT MT-SAFE
-  struct servent* pResult;
-  pResult = getservbyport(htons(port), (const char*)protocol);
-  return pResult ? String<>(pResult->s_name) : String<>();
+  getservbyport_r(htons(port), (const char*)protocol, &result, buffer, sizeof(buffer), &sp);
 #else
-  #err "Operating system not supported"
+  #warning Using MT-unsafe getservbyport
+  sp = getservbyport(htons(port), (const char*)protocol);
 #endif
+  return sp ? String<>(sp->s_name) : String<>();
 }
 
 InetService::InetService(const String<>& name, const String<>& protocol) throw(ServiceNotFound) {
@@ -69,10 +57,8 @@ InetService::InetService(unsigned short port, const String<>& protocol) throw(Se
   this->protocol = protocol;
 }
 
-InetService::InetService(const InetService& copy) throw() {
-  name = copy.name;
-  port = copy.port;
-  protocol = copy.protocol;
+InetService::InetService(const InetService& copy) throw() :
+  name(copy.name), port(copy.port), protocol(copy.protocol) {
 }
 
 InetService& InetService::operator=(const InetService& eq) throw() {

@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "AccessDenied.h"
+#include <base/io/AccessDenied.h>
 
 AccessDenied::AccessDenied() throw() : IOException() {
 }

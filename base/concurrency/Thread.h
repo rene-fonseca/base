@@ -47,7 +47,7 @@ typedef enum {
 
     Example:
     <pre>
-    class MyActiveObject : public Object, public Runnable {
+    class MyActiveObject : public Runnable {
     protected:
 
       unsigned int count;

@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "ResourceException.h"
+#include <base/ResourceException.h>
 
 ResourceException::ResourceException() throw() {
 }

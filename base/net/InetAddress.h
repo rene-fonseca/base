@@ -6,11 +6,12 @@
 #ifndef _DK_SDU_MIP__BASE_NET__INET_ADDRESS_H
 #define _DK_SDU_MIP__BASE_NET__INET_ADDRESS_H
 
-#include "base/Object.h"
-#include "base/string/InvalidFormat.h"
-#include "base/string/String.h"
-#include "base/collection/List.h"
-#include "HostNotFound.h"
+#include <base/Object.h>
+#include <base/string/InvalidFormat.h>
+#include <base/string/String.h>
+#include <base/collection/List.h>
+#include <base/net/HostNotFound.h>
+#include <base/net/NetworkException.h>
 
 /**
   This class represents an Internet Protocol (IP) address (support for both IPv4 and IPv6).
@@ -27,7 +28,11 @@ public:
 private:
 
   /** Internal structure holding the IP address in network byte order. */
-  struct {char buffer[16];} address; // enough for IPv6 addresses
+#if defined(HAVE_IPV6)
+  struct {char buffer[16];} address; // enough for IPv6 and IPv4 addresses
+#else
+  struct {char buffer[4];} address; // enough for IPv4 addresses
+#endif
 public:
 
   /**
@@ -53,7 +58,7 @@ public:
     @param addr The internet address in network byte order.
     @param family Specifies the family of the binary address (IPv4 or IPv6).
   */
-  InetAddress(const char* addr, Family family) throw();
+  InetAddress(const char* addr, Family family) throw(NetworkException);
 
   /**
     Initializes the address from the specified string. Implicit initialization is allowed.
@@ -91,12 +96,15 @@ public:
   bool operator==(const InetAddress& eq) throw();
 
   /**
-    Returns true if this address is the unspecified address (i.e. '::').
+    Returns true if this address is the unspecified address (i.e. '::' and
+    '0.0.0.0' in the case of IPv6 and IPv4, respectively).
   */
   bool isUnspecified() const throw();
 
   /**
-    Returns true if this address is the loopback address (i.e. '::1'). The loopback address is a unicast address used to send packets to the local host.
+    Returns true if this address is the loopback address (i.e. '::1' and
+    '127.0.0.1' in the case of IPv6 and IPv4, respectively). The loopback
+    address is a unicast address used to send packets to the local host.
   */
   bool isLoopback() const throw();
 
@@ -116,22 +124,25 @@ public:
   bool isSiteLocal() const throw();
 
   /**
-    Returns true if the address is an IPv4-mapped IPv6 address (e.g. '::ffff:127.0.0.1').
+    Returns true if the address is an IPv4-mapped IPv6 address
+    (e.g. '::ffff:127.0.0.1'). Returns false for IPv4 addresses.
   */
   bool isV4Mapped() const throw();
 
   /**
     Returns true if this address is IPv4 compatible (e.g. '::127.0.0.1').
+    Returns true for IPv4 addresses.
   */
   bool isV4Compatible() const throw();
 
   /**
-    Sets the address.
+    Sets the address. Throws 'NetworkException' if the specified family is not
+    supported by the operating system.
 
     @param addr The internet address in network byte order.
     @param family Specifies the family of the binary address (IPv4 or IPv6).
   */
-  void setAddress(const char* addr, Family family) throw();
+  void setAddress(const char* addr, Family family) throw(NetworkException);
 
   /**
     Writes a string representation of the address to a stream.

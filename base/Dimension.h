@@ -6,8 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE__DIMENSION_H
 #define _DK_SDU_MIP__BASE__DIMENSION_H
 
-#include "Object.h"
-#include "base/string/FormatOutputStream.h"
+#include <base/Object.h>
+#include <base/string/FormatOutputStream.h>
 
 /**
   Dimension.

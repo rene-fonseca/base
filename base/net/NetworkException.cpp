@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "NetworkException.h"
+#include <base/net/NetworkException.h>
 
 NetworkException::NetworkException() throw() : IOException() {
 }

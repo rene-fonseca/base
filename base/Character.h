@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE__CHARACTER_H
 #define _DK_SDU_MIP__BASE__CHARACTER_H
 
-#include "Object.h"
+#include <base/Object.h>
 
 /**
   Character.
@@ -25,41 +25,46 @@ public:
   /**
     Initializes the character as '\0'.
   */
-  inline Character() throw() : val('\0') {};
+  inline Character() throw() : val('\0') {}
 
   /**
-    Initializes the character. Implicit initialization allowed.
+    Initializes the character. Implicit initialization with native type allowed.
 
     @param value The desired value.
   */
-  inline Character(char value) throw() : val(value) {};
+  inline Character(char value) throw() : val(value) {}
 
   /**
-    Copy constructor. Initializes a new Character from other Character object.
+    Initializes character from other character object.
   */
-  Character(const Character& copy) throw(); // use default copy object policy
+  inline Character(const Character& copy) throw() : val(copy.val) {}
 
   /**
-    Assignment operator.
+    Assignment of character to this object.
   */
-  Character& operator=(int value) const throw(); // use default assignment object policy
+  inline Character& operator=(const Character eq) throw() {val = eq.val;}
 
   /**
-    Gets the value of the integer.
+    Assignment of native type to this object.
   */
-  inline char getValue() const throw() {return val;};
+  inline Character& operator=(char eq) throw() {val = eq;}
 
   /**
-    Sets the value of the integer.
+    Gets the value of the character.
+  */
+  inline char getValue() const throw() {return val;}
+
+  /**
+    Sets the value of the character.
 
     @param value The desired value.
   */
-  inline void setValue(char value) throw() {val = value;};
+  inline void setValue(char value) throw() {val = value;}
 
   /**
-    Casts integer to native type.
+    Casts character to native type.
   */
-  inline operator char() const throw() {return val;};
+  inline operator char() const throw() {return val;}
 };
 
 #endif

@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "MemoryException.h"
+#include <base/MemoryException.h>
 
 MemoryException::MemoryException() throw() {
 }

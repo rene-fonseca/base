@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE__ITERATOR_H
 #define _DK_SDU_MIP__BASE__ITERATOR_H
 
-#include "OutOfBounds.h"
+#include <base/OutOfBounds.h>
 
 /**
   Defines the types of a writeable iterator.

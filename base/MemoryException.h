@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE__MEMORY_EXCEPTION_H
 #define _DK_SDU_MIP__BASE__MEMORY_EXCEPTION_H
 
-#include "ResourceException.h"
+#include <base/ResourceException.h>
 
 /**
   Thrown on memory allocation/deallocation error.

@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_NET__CLIENT_SOCKET_H
 #define _DK_SDU_MIP__BASE_NET__CLIENT_SOCKET_H
 
-#include "Socket.h"
+#include <base/net/Socket.h>
 
 /**
   This class implements a client stream socket. A socket is an endpoint for communication between two machines.

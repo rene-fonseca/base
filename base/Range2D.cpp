@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Range2D.h"
+#include <base/Range2D.h>
 
 Range2D::Range2D() throw() {
   assign(0, 0);

@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE__OUT_OF_DOMAIN_H
 #define _DK_SDU_MIP__BASE__OUT_OF_DOMAIN_H
 
-#include "Exception.h"
+#include <base/Exception.h>
 
 /**
   Exception used to specify that a variable has been assigned a value not in the valid domain.

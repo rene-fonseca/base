@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "ClientSocket.h"
+#include <base/net/ClientSocket.h>
 
 ClientSocket::ClientSocket() throw(IOException) :
   Socket() {

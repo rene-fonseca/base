@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Exception.h"
+#include <base/Exception.h>
 
 Exception::Exception() throw() : message(0) {
 }

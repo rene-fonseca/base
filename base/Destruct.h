@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE__DESTRUCT_H
 #define _DK_SDU_MIP__BASE__DESTRUCT_H
 
-#include "Exception.h"
+#include <base/Exception.h>
 
 /**
   Thrown on object deconstruction error. Used to detect resource leaks.

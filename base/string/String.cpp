@@ -11,6 +11,16 @@
 template String<DefaultLock>;
 template String<Unsafe>;
 
+template<class TYPE> inline TYPE min(TYPE a, TYPE b) {return (a <= b) ? a : b;}
+
+template<class TYPE> inline TYPE max(TYPE a, TYPE b) {return (a >= b) ? a : b;}
+
+template<class TYPE> inline void swap(TYPE& a, TYPE& b) {
+  TYPE temp = a;
+  a = b;
+  b = temp;
+};
+
 #ifndef HAVE_MEMCHR
 inline const char* memchr(const char* src, int value, unsigned int count) {
   return find<char>(src, count, bind2Second(Equal<char>(), value));

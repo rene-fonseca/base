@@ -6,8 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE__RANGE2D_H
 #define _DK_SDU_MIP__BASE__RANGE2D_H
 
-#include "Object.h"
-#include "base/string/FormatOutputStream.h"
+#include <base/Object.h>
+#include <base/string/FormatOutputStream.h>
 
 /**
   A 2D range object is a span from a minimum to a maximum.

@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Object.h"
+#include <base/Object.h>
 
 Object::Object() throw() {
 }

@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Construct.h"
+#include <base/Construct.h>
 
 Construct::Construct() throw() {
 }

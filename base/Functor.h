@@ -15,7 +15,7 @@
 
 
 /**
-  Returns true if two sequences are pairwise equal.
+  Returns true if two sequences are pairwise equal (non-modifying operation).
 */
 template<class TYPE>
 inline bool equal(const TYPE* left, const TYPE* right, unsigned int count) {
@@ -31,7 +31,7 @@ inline bool equal(const TYPE* left, const TYPE* right, unsigned int count) {
 }
 
 /**
-  Returns the index of the first mismatch between two sequences.
+  Returns the index of the first mismatch between two sequences (non-modifying operation).
 
   @return count if no mismatch was found.
 */
@@ -50,7 +50,7 @@ inline unsigned int mismatch(const TYPE* left, const TYPE* right, unsigned int c
 }
 
 /**
-  Returns the number of matches of a predicate in a sequence.
+  Returns the number of matches of a predicate in a sequence (non-modifying operation).
 */
 template<class TYPE, class UNOPR>
 inline unsigned int count(const TYPE* left, unsigned int c, UNOPR& predicate) {
@@ -66,7 +66,7 @@ inline unsigned int count(const TYPE* left, unsigned int c, UNOPR& predicate) {
 }
 
 /**
-  Invocates unary operation for each element.
+  Invocates the specified unary operation for each element (non-modifying operation).
 */
 template<class TYPE, class UNOPR>
 inline void forEach(const TYPE* left, unsigned int count, UNOPR& function) {
@@ -78,7 +78,7 @@ inline void forEach(const TYPE* left, unsigned int count, UNOPR& function) {
 }
 
 /**
-  Invocates binary operation for each pair of elements.
+  Invocates the specified binary operation for each pair of elements (non-modifying operation).
 */
 template<class TYPE, class BINOPR>
 inline void forEach(const TYPE* left, const TYPE* right, unsigned int count, BINOPR& function) {
@@ -90,7 +90,9 @@ inline void forEach(const TYPE* left, const TYPE* right, unsigned int count, BIN
   }
 }
 
-/** Invocates binary operation for each element where the element is used as both arguments. */
+/**
+  Invocates the specified binary operation for each element where the element is used as both operands (non-modifying operation).
+*/
 template<class TYPE, class BINOPR>
 inline void forEachDoBinary(const TYPE* left, unsigned int count, BINOPR& function) {
   while (count) {
@@ -100,7 +102,11 @@ inline void forEachDoBinary(const TYPE* left, unsigned int count, BINOPR& functi
   }
 }
 
-/** Find first occurance of a value in a sequence. */
+/**
+  Find the first occurance of a value in a sequence (non-modifying operation).
+
+  @return A pointer to the value if it is present in the sequence otherwise NULL.
+*/
 template<class TYPE>
 inline const TYPE* find(const TYPE* left, unsigned int count, const TYPE& value) {
   while (count) {

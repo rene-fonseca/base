@@ -3,4 +3,4 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "ShortInteger.h"
+#include <ShortInteger.h>

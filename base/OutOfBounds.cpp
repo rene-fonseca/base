@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "OutOfBounds.h"
+#include <base/OutOfBounds.h>
 
 OutOfBounds::OutOfBounds() throw() {
 }

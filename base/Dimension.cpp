@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Dimension.h"
+#include <base/Dimension.h>
 
 Dimension::Dimension() throw() {
   width = 0;

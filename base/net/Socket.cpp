@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Socket.h"
+#include <base/net/Socket.h>
 #include <base/Functor.h>
 
 #ifdef __win32__
@@ -17,9 +17,9 @@
   #include <string.h>
 #endif
 
-#ifndef socklen_t
-  #define socklen_t int
-#endif
+//#ifndef socklen_t
+//  #define socklen_t int
+//#endif
 
 #ifndef INVALID_SOCKET
   #define INVALID_SOCKET -1

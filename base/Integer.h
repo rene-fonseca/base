@@ -6,11 +6,11 @@
 #ifndef _DK_SDU_MIP__BASE__INTEGER_H
 #define _DK_SDU_MIP__BASE__INTEGER_H
 
-#include "Object.h"
-#include "OutOfRange.h"
-#include "string/String.h"
-#include "string/InvalidFormat.h"
-#include "string/StringOutputStream.h"
+#include <base/Object.h>
+#include <base/OutOfRange.h>
+#include <base/string/String.h>
+#include <base/string/InvalidFormat.h>
+#include <base/string/StringOutputStream.h>
 #include <limits.h>
 
 /**
@@ -38,14 +38,14 @@ public:
   /**
     Initializes the integer as zero.
   */
-  inline Integer() throw() : val(0) {};
+  inline Integer() throw() : val(0) {}
 
   /**
     Initializes the integer with the specified value. Implicit initialization allowed.
 
     @param value The desired value.
   */
-  inline Integer(int value) throw() : val(value) {};
+  inline Integer(int value) throw() : val(value) {}
 
   /**
     Copy constructor. Initializes a new Integer from other Integer object.
@@ -60,19 +60,19 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline int getValue() const throw() {return val;};
+  inline int getValue() const throw() {return val;}
 
   /**
     Sets the value of the integer.
 
     @param value The desired value.
   */
-  inline void setValue(int value) throw() {val = value;};
+  inline void setValue(int value) throw() {val = value;}
 
   /**
     Casts integer to native type.
   */
-  inline operator int() const throw() {return val;};
+  inline operator int() const throw() {return val;}
 };
 
 #endif

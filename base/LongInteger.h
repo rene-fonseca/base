@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE__LONG_INTEGER_H
 #define _DK_SDU_MIP__BASE__LONG_INTEGER_H
 
-#include "Object.h"
+#include <base/Object.h>
 
 /**
   Signed and long integer (64 bits or more).
@@ -33,7 +33,7 @@ public:
   /**
     Initializes the long integer as zero.
   */
-  inline LongInteger() throw() : val(0) {};
+  inline LongInteger() throw() : val(0) {}
 
   /**
     Initializes the long integer with the specified value. Implicit initialization allowed.

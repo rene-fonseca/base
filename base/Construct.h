@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP_BASE_CONSTRUCT_H
 #define _DK_SDU_MIP_BASE_CONSTRUCT_H
 
-#include "Exception.h"
+#include <base/Exception.h>
 
 /**
   Thrown on object construction error.

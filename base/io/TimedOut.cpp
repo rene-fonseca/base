@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "TimedOut.h"
+#include <base/io/TimedOut.h>
 
 TimedOut::TimedOut() throw() : IOException() {
 }

@@ -1,0 +1,36 @@
+/***************************************************************************
+    copyright   : (C) 2000 by René Møller Fonseca
+    email       : fonseca@mip.sdu.dk
+ ***************************************************************************/
+
+#include <base/net/InetInterface.h>
+#include <net/if.h>
+
+List<InetInterface>& getInetInterfaces() throw(NetworkException) {
+#if defined(HAVE_IPV6)
+  List<InetInterface> interfaces;
+  struct if_nameindex* ni;
+  if ((ni = if_nameindex()) == NULL) { // MT-safe
+    throw NetworkException("Unable to get interfaces");
+  }
+  interfaces.add(InetInterface(ni->if_index, ni->if_name));
+  if_freenameindex(ni); // MT-safe
+  return interfaces;
+#else
+  #warning getInetInterfaces not implemented
+#endif
+}
+
+InetInterface::InetInterface(unsigned int i, const char* n) : index(i), name(n) {
+}
+
+InetInterface::InetInterface(const InetInterface& copy) throw() : index(copy.index), name(copy.name) {
+}
+
+unsigned int InetInterface::getIndex() const throw() {
+  return index;
+}
+
+const String<>& InetInterface::getName() const throw() {
+  return name;
+}

@@ -3,10 +3,11 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/Destruct.h>
+#include <base/concurrency/SpinLock.h>
 
-Destruct::Destruct() throw() {
-}
-
-Destruct::Destruct(const char* message) throw() : Exception(message) {
+int main() {
+  SpinLock lock;
+  lock.tryExclusiveLock();
+  lock.exclusiveLock();
+  lock.releaseLock();
 }

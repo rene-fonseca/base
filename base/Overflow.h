@@ -6,11 +6,15 @@
 #ifndef _DK_SDU_MIP__BASE__OVERFLOW_H
 #define _DK_SDU_MIP__BASE__OVERFLOW_H
 
-#include "Exception.h"
+#include <base/Exception.h>
 
 /**
-  Thrown on value greater than maximum valid value.
+  This exception indicates that a resulting value is greater than the maximum
+  positive representable value using a given format/type. An overflow condition
+  will occur if the result of adding two 32 bit signed integers is greater than
+  2^31-1.
 
+  @see Underflow
   @author René Møller Fonseca
   @version 1.0
 */

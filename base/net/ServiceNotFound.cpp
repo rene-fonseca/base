@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "ServiceNotFound.h"
+#include <base/net/ServiceNotFound.h>
 
 ServiceNotFound::ServiceNotFound() {
 }

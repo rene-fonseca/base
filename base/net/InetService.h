@@ -6,10 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_NET__INET_SERVICE_H
 #define _DK_SDU_MIP__BASE_NET__INET_SERVICE_H
 
-#include "base/Object.h"
-#include "base/string/String.h"
-#include "base/string/FormatOutputStream.h"
-#include "ServiceNotFound.h"
+#include <base/Object.h>
+#include <base/string/String.h>
+#include <base/string/FormatOutputStream.h>
+#include <base/net/ServiceNotFound.h>
 
 /**
   This class represents an internet service.

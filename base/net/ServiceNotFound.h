@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_NET__SERVICE_NOT_FOUND_H
 #define _DK_SDU_MIP__BASE_NET__SERVICE_NOT_FOUND_H
 
-#include "NetworkException.h"
+#include <base/net/NetworkException.h>
 
 /**
   This exception specifies that the service could not be resolved.

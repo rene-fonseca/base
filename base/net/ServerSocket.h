@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_NET__SERVER_SOCKET_H
 #define _DK_SDU_MIP__BASE_NET__SERVER_SOCKET_H
 
-#include "Socket.h"
+#include <base/net/Socket.h>
 
 /**
   This class implements a stream server socket. A socket is an endpoint for communication between two machines.

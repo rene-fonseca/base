@@ -9,7 +9,7 @@
 #include <base/io/IOException.h>
 
   /**
-    Exception thrown errors due to denied access.
+    IO exception thrown on errors due to denied access.
 
     @author René Møller Fonseca
     @version 1.0

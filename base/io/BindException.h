@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_IO__BIND_EXCEPTION_H
 #define _DK_SDU_MIP__BASE_IO__BIND_EXCEPTION_H
 
-#include "IOException.h"
+#include <base/io/IOException.h>
 
   /**
     Thrown if unable to bind streams together.

@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "ServerSocket.h"
+#include <base/net/ServerSocket.h>
 
 ServerSocket::ServerSocket() throw(IOException) :
   Socket() {

@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE__OUT_OF_BOUNDS_H
 #define _DK_SDU_MIP__BASE__OUT_OF_BOUNDS_H
 
-#include "Exception.h"
+#include <base/Exception.h>
 
 /**
   Out of bounds exception.

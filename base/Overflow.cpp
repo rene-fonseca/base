@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Overflow.h"
+#include <base/Overflow.h>
 
 Overflow::Overflow() throw() {
 }

@@ -7,8 +7,8 @@
 #define _DK_SDU_MIP__BASE__OBJECT_H
 
 #include "config.h"
-#include "Copyable.h"
-#include "Comparable.h"
+#include <base/Copyable.h>
+#include <base/Comparable.h>
 
 /**
   The base class of all non-abstract classes. Objects are not copyable as default.

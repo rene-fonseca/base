@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP_BASE_BIDIRECTIONAL_ITERATOR_H
 #define _DK_SDU_MIP_BASE_BIDIRECTIONAL_ITERATOR_H
 
-#include "base/ForwardIterator.h"
+#include <base/ForwardIterator.h>
 
 /**
   Bidirectional iterator interface.

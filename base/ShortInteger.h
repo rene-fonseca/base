@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE__SHORT_INTEGER_H
 #define _DK_SDU_MIP__BASE__SHORT_INTEGER_H
 
-#include "Object.h"
+#include <base/Object.h>
 #include <limits.h>
 
 /**

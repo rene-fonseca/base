@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "OutOfRange.h"
+#include <base/OutOfRange.h>
 
 OutOfRange::OutOfRange() throw() {
 }

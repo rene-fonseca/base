@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE__OUT_OF_RANGE_H
 #define _DK_SDU_MIP__BASE__OUT_OF_RANGE_H
 
-#include "Exception.h"
+#include <base/Exception.h>
 
 /**
   Exception used to specify that an index is out of range.

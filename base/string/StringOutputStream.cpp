@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,8 @@ void StringOutputStreamWrapper::flush() throw(IOException) {
   assert(!closed, IOException("Output stream is closed", this));
 }
 
-unsigned int StringOutputStreamWrapper::write(const char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
+unsigned int StringOutputStreamWrapper::write(
+  const char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
   assert(!closed, IOException("Output stream is closed", this));
   string.append(buffer, size);
   return size;

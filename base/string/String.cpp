@@ -286,12 +286,12 @@ String& String::append(
   unsigned int maximum) throw(StringException, MemoryException) {
   assert(maximum <= MAXIMUM_LENGTH, StringException(this));
   const unsigned int length = getLength();
-  setLength(length + minimum(literal.getLength(), maximum));
+  setLength(length + minimum<MemorySize>(literal.getLength(), maximum));
   char* buffer = elements->getElements();
   copy<char>(
     buffer + length,
     literal.getValue(),
-    minimum(literal.getLength(), maximum)
+    minimum<MemorySize>(literal.getLength(), maximum)
   );
   return *this;
 }

@@ -31,7 +31,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   system. SerialPort defines the minimum required functionality for serial
   communications ports.
 
+  @short Serial port.
   @see CommunicationPort.
+  @ingroup communications
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

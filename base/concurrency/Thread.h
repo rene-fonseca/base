@@ -74,6 +74,14 @@ public:
 
   /** Thread resource identifier type. */
   typedef void* Identifier;
+
+  /** Structure holding the user and system times. */
+  struct Times {
+    /** The user mode time. */
+    unsigned long long user;
+    /** The system mode time. */
+    unsigned long long system;
+  };
   
   /** Scheduling policy type. */
   enum SchedulingPolicy {
@@ -312,14 +320,6 @@ public:
     Returns the execution state of the thread.
   */
   inline State getState() const throw() {return state;}
-
-  /**
-  */
-  //Date getKernelLevelTime() const throw();
-  
-  /**
-  */
-  //Date getUserLevelTime() const throw();
   
   /**
     Returns true if the thread is alive and kicking.
@@ -356,6 +356,11 @@ public:
   */
   inline bool isTerminated() const throw() {return terminated;}
 
+  /**
+    Returns the current processing times (both user and system times).
+  */
+  Times getTimes() const throw();
+  
   /**
     The calling thread waits for the thread complete. Several threads are
     allowed to be waiting for the same thread to complete. A thread will block

@@ -47,10 +47,10 @@ public:
     case '|':
     case '^':
     case '~':
-    case '[':
-    case ']':
     case '`':
       return RELAXED;
+    case '[': // RFC 2732
+    case ']': // RFC 2732
     default:
       return NEVER;
     }
@@ -185,10 +185,14 @@ bool Url::isHost(String::ReadIterator i, const String::ReadIterator& end) throw(
     return false;
   }
 
-  if (ASCIITraits::isDigit(*i)) { // is IP address
-    // TAG: use InetAddress for IPv6 support
-    // 0x1234.0x1234.0x1234.0x1234.0x1234.0x1234.0x1234.0x1234
-    // 0x1234.0x1234.0x1234.0x1234.0x1234.0x1234.123.123.123.123
+  if (*i == '[') { // is IPv6 address
+    // TAG: use InetAddress for IPv6 support (RFC 2732)
+    ++i; // skip [
+    String::ReadIterator j = i;
+    while (*i != ']') {
+      ++i;
+    }
+  } else if (ASCIITraits::isDigit(*i)) { // is IP address
     // "123.123.123.123" or "123.123.123" or "123.123" or "123"
     for (unsigned int digitGroup = 0; digitGroup < 4; ++digitGroup) {
       if (ASCIITraits::isDigit(*i)) { // first digit

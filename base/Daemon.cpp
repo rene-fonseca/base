@@ -96,7 +96,7 @@ public:
   static void WINAPI serviceEntry(DWORD argc, LPTSTR* argv) throw() {
     ASSERT(Thread::getThread() == 0); // make sure this is a new context
     // register the service control handler
-    serviceStatusHandle = RegisterServiceCtrlHandler(Application::getApplication()->getFormalName(), serviceControlHandler);
+    serviceStatusHandle = RegisterServiceCtrlHandler(Application::getApplication()->getFormalName().getElements(), serviceControlHandler);
     if (!serviceStatusHandle) {
       return;
     }
@@ -162,8 +162,8 @@ void Daemon::install() {
   if (manager) {
     SC_HANDLE service = CreateService(
       manager,
-      Application::getApplication()->getFormalName(), // name of service
-      Application::getApplication()->getFormalName(), // name to display
+      Application::getApplication()->getFormalName().getElements(), // name of service
+      Application::getApplication()->getFormalName().getElements(), // name to display
       SERVICE_ALL_ACCESS, // desired access
       SERVICE_WIN32_OWN_PROCESS, // service type
       SERVICE_DEMAND_START, // start type
@@ -174,7 +174,7 @@ void Daemon::install() {
       TEXT(""), // dependencies
       NULL, // LocalSystem account
       NULL // no password
-    );                      
+    );
 
     if (service) {
       fout << "Service has been installed as " << Application::getApplication()->getFormalName() << ENDL;

@@ -27,7 +27,7 @@ FolderInfo::FolderInfo(const String& path) throw(FileSystemException) : path(pat
   static const long long fileTimeOffset = 0x0000001c1a021060LL; // TAG: validate this
 
   WIN32_FIND_DATA buffer;
-  HANDLE handle = FindFirstFile(path.getElements() + "\\*", &buffer);
+  HANDLE handle = FindFirstFile((path + "\\*").getElements(), &buffer);
   if ((handle == INVALID_HANDLE_VALUE) || !(buffer.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
     throw FileSystemException("Not a folder");
   }
@@ -64,7 +64,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   HANDLE handle;
   WIN32_FIND_DATA entry;
 
-  handle = FindFirstFile(path.getElements() + "\\*", &entry);
+  handle = FindFirstFile((path + "\\*").getElements(), &entry);
   if (handle == INVALID_HANDLE_VALUE) {
     if (GetLastError() != ERROR_NO_MORE_FILES) {
       throw FileSystemException("Unable to read entries of folder");

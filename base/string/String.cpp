@@ -78,6 +78,10 @@ void String::setGranularity(unsigned int granularity) throw() {
   elements->setGranularity(granularity);
 }
 
+void String::forceToLength(unsigned int length) throw(StringException, MemoryException) {
+  setLength(length);
+}
+
 char String::getAt(unsigned int index) const throw(OutOfRange) {
   assert(index < getLength(), OutOfRange());
   return getBuffer()[index];

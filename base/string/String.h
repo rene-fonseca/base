@@ -303,6 +303,11 @@ public:
   */
   void setGranularity(unsigned int granularity) throw();
 
+  /**
+    Sets the length of the string without initializing the elements.
+  */
+  void forceToLength(unsigned int length) throw(StringException, MemoryException);
+
 // *******************************************************************************************
 //   TRAVERSE SECTION
 // *******************************************************************************************

@@ -16,7 +16,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/NotImplemented.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else // unix
   #include <sys/types.h>
@@ -44,8 +44,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 User User::getCurrentUser() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return User(-1);
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  return User(PrimitiveTraits<unsigned long long>::MAXIMUM);
 #else // unix
   uid_t uid = ::getuid();
   return User(uid);
@@ -53,14 +53,18 @@ User User::getCurrentUser() throw() {
 }
 
 User::User(unsigned long long _id) throw(OutOfDomain) : id(_id) {
-  assert(id <= PrimitiveTraits<uid_t>::MAXIMUM, OutOfDomain("Invalid user id"));
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  // not implemented
+#else // unix
+  assert(id <= PrimitiveTraits<uid_t>::MAXIMUM, OutOfDomain("Invalid user id", this));
+#endif // flavor
 }
 
 User::User(const User& copy) throw() : id(copy.id) {
 }
 
 User::User(const String& name) throw(UserException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #else // unix
   //long sysconf(_SC_GETPW_R_SIZE_MAX);
   Allocator<char>* buffer = Thread::getLocalStorage();
@@ -73,7 +77,7 @@ User::User(const String& name) throw(UserException) {
 }
 
 String User::getName() const throw(UserException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #else // unix
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
@@ -85,7 +89,7 @@ String User::getName() const throw(UserException) {
 }
 
 String User::getHomeFolder() const throw(UserException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #else // unix
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
@@ -97,7 +101,7 @@ String User::getHomeFolder() const throw(UserException) {
 }
 
 bool User::isMemberOf(const Group& group) throw(UserException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   throw NotImplemented(this);
 #else // unix
   throw NotImplemented(this);

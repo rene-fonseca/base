@@ -31,6 +31,7 @@ MutualExclusion::MutualExclusion() throw(ResourceException) {
   ::EnterCriticalSection((CRITICAL_SECTION*)mutex); // force allocation of event (non-paged memory)
   ::LeaveCriticalSection((CRITICAL_SECTION*)mutex);
 #else // pthread
+  mutex = new pthread_mutex_t[1];
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
     throw ResourceException(this);

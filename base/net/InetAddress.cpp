@@ -105,7 +105,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
       throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
-#  elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) ||
+#  elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
          (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
@@ -167,7 +167,7 @@ InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
       throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
-#  elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) ||
+#  elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
          (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
@@ -364,7 +364,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
       AF_INET
     ); // MT-safe
     assert(hp, HostNotFound("Unable to resolve IP address", this));
-#  elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) ||
+#  elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
          (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
     struct hostent result;
     char buffer[1024]; // how big should this buffer be

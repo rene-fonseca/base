@@ -105,6 +105,16 @@ private:
 public:
 
   /**
+    Sets the owner of the file.
+
+    @param path The path of the file.
+    @param owner The new owner of the file.
+    @param group The primary group of the file.
+    @param followLink Specifies whether or not to follow the link.
+  */
+  static void changeOwner(const String& path, const Trustee& owner, const Trustee& group, bool followLink = true) throw(FileException);
+  
+  /**
     Initializes an invalid file object (correspons to a closed file).
   */
   File() throw();
@@ -156,11 +166,6 @@ public:
   */
   Trustee getGroup() const throw(FileException);
 
-  /**
-    Sets the owner of the file.
-  */
-  void setOwner(const Trustee& owner) throw(FileException);
-  
   /**
     Returns the permissions of the file.
   */

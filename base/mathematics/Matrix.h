@@ -29,6 +29,42 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 template<class TYPE> class Matrix : public Object {
 public:
 
+  class RowReference;
+
+  /**
+    Reference to an element within a matrix.
+  */
+  class ElementReference {
+  private:
+
+    friend class RowReference;
+    Matrix& matrix; // use reference to avoid 'copy on write'
+    unsigned int row;
+    unsigned int column;
+    ElementReference(Matrix& m, unsigned int r, unsigned int c) throw() : matrix(m), row(r), column(c) {}
+  public:
+
+    inline ElementReference& operator=(bool value) throw(OutOfRange) {matrix.setAt(row, column, value); return *this;}
+    inline operator TYPE() throw(OutOfRange) {return matrix.getAt(row, column);}
+  };
+
+  /**
+    Reference to a row within a matrix.
+  */
+  class RowReference {
+  private:
+
+    friend class Matrix;
+    Matrix& matrix; // use reference to avoid 'copy on write'
+    unsigned int row;
+    inline RowReference(Matrix& m, unsigned int r) throw() : matrix(m), row(r) {}
+  public:
+
+    inline ElementReference operator[](unsigned int column) throw(OutOfRange) {
+      return ElementReference(matrix, row, column);
+    }
+  };
+
   class Row {
   public:
 
@@ -415,6 +451,14 @@ public:
   inline TYPE operator()(unsigned int row, unsigned int column) const throw(OutOfRange) {
     return getAt(row, column);
   }
+
+  /**
+    Returns a reference to the specified row.
+  */
+  inline RowReference operator[](unsigned int row) throw(OutOfRange) {
+    return RowReference(*this, row);
+  }
+
 
 
   // Modification section

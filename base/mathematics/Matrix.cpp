@@ -30,27 +30,21 @@ public:
 };
 
 template<class TYPE>
- Matrix<TYPE>::Matrix(const Dimension& dimension) throw(OutOfDomain) {
-  if (dimension.getSize() < 1) {
-    throw OutOfDomain();
-  }
+Matrix<TYPE>::Matrix(const Dimension& dimension) throw(OutOfDomain) {
+  assert(dimension.getSize() > 0, OutOfDomain());
   setSize(dimension.getHeight(), dimension.getWidth());
 }
 
 template<class TYPE>
 Matrix<TYPE>::Matrix(const TYPE elements[], const Dimension& dimension) throw(OutOfDomain) {
-  if (dimension.getSize() < 1) {
-    throw OutOfDomain();
-  }
+  assert(dimension.getSize() > 0, OutOfDomain());
   setSize(dimension.getHeight(), dimension.getWidth());
   copy<TYPE>(getMutableElements(), elements, getSize());
 }
 
 template<class TYPE>
 Matrix<TYPE>::Matrix(Enumeration<TYPE, TYPE&, TYPE*>& diagonal, const Dimension& dimension) throw(OutOfDomain) {
-  if (dimension.getSize() < 1) {
-    throw OutOfDomain();
-  }
+  assert(dimension.getSize() > 0, OutOfDomain());
   setSize(dimension.getHeight(), dimension.getWidth());
   identity();
   unsigned int i = 0;
@@ -186,9 +180,7 @@ TYPE Matrix<TYPE>::getNorm() const throw() {
 
 template<class TYPE>
 TYPE Matrix<TYPE>::getDeterminant() const throw(NotSquare, MemoryException) {
-  if (!isSquare()) {
-    throw NotSquare();
-  }
+  assert(isSquare(), NotSquare());
 
   Matrix temp(*this); // make a copy of this matrix
   TYPE* elements = temp.getMutableElements();
@@ -241,9 +233,7 @@ TYPE Matrix<TYPE>::getDeterminant() const throw(NotSquare, MemoryException) {
 template<class TYPE>
 Matrix<TYPE> Matrix<TYPE>::getMinor(unsigned int row, unsigned int column) const throw(OutOfRange, NotSquare, MemoryException) {
   validateElement(row, column);
-  if (!isSquare()) {
-    throw NotSquare();
-  }
+  assert(isSquare(), NotSquare());
 
   Matrix temp(Dimension(rows - 1, columns - 1));
 
@@ -278,9 +268,7 @@ TYPE Matrix<TYPE>::getCofactor(unsigned int row, unsigned int column) const thro
 
 template<class TYPE>
 Matrix<TYPE> Matrix<TYPE>::getAdjoint() const throw(NotSquare, MemoryException) {
-  if (!isSquare()) {
-    throw NotSquare();
-  }
+  assert(isSquare(), NotSquare());
 
   Matrix result(Dimension(rows, columns));
   TYPE* current = result.getMutableElements();
@@ -309,9 +297,7 @@ Matrix<TYPE> Matrix<TYPE>::minus() const throw() {
 
 template<class TYPE>
 Matrix<TYPE> Matrix<TYPE>::invert() const throw(NotSquare, Singular, MemoryException) {
-  if (!isSquare()) {
-    throw NotSquare();
-  }
+  assert(isSquare(), NotSquare());
 
   Matrix result(getDimension());
   result.identity();
@@ -334,9 +320,7 @@ Matrix<TYPE> Matrix<TYPE>::invert() const throw(NotSquare, Singular, MemoryExcep
       current += columns; // go to element in next row
     }
 
-    if (maximumValue == TYPE(0)) {
-      throw Singular();
-    }
+    assert(maximumValue != TYPE(0), Singular());
 
     if (maximumRow != diagonal) { // do we have to swap rows
       swap( // only swap from current column
@@ -468,9 +452,7 @@ Matrix<TYPE>& Matrix<TYPE>::pivot(unsigned int row, unsigned int column) throw(O
   TYPE* elements = getMutableElements();
   TYPE value = elements[getIndexOfElement(row, column)];
 
-  if (value == TYPE(0)) {
-    throw Singular();
-  }
+  assert(value != TYPE(0), Singular());
 
   // make value of specified element 1
   transform(
@@ -497,9 +479,7 @@ template<class TYPE>
 Matrix<TYPE> Matrix<TYPE>::solve(const Matrix<TYPE>& value) const throw(IncompatibleOperands, Singular) {
   // back substitution would be more efficient
 
-  if (!isSquare() || (columns != value.rows)) {
-    throw IncompatibleOperands("Unable to solve matrix equations");
-  }
+  assert(isSquare() && (columns == value.rows), IncompatibleOperands("Unable to solve matrix equations"));
 
   Matrix temp(*this); // make copy of this matrix
   Matrix result(value);
@@ -521,9 +501,7 @@ Matrix<TYPE> Matrix<TYPE>::solve(const Matrix<TYPE>& value) const throw(Incompat
       current += columns; // go to element in next row
     }
 
-    if (maximumValue == TYPE(0)) {
-      throw Singular();
-    }
+    assert(maximumValue != TYPE(0), Singular());
 
     if (maximumRow != diagonal) { // do we have to swap rows
       swap( // only swap from current column
@@ -567,9 +545,7 @@ Matrix<TYPE> Matrix<TYPE>::solve(const Matrix<TYPE>& value) const throw(Incompat
 
 template<class TYPE>
 Matrix<TYPE>& Matrix<TYPE>::clip(unsigned int rows, unsigned int columns) throw(OutOfRange, MemoryException) {
-  if ((rows > this->rows) || (columns > this->columns)) {
-    throw OutOfRange();
-  }
+  assert((rows <= this->rows) && (columns <= this->columns), OutOfRange());
 
   TYPE* elements = getMutableElements();
   const TYPE* src = elements + this->columns - columns; // first row is ok
@@ -593,18 +569,14 @@ Matrix<TYPE>& Matrix<TYPE>::negate() throw(MemoryException) {
 
 template<class TYPE>
 Matrix<TYPE>& Matrix<TYPE>::add(const Matrix<TYPE>& value) throw(IncompatibleOperands, MemoryException) {
-  if (!isCompatible(value)) {
-    throw IncompatibleOperands();
-  }
+  assert(isCompatible(value), IncompatibleOperands());
   transformByBinary(getMutableElements(), getReadOnlyElements(), getSize(), Add<TYPE>());
   return *this;
 }
 
 template<class TYPE>
 Matrix<TYPE>& Matrix<TYPE>::subtract(const Matrix<TYPE>& value) throw(IncompatibleOperands, MemoryException) {
-  if (!isCompatible(value)) {
-    throw IncompatibleOperands();
-  }
+  assert(isCompatible(value), IncompatibleOperands());
   transformByBinary(getMutableElements(), getReadOnlyElements(), getSize(), Subtract<TYPE>());
   return *this;
 }
@@ -630,9 +602,7 @@ Matrix<TYPE>& Matrix<TYPE>::negate(const Matrix<TYPE>& value) throw(MemoryExcept
 
 template<class TYPE>
 Matrix<TYPE>& Matrix<TYPE>::add(const Matrix& left, const Matrix& right) throw(IncompatibleOperands, MemoryException) {
-  if (!left.isCompatible(right)) {
-    throw IncompatibleOperands();
-  }
+  assert(left.isCompatible(right), IncompatibleOperands());
   setDimension(left);
   transformByBinary(getMutableElements(), left.getReadOnlyElements(), right.getReadOnlyElements(), getSize(), Add<TYPE>());
   return *this;
@@ -640,9 +610,7 @@ Matrix<TYPE>& Matrix<TYPE>::add(const Matrix& left, const Matrix& right) throw(I
 
 template<class TYPE>
 Matrix<TYPE>& Matrix<TYPE>::subtract(const Matrix& left, const Matrix& right) throw(IncompatibleOperands, MemoryException) {
-  if (!left.isCompatible(right)) {
-    throw IncompatibleOperands();
-  }
+  assert(left.isCompatible(right), IncompatibleOperands());
   setDimension(left);
   transformByBinary(getMutableElements(), left.getReadOnlyElements(), right.getReadOnlyElements(), getSize(), Add<TYPE>());
   return *this;
@@ -650,9 +618,7 @@ Matrix<TYPE>& Matrix<TYPE>::subtract(const Matrix& left, const Matrix& right) th
 
 template<class TYPE>
 Matrix<TYPE>& Matrix<TYPE>::multiply(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(IncompatibleOperands, MemoryException) {
-  if (left.columns != right.rows) {
-    throw IncompatibleOperands();
-  }
+  assert(left.columns == right.rows, IncompatibleOperands());
   setSize(left.rows, right.columns);
 
   unsigned int length = right.rows; // If A=[k,l] and B=[l,m] then common = l

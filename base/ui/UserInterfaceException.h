@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   This exception is raised by the user interface classes.
   
   @short User interface exception
-  @ingroup ui
+  @ingroup ui exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

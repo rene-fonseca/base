@@ -16,9 +16,16 @@
   @version 1.0
 */
 
-template<class TYPE>
+template<class TYPE, class REF, class PTR>
 class Enumeration {
 public:
+
+  /** The type of the values being enumerated. */
+  typedef TYPE Value;
+  /** The type of a reference to a value. */
+  typedef REF Reference;
+  /** The type of a pointer to a value. */
+  typedef PTR Pointer;
 
   /**
     Returns true if the enumeration has more elements.
@@ -27,10 +34,8 @@ public:
 
   /**
     Returns the next element of the enumeration.
-
-    @return NULL if no more elements are available in the enumeration.
   */
-  virtual const TYPE* const next() throw(EndOfEnumeration) = 0;
+  virtual Pointer next() throw(EndOfEnumeration) = 0;
 };
 
 #endif

@@ -6,76 +6,75 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__MAP_H
 #define _DK_SDU_MIP__BASE_COLLECTION__MAP_H
 
-#include <base/collection/Collection.h>
-#include <base/collection/Enumeration.h>
+#include <base/collection/OrderedBinaryTree.h>
+#include <base/collection/Association.h>
 #include <base/Exception.h>
 #include <base/MemoryException.h>
 #include <base/collection/InvalidKey.h>
+#include <base/string/FormatOutputStream.h>
 
 /**
-  Map.
+  Map collection implemented using an ordered binary tree.
 
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.1
 */
-
 template<class KEY, class VALUE>
 class Map : public Collection {
+public:
+
+  /** The type of a node in the map. */
+  typedef Association<KEY, VALUE> Node;
+private:
+
+  /** The associations of the map. */
+  OrderedBinaryTree<Association<KEY, VALUE> > elements;
+  /** The number of associations in the map. */
+  unsigned int size;
 protected:
 
   /**
-    Association node of map.
-  */
-  class MapNode {
-  protected:
-    MapNode* next;
-    KEY key;
-    VALUE value;
-  public:
-    inline MapNode(MapNode* n, const KEY& k, const VALUE& v) throw() : next(n), key(k), value(v) {}
-    inline MapNode* getNext() const throw() {return next;}
-    inline void setNext(MapNode* next) throw() {this->next = next;}
-    inline const KEY& getKey() const throw() {return key;}
-    inline const VALUE& getValue() const throw() {return value;}
-    inline void setValue(VALUE& value) throw() {this->value = value;}
-  };
+    Enumeration of all the elements of a map.
 
-  class MapEnumerationNode {
-  protected:
-    MapNode* node;
+    @author René Møller Fonseca
+    @version 1.0
+  */
+  class Enumeration : public OrderedBinaryTree<Node>::Enumeration {
   public:
-    explicit inline MapEnumerationNode(MapNode* n) throw() : node(n) {}
-    inline const KEY& getKey() const throw() {return node->getKey();}
-    inline const VALUE& getValue() const throw() {return node->getValue();}
-    inline void setValue(VALUE& value) throw() {node->setValue(value);}
+
+    /**
+      Initializes an enumeration of all the elements of the specified map.
+
+      @param map The map being enumerated.
+    */
+    inline Enumeration(Map& map) throw() :
+      OrderedBinaryTree<Node>::Enumeration(map.elements) {}
+
+//    inline Node* next() throw(EndOfEnumeration) {
+//      return OrderedBinaryTree<Node>::next()->getValue();
+//    }
   };
 
   /**
-    Enumeration of all the associations in a map.
-  */
-  class MapEnumeration {
-  private:
+    Non-modifying enumeration of all the elements of a map.
 
-    MapNode* node;
+    @author René Møller Fonseca
+    @version 1.0
+  */
+  class ReadOnlyEnumeration : public OrderedBinaryTree<Node>::ReadOnlyEnumeration {
   public:
 
-    inline MapEnumeration(MapNode* n) throw() : node(n) {}
+    /**
+      Initializes a non-modifying enumeration of all the elements of the
+      specified map.
 
-    inline bool hasNext() const throw() {
-      return node && node->getNext();
-    }
-
-    inline const MapEnumerationNode next() throw(EndOfEnumeration) {
-      if (!node) {
-        throw EndOfEnumeration();
-      }
-      MapEnumerationNode temp(node);
-      node = node->getNext();
-      return temp;
-    }
+      @param map The map being enumerated.
+    */
+    inline ReadOnlyEnumeration(const Map& map) throw() :
+      OrderedBinaryTree<Node>::ReadOnlyEnumeration(map.elements) {}
   };
 
-  /**
+  /*
     Used to implement 'operator[](const KEY& key)'
   */
   class Index {
@@ -87,30 +86,36 @@ protected:
     inline VALUE operator=(const VALUE& value) throw(MemoryException) {map.add(key, value); return value;}
     inline operator VALUE() const throw(InvalidKey) {return map.getValue(key);}
   };
-
-  /** The first node in the map. */
-  MapNode* first;
 public:
 
   /**
     Initializes an empty map.
   */
-  Map() throw();
+  Map() throw() {}
 
   /**
     Initializes map from other map.
   */
-  Map(const Map& copy) throw(MemoryException);
+  Map(const Map& copy) throw(MemoryException) : elements(copy.elements) {}
 
   /**
-    Returns an enumeration of all the associations in this map.
+    Returns the number of associations in the map.
   */
-  MapEnumeration getEnumeration() throw();
+  inline unsigned int getSize() const throw() {return size;}
+
+  /**
+    Returns true if the map is empty.
+  */
+  inline bool isEmpty() const throw() {return size == 0;}
 
   /**
     Returns true if the specified key is associated with a value in this map.
+
+    @param key The value to search for.
   */
-  bool isKey(const KEY& key) const throw();
+  bool isKey(const KEY& key) const throw() {
+    return elements.find(Association<KEY, VALUE>(key));
+  }
 
   /**
     Returns the value associated with the specified key. Throws 'InvalidKey'
@@ -118,7 +123,13 @@ public:
 
     @param key The key of the value.
   */
-  VALUE getValue(const KEY& key) const throw(InvalidKey);
+  VALUE getValue(const KEY& key) const throw(InvalidKey) {
+    const OrderedBinaryTree<Association<KEY, VALUE> >::Node* node = elements.find(Association<KEY, VALUE>(key));
+    if (!node) {
+      throw InvalidKey();
+    }
+    return node->getValue()->getValue();
+  }
 
   /**
     Associates the specified key with the specified value in this map. If the
@@ -127,87 +138,56 @@ public:
     @param key The key.
     @param value The value.
   */
-  void add(const KEY& key, const VALUE& value) throw(MemoryException);
+  void add(const KEY& key, const VALUE& value) throw(MemoryException) {
+    Node* result = elements.add(Association<KEY, VALUE>(key, value));
+    if (result) {
+      // key already exists
+      result->setValue(value); // set the new value
+    } else {
+      // key did not exist
+      ++size;
+    }
+  }
 
   /**
     Removes the specified key and its associated value from this map. Throws
     'InvalidKey' if the key doesn't exist in this map.
   */
-  void remove(const KEY& key) throw(InvalidKey);
+  void remove(const KEY& key) throw(InvalidKey) {
+    elements.remove(elements.find(Association<KEY, VALUE>(key)));
+    --size; // never ends up here if the key doesn't exist
+  }
 
   /**
     Removes all the keys from this map.
   */
-  void removeAll() throw();
+  void removeAll() throw() {
+    elements.removeAll();
+    size = 0;
+  }
 
   /**
     Returns the value associated with the specified key when used as 'rvalue'.
     When used as 'lvalue' the key is associated with the specified value.
   */
-  inline Index operator[](const KEY& key) throw(InvalidKey, MemoryException) {return Index(*this, key);}
-
-  /**
-    Destroys the map.
-  */
-  ~Map() throw();
+  inline Index operator[](const KEY& key) throw(InvalidKey, MemoryException) {
+    return Index(*this, key);
+  }
 };
 
-
-
-/*
-template<class KEY, class VALUE> class Map<KEY*, VALUE>;
-template<class VALUE> class Map<void*, VALUE>;
-
-
-
-template<>
-class Stack<void*> : public Collection {
-protected:
-
-  typedef void* TYPE;
-
-  class StackNode {
-  protected:
-    StackNode* next;
-    TYPE value;
-  public:
-    inline StackNode(StackNode* n, const TYPE& v) : next(n), value(v) {}
-    inline StackNode* getNext() const throw() {return next;}
-    inline TYPE* getValue() throw() {return &value;}
-  };
-
-  StackNode* top;
-  unsigned int size;
-public:
-
-  Stack() throw();
-  Stack(const Stack& copy) throw(MemoryException);
-  void* peek(unsigned int index = 0) const throw(OutOfRange);
-  void push(void* value) throw(MemoryException);
-  void* pop() throw(OutOfRange);
-  void pop(unsigned int count) throw(OutOfRange);
-  void removeAll() throw();
-  ~Stack() throw();
-};
-*/
-
-/*
 template<class KEY, class VALUE>
-class Map<KEY*, VALUE> : private Map<void*, VALUE> {
-public:
-  typedef Map<void*, VALUE> Base;
-
-  inline Map() throw() : Base() {}
-  inline Map(const Map& copy) throw(MemoryException) : Base(copy) {}
-  inline Base::MapEnumeration getEnumeration() throw() {return Base::getEnumeration();}
-  inline bool isKey(const KEY& key) const throw() {return Base::isKey(key);}
-  inline VALUE getValue(const KEY& key) const throw(InvalidKey) {return Base::getValue(key);}
-  inline void add(const KEY& key, const VALUE& value) throw(MemoryException) {Base::add(key, value);}
-  inline void remove(const KEY& key) throw(InvalidKey) {Base::remove(key);}
-  inline void removeAll() throw() {Base::removeAll();}
-  inline Index operator[](const KEY& key) throw(InvalidKey, MemoryException) {return Index(*this, key);}
-  inline ~Map() throw() {};
-};
-*/
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>& value) {
+  Map<KEY, VALUE>::ReadOnlyEnumeration enu(value);
+  stream << '{';
+  while (enu.hasNext()) {
+    Map<KEY, VALUE>::Node* node = enu.next();
+    stream << *node->getKey() << "->" << *node->getValue();
+    if (enu.hasNext()) {
+      stream << ";";
+    }
+  }
+  stream << '}';
+  return stream;
+}
 
 #endif

@@ -3,16 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/collection/Map.h>
+#include <base/collection/InvalidEnumeration.h>
 
-/*
-template Map<int, int>;
-
-void Map_main() {
-  Map<int, int> mii;
-
-  mii.add(1, 2);
-  mii.add(2, 3);
-  mii.add(3, 4);
+InvalidEnumeration::InvalidEnumeration() {
 }
-*/
+
+InvalidEnumeration::InvalidEnumeration(const char* message) : Exception(message) {
+}

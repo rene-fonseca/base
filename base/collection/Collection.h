@@ -12,30 +12,10 @@
   Collection is the common interface implemented containers.
 
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.1
 */
 
 class Collection : public Object {
-protected:
-
-  /** The number of elements in the collection. */
-  unsigned int size;
-public:
-
-  /**
-    Initializes an empty collection.
-  */
-  inline Collection() throw() : size(0) {}
-
-  /**
-    Returns the number of elements in the collection.
-  */
-  inline unsigned int getSize() const throw() {return size;}
-
-  /**
-    Returns true if the collection is empty.
-  */
-  inline bool isEmpty() const throw() {return size != 0;}
 };
 
 #endif

@@ -1,0 +1,76 @@
+/***************************************************************************
+    copyright   : (C) 2000 by René Møller Fonseca
+    email       : fonseca@mip.sdu.dk
+ ***************************************************************************/
+
+#ifndef _DK_SDU_MIP__BASE_COLLECTION__DOUBLE_LINKED_NODE_H
+#define _DK_SDU_MIP__BASE_COLLECTION__DOUBLE_LINKED_NODE_H
+
+/**
+  A double linked node. This class is used by collections that only require
+  bidirectional traversal of elements.
+
+  @short Double linked node.
+  @author René Møller Fonseca
+  @version 1.0
+*/
+
+template<class TYPE>
+class DoubleLinkedNode {
+protected:
+
+  /** The next node in the container. */
+  DoubleLinkedNode* next;
+  /** The previous node in the container. */
+  DoubleLinkedNode* previous;
+  /** The value associated with the node. */
+  TYPE value;
+public:
+
+  /**
+    Initializes a linked node.
+
+    @param n The next node in the container.
+    @param p The previous node in the container.
+    @param v The value to be associated with the node.
+  */
+  inline DoubleLinkedNode(DoubleLinkedNode* n, DoubleLinkedNode* p, const TYPE& v) :
+    next(n), previous(p), value(v) {}
+
+  /**
+    Returns the next node.
+  */
+  inline DoubleLinkedNode* getNext() const throw() {return next;}
+
+  /**
+    Sets the next node.
+  */
+  inline void setNext(DoubleLinkedNode* next) throw() {this->next = next;}
+
+  /**
+    Returns the previous node.
+  */
+  inline DoubleLinkedNode* getPrevious() const throw() {return previous;}
+
+  /**
+    Sets the previous node.
+  */
+  inline void setPrevious(DoubleLinkedNode* previous) throw() {this->previous = previous;}
+
+  /**
+    Returns the value of the node.
+  */
+  inline TYPE* getValue() throw() {return &value;}
+
+  /**
+    Returns the value of the node.
+  */
+  inline const TYPE* getValue() const throw() {return &value;}
+
+  /**
+    Sets the value of the node.
+  */
+  inline void setValue(TYPE value) throw() {this->value = value;}
+};
+
+#endif

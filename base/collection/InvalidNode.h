@@ -3,32 +3,32 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COLLECTION__INVALID_KEY_H
-#define _DK_SDU_MIP__BASE_COLLECTION__INVALID_KEY_H
+#ifndef _DK_SDU_MIP__BASE_COLLECTION__INVALID_NODE_H
+#define _DK_SDU_MIP__BASE_COLLECTION__INVALID_NODE_H
 
 #include <base/Exception.h>
 
 /**
-  This exception specifies that a key of a collection is invalid.
+  This exception specifies that a node of a collection is invalid.
 
   @author René Møller Fonseca
   @version 1.0
 */
 
-class InvalidKey : public Exception {
+class InvalidNode : public Exception {
 public:
 
   /**
     Initializes the exception object with no message.
   */
-  InvalidKey();
+  InvalidNode();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  InvalidKey(const char* message);
+  InvalidNode(const char* message);
 };
 
 #endif

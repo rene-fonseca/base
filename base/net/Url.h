@@ -12,7 +12,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Internet url.
+  Internet url. This class is used to break down a url into its components.
 
   @author René Møller Fonseca
   @version 1.0
@@ -21,42 +21,130 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class Url : public Object {
 private:
 
-  String<> protocol;
-  String<> user;
-  String<> password;
-  String<> host;
-  String<> path;
-  String<> port;
+  /** The protocol. */
+  String protocol;
+  /** The user. */
+  String user;
+  /** The password. */
+  String password;
+  /** The host. */
+  String host;
+  /** The port. */
+  String port;
+  /** The path. */
+  String path;
 protected:
 
-  void parse(String<> url) throw();
+  /**
+    Parses the string as a url.
+  */
+  void parse(const String& url) throw();
 public:
 
+  /**
+    Initializes an empty url.
+  */
   Url() throw(MemoryException);
-  Url(String<> url) throw(MemoryException);
-  Url(String<> url, String<> root) throw(MemoryException);
+
+  /**
+    Initializes url from a string representation.
+
+    @param url The string representation of the url.
+  */
+  Url(const String& url) throw(MemoryException);
+
+  /**
+    Initializes url from separate string representations of relative and base url.
+
+    @param relative The relative url.
+    @param base The base url.
+  */
+  Url(const String& relative, const String& base) throw(MemoryException);
+
+  /**
+    Initializes url from other url.
+  */
   Url(const Url& copy) throw();
+
+  /**
+    Assignment of url by url.
+  */
   Url& operator=(const Url& eq) throw();
 
+  /**
+    Returns true if the url is relative.
+  */
   bool isRelative() const throw();
 
-  String<> getProtocol() const throw();
-  String<> getUser() const throw();
-  String<> getPassword() const throw();
-  String<> getHost() const throw();
-  String<> getPort() const throw();
-  String<> getPath() const throw();
+  /**
+    Returns the protocol.
+  */
+  String getProtocol() const throw();
 
-  String<> getUrl() const throw(MemoryException);
+  /**
+    Returns the user.
+  */
+  String getUser() const throw();
 
-  void setProtocol(String<> value) throw();
-  void setUser(String<> value) throw();
-  void setPassword(String<> value) throw();
-  void setHost(String<> value) throw();
-  void setPort(String<> value) throw();
-  void setPath(String<> value) throw();
+  /**
+    Returns the password.
+  */
+  String getPassword() const throw();
+
+  /**
+    Returns the host.
+  */
+  String getHost() const throw();
+
+  /**
+    Returns the port.
+  */
+  String getPort() const throw();
+
+  /**
+    Returns the path.
+  */
+  String getPath() const throw();
+
+  /**
+    Returns the url.
+  */
+  String getUrl() const throw(MemoryException);
+
+  /**
+    Sets the protocol.
+  */
+  void setProtocol(const String& value) throw();
+
+  /**
+    Sets the user.
+  */
+  void setUser(const String& value) throw();
+
+  /**
+    Sets the password.
+  */
+  void setPassword(const String& value) throw();
+
+  /**
+    Sets the host.
+  */
+  void setHost(const String& value) throw();
+
+  /**
+    Sets the port.
+  */
+  void setPort(const String& value) throw();
+
+  /**
+    Sets the path.
+  */
+  void setPath(const String& value) throw();
 };
 
+/**
+  Writes the specified url to the format output stream.
+*/
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Url& value) throw(MemoryException, IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

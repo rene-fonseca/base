@@ -11,11 +11,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 Url::Url() throw(MemoryException) {
 }
 
-Url::Url(String<> url) throw(MemoryException) {
+Url::Url(const String& url) throw(MemoryException) {
   parse(url);
 }
 
-Url::Url(String<> baseUrl, String<> relativeUrl) throw(MemoryException) {
+Url::Url(const String& baseUrl, const String& relativeUrl) throw(MemoryException) {
   Url url(relativeUrl);
   if (url.isRelative()) {
     parse(baseUrl + relativeUrl);
@@ -47,7 +47,7 @@ bool Url::isRelative() const throw() {
   return !path.getLength() || path.startsWith("/");
 }
 
-void Url::parse(String<> url) throw() {
+void Url::parse(const String& url) throw() {
   // example url: http://fonseca:password@www.mip.sdu.dk:80/~fonseca/base/
 
   int index = 0; // current position in the url
@@ -102,35 +102,35 @@ void Url::parse(String<> url) throw() {
   }
 
   // read path
-  path = url.substring(slashIndex + 1, last);
+  path = url.substring(slashIndex, last); // should we keep the slash - I keep it for now
 }
 
-String<> Url::getProtocol() const throw() {
+String Url::getProtocol() const throw() {
   return protocol;
 }
 
-String<> Url::getUser() const throw() {
+String Url::getUser() const throw() {
   return user;
 }
 
-String<> Url::getPassword() const throw() {
+String Url::getPassword() const throw() {
   return password;
 }
 
-String<> Url::getHost() const throw() {
+String Url::getHost() const throw() {
   return host;
 }
 
-String<> Url::getPort() const throw() {
+String Url::getPort() const throw() {
   return port;
 }
 
-String<> Url::getPath() const throw() {
+String Url::getPath() const throw() {
   return path;
 }
 
-String<> Url::getUrl() const throw(MemoryException) {
-  String<> result;
+String Url::getUrl() const throw(MemoryException) {
+  String result;
 
   if (protocol.getLength()) {
     result.append(protocol);
@@ -160,27 +160,27 @@ String<> Url::getUrl() const throw(MemoryException) {
   return result;
 }
 
-void Url::setProtocol(String<> value) throw() {
+void Url::setProtocol(const String& value) throw() {
   protocol = value;
 }
 
-void Url::setUser(String<> value) throw() {
+void Url::setUser(const String& value) throw() {
   user = value;
 }
 
-void Url::setPassword(String<> value) throw() {
+void Url::setPassword(const String& value) throw() {
   password = value;
 }
 
-void Url::setHost(String<> value) throw() {
+void Url::setHost(const String& value) throw() {
   host = value;
 }
 
-void Url::setPort(String<> value) throw() {
+void Url::setPort(const String& value) throw() {
   port = value;
 }
 
-void Url::setPath(String<> value) throw() {
+void Url::setPath(const String& value) throw() {
   path = value;
 }
 

@@ -61,8 +61,8 @@ public:
 //
 //      @param allocator The Allocator being enumerated.
 //    */
-//    Enumeration(CapacityAllocator& allocator) throw() :
-//      AllocatorEnumeration<TYPE, TYPE&, TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
+//    Enumeration(CapacityAllocator& allocator) throw()
+//      : AllocatorEnumeration<TYPE, TYPE&, TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
 //  };
 //
 //  /**
@@ -76,8 +76,8 @@ public:
 //
 //      @param allocator The Allocator being enumerated.
 //    */
-//    ReadOnlyEnumeration(const CapacityAllocator& allocator) throw() :
-//      AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
+//    ReadOnlyEnumeration(const CapacityAllocator& allocator) throw()
+//      : AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
 //  };
 public:
 
@@ -92,7 +92,8 @@ public:
 
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline explicit CapacityAllocator(unsigned int granularity) throw(OutOfRange) : capacity(0), granularity(granularity) {
+  inline explicit CapacityAllocator(unsigned int _granularity) throw(OutOfRange)
+    : capacity(0), granularity(_granularity) {
     assert(granularity >= MINIMUM_GRANULARITY, OutOfRange());
   }
 
@@ -105,7 +106,8 @@ public:
     @param size Specifies the initial size of the allocator.
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline CapacityAllocator(unsigned int size, unsigned int granularity) throw(OutOfRange, MemoryException) : capacity(0), granularity(granularity) {
+  inline CapacityAllocator(unsigned int size, unsigned int _granularity) throw(OutOfRange, MemoryException)
+    : capacity(0), granularity(_granularity) {
     assert(granularity >= MINIMUM_GRANULARITY, OutOfRange());
     setSize(size);
   }
@@ -113,11 +115,9 @@ public:
   /**
     Initializes allocator from other allocator.
   */
-  inline CapacityAllocator(const CapacityAllocator& cpy) throw(MemoryException) : capacity(0), granularity(0) {
-    setGranularity(cpy.getGranularity());
-    setSize(cpy.getSize());
-      // we only want to copy the first 'capacity' number of elements!
-    copy<TYPE>(getElements(), cpy.getElements(), capacity); // blocks do not overlap
+  inline CapacityAllocator(const CapacityAllocator& copy) throw(MemoryException)
+    : Allocator<TYPE>(copy), capacity(copy.capacity), granularity(copy.granularity) {
+    // TAG: we only want to copy the first 'capacity' number of elements!
   }
 
   /**
@@ -125,10 +125,10 @@ public:
   */
   inline CapacityAllocator& operator=(const CapacityAllocator& eq) throw(MemoryException) {
     if (&eq != this) { // protect against self assignment
-      setGranularity(eq.getGranularity());
-      setSize(eq.getSize());
-      // we only want to copy the first 'capacity' number of elements!
-      copy<TYPE>(getElements(), copy.getElements(), capacity); // blocks do not overlap
+      capacity = eq.capacity;
+      granularity = eq.granularity;
+      Allocator<TYPE>::operator=(eq);
+      // TAG: we only want to copy the first 'capacity' number of elements!
     }
     return *this;
   }

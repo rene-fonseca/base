@@ -14,7 +14,7 @@
 #include <base/platforms/features.h>
 #include <base/concurrency/Event.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else // pthread
   #include <pthread.h>
@@ -26,7 +26,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Event::Event() throw(ResourceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if ((handle = ::CreateEvent(0, TRUE, FALSE, 0)) == 0) {
     throw ResourceException("Unable to initialize event", this);
   }
@@ -58,7 +58,7 @@ Event::Event() throw(ResourceException) {
 }
 
 bool Event::isSignaled() const throw(EventException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return ::WaitForSingleObject(handle, 0) == WAIT_OBJECT_0; // should never fail
 #else // pthread
   bool result;
@@ -74,7 +74,7 @@ bool Event::isSignaled() const throw(EventException) {
 }
 
 void Event::reset() throw(EventException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!::ResetEvent(handle)) {
     throw EventException("Unable to reset event", this);
   }
@@ -90,7 +90,7 @@ void Event::reset() throw(EventException) {
 }
 
 void Event::signal() throw(EventException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!::SetEvent(handle)) {
     throw EventException("Unable to signal event", this);
   }
@@ -109,7 +109,7 @@ void Event::signal() throw(EventException) {
 }
 
 void Event::wait() const throw(EventException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (::WaitForSingleObject(handle, INFINITE) != WAIT_OBJECT_0) {
     throw EventException("Unable to wait for event", this);
   }
@@ -132,7 +132,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
   if (microseconds >= 1000000) {
     throw OutOfDomain(this);
   }
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   switch (::WaitForSingleObject(handle, microseconds/1000)) {
   case WAIT_OBJECT_0:
     return true;
@@ -172,7 +172,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
 }
 
 Event::~Event() throw(EventException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (::CloseHandle(handle) == 0) {
     throw EventException("Unable to destroy event", this);
   }

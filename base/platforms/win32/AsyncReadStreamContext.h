@@ -40,17 +40,23 @@ namespace win32 {
     
     AsynchronousReadEventListener* listener;
     CallbackInfo callbackInfo;
-    char* buffer;
+    uint8* buffer;
     unsigned int bytesToRead;
     unsigned int bytesRead;
     unsigned int flags;
     
     inline void notifyAsynchronousCompletionListener() throw() {
-      listener->asynchronousCompletion(AsynchronousReadCompletion(buffer, bytesToRead, 0, bytesRead, flags));
+      listener->asynchronousCompletion(
+        AsynchronousReadCompletion(buffer, bytesToRead, 0, bytesRead, flags)
+      );
     }
   public:
     
-    AsyncReadStreamContext(OperatingSystem::Handle handle, char* buffer, unsigned int bytesToRead, AsynchronousReadEventListener* listener) throw(IOException);
+    AsyncReadStreamContext(
+      OperatingSystem::Handle handle,
+      uint8* buffer,
+      unsigned int bytesToRead,
+      AsynchronousReadEventListener* listener) throw(IOException);
   public:
 
     AsynchronousReadCompletion getCompletion() const throw() {

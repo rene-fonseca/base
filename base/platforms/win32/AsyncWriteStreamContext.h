@@ -40,27 +40,39 @@ namespace win32 {
     
     AsynchronousWriteEventListener* listener;
     CallbackInfo callbackInfo;
-    const char* buffer;
+    const uint8* buffer;
     unsigned int bytesToWrite;
     unsigned int bytesWritten;
     unsigned int flags;
     
     inline void notifyAsynchronousCompletionListener() throw() {
       listener->asynchronousCompletion(
-        AsynchronousWriteCompletion(buffer, bytesToWrite, 0, bytesWritten, flags)
+        AsynchronousWriteCompletion(
+          buffer,
+          bytesToWrite,
+          0,
+          bytesWritten,
+          flags
+        )
       );
     }
   public:
     
     AsyncWriteStreamContext(
       OperatingSystem::Handle handle,
-      const char* buffer,
+      const uint8* buffer,
       unsigned int bytesToWrite,
       AsynchronousWriteEventListener* listener) throw(IOException);
   public:
 
     AsynchronousWriteCompletion getCompletion() const throw() {
-      return AsynchronousWriteCompletion(buffer, bytesToWrite, 0, bytesWritten, flags);
+      return AsynchronousWriteCompletion(
+        buffer,
+        bytesToWrite,
+        0,
+        bytesWritten,
+        flags
+      );
     }
 
     ~AsyncWriteStreamContext() throw(AsynchronousException);

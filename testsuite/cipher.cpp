@@ -424,16 +424,12 @@ public:
       unsigned int count = 1;
       unsigned int cipherBytes = 0;
       while (count > 0) {
-        count = input.read(
-          Cast::getCharAddress(clearText[0]),
-          sizeof(clearText),
-          true
-        );
-        cipherBytes  = cipher.push(cipherText, clearText, count);
-        output.write(Cast::getCharAddress(cipherText[0]), cipherBytes);
+        count = input.read(clearText, sizeof(clearText), true);
+        cipherBytes = cipher.push(cipherText, clearText, count);
+        output.write(cipherText, cipherBytes);
       }
       cipherBytes = cipher.pushEnd(cipherText, sizeof(cipherText));
-      output.write(Cast::getCharAddress(cipherText[0]), cipherBytes);
+      output.write(cipherText, cipherBytes);
     } else {
       ferr << "Error: " << "Invalid filesystem entry" << ENDL;
       setExitCode(EXIT_CODE_ERROR);

@@ -36,7 +36,8 @@ bool FormatInputStream::overwriteFromSource() throw(IOException) {
   unsigned int bytesToRead = minimum<unsigned int>(WINDOW_SIZE, available);
   head = buffer.getBeginIterator();
   tail = head;
-  unsigned int bytesRead = FilterInputStream::read(head.getValue(), bytesToRead); // will not block
+  unsigned int bytesRead =
+    FilterInputStream::read(head.getValue(), bytesToRead); // will not block
   ASSERT(bytesRead == bytesToRead);
   head += bytesRead;
   return true;
@@ -48,7 +49,8 @@ bool FormatInputStream::appendFromSource() throw(IOException) {
   if (available == 0) {
     return false;
   }
-  unsigned int size = minimum<unsigned int>(buffer.getEndReadIterator() - head, available);
+  unsigned int size =
+    minimum<unsigned int>(buffer.getEndReadIterator() - head, available);
   unsigned int bytesRead = FilterInputStream::read(head.getValue(), size); // will not block
   ASSERT(bytesRead == size);
   head += size;
@@ -75,7 +77,11 @@ String FormatInputStream::getWord() throw(IOException) {
     unsigned int length = tail - beginning;
     unsigned int offset = result.getLength();
     result.forceToLength(result.getLength() + length); // extend string
-    copy<char>((result.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
+    copy<uint8>(
+      Cast::pointer<uint8*>((result.getBeginIterator() + offset).getValue()),
+      beginning.getValue(),
+      length
+    );
     
     if (tail < head) { // end of word
       break;
@@ -98,7 +104,11 @@ String FormatInputStream::getLine() throw(IOException) {
         unsigned int length = tail - beginning;
         unsigned int offset = line.getLength();
         line.forceToLength(line.getLength() + length); // extend string
-        copy<char>((line.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
+        copy<uint8>(
+          Cast::pointer<uint8*>((line.getBeginIterator() + offset).getValue()),
+          beginning.getValue(),
+          length
+        );
         ++tail; // skip '\n'
         if ((tail == head) && !overwriteFromSource()) {
           return line; // eof reached
@@ -111,7 +121,11 @@ String FormatInputStream::getLine() throw(IOException) {
         unsigned int length = tail - beginning;
         unsigned int offset = line.getLength();
         line.forceToLength(line.getLength() + length); // extend string
-        copy<char>((line.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
+        copy<uint8>(
+          Cast::pointer<uint8*>((line.getBeginIterator() + offset).getValue()),
+          beginning.getValue(),
+          length
+        );
         ++tail; // skip '\r'
         if ((tail == head) && !overwriteFromSource()) {
           return line; // eof reached
@@ -125,14 +139,21 @@ String FormatInputStream::getLine() throw(IOException) {
     unsigned int length = tail - beginning;
     unsigned int offset = line.getLength();
     line.forceToLength(line.getLength() + length); // extend string
-    copy<char>((line.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
+    copy<uint8>(
+      Cast::pointer<uint8*>((line.getBeginIterator() + offset).getValue()),
+      beginning.getValue(),
+      length
+    );
     if (!overwriteFromSource()) {
       return line; // eof reached
     }
   }
 }
 
-unsigned int FormatInputStream::read(char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
+unsigned int FormatInputStream::read(
+  uint8* buffer,
+  unsigned int size,
+  bool nonblocking) throw(IOException) {
   unsigned int bytesRead = 0; // number of bytes that have been copied into external buffer
   while (true) {
     // copy from internal to external buffer - no overlap
@@ -156,17 +177,21 @@ FormatInputStream::~FormatInputStream() throw(IOException) {
 
 
 
-FormatInputStream& operator>>(FormatInputStream& stream, char& value) throw(IOException) {
+FormatInputStream& operator>>(
+  FormatInputStream& stream, char& value) throw(IOException) {
   value = stream.getCharacter();
   return stream;
 }
 
-FormatInputStream& operator>>(FormatInputStream& stream, String& value) throw(IOException) {
+FormatInputStream& operator>>(
+  FormatInputStream& stream, String& value) throw(IOException) {
   value = stream.getLine();
   return stream;
 }
 
-FormatInputStream& operator>>(FormatInputStream& stream, unsigned int& value) throw(InvalidFormat, IOException) {
+FormatInputStream& operator>>(
+  FormatInputStream& stream,
+  unsigned int& value) throw(InvalidFormat, IOException) {
   value = 0;
   char ch;
   do {

@@ -30,14 +30,18 @@ unsigned int BufferedInputStream::available() const throw(IOException) {
 }
 
 unsigned int BufferedInputStream::read(
-  char* buffer,
+  uint8* buffer,
   unsigned int size,
   bool nonblocking) throw(IOException) {
   unsigned int bytesRead = 0; // number of bytes that have been copied into external buffer
   while (true) {
     // copy from internal to external buffer - no overlap
     unsigned int bytesToCopy = minimum(size - bytesRead, count - position);
-    copy<char>(buffer, this->buffer.getElements() + this->position, bytesToCopy);
+    copy<uint8>(
+      buffer,
+      this->buffer.getElements() + this->position,
+      bytesToCopy
+    );
     bytesRead += bytesToCopy;
     position += bytesToCopy;
     buffer += bytesToCopy;
@@ -49,21 +53,28 @@ unsigned int BufferedInputStream::read(
     position = 0;
     unsigned int available = FilterInputStream::available();
     if (available > 0) {
-      count = FilterInputStream::read(this->buffer.getElements(), minimum(this->buffer.getSize(), available)); // refill of internal buffer without blocking
+      count = FilterInputStream::read(
+        this->buffer.getElements(),
+        minimum(this->buffer.getSize(), available)
+      ); // refill of internal buffer without blocking
       ASSERT(count == available);
     } else if (nonblocking) {
       break;
     } else { // blocking
       FilterInputStream::wait(); // TAG: what about EOF
       unsigned int available = FilterInputStream::available();
-      count = FilterInputStream::read(this->buffer.getElements(), minimum(this->buffer.getSize(), available)); // refill of internal buffer without blocking
+      count = FilterInputStream::read(
+        this->buffer.getElements(),
+        minimum(this->buffer.getSize(), available)
+      ); // refill of internal buffer without blocking
       ASSERT((count > 0) && (count == available));
     }
   }
   return bytesRead;
 }
 
-unsigned int BufferedInputStream::peek(unsigned int count) throw(OutOfDomain, IOException) {
+unsigned int BufferedInputStream::peek(
+  unsigned int count) throw(OutOfDomain, IOException) {
   unsigned int unreadBytes = this->count - position;
   if (count > unreadBytes) { // request for more than currently available in this buffer
     assert(count <= buffer.getSize(), OutOfDomain());
@@ -71,9 +82,17 @@ unsigned int BufferedInputStream::peek(unsigned int count) throw(OutOfDomain, IO
     position = 0;
     this->count -= position;
     // only read count bytes in blocking mode
-    this->count += FilterInputStream::read(buffer.getElements() + this->count, buffer.getSize() - this->count, true); // fill internal buffer (non-blocking)
+    this->count += FilterInputStream::read(
+      buffer.getElements() + this->count,
+      buffer.getSize() - this->count,
+      true
+    ); // fill internal buffer (non-blocking)
     if (this->count < count) {
-      this->count += FilterInputStream::read(buffer.getElements() + this->count, count - this->count, false); // fill internal buffer (blocking)
+      this->count += FilterInputStream::read(
+        buffer.getElements() + this->count,
+        count - this->count,
+        false
+      ); // fill internal buffer (blocking)
     }
   }
   ASSERT(position <= this->count);

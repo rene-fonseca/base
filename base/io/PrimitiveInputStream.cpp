@@ -25,67 +25,69 @@ PrimitiveInputStream::PrimitiveInputStream(
 
 bool PrimitiveInputStream::readBoolean() throw(IOException) {
   char value;
-  read(Cast::getCharAddress(value), sizeof(value));
+  read(Cast::getAddress(value), sizeof(value));
   return value != 0;
 }
 
 char PrimitiveInputStream::readChar() throw(IOException) {
   char value;
-  read(Cast::getCharAddress(value), sizeof(value));
+  read(Cast::getAddress(value), sizeof(value));
   return value;
 }
 
 short PrimitiveInputStream::readShortInteger() throw(IOException) {
   BigEndian<int16> value;
-  read(Cast::getCharAddress(value), sizeof(value));
+  read(Cast::getAddress(value), sizeof(value));
   return value;
 }
 
-unsigned short PrimitiveInputStream::readUnsignedShortInteger() throw(IOException) {
+unsigned short
+  PrimitiveInputStream::readUnsignedShortInteger() throw(IOException) {
   BigEndian<uint16> value;
-  read(Cast::getCharAddress(value), sizeof(value));
+  read(Cast::getAddress(value), sizeof(value));
   return value;
 }
 
 int PrimitiveInputStream::readInteger() throw(IOException) {
   BigEndian<int32> value;
-  read(Cast::getCharAddress(value), sizeof(value));
+  read(Cast::getAddress(value), sizeof(value));
   return value;
 }
 
 unsigned int PrimitiveInputStream::readUnsignedInteger() throw(IOException) {
   BigEndian<uint32> value;
-  read(Cast::getCharAddress(value), sizeof(value));
+  read(Cast::getAddress(value), sizeof(value));
   return value;
 }
 
 long long PrimitiveInputStream::readLongInteger() throw(IOException) {
   BigEndian<int64> value;
-  read(Cast::getCharAddress(value), sizeof(value));
+  read(Cast::getAddress(value), sizeof(value));
   return value;
 }
 
-unsigned long long PrimitiveInputStream::readUnsignedLongInteger() throw(IOException) {
+unsigned long long
+  PrimitiveInputStream::readUnsignedLongInteger() throw(IOException) {
   BigEndian<uint64> value;
-  read(Cast::getCharAddress(value), sizeof(value));
+  read(Cast::getAddress(value), sizeof(value));
   return value;
 }
 
 float PrimitiveInputStream::readFloat() throw(IOException) {
   FloatingPoint::IEEE754SinglePrecision value;
-  read(Cast::getCharAddress(value), sizeof(value));
+  read(Cast::getAddress(value), sizeof(value));
   return value;
 }
 
 double PrimitiveInputStream::readDouble() throw(IOException) {
   FloatingPoint::IEEE754DoublePrecision value;
-  read(Cast::getCharAddress(value), sizeof(value));
+  read(Cast::getAddress(value), sizeof(value));
   return value;
 }
 
 long double PrimitiveInputStream::readLongDouble() throw(IOException) {
   FloatingPoint::IEEEQuadruplePrecision value;
-  read(Cast::getCharAddress(value), sizeof(value));
+  read(Cast::getAddress(value), sizeof(value));
   return value;
 }
 

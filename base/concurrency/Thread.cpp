@@ -40,11 +40,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 ThreadKey<Thread> Thread::ThreadLocal::thread; // thread object
-ThreadKey<Allocator<char> > Thread::ThreadLocal::storage; // thread local storage
+ThreadKey<Allocator<uint8> > Thread::ThreadLocal::storage; // thread local storage
 
 Thread::ThreadLocal::ThreadLocal(Thread* _thread) throw(MemoryException) {
   thread.setKey(_thread);
-  storage.setKey(new Allocator<char>(Thread::THREAD_LOCAL_STORAGE));
+  storage.setKey(new Allocator<uint8>(Thread::THREAD_LOCAL_STORAGE));
 }
 
 Thread::ThreadLocal::~ThreadLocal() throw() {
@@ -92,7 +92,7 @@ Thread* Thread::getThread() throw() {
   return ThreadLocal::getThread();
 }
 
-Allocator<char>* Thread::getLocalStorage() throw() {
+Allocator<uint8>* Thread::getLocalStorage() throw() {
   return ThreadLocal::getStorage();
 }
 

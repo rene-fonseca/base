@@ -40,7 +40,12 @@ namespace win32 {
     context->selfReference = 0; // release destruction lock (do NOT access state hereafter)
   }
 
-  AsyncWriteFileContext::AsyncWriteFileContext(OperatingSystem::Handle handle, const char* _buffer, unsigned int _bytesToWrite, unsigned long long _offset, AsynchronousWriteEventListener* _listener) throw(IOException) 
+  AsyncWriteFileContext::AsyncWriteFileContext(
+    OperatingSystem::Handle handle,
+    const uint8* _buffer,
+    unsigned int _bytesToWrite,
+    unsigned long long _offset,
+    AsynchronousWriteEventListener* _listener) throw(IOException) 
     : listener(_listener),
       buffer(_buffer),
       bytesToWrite(_bytesToWrite),
@@ -52,7 +57,13 @@ namespace win32 {
     callbackInfo.overlapped.OffsetHigh = getHighWordOf64(offset);
     callbackInfo.context = this;
     
-    BOOL result = ::WriteFileEx(handle, buffer, bytesToWrite, &callbackInfo.overlapped, asyncWriteFileCallback);
+    BOOL result = ::WriteFileEx(
+      handle,
+      buffer,
+      bytesToWrite,
+      &callbackInfo.overlapped,
+      asyncWriteFileCallback
+    );
     if (!result) {
       //DWORD lastError = ::GetLastError();
       selfReference = 0; // release destruction lock (do NOT access state hereafter)
@@ -61,7 +72,10 @@ namespace win32 {
   }
 
   AsyncWriteFileContext::~AsyncWriteFileContext() throw(AsynchronousException) {
-    assert((flags & AsynchronousWriteCompletion::COMPLETED) != 0, AsynchronousException(this));
+    assert(
+      (flags & AsynchronousWriteCompletion::COMPLETED) != 0,
+      AsynchronousException(this)
+    );
   }
   
 }; // win32 namespace

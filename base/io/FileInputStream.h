@@ -42,16 +42,19 @@ public:
     Initializes the file input stream.
 
     @param path The path of the file.
-    @param exclusive Specifies that the file should be opened in exclusive mode.
+    @param exclusive Specifies that the file should be opened in exclusive
+    mode.
   */
-  FileInputStream(const String& name, bool exclusive = true) throw(FileNotFound);
+  FileInputStream(
+    const String& name, bool exclusive = true) throw(FileNotFound);
 
   inline bool atEnd() const throw(FileException) {
     return end;
   }
 
   /**
-    Returns the number of bytes that can be read or skipped over without blocking.
+    Returns the number of bytes that can be read or skipped over without
+    blocking.
 
     @return Available number of bytes in stream.
   */
@@ -61,7 +64,10 @@ public:
 
   unsigned int skip(unsigned int count) throw(FileException);
 
-  inline unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(FileException) {
+  inline unsigned int read(
+    uint8* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(FileException) {
     return file.read(buffer, size, nonblocking);
   }
 

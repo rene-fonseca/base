@@ -30,8 +30,16 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  DatagramClientApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("datagramClient"), numberOfArguments, arguments, environment) {
+  DatagramClientApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application(
+        "datagramClient",
+        numberOfArguments,
+        arguments,
+        environment
+    ) {
   }
 
   void client(String host, String service) {
@@ -84,18 +92,34 @@ public:
     socket.setBroadcast(true);
 
     fout << "Sending datagram..." << ENDL;
-    char sendBuffer[] = "DATAGRAM FROM CLIENT";
-    unsigned int bytesSent = socket.sendTo(sendBuffer, sizeof(sendBuffer), address, port);
+    static const Literal sendBuffer = "DATAGRAM FROM CLIENT";
+    unsigned int bytesSent = socket.sendTo(
+      Cast::pointer<const uint8*>(sendBuffer.getValue()),
+      sendBuffer.getLength(),
+      address,
+      port
+    );
 
-    char receiveBuffer[4096];
+    Allocator<uint8> receiveBuffer(4096);
     InetAddress remoteAddress;
     unsigned short remotePort;
 
     fout << "Waiting for datagram..." << ENDL;
-    unsigned int bytesReceived = socket.receiveFrom(receiveBuffer, sizeof(receiveBuffer), remoteAddress, remotePort);
-    fout << "Datagram of " << bytesReceived << " bytes received from " << InetEndPoint(remoteAddress, remotePort) << ENDL;
-    fout << ">: " << receiveBuffer << ENDL;
-
+    unsigned int bytesReceived = socket.receiveFrom(
+      receiveBuffer.getElements(),
+      receiveBuffer.getSize(),
+      remoteAddress,
+      remotePort
+    );
+    fout << "Datagram of " << bytesReceived << " bytes received from "
+         << InetEndPoint(remoteAddress, remotePort)
+         << ENDL;
+    fout << ">: "
+         << String(
+              Cast::pointer<const char*>(receiveBuffer.getElements()),
+              bytesReceived
+            ) << ENDL;
+    
     fout << "Closing socket..." << ENDL;
     socket.close();
   }

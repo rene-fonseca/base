@@ -45,7 +45,7 @@ public:
     @param offset The offset.
   */
   virtual AsynchronousReadOperation read(
-    char* buffer,
+    uint8* buffer,
     unsigned int bytesToRead,
     unsigned long long offset,
     AsynchronousReadEventListener* listener) throw(AsynchronousException) = 0;
@@ -58,7 +58,7 @@ public:
     @param offset The offset.
   */
   virtual AsynchronousWriteOperation write(
-    const char* buffer,
+    const uint8* buffer,
     unsigned int bytesToWrite,
     unsigned long long offset,
     AsynchronousWriteEventListener* listener) throw(AsynchronousException) = 0;

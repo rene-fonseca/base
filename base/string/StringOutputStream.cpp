@@ -25,9 +25,11 @@ void StringOutputStreamWrapper::flush() throw(IOException) {
 }
 
 unsigned int StringOutputStreamWrapper::write(
-  const char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
+  const uint8* buffer,
+  unsigned int size,
+  bool nonblocking) throw(IOException) {
   assert(!closed, IOException("Output stream is closed", this));
-  string.append(buffer, size);
+  string.append(NativeString(Cast::pointer<const char*>(buffer)), size);
   return size;
 }
 
@@ -38,8 +40,9 @@ StringOutputStream::StringOutputStream() throw(BindException) :
   stream.setGranularity(DEFAULT_GRANULARITY);
 }
 
-StringOutputStream::StringOutputStream(unsigned int granularity) throw(BindException) :
-  FormatOutputStream(stream) {
+StringOutputStream::StringOutputStream(
+  unsigned int granularity) throw(BindException)
+  : FormatOutputStream(stream) {
   stream.setGranularity(granularity);
 }
 

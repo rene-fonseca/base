@@ -122,8 +122,8 @@ public:
   void open(const EUI64& adapter) throw(IEEE1394Exception);
   
   /**
-    Closes this handle to the adapter. The adapter is destroyed when all handles
-    have been closed.
+    Closes this handle to the adapter. The adapter is destroyed when all
+    handles have been closed.
   */
   void close() throw(IEEE1394Exception);
   
@@ -153,9 +153,14 @@ public:
     @param node The node id of the source node.
     @param address The base address of the memory region to read from.
     @param buffer The data buffer.
-    @param size The number of bytes to read (must be an integral number of quadlets).
+    @param size The number of bytes to read (must be an integral number of
+    quadlets).
   */
-  void read(unsigned short node, uint64 address, char* buffer, unsigned int size) throw(IEEE1394Exception);
+  void read(
+    unsigned short node,
+    uint64 address,
+    uint8* buffer,
+    unsigned int size) throw(IEEE1394Exception);
 
   /**
     Write data to device.
@@ -163,22 +168,35 @@ public:
     @param node The node id of the destination node.
     @param address The base address of the memory region to write to.
     @param buffer The data buffer.
-    @param size The number of bytes to write (must be an integral number of quadlets).
+    @param size The number of bytes to write (must be an integral number of
+    quadlets).
   */
-  void write(unsigned short node, uint64 address, const char* buffer, unsigned int size) throw(IEEE1394Exception);
+  void write(
+    unsigned short node,
+    uint64 address,
+    const uint8* buffer,
+    unsigned int size) throw(IEEE1394Exception);
 
   /**
-    Read data from device. This method is only used for debugging and development.
+    Read data from device. This method is only used for debugging and
+    development.
 
     @param node The node id of the source node.
-    @param address The base address of the memory region to read from (must be a quadlet boundary).
+    @param address The base address of the memory region to read from (must be
+    a quadlet boundary).
     @param buffer The data buffer.
     @param size The number of quadlets to read (not bytes!).
-    @param value The default value to store in the buffer for unsuccessful reads.
+    @param value The default value to store in the buffer for unsuccessful
+    reads.
     
     @return The number of quadlets read successfully.
   */
-  unsigned int read(unsigned short node, uint64 address, uint32* buffer, unsigned int size, uint32 value) throw(IEEE1394Exception);
+  unsigned int read(
+    unsigned short node,
+    uint64 address,
+    uint32* buffer,
+    unsigned int size,
+    uint32 value) throw(IEEE1394Exception);
 
   /**
     This methods provides atomic write access to quadlet.
@@ -186,28 +204,40 @@ public:
     @param node The node id of the node.
     @param address The address of the quadlet (must be a quadlet boundary).
     @param instruction The atomic instruction.
-    @param argument The argument to the instruction (ignored by FETCH_ADD and LITTLE_FETCH_ADD).
+    @param argument The argument to the instruction (ignored by FETCH_ADD and
+    LITTLE_FETCH_ADD).
     @param data The data value use by the instruction.
     
     @return The result.
   */
-  uint32 lock(unsigned short node, uint64 address, LockInstruction instruction, uint32 argument, uint32 data) throw(IEEE1394Exception);
+  uint32 lock(
+    unsigned short node,
+    uint64 address,
+    LockInstruction instruction,
+    uint32 argument,
+    uint32 data) throw(IEEE1394Exception);
 
   /**
     Returns an isochronous read channel.
 
     @param maxPacketsPerRequest The maximum number of packets per request.
-    @param subchannel Mask specifying the subchannel to reserve for this channel.
+    @param subchannel Mask specifying the subchannel to reserve for this
+    channel.
   */
-  IsochronousReadChannel getReadChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception);
+  IsochronousReadChannel getReadChannel(
+    unsigned int maxPacketsPerRequest,
+    uint64 subchannels) throw(IEEE1394Exception);
   
   /**
     Returns an isochronous write channel.
 
     @param maxPacketsPerRequest The maximum number of packets per request.
-    @param subchannel Mask specifying the subchannel to reserve for this channel.
+    @param subchannel Mask specifying the subchannel to reserve for this
+    channel.
   */
-  IsochronousWriteChannel getWriteChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception);
+  IsochronousWriteChannel getWriteChannel(
+    unsigned int maxPacketsPerRequest,
+    uint64 subchannels) throw(IEEE1394Exception);
 
   /**
     Destroys the IEEE 1394 implementation.
@@ -230,13 +260,24 @@ public:
 
   void dequeue() throw(IEEE1394Exception);
 
-  void registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception);
+  void registerFCPListener(
+    FunctionControlProtocolListener* listener) throw(IEEE1394Exception);
   
   void unregisterFCPListener() throw(IEEE1394Exception);
 
-  void readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception);
+  void readIsochronous(
+    unsigned int channel,
+    unsigned int maximumPayload,
+    IsochronousChannelListener* listener
+  ) throw(OutOfDomain, IEEE1394Exception);
 
-  void writeIsochronous(const uint8* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed) throw(OutOfDomain, IEEE1394Exception);
+  void writeIsochronous(
+    const uint8* buffer,
+    unsigned int size,
+    unsigned int channel,
+    unsigned int tag,
+    unsigned int sy,
+    Speed speed) throw(OutOfDomain, IEEE1394Exception);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -53,7 +53,10 @@ public:
     @param nonblocking Specifies that the method may not block.
     @return The actual number of bytes read from the stream.
   */
-  virtual unsigned int read(char* buffer, unsigned int size, bool nonblocking) throw(IOException) = 0;
+  virtual unsigned int read(
+    uint8* buffer,
+    unsigned int size,
+    bool nonblocking) throw(IOException) = 0;
 
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than

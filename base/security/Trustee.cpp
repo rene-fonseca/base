@@ -297,14 +297,14 @@ String Trustee::getName() const throw(TrusteeException) {
     {
 #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRNAM_R)
       //long sysconf(_SC_GETGR_R_SIZE_MAX);
-      Allocator<char>* buffer = Thread::getLocalStorage();
+      Allocator<uint8>* buffer = Thread::getLocalStorage();
       struct group grp;
       struct group* entry;
       int result = ::getgrgid_r(
         (gid_t)integralId,
         &grp,
-        buffer->getElements(),
-        buffer->getSize(),
+        (char*)buffer->getElements(),
+        buffer->getSize()/sizeof(char),
         &entry
       );
       assert(result == 0, TrusteeException(this));
@@ -318,14 +318,14 @@ String Trustee::getName() const throw(TrusteeException) {
     }
   case Trustee::USER:
     {
-      Allocator<char>* buffer = Thread::getLocalStorage();
+      Allocator<uint8>* buffer = Thread::getLocalStorage();
       struct passwd pw;
       struct passwd* entry;
       int result = ::getpwuid_r(
         (uid_t)integralId,
         &pw,
-        buffer->getElements(),
-        buffer->getSize(),
+        (char*)buffer->getElements(),
+        buffer->getSize()/sizeof(char),
         &entry
       );
       assert(result == 0, TrusteeException("Unable to lookup name", this));

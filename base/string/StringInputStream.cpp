@@ -34,7 +34,8 @@ void StringInputStream::close() throw(IOException) {
   closed = true;
 }
 
-unsigned int StringInputStream::read(char* buffer, unsigned int size) throw(IOException) {
+unsigned int StringInputStream::read(
+  uint8* buffer, unsigned int size) throw(IOException) {
   assert(!closed, IOException(this));
   if (index >= string.getLength()) {
     assert(!eof, EndOfFile(this));
@@ -44,7 +45,7 @@ unsigned int StringInputStream::read(char* buffer, unsigned int size) throw(IOEx
   if (size >= string.getLength() - index) {
     size = string.getLength() - index;
   }
-  copy<char>(buffer, string.getElements(), size);
+  copy<uint8>(buffer, Cast::pointer<const uint8*>(string.getBytes()), size);
   return size;
 }
 

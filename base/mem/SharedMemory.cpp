@@ -25,25 +25,34 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-SharedMemory::SharedMemoryImpl::SharedMemoryImpl(const File& _file, const FileRegion& _region, unsigned int _access) throw(MemoryException)
+SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
+  const File& _file,
+  const FileRegion& _region,
+  unsigned int _access) throw(MemoryException)
   : file(_file), region(_region), access(_access) {
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  DWORD protection = (access & SharedMemory::WRITE) ? PAGE_READWRITE : PAGE_READONLY;
-  handle = ::CreateFileMapping(SharedMemory::getHandle(file),
-                               0, // security
-                               protection, // protection
-                               0, // high word of size
-                               region.getSize(), // low word of size
-                               0 // name of mapping
+  DWORD protection =
+    (access & SharedMemory::WRITE) ? PAGE_READWRITE : PAGE_READONLY;
+  handle = ::CreateFileMapping(
+    SharedMemory::getHandle(file),
+    0, // security
+    protection, // protection
+    0, // high word of size
+    region.getSize(), // low word of size
+    0 // name of mapping
   );
-  assert(handle != OperatingSystem::INVALID_HANDLE, MemoryException("Unable to open shared memory", this));
+  assert(
+    handle != OperatingSystem::INVALID_HANDLE,
+    MemoryException("Unable to open shared memory", this)
+  );
 
-  address = (char*)::MapViewOfFile(handle, // handle to file-mapping object
-                                   (access & SharedMemory::WRITE) ? FILE_MAP_WRITE : FILE_MAP_READ, // access mode
-                                   getHighWordOf64(region.getOffset()), // high word of offset
-                                   getLowWordOf64(region.getOffset()), // low word of offset
-                                   region.getSize() // number of bytes to map
+  address = (uint8*)::MapViewOfFile(
+    handle, // handle to file-mapping object
+    (access & SharedMemory::WRITE) ? FILE_MAP_WRITE : FILE_MAP_READ, // access mode
+    getHighWordOf64(region.getOffset()), // high word of offset
+    getLowWordOf64(region.getOffset()), // low word of offset
+    region.getSize() // number of bytes to map
   );
   if (access == 0) {
     ::CloseHandle(handle);
@@ -70,40 +79,74 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(const File& _file, const FileRe
   }
   
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    address = (char*)::mmap64(0, region.getSize(), protection, MAP_SHARED, getHandle(file), region.getOffset());
+    address = (uint8*)::mmap64(
+      0,
+      region.getSize(),
+      protection,
+      MAP_SHARED,
+      getHandle(file),
+      region.getOffset()
+    );
   #else
-    assert((region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM), MemoryException("Unable to open shared memory", this));
-    address = (char*)::mmap(0, region.getSize(), protection, MAP_SHARED, getHandle(file), region.getOffset());
+    assert(
+      (region.getOffset() >= 0) &&
+      (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM),
+      MemoryException("Unable to open shared memory", this)
+    );
+    address = (uint8*)::mmap(
+      0,
+      region.getSize(),
+      protection,
+      MAP_SHARED,
+      getHandle(file),
+      region.getOffset()
+    );
   #endif
-  assert(address !=  MAP_FAILED, MemoryException("Unable to open shared memory", this));
+  assert(
+    address !=  MAP_FAILED,
+    MemoryException("Unable to open shared memory", this)
+  );
 #endif // flavor
 }
 
 void SharedMemory::SharedMemoryImpl::lock() throw(MemoryException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(::VirtualLock(address, region.getSize()), MemoryException("Unable to lock process memory", this));
+  assert(
+    ::VirtualLock(address, region.getSize()),
+    MemoryException("Unable to lock process memory", this)
+  );
 #else // unix
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
     throw NotSupported(this);
   #else
-    assert(::mlock(address, region.getSize()) == 0, MemoryException("Unable to lock memory", this));
+    assert(
+      ::mlock(address, region.getSize()) == 0,
+      MemoryException("Unable to lock memory", this)
+    );
   #endif
 #endif // flavor
 }
 
 void SharedMemory::SharedMemoryImpl::unlock() throw(MemoryException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(::VirtualUnlock(address, region.getSize()), MemoryException("Unable to unlock process memory", this));
+  assert(
+    ::VirtualUnlock(address, region.getSize()),
+    MemoryException("Unable to unlock process memory", this)
+  );
 #else // unix
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
     throw NotSupported(this);
   #else  
-    assert(::munlock(address, region.getSize()) == 0, MemoryException("Unable to unlock process memory", this));
+    assert(
+      ::munlock(address, region.getSize()) == 0,
+      MemoryException("Unable to unlock process memory", this)
+    );
   #endif
 #endif // flavor
 }
 
-void SharedMemory::SharedMemoryImpl::setProtection(unsigned int access) throw(MemoryException) {
+void SharedMemory::SharedMemoryImpl::setProtection(
+  unsigned int access) throw(MemoryException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   DWORD protection = 0;
   if (access == 0) {
@@ -148,20 +191,32 @@ void SharedMemory::SharedMemoryImpl::setProtection(unsigned int access) throw(Me
   }
   assert(
     ::mprotect(address, region.getSize(), protection) == 0,
-    MemoryException("Unable to unlock process memory", Type::getType<SharedMemory>())
+    MemoryException(
+      "Unable to unlock process memory",
+      Type::getType<SharedMemory>()
+    )
   );
 #endif // flavor
 }
 
-void SharedMemory::SharedMemoryImpl::synchronize(bool asynchronous) throw(MemoryException) {
+void SharedMemory::SharedMemoryImpl::synchronize(
+  bool asynchronous) throw(MemoryException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   BOOL status = ::FlushViewOfFile(address, getSize());
-  assert(status != 0, MemoryException("Unable to synchronize memory", Type::getType<SharedMemory>()));
+  assert(
+    status != 0,
+    MemoryException(
+      "Unable to synchronize memory",
+      Type::getType<SharedMemory>())
+  );
 #else // unix
   int flags = (asynchronous) ? (MS_ASYNC) : (MS_SYNC);
   assert(
     ::msync(address, region.getSize(), flags) == 0,
-    MemoryException("Unable to synchronize memory", Type::getType<SharedMemory>())
+    MemoryException(
+      "Unable to synchronize memory",
+      Type::getType<SharedMemory>()
+    )
   );
 #endif // flavor
 }
@@ -196,7 +251,11 @@ unsigned int SharedMemory::getGranularity() throw() {
 }
 
 // TAG: security - need ACL and mode support - owner, group, and other
-SharedMemory::SharedMemory(const String& path, const FileRegion& region, unsigned int access, unsigned int options) throw(FileException, MemoryException) {
+SharedMemory::SharedMemory(
+  const String& path,
+  const FileRegion& region,
+  unsigned int access,
+  unsigned int options) throw(FileException, MemoryException) {
   File::Access fileAccess = File::READ;
   if (access & SharedMemory::WRITE) {
     if (access & (SharedMemory::READ|SharedMemory::EXECUTE)) {
@@ -224,7 +283,8 @@ SharedMemory::SharedMemory(const String& path, const FileRegion& region, unsigne
   }
 }
 
-SharedMemory::SharedMemory(const SharedMemory& copy) throw() : sharedMemory(copy.sharedMemory) {
+SharedMemory::SharedMemory(const SharedMemory& copy) throw()
+  : sharedMemory(copy.sharedMemory) {
 }
 
 SharedMemory& SharedMemory::operator=(const SharedMemory& eq) throw() {
@@ -249,7 +309,7 @@ void SharedMemory::synchronize(bool asynchronous) throw(MemoryException) {
 }
 
 void SharedMemory::clear() throw() {
-  fill<char>(sharedMemory->getBytes(), sharedMemory->getSize(), 0);
+  fill<uint8>(sharedMemory->getBytes(), sharedMemory->getSize(), 0);
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

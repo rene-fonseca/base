@@ -291,7 +291,7 @@ public:
     /** The subchannel. */
     unsigned int subchannel;
     /** The buffer. */
-    char* buffer;
+    uint8* buffer;
     /** The size of the buffer in bytes. */
     unsigned int bufferSize;
     /** The number of received packets. */
@@ -322,12 +322,13 @@ public:
     /**
       Sets the subchannel.
     */
-    void setSubchannel(unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception);
+    void setSubchannel(
+      unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception);
     
     /**
       Returns the buffer.
     */
-    inline char* getBuffer() const throw() {
+    inline uint8* getBuffer() const throw() {
       return buffer;
     }
     
@@ -344,7 +345,7 @@ public:
       @param buffer The location of the buffer.
       @param size The size of the buffer in bytes.
     */
-    void setBuffer(char* buffer, unsigned int size) throw(IEEE1394Exception);
+    void setBuffer(uint8* buffer, unsigned int size) throw(IEEE1394Exception);
     
     /**
       Returns the number of received packets.
@@ -390,7 +391,8 @@ public:
     /**
       Sets the maximum payload in bytes per packet.
     */
-    void setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception);
+    void setPayload(
+      unsigned int payload) throw(OutOfDomain, IEEE1394Exception);
   };
 
   /**
@@ -411,7 +413,7 @@ public:
     /** The maximum payload in bytes per packet. */
     unsigned int payload;
     /** The secondary buffer for header data. */
-    char* secondaryBuffer;
+    uint8* secondaryBuffer;
   public:
     
     /**
@@ -424,7 +426,8 @@ public:
     /**
       Sets the desired number of packets to be received.
     */
-    void setNumberOfPackets(unsigned int packets) throw(OutOfDomain, IEEE1394Exception);
+    void setNumberOfPackets(
+      unsigned int packets) throw(OutOfDomain, IEEE1394Exception);
     
     /**
       Returns the size of the header in bytes per packet.
@@ -434,9 +437,11 @@ public:
     }
     
     /**
-      Sets the size of the header in bytes per packet (the size must be an integral number of 32 bit words).
+      Sets the size of the header in bytes per packet (the size must be an
+      integral number of 32 bit words).
     */
-    void setHeaderSize(unsigned int size) throw(OutOfDomain, IEEE1394Exception);
+    void setHeaderSize(
+      unsigned int size) throw(OutOfDomain, IEEE1394Exception);
     
     /**
       Returns the maximum payload in bytes per packet.
@@ -446,14 +451,16 @@ public:
     }
     
     /**
-      Sets the maximum payload in bytes per packet (the payload must be an integral number of 32 bit words).
+      Sets the maximum payload in bytes per packet (the payload must be an
+      integral number of 32 bit words).
     */
-    void setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception);
+    void setPayload(
+      unsigned int payload) throw(OutOfDomain, IEEE1394Exception);
     
     /**
       Returns the secondary buffer used for header data.
     */
-    inline char* getSecondaryBuffer() const throw() {
+    inline uint8* getSecondaryBuffer() const throw() {
       return secondaryBuffer;
     }
 
@@ -464,7 +471,10 @@ public:
       @param size The size of the buffer in bytes.
       @param secondaryBuffer The secondary buffer.
     */
-    void setBuffer(char* buffer, unsigned int size, char* secondaryBuffer) throw(IEEE1394Exception);    
+    void setBuffer(
+      uint8* buffer,
+      unsigned int size,
+      uint8* secondaryBuffer) throw(IEEE1394Exception);    
   };
 
   /**
@@ -479,7 +489,7 @@ public:
   private:
 
     /** The buffer. */
-    const char* buffer;
+    const uint8* buffer;
     /** The size of the buffer in bytes. */
     unsigned int bufferSize;
     /** The number of packets in the buffer. */
@@ -504,7 +514,7 @@ public:
     /**
       Returns the buffer.
     */
-    inline const char* getBuffer() const throw() {
+    inline const uint8* getBuffer() const throw() {
       return buffer;
     }
     
@@ -529,7 +539,10 @@ public:
       @param size The size of the buffer in bytes.
       @param numberOfPackets The number of packets in the buffer.
     */
-    void setBuffer(const char* buffer, unsigned int size, unsigned int numberOfPackets) throw(IEEE1394Exception);
+    void setBuffer(
+      const uint8* buffer,
+      unsigned int size,
+      unsigned int numberOfPackets) throw(IEEE1394Exception);
     
     /**
       Returns the transmission speed.
@@ -585,13 +598,13 @@ public:
   private:
 
     /** The secondary buffer for header data. */
-    const char* secondaryBuffer;
+    const uint8* secondaryBuffer;
   public:
     
     /**
       Returns the secondary buffer used for header data.
     */
-    inline const char* getSecondaryBuffer() const throw() {
+    inline const uint8* getSecondaryBuffer() const throw() {
       return secondaryBuffer;
     }
     
@@ -603,7 +616,11 @@ public:
       @param numberOfPackets The number of packets in the buffer.
       @param secondaryBuffer The secondary buffer.
     */
-    void setBuffer(const char* buffer, unsigned int size, unsigned int numberOfPackets, const char* secondaryBuffer) throw(IEEE1394Exception);
+    void setBuffer(
+      const uint8* buffer,
+      unsigned int size,
+      unsigned int numberOfPackets,
+      const uint8* secondaryBuffer) throw(IEEE1394Exception);
   };
 
 
@@ -630,21 +647,24 @@ public:
     /**
       Initializes object.
     */
-    inline IsochronousReadPacketsRequest(IsochronousReadPacketsRequestImpl* _context) throw()
+    inline IsochronousReadPacketsRequest(
+      IsochronousReadPacketsRequestImpl* _context) throw()
       : context(_context) {
     }
 
     /**
       Initializes object from other object.
     */
-    inline IsochronousReadPacketsRequest(const IsochronousReadPacketsRequest& copy) throw()
+    inline IsochronousReadPacketsRequest(
+      const IsochronousReadPacketsRequest& copy) throw()
       : context(copy.context) {
     }
 
     /**
       Assignment of object by object.
     */
-    inline IsochronousReadPacketsRequest& operator=(const IsochronousReadPacketsRequest& eq) throw() {
+    inline IsochronousReadPacketsRequest& operator=(
+      const IsochronousReadPacketsRequest& eq) throw() {
       context = eq.context;
       return *this;
     }
@@ -701,7 +721,8 @@ public:
     /**
       Sets the subchannel.
     */
-    inline void setSubchannel(unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception) {
+    inline void setSubchannel(
+      unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception) {
       context->setSubchannel(subchannel);
     }
 
@@ -715,7 +736,7 @@ public:
     /**
       Returns the buffer.
     */
-    inline char* getBuffer() const throw() {
+    inline uint8* getBuffer() const throw() {
       return context->getBuffer();
     }
     
@@ -725,7 +746,8 @@ public:
       @param buffer The location of the buffer.
       @param size The size of the buffer in bytes.
     */
-    inline void setBuffer(char* buffer, unsigned int size) throw(IEEE1394Exception) {
+    inline void setBuffer(
+      uint8* buffer, unsigned int size) throw(IEEE1394Exception) {
       context->setBuffer(buffer, size);
     }
   };
@@ -750,21 +772,24 @@ public:
     /**
       Initializes object.
     */
-    inline IsochronousReadFixedPacketsRequest(IsochronousReadFixedPacketsRequestImpl* _context) throw()
+    inline IsochronousReadFixedPacketsRequest(
+      IsochronousReadFixedPacketsRequestImpl* _context) throw()
       : context(_context) {
     }
 
     /**
       Initializes object from other object.
     */
-    inline IsochronousReadFixedPacketsRequest(const IsochronousReadFixedPacketsRequest& copy) throw()
+    inline IsochronousReadFixedPacketsRequest(
+      const IsochronousReadFixedPacketsRequest& copy) throw()
       : context(copy.context) {
     }
 
     /**
       Assignment of object by object.
     */
-    inline IsochronousReadFixedPacketsRequest& operator=(const IsochronousReadFixedPacketsRequest& eq) throw() {
+    inline IsochronousReadFixedPacketsRequest& operator=(
+      const IsochronousReadFixedPacketsRequest& eq) throw() {
       context = eq.context;
       return *this;
     }
@@ -821,7 +846,8 @@ public:
     /**
       Sets the subchannel.
     */
-    inline void setSubchannel(unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception) {
+    inline void setSubchannel(
+      unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception) {
       context->setSubchannel(subchannel);
     }
 
@@ -842,14 +868,15 @@ public:
     /**
       Sets the payload in bytes per packet.
     */
-    inline void setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
+    inline void setPayload(
+      unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
       context->setPayload(payload);
     }
 
     /**
       Returns the buffer.
     */
-    inline char* getBuffer() const throw() {
+    inline uint8* getBuffer() const throw() {
       return context->getBuffer();
     }
     
@@ -859,7 +886,8 @@ public:
       @param buffer The location of the buffer.
       @param size The size of the buffer in bytes.
     */
-    inline void setBuffer(char* buffer, unsigned int size) throw(IEEE1394Exception) {
+    inline void setBuffer(
+      uint8* buffer, unsigned int size) throw(IEEE1394Exception) {
       context->setBuffer(buffer, size);
     }
   };
@@ -890,21 +918,24 @@ public:
     /**
       Initializes object.
     */
-    inline IsochronousReadFixedDataRequest(IsochronousReadFixedDataRequestImpl* _context) throw()
+    inline IsochronousReadFixedDataRequest(
+      IsochronousReadFixedDataRequestImpl* _context) throw()
       : context(_context) {
     }
 
     /**
       Initializes object from other object.
     */
-    inline IsochronousReadFixedDataRequest(const IsochronousReadFixedDataRequest& copy) throw()
+    inline IsochronousReadFixedDataRequest(
+      const IsochronousReadFixedDataRequest& copy) throw()
       : context(copy.context) {
     }
 
     /**
       Assignment of object by object.
     */
-    inline IsochronousReadFixedDataRequest& operator=(const IsochronousReadFixedDataRequest& eq) throw() {
+    inline IsochronousReadFixedDataRequest& operator=(
+      const IsochronousReadFixedDataRequest& eq) throw() {
       context = eq.context;
       return *this;
     }
@@ -961,7 +992,8 @@ public:
     /**
       Sets the subchannel.
     */
-    inline void setSubchannel(unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception) {
+    inline void setSubchannel(
+      unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception) {
       context->setSubchannel(subchannel);
     }
 
@@ -982,7 +1014,8 @@ public:
     /**
       Sets the desired number of packets to be received.
     */
-    inline void setNumberOfPackets(unsigned int packets) throw(OutOfDomain, IEEE1394Exception) {
+    inline void setNumberOfPackets(
+      unsigned int packets) throw(OutOfDomain, IEEE1394Exception) {
       context->setNumberOfPackets(packets);
     }
 
@@ -994,9 +1027,11 @@ public:
     }
     
     /**
-      Sets the size of the header in bytes per packet (the size must be an integral number of 32 bit words).
+      Sets the size of the header in bytes per packet (the size must be an
+      integral number of 32 bit words).
     */
-    inline void setHeaderSize(unsigned int size) throw(OutOfDomain, IEEE1394Exception) {
+    inline void setHeaderSize(
+      unsigned int size) throw(OutOfDomain, IEEE1394Exception) {
       context->setHeaderSize(size);
     }
     
@@ -1008,23 +1043,25 @@ public:
     }
 
     /**
-      Sets the payload in bytes per packet (the size must be an integral number of 32 bit words).
+      Sets the payload in bytes per packet (the size must be an integral number
+      of 32 bit words).
     */
-    inline void setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
+    inline void setPayload(
+      unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
       context->setPayload(payload);
     }
     
     /**
       Returns the buffer.
     */
-    inline char* getBuffer() const throw() {
+    inline uint8* getBuffer() const throw() {
       return context->getBuffer();
     }
     
     /**
       Returns the secondary buffer used for header data.
     */
-    inline char* getSecondaryBuffer() const throw() {
+    inline uint8* getSecondaryBuffer() const throw() {
       return context->getSecondaryBuffer();
     }
     
@@ -1035,7 +1072,10 @@ public:
       @param size The size of the buffer in bytes.
       @param secondaryBuffer The secondary buffer.
     */
-    inline void setBuffer(char* buffer, unsigned int size, char* secondaryBuffer) throw(IEEE1394Exception) {
+    inline void setBuffer(
+      uint8* buffer,
+      unsigned int size,
+      uint8* secondaryBuffer) throw(IEEE1394Exception) {
       context->setBuffer(buffer, size, secondaryBuffer);
     }
   };
@@ -1066,21 +1106,24 @@ public:
     /**
       Initialize read request from read packets request.
     */
-    inline IsochronousReadRequest(const IsochronousReadPacketsRequest& request) throw()
+    inline IsochronousReadRequest(
+      const IsochronousReadPacketsRequest& request) throw()
       : context(request.context.getValue()) {
     }
 
     /**
       Initialize read request from read packets request.
     */
-    inline IsochronousReadRequest(const IsochronousReadFixedPacketsRequest& request) throw()
+    inline IsochronousReadRequest(
+      const IsochronousReadFixedPacketsRequest& request) throw()
       : context(request.context.getValue()) {
     }
 
     /**
       Initialize read request from read packets request.
     */
-    inline IsochronousReadRequest(const IsochronousReadFixedDataRequest& request) throw()
+    inline IsochronousReadRequest(
+      const IsochronousReadFixedDataRequest& request) throw()
       : context(request.context.getValue()) {
     }
 
@@ -1094,7 +1137,8 @@ public:
     /**
       Assignment of object by object.
     */
-    inline IsochronousReadRequest& operator=(const IsochronousReadRequest& eq) throw() {
+    inline IsochronousReadRequest& operator=(
+      const IsochronousReadRequest& eq) throw() {
       context = eq.context;
       return *this;
     }
@@ -1143,30 +1187,48 @@ public:
     }
     
     /**
-      Casts request to an isochronous read packets request (READ_PACKETS_REQUEST).
+      Casts request to an isochronous read packets request
+      (READ_PACKETS_REQUEST).
       
-      @return Returns an invalid object if the request is not an isochronous packets request.
+      @return Returns an invalid object if the request is not an isochronous
+      packets request.
     */
-    IsochronousReadPacketsRequest getIsochronousReadPacketsRequest() const throw() {
-      return IsochronousReadPacketsRequest(dynamic_cast<IsochronousReadPacketsRequestImpl*>(context.getValue()));
+    IsochronousReadPacketsRequest
+      getIsochronousReadPacketsRequest() const throw() {
+      return IsochronousReadPacketsRequest(
+        dynamic_cast<IsochronousReadPacketsRequestImpl*>(context.getValue()
+        )
+      );
     }
     
     /**
-      Casts request to an isochronous read fixed packets request (READ_FIXED_PACKETS_REQUEST).
+      Casts request to an isochronous read fixed packets request
+      (READ_FIXED_PACKETS_REQUEST).
       
-      @return Returns an invalid object if the request is not an isochronous fixed packets request.
+      @return Returns an invalid object if the request is not an isochronous
+      fixed packets request.
     */
-    IsochronousReadFixedPacketsRequest getIsochronousReadFixedPacketsRequest() const throw() {
-      return IsochronousReadFixedPacketsRequest(dynamic_cast<IsochronousReadFixedPacketsRequestImpl*>(context.getValue()));
+    IsochronousReadFixedPacketsRequest
+      getIsochronousReadFixedPacketsRequest() const throw() {
+      return IsochronousReadFixedPacketsRequest(
+        dynamic_cast<IsochronousReadFixedPacketsRequestImpl*>(
+          context.getValue()
+        )
+      );
     }
 
     /**
-      Casts request to an isochronous read fixed data request (READ_FIXED_DATA_REQUEST).
+      Casts request to an isochronous read fixed data request
+      (READ_FIXED_DATA_REQUEST).
       
-      @return Returns an invalid object if the request is not an isochronous fixed data request.
+      @return Returns an invalid object if the request is not an isochronous
+      fixed data request.
     */
-    IsochronousReadFixedDataRequest getIsochronousReadFixedDataRequest() const throw() {
-      return IsochronousReadFixedDataRequest(dynamic_cast<IsochronousReadFixedDataRequestImpl*>(context.getValue()));
+    IsochronousReadFixedDataRequest
+      getIsochronousReadFixedDataRequest() const throw() {
+      return IsochronousReadFixedDataRequest(
+        dynamic_cast<IsochronousReadFixedDataRequestImpl*>(context.getValue())
+      );
     }
   };
 
@@ -1194,21 +1256,24 @@ public:
     /**
       Initializes object.
     */
-    inline IsochronousWritePacketsRequest(IsochronousWritePacketsRequestImpl* _context) throw()
+    inline IsochronousWritePacketsRequest(
+      IsochronousWritePacketsRequestImpl* _context) throw()
       : context(_context) {
     }
 
     /**
       Initializes object from other object.
     */
-    inline IsochronousWritePacketsRequest(const IsochronousWritePacketsRequest& copy) throw()
+    inline IsochronousWritePacketsRequest(
+      const IsochronousWritePacketsRequest& copy) throw()
       : context(copy.context) {
     }
 
     /**
       Assignment of object by object.
     */
-    inline IsochronousWritePacketsRequest& operator=(const IsochronousWritePacketsRequest& eq) throw() {
+    inline IsochronousWritePacketsRequest& operator=(
+      const IsochronousWritePacketsRequest& eq) throw() {
       context = eq.context;
       return *this;
     }
@@ -1258,21 +1323,23 @@ public:
     /**
       Returns the buffer.
     */
-    inline const char* getBuffer() const throw() {
+    inline const uint8* getBuffer() const throw() {
       return context->getBuffer();
     }
     
     /**
       Returns the transmission speed.
     */
-    inline unsigned int getSpeed() const throw(OutOfDomain, IEEE1394Exception) {
+    inline unsigned int
+      getSpeed() const throw(OutOfDomain, IEEE1394Exception) {
       return context->getSpeed();
     }
 
     /**
       Sets the transmission speed.
     */
-    inline void setSpeed(unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
+    inline void setSpeed(
+      unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
       context->setSpeed(speed);
     }
 
@@ -1304,21 +1371,24 @@ public:
     /**
       Initializes object.
     */
-    inline IsochronousWriteFixedPacketsRequest(IsochronousWriteFixedPacketsRequestImpl* _context) throw()
+    inline IsochronousWriteFixedPacketsRequest(
+      IsochronousWriteFixedPacketsRequestImpl* _context) throw()
       : context(_context) {
     }
 
     /**
       Initializes object from other object.
     */
-    inline IsochronousWriteFixedPacketsRequest(const IsochronousWriteFixedPacketsRequest& copy) throw()
+    inline IsochronousWriteFixedPacketsRequest(
+      const IsochronousWriteFixedPacketsRequest& copy) throw()
       : context(copy.context) {
     }
 
     /**
       Assignment of object by object.
     */
-    inline IsochronousWriteFixedPacketsRequest& operator=(const IsochronousWriteFixedPacketsRequest& eq) throw() {
+    inline IsochronousWriteFixedPacketsRequest& operator=(
+      const IsochronousWriteFixedPacketsRequest& eq) throw() {
       context = eq.context;
       return *this;
     }
@@ -1368,21 +1438,23 @@ public:
     /**
       Returns the buffer.
     */
-    inline const char* getBuffer() const throw() {
+    inline const uint8* getBuffer() const throw() {
       return context->getBuffer();
     }
 
     /**
       Returns the transmission speed.
     */
-    inline unsigned int getSpeed() const throw(OutOfDomain, IEEE1394Exception) {
+    inline unsigned int
+      getSpeed() const throw(OutOfDomain, IEEE1394Exception) {
       return context->getSpeed();
     }
 
     /**
       Sets the transmission speed.
     */
-    inline void setSpeed(unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
+    inline void setSpeed(
+      unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
       context->setSpeed(speed);
     }
 
@@ -1414,21 +1486,24 @@ public:
     /**
       Initializes write request.
     */
-    inline IsochronousWriteDataRequest(IsochronousWriteDataRequestImpl* _context) throw() // TAG: must be private
+    inline IsochronousWriteDataRequest(
+      IsochronousWriteDataRequestImpl* _context) throw() // TAG: must be private
       : context(_context) {
     }
 
     /**
       Initializes write request from other write request.
     */
-    inline IsochronousWriteDataRequest(const IsochronousWriteDataRequest& copy) throw()
+    inline IsochronousWriteDataRequest(
+      const IsochronousWriteDataRequest& copy) throw()
       : context(copy.context) {
     }
 
     /**
       Assignment of write request by write request.
     */
-    inline IsochronousWriteDataRequest& operator=(const IsochronousWriteDataRequest& eq) throw() {
+    inline IsochronousWriteDataRequest& operator=(
+      const IsochronousWriteDataRequest& eq) throw() {
       context = eq.context;
       return *this;
     }
@@ -1478,21 +1553,23 @@ public:
     /**
       Returns the buffer.
     */
-    inline const char* getBuffer() const throw() {
+    inline const uint8* getBuffer() const throw() {
       return context->getBuffer();
     }
     
     /**
       Returns the transmission speed.
     */
-    inline unsigned int getSpeed() const throw(OutOfDomain, IEEE1394Exception) {
+    inline unsigned int
+      getSpeed() const throw(OutOfDomain, IEEE1394Exception) {
       return context->getSpeed();
     }
 
     /**
       Sets the transmission speed.
     */
-    inline void setSpeed(unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
+    inline void setSpeed(
+      unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
       context->setSpeed(speed);
     }
 
@@ -1523,28 +1600,32 @@ public:
     /**
       Initializes write request.
     */
-    inline IsochronousWriteRequest(IsochronousWriteRequestImpl* _context) throw() // TAG: must be private
+    inline IsochronousWriteRequest(
+      IsochronousWriteRequestImpl* _context) throw() // TAG: must be private
       : context(_context) {
     }
 
     /**
       Initialize write request from write packets request.
     */
-    inline IsochronousWriteRequest(const IsochronousWritePacketsRequest& request) throw()
+    inline IsochronousWriteRequest(
+      const IsochronousWritePacketsRequest& request) throw()
       : context(request.context.getValue()) {
     }
 
     /**
       Initialize write request from write fixed packets request.
     */
-    inline IsochronousWriteRequest(const IsochronousWriteFixedPacketsRequest& request) throw()
+    inline IsochronousWriteRequest(
+      const IsochronousWriteFixedPacketsRequest& request) throw()
       : context(request.context.getValue()) {
     }
 
     /**
       Initialize write request from write data request.
     */
-    inline IsochronousWriteRequest(const IsochronousWriteDataRequest& request) throw()
+    inline IsochronousWriteRequest(
+      const IsochronousWriteDataRequest& request) throw()
       : context(request.context.getValue()) {
     }
 
@@ -1558,7 +1639,8 @@ public:
     /**
       Assignment of object by object.
     */
-    inline IsochronousWriteRequest& operator=(const IsochronousWriteRequest& eq) throw() {
+    inline IsochronousWriteRequest& operator=(
+      const IsochronousWriteRequest& eq) throw() {
       context = eq.context;
       return *this;
     }
@@ -1607,30 +1689,46 @@ public:
     }
     
     /**
-      Casts request to an isochronous write packets request (WRITE_PACKETS_REQUEST).
+      Casts request to an isochronous write packets request
+      (WRITE_PACKETS_REQUEST).
       
-      @return Returns an invalid object if the request is not an isochronous packets request.
+      @return Returns an invalid object if the request is not an isochronous
+      packets request.
     */
-    IsochronousWritePacketsRequest getIsochronousWritePacketsRequest() const throw() {
-      return IsochronousWritePacketsRequest(dynamic_cast<IsochronousWritePacketsRequestImpl*>(context.getValue()));
+    IsochronousWritePacketsRequest
+      getIsochronousWritePacketsRequest() const throw() {
+      return IsochronousWritePacketsRequest(
+        dynamic_cast<IsochronousWritePacketsRequestImpl*>(context.getValue())
+      );
     }
     
     /**
-      Casts request to an isochronous write fixed packets request (WRITE_FIXED_PACKETS_REQUEST).
+      Casts request to an isochronous write fixed packets request
+      (WRITE_FIXED_PACKETS_REQUEST).
       
-      @return Returns an invalid object if the request is not an isochronous fixed packets request.
+      @return Returns an invalid object if the request is not an isochronous
+      fixed packets request.
     */
-    IsochronousWriteFixedPacketsRequest getIsochronousWriteFixedPacketsRequest() const throw() {
-      return IsochronousWriteFixedPacketsRequest(dynamic_cast<IsochronousWriteFixedPacketsRequestImpl*>(context.getValue()));
+    IsochronousWriteFixedPacketsRequest
+      getIsochronousWriteFixedPacketsRequest() const throw() {
+      return IsochronousWriteFixedPacketsRequest(
+        dynamic_cast<IsochronousWriteFixedPacketsRequestImpl*>(
+          context.getValue()
+        )
+      );
     }
 
     /**
       Casts request to an isochronous write data request (WRITE_DATA_REQUEST).
       
-      @return Returns an invalid object if the request is not an isochronous fixed data request.
+      @return Returns an invalid object if the request is not an isochronous
+      fixed data request.
     */
-    IsochronousWriteDataRequest getIsochronousWriteDataRequest() const throw() {
-      return IsochronousWriteDataRequest(dynamic_cast<IsochronousWriteDataRequestImpl*>(context.getValue()));
+    IsochronousWriteDataRequest
+      getIsochronousWriteDataRequest() const throw() {
+      return IsochronousWriteDataRequest(
+        dynamic_cast<IsochronousWriteDataRequestImpl*>(context.getValue())
+      );
     }
   };
   
@@ -1658,42 +1756,50 @@ public:
     /**
       Returns a read packet request object (READ_PACKETS_REQUEST).
     */    
-    virtual IsochronousReadPacketsRequest getReadPacketsRequest() const throw(IEEE1394Exception);
+    virtual IsochronousReadPacketsRequest
+      getReadPacketsRequest() const throw(IEEE1394Exception);
     
     /**
       Returns a read fixed packet request object (READ_FIXED_PACKETS_REQUEST).
     */    
-    virtual IsochronousReadFixedPacketsRequest getReadFixedPacketsRequest() const throw(IEEE1394Exception);
+    virtual IsochronousReadFixedPacketsRequest
+      getReadFixedPacketsRequest() const throw(IEEE1394Exception);
     
     /**
       Returns a read fixed data request object (READ_FIXED_DATA_REQUEST).
     */    
-    virtual IsochronousReadFixedDataRequest getReadFixedDataRequest() const throw(IEEE1394Exception);
+    virtual IsochronousReadFixedDataRequest
+      getReadFixedDataRequest() const throw(IEEE1394Exception);
 
     /**
       Queues the specified read request.
     */
-    virtual void queue(IsochronousReadRequest& request) throw(IEEE1394Exception);
+    virtual void queue(
+      IsochronousReadRequest& request) throw(IEEE1394Exception);
 
     /**
       Queues the specified read request.
     */
-    virtual void queue(IsochronousReadPacketsRequest& request) throw(IEEE1394Exception);
+    virtual void queue(
+      IsochronousReadPacketsRequest& request) throw(IEEE1394Exception);
 
     /**
       Queues the specified read request.
     */
-    virtual void queue(IsochronousReadFixedPacketsRequest& request) throw(IEEE1394Exception);
+    virtual void queue(
+      IsochronousReadFixedPacketsRequest& request) throw(IEEE1394Exception);
 
     /**
       Queues the specified read request.
     */
-    virtual void queue(IsochronousReadFixedDataRequest& request) throw(IEEE1394Exception);
+    virtual void queue(
+      IsochronousReadFixedDataRequest& request) throw(IEEE1394Exception);
     
     /**
       Queues the specified read requests.
     */
-    virtual void queue(Allocator<IsochronousReadRequest>& request) throw(IEEE1394Exception);
+    virtual void queue(
+      Allocator<IsochronousReadRequest>& request) throw(IEEE1394Exception);
 
     /**
       Returns the next completed request.
@@ -1710,16 +1816,20 @@ public:
 
       @return The number of dequeued requests.
     */
-    virtual unsigned int dequeue(unsigned int requests, unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception);
+    virtual unsigned int dequeue(
+      unsigned int requests,
+      unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception);
 
     /**
       Wait for an event.
 
       @param microseconds The timeout period in microseconds [0; 999999999].
       
-      @return True if event occured within the specified timeout period and otherwise false.
+      @return True if event occured within the specified timeout period and
+      otherwise false.
     */
-    virtual bool wait(unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception);
+    virtual bool wait(
+      unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception);
   };
   
   /**
@@ -1746,42 +1856,51 @@ public:
     /**
       Returns a write packet request object (WRITE_PACKETS_REQUEST).
     */    
-    virtual IsochronousWritePacketsRequest getWritePacketsRequest() const throw(IEEE1394Exception);
+    virtual IsochronousWritePacketsRequest
+      getWritePacketsRequest() const throw(IEEE1394Exception);
     
     /**
-      Returns a write fixed packet request object (WRITE_FIXED_PACKETS_REQUEST).
+      Returns a write fixed packet request object
+      (WRITE_FIXED_PACKETS_REQUEST).
     */
-    virtual IsochronousWriteFixedPacketsRequest getWriteFixedPacketsRequest() const throw(IEEE1394Exception);
+    virtual IsochronousWriteFixedPacketsRequest
+      getWriteFixedPacketsRequest() const throw(IEEE1394Exception);
     
     /**
       Returns a write data request object (WRITE_DATA_REQUEST).
     */
-    virtual IsochronousWriteDataRequest getWriteDataRequest() const throw(IEEE1394Exception);
+    virtual IsochronousWriteDataRequest
+      getWriteDataRequest() const throw(IEEE1394Exception);
     
     /**
       Queues the specified write request.
     */
-    virtual void queue(IsochronousWriteRequest& request) throw(IEEE1394Exception);
+    virtual void queue(
+      IsochronousWriteRequest& request) throw(IEEE1394Exception);
 
     /**
       Queues the specified write request.
     */
-    virtual void queue(IsochronousWritePacketsRequest& request) throw(IEEE1394Exception);
+    virtual void queue(
+      IsochronousWritePacketsRequest& request) throw(IEEE1394Exception);
 
     /**
       Queues the specified write request.
     */
-    virtual void queue(IsochronousWriteFixedPacketsRequest& request) throw(IEEE1394Exception);
+    virtual void queue(
+      IsochronousWriteFixedPacketsRequest& request) throw(IEEE1394Exception);
 
     /**
       Queues the specified write request.
     */
-    virtual void queue(IsochronousWriteDataRequest& request) throw(IEEE1394Exception);
+    virtual void queue(
+      IsochronousWriteDataRequest& request) throw(IEEE1394Exception);
 
     /**
       Queues the specified write requests.
     */
-    virtual void queue(Allocator<IsochronousWriteRequest>& request) throw(IEEE1394Exception);
+    virtual void queue(
+      Allocator<IsochronousWriteRequest>& request) throw(IEEE1394Exception);
 
     /**
       Returns the next completed request.
@@ -1795,9 +1914,11 @@ public:
 
       @param microseconds The timeout period in microseconds [0; 999999999].
       
-      @return True if event occured within the specified timeout period and otherwise false.
+      @return True if event occured within the specified timeout period and
+      otherwise false.
     */
-    virtual bool wait(unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception);
+    virtual bool wait(
+      unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception);
   };
 protected:
   
@@ -1876,14 +1997,16 @@ public:
     /**
       Initialize channel as closed.
     */
-    inline IsochronousReadChannel() throw() : readChannel(new IsochronousReadChannelImpl()) {
+    inline IsochronousReadChannel() throw()
+      : readChannel(new IsochronousReadChannelImpl()) {
     }
     
     /**
       Initializes read channel.
     */
-    inline IsochronousReadChannel(IsochronousReadChannelImpl* _readChannel) throw() :
-      readChannel(_readChannel) {
+    inline IsochronousReadChannel(
+      IsochronousReadChannelImpl* _readChannel) throw()
+      : readChannel(_readChannel) {
       assert(_readChannel, NullPointer(this));
     }
     
@@ -1897,7 +2020,8 @@ public:
     /**
       Assignment of channel by channel.
     */
-    inline IsochronousReadChannel& operator=(const IsochronousReadChannel& eq) throw() {
+    inline IsochronousReadChannel& operator=(
+      const IsochronousReadChannel& eq) throw() {
       readChannel = eq.readChannel;
       return *this;
     }
@@ -1926,56 +2050,64 @@ public:
     /**
       Returns a read packet request object (READ_PACKETS_REQUEST).
     */    
-    inline IsochronousReadPacketsRequest getReadPacketsRequest() const throw() {
+    inline IsochronousReadPacketsRequest
+      getReadPacketsRequest() const throw() {
       return readChannel->getReadPacketsRequest();
     }
     
     /**
       Returns a read fixed packet request object (READ_FIXED_PACKETS_REQUEST).
     */    
-    inline IsochronousReadFixedPacketsRequest getReadFixedPacketsRequest() const throw() {
+    inline IsochronousReadFixedPacketsRequest
+      getReadFixedPacketsRequest() const throw() {
       return readChannel->getReadFixedPacketsRequest();
     }
     
     /**
       Returns a read fixed data request object (READ_FIXED_DATA_REQUEST).
     */    
-    inline IsochronousReadFixedDataRequest getReadFixedDataRequest() const throw() {
+    inline IsochronousReadFixedDataRequest
+      getReadFixedDataRequest() const throw() {
       return readChannel->getReadFixedDataRequest();
     }
 
     /**
       Queues the specified read request.
     */
-    inline void queue(IsochronousReadRequest& request) throw(IEEE1394Exception) {
+    inline void queue(
+      IsochronousReadRequest& request) throw(IEEE1394Exception) {
       readChannel->queue(request);
     }
     
     /**
       Queues the specified read request.
     */
-    inline void queue(IsochronousReadPacketsRequest& request) throw(IEEE1394Exception) {
+    inline void queue(
+      IsochronousReadPacketsRequest& request) throw(IEEE1394Exception) {
       readChannel->queue(request);
     }
     
     /**
       Queues the specified read request.
     */
-    inline void queue(IsochronousReadFixedPacketsRequest& request) throw(IEEE1394Exception) {
+    inline void queue(
+      IsochronousReadFixedPacketsRequest& request) throw(IEEE1394Exception) {
       readChannel->queue(request);
     }
     
     /**
       Queues the specified read request.
     */
-    inline void queue(IsochronousReadFixedDataRequest& request) throw(IEEE1394Exception) {
+    inline void queue(
+      IsochronousReadFixedDataRequest& request) throw(IEEE1394Exception) {
       readChannel->queue(request);
     }
     
     /**
       Queues the specified read requests.
     */
-    inline void queue(Allocator<IsochronousReadRequest>& request) throw(IEEE1394Exception) {
+    inline void queue(
+      Allocator<IsochronousReadRequest>& request) throw(IEEE1394Exception) {
       readChannel->queue(request);
     }
     
@@ -1996,7 +2128,9 @@ public:
 
       @return The number of dequeued requests.
     */
-    inline unsigned int dequeue(unsigned int requests, unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
+    inline unsigned int dequeue(
+      unsigned int requests,
+      unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
       return readChannel->dequeue(requests, microseconds);
     }
     
@@ -2005,7 +2139,8 @@ public:
 
       @param microseconds The timeout period in microseconds [0; 999999999].
       
-      @return True if event occured within the specified timeout period and otherwise false.
+      @return True if event occured within the specified timeout period and
+      otherwise false.
     */
     inline bool wait(unsigned int microseconds) throw(OutOfDomain) {
       return readChannel->wait(microseconds);
@@ -2022,14 +2157,16 @@ public:
     /**
       Initializes channel as closed.
     */
-    inline IsochronousWriteChannel() throw() : writeChannel(new IsochronousWriteChannelImpl()) {
+    inline IsochronousWriteChannel() throw()
+      : writeChannel(new IsochronousWriteChannelImpl()) {
     }
 
     /**
       Initializes write channel.
     */
-    inline IsochronousWriteChannel(IsochronousWriteChannelImpl* _writeChannel) throw() :
-      writeChannel(_writeChannel) {
+    inline IsochronousWriteChannel(
+      IsochronousWriteChannelImpl* _writeChannel) throw()
+      : writeChannel(_writeChannel) {
       assert(_writeChannel, NullPointer(this));
     }
 
@@ -2043,7 +2180,8 @@ public:
     /**
       Assignment of channel by channel.
     */
-    inline IsochronousWriteChannel& operator=(const IsochronousWriteChannel& eq) throw() {
+    inline IsochronousWriteChannel& operator=(
+      const IsochronousWriteChannel& eq) throw() {
       writeChannel = eq.writeChannel;
       return *this;
     }
@@ -2072,14 +2210,17 @@ public:
     /**
       Returns a write packet request object (WRITE_PACKETS_REQUEST).
     */    
-    inline IsochronousWritePacketsRequest getWritePacketsRequest() const throw() {
+    inline IsochronousWritePacketsRequest
+      getWritePacketsRequest() const throw() {
       return writeChannel->getWritePacketsRequest();
     }
     
     /**
-      Returns a write fixed packet request object (WRITE_FIXED_PACKETS_REQUEST).
+      Returns a write fixed packet request object
+      (WRITE_FIXED_PACKETS_REQUEST).
     */
-    inline IsochronousWriteFixedPacketsRequest getWriteFixedPacketsRequest() const throw() {
+    inline IsochronousWriteFixedPacketsRequest
+      getWriteFixedPacketsRequest() const throw() {
       return writeChannel->getWriteFixedPacketsRequest();
     }
     
@@ -2093,35 +2234,40 @@ public:
     /**
       Queues the specified write request.
     */
-    inline void queue(IsochronousWriteRequest& request) throw(IEEE1394Exception) {
+    inline void queue(
+      IsochronousWriteRequest& request) throw(IEEE1394Exception) {
       return writeChannel->queue(request);
     }
 
     /**
       Queues the specified write request.
     */
-    inline void queue(IsochronousWritePacketsRequest& request) throw(IEEE1394Exception) {
+    inline void queue(
+      IsochronousWritePacketsRequest& request) throw(IEEE1394Exception) {
       return writeChannel->queue(request);
     }
 
     /**
       Queues the specified write request.
     */
-    inline void queue(IsochronousWriteFixedPacketsRequest& request) throw(IEEE1394Exception) {
+    inline void queue(
+      IsochronousWriteFixedPacketsRequest& request) throw(IEEE1394Exception) {
       return writeChannel->queue(request);
     }
 
     /**
       Queues the specified write request.
     */
-    inline void queue(IsochronousWriteDataRequest& request) throw(IEEE1394Exception) {
+    inline void queue(
+      IsochronousWriteDataRequest& request) throw(IEEE1394Exception) {
       return writeChannel->queue(request);
     }
 
     /**
       Queues the specified write requests.
     */
-    inline void queue(Allocator<IsochronousWriteRequest>& request) throw(IEEE1394Exception) {
+    inline void queue(
+      Allocator<IsochronousWriteRequest>& request) throw(IEEE1394Exception) {
       return writeChannel->queue(request);
     }
     
@@ -2139,7 +2285,8 @@ public:
 
       @param microseconds The timeout period in microseconds [0; 999999999].
       
-      @return True if event occured within the specified timeout period and otherwise false.
+      @return True if event occured within the specified timeout period and
+      otherwise false.
     */
     inline bool wait(unsigned int microseconds) throw(OutOfDomain) {
       return writeChannel->wait(microseconds);
@@ -2160,7 +2307,9 @@ public:
       
       @return False to stop the listener.
     */
-    virtual bool onIsochronousPacket(const uint8* buffer, unsigned int size) throw() = 0;
+    virtual bool onIsochronousPacket(
+      const uint8* buffer,
+      unsigned int size) throw() = 0;
   };
 
   /**
@@ -2176,7 +2325,10 @@ public:
       @param buffer The buffer.
       @param size The size of the data.      
     */
-    virtual void onFCPRequest(unsigned short nodeId, const uint8* buffer, unsigned int size) throw() = 0;
+    virtual void onFCPRequest(
+      unsigned short nodeId,
+      const uint8* buffer,
+      unsigned int size) throw() = 0;
 
     /**
       Invoked on an incoming FCP response.
@@ -2185,7 +2337,10 @@ public:
       @param buffer The buffer.
       @param size The size of the data.      
     */
-    virtual void onFCPResponse(unsigned short nodeId, const uint8* buffer, unsigned int size) throw() = 0;
+    virtual void onFCPResponse(
+      unsigned short nodeId,
+      const uint8* buffer,
+      unsigned int size) throw() = 0;
   };
 };
 

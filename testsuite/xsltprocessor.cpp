@@ -57,7 +57,7 @@ public:
     const String sourceName = arguments[0];
     const String destinationName = arguments[1];
     
-    Allocator<char> buffer;
+    Allocator<uint8> buffer;
     {
        fout << "Reading XML file into buffer..." << ENDL;
        File file(sourceName, File::READ, File::EXCLUSIVE);

@@ -262,7 +262,12 @@ public:
     Timer updateTimer;
     
     if (progress) {
-      String temp = getProgress(position, size, compressedSize, timer.getLiveMicroseconds());
+      String temp = getProgress(
+        position,
+        size,
+        compressedSize,
+        timer.getLiveMicroseconds()
+      );
       fout << setWidth(previousLength) << temp << '\r' << (debug ? ENDL : FLUSH);
       previousLength = temp.getLength();
     }
@@ -271,7 +276,7 @@ public:
       unsigned int bytesToCompress =
         minimum<long long>(size - position, inputBuffer.getSize());
       unsigned int bytesRead = sourceFile.read(
-        Cast::pointer<char*>(inputBuffer.getElements()),
+        inputBuffer.getElements(),
         bytesToCompress
       );
       
@@ -313,10 +318,7 @@ public:
           if (compressedBytes == 0) {
             break;
           }
-          fos.write(
-            Cast::pointer<const char*>(outputBuffer.getElements()),
-            compressedBytes
-          );
+          fos.write(outputBuffer.getElements(), compressedBytes);
           if (debug) {
             fout << "DEBUG: write"
                  << " position:" << compressedSize
@@ -355,10 +357,7 @@ public:
              << " pulled:" << compressedBytes
              << ENDL;
       }
-      fos.write(
-        Cast::pointer<const char*>(outputBuffer.getElements()),
-        compressedBytes
-      );
+      fos.write(outputBuffer.getElements(), compressedBytes);
       if (debug) {
         fout << "DEBUG: write"
              << " position:" << compressedSize
@@ -372,7 +371,12 @@ public:
     }
     
     if (progress) {
-      String temp = getProgress(size, size, compressedSize, timer.getLiveMicroseconds());
+      String temp = getProgress(
+        size,
+        size,
+        compressedSize,
+        timer.getLiveMicroseconds()
+      );
       fout << setWidth(previousLength) << temp << '\r' << ENDL;
     }
   }
@@ -426,7 +430,7 @@ public:
       unsigned int bytesToDecompress =
         minimum<long long>(size - position, inputBuffer.getSize());
       unsigned int bytesRead = sourceFile.read(
-        Cast::pointer<char*>(inputBuffer.getElements()),
+        inputBuffer.getElements(),
         bytesToDecompress
       );
       
@@ -469,11 +473,8 @@ public:
           if (decompressedBytes == 0) {
             break;
           }
-          fos.write(
-            Cast::pointer<const char*>(outputBuffer.getElements()),
-            decompressedBytes
-          );
-
+          fos.write(outputBuffer.getElements(), decompressedBytes);
+          
           if (debug) {
             fout << "DEBUG: write"
                  << " position:" << decompressedSize
@@ -521,10 +522,7 @@ public:
              << ENDL;
       }
       
-      fos.write(
-        Cast::pointer<const char*>(outputBuffer.getElements()),
-        decompressedBytes
-      );
+      fos.write(outputBuffer.getElements(), decompressedBytes);
       
       if (debug) {
         fout << "DEBUG: write"

@@ -292,7 +292,7 @@ public:
     @return The actual number of bytes read.
   */
   inline unsigned int read(
-    char* buffer,
+    uint8* buffer,
     unsigned int size,
     bool nonblocking = false) throw(NetworkException) {
     return Socket::read(buffer, size, nonblocking);
@@ -306,7 +306,7 @@ public:
     @return The actual number of bytes written.
   */
   inline unsigned int write(
-    const char* buffer,
+    const uint8* buffer,
     unsigned int size,
     bool nonblocking = false) throw(NetworkException) {
     return Socket::write(buffer, size, nonblocking);

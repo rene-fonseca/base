@@ -205,7 +205,7 @@ public:
         guard.releaseLock();
         try {
           streamSocket.write(
-            Cast::pointer<const char*>(buffer->getElements()),
+            Cast::pointer<const uint8*>(buffer->getElements()),
             buffer->getByteSize()
           );
         } catch (IOException& e) {
@@ -238,7 +238,7 @@ public:
         guard.releaseLock();
         try {
           unsigned int bytesRead = streamSocket.read(
-            Cast::pointer<char*>(buffer->getElements()),
+            Cast::pointer<uint8*>(buffer->getElements()),
             buffer->getByteSize()
           );
         } catch (EndOfFile& e) {

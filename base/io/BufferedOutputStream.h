@@ -40,7 +40,7 @@ public:
 protected:
 
   /** The buffer. */
-  Allocator<char> buffer;
+  Allocator<uint8> buffer;
   /** The write head. */
   unsigned int writeHead;
   /** The read head. */
@@ -51,9 +51,13 @@ public:
     Initializes the buffered output stream.
 
     @param out The output stream.
-    @param size The size of the buffer. Default is given by DEFAULT_BUFFER_SIZE.
+    @param size The size of the buffer. Default is given by
+    DEFAULT_BUFFER_SIZE.
   */
-  BufferedOutputStream(OutputStream& out, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException, MemoryException);
+  BufferedOutputStream(
+    OutputStream& out,
+    unsigned int size = DEFAULT_BUFFER_SIZE
+  ) throw(BindException, MemoryException);
 
   /**
     Forces any buffered bytes to be written out.
@@ -66,9 +70,13 @@ public:
     @param buffer The buffer containing the bytes to be written.
     @param size The number of bytes to be written.
     @param nonblocking Specifies that the method may not block.
-    @return The actual number of bytes written. Always the requested number of bytes in blocking mode unless an error occured.
+    @return The actual number of bytes written. Always the requested number of
+    bytes in blocking mode unless an error occured.
   */
-  unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
+  unsigned int write(
+    const uint8* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(IOException);
 
   /**
     Writes a single value multiple times to the stream.

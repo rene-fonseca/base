@@ -22,7 +22,8 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  A string input stream is a input stream which receives its data from a string.
+  A string input stream is a input stream which receives its data from a
+  string.
 
   @short Input stream with string source.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -50,27 +51,31 @@ public:
   StringInputStream(String& string) throw(BindException);
   
   /**
-    Returns the number of bytes that can be read or skipped over without blocking.
+    Returns the number of bytes that can be read or skipped over without
+    blocking.
 
     @return Available number of bytes in stream.
   */
   unsigned int available() throw(IOException);
   
   /**
-    Closes the input stream and releases any system resources associated with the stream.
+    Closes the input stream and releases any system resources associated with
+    the stream.
   */
   void close() throw(IOException);
   
   /**
-    Fills the buffer with bytes from the stream. Blocks if asked to read more bytes than available.
+    Fills the buffer with bytes from the stream. Blocks if asked to read more
+    bytes than available.
     
     @param buffer The buffer.
     @param size The size of the buffer.
   */
-  unsigned int read(char* buffer, unsigned int size) throw(IOException);
+  unsigned int read(uint8* buffer, unsigned int size) throw(IOException);
   
   /**
-    Skips a specified number of bytes. Blocks if asked to skip more bytes than available.
+    Skips a specified number of bytes. Blocks if asked to skip more bytes than
+    available.
     
     @param count The number of bytes to skip.
   */

@@ -40,7 +40,7 @@ public:
 protected:
   
   /** The buffer associated with the operation. */
-  char* buffer;
+  uint8* buffer;
   /** The desired number of bytes to be read. */
   unsigned int bytesToRead;
   /** The offset. */
@@ -55,7 +55,7 @@ public:
     Initialization of object.
   */
   inline AsynchronousReadCompletion(
-    char* _buffer,
+    uint8* _buffer,
     unsigned int _bytesToRead,
     unsigned long long _offset,
     unsigned int _bytesRead,
@@ -97,7 +97,7 @@ public:
     return (flags & ABORTED) != 0;
   }
 
-  inline char* getBuffer() throw() {
+  inline uint8* getBuffer() throw() {
     return buffer;
   }
   

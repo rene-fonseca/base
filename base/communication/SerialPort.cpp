@@ -371,21 +371,30 @@ void SerialPort::asyncCancel() throw(AsynchronousException) {
 #endif // flavor
 }
 
-AsynchronousReadOperation SerialPort::read(char* buffer, unsigned int bytesToRead, AsynchronousReadEventListener* listener) throw(AsynchronousException) {
+AsynchronousReadOperation SerialPort::read(
+  uint8* buffer,
+  unsigned int bytesToRead,
+  AsynchronousReadEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncReadStreamContext(handle->getHandle(), buffer, bytesToRead, listener);
 #endif // flavor
 }
 
-AsynchronousWriteOperation SerialPort::write(const char* buffer, unsigned int bytesToWrite, AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
+AsynchronousWriteOperation SerialPort::write(
+  const uint8* buffer,
+  unsigned int bytesToWrite,
+  AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncWriteStreamContext(handle->getHandle(), buffer, bytesToWrite, listener);
 #endif // flavor
 }
 
-unsigned int SerialPort::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(IOException) {
+unsigned int SerialPort::read(
+  uint8* buffer,
+  unsigned int bytesToRead,
+  bool nonblocking) throw(IOException) {
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -423,7 +432,10 @@ unsigned int SerialPort::read(char* buffer, unsigned int bytesToRead, bool nonbl
   return bytesRead;
 }
 
-unsigned int SerialPort::write(const char* buffer, unsigned int bytesToWrite, bool nonblocking) throw(IOException) {
+unsigned int SerialPort::write(
+  const uint8* buffer,
+  unsigned int bytesToWrite,
+  bool nonblocking) throw(IOException) {
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {

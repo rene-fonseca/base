@@ -376,7 +376,8 @@ namespace internal {
       }
     }
 
-    static inline void raiseNetwork(const char* message) throw(NetworkException) {
+    static inline void raiseNetwork(
+      const char* message) throw(NetworkException) {
       unsigned int error = getNativeError();
       NetworkException e(message, Type::getType<Socket>());
       unsigned int cause = getCause(error);
@@ -1256,8 +1257,8 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
     mreq.ipv6mr_interface = 0;
     if (!interface.isUnspecified()) {
       struct ifconf ifc;
-      ifc.ifc_len = Thread::getLocalStorage()->getSize();
-      ifc.ifc_buf = Thread::getLocalStorage()->getElements();
+      ifc.ifc_len = Thread::getLocalStorage()->getSize()/sizeof(char);
+      ifc.ifc_buf = (char*)Thread::getLocalStorage()->getElements();
       if (ioctl((int)socket->getHandle(), SIOCGIFCONF, &ifc)) {
         internal::SocketImpl::raiseNetwork("Unable to resolve interface");
       }
@@ -1613,13 +1614,16 @@ unsigned int Socket::pending() const throw(NetworkException) {
 void Socket::flush() throw(NetworkException) {
 }
 
-unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(NetworkException) {
+unsigned int Socket::read(
+  uint8* buffer,
+  unsigned int bytesToRead,
+  bool nonblocking) throw(NetworkException) {
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     int result = ::recv(
       (int)socket->getHandle(),
-      buffer,
+      (char*)buffer,
       minimum<unsigned int>(bytesToRead, PrimitiveTraits<int>::MAXIMUM),
       0
     );
@@ -1667,13 +1671,16 @@ unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocki
   return bytesRead;
 }
 
-unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool nonblocking) throw(NetworkException) {
+unsigned int Socket::write(
+  const uint8* buffer,
+  unsigned int bytesToWrite,
+  bool nonblocking) throw(NetworkException) {
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     int result = ::send(
       (int)socket->getHandle(),
-      buffer,
+      (const char*)buffer,
       minimum<unsigned int>(bytesToWrite, PrimitiveTraits<int>::MAXIMUM),
       0
     );
@@ -1719,11 +1726,22 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
   return bytesWritten;
 }
 
-unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(NetworkException) {
+unsigned int Socket::receiveFrom(
+  uint8* buffer,
+  unsigned int size,
+  InetAddress& address,
+  unsigned short& port) throw(NetworkException) {
   SocketAddress sa;
   socklen sl = sa.getAnySize();
   size = minimum<unsigned int>(size, PrimitiveTraits<int>::MAXIMUM); // silently reduce
-  int result = ::recvfrom((int)socket->getHandle(),  buffer, size, 0, sa.getValue(), &sl);
+  int result = ::recvfrom(
+    (int)socket->getHandle(),
+    (char*)buffer,
+    size,
+    0,
+    sa.getValue(),
+    &sl
+  );
   if (result < 0) {
     internal::SocketImpl::raiseNetwork("Unable to receive from");
   }
@@ -1732,10 +1750,21 @@ unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& a
   return result;
 }
 
-unsigned int Socket::sendTo(const char* buffer, unsigned int size, const InetAddress& address, unsigned short port) throw(NetworkException) {
+unsigned int Socket::sendTo(
+  const uint8* buffer,
+  unsigned int size,
+  const InetAddress& address,
+  unsigned short port) throw(NetworkException) {
   const SocketAddress sa(address, port, socket->getDomain());
   size = minimum<unsigned int>(size, PrimitiveTraits<int>::MAXIMUM); // silently reduce
-  int result = ::sendto((int)socket->getHandle(), buffer, size, 0, sa.getValue(), sa.getSize());
+  int result = ::sendto(
+    (int)socket->getHandle(),
+    (const char*)buffer,
+    size,
+    0,
+    sa.getValue(),
+    sa.getSize()
+  );
   if (result < 0) {
     internal::SocketImpl::raiseNetwork("Unable to send to");
   }
@@ -1749,7 +1778,10 @@ void Socket::asyncCancel() throw(AsynchronousException) {
 #endif // flavor
 }
 
-AsynchronousReadOperation Socket::read(char* buffer, unsigned int bytesToRead, AsynchronousReadEventListener* listener) throw(AsynchronousException) {
+AsynchronousReadOperation Socket::read(
+  uint8* buffer,
+  unsigned int bytesToRead,
+  AsynchronousReadEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncReadStreamContext(
@@ -1763,7 +1795,10 @@ AsynchronousReadOperation Socket::read(char* buffer, unsigned int bytesToRead, A
 #endif // flavor
 }
 
-AsynchronousWriteOperation Socket::write(const char* buffer, unsigned int bytesToWrite, AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
+AsynchronousWriteOperation Socket::write(
+  const uint8* buffer,
+  unsigned int bytesToWrite,
+  AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncWriteStreamContext(

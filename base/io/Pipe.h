@@ -124,9 +124,15 @@ public:
   */
   void flush() throw(PipeException);
 
-  unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(PipeException);
+  unsigned int read(
+    uint8* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(PipeException);
 
-  unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(PipeException);
+  unsigned int write(
+    const uint8* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(PipeException);
 
   /**
     Blocking wait for input to become available.

@@ -221,7 +221,7 @@ private:
     /** The thread object associated with context. */
     static ThreadKey<Thread> thread;
     /** The thread local storage. */
-    static ThreadKey<Allocator<char> > storage;
+    static ThreadKey<Allocator<uint8> > storage;
   public:
 
     /**
@@ -239,7 +239,7 @@ private:
     /**
       Returns the thread local storage.
     */
-    static inline Allocator<char>* getStorage() throw() {
+    static inline Allocator<uint8>* getStorage() throw() {
       return storage.getKey();
     }
 
@@ -278,7 +278,7 @@ public:
   /**
     Returns the thread object associated with the executing thread.
   */
-  static Allocator<char>* getLocalStorage() throw();
+  static Allocator<uint8>* getLocalStorage() throw();
 
   /**
     Makes the executing thread sleep for at least the specified time.

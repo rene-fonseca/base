@@ -39,7 +39,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SerialPort : public CommunicationsPort, public virtual AsynchronousIOStream {
+class SerialPort : public CommunicationsPort,
+                   public virtual AsynchronousIOStream {
 private:
 
   Reference<Handle> handle;
@@ -144,40 +145,51 @@ public:
   /**
     Sets the serial port parameters.
   */
-  void setParameters(unsigned int baudRate, unsigned int dataBits, unsigned int parity, unsigned int stopBits) throw(NotSupported, CommunicationsException);
+  void setParameters(
+    unsigned int baudRate,
+    unsigned int dataBits,
+    unsigned int parity,
+    unsigned int stopBits) throw(NotSupported, CommunicationsException);
 
   /**
     Sets the flow control mode.
   */
-  void setFlowControlMode(unsigned int flowMode) throw(CommunicationsException);
+  void setFlowControlMode(
+    unsigned int flowMode) throw(CommunicationsException);
   
   /**
-    Returns the state of the CD (Carrier Detect) bit in the UART, if supported by the underlying implementation.
+    Returns the state of the CD (Carrier Detect) bit in the UART, if supported
+    by the underlying implementation.
   */
   bool isCD() const throw(CommunicationsException);
 
   /**
-    Returns the state of the CTS (Clear To Send) bit in the UART, if supported by the underlying implementation.
+    Returns the state of the CTS (Clear To Send) bit in the UART, if supported
+    by the underlying implementation.
   */
   bool isCTS() const throw(CommunicationsException);
 
   /**
-    Returns the state of the DSR (Data Set Ready) bit in the UART, if supported by the underlying implementation.
+    Returns the state of the DSR (Data Set Ready) bit in the UART, if supported
+    by the underlying implementation.
   */
   bool isDSR() const throw(CommunicationsException);
 
   /**
-    Returns the state of the DTR (Data Terminal Ready) bit in the UART, if supported by the underlying implementation.
+    Returns the state of the DTR (Data Terminal Ready) bit in the UART, if
+    supported by the underlying implementation.
   */
   bool isDTR() const throw(CommunicationsException);
 
   /**
-    Returns the state of the RI (Ring Indicator) bit in the UART, if supported by the underlying implementation.
+    Returns the state of the RI (Ring Indicator) bit in the UART, if supported
+    by the underlying implementation.
   */
   bool isRI() const throw(CommunicationsException);
 
   /**
-    Returns the state of the RTS (Request To Send) bit in the UART, if supported by the underlying implementation.
+    Returns the state of the RTS (Request To Send) bit in the UART, if
+    supported by the underlying implementation.
   */
   bool isRTS() const throw(CommunicationsException);
 
@@ -253,19 +265,25 @@ public:
   */
   unsigned int getOutputBufferSize() const throw(CommunicationsException);
   
-  unsigned int read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(IOException);
+  unsigned int read(
+    uint8* buffer,
+    unsigned int bytesToRead,
+    bool nonblocking) throw(IOException);
   
-  unsigned int write(const char* buffer, unsigned int bytesToWrite, bool nonblocking) throw(IOException);
+  unsigned int write(
+    const uint8* buffer,
+    unsigned int bytesToWrite,
+    bool nonblocking) throw(IOException);
 
   void asyncCancel() throw(AsynchronousException);
   
   AsynchronousReadOperation read(
-    char* buffer,
+    uint8* buffer,
     unsigned int bytesToRead,
     AsynchronousReadEventListener* listener) throw(AsynchronousException);
 
   AsynchronousWriteOperation write(
-    const char* buffer,
+    const uint8* buffer,
     unsigned int bytesToWrite,
     AsynchronousWriteEventListener* listener) throw(AsynchronousException);
   

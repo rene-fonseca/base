@@ -1000,7 +1000,7 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
 #elif (_DK_SDU_MIP__BASE__DEMANGLE == _DK_SDU_MIP__BASE__DEMANGLE_SUNWSPRO)
 
 String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
-  Allocator<char>* buffer = Thread::getLocalStorage();
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
   int result =
     cplus_demangle(mangled, buffer->getElements(), buffer->getSize());
   ASSERT(!result);

@@ -60,31 +60,51 @@ unsigned int DummyIEEE1394::getFIFOSize() const throw(IEEE1394Exception) {
   throw IEEE1394Exception(this);
 }
 
-void DummyIEEE1394::read(unsigned short node, uint64 address, char* buffer, unsigned int size) throw(IEEE1394Exception) {
+void DummyIEEE1394::read(
+  unsigned short node,
+  uint64 address, uint8* buffer,
+  unsigned int size) throw(IEEE1394Exception) {
   throw IEEE1394Exception(this);
 }
 
-void DummyIEEE1394::write(unsigned short node, uint64 address, const char* buffer, unsigned int size) throw(IEEE1394Exception) {
+void DummyIEEE1394::write(
+  unsigned short node,
+  uint64 address,
+  const uint8* buffer,
+  unsigned int size) throw(IEEE1394Exception) {
   throw IEEE1394Exception(this);
 }
 
-unsigned int DummyIEEE1394::read(unsigned short node, uint64 address, uint32* buffer, unsigned int size, uint32 value) throw(IEEE1394Exception) {
+unsigned int DummyIEEE1394::read(
+  unsigned short node,
+  uint64 address,
+  uint32* buffer,
+  unsigned int size,
+  uint32 value) throw(IEEE1394Exception) {
   throw IEEE1394Exception(this);
 }
 
-IEEE1394Common::IsochronousReadChannel DummyIEEE1394::getReadChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) {
+IEEE1394Common::IsochronousReadChannel DummyIEEE1394::getReadChannel(
+  unsigned int maxPacketsPerRequest,
+  uint64 subchannels) throw(IEEE1394Exception) {
   throw IEEE1394Exception(this);
 }
 
-IEEE1394Common::IsochronousWriteChannel DummyIEEE1394::getWriteChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) {
+IEEE1394Common::IsochronousWriteChannel DummyIEEE1394::getWriteChannel(
+  unsigned int maxPacketsPerRequest,
+  uint64 subchannels) throw(IEEE1394Exception) {
   throw IEEE1394Exception(this);
 }
 
-void DummyIEEE1394::readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) {
+void DummyIEEE1394::readIsochronous(
+  unsigned int channel,
+  unsigned int maximumPayload,
+  IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) {
   throw IEEE1394Exception(this);
 }
 
-bool DummyIEEE1394::wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) {
+bool DummyIEEE1394::wait(
+  unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) {
   throw IEEE1394Exception(this);
 }
 
@@ -92,7 +112,8 @@ void DummyIEEE1394::dequeue() throw(IEEE1394Exception) {
   throw IEEE1394Exception(this);
 }
   
-void DummyIEEE1394::registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception) {
+void DummyIEEE1394::registerFCPListener(
+  FunctionControlProtocolListener* listener) throw(IEEE1394Exception) {
   throw IEEE1394Exception(this);
 }
 

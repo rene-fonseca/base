@@ -21,7 +21,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class StringOutputStreamWrapper : public virtual Object, public virtual OutputStream {
+class StringOutputStreamWrapper : public virtual Object,
+                                  public virtual OutputStream {
 private:
 
   /** The string holding the stream data. */
@@ -37,7 +38,10 @@ public:
 
   void flush() throw(IOException);
 
-  unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
+  unsigned int write(
+    const uint8* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(IOException);
 
   inline unsigned int getGranularity() const throw() {
     return string.getGranularity();

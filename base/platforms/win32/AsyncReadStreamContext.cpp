@@ -18,7 +18,7 @@
 #endif
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
+#  include <windows.h>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -41,7 +41,11 @@ namespace win32 {
     context->selfReference = 0; // release destruction lock (do NOT access state hereafter)
   }
 
-  AsyncReadStreamContext::AsyncReadStreamContext(OperatingSystem::Handle handle, char* _buffer, unsigned int _bytesToRead, AsynchronousReadEventListener* _listener) throw(IOException)
+  AsyncReadStreamContext::AsyncReadStreamContext(
+    OperatingSystem::Handle handle,
+    uint8* _buffer,
+    unsigned int _bytesToRead,
+    AsynchronousReadEventListener* _listener) throw(IOException)
     : listener(_listener),
       buffer(_buffer),
       bytesToRead(_bytesToRead),
@@ -50,7 +54,13 @@ namespace win32 {
     clear(callbackInfo.overlapped);
     callbackInfo.context = this;
     
-    BOOL result = ::ReadFileEx(handle, buffer, bytesToRead, &callbackInfo.overlapped, asyncReadStreamCallback);
+    BOOL result = ::ReadFileEx(
+      handle,
+      buffer,
+      bytesToRead,
+      &callbackInfo.overlapped,
+      asyncReadStreamCallback
+    );
     if (!result) {
       DWORD lastError = ::GetLastError();
       if (lastError == ERROR_HANDLE_EOF) {
@@ -65,7 +75,10 @@ namespace win32 {
   }
 
   AsyncReadStreamContext::~AsyncReadStreamContext() throw(AsynchronousException) {
-    assert((flags & AsynchronousReadCompletion::COMPLETED) != 0, AsynchronousException(this));
+    assert(
+      (flags & AsynchronousReadCompletion::COMPLETED) != 0,
+      AsynchronousException(this)
+    );
   }
   
 }; // win32 namespace

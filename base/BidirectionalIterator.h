@@ -31,7 +31,7 @@ public:
   /**
     Returns the previous element in the iteration.
 
-    @return The previous element. Return NULL if no more elements.
+    @return The previous element. Return 0 if no more elements.
   */
   virtual Pointer previous() throw() = 0;
 

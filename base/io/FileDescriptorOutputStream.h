@@ -52,7 +52,8 @@ public:
   FileDescriptorOutputStream(const FileDescriptorOutputStream& copy) throw();
 
   /**
-    Assignment of file descriptor output stream to this file descriptor output stream.
+    Assignment of file descriptor output stream to this file descriptor output
+    stream.
   */
   FileDescriptorOutputStream& operator=(const FileDescriptorOutputStream& eq) throw();
 
@@ -68,7 +69,10 @@ public:
     @param size The number of bytes to be written.
     @return The actual number of bytes written.
   */
-  unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
+  unsigned int write(
+    const uint8* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(IOException);
 
   /**
     Releases the file descriptor.

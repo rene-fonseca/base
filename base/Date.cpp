@@ -1164,7 +1164,7 @@ WideString Date::format(
   bool local) const throw(InvalidFormat, MemoryException) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_WCSFTIME)
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  Allocator<char>* buffer = Thread::getLocalStorage();
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
   time_t nativeTime = internal::dateToNative(date);
   struct tm time;
   if (local) {
@@ -1183,7 +1183,7 @@ WideString Date::format(
     result
   );
 #else // unix
-  Allocator<char>* buffer = Thread::getLocalStorage();
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
   time_t nativeTime = internal::dateToNative(date);
   struct tm time;
   if (local) {

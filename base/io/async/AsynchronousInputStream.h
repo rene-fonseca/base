@@ -32,7 +32,7 @@ public:
     @param listener The listener to be notified on completion.
   */
   virtual AsynchronousReadOperation read(
-    char* buffer,
+    uint8* buffer,
     unsigned int bytesToRead,
     AsynchronousReadEventListener* listener) throw(AsynchronousException) = 0;
 };

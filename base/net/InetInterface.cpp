@@ -266,8 +266,8 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   try {
     struct ifconf ifc;
-    ifc.ifc_len = Thread::getLocalStorage()->getSize();
-    ifc.ifc_buf = Thread::getLocalStorage()->getElements();
+    ifc.ifc_len = Thread::getLocalStorage()->getSize()/sizeof(char);
+    ifc.ifc_buf = (char*)Thread::getLocalStorage()->getElements();
     if (ioctl(handle, SIOCGIFCONF, &ifc)) {
       close(handle);
       throw NetworkException(
@@ -483,8 +483,8 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
 //     );
 //   }
   struct ifconf ifc;
-  ifc.ifc_len = Thread::getLocalStorage()->getSize();
-  ifc.ifc_buf = Thread::getLocalStorage()->getElements();
+  ifc.ifc_len = Thread::getLocalStorage()->getSize()/sizeof(char);
+  ifc.ifc_buf = (char*)Thread::getLocalStorage()->getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
@@ -538,7 +538,10 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
   char name[IFNAMSIZ];
   assert(
     if_indextoname(index, name) != 0,
-    NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
+    NetworkException(
+      "Unable to resolve interface",
+      Type::getType<InetInterface>()
+    )
   );
   return String(name, IFNAMSIZ);
 #elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)

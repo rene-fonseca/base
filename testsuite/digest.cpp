@@ -62,7 +62,7 @@ public:
     
     Adler32 sum;
     unsigned int count;
-    while ((count = file.read(Cast::getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
+    while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
     sum.pushEnd();
@@ -76,7 +76,7 @@ public:
     
     CRC32 sum;
     unsigned int count;
-    while ((count = file.read(Cast::getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
+    while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
     sum.pushEnd();
@@ -90,7 +90,7 @@ public:
     
     MD5Sum sum;
     unsigned int count;
-    while ((count = file.read(Cast::getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
+    while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
     sum.pushEnd();
@@ -103,7 +103,7 @@ public:
 
     SHA1 sum;
     unsigned int count;
-    while ((count = file.read(Cast::getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
+    while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
     sum.pushEnd();
@@ -116,7 +116,7 @@ public:
 
     SHA256 sum;
     unsigned int count;
-    while ((count = file.read(Cast::getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
+    while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
     sum.pushEnd();
@@ -129,7 +129,7 @@ public:
 
     SHA384 sum;
     unsigned int count;
-    while ((count = file.read(Cast::getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
+    while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
     sum.pushEnd();
@@ -142,7 +142,7 @@ public:
 
     SHA512 sum;
     unsigned int count;
-    while ((count = file.read(Cast::getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
+    while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
     sum.pushEnd();

@@ -38,7 +38,7 @@ public:
 protected:
 
   /** The bytes of the buffer. */
-  char* bytes;
+  uint8* bytes;
   /** The size of the buffer. */
   unsigned int size;
   /** The granularity of the size. */
@@ -53,8 +53,8 @@ public:
     MemoryException if unable to allocate the required memory.
 
     @param size Specifies the initial size of the buffer. Default is 0.
-    @param granularity Specifies the granularity of the size. Default is given by
-    DEFAULT_GRANULARITY.
+    @param granularity Specifies the granularity of the size. Default is given
+    by DEFAULT_GRANULARITY.
   */
   explicit Buffer(
     unsigned int size = 0,
@@ -69,14 +69,14 @@ public:
   /**
     Returns the bytes of the buffer.
   */
-  inline char* getBytes() throw() {
+  inline uint8* getBytes() throw() {
     return bytes;
   }
 
   /**
     Returns the bytes of the buffer.
   */
-  inline const char* getBytes() const throw() {
+  inline const uint8* getBytes() const throw() {
     return bytes;
   }
 

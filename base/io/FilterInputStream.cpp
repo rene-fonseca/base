@@ -28,7 +28,7 @@ void FilterInputStream::close() throw(IOException) {
 }
 
 unsigned int FilterInputStream::read(
-  char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
+  uint8* buffer, unsigned int size, bool nonblocking) throw(IOException) {
   return in.read(buffer, size, nonblocking);
 }
 

@@ -113,18 +113,23 @@ public:
          << ENDL;
     
     fout << "Sending here am I packet..." << ENDL;
-    char message[] = "HERE AM I";
-    socket.sendTo(message, sizeof(message), group, port);
+    static const Literal message = "HERE AM I";
+    socket.sendTo(
+      Cast::pointer<const uint8*>(message.getValue()),
+      message.getLength(),
+      group,
+      port
+    );
     
+    Allocator<uint8> buffer(4096);
     while (!isTerminated()) {
-      char buffer[4096];
       InetAddress remoteAddress;
       unsigned short remotePort;
       
       fout << "Waiting for packet..." << ENDL;
       unsigned int bytesReceived = socket.receiveFrom(
-        buffer,
-        sizeof(buffer),
+        buffer.getElements(),
+        buffer.getSize(),
         remoteAddress,
         remotePort
       );
@@ -133,13 +138,16 @@ public:
            << " bytes received from " << remoteAddress
            << " on port " << remotePort << ENDL;
       
-      fout << ">: " << buffer << ENDL;
+      fout << ">: " << String(
+        Cast::pointer<const char*>(buffer.getElements()),
+        bytesReceived
+      ) << ENDL;
       
       fout << "Sending packet back to client..." << ENDL;
-      char response[] = "MULTICAST PACKET FROM SERVER";
+      static const Literal response = "MULTICAST PACKET FROM SERVER";
       unsigned int bytesSent = socket.sendTo(
-        response,
-        sizeof(response),
+        Cast::pointer<const uint8*>(response.getValue()),
+        response.getLength(),
         remoteAddress,
         remotePort
       );

@@ -41,27 +41,41 @@ namespace win32 {
     
     AsynchronousReadEventListener* listener;
     CallbackInfo callbackInfo;
-    char* buffer;
+    uint8* buffer;
     unsigned int bytesToRead;
     unsigned long long offset;
     unsigned int bytesRead;
     unsigned int flags;
     
     inline void notifyAsynchronousCompletionListener() throw() {
-      listener->asynchronousCompletion(AsynchronousReadCompletion(buffer, bytesToRead, offset, bytesRead, flags));
+      listener->asynchronousCompletion(
+        AsynchronousReadCompletion(
+          buffer,
+          bytesToRead,
+          offset,
+          bytesRead,
+          flags
+        )
+      );
     }
   public:
     
     AsyncReadFileContext(
       OperatingSystem::Handle handle,
-      char* buffer,
+      uint8* buffer,
       unsigned int bytesToRead,
       unsigned long long offset,
       AsynchronousReadEventListener* listener) throw(IOException);
   public:
 
     AsynchronousReadCompletion getCompletion() const throw() {
-      return AsynchronousReadCompletion(buffer, bytesToRead, offset, bytesRead, flags);
+      return AsynchronousReadCompletion(
+        buffer,
+        bytesToRead,
+        offset,
+        bytesRead,
+        flags
+      );
     }
 
     ~AsyncReadFileContext() throw(AsynchronousException);

@@ -24,10 +24,12 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-SaveFileDialog::SaveFileDialog() throw() : flags(SaveFileDialog::ASK_TO_OVERWRITE), defaultFilter(0) {
+SaveFileDialog::SaveFileDialog() throw()
+  : flags(SaveFileDialog::ASK_TO_OVERWRITE), defaultFilter(0) {
 }
 
-void SaveFileDialog::setFilter(const String& description, const String& filter) throw() {
+void SaveFileDialog::setFilter(
+  const String& description, const String& filter) throw() {
   defaultFilter = 0;
   filters[description] = filter;
 }
@@ -42,8 +44,10 @@ bool SaveFileDialog::execute() throw(UserInterfaceException) {
   typedef BOOL (WINAPI *FGetSaveFileNameA)(LPOPENFILENAME);
   static FGetSaveFileNameA GetSaveFileNameA = 0;
   if (!GetSaveFileNameA) { // TAG: need to be atomic
-    DynamicLinker* dynamicLinker = new DynamicLinker(MESSAGE("comdlg32.dll"));
-    GetSaveFileNameA = (FGetSaveFileNameA)dynamicLinker->getSymbol(MESSAGE("GetSaveFileNameA")); // TAG: fix cast
+    DynamicLinker* dynamicLinker = new DynamicLinker("comdlg32.dll");
+    GetSaveFileNameA = (FGetSaveFileNameA)dynamicLinker->getSymbol(
+      Literal("GetSaveFileNameA")
+    ); // TAG: fix cast
   }
 
   char filters[4096]; // TAG: fixme
@@ -51,17 +55,32 @@ bool SaveFileDialog::execute() throw(UserInterfaceException) {
   Map<String, String>::ReadEnumerator enu = this->filters.getReadEnumerator();
   while (enu.hasNext()) {
     const Map<String, String>::Node* node = enu.next();
-    copy(dest, node->getValue()->getElements(), node->getValue()->getLength() + 1); // include terminator
+    copy(
+      dest,
+      node->getValue()->getElements(),
+      node->getValue()->getLength() + 1
+    ); // include terminator
     dest += node->getValue()->getLength() + 1;
-    copy(dest, node->getKey()->getElements(), node->getKey()->getLength() + 1); // include terminator
+    copy(
+      dest,
+      node->getKey()->getElements(),
+      node->getKey()->getLength() + 1
+    ); // include terminator
     dest += node->getKey()->getLength() + 1;
   }
   *dest++ = '\0'; // final termination;
   *dest++ = '\0'; // final termination;
   
-  Allocator<char>* buffer = Thread::getLocalStorage();
-  assert(buffer->getSize() >= 256, UnexpectedFailure("Thread local buffer is too small", this));
-  copy(buffer->getElements(), filename.getElements(), filename.getLength() + 1); // includes terminator
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
+  assert(
+    buffer->getSize() >= 256,
+    UnexpectedFailure("Thread local buffer is too small", this)
+  );
+  copy(
+    Cast::pointer<char*>(buffer->getElements()),
+    filename.getElements(),
+    filename.getLength() + 1
+  ); // includes terminator
   
   OPENFILENAME saveFile;
   clear(saveFile);
@@ -69,8 +88,8 @@ bool SaveFileDialog::execute() throw(UserInterfaceException) {
   saveFile.lpstrFilter = filters;
   saveFile.nFilterIndex = defaultFilter; // select custom
   
-  saveFile.lpstrFile = buffer->getElements();
-  saveFile.nMaxFile = buffer->getSize();
+  saveFile.lpstrFile = Cast::pointer<char*>(buffer->getElements());
+  saveFile.nMaxFile = buffer->getSize()/sizeof(char);
   saveFile.lpstrInitialDir = folder.isProper() ? folder.getElements() : 0;
   saveFile.lpstrTitle = title.isProper() ? title.getElements() : 0;
   saveFile.Flags |= (flags & SaveFileDialog::ASK_TO_OVERWRITE) ? OFN_OVERWRITEPROMPT : 0;

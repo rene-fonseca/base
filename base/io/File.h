@@ -207,9 +207,11 @@ public:
     Sets the position.
 
     @param position The relative offset from the specified base offset.
-    @param whence Specifies the base offset. The default is the beginning of the file.
+    @param whence Specifies the base offset. The default is the beginning of
+    the file.
   */
-  void setPosition(long long position, Whence whence = BEGIN) throw(FileException);
+  void setPosition(
+    long long position, Whence whence = BEGIN) throw(FileException);
 
   /**
     Truncates the file to the specified size. The file must have been opened
@@ -231,20 +233,24 @@ public:
     acquired. Exclusive locks require the file to be opened with write access.
 
     @param region The file region to be locked.
-    @param exclusive Specifies that the region should be locked exclusively. Default is true.
+    @param exclusive Specifies that the region should be locked exclusively.
+    Default is true.
   */
-  void lock(const FileRegion& region, bool exclusive = true) throw(FileException);
+  void lock(
+    const FileRegion& region, bool exclusive = true) throw(FileException);
 
   /**
     Tries to lock specified region of the file. Exclusive locks require the
     file to be opened with write access.
 
     @param region The file region to be locked.
-    @param exclusive Specifies that the region should be locked exclusively. Default is true.
+    @param exclusive Specifies that the region should be locked exclusively.
+    Default is true.
 
     @return True if the lock was acquired.
   */
-  bool tryLock(const FileRegion& region, bool exclusive = true) throw(FileException);
+  bool tryLock(
+    const FileRegion& region, bool exclusive = true) throw(FileException);
 
   /**
     Unlocks the specified region of the file.
@@ -275,7 +281,8 @@ public:
   /**
     Returns the value of the specified file system variable.
   */
-  unsigned long getVariable(Variable variable) throw(FileException, NotSupported);
+  unsigned long getVariable(
+    Variable variable) throw(FileException, NotSupported);
   
 
 
@@ -284,9 +291,13 @@ public:
     region to be read, the read request will block until the lock has been
     released.
 
-    @return 0 if the end of the file has been reached (or if requested to read 0 bytes).
+    @return 0 if the end of the file has been reached (or if requested to read
+    0 bytes).
   */
-  unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(FileException);
+  unsigned int read(
+    uint8* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(FileException);
 
   /**
     Read the specified type.
@@ -300,7 +311,10 @@ public:
     Raises EndOfFile if minimum number of bytes cannot be read without
     exceeding the end of the file.
   */
-  unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(FileException);
+  unsigned int write(
+    const uint8* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(FileException);
 protected:
   
   OperatingSystem::Handle getHandle() const throw() {
@@ -323,14 +337,14 @@ public:
     @param listener The listener to be notified on completion.
   */
   AsynchronousReadOperation read(
-    char* buffer,
+    uint8* buffer,
     unsigned int bytesToRead,
     unsigned long long offset,
     AsynchronousReadEventListener* listener) throw(AsynchronousException);
 
   /**
-    Requests and asynchronous write operation. Asynchronous IO is only supported
-    if the file has been opened in asynchronous mode.
+    Requests and asynchronous write operation. Asynchronous IO is only
+    supported if the file has been opened in asynchronous mode.
 
     @param buffer The bytes to be written.
     @param bytesToWrite The number of bytes to be written.
@@ -338,7 +352,7 @@ public:
     @param listener The listener to be notified on completion.
   */
   AsynchronousWriteOperation write(
-    const char* buffer,
+    const uint8* buffer,
     unsigned int bytesToWrite,
     unsigned long long offset,
     AsynchronousWriteEventListener* listener) throw(AsynchronousException);

@@ -172,10 +172,11 @@ unsigned int Pipe::available() const throw(PipeException) {
 }
 
 unsigned int Pipe::skip(unsigned int count) throw(PipeException) {
-  Allocator<char>* buffer = Thread::getLocalStorage();
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
   unsigned int bytesSkipped = 0;
   while (bytesSkipped < count) {
-    unsigned int bytesToRead = minimum(count - bytesSkipped, buffer->getSize());
+    unsigned int bytesToRead =
+      minimum(count - bytesSkipped, buffer->getSize());
     bytesSkipped += read(buffer->getElements(), bytesToRead);
   }
   return bytesSkipped;
@@ -198,7 +199,10 @@ void Pipe::flush() throw(PipeException) {
 #endif
 }
 
-unsigned int Pipe::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(PipeException) {
+unsigned int Pipe::read(
+  uint8* buffer,
+  unsigned int bytesToRead,
+  bool nonblocking) throw(PipeException) {
   // TAG: currently always blocks
   // select wait mode with SetNamedPipeHandleState for win32
   assert(!end, EndOfFile(this));
@@ -206,7 +210,13 @@ unsigned int Pipe::read(char* buffer, unsigned int bytesToRead, bool nonblocking
   while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
-    BOOL success = ::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, NULL);
+    BOOL success = ::ReadFile(
+      fd->getHandle(),
+      buffer,
+      bytesToRead,
+      &result,
+      0
+    );
     if (!success) { // has error occured
       DWORD error = ::GetLastError();
       if (error == ERROR_BROKEN_PIPE) { // eof
@@ -218,7 +228,11 @@ unsigned int Pipe::read(char* buffer, unsigned int bytesToRead, bool nonblocking
       }
     }
 #else // unix
-    int result = ::read(fd->getHandle(), buffer, minimum<unsigned int>(bytesToRead, SSIZE_MAX));
+    int result = ::read(
+      fd->getHandle(),
+      buffer,
+      minimum<unsigned int>(bytesToRead, SSIZE_MAX)
+    );
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
       case EINTR: // interrupted by signal before any data was read
@@ -243,13 +257,22 @@ unsigned int Pipe::read(char* buffer, unsigned int bytesToRead, bool nonblocking
   return bytesRead;
 }
 
-unsigned int Pipe::write(const char* buffer, unsigned int bytesToWrite, bool nonblocking) throw(PipeException) {
+unsigned int Pipe::write(
+  const uint8* buffer,
+  unsigned int bytesToWrite,
+  bool nonblocking) throw(PipeException) {
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
-    BOOL success = ::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0);
+    BOOL success = ::WriteFile(
+      fd->getHandle(),
+      buffer,
+      bytesToWrite,
+      &result,
+      0
+    );
     if (!success) {
       throw PipeException("Unable to write to pipe", this);
     }

@@ -32,7 +32,7 @@ public:
     @param listener The listener to be notified on completion.
   */
   virtual AsynchronousWriteOperation write(
-    const char* buffer,
+    const uint8* buffer,
     unsigned int bytesToWrite,
     AsynchronousWriteEventListener* listener) throw(AsynchronousException) = 0;
 };

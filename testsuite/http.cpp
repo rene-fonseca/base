@@ -109,7 +109,8 @@ public:
 
   static inline bool isText(char value) throw() {
     // TAG: RFC states that non-ASCII chars should be accepted! - I ignore this for now
-    return ASCIITraits::isASCII(value) && ((value == ' ') || (value == '\t') || !ASCIITraits::isControl(value));
+    return ASCIITraits::isASCII(value) &&
+      ((value == ' ') || (value == '\t') || !ASCIITraits::isControl(value));
   }
 
   static inline bool isSeparator(char value) throw() {
@@ -123,7 +124,8 @@ public:
   }
 
   static inline bool isToken(char value) throw() {
-    return ASCIITraits::isASCII(value) && (!ASCIITraits::isControl(value) && !isSeparator(value));
+    return ASCIITraits::isASCII(value) &&
+      (!ASCIITraits::isControl(value) && !isSeparator(value));
   }
 
   static const char* SHORT_WEEKDAY[7];
@@ -200,7 +202,10 @@ public:
       for (; (i < endValue) && (*i != '"') && HTTPTraits::isText(*i); ++i) { // skip quoted string
         // TAG: need support for '\\'
       }
-      assert((i == --endValue) && (*i++ == '"'), HTTPException("Invalid message header"));
+      assert(
+        (i == --endValue) && (*i++ == '"'),
+        HTTPException("Invalid message header")
+      );
     }
     this->value = line.substring(value - begin, endValue - begin);
   }
@@ -310,7 +315,7 @@ public:
   }
   
   unsigned int push(const uint8* buffer, unsigned int size) throw() {
-    file.write(Cast::pointer<const char*>(buffer), size);
+    file.write(buffer, size);
     ASSERT(result == size);
     bytesWritten += size;
     if (totalSize > 0) {
@@ -412,7 +417,7 @@ private:
   /** The number of retry attempts. */
   unsigned int retryAttempts;
   /** Read buffer. */
-  Allocator<char> buffer;
+  Allocator<uint8> buffer;
 protected:
 
   void translateStatus(const String& value) throw(HTTPException) {

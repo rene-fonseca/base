@@ -42,7 +42,12 @@ namespace win32 {
     context->selfReference = 0; // release destruction lock (do NOT access state hereafter)
   }
 
-  AsyncReadFileContext::AsyncReadFileContext(OperatingSystem::Handle handle, char* _buffer, unsigned int _bytesToRead, unsigned long long _offset, AsynchronousReadEventListener* _listener) throw(IOException) 
+  AsyncReadFileContext::AsyncReadFileContext(
+    OperatingSystem::Handle handle,
+    uint8* _buffer,
+    unsigned int _bytesToRead,
+    unsigned long long _offset,
+    AsynchronousReadEventListener* _listener) throw(IOException) 
     : listener(_listener),
       buffer(_buffer),
       bytesToRead(_bytesToRead),
@@ -54,7 +59,13 @@ namespace win32 {
     callbackInfo.overlapped.OffsetHigh = getHighWordOf64(offset);
     callbackInfo.context = this;
     
-    BOOL result = ::ReadFileEx(handle, buffer, bytesToRead, &callbackInfo.overlapped, asyncReadFileCallback);
+    BOOL result = ::ReadFileEx(
+      handle,
+      buffer,
+      bytesToRead,
+      &callbackInfo.overlapped,
+      asyncReadFileCallback
+    );
     if (!result) {
       DWORD lastError = ::GetLastError();
       if (lastError == ERROR_HANDLE_EOF) {
@@ -69,7 +80,10 @@ namespace win32 {
   }
 
   AsyncReadFileContext::~AsyncReadFileContext() throw(AsynchronousException) {
-    assert((flags & AsynchronousReadCompletion::COMPLETED) != 0, AsynchronousException(this));
+    assert(
+      (flags & AsynchronousReadCompletion::COMPLETED) != 0,
+      AsynchronousException(this)
+    );
   }
   
 }; // win32 namespace

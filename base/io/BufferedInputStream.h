@@ -41,7 +41,7 @@ public:
 protected:
 
   /** The internal buffer used to store data temporarily. */
-  Allocator<char> buffer;
+  Allocator<uint8> buffer;
   /** The current number of bytes in the buffer. */
   unsigned int count;
   /** The current position in the buffer. */
@@ -52,15 +52,19 @@ public:
     Initializes the buffered input stream.
 
     @param in The input stream.
-    @param size The size of the buffer. Default is given by DEFAULT_BUFFER_SIZE. The size cannot...
+    @param size The size of the buffer. Default is given by
+    DEFAULT_BUFFER_SIZE. The size cannot...
   */
-  BufferedInputStream(InputStream& in, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException, MemoryException);
+  BufferedInputStream(
+    InputStream& in,
+    unsigned int size = DEFAULT_BUFFER_SIZE
+  ) throw(BindException, MemoryException);
 
   /**
     Returns the unread bytes of the internal buffer as sequence. The size of
     the sequence is returned by getNumberOfBytes() or peek().
   */
-  inline const char* getElements() const throw() {
+  inline const uint8* getElements() const throw() {
     return buffer.getElements() + position;
   }
 
@@ -95,10 +99,14 @@ public:
     @param nonblocking Specifies that the method may not block. Default is false.
     @return The actual number of bytes read from the stream.
   */
-  unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
+  unsigned int read(
+    uint8* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(IOException);
 
   /**
-    Skips a specified number of bytes. Blocks if asked to skip more bytes than available.
+    Skips a specified number of bytes. Blocks if asked to skip more bytes than
+    available.
 
     @param count The number of bytes to skip.
     @return The actual number of bytes skipped.

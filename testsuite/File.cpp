@@ -75,7 +75,7 @@ public:
     fout << "Testing asynchronous reading from file..." << ENDL;
     try {
       File file(path, File::READ, 0);
-      Allocator<char> buffer(bufferSize);
+      Allocator<uint8> buffer(bufferSize);
       unsigned long long offset = 0;
       while (!eof && !stop) {
         try {
@@ -119,24 +119,35 @@ public:
       return;
     }
     try {
-      destFile = File(destPath, File::WRITE, File::CREATE | File::EXCLUSIVE | File::ASYNCHRONOUS);
+      destFile = File(
+        destPath,
+        File::WRITE,
+        File::CREATE | File::EXCLUSIVE | File::ASYNCHRONOUS
+      );
     } catch (IOException& e) {
       ferr << "Unable to create destination file (make sure it does not exist)." << ENDL;
       Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
       return;
     }
 
-    Allocator<char> buffer(bufferSize);
+    Allocator<uint8> buffer(bufferSize);
     unsigned long long offset = 0;
     while (!eof && !stop) {
       AsynchronousReadOperation readOperation;
       AsynchronousWriteOperation writeOperation;
       try {
-        readOperation = sourceFile.read(buffer.getElements(), buffer.getSize(), offset, this);
+        readOperation = sourceFile.read(
+          buffer.getElements(),
+          buffer.getSize(),
+          offset,
+          this
+        );
       } catch (IOException& e) {
         ferr << "Unable to read from file." << ENDL;
         stop = true;
-        Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
+        Application::getApplication()->setExitCode(
+          Application::EXIT_CODE_ERROR
+        );
         return;
       }
       unsigned int counter = 0;

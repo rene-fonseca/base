@@ -292,8 +292,14 @@ void LinuxRawIEEE1394::open(const EUI64& adapter) throw(IEEE1394Exception) {
   request.misc = ((((((static_cast<unsigned int>(id[4]) << 8) | id[5]) << 8) | id[6]) << 8) | id[7]) - 1;
   
   // TAG: must be atomic
-  assert(::write(handle, &request, sizeof(request)) == sizeof(request), IEEE1394Exception("Unable to queue request", this));
-  assert(::read(handle, &request, sizeof(request)) == sizeof(request), IEEE1394Exception("Unable to dequeue response", this));
+  assert(
+    ::write(handle, &request, sizeof(request)) == sizeof(request),
+    IEEE1394Exception("Unable to queue request", this)
+  );
+  assert(
+    ::read(handle, &request, sizeof(request)) == sizeof(request),
+    IEEE1394Exception("Unable to dequeue response", this)
+  );
   // TAG: dequeue until generation? while (request.generation < generation);
  
   switch (request.error) {
@@ -427,7 +433,11 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
 }
 
 // TAG: add exception OutOfDomain
-void LinuxRawIEEE1394::read(unsigned short node, uint64 address, char* buffer, unsigned int size) throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::read(
+  unsigned short node,
+  uint64 address,
+  uint8* buffer,
+  unsigned int size) throw(IEEE1394Exception) {
   assert(size % sizeof(IEEE1394Impl::Quadlet) == 0, OutOfDomain(this));
   
   // TAG: use maximum async payload?
@@ -479,7 +489,11 @@ void LinuxRawIEEE1394::read(unsigned short node, uint64 address, char* buffer, u
   }
 }
 
-void LinuxRawIEEE1394::write(unsigned short node, uint64 address, const char* buffer, unsigned int size) throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::write(
+  unsigned short node,
+  uint64 address,
+  const uint8* buffer,
+  unsigned int size) throw(IEEE1394Exception) {
   LinuxRawIEEE1394Impl::RequestContext requestContext;
   requestContext.type = LinuxRawIEEE1394::REQUEST_ASYNC_WRITE;
   requestContext.dequeued = false;
@@ -490,7 +504,8 @@ void LinuxRawIEEE1394::write(unsigned short node, uint64 address, const char* bu
   request.type = LinuxRawIEEE1394::REQUEST_ASYNC_WRITE;
   request.generation = generation;
   request.tag = Cast::getOffset(&requestContext);
-  request.address = (static_cast<uint64>(node) << 48) | (address & ((static_cast<uint64>(1) << 48) - 1));
+  request.address = (static_cast<uint64>(node) << 48) |
+    (address & ((static_cast<uint64>(1) << 48) - 1));
   request.size = size;
   request.sendBuffer = Cast::getOffset(buffer);
   assert(

@@ -90,14 +90,14 @@ Group::Group(const String& name) throw(GroupException) {
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
-    Allocator<char>* buffer = Thread::getLocalStorage();
+    Allocator<uint8>* buffer = Thread::getLocalStorage();
     struct group grp;
     struct group* entry;
     int result = ::getgrnam_r(
       name.getElements(),
       &grp,
-      buffer->getElements(),
-      buffer->getSize(),
+      (char*)buffer->getElements(),
+      buffer->getSize()/sizeof(char),
       &entry
     );
     assert(result == 0, GroupException(this));
@@ -116,14 +116,14 @@ Group::Group(const User& user) throw(GroupException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   throw NotImplemented(this);
 #else // unix
-  Allocator<char>* buffer = Thread::getLocalStorage();
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
   int result = ::getpwuid_r(
     Cast::extract<uid_t>(user.getIntegralId()),
     &pw,
-    buffer->getElements(),
-    buffer->getSize(),
+    (char*)buffer->getElements(),
+    buffer->getSize()/sizeof(char),
     &entry
   );
   assert(result == 0, GroupException(this));
@@ -161,14 +161,14 @@ String Group::getName() const throw(GroupException) {
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
-    Allocator<char>* buffer = Thread::getLocalStorage();
+    Allocator<uint8>* buffer = Thread::getLocalStorage();
     struct group grp;
     struct group* entry;
     int result = ::getgrgid_r(
       Cast::extract<gid_t>(integralId),
       &grp,
-      buffer->getElements(),
-      buffer->getSize(),
+      (char*)buffer->getElements(),
+      buffer->getSize()/sizeof(char),
       &entry
     );
     assert(result == 0, GroupException(this));
@@ -191,14 +191,17 @@ Array<String> Group::getMembers() const throw(GroupException) {
   DWORD nameSize = sizeof(name);
   WCHAR domainName[DNLEN+1];
   DWORD domainNameSize = sizeof(domainName);
-  assert(::LookupAccountSidW(0,
-                             (PSID)id->getElements(),
-                             name,
-                             &nameSize,
-                             domainName,
-                             &domainNameSize,
-                             &sidType) != 0,
-         GroupException("Unable to lookup name", this)
+  assert(
+    ::LookupAccountSidW(
+      0,
+      (PSID)id->getElements(),
+      name,
+      &nameSize,
+      domainName,
+      &domainNameSize,
+      &sidType
+    ) != 0,
+    GroupException("Unable to lookup name", this)
   );
   
   GROUP_USERS_INFO_0* buffer = 0;
@@ -231,14 +234,14 @@ Array<String> Group::getMembers() const throw(GroupException) {
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRGID_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
-    Allocator<char>* buffer = Thread::getLocalStorage();
+    Allocator<uint8>* buffer = Thread::getLocalStorage();
     struct group grp;
     struct group* entry;
     int result = ::getgrgid_r(
       Cast::extract<gid_t>(integralId),
       &grp,
-      buffer->getElements(),
-      buffer->getSize(),
+      (char*)buffer->getElements(),
+      buffer->getSize()/sizeof(char),
       &entry
     );
     assert(result == 0, GroupException(this));

@@ -39,7 +39,11 @@ namespace win32 {
     context->selfReference = 0; // release destruction lock (do NOT access state hereafter)
   }
 
-  AsyncWriteStreamContext::AsyncWriteStreamContext(OperatingSystem::Handle handle, const char* _buffer, unsigned int _bytesToWrite, AsynchronousWriteEventListener* _listener) throw(IOException)
+  AsyncWriteStreamContext::AsyncWriteStreamContext(
+    OperatingSystem::Handle handle,
+    const uint8* _buffer,
+    unsigned int _bytesToWrite,
+    AsynchronousWriteEventListener* _listener) throw(IOException)
     : listener(_listener),
       buffer(_buffer),
       bytesToWrite(_bytesToWrite),
@@ -48,7 +52,13 @@ namespace win32 {
     clear(callbackInfo.overlapped);
     callbackInfo.context = this;
     
-    BOOL result = ::WriteFileEx(handle, buffer, bytesToWrite, &callbackInfo.overlapped, asyncWriteStreamCallback);
+    BOOL result = ::WriteFileEx(
+      handle,
+      buffer,
+      bytesToWrite,
+      &callbackInfo.overlapped,
+      asyncWriteStreamCallback
+    );
     if (!result) {
       //DWORD lastError = ::GetLastError();
       selfReference = 0; // release destruction lock (do NOT access state hereafter)
@@ -57,7 +67,10 @@ namespace win32 {
   }
 
   AsyncWriteStreamContext::~AsyncWriteStreamContext() throw(AsynchronousException) {
-    assert((flags & AsynchronousWriteCompletion::COMPLETED) != 0, AsynchronousException(this));
+    assert(
+      (flags & AsynchronousWriteCompletion::COMPLETED) != 0,
+      AsynchronousException(this)
+    );
   }
   
 }; // win32 namespace

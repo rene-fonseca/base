@@ -32,7 +32,8 @@ class Stream : public virtual ReferenceCountedObject {
 public:
 
   /**
-    Closes the stream and releases any system resources associated with the stream.
+    Closes the stream and releases any system resources associated with the
+    stream.
   */
   virtual void close() throw(IOException) = 0;
 

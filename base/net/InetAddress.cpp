@@ -51,11 +51,14 @@ String InetAddress::getLocalHost() throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // I use thread local storage 'cause I don't know what the maximum length is
   // the microsoft example code that I have seen assumes that the name cannot exceed 200 chars
-  Allocator<char>* buffer = Thread::getLocalStorage();
-  ASSERT(buffer->getSize() > 200);
-  char* name = buffer->getElements();
-  if (gethostname(name, buffer->getSize())) {
-    throw NetworkException("Unable to get local host name", Type::getType<InetAddress>());
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
+  ASSERT(buffer->getSize()/sizeof(char) > 200);
+  char* name = (char*)buffer->getElements();
+  if (gethostname(name, buffer->getSize()/sizeof(char))) {
+    throw NetworkException(
+      "Unable to get local host name",
+      Type::getType<InetAddress>()
+    );
   }
 #else // unix
   char name[MAXHOSTNAMELEN + 1]; // does MAXHOSTNAMELEN include terminator
@@ -76,7 +79,10 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 
   struct addrinfo* ai;
   if (getaddrinfo(name.getElements(), 0, &hint, &ai) != 0) { // MT-level is safe
-    throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
+    throw HostNotFound(
+      "Unable to lookup host by name",
+      Type::getType<InetAddress>()
+    );
   }
 
   struct addrinfo* i = ai;
@@ -84,11 +90,15 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
     uint8* address;
     switch (i->ai_family) {
     case PF_INET:
-      address = Cast::getAddress(Cast::pointer<struct sockaddr_in*>(i->ai_addr)->sin_addr);
+      address = Cast::getAddress(
+        Cast::pointer<struct sockaddr_in*>(i->ai_addr)->sin_addr
+      );
       result.append(InetAddress(address, IP_VERSION_4));
       break;
     case PF_INET6:
-      address = Cast::getAddress(Cast::pointer<struct sockaddr_in6*>(i->ai_addr)->sin6_addr);
+      address = Cast::getAddress(
+        Cast::pointer<struct sockaddr_in6*>(i->ai_addr)->sin6_addr
+      );
       result.append(InetAddress(address, IP_VERSION_6));
       break;
     default:
@@ -103,7 +113,10 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 
 #  if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
-      throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
+      throw HostNotFound(
+        "Unable to lookup host by name",
+        Type::getType<InetAddress>()
+      );
     }
 #  elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
          (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
@@ -111,7 +124,10 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
     char buffer[1024]; // how big should this buffer be
     int error;
     if (!(hp = gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &error))) {
-      throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
+      throw HostNotFound(
+        "Unable to lookup host by name",
+        Type::getType<InetAddress>()
+      );
     }
 #  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     struct hostent h;

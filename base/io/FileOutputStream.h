@@ -69,10 +69,15 @@ public:
     Initializes the file output stream.
 
     @param path The name of the file.
-    @param options The flags used to open the file (CREATE, TRUNCATE, APPEND, NONBLOCK, and SYNC).
-    @param permissions Specifies the permissions to be used if the file is created.
+    @param options The flags used to open the file (CREATE, TRUNCATE, APPEND,
+    NONBLOCK, and SYNC).
+    @param permissions Specifies the permissions to be used if the file is
+    created.
   */
-  FileOutputStream(const String& path, unsigned int options, unsigned int permissions = 0x640) throw(FileNotFound);
+  FileOutputStream(
+    const String& path,
+    unsigned int options,
+    unsigned int permissions = 0x640) throw(FileNotFound);
 
   FileOutputStream(const FileOutputStream& copy) throw();
 
@@ -87,7 +92,10 @@ public:
     file.flush();
   }
 
-  inline unsigned int write(const char* buffer, unsigned int count, bool nonblocking = false) throw(IOException) {
+  inline unsigned int write(
+    const uint8* buffer,
+    unsigned int count,
+    bool nonblocking = false) throw(IOException) {
     return file.write(buffer, count, nonblocking);
   }
 };

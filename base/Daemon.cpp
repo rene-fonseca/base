@@ -43,7 +43,7 @@ public:
 
   static bool run() throw() {
     try {
-      ASSERT(Thread::getThread() == 0); // make sure this is a new context - ThreadKey is initialized to NULL
+      ASSERT(Thread::getThread() == 0); // make sure this is a new context - ThreadKey is initialized to 0
       DaemonImpl::daemonThread = new Thread(DaemonImpl::parentThread);
       Thread::ThreadLocal threadLocal(DaemonImpl::daemonThread);
       DaemonImpl::runnable->run();

@@ -69,8 +69,8 @@ public:
   virtual void open(const EUI64& adapter) throw(IEEE1394Exception) = 0;
   
   /**
-    Closes this handle to the adapter. The adapter is destroyed when all handles
-    have been closed.
+    Closes this handle to the adapter. The adapter is destroyed when all
+    handles have been closed.
   */
   virtual void close() throw(IEEE1394Exception) = 0;
 
@@ -100,9 +100,14 @@ public:
     @param node The node id of source node.
     @param address The base address of the memory region to read from.
     @param buffer The data buffer.
-    @param size The number of bytes to read (must be an integral number of quadlets).
+    @param size The number of bytes to read (must be an integral number of
+    quadlets).
   */
-  virtual void read(unsigned short node, uint64 address, char* buffer, unsigned int size) throw(IEEE1394Exception) = 0;
+  virtual void read(
+    unsigned short node,
+    uint64 address,
+    uint8* buffer,
+    unsigned int size) throw(IEEE1394Exception) = 0;
 
   /**
     Write data to device.
@@ -110,36 +115,53 @@ public:
     @param node The node id of destination node.
     @param address The base address of the memory region to write to.
     @param buffer The data buffer.
-    @param size The number of bytes to write (must be an integral number of quadlets).
+    @param size The number of bytes to write (must be an integral number of
+    quadlets).
   */
-  virtual void write(unsigned short node, uint64 address, const char* buffer, unsigned int size) throw(IEEE1394Exception) = 0;
+  virtual void write(
+    unsigned short node,
+    uint64 address,
+    const uint8* buffer,
+    unsigned int size) throw(IEEE1394Exception) = 0;
 
   /**
-    Read data from device. This method is only used for debugging and development.
+    Read data from device. This method is only used for debugging and
+    development.
 
     @param node The node id of source node.
-    @param address The base address of the memory region to read from (must be a quadlet boundary).
+    @param address The base address of the memory region to read from (must be
+    a quadlet boundary).
     @param buffer The data buffer.
     @param size The number of quadlets to read (not bytes!).
-    @param value The default value to store in the buffer for unsuccessful reads.
+    @param value The default value to store in the buffer for unsuccessful
+    reads.
     
     @return The number of quadlets read successfully.
   */
-  virtual unsigned int read(unsigned short node, uint64 address, uint32* buffer, unsigned int size, uint32 value) throw(IEEE1394Exception) = 0;
+  virtual unsigned int read(
+    unsigned short node,
+    uint64 address,
+    uint32* buffer,
+    unsigned int size,
+    uint32 value) throw(IEEE1394Exception) = 0;
 
   /**
     Returns an isochronous read channel.
 
     @param maxPacketsPerRequest The maximum number of packets per request.
-    @param subchannel Mask specifying the subchannel to reserve for this channel.
+    @param subchannel Mask specifying the subchannel to reserve for this
+    channel.
   */
-  virtual IsochronousReadChannel getReadChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) = 0;
+  virtual IsochronousReadChannel getReadChannel(
+    unsigned int maxPacketsPerRequest,
+    uint64 subchannels) throw(IEEE1394Exception) = 0;
   
   /**
     Returns an isochronous write channel.
 
     @param maxPacketsPerRequest The maximum number of packets per request.
-    @param subchannel Mask specifying the subchannel to reserve for this channel.
+    @param subchannel Mask specifying the subchannel to reserve for this
+    channel.
   */
   virtual IsochronousWriteChannel getWriteChannel(
     unsigned int maxPacketsPerRequest,
@@ -155,13 +177,16 @@ public:
   virtual void readIsochronous(
     unsigned int channel,
     unsigned int maximumPayload,
-    IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) = 0;
+    IsochronousChannelListener* listener
+  ) throw(OutOfDomain, IEEE1394Exception) = 0;
 
-  virtual bool wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) = 0;
+  virtual bool wait(
+    unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) = 0;
   
   virtual void dequeue() throw(IEEE1394Exception) = 0;
   
-  virtual void registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception) = 0;
+  virtual void registerFCPListener(
+    FunctionControlProtocolListener* listener) throw(IEEE1394Exception) = 0;
   
   virtual void unregisterFCPListener() throw(IEEE1394Exception) = 0;
 

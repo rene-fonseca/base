@@ -232,7 +232,10 @@ protected:
       while (true) { // read line
         char ch;
         instream >> ch;
-        assert(String::Traits::isASCII(ch), FTPException("Reply contains invalid character"));
+        assert(
+          String::Traits::isASCII(ch),
+          FTPException("Reply contains invalid character")
+        );
         // read until new line "\n" and remove "\r" and other annoying chars
         if (ch == '\n') {
           break;
@@ -475,15 +478,16 @@ public:
   }
 
   void readDirectoryList() throw(IOException) {
-    Allocator<char> buffer(4096);
+    Allocator<uint8> buffer(4096);
 
     while (true) { // read line until response
-      unsigned int result = dataConnection.read(buffer.getElements(), buffer.getSize(), true);
+      unsigned int result =
+        dataConnection.read(buffer.getElements(), buffer.getSize(), true);
       if (result == 0) {
         break;
       }
 
-      const char* i = buffer.getElements();
+      const char* i = Cast::pointer<const char*>(buffer.getElements());
       const char* end = i + result;
       while (i < end) { // read all
         const char* p = i;
@@ -513,14 +517,16 @@ public:
   }
 
   void readData(long long sizeOfFile) throw(IOException) {
-    Allocator<char> buffer(4096 * 16);
+    Allocator<uint8> buffer(4096 * 16);
     File file("ftpoutput", File::WRITE, File::CREATE | File::TRUNCATE);
 
     Timer timer;
     long long bytesRead = 0;
     while (bytesRead < sizeOfFile) {
-      unsigned int bytesToRead = minimum<long long>(buffer.getSize(), sizeOfFile - bytesRead);
-      unsigned int result = dataConnection.read(buffer.getElements(), bytesToRead);
+      unsigned int bytesToRead =
+        minimum<long long>(buffer.getSize(), sizeOfFile - bytesRead);
+      unsigned int result =
+        dataConnection.read(buffer.getElements(), bytesToRead);
       bytesRead += result;
 
       file.write(buffer.getElements(), result);

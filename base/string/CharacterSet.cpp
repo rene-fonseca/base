@@ -60,13 +60,15 @@ CharacterSet CharacterSet::load(
     
     if (byteOrder == Architecture::LE) {
       // load data lot (little endian)
-      const LittleEndian<uint32>* src = Cast::pointer<const LittleEndian<uint32>*>(data);
+      const LittleEndian<uint32>* src =
+        Cast::pointer<const LittleEndian<uint32>*>(data);
       for (unsigned int i = 0; i < 256; ++i) {
         *dest++ = *src++;
       }
     } else if (byteOrder == Architecture::BE) {
       // load data lot (big endian)
-      const BigEndian<uint32>* src = Cast::pointer<const BigEndian<uint32>*>(data);
+      const BigEndian<uint32>* src =
+        Cast::pointer<const BigEndian<uint32>*>(data);
       for (unsigned int i = 0; i < 256; ++i) {
         *dest++ = *src++;
       }
@@ -77,7 +79,10 @@ CharacterSet CharacterSet::load(
       const ucs4* src = characterSet.characterSet->getElements();
       for (unsigned int i = 0; i < 256; ++i) {
         // duplicates are allowed
-        assert(WideString::isUCS4(*src++), InvalidFormat(Type::getType<CharacterSet>()));
+        assert(
+          WideString::isUCS4(*src++),
+          InvalidFormat(Type::getType<CharacterSet>())
+        );
       }
     }
     
@@ -89,7 +94,9 @@ CharacterSet CharacterSet::load(
   }
 }
 
-CharacterSet CharacterSet::load(const Array<String>& searchPaths, const String& path) throw(FileException, InvalidFormat) {
+CharacterSet CharacterSet::load(
+  const Array<String>& searchPaths,
+  const String& path) throw(FileException, InvalidFormat) {
   // TAG: default path "/usr/share/mip.sdu.dk/base/charset/" and name "8859-1"
   if (FileSystem::isAbsolutePath(path)) {
     return load(path);
@@ -141,7 +148,8 @@ void CharacterSet::save(const String& path, Architecture::ByteOrder byteOrder) c
     
     if (byteOrder == Architecture::LE) {
       // load data lot (little endian)
-      LittleEndian<uint32>* dest = Cast::pointer<LittleEndian<uint32>*>(header);
+      LittleEndian<uint32>* dest =
+        Cast::pointer<LittleEndian<uint32>*>(header);
       *dest++ = WideString::BOM;
       for (unsigned int i = 0; i < 256; ++i) {
         *dest++ = *src++;
@@ -154,7 +162,7 @@ void CharacterSet::save(const String& path, Architecture::ByteOrder byteOrder) c
         *dest++ = *src++;
       }
     }
-    file.write(Cast::pointer<const char*>(buffer), sizeof(buffer));
+    file.write(buffer, sizeof(buffer));
   } catch (IOException& e) {
     throw FileException(Type::getType<CharacterSet>());
   }

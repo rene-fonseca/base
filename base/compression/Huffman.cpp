@@ -31,20 +31,23 @@ public:
   /** The minimum buffer size. */
   static const unsigned int MINIMUM_BUFFER_SIZE = 1024;
   
-  typedef Allocator<char>::Iterator Iterator;
+  typedef Allocator<uint8>::Iterator Iterator;
 protected:
 
   /** The buffer. */
-  Allocator<char> buffer;
+  Allocator<uint8> buffer;
   /** Beginning of buffer. */
-  char* begin;
+  uint8* begin;
   /** End of buffer. */
-  const char* end;
+  const uint8* end;
   /** The write head. */
-  char* writeHead;
+  uint8* writeHead;
 public:
 
-  FixedBlockOutputStream(OutputStream& out, unsigned int size = DEFAULT_BUFFER_SIZE, unsigned int headroom = 0) throw(BindException, MemoryException)
+  FixedBlockOutputStream(
+    OutputStream& out,
+    unsigned int size = DEFAULT_BUFFER_SIZE,
+    unsigned int headroom = 0) throw(BindException, MemoryException)
     : FilterOutputStream(out),
       buffer(maximum(size, MINIMUM_BUFFER_SIZE) + headroom),
       begin(buffer.getElements()),
@@ -71,19 +74,19 @@ public:
   
   inline Iterator getWriteIterator(unsigned int size = 0) throw() {
     ASSERT(size <= getAvailable());
-    char* previous = writeHead;
+    uint8* previous = writeHead;
     writeHead += size;
     return Iterator(previous);
   }
   
-  inline void write(char value) throw(IOException) {
+  inline void write(uint8 value) throw(IOException) {
     if (writeHead == end) {
       flush();
     }
     *writeHead++ = value;
   }
 
-  inline void unfoldValue(char value, unsigned int size) throw() {
+  inline void unfoldValue(uint8 value, unsigned int size) throw() {
     // fill internal buffer if possible
     unsigned int bytesToWrite = minimum(size, getAvailable()); // could be 0
     fill(writeHead, bytesToWrite, value);
@@ -109,7 +112,7 @@ public:
     }
   }
   
-  void write(const char* buffer, unsigned int size) throw(IOException) {
+  void write(const uint8* buffer, unsigned int size) throw(IOException) {
     // fill internal buffer if possible
     unsigned int bytesToCopy = minimum(size, getAvailable()); // could be 0
     copy(writeHead, buffer, bytesToCopy);
@@ -170,7 +173,7 @@ private:
 public:
 
   void updateCodeLengths(const uint8* buffer, unsigned int size) throw() {
-    fill<char>(Cast::getCharAddress(nodes), sizeof(nodes), 0);
+    fill<uint8>(Cast::getAddress(nodes), sizeof(nodes), 0);
     
     // mark end of linked lists
     for (int i = ALPHABET_SIZE - 1; i >= 0; --i) {
@@ -350,7 +353,7 @@ public:
 
     ASSERT((dest - header) <= getArraySize(header));
     
-    os.write(Cast::getCharAddress(header), dest - header);
+    os.write(Cast::getAddress(header), dest - header);
   }
 
   Encoder(OutputStream& stream, const uint8* buffer, unsigned int size) throw(IOException)
@@ -482,8 +485,9 @@ private:
   unsigned int garbageBits;
 public:
 
-  inline unsigned int readSymbols(const uint8* buffer, unsigned int size) throw(InvalidFormat) {
-    fill<char>(Cast::getCharAddress(symbols), sizeof(symbols), 0);
+  inline unsigned int readSymbols(
+    const uint8* buffer, unsigned int size) throw(InvalidFormat) {
+    fill<uint8>(Cast::getAddress(symbols), sizeof(symbols), 0);
     
     const uint8* src = buffer;
     const uint8* end = src + size;
@@ -493,7 +497,11 @@ public:
     minimumLength = *src++;
     assert(src < end, InvalidFormat("Invalid header", this));
     maximumLength = *src++;
-    assert((minimumLength <= maximumLength) && (maximumLength <= (ALPHABET_SIZE - 1)), InvalidFormat(this));
+    assert(
+      (minimumLength <= maximumLength) &&
+      (maximumLength <= (ALPHABET_SIZE - 1)),
+      InvalidFormat(this)
+    );
 
     for (unsigned int length = minimumLength; length <= maximumLength; ++length) {
       assert(src < end, InvalidFormat("Invalid header", this));

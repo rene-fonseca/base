@@ -78,25 +78,40 @@ public:
     fout << "Server address..." << ENDL;
     fout << indent(2) << InetEndPoint(serverSocket.getLocalAddress(), serverSocket.getLocalPort()) << ENDL;
 
-    fout << "Requesting permission to send/receive broadcast messages..." << ENDL;
+    fout << "Requesting permission to send/receive broadcast messages..."
+         << ENDL;
     serverSocket.setBroadcast(true);
 
     unsigned int datagrams = 10; // the number of connections to accept
 
+    Allocator<uint8> buffer(4096);
     while (datagrams--) {
-      char buffer[4096];
       InetAddress remoteAddress;
       unsigned short remotePort;
 
       fout << "Waiting for datagram..." << ENDL;
-      unsigned int bytesReceived = serverSocket.receiveFrom(buffer, sizeof(buffer), remoteAddress, remotePort);
+      unsigned int bytesReceived = serverSocket.receiveFrom(
+        buffer.getElements(),
+        buffer.getSize(),
+        remoteAddress,
+        remotePort
+      );
 
-      fout << "Datagram of " << bytesReceived << " bytes received from " << InetEndPoint(remoteAddress, remotePort) << ENDL;
-      fout << ">: " << buffer << ENDL;
-
+      fout << "Datagram of " << bytesReceived << " bytes received from "
+           << InetEndPoint(remoteAddress, remotePort) << ENDL;
+      fout << ">: " << String(
+        Cast::pointer<const char*>(buffer.getElements()),
+        bytesReceived
+      ) << ENDL;
+      
       fout << "Sending datagram back to client..." << ENDL;
-      char response[] = "DATAGRAM FROM SERVER";
-      unsigned int bytesSent = serverSocket.sendTo(response, sizeof(response), remoteAddress, remotePort);
+      static const Literal response = "DATAGRAM FROM SERVER";
+      unsigned int bytesSent = serverSocket.sendTo(
+        Cast::pointer<const uint8*>(response.getValue()),
+        response.getLength(),
+        remoteAddress,
+        remotePort
+      );
       fout << "bytesSent: " << bytesSent << ENDL;
     }
 

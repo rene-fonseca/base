@@ -216,7 +216,11 @@ public:
           const long long size = sourceFile.getSize();
           
           if (progress) {
-            String temp = getProgress(position, size, timer.getLiveMicroseconds());
+            String temp = getProgress(
+              position,
+              size,
+              timer.getLiveMicroseconds()
+            );
             fout << setWidth(previousLength) << temp << '\r' << FLUSH;
             previousLength = temp.getLength();
           }
@@ -225,16 +229,17 @@ public:
             if (progress) {
               if (updateTimer.getLiveMicroseconds() >= UPDATE_TIME) {
                 updateTimer.start();
-                String temp = getProgress(position, size, timer.getLiveMicroseconds());
+                String temp = getProgress(
+                  position,
+                  size,
+                  timer.getLiveMicroseconds()
+                );
                 fout << setWidth(previousLength) << temp << '\r' << FLUSH;
                 previousLength = temp.getLength();
               }
             }
             reader.seek(position);
-            destinationFile.write(
-              Cast::pointer<const char*>(reader.getBytes()),
-              reader.getSize()
-            );
+            destinationFile.write(reader.getBytes(), reader.getSize());
             position += reader.getSize();
           }
           

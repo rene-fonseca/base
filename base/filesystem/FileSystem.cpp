@@ -328,19 +328,28 @@ String FileSystem::toUrl(const String& path) throw(FileSystemException) {
 
 String FileSystem::getCurrentFolder() throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  Allocator<char>* buffer = Thread::getLocalStorage();
-  DWORD length = ::GetCurrentDirectory(buffer->getSize(), buffer->getElements());
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
+  DWORD length = ::GetCurrentDirectory(
+    buffer->getSize()/sizeof(char),
+    (char*)buffer->getElements()
+  );
   if (length == 0) {
-    throw FileSystemException("Unable to get current folder", Type::getType<FileSystem>());
+    throw FileSystemException(
+      "Unable to get current folder",
+      Type::getType<FileSystem>()
+    );
   }
-  return String(buffer->getElements());
+  return String((char*)buffer->getElements());
 #else // unix
-  Allocator<char>* buffer = Thread::getLocalStorage();
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
   ASSERT(buffer->getSize() > PATH_MAX);
-  if (::getcwd(buffer->getElements(), buffer->getSize())) {
-    throw FileSystemException("Unable to get current folder", Type::getType<FileSystem>());
+  if (::getcwd((char*)buffer->getElements(), buffer->getSize()/sizeof(char))) {
+    throw FileSystemException(
+      "Unable to get current folder",
+      Type::getType<FileSystem>()
+    );
   }
-  return String(buffer->getElements());
+  return String((const char*)buffer->getElements());
 #endif // flavor
 }
 

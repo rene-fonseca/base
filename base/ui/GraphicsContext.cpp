@@ -42,7 +42,10 @@ GraphicsContext::Pen::Pen(Color color) throw(UserInterfaceException) {
 #endif // flavor
 }
 
-GraphicsContext::Pen::Pen(PenStyle style, Color color, unsigned int width) throw(UserInterfaceException) {
+GraphicsContext::Pen::Pen(
+  PenStyle style,
+  Color color,
+  unsigned int width) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   static const int NATIVE_STYLES[] = { // keep in sync with GraphicsContext::PenStyle
     PS_NULL, // NONE
@@ -147,7 +150,11 @@ Array<String> GraphicsContext::Font::getFonts() throw(UserInterfaceException) {
   return result;
 }
 
-GraphicsContext::Font::Font(const String& name, unsigned short height, FontWeight weight, unsigned int flags) throw(UserInterfaceException) {
+GraphicsContext::Font::Font(
+  const String& name,
+  unsigned short height,
+  FontWeight weight,
+  unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   static int NATIVE_WEIGHTS[] = {
     FW_THIN, // THIN
@@ -218,7 +225,8 @@ void GraphicsContext::setFont(Font font) throw(UserInterfaceException) {
 #endif // flavor  
 }
 
-void GraphicsContext::setBackgroundMode(bool transparent) throw(UserInterfaceException) {
+void GraphicsContext::setBackgroundMode(
+  bool transparent) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::SetBkMode(
     (HDC)graphicsContextHandle,
@@ -228,7 +236,8 @@ void GraphicsContext::setBackgroundMode(bool transparent) throw(UserInterfaceExc
 #endif // flavor
 };
 
-void GraphicsContext::setBackgroundColor(Color color) throw(UserInterfaceException) {
+void GraphicsContext::setBackgroundColor(
+  Color color) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::SetBkColor(
     (HDC)graphicsContextHandle,
@@ -248,7 +257,8 @@ void GraphicsContext::setTextColor(Color color) throw(UserInterfaceException) {
 #endif // flavor
 };
 
-void GraphicsContext::setTextAlignment(unsigned int alignment) throw(UserInterfaceException) {
+void GraphicsContext::setTextAlignment(
+  unsigned int alignment) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int nativeAlignment = 0;
   if (alignment & Alignment::LEFT) {
@@ -400,7 +410,8 @@ void GraphicsContext::setPixels(
 #endif // flavor
 }
 
-void GraphicsContext::moveTo(const Position& position) throw(UserInterfaceException) {
+void GraphicsContext::moveTo(
+  const Position& position) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
     ::MoveToEx(
@@ -416,7 +427,9 @@ void GraphicsContext::moveTo(const Position& position) throw(UserInterfaceExcept
 #endif // flavor  
 }
 
-void GraphicsContext::lineTo(const Position& position, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::lineTo(
+  const Position& position,
+  unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
     ::LineTo(
@@ -431,7 +444,10 @@ void GraphicsContext::lineTo(const Position& position, unsigned int flags) throw
 #endif // flavor  
 }
 
-void GraphicsContext::line(const Position& upperLeft, const Position& lowerRight, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::line(
+  const Position& upperLeft,
+  const Position& lowerRight,
+  unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   POINT points[3];
   points[0].x = upperLeft.getX();
@@ -481,7 +497,12 @@ void GraphicsContext::line(const Position& upperLeft, const Position& lowerRight
 // #endif // flavor  
 // }
 
-void GraphicsContext::arc(const Position& position, const Dimension& dimension, int start, int stop, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::arc(
+  const Position& position,
+  const Dimension& dimension,
+  int start,
+  int stop,
+  unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 //   BOOL ::Arc(
 //     (HDC)graphicsContextHandle, // handle to device context
@@ -536,7 +557,10 @@ void GraphicsContext::arc(const Position& position, const Dimension& dimension, 
 // #endif // flavor
 // }
 
-void GraphicsContext::rectangle(const Position& upperLeft, const Position& lowerRight, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::rectangle(
+  const Position& upperLeft,
+  const Position& lowerRight,
+  unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
     ::Rectangle(
@@ -573,7 +597,10 @@ void GraphicsContext::rectangle(const Position& upperLeft, const Position& lower
 #endif // flavor  
 }
 
-void GraphicsContext::rectangle(const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::rectangle(
+  const Position& position,
+  const Dimension& dimension,
+  unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
     ::Rectangle(
@@ -610,7 +637,11 @@ void GraphicsContext::rectangle(const Position& position, const Dimension& dimen
 #endif // flavor  
 }
 
-void GraphicsContext::rectangle(const Position& upperLeft, const Position& lowerRight, Brush brush, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::rectangle(
+  const Position& upperLeft,
+  const Position& lowerRight,
+  Brush brush,
+  unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   RECT rect;
   rect.left = upperLeft.getX();
@@ -629,7 +660,11 @@ void GraphicsContext::rectangle(const Position& upperLeft, const Position& lower
 #endif // flavor  
 }
 
-void GraphicsContext::rectangle(const Position& position, const Dimension& dimension, Brush brush, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::rectangle(
+  const Position& position,
+  const Dimension& dimension,
+  Brush brush,
+  unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();
@@ -669,7 +704,9 @@ void GraphicsContext::rectangle(const Position& position, const Dimension& dimen
   mode
 );
 
-void GraphicsContext::rectangle(const Array<Region>& rectangles, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::rectangle(
+  const Array<Region>& rectangles,
+  unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #else // unix
   ::XFillRectangles(
@@ -683,7 +720,10 @@ void GraphicsContext::rectangle(const Array<Region>& rectangles, unsigned int fl
 }
 #endif
 
-void GraphicsContext::ellipse(const Position& upperLeft, const Position& lowerRight, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::ellipse(
+  const Position& upperLeft,
+  const Position& lowerRight,
+  unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
     ::Ellipse(
@@ -699,7 +739,10 @@ void GraphicsContext::ellipse(const Position& upperLeft, const Position& lowerRi
 #endif // flavor  
 }
 
-void GraphicsContext::ellipse(const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::ellipse(
+  const Position& position,
+  const Dimension& dimension,
+  unsigned int flags) throw(UserInterfaceException) {
   if (!dimension.isProper()) {
     return;
   }
@@ -743,7 +786,8 @@ void GraphicsContext::pie(
 #endif // flavor  
 }
 
-unsigned int GraphicsContext::getWidthOf(char ch) const throw(UserInterfaceException) {
+unsigned int GraphicsContext::getWidthOf(
+  char ch) const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   INT width;
   assert(
@@ -761,7 +805,8 @@ unsigned int GraphicsContext::getWidthOf(char ch) const throw(UserInterfaceExcep
 #endif // flavor
 }
 
-Dimension GraphicsContext::getDimensionOf(const String& text) const throw(UserInterfaceException) {
+Dimension GraphicsContext::getDimensionOf(
+  const String& text) const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SIZE size;
   assert(
@@ -791,7 +836,11 @@ Dimension GraphicsContext::getDimensionOf(const String& text) const throw(UserIn
 // );
 
 // TAG: need ucs2 method
-void GraphicsContext::text(const Position& position, const Dimension& dimension, const String& text, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::text(
+  const Position& position,
+  const Dimension& dimension,
+  const String& text,
+  unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   UINT nativeTextFormat = 0;
   if (flags & TextFormat::LEFT) {

@@ -50,12 +50,15 @@ public:
     /** Specifies the access to the shared memory. */
     unsigned int access;
     /** The base address of the shared memory block. */
-    char* address;
+    uint8* address;
   public:
 
-    SharedMemoryImpl(const File& file, const FileRegion& region, unsigned int access) throw(MemoryException);
+    SharedMemoryImpl(
+      const File& file,
+      const FileRegion& region,
+      unsigned int access) throw(MemoryException);
     
-    inline char* getBytes() const throw() {
+    inline uint8* getBytes() const throw() {
       return address;
     }
     
@@ -162,14 +165,14 @@ public:
   /**
     Returns the shared bytes for modifying access.
   */
-  inline char* getBytes() throw() {
+  inline uint8* getBytes() throw() {
     return sharedMemory->getBytes();
   }
   
   /**
     Returns the shared bytes for non-modifying access.
   */
-  inline const char* getBytes() const throw() {
+  inline const uint8* getBytes() const throw() {
     return sharedMemory->getBytes();
   }
   
@@ -191,7 +194,8 @@ public:
   /**
     Synchronize memory with file.
 
-    @param asynchronous Allows the method to return before all data has been written. The default is false.
+    @param asynchronous Allows the method to return before all data has been
+    written. The default is false.
   */
   void synchronize(bool asynchronous = false) throw(MemoryException);
 

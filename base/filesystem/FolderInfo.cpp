@@ -382,7 +382,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
     }
   }
 #else // unix
-  Allocator<char>* buffer = Thread::getLocalStorage();
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
 
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     DIR* directory;

@@ -72,16 +72,21 @@ public:
   unsigned int available() const throw(IOException);
 
   /**
-    Fills the buffer with bytes from the stream. Blocks if asked to read more bytes than available.
+    Fills the buffer with bytes from the stream. Blocks if asked to read more
+    bytes than available.
 
     @param buffer The buffer.
     @param size The size of the buffer.
     @return The actual number of bytes read.
   */
-  unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
+  unsigned int read(
+    uint8* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(IOException);
 
   /**
-    Skips a specified number of bytes. Blocks if asked to skip more bytes than available.
+    Skips a specified number of bytes. Blocks if asked to skip more bytes than
+    available.
 
     @param count The number of bytes to skip.
   */

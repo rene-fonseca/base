@@ -39,7 +39,7 @@ public:
 protected:
   
   /** The buffer associated with the operation. */
-  const char* buffer;
+  const uint8* buffer;
   /** The desired number of bytes to be written. */
   unsigned int bytesToWrite;
   /** The offset. */
@@ -54,7 +54,7 @@ public:
     Initialization of object.
   */
   inline AsynchronousWriteCompletion(
-    const char* _buffer,
+    const uint8* _buffer,
     unsigned int _bytesToWrite,
     unsigned long long _offset,
     unsigned int _bytesWritten,
@@ -92,7 +92,7 @@ public:
     return (flags & ABORTED) != 0;
   }
 
-  inline const char* getBuffer() const throw() {
+  inline const uint8* getBuffer() const throw() {
     return buffer;
   }
   

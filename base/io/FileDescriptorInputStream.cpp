@@ -64,15 +64,18 @@ FileDescriptorInputStream::FileDescriptorInputStream() throw() :
   FileDescriptor(), end(false) {
 }
 
-FileDescriptorInputStream::FileDescriptorInputStream(const FileDescriptor& fd) throw() :
-  FileDescriptor(fd), end(false) {
+FileDescriptorInputStream::FileDescriptorInputStream(
+  const FileDescriptor& fd) throw()
+  : FileDescriptor(fd), end(false) {
 }
 
-FileDescriptorInputStream::FileDescriptorInputStream(const FileDescriptorInputStream& copy) throw() :
+FileDescriptorInputStream::FileDescriptorInputStream(
+  const FileDescriptorInputStream& copy) throw() :
   FileDescriptor(copy), end(copy.end) {
 }
 
-FileDescriptorInputStream& FileDescriptorInputStream::operator=(const FileDescriptorInputStream& eq) throw() {
+FileDescriptorInputStream& FileDescriptorInputStream::operator=(
+  const FileDescriptorInputStream& eq) throw() {
   if (&eq != this) { // protect against self assignment
     fd = eq.fd;
     end = eq.end;
@@ -127,14 +130,23 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException) {
 #endif // flavor
 }
 
-unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(IOException) {
+unsigned int FileDescriptorInputStream::read(
+  uint8* buffer,
+  unsigned int bytesToRead,
+  bool nonblocking) throw(IOException) {
   // TAG: currently always blocks
   assert(!end, EndOfFile(this));
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
-    BOOL success = ::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, 0);
+    BOOL success = ::ReadFile(
+      fd->getHandle(),
+      buffer,
+      bytesToRead,
+      &result,
+      0
+    );
     if (!success) { // has error occured
       if (::GetLastError() == ERROR_BROKEN_PIPE) {
         result = 0;
@@ -143,7 +155,11 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int bytesToR
       }
     }
 #else // unix
-    int result = ::read(fd->getHandle(), buffer, minimum<unsigned int>(bytesToRead, SSIZE_MAX));
+    int result = ::read(
+      fd->getHandle(),
+      buffer,
+      minimum<unsigned int>(bytesToRead, SSIZE_MAX)
+    );
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
       case EINTR: // interrupted by signal before any data was read
@@ -168,8 +184,9 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int bytesToR
   return bytesRead;
 }
 
-unsigned int FileDescriptorInputStream::skip(unsigned int count) throw(IOException) {
-  Allocator<char>* buffer = Thread::getLocalStorage();
+unsigned int FileDescriptorInputStream::skip(
+  unsigned int count) throw(IOException) {
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
   unsigned int bytesSkipped = 0;
   while (bytesSkipped < count) {
     unsigned int bytesToRead = minimum(count - bytesSkipped, buffer->getSize());
@@ -210,9 +227,13 @@ void FileDescriptorInputStream::wait() const throw(IOException) {
 #endif // flavor
 }
 
-bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOException) {
+bool FileDescriptorInputStream::wait(
+  unsigned int timeout) const throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  DWORD result = ::WaitForSingleObject(fd->getHandle(), minimum(timeout, 999999999U));
+  DWORD result = ::WaitForSingleObject(
+    fd->getHandle(),
+    minimum(timeout, 999999999U)
+  );
   return result == WAIT_OBJECT_0;
 #else // unix
   fd_set rfds;

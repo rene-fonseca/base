@@ -32,7 +32,7 @@ class EchoThread : public Runnable {
 private:
 
   static const unsigned int BUFFER_SIZE = 4096;
-  Allocator<char> buffer;
+  Allocator<uint8> buffer;
 public:
   
   EchoThread() throw()

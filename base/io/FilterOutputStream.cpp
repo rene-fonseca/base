@@ -28,7 +28,9 @@ void FilterOutputStream::flush() throw(IOException) {
 }
 
 unsigned int FilterOutputStream::write(
-  const char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
+  const uint8* buffer,
+  unsigned int size,
+  bool nonblocking) throw(IOException) {
   return out.write(buffer, size, nonblocking);
 }
 

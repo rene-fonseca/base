@@ -909,12 +909,15 @@ void File::truncate(long long size) throw(FileException) {
   }
 #endif
   if (size > oldSize) {
-    Allocator<char>* buffer = Thread::getLocalStorage();
-    fill<char>(buffer->getElements(), buffer->getSize(), 0);
+    Allocator<uint8>* buffer = Thread::getLocalStorage();
+    fill<uint8>(buffer->getElements(), buffer->getSize(), 0);
     setPosition(oldSize);
     long long count = size - oldSize;
     while (count > 0) {
-      count -= write(buffer->getElements(), minimum<long long>(count, buffer->getSize())); // blocking write
+      count -= write(
+        buffer->getElements(),
+        minimum<long long>(count, buffer->getSize())
+      ); // blocking write
     }
   }
 }
@@ -931,9 +934,13 @@ void File::flush() throw(FileException) {
 #endif
 }
 
-void File::lock(const FileRegion& region, bool exclusive) throw(FileException) {
+void File::lock(
+  const FileRegion& region, bool exclusive) throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region", this));
+  assert(
+    (region.getOffset() >= 0) && (region.getSize() >= 0),
+    FileException("Unable to lock region", this)
+  );
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
   OVERLAPPED overlapped;
@@ -978,7 +985,10 @@ void File::lock(const FileRegion& region, bool exclusive) throw(FileException) {
     }
   #else
     assert(
-      (region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM) && (region.getSize() >= 0) && (region.getSize() <= PrimitiveTraits<int>::MAXIMUM),
+      (region.getOffset() >= 0) &&
+      (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM) &&
+      (region.getSize() >= 0) &&
+      (region.getSize() <= PrimitiveTraits<int>::MAXIMUM),
       FileException("Unable to lock region", this)
     );
     struct flock lock;
@@ -1000,7 +1010,8 @@ void File::lock(const FileRegion& region, bool exclusive) throw(FileException) {
 #endif
 }
 
-bool File::tryLock(const FileRegion& region, bool exclusive) throw(FileException) {
+bool File::tryLock(
+  const FileRegion& region, bool exclusive) throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region", this));
   LARGE_INTEGER offset;
@@ -1254,7 +1265,10 @@ unsigned long File::getVariable(Variable variable) throw(FileException, NotSuppo
 #endif // flavor
 }
 
-unsigned int File::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(FileException) {
+unsigned int File::read(
+  uint8* buffer,
+  unsigned int bytesToRead,
+  bool nonblocking) throw(FileException) {
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -1325,7 +1339,10 @@ unsigned int File::read(char* buffer, unsigned int bytesToRead, bool nonblocking
   return bytesRead;
 }
 
-unsigned int File::write(const char* buffer, unsigned int bytesToWrite, bool nonblocking) throw(FileException) {
+unsigned int File::write(
+  const uint8* buffer,
+  unsigned int bytesToWrite,
+  bool nonblocking) throw(FileException) {
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -1405,7 +1422,11 @@ void File::asyncCancel() throw(AsynchronousException) {
 #endif // flavor
 }
 
-AsynchronousReadOperation File::read(char* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(AsynchronousException) {
+AsynchronousReadOperation File::read(
+  uint8* buffer,
+  unsigned int bytesToRead,
+  unsigned long long offset,
+  AsynchronousReadEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncReadFileContext(getHandle(), buffer, bytesToRead, offset, listener);
@@ -1414,7 +1435,11 @@ AsynchronousReadOperation File::read(char* buffer, unsigned int bytesToRead, uns
 #endif // flavor
 }
 
-AsynchronousWriteOperation File::write(const char* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
+AsynchronousWriteOperation File::write(
+  const uint8* buffer,
+  unsigned int bytesToWrite,
+  unsigned long long offset,
+  AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncWriteFileContext(getHandle(), buffer, bytesToWrite, offset, listener);

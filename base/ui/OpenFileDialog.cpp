@@ -24,10 +24,12 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-OpenFileDialog::OpenFileDialog() throw() : flags(OpenFileDialog::MUST_EXIST), defaultFilter(0) {
+OpenFileDialog::OpenFileDialog() throw()
+  : flags(OpenFileDialog::MUST_EXIST), defaultFilter(0) {
 }
 
-void OpenFileDialog::setFilter(const String& description, const String& filter) throw() {
+void OpenFileDialog::setFilter(
+  const String& description, const String& filter) throw() {
   filters[description] = filter;
 }
 
@@ -36,8 +38,10 @@ bool OpenFileDialog::execute() throw(UserInterfaceException) {
   typedef BOOL (WINAPI *FGetOpenFileNameA)(LPOPENFILENAME);
   static FGetOpenFileNameA GetOpenFileNameA = 0;
   if (!GetOpenFileNameA) { // TAG: need to be atomic
-    DynamicLinker* dynamicLinker = new DynamicLinker(MESSAGE("comdlg32.dll"));
-    GetOpenFileNameA = (FGetOpenFileNameA)dynamicLinker->getSymbol(MESSAGE("GetOpenFileNameA")); // TAG: fix cast
+    DynamicLinker* dynamicLinker = new DynamicLinker("comdlg32.dll");
+    GetOpenFileNameA = (FGetOpenFileNameA)dynamicLinker->getSymbol(
+      Literal("GetOpenFileNameA")
+    ); // TAG: fix cast
   }
   
   char filters[4096]; // TAG: fixme
@@ -53,9 +57,16 @@ bool OpenFileDialog::execute() throw(UserInterfaceException) {
   *dest++ = '\0'; // final termination;
   *dest++ = '\0'; // final termination;
   
-  Allocator<char>* buffer = Thread::getLocalStorage();
-  assert(buffer->getSize() >= 256, UnexpectedFailure("Thread local buffer is too small", this));
-  copy(buffer->getElements(), filename.getElements(), filename.getLength() + 1); // includes terminator
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
+  assert(
+    buffer->getSize() >= 256,
+    UnexpectedFailure("Thread local buffer is too small", this)
+  );
+  copy(
+    Cast::pointer<char*>(buffer->getElements()),
+    filename.getElements(),
+    filename.getLength() + 1
+  ); // includes terminator
   
   OPENFILENAME openFile;
   clear(openFile);
@@ -63,8 +74,8 @@ bool OpenFileDialog::execute() throw(UserInterfaceException) {
   openFile.lpstrFilter = filters;
   openFile.nFilterIndex = defaultFilter; // select custom
   
-  openFile.lpstrFile = buffer->getElements();
-  openFile.nMaxFile = buffer->getSize();
+  openFile.lpstrFile = Cast::pointer<char*>(buffer->getElements());
+  openFile.nMaxFile = buffer->getSize()/sizeof(char);
   openFile.lpstrInitialDir = folder.isProper() ? folder.getElements() : 0;
   openFile.lpstrTitle = title.isProper() ? title.getElements() : 0;
   openFile.Flags |= (flags & OpenFileDialog::MUST_EXIST) ? OFN_FILEMUSTEXIST : 0; // OFN_PATHMUSTEXIST

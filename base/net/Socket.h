@@ -547,7 +547,7 @@ public:
     @return The actual number of bytes read.
   */
   unsigned int read(
-    char* buffer,
+    uint8* buffer,
     unsigned int size,
     bool nonblocking = false) throw(NetworkException);
 
@@ -560,7 +560,7 @@ public:
     @return The actual number of bytes written.
   */
   unsigned int write(
-    const char* buffer,
+    const uint8* buffer,
     unsigned int size,
     bool nonblocking = false) throw(NetworkException);
 
@@ -575,7 +575,7 @@ public:
     @return The number of bytes sent.
   */
   unsigned int sendTo(
-    const char* buffer,
+    const uint8* buffer,
     unsigned int size,
     const InetAddress& address,
     unsigned short port) throw(NetworkException);
@@ -591,7 +591,7 @@ public:
     @return The number of bytes received.
   */
   unsigned int receiveFrom(
-    char* buffer,
+    uint8* buffer,
     unsigned int size,
     InetAddress& address,
     unsigned short& port) throw(NetworkException);
@@ -599,12 +599,12 @@ public:
   void asyncCancel() throw(AsynchronousException);
   
   AsynchronousReadOperation read(
-    char* buffer,
+    uint8* buffer,
     unsigned int bytesToRead,
     AsynchronousReadEventListener* listener) throw(AsynchronousException);
 
   AsynchronousWriteOperation write(
-    const char* buffer,
+    const uint8* buffer,
     unsigned int bytesToWrite,
     AsynchronousWriteEventListener* listener) throw(AsynchronousException);
   

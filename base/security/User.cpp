@@ -130,14 +130,14 @@ User::User(const String& name) throw(UserException) {
   integralId = 0;
 #else // unix
   // long sysconf(_SC_GETPW_R_SIZE_MAX);
-  Allocator<char>* buffer = Thread::getLocalStorage();
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
   int result = ::getpwnam_r(
     name.getElements(),
     &pw,
-    buffer->getElements(),
-    buffer->getSize(),
+    (char*)buffer->getElements(),
+    buffer->getSize()/sizeof(char),
     &entry
   );
   assert(result == 0, UserException(this));
@@ -156,13 +156,15 @@ String User::getName(bool fallback) const throw(UserException) {
   DWORD nameSize = sizeof(name);
   char domainName[DNLEN+1];
   DWORD domainNameSize = sizeof(domainName);
-  if (::LookupAccountSid(0,
-                         (PSID)id->getElements(),
-                         name,
-                         &nameSize,
-                         domainName,
-                         &domainNameSize,
-                         &sidType) == 0) {
+  if (::LookupAccountSid(
+        0,
+        (PSID)id->getElements(),
+        name,
+        &nameSize,
+        domainName,
+        &domainNameSize,
+        &sidType) == 0
+  ) {
     assert(fallback, UserException("Unable to lookup name", this));
     StringOutputStream s;
     s << *this << FLUSH;
@@ -174,14 +176,14 @@ String User::getName(bool fallback) const throw(UserException) {
     return String(name); // TAG: does nameSize hold length of name
   }
 #else // unix
-  Allocator<char>* buffer = Thread::getLocalStorage();
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
   int result = ::getpwuid_r(
     Cast::extract<uid_t>(integralId),
     &pw,
-    buffer->getElements(),
-    buffer->getSize(),
+    (char*)buffer->getElements(),
+    buffer->getSize()/sizeof(char),
     &entry
   );
   if (result != 0) {
@@ -205,14 +207,14 @@ String User::getHomeFolder() const throw(UserException) {
 //   );
   throw NotImplemented(this);
 #else // unix  
-  Allocator<char>* buffer = Thread::getLocalStorage();
+  Allocator<uint8>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
   int result = ::getpwuid_r(
     Cast::extract<uid_t>(integralId),
     &pw,
-    buffer->getElements(),
-    buffer->getSize(),
+    (char*)buffer->getElements(),
+    buffer->getSize()/sizeof(char),
     &entry
   );
   assert(result == 0, UserException(this));

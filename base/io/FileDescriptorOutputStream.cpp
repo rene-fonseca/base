@@ -67,13 +67,22 @@ void FileDescriptorOutputStream::flush() throw(IOException) {
 #endif // flavor
 }
 
-unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int bytesToWrite, bool nonblocking) throw(IOException) {
+unsigned int FileDescriptorOutputStream::write(
+  const uint8* buffer,
+  unsigned int bytesToWrite,
+  bool nonblocking) throw(IOException) {
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
-    BOOL success = ::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0);
+    BOOL success = ::WriteFile(
+      fd->getHandle(),
+      buffer,
+      bytesToWrite,
+      &result,
+      0
+    );
     if (!success) {
       throw IOException("Unable to write to object");
     }

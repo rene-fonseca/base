@@ -92,11 +92,11 @@ FormatOutputStream& FormatOutputStream::setDateFormat(
 
 FormatOutputStream& FormatOutputStream::operator<<(
   Action action) throw(IOException) {
-  static const char* SP_STR = " ";
-  static const char* CR_STR = "\r";
-  static const char* LF_STR = "\n";
-  static const char* LFCR_STR = "\n\r";
-  static const char* CRLF_STR = "\r\n";
+  static const Literal SP_STR = " ";
+  static const Literal CR_STR = "\r";
+  static const Literal LF_STR = "\n";
+  static const Literal LFCR_STR = "\n\r";
+  static const Literal CRLF_STR = "\r\n";
 
   ExclusiveSynchronize<Guard> _guard(guard);
   switch (action) {
@@ -218,7 +218,10 @@ FormatOutputStream& FormatOutputStream::operator<<(
     context.justification = Symbols::RIGHT;
     break;
   case SP:
-    write(SP_STR, 1); // may throw IOException
+    write(
+      Cast::pointer<const uint8*>(SP_STR.getValue()),
+      SP_STR.getLength()
+    ); // may throw IOException
     break;
   case UNIXEOL:
     context.endOfLine = Symbols::UNIXEOL;
@@ -230,27 +233,48 @@ FormatOutputStream& FormatOutputStream::operator<<(
     context.endOfLine = Symbols::MACEOL;
     break;
   case CR:
-    write(CR_STR, 1); // may throw IOException
+    write(
+      Cast::pointer<const uint8*>(CR_STR.getValue()),
+      CR_STR.getLength()
+    ); // may throw IOException
     break;
   case LF:
-    write(LF_STR, 1); // may throw IOException
+    write(
+      Cast::pointer<const uint8*>(LF_STR.getValue()),
+      LF_STR.getLength()
+    ); // may throw IOException
     break;
   case CRLF:
-    write(CRLF_STR, 2); // may throw IOException
+    write(
+      Cast::pointer<const uint8*>(CRLF_STR.getValue()),
+      CRLF_STR.getLength()
+    ); // may throw IOException
     break;
   case LFCR:
-    write(LFCR_STR, 2); // may throw IOException
+    write(
+      Cast::pointer<const uint8*>(LFCR_STR.getValue()),
+      LFCR_STR.getLength()
+    ); // may throw IOException
     break;
   case EOL:
     switch (context.endOfLine) {
     case Symbols::UNIXEOL:
-      write(LF_STR, 1); // may throw IOException
+      write(
+        Cast::pointer<const uint8*>(LF_STR.getValue()),
+        LF_STR.getLength()
+      ); // may throw IOException
       break;
     case Symbols::WINDOWSEOL:
-      write(CRLF_STR, 2); // may throw IOException
+      write(
+        Cast::pointer<const uint8*>(CRLF_STR.getValue()),
+        CRLF_STR.getLength()
+      ); // may throw IOException
       break;
     case Symbols::MACEOL:
-      write(LFCR_STR, 2); // may throw IOException
+      write(
+        Cast::pointer<const uint8*>(LFCR_STR.getValue()),
+        LFCR_STR.getLength()
+      ); // may throw IOException
       break;
     }
     break;
@@ -260,13 +284,22 @@ FormatOutputStream& FormatOutputStream::operator<<(
   case ENDL:
     switch (context.endOfLine) {
     case Symbols::UNIXEOL:
-      write(LF_STR, 1); // may throw IOException
+      write(
+        Cast::pointer<const uint8*>(LF_STR.getValue()),
+        LF_STR.getLength()
+      ); // may throw IOException
       break;
     case Symbols::WINDOWSEOL:
-      write(CRLF_STR, 2); // may throw IOException
+      write(
+        Cast::pointer<const uint8*>(CRLF_STR.getValue()),
+        CRLF_STR.getLength()
+      ); // may throw IOException
       break;
     case Symbols::MACEOL:
-      write(LFCR_STR, 2); // may throw IOException
+      write(
+        Cast::pointer<const uint8*>(LFCR_STR.getValue()),
+        LFCR_STR.getLength()
+      ); // may throw IOException
       break;
     }
     flush(); // may throw IOException
@@ -291,10 +324,15 @@ FormatOutputStream& FormatOutputStream::setContext(
 }
 
 void FormatOutputStream::indent(unsigned int size) throw(IOException) {
-  static const char INDENT[] = "                                                                                ";
+  static const Literal INDENT =
+    "                                        "
+    "                                        ";
   ExclusiveSynchronize<Guard> _guard(guard);
-  if (size <= sizeof(INDENT)) {
-    write(INDENT, size); // write characters
+  if (size <= INDENT.getLength()) {
+    write(
+      Cast::pointer<const uint8*>(INDENT.getValue()),
+      size
+    ); // write characters
   } else {
     unfoldValue(' ', size);
   }
@@ -320,13 +358,13 @@ void FormatOutputStream::addCharacterField(
   }
 
   if (justification == Symbols::LEFT) {
-    write(buffer, size); // write characters
+    write(Cast::pointer<const uint8*>(buffer), size); // write characters
   }
   if (size < static_cast<unsigned int>(context.width)) { // write blanks if required
     unfoldValue(' ', context.width - size);
   }
   if (context.justification == Symbols::RIGHT) {
-    write(buffer, size); // write characters
+    write(Cast::pointer<const uint8*>(buffer), size); // write characters
   }
   context = defaultContext;
 }
@@ -382,24 +420,36 @@ void FormatOutputStream::addIntegerField(
     }
   }
 
-  if (isSigned && ((context.integerBase != Symbols::BINARY) && (context.integerBase != Symbols::HEXADECIMAL))) {
-    write("-", 1); // write sign
+  if (isSigned &&
+      ((context.integerBase != Symbols::BINARY) &&
+       (context.integerBase != Symbols::HEXADECIMAL))) {
+    write(Cast::pointer<const uint8*>("-"), 1); // write sign
   }
 
   if ((context.flags & Symbols::PREFIX) != 0) { // is prefix requested
     switch (context.integerBase) {
     case Symbols::BINARY:
-      write("0", 1);
-      write(((context.flags & FormatOutputStream::Symbols::UPPER) == 0) ? "b" : "B", 1);
+      write(Cast::pointer<const uint8*>("0"), 1);
+      write(
+        Cast::pointer<const uint8*>(
+          ((context.flags & FormatOutputStream::Symbols::UPPER) == 0) ? "b" : "B"
+        ),
+        1
+      );
       break;
     case Symbols::OCTAL:
-      write("0", 1);
+      write(Cast::pointer<const uint8*>("0"), 1);
       break;
     case Symbols::DECIMAL:
       break;
     case Symbols::HEXADECIMAL:
-      write("0", 1);
-      write(((context.flags & FormatOutputStream::Symbols::UPPER) == 0) ? "x" : "X", 1);
+      write(Cast::pointer<const uint8*>("0"), 1);
+      write(
+        Cast::pointer<const uint8*>(
+          ((context.flags & FormatOutputStream::Symbols::UPPER) == 0) ? "x" : "X"
+        ),
+        1
+      );
       break;
     }
   }
@@ -426,7 +476,7 @@ void FormatOutputStream::addIntegerField(
     unfoldValue(digit, pads);
   }
 
-  write(buffer, size); // write late buffer
+  write(Cast::pointer<const uint8*>(buffer), size); // write late buffer
   if (justification == Symbols::LEFT) {
     unfoldValue(' ', pads);
   }
@@ -528,13 +578,13 @@ void FormatOutputStream::addDateField(const Date& date) throw(IOException) {
 
   const int size = field.getLength();
   if (justification == Symbols::LEFT) {
-    write(field.getBytes(), size); // write characters
+    write(Cast::pointer<const uint8*>(field.getBytes()), size); // write characters
   }
   if (size < context.width) { // write blanks if required
     unfoldValue(' ', context.width - size);
   }
   if (context.justification == Symbols::RIGHT) {
-    write(field.getBytes(), size); // write characters
+    write(Cast::pointer<const uint8*>(field.getBytes()), size); // write characters
   }
   context = defaultContext;  
 }
@@ -556,7 +606,8 @@ FormatOutputStream& FormatOutputStream::operator<<(
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
-      unsigned short temp = Cast::impersonate<unsigned short>(value); // no sign
+      unsigned short temp =
+        Cast::impersonate<unsigned short>(value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000001); // get digit
         temp >>= 1; // bits per digit
@@ -612,7 +663,8 @@ FormatOutputStream& FormatOutputStream::operator<<(
 FormatOutputStream& FormatOutputStream::operator<<(
   unsigned short value) throw(IOException) {
   char buffer[sizeof(unsigned short) * 8];
-  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+  char* dest =
+    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -669,7 +721,8 @@ FormatOutputStream& FormatOutputStream::operator<<(
 FormatOutputStream& FormatOutputStream::operator<<(
   int value) throw(IOException) {
   char buffer[sizeof(int) * 8];
-  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+  char* dest =
+    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -730,7 +783,8 @@ FormatOutputStream& FormatOutputStream::operator<<(
 FormatOutputStream& FormatOutputStream::operator<<(
   unsigned int value) throw(IOException) {
   char buffer[sizeof(unsigned int) * 8];
-  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+  char* dest =
+    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -787,7 +841,8 @@ FormatOutputStream& FormatOutputStream::operator<<(
 FormatOutputStream& FormatOutputStream::operator<<(
   long value) throw(IOException) {
   char buffer[sizeof(long) * 8];
-  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+  char* dest =
+    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -848,7 +903,8 @@ FormatOutputStream& FormatOutputStream::operator<<(
 FormatOutputStream& FormatOutputStream::operator<<(
   unsigned long value) throw(IOException) {
   char buffer[sizeof(unsigned long) * 8];
-  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+  char* dest =
+    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -905,7 +961,8 @@ FormatOutputStream& FormatOutputStream::operator<<(
 FormatOutputStream& FormatOutputStream::operator<<(
   long long value) throw(IOException) {
   char buffer[sizeof(long long) * 8];
-  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+  char* dest =
+    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -966,7 +1023,8 @@ FormatOutputStream& FormatOutputStream::operator<<(
 FormatOutputStream& FormatOutputStream::operator<<(
   unsigned long long value) throw(IOException) {
   char buffer[sizeof(unsigned long long) * 8];
-  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+  char* dest =
+    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -1821,7 +1879,7 @@ void FormatOutputStream::writeFloatingPointType(
     ExclusiveSynchronize<Guard> _guard(guard);
     unsigned int length = (output - buffer);
     if (static_cast<unsigned int>(context.width) <= length) {
-      write(buffer, length); // write characters
+      write(Cast::pointer<const uint8*>(buffer), length); // write characters
     } else {
       unsigned int invertedLength = context.width - length;
 
@@ -1832,13 +1890,13 @@ void FormatOutputStream::writeFloatingPointType(
 
       switch (justification) {
       case Symbols::LEFT:
-        write(buffer, length); // write characters
+        write(Cast::pointer<const uint8*>(buffer), length); // write characters
         unfoldValue(' ', invertedLength);
         break;
       case Symbols::DEPENDENT:
       case Symbols::RIGHT:
         unfoldValue(' ', invertedLength);
-        write(buffer, length); // write characters
+        write(Cast::pointer<const uint8*>(buffer), length); // write characters
         break;
       case Symbols::RADIX:
         ASSERT(radix);
@@ -1849,7 +1907,7 @@ void FormatOutputStream::writeFloatingPointType(
           prefixLength = minimum(context.radixPosition - beforeRadix, invertedLength);
           unfoldValue(' ', prefixLength);
         }
-        write(buffer, length); // write characters
+        write(Cast::pointer<const uint8*>(buffer), length); // write characters
         unfoldValue(' ', invertedLength - prefixLength);
         break;
       }

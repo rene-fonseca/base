@@ -44,41 +44,54 @@ public:
     : Application("Huffman", numberOfArguments, arguments, environment) {
   }
 
-  void compress(const String& source, const String& destination) throw(IOException) {
+  void compress(
+    const String& source, const String& destination) throw(IOException) {
     File sourceFile(source, File::READ, 0);
     
     unsigned long long size = sourceFile.getSize();
-    assert(size <= PrimitiveTraits<unsigned int>::MAXIMUM, IOException("File is too big for me", this));
+    assert(
+      size <= PrimitiveTraits<unsigned int>::MAXIMUM,
+      IOException("File is too big for me", this)
+    );
 
-    Allocator<char> buffer(size);
+    Allocator<uint8> buffer(size);
     sourceFile.read(buffer.getElements(), buffer.getSize());
     sourceFile.close();
 
     FileOutputStream fos(destination, File::CREATE|File::TRUNCATE);
     Huffman huffman;
-    huffman.encode(fos, Cast::pointer<const uint8*>(buffer.getElements()), buffer.getSize());
+    huffman.encode(
+      fos,
+      buffer.getElements(),
+      buffer.getSize()
+    );
   }
   
-  void uncompress(const String& source, const String& destination) throw(InvalidFormat, IOException) {
+  void uncompress(
+    const String& source,
+    const String& destination) throw(InvalidFormat, IOException) {
     File sourceFile(source, File::READ, 0);
     
     unsigned long long size = sourceFile.getSize();
-    assert(size <= PrimitiveTraits<unsigned int>::MAXIMUM, IOException("File is too big for me", this));
+    assert(
+      size <= PrimitiveTraits<unsigned int>::MAXIMUM,
+      IOException("File is too big for me", this)
+    );
     
-    Allocator<char> buffer(size);
+    Allocator<uint8> buffer(size);
     sourceFile.read(buffer.getElements(), buffer.getSize());
     sourceFile.close();
     
     FileOutputStream fos(destination, File::CREATE|File::TRUNCATE);
     Huffman huffman;
-    huffman.decode(fos, Cast::pointer<const uint8*>(buffer.getElements()), buffer.getSize());
+    huffman.decode(fos, buffer.getElements(), buffer.getSize());
   }
 
   void random(const String& destination) throw(IOException) {
     Random random;
     unsigned int size = random.getInteger() % (64 * 1024);
     
-    Allocator<char> buffer(size);
+    Allocator<uint8> buffer(size);
     for (unsigned int i = 0; i < buffer.getSize(); ++i) {
       buffer.getElements()[i] = random.getInteger(); // slow
     }
@@ -98,7 +111,11 @@ public:
     String message = stream.getString();
     FileOutputStream fos(destination, File::CREATE|File::TRUNCATE);
     Huffman huffman;
-    huffman.encode(fos, Cast::pointer<const uint8*>(message.getElements()), message.getLength());
+    huffman.encode(
+      fos,
+      Cast::pointer<const uint8*>(message.getElements()),
+      message.getLength()
+    );
   }
   
   void main() throw() {

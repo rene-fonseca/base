@@ -56,7 +56,7 @@ public:
              << ENDL;
       } else {
         try {
-          Allocator<char> buffer(4096 * 4);
+          Allocator<uint8> buffer(4096 * 4);
           
           String filename = arguments[0];
           File file(filename, File::READ, 0);
@@ -65,9 +65,10 @@ public:
           
           unsigned long long offset = 0;
           while (offset < size) {
-            unsigned int blockSize = minimum<unsigned long long>(buffer.getSize(), size - offset);
+            unsigned int blockSize =
+              minimum<unsigned long long>(buffer.getSize(), size - offset);
             file.read(buffer.getElements(), blockSize);
-            MemoryDump dump(Cast::pointer<const uint8*>(buffer.getElements()), blockSize);
+            MemoryDump dump(buffer.getElements(), blockSize);
             dump.setWordSize(1);
             dump.setGlobalOffset(offset);
             fout << dump << ENDL;

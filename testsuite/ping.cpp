@@ -136,14 +136,14 @@ public:
     uint64 maximumTime = 0;
     uint64 totalTime = 0;
     
-    Allocator<char> outgoing(dataSize);
-    Allocator<char> incoming(dataSize);
-    fill<char>(outgoing.getElements(), outgoing.getSize(), 0);
+    Allocator<uint8> outgoing(dataSize);
+    Allocator<uint8> incoming(dataSize);
+    fill<uint8>(outgoing.getElements(), outgoing.getSize(), 0);
     
     while (!isTerminated() &&
            ((packetsToTransmit == 0) ||
             (packetsTransmitted < packetsToTransmit))) {
-      char* dest = outgoing.getElements();
+      uint8* dest = outgoing.getElements();
       *dest++ = packetsTransmitted;
       timeoutTimer.start();
       timer.start();
@@ -209,7 +209,8 @@ public:
   
   void help() throw() {
     version();
-    fout << getFormalName() << " [--help] [--port PORT] [--data SIZE] [--time MS] host" << ENDL;
+    fout << getFormalName()
+         << " [--help] [--port PORT] [--data SIZE] [--time MS] host" << ENDL;
   }
   
   void main() throw() {

@@ -46,7 +46,10 @@ public:
     @param nonblocking Specifies that the method may not block.
     @return The actual number of bytes written to the stream.
   */
-  virtual unsigned int write(const char* buffer, unsigned int size, bool nonblocking) throw(IOException) = 0;
+  virtual unsigned int write(
+    const uint8* buffer,
+    unsigned int size,
+    bool nonblocking) throw(IOException) = 0;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

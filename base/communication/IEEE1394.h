@@ -191,16 +191,20 @@ public:
   }
   
   /**
-    Returns the maximum payload for asynchronous packets for the specified speed.
+    Returns the maximum payload for asynchronous packets for the specified
+    speed.
   */
-  static inline unsigned int getMaximumAsyncPayloadForSpeed(Speed speed) throw() {
+  static inline unsigned int getMaximumAsyncPayloadForSpeed(
+    Speed speed) throw() {
     return 1 << (static_cast<unsigned int>(speed) + 9);
   }
   
   /**
-    Returns the maximum payload for isochronous packets for the specified speed.
+    Returns the maximum payload for isochronous packets for the specified
+    speed.
   */
-  static inline unsigned int getMaximumIsoPayloadForSpeed(Speed speed) throw() {
+  static inline unsigned int getMaximumIsoPayloadForSpeed(
+    Speed speed) throw() {
     return 1 << (static_cast<unsigned int>(speed) + 10);
   }
 
@@ -281,7 +285,10 @@ private:
 protected:
 
   // TAG: this does not belong here
-  inline unsigned int getBits(unsigned int value, unsigned int offset, unsigned int size) throw() {
+  inline unsigned int getBits(
+    unsigned int value,
+    unsigned int offset,
+    unsigned int size) throw() {
     return (value >> offset) & ((1 << size) - 1);
   }
   
@@ -291,7 +298,10 @@ protected:
     bool present;
     /** Specifies that the node has an active link and transaction layer. */
     bool link;
-    /** Specifies that the node is a contender for the bus manager or isochronous resource manager. */
+    /**
+      Specifies that the node is a contender for the bus manager or isochronous
+      resource manager.
+    */
     bool contender;
     /** The gap count. */
     unsigned int gapCount;
@@ -346,12 +356,12 @@ protected:
     ieee1394impl->read(
       node,
       IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BUS_INFO_GUID,
-      Cast::getCharAddress(guid[0]), sizeof(guid[0])
+      Cast::getAddress(guid[0]), sizeof(guid[0])
     );
     ieee1394impl->read(
       node,
       IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BUS_INFO_GUID + sizeof(Quadlet),
-      Cast::getCharAddress(guid[1]), sizeof(guid[1])
+      Cast::getAddress(guid[1]), sizeof(guid[1])
     );
     return EUI64(Cast::getAddress(guid[0]));
   }
@@ -379,7 +389,8 @@ public:
 public:
 
   /**
-    Returns a convenient string representation of the node id (e.g. "local:0" or "123:broadcast").
+    Returns a convenient string representation of the node id (e.g. "local:0"
+    or "123:broadcast").
 
     @param nodeId The node id.
   */
@@ -389,11 +400,14 @@ public:
     Returns the node id of the node with the desired role.
     
     @param role The role of the desired node.
-    @param busId The bus id of the bus ([0; 1023]). The default is the local bus.
+    @param busId The bus id of the bus ([0; 1023]). The default is the local
+    bus.
 
     @return Returns the broadcast id for the specified bus if no node is found.
   */
-  unsigned short findRole(Role role, unsigned int busId = LOCAL_BUS) throw(OutOfDomain, IEEE1394Exception);
+  unsigned short findRole(
+    Role role,
+    unsigned int busId = LOCAL_BUS) throw(OutOfDomain, IEEE1394Exception);
   
   /**
     Returns the number of nodes of the local bus.
@@ -454,12 +468,14 @@ public:
   unsigned int getBusTime(unsigned short node) throw(IEEE1394Exception);
 
   /**
-    Returns the available bandwidth from the current isochronous resource manager.
+    Returns the available bandwidth from the current isochronous resource
+    manager.
   */
   unsigned int getAvailableBandwidth() throw(IEEE1394Exception);
   
   /**
-    Returns the available isochronous channels from the current isochronous reource manager.
+    Returns the available isochronous channels from the current isochronous
+    reource manager.
   */
   uint64 getAvailableIsochronousChannels() throw(IEEE1394Exception);
   
@@ -483,14 +499,16 @@ public:
     @param a The physical id of the first node.
     @param b The physical id of the second node.
   */
-  Speed getMaximumSpeedBetweenNodes(unsigned int a, unsigned int b) const throw(OutOfDomain);
+  Speed getMaximumSpeedBetweenNodes(
+    unsigned int a, unsigned int b) const throw(OutOfDomain);
 
   /**
     Returns the maximum speed to the specified node.
 
     @param physicalId The physical id of the node.
   */
-  inline Speed getMaximumSpeedToNode(unsigned int physicalId) const throw(OutOfDomain) {
+  inline Speed getMaximumSpeedToNode(
+    unsigned int physicalId) const throw(OutOfDomain) {
     return getMaximumSpeedBetweenNodes(localId, physicalId);
   }
 
@@ -520,7 +538,8 @@ public:
   /**
     Initializes IEEE 1394 from other IEEE 1394 object.
   */
-  inline IEEE1394(const IEEE1394& copy) throw() : ieee1394impl(copy.ieee1394impl) {
+  inline IEEE1394(const IEEE1394& copy) throw()
+    : ieee1394impl(copy.ieee1394impl) {
   }
   
   /**
@@ -643,15 +662,16 @@ public:
   int getPhysicalId(const EUI64& guid) throw();
   
   /**
-    Returns a description of the specified node if available in the configuration ROM.
+    Returns a description of the specified node if available in the
+    configuration ROM.
     
     @param node The node id.
   */
   String getDescription(unsigned short node) throw(IEEE1394Exception);
 
   /**
-    Returns the keywords (separated by space) of the specified node if available
-    in the configuration ROM.
+    Returns the keywords (separated by space) of the specified node if
+    available in the configuration ROM.
     
     @param node The node id.
   */
@@ -677,7 +697,8 @@ public:
     
     @param physicalId The physical id of the node [0; 63[.
     
-    @return As a special case this method returns false for any invalid physical id.
+    @return As a special case this method returns false for any invalid
+    physical id.
   */
   inline bool isPresent(unsigned int physicalId) const throw() {
     return physicalId < numberOfNodes;
@@ -695,7 +716,8 @@ public:
 
     @param physicalId The physical id of the node [0; 63[.
   */
-  inline bool isLinkLayerActive(unsigned int physicalId) const throw(OutOfDomain) {
+  inline bool isLinkLayerActive(
+    unsigned int physicalId) const throw(OutOfDomain) {
     assert(physicalId < numberOfNodes, OutOfDomain(this));
     return nodes[physicalId].link;
   }
@@ -712,7 +734,8 @@ public:
     
     @param physicalId The physical id of the node [0; 63[.
   */
-  inline bool isContender(unsigned int physicalId) const throw(OutOfDomain) {    
+  inline bool isContender(
+    unsigned int physicalId) const throw(OutOfDomain) {
     assert(physicalId < numberOfNodes, OutOfDomain(this));
     return nodes[physicalId].contender;
   }
@@ -732,7 +755,8 @@ public:
 
     @param physicalId The physical id the node.
   */
-  inline unsigned int getGapCount(unsigned int physicalId) const throw(OutOfDomain) {
+  inline unsigned int getGapCount(
+    unsigned int physicalId) const throw(OutOfDomain) {
     assert(physicalId < numberOfNodes, OutOfDomain(this));
     return nodes[physicalId].gapCount;
   }
@@ -742,7 +766,8 @@ public:
 
     @param physicalId The physical id the node.
   */
-  inline unsigned int getNumberOfPorts(unsigned int physicalId) const throw(OutOfDomain) {
+  inline unsigned int getNumberOfPorts(
+    unsigned int physicalId) const throw(OutOfDomain) {
     assert(physicalId < numberOfNodes, OutOfDomain(this));
     return nodes[physicalId].numberOfPorts;
   }
@@ -753,8 +778,12 @@ public:
     @param physicalId The physical id of the node.
     @param port The port of the node.
   */
-  inline PortState getPortState(unsigned int physicalId, unsigned int port) const throw(OutOfDomain) {
-    assert((physicalId < numberOfNodes) && (port < nodes[physicalId].numberOfPorts), OutOfDomain(this));
+  inline PortState getPortState(
+    unsigned int physicalId, unsigned int port) const throw(OutOfDomain) {
+    assert(
+      (physicalId < numberOfNodes) && (port < nodes[physicalId].numberOfPorts),
+      OutOfDomain(this)
+    );
     return nodes[physicalId].ports[port];
   }
   
@@ -763,7 +792,8 @@ public:
 
     @param physicalId The physical id the node.
   */
-  inline unsigned int getLocalMaximumPayload(unsigned int physicalId) const throw(OutOfDomain) {
+  inline unsigned int getLocalMaximumPayload(
+    unsigned int physicalId) const throw(OutOfDomain) {
     assert(physicalId < numberOfNodes, OutOfDomain(this));
     return nodes[physicalId].maximumPayload;
   }
@@ -773,7 +803,8 @@ public:
 
     @param physicalId The physical id the node.
   */
-  inline PowerClass getPowerClass(unsigned int physicalId) const throw(OutOfDomain) {
+  inline PowerClass getPowerClass(
+    unsigned int physicalId) const throw(OutOfDomain) {
     assert(physicalId < numberOfNodes, OutOfDomain(this));
     return nodes[physicalId].powerClass;
   }
@@ -786,9 +817,15 @@ public:
     
     @return The quadlet in native byte order.
   */
-  inline uint32 getQuadlet(unsigned short node, uint32 offset) throw(IEEE1394Exception) {
+  inline uint32 getQuadlet(
+    unsigned short node, uint32 offset) throw(IEEE1394Exception) {
     Quadlet quadlet;
-    ieee1394impl->read(node, IEEE1394::CSR_BASE_ADDRESS + offset, Cast::getCharAddress(quadlet), sizeof(quadlet));
+    ieee1394impl->read(
+      node,
+      IEEE1394::CSR_BASE_ADDRESS + offset,
+      Cast::getAddress(quadlet),
+      sizeof(quadlet)
+    );
     return quadlet;
   }
 
@@ -800,7 +837,11 @@ public:
     @param buffer The data buffer.
     @param size The number of bytes to read.
   */
-  inline void read(unsigned short node, uint64 address, char* buffer, unsigned int size) throw(IEEE1394Exception) {
+  inline void read(
+    unsigned short node,
+    uint64 address,
+    uint8* buffer,
+    unsigned int size) throw(IEEE1394Exception) {
     ieee1394impl->read(node, address, buffer, size);
   }
 
@@ -812,22 +853,34 @@ public:
     @param buffer The data buffer.
     @param size The number of bytes to write.
   */
-  inline void write(unsigned short node, uint64 address, const char* buffer, unsigned int size) throw(IEEE1394Exception) {
+  inline void write(
+    unsigned short node,
+    uint64 address,
+    const uint8* buffer,
+    unsigned int size) throw(IEEE1394Exception) {
     ieee1394impl->write(node, address, buffer, size);
   }
 
   /**
-    Read data from device. This method is only used for debugging and development.
+    Read data from device. This method is only used for debugging and
+    development.
 
     @param node The node id of source node.
-    @param address The base address of the memory region to read from (must be a quadlet boundary).
+    @param address The base address of the memory region to read from (must be
+    a quadlet boundary).
     @param buffer The data buffer.
     @param size The number of quadlets to read (not bytes!). // TAG: FIXME
-    @param value The default value to store in the buffer for unsuccessful reads.
+    @param value The default value to store in the buffer for unsuccessful
+    reads.
     
     @return The number of quadlets read successfully.
   */
-  inline unsigned int read(unsigned short node, uint64 address, uint32* buffer, unsigned int size, uint32 value) throw(IEEE1394Exception) {
+  inline unsigned int read(
+    unsigned short node,
+    uint64 address,
+    uint32* buffer,
+    unsigned int size,
+    uint32 value) throw(IEEE1394Exception) {
     return ieee1394impl->read(node, address, buffer, size, value);
   }
   
@@ -835,9 +888,12 @@ public:
     Returns an isochronous read channel.
 
     @param maximumPacketsPerRequest The maximum number of packets per request.
-    @param subchannel Mask specifying the subchannel to reserve for this channel.
+    @param subchannel Mask specifying the subchannel to reserve for this
+    channel.
   */
-  inline IsochronousReadChannel getReadChannel(unsigned int maximumPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) {
+  inline IsochronousReadChannel getReadChannel(
+    unsigned int maximumPacketsPerRequest,
+    uint64 subchannels) throw(IEEE1394Exception) {
     return ieee1394impl->getReadChannel(maximumPacketsPerRequest, subchannels);
   }
   
@@ -845,13 +901,17 @@ public:
     Returns an isochronous write channel.
 
     @param maximumPacketsPerRequest The maximum number of packets per request.
-    @param subchannel Mask specifying the subchannel to reserve for this channel.
+    @param subchannel Mask specifying the subchannel to reserve for this
+    channel.
   */
-  inline IsochronousWriteChannel getWriteChannel(unsigned int maximumPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) {
+  inline IsochronousWriteChannel getWriteChannel(
+    unsigned int maximumPacketsPerRequest,
+    uint64 subchannels) throw(IEEE1394Exception) {
     return ieee1394impl->getWriteChannel(maximumPacketsPerRequest, subchannels);
   }
 
-  inline bool wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) {
+  inline bool wait(
+    unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) {
     return ieee1394impl->wait(milliseconds);
   }
   
@@ -859,7 +919,8 @@ public:
     ieee1394impl->dequeue();
   }
   
-  inline void registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception) {
+  inline void registerFCPListener(
+    FunctionControlProtocolListener* listener) throw(IEEE1394Exception) {
     ieee1394impl->registerFCPListener(listener);
   }
   
@@ -867,7 +928,10 @@ public:
     ieee1394impl->unregisterFCPListener();
   }
 
-  inline void readIsochronous(unsigned int channel, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) {
+  inline void readIsochronous(
+    unsigned int channel,
+    IsochronousChannelListener* listener
+  ) throw(OutOfDomain, IEEE1394Exception) {
     unsigned int maximumPayload = getMaximumIsoPayloadForSpeed(
       getMaximumSpeed(getLocalId())
     ); // in bytes

@@ -40,11 +40,11 @@ public:
   static const unsigned int WINDOW_SIZE = 4096;
 protected:
 
-  typedef Allocator<char>::Iterator Iterator;
-  typedef Allocator<char>::ReadIterator ReadIterator;
+  typedef Allocator<uint8>::Iterator Iterator;
+  typedef Allocator<uint8>::ReadIterator ReadIterator;
 
   /** The internal buffer. */
-  Allocator<char> buffer;
+  Allocator<uint8> buffer;
   /** The current write position. */
   Iterator head;
   /** The current read position. */
@@ -53,12 +53,14 @@ protected:
   String line;
   
   /**
-    Fills the internal buffer with bytes from the input stream. Removes any characters already in the buffer.
+    Fills the internal buffer with bytes from the input stream. Removes any
+    characters already in the buffer.
   */
   bool overwriteFromSource() throw(IOException);
 
   /**
-    Fills the internal buffer with bytes from the input stream without removing any characters already in the buffer.
+    Fills the internal buffer with bytes from the input stream without removing
+    any characters already in the buffer.
   */
   bool appendFromSource() throw(IOException);
 public:
@@ -71,7 +73,8 @@ public:
   FormatInputStream(InputStream& in) throw(BindException);
 
   /**
-    Returns the number of bytes that can be read or skipped over without blocking.
+    Returns the number of bytes that can be read or skipped over without
+    blocking.
 
     @return Available number of bytes in stream.
   */
@@ -98,14 +101,19 @@ public:
   String getLine() throw(IOException);
 
   /**
-    Fills the specified buffer with bytes from the stream. Blocks if asked to read more bytes than available.
+    Fills the specified buffer with bytes from the stream. Blocks if asked to
+    read more bytes than available.
 
     @param buffer The buffer to receive the bytes.
     @param size The size of the buffer.
-    @param nonblocking Specifies that the method may not block. Default is false.
+    @param nonblocking Specifies that the method may not block. Default is
+    false.
     @return The actual number of bytes read from the stream.
   */
-  unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
+  unsigned int read(
+    uint8* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(IOException);
 
   /**
     Destroys the format input stream.
@@ -122,17 +130,21 @@ extern FormatInputStream fin;
 /**
   Reads one character from the format input stream.
 */
-FormatInputStream& operator>>(FormatInputStream& stream, char& value) throw(IOException);
+FormatInputStream& operator>>(
+  FormatInputStream& stream, char& value) throw(IOException);
 
 /**
   Reads one line from the format input stream.
 */
-FormatInputStream& operator>>(FormatInputStream& stream, String& value) throw(IOException);
+FormatInputStream& operator>>(
+  FormatInputStream& stream, String& value) throw(IOException);
 
 /**
   Reads unsigned int from the format input stream.
 */
-FormatInputStream& operator>>(FormatInputStream& stream, unsigned int& value) throw(InvalidFormat, IOException);
+FormatInputStream& operator>>(
+  FormatInputStream& stream,
+  unsigned int& value) throw(InvalidFormat, IOException);
 
 //FormatInputStream& operator>>(FormatInputStream& stream, short int& value);
 //FormatInputStream& operator>>(FormatInputStream& stream, unsigned short int& value);

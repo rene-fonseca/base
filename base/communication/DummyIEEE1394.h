@@ -99,9 +99,14 @@ public:
     @param node The node id of source node.
     @param address The base address of the memory region to read from.
     @param buffer The data buffer.
-    @param size The number of bytes to read (must be an integral number of quadlets).
+    @param size The number of bytes to read (must be an integral number of
+    quadlets).
   */
-  void read(unsigned short node, uint64 address, char* buffer, unsigned int size) throw(IEEE1394Exception);
+  void read(
+    unsigned short node,
+    uint64 address,
+    uint8* buffer,
+    unsigned int size) throw(IEEE1394Exception);
 
   /**
     Write data to device.
@@ -109,46 +114,70 @@ public:
     @param node The node id of destination node.
     @param address The base address of the memory region to write to.
     @param buffer The data buffer.
-    @param size The number of bytes to write (must be an integral number of quadlets).
+    @param size The number of bytes to write (must be an integral number of
+    quadlets).
   */
-  void write(unsigned short node, uint64 address, const char* buffer, unsigned int size) throw(IEEE1394Exception);
+  void write(
+    unsigned short node,
+    uint64 address,
+    const uint8* buffer,
+    unsigned int size) throw(IEEE1394Exception);
 
   /**
-    Read data from device. This method is only used for debugging and development.
+    Read data from device. This method is only used for debugging and
+    development.
 
     @param node The node id of source node.
-    @param address The base address of the memory region to read from (must be a quadlet boundary).
+    @param address The base address of the memory region to read from (must be
+    a quadlet boundary).
     @param buffer The data buffer.
     @param size The number of quadlets to read (not bytes!).
-    @param value The default value to store in the buffer for unsuccessful reads.
+    @param value The default value to store in the buffer for unsuccessful
+    reads.
     
     @return The number of quadlets read successfully.
   */
-  unsigned int read(unsigned short node, uint64 address, uint32* buffer, unsigned int size, uint32 value) throw(IEEE1394Exception);
+  unsigned int read(
+    unsigned short node,
+    uint64 address,
+    uint32* buffer,
+    unsigned int size,
+    uint32 value) throw(IEEE1394Exception);
 
   /**
     Returns an isochronous read channel.
 
     @param maxPacketsPerRequest The maximum number of packets per request.
-    @param subchannel Mask specifying the subchannel to reserve for this channel.
+    @param subchannel Mask specifying the subchannel to reserve for this
+    channel.
   */
-  IsochronousReadChannel getReadChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception);
+  IsochronousReadChannel getReadChannel(
+    unsigned int maxPacketsPerRequest,
+    uint64 subchannels) throw(IEEE1394Exception);
   
   /**
     Returns an isochronous write channel.
 
     @param maxPacketsPerRequest The maximum number of packets per request.
-    @param subchannel Mask specifying the subchannel to reserve for this channel.
+    @param subchannel Mask specifying the subchannel to reserve for this
+    channel.
   */
-  IsochronousWriteChannel getWriteChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception);
+  IsochronousWriteChannel getWriteChannel(
+    unsigned int maxPacketsPerRequest,
+    uint64 subchannels) throw(IEEE1394Exception);
   
-  void readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception);
+  void readIsochronous(
+    unsigned int channel,
+    unsigned int maximumPayload,
+    IsochronousChannelListener* listener
+  ) throw(OutOfDomain, IEEE1394Exception);
 
   bool wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception);
   
   void dequeue() throw(IEEE1394Exception);
   
-  void registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception);
+  void registerFCPListener(
+    FunctionControlProtocolListener* listener) throw(IEEE1394Exception);
   
   void unregisterFCPListener() throw(IEEE1394Exception);
 };

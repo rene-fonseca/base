@@ -11,7 +11,6 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/net/InetEndPoint.h>
 #include <base/Integer.h>
 
@@ -33,7 +32,7 @@ InetEndPoint::InetEndPoint(const InetAddress& address, const String& service) th
   try {
     Integer integer(service);
     if ((integer < 0) || (integer > 0xffff)) {
-      throw ServiceNotFound("Port is out of range");
+      throw ServiceNotFound("Port is out of range", this);
     }
     port = integer;
   } catch(InvalidFormat& e) {
@@ -46,7 +45,7 @@ InetEndPoint::InetEndPoint(const String& host, const String& service) throw(Serv
   try {
     Integer integer(service);
     if ((integer < 0) || (integer > 0xffff)) {
-      throw ServiceNotFound("Port is out of range");
+      throw ServiceNotFound("Port is out of range", this);
     }
     port = integer;
   } catch(InvalidFormat& e) {
@@ -78,7 +77,8 @@ void InetEndPoint::setPort(unsigned short value) throw() {
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const InetEndPoint& value) {
-  return stream << value.getAddress() << ":" << value.getPort();
+  FormatOutputStream::PushContext push(stream);
+  return stream << value.getAddress() << ':' << value.getPort();
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

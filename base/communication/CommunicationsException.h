@@ -21,6 +21,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Exception thrown by communications ports.
 
+  @short General communications exception
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

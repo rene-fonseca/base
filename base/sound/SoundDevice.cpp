@@ -15,6 +15,7 @@
 #include <base/UnexpectedFailure.h>
 #include <base/io/IOException.h>
 #include <base/sound/SoundDevice.h>
+#include <base/concurrency/ExclusiveSynchronize.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #define NO_STRICT
@@ -52,6 +53,8 @@ void SoundDevice::reacquireAccess(unsigned int access) throw(NotSupported) {
   // guarded externally
   if (this->access != access) {
     this->access = access;
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
+  #if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
     deviceDescriptor.close(); // must close before reopening
     if (access != 0) { // only open if required
       int flags;
@@ -70,39 +73,37 @@ void SoundDevice::reacquireAccess(unsigned int access) throw(NotSupported) {
       assert(handle != OperatingSystem::INVALID_HANDLE, NotSupported());
       deviceDescriptor.setHandle(handle);
     }
+  #endif // os
+#endif // flavour
   }
 }
 
 void SoundDevice::acquireReadAccess() throw(IOException) {
-  exclusiveLock();
+  ExclusiveSynchronize<SoundDevice> exclusiveSynchronize(*this);
   if (!isReadable()) {
     reacquireAccess(access | READ);
   }
-  releaseLock();
 }
 
 void SoundDevice::relinquishReadAccess() throw(IOException) {
-  exclusiveLock();
+  ExclusiveSynchronize<SoundDevice> exclusiveSynchronize(*this);
   if (isReadable()) {
     reacquireAccess(access & ~READ);
   }
-  releaseLock();
 }
 
 void SoundDevice::acquireWriteAccess() throw(IOException) {
-  exclusiveLock();
+  ExclusiveSynchronize<SoundDevice> exclusiveSynchronize(*this);
   if (!isWriteable()) {
     reacquireAccess(access | WRITE);
   }
-  releaseLock();
 }
 
 void SoundDevice::relinquishWriteAccess() throw(IOException) {
-  exclusiveLock();
+  ExclusiveSynchronize<SoundDevice> exclusiveSynchronize(*this);
   if (isWriteable()) {
     reacquireAccess(access & ~WRITE);
   }
-  releaseLock();
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -4,4 +4,4 @@ DEFS = @DEFS@
 
 noinst_LTLIBRARIES = libcollection.la
 
-libcollection_la_SOURCES = EndOfEnumeration.cpp InvalidEnumeration.cpp InvalidKey.cpp InvalidNode.cpp
+libcollection_la_SOURCES = EndOfEnumeration.cpp InvalidEnumeration.cpp InvalidKey.cpp InvalidNode.cpp BitSet.cpp

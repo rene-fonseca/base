@@ -33,10 +33,7 @@ protected:
   void* graphicsContextHandle;
   /** Opaque handle to OpenGL rendering context. */
   void* renderingContextHandle;
-  /** The number of overlay planes. */
-  unsigned int numberOfOverlayPlanes;
-  /** The number of underlay planes. */
-  unsigned int numberOfUnderlayPlanes;
+  unsigned int flags;
   uint8 colorBits;
   uint8 redBits;
   uint8 redShift;
@@ -54,6 +51,10 @@ protected:
   uint8 depthBits;
   uint8 stencilBits;
   uint8 auxBuffers;
+  /** The number of overlay planes. */
+  unsigned int numberOfOverlayPlanes;
+  /** The number of underlay planes. */
+  unsigned int numberOfUnderlayPlanes;
 
   /**
     Loads the OpenGL module.
@@ -63,8 +64,8 @@ public:
 
   /** OpenGL format flags. */
   enum Flag {
-    COLOR_INDEX = 1, /**< Color index. */
-    DOUBLE_BUFFERED = COLOR_INDEX << 1, /**< Request double buffered. */
+    COLOR_INDEXED = 1, /**< Color index. */
+    DOUBLE_BUFFERED = COLOR_INDEXED << 1, /**< Request double buffered. */
     ACCUMULATOR = DOUBLE_BUFFERED << 1, /**< Accumulator. */
     ALPHA = ACCUMULATOR << 1, /**< Request alpha/transparency support. */
     DEPTH = ALPHA << 1, /**< Depth buffer support. */
@@ -74,15 +75,30 @@ public:
     STEREO = MULTI_SAMPLE << 1, /**< Stereo support. */
     LUMINANCE = STEREO << 1, /**< Luminance support. */
     RGB = LUMINANCE << 1,
-    RGB15 = RGB << 1,
-    RGB16 = RGB15 << 1,
-    RGB24 = RGB16 << 1,
-    RGBA32 = RGB24 << 1,
-    OVERLAY = RGBA32 << 1,
+    OVERLAY = RGB << 1,
     UNDERLAY = OVERLAY << 1,
     SWAP_LAYER, /**< Swap individual layers. */
     DIRECT = UNDERLAY << 1, /**< Direct rendering support (accelerated). */
     GENERIC = DIRECT << 1 /**< Generic implementation. */
+  };
+
+  /** Format descriptor. */
+  struct Format {
+    unsigned int id;
+    unsigned int flags;
+    uint8 colorBits;
+    uint8 redBits;
+    uint8 greenBits;
+    uint8 blueBits;
+    uint8 alphaBits;
+    uint8 accumulatorBits;
+    uint8 accumulatorRedBits;
+    uint8 accumulatorGreenBits;
+    uint8 accumulatorBlueBits;
+    uint8 accumulatorAlphaBits;
+    uint8 depthBits;
+    uint8 stencilBits;
+    uint8 auxBuffers;
   };
   
   /**
@@ -134,38 +150,180 @@ public:
     return numberOfUnderlayPlanes;
   }
 
+  /**
+    Returns true is the context is double buffered.
+  */
   inline bool isDoubleBuffered() const throw() {
-    return false; // TAG: fixme
-  }
-  
-  inline bool isRGBA() const throw() {
-    return false; // TAG: fixme
-  }  
-  
-  inline bool hasAlphaBuffer() const throw() {
-    return alphaBits;
-  }
-  
-  inline bool hasAccumulatorBuffer() const throw() {
-    return accumulatorBits;
-  }
-  
-  inline bool hasDepthBuffer() const throw() {
-    return depthBits;
-  }
-  
-  inline bool hasStencilBuffer() const throw() {
-    return stencilBits;
-  }
-  
-  inline bool hasAuxBuffers() const throw() {
-    return auxBuffers;
+    return flags & DOUBLE_BUFFERED;
   }
 
   /**
-    Returns true if context is a direct rendering context.
+    Returns true if the context is color indexed.
   */
-  bool isDirect() const throw(OpenGLException);
+  inline bool isColorIndexed() const throw() {
+    return flags & COLOR_INDEXED;
+  }
+
+  /**
+    Returns true if the context is stereoscopic.
+  */
+  inline bool isStereoscopic() const throw() {
+    return flags & STEREO;
+  }
+  
+  /**
+    Returns true if the context is direct (accelerated).
+  */
+  inline bool isDirect() const throw() {
+    return flags & DIRECT;
+  }
+  
+  /**
+    Returns true if the context is the generic implementation.
+  */
+  inline bool isGeneric() const throw() {
+    return flags & GENERIC;
+  }
+  
+  /**
+    Returns true if the multi sample.
+  */
+  inline bool isMultiSampled() const throw() {
+    return flags & MULTI_SAMPLE;
+  }
+  
+  /**
+    Returns true if the layers may be swapped individually.
+  */
+  inline bool isSwapLayers() const throw() {
+    return flags & SWAP_LAYER;
+  }
+  
+  /**
+    Returns true is alpha buffer is available.
+  */
+  inline bool hasAlphaBuffer() const throw() {
+    return alphaBits;
+  }  
+
+  /**
+    Returns the number of color bits (excluding the alpha bits).
+  */
+  inline unsigned int getNumberOfColorBits() const throw() {
+    return colorBits;
+  }
+
+  /**
+    Returns the number of red bits.
+  */
+  inline unsigned int getNumberOfRedBits() const throw() {
+    return redBits;
+  }
+  
+  /**
+    Returns the number of green bits.
+  */
+  inline unsigned int getNumberOfGreenBits() const throw() {
+    return greenBits;
+  }
+  
+  /**
+    Returns the number of blue bits.
+  */
+  inline unsigned int getNumberOfBlueBits() const throw() {
+    return blueBits;
+  }
+
+  /**
+    Returns the number of alpha bits.
+  */
+  inline unsigned int getNumberOfAlphaBits() const throw() {
+    return alphaBits;
+  }
+
+  /**
+    Returns true if an accumulator buffer is available.
+  */
+  inline bool hasAccumulatorBuffer() const throw() {
+    return accumulatorBits;
+  }
+
+  /**
+    Returns the number of accumulator bits.
+  */
+  inline unsigned int getNumberOfAcculumatorBits() const throw() {
+    return accumulatorBits;
+  }
+
+  /**
+    Returns the number of red bits for the accumulator buffer.
+  */
+  inline unsigned int getNumberOfAcculumatorRedBits() const throw() {
+    return accumulatorRedBits;
+  }
+  
+  /**
+    Returns the number of green bits for the accumulator buffer.
+  */
+  inline unsigned int getNumberOfAcculumatorGreenBits() const throw() {
+    return accumulatorGreenBits;
+  }
+  
+  /**
+    Returns the number of blue bits for the accumulator buffer.
+  */
+  inline unsigned int getNumberOfAcculumatorBlueBits() const throw() {
+    return accumulatorBlueBits;
+  }
+
+  /**
+    Returns the number of alpha bits for the accumulator buffer.
+  */
+  inline unsigned int getNumberOfAcculumatorAlphaBits() const throw() {
+    return accumulatorAlphaBits;
+  }
+  
+  /**
+    Returns true if depth buffer is available.
+  */
+  inline bool hasDepthBuffer() const throw() {
+    return depthBits;
+  }
+
+  /**
+    Returns the number of depth bits.
+  */
+  inline unsigned int getNumberOfDepthBits() const throw() {
+    return depthBits;
+  }
+
+  /**
+    Returns true if stencil buffer is available.
+  */
+  inline bool hasStencilBuffer() const throw() {
+    return stencilBits;
+  }
+
+  /**
+    Returns the number of stencil bits.
+  */
+  inline bool getNumberOfStencilBits() const throw() {
+    return stencilBits;
+  }
+
+  /**
+    Returns true if auxiliary buffers are available.
+  */
+  inline bool hasAuxBuffers() const throw() {
+    return auxBuffers;
+  }
+  
+  /**
+    Returns the number of auxiliary buffers.
+  */
+  inline unsigned int getNumberOfAuxBuffers() const throw() {
+    return auxBuffers;
+  }
   
   /**
     Returns true if the executing thread has an associated OpenGL context.

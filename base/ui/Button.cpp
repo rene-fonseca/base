@@ -17,71 +17,66 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Button::Button(Window& owner) throw(UserInterfaceException)
   : Widget(owner),
-    brush(WINDOW_BACKGROUND) {
+    grayedBrush(Color(192, 192, 192)),
+    pressedBrush(Color(64, 96, 192)),
+    highlightBrush(Color(128, 160, 255)),
+    lightPen(Color(192, 192, 255)),
+    darkPen(Color(16, 32, 128)),
+    normalTextColor(0, 0, 0),
+    pressedTextColor(128, 160, 255),
+    grayed(false),
+    pressed(false),
+    highlighted(false) {
+  setBrush(Color(96, 128, 255));
+  setFont(Font(MESSAGE("Arial"), 14, HEAVY));
   setBackgroundMode(true);
-}
-
-void Button::setBackground(Color background) throw(UserInterfaceException) {
-  if (background != this->background) {
-    this->background = background;
-    brush = Brush(background);
-    onDisplay();
-  }
-}
-
-void Button::setTextColor(Color textColor) throw(UserInterfaceException) {
-  if (textColor != this->textColor) {
-    this->textColor = textColor;
-    setTextColor(textColor);
-    onDisplay();
-  }
 }
 
 void Button::setText(const String& text) throw(UserInterfaceException) {
   if (text != this->text) {
     this->text = text;
-    // pre calc.
-    onDisplay();
+    invalidate();
   }
 }
 
-void Button::onResize(const Dimension& dimension) throw() {
-  onDisplay();
+Dimension Button::getPreferredSize() throw(UserInterfaceException) {
+  Dimension dimension = getDimensionOf(text);
+  return Dimension(
+    dimension.getWidth() + 2 * PREFERRED_HORIZONTAL_MARGIN,
+    dimension.getHeight() + 2 * PREFERRED_VERTICAL_MARGIN
+  );
 }
 
 void Button::onMouseScope(bool scope) throw() {
-  fout << MESSAGE("Button: Mouse scope: ") << scope << ENDL;
-  if (scope) {
-    brush = Brush(Color(0x50, 0x80, 0xff));
-  } else {
-    brush = Brush(Color(0x30, 0x60, 0xe0));
-  }
-  //highlight = scope;
-  onDisplay();
-}
-
-void Button::onMouseMove(const Position& position, unsigned int state) throw() {
-  fout << MESSAGE("Button: Mouse motion event: ") << position << ENDL;
+  highlighted = scope;
+  invalidate();
 }
 
 void Button::onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) throw() {
-  fout << MESSAGE("Button: Mouse button event: ") << position << ENDL;
   if (button == Mouse::LEFT) {
     if (event == Mouse::PRESSED) {
       pressed = true;
-      brush = Brush(Color(0x10, 0x40, 0xc0));
+      setTextColor(pressedTextColor);
       setCapture(true);
     } else if (event == Mouse::RELEASED) {
-      pressed = false;
-      brush = Brush(Color(0x30, 0x60, 0xe0));
-      if ((position.getX() >= 0) && (position.getY() >= 0)) {
-        // index getDimension
+      if (pressed) {
+        pressed = false;
+        setTextColor(normalTextColor);
+        if (position.isWithin(getDimension())) {
+          highlighted = true;
+          onSelection();
+        } else {
+          highlighted = false;
+        }
+        setCapture(false);
       }
-      // if inside window then selected onButton()
-      setCapture(false);
     }
-    onDisplay();
+    invalidate();
   }
+}
+
+void Button::onSelection() throw() {
+  fout << MESSAGE("Button: Selection event") << ENDL;
 }
 
 void Button::onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
@@ -90,20 +85,63 @@ void Button::onKey(unsigned int key, unsigned int flags, unsigned int modifiers)
       return;
     }
     if (key == Key::SPACE) {
-      // send select event to listener
+      // when released
+      onSelection();
     }
   }
 }
 
 void Button::onDisplay() throw() {
-  // if has focus then draw box
-  rectangle(Position(0, 0), Position(256, 256), brush);
-  Widget::text(
-    Position(0, 0),
-    getDimension(),
-    text,
-    TextFormat::CENTER|TextFormat::MIDDLE|TextFormat::PREFIX
-  );
+  // focus, normal, pressed, highlighted
+  // 0: enabled, disabled (ignore all other)
+  // 1: focus (mark button), no focus
+  // 2: over (highlight), not over
+  // 3: pressed (always over), not pressed (use over/not over)  
+  
+  Position upperLeft = Position(0, 0);
+  Position lowerRight = getLocalBindingOffset(LOWER_RIGHT);
+  if (pressed) {
+    // draw sunken frame
+    setPen(darkPen);
+    line(getLocalBindingOffset(LOWER_LEFT), upperLeft);
+    line(upperLeft, getLocalBindingOffset(UPPER_RIGHT));
+    setPen(lightPen);
+    line(getLocalBindingOffset(UPPER_RIGHT), lowerRight);
+    line(lowerRight, getLocalBindingOffset(LOWER_LEFT));    
+  } else {
+    // draw raised frame
+    setPen(lightPen);
+    line(getLocalBindingOffset(LOWER_LEFT), upperLeft);
+    line(upperLeft, getLocalBindingOffset(UPPER_RIGHT));
+    setPen(darkPen);
+    line(getLocalBindingOffset(UPPER_RIGHT), lowerRight);
+    line(lowerRight, getLocalBindingOffset(LOWER_LEFT));
+  }
+  
+  upperLeft += Position(1, 1);
+  lowerRight -= Position(1, 1);
+  if (lowerRight.isAfter(upperLeft)) {
+    if (!grayed) {
+      if (pressed) {
+        rectangle(upperLeft, lowerRight, pressedBrush);
+      } else {
+        if (highlighted) {
+          rectangle(upperLeft, lowerRight, highlightBrush);
+        } else {
+          rectangle(upperLeft, lowerRight, getBrush()); // normal
+        }
+      }
+      Widget::text(
+        upperLeft,
+        upperLeft.getDimension(lowerRight),
+        text,
+        TextFormat::CENTER|TextFormat::MIDDLE|TextFormat::PREFIX
+      );
+    } else {
+      rectangle(upperLeft, lowerRight, grayedBrush);
+      // TAG: draw grayed text
+    }
+  }
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

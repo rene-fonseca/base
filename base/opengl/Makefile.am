@@ -18,10 +18,12 @@ noinst_LTLIBRARIES = libopengl.la
 libopengl_la_SOURCES = OpenGL.cpp \
                        OpenGLContext.cpp \
                        OpenGLContextImpl.cpp \
-                       OpenGLPixmapContext.cpp
+                       OpenGLPixmapContext.cpp \
+                       OpenGLWidget.cpp
 
 sectiondir = $(includedir)/base/opengl
 section_HEADERS = OpenGL.h \
                   OpenGLContext.h \
                   OpenGLContextImpl.h \
-                  OpenGLPixmapContext.h
+                  OpenGLPixmapContext.h \
+                  OpenGLWidget.h

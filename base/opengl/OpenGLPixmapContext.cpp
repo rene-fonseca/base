@@ -95,7 +95,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
   }
   if (flags & OpenGLContextImpl::LUMINANCE) {
   }
-  pfd.iPixelType = (flags & OpenGLContextImpl::COLOR_INDEX) ? PFD_TYPE_COLORINDEX : PFD_TYPE_RGBA;    
+  pfd.iPixelType = (flags & OpenGLContextImpl::COLOR_INDEXED) ? PFD_TYPE_COLORINDEX : PFD_TYPE_RGBA;    
   
   int index;
   if (!(index = ::ChoosePixelFormat((HDC)graphicsContextHandle, &pfd))) {
@@ -167,7 +167,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
     *dest++ = GLX_USE_GL;
     *dest++ = GLX_LEVEL;
     *dest++ = 0; // main layer
-    if (flags & OpenGLContextImpl::COLOR_INDEX) {
+    if (flags & OpenGLContextImpl::COLOR_INDEXED) {
       *dest++ = GLX_BUFFER_SIZE;
       *dest++ = 1; // TAG: fixme
     } else {
@@ -186,7 +186,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
       *dest++ = GLX_STEREO;
     }
     if (flags & OpenGLContextImpl::ACCUMULATOR) {
-      if (flags & OpenGLContextImpl::COLOR_INDEX) {
+      if (flags & OpenGLContextImpl::COLOR_INDEXED) {
       } else {
         *dest++ = GLX_ACCUM_RED_SIZE;
         *dest++ = 1;
@@ -298,8 +298,8 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
 }
 
 OpenGLPixmapContext::OpenGLPixmapContext(const Dimension& dimension, unsigned int flags) throw(OpenGLException)
-  : prefixInitialization(initialize(dimension, flags)),
-    OpenGLContextImpl() {
+  : OpenGLContextImpl(),
+    prefixInitialization(initialize(dimension, flags)) {
 }
 
 OpenGLPixmapContext::~OpenGLPixmapContext() throw() {

@@ -84,28 +84,44 @@ public:
   }
   
   /**
-    Returns true if the position if with the rectangle specified by the corners
-    a and b.
-
-    @param a Corner.
-    @param b Corner.
+    Returns true if the position is contained in the bounding rectangle
+    specified by the upper left and lower right corners.
+    
+    @param upperLeft The upper left corner.
+    @param lowerRight The lower right corner.
   */
-  inline bool isWithin(const Position& a, const Position& b) const throw() {
-    return (x >= a.x) && (y >= a.y) && (x <= b.x) && (y <= b.y);
+  inline bool isWithin(const Position& upperLeft, const Position& lowerRight) const throw() {
+    return (x >= upperLeft.x) &&
+      (y >= upperLeft.y) &&
+      (x <= lowerRight.x) &&
+      (y <= lowerRight.y);
   }
 
   /**
-    Returns true if the position if with the rectangle specified by the upper
-    left corner and the dimension.
+    Returns true if the position is contained in the bounding rectangle
+    specified by the upper left corner and the dimension.
     
-    @param position Upper left corner.
-    @param dimension Dimension of the rectangle.
+    @param position Upper left corner of the bounding rectangle.
+    @param dimension Dimension of the bounding rectangle.
   */
   inline bool isWithin(const Position& position, const Dimension& dimension) const throw() {
     return (x >= position.x) &&
       (y >= position.y) &&
       (x < static_cast<int>(position.x + dimension.getWidth())) &&
       (y < static_cast<int>(position.y + dimension.getHeight()));
+  }
+  
+  /**
+    Returns true if the position is contained in the bounding rectangle given by
+    the upper left corner (0, 0) and the specified dimension.
+    
+    @param dimension Dimension of the bounding rectangle.
+  */
+  inline bool isWithin(const Dimension& dimension) const throw() {
+    return (x >= 0) &&
+      (y >= 0) &&
+      (static_cast<unsigned int>(x) < dimension.getWidth()) &&
+      (static_cast<unsigned int>(y) < dimension.getHeight());
   }
 
   /**
@@ -245,12 +261,26 @@ public:
   }
 
   /**
+    Returns true if the position is after the specified position.
+  */
+  inline bool isAfter(const Position& position) const throw() {
+    return (x > position.x) && (y > position.y);
+  }
+  
+  /**
+    Returns true if the position is before the specified position.
+  */
+  inline bool isBefore(const Position& position) const throw() {
+    return (x < position.x) || (y < position.y);
+  }
+  
+  /**
     Returns the dimension of the rectangle from this position (upper left) to
     the specified lower right corner.
     
     @param position The lower right corner.
   */
-  inline Dimension getDimension(const Position& position) throw() {
+  inline Dimension getDimension(const Position& position) const throw() {
     const Position temp(position.x - x, position.y - y);
     return Dimension(maximum(temp.x, 0), maximum(temp.y, 0));
   }

@@ -70,17 +70,15 @@ void ProgressBar::setMaximumValue(unsigned int value) throw() {
 
 void ProgressBar::onDisplay() throw() {
   const unsigned int value = minimum(currentValue, maximumValue);
-  
-  // draw raised/sunken frame  
+
+  // draw raised frame
   setPen(darkPen);
+  line(getLocalBindingOffset(LOWER_LEFT), Position(0, 0));
   line(Position(0, 0), getLocalBindingOffset(UPPER_RIGHT));
-  line(Position(0, 0), getLocalBindingOffset(LOWER_LEFT));
-
   Position lowerRight = getLocalBindingOffset(LOWER_RIGHT);
-
   setPen(lightPen);
-  line(lowerRight, getLocalBindingOffset(UPPER_RIGHT));
-  line(getLocalBindingOffset(LOWER_LEFT), lowerRight);
+  line(getLocalBindingOffset(UPPER_RIGHT), lowerRight);
+  line(lowerRight, getLocalBindingOffset(LOWER_LEFT));
   
   Dimension dimension = getDimension();
   if ((dimension.getWidth() > 2) && (dimension.getHeight() > 2)) {

@@ -711,7 +711,7 @@ bool OpenGL::isSupported(const String& name) throw(OpenGLException) {
   assert(name.isProper() && (name.indexOf(' ') < 0), OpenGLException(Type::getType<OpenGL>()));
   const GLubyte* extensions = glGetString(OpenGL::EXTENSIONS);
   String temp(Cast::pointer<const char*>(extensions));
-  int start = 0;
+  unsigned int start = 0;
   while (true) {
     int index = temp.indexOf(name, start);
     if (index < 0) {

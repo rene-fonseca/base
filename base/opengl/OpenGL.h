@@ -3076,8 +3076,6 @@ public:
   typedef void (CALL_OPENGL *WindowPos3sv)(const GLshort* p);
   WindowPos3sv glWindowPos3sv;
   
-  // public: inline const GLubyte* glGetString(GLenum name) throw() {return x::glGetString(name);}
-
   /**
     Defines the 2D orthographic projection matrix.
   */
@@ -3090,6 +3088,14 @@ public:
   */
   void lookAt(const Vector3D<double>& eye, const Vector3D<double>& center, const Vector3D<double>& up) throw();
 
+  /**
+    Sets the perspective projection matrix.
+
+    @param fovy The field of view angle in degrees.
+    @param aspectRatio The aspect ratio.
+    @param zNear Distance from the viewer to the near clipping plane.
+    @param zFar Distance from the viewer to the far clipping plane.
+  */
   void perspective(GLdouble fovy, GLdouble aspectRatio, GLdouble zNear, GLdouble zFar) throw();
   
   Vector3D<double> project(Vector3D<double> object, const Matrix4x4<double> model, const Matrix4x4<double> projection, const GLint viewport[4]) throw(OpenGLException);
@@ -3101,10 +3107,10 @@ public:
   /**
     Draws a box.
     
-    @width The width of the box.
-    @length The length of the box.
-    @height The height of the box.
-    @flags The flags.
+    @param width The width of the box.
+    @param length The length of the box.
+    @param height The height of the box.
+    @param flags The flags.
   */
   void box(double width, double length, double height, unsigned int flags) throw();
   
@@ -3224,7 +3230,8 @@ public:
     OpenGL& openGL;
   public:
     
-    inline DisplayList(OpenGL& _openGL, GLuint list, GLenum mode = OpenGL::COMPILE) throw() : openGL(_openGL) {
+    inline DisplayList(OpenGL& _openGL, GLuint list, GLenum mode = OpenGL::COMPILE) throw()
+      : openGL(_openGL) {
       openGL.glNewList(list, mode);
     }
     
@@ -3233,6 +3240,62 @@ public:
     }
   };
 
+  class ReserveDisplayLists : public Object {
+  private:
+    
+    OpenGL& openGL;
+    unsigned int offset;
+    unsigned int numberOfLists;
+    Allocator<unsigned int> objects;
+  public:
+    
+    inline ReserveDisplayLists(OpenGL& _openGL, unsigned int _numberOfLists) throw(OutOfDomain, OpenGLException)
+      : openGL(_openGL),
+        numberOfLists(_numberOfLists),
+        objects(_numberOfLists) {
+      assert(numberOfLists > 0, OutOfDomain(this));
+      offset = openGL.glGenLists(numberOfLists);
+      assert(offset > 0, OpenGLException("Display lists exhausted", this));
+      unsigned int* dest = objects.getElements();
+      const unsigned int* end = dest + numberOfLists;
+      for (unsigned int id = offset; dest < end; ++id, ++dest) {
+        *dest = id;
+      }
+    }
+    
+    inline unsigned int getOffset() const throw() {
+      return offset;
+    }
+    
+    inline void execute() const throw() {
+      openGL.glCallLists(numberOfLists, UNSIGNED_INT, objects.getElements());
+    }
+    
+    inline ~ReserveDisplayLists() throw() {
+      openGL.glDeleteLists(offset, numberOfLists);
+    }
+  };
+  
+  class ReserveTexture : public Object {
+  private:
+    
+    OpenGL& openGL;
+    unsigned int name;
+  public:
+    
+    inline ReserveTexture(OpenGL& _openGL) throw(OutOfDomain)
+      : openGL(_openGL) {
+      openGL.glGenTextures(1, &name);
+    }
+    
+    inline unsigned int getName() const throw() {
+      return name;
+    }
+    
+    inline ~ReserveTexture() throw() {
+      openGL.glDeleteTextures(1, &name);
+    }
+  };
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

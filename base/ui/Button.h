@@ -19,7 +19,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Button widget.
+  Push button widget.
   
   @short Button widget.
   @ingroup ui
@@ -30,50 +30,29 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class Button : public Widget {
 private:
 
-  // 0: enabled, disabled (ignore all other)
-  // 1: focus (mark button), no focus
-  // 2: over (highlight), not over
-  // 3: pressed (always over), not pressed (use over/not over)
-  
   String text;
-  Brush brush;
-//   Brush highlightBrush;
-//   Brush pressedBrush;
-  Color background;
-  Color textColor;
-  unsigned int mode;
+  Brush grayedBrush;
+  Brush pressedBrush;
+  Brush highlightBrush;
+  Pen lightPen;
+  Pen darkPen;
+  Color normalTextColor;
+  Color pressedTextColor;
+  bool grayed;
   bool pressed;
+  bool highlighted;
 public:
 
+  enum {
+    PREFERRED_HORIZONTAL_MARGIN = 16,
+    PREFERRED_VERTICAL_MARGIN = 8
+  };
+  
   /**
     Initializes the button widget.
   */
   Button(Window& owner) throw(UserInterfaceException);
-
-  /**
-    Returns the background color.
-  */
-  inline Color getBackground() const throw() {
-    return background;
-  }
-
-  /**
-    Sets the background color.
-  */
-  void setBackground(Color background) throw(UserInterfaceException);
-
-  /**
-    Returns the text color.
-  */
-  inline Color getTextColor() const throw() {
-    return textColor;
-  }
-
-  /**
-    Sets the color of the button text.
-  */
-  void setTextColor(Color textColor) throw(UserInterfaceException);
-
+  
   /**
     Returns the button text.
   */
@@ -82,25 +61,20 @@ public:
   }
 
   /**
+    Returns the preferred size of the button.
+  */
+  Dimension getPreferredSize() throw(UserInterfaceException);
+  
+  /**
     Sets the button text.
   */
   void setText(const String& text) throw(UserInterfaceException);
-
-  /**
-    Invoked when the button is resized.
-  */
-  void onResize(const Dimension& dimension) throw();
-
+  
   /**
     Invoked when the mouse cursor enters and exists the scope of the button.
   */
   void onMouseScope(bool scope) throw();
-
-  /**
-    Invoked on mouse motion.
-  */
-  void onMouseMove(const Position& position, unsigned int state) throw();
-
+  
   /**
     Invoked when a mouse button is pressed or released over the button.
   */
@@ -116,6 +90,11 @@ public:
   */
   void onDisplay() throw();
 
+  /**
+    Invoked when the button is selected.
+  */
+  virtual void onSelection() throw();
+  
   /**
     Destroys the button.
   */

@@ -73,9 +73,11 @@ void Split::onResize(const Dimension& dimension) throw() {
 }
 
 void Split::onMouseScope(bool scope) throw() {
-  split = Brush(0x808080); // normal
-  setCursor(HAND);
-  invalidate();
+  if (!scope) {
+    split = Brush(0x808080); // normal
+    setCursor(HAND);
+    invalidate();
+  }
 }
 
 void Split::onMouseMove(const Position& position, unsigned int state) throw() {

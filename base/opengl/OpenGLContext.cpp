@@ -61,7 +61,110 @@ void OpenGLContext::destroy() throw() {
   WindowImpl::destroy();
 }
 
-nothing OpenGLContext::initialize() throw(OpenGLException, UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+struct MonitorEnumeratorData {
+  Array<OpenGLContext::Format> formats;
+  unsigned int flags;
+  unsigned int id;
+};
+
+BOOL CALLBACK enumerateMonitor(HMONITOR monitor, HDC hdc, LPRECT rect, LPARAM context) throw() {
+  MonitorEnumeratorData* temp = (MonitorEnumeratorData*)context;
+  int numberOfFormats = ::DescribePixelFormat(hdc, 0, 0, 0);
+  
+  for (int i = 1; i <= numberOfFormats; ++i) {
+    PIXELFORMATDESCRIPTOR pfd;
+    ::DescribePixelFormat(hdc, i, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
+    
+    bool candidate = (pfd.dwFlags & PFD_DRAW_TO_WINDOW) && (pfd.dwFlags & PFD_SUPPORT_OPENGL);
+    if (temp->flags & OpenGLContext::COLOR_INDEXED) {
+      candidate &= pfd.iPixelType == PFD_TYPE_COLORINDEX;
+    }
+    if (temp->flags & OpenGLContext::RGB) {
+      candidate &= pfd.iPixelType == PFD_TYPE_RGBA;
+    }
+    if (temp->flags & OpenGLContext::DOUBLE_BUFFERED) {
+      candidate &= pfd.dwFlags & PFD_DOUBLEBUFFER;
+    }
+    if (temp->flags & OpenGLContext::STEREO) {
+      candidate &= pfd.dwFlags & PFD_STEREO;
+    }
+    if (temp->flags & OpenGLContext::DIRECT) {
+      candidate &= (pfd.dwFlags & PFD_GENERIC_FORMAT) == 0;
+    }
+    if (temp->flags & OpenGLContext::GENERIC) {
+      candidate &= (pfd.dwFlags & PFD_GENERIC_FORMAT) != 0;
+    }
+    if (temp->flags & OpenGLContext::ALPHA) {
+      candidate &= pfd.cAlphaBits > 0;
+    }
+    if (temp->flags & OpenGLContext::ACCUMULATOR) {
+      candidate &= pfd.cAccumBits > 0;
+    }
+    if (temp->flags & OpenGLContext::DEPTH) {
+      candidate &= pfd.cDepthBits > 0;
+    }
+    if (temp->flags & OpenGLContext::STENCIL) {
+      candidate &= pfd.cStencilBits > 0;
+    }
+    if (temp->flags & OpenGLContext::AUX) {
+      candidate &= pfd.cAuxBuffers > 0;
+    }
+    if (candidate) {
+      OpenGLContext::Format format;
+      format.id = temp->id++;
+      format.flags = 0;
+      if (pfd.iPixelType == PFD_TYPE_COLORINDEX) {
+        format.flags |= OpenGLContext::COLOR_INDEXED;
+      }
+      if (pfd.iPixelType == PFD_TYPE_RGBA) {
+        format.flags |= OpenGLContext::RGB;
+      }
+      if (pfd.dwFlags & PFD_GENERIC_FORMAT) {
+        format.flags |= OpenGLContext::GENERIC;
+      }
+      if (pfd.dwFlags & PFD_DOUBLEBUFFER) {
+        format.flags |= OpenGLContext::DOUBLE_BUFFERED;
+      }
+      if (pfd.dwFlags & PFD_STEREO) {
+        format.flags |= OpenGLContext::STEREO;
+      }
+      format.colorBits = pfd.cColorBits;
+      format.redBits = pfd.cRedBits;
+      format.greenBits = pfd.cGreenBits;
+      format.blueBits = pfd.cBlueBits;
+      format.alphaBits = pfd.cAlphaBits;
+      format.accumulatorBits = pfd.cAccumBits;
+      format.accumulatorRedBits = pfd.cAccumRedBits;
+      format.accumulatorGreenBits = pfd.cAccumGreenBits;
+      format.accumulatorBlueBits = pfd.cAccumBlueBits;
+      format.accumulatorAlphaBits = pfd.cAccumAlphaBits;
+      format.depthBits = pfd.cDepthBits;
+      format.stencilBits = pfd.cStencilBits;
+      format.auxBuffers = pfd.cAuxBuffers;
+      temp->formats.append(format);
+    }
+  }
+  return TRUE;
+}
+#endif // flavor
+
+Array<OpenGLContext::Format> OpenGLContext::getFormats(unsigned int flags) throw(OpenGLException, UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  MonitorEnumeratorData temp;
+  temp.flags = flags;
+  temp.id = 0;
+  HDC hdc = ::GetDC(0); // GetDCEx(0, 0, 0);
+  ::EnumDisplayMonitors(hdc, 0, enumerateMonitor, (LPARAM)&temp);
+  ::ReleaseDC(0, hdc);
+  return temp.formats;
+#else // unix
+  Array<OpenGLContext::Format> formats;
+  return formats;
+#endif // flavor
+}
+
+nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, UserInterfaceException) {
   OpenGLContextImpl::loadModule();
   
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -106,84 +209,61 @@ nothing OpenGLContext::initialize() throw(OpenGLException, UserInterfaceExceptio
     throw UserInterfaceException("Unable to connect to device context", this);
   }
   OpenGLContextImpl::graphicsContextHandle = WindowImpl::graphicsContextHandle; // TAG: fixme
-  
-  PIXELFORMATDESCRIPTOR pfd = {
-    sizeof(PIXELFORMATDESCRIPTOR), // size of this pfd
-    1, // version number
-    PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL, // support window and OpenGL (rest set below)
-    0, // type set below
-    0, // color depth
-    0, 0, 0, 0, 0, 0, // color bits ignored
-    0, // no alpha buffer
-    0, // shift bit ignored
-    0, // accumulation buffer
-    0, 0, 0, 0, // accum bits ignored
-    0, // z-buffer
-    0, // stencil buffer
-    0, // auxiliary buffer
-    PFD_MAIN_PLANE, // main layer (ignored in new implementations)
-    0, // reserved
-    0, 0, 0 // layer masks ignored
-  };
-  
-  if (flags & OpenGLContext::COLOR_INDEX) {
-    pfd.iPixelType = PFD_TYPE_COLORINDEX;
-    pfd.cColorBits = 8;
-  } else {
-    pfd.iPixelType = PFD_TYPE_RGBA;
-    pfd.cColorBits = 15;
-  }
-  if (flags & OpenGLContext::DOUBLE_BUFFERED) {
-    pfd.dwFlags |= PFD_DOUBLEBUFFER;
-  }
-  if (flags & OpenGLContext::STEREO) {
-    pfd.dwFlags |= PFD_STEREO;
-  }
-  if (flags & OpenGLContext::ACCUMULATOR) {
-    if (flags & OpenGLContext::COLOR_INDEX) {
-    } else {
-      pfd.cAccumBits = 1;
+
+  int formatId = 0;
+  int numberOfFormats = ::DescribePixelFormat((HDC)WindowImpl::graphicsContextHandle, 0, 0, 0);
+  PIXELFORMATDESCRIPTOR pfd;
+  for (int i = 1; i <= numberOfFormats; ++i) {
+    ::DescribePixelFormat(
+      (HDC)WindowImpl::graphicsContextHandle,
+      i,
+      sizeof(PIXELFORMATDESCRIPTOR),
+      &pfd
+    );
+    
+    bool candidate = (pfd.dwFlags & PFD_DRAW_TO_WINDOW) && (pfd.dwFlags & PFD_SUPPORT_OPENGL);
+    if (format.flags & OpenGLContext::COLOR_INDEXED) {
+      candidate &= pfd.iPixelType == PFD_TYPE_COLORINDEX;
+    }
+    if (format.flags & OpenGLContext::RGB) {
+      candidate &= pfd.iPixelType == PFD_TYPE_RGBA;
+    }
+    if (format.flags & OpenGLContext::GENERIC) {
+      candidate &= pfd.dwFlags & PFD_GENERIC_FORMAT;
+    }
+    if (format.flags & OpenGLContext::DOUBLE_BUFFERED) {
+      candidate &= pfd.dwFlags & PFD_DOUBLEBUFFER;
+    }
+    if (format.flags & OpenGLContext::STEREO) {
+      candidate &= pfd.dwFlags & PFD_STEREO;
+    }
+    candidate &= pfd.cColorBits == format.colorBits;
+    candidate &= pfd.cRedBits == format.redBits;
+    candidate &= pfd.cGreenBits == format.greenBits;
+    candidate &= pfd.cBlueBits == format.blueBits;
+    candidate &= pfd.cAlphaBits == format.alphaBits;
+    candidate &= pfd.cAccumBits == format.accumulatorBits;
+    candidate &= pfd.cAccumRedBits == format.accumulatorRedBits;
+    candidate &= pfd.cAccumGreenBits == format.accumulatorGreenBits;
+    candidate &= pfd.cAccumBlueBits == format.accumulatorBlueBits;
+    candidate &= pfd.cAccumAlphaBits == format.accumulatorAlphaBits;
+    candidate &= pfd.cDepthBits == format.depthBits;
+    candidate &= pfd.cStencilBits == format.stencilBits;
+    candidate &= pfd.cAuxBuffers == format.auxBuffers;
+    if (candidate) {
+      formatId = i;
+      break;
     }
   }
-  if (flags & OpenGLContext::ALPHA) {
-    pfd.cAlphaBits = 1;
-  }
-  if (flags & OpenGLContext::DEPTH) {
-    pfd.cDepthBits = 32; // TAG: fixme
-  }
-  if (flags & OpenGLContext::STENCIL) {
-    pfd.cStencilBits = 1; // TAG: fixme
-  }
-  if (flags & OpenGLContext::AUX) {
-    pfd.cAuxBuffers = 1; // TAG: fixme
-  }
-  if (flags & OpenGLContext::MULTI_SAMPLE) {
-    // TAG: fixme
-  }
-  if (flags & OpenGLContext::LUMINANCE) {
-    // TAG: fixme
-  }
+  assert(formatId != 0, OpenGLException("Requested format not supported", this));
   
-  int index;
-  if (!(index = ::ChoosePixelFormat((HDC)WindowImpl::graphicsContextHandle, &pfd))) {
-    throw OpenGLException("Format not supported", this);
-  }
-
-  // int index = ::GetPixel((HDC)WindowImpl::graphicsContextHandle);
-  
-  ::DescribePixelFormat(
-    (HDC)WindowImpl::graphicsContextHandle,
-    index,
-    sizeof(PIXELFORMATDESCRIPTOR),
-    &pfd
-  );
-
-  // TAG: if format is ok (need other checks)
-  assert(
-    (pfd.dwFlags & PFD_DRAW_TO_WINDOW) &&
-    (pfd.dwFlags & PFD_SUPPORT_OPENGL),
-    OpenGLException("Format not supported", this)
-  );
+  OpenGLContextImpl::flags = 0;
+  OpenGLContextImpl::flags |= (pfd.iPixelType == PFD_TYPE_COLORINDEX) ? OpenGLContext::COLOR_INDEXED : 0;
+  OpenGLContextImpl::flags |= (pfd.dwFlags & PFD_DOUBLEBUFFER) ? OpenGLContext::DOUBLE_BUFFERED : 0;
+  OpenGLContextImpl::flags |= (pfd.dwFlags & PFD_STEREO) ? OpenGLContext::STEREO : 0;
+  // OpenGLContextImpl::flags |= (pfd.dwFlags & PFD_SWAP_LAYER_BUFFERS) ? OpenGLContext::SWAP_LAYER : 0;
+  OpenGLContextImpl::flags |= (pfd.dwFlags & PFD_GENERIC_ACCELERATED) ? OpenGLContext::DIRECT : 0;
+  OpenGLContextImpl::flags |= (pfd.dwFlags & PFD_GENERIC_FORMAT) ? OpenGLContext::GENERIC : 0;
   
   redBits = pfd.cRedBits;
   redShift = pfd.cRedShift;
@@ -201,40 +281,25 @@ nothing OpenGLContext::initialize() throw(OpenGLException, UserInterfaceExceptio
   depthBits = pfd.cDepthBits;
   stencilBits = pfd.cStencilBits;
   auxBuffers = pfd.cAuxBuffers;
-  
   numberOfOverlayPlanes = (pfd.bReserved >> 0) & 0xf;
   numberOfUnderlayPlanes = (pfd.bReserved >> 4) & 0xf;
-
-  fout << MESSAGE("red bits: ") << redBits << EOL
-       << MESSAGE("green bits: ") << greenBits << EOL
-       << MESSAGE("blue bits: ") << blueBits << EOL
-       << MESSAGE("alpha bits: ") << alphaBits << EOL
-       << MESSAGE("accumulator red bits: ") << accumulatorRedBits << EOL
-       << MESSAGE("accumulator green bits: ") << accumulatorGreenBits << EOL
-       << MESSAGE("accumulator blue bits: ") << accumulatorBlueBits << EOL
-       << MESSAGE("accumulator alpha bits: ") << accumulatorAlphaBits << EOL
-       << MESSAGE("depth bits: ") << depthBits << EOL
-       << MESSAGE("stencil bits: ") << stencilBits << EOL
-       << MESSAGE("aux buffers: ") << auxBuffers << EOL
-       << MESSAGE("overlay planes: ") << numberOfOverlayPlanes << EOL
-       << MESSAGE("underlay planes: ") << numberOfUnderlayPlanes << EOL
-       << ENDL;
   
-  if (!::SetPixelFormat((HDC)WindowImpl::graphicsContextHandle, index, &pfd)) {
+  if (!::SetPixelFormat((HDC)WindowImpl::graphicsContextHandle, formatId, &pfd)) {
     throw OpenGLException("Unable to set format", this);
   }
-  if (!(renderingContextHandle = native::GDI::wglCreateContext((HDC)WindowImpl::graphicsContextHandle))) {
+  if (!(renderingContextHandle = native::GDI::wglCreateContext(
+          (HDC)WindowImpl::graphicsContextHandle))) {
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
     throw OpenGLException("Unable to create rendering context", this);
   }
-  if (!native::GDI::wglMakeCurrent((HDC)WindowImpl::graphicsContextHandle, (HGLRC)renderingContextHandle)) {
+  if (!native::GDI::wglMakeCurrent(
+        (HDC)WindowImpl::graphicsContextHandle, (HGLRC)renderingContextHandle)) {
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
     throw OpenGLException("Invalid rendering context", this);
   }
 #else // unix
-
   fout << MESSAGE("GLX version: ") << HEX << native::GLX::version << ENDL;
   
   int screenId = ::XDefaultScreen((Display*)displayHandle);
@@ -286,7 +351,7 @@ nothing OpenGLContext::initialize() throw(OpenGLException, UserInterfaceExceptio
 //     *dest++ = GLX_USE_GL;
 //     *dest++ = GLX_LEVEL;
 //     *dest++ = 0; // main layer
-    if (flags & OpenGLContext::COLOR_INDEX) {
+    if (WindowImpl::flags & OpenGLContext::COLOR_INDEXED) {
 //       *dest++ = GLX_BUFFER_SIZE;
 //       *dest++ = 1; // TAG: fixme
     } else {
@@ -298,14 +363,14 @@ nothing OpenGLContext::initialize() throw(OpenGLException, UserInterfaceExceptio
 //       *dest++ = GLX_BLUE_SIZE;
 //       *dest++ = 1;
     }
-    if (flags & OpenGLContext::DOUBLE_BUFFERED) {
+    if (WindowImpl::flags & OpenGLContext::DOUBLE_BUFFERED) {
       *dest++ = GLX_DOUBLEBUFFER;
     }
-//     if (flags & OpenGLContext::STEREO) {
+//     if (WindowImpl::flags & OpenGLContext::STEREO) {
 //       *dest++ = GLX_STEREO;
 //     }
-//     if (flags & OpenGLContext::ACCUMULATOR) {
-//       if (flags & OpenGLContext::COLOR_INDEX) {
+//     if (WindowImpl::flags & OpenGLContext::ACCUMULATOR) {
+//       if (WindowImpl::flags & OpenGLContext::COLOR_INDEXED) {
 //       } else {
 //         *dest++ = GLX_ACCUM_RED_SIZE;
 //         *dest++ = 1;
@@ -315,35 +380,34 @@ nothing OpenGLContext::initialize() throw(OpenGLException, UserInterfaceExceptio
 //         *dest++ = 1;
 //       }
 //     }
-//     if (flags & OpenGLContext::ALPHA) {
+//     if (WindowImpl::flags & OpenGLContext::ALPHA) {
 //       *dest++ = GLX_ALPHA_SIZE;
 //       *dest++ = 1;
-//       if (flags & OpenGLContext::ACCUMULATOR) {
+//       if (WindowImpl::flags & OpenGLContext::ACCUMULATOR) {
 //         *dest++ = GLX_ACCUM_ALPHA_SIZE;
 //         *dest++ = 1;
 //       }
 //     }
-//     if (flags & OpenGLContext::DEPTH) {
+//     if (WindowImpl::flags & OpenGLContext::DEPTH) {
 //       *dest++ = GLX_DEPTH_SIZE;
 //       *dest++ = 12; // TAG: fixme - minimum value allowed by specification is 12
 //     } else {
 //       *dest++ = GLX_DEPTH_SIZE;
 //       *dest++ = 0;
 //     }
-//     if (flags & OpenGLContext::AUX) {
+//     if (WindowImpl::flags & OpenGLContext::AUX) {
 //       *dest++ = GLX_AUX_BUFFERS;
 //       *dest++= 1;
 //     }
-//     if (flags & OpenGLContext::STENCIL) {
+//     if (WindowImpl::flags & OpenGLContext::STENCIL) {
 //       *dest++ = GLX_STENCIL_SIZE;
 //       *dest++ = 1; // TAG: fixme
 //     }
-//     if (flags & OpenGLContext::MULTI_SAMPLE) {
+//     if (WindowImpl::flags & OpenGLContext::MULTI_SAMPLE) {
 //     }
-//     if (flags & OpenGLContext::LUMINANCE) {
+//     if (WindowImpl::flags & OpenGLContext::LUMINANCE) {
 //     }
     *dest++ = None;
-    fout << "disaply: " << (void*)displayHandle << ENDL;
     
     static int attributeList[] = { GLX_RGBA, None };
     //static int ATTRIBUTES2[] = {GLX_RGBA, GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4, None};
@@ -361,7 +425,7 @@ nothing OpenGLContext::initialize() throw(OpenGLException, UserInterfaceExceptio
     (Display*)displayHandle,
     visualInfo,
     0,
-    (flags & OpenGLContext::DIRECT) ? True : False
+    (WindowImpl::flags & OpenGLContext::DIRECT) ? True : False
   );
   WRITE_SOURCE_LOCATION();
   
@@ -452,10 +516,10 @@ nothing OpenGLContext::initialize() throw(OpenGLException, UserInterfaceExceptio
 OpenGLContext::OpenGLContext(
   const Position& position,
   const Dimension& dimension,
-  unsigned int flags) throw(OpenGLException, UserInterfaceException)
+  const Format& format) throw(OpenGLException, UserInterfaceException)
   : WindowImpl(position, dimension, 0), // TAG: fix flags
-    prefixInitialization(initialize()),
-    OpenGLContextImpl() {
+    OpenGLContextImpl(),
+    prefixInitialization(initialize(format)) {
   construct();
   invalidate();
 }

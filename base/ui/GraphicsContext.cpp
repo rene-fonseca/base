@@ -732,6 +732,24 @@ void GraphicsContext::pie(
 #endif // flavor  
 }
 
+unsigned int GraphicsContext::getWidthOf(char ch) const throw(UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  INT width;
+  assert(
+    ::GetCharWidth32(
+      (HDC)graphicsContextHandle,
+      ch,
+      ch,
+      &width
+    ),
+    UserInterfaceException(this)
+  );
+  return width;
+#else // unix
+  return 0; // TAG: fixme
+#endif // flavor
+}
+
 Dimension GraphicsContext::getDimensionOf(const String& text) const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SIZE size;

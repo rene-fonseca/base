@@ -111,16 +111,16 @@ String OpenGLContextImpl::getGLServerExtensions() const throw(OpenGLException) {
 #endif // flavor
 }
 
-bool OpenGLContextImpl::isDirect() const throw(OpenGLException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return true; // TAG: unless pixmap
-#else // unix
-  return native::GLX::glXIsDirect(
-    (Display*)Backend<WindowImpl>::getDisplay(),
-    (GLXContext)renderingContextHandle
-  ) == True;
-#endif // flavor
-}
+// bool OpenGLContextImpl::isDirect() const throw(OpenGLException) {
+// #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+//   return true; // TAG: unless pixmap
+// #else // unix
+//   return native::GLX::glXIsDirect(
+//     (Display*)Backend<WindowImpl>::getDisplay(),
+//     (GLXContext)renderingContextHandle
+//   ) == True;
+// #endif // flavor
+// }
 
 bool OpenGLContextImpl::hasCurrent() const throw(OpenGLException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -139,7 +139,10 @@ bool OpenGLContextImpl::isCurrent() const throw(OpenGLException) {
 }
 
 void OpenGLContextImpl::makeCurrent() throw(OpenGLException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  ::SetLastError(0);
+  native::GDI::wglMakeCurrent((HDC)graphicsContextHandle, (HGLRC)renderingContextHandle);
+  fout << MESSAGE("Failed to make current: ") << ::GetLastError() << ENDL;
   assert(
     native::GDI::wglMakeCurrent((HDC)graphicsContextHandle, (HGLRC)renderingContextHandle),
     OpenGLException(this)
@@ -199,7 +202,7 @@ void OpenGLContextImpl::swap() throw(OpenGLException) {
 
 void OpenGLContextImpl::swap(int plane) throw(OutOfRange, OpenGLException) {
   assert(
-    (plane >= -numberOfUnderlayPlanes) && (plane <= numberOfOverlayPlanes),
+    (plane >= -static_cast<int>(numberOfUnderlayPlanes)) && (plane <= numberOfOverlayPlanes),
     OutOfRange(this)
   );
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  

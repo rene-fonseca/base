@@ -488,6 +488,11 @@ public:
     unsigned int flags) throw(UserInterfaceException);
 
   /**
+    Returns the width of the specified character.
+  */
+  unsigned int getWidthOf(char ch) const throw(UserInterfaceException);
+  
+  /**
     Returns the dimension of the text.
   */
   Dimension getDimensionOf(const String& text) const throw(UserInterfaceException);

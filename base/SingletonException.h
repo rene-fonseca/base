@@ -43,8 +43,19 @@ public:
   */
   SingletonException(const char* message) throw();
 
-  SingletonException(Type type) throw() : Exception(type) {}
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
+  SingletonException(Type type) throw() : Exception(type) {}  
   
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
   SingletonException(const char* message, Type type) throw() : Exception(message, type) {}
 };
 

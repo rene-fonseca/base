@@ -40,6 +40,11 @@ public:
   */
   OutOfRange(const char* message) throw();
 
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
   OutOfRange(Type type) throw() : Exception(type) {}
 
   /**

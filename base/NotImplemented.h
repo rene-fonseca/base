@@ -41,8 +41,19 @@ public:
   */
   NotImplemented(const char* message) throw();
 
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
   NotImplemented(Type type) throw() : Exception(type) {}
   
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
   NotImplemented(const char* message, Type type) throw() : Exception(message, type) {}
 };
 

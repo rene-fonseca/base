@@ -31,9 +31,10 @@ class ServerSocket : protected Socket {
 public:
 
   /**
-    Initializes an invalidated socket object (ie. unconnected and unbound).
+    Initializes an invalidated socket object (i.e. unconnected and unbound).
   */
-  inline ServerSocket() throw() {}
+  inline ServerSocket() throw() {
+  }
 
   /**
     Creates a server stream socket and binds it to the specified port and IP address.
@@ -52,7 +53,9 @@ public:
     @return True if connection has been accepted. False, if connection could
     not be accepted without blocking.
   */
-  inline StreamSocket accept() throw(IOException) {return StreamSocket(*this);}
+  inline StreamSocket accept() throw(IOException) {
+    return StreamSocket(*this);
+  }
 
   /**
     Accepts the first connection from the queue of pending connections on this
@@ -62,12 +65,16 @@ public:
     
     @return An invalid socket if the timeout period expired.
   */
-  inline StreamSocket accept(unsigned int milliseconds) throw(IOException) {return StreamSocket(*this);}
+  inline StreamSocket accept(unsigned int milliseconds) throw(IOException) {
+    return StreamSocket(*this);
+  }
 
   /**
     Closes this socket.
   */
-  inline void close() throw(IOException) {Socket::close();}
+  inline void close() throw(IOException) {
+    Socket::close();
+  }
 
   /**
     Caches the locally assigned address and port of the socket. This member
@@ -79,22 +86,30 @@ public:
   /**
     Returns the local IP address to which the socket is bound.
   */
-  inline const InetAddress& getLocalAddress() const throw() {return Socket::getLocalAddress();}
+  inline const InetAddress& getLocalAddress() const throw() {
+    return Socket::getLocalAddress();
+  }
 
   /**
     Returns the local port to which the socket is bound.
   */
-  inline unsigned short getLocalPort() const throw() {return Socket::getLocalPort();}
+  inline unsigned short getLocalPort() const throw() {
+    return Socket::getLocalPort();
+  }
 
   /**
     Sets the blocking mode of the socket.
   */
-  inline void setNonBlocking(bool value) throw(IOException) {Socket::setNonBlocking(value);}
+  inline void setNonBlocking(bool value) throw(IOException) {
+    Socket::setNonBlocking(value);
+  }
 
   /**
     Blocking wait for incoming connection request.
   */
-  inline void wait() const throw(IOException) {Socket::wait();}
+  inline void wait() const throw(IOException) {
+    Socket::wait();
+  }
 
   /**
     Blocking wait for incoming connection request.
@@ -103,8 +118,9 @@ public:
     
     @return True, if incomming connection is available. False, if the timeout periode expired.
   */
-  inline bool wait(unsigned int microseconds) const throw(IOException) {return Socket::wait(microseconds);}
-  
+  inline bool wait(unsigned int microseconds) const throw(IOException) {
+    return Socket::wait(microseconds);
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

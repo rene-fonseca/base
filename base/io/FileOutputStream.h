@@ -23,6 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Output stream with a file as the destination.
 
   @short File output stream.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

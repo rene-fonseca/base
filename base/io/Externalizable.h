@@ -22,7 +22,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Interface implemented by classes that can be externalized (i.e. instances can
   be read from and written to a stream).
-
+  
+  @short Externalizable interface.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

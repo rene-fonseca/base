@@ -21,8 +21,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  A FilterOutputStream that adds buffer functionality to an OutputStream for added performance. MT-unsafe implementation.
-
+  A FilterOutputStream that adds buffer functionality to an OutputStream for
+  added performance. MT-unsafe implementation.
+  
+  @short Buffered output stream.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

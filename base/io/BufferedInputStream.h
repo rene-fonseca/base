@@ -22,8 +22,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  A FilterInputStream that adds buffer functionality to an InputStream for added performance. MT-unsafe implementation.
-
+  A FilterInputStream that adds buffer functionality to an InputStream for
+  added performance. MT-unsafe implementation.
+  
+  @short Buffered input stream.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

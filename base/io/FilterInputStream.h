@@ -21,8 +21,13 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  A FilterInputStream redirects requests to an ordinary InputStream possibly transforming data and providing additional functionality in the process. A FilterInputStream is itself an InputStream. MT-Safe implementation if used with MT-safe input stream.
+  A FilterInputStream redirects requests to an ordinary InputStream possibly
+  transforming data and providing additional functionality in the process. A
+  FilterInputStream is itself an InputStream. MT-Safe implementation if used
+  with MT-safe input stream.
 
+  @short Filter input stream.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -19,8 +19,12 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  A FilterOutputStream that allows you to write primitive data types to an output stream in big-endian format. MT-Safe implementation if used with MT-safe input stream.
+  A FilterOutputStream that allows you to write primitive data types to an
+  output stream in big-endian format. MT-Safe implementation if used with
+  MT-safe input stream.
 
+  @short Primitive output stream.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -20,9 +20,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Exception raised on file object exceptions.
-
+  
   @short File exception.
-  @ingroup exceptions
+  @ingroup exceptions io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

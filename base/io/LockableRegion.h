@@ -22,7 +22,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  A lockable file region.
+  
   @short A lockable file region.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -41,7 +44,8 @@ public:
 
     @param file The file.
     @param region The file region to be locked.
-    @param exclusive Specifies that the region should be locked exclusively (if false the region is locked shared). This argument is true by default.
+    @param exclusive Specifies that the region should be locked exclusively (if
+    false the region is locked shared). This argument is true by default.
   */
   LockableRegion(const File& file, const FileRegion& region, bool exclusive) throw(FileException);
 
@@ -56,7 +60,8 @@ public:
     Lock the specified file region (the old region is unlocked first).
 
     @param region The new file region to be locked.
-    @param exclusive Specifies that the region should be locked exclusively (if false the region is locked shared). This argument is true by default.
+    @param exclusive Specifies that the region should be locked exclusively (if
+    false the region is locked shared). This argument is true by default.
   */
   void lock(const FileRegion& region, bool exclusive = true) throw(FileException);
 

@@ -21,6 +21,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Class representing an output stream of bytes.
 
+  @short Output stream.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -23,6 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Description of a file region represented by an offset (64 bit) and a size (32 bit).
 
   @short A region of a file.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */

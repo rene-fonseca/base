@@ -21,8 +21,12 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  A FilterOutputStream redirects requests to an ordinary OutputStream possibly transforming data and providing additional functionality in the process. A FilterOutputStream is itself an OutputStream.
-
+  A FilterOutputStream redirects requests to an ordinary OutputStream possibly
+  transforming data and providing additional functionality in the process. A
+  FilterOutputStream is itself an OutputStream.
+  
+  @short Filter output stream.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

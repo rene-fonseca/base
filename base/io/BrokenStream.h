@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Specifies that the stream has been broken.
   
   @short Broken stream exception
-  @ingroup exceptions
+  @ingroup exceptions io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

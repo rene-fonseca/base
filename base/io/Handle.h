@@ -26,6 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   normally not used directly by the application.
 
   @short Generic descriptor
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

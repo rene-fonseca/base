@@ -21,6 +21,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Specifies that the file doesn't exist or couldn't be opened.
 
+  @short File not found exception.
+  @ingroup exceptions io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -45,7 +47,7 @@ public:
 
     @param type The identity of the type.
   */
-  FileNotFound(Type type) throw() : FileException(type) {
+  inline FileNotFound(Type type) throw() : FileException(type) {
   }
 
   /**
@@ -54,7 +56,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  FileNotFound(const char* message, Type type) throw() : FileException(message, type) {
+  inline FileNotFound(const char* message, Type type) throw()
+    : FileException(message, type) {
   }
 };
 

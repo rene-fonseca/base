@@ -23,6 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Low-level push interface for in-memory IO.
   
   @short Push interface
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

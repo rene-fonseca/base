@@ -34,8 +34,8 @@ class MappedFile;
 class SharedMemory;
 
 /**
-  File.
-
+  A file.
+  
   @short File.
   @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>

@@ -32,7 +32,6 @@ libio_la_SOURCES = \
   FileNotFound.cpp \
   IOException.cpp \
   EndOfFile.cpp \
-  EOFException.cpp \
   FilterInputStream.cpp \
   PrimitiveOutputStream.cpp \
   PrimitiveInputStream.cpp \
@@ -66,7 +65,6 @@ section_HEADERS = \
   BufferedOutputStream.h \
   FileOutputStream.h \
   PrimitiveInputStream.h \
-  EOFException.h \
   EndOfFile.h \
   FileNotFound.h \
   IOException.h \

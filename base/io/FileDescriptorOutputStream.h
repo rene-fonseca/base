@@ -24,6 +24,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   bytes within the operatingsystem (e.g. file, socket and pipe). This class is
   normally not used directly by the application.
 
+  @short Filedescriptor output stream.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -21,7 +21,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Base class of all streams of bytes.
-
+  
+  @short Stream.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -14,20 +14,25 @@
 #ifndef _DK_SDU_MIP__BASE_XML__SAX_PARSE_EXCEPTION_H
 #define _DK_SDU_MIP__BASE_XML__SAX_PARSE_EXCEPTION_H
 
-#include <base/SAXException.h>
+#include <base/xml/SAXException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  SAX parse exception.
+  This exception will include information for locating the error in the
+  original XML document. Note that although the application will receive a
+  SAXParseException as the argument to the handlers in the ErrorHandler
+  interface, the application is not actually required to throw the exception;
+  instead, it can simply read the information in it and take a different
+  action.
   
-  @short SAX parse exception.
+  @short Encapsulate an XML parse error or warning.
   @ingroup exceptions xml
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
-class SAXParseException : public Exception {
+class SAXParseException : public SAXException {
 private:
 
   /** The line number. */
@@ -35,7 +40,12 @@ private:
   /** The column number. */
   unsigned int column;
 public:
-
+  
+  /** Exception causes. */
+  enum Cause {
+    NOT_WELL_FORMED /**< The document is not well-formed. */
+  };
+  
   /**
     Initializes the exception with no message.
   */

@@ -9,12 +9,12 @@
 #include <base/net/ServerSocket.h>
 
 void test() {
-  fout << "Testing ServerSocket...\n";
+  fout << "Datagram network server...\n";
 
   fout << "Hostname: " << InetAddress::getLocalHost() << EOL;
 
-  InetAddress address;
-  {
+  InetAddress address("0.0.0.0");
+/*  {
     fout << "Local addresses:\n";
     List<InetAddress> addresses = InetAddress::getAddressesByName(InetAddress::getLocalHost());
     List<InetAddress>::ReadOnlyEnumeration enu(addresses);
@@ -28,7 +28,7 @@ void test() {
         fout << "  address " << index++ << ": " << *temp << EOL;
       }
     }
-  }
+  }*/
 
   unsigned short port = 1234; // default
   try {
@@ -45,8 +45,8 @@ void test() {
 
   Socket serverSocket;
 
-  fout << "Creating stream socket...\n";
-  serverSocket.create(true);
+  fout << "Creating datagram socket...\n";
+  serverSocket.create(false);
 
   fout << "Binding to address...\n";
   serverSocket.bind(address, port);
@@ -54,34 +54,25 @@ void test() {
   fout << "Server address...\n";
   fout << "  address=" << serverSocket.getLocalAddress() << " port=" << serverSocket.getLocalPort() << EOL;
 
-  fout << "Listening for one client...\n";
-  serverSocket.listen(1);
+  fout << "Requesting permission to send/receive broadcast messages...\n";
+  serverSocket.setBroadcast(true);
 
-  fout << "Waiting for client to connect...\n";
+  unsigned int datagrams = 10; // the number of connections to accept
 
-  unsigned int connection = 1; // the number of connections so far
-
-  while (connection < 4) {
-    Socket client;
-    client.accept(serverSocket);
-
-    fout << "Connection number " << connection++ << " established from\n";
-    fout << "  remote: address=" << client.getAddress() << " port=" << client.getPort() << EOL;
-
-    fout << "Talking with client...\n";
-    FileDescriptorOutputStream socketOutput = client.getOutputStream();
-    FileDescriptorInputStream socketInput = client.getInputStream();
-    FormatOutputStream fstream(socketOutput);
-
+  while (datagrams--) {
     char buffer[4096];
-    socketInput.read((char*)&buffer, sizeof(buffer));
+    InetAddress remoteAddress;
+    unsigned short remotePort;
+
+    fout << "Waiting for datagram...\n";
+    unsigned int bytesReceived = serverSocket.receiveFrom((char*)&buffer, sizeof(buffer), remoteAddress, remotePort);
+
+    fout << "Datagram of " << bytesReceived << " bytes received from " << remoteAddress
+         << " on port " << remotePort << EOL;
     fout << buffer;
 
-    fstream << "Thanks for your reply\n";
-    client.shutdownOutputStream();
-
-//    fout << "Closing connection...\n";
-//    client.close();
+    fout << "Sending datagram back to client...\n";
+    unsigned int bytesSent = serverSocket.sendTo((char*)&buffer, bytesReceived, remoteAddress, remotePort);
   }
 
   fout << "Closing server socket...\n";

@@ -1,7 +1,7 @@
 ####### kdevelop will overwrite this part!!! (begin)##########
 ####### kdevelop will overwrite this part!!! (end)############
 DEFS = @DEFS@
-bin_PROGRAMS = Array List Set Map String io client server Thread
+bin_PROGRAMS = Array List Set Map String io client server datagramClient datagramServer Thread
 
 Array_SOURCES = Array.cpp
 Array_LDADD = ../base/libbase.la
@@ -27,7 +27,13 @@ client_LDADD = ../base/libbase.la
 server_SOURCES = server.cpp
 server_LDADD = ../base/libbase.la
 
+datagramClient_SOURCES = datagramClient.cpp
+datagramClient_LDADD = ../base/libbase.la
+
+datagramServer_SOURCES = datagramServer.cpp
+datagramServer_LDADD = ../base/libbase.la
+
 Thread_SOURCES = Thread.cpp
 Thread_LDADD = ../base/libbase.la
 
-EXTRA_DIST = Array.cpp List.cpp Set.cpp Map.cpp String.cpp io.cpp client.cpp server.cpp Thread.cpp
+EXTRA_DIST = Array.cpp List.cpp Set.cpp Map.cpp String.cpp io.cpp client.cpp server.cpp datagramClient.cpp datagramServer.cpp Thread.cpp

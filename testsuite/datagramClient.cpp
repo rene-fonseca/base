@@ -13,7 +13,7 @@ char* hostname = 0;
 char* servicename = 0;
 
 void test() {
-  fout << "Testing client socket...\n";
+  fout << "Datagram network client...\n";
 
   fout << "Server: " << hostname << EOL;
 
@@ -59,23 +59,23 @@ void test() {
   fout << "Initializing socket...\n";
   Socket socket;
 
-  fout << "Creating stream socket...\n";
-  socket.create(true);
+  fout << "Creating datagram socket...\n";
+  socket.create(false);
 
-  fout << "Connecting to server...\n";
-  socket.connect(address, port);
-  fout << "socket: remote address=" << socket.getAddress() << " remote port=" << socket.getPort() << EOL;
+  fout << "Requesting permission to send broadcast messages...\n";
+  socket.setBroadcast(true);
 
-  fout << "Talking with server...\n";
-  FileDescriptorOutputStream socketOutput = socket.getOutputStream();
-  FileDescriptorInputStream socketInput = socket.getInputStream();
-  FormatOutputStream fstream(socketOutput);
-
-  fstream << "Hi, I'm the client\n";
-  socket.shutdownOutputStream();
+  fout << "Sending datagram...\n";
+  char sendBuffer[] = "THIS IS A DATAGRAM\n";
+  unsigned int bytesSent = socket.sendTo((char*)&sendBuffer, sizeof(sendBuffer), address, port);
 
   char buffer[4096];
-  socketInput.read((char*)&buffer, sizeof(buffer));
+  InetAddress remoteAddress;
+  unsigned short remotePort;
+
+  fout << "Waiting for datagram...\n";
+  unsigned int bytesReceived = socket.receiveFrom((char*)&buffer, sizeof(buffer), remoteAddress, remotePort);
+  fout << "Datagram: bytesReceived=" << bytesReceived << EOL;
   fout << buffer;
 
   socket.close();

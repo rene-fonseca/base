@@ -24,6 +24,7 @@
   #include <time.h>
   #include <sys/time.h>
   #include <unistd.h>
+  #include <errno.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -163,66 +164,66 @@ Allocator<char>* Thread::getLocalStorage() throw() {
 }
 
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
-  if (nanoseconds >= 1000000000) {
-    throw OutOfDomain();
-  }
+  assert(nanoseconds < 1000000000, OutOfDomain());
 #if defined(__win32__)
   Sleep(nanoseconds/1000);
 #else // __unix__
   struct timespec interval;
   interval.tv_sec = nanoseconds / 1000000000;
   interval.tv_nsec = nanoseconds % 1000000000;
-  do {
-    ::nanosleep(&interval, &interval);
-  } while ((interval.tv_sec != 0) || (interval.tv_nsec != 0));
+  while (::nanosleep(&interval, &interval) == -1) {
+    if (errno != EINTR) {
+      break;
+    }
+  }
 #endif
 }
 
 void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
-  if (microseconds >= 1000000000) {
-    throw OutOfDomain();
-  }
+  assert(microseconds < 1000000000, OutOfDomain());
 #if defined(__win32__)
   Sleep(microseconds/1000);
 #else // __unix__
   struct timespec interval;
   interval.tv_sec = microseconds / 1000000;
   interval.tv_nsec = (microseconds % 1000000) * 1000;
-  do {
-    ::nanosleep(&interval, &interval);
-  } while ((interval.tv_sec != 0) || (interval.tv_nsec != 0));
+  while (::nanosleep(&interval, &interval) == -1) {
+    if (errno != EINTR) {
+      break;
+    }
+  }
 #endif
 }
 
 void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
-  if (milliseconds >= 1000000000) {
-    throw OutOfDomain();
-  }
+  assert(milliseconds < 1000000000, OutOfDomain());
 #if defined(__win32__)
   Sleep(milliseconds);
 #else // __unix__
   struct timespec interval;
   interval.tv_sec = milliseconds / 1000;
   interval.tv_nsec = (milliseconds % 1000) * 1000000;
-  do {
-    ::nanosleep(&interval, &interval);
-  } while ((interval.tv_sec != 0) || (interval.tv_nsec != 0));
+  while (::nanosleep(&interval, &interval) == -1) {
+    if (errno != EINTR) {
+      break;
+    }
+  }
 #endif
 }
 
 void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
-  if (seconds >= 1000000) {
-    throw OutOfDomain();
-  }
+  assert(seconds < 1000000, OutOfDomain());
 #if defined(__win32__)
   Sleep(seconds * 1000);
 #else // __unix__
   struct timespec interval;
   interval.tv_sec = seconds;
   interval.tv_nsec = 0;
-  do {
-    ::nanosleep(&interval, &interval);
-  } while (interval.tv_sec != 0);
+  while (::nanosleep(&interval, &interval) == -1) {
+    if (errno != EINTR) {
+      break;
+    }
+  }
 #endif
 }
 

@@ -70,7 +70,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
   
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct addrinfo hint;
-  fill<char>(getCharAddress(hint), sizeof(hint), 0);
+  fill<char>(Cast::getCharAddress(hint), sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
 
   struct addrinfo* ai;
@@ -137,7 +137,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound) {
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct addrinfo hint;
-  fill<char>(getCharAddress(hint), sizeof(hint), 0);
+  fill<char>(Cast::getCharAddress(hint), sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
 
   struct addrinfo* ai;
@@ -330,7 +330,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
   addr.sin6_len = sizeof(addr);
 #endif
   addr.sin6_family = AF_INET6;
-  copy<char>(getCharAddress(addr.sin6_addr), getCharAddress(address), sizeof(address));
+  copy<char>(Cast::getCharAddress(addr.sin6_addr), getCharAddress(address), sizeof(address));
   char hostname[NI_MAXHOST]; // includes space for terminator
 
   if (getnameinfo(
@@ -396,7 +396,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
     }
 #  else
     #warning gethostbyaddr is not MT-safe
-    if (!(hp = gethostbyaddr(getCharAddress(address.words[3]), sizeof(address.words[3]), AF_INET))) {
+    if (!(hp = gethostbyaddr(Cast::getCharAddress(address.words[3]), sizeof(address.words[3]), AF_INET))) {
       throw HostNotFound("Unable to resolve IP address", this);
     }
 #  endif

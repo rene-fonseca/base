@@ -69,8 +69,7 @@ FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
 
 
 
-FileDescriptor::FileDescriptor(int handle) throw() {
-  fd = new Descriptor(handle);
+FileDescriptor::FileDescriptor(int handle) throw() : fd(new Descriptor(handle)) {
 }
 
 FileDescriptor::FileDescriptor(const FileDescriptor& copy) throw() : fd(copy.fd) {

@@ -29,6 +29,7 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size) 
 
   if (size <= bytesLeft) { // do we have enough space left in the internal buffer
     memcpy(this->buffer + count, buffer, size); // copy from external to internal
+    count += size;
     return size;
   }
 

@@ -28,6 +28,7 @@ protected:
     int handle;
   public:
     Descriptor() throw();
+    Descriptor(const Descriptor& copy) throw() : handle(copy.handle) {}
     Descriptor(int handle) throw();
     void close() throw(IOException);
     int getFlags() const throw(IOException);

@@ -35,12 +35,12 @@ FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(FileDescriptor
 }
 
 void FileDescriptorOutputStream::flush() throw(IOException) {
-#if defined(__CYGWIN__)
-#else
-  if (::fdatasync(fd->getHandle()) != 0) {
-    throw IOException("Unable to flush file descriptor");
-  }
-#endif
+//#if defined(__CYGWIN__)
+//#else
+//  if (::fdatasync(fd->getHandle()) != 0) {
+//    throw IOException("Unable to flush file descriptor");
+//  }
+//#endif
 }
 
 unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {

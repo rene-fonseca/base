@@ -60,7 +60,18 @@ public:
   */
   template<class TYPE>
   static inline String getTypename(const TYPE& object) throw() {
-    return demangleName(Type::getType(object).getLocalName());
+    return demangleName(Type(object).getLocalName());
+  }
+  
+  /**
+    Returns the demangled type name of the specified type. The result is the
+    string representation of the fully qualified name of the type (e.g.
+    "base::String").
+
+    @param type The type.
+  */
+  static inline String getTypename(const Type& type) throw() {
+    return demangleName(type.getLocalName());
   }
 };
 

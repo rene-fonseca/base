@@ -4,6 +4,7 @@
  ***************************************************************************/
 
 #include <base/string/FormatOutputStream.h>
+#include <base/string/StringOutputStream.h>
 #include <base/string/String.h>
 #include <base/collection/List.h>
 #include <base/collection/Set.h>
@@ -19,7 +20,8 @@ void test() {
   fout << "Writing built-in types to fout" << ENDL;
   fout << "short (-1234): " << short(-1234) << ENDL;
   fout << "int (-123456): " << int(-123456) << ENDL;
-//  fout << "long long (-1234567890): " << -1234567890L << ENDL;
+  fout << "long (-123456): " << -123456L << ENDL;
+  fout << "long long (-1234567890): " << -1234567890LL << ENDL;
   fout << "char (A): " << 'A' << ENDL;
   fout << "char* (Hello, World!): " << "Hello, World!" << ENDL;
 
@@ -27,6 +29,10 @@ void test() {
 
   fout << "String<char>: " << String("This is a String object") << ENDL;
   fout << "Date (now): " << Date::getNow() << ENDL;
+
+  StringOutputStream stream;
+  stream << "This " << "is " << "written " << "to " << "a " << "string " << "stream" << FLUSH;
+  fout << "String: " << stream.getString() << ENDL;
 
   List<int> li;
   for (unsigned int i = 0; i < 10; i++) {

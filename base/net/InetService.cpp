@@ -73,9 +73,11 @@ InetService::InetService(const String& name, const String& protocol) throw(Servi
 }
 
 InetService::InetService(unsigned short port, const String& protocol) throw(ServiceNotFound) {
-  if ((name = getByPort(port, protocol.getElements())) == "") {
-    throw ServiceNotFound("Unable to resolve service by port", this);
-  }
+  name = getByPort(port, protocol.getElements());
+  assert(
+    name.isProper(),
+    ServiceNotFound("Unable to resolve service by port", this)
+  );
   this->port = port;
   this->protocol = protocol;
 }

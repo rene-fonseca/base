@@ -67,7 +67,7 @@ public:
     @param name Specifies the name of the service.
     @param protocol Specifies the name of the protocol. Default is "tcp".
   */
-  explicit InetService(const String& name, const String& protocol = "tcp") throw(ServiceNotFound);
+  explicit InetService(const String& name, const String& protocol = MESSAGE("tcp")) throw(ServiceNotFound);
 
   /**
     Initializes a service object by specified port number and protocol.
@@ -75,7 +75,7 @@ public:
     @param port The port number.
     @param protocol Specifies the name of the protocol. Default is "tcp".
   */
-  explicit InetService(unsigned short port, const String& protocol = "tcp") throw(ServiceNotFound);
+  explicit InetService(unsigned short port, const String& protocol = MESSAGE("tcp")) throw(ServiceNotFound);
 
   /**
     Copy constructor.

@@ -93,7 +93,7 @@ private:
   /** The family of the address. */
   Family family;
   /** Internal structure holding the IP address in network byte order. */
-  union Address {
+  union {
     uint32 words[4]; // enough for IPv6 and IPv4 addresses
     uint16 halfWords[8];
     uint8 octets[16];

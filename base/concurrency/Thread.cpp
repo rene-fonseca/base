@@ -576,7 +576,6 @@ void Thread::terminate() throw() {
 }
 
 Thread::~Thread() throw(ThreadException) {
-  TRACE_MEMBER();
   if (getParent() != 0) {
     if (state != NOTSTARTED) {
       terminationEvent.wait(); // allows multiple contexts to wait for thread to terminate

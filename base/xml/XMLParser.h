@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 typedef Map<String, XMLProperty> XMLPropertyHash;
 
 /**
-  XML parser
-  @author René Møller Fonseca
+  XML parser.
+
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.0
 */
 
 class XMLParser : public Object {

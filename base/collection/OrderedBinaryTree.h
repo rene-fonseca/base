@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   subtrees are respectively less than and greater than the value for any node.
 
   @short Ordered binary tree.
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -49,7 +49,7 @@ public:
 //  /**
 //    Enumeration of all the elements of an ordered binary tree.
 //
-//    @author René Møller Fonseca
+//    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 //    @version 1.0
 //  */
 //  class Enumeration : public InfixOrderEnumeration<Value, Value&, Value*, Node*> {
@@ -68,7 +68,7 @@ public:
 //  /**
 //    Non-modifying enumeration of all the elements of an ordered binary tree.
 //
-//    @author René Møller Fonseca
+//    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 //    @version 1.0
 //  */
 //  class ReadOnlyEnumeration : public InfixOrderEnumeration<Value, const Value&, const Value*, const Node*> {

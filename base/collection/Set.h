@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Set collection implemented using an ordered binary tree.
 
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */
 
@@ -108,7 +108,7 @@ public:
 //  /**
 //    Enumeration of all the elements of a set.
 //
-//    @author René Møller Fonseca
+//    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 //    @version 1.0
 //  */
 //  class Enumeration : public OrderedBinaryTree<KEY>::Enumeration {
@@ -126,7 +126,7 @@ public:
 //  /**
 //    Non-modifying enumeration of all the elements of a set.
 //
-//    @author René Møller Fonseca
+//    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 //    @version 1.0
 //  */
 //  class ReadOnlyEnumeration : public OrderedBinaryTree<KEY>::ReadOnlyEnumeration {

@@ -61,7 +61,7 @@ void Attribute::setValue(const String& value) throw(DOMException) {
     xmlFreeNodeList(attribute->children);
   }
   attribute->children = 0;
-  attribute->last = 0;  
+  attribute->last = 0;
   
   xmlChar* encoded = xmlEncodeEntitiesReentrant(
     attribute->doc,

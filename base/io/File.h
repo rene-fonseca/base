@@ -304,7 +304,7 @@ public:
   */
   template<class TYPE>
   inline unsigned int read(TYPE& buffer) throw(FileException) {
-    return read(Cast::getCharAddress(buffer), sizeof(TYPE));
+    return read(Cast::getAddress(buffer), sizeof(TYPE));
   }
 
   /**

@@ -681,7 +681,7 @@ public:
     
     struct Flag {
       unsigned int mask;
-      StringLiteral literal;
+      Literal literal;
     };
     
     void onMouseMove(const Position& position, unsigned int state) throw() {
@@ -765,7 +765,7 @@ public:
         {Key::INSERT_TOGGLED, MESSAGE("INSERT")}
       };
       
-      static const StringLiteral EVENT_STRING[] = {
+      static const Literal EVENT_STRING[] = {
         MESSAGE("PRESSED"),
         MESSAGE("RELEASED"),
         MESSAGE("DOUBLE CLICKED"),
@@ -999,7 +999,7 @@ public:
            << ENDL;
     }
     
-    void dumpCommand(const StringLiteral& description) throw() {
+    void dumpCommand(const Literal& description) throw() {
       if (verbosity >= Verbosity::COMMANDS) {
         fout << "Command: " << description << ENDL;
       }
@@ -1037,7 +1037,7 @@ public:
         break;
       case Command::HELP:
         dumpCommand(MESSAGE("Help"));
-        fout << MESSAGE("Help") << EOL << ENDL; // TAG: fixme
+        fout << "Help" << EOL << ENDL; // TAG: fixme
         break;
       case Command::SHOW_OPENGL_INFORMATION:
         dumpCommand(MESSAGE("Show OpenGL information"));
@@ -1195,7 +1195,7 @@ public:
         break;
       default:
         if (verbosity >= Verbosity::WARNINGS) {
-          fout << MESSAGE("Command '") << identifier << MESSAGE("' is not supported") << ENDL;
+          fout << "Command '" << identifier << "' is not supported" << ENDL;
         }
       }
     }

@@ -101,8 +101,8 @@ public:
   }
 
   void testDemangling(
-    const StringLiteral& mangled, const String& expected) throw() {
-    String demangled = TypeInfo::demangleName(mangled);
+    const Literal& mangled, const String& expected) throw() {
+    String demangled = TypeInfo::demangleName(mangled.getValue());
     if (demangled == expected) {
       fout << "Demangling " << mangled << ": " << demangled << " <OK>" << ENDL;
     } else {

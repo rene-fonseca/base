@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,42 +32,42 @@ using namespace dk::sdu::mip::base;
 // prepend with FileTransferProtocolClient::
 
 // Access control commands
-const StringLiteral CMD_ACCOUNT = MESSAGE("ACCT"); // set account
-const StringLiteral CMD_CDUP = MESSAGE("CDUP"); // change to parent directory
-const StringLiteral CMD_CWD = MESSAGE("CWD"); // change working directory
-const StringLiteral CMD_LOGOUT = MESSAGE("QUIT"); // logout
-const StringLiteral CMD_PASSWORD = MESSAGE("PASS"); // set password
-const StringLiteral CMD_REINITIALIZE = MESSAGE("REIN"); // reinitialize
-const StringLiteral CMD_USER = MESSAGE("USER"); // set user
+const Literal CMD_ACCOUNT = MESSAGE("ACCT"); // set account
+const Literal CMD_CDUP = MESSAGE("CDUP"); // change to parent directory
+const Literal CMD_CWD = MESSAGE("CWD"); // change working directory
+const Literal CMD_LOGOUT = MESSAGE("QUIT"); // logout
+const Literal CMD_PASSWORD = MESSAGE("PASS"); // set password
+const Literal CMD_REINITIALIZE = MESSAGE("REIN"); // reinitialize
+const Literal CMD_USER = MESSAGE("USER"); // set user
 
 // Transfer parameter commands
-const StringLiteral CMD_DATA_PORT = MESSAGE("PORT"); // set host data connection port
-const StringLiteral CMD_PASSIVE = MESSAGE("PASV"); // request passive mode
-const StringLiteral CMD_REPRESENTATION = MESSAGE("TYPE"); // request data representation (AEIL)
-const StringLiteral CMD_FILE_STRUCTURE = MESSAGE("STRU"); // request file structure (file/record/page)
-const StringLiteral CMD_TRANSFER_MODE = MESSAGE("MODE"); // (stream/block/compressed)
+const Literal CMD_DATA_PORT = MESSAGE("PORT"); // set host data connection port
+const Literal CMD_PASSIVE = MESSAGE("PASV"); // request passive mode
+const Literal CMD_REPRESENTATION = MESSAGE("TYPE"); // request data representation (AEIL)
+const Literal CMD_FILE_STRUCTURE = MESSAGE("STRU"); // request file structure (file/record/page)
+const Literal CMD_TRANSFER_MODE = MESSAGE("MODE"); // (stream/block/compressed)
 
 // FTP service commands
-const StringLiteral CMD_RETRIEVE = MESSAGE("RETR"); // retrieve file from server
-const StringLiteral CMD_STORE = MESSAGE("STOR"); // store file on server
-const StringLiteral CMD_STORE_UNIQUE = MESSAGE("STOU"); // store unique file on server
-const StringLiteral CMD_APPEND = MESSAGE("APPE"); // append data to file on server
-const StringLiteral CMD_ALLOCATE = MESSAGE("ALLO"); // allocate storage for specified number of bytes
-const StringLiteral CMD_RESTART = MESSAGE("REST"); // restart transfer at marker
-const StringLiteral CMD_RENAME_FROM = MESSAGE("RNFR"); // rename from
-const StringLiteral CMD_RENAME_TO = MESSAGE("RNTO"); // rename to
-const StringLiteral CMD_ABORT = MESSAGE("ABOR"); // abort transfers
-const StringLiteral CMD_DELETE = MESSAGE("DELE"); // delete file
-const StringLiteral CMD_REMOVE_DIRECTORY = MESSAGE("RMD"); // remove directory
-const StringLiteral CMD_MAKE_DIRECTORY = MESSAGE("MKD"); // make directory
-const StringLiteral CMD_PWD = MESSAGE("PWD"); // print working directory
-const StringLiteral CMD_LIST = MESSAGE("LIST"); // list directory or file content
-const StringLiteral CMD_NAME_LIST = MESSAGE("NLST"); // request name list
-const StringLiteral CMD_SITE = MESSAGE("SITE"); // site specific
-const StringLiteral CMD_SYSTEM = MESSAGE("SYST"); // system type
-const StringLiteral CMD_STATUS = MESSAGE("STAT"); // status
-const StringLiteral CMD_HELP = MESSAGE("HELP"); // request help
-const StringLiteral CMD_NOOP = MESSAGE("NOOP"); // no operation
+const Literal CMD_RETRIEVE = MESSAGE("RETR"); // retrieve file from server
+const Literal CMD_STORE = MESSAGE("STOR"); // store file on server
+const Literal CMD_STORE_UNIQUE = MESSAGE("STOU"); // store unique file on server
+const Literal CMD_APPEND = MESSAGE("APPE"); // append data to file on server
+const Literal CMD_ALLOCATE = MESSAGE("ALLO"); // allocate storage for specified number of bytes
+const Literal CMD_RESTART = MESSAGE("REST"); // restart transfer at marker
+const Literal CMD_RENAME_FROM = MESSAGE("RNFR"); // rename from
+const Literal CMD_RENAME_TO = MESSAGE("RNTO"); // rename to
+const Literal CMD_ABORT = MESSAGE("ABOR"); // abort transfers
+const Literal CMD_DELETE = MESSAGE("DELE"); // delete file
+const Literal CMD_REMOVE_DIRECTORY = MESSAGE("RMD"); // remove directory
+const Literal CMD_MAKE_DIRECTORY = MESSAGE("MKD"); // make directory
+const Literal CMD_PWD = MESSAGE("PWD"); // print working directory
+const Literal CMD_LIST = MESSAGE("LIST"); // list directory or file content
+const Literal CMD_NAME_LIST = MESSAGE("NLST"); // request name list
+const Literal CMD_SITE = MESSAGE("SITE"); // site specific
+const Literal CMD_SYSTEM = MESSAGE("SYST"); // system type
+const Literal CMD_STATUS = MESSAGE("STAT"); // status
+const Literal CMD_HELP = MESSAGE("HELP"); // request help
+const Literal CMD_NOOP = MESSAGE("NOOP"); // no operation
 
 
 
@@ -681,13 +681,13 @@ public:
     getResponse(); // wait for completed
   }
 
-//const StringLiteral CMD_RETRIEVE = MESSAGE("RETR"); // retrieve file from server
-//const StringLiteral CMD_STORE = MESSAGE("STOR"); // store file on server
-//const StringLiteral CMD_STORE_UNIQUE = MESSAGE("STOU"); // store unique file on server
-//const StringLiteral CMD_APPEND = MESSAGE("APPE"); // append data to file on server
-//const StringLiteral CMD_ALLOCATE = MESSAGE("ALLO"); // allocate storage for specified number of bytes
-//const StringLiteral CMD_NAME_LIST = MESSAGE("NLST"); // request name list
-//const StringLiteral CMD_SITE = MESSAGE("SITE"); // site specific
+//const Literal CMD_RETRIEVE = MESSAGE("RETR"); // retrieve file from server
+//const Literal CMD_STORE = MESSAGE("STOR"); // store file on server
+//const Literal CMD_STORE_UNIQUE = MESSAGE("STOU"); // store unique file on server
+//const Literal CMD_APPEND = MESSAGE("APPE"); // append data to file on server
+//const Literal CMD_ALLOCATE = MESSAGE("ALLO"); // allocate storage for specified number of bytes
+//const Literal CMD_NAME_LIST = MESSAGE("NLST"); // request name list
+//const Literal CMD_SITE = MESSAGE("SITE"); // site specific
 
   void abort() throw(FTPException) {
     if (verbosity >= DEBUG) {

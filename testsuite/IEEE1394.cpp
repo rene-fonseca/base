@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -48,8 +48,11 @@ public:
     COMMAND_ERROR
   };
   
-  IEEE1394Application(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("IEEE1394"), numberOfArguments, arguments, environment) {
+  IEEE1394Application(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("IEEE1394", numberOfArguments, arguments, environment) {
   }
 
   void dumpAdapters() throw() {
@@ -57,18 +60,18 @@ public:
       IEEE1394 ieee1394;
       Array<EUI64> adapters = ieee1394.getAdapters();
       if (adapters.getSize() == 0) {
-        fout << MESSAGE("No IEEE 1394 adapters available") << ENDL;
+        fout << "No IEEE 1394 adapters available" << ENDL;
       } else {
         Array<EUI64>::ReadEnumerator enu = adapters.getReadEnumerator();
-        fout << MESSAGE("IEEE 1394 adapters:") << EOL;
+        fout << "IEEE 1394 adapters:" << EOL;
         while (enu.hasNext()) {
-          fout << MESSAGE("  ") << *enu.next() << EOL;
+          fout << indent(2) << *enu.next() << EOL;
         }
         fout << FLUSH;
       }
     } catch (Exception& e) {
       fout << ENDL;
-      ferr << MESSAGE("Unable to get available adapters") << EOL
+      ferr << "Unable to get available adapters" << EOL
            << e << ENDL;
       Application::getApplication()->setExitCode(EXIT_CODE_ERROR);
       return;
@@ -76,7 +79,7 @@ public:
   }
 
   void openAdapter(IEEE1394& ieee1394, const EUI64& id) throw() {
-    fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
+    fout << "Opening IEEE 1394 adapter (" << id << ')' << ENDL;
     ieee1394.open(id);
   }
 
@@ -91,25 +94,25 @@ public:
       if (guid.isInvalid()) {
         Array<EUI64> adapters = ieee1394.getAdapters();
         if (adapters.getSize() == 0) {
-          ferr << MESSAGE("No adapters available") << ENDL;
+          ferr << "No adapters available" << ENDL;
           setExitCode(Application::EXIT_CODE_ERROR);
           return;
         }
         id = adapters[0];
       }
       
-      fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
+      fout << "Opening IEEE 1394 adapter (" << id << ')' << ENDL;
       ieee1394.open(id);
       ieee1394.checkResetGeneration();
 
-      static const StringLiteral STANDARDS[] = {
+      static const Literal STANDARDS[] = {
         MESSAGE("Unspecified"),
         MESSAGE("IEEE 1394"),
         MESSAGE("IEEE 1394A"),
         MESSAGE("IEEE 1394B")
       };
       
-      static const StringLiteral SPEEDS[] = {
+      static const Literal SPEEDS[] = {
         MESSAGE("S100"),
         MESSAGE("S200"),
         MESSAGE("S400"),
@@ -118,59 +121,59 @@ public:
         MESSAGE("S3200")
       };
 
-      fout << MESSAGE("Number of local nodes: ") << ieee1394.getNumberOfNodes() << EOL
-           << MESSAGE("Local id: ") << ieee1394.getLocalId() << EOL
-           << MESSAGE("Root node: ") << ieee1394.getRootNode() << EOL;
+      fout << "Number of local nodes: " << ieee1394.getNumberOfNodes() << EOL
+           << "Local id: " << ieee1394.getLocalId() << EOL
+           << "Root node: " << ieee1394.getRootNode() << EOL;
 
       
       if (ieee1394.getBusManager() != IEEE1394::BROADCAST) {
-        fout << MESSAGE("Bus manager: ") << ieee1394.getBusManager() << EOL;
+        fout << "Bus manager: " << ieee1394.getBusManager() << EOL;
       } else {
-        fout << MESSAGE("Bus manager: ") << MESSAGE("(not present)") << EOL;
+        fout << "Bus manager: " << "(not present)" << EOL;
       }
 
       if (ieee1394.getCycleMaster() != IEEE1394::BROADCAST) {
-        fout << MESSAGE("Cycle master: ") << ieee1394.getCycleMaster() << EOL;
+        fout << "Cycle master: " << ieee1394.getCycleMaster() << EOL;
       } else {
-        fout << MESSAGE("Cycle master: ") << MESSAGE("(not present)") << EOL;
+        fout << "Cycle master: " << "(not present)" << EOL;
       }
       
       if (ieee1394.getIsochronousResourceManager() != IEEE1394::BROADCAST) {
-        fout << MESSAGE("Isochronous resource manager: ")
+        fout << "Isochronous resource manager: "
              << ieee1394.getIsochronousResourceManager() << EOL
-             << MESSAGE("  Available bandwidth: ")
+             << indent(2) << "Available bandwidth: "
              << ieee1394.getAvailableBandwidth() << EOL
-             << MESSAGE("  Available channels: ")
+             << indent(2) << "Available channels: "
              << BIN << setWidth(64) << ZEROPAD << NOPREFIX
              << ieee1394.getAvailableIsochronousChannels() << EOL;
       } else {
-        fout << MESSAGE("Isochronous resource manager: ") << MESSAGE("(not present)") << EOL;
+        fout << "Isochronous resource manager: " << "(not present)" << EOL;
       }
-      fout << MESSAGE("Maximum broadcast speed: ") << SPEEDS[ieee1394.getBroadcastSpeed()] << EOL;
+      fout << "Maximum broadcast speed: " << SPEEDS[ieee1394.getBroadcastSpeed()] << EOL;
       
       for (unsigned int id = 0; id < ieee1394.getNumberOfNodes(); ++id) {
         const unsigned short node = IEEE1394::makeNodeId(id);
         const unsigned int capabilities = ieee1394.getCapabilities(node);
-        fout << MESSAGE("Node: ") << id << EOL;
+        fout << "Node: " << id << EOL;
 
         if (!ieee1394.isLinkLayerActive(id)) {
-          fout << MESSAGE("  link layer is not active") << EOL;
+          fout << "  link layer is not active" << EOL;
           continue;
         }
         
         try {
           IEEE1394::Standard standard = ieee1394.getCompliance(node);
-          fout << MESSAGE("  standard: ") << STANDARDS[standard] << EOL;
+          fout << "  standard: " << STANDARDS[standard] << EOL;
         } catch (IEEE1394Exception& e) {
         }
 
         if (!ieee1394.getLocalIdentifier(id).isInvalid()) {
-          fout << MESSAGE("  guid: ") << ieee1394.getLocalIdentifier(id) << EOL;
+          fout << "  guid: " << ieee1394.getLocalIdentifier(id) << EOL;
         }
 
         try {
           unsigned int vendor = ieee1394.getVendorId(node);
-          fout << MESSAGE("  vendor: ")
+          fout << "  vendor: "
                << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 16) & 0xff) << ':'
                << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 8) & 0xff) << ':'
                << HEX << setWidth(2) << ZEROPAD << NOPREFIX << (vendor & 0xff) << EOL;        
@@ -180,75 +183,75 @@ public:
         try {
           String description = ieee1394.getDescription(node);
           if (description.isProper()) {
-            fout << MESSAGE("  description: ") << description << EOL;
+            fout << "  description: " << description << EOL;
           }
           
           String keywords = ieee1394.getKeywords(node);
           if (keywords.isProper()) {
-            fout << MESSAGE("  keywords: ") << keywords << EOL;
+            fout << "  keywords: " << keywords << EOL;
           }
         } catch (IEEE1394Exception& e) {
         }
         
         try {
           unsigned int max = ieee1394.getMaximumPayload(node);
-          fout << MESSAGE("  maximum asynchronous payload: ") << max << EOL;
+          fout << "  maximum asynchronous payload: " << max << EOL;
         } catch (IEEE1394Exception& e) {
         }
 
-        fout << MESSAGE("  is contender: ") << ieee1394.isContender(id) << EOL
-             << MESSAGE("  maximum physical speed: ")
+        fout << "  is contender: " << ieee1394.isContender(id) << EOL
+             << "  maximum physical speed: "
              << SPEEDS[ieee1394.getMaximumSpeed(id)] << EOL
-             << MESSAGE("  maximum link speed: ")
+             << "  maximum link speed: "
              << SPEEDS[ieee1394.getMaximumLinkSpeed(id)] << EOL;
 
         if (capabilities) {
-          fout << MESSAGE("  capabilities: ") << EOL;
+          fout << "  capabilities: " << EOL;
           if (capabilities & IEEE1394::ISOCHRONOUS_RESOURCE_MANAGER_CAPABLE) {
-            fout << MESSAGE("    isochronous resource manager") << EOL;
+            fout << "    isochronous resource manager" << EOL;
           }
           if (capabilities & IEEE1394::CYCLE_MASTER_CAPABLE) {
-            fout << MESSAGE("    cycle master") << EOL;
+            fout << "    cycle master" << EOL;
           }
           if (capabilities & IEEE1394::ISOCHRONOUS_TRANSACTION_CAPABLE) {
-            fout << MESSAGE("    isochronous transaction") << EOL;
+            fout << "    isochronous transaction" << EOL;
           }
           if (capabilities & IEEE1394::BUS_MASTER_CAPABLE) {
-            fout << MESSAGE("    bus master") << EOL;
+            fout << "    bus master" << EOL;
           }
           if (capabilities & IEEE1394::POWER_MANAGER_CAPABLE) {
-            fout << MESSAGE("    power manager") << EOL;
+            fout << "    power manager" << EOL;
           }
         }
         
         if ((ieee1394.getIsochronousResourceManager() == id) ||
             (ieee1394.getBusManager() == id)) {
-          fout << MESSAGE("  roles: ") << EOL;
+          fout << "  roles: " << EOL;
           if (ieee1394.getCycleMaster() == id) {
-            fout << MESSAGE("    cycle master") << EOL;
+            fout << "    cycle master" << EOL;
           }
 //          if (ieee1394.getPowerManager() == id) {
-//            fout << MESSAGE("    power manager") << EOL;
+//            fout << "    power manager" << EOL;
 //          }
           if (ieee1394.getIsochronousResourceManager() == id) {
-            fout << MESSAGE("    isochronous resource manager") << EOL;
+            fout << "    isochronous resource manager" << EOL;
           }
           if (ieee1394.getBusManager() == id) {
-            fout << MESSAGE("    bus manager") << EOL;
+            fout << "    bus manager" << EOL;
           }
         }
         
         if (capabilities & IEEE1394::CYCLE_MASTER_CAPABLE) {
           try {
             unsigned int busTime = ieee1394.getBusTime(node);
-            fout << MESSAGE("  bus time: ") << busTime << EOL;            
+            fout << "  bus time: " << busTime << EOL;            
           } catch (IEEE1394Exception& e) {
           }
         }
         if (capabilities & IEEE1394::ISOCHRONOUS_TRANSACTION_CAPABLE) {
           try {
             unsigned int cycleTime = ieee1394.getCycleTime(node);
-            fout << MESSAGE("  cycle time: ") << cycleTime << EOL;
+            fout << "  cycle time: " << cycleTime << EOL;
           } catch (IEEE1394Exception& e) {
           }
         }
@@ -256,12 +259,15 @@ public:
       fout << ENDL;
     } catch (IEEE1394Exception& e) {
       fout << ENDL;
-      ferr << MESSAGE("Exception: ") << e << ENDL;
+      ferr << "Exception: " << e << ENDL;
       setExitCode(Application::EXIT_CODE_ERROR);
     }
   }
 
-  void dumpRegisterSpace(uint64 firstAddress, uint64 lastAddress, const EUI64& guid, int node) throw() {
+  void dumpRegisterSpace(
+    uint64 firstAddress,
+    uint64 lastAddress,
+    const EUI64& guid, int node) throw() {
     try {
       IEEE1394 ieee1394;
       
@@ -269,14 +275,14 @@ public:
       if (guid.isInvalid()) {
         Array<EUI64> adapters = ieee1394.getAdapters();
         if (adapters.getSize() == 0) {
-          ferr << MESSAGE("No adapters available") << ENDL;
+          ferr << "No adapters available" << ENDL;
           setExitCode(Application::EXIT_CODE_ERROR);
           return;
         }
         id = adapters[0];
       }
       
-      fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
+      fout << "Opening IEEE 1394 adapter (" << id << ')' << ENDL;
       ieee1394.open(id);
 
       if (node < 0) {
@@ -316,7 +322,7 @@ public:
                  << characters[0] << characters[1] << characters[2] << characters[3] << EOL;
           } else {
             fout << HEX << setWidth(16) << ZEROPAD << NOPREFIX << (firstAddress + i * sizeof(uint32)) << ' ' << ' '
-                 << MESSAGE("........") << EOL;
+                 << "........" << EOL;
           }
         }
         
@@ -324,22 +330,24 @@ public:
       }
     } catch (Exception& e) {
       fout << ENDL;
-      ferr << MESSAGE("Exception: ") << e << ENDL;
+      ferr << "Exception: " << e << ENDL;
       setExitCode(Application::EXIT_CODE_ERROR);
     }
   }
 
-  void onFCPRequest(unsigned short nodeId, const uint8* buffer, unsigned int size) throw() {
-    fout << MESSAGE("FCP request: ") << EOL
-         << MESSAGE("  source node: ") << IEEE1394::getAsString(nodeId) << EOL
+  void onFCPRequest(
+    unsigned short nodeId, const uint8* buffer, unsigned int size) throw() {
+    fout << "FCP request: " << EOL
+         << "  source node: " << IEEE1394::getAsString(nodeId) << EOL
          << ENDL;
     MemoryDump dump(buffer, size);
     fout << dump << ENDL;
   }
 
-  void onFCPResponse(unsigned short nodeId, const uint8* buffer, unsigned int size) throw() {
-    fout << MESSAGE("FCP response: ") << EOL
-         << MESSAGE("  source node: ") << IEEE1394::getAsString(nodeId) << EOL
+  void onFCPResponse(
+    unsigned short nodeId, const uint8* buffer, unsigned int size) throw() {
+    fout << "FCP response: " << EOL
+         << "  source node: " << IEEE1394::getAsString(nodeId) << EOL
          << ENDL;
     MemoryDump dump(buffer, size);
     fout << dump << ENDL;
@@ -359,14 +367,14 @@ public:
       if (guid.isInvalid()) {
         Array<EUI64> adapters = ieee1394.getAdapters();
         if (adapters.getSize() == 0) {
-          ferr << MESSAGE("No adapters available") << ENDL;
+          ferr << "No adapters available" << ENDL;
           setExitCode(Application::EXIT_CODE_ERROR);
           return;
         }
         id = adapters[0];
       }
       
-      fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
+      fout << "Opening IEEE 1394 adapter (" << id << ')' << ENDL;
       ieee1394.open(id);
 
       ieee1394.registerFCPListener(this);
@@ -393,7 +401,7 @@ public:
       ieee1394.unregisterFCPListener();
     } catch (Exception& e) {
       fout << ENDL;
-      ferr << MESSAGE("Exception: ") << e << ENDL;
+      ferr << "Exception: " << e << ENDL;
       setExitCode(Application::EXIT_CODE_ERROR);
     }
   }
@@ -406,22 +414,22 @@ public:
       if (guid.isInvalid()) {
         Array<EUI64> adapters = ieee1394.getAdapters();
         if (adapters.getSize() == 0) {
-          ferr << MESSAGE("No adapters available") << ENDL;
+          ferr << "No adapters available" << ENDL;
           setExitCode(Application::EXIT_CODE_ERROR);
           return;
         }
         id = adapters[0];
       }
       
-      fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
+      fout << "Opening IEEE 1394 adapter (" << id << ')' << ENDL;
       ieee1394.open(id);
 
       //char buffer[(255 + 1) * sizeof(IEEE1394::Quadlet)];
-      fout << MESSAGE("Listening for isochronous packets on channel ") << channel << MESSAGE("...") << ENDL;
+      fout << "Listening for isochronous packets on channel " << channel << "..." << ENDL;
       ieee1394.readIsochronous(channel, this);
     } catch (Exception& e) {
       fout << ENDL;
-      ferr << MESSAGE("Exception: ") << e << ENDL;
+      ferr << "Exception: " << e << ENDL;
       setExitCode(Application::EXIT_CODE_ERROR);
     }
   }
@@ -442,7 +450,10 @@ public:
           string.substring(0, index),
           UnsignedLongInteger::ANY
         );
-        assert(busId <= IEEE1394::LOCAL_BUS, InvalidFormat("Invalid bus id", this));
+        assert(
+          busId <= IEEE1394::LOCAL_BUS,
+          InvalidFormat("Invalid bus id", this)
+        );
       }
     }
     if (physical == "broadcast") {
@@ -450,15 +461,19 @@ public:
     } else {
       physicalId = UnsignedInteger::parse(physical, UnsignedLongInteger::ANY);
     }
-    assert(physicalId <= IEEE1394::BROADCAST, InvalidFormat("Invalid physical id", this));
+    assert(
+      physicalId <= IEEE1394::BROADCAST,
+      InvalidFormat("Invalid physical id", this)
+    );
     return IEEE1394::makeNodeId(physicalId, busId);
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     Command command = COMMAND_ERROR;
@@ -630,23 +645,23 @@ public:
       break;
     case COMMAND_HELP:
       // TAG: more help
-      fout << MESSAGE("Usage: ") << getFormalName()
-           << MESSAGE(" [options] [adapter EUI-64] [node EUI-64 or physical id]") << ENDL;
+      fout << "Usage: " << getFormalName()
+           << " [options] [adapter EUI-64] [node EUI-64 or physical id]" << ENDL;
       break;
     case COMMAND_VERSION:
       break;
     case COMMAND_USAGE:
-      fout << MESSAGE("Usage: ") << getFormalName()
-           << MESSAGE(" [options] [adapter EUI-64] [node EUI-64 or physical id]") << ENDL;
+      fout << "Usage: " << getFormalName()
+           << " [options] [adapter EUI-64] [node EUI-64 or physical id]" << ENDL;
       break;
     case COMMAND_ERROR:
       // fout has been flushed
       if (errorMessage.isProper()) {
-        ferr << MESSAGE("ERROR: Invalid arguments(s): ") << errorMessage << EOL;
+        ferr << "ERROR: Invalid arguments(s): " << errorMessage << EOL;
       } else {
-        ferr << MESSAGE("ERROR: Invalid arguments(s)") << EOL;
+        ferr << "ERROR: Invalid arguments(s)" << EOL;
       }
-      ferr << MESSAGE("For help: ") << getFormalName() << MESSAGE(" --help") << ENDL;
+      ferr << "For help: " << getFormalName() << " --help" << ENDL;
       setExitCode(Application::EXIT_CODE_ERROR);
       break;
     }

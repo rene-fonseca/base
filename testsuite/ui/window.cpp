@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,14 +31,19 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  WindowApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("Window"), numberOfArguments, arguments, environment) {
+  WindowApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("Window", numberOfArguments, arguments, environment) {
   }
 
   class MyOpenGLWidget : public OpenGLWidget {
   public:
     
-    MyOpenGLWidget(Window& owner, const Format& format) throw(OpenGLException, UserInterfaceException)
+    MyOpenGLWidget(
+      Window& owner,
+      const Format& format) throw(OpenGLException, UserInterfaceException)
       : OpenGLWidget(owner, format) {
     }
     
@@ -142,16 +147,16 @@ public:
       
       label.setPosition(Position(16, 16));
       label.setDimension(Dimension(256, 32));
-      label.setText(MESSAGE("This is a label"));
+      label.setText("This is a label");
       label.setTextFormat(TextFormat::RIGHT | TextFormat::MIDDLE);
       label.setBrush(Color(192, 192, 192));
-      label.setFont(Font(MESSAGE("Arial"), 16));
+      label.setFont(Font("Arial", 16));
       
       split.setPosition(Position(8, 8));
       split.setDimension(Dimension(128, 128));
       split.setOffset(64, Split::FIRST);
       
-      button.setText(MESSAGE("Accept"));
+      button.setText("Accept");
       button.setPosition(Position(512, 64));
       button.setDimension(button.getPreferredSize());
 
@@ -171,7 +176,7 @@ public:
       
       Bitmap bitmap(Dimension(128, 128), Bitmap::RGB, Bitmap::RGB_32, data);
       picture.setBitmap(bitmap);
-      fout << MESSAGE("Bitmap: ") << picture.getBitmap().getDimension() << ENDL;
+      fout << "Bitmap: " << picture.getBitmap().getDimension() << ENDL;
       
       openGLWidget.setPosition(Position(256, 32));
       openGLWidget.setDimension(Dimension(128, 128));
@@ -185,18 +190,18 @@ public:
     }
     
     void onMove(const Position& position) throw() {
-      fout << MESSAGE("Event: move ") << position << ENDL;
+      fout << "Event: move " << position << ENDL;
       progressBar.setCurrentValue(position.getX());
     }
     
     void onResize(const Dimension& dimension) throw() {
-      fout << MESSAGE("Event: resize ") << dimension << ENDL;
+      fout << "Event: resize " << dimension << ENDL;
       onDisplay();
     }
     
     struct Flag {
       unsigned int mask;
-      StringLiteral literal;
+      Literal literal;
     };
     
     void onMouseMove(const Position& position, unsigned int state) throw() {
@@ -219,7 +224,7 @@ public:
         {Key::INSERT_TOGGLED, MESSAGE("INSERT")}
       };
       
-      fout << MESSAGE("Event: mouse move ") << position << ' ';
+      fout << "Event: mouse move " << position << ' ';
       for (unsigned int i = 0; i < getArraySize(STATES); ++i) {
         if (state & STATES[i].mask) {
           fout << STATES[i].literal << ' ';
@@ -229,7 +234,7 @@ public:
     }
 
     void onMouseScope(bool scope) throw() {
-      fout << MESSAGE("Event: mouse scope ")
+      fout << "Event: mouse scope "
            << (scope ? MESSAGE("INSIDE SCOPE") : MESSAGE("OUT OF SCOPE")) << ENDL;
     }
     
@@ -258,20 +263,19 @@ public:
         {Key::INSERT_TOGGLED, MESSAGE("INSERT")}
       };
       
-      static const StringLiteral EVENT_STRING[] = {
+      static const Literal EVENT_STRING[] = {
         MESSAGE("PRESSED"),
         MESSAGE("RELEASED"),
         MESSAGE("DOUBLE CLICKED"),
         MESSAGE("TURNED")
       };
       
-      fout << MESSAGE("Event: mouse button ")
-           << getMouseButtonName(button) << ' ';
+      fout << "Event: mouse button " << getMouseButtonName(button) << SP;
       
       if (event < getArraySize(EVENT_STRING)) {
         fout << EVENT_STRING[event];
       } else {
-        fout << MESSAGE("[UNNAMED EVENT]") << ' ' << static_cast<unsigned int>(event);
+        fout << "[UNNAMED EVENT]" << ' ' << static_cast<unsigned int>(event);
       }
       fout << ' ';
       
@@ -308,80 +312,88 @@ public:
       }
     }
     
-    void onMouseWheel(const Position& position, int delta, unsigned int buttons) throw() {
-      fout << MESSAGE("Event: mouse wheel ") << position << ' ' << delta << ENDL;
+    void onMouseWheel(
+      const Position& position, int delta, unsigned int buttons) throw() {
+      fout << "Event: mouse wheel " << position << SP << delta << ENDL;
     }
     
-    void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
+    void onKey(
+      unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
       if (flags & Key::PRESSED) {
         if (flags & Key::DEAD) {
           return;
         }
 
         if ((flags & Key::ASCII) && ASCIITraits::isGraph(key)) {
-          fout << MESSAGE("Key: ") << PREFIX << HEX << key << ' '
+          fout << "Key: " << PREFIX << HEX << key << SP
                << '\'' << static_cast<char>(key) << '\''
-               << ' ' << MESSAGE("PRESSED");
+               << SP << "PRESSED";
         } else {
-          fout << MESSAGE("Key: ") << PREFIX << HEX << key << ' ' << MESSAGE("PRESSED");
+          fout << "Key: " << PREFIX << HEX << key << SP << "PRESSED";
         }
         if (flags & Key::FIRST_TIME) {
-          fout << ' ' << MESSAGE("FIRST");
+          fout << SP << "FIRST";
         }
         fout << ENDL;
       } else {
-        fout << MESSAGE("Key: ") << PREFIX << HEX << key << ' ' << MESSAGE("RELEASED") << ENDL;
+        fout << "Key: " << PREFIX << HEX << key << SP << "RELEASED" << ENDL;
       }
     }
 
     void onDestruction() throw() {
-      fout << MESSAGE("Event: destruction") << ENDL;
+      fout << "Event: destruction" << ENDL;
       exit();
     }
     
     bool onClose() throw() {
-      fout << MESSAGE("Event: close ") << ENDL;
+      fout << "Event: close " << ENDL;
       return true;
     }
     
     void onVisibility(Visibility visibility) throw() {
-      static const StringLiteral VISIBILITY[] = {
+      static const Literal VISIBILITY[] = {
         MESSAGE("INVISIBLE"),
         MESSAGE("PARTIALLY VISIBLE"),
         MESSAGE("VISIBLE")
       };
       
-      fout << MESSAGE("Event: visibility ") << VISIBILITY[visibility] << ENDL;
+      fout << "Event: visibility " << VISIBILITY[visibility] << ENDL;
     }
     
     void onFocus(Focus focus) throw() {
       update();
-      fout << MESSAGE("Event: focus ")
+      fout << "Event: focus "
            << ((focus == ACQUIRED_FOCUS) ? MESSAGE("ACQUIRED") : MESSAGE("LOST")) << ENDL;
     }
     
     void onMenu(unsigned int identifier) throw() {
-      fout << MESSAGE("Event: menu ") << identifier << ENDL;
+      fout << "Event: menu " << identifier << ENDL;
     }
     
     void onCommand(unsigned int identifier) throw() {
-      fout << MESSAGE("Event: command ") << identifier << ENDL;
+      fout << "Event: command " << identifier << ENDL;
     }
   };
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
 
     //Display display();
     
-    MyWindow myWindow(MESSAGE("Hello, World"), Position(123, 312), Dimension(256, 128), 0);
+    MyWindow myWindow(
+      "Hello, World",
+      Position(123, 312),
+      Dimension(256, 128),
+      0
+    );
 
-    fout << MESSAGE("Server vendor: ") << myWindow.getServerVendor() << ENDL;
-    fout << MESSAGE("Server release: ") << myWindow.getServerRelease() << ENDL;
+    fout << "Server vendor: " << myWindow.getServerVendor() << ENDL;
+    fout << "Server release: " << myWindow.getServerRelease() << ENDL;
     
     myWindow.show();
     myWindow.raise();

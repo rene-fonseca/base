@@ -33,30 +33,30 @@ using namespace dk::sdu::mip::base;
 namespace commands {
   
   // Methods
-  const StringLiteral METHOD_OPTIONS = MESSAGE("OPTIONS");
-  const StringLiteral METHOD_GET = MESSAGE("GET");
-  const StringLiteral METHOD_HEAD = MESSAGE("HEAD");
-  const StringLiteral METHOD_POST = MESSAGE("POST");
-  const StringLiteral METHOD_PUT = MESSAGE("PUT");
-  const StringLiteral METHOD_DELETE = MESSAGE("DELETE");
-  const StringLiteral METHOD_TRACE = MESSAGE("TRACE");
-  const StringLiteral METHOD_CONNECT = MESSAGE("CONNECT");
+  const Literal METHOD_OPTIONS = MESSAGE("OPTIONS");
+  const Literal METHOD_GET = MESSAGE("GET");
+  const Literal METHOD_HEAD = MESSAGE("HEAD");
+  const Literal METHOD_POST = MESSAGE("POST");
+  const Literal METHOD_PUT = MESSAGE("PUT");
+  const Literal METHOD_DELETE = MESSAGE("DELETE");
+  const Literal METHOD_TRACE = MESSAGE("TRACE");
+  const Literal METHOD_CONNECT = MESSAGE("CONNECT");
 
   // Access control commands
-  const StringLiteral CMD_ACCOUNT = MESSAGE("ACCT"); // set account
-  const StringLiteral CMD_CDUP = MESSAGE("CDUP"); // change to parent directory
-  const StringLiteral CMD_CWD = MESSAGE("CWD"); // change working directory
-  const StringLiteral CMD_LOGOUT = MESSAGE("QUIT"); // logout
-  const StringLiteral CMD_PASSWORD = MESSAGE("PASS"); // set password
-  const StringLiteral CMD_REINITIALIZE = MESSAGE("REIN"); // reinitialize
-  const StringLiteral CMD_USER = MESSAGE("USER"); // set user
+  const Literal CMD_ACCOUNT = MESSAGE("ACCT"); // set account
+  const Literal CMD_CDUP = MESSAGE("CDUP"); // change to parent directory
+  const Literal CMD_CWD = MESSAGE("CWD"); // change working directory
+  const Literal CMD_LOGOUT = MESSAGE("QUIT"); // logout
+  const Literal CMD_PASSWORD = MESSAGE("PASS"); // set password
+  const Literal CMD_REINITIALIZE = MESSAGE("REIN"); // reinitialize
+  const Literal CMD_USER = MESSAGE("USER"); // set user
 
   // Transfer parameter commands
-  const StringLiteral CMD_DATA_PORT = MESSAGE("PORT"); // set host data connection port
-  const StringLiteral CMD_PASSIVE = MESSAGE("PASV"); // request passive mode
-  const StringLiteral CMD_REPRESENTATION = MESSAGE("TYPE"); // request data representation (AEIL)
-  const StringLiteral CMD_FILE_STRUCTURE = MESSAGE("STRU"); // request file structure (file/record/page)
-  const StringLiteral CMD_TRANSFER_MODE = MESSAGE("MODE"); // (stream/block/compressed)
+  const Literal CMD_DATA_PORT = MESSAGE("PORT"); // set host data connection port
+  const Literal CMD_PASSIVE = MESSAGE("PASV"); // request passive mode
+  const Literal CMD_REPRESENTATION = MESSAGE("TYPE"); // request data representation (AEIL)
+  const Literal CMD_FILE_STRUCTURE = MESSAGE("STRU"); // request file structure (file/record/page)
+  const Literal CMD_TRANSFER_MODE = MESSAGE("MODE"); // (stream/block/compressed)
 }; // commands namespace
 
 using namespace commands;
@@ -477,8 +477,8 @@ protected:
 
   /* See chapter 5 of RFC */
   String makeRequest(Method method, const String& host, const String& resourceUri) throw(IOException) {
-    static const StringLiteral AGENT = MESSAGE("http/0.1 (http://www.mip.sdu.dk/~fonseca/base)");
-    static const StringLiteral methods[] = {
+    static const Literal AGENT = MESSAGE("http/0.1 (http://www.mip.sdu.dk/~fonseca/base)");
+    static const Literal methods[] = {
       METHOD_OPTIONS,
       METHOD_GET,
       METHOD_HEAD,

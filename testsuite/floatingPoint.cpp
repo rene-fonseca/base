@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,8 +24,11 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  FloatingPointApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("floatingPoint"), numberOfArguments, arguments, environment) {
+  FloatingPointApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("floatingPoint", numberOfArguments, arguments, environment) {
   }
 
   enum FloatingPointRepresentation {
@@ -60,7 +63,7 @@ public:
 
   template<class TYPE>
   static String getRepresentationAsString() throw() {
-    static const StringLiteral REPRESENTATION[] = {
+    static const Literal REPRESENTATION[] = {
       MESSAGE("IEEE 754 single precision"),
       MESSAGE("IEEE 754 double precision"),
       MESSAGE("IEEE extended double precision 96 bit"),

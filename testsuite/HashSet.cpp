@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,14 +26,15 @@ private:
 public:
 
   HashSetApplication(int argc, const char* argv[], const char* env[]) throw()
-    : Application(MESSAGE("HashSet"), argc, argv, env) {
+    : Application("HashSet", argc, argv, env) {
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     fout << MESSAGE("Initializing set") << ENDL;
@@ -69,7 +70,7 @@ public:
     si.removeAll();
     fout << MESSAGE("Size: ") << si.getSize() << ENDL;
 
-    static const StringLiteral WORDS[] = {
+    static const Literal WORDS[] = {
       MESSAGE("hi"),
       MESSAGE("hello"),
       MESSAGE("world"),

@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MATHEMATICS__VECTOR3D_H
-#define _DK_SDU_MIP__BASE_MATHEMATICS__VECTOR3D_H
+#ifndef _DK_SDU_MIP__BASE_MATHEMATICS__VECTOR_3D_H
+#define _DK_SDU_MIP__BASE_MATHEMATICS__VECTOR_3D_H
 
 #include <base/string/FormatOutputStream.h>
 #include <base/mathematics/Math.h>
@@ -44,7 +44,9 @@ public:
   /**
     Initializes vector as origin (0, 0, 0).
   */
-  inline Vector3D() throw() : x(0), y(0), z(0) {}
+  inline Vector3D() throw()
+    : x(0), y(0), z(0) {
+  }
 
   /**
     Initializes vector from the specified coordinates.
@@ -60,7 +62,9 @@ public:
 
     @param vector The desired vector.
   */
-  inline Vector3D(const Vector3D& copy) throw() : x(copy.x), y(copy.y), z(copy.z) {}
+  inline Vector3D(const Vector3D& copy) throw()
+    : x(copy.x), y(copy.y), z(copy.z) {
+  }
 
   /**
     Assignment of this vector from vector.
@@ -75,7 +79,9 @@ public:
   /**
     Returns the square of the modulus of the vector.
   */
-  inline TYPE getSqrModulus() const throw() {return x*x + y*y + z*z;}
+  inline TYPE getSqrModulus() const throw() {
+    return x*x + y*y + z*z;
+  }
 
   /**
     Returns the modulus of the vector.
@@ -101,38 +107,50 @@ public:
   /**
     Returns the X coordinate of the vector.
   */
-  inline TYPE getX() const throw() {return x;}
+  inline TYPE getX() const throw() {
+    return x;
+  }
 
   /**
     Returns the Y coordinate of the vector.
   */
-  inline TYPE getY() const throw() {return y;}
+  inline TYPE getY() const throw() {
+    return y;
+  }
 
   /**
     Returns the Z coordinate of the vector.
   */
-  inline TYPE getZ() const throw() {return z;}
+  inline TYPE getZ() const throw() {
+    return z;
+  }
 
   /**
     Sets the X coordinate of the vector.
 
     @param x The desired X coordinate.
   */
-  inline void setX(const TYPE& x) throw() {this->x = x;}
+  inline void setX(const TYPE& x) throw() {
+    this->x = x;
+  }
 
   /**
     Sets the Y coordinate of the vector.
 
     @param y The desired Y coordinate.
   */
-  inline void setY(const TYPE& y) throw() {this->y = y;}
+  inline void setY(const TYPE& y) throw() {
+    this->y = y;
+  }
 
   /**
     Sets the Z coordinate of the vector.
 
     @param z The desired Z coordinate.
   */
-  inline void setZ(const TYPE& z) throw() {this->z = z;}
+  inline void setZ(const TYPE& z) throw() {
+    this->z = z;
+  }
 
   /**
     Sets values less than the specified value to zero.
@@ -289,38 +307,50 @@ public:
 
     @param value The value to be added.
   */
-  inline Vector3D& operator+=(const Vector3D& value) throw() {return add(value);}
+  inline Vector3D& operator+=(const Vector3D& value) throw() {
+    return add(value);
+  }
 
   /**
     Subtracts the specified vector from this vector.
 
     @param value The value to be subtracted.
   */
-  inline Vector3D& operator-=(const Vector3D& value) throw() {return subtract(value);}
+  inline Vector3D& operator-=(const Vector3D& value) throw() {
+    return subtract(value);
+  }
 
   /**
     Multiplies this vector with the specified value.
 
     @param value The multiplicator.
   */
-  inline Vector3D& operator*=(const TYPE& value) throw() {return multiply(value);}
+  inline Vector3D& operator*=(const TYPE& value) throw() {
+    return multiply(value);
+  }
 
   /**
     Divides this vector with the specified value.
 
     @param value The divisor.
   */
-  inline Vector3D& operator/=(const TYPE& value) throw() {return divide(value);}
+  inline Vector3D& operator/=(const TYPE& value) throw() {
+    return divide(value);
+  }
 
   /**
     Unary plus.
   */
-  inline Vector3D operator+() const throw() {return plus();}
+  inline Vector3D operator+() const throw() {
+    return plus();
+  }
 
   /**
     Unary minus.
   */
-  inline Vector3D operator-() const throw() {return minus();}
+  inline Vector3D operator-() const throw() {
+    return minus();
+  }
 };
 
 template<class TYPE>

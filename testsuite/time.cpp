@@ -74,23 +74,32 @@ public:
       command += *enu.next();
     }
     
+    Timer timer;
+    Process child;
+    int exitCode;
+    
     try {      
-      Timer timer;
       timer.start();
-      Process child = Process::execute(command);
-      int exitCode = child.wait();
+      child = Process::execute(command);
+      exitCode = child.wait();
       timer.stop();
-      setExitCode(exitCode);
-      Process::Times times = child.getTimes();
-      child.getTimes();
-      fout << EOL
-           << MESSAGE("Real: ") << setPrecision(3) << getTimeAsString(timer.getMicroseconds() * 1000ULL) << EOL
-           << MESSAGE("User: ") << setPrecision(3) << getTimeAsString(times.user) << EOL
-           << MESSAGE("System: ") << setPrecision(3) << getTimeAsString(times.system) << EOL
-           << ENDL;
-    } catch (Exception& e) {
+    } catch (Process::ProcessException& e) {
       exceptionHandler(e);
+      setExitCode(EXIT_CODE_ERROR);
+      return;
     }
+    
+    setExitCode(exitCode);
+    Process::Times times = child.getTimes();
+    child.getTimes();
+    fout << EOL
+         << MESSAGE("Real: ") << setPrecision(3)
+         << getTimeAsString(timer.getMicroseconds() * 1000ULL) << EOL
+         << MESSAGE("User: ") << setPrecision(3)
+         << getTimeAsString(times.user) << EOL
+         << MESSAGE("System: ") << setPrecision(3)
+         << getTimeAsString(times.system) << EOL
+         << ENDL;
   }
   
 };

@@ -120,8 +120,8 @@ public:
       host = arguments[0]; // the address
       break;
     case 2:
-      host = arguments[1]; // the address
-      service = arguments[2]; // the service
+      host = arguments[0]; // the address
+      service = arguments[1]; // the service
       break;
     default:
       fout << MESSAGE("client [host] [service]") << ENDL;

@@ -73,7 +73,7 @@ public:
          << socket.getMulticastInterface() << ENDL;
     
     InetAddress interface; // unspecified
-    InetAddress group("234.5.6.7");
+    InetAddress group("ff00::1234"); // group("234.5.6.7");
     fout << MESSAGE("Joining multicast group ") << group
          << MESSAGE(" on interface ") << interface << ENDL;
     socket.joinGroup(interface, group);
@@ -81,14 +81,14 @@ public:
     fout << MESSAGE("Disabling multicast loopback...") << ENDL;
     socket.setMulticastLoopback(false);
 
-    fout << MESSAGE("Setting multicast time to live TTL...") << ENDL;
-    socket.setMulticastTTL(1);
+    fout << MESSAGE("Setting multicast time to live (TTL)...") << ENDL;
+    socket.setMulticastHops(1);
 
     fout << MESSAGE("Multicast settings: ") << EOL
          << indent(2) << MESSAGE("Default interface: ") << socket.getMulticastInterface() << EOL
-         << indent(2) << MESSAGE("TTL: ") << socket.getMulticastTTL() << EOL
+         << indent(2) << MESSAGE("Hops: ") << socket.getMulticastHops() << EOL
          << indent(2) << MESSAGE("Loopback: ") << socket.getMulticastLoopback() << EOL
-         << ENDL;    
+         << ENDL;
 
     fout << MESSAGE("Server address...") << ENDL;
     fout << indent(2) << socket.getLocalAddress() << ':' << socket.getLocalPort() << ENDL;

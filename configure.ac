@@ -860,7 +860,7 @@ case "$ac_base_cxx_vendor/$ac_base_cxx_name" in
     base_abi=gccv2
   fi
 ;;
-"sun.com/SUN WorkShop")
+"sun.com/Sun WorkShop")
   AC_BASE_DEFINE(DEFAULT_COMPILER, ${base_symbol_prefix}COMPILER_SUNWSPRO)
   AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_SUNWSPRO)
   base_abi=sunwspro

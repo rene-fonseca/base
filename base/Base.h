@@ -78,10 +78,22 @@ template<class TYPE>
 inline TYPE minimum(TYPE a, TYPE b) throw() {return (a <= b) ? a : b;}
 
 /**
+  Returns the minimum value among the 3 values.
+*/
+template<class TYPE>
+inline TYPE minimum(TYPE a, TYPE b, TYPE c) throw() {return minimum<TYPE>(minimum<TYPE>(a, b), c);}
+
+/**
   Returns the maximum value.
 */
 template<class TYPE>
 inline TYPE maximum(TYPE a, TYPE b) throw() {return (a >= b) ? a : b;}
+
+/**
+  Returns the maximum value among the 3 values.
+*/
+template<class TYPE>
+inline TYPE maximum(TYPE a, TYPE b, TYPE c) throw() {return maximum<TYPE>(maximum<TYPE>(a, b), c);}
 
 /**
   Returns -1, 0, and 1 if a is less than b, a is equal to b, and a is greater

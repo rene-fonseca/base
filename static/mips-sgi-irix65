@@ -25,6 +25,12 @@ long_double=IEEE_754_DOUBLE_PRECISION
 
 # os
 os=IRIX65
+
+# _REENTRANT - selects additionally reentrant object
+# _SGI_SOURCE - specifies that the UNIX 98 functionality and SGI extensions are utilized
+# _LANGUAGE_C_PLUS_PLUS - enables C++ specific prototypes
+# _LARGEFILE64_SOURCE - enables LFS prototypes
+
 features="_REENTRANT=1 _SGI_SOURCE=1 _LANGUAGE_C_PLUS_PLUS=1 lfs:_LARGEFILE64_SOURCE=1"
 
 # functions

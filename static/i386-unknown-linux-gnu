@@ -19,6 +19,10 @@ long_double=IEEE_EXTENDED_DOUBLE_PRECISION_96
 
 # os
 os=LINUX
+
+# _GNU_SOURCE - specifies that the UNIX 98 functionality and GNU extensions are utilized
+# _LARGEFILE64_SOURCE - enables LFS prototypes
+
 features="_GNU_SOURCE=1 lfs:_LARGEFILE64_SOURCE=1"
 
 # functions

@@ -6,34 +6,49 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__ALLOCATOR_H
 #define _DK_SDU_MIP__BASE_MEM__ALLOCATOR_H
 
-#include <base/MemoryException.h>
+#include <base/mem/Heap.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Functor.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-/**
-  This class encapsulates the implementation used by the Allocator class. Do
-  not use directly.
+/** Initializes the elements of the sequence using the default constructor. */
+template<class TYPE>
+inline void initialize(TYPE* element, unsigned int count) throw() {
+  if (!isPrimitive<TYPE>()) {
+    const TYPE* end = element + count;
+    --element;
+    while (++element != end) {
+      new(element) TYPE();
+    }
+  }
+}
 
-  @see Allocator
-  @author René Møller Fonseca
-  @version 1.01
-*/
+/** Initializes the elements of the sequence by moving elements from other sequence. */
+template<class TYPE>
+inline void initializeAndDestroy(TYPE* dest, const TYPE* src, unsigned int count) throw() {
+  if (!isPrimitive<TYPE>()) {
+    const TYPE* end = dest + count;
+    while (dest != end) {
+      new(dest) TYPE(*src); // copy object
+      src->~TYPE(); // destroy old object
+      ++dest;
+      ++src;
+    }
+  }
+}
 
-class AllocatorImpl {
-public:
-
-  /**
-    Sets the size of the allocated memory.
-
-    @param elements Pointer to the elements.
-    @param size The size of the memory block in bytes.
-  */
-  void* setSize(void* elements, unsigned int size) throw(MemoryException);
-};
-
-
+/** Destroys the elements of the sequence. */
+template<class TYPE>
+inline void destroy(TYPE* element, unsigned int count) throw() {
+  if (!isPrimitive<TYPE>()) {
+    const TYPE* end = element + count;
+    --element;
+    while (++element != end) {
+      element->~TYPE();
+    }
+  }
+}
 
 /**
   Allocator of resizeable memory block. The implementation is not MT-safe.
@@ -44,7 +59,7 @@ public:
 */
 
 template<class TYPE>
-class Allocator : private AllocatorImpl {
+class Allocator {
 private:
 
   /** The allocated memory block. */
@@ -157,10 +172,25 @@ public:
 
     @param size The desired size.
   */
-  inline void setSize(unsigned int size) throw(MemoryException) {
+  void setSize(unsigned int size) throw(MemoryException) {
     if (size != this->size) {
+      if (isPrimitive<TYPE>()) {
+        // no need to destroy or initialize elements
+        elements = Heap::resize(elements, size);
+      } else {
+        if (size < this->size) { // are we about to reduce the array
+          destroy(elements + size, this->size - size);
+          elements = Heap::resize(elements, size);
+        } else { // array is to be expanded
+          TYPE* temp = Heap::allocate<TYPE>(size); // new array
+          initializeAndDestroy(temp, elements, this->size);
+          Heap::release(elements); // free previous array
+          elements = temp;
+          initialize(elements + this->size, size - this->size); // default initialization of new objects
+          // could be optimized if we use Heap::tryResize - but currently only works for win32
+        }
+      }
       this->size = size;
-      elements = static_cast<TYPE*>(AllocatorImpl::setSize(elements, size * sizeof(TYPE)));
     }
   }
 

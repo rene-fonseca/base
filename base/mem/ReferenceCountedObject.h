@@ -14,9 +14,11 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_H
 #define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_H
 
-#include <base/features.h>
+#include <base/Primitives.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+class ReferenceCountedObjectPointerImpl;
 
 /**
   A reference counted object is used to count the number of references from
@@ -43,21 +45,23 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Reference counted object.
   @see ReferenceCountedObjectPointer
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.01
+  @version 1.1
 */
 
 class ReferenceCountedObject {
   friend class ReferenceCountedObjectPointerImpl;
+  friend class ReferenceImpl;
 private:
 
   /** The current number of references to the object. */
-  mutable unsigned long references; // out of memory before overflow
+  mutable MemorySize references; // out of memory before overflow
 public:
 
   /**
     Initializes reference counted object with zero references.
   */
-  inline ReferenceCountedObject() throw() : references(0) {}
+  inline ReferenceCountedObject() throw() : references(0) {
+  }
 
   /**
     Initializes object from other reference counted object. The new object
@@ -65,7 +69,9 @@ public:
     copy constructor but makes sense since a new object cannot have any
     references.
   */
-  inline ReferenceCountedObject(const ReferenceCountedObject& copy) throw() : references(0) {}
+  inline ReferenceCountedObject(const ReferenceCountedObject& copy) throw()
+    : references(0) {
+  }
 
   /**
     Assignment of reference counted object does not change this object. This

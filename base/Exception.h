@@ -14,37 +14,69 @@
 #ifndef _DK_SDU_MIP__BASE__EXCEPTION_H
 #define _DK_SDU_MIP__BASE__EXCEPTION_H
 
-#include <base/features.h>
+#include <base/Type.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  The base class of all exceptions.
+  \defgroup exceptions Exceptions
+*/
 
+/**
+  This is the base class of all exceptions supported by the framework. Normally
+  exceptions do not raise exceptions themselves. It is highly advised against
+  raising objects which are not specializations of Exception. Exceptions allow
+  the developer to handle 'rare' conditions at runtime in a safe manner. An
+  exception doesn't have to be indicating an error but normally does. Uncaught
+  exceptions will terminate the executing context with an error (in the case of
+  the main context the entire application is terminated).
+
+  \ingroup exceptions
+  @short The general exception class
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.01
+  @version 1.02
 */
 
 class Exception {
 private:
 
   /**
-    Message associated with the exception.
+    The message associated with the exception (ASCII format). This may not be available.
   */
   const char* message;
+  
+  /**
+    The identity of the type which raised the exception (may not be available).
+  */
+  const Type type;
 public:
 
   /**
-    Initializes the exception object with no message.
+    Initializes the exception object without an associated message and type identity.
   */
   Exception() throw();
 
   /**
     Initializes the exception object.
 
-    @param message The message.
+    @param message An NULL-terminated string (ASCII).
   */
   Exception(const char* message) throw();
+
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
+  Exception(Type type) throw();
+  
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  Exception(const char* message, Type type) throw();
 
   /**
     Copy constructor.
@@ -60,6 +92,11 @@ public:
   */
   const char* getMessage() const throw();
 
+  /**
+    Returns the identity of the type which raised the exception.
+  */
+  Type getType() const throw();
+  
   /**
     Destroys exception object.
   */

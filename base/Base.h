@@ -137,13 +137,61 @@ public:
   }
 };
 
+
+
+class Unspecified {
+public:
+  
+  /** Constraint error codes. */
+  enum {
+    /** Unspecified error. */
+    UNSPECIFIED
+  };
+};
+
+/**
+  Use this class to force an error at compile-time if the given expression
+  evaluates to false.
+  
+  @short Compile-time constraint.
+  @ingroup debugging
+  
+  @code
+  class MyClass {
+  public:
+  
+    enum {
+      MY_ERROR
+    };
+    
+    void myMethod() throw() {
+      if (Constraint<sizeof(unsigned int) == sizeof(unsigned long)>::UNSPECIFIED);
+      ...
+      if (Constraint<sizeof(unsigned int) == sizeof(unsigned long), MyClass>::MY_ERROR);
+      ...
+    }
+  };
+  @endcode
+*/
+template<bool ASSERTION, class TYPE = Unspecified>
+class Constraint {
+};
+
+template<class TYPE>
+class Constraint<true, TYPE> : public TYPE {
+};
+
+
+
 template<class TYPE>
 class Backend {
 };
 
+
+
 /** Destroys a complete object. */
 template<class TYPE>
-inline void deleteComplete(const volatile TYPE* value) /*throw()*/ {
+inline void deleteComplete(const volatile TYPE* value) /*throw(...)*/ {
   sizeof(TYPE);
   delete value;
 }

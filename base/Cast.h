@@ -18,29 +18,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-template<bool ASSERT>
-class CastAssert {
-};
-
-template<>
-class CastAssert<true> {
-public:
-
-  /** Casting error codes. */
-  enum Error {
-    /** This error specifies that the impersonator type does not occupy the exact same memory as the impersonated type. */
-    MISMATCH_OF_IMPERSONATOR_FOOTPRINT,
-    /** Specifies that the container type occupies less memory than the element type. */
-    CONTAINER_FOOTPRINT_TOO_SMALL,
-    /** Specifies that the element tyoe occupies more memory than the container type. */
-    ELEMENT_FOOTPRINT_TOO_LARGE,
-    /** Specifies that the type is not a pointer. */
-    NOT_A_POINTER
-  };
-};
-
-
-
 /**
   This class provides common casting methods.
   
@@ -51,12 +28,36 @@ public:
 
 class Cast {
 private:
-
+  
+  /** Casting error codes. */
+  enum {
+    /**
+      This error specifies that the impersonator type does not occupy the exact
+      amount of memory as the impersonated type.
+    */
+    MISMATCH_OF_IMPERSONATOR_FOOTPRINT,
+    /**
+      Specifies that the container type occupies less memory than the element
+      type.
+    */
+    CONTAINER_FOOTPRINT_TOO_SMALL,
+    /**
+      Specifies that the element type occupies more memory than the container
+      type.
+    */
+    ELEMENT_FOOTPRINT_TOO_LARGE,
+    /**
+      Specifies that the type is not a pointer.
+    */
+    NOT_A_POINTER
+  };
+  
   template<class RESULT>
   class Up {
   public:
+    
     inline RESULT operator()(RESULT value) const throw() {
-      CastAssert<false>::NOT_A_POINTER;
+      Constraint<false, Cast>::NOT_A_POINTER;
     }
   };
   
@@ -114,14 +115,16 @@ private:
   template<class RESULT, class ORIGINAL>
   class PointerCast {
   public:
+    
     static inline RESULT cast(ORIGINAL value) throw() {
-      CastAssert<false>::NOT_A_POINTER;
+      Constraint<false, Cast>::NOT_A_POINTER;
     }
   };
   
   template<class RESULT, class ORIGINAL>
   class PointerCast<RESULT*, ORIGINAL*> {
   public:
+    
     static inline RESULT* cast(ORIGINAL* value) throw() {
       union {
         ORIGINAL* original;
@@ -135,6 +138,7 @@ private:
   template<class RESULT, class ORIGINAL>
   class PointerCast<const RESULT*, const ORIGINAL*> {
   public:
+    
     static inline const RESULT* cast(const ORIGINAL* value) throw() {
       union {
         const ORIGINAL* original;
@@ -148,6 +152,7 @@ private:
   template<class RESULT, class ORIGINAL>
   class PointerCast<volatile RESULT*, volatile ORIGINAL*> {
   public:
+    
     static inline volatile RESULT* cast(volatile ORIGINAL* value) throw() {
       union {
         volatile ORIGINAL* original;
@@ -161,6 +166,7 @@ private:
   template<class RESULT, class ORIGINAL>
   class PointerCast<volatile const RESULT*, volatile const ORIGINAL*> {
   public:
+    
     static inline volatile const RESULT* cast(volatile const ORIGINAL* value) throw() {
       union {
         volatile const ORIGINAL* original;
@@ -174,14 +180,16 @@ private:
   template<class RESULT, class ORIGINAL>
   class AnyPointerCast {
   public:
+    
     static inline RESULT cast(ORIGINAL value) throw() {
-      CastAssert<false>::NOT_A_POINTER;
+      Constraint<false, Cast>::NOT_A_POINTER;
     }
   };
   
   template<class RESULT, class ORIGINAL>
   class AnyPointerCast<RESULT*, ORIGINAL*> {
   public:
+    
     static inline RESULT* cast(ORIGINAL* value) throw() {
       union {
         ORIGINAL* original;
@@ -199,6 +207,7 @@ private:
   template<class RESULT, class ORIGINAL>
   class ReinterpretCast<RESULT*, ORIGINAL*> {
   public:
+    
     inline RESULT* operator()(ORIGINAL* value) const throw() {
       union {
         ORIGINAL* original;
@@ -212,6 +221,7 @@ private:
   template<class RESULT, class ORIGINAL>
   class ReinterpretCast<const RESULT*, const ORIGINAL*> {
   public:
+    
     inline const RESULT* operator()(const ORIGINAL* value) const throw() {
       union {
         const ORIGINAL* original;
@@ -355,7 +365,8 @@ public:
     Returns the address of the specified object as a char pointer.
   */
   template<class TYPE>
-  static inline volatile const char* getCharAddress(volatile const TYPE value[]) throw() {
+  static inline volatile const char* getCharAddress(
+    volatile const TYPE value[]) throw() {
     return reinterpret_cast<volatile const char*>(value);
   }
 
@@ -363,7 +374,8 @@ public:
     Returns the memory offset of the specified pointer. Any qualifiers are lost in the process!
   */
   static inline MemorySize getOffset(const volatile void* value) throw() {
-    return static_cast<const volatile char*>(value) - static_cast<const volatile char*>(0);
+    return static_cast<const volatile char*>(value) -
+      static_cast<const volatile char*>(0);
   }
 
   /**
@@ -415,15 +427,13 @@ public:
     
     template<class ARGUMENT>
     static inline RESULT& cast(ARGUMENT& value) throw() {
-      if (CastAssert<sizeof(RESULT) == sizeof(ARGUMENT)>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT) {
-      }
+      if (Constraint<sizeof(RESULT) == sizeof(ARGUMENT), Cast>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT);
       return *reinterpret_cast<RESULT*>(&value);
     }
     
     template<class ARGUMENT>
     static inline const RESULT& cast(const ARGUMENT& value) throw() {
-      if (CastAssert<sizeof(RESULT) == sizeof(ARGUMENT)>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT) {
-      }
+      if (Constraint<sizeof(RESULT) == sizeof(ARGUMENT), Cast>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT);
       return *reinterpret_cast<const RESULT*>(&value);
     }
   };
@@ -445,8 +455,7 @@ public:
     
     template<class ARGUMENT>
     static inline RESULT cast(ARGUMENT& value) throw() {
-      if (CastAssert<sizeof(RESULT) >= sizeof(ARGUMENT)>::CONTAINER_FOOTPRINT_TOO_SMALL) {
-      }
+      if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL);
       union {
         ARGUMENT argument;
         RESULT result; // make sure we do not get an access violation in the cast
@@ -457,8 +466,7 @@ public:
     
     template<class ARGUMENT>
     static inline const RESULT cast(const ARGUMENT& value) throw() {
-      if (CastAssert<sizeof(RESULT) >= sizeof(ARGUMENT)>::CONTAINER_FOOTPRINT_TOO_SMALL) {
-      }
+      if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL);
       union {
         const ARGUMENT argument;
         const RESULT result; // make sure we do not get an access violation in the cast
@@ -485,15 +493,13 @@ public:
     
     template<class ARGUMENT>
     static inline RESULT cast(ARGUMENT& value) throw() {
-      if (CastAssert<sizeof(RESULT) <= sizeof(ARGUMENT)>::ELEMENT_FOOTPRINT_TOO_LARGE) {
-      }
+      if (Constraint<sizeof(RESULT) <= sizeof(ARGUMENT), Cast>::ELEMENT_FOOTPRINT_TOO_LARGE);
       return *reinterpret_cast<RESULT*>(&value);
     }
     
     template<class ARGUMENT>
     static inline const RESULT cast(const ARGUMENT& value) throw() {
-      if (CastAssert<sizeof(RESULT) <= sizeof(ARGUMENT)>::ELEMENT_FOOTPRINT_TOO_LARGE) {
-      }
+      if (Constraint<sizeof(RESULT) <= sizeof(ARGUMENT), Cast>::ELEMENT_FOOTPRINT_TOO_LARGE);
       return *reinterpret_cast<const RESULT*>(&value);
     }
   };

@@ -14,7 +14,37 @@
 #ifndef _DK_SDU_MIP__BASE__FEATURES_H
 #define _DK_SDU_MIP__BASE__FEATURES_H
 
-#include <base/config.h>
+#include <base/platforms/symbols.h> // must be first
+#include <base/configuration.h>
+#include <base/platforms/platform.h>
+
+#if !defined(_DK_SDU_MIP__BASE__CPP_CONST)
+  #error Compiler does not support the const keyword  
+#endif
+
+#if !defined(_DK_SDU_MIP__BASE__CPP_INLINE)
+  #error Compiler does not support inlining of functions
+#endif
+
+#if !defined(_DK_SDU_MIP__BASE__CPP_STATIC_CONST)
+  #error Static const with initializer inside class definition is not supported by compiler
+#endif
+
+#if !defined(_DK_SDU_MIP__BASE__CPP_ANONYMOUS)
+  #error Anonymous structure (and union) is not supported by compiler
+#endif
+
+#if (_DK_SDU_MIP__BASE__LONG_SIZE < _DK_SDU_MIP__BASE__POINTER_SIZE)
+  #error Primitive long cannot hold result of pointer arithmetic
+#endif
+
+#if (_DK_SDU_MIP__BASE__POINTER_SIZE == 4)
+  #define _DK_SDU_MIP__BASE__ABI32
+#elif (_DK_SDU_MIP__BASE__POINTER_SIZE == 8)
+  #define _DK_SDU_MIP__BASE__ABI64
+#else
+  #error Unsupported pointer size
+#endif
 
 #if defined(_DK_SDU_MIP__BASE__NAMESPACE)
   #define _DK_SDU_MIP__BASE__ENTER_NAMESPACE namespace base {

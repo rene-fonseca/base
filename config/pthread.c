@@ -1,7 +1,8 @@
 /*
-  Compiles and runs if posix thread is supported.
+  Compiles and runs if posix thread is supported. Returns 0 if supported.
 */
 
+#define _REENTRANT 1
 #define _XOPEN_SOURCE 500
 #include <pthread.h>
 
@@ -11,6 +12,8 @@ void* entry(void* arg) {
 
 int main() {
   pthread_t id;
-  pthread_create(&id, 0, entry, 0);
-  return 0;
+  if (!pthread_create(&id, 0, entry, 0)) {
+   return 0;
+  }
+  return 1;
 }

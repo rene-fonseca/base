@@ -122,7 +122,8 @@ Color::Color(NamedColor color) throw() {
     0x969063, // Wood(Med)
     0xffff00 // Yellow
   };
-  value = NAMED_COLORS[color];
+  uint32 temp = NAMED_COLORS[color];
+  value = ((temp & 0xff) << 16) | (temp & 0x00ff00) | (temp >> 16);
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Color& value) throw(IOException) {

@@ -77,9 +77,9 @@ public:
     @param blue The blue component.
   */
   inline Color(uint8 red, uint8 green, uint8 blue) throw()
-    : value((static_cast<uint32>(red) << 16) |
+    : value((static_cast<uint32>(blue) << 16) |
             (static_cast<uint32>(green) << 8) |
-            static_cast<uint32>(blue)) {
+            static_cast<uint32>(red)) {
   }
 
   /**
@@ -115,14 +115,14 @@ public:
     Returns the red component.
   */
   inline uint8 getRed() const throw() {
-    return static_cast<uint8>(value >> 16);
+    return static_cast<uint8>(value >> 0);
   }
   
   /**
     Sets the red component.
   */
   inline void setRed(uint8 value) throw() {
-    value = (value & 0x00ffff) | (static_cast<unsigned int>(value) << 16);
+    value = (value & 0xffff00) | (static_cast<unsigned int>(value) << 0);
   }
 
   /**
@@ -143,14 +143,14 @@ public:
     Returns the blue component.
   */
   inline uint8 getBlue() const throw() {
-    return static_cast<uint8>(value >> 0);
+    return static_cast<uint8>(value >> 16);
   }
 
   /**
     Sets the blue component.
   */
   inline void setBlue(uint8 value) throw() {
-    value = (value & 0xffff00) | (static_cast<unsigned int>(value) << 0);
+    value = (value & 0x00ffff) | (static_cast<unsigned int>(value) << 16);
   }
 
   /**

@@ -23,9 +23,34 @@ namespace isoc {
   extern "C" double fabs(double);
   extern "C" long double fabsl(long double);
 
+  extern "C" float ceilf(float);
+  extern "C" double ceil(double);
+  extern "C" long double ceill(long double);
+
+  extern "C" float floorf(float);
+  extern "C" double floor(double);
+  extern "C" long double floorl(long double);
+
+  extern "C" float roundf(float);
+  extern "C" double round(double);
+  extern "C" long double roundl(long double);
+
+  extern "C" float truncf(float);
+  extern "C" double trunc(double);
+  extern "C" long double truncl(long double);
+
+
   extern "C" float sqrtf(float);
   extern "C" double sqrt(double);
   extern "C" long double sqrtl(long double);
+
+  extern "C" float cbrtf(float);
+  extern "C" double cbrt(double);
+  extern "C" long double cbrtl(long double);
+
+  extern "C" float hypotf(float, float);
+  extern "C" double hypot(double, double);
+  extern "C" long double hypotl(long double, long double);
 
   extern "C" float expf(float);
   extern "C" double exp(double);
@@ -34,6 +59,14 @@ namespace isoc {
   extern "C" float logf(float);
   extern "C" double log(double);
   extern "C" long double logl(long double);
+
+  extern "C" float log2f(float);
+  extern "C" double log2(double);
+  extern "C" long double log2l(long double);
+
+  extern "C" float log10f(float);
+  extern "C" double log10(double);
+  extern "C" long double log10l(long double);
 
   extern "C" float powf(float, float);
   extern "C" double pow(double, double);
@@ -115,6 +148,55 @@ public:
     return isoc::fabsl(value);
   }
 
+  static float inline ceil(float value) throw() {
+    return isoc::ceilf(value);
+  }
+
+  static double inline ceil(double value) throw() {
+    return isoc::ceil(value);
+  }
+
+  static long double inline ceil(long double value) throw() {
+    return isoc::ceill(value);
+  }
+
+  static float inline floor(float value) throw() {
+    return isoc::floorf(value);
+  }
+
+  static double inline floor(double value) throw() {
+    return isoc::floor(value);
+  }
+
+  static long double inline floor(long double value) throw() {
+    return isoc::floorl(value);
+  }
+
+  static float inline round(float value) throw() {
+    return isoc::roundf(value);
+  }
+
+  static double inline round(double value) throw() {
+    return isoc::round(value);
+  }
+
+  static long double inline round(long double value) throw() {
+    return isoc::roundl(value);
+  }
+
+  static float inline trunc(float value) throw() {
+    return isoc::truncf(value);
+  }
+
+  static double inline trunc(double value) throw() {
+    return isoc::trunc(value);
+  }
+
+  static long double inline trunc(long double value) throw() {
+    return isoc::truncl(value);
+  }
+
+
   static float inline sqrt(float value) throw() {
     return isoc::sqrtf(value);
   }
@@ -127,6 +209,29 @@ public:
     return isoc::sqrtl(value);
   }
 
+  static float inline cbrt(float value) throw() {
+    return isoc::cbrtf(value);
+  }
+
+  static double inline cbrt(double value) throw() {
+    return isoc::cbrt(value);
+  }
+
+  static long double inline cbrt(long double value) throw() {
+    return isoc::cbrtl(value);
+  }
+
+  static float inline hypot(float x, float y) throw() {
+    return isoc::hypotf(x, y);
+  }
+
+  static double inline hypot(double x, double y) throw() {
+    return isoc::hypot(x, y);
+  }
+
+  static long double inline hypot(long double x, long double y) throw() {
+    return isoc::hypotl(x, y);
+  }
 
   static float inline exp(float value) throw() {
     return isoc::expf(value);
@@ -150,6 +255,30 @@ public:
 
   static long double inline log(long double value) throw() {
     return isoc::logl(value);
+  }
+
+  static float inline log2(float value) throw() {
+    return isoc::log2f(value);
+  }
+
+  static double inline log2(double value) throw() {
+    return isoc::log2(value);
+  }
+
+  static long double inline log2(long double value) throw() {
+    return isoc::log2l(value);
+  }
+
+  static float inline log10(float value) throw() {
+    return isoc::log10f(value);
+  }
+
+  static double inline log10(double value) throw() {
+    return isoc::log10(value);
+  }
+
+  static long double inline log10(long double value) throw() {
+    return isoc::log10l(value);
   }
 
   static float inline pow(float a, float b) throw() {
@@ -414,7 +543,7 @@ public:
   /**
     Returns the specified integer if it's a power of 2 and otherwise returns 0.
   */
-  inline unsigned char isPowerOf2(unsigned char value) throw() {
+  static inline unsigned char isPowerOf2(unsigned char value) throw() {
     static const bool IS_POWER[16] = {
       0, 1, 2, 0, 4, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0
     };

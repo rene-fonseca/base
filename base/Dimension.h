@@ -17,7 +17,7 @@
   @version 1.0
 */
 
-class Dimension : public Object {
+class Dimension : public Object, Copyable, Comparable {
 protected:
 
   /** The width. */

@@ -4,14 +4,6 @@
  ***************************************************************************/
 
 #include "Object.h"
-#include "Exception.h"
-#include <iostream>
-
-using namespace ::std;
-
-bool Object::operator==(const Object& object) {
-  return (this == &object);
-}
 
 /*
 void* operator new(size_t size) throw(MemoryException) {

@@ -1,9 +1,4 @@
 # KDE Config File
-[ellert/io/IO_Manager.cpp]
-install_location=
-dist=true
-install=false
-type=SOURCE
 [ellert/base/concurrency/ThreadKey.h]
 install_location=
 dist=true
@@ -71,12 +66,12 @@ type=SOURCE
 files=ellert/docs/en/index.html,ellert/docs/en/index-1.html,ellert/docs/en/index-2.html,ellert/docs/en/index-3.html,ellert/docs/en/index-4.html,ellert/docs/en/index-5.html,ellert/docs/en/index-6.html,
 sub_dirs=
 type=normal
-[ellert/vehicle/DesiredAngleInterface.h]
+[ellert/io/IO_VMERegionProvider.cpp]
 install_location=
 dist=true
 install=false
-type=HEADER
-[ellert/io/IO_Module.h]
+type=SOURCE
+[ellert/vehicle/DesiredAngleInterface.h]
 install_location=
 dist=true
 install=false
@@ -98,9 +93,9 @@ install=false
 type=HEADER
 [Config for BinMakefileAm]
 ldflags=
-addcxxflags=-DDEBUG_VEHICLE -I/home/fonseca/src/ellert/ellert -I/usr/include
+addcxxflags=-DDEBUG_VEHICLE -DDEBUG_IO -I/home/fonseca/src/ellert/ellert -I/usr/include
 ldadd=pthread
-cxxflags= -O2 -g3 -Wall
+cxxflags=-O2 -g3 -Wall
 bin_program=ellert
 [ellert/base/mathematics/Vector2D.cpp]
 install_location=
@@ -152,11 +147,6 @@ install_location=
 dist=true
 install=false
 type=DATA
-[ellert/io/IO_DummyManager.cpp]
-install_location=
-dist=true
-install=false
-type=SOURCE
 [ellert/base/concurrency/ThreadKey.cpp]
 install_location=
 dist=true
@@ -167,21 +157,16 @@ install_location=
 dist=true
 install=false
 type=HEADER
-[ellert/io/IO_UniverseManager.h]
-install_location=
-dist=true
-install=false
-type=HEADER
-[ellert/io/IO_Manager.h]
-install_location=
-dist=true
-install=false
-type=HEADER
 [ellert/vehicle/PositionInterface.h]
 install_location=
 dist=true
 install=false
 type=HEADER
+[ellert/io/IO_VMERegion.cpp]
+install_location=
+dist=true
+install=false
+type=SOURCE
 [ellert/io/CalibratedAnalogInput.h]
 install_location=
 dist=true
@@ -202,11 +187,11 @@ install_location=
 dist=true
 install=false
 type=DATA
-[ellert/io/IO_UniverseManager.cpp]
+[ellert/io/IO_VMERegion.h]
 install_location=
 dist=true
 install=false
-type=SOURCE
+type=HEADER
 [ellert/vehicle/MappedJoystick.cpp]
 install_location=
 dist=true
@@ -301,6 +286,11 @@ install_location=
 dist=true
 install=false
 type=DATA
+[ellert/io/IO_VMERegionProvider.h]
+install_location=
+dist=true
+install=false
+type=HEADER
 [ellert/vehicle/Indicator.h]
 install_location=
 dist=true
@@ -316,6 +306,16 @@ install_location=
 dist=true
 install=false
 type=HEADER
+[ellert/io/IO_DummyVMEProvider.cpp]
+install_location=
+dist=true
+install=false
+type=SOURCE
+[ellert/io/IO_Region.cpp]
+install_location=
+dist=true
+install=false
+type=SOURCE
 [ellert/io/IO_IPRAMBO.cpp]
 install_location=
 dist=true
@@ -388,6 +388,11 @@ type=HEADER
 [ellert/docs/Makefile.am]
 sub_dirs=en,
 type=normal
+[ellert/io/IO_Provider.h]
+install_location=
+dist=true
+install=false
+type=HEADER
 [ellert/vehicle/BrakeLight.cpp]
 install_location=
 dist=true
@@ -509,13 +514,13 @@ dist=true
 install=false
 type=SOURCE
 [General]
-make_options= -j1
+make_options=-j1
 makefiles=Makefile.am,ellert/Makefile.am,ellert/docs/Makefile.am,ellert/docs/en/Makefile.am,ellert/base/Makefile.am,ellert/vehicle/Makefile.am,ellert/base/concurrency/Makefile.am,ellert/base/mathematics/Makefile.am,ellert/io/Makefile.am,
 version_control=CVS
 author=René Møller Fonseca
 project_type=normal_cpp
 sub_dir=ellert/
-lfv_open_groups=Others,
+lfv_open_groups=
 workspace=1
 version=0.1
 project_name=Ellert
@@ -525,11 +530,11 @@ short_info=,
 email=fonseca@mip.sdu.dk
 kdevprj_version=1.2
 modifyMakefiles=true
-[ellert/io/IO_Module.cpp]
+[ellert/io/IO_RegionProvider.h]
 install_location=
 dist=true
 install=false
-type=SOURCE
+type=HEADER
 [ellert/io/IO_ADA08.cpp]
 install_location=
 dist=true
@@ -585,11 +590,6 @@ install_location=
 dist=true
 install=false
 type=SOURCE
-[ellert/io/IO_DummyManager.h]
-install_location=
-dist=true
-install=false
-type=HEADER
 [ellert/vehicle/Vehicle.h]
 install_location=
 dist=true
@@ -625,6 +625,11 @@ install_location=
 dist=true
 install=false
 type=SOURCE
+[ellert/io/IO_VMEProvider.h]
+install_location=
+dist=true
+install=false
+type=HEADER
 [ellert/io/AnalogOutput.h]
 install_location=
 dist=true
@@ -664,6 +669,11 @@ type=SOURCE
 files=ellert.kdevprj,AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,ellert.lsm,
 sub_dirs=ellert,
 type=normal
+[ellert/io/IO_DummyVMEProvider.h]
+install_location=
+dist=true
+install=false
+type=HEADER
 [ellert/base/concurrency/ThreadLock.h]
 install_location=
 dist=true
@@ -694,11 +704,6 @@ install_location=
 dist=true
 install=false
 type=DATA
-[ellert/io/IO.h]
-install_location=
-dist=true
-install=false
-type=HEADER
 [ellert/io/DigitalInput.h]
 install_location=
 dist=true
@@ -729,13 +734,18 @@ install_location=
 dist=true
 install=false
 type=DATA
+[ellert/io/IO_Region.h]
+install_location=
+dist=true
+install=false
+type=HEADER
 [ellert/io/CalibrationInterface.h]
 install_location=
 dist=true
 install=false
 type=HEADER
 [ellert/io/Makefile.am]
-files=ellert/io/AnalogInput.h,ellert/io/AnalogOutput.h,ellert/io/CalibratedAnalogInput.cpp,ellert/io/CalibratedAnalogInput.h,ellert/io/CalibratedAnalogOutput.cpp,ellert/io/CalibratedAnalogOutput.h,ellert/io/CalibrationInterface.h,ellert/io/DigitalInput.h,ellert/io/DigitalOutput.h,ellert/io/IO.h,ellert/io/IO_ADA08.cpp,ellert/io/IO_ADA08.h,ellert/io/IO_DummyManager.cpp,ellert/io/IO_DummyManager.h,ellert/io/IO_IPModule.cpp,ellert/io/IO_IPModule.h,ellert/io/IO_IPRAMBO.cpp,ellert/io/IO_IPRAMBO.h,ellert/io/IO_Manager.cpp,ellert/io/IO_Manager.h,ellert/io/IO_Module.cpp,ellert/io/IO_Module.h,ellert/io/IO_RTI602.cpp,ellert/io/IO_RTI602.h,ellert/io/IO_UniverseManager.cpp,ellert/io/IO_UniverseManager.h,ellert/io/IO_VDIN.cpp,ellert/io/IO_VDIN.h,ellert/io/IO_VDOUT.cpp,ellert/io/IO_VDOUT.h,ellert/io/Timer.h,
+files=ellert/io/AnalogInput.h,ellert/io/AnalogOutput.h,ellert/io/CalibratedAnalogInput.cpp,ellert/io/CalibratedAnalogInput.h,ellert/io/CalibratedAnalogOutput.cpp,ellert/io/CalibratedAnalogOutput.h,ellert/io/CalibrationInterface.h,ellert/io/DigitalInput.h,ellert/io/DigitalOutput.h,ellert/io/IO_ADA08.cpp,ellert/io/IO_ADA08.h,ellert/io/IO_IPModule.cpp,ellert/io/IO_IPModule.h,ellert/io/IO_IPRAMBO.cpp,ellert/io/IO_IPRAMBO.h,ellert/io/IO_RTI602.cpp,ellert/io/IO_RTI602.h,ellert/io/IO_VDIN.cpp,ellert/io/IO_VDIN.h,ellert/io/IO_VDOUT.cpp,ellert/io/IO_VDOUT.h,ellert/io/Timer.h,ellert/io/IO_VMERegionProvider.h,ellert/io/IO_VMERegionProvider.cpp,ellert/io/IO_VMERegion.h,ellert/io/IO_VMERegion.cpp,ellert/io/IO_VMEProvider.h,ellert/io/IO_Region.h,ellert/io/IO_Region.cpp,ellert/io/IO_RegionProvider.h,ellert/io/IO_DummyVMEProvider.h,ellert/io/IO_DummyVMEProvider.cpp,ellert/io/IO_Provider.h,
 sub_dirs=
 type=static_library
 [ellert/base/mathematics/Vector.h]

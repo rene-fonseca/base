@@ -6,6 +6,9 @@
 #ifndef _BASE_OBJECT_H
 #define _BASE_OBJECT_H
 
+#include "Copyable.h"
+#include "Comparable.h"
+
 #include <string>
 #include <iostream>
 
@@ -13,7 +16,7 @@ using std::string;
 using std::ostream;
 
 /**
-  The base class of all non-abstract classes.
+  The base class of all non-abstract classes. Objects are not copyable as default.
 
   @author René Møller Fonseca
   @version 1.0
@@ -22,15 +25,10 @@ using std::ostream;
 class Object {
 private:
 
-  /**
-    Copy constructor. Prevent default copying of objects.
-  */
-  Object(const Object& object);
-
-  /**
-    Assignment operator. Prevent default assignment of objects.
-  */
-  Object* operator=(const Object& object);
+  /* Disable the default copy constructor. */
+//  Object(const Object& object);
+  /* Disable the default assignment operator. */
+//  Object& operator=(const Object& object);
 public:
 
   /**
@@ -39,17 +37,7 @@ public:
   Object() {};
 
   /**
-    Equality operator. Compares the addresses of the objects.
-  */
-  virtual bool operator==(const Object& object);
-
-  /**
-    Writes a string representation of the object to a stream.
-  */
-//  virtual ostream& toString(ostream& stream) const = 0;
-
-  /**
-    Destroys the object.
+    Destroys the object. Ensure envocation of correct destructor when using polymophism.
   */
   virtual ~Object() = 0;
 };

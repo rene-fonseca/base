@@ -68,11 +68,11 @@ public:
     RGB_15, /**< Pixels are stored in 16 bits (5 bit per component). */
     RGB_16, /**< Pixels are stored in 16 bits (5 bit for red and blue and 6 for green component). */
     RGB_24, /**< Pixels are stored in 24 bits (8 bits per component with the most significant octet not used). */
-    RGB_24_LE,
-    RGB_24_BE,
+    RGB_24_LE, /**< Pixels are stored in 24 bits (8 bits per component with the most significant octet not used). */
+    RGB_24_BE, /**< Pixels are stored in 24 bits (8 bits per component with the most significant octet not used). */
     RGB_32, /**< Pixels are stored in 32 bits (8 bits per component). */
-    RGB_32_LE,
-    RGB_32_BE,
+    RGB_32_LE, /**< Pixels are stored in 32 bits (8 bits per component). */
+    RGB_32_BE, /**< Pixels are stored in 32 bits (8 bits per component). */
     RGBA_32, /**< Each pixel take up 32 bit. */
     RGBA_32_LE, /**< Each pixel take up 32 bit (red, green, blue, and alpha). */
     RGBA_32_BE /**< Each pixel take up 32 bit (alpha, blue, green, and red). */

@@ -2,7 +2,7 @@
 ####### kdevelop will overwrite this part!!! (end)############
 DEFS =
 
-bin_PROGRAMS = Array List Queue Set Map String io client server datagramClient datagramServer Thread referenceCounting fileInput mtServer filesystem xml daemon Exception
+bin_PROGRAMS = Array List Queue Set Map String io client server datagramClient datagramServer Thread referenceCounting fileInput mtServer filesystem xml daemon Exception ftp
 
 Array_SOURCES = Array.cpp
 List_SOURCES = List.cpp
@@ -23,5 +23,6 @@ filesystem_SOURCES = filesystem.cpp
 xml_SOURCES = xml.cpp
 daemon_SOURCES = daemon.cpp
 Exception_SOURCES = Exception.cpp
+ftp_SOURCES = ftp.cpp
 
-EXTRA_DIST = Array.cpp List.cpp Queue.cpp Set.cpp Map.cpp String.cpp io.cpp client.cpp server.cpp datagramClient.cpp datagramServer.cpp Thread.cpp referenceCounting.cpp fileInput.cpp mtServer.cpp filesystem.cpp xml.cpp daemon.cpp Exception.cpp
+EXTRA_DIST = Array.cpp List.cpp Queue.cpp Set.cpp Map.cpp String.cpp io.cpp client.cpp server.cpp datagramClient.cpp datagramServer.cpp Thread.cpp referenceCounting.cpp fileInput.cpp mtServer.cpp filesystem.cpp xml.cpp daemon.cpp Exception.cpp ftp.cpp

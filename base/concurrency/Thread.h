@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -84,7 +84,7 @@ typedef enum {
   </pre>
 
   @see Runnable
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */
 
@@ -117,7 +117,7 @@ private:
   ThreadTermination termination;
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   /** Handle to the thread. */
-  HANDLE threadHandle;
+  OperatingSystem::Handle threadHandle;
   /** Identifier for the thread. */
   DWORD threadID;
 #else // pthread

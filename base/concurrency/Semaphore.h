@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,6 +20,7 @@
 #include <base/OutOfDomain.h>
 #include <base/Overflow.h>
 #include <base/Type.h>
+#include <base/OperatingSystem.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
@@ -35,7 +36,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Semaphore. Synchronization object.
 
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */
 
@@ -52,7 +53,7 @@ public:
 private:
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  HANDLE semaphore;
+  OperatingSystem::Handle semaphore;
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   mutable sem_t semaphore;
 #else

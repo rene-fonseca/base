@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,7 +37,7 @@ public:
   Pool of threads used to run 'm' jobs using 'n' threads. The implementation is
   MT-safe.
 
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -60,7 +60,7 @@ private:
     Wrapper runnable used by ThreadPool to run the jobs. All the threads of the
     thread pool share one runnable object.
 
-    @author René Møller Fonseca
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
 

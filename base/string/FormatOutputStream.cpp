@@ -164,6 +164,10 @@ void FormatOutputStream::addDoubleField(const char* early, unsigned int earlySiz
   prepareForField();
 }
 
+FormatOutputStream& operator<<(FormatOutputStream& stream, bool value) {
+  return stream << (value ? "true" : "false");
+}
+
 FormatOutputStream& operator<<(FormatOutputStream& stream, char value) {
   stream.addCharacterField(&value, 1);
   return stream;

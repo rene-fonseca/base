@@ -136,6 +136,7 @@ extern FormatOutputStream fout;
 */
 extern FormatOutputStream ferr;
 
+FormatOutputStream& operator<<(FormatOutputStream& stream, bool value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, char value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, const char* value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, short int value);

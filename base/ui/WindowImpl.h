@@ -311,6 +311,33 @@ public:
   WindowImpl(const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException);
 
   /**
+    Returns the position of the binding point relative to this window.
+  */
+  inline Position getLocalBindingOffset(Binding binding) const throw() {
+    const Dimension dimension = getDimension();
+    switch (binding) {
+    case UPPER_LEFT:
+      return Position(0, 0);
+    case UPPER_CENTER:
+      return Position(dimension.getWidth()/2, 0);
+    case UPPER_RIGHT:
+      return Position(static_cast<int>(dimension.getWidth()) - 1, 0);
+    case MIDDLE_LEFT:
+      return Position(0, dimension.getHeight()/2);
+    case MIDDLE_CENTER:
+      return Position(dimension.getWidth()/2, dimension.getHeight()/2);
+    case MIDDLE_RIGHT:
+      return Position(static_cast<int>(dimension.getWidth()) - 1, dimension.getHeight()/2);
+    case LOWER_LEFT:
+      return Position(0, static_cast<int>(dimension.getHeight()) - 1);
+    case LOWER_CENTER:
+      return Position(dimension.getWidth()/2, static_cast<int>(dimension.getHeight()) - 1);
+    case LOWER_RIGHT:
+      return Position(static_cast<int>(dimension.getWidth()) - 1, static_cast<int>(dimension.getHeight()) - 1);
+    }
+  }
+  
+  /**
     Returns the position of the binding point relative to the owner.
   */
   Position getBindingOffset(Binding binding) const throw();
@@ -741,6 +768,14 @@ public:
   */
   bool wait(unsigned int milliseconds) throw(UserInterfaceException);
   
+  /**
+    This method is responsible for dispatching incomming messages to the
+    corresponding message handlers.
+
+    @return False if dispatch got an exit message.
+  */
+  bool openDispatch() throw(UserInterfaceException);
+
   /**
     This method is responsible for dispatching incomming messages to the
     corresponding message handlers.

@@ -55,48 +55,31 @@ void FileDescriptorOutputStream::flush() throw(IOException) {
 }
 
 unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {
-  unsigned int totalBytesWritten = 0;
-
 #if defined(__win32__)
-  while (totalBytesWritten < size) {
-    unsigned int bytesWritten;
-    int test = fd->getHandle();
-    bool success = WriteFile((void*)fd->getHandle(), &buffer[totalBytesWritten], size - totalBytesWritten, (DWORD*)&bytesWritten, NULL);
-
-    if (success) {
-      if (bytesWritten == 0) {
-        return totalBytesWritten;
-      }
-      totalBytesWritten += bytesWritten;
-    } else { // error occured
-      DWORD errcode = GetLastError();
+  DWORD bytesWritten;
+  BOOL success = WriteFile((HANDLE)fd->getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, &bytesWritten, 0);
+  if (success) {
+    return bytesWritten;
+  } else {
+    throw IOException("Unable to write to file descriptor");
+  }
+#else // __unix__
+  int result = ::write(fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
+  if (result == 0) {
+    // do not know if it is possible to end up here
+    return 0;
+  } else if (result == -1) { // has an error occured
+    switch (errno) {
+    case EINTR: // interrupted by signal before any data was written
+      return 0; // try later
+    case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
+      return 0; // try later
+    default:
       throw IOException("Unable to write to file descriptor");
     }
   }
-#else // __unix__
-  while (totalBytesWritten < size) {
-    int result = ::write(fd->getHandle(), &buffer[totalBytesWritten], (size - totalBytesWritten) % SSIZE_MAX);
-
-    if (result == 0) {
-      // do not know if it is possible to end up here
-      return totalBytesWritten;
-    } else if (result == -1) { // has an error occured
-      switch (errno) {
-      case EINTR: // interrupted by signal before any data was written
-        // try again
-        break;
-      case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
-        return totalBytesWritten; // early return
-        break;
-      default:
-        throw IOException("Unable to write to file descriptor");
-      }
-    } else {
-      totalBytesWritten += result;
-    }
-  }
+  return result;
 #endif
-  return totalBytesWritten;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorOutputStream& value) {

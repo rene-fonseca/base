@@ -8,7 +8,8 @@
 #if defined(__win32__)
   #include <windows.h>
 #else // __unix
-  #include <sys/types.h>
+  #include <sys/types.h> // required by fstat
+  #include <sys/stat.h> // required by fstat
   #include <fcntl.h>
   #include <unistd.h>
 #endif
@@ -60,7 +61,7 @@ unsigned int FileInputStream::available() const throw(IOException) {
 #else // __unix__
   struct stat status;
   off_t position;
-  if ((fstat(getHandle(), &status) != 0) || ((position = ::lseek(getHandle(), 0, SEEK_CUR)) == -1)) {
+  if ((::fstat(getHandle(), &status) != 0) || ((position = ::lseek(getHandle(), 0, SEEK_CUR)) == -1)) {
     throw IOException("Unable to get available bytes");
   }
   return status.st_size - position;

@@ -60,7 +60,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String<>& name) throw(Ho
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
-    if (!(hp = gethostbyname_r((const char*)name, &result, buffer, sizeof(buffer), &error))) {
+    if (!(hp = gethostbyname_r((const char*)name, &h, buffer, sizeof(buffer), &error))) {
       throw HostNotFound("Unable to lookup host by name");
     }
   #elif defined(__linux__)
@@ -173,7 +173,7 @@ String<> InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound)
 
 bool InetAddress::operator==(const InetAddress& eq) throw() {
 #if defined(HAVE_IPV6)
-  return IN6_ARE_ADDR_EQUAL(&address, &eq.address);
+  return IN6_ARE_ADDR_EQUAL((struct in6_addr*)&address, (struct in6_addr*)&eq.address);
 #else
   return address.buffer == eq.address.buffer;
 #endif // HAVE_IPV6
@@ -189,7 +189,7 @@ bool InetAddress::isUnspecified() const throw() {
 
 bool InetAddress::isLoopback() const throw() {
 #if defined(HAVE_IPV6)
-  return IN6_IS_ADDR_LOOPBACK(&address);
+  return IN6_IS_ADDR_LOOPBACK((struct in6_addr*)&address);
 #else
   return (uint32_t)address.buffer == htonl(0x7f000001);
 #endif // HAVE_IPV6
@@ -197,7 +197,7 @@ bool InetAddress::isLoopback() const throw() {
 
 bool InetAddress::isMulticast() const throw() {
 #if defined(HAVE_IPV6)
-  return IN6_IS_ADDR_MULTICAST(&address);
+  return IN6_IS_ADDR_MULTICAST((struct in6_addr*)&address);
 #else
   return false;
 #endif // HAVE_IPV6
@@ -205,7 +205,7 @@ bool InetAddress::isMulticast() const throw() {
 
 bool InetAddress::isLinkLocal() const throw() {
 #if defined(HAVE_IPV6)
-  return IN6_IS_ADDR_LINKLOCAL(&address);
+  return IN6_IS_ADDR_LINKLOCAL((struct in6_addr*)&address);
 #else
   return false;
 #endif // HAVE_IPV6
@@ -213,7 +213,7 @@ bool InetAddress::isLinkLocal() const throw() {
 
 bool InetAddress::isSiteLocal() const throw() {
 #if defined(HAVE_IPV6)
-  return IN6_IS_ADDR_SITELOCAL(&address);
+  return IN6_IS_ADDR_SITELOCAL((struct in6_addr*)&address);
 #else
   return false;
 #endif // HAVE_IPV6
@@ -221,7 +221,7 @@ bool InetAddress::isSiteLocal() const throw() {
 
 bool InetAddress::isV4Mapped() const throw() {
 #if defined(HAVE_IPV6)
-  return IN6_IS_ADDR_V4MAPPED(&address);
+  return IN6_IS_ADDR_V4MAPPED((struct in6_addr*)&address);
 #else
   return false;
 #endif // HAVE_IPV6
@@ -229,7 +229,7 @@ bool InetAddress::isV4Mapped() const throw() {
 
 bool InetAddress::isV4Compatible() const throw() {
 #if defined(HAVE_IPV6)
-  return IN6_IS_ADDR_V4COMPAT(&address);
+  return IN6_IS_ADDR_V4COMPAT((struct in6_addr*)&address);
 #else
   return true;
 #endif // HAVE_IPV6

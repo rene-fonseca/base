@@ -279,7 +279,7 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
       (S_IRUSR == FolderInfo::RUSR) && (S_IWUSR == FolderInfo::WUSR) && (S_IXUSR == FolderInfo::XUSR) &&
       (S_IRGRP == FolderInfo::RGRP) && (S_IWGRP == FolderInfo::WGRP) && (S_IXGRP == FolderInfo::XGRP) &&
       (S_IROTH == FolderInfo::ROTH) && (S_IWOTH == FolderInfo::WOTH) && (S_IXOTH == FolderInfo::XOTH)) {
-    return status.st_mode & (File::PERMISSION_MASK|STICKY_MASK);
+    mode = status.st_mode & (FolderInfo::PERMISSION_MASK|FolderInfo::STICKY_MASK);
   } else {
 #endif
 #if defined(S_ISUID)

@@ -281,7 +281,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException) : path(_path)
       (S_IRUSR == FileInfo::RUSR) && (S_IWUSR == FileInfo::WUSR) && (S_IXUSR == FileInfo::XUSR) &&
       (S_IRGRP == FileInfo::RGRP) && (S_IWGRP == FileInfo::WGRP) && (S_IXGRP == FileInfo::XGRP) &&
       (S_IROTH == FileInfo::ROTH) && (S_IWOTH == FileInfo::WOTH) && (S_IXOTH == FileInfo::XOTH)) {
-    return status.st_mode & (File::PERMISSION_MASK|STICKY_MASK);
+    mode = status.st_mode & (FileInfo::PERMISSION_MASK|FileInfo::STICKY_MASK);
   } else {
 #endif
 #if defined(S_ISUID)

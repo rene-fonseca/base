@@ -356,10 +356,18 @@ namespace internal {
       unsigned int* length) throw(NetworkException) {
       socklen temp = *length;
       if (::getsockopt(handle, level, option, static_cast<char*>(buffer), &temp) != 0) {
-        throw bindCause(
-          NetworkException("Unable to get IP option", Type::getType<Socket>()),
-          getCause()
-        );
+        unsigned int cause = getCause();
+        if (cause) {
+          throw bindCause(
+            NetworkException("Unable to get IP option", Type::getType<Socket>()),
+            cause
+          );
+        } else {
+          throw bindError(
+            NetworkException("Unable to get IP option", Type::getType<Socket>()),
+            getNativeError()
+          );
+        }
       }
       *length = temp;
     }
@@ -371,10 +379,18 @@ namespace internal {
       const void* buffer,
       unsigned int length) throw(NetworkException) {
       if (::setsockopt(handle, level, option, static_cast<const char*>(buffer), length) != 0) {
-        throw bindCause(
-          NetworkException("Unable to set IP option", Type::getType<Socket>()),
-          getCause()
-        );
+        unsigned int cause = getCause();
+        if (cause) {
+          throw bindCause(
+            NetworkException("Unable to set IP option", Type::getType<Socket>()),
+            cause
+          );
+        } else {
+          throw bindError(
+            NetworkException("Unable to set IP option", Type::getType<Socket>()),
+            getNativeError()
+          );
+        }
       }
     }
     
@@ -500,20 +516,38 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(Network
   socket->setRemotePort(port);
 }
 
-// TAG: support domain specification
-void Socket::create(Kind kind) throw(NetworkException) {
+void Socket::create(Kind kind, Domain domain) throw(NetworkException) {
   // TAG: should return new socket not overwrite handle (static method)
   static const int SOCKET_KINDS[] = {SOCK_STREAM, SOCK_DGRAM, SOCK_RAW};
-  assert(!socket->isValid(), NetworkException("Unable to create socket", this));
+  assert(
+    !socket->isValid(),
+    NetworkException("Unable to create socket", this)
+  );
 #if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
-  OperatingSystem::Handle handle = (OperatingSystem::Handle)::socket(PF_INET6, SOCKET_KINDS[kind], 0);
+  OperatingSystem::Handle handle = (OperatingSystem::Handle)::socket(
+    (domain != Socket::IPV4) ? PF_INET6 : PF_INET,
+    SOCKET_KINDS[kind],
+    0
+  );
   assert(
     handle != OperatingSystem::INVALID_HANDLE,
     NetworkException("Unable to create socket", this)
   );
-  socket = new SocketImpl(handle, Socket::IPV6, kind);
+  socket = new SocketImpl(
+    handle,
+    (domain != Socket::IPV4) ? Socket::IPV6 : Socket::IPV4,
+    kind
+  );
 #else
-  OperatingSystem::Handle handle = (OperatingSystem::Handle)::socket(PF_INET, SOCKET_KINDS[kind], 0);
+  assert(
+    (domain == Socket::IPV4) || (domain == Socket::DEFAULT_DOMAIN),
+    NetworkException("Domain not supported")
+  );
+  OperatingSystem::Handle handle = (OperatingSystem::Handle)::socket(
+    PF_INET,
+    SOCKET_KINDS[kind],
+    0
+  );
   assert(
     handle != OperatingSystem::INVALID_HANDLE,
     NetworkException("Unable to create socket", this)

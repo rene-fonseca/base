@@ -52,9 +52,10 @@ public:
 
   /** Domain. */
   enum Domain {
+    // UNIX, /**< UNIX domain. */
     IPV4, /**< IP version 4. */
-    IPV6 /**< IP version 6. */
-    // UNIX /**< UNIX domain. */
+    IPV6, /**< IP version 6. */
+    DEFAULT_DOMAIN /**< The default domain. */
   };
   
   /** Socket type. */
@@ -239,8 +240,9 @@ public:
     Creates either a stream or a datagram socket.
 
     @param kind The socket type (e.g. STREAM).
+    @param domain The domain (the default is DEFAULT_DOMAIN).
   */
-  void create(Kind kind) throw(NetworkException);
+  void create(Kind kind, Domain domain = DEFAULT_DOMAIN) throw(NetworkException);
 
   /**
     Caches the locally assigned address and port of the socket. This member

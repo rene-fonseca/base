@@ -7,7 +7,6 @@
 #define _DK_SDU_MIP__BASE_STRING__STRING_H
 
 #include <base/Object.h>
-#include <base/concurrency/Synchronize.h>
 #include <base/OutOfRange.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
@@ -60,8 +59,7 @@ struct WideStringLiteral {
   @version 1.0
 */
 
-template<class LOCK = DefaultLock>
-class String : public virtual Object, protected virtual Synchronizeable<LOCK> {
+class String : public virtual Object {
 public:
 
   /** Specifies the string terminator. */
@@ -620,11 +618,6 @@ public:
 // *******************************************************************************************
 
   /**
-    Converts this string to another string.
-  */
-  String toString() const;
-
-  /**
     Returns null-terminated string.
   */
   inline const char* getBytes() const {return getReadOnlyBuffer();};
@@ -639,47 +632,31 @@ public:
 // *******************************************************************************************
 
   /**
-    Writes this string to the format stream.
-  */
-  FormatOutputStream& operator<<(FormatOutputStream& stream) const;
-
-  /**
     Writes string to format stream.
   */
-//  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const String& value) throw(IOException);
+  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
 };
-
-/**
-  Returns a new string that is the concatenation of the two specified strings.
-*/
-template<class LOCK>
-String<LOCK> operator+(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException);
-
-/**
-  String reduction. Removes suffix from string if and only if it ends with the suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas ("pre"-"suf") results in "pre").
-*/
-template<class LOCK>
-String<LOCK> operator-(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException);
 
 /**
   Writes string to format stream.
 */
-template<class LOCK>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const String<LOCK>& value) {
-  return value.operator<<(stream);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
+
+/**
+  Returns a new string that is the concatenation of the two specified strings.
+*/
+inline String operator+(const String& left, const String& right) throw(MemoryException) {
+  return String(left.getLength() + right.getLength()).append(left).append(right);
 }
 
-template<class LOCK>
-String<LOCK> operator+(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException) {
-  return String<LOCK>(left.getLength() + right.getLength()).append(left).append(right);
-}
-
-template<class LOCK>
-String<LOCK> operator-(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException) {
+/**
+  String reduction. Removes suffix from string if and only if it ends with the suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas ("pre"-"suf") results in "pre").
+*/
+inline String operator-(const String& left, const String& right) throw(MemoryException) {
   if (left.endsWith(right)) {
     return left.substring(0, left.getLength() - right.getLength()); // return copy of left without suffix
   } else {
-    return String<LOCK>(left); // return copy of left
+    return String(left); // return copy of left
   }
 }
 

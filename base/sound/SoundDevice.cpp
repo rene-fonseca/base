@@ -45,7 +45,6 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 SoundDevice::SoundDevice() throw() : access(0) {
-  Trace::message(__PRETTY_FUNCTION__);
 }
 
 void SoundDevice::reacquireAccess(unsigned int access) throw(NotSupported) {
@@ -103,10 +102,6 @@ void SoundDevice::relinquishWriteAccess() throw(IOException) {
   if (isWriteable()) {
     reacquireAccess(access & ~WRITE);
   }
-}
-
-SoundDevice::~SoundDevice() throw() {
-  Trace::message(__PRETTY_FUNCTION__);
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

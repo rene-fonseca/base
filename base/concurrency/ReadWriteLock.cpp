@@ -273,7 +273,6 @@ void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
 }
 
 ReadWriteLock::~ReadWriteLock() throw(ReadWriteLockException) {
-  Trace::message(__PRETTY_FUNCTION__);
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   delete static_cast<ReadWriteLockImpl*>(representation);
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
@@ -287,7 +286,6 @@ ReadWriteLock::~ReadWriteLock() throw(ReadWriteLockException) {
   }
   delete[] static_cast<pthread_mutex_t*>(representation);
 #endif
-  Trace::message(__PRETTY_FUNCTION__);
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

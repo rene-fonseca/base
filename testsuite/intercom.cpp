@@ -27,6 +27,7 @@
 #include <base/UnsignedInteger.h>
 #include <base/sound/SoundInputStream.h>
 #include <base/sound/SoundOutputStream.h>
+#include <base/io/EndOfFile.h>
 
 using namespace base;
 
@@ -188,13 +189,20 @@ public:
         guard.exclusiveLock();
         Allocator<short>* buffer = writingQueue.pop();
         guard.releaseLock();
-        streamSocket.write(pointer_cast<const char*>(buffer->getElements()), buffer->getByteSize());
+        try {
+          streamSocket.write(pointer_cast<const char*>(buffer->getElements()), buffer->getByteSize());
+        } catch(IOException& e) {
+          fout << MESSAGE("IOException: ") << e.getMessage() << ENDL;
+          Application::getApplication()->terminate();
+          break;
+        }
         guard.exclusiveLock();
         recordingQueue.push(buffer);
         recordingSemaphore.post();
         guard.releaseLock();
       }
     }
+    streamSocket.shutdownOutputStream();
     fout << MESSAGE("Writing thread terminating") << ENDL;
   }
 
@@ -211,7 +219,17 @@ public:
         guard.exclusiveLock();
         Allocator<short>* buffer = readingQueue.pop();
         guard.releaseLock();
-        unsigned int bytesRead = streamSocket.read(pointer_cast<char*>(buffer->getElements()), buffer->getByteSize());
+        try {
+          unsigned int bytesRead = streamSocket.read(pointer_cast<char*>(buffer->getElements()), buffer->getByteSize());
+        } catch(EndOfFile& e) {
+          fout << MESSAGE("Connection terminated by remote host") << ENDL;
+          Application::getApplication()->terminate();
+          break;
+        } catch(IOException& e) {
+          fout << MESSAGE("IO error: ") << e.getMessage() << ENDL;
+          Application::getApplication()->terminate();
+          break;
+        }
         guard.exclusiveLock();
         playingQueue.push(buffer);
         playingSemaphore.post();

@@ -27,7 +27,7 @@ class Group;
 /**
   A user trustee.
   
-  @short User.
+  @short User trustee.
   @ingroup security
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2

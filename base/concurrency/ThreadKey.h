@@ -18,11 +18,9 @@
 #include <base/Exception.h>
 #include <base/ResourceException.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-#else
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
   #include <pthread.h>
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -39,7 +37,7 @@ private:
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   /** Internal data. */
-  DWORD key;
+  unsigned long key;
 #else
   /** Internal data. */
   pthread_key_t key;
@@ -49,6 +47,8 @@ public:
   /** Exception thrown directly by the ThreadKey class. */
   class ThreadKeyException : public Exception {
   public:
+    
+    ThreadKeyException() throw() {}
     ThreadKeyException(const char* message) throw() : Exception(message) {}
   };
 

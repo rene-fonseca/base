@@ -11,10 +11,9 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MATH__COMPLEX_H
-#define _DK_SDU_MIP__BASE_MATH__COMPLEX_H
+#ifndef _DK_SDU_MIP__BASE_MATHEMATICS__COMPLEX_H
+#define _DK_SDU_MIP__BASE_MATHEMATICS__COMPLEX_H
 
-#include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
 #include <math.h> // TAG: not nice; but what can I do
 
@@ -354,7 +353,11 @@ inline Complex operator/(const Complex& left, long double right) throw() {
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value);
 
 template<>
-inline bool isRelocateable<Complex>() throw() {return isRelocateable<Object>();}
+class Relocateable<Complex> {
+public:
+
+  static const bool IS_RELOCATEABLE = Relocateable<long double>::IS_RELOCATEABLE;
+};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

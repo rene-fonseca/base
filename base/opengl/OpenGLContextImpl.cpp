@@ -52,7 +52,7 @@ String OpenGLContextImpl::getGLClientVendor() const throw(OpenGLException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
-  return native::GLX::glXGetClientString((Display*)Backend<WindowImpl>::getDisplay(), GLX_VENDOR);
+  return native::GLX::glXGetClientString((Display*)Backend<WindowImpl>::getDisplay(), native::GLX::VENDOR);
 #endif // flavor
 }
 
@@ -60,7 +60,7 @@ String OpenGLContextImpl::getGLClientRelease() const throw(OpenGLException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
-  return native::GLX::glXGetClientString((Display*)Backend<WindowImpl>::getDisplay(), GLX_VERSION);
+  return native::GLX::glXGetClientString((Display*)Backend<WindowImpl>::getDisplay(), native::GLX::VERSION);
 #endif // flavor
 }
 
@@ -68,7 +68,7 @@ String OpenGLContextImpl::getGLClientExtensions() const throw(OpenGLException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
-  return native::GLX::glXGetClientString((Display*)Backend<WindowImpl>::getDisplay(), GLX_EXTENSIONS);
+  return native::GLX::glXGetClientString((Display*)Backend<WindowImpl>::getDisplay(), native::GLX::EXTENSIONS);
 #endif // flavor
 }
 
@@ -80,7 +80,7 @@ String OpenGLContextImpl::getGLServerVendor() const throw(OpenGLException) {
   return native::GLX::glXQueryServerString(
     (Display*)Backend<WindowImpl>::getDisplay(),
     ::XScreenNumberOfScreen((Screen*)screenHandle),
-    GLX_VENDOR
+    native::GLX::VENDOR
   );
 #endif // flavor
 }
@@ -93,7 +93,7 @@ String OpenGLContextImpl::getGLServerRelease() const throw(OpenGLException) {
   return native::GLX::glXQueryServerString(
     (Display*)Backend<WindowImpl>::getDisplay(),
     ::XScreenNumberOfScreen((Screen*)screenHandle),
-    GLX_VERSION
+    native::GLX::VERSION
   );
 #endif // flavor
 }
@@ -106,7 +106,7 @@ String OpenGLContextImpl::getGLServerExtensions() const throw(OpenGLException) {
   return native::GLX::glXQueryServerString(
     (Display*)Backend<WindowImpl>::getDisplay(),
     ::XScreenNumberOfScreen((Screen*)screenHandle),
-    GLX_EXTENSIONS
+    native::GLX::EXTENSIONS
   );
 #endif // flavor
 }
@@ -117,7 +117,7 @@ String OpenGLContextImpl::getGLServerExtensions() const throw(OpenGLException) {
 // #else // unix
 //   return native::GLX::glXIsDirect(
 //     (Display*)Backend<WindowImpl>::getDisplay(),
-//     (GLXContext)renderingContextHandle
+//     (native::GLX::GLXContext)renderingContextHandle
 //   ) == True;
 // #endif // flavor
 // }
@@ -134,7 +134,7 @@ bool OpenGLContextImpl::isCurrent() const throw(OpenGLException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return native::GDI::wglGetCurrentContext() == (HGLRC)renderingContextHandle;
 #else // unix
-  return native::GLX::glXGetCurrentContext() == (GLXContext)renderingContextHandle;
+  return native::GLX::glXGetCurrentContext() == (native::GLX::GLXContext)renderingContextHandle;
 #endif // flavor
 }
 
@@ -151,17 +151,17 @@ void OpenGLContextImpl::makeCurrent() throw(OpenGLException) {
   assert(
     native::GLX::glXMakeCurrent(
       (Display*)Backend<WindowImpl>::getDisplay(),
-      (GLXDrawable)drawableHandle,
-      (GLXContext)renderingContextHandle
+      (native::GLX::GLXDrawable)drawableHandle,
+      (native::GLX::GLXContext)renderingContextHandle
     ) == True,
     OpenGLException(this)
   );
 // GLX 1.3
 //   Bool result = native::GLX::glXMakeContextCurrent(
 //     (Display*)Backend<WindowImpl>::getDisplay(),
-//     (GLXDrawable)drawableHandle,
-//     (GLXDrawable)drawableHandle,
-//     (GLXContext)renderingContextHandle
+//     (native::GLX::GLXDrawable)drawableHandle,
+//     (native::GLX::GLXDrawable)drawableHandle,
+//     (native::GLX::GLXContext)renderingContextHandle
 //   );
 #endif // flavor
 }
@@ -173,8 +173,8 @@ void OpenGLContextImpl::deselect() throw() {
   assert(
     native::GLX::glXMakeCurrent(
       (Display*)Backend<WindowImpl>::getDisplay(),
-      (GLXDrawable)None,
-      (GLXContext)0
+      (native::GLX::GLXDrawable)None,
+      (native::GLX::GLXContext)0
     ) == True,
     OpenGLException(this)
   );
@@ -196,7 +196,7 @@ void OpenGLContextImpl::swap() throw(OpenGLException) {
 //     OpenGLException("Unable to swap buffers", this)
 //   );
 #else // unix
-  native::GLX::glXSwapBuffers((Display*)Backend<WindowImpl>::getDisplay(), (GLXDrawable)drawableHandle);
+  native::GLX::glXSwapBuffers((Display*)Backend<WindowImpl>::getDisplay(), (native::GLX::GLXDrawable)drawableHandle);
 #endif // flavor
 }
 

@@ -40,18 +40,21 @@ void OpenGLContext::destroy() throw() {
 #else // unix
   native::GLX::glXMakeCurrent(
     (Display*)Backend<WindowImpl>::getDisplay(),
-    (GLXDrawable)None,
-    (GLXContext)0
+    (native::GLX::GLXDrawable)None,
+    (native::GLX::GLXContext)0
   );
   if (renderingContextHandle) {
-    native::GLX::glXDestroyContext((Display*)displayHandle, (GLXContext)renderingContextHandle);
+    native::GLX::glXDestroyContext(
+      (Display*)displayHandle,
+      (native::GLX::GLXContext)renderingContextHandle
+    );
     renderingContextHandle = 0;
   }
   if (WindowImpl::graphicsContextHandle) {
     // nothing to destroy
   }
   if (drawableHandle) {
-    // GLX 1.3 native::GLX::glXDestroyWindow((Display*)displayHandle, (GLXWindow)drawableHandle);
+    // GLX 1.3 native::GLX::glXDestroyWindow((Display*)displayHandle, (native::GLX::GLXWindow)drawableHandle);
     ::XDestroyWindow((Display*)displayHandle, (::Window)drawableHandle);
   }
   if (screenHandle) {
@@ -312,22 +315,22 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
 //     GLXFBConfig* configs = native::GLX::glXGetFBConfigs((Display*)displayHandle, screenId, &numberOfConfigs);
 
 //     static const unsigned int ATTRIBUTES[] = {
-//       GLX_X_VISUAL_TYPE,
-//       GLX_CONFIG_CAVEAT,
-//       GLX_TRANSPARENT_TYPE,
-//       GLX_TRANSPARENT_INDEX_VALUE,
-//       GLX_TRANSPARENT_RED_VALUE,
-//       GLX_TRANSPARENT_GREEN_VALUE,
-//       GLX_TRANSPARENT_BLUE_VALUE,
-//       GLX_TRANSPARENT_ALPHA_VALUE,
-//       GLX_DRAWABLE_TYPE,
-//       GLX_RENDER_TYPE,
-//       GLX_X_RENDERABLE,
-//       GLX_FBCONFIG_ID,
-//       GLX_MAX_PBUFFER_WIDTH,
-//       GLX_MAX_PBUFFER_HEIGHT,
-//       GLX_MAX_PBUFFER_PIXELS,
-//       GLX_VISUAL_ID
+//       native::GLX::X_VISUAL_TYPE,
+//       native::GLX::CONFIG_CAVEAT,
+//       native::GLX::TRANSPARENT_TYPE,
+//       native::GLX::TRANSPARENT_INDEX_VALUE,
+//       native::GLX::TRANSPARENT_RED_VALUE,
+//       native::GLX::TRANSPARENT_GREEN_VALUE,
+//       native::GLX::TRANSPARENT_BLUE_VALUE,
+//       native::GLX::TRANSPARENT_ALPHA_VALUE,
+//       native::GLX::DRAWABLE_TYPE,
+//       native::GLX::RENDER_TYPE,
+//       native::GLX::X_RENDERABLE,
+//       native::GLX::FBCONFIG_ID,
+//       native::GLX::MAX_PBUFFER_WIDTH,
+//       native::GLX::MAX_PBUFFER_HEIGHT,
+//       native::GLX::MAX_PBUFFER_PIXELS,
+//       native::GLX::VISUAL_ID
 //     };
     
 //     for (unsigned int i = 0; i < numberOfConfigs; ++i) {
@@ -348,59 +351,59 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
   {
     int attributes[33]; // make sure buffer is big enough
     int* dest = attributes;
-//     *dest++ = GLX_USE_GL;
-//     *dest++ = GLX_LEVEL;
+//     *dest++ = native::GLX::USE_GL;
+//     *dest++ = native::GLX::LEVEL;
 //     *dest++ = 0; // main layer
     if (WindowImpl::flags & OpenGLContext::COLOR_INDEXED) {
-//       *dest++ = GLX_BUFFER_SIZE;
+//       *dest++ = native::GLX::BUFFER_SIZE;
 //       *dest++ = 1; // TAG: fixme
     } else {
-      *dest++ = GLX_RGBA;
-//       *dest++ = GLX_RED_SIZE;
+      *dest++ = native::GLX::RGBA;
+//       *dest++ = native::GLX::RED_SIZE;
 //       *dest++ = 1;
-//       *dest++ = GLX_GREEN_SIZE;
+//       *dest++ = native::GLX::GREEN_SIZE;
 //       *dest++ = 1;
-//       *dest++ = GLX_BLUE_SIZE;
+//       *dest++ = native::GLX::BLUE_SIZE;
 //       *dest++ = 1;
     }
     if (WindowImpl::flags & OpenGLContext::DOUBLE_BUFFERED) {
-      *dest++ = GLX_DOUBLEBUFFER;
+      *dest++ = native::GLX::DOUBLEBUFFER;
     }
 //     if (WindowImpl::flags & OpenGLContext::STEREO) {
-//       *dest++ = GLX_STEREO;
+//       *dest++ = native::GLX::STEREO;
 //     }
 //     if (WindowImpl::flags & OpenGLContext::ACCUMULATOR) {
 //       if (WindowImpl::flags & OpenGLContext::COLOR_INDEXED) {
 //       } else {
-//         *dest++ = GLX_ACCUM_RED_SIZE;
+//         *dest++ = native::GLX::ACCUM_RED_SIZE;
 //         *dest++ = 1;
-//         *dest++ = GLX_ACCUM_GREEN_SIZE;
+//         *dest++ = native::GLX::ACCUM_GREEN_SIZE;
 //         *dest++ = 1;
-//         *dest++ = GLX_ACCUM_BLUE_SIZE;
+//         *dest++ = native::GLX::ACCUM_BLUE_SIZE;
 //         *dest++ = 1;
 //       }
 //     }
 //     if (WindowImpl::flags & OpenGLContext::ALPHA) {
-//       *dest++ = GLX_ALPHA_SIZE;
+//       *dest++ = native::GLX::ALPHA_SIZE;
 //       *dest++ = 1;
 //       if (WindowImpl::flags & OpenGLContext::ACCUMULATOR) {
-//         *dest++ = GLX_ACCUM_ALPHA_SIZE;
+//         *dest++ = native::GLX::ACCUM_ALPHA_SIZE;
 //         *dest++ = 1;
 //       }
 //     }
 //     if (WindowImpl::flags & OpenGLContext::DEPTH) {
-//       *dest++ = GLX_DEPTH_SIZE;
+//       *dest++ = native::GLX::DEPTH_SIZE;
 //       *dest++ = 12; // TAG: fixme - minimum value allowed by specification is 12
 //     } else {
-//       *dest++ = GLX_DEPTH_SIZE;
+//       *dest++ = native::GLX::DEPTH_SIZE;
 //       *dest++ = 0;
 //     }
 //     if (WindowImpl::flags & OpenGLContext::AUX) {
-//       *dest++ = GLX_AUX_BUFFERS;
+//       *dest++ = native::GLX::AUX_BUFFERS;
 //       *dest++= 1;
 //     }
 //     if (WindowImpl::flags & OpenGLContext::STENCIL) {
-//       *dest++ = GLX_STENCIL_SIZE;
+//       *dest++ = native::GLX::STENCIL_SIZE;
 //       *dest++ = 1; // TAG: fixme
 //     }
 //     if (WindowImpl::flags & OpenGLContext::MULTI_SAMPLE) {
@@ -409,17 +412,15 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
 //     }
     *dest++ = None;
     
-    static int attributeList[] = { GLX_RGBA, None };
-    //static int ATTRIBUTES2[] = {GLX_RGBA, GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4, None};
+    static int attributeList[] = {native::GLX::RGBA, None};
+    //static int ATTRIBUTES2[] = {native::GLX::RGBA, native::GLX::RED_SIZE, 4, native::GLX::GREEN_SIZE, 4, native::GLX::BLUE_SIZE, 4, None};
     visualInfo = native::GLX::glXChooseVisual(
       (Display*)displayHandle,
       screenId,
       attributeList // attributes
     );
     // TAG: screenHandle = 0
-    WRITE_SOURCE_LOCATION();
     assert(visualInfo, OpenGLException("Format not supported", this));
-    WRITE_SOURCE_LOCATION();
 
     renderingContextHandle = native::GLX::glXCreateContext(
     (Display*)displayHandle,
@@ -427,26 +428,25 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
     0,
     (WindowImpl::flags & OpenGLContext::DIRECT) ? True : False
   );
-  WRITE_SOURCE_LOCATION();
   
     static const unsigned int ATTRIBUTES[] = {
-      GLX_USE_GL,
-      GLX_BUFFER_SIZE,
-      GLX_LEVEL,
-      GLX_RGBA,
-      GLX_DOUBLEBUFFER,
-      GLX_STEREO,
-      GLX_AUX_BUFFERS,
-      GLX_RED_SIZE,
-      GLX_GREEN_SIZE,
-      GLX_BLUE_SIZE,
-      GLX_ALPHA_SIZE,
-      GLX_DEPTH_SIZE,
-      GLX_STENCIL_SIZE,
-      GLX_ACCUM_RED_SIZE,
-      GLX_ACCUM_GREEN_SIZE,
-      GLX_ACCUM_BLUE_SIZE,
-      GLX_ACCUM_ALPHA_SIZE
+      native::GLX::USE_GL,
+      native::GLX::BUFFER_SIZE,
+      native::GLX::LEVEL,
+      native::GLX::RGBA,
+      native::GLX::DOUBLEBUFFER,
+      native::GLX::STEREO,
+      native::GLX::AUX_BUFFERS,
+      native::GLX::RED_SIZE,
+      native::GLX::GREEN_SIZE,
+      native::GLX::BLUE_SIZE,
+      native::GLX::ALPHA_SIZE,
+      native::GLX::DEPTH_SIZE,
+      native::GLX::STENCIL_SIZE,
+      native::GLX::ACCUM_RED_SIZE,
+      native::GLX::ACCUM_GREEN_SIZE,
+      native::GLX::ACCUM_BLUE_SIZE,
+      native::GLX::ACCUM_ALPHA_SIZE
     };
     
     for (unsigned int i = 0; i < getArraySize(ATTRIBUTES); ++i) {

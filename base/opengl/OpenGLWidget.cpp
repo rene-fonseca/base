@@ -39,18 +39,21 @@ void OpenGLWidget::destroy() throw() {
 #else // unix
   native::GLX::glXMakeCurrent(
     (Display*)Backend<WindowImpl>::getDisplay(),
-    (GLXDrawable)None,
-    (GLXContext)0
+    (native::GLX::GLXDrawable)None,
+    (native::GLX::GLXContext)0
   );
   if (renderingContextHandle) {
-    native::GLX::glXDestroyContext((Display*)displayHandle, (GLXContext)renderingContextHandle);
+    native::GLX::glXDestroyContext(
+      (Display*)displayHandle,
+      (native::GLX::GLXContext)renderingContextHandle
+    );
     renderingContextHandle = 0;
   }
   if (WindowImpl::graphicsContextHandle) {
     // nothing to destroy
   }
   if (drawableHandle) {
-    // GLX 1.3 native::GLX::glXDestroyWindow((Display*)displayHandle, (GLXWindow)drawableHandle);
+    // GLX 1.3 native::GLX::glXDestroyWindow((Display*)displayHandle, (native::GLX::GLXWindow)drawableHandle);
     ::XDestroyWindow((Display*)displayHandle, (::Window)drawableHandle);
   }
   if (screenHandle) {

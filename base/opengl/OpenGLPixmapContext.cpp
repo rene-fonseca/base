@@ -164,59 +164,59 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
   {
     int attributes[33]; // make sure buffer is big enough
     int* dest = attributes;
-    *dest++ = GLX_USE_GL;
-    *dest++ = GLX_LEVEL;
+    *dest++ = native::GLX::USE_GL;
+    *dest++ = native::GLX::LEVEL;
     *dest++ = 0; // main layer
     if (flags & OpenGLContextImpl::COLOR_INDEXED) {
-      *dest++ = GLX_BUFFER_SIZE;
+      *dest++ = native::GLX::BUFFER_SIZE;
       *dest++ = 1; // TAG: fixme
     } else {
-      *dest++ = GLX_RGBA;
-      *dest++ = GLX_RED_SIZE;
+      *dest++ = native::GLX::RGBA;
+      *dest++ = native::GLX::RED_SIZE;
       *dest++ = 1;
-      *dest++ = GLX_GREEN_SIZE;
+      *dest++ = native::GLX::GREEN_SIZE;
       *dest++ = 1;
-      *dest++ = GLX_BLUE_SIZE;
+      *dest++ = native::GLX::BLUE_SIZE;
       *dest++ = 1;
     }
     if (flags & OpenGLContextImpl::DOUBLE_BUFFERED) {
-      *dest++ = GLX_DOUBLEBUFFER;
+      *dest++ = native::GLX::DOUBLEBUFFER;
     }
     if (flags & OpenGLContextImpl::STEREO) {
-      *dest++ = GLX_STEREO;
+      *dest++ = native::GLX::STEREO;
     }
     if (flags & OpenGLContextImpl::ACCUMULATOR) {
       if (flags & OpenGLContextImpl::COLOR_INDEXED) {
       } else {
-        *dest++ = GLX_ACCUM_RED_SIZE;
+        *dest++ = native::GLX::ACCUM_RED_SIZE;
         *dest++ = 1;
-        *dest++ = GLX_ACCUM_GREEN_SIZE;
+        *dest++ = native::GLX::ACCUM_GREEN_SIZE;
         *dest++ = 1;
-        *dest++ = GLX_ACCUM_BLUE_SIZE;
+        *dest++ = native::GLX::ACCUM_BLUE_SIZE;
         *dest++ = 1;
       }
     }
     if (flags & OpenGLContextImpl::ALPHA) {
-      *dest++ = GLX_ALPHA_SIZE;
+      *dest++ = native::GLX::ALPHA_SIZE;
       *dest++ = 1;
       if (flags & OpenGLContextImpl::ACCUMULATOR) {
-        *dest++ = GLX_ACCUM_ALPHA_SIZE;
+        *dest++ = native::GLX::ACCUM_ALPHA_SIZE;
         *dest++ = 1;
       }
     }
     if (flags & OpenGLContextImpl::DEPTH) {
-      *dest++ = GLX_DEPTH_SIZE;
+      *dest++ = native::GLX::DEPTH_SIZE;
       *dest++ = 32; // TAG: fixme - minimum value allowed by specification is 12
     } else {
-      *dest++ = GLX_DEPTH_SIZE;
+      *dest++ = native::GLX::DEPTH_SIZE;
       *dest++ = 0;
     }
     if (flags & OpenGLContextImpl::AUX) {
-      *dest++ = GLX_AUX_BUFFERS;
+      *dest++ = native::GLX::AUX_BUFFERS;
       *dest++= 1;
     }
     if (flags & OpenGLContextImpl::STENCIL) {
-      *dest++ = GLX_STENCIL_SIZE;
+      *dest++ = native::GLX::STENCIL_SIZE;
       *dest++ = 1; // TAG: fixme
     }
     if (flags & OpenGLContextImpl::MULTI_SAMPLE) {
@@ -234,23 +234,23 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
     assert(visualInfo, OpenGLException("Format not supported", this));
     
     static const unsigned int ATTRIBUTES[] = {
-      GLX_USE_GL,
-      GLX_BUFFER_SIZE,
-      GLX_LEVEL,
-      GLX_RGBA,
-      GLX_DOUBLEBUFFER,
-      GLX_STEREO,
-      GLX_AUX_BUFFERS,
-      GLX_RED_SIZE,
-      GLX_GREEN_SIZE,
-      GLX_BLUE_SIZE,
-      GLX_ALPHA_SIZE,
-      GLX_DEPTH_SIZE,
-      GLX_STENCIL_SIZE,
-      GLX_ACCUM_RED_SIZE,
-      GLX_ACCUM_GREEN_SIZE,
-      GLX_ACCUM_BLUE_SIZE,
-      GLX_ACCUM_ALPHA_SIZE
+      native::GLX::USE_GL,
+      native::GLX::BUFFER_SIZE,
+      native::GLX::LEVEL,
+      native::GLX::RGBA,
+      native::GLX::DOUBLEBUFFER,
+      native::GLX::STEREO,
+      native::GLX::AUX_BUFFERS,
+      native::GLX::RED_SIZE,
+      native::GLX::GREEN_SIZE,
+      native::GLX::BLUE_SIZE,
+      native::GLX::ALPHA_SIZE,
+      native::GLX::DEPTH_SIZE,
+      native::GLX::STENCIL_SIZE,
+      native::GLX::ACCUM_RED_SIZE,
+      native::GLX::ACCUM_GREEN_SIZE,
+      native::GLX::ACCUM_BLUE_SIZE,
+      native::GLX::ACCUM_ALPHA_SIZE
     };
     
     for (unsigned int i = 0; i < getArraySize(ATTRIBUTES); ++i) {
@@ -321,13 +321,13 @@ OpenGLPixmapContext::~OpenGLPixmapContext() throw() {
 #else // unix
   native::GLX::glXMakeCurrent(
     (Display*)Backend<WindowImpl>::getDisplay(),
-    (GLXDrawable)None,
-    (GLXContext)0
+    (native::GLX::GLXDrawable)None,
+    (native::GLX::GLXContext)0
   );
   if (renderingContextHandle) {
     native::GLX::glXDestroyGLXPixmap(
       (Display*)Backend<WindowImpl>::getDisplay(),
-      (GLXPixmap)renderingContextHandle
+      (native::GLX::GLXPixmap)renderingContextHandle
     );
     renderingContextHandle = 0;
   }

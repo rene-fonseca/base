@@ -42,7 +42,7 @@ if test "x$ac_base_include" != "x"; then
   CPPFLAGS="-I${ac_base_include}${CPPFLAGS:+ }${CPPFLAGS}"
 fi
 if test "x$ac_base_lib" != "x"; then
-  LIBS="${CPPFLAGS}${CPPFLAGS:+ }${ac_base_lib}/libbase.la"
+  LIBS="${LIBS}${LIBS:+ }${ac_base_lib}/libbase.la"
 fi
 
 AC_OUTPUT(Makefile)

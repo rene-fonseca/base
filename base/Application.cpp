@@ -63,11 +63,9 @@ public:
         } else if (nativeError != 0) {
           stream << MESSAGE(" due to native error ")
                  << HEX << setWidth(10) << ZEROPAD << PREFIX << nativeError;
-          if (!message && !nativeError) {
-            unsigned int error = OperatingSystem::getErrorCode(nativeError);
-            if (error != OperatingSystem::UNSPECIFIED_ERROR) {
-              stream << ' ' << '(' << OperatingSystem::getErrorMessage(error) << ')';
-            }
+          unsigned int error = OperatingSystem::getErrorCode(nativeError);
+          if (error != OperatingSystem::UNSPECIFIED_ERROR) {
+            stream << ' ' << '(' << OperatingSystem::getErrorMessage(error) << ')';
           }
         }
         stream << '.' << FLUSH;
@@ -116,11 +114,10 @@ public:
         } else if (nativeError != 0) {
           stream << MESSAGE(" due to native error ")
                  << HEX << setWidth(10) << ZEROPAD << PREFIX << nativeError;
-          if (!message && !nativeError) {
-            unsigned int error = OperatingSystem::getErrorCode(nativeError);
-            if (error != OperatingSystem::UNSPECIFIED_ERROR) {
-              stream << ' ' << '(' << OperatingSystem::getErrorMessage(error) << ')';
-            }
+          unsigned int error = OperatingSystem::getErrorCode(nativeError);
+          if (error != OperatingSystem::UNSPECIFIED_ERROR) {
+            stream << ' ' << '(' << OperatingSystem::getErrorMessage(error) << ')'
+                   << MESSAGE(" and");
           }
         }
         stream << MESSAGE(" in violation with exception specification.") << FLUSH;

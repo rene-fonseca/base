@@ -363,7 +363,7 @@ Vector3D<TYPE> cross(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) th
 */
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector3D<TYPE>& value) {
-  return stream << "(" << value.x << ";" << value.y << ";" << value.z << ")";
+  return stream << "(" << value.getX() << ";" << value.getY() << ";" << value.getZ() << ")";
 }
 
 template<>

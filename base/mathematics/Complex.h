@@ -19,7 +19,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @author René Møller Fonseca
 */
 
-class Complex : public Object {
+class Complex {
 private:
 
   /** The real part of the complex number. */
@@ -257,6 +257,16 @@ public:
 
 
   /**
+    Returns the sum of the complex numbers.
+  */
+  friend Complex operator+(const Complex& left, const Complex& right) throw();
+
+  /**
+    Returns the difference of the complex numbers.
+  */
+  friend Complex operator-(const Complex& left, const Complex& right) throw();
+
+  /**
     Returns the product of the complex numbers.
   */
   friend Complex operator*(const Complex& left, const Complex& right) throw();
@@ -280,6 +290,14 @@ public:
 inline Complex::Complex(double r) throw() : real(r) {}
 
 inline Complex::Complex(double r, double i) throw() : real(r), imaginary(i) {}
+
+inline Complex operator+(const Complex& left, const Complex& right) throw() {
+  return Complex(left.real + right.real, left.imaginary + right.imaginary);
+}
+
+inline Complex operator-(const Complex& left, const Complex& right) throw() {
+  return Complex(left.real - right.real, left.imaginary - right.imaginary);
+}
 
 inline Complex operator*(const Complex& left, const Complex& right) throw() {
   return Complex(
@@ -308,9 +326,7 @@ inline Complex operator/(const Complex& left, double right) throw() {
 /**
   Writes a string representation of the complex number to a format stream "(real; imaginary)".
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value) {
-  return stream << "(" << value.getReal() << ";" << value.getImaginary() << ")";
-}
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value);
 
 template<>
 inline bool isRelocateable<Complex>() throw() {return isRelocateable<Object>();}

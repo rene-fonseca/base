@@ -227,13 +227,14 @@ AC_BASE_YES(base_explicit_namespace, AC_BASE_DEFINE(NAMESPACE))
 base_explicit_demangle=no
 AC_ARG_ENABLE(
   demangle,[
-  --enable-demangle=[gccv3|gccv2|sunwspro|mipspro|no]
+  --enable-demangle=[v3mv|gccv3|gccv2|sunwspro|mipspro|no]
       Specifies that support for type name demangling should be included for
-      the given compiler/ABI. This feature is disabled by default. 'gccv3'
-      enables support for GCC 3.0. 'gccv2' enables support for GCC 2.95.3.
-      'sunwspro' enables support for the SUN WorkShop C++ compiler. 'mipspro'
-      enables support for SGI MIPSpro.],
-  AC_BASE_CHECK_ARG(base_explicit_demangle, gccv3 gccv2 sunwspro mipspro no, Invalid argument used with the demangle flag.))
+      the given compiler/ABI. This feature is disabled by default. 'v3mv'
+      selects builtin support for the V3 multi-vendor C++ standard ABI.
+      'gccv3' enables support for GCC 3.0. 'gccv2' enables support for GCC
+      2.95.3. 'sunwspro' enables support for the SUN WorkShop C++ compiler.
+      'mipspro' enables support for SGI MIPSpro.],
+  AC_BASE_CHECK_ARG(base_explicit_demangle, v3mv gccv3 gccv2 sunwspro mipspro no, Invalid argument used with the demangle flag.))
 
 base_explicit_threads=auto
 AC_ARG_ENABLE(
@@ -497,7 +498,9 @@ AC_BASE_ADDLIB($base_cv_stl_libs)
 
 dnl Explicit features.
 
-if test "$base_explicit_demangle" = gccv3; then
+if test "$base_explicit_demangle" = v3mv; then
+  AC_BASE_DEFINE(DEMANGLE_V3MV)
+elif test "$base_explicit_demangle" = gccv3; then
   AC_BASE_DEFINE(DEMANGLE_GCCV3)
   AC_BASE_ADDLIB(-liberty)
 elif test "$base_explicit_demangle" = gccv2; then

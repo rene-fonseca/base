@@ -6,7 +6,6 @@
 #include <base/io/FileDescriptorOutputStream.h>
 #include <base/io/EndOfFile.h>
 #include <sys/types.h>
-#include <stropts.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>

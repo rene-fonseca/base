@@ -34,12 +34,12 @@ inline RESULT implicit_cast(ARGUMENT argument) throw() {return argument;}
 
 template<class TYPE> class ConstPointerHelper {
 public:
-  enum {IS_CONSTANT=false};
+  enum {IS_CONSTANT = false};
 };
 
 template<class TYPE> class ConstPointerHelper<const TYPE*> {
 public:
-  enum {IS_CONSTANT=true};
+  enum {IS_CONSTANT = true};
 };
 
 template<class TYPE> inline bool isConstPointer() throw() {
@@ -137,17 +137,16 @@ inline void assert(bool assertion, EXCEPTION exception) {
 /**
   Assertion.
 */
-template<class EXCEPTION>
 class Assertion {
 public:
   
   /**
     @param assertion The assertion.
-    @param exception The exception.
+    @param message The message.
   */
-  inline Assertion(bool assertion, EXCEPTION exception) throw() {
+  inline Assertion(bool assertion, const char* message) throw() {
     if (!assertion) {
-      throw exception;
+      Trace::message(message);
     }
   }
 };

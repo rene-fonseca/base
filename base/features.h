@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,9 +13,6 @@
 
 #ifndef _DK_SDU_MIP__BASE__FEATURES_H
 #define _DK_SDU_MIP__BASE__FEATURES_H
-
-// TAG: put this comment in documentation
-// order: const -> probed -> arch -> compiler -> os -> framework -> application
 
 #include <base/platforms/symbols.h>
 #include <base/configuration.h>

@@ -80,6 +80,7 @@ enum Action {
   DEPENDENT, /**< Selects default justification of the field type. This is the default. */
   LEFT, /**< Selects left justification within field. */
   RIGHT, /**< Selects right justification within field. */
+  SP, /**< Writes a whitespace (SP). */
   UNIXEOL, /**< Selects line-feed (LF) as EOL. This is the default for all platforms. */
   WINDOWSEOL, /**< Selects carriage-return followed by line-feed (LF) as EOL. */
   MACEOL, /**< Selects line-feed (LF) followed by carriage-return (CR) as EOL. */

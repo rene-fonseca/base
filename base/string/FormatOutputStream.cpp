@@ -92,6 +92,7 @@ FormatOutputStream& FormatOutputStream::setDateFormat(
 
 FormatOutputStream& FormatOutputStream::operator<<(
   Action action) throw(IOException) {
+  static const char* SP_STR = " ";
   static const char* CR_STR = "\r";
   static const char* LF_STR = "\n";
   static const char* LFCR_STR = "\n\r";
@@ -215,6 +216,9 @@ FormatOutputStream& FormatOutputStream::operator<<(
     break;
   case RIGHT:
     context.justification = Symbols::RIGHT;
+    break;
+  case SP:
+    write(SP_STR, 1); // may throw IOException
     break;
   case UNIXEOL:
     context.endOfLine = Symbols::UNIXEOL;

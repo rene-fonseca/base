@@ -117,7 +117,7 @@ unsigned int SoundOutputStream::getChannels() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return 0;
 #else
-  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.lock);
+  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     int channels;
@@ -135,7 +135,7 @@ unsigned int SoundOutputStream::getRate() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return 0;
 #else
-  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.lock);
+  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     int rate;
@@ -158,7 +158,7 @@ unsigned int SoundOutputStream::getPosition() const throw() {
   assert(time.wType == TIME_SAMPLES, UnexpectedFailure());
   return time.u.sample;
 #else
-  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.lock);
+  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     return 0;
@@ -174,7 +174,7 @@ void SoundOutputStream::resume() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   event.reset();
 #else
-  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.lock);
+  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
@@ -192,7 +192,7 @@ void SoundOutputStream::reset() throw() {
   ::waveOutReset((HWAVEOUT)handle);
   event.reset();
 #else
-  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.lock);
+  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     assert(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0, UnexpectedFailure()); // should never fail
@@ -223,7 +223,7 @@ void SoundOutputStream::wait() throw() {
   result = ::waveOutUnprepareHeader((HWAVEOUT)handle, &header, sizeof(header));
   assert(result == MMSYSERR_NOERROR, UnexpectedFailure());
 #else
-  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.lock);
+  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     assert(::ioctl(handle, SNDCTL_DSP_SYNC, 0) == 0, UnexpectedFailure());
@@ -255,7 +255,7 @@ unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) thr
 
   return header.dwBytesRecorded;
 #else
-  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.lock);
+  SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   unsigned int bytesWritten = 0;
   while (bytesWritten < size) {

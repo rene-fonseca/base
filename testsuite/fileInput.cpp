@@ -18,29 +18,48 @@
 #include <base/Application.h>
 #include <base/Type.h>
 #include <base/security/MD5Sum.h>
+#include <base/security/SHA1.h>
 
 using namespace base;
 
-enum Job {MD5SUM, DUMP};
+enum Job {TEST, MD5SUM, SHA, DUMP};
 
-void testChecksum(const String& str) {
+void calculateMD5Checksum(const String& str) {
   MD5Sum checksum;
   checksum.push((const byte*)str.getElements(), str.getLength());
   checksum.pushEnd();
 
   fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
        << "Original message: " << str << EOL
-       << "Message digest (hex): " << checksum.getValue() << EOL
+       << "MD5 Message digest (hex): " << checksum.getValue() << EOL
        << ENDL;
 }
 
-void testChecksums() {
-  testChecksum("");
-  testChecksum("a");
-  testChecksum("abc");
-  testChecksum("message digest");
-  testChecksum("abcdefghijklmnopqrstuvwxyz");
-  testChecksum("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+void calculateSHA1Checksum(const String& str) {
+  SHA1 checksum;
+  checksum.push((const byte*)str.getElements(), str.getLength());
+  checksum.pushEnd();
+
+  fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
+       << "Original message: " << str << EOL
+       << "SHA-1 Message digest (hex): " << checksum.getValue() << EOL
+       << ENDL;
+}
+
+void calculateChecksums() {
+  calculateMD5Checksum("");
+  calculateMD5Checksum("a");
+  calculateMD5Checksum("abc");
+  calculateMD5Checksum("message digest");
+  calculateMD5Checksum("abcdefghijklmnopqrstuvwxyz");
+  calculateMD5Checksum("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+
+  calculateSHA1Checksum("");
+  calculateSHA1Checksum("a");
+  calculateSHA1Checksum("abc"); // A9993E36 4706816A BA3E2571 7850C26C 9CD0D89D
+  calculateSHA1Checksum("message digest");
+  calculateSHA1Checksum("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"); // 84983E44 1C3BD26E BAAE4AA1 F95129E5 E54670F1
+  calculateSHA1Checksum("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
 }
 
 void jobMD5Sum(const String& filePath) {
@@ -49,6 +68,25 @@ void jobMD5Sum(const String& filePath) {
 
   byte buffer[4096];
   MD5Sum sum;
+  unsigned int count;
+  while ((count = file.read((char*)&buffer[0], 4096, true)) > 0) {
+    fout << '.' << FLUSH;
+    sum.push(buffer, count);
+  }
+  sum.pushEnd();
+  fout << ENDL;
+
+  fout << "Total number of bytes: " << sum.getTotalSize() << EOL
+       << "Message digest (hex): " << sum.getValue() << EOL
+       << "Message digest (Base64): " << sum.getBase64() << ENDL;
+}
+
+void jobSHA1(const String& filePath) {
+  fout << "Calculating MD5 checksum";
+  FileInputStream file(filePath, 0);
+
+  byte buffer[4096];
+  SHA1 sum;
   unsigned int count;
   while ((count = file.read((char*)&buffer[0], 4096, true)) > 0) {
     fout << '.' << FLUSH;
@@ -78,8 +116,14 @@ void jobDump(const String& filePath) {
 
 void entry(Job job, const String& filePath) {
   switch (job) {
+  case TEST:
+    calculateChecksums();
+    break;
   case MD5SUM:
     jobMD5Sum(filePath);
+    break;
+  case SHA:
+    jobSHA1(filePath);
     break;
   case DUMP:
     jobDump(filePath);
@@ -92,7 +136,7 @@ int main(int argc, const char* argv[], const char *envp[]) {
   Application app("fileInput", argc, argv, envp);
 
   Array<String> arguments = Application::getApplication()->getArguments();
-  Job job = MD5SUM;
+  Job job = TEST;
   String jobString;
   String filePath = "/etc/services";
 
@@ -101,8 +145,12 @@ int main(int argc, const char* argv[], const char *envp[]) {
     break;
   case 2:
     jobString = arguments[0]; // job
-    if (jobString == "MD5SUM") {
+    if (jobString == "TEST") {
+      job = TEST;
+    } else if (jobString == "MD5SUM") {
       job = MD5SUM;
+    } else if (jobString == "SHA1") {
+      job = SHA;
     } else if (jobString == "DUMP") {
       job = DUMP;
     } else {

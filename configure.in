@@ -349,7 +349,7 @@ for ac_base_temp in $1; do
     break
   fi
 done
-AC_BASE_YESNO(ac_temp_cached, [echo $ECHO_N "(cached) $ECHO_C" >&AS_MESSAGE_FD], $2)
+AC_BASE_YESNO(ac_temp_cached, [echo $ECHO_N "(cached) $ECHO_C" >&AC_FD_MSG], $2)
 ])
 
 dnl AC_BASE_ATTEMPT(result variable, value variable, value list, action setting result)
@@ -379,7 +379,7 @@ dnl AC_BASE_TRIM(string)
 AC_DEFUN(AC_BASE_TRIM, [`echo $1`])
 
 dnl AC_BASE_TRY_EXEC(variable)
-AC_DEFUN(AC_BASE_TRY_EXEC, [ { eval [$]$1 >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD; ac_base_status=`echo $?`; } ])
+AC_DEFUN(AC_BASE_TRY_EXEC, [ { eval [$]$1 >&AC_FD_CC 2>&AC_FD_CC; ac_base_status=`echo $?`; } ])
 
 dnl AC_BASE_TRY_CMD(command)
 AC_DEFUN(AC_BASE_TRY_CMD, [ { ac_base_temp='$1'; AC_BASE_TRY_EXEC(ac_base_temp); } ])

@@ -79,11 +79,6 @@ public:
   unsigned int getNumberOfNodes() const throw();
 
   /**
-    Returns the IEEE 1394 standard of the adapter.
-  */
-  Standard getCompliance() const throw(IEEE1394Exception);
-
-  /**
     Returns the current error status.
   */
   unsigned int getStatus() const throw(IEEE1394Exception);

@@ -48,10 +48,6 @@ unsigned int DummyIEEE1394::getNumberOfNodes() const throw() {
   throw IEEE1394Exception(this);
 }
 
-IEEE1394Common::Standard DummyIEEE1394::getCompliance() const throw(IEEE1394Exception) {
-  throw IEEE1394Exception(this);
-}
-
 unsigned int DummyIEEE1394::getStatus() const throw(IEEE1394Exception) {
   throw IEEE1394Exception(this);
 }

@@ -16,6 +16,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/FloatingPoint.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
+#include <base/OutOfRange.h> // TAG: move to header
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -361,10 +362,11 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, char value) throw(IOE
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const char* value) throw(IOException) {
-  if (value) {
-    unsigned int length = strlen(value); // TAG: replace strlen
-    stream.addCharacterField(value, length);
-  }
+  // TAG: fix exception specification
+  assert(value, OutOfDomain());
+  const char* terminator = find<char>(value, 1U << 16 - 1, 0); // find terminator
+  assert(terminator, OutOfRange()); // maximum length exceeded
+  stream.addCharacterField(value, terminator - value);
   return stream;
 }
 
@@ -853,7 +855,7 @@ public:
     fill(value, size, 0U);
   }
 
-  static inline void assign(/*restrict*/ unsigned int* dest, /*restrict*/ const unsigned int* src, unsigned int size) throw() {
+  static inline void assign(unsigned int* restrict dest, const unsigned int* restrict src, unsigned int size) throw() {
     copy(dest, src, size);
   }
 
@@ -949,7 +951,7 @@ public:
     return carrier > 0;
   }
   
-  static inline bool add(/*restrict*/ unsigned int* value, /*restrict*/ const unsigned int* right, unsigned int size) throw() {
+  static inline bool add(unsigned int* restrict value, const unsigned int* restrict right, unsigned int size) throw() {
     const unsigned int* end = value + size;
     unsigned int carrier = 0;
     for (; value < end; ++value, ++right) {
@@ -960,7 +962,7 @@ public:
     return carrier > 0;
   }
 
-  static inline bool subtract(/*restrict*/ unsigned int* value, /*restrict*/ const unsigned int* right, unsigned int size) throw() {
+  static inline bool subtract(unsigned int* restrict value, const unsigned int* restrict right, unsigned int size) throw() {
     const unsigned int* end = value + size;
     unsigned int borrow = 0;
     for (; value < end; ++value, ++right) {
@@ -972,7 +974,7 @@ public:
     return borrow > 0;
   }
 
-  static inline bool checkOverflow(/*restrict*/ const unsigned int* left, /*restrict*/ const unsigned int* right, unsigned int size) throw() {
+  static inline bool checkOverflow(const unsigned int* restrict left, const unsigned int* restrict right, unsigned int size) throw() {
     const unsigned int* end = left + size;
     unsigned int carrier = 0;
     for (; left < end; ++left, ++right) {
@@ -1027,7 +1029,7 @@ public:
     return true;
   }
 
-  static inline bool lessThan(/*restrict*/ const unsigned int* left, /*restrict*/ const unsigned int* right, unsigned int size) throw() {
+  static inline bool lessThan(const unsigned int* restrict left, const unsigned int* restrict right, unsigned int size) throw() {
     const unsigned int* end = left;
     left += size;
     right += size;
@@ -1043,7 +1045,7 @@ public:
     return false;
   }
 
-  static inline bool equal(/*restrict*/ const unsigned int* left, /*restrict*/ const unsigned int* right, unsigned int size) throw() {
+  static inline bool equal(const unsigned int* restrict left, const unsigned int* restrict right, unsigned int size) throw() {
     const unsigned int* end = left + size;
     while (left < end) {
       if (*left++ != *right++) {
@@ -1054,7 +1056,7 @@ public:
   }
 
   // may remainder be the same as dividend - I think so
-  static inline void divide(/*restrict*/ unsigned int* quotient, unsigned int* remainder, const unsigned int* dividend, /*restrict*/ const unsigned int* divisor, unsigned int size) throw() {
+  static inline void divide(unsigned int* restrict quotient, unsigned int* remainder, const unsigned int* dividend, const unsigned int* restrict divisor, unsigned int size) throw() {
     unsigned int temp[size];
     clear(quotient, size);
     unsigned int* tempDividend = remainder;
@@ -1098,7 +1100,7 @@ enum CutMode {
   CUT_MODE_RELATIVE
 };
 
-void convertFloatingPoint(unsigned int significant, unsigned int precision, CutMode cutMode, FormatOutputStream::Symbols::RealStyle realStyle, /*restrict*/ unsigned int* mantissa, unsigned int mantissaSize, int base2Exponent, /*restrict*/ byte* buffer, unsigned int& numberOfDigits, int& exponent) throw() {
+void convertFloatingPoint(unsigned int significant, unsigned int precision, CutMode cutMode, FormatOutputStream::Symbols::RealStyle realStyle, unsigned int* restrict mantissa, unsigned int mantissaSize, int base2Exponent, byte* restrict buffer, unsigned int& numberOfDigits, int& exponent) throw() {
   // TAG: there is plenty room for optimization
   static const unsigned int power[] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 

@@ -1,35 +1,45 @@
 #!/bin/sh
 
+debug=yes
+
 if test x$1 = x; then
   echo Platform description missing 1>&2
   exit 1
 fi
 
 . $1
-  
-# architecture (mostly)
 
-case $unsigned_char in yes|no) export base_cv_unsigned_char="$unsigned_char";; esac
+flavor=${flavor-unix}
+case $flavor in unix) base_cv_flavor=UNIX;; win32) base_cv_flavor=WIN32;; *) exit 1;; esac
+echo base_cv_flavor=$base_cv_flavor
+
+# architecture
+case $arch in [A-Z0-9_]*) base_cv_arch=$arch;; *) exit 1;; esac
+echo base_cv_arch=$base_cv_arch
+case $arch_minor in [A-Z0-9_]*) base_cv_arch_minor=$arch_minor;; *) exit 1;; esac
+echo base_cv_arch_minor=$base_cv_arch_minor
+
+case $unsigned_char in yes|no) base_cv_unsigned_char=$unsigned_char;; *) exit 1;; esac
 echo base_cv_unsigned_char=$base_cv_unsigned_char
 
-case $char_size in 1|2|4|8|16) base_cv_char_size="$char_size";; esac
+case $char_size in 1|2|4|8|16) base_cv_char_size=$char_size;; *) exit 1;; esac
 echo base_cv_char_size=$base_cv_char_size
-case $short_size in 1|2|4|8|16) base_cv_short_size="$short_size";; esac
+case $short_size in 1|2|4|8|16) base_cv_short_size=$short_size;; *) exit 1;; esac
 echo base_cv_short_size=$base_cv_short_size
-case $int_size in 1|2|4|8|16) base_cv_int_size="$int_size";; esac
+case $int_size in 1|2|4|8|16) base_cv_int_size=$int_size;; *) exit 1;; esac
 echo base_cv_int_size=$base_cv_int_size
-case $long_size in 1|2|4|8|16) base_cv_long_size="$long_size";; esac
+case $long_size in 1|2|4|8|16) base_cv_long_size=$long_size;; *) exit 1;; esac
 echo base_cv_long_size=$base_cv_long_size
-case $long_long_size in 1|2|4|8|16) base_cv_long_long_size="$long_long_size";; esac
+case $long_long_size in 1|2|4|8|16) base_cv_long_long_size=$long_long_size;; *) exit 1;; esac
 echo base_cv_long_long_size=$base_cv_long_long_size
-case $wchar_size in 1|2|4|8|16) base_cv_wchar_size="$wchar_size";; esac
+case $wchar_size in 1|2|4|8|16) base_cv_wchar_size=$wchar_size;; *) exit 1;; esac
 echo base_cv_wchar_size=$base_cv_wchar_size
-case $pointer_size in 1|2|4|8|16) base_cv_pointer_size="$pointer_size";; esac
+case $pointer_size in 1|2|4|8|16) base_cv_pointer_size=$pointer_size;; *) exit 1;; esac
 echo base_cv_pointer_size=$base_cv_pointer_size
 
-case $byte_order in LITTLE_ENDIAN|BIG_ENDIAN) base_cv_byte_order="$byte_order";; esac
+case $byte_order in LITTLE_ENDIAN|BIG_ENDIAN) base_cv_byte_order=$byte_order;; *) exit 1;; esac
 echo base_cv_byte_order=$base_cv_byte_order
-case $word_order in LITTLE_ENDIAN|BIG_ENDIAN) base_cv_word_order="$word_order";; esac
+case $word_order in LITTLE_ENDIAN|BIG_ENDIAN) base_cv_word_order=$word_order;; *) exit 1;; esac
 echo base_cv_word_order=$base_cv_word_order
 
 case $float in
@@ -39,6 +49,9 @@ IEEE_EXTENDED_DOUBLE_PRECISION_96| \
 IEEE_EXTENDED_DOUBLE_PRECISION_128| \
 IEEE_QUADRUPLE_PRECISION)
   base_cv_float=$float
+;;
+*)
+  exit 1
 ;;
 esac
 echo base_cv_float=$base_cv_float
@@ -51,6 +64,9 @@ IEEE_EXTENDED_DOUBLE_PRECISION_128| \
 IEEE_QUADRUPLE_PRECISION)
   base_cv_double=$double
 ;;
+*)
+  exit 1
+;;
 esac
 echo base_cv_double=$base_cv_double
 
@@ -60,10 +76,27 @@ IEEE_754_DOUBLE_PRECISION| \
 IEEE_EXTENDED_DOUBLE_PRECISION_96| \
 IEEE_EXTENDED_DOUBLE_PRECISION_128| \
 IEEE_QUADRUPLE_PRECISION)
-  export base_cv_long_double=$long_double
+  base_cv_long_double=$long_double
+;;
+*)
+  exit 1
 ;;
 esac
 echo base_cv_long_double=$base_cv_long_double
+
+
+
+# os
+os=${os-UNSPECIFIED}
+case $os in [A-Z]*) base_cv_os=$os;; *) exit 1;; esac
+echo base_cv_os=$base_cv_os
+
+os_minor=${os_minor-0}
+case $os_minor in [0-9]*) base_cv_os_minor=$os_minor;; *) exit 1;; esac
+echo base_cv_os_minor=$base_cv_os_minor
+
+# TAG: need to check if valid syntax
+echo base_cv_features=$features
 
 
 
@@ -110,7 +143,6 @@ for function in $all_functions; do
 done
 
 # symbols/types: SOCKLEN_T
-# TAG: fixme
 
 # sub apis  
 default_available_apis=
@@ -153,3 +185,6 @@ for api in $all_apis; do
   variable=base_cv_api_$api
   echo base_cv_api_$api=${!variable}
 done
+
+# TAG: need to check if valid syntax
+echo base_cv_libraries=\""$libraries"\"

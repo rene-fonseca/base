@@ -19,7 +19,7 @@ libsecurity_la_SOURCES = \
   AccessControlEntry.cpp \
   AccessControlList.cpp \
   Adler32.cpp \
-  AdvancedStandardEncryption.cpp \
+  AdvancedEncryptionStandard.cpp \
   Base64.cpp \
   CRC32.cpp \
   Group.cpp \
@@ -37,7 +37,7 @@ section_HEADERS = \
   AccessControlEntry.h \
   AccessControlList.h \
   Adler32.h \
-  AdvancedStandardEncryption.h \
+  AdvancedEncryptionStandard.h \
   Base64.h \
   CRC32.h \
   Group.h \

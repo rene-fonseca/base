@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_SECURITY__ADVANCED_STANDARD_ENCRYPTION_H
-#define _DK_SDU_MIP__BASE_SECURITY__ADVANCED_STANDARD_ENCRYPTION_H
+#ifndef _DK_SDU_MIP__BASE_SECURITY__ADVANCED_ENCRYPTION_STANDARD_H
+#define _DK_SDU_MIP__BASE_SECURITY__ADVANCED_ENCRYPTION_STANDARD_H
 
 #include <base/string/String.h>
 #include <base/OutOfRange.h>
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class AdvancedStandardEncryption : public Object {
+class AdvancedEncryptionStandard : public Object {
 public:
   
   /** Cipher. */
@@ -199,7 +199,7 @@ public:
     @param inverse Specifies if the inverse cipher should be used. The default
     is false.
   */
-  AdvancedStandardEncryption(
+  AdvancedEncryptionStandard(
     const uint8* key, Cipher cipher, bool inverse = false) throw();
   
   /**

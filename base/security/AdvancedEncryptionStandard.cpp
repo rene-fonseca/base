@@ -11,12 +11,12 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/security/AdvancedStandardEncryption.h>
+#include <base/security/AdvancedEncryptionStandard.h>
 #include <base/Functor.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-namespace AdvancedStandardEncryptionImpl {
+namespace AdvancedEncryptionStandardImpl {
   
   /** Substitution lookup table. */
   const uint8 S[256] = {
@@ -336,7 +336,7 @@ namespace AdvancedStandardEncryptionImpl {
     0xa7, 0xa9, 0xbb, 0xb5, 0x9f, 0x91, 0x83, 0x8d // 0xf8
   };
   
-  typedef AdvancedStandardEncryption Aes;
+  typedef AdvancedEncryptionStandard Aes;
   
   class Cipher128 : public Aes::Cipher128Traits {
   public:
@@ -1113,10 +1113,10 @@ namespace AdvancedStandardEncryptionImpl {
     }
   };
   
-} // end of namespace - AdvancedStandardEncryptionImpl
+} // end of namespace - AdvancedEncryptionStandardImpl
 
 
-void AdvancedStandardEncryption::Cipher128::operator()(
+void AdvancedEncryptionStandard::Cipher128::operator()(
   uint8* dest, const uint8* src, const uint8* schedule) throw() {
   uint8 state[4][Nb];
   
@@ -1126,24 +1126,24 @@ void AdvancedStandardEncryption::Cipher128::operator()(
     }
   }
   
-  AdvancedStandardEncryptionImpl::Cipher128::addRoundKey(
+  AdvancedEncryptionStandardImpl::Cipher128::addRoundKey(
     state,
     0,
     schedule
   );
   for (unsigned int round = 1; round <= (Nr - 1); ++round) {   
-    AdvancedStandardEncryptionImpl::Cipher128::substitute(state);
-    AdvancedStandardEncryptionImpl::Cipher128::shiftRows(state);
-    AdvancedStandardEncryptionImpl::Cipher128::mixColumns(state);
-    AdvancedStandardEncryptionImpl::Cipher128::addRoundKey(
+    AdvancedEncryptionStandardImpl::Cipher128::substitute(state);
+    AdvancedEncryptionStandardImpl::Cipher128::shiftRows(state);
+    AdvancedEncryptionStandardImpl::Cipher128::mixColumns(state);
+    AdvancedEncryptionStandardImpl::Cipher128::addRoundKey(
       state,
       round,
       schedule
     );
   }
-  AdvancedStandardEncryptionImpl::Cipher128::substitute(state);
-  AdvancedStandardEncryptionImpl::Cipher128::shiftRows(state);
-  AdvancedStandardEncryptionImpl::Cipher128::addRoundKey(
+  AdvancedEncryptionStandardImpl::Cipher128::substitute(state);
+  AdvancedEncryptionStandardImpl::Cipher128::shiftRows(state);
+  AdvancedEncryptionStandardImpl::Cipher128::addRoundKey(
     state,
     Nr,
     schedule
@@ -1156,7 +1156,7 @@ void AdvancedStandardEncryption::Cipher128::operator()(
   }
 }
 
-void AdvancedStandardEncryption::InverseCipher128::operator()(
+void AdvancedEncryptionStandard::InverseCipher128::operator()(
   uint8* dest, const uint8* src, const uint8* schedule) throw() {
   uint8 state[4][Nb];
   
@@ -1166,24 +1166,24 @@ void AdvancedStandardEncryption::InverseCipher128::operator()(
     }
   }
   
-  AdvancedStandardEncryptionImpl::InverseCipher128::addRoundKey(
+  AdvancedEncryptionStandardImpl::InverseCipher128::addRoundKey(
     state,
     Nr,
     schedule
   );
   for (unsigned int round = (Nr - 1); round >= 1; --round) {
-    AdvancedStandardEncryptionImpl::InverseCipher128::shiftRows(state);
-    AdvancedStandardEncryptionImpl::InverseCipher128::substitute(state);
-    AdvancedStandardEncryptionImpl::InverseCipher128::addRoundKey(
+    AdvancedEncryptionStandardImpl::InverseCipher128::shiftRows(state);
+    AdvancedEncryptionStandardImpl::InverseCipher128::substitute(state);
+    AdvancedEncryptionStandardImpl::InverseCipher128::addRoundKey(
       state,
       round,
       schedule
     );
-    AdvancedStandardEncryptionImpl::InverseCipher128::mixColumns(state);
+    AdvancedEncryptionStandardImpl::InverseCipher128::mixColumns(state);
   }
-  AdvancedStandardEncryptionImpl::InverseCipher128::shiftRows(state);
-  AdvancedStandardEncryptionImpl::InverseCipher128::substitute(state);
-  AdvancedStandardEncryptionImpl::InverseCipher128::addRoundKey(
+  AdvancedEncryptionStandardImpl::InverseCipher128::shiftRows(state);
+  AdvancedEncryptionStandardImpl::InverseCipher128::substitute(state);
+  AdvancedEncryptionStandardImpl::InverseCipher128::addRoundKey(
     state,
     0,
     schedule
@@ -1196,7 +1196,7 @@ void AdvancedStandardEncryption::InverseCipher128::operator()(
   }
 }
 
-void AdvancedStandardEncryption::Cipher192::operator()(
+void AdvancedEncryptionStandard::Cipher192::operator()(
   uint8* dest, const uint8* src, const uint8* schedule) throw() {
   uint8 state[4][Nb];
   
@@ -1206,24 +1206,24 @@ void AdvancedStandardEncryption::Cipher192::operator()(
     }
   }
   
-  AdvancedStandardEncryptionImpl::Cipher192::addRoundKey(
+  AdvancedEncryptionStandardImpl::Cipher192::addRoundKey(
     state,
     0,
     schedule
   );
   for (unsigned int round = 1; round <= (Nr - 1); ++round) {   
-    AdvancedStandardEncryptionImpl::Cipher192::substitute(state);
-    AdvancedStandardEncryptionImpl::Cipher192::shiftRows(state);
-    AdvancedStandardEncryptionImpl::Cipher192::mixColumns(state);
-    AdvancedStandardEncryptionImpl::Cipher192::addRoundKey(
+    AdvancedEncryptionStandardImpl::Cipher192::substitute(state);
+    AdvancedEncryptionStandardImpl::Cipher192::shiftRows(state);
+    AdvancedEncryptionStandardImpl::Cipher192::mixColumns(state);
+    AdvancedEncryptionStandardImpl::Cipher192::addRoundKey(
       state,
       round,
       schedule
     );
   }
-  AdvancedStandardEncryptionImpl::Cipher192::substitute(state);
-  AdvancedStandardEncryptionImpl::Cipher192::shiftRows(state);
-  AdvancedStandardEncryptionImpl::Cipher192::addRoundKey(
+  AdvancedEncryptionStandardImpl::Cipher192::substitute(state);
+  AdvancedEncryptionStandardImpl::Cipher192::shiftRows(state);
+  AdvancedEncryptionStandardImpl::Cipher192::addRoundKey(
     state,
     Nr,
     schedule
@@ -1236,7 +1236,7 @@ void AdvancedStandardEncryption::Cipher192::operator()(
   }
 }
 
-void AdvancedStandardEncryption::InverseCipher192::operator()(
+void AdvancedEncryptionStandard::InverseCipher192::operator()(
   uint8* dest, const uint8* src, const uint8* schedule) throw() {
   uint8 state[4][Nb];
   
@@ -1246,24 +1246,24 @@ void AdvancedStandardEncryption::InverseCipher192::operator()(
     }
   }
   
-  AdvancedStandardEncryptionImpl::InverseCipher192::addRoundKey(
+  AdvancedEncryptionStandardImpl::InverseCipher192::addRoundKey(
     state,
     Nr,
     schedule
   );
   for (unsigned int round = (Nr - 1); round >= 1; --round) {
-    AdvancedStandardEncryptionImpl::InverseCipher192::shiftRows(state);
-    AdvancedStandardEncryptionImpl::InverseCipher192::substitute(state);
-    AdvancedStandardEncryptionImpl::InverseCipher192::addRoundKey(
+    AdvancedEncryptionStandardImpl::InverseCipher192::shiftRows(state);
+    AdvancedEncryptionStandardImpl::InverseCipher192::substitute(state);
+    AdvancedEncryptionStandardImpl::InverseCipher192::addRoundKey(
       state,
       round,
       schedule
     );
-    AdvancedStandardEncryptionImpl::InverseCipher192::mixColumns(state);
+    AdvancedEncryptionStandardImpl::InverseCipher192::mixColumns(state);
   }
-  AdvancedStandardEncryptionImpl::InverseCipher192::shiftRows(state);
-  AdvancedStandardEncryptionImpl::InverseCipher192::substitute(state);
-  AdvancedStandardEncryptionImpl::InverseCipher192::addRoundKey(
+  AdvancedEncryptionStandardImpl::InverseCipher192::shiftRows(state);
+  AdvancedEncryptionStandardImpl::InverseCipher192::substitute(state);
+  AdvancedEncryptionStandardImpl::InverseCipher192::addRoundKey(
     state,
     0,
     schedule
@@ -1276,7 +1276,7 @@ void AdvancedStandardEncryption::InverseCipher192::operator()(
   }
 }
 
-void AdvancedStandardEncryption::Cipher256::operator()(
+void AdvancedEncryptionStandard::Cipher256::operator()(
   uint8* dest, const uint8* src, const uint8* schedule) throw() {
   uint8 state[4][Nb];
   
@@ -1286,24 +1286,24 @@ void AdvancedStandardEncryption::Cipher256::operator()(
     }
   }
   
-  AdvancedStandardEncryptionImpl::Cipher256::addRoundKey(
+  AdvancedEncryptionStandardImpl::Cipher256::addRoundKey(
     state,
     0,
     schedule
   );
   for (unsigned int round = 1; round <= (Nr - 1); ++round) {   
-    AdvancedStandardEncryptionImpl::Cipher256::substitute(state);
-    AdvancedStandardEncryptionImpl::Cipher256::shiftRows(state);
-    AdvancedStandardEncryptionImpl::Cipher256::mixColumns(state);
-    AdvancedStandardEncryptionImpl::Cipher256::addRoundKey(
+    AdvancedEncryptionStandardImpl::Cipher256::substitute(state);
+    AdvancedEncryptionStandardImpl::Cipher256::shiftRows(state);
+    AdvancedEncryptionStandardImpl::Cipher256::mixColumns(state);
+    AdvancedEncryptionStandardImpl::Cipher256::addRoundKey(
       state,
       round,
       schedule
     );
   }
-  AdvancedStandardEncryptionImpl::Cipher256::substitute(state);
-  AdvancedStandardEncryptionImpl::Cipher256::shiftRows(state);
-  AdvancedStandardEncryptionImpl::Cipher256::addRoundKey(
+  AdvancedEncryptionStandardImpl::Cipher256::substitute(state);
+  AdvancedEncryptionStandardImpl::Cipher256::shiftRows(state);
+  AdvancedEncryptionStandardImpl::Cipher256::addRoundKey(
     state,
     Nr,
     schedule
@@ -1316,7 +1316,7 @@ void AdvancedStandardEncryption::Cipher256::operator()(
   }
 }
 
-void AdvancedStandardEncryption::InverseCipher256::operator()(
+void AdvancedEncryptionStandard::InverseCipher256::operator()(
   uint8* dest, const uint8* src, const uint8* schedule) throw() {
   uint8 state[4][Nb];
   
@@ -1326,24 +1326,24 @@ void AdvancedStandardEncryption::InverseCipher256::operator()(
     }
   }
   
-  AdvancedStandardEncryptionImpl::InverseCipher256::addRoundKey(
+  AdvancedEncryptionStandardImpl::InverseCipher256::addRoundKey(
     state,
     Nr,
     schedule
   );
   for (unsigned int round = (Nr - 1); round >= 1; --round) {
-    AdvancedStandardEncryptionImpl::InverseCipher256::shiftRows(state);
-    AdvancedStandardEncryptionImpl::InverseCipher256::substitute(state);
-    AdvancedStandardEncryptionImpl::InverseCipher256::addRoundKey(
+    AdvancedEncryptionStandardImpl::InverseCipher256::shiftRows(state);
+    AdvancedEncryptionStandardImpl::InverseCipher256::substitute(state);
+    AdvancedEncryptionStandardImpl::InverseCipher256::addRoundKey(
       state,
       round,
       schedule
     );
-    AdvancedStandardEncryptionImpl::InverseCipher256::mixColumns(state);
+    AdvancedEncryptionStandardImpl::InverseCipher256::mixColumns(state);
   }
-  AdvancedStandardEncryptionImpl::InverseCipher256::shiftRows(state);
-  AdvancedStandardEncryptionImpl::InverseCipher256::substitute(state);
-  AdvancedStandardEncryptionImpl::InverseCipher256::addRoundKey(
+  AdvancedEncryptionStandardImpl::InverseCipher256::shiftRows(state);
+  AdvancedEncryptionStandardImpl::InverseCipher256::substitute(state);
+  AdvancedEncryptionStandardImpl::InverseCipher256::addRoundKey(
     state,
     0,
     schedule
@@ -1356,25 +1356,25 @@ void AdvancedStandardEncryption::InverseCipher256::operator()(
   }
 }
 
-AdvancedStandardEncryption::AdvancedStandardEncryption(
+AdvancedEncryptionStandard::AdvancedEncryptionStandard(
   const uint8* key, Cipher _cipher, bool _inverse) throw()
   : cipher(_cipher),
     inverse(_inverse),
     bytesInBuffer(0) {
   switch (cipher) {
   case CIPHER_128:
-    AdvancedStandardEncryptionImpl::Cipher128::fillSchedule(schedule, key);
+    AdvancedEncryptionStandardImpl::Cipher128::fillSchedule(schedule, key);
     break;
   case CIPHER_192:
-    AdvancedStandardEncryptionImpl::Cipher192::fillSchedule(schedule, key);
+    AdvancedEncryptionStandardImpl::Cipher192::fillSchedule(schedule, key);
     break;
   case CIPHER_256:
-    AdvancedStandardEncryptionImpl::Cipher256::fillSchedule(schedule, key);
+    AdvancedEncryptionStandardImpl::Cipher256::fillSchedule(schedule, key);
     break;
   }
 }
 
-unsigned int AdvancedStandardEncryption::push(
+unsigned int AdvancedEncryptionStandard::push(
   uint8* dest, const uint8* src, unsigned int size) throw() {
   switch (cipher) {
   case CIPHER_128:
@@ -1400,7 +1400,7 @@ unsigned int AdvancedStandardEncryption::push(
   }
 }
 
-unsigned int AdvancedStandardEncryption::pushEnd(
+unsigned int AdvancedEncryptionStandard::pushEnd(
   uint8* dest, unsigned int size) throw() {
   switch (cipher) {
   case CIPHER_128:

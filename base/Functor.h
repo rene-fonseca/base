@@ -16,30 +16,30 @@
 
 #include <base/Base.h>
 #include <base/Primitives.h>
+#include <base/Cast.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 namespace isoc {
-  typedef unsigned int size_t;
 
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCPY)
-  extern "C" void* memcpy(void* restrict, const void* restrict, size_t);
+  extern "C" void* memcpy(void* restrict, const void* restrict, MemorySize);
 #endif
 
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCMP)
-  extern "C" int memcmp(const void*, const void*, size_t);
+  extern "C" int memcmp(const void*, const void*, MemorySize);
 #endif
 
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMMOVE)
-  extern "C" void* memmove(void*, const void*, size_t);
+  extern "C" void* memmove(void*, const void*, MemorySize);
 #endif
 
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCHR)
-  extern "C" void* memchr(const void*, int, size_t);
+  extern "C" void* memchr(const void*, int, MemorySize);
 #endif
 
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMSET)
-  extern "C" void* memset(void*, int, size_t);
+  extern "C" void* memset(void*, int, MemorySize);
 #endif
 }; // end of namespace isoc
 
@@ -133,6 +133,11 @@ template<>
 inline int compare<char>(const char* left, const char* right, unsigned int count) {
   return isoc::memcmp(left, right, count);
 }
+
+template<>
+inline int compare<uint8>(const uint8* left, const uint8* right, unsigned int count) {
+  return isoc::memcmp(left, right, count);
+}
 #endif
 
 /**
@@ -208,7 +213,7 @@ inline const TYPE* find(const TYPE* element, unsigned int count, TYPE value) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCHR)
 template<>
 inline const char* find(const char* element, unsigned int count, char value) throw() {
-  return pointer_cast<const char*>(isoc::memchr(element, value, count));
+  return Cast::pointer<const char*>(isoc::memchr(element, value, count));
 }
 #endif
 
@@ -313,34 +318,28 @@ inline void copy(TYPE* restrict dest, const TYPE* restrict src, unsigned int cou
     isoc::memcpy(dest, src, count * sizeof(TYPE));
 #else
     // TAG: should I align the first long word
-    unsigned long long bytesToCopy = count * sizeof(TYPE);
-    long* d = pointer_cast<long*>(dest);
-    const long* s = pointer_cast<const long*>(src);
+    uint64 bytesToCopy = static_cast<uint64>(count) * sizeof(TYPE);
+    long* d = Cast::pointer<long*>(dest);
+    const long* s = Cast::pointer<const long*>(src);
     {
       const TYPE* end = d + bytesToCopy/sizeof(long);
       while (d < end) {
-        *d = *s;
-        ++d;
-        ++s;
+        *d++ = *s++;
       }
     }
     {
-      long* dc = pointer_cast<char*>(d);
-      const long* sc = pointer_cast<char*>(s);
+      long* dc = Cast::pointer<char*>(d);
+      const long* sc = Cast::pointer<char*>(s);
       const TYPE* end = dc + bytesToCopy % sizeof(long);
       while (dc < end) {
-        *dc = *sc;
-        ++dc;
-        ++sc;
+        *dc++ = *sc++;
       }
     }
 #endif
   } else {
     const TYPE* end = dest + count;
     while (dest < end) {
-      *dest = *src;
-      ++dest;
-      ++src;
+      *dest++ = *src++;
     }
   }
 }
@@ -349,32 +348,32 @@ inline void copy(TYPE* restrict dest, const TYPE* restrict src, unsigned int cou
 template<class TYPE>
 inline void move(TYPE* dest, const TYPE* src, unsigned int count) throw() {
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
+    uint64 bytesToMove = static_cast<uint64>(count) * sizeof(TYPE);
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMMOVE)
-    isoc::memmove(dest, src, count * sizeof(TYPE));
+    isoc::memmove(dest, src, bytesToMove);
 #else
     // TAG: should I align the first long word
-    unsigned long long bytesToMove = count * sizeof(TYPE);
-    long* d = pointer_cast<long*>(dest);
-    const long* s = pointer_cast<long*>(src);
-    move<long>(d, c, bytesToMove/sizeof(long));
-    move<char>(d + bytesToMove/sizeof(long), c + bytesToMove/sizeof(long), bytesToMove % sizeof(long));
+    long* d = Cast::pointer<long*>(dest);
+    const long* s = Cast::pointer<long*>(src);
+    move<long>(d, s, bytesToMove/sizeof(long));
+    move<uint8>(
+      Cast::pointer<uint8*>(d + bytesToMove/sizeof(long)),
+      Cast::pointer<const uint8*>(s + bytesToMove/sizeof(long)),
+      bytesToMove%sizeof(long)
+    );
 #endif
   } else {
     if (dest < src) {
       const TYPE* end = dest + count;
       while (dest < end) {
-        *dest = *src;
-        ++dest;
-        ++src;
+        *dest++ = *src++;
       }
     } else {
       const TYPE* first = dest;
       dest += count;
       src += count;
       while (dest > first) {
-        --dest;
-        --src;
-        *dest = *src;
+        *--dest = *--src;
       }
     }
   }
@@ -385,9 +384,7 @@ template<class TYPE>
 inline void swap(TYPE* restrict left, TYPE* restrict right, unsigned int count) throw() {
   const TYPE* end = left + count;
   while (left < end) {
-    swapper(*left, *right);
-    ++left;
-    ++right;
+    swapper(*left++, *right++);
   }
 }
 
@@ -396,14 +393,18 @@ template<class TYPE>
 inline void fill(TYPE* dest, unsigned int count, TYPE value) throw() {
   const TYPE* end = dest + count;
   while (dest < end) {
-    *dest = value;
-    ++dest;
+    *dest++ = value;
   }
 }
 
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMSET)
 template<>
 inline void fill<char>(char* dest, unsigned int count, char value) throw() {
+  isoc::memset(dest, value, count);
+}
+
+template<>
+inline void fill<uint8>(uint8* dest, unsigned int count, uint8 value) throw() {
   isoc::memset(dest, value, count);
 }
 #endif
@@ -413,12 +414,12 @@ inline void fill<char>(char* dest, unsigned int count, char value) throw() {
 /** Initializes an object to zero. This function should only be used for types with small memory footprints. */
 template<class TYPE>
 inline void clear(TYPE& value) throw() {
-  unsigned long* p = pointer_cast<unsigned long*>(&value);
-  for (unsigned int i = 0; i < sizeof(TYPE)/sizeof(unsigned long); ++i) {
+  long* p = Cast::pointer<long*>(&value);
+  for (unsigned int i = 0; i < sizeof(TYPE)/sizeof(long); ++i) {
     *p++ = 0;
   }
-  unsigned char* q = pointer_cast<unsigned char*>(p);
-  for (unsigned int i = 0; i < sizeof(TYPE)%sizeof(unsigned long); ++i) {
+  uint8* q = Cast::pointer<uint8*>(p);
+  for (unsigned int i = 0; i < sizeof(TYPE)%sizeof(long); ++i) {
     *q++ = 0;
   }
 }

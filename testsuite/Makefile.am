@@ -1,5 +1,5 @@
 # ***************************************************************************
-#    The Base Framework
+#    The Base Framework (Test Suite)
 #    A framework for developing platform independent applications
 #
 #    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -13,6 +13,8 @@
 
 DEFS =
 DEFAULT_INCLUDES =
+
+LIBS=-lbase
 
 bin_PROGRAMS = Array List Queue Set Map String io client server datagramClient datagramServer Thread referenceCounting fileInput mtServer filesystem xml daemon Exception ftp http dlapp intercom Version SerialPort File floatingPoint
 

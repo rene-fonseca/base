@@ -877,12 +877,12 @@ int main(int argc, const char* argv[], const char* env[]) {
     file = arguments[1]; // the service
     break;
   default:
-    fout << "usage: " << Application::getApplication()->getName() << " [url] [output]" << ENDL;
+    fout << MESSAGE("Usage: ") << Application::getApplication()->getName() << MESSAGE(" [url] [output]") << ENDL;
     return Application::EXIT_CODE_NORMAL; // stop
   }
 
   try {
-    fout << "Testing File Transfer Protocol (FTP) class..." << ENDL;
+    fout << MESSAGE("Testing File Transfer Protocol (FTP) class...") << ENDL;
     ftpclient(url, file);
   } catch(Exception& e) {
     return Application::getApplication()->exceptionHandler(e);

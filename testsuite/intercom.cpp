@@ -437,6 +437,7 @@ public:
 
   void main() throw(OutOfDomain) {
     fout << Application::getFormalName() << MESSAGE(" version 1.0") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
          << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
 

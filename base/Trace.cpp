@@ -11,9 +11,10 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/Trace.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
   #include <string.h>
   #include <stdio.h>
@@ -25,8 +26,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-void Trace::message(const char* message) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+void Trace::message(const char* message) throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::OutputDebugString(message);
 #else // unix
   const char* ident;
@@ -37,8 +38,8 @@ void Trace::message(const char* message) {
 #endif // flavor
 }
 
-void Trace::member(const void* ptr, const char* message) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+void Trace::member(const void* ptr, const char* message) throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int length = strlen(message);
   char buffer[sizeof("0x1234567812345678 >> ") + length];
   sprintf(buffer, "%08x >> %s", ptr, message); // sprintf must be MT-safe

@@ -67,8 +67,8 @@ Group::Group(const void* _id) throw(OutOfDomain) {
   id = new char[size];
   copy<char>((char*)id, (const char*)_id, size);
 #else // unix
-  assert((unsigned long)id <= PrimitiveTraits<gid_t>::MAXIMUM, OutOfDomain("Invalid group id", this));
-  id = (void*)_id; // we only cast away const 'cause we do not dereference it
+  assert((unsigned long)_id <= PrimitiveTraits<gid_t>::MAXIMUM, OutOfDomain("Invalid group id", this));
+  id = (void*)_id; // we only cast away const 'cause we do not dereference the pointer
 #endif // flavor
 }
 

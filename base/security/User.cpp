@@ -87,8 +87,8 @@ User::User(const void* _id) throw(OutOfDomain) {
   id = new char[size];
   copy<char>((char*)id, (const char*)_id, size);
 #else // unix
-  assert((unsigned long)id <= PrimitiveTraits<uid_t>::MAXIMUM, OutOfDomain("Invalid user id", this));
-  id = (void*)_id; // we only cast away const 'cause we do not dereference it
+  assert((unsigned long)_id <= PrimitiveTraits<uid_t>::MAXIMUM, OutOfDomain("Invalid user id", this));
+  id = (void*)_id; // we only cast away const 'cause we do not dereference the pointer
 #endif // flavor
 }
 

@@ -21,14 +21,14 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  MemoryException();
+  MemoryException() throw();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  MemoryException(const char* message);
+  MemoryException(const char* message) throw();
 };
 
 #endif

@@ -5,8 +5,8 @@
 
 #include "OutOfBounds.h"
 
-OutOfBounds::OutOfBounds() {
+OutOfBounds::OutOfBounds() throw() {
 }
 
-OutOfBounds::OutOfBounds(const char* message) : Exception(message) {
+OutOfBounds::OutOfBounds(const char* message) throw() : Exception(message) {
 }

@@ -21,14 +21,14 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  Destruct();
+  Destruct() throw();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  Destruct(const char* message);
+  Destruct(const char* message) throw();
 };
 
 #endif

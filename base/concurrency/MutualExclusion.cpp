@@ -7,6 +7,11 @@
 #include <errno.h>
 
 MutualExclusion::MutualExclusion() throw(Construct) {
+#ifdef __cygwin__
+  if (pthread_mutex_init(&mutex, NULL) != 0) {
+    throw Construct();
+  }
+#else
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
     throw Construct();

@@ -5,8 +5,6 @@
 
 #include "Map.h"
 
-//template Map<void*, void*>;
-
 template<class KEY, class VALUE>
 Map<KEY, VALUE>::Map() throw() : first(0) {
 }

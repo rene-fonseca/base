@@ -5,18 +5,18 @@
 
 #include "Exception.h"
 
-Exception::Exception() {
+Exception::Exception() throw() : message(0) {
 }
 
-Exception::Exception(const char* m) : message(m) {
+Exception::Exception(const char* m) throw() : message(m) {
 }
 
-Exception::Exception(const Exception& copy) : message(copy.message) {
+Exception::Exception(const Exception& copy) throw() : message(copy.message) {
 }
 
-const char* Exception::getMessage() const {
+const char* Exception::getMessage() const throw() {
   return message;
 }
 
-Exception::~Exception() {
+Exception::~Exception() throw() {
 }

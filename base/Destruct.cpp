@@ -5,8 +5,8 @@
 
 #include "Destruct.h"
 
-Destruct::Destruct() {
+Destruct::Destruct() throw() {
 }
 
-Destruct::Destruct(const char* message) : Exception(message) {
+Destruct::Destruct(const char* message) throw() : Exception(message) {
 }

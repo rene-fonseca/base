@@ -5,8 +5,8 @@
 
 #include "DeviceException.h"
 
-DeviceException::DeviceException() {
+DeviceException::DeviceException() throw() {
 }
 
-DeviceException::DeviceException(const char* message) : ResourceException(message) {
+DeviceException::DeviceException(const char* message) throw() : ResourceException(message) {
 }

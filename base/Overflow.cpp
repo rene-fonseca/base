@@ -5,8 +5,8 @@
 
 #include "Overflow.h"
 
-Overflow::Overflow() {
+Overflow::Overflow() throw() {
 }
 
-Overflow::Overflow(const char* message) : Exception(message) {
+Overflow::Overflow(const char* message) throw() : Exception(message) {
 }

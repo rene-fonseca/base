@@ -5,8 +5,8 @@
 
 #include "ResourceException.h"
 
-ResourceException::ResourceException() {
+ResourceException::ResourceException() throw() {
 }
 
-ResourceException::ResourceException(const char* message) : Exception(message) {
+ResourceException::ResourceException(const char* message) throw() : Exception(message) {
 }

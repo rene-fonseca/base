@@ -5,6 +5,9 @@
 
 #include "Object.h"
 
+Object::Object() throw() {
+}
+
 Object::~Object() throw() {
 }
 

@@ -5,8 +5,8 @@
 
 #include "OutOfDomain.h"
 
-OutOfDomain::OutOfDomain() {
+OutOfDomain::OutOfDomain() throw() {
 }
 
-OutOfDomain::OutOfDomain(const char* message) : Exception(message) {
+OutOfDomain::OutOfDomain(const char* message) throw() : Exception(message) {
 }

@@ -21,14 +21,14 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  OutOfBounds();
+  OutOfBounds() throw();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  OutOfBounds(const char* message);
+  OutOfBounds(const char* message) throw();
 };
 
 #endif

@@ -21,14 +21,14 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  DeviceException();
+  DeviceException() throw();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  DeviceException(const char* message);
+  DeviceException(const char* message) throw();
 };
 
 #endif

@@ -21,14 +21,14 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  ResourceException();
+  ResourceException() throw();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  ResourceException(const char* message);
+  ResourceException(const char* message) throw();
 };
 
 #endif

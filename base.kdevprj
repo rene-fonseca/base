@@ -462,6 +462,11 @@ install_location=
 dist=true
 install=false
 type=HEADER
+[ellert/base/mathematics/ExpressionParser.cpp]
+install_location=
+dist=true
+install=false
+type=SOURCE
 [ellert/base/collection/Stack.cpp]
 install_location=
 dist=true
@@ -660,7 +665,7 @@ dist=true
 install=false
 type=HEADER
 [ellert/base/mathematics/Makefile.am]
-files=ellert/base/mathematics/Matrix.cpp,ellert/base/mathematics/Matrix.h,ellert/base/mathematics/Vector.cpp,ellert/base/mathematics/Vector.h,ellert/base/mathematics/Vector2D.cpp,ellert/base/mathematics/Vector2D.h,ellert/base/mathematics/Vector3D.cpp,ellert/base/mathematics/Vector3D.h,ellert/base/mathematics/IncompatibleOperands.h,ellert/base/mathematics/IncompatibleOperands.cpp,ellert/base/mathematics/ExpressionException.h,ellert/base/mathematics/ExpressionException.cpp,ellert/base/mathematics/AmbiguousRegistration.h,ellert/base/mathematics/AmbiguousRegistration.cpp,
+files=ellert/base/mathematics/Matrix.cpp,ellert/base/mathematics/Matrix.h,ellert/base/mathematics/Vector.cpp,ellert/base/mathematics/Vector.h,ellert/base/mathematics/Vector2D.cpp,ellert/base/mathematics/Vector2D.h,ellert/base/mathematics/Vector3D.cpp,ellert/base/mathematics/Vector3D.h,ellert/base/mathematics/IncompatibleOperands.h,ellert/base/mathematics/IncompatibleOperands.cpp,ellert/base/mathematics/ExpressionException.h,ellert/base/mathematics/ExpressionException.cpp,ellert/base/mathematics/AmbiguousRegistration.h,ellert/base/mathematics/AmbiguousRegistration.cpp,ellert/base/mathematics/ExpressionParser.h,ellert/base/mathematics/ExpressionParser.cpp,
 type=static_library
 sub_dirs=
 [ellert/base/Underflow.h]
@@ -1311,6 +1316,11 @@ install_location=
 dist=true
 install=false
 type=SOURCE
+[ellert/base/mathematics/ExpressionParser.h]
+install_location=
+dist=true
+install=false
+type=HEADER
 [ellert/base/concurrency/Semaphore.cpp]
 install_location=
 dist=true

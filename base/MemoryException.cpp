@@ -5,8 +5,8 @@
 
 #include "MemoryException.h"
 
-MemoryException::MemoryException() {
+MemoryException::MemoryException() throw() {
 }
 
-MemoryException::MemoryException(const char* message) : ResourceException(message) {
+MemoryException::MemoryException(const char* message) throw() : ResourceException(message) {
 }

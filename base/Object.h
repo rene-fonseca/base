@@ -29,12 +29,12 @@ public:
   /**
     Initializes object.
   */
-  inline Object() throw() {};
+  Object() throw();
 
   /**
     Destroys the object. Ensure envocation of correct destructor when using polymorphism.
   */
-  virtual ~Object() throw() = 0;
+  virtual ~Object() throw();
 };
 
 

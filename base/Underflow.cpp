@@ -5,8 +5,8 @@
 
 #include "Underflow.h"
 
-Underflow::Underflow() {
+Underflow::Underflow() throw() {
 }
 
-Underflow::Underflow(const char* message) : Exception(message) {
+Underflow::Underflow(const char* message) throw() : Exception(message) {
 }

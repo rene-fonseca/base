@@ -5,8 +5,8 @@
 
 #include "Construct.h"
 
-Construct::Construct() {
+Construct::Construct() throw() {
 }
 
-Construct::Construct(const char* message) : Exception(message) {
+Construct::Construct(const char* message) throw() : Exception(message) {
 }

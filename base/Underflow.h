@@ -21,14 +21,14 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  Underflow();
+  Underflow() throw();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  Underflow(const char* message);
+  Underflow(const char* message) throw();
 };
 
 #endif

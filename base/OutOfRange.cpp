@@ -5,8 +5,8 @@
 
 #include "OutOfRange.h"
 
-OutOfRange::OutOfRange() {
+OutOfRange::OutOfRange() throw() {
 }
 
-OutOfRange::OutOfRange(const char* message) : Exception(message) {
+OutOfRange::OutOfRange(const char* message) throw() : Exception(message) {
 }

@@ -6,16 +6,14 @@
 #ifndef _DK_SDU_MIP__BASE__EXCEPTION_H
 #define _DK_SDU_MIP__BASE__EXCEPTION_H
 
-#include "Object.h"
-
 /**
   This class fundamental exception.
 
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.01
 */
 
-class Exception : public Object {
+class Exception {
 private:
 
   /**
@@ -27,33 +25,33 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  Exception();
+  Exception() throw();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  Exception(const char* message);
+  Exception(const char* message) throw();
 
   /**
     Copy constructor.
 
     @param exception The exception object to be copied.
   */
-  Exception(const Exception& copy);
+  Exception(const Exception& copy) throw();
 
   /**
     Returns the message associated with the exception.
 
     @return The message associated with the exception.
   */
-  const char* getMessage() const;
+  const char* getMessage() const throw();
 
   /**
     Destroys exception object.
   */
-  ~Exception();
+  virtual ~Exception() throw();
 };
 
 #endif

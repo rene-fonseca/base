@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -236,7 +236,10 @@ long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
   case SUPPORTS_PROCESS_SHARED_SYNCHRONIZATION:
     return 1;
   }
-  throw NotSupported("System variable not supported", Type::getType<OperatingSystem>());
+  throw NotSupported(
+    "System variable not supported",
+    Type::getType<OperatingSystem>()
+  );
 #else // unix
   static int SYSTEM_VARIABLES[SUPPORTS_PROCESS_SHARED_SYNCHRONIZATION + 1] = {
     _SC_AIO_LISTIO_MAX, // MAX_NUM_OF_ASYNC_IO_OPRS_PER_LIST
@@ -336,11 +339,15 @@ long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
   case SUPPORTS_PROCESS_SHARED_SYNCHRONIZATION:
     return 0; // TAG: what about this
   }
-  throw NotSupported("System variable not supported", Type::getType<OperatingSystem>());
+  throw NotSupported(
+    "System variable not supported",
+    Type::getType<OperatingSystem>()
+  );
 #endif // flavor
 }
 
-int64 OperatingSystem::getResourceLimit(Resource resource, LimitType type) throw() {
+int64 OperatingSystem::getResourceLimit(
+  Resource resource, LimitType type) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   throw NotSupported(Type::getType<OperatingSystem>());
 #else // unix

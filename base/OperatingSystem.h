@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,13 +32,19 @@ class OperatingSystem : public Object {
 public:
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  /** The type of an ordinary resource handle (do NOT assume anything about this type). */
+  /**
+    The type of an ordinary resource handle (do NOT assume anything about this
+    type).
+  */
   typedef void* Handle;
 
   /** This constants indicates an invalid handle. */
   static const Handle INVALID_HANDLE = static_cast<char*>(0) - 1;
 #else
-  /** The type of an ordinary resource handle (do NOT assume anything about this type). */
+  /**
+    The type of an ordinary resource handle (do NOT assume anything about this
+    type).
+  */
   typedef int Handle;
   
   /** This constant indicates an invalid handle. */
@@ -153,18 +159,24 @@ public:
     Get resource limit.
 
     @param resource The resource limit.
-    @param type Selects between soft and hard limit . The default is SOFT_LIMIT.
+    @param type Selects between soft and hard limit. The default is
+    SOFT_LIMIT.
   */
-  static int64 getResourceLimit(Resource resource, LimitType type = SOFT_LIMIT) throw();
+  static int64 getResourceLimit(
+    Resource resource, LimitType type = SOFT_LIMIT) throw();
 
   /**
     Set resource limit.
     
     @param resource The resource limit.
     @param limit The limit.
-    @param type Selects between soft and hard limit . The default is SOFT_LIMIT.
+    @param type Selects between soft and hard limit. The default is
+    SOFT_LIMIT.
   */
-  static void setResourceLimit(Resource resource, int64 limit, LimitType type = SOFT_LIMIT) throw(OutOfRange);
+  static void setResourceLimit(
+    Resource resource,
+    int64 limit,
+    LimitType type = SOFT_LIMIT) throw(OutOfRange);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

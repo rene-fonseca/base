@@ -8,5 +8,8 @@
 Destruct::Destruct() {
 }
 
+Destruct::Destruct(const string& str) : Exception(str) {
+}
+
 Destruct::~Destruct() {
 }

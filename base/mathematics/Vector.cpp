@@ -6,6 +6,9 @@
 #include "Vector.h"
 #include <math.h>
 
+template Vector<float>;
+template Vector<double>;
+
 template<class TYPE> Vector<TYPE>::Vector(unsigned int length) throw() {
   this->length = length;
   elements = new TYPE[length];
@@ -41,21 +44,21 @@ template<class TYPE> unsigned int Vector<TYPE>::getLength() const throw() {
 
 template<class TYPE> TYPE& Vector<TYPE>::operator[](unsigned int index) const throw(OutOfRange) {
   if (index >= length) {
-    throw RangeException();
+    throw OutOfRange();
   }
   return elements[index];
 }
 
 template<class TYPE> TYPE& Vector<TYPE>::getAt(unsigned int index) const throw(OutOfRange) {
   if (index >= length) {
-    throw RangeException();
+    throw OutOfRange();
   }
   return elements[index];
 }
 
 template<class TYPE> void Vector<TYPE>::setAt(unsigned int index, const TYPE& value) throw(OutOfRange) {
   if (index >= length) {
-    throw RangeException();
+    throw OutOfRange();
   }
   elements[index] = value;
 }
@@ -175,10 +178,10 @@ template<class TYPE> Vector<TYPE>& Vector<TYPE>::operator*=(const TYPE& value) t
   return *this;
 }
 
-template<class TYPE> Vector<TYPE>& Vector<TYPE>::operator*(const TYPE& value) throw() {
-  Vector<TYPE> result = Vector(length);
+template<class TYPE> Vector<TYPE>* Vector<TYPE>::operator*(const TYPE& value) throw() {
+  Vector<TYPE>* result = new Vector(length);
   TYPE* source = elements;
-  TYPE* destination = result.elements;
+  TYPE* destination = result->elements;
   unsigned int count = length;
 
   while (count--) {
@@ -206,7 +209,7 @@ template<class TYPE> bool Vector<TYPE>::operator==(const Vector& vector) const t
   return true;
 }
 
-template<class TYPE> TYPE& Vector<TYPE>::dot(const Vector<TYPE>& vector) const throw(IncompatibleVectors) {
+template<class TYPE> TYPE Vector<TYPE>::dot(const Vector<TYPE>& vector) const throw(IncompatibleVectors) {
   if (length != vector.length) {
     throw IncompatibleVectors();
   }
@@ -223,7 +226,7 @@ template<class TYPE> TYPE& Vector<TYPE>::dot(const Vector<TYPE>& vector) const t
   return result;
 }
 
-template<class TYPE> TYPE& Vector<TYPE>::norm() const throw() {
+template<class TYPE> TYPE Vector<TYPE>::norm() const throw() {
   TYPE result = 0;
   TYPE* element = elements;
   unsigned int count = length;

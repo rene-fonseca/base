@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_COMPARABLE_H
-#define _BASE_COMPARABLE_H
+#ifndef _DK_SDU_MIP_BASE_COMPARABLE_H
+#define _DK_SDU_MIP_BASE_COMPARABLE_H
 
 /**
   Comparable interface.

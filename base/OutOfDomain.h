@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_OUT_OF_DOMAIN_H
-#define _BASE_OUT_OF_DOMAIN_H
+#ifndef _DK_SDU_MIP_BASE_OUT_OF_DOMAIN_H
+#define _DK_SDU_MIP_BASE_OUT_OF_DOMAIN_H
 
 #include "Exception.h"
 
@@ -17,7 +17,22 @@
 
 class OutOfDomain : public Exception {
 public:
+
+  /**
+    Initializes the exception object with no message.
+  */
   OutOfDomain();
+
+  /**
+    Initializes the exception object.
+
+    @param message The message.
+  */
+  OutOfDomain(const string& message);
+
+  /**
+    Destroys exception object.
+  */
   ~OutOfDomain();
 };
 

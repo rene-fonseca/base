@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_OUT_OF_RANGE_H
-#define _BASE_OUT_OF_RANGE_H
+#ifndef _DK_SDU_MIP_BASE_OUT_OF_RANGE_H
+#define _DK_SDU_MIP_BASE_OUT_OF_RANGE_H
 
 #include "Exception.h"
 
@@ -17,7 +17,22 @@
 
 class OutOfRange : public Exception {
 public:
+
+  /**
+    Initializes the exception object with no message.
+  */
   OutOfRange();
+
+  /**
+    Initializes the exception object.
+
+    @param message The message.
+  */
+  OutOfRange(const string& message);
+
+  /**
+    Destroys exception object.
+  */
   ~OutOfRange();
 };
 

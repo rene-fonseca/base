@@ -8,5 +8,8 @@
 Underflow::Underflow() {
 }
 
+Underflow::Underflow(const string& str) : Exception(str) {
+}
+
 Underflow::~Underflow() {
 }

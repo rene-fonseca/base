@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_CONSTRUCT_H
-#define _BASE_CONSTRUCT_H
+#ifndef _DK_SDU_MIP_BASE_CONSTRUCT_H
+#define _DK_SDU_MIP_BASE_CONSTRUCT_H
 
 #include "Exception.h"
 
@@ -17,7 +17,22 @@
 
 class Construct : public Exception {
 public:
+
+  /**
+    Initializes the exception object with no message.
+  */
   Construct();
+
+  /**
+    Initializes the exception object.
+
+    @param message The message.
+  */
+  Construct(const string& message);
+
+  /**
+    Destroys exception object.
+  */
   ~Construct();
 };
 

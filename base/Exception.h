@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_EXCEPTION_H
-#define _BASE_EXCEPTION_H
+#ifndef _DK_SDU_MIP_BASE_EXCEPTION_H
+#define _DK_SDU_MIP_BASE_EXCEPTION_H
 
 #include "Object.h"
 #include <string>
@@ -24,20 +24,13 @@ private:
   /**
     Message associated with the exception.
   */
-  string* message;
+  string message;
 public:
 
   /**
     Initializes the exception object with no message.
   */
   Exception();
-
-  /**
-    Initializes the exception object.
-
-    @param message The message.
-  */
-  Exception(const char* message);
 
   /**
     Initializes the exception object.
@@ -66,9 +59,9 @@ public:
   ostream& toString(ostream& stream) const;
 
   /**
-    Free exception object.
+    Destroys exception object.
   */
-  virtual ~Exception();
+  ~Exception();
 };
 
 #endif

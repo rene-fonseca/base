@@ -8,5 +8,8 @@
 OutOfDomain::OutOfDomain() {
 }
 
+OutOfDomain::OutOfDomain(const string& str) : Exception(str) {
+}
+
 OutOfDomain::~OutOfDomain() {
 }

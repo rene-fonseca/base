@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_UNDERFLOW_H
-#define _BASE_UNDERFLOW_H
+#ifndef _DK_SDU_MIP_BASE_UNDERFLOW_H
+#define _DK_SDU_MIP_BASE_UNDERFLOW_H
 
 #include "Exception.h"
 
@@ -17,7 +17,22 @@
 
 class Underflow : public Exception {
 public:
+
+  /**
+    Initializes the exception object with no message.
+  */
   Underflow();
+
+  /**
+    Initializes the exception object.
+
+    @param message The message.
+  */
+  Underflow(const string& message);
+
+  /**
+    Destroys exception object.
+  */
   ~Underflow();
 };
 

@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_VECTOR_H
-#define _BASE_VECTOR_H
+#ifndef _DK_SDU_MIP_BASE_VECTOR_H
+#define _DK_SDU_MIP_BASE_VECTOR_H
 
 #include "base/Object.h"
 #include "base/Exception.h"
@@ -40,7 +40,7 @@ public:
 
     @param length The number of elements in the vector.
   */
-  Vector(unsigned int length) throw();
+  explicit Vector(unsigned int length) throw();
 
   /**
     Initialize object.
@@ -158,7 +158,7 @@ public:
 
     @param value The value to be multiplied.
   */
-  Vector& operator*(const TYPE& value) throw();
+  Vector* operator*(const TYPE& value) throw();
 
   /**
     Returns true if the vectors are equal.
@@ -172,12 +172,12 @@ public:
 
     @param vector Vector to be used in the calculation.
   */
-  TYPE& dot(const Vector& vector) const throw(IncompatibleVectors);
+  TYPE dot(const Vector& vector) const throw(IncompatibleVectors);
 
   /**
     Returns the norm of the vector.
   */
-  TYPE& norm() const throw();
+  TYPE norm() const throw();
 
   /**
     Destroys the vector.

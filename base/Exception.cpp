@@ -9,23 +9,17 @@
 using namespace ::std;
 
 Exception::Exception() {
-  message = new string();
 }
 
-Exception::Exception(const char* message) {
-  this->message = new string(message);
-}
-
-Exception::Exception(const string& message) {
-  this->message = new string(message);
+Exception::Exception(const string& str) : message(str) {
 }
 
 Exception::Exception(const Exception& exception) {
-  this->message = new string(exception.getMessage());
+  message = exception.getMessage();
 }
 
 const string& Exception::getMessage() const {
-  return *message;
+  return message;
 }
 
 ostream& Exception::toString(ostream& stream) const {
@@ -33,5 +27,4 @@ ostream& Exception::toString(ostream& stream) const {
 }
 
 Exception::~Exception() {
-  delete message;
 }

@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_BIDIRECTIONAL_ITERATOR_H
-#define _BASE_BIDIRECTIONAL_ITERATOR_H
+#ifndef _DK_SDU_MIP_BASE_BIDIRECTIONAL_ITERATOR_H
+#define _DK_SDU_MIP_BASE_BIDIRECTIONAL_ITERATOR_H
 
 #include "base/ForwardIterator.h"
 

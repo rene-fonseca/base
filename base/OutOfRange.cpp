@@ -8,5 +8,8 @@
 OutOfRange::OutOfRange() {
 }
 
+OutOfRange::OutOfRange(const string& str) : Exception(str) {
+}
+
 OutOfRange::~OutOfRange() {
 }

@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_OBJECT_H
-#define _BASE_OBJECT_H
+#ifndef _DK_SDU_MIP_BASE_OBJECT_H
+#define _DK_SDU_MIP_BASE_OBJECT_H
 
 #include "Copyable.h"
 #include "Comparable.h"

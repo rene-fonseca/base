@@ -3,8 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_ITERATOR_H
-#define _BASE_ITERATOR_H
+#ifndef _DK_SDU_MIP_BASE_ITERATOR_H
+#define _DK_SDU_MIP_BASE_ITERATOR_H
+
+#include "OutOfBounds.h"
 
 template<class TYPE>
 class IteratorTraits {
@@ -47,12 +49,14 @@ public:
   /**
     Returns the element at the current position.
   */
-  virtual Pointer operator->() const throw() = 0;
+//  virtual Pointer operator->() const throw() = 0;
 
   /**
     Returns the element at the current position.
   */
-  virtual Reference operator*() const throw() = 0;
+  virtual Reference getElement() const throw(OutOfBounds) = 0;
+
+//  inline Reference operator*() const throw(OutOfBounds) {return getElement();};
 };
 
 #endif

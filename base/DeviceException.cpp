@@ -8,5 +8,8 @@
 DeviceException::DeviceException() {
 }
 
+DeviceException::DeviceException(const string& str) : ResourceException(str) {
+}
+
 DeviceException::~DeviceException() {
 }

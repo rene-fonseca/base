@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_DESTRUCT_H
-#define _BASE_DESTRUCT_H
+#ifndef _DK_SDU_MIP_BASE_DESTRUCT_H
+#define _DK_SDU_MIP_BASE_DESTRUCT_H
 
 #include "Exception.h"
 
@@ -17,7 +17,22 @@
 
 class Destruct : public Exception {
 public:
+
+  /**
+    Initializes the exception object with no message.
+  */
   Destruct();
+
+  /**
+    Initializes the exception object.
+
+    @param message The message.
+  */
+  Destruct(const string& message);
+
+  /**
+    Destroys exception object.
+  */
   ~Destruct();
 };
 

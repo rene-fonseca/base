@@ -1,1 +1,1 @@
-
+Add delay when communication with Z8536 in IO_ADA08 class if required.

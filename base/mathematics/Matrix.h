@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_MATRIX_H
-#define _BASE_MATRIX_H
+#ifndef _DK_SDU_MIP_BASE_MATRIX_H
+#define _DK_SDU_MIP_BASE_MATRIX_H
 
 #include "base/Object.h"
 #include "base/Dimension.h"
@@ -13,6 +13,8 @@
 #include "base/OutOfDomain.h"
 #include "base/RandomIterator.h"
 #include "base/mathematics/Vector.h"
+#include "base/iteration/SimpleRandomIterator.h"
+#include "base/iteration/EquidistantRandomIterator.h"
 #include <string>
 
 using std::string;
@@ -25,6 +27,19 @@ using std::string;
 */
 
 template<class TYPE> class Matrix : public Object {
+public:
+
+  /** Iterators. */
+  typedef SimpleRandomIterator<TYPE> RowIterator;
+  typedef ReadOnlySimpleRandomIterator<TYPE> ReadOnlyRowIterator;
+  typedef EquidistantRandomIterator<TYPE> ColumnIterator;
+  typedef ReadOnlyEquidistantRandomIterator<TYPE> ReadOnlyColumnIterator;
+  typedef EquidistantRandomIterator<TYPE> DiagonalIterator;
+  typedef ReadOnlyEquidistantRandomIterator<TYPE> ReadOnlyDiagonalIterator;
+  typedef SimpleRandomIterator<TYPE> RowByColumnIterator;
+  typedef ReadOnlySimpleRandomIterator<TYPE> ReadOnlyRowByColumnIterator;
+  typedef EquidistantRandomIterator<TYPE> ColumnByRowIterator;
+  typedef ReadOnlyEquidistantRandomIterator<TYPE> ReadOnlyColumnByRowIterator;
 protected:
 
   /** The elements of the matrix. */
@@ -36,7 +51,7 @@ protected:
   /** The number of elements in the matrix. */
   unsigned int size;
   /** The dimension of the matrix. */
-  Dimension* dimension;
+  Dimension dimension;
 
   /** Used to reallocate memory for elements if the matrix changes its dimension. */
   void adjustDimension(unsigned int rows, unsigned int columns);
@@ -98,67 +113,57 @@ public:
   */
   Matrix(const Vector<TYPE>& diagonal) throw();
 
-  RandomIterator<TYPE> getIteratorOfRow(unsigned int row) throw(OutOfBounds);
+  /**
+    Returns an iterator of a single row of the matrix.
 
-  ReadOnlyRandomIterator<TYPE> getIteratorOfRow(unsigned int row) const throw(OutOfBounds);
+    @param row Specifies the row to be returned.
+  */
+  RowIterator<TYPE> getIteratorOfRow(unsigned int row) throw(OutOfBounds);
 
-  RandomIterator<TYPE> getIteratorOfColumn(unsigned int column) throw(OutOfBounds);
+  /**
+    Returns a read-only iterator of a single row of the matrix.
 
-  ReadOnlyRandomIterator<TYPE> getIteratorOfColumn(unsigned int column) const throw(OutOfBounds);
+    @param row Specifies the row to be returned.
+  */
+  ReadOnlyRowIterator<TYPE> getIteratorOfRow(unsigned int row) const throw(OutOfBounds);
 
-  RandomIterator<TYPE> getIteratorOfDiagonal() throw();
+  /**
+    Returns an iterator of a single column of the matrix.
 
-  ReadOnlyRandomIterator<TYPE> getIteratorOfDiagonal() const throw();
+    @param column Specifies the column to be returned.
+  */
+  ColumnIterator<TYPE> getIteratorOfColumn(unsigned int column) throw(OutOfBounds);
 
-  RandomIterator<TYPE> getIteratorOfRowByColumn() throw();
+  /**
+    Returns a read-only iterator of a single column of the matrix.
 
-  ReadOnlyRandomIterator<TYPE> getIteratorOfRowByColumn() const throw();
+    @param column Specifies the column to be returned.
+  */
+  ColumnIterator<TYPE, ReadOnly> getIteratorOfColumn(unsigned int column) const throw(OutOfBounds);
+
+  /**
+    Returns an iterator of the diagonal elements of the matrix.
+  */
+  DiagonalIterator<TYPE> getIteratorOfDiagonal() throw();
+
+  /**
+    Returns a read-only iterator of the diagonal elements of the matrix.
+  */
+  ReadOnlyDiagonalIterator<TYPE> getIteratorOfDiagonal() const throw();
+
+  /**
+    Returns an iterator of all the elements of the matrix.
+  */
+  RowByColumnIterator<TYPE> getIteratorOfRowByColumn() throw();
+
+  /**
+    Returns a read-only iterator of all the elements of the matrix.
+  */
+  ReadOnlyRowByColumnIterator<TYPE> getIteratorOfRowByColumn() const throw();
 
 //  RandomIterator<TYPE> getIteratorOfColumnByRow() throw();
 
 //  ReadOnlyRandomIterator<TYPE> getIteratorOfColumnByRow() const throw();
-
-  /**
-    Returns a row of the matrix.
-
-    @param row Specifies the row to be returned.
-  */
-//  Vector<TYPE>& getRow(unsigned int row) const throw();
-
-  /**
-    Returns a column of the matrix.
-
-    @param column Specifies the column to be returned.
-  */
-//  Vector<TYPE>& getColumn(unsigned int column) const throw();
-
-  /**
-    Returns the diagonal elements of the matrix.
-  */
-//  Vector<TYPE>& getDiagonal() const throw (NotSquare);
-
-  /**
-    Sets the elements of the specified row.
-
-    @param vector The new elements.
-    @param row The row to be set.
-  */
-//  Matrix& setRow(Vector<TYPE>& vector, unsigned int row) throw();
-
-  /**
-    Sets the elements of the specified column.
-
-    @param vector The new elements.
-    @param column The column to be set.
-  */
-//  Matrix& setColumn(Vector<TYPE>& vector, unsigned int column) throw();
-
-  /**
-    Set the diagonal elements of the matrix.
-
-    @param diagonal The diagonal elements.
-  */
-//  Matrix& setDiagonal(Vector<TYPE>& diagonal) throw(MatrixException);
 
   /**
     Returns the dimension of the matrix.

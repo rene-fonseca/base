@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_IO_EXCEPTION_H
-#define _BASE_IO_EXCEPTION_H
+#ifndef _DK_SDU_MIP_BASE_IO_EXCEPTION_H
+#define _DK_SDU_MIP_BASE_IO_EXCEPTION_H
 
 #include "Exception.h"
 
@@ -17,7 +17,22 @@
 
 class IOException : public Exception {
 public:
+
+  /**
+    Initializes the exception object with no message.
+  */
   IOException();
+
+  /**
+    Initializes the exception object.
+
+    @param message The message.
+  */
+  IOException(const string& message);
+
+  /**
+    Destroys exception object.
+  */
   ~IOException();
 };
 

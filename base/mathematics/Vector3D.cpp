@@ -8,6 +8,9 @@
 
 using namespace ::std;
 
+template Vector3D<float>;
+template Vector3D<double>;
+
 const Float3D zeroFloat3D(0, 0, 0);
 const Double3D zeroDouble3D(0, 0, 0);
 

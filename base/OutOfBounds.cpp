@@ -8,5 +8,8 @@
 OutOfBounds::OutOfBounds() {
 }
 
+OutOfBounds::OutOfBounds(const string& str) : Exception(str) {
+}
+
 OutOfBounds::~OutOfBounds() {
 }

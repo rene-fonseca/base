@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_DEVICE_EXCEPTION_H
-#define _BASE_DEVICE_EXCEPTION_H
+#ifndef _DK_SDU_MIP_BASE_DEVICE_EXCEPTION_H
+#define _DK_SDU_MIP_BASE_DEVICE_EXCEPTION_H
 
 #include "ResourceException.h"
 
@@ -17,7 +17,22 @@
 
 class DeviceException : public ResourceException {
 public:
+
+  /**
+    Initializes the exception object with no message.
+  */
   DeviceException();
+
+  /**
+    Initializes the exception object.
+
+    @param message The message.
+  */
+  DeviceException(const string& message);
+
+  /**
+    Destroys exception object.
+  */
   ~DeviceException();
 };
 

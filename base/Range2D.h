@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _RANGE2D_H
-#define _RANGE2D_H
+#ifndef _DK_SDU_MIP_RANGE2D_H
+#define _DK_SDU_MIP_RANGE2D_H
 
 #include "Object.h"
 

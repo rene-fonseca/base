@@ -8,5 +8,8 @@
 ResourceException::ResourceException() {
 }
 
+ResourceException::ResourceException(const string& str) : Exception(str) {
+}
+
 ResourceException::~ResourceException() {
 }

@@ -3,11 +3,11 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_FORWARD_ITERATOR_H
-#define _BASE_FORWARD_ITERATOR_H
+#ifndef _DK_SDU_MIP_BASE_FORWARD_ITERATOR_H
+#define _DK_SDU_MIP_BASE_FORWARD_ITERATOR_H
 
 #include "base/Iterator.h"
-#include "base/Exception.h"
+#include "base/OutOfBounds.h"
 
 /**
   Forward iterator interface.
@@ -32,7 +32,7 @@ public:
 
     @return The next element.
   */
-  virtual void next() throw(OutOfBounds) = 0;
+  virtual bool next() throw(OutOfBounds) = 0;
 
   /**
     Moves to the next element.

@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_ATOMIC_COUNTER_H
-#define _BASE_ATOMIC_COUNTER_H
+#ifndef _DK_SDU_MIP_BASE_ATOMIC_COUNTER_H
+#define _DK_SDU_MIP_BASE_ATOMIC_COUNTER_H
 
 #include "ThreadLock.h"
 

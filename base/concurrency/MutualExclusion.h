@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_MUTUAL_EXCLUSION_H
-#define _BASE_MUTUAL_EXCLUSION_H
+#ifndef _DK_SDU_MIP_BASE_MUTUAL_EXCLUSION_H
+#define _DK_SDU_MIP_BASE_MUTUAL_EXCLUSION_H
 
 #include "config.h"
 #include "base/Object.h"

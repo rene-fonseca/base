@@ -5,105 +5,8 @@
 
 #include "Matrix.h"
 
-using namespace ::std;
-
-template<class TYPE, class IT = IteratorTraits<TYPE> >
-class SimpleRandomIterator : public RandomIterator<TYPE, IT> {
-private:
-
-  TYPE* current;
-  TYPE* first;
-  TYPE* last;
-  unsigned int size;
-public:
-
-  SimpleRandomIterator(TYPE* first, unsigned int size) throw() {
-    this->first = first;
-    this->last = first[size];
-    this->size = size;
-    this->current = first;
-  }
-
-  inline bool hasNext() const throw() {return current < last;}
-
-  inline bool hasPrevious() const throw() {return current > first;}
-
-  inline void next() throw() {++current;}
-
-  inline void previous() throw() {--current;}
-
-  inline Distance getSize() const throw() {return size;}
-
-  inline Distance getIndex() const throw() {return 0;}
-
-  void setIndex(Distance index) throw(OutOfBounds) {
-    if (index >= size) {
-      throw OutOfBounds();
-    }
-    current = &first[index];
-  }
-
-  inline Pointer operator->() const throw() {return current;}
-
-  inline Reference operator*() const throw() {return *current;}
-
-  Reference operator[](Distance index) const throw(OutOfBounds) {
-    if (index >= size) {
-      throw OutOfBounds();
-    }
-    return first[index];
-  }
-};
-
-template<class TYPE, class IT = IteratorTraits<TYPE> >
-class EquidistantRandomIterator : public RandomIterator<TYPE, IT> {
-private:
-
-  TYPE* current;
-  TYPE* first;
-  TYPE* last;
-  unsigned int size;
-  unsigned int distance;
-public:
-
-  EquidistantRandomIterator(TYPE* first, unsigned int size, unsigned int distance = 1) throw() {
-    this->first = first;
-    this->last = first[size * distance];
-    this->size = size;
-    this->distance = distance;
-    this->current = first;
-  }
-
-  inline bool hasNext() const throw() {return current < last;}
-
-  inline bool hasPrevious() const throw() {return current > first;}
-
-  inline void next() throw() {current += distance;}
-
-  inline void previous() throw() {current -= distance;}
-
-  inline Distance getSize() const throw() {return size;}
-
-  inline Distance getIndex() const throw() {return 0;}
-
-  void setIndex(Distance index) throw(OutOfBounds) {
-    if (index >= size) {
-      throw OutOfBounds();
-    }
-    current = &first[index];
-  }
-
-  inline Pointer operator->() const throw() {return current;}
-
-  inline Reference operator*() const throw() {return *current;}
-
-  Reference operator[](Distance index) const throw(OutOfBounds) {
-    if (index >= size) {
-      throw OutOfBounds();
-    }
-    return first[index];
-  }
-};
+template Matrix<float>;
+template Matrix<double>;
 
 template<class TYPE> void Matrix<TYPE>::adjustDimension(unsigned int rows, unsigned int columns) {
   unsigned int newSize = rows * columns;
@@ -133,7 +36,7 @@ template<class TYPE> Matrix<TYPE>::Matrix(const Dimension& dimension) throw(OutO
     throw OutOfDomain();
   }
 
-  this->dimension = new Dimension(dimension);
+  this->dimension = dimension;
   rows = dimension.getWidth();
   columns = dimension.getHeight();
   size = dimension.getSize();
@@ -146,7 +49,7 @@ template<class TYPE> Matrix<TYPE>::Matrix(TYPE elements[], const Dimension& dime
     throw OutOfDomain();
   }
 
-  this->dimension = new Dimension(dimension);
+  this->dimension = dimension;
   rows = dimension.getWidth();
   columns = dimension.getHeight();
   size = dimension.getSize();
@@ -160,12 +63,42 @@ template<class TYPE> Matrix<TYPE>::Matrix(TYPE elements[], const Dimension& dime
 }
 
 template<class TYPE> Matrix<TYPE>::Matrix(const Matrix& matrix) throw() {
-  Matrix(matrix.elements, matrix.dimension);
+  this->dimension = matrix.dimension;
+  rows = dimension.getWidth();
+  columns = dimension.getHeight();
+  size = dimension.getSize();
+
+  elements = new TYPE[size];
+
+  /* Copy elements. */
+  for (unsigned int i = 0; i < size; i++) {
+    this->elements[i] = matrix.elements[i];
+  }
 }
 
 template<class TYPE> Matrix<TYPE>::Matrix(const Vector<TYPE>& diagonal) throw() {
-  Matrix(Dimension(diagonal.length, diagonal.length));
-  setDiagonal(diagonal);
+  this->dimension = Dimension(diagonal.getLength(), diagonal.getLength());
+  rows = dimension.getWidth();
+  columns = dimension.getHeight();
+  size = dimension.getSize();
+
+  elements = new TYPE[size];
+
+  SimpleRandomIterator<TYPE> dest; // = getIteratorOfRowByColumn();
+  while (dest.hasNext()) {
+    *dest = 0;
+    ++dest;
+  }
+
+//  RandomIterator<TYPE>* src = diagonal.getIterator();
+//  ReadOnlyRandomIterator<TYPE>* src = diagonal.getReadOnlyIterator();
+  float* src = NULL;
+  dest = getIteratorOfDiagonal();
+  while (dest.hasNext()) {
+    *dest = *src;
+    ++src;
+    ++dest;
+  }
 }
 
 template<class TYPE> RandomIterator<TYPE> Matrix<TYPE>::getIteratorOfRow(unsigned int row) throw(OutOfBounds) {
@@ -557,5 +490,4 @@ template<class TYPE> void Matrix<TYPE>::toStream(ostream& stream) const {
 
 template<class TYPE> Matrix<TYPE>::~Matrix() throw() {
   delete[] elements;
-  delete dimension;
 }

@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_SEMAPHORE_H
-#define _BASE_SEMAPHORE_H
+#ifndef _DK_SDU_MIP_BASE_SEMAPHORE_H
+#define _DK_SDU_MIP_BASE_SEMAPHORE_H
 
 #include "config.h"
 #include "MutualExclusion.h"

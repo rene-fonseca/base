@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_MEMORY_EXCEPTION_H
-#define _BASE_MEMORY_EXCEPTION_H
+#ifndef _DK_SDU_MIP_BASE_MEMORY_EXCEPTION_H
+#define _DK_SDU_MIP_BASE_MEMORY_EXCEPTION_H
 
 #include "ResourceException.h"
 
@@ -17,7 +17,22 @@
 
 class MemoryException : public ResourceException {
 public:
+
+  /**
+    Initializes the exception object with no message.
+  */
   MemoryException();
+
+  /**
+    Initializes the exception object.
+
+    @param message The message.
+  */
+  MemoryException(const string& message);
+
+  /**
+    Destroys exception object.
+  */
   ~MemoryException();
 };
 

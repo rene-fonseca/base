@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_OUT_OF_BOUNDS_H
-#define _BASE_OUT_OF_BOUNDS_H
+#ifndef _DK_SDU_MIP_BASE_OUT_OF_BOUNDS_H
+#define _DK_SDU_MIP_BASE_OUT_OF_BOUNDS_H
 
 #include "Exception.h"
 
@@ -17,7 +17,22 @@
 
 class OutOfBounds : public Exception {
 public:
+
+  /**
+    Initializes the exception object with no message.
+  */
   OutOfBounds();
+
+  /**
+    Initializes the exception object.
+
+    @param message The message.
+  */
+  OutOfBounds(const string& message);
+
+  /**
+    Destroys exception object.
+  */
   ~OutOfBounds();
 };
 

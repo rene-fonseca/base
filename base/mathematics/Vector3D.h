@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_VECTOR3D_H
-#define _BASE_VECTOR3D_H
+#ifndef _DK_SDU_MIP_BASE_VECTOR3D_H
+#define _DK_SDU_MIP_BASE_VECTOR3D_H
 
 #include "base/Object.h"
 

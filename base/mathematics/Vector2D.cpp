@@ -6,7 +6,8 @@
 #include "Vector2D.h"
 #include <math.h>
 
-//using namespace ::std;
+template Vector2D<float>;
+template Vector2D<double>;
 
 const Float2D zeroFloat2D(0, 0);
 const Double2D zeroDouble2D(0, 0);

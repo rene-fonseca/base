@@ -15,7 +15,7 @@
 #define _DK_SDU_MIP__BASE__INTEGER_H
 
 #include <base/Object.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 #include <base/string/String.h>
 #include <base/string/InvalidFormat.h>
 

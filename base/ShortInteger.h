@@ -15,7 +15,7 @@
 #define _DK_SDU_MIP__BASE__SHORT_INTEGER_H
 
 #include <base/Object.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

@@ -27,4 +27,16 @@ nobase_section_HEADERS = \
   os/os.h os/cygwin/cygwin.h os/solaris/solaris.h os/winnt4/winnt4.h
 
 # temporary fix
-EXTRA_DIST = $(nobase_section_HEADERS)
+EXTRA_DIST = $(nobase_section_HEADERS) \
+  os/unix/GLX.h \
+  os/unix/GLX.cpp \
+  win32/GDI.h \
+  win32/GDI.cpp \
+  win32/AsyncReadFileContext.h \
+  win32/AsyncReadFileContext.cpp \
+  win32/AsyncReadStreamContext.h \
+  win32/AsyncReadStreamContext.cpp \
+  win32/AsyncWriteFileContext.h \
+  win32/AsyncWriteFileContext.cpp \
+  win32/AsyncWriteStreamContext.h \
+  win32/AsyncWriteStreamContext.cpp

@@ -14,26 +14,27 @@
 #include <base/Base.h>
 #include <base/Date.h>
 #include <base/concurrency/Thread.h>
+#include <base/Exception.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
   #include <time.h>
-#else // __unix__
+#else // unix
   #include <sys/time.h>
   #include <time.h>
   #include <unistd.h>
 #endif
 
-/**
-  Requirements:
-    int must be compatible with time_t.
-*/
-
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  ASSERTION(sizeof(FILETIME) == sizeof(long long));
+#else // unix
+  ASSERTION(sizeof(int) == sizeof(time_t));
+#endif
+
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 inline Date FileTimeToDate(const FILETIME& time) {
-  ASSERT(sizeof(FILETIME) == sizeof(long long));
   return Date((*reinterpret_cast<const long long*>(&time) - 116444736000000000LL)/10000000); // TAG: 0x0000001c1a021060LL
 }
 #endif
@@ -43,7 +44,7 @@ Date Date::getNow() throw(DateException) {
   FILETIME buffer;
   GetSystemTimeAsFileTime(&buffer);
   return FileTimeToDate(buffer);
-#else // __unix__
+#else // unix
   return Date(::time(0));
 #endif
 }
@@ -54,7 +55,7 @@ Date Date::getTime(int second, int minute, int hour) throw(DateException) {
   SYSTEMTIME time = {0, 0, 0, 0, hour, minute, second, 0};
   SystemTimeToFileTime(&time, &buffer);
   return FileTimeToDate(buffer);
-#else // __unix__
+#else // unix
   struct tm temp = {second, minute, hour, 0, 0, 0, 0, 0, 0};
   int result;
   if ((result = mktime(&temp)) == -1) {
@@ -70,7 +71,7 @@ Date Date::getDate(int day, int month, int year) throw(DateException) {
   SYSTEMTIME time = {year, month, 0, day, 0, 0, 0, 0};
   SystemTimeToFileTime(&time, &buffer);
   return FileTimeToDate(buffer);
-#else // __unix__
+#else // unix
   struct tm temp = {0, 0, 0, day, month, year, 0, 0, 0};
   int result;
   if ((result = mktime(&temp)) == -1) {
@@ -86,7 +87,7 @@ Date Date::getDate(int second, int minute, int hour, int day, int month, int yea
   SYSTEMTIME time = {year, month, 0, day, hour, minute, second, 0};
   SystemTimeToFileTime(&time, &buffer);
   return FileTimeToDate(buffer);
-#else // __unix__
+#else // unix
   struct tm temp = {second, minute, hour, day, month, year, 0, 0, 0};
   int result;
   if ((result = mktime(&temp)) == -1) {
@@ -101,7 +102,7 @@ int Date::getSecond() const throw() {
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wSecond;
-#else // __unix__
+#else // unix
   struct tm result;
   localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_sec;
@@ -113,7 +114,7 @@ int Date::getMinute() const throw() {
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wMinute;
-#else // __unix__
+#else // unix
   struct tm result;
   localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_min;
@@ -125,7 +126,7 @@ int Date::getHour() const throw() {
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wHour;
-#else // __unix__
+#else // unix
   struct tm result;
   localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_hour;
@@ -137,7 +138,7 @@ int Date::getDay() const throw() {
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wDay;
-#else // __unix__
+#else // unix
   struct tm result;
   localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_mday;
@@ -149,7 +150,7 @@ int Date::getDayOfWeek() const throw() {
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wDayOfWeek;
-#else // __unix__
+#else // unix
   struct tm result;
   localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_wday;
@@ -162,7 +163,7 @@ int Date::getDayOfYear() const throw() {
   SYSTEMTIME time;
   GetLocalTime(&time);
   //  return time.wYear;
-#else // __unix__
+#else // unix
   struct tm result;
   localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_yday;
@@ -174,7 +175,7 @@ int Date::getMonth() const throw() {
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wMonth;
-#else // __unix__
+#else // unix
   struct tm result;
   localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_mon;
@@ -186,7 +187,7 @@ int Date::getYear() const throw() {
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wYear;
-#else // __unix__
+#else // unix
   struct tm result;
   localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_year;
@@ -198,7 +199,7 @@ int Date::getUTCSecond() const throw() {
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wSecond;
-#else // __unix__
+#else // unix
   struct tm result;
   gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_sec;
@@ -210,7 +211,7 @@ int Date::getUTCMinute() const throw() {
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wMinute;
-#else // __unix__
+#else // unix
   struct tm result;
   gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_min;
@@ -222,7 +223,7 @@ int Date::getUTCHour() const throw() {
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wHour;
-#else // __unix__
+#else // unix
   struct tm result;
   gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_hour;
@@ -234,7 +235,7 @@ int Date::getUTCDay() const throw() {
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wDay;
-#else // __unix__
+#else // unix
   struct tm result;
   gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_mday;
@@ -246,7 +247,7 @@ int Date::getUTCDayOfWeek() const throw() {
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wDayOfWeek;
-#else // __unix__
+#else // unix
   struct tm result;
   gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_wday;
@@ -259,7 +260,7 @@ int Date::getUTCDayOfYear() const throw() {
   //  SYSTEMTIME time;
   //  GetSystemTime(&time);
   //  return time.wYear;
-#else // __unix__
+#else // unix
   struct tm result;
   gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_yday;
@@ -271,7 +272,7 @@ int Date::getUTCMonth() const throw() {
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wMonth;
-#else // __unix__
+#else // unix
   struct tm result;
   gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_mon;
@@ -283,7 +284,7 @@ int Date::getUTCYear() const throw() {
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wYear;
-#else // __unix__
+#else // unix
   struct tm result;
   gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_year;
@@ -292,7 +293,7 @@ int Date::getUTCYear() const throw() {
 
 String Date::format(const String& format, bool local) const throw(MemoryException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#else // __unix__
+#else // unix
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct tm time;
   if (local) {
@@ -308,7 +309,7 @@ String Date::format(const String& format, bool local) const throw(MemoryExceptio
 WideString Date::format(const WideString& format, bool local) const throw(MemoryException) {
 #if defined(_DK_SDU_MIP__BASE__WCSFTIME)
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#else // __unix__
+#else // unix
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct tm time;
   if (local) {
@@ -329,7 +330,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Date& value) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   int date = value.getValue();
   return stream << ctime(&(time_t)date); // TAG: not MT-safe
-#else // __unix__
+#else // unix
   char buffer[256];
   int date = value.getValue();
   return stream << ctime_r(&static_cast<time_t>(date), buffer); // TAG: depends on specific API

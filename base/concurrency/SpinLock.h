@@ -41,29 +41,28 @@ public:
   */
   inline bool tryExclusiveLock() const throw() {
 #if defined(i386)
-    register int previous;
+    register unsigned int previous;
     asm volatile ("xchgl %0, %1" : "=&r" (previous), "=m" (value) : "0" (1));
     return !previous;
-#elif defined(sparc)
-    register int previous;
+#elif defined(sparc) // sparc V9 has cas instruction
+    register unsigned int previous;
     asm volatile ("swap %1, %0" : "=&r" (previous), "=m" (value) : "0" (1));
     return !previous;
-
-//    register unsigned char _res = 1;
-//    asm ("ldstub [%2], %0" : "=r"(_res), "=m" (value) : "r" (value));
-//    return (int)_res;
-/*
-In CAS based updates, _RWSTD_MT_INCREMENT macro is defined to be a Fetch_and_Add inline assembler function:
-.inline fetch_and_add,4
-retry:
-ld [%o0],%l0
-add %l0,%o1,%l1
-cas [%o0],%l0,%l1
-cmp %l0,%l1
-bne retry
-mov %l1,%o0
-nop
-*/
+#elif defined(mips) // MIPS II - R4000 processors
+    register unsigned int success;
+    asm volatile (
+      "0:"
+      "lld %0, (%1);" // get state of lock: 0 (unlocked), or 1 (locked)
+      "xor %0, %0, $1;"
+      "beq %0, $0, 1f;" // stop if already locked
+      "nop;"
+      "scd %0, (%1);" // try to lock
+      "beq %0, $0, 0b;" // retry if we did not succeed
+      "nop;"
+      "1:"
+      : "=&r" (success), "=m" (value) // outputs
+    );
+    return success;
 #else
 #endif
   }

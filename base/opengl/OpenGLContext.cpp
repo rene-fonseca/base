@@ -49,11 +49,11 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32) // TAG: fixme
-
 namespace OpenGLContextImpl {
 
   DynamicLinker* dynamicLinker = 0;
+
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   
   HGLRC (CALL_OPENGL *wglCreateContext)(HDC hdc);
   HGLRC (CALL_OPENGL *wglCreateLayerContext)(HDC hdc, int plane);
@@ -64,7 +64,7 @@ namespace OpenGLContextImpl {
   BOOL (CALL_OPENGL *wglMakeCurrent)(HDC hdc, HGLRC hglrc);
   BOOL (CALL_OPENGL *wglSwapLayerBuffers)(HDC hdc, UINT planes);
   BOOL (CALL_OPENGL *wglDescribeLayerPlane)(HDC hdc, int pixelFormat, int layerPlane, UINT bytes, LPLAYERPLANEDESCRIPTOR lpd);
-
+  
   typedef void (CALL_OPENGL *OpenGLFunction)();
   
   struct Descriptor {
@@ -620,11 +620,13 @@ namespace OpenGLContextImpl {
   };
 
   ATOM windowClass = 0;
-
+#endif // win32
+  
   /*
     GCC: referencing a member of a forward declared class results in "does not have member" but should have been something like "class not defined"
   */
   inline void* createContext(const String& title, const Position& position, const Dimension& dimension, unsigned int flags) throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
     static SpinLock spinLock;
 
     // TAG: need new operator that does not throw an exception
@@ -646,7 +648,6 @@ namespace OpenGLContextImpl {
           ); // TAG: fix cast
       }
     }
-    WRITE_SOURCE_LOCATION();
 
     // only register class if not already registered
     if (OpenGLContext::numberOfContexts++ == 0) { // TAG: must be atomic
@@ -667,7 +668,6 @@ namespace OpenGLContextImpl {
       OpenGLContextImpl::windowClass = ::RegisterClassEx(&temp); // zero if fails
     }
     spinLock.releaseLock();
-    WRITE_SOURCE_LOCATION();
 
     RECT rect;
     rect.left = position.getX();
@@ -686,7 +686,6 @@ namespace OpenGLContextImpl {
       style = WS_OVERLAPPEDWINDOW;
     }
     ::AdjustWindowRectEx(&rect, style, FALSE, extendedStyle);
-    WRITE_SOURCE_LOCATION();
     
     context->window = ::CreateWindowEx(
       extendedStyle, // extended style
@@ -704,7 +703,6 @@ namespace OpenGLContextImpl {
       0 // application window data structure
     );
     assert(context->window, OpenGLException("Unable to create window", Type::getType<OpenGLException>()));
-    WRITE_SOURCE_LOCATION();
     
     PIXELFORMATDESCRIPTOR pfd = {
       sizeof(PIXELFORMATDESCRIPTOR), // size of this pfd
@@ -759,7 +757,6 @@ namespace OpenGLContextImpl {
       ::DestroyWindow(context->window);
       throw OpenGLException("Unable to connect to device context", Type::getType<OpenGLException>());
     }
-    WRITE_SOURCE_LOCATION();
 
     int index;
     if (!(index = ::ChoosePixelFormat(context->deviceContext, &pfd))) {
@@ -776,8 +773,10 @@ namespace OpenGLContextImpl {
       ::DestroyWindow(context->window);
       throw OpenGLException("Invalid rendering context", Type::getType<OpenGLException>());
     }
-    WRITE_SOURCE_LOCATION();
     return context;
+#else // unix
+    throw NotImplemented(Type::getType<OpenGLContext>());
+#endif // flavor
   }
 };
 
@@ -786,6 +785,7 @@ unsigned int OpenGLContext::numberOfContexts = 0;
 
 OpenGLContext::OpenGLContext(const String& title, const Position& position, const Dimension& dimension, unsigned int flags) throw(OpenGLException)
   : handle(OpenGLContextImpl::createContext(title, position, dimension, flags)), openGL() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   OpenGLContextImpl::addOpenGLContext(this, context->window);
 
@@ -809,16 +809,22 @@ OpenGLContext::OpenGLContext(const String& title, const Position& position, cons
   mouseEvent.hwndTrack = context->window;
   mouseEvent.dwHoverTime = 0;
   assert(::TrackMouseEvent(&mouseEvent), OpenGLException(this));
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::displayMenu(const Position& position, const Menu& menu) throw(UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   ::SetForegroundWindow(context->window);
   POINT point;
   point.x = position.getX();
   point.y = position.getY();
   ::ClientToScreen(context->window, &point);
+  // returns with error is menu already active
   // assert(
+  ::SetLastError(1234);
     ::TrackPopupMenuEx(
       (HMENU)menu.getHandle(),
       TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
@@ -830,9 +836,13 @@ void OpenGLContext::displayMenu(const Position& position, const Menu& menu) thro
   fout << "GetLastError: " << ::GetLastError() << ENDL;
         //    UserInterfaceException(this)
         //  );
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 unsigned int OpenGLContext::getNumberOfOverlayPlanes() const throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   PIXELFORMATDESCRIPTOR pfd;
   if (context->deviceContext) {
@@ -844,9 +854,13 @@ unsigned int OpenGLContext::getNumberOfOverlayPlanes() const throw(OpenGLExcepti
     }
   }
   throw OpenGLException(this);
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 unsigned int OpenGLContext::getNumberOfUnderlayPlanes() const throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   PIXELFORMATDESCRIPTOR pfd;
   if (context->deviceContext) {
@@ -858,14 +872,22 @@ unsigned int OpenGLContext::getNumberOfUnderlayPlanes() const throw(OpenGLExcept
     }
   }
   throw OpenGLException(this);
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::exit() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   // OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   ::PostQuitMessage(0);
+#else // unix
+  throw NotImplemented(Type::getType<OpenGLContext>());
+#endif // flavor
 }
 
 void OpenGLContext::dispatch() throw(OpenGLException /*, SingletonException*/) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   // static SpinLock spinLock;
   // assert(spinLock.tryExclusiveLock(), SingletonException(Type::getType<OpenGLContext>()));
   MSG msg;
@@ -886,6 +908,9 @@ void OpenGLContext::dispatch() throw(OpenGLException /*, SingletonException*/) {
     }
   }
   // spinLock.releaseLock();
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 // PixelFormat OpenGLContext::getPixelFormat() throw() {
@@ -898,15 +923,24 @@ void OpenGLContext::dispatch() throw(OpenGLException /*, SingletonException*/) {
 // }
 
 void OpenGLContext::makeCurrent() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   OpenGLContextImpl::wglMakeCurrent(context->deviceContext, context->renderingContext);
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::deselect() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::wglMakeCurrent(0, 0);
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::swap() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   if (!::SwapBuffers(context->deviceContext)) {
     fout << "Unable to swap buffers: " << ::GetLastError() << " " << (void*)context->deviceContext << " " << (void*)context->window << ENDL;
@@ -916,10 +950,14 @@ void OpenGLContext::swap() throw(OpenGLException) {
 //     ::SwapBuffers(context->deviceContext),
 //     OpenGLException("Unable to swap buffer", this)
 //   );
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 #if 0
 void OpenGLContext::swap(int plane) throw(OutOfRange, OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   unsigned int numberOfUnderlays = -15; // TAG: must be attribute
   unsigned int numberOfOverlays = 15; // TAG: must be attribute
   assert(
@@ -961,6 +999,9 @@ void OpenGLContext::swap(int plane) throw(OutOfRange, OpenGLException) {
   };
   BOOL result = OpenGLContextImpl::wglSwapLayerBuffers(context->hdc, PLANES[plane + 15]);
   // TAG: fixme
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 #endif
 
@@ -973,6 +1014,7 @@ void OpenGLContext::swap(int plane) throw(OutOfRange, OpenGLException) {
 // }
 
 void OpenGLContext::update() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   // TAG: time this implementation and select faster choice
   assert(
@@ -983,16 +1025,24 @@ void OpenGLContext::update() throw(OpenGLException) {
 //     ::PostMessage(context->window, WM_PAINT, 0, 0),
 //     OpenGLException(this)
 //   );
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::close() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   if (context->window) {
     assert(::DestroyWindow(context->window), OpenGLException(this));
   }
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 OpenGLContext::~OpenGLContext() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   // TAG: do we need reference counting for context?
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   if (context->window) {
@@ -1003,9 +1053,13 @@ OpenGLContext::~OpenGLContext() throw() {
   if (--numberOfContexts == 0) { // TAG: must be atomic
     ::UnregisterClass("mip.sdu.dk/~fonseca/base/opengl/OpenGLContext", ::GetModuleHandle(0));
   }
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 String OpenGLContext::getTitle() const throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   // TAG: more simple to use title attribute
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   String result;
@@ -1018,11 +1072,18 @@ String OpenGLContext::getTitle() const throw(OpenGLException) {
     }
     return result;
   }
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::setTitle(const String& title) throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   ::SetWindowText(context->window, title.getElements());
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 // void OpenGLContext::getPosition() throw(OpenGLException) {
@@ -1033,6 +1094,7 @@ void OpenGLContext::setTitle(const String& title) throw(OpenGLException) {
 // }
 
 void OpenGLContext::setPosition(const Position& position) throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   RECT rect;
   ::GetWindowRect(context->window, &rect);
@@ -1047,19 +1109,31 @@ void OpenGLContext::setPosition(const Position& position) throw(OpenGLException)
     ),
     OpenGLException(this)
   );
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 #if 0
 
 unsigned int OpenGLContext::getNumberOfMonitors() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   return ::GetSystemMetrics(SM_CMONITORS);
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 bool OpenGLContext::hasMouse() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   return ::GetSystemMetrics(SM_MOUSEPRESENT);
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 unsigned int OpenGLContext::getMouseButtons() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   unsigned int result = 0;
   unsigned int temp = ::GetSystemMetrics(SM_CMOUSEBUTTONS);
   // SM_SWAPBUTTON
@@ -1067,6 +1141,9 @@ unsigned int OpenGLContext::getMouseButtons() throw() {
     result |= Mouse::WHEEL;
   }
   return result;
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 enum Screen {
@@ -1079,6 +1156,7 @@ enum Screen {
 // GetDeviceCaps(hdcPrimaryMonitor, HORZRES/VERTRES)
 
 Dimension OpenGLContext::getScreenDimension(Screen screen) throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   unsigned int width;
   unsigned int height;
   switch (screen) {
@@ -1092,6 +1170,9 @@ Dimension OpenGLContext::getScreenDimension(Screen screen) throw() {
     break;
   }
   return Dimension(width, height);
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 #endif
 
@@ -1104,6 +1185,7 @@ Dimension OpenGLContext::getScreenDimension(Screen screen) throw() {
 // }
 
 void OpenGLContext::setSize(const Dimension& dimension) throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   RECT rect;
   ::GetWindowRect(context->window, &rect);
@@ -1118,9 +1200,13 @@ void OpenGLContext::setSize(const Dimension& dimension) throw(OpenGLException) {
     ),
     OpenGLException(this)
   );
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::setCursor(Cursor cursor) throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   static const unsigned int CURSORS[] = {
     0, // NONE (not used)
     OCR_APPSTARTING, // WORKING_IN_BACKGROUND
@@ -1158,24 +1244,43 @@ void OpenGLContext::setCursor(Cursor cursor) throw(OpenGLException) {
 //     }
 // //     this->cursor = cursor;
 // //   }
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::hideCursor() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   assert(::ShowCursor(FALSE), OpenGLException(this));
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::showCursor() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   assert(::ShowCursor(TRUE), OpenGLException(this));
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 Position OpenGLContext::getCursorPosition() const throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   POINT point;
   ::GetCursorPos(&point);
   return Position(point.x, point.y);
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::setCursorPosition(const Position& position) throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   ::SetCursorPos(position.getX(), position.getY());
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 // void OpenGLContext::getCursorConfinement() throw() {
@@ -1185,10 +1290,15 @@ void OpenGLContext::setCursorPosition(const Position& position) throw(OpenGLExce
 // }
 
 void OpenGLContext::releaseCursorConfinement() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   assert(::ClipCursor(0), OpenGLException(this));
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::setCursorConfinement() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   POINT offset;
   offset.x = 0;
@@ -1201,15 +1311,22 @@ void OpenGLContext::setCursorConfinement() throw(OpenGLException) {
   rect.right += offset.x;
   rect.bottom += offset.y;
   assert(::ClipCursor(&rect), OpenGLException(this));
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::setCursorConfinement(const Position& position, const Dimension& dimension) throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   RECT rect;
   rect.left = position.getX();
   rect.top = position.getY();
   rect.right = rect.left + dimension.getWidth() - 1;
   rect.bottom = rect.top + dimension.getHeight() - 1;
   ::ClipCursor(&rect);
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 #if 0
@@ -1224,41 +1341,70 @@ void OpenGLContext::setCursorConfinement(const Position& position, const Dimensi
 #endif
 
 bool OpenGLContext::isMaximized() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   return ::IsZoomed(context->window) == TRUE;
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 bool OpenGLContext::isMinimized() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   return ::IsIconic(context->window) == TRUE;
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::maximize() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   ::ShowWindow(context->window, SW_MAXIMIZE);
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::minimize() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   ::ShowWindow(context->window, SW_MINIMIZE);
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::show() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   ::ShowWindow(context->window, SW_SHOW);
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::hide() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   ::ShowWindow(context->window, SW_HIDE);
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::acquireFocus() throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   assert(::SetFocus(context->window), OpenGLException(this));
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::setDisplayMode(DisplayMode displayMode) throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   if (displayMode != this->displayMode) {
 
     switch (displayMode) {
@@ -1285,23 +1431,35 @@ void OpenGLContext::setDisplayMode(DisplayMode displayMode) throw(OpenGLExceptio
     
     this->displayMode = displayMode;
   }
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 bool OpenGLContext::getCapture() const throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
   return ::GetCapture() == context->window;
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 void OpenGLContext::setCapture(bool state) throw(OpenGLException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   if (state) {
     OpenGLContextImpl::Context* context = Cast::pointer<OpenGLContextImpl::Context*>(handle);
     ::SetCapture(context->window);
   } else {
     ::ReleaseCapture();
   }
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
 
 unsigned int OpenGLContext::getKeyState(unsigned int code) const throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   static const uint8 KEYS[] = {
     VK_INSERT,
     VK_DELETE,
@@ -1360,9 +1518,10 @@ unsigned int OpenGLContext::getKeyState(unsigned int code) const throw() {
   state |= (nativeState & 0x80) ? Key::PRESSED : 0;
   state |= (nativeState & 0x01) ? Key::TOGGLED : 0;
   return state;
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
 }
-
-#endif // TAG: fixme
 
 void OpenGLContext::onDisplay() throw() {
   openGL.glClearColor(0.0, 0.0, 0.0, 1.0);

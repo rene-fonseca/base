@@ -15,6 +15,7 @@
 #include <base/Integer.h>
 #include <base/net/InetInterface.h>
 #include <base/net/InetService.h>
+#include <base/net/InetEndPoint.h>
 #include <base/net/ServerSocket.h>
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
@@ -58,11 +59,19 @@ public:
       }
     }
 
+    if (!group.isMulticast()) {
+      ferr << MESSAGE("Error: ")
+           << MESSAGE("Address is not a multicast address.") << ENDL;
+      setExitCode(EXIT_CODE_ERROR);
+      return;
+    }
+    
     fout << MESSAGE("Initializing server socket...") << ENDL;
     Socket socket;
 
     fout << MESSAGE("Creating datagram socket...") << ENDL;
-    socket.create(Socket::DATAGRAM);
+    Socket::Domain domain = group.isIPv4() ? Socket::IPV4 : Socket::IPV6;
+    socket.create(Socket::DATAGRAM, domain);
 
     fout << MESSAGE("Enabling reuse...") << ENDL;
     socket.setReuseAddress(true);
@@ -92,7 +101,9 @@ public:
          << ENDL;
 
     fout << MESSAGE("Server address...") << ENDL;
-    fout << indent(2) << socket.getLocalAddress() << ':' << socket.getLocalPort() << ENDL;
+    fout << indent(2)
+         << InetEndPoint(socket.getLocalAddress(), socket.getLocalPort())
+         << ENDL;
     
     fout << MESSAGE("Sending here am I packet...") << ENDL;
     char message[] = "HERE AM I";

@@ -33,21 +33,24 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  OrbException() throw();
+  inline OrbException() throw() {
+  }
   
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  OrbException(const char* message) throw();
+  inline OrbException(const char* message) throw() : RMIException(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  OrbException(Type type) throw();
+  inline OrbException(Type type) throw() : RMIException(type) {
+  }
   
   /**
     Initializes the exception object.
@@ -55,7 +58,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  OrbException(const char* message, Type type) throw();
+  inline OrbException(const char* message, Type type) throw()
+    : RMIException(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

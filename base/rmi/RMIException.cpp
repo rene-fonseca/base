@@ -15,17 +15,4 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-RMIException::RMIException() throw() : Exception() {
-}
-
-RMIException::RMIException(const char* message) throw() : Exception(message) {
-}
-
-RMIException::RMIException(Type type) throw() : Exception(type) {
-}
-
-RMIException::RMIException(const char* message, Type type) throw()
-  : Exception(message, type) {
-}
-
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

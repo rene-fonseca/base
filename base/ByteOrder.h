@@ -114,7 +114,7 @@ namespace ByteOrder {
     }
     
     inline LittleEndian(int16 value) throw()
-      : b(value >> 8), a(value) {
+      : a(value), b(value >> 8) {
     }
     
     inline int16 operator=(int16 eq) throw() {
@@ -138,7 +138,7 @@ namespace ByteOrder {
     }
     
     inline LittleEndian(uint16 value) throw()
-      : b(value >> 8), a(value) {
+      : a(value), b(value >> 8) {
     }
     
     inline uint16 operator=(uint16 eq) throw() {
@@ -164,7 +164,7 @@ namespace ByteOrder {
     }
     
     inline LittleEndian(int32 value) throw()
-      : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {
+      : a(value), b(value >> 8), c(value >> 16), d(value >> 24) {
     }
     
     inline int32 operator=(int32 eq) throw() {
@@ -192,7 +192,7 @@ namespace ByteOrder {
     }
     
     inline LittleEndian(uint32 value) throw()
-      : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {
+      : a(value), b(value >> 8), c(value >> 16), d(value >> 24) {
     }
     
     inline uint32 operator=(uint32 eq) throw() {
@@ -218,7 +218,7 @@ namespace ByteOrder {
     }
   
     inline LittleEndian(int64 value) throw()
-      : b(value >> 32), a(value) {
+      : a(value), b(value >> 32) {
     }
     
     inline int64 operator=(int64 eq) throw() {
@@ -242,7 +242,7 @@ namespace ByteOrder {
     }
     
     inline LittleEndian(uint64 value) throw()
-      : b(value >> 32), a(value) {
+      : a(value), b(value >> 32) {
     }
     
     inline uint64 operator=(uint64 eq) throw() {

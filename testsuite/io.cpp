@@ -74,17 +74,17 @@ void test() {
   fout << "ffff::127.0.0.1 - " << InetAddress("ffff::127.0.0.1", InetAddress::IP_VERSION_6) << ENDL;
   fout << "::ffff:127.0.0.1 - " << InetAddress("::ffff:127.0.0.1") << ENDL;
 
-  fout << FIXED << setPrecision(48) << 0.30102999566398119521373889472449L << ' '
-       << FIXED << 1.0 << ' '
-       << FIXED << 10.5 << ' '
-       << FIXED << 149.9 << ENDL;
+  fout << base::FIXED << setPrecision(48) << 0.30102999566398119521373889472449L << ' '
+       << base::FIXED << 1.0 << ' '
+       << base::FIXED << 10.5 << ' '
+       << base::FIXED << 149.9 << ENDL;
 
   for (int i = -12; i < 22; ++i) {
     long double temp = 0.30102999566398119521373889472449L * i * i * i * exp(i * log(10.0L));
     fout << setWidth(30) << SCIENTIFIC << NECESSARY << temp << " "
          << setWidth(10) << SCIENTIFIC << setPrecision(0) << temp << " "
          << setWidth(20) << ENGINEERING << setRadixPosition(5) << setPrecision(6) << temp << " "
-         << setWidth(30) << FIXED << GROUPING << setRadixPosition(20) << setPrecision(2) << temp << ENDL;
+         << setWidth(30) << base::FIXED << GROUPING << setRadixPosition(20) << setPrecision(2) << temp << ENDL;
   }
 }
 

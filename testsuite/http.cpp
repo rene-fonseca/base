@@ -27,6 +27,15 @@
 #include <base/io/File.h>
 #include <base/net/Url.h>
 
+#undef OPTIONS
+#undef GET
+#undef HEAD
+#undef POST
+#undef PUT
+#undef DELETE
+#undef TRACE
+#undef CONNECT
+
 using namespace base;
 
 // Methods
@@ -263,9 +272,9 @@ public:
     ASSERT(result == size);
     bytesWritten += size;
     fout << "  bytes written=" << bytesWritten
-         << "  completed=" << FIXED << setWidth(10) << setPrecision(6) << static_cast<long double>(bytesWritten)/totalSize*100 << "%"
-         << "  time=" << FIXED << setWidth(10) << timer.getLiveMicroseconds()/1000000.
-         << "  rate=" << FIXED << setWidth(15) << setPrecision(6) << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds()) << "kbs\r" << FLUSH;
+         << "  completed=" << base::FIXED << setWidth(10) << setPrecision(6) << static_cast<long double>(bytesWritten)/totalSize*100 << "%"
+         << "  time=" << base::FIXED << setWidth(10) << timer.getLiveMicroseconds()/1000000.
+         << "  rate=" << base::FIXED << setWidth(15) << setPrecision(6) << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds()) << "kbs\r" << FLUSH;
   }
 
   void pushEnd() throw() {
@@ -293,11 +302,11 @@ public:
   typedef HTTPTraits Traits;
 
   /** Verbosity levels. */
-  typedef enum {SILENT, SHORT, ALL, DEBUG, DEBUG_EXTENDED} Verbosity;
+  enum Verbosity {SILENT, SHORT, ALL, DEBUG, DEBUG_EXTENDED};
   /** Status code classes. */
-  typedef enum {INFORMATION, SUCCESS, REDIRECTION, CLIENT_ERROR, SERVER_ERROR} StatusClass;
+  enum StatusClass {INFORMATION, SUCCESS, REDIRECTION, CLIENT_ERROR, SERVER_ERROR};
   /** Methods. */
-  typedef enum {OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT} Method;
+  enum Method {OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT};
   /** Reply something. */
   typedef enum {} XXX;
 

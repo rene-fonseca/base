@@ -204,7 +204,7 @@ public:
         dump(MESSAGE(", "));
         assert(templateArgument(), InvalidFormat(this));
       }
-      if (demangled.endsWith(MESSAGE(">"))) {
+      if (demangled.endsWith(">")) {
         dump(MESSAGE(" >"));
       } else {
         demangled += '>';

@@ -895,7 +895,7 @@ void WindowImpl::flush() throw(UserInterfaceException) {
 // TAG: need glx version method, ...
 String WindowImpl::getServerVendor() const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return MESSAGE("UNSPECIFIED");
+  return Literal("UNSPECIFIED");
 #else // unix
   return NativeString(::XServerVendor((Display*)displayHandle));
 #endif // flavor
@@ -2438,18 +2438,18 @@ Literal WindowImpl::getMouseButtonName(Mouse::Button button) throw() {
   // keep out to date with WindowImpl::Mouse::Button
   switch (button) {
   case Mouse::MIDDLE:
-    return MESSAGE("MIDDLE");
+    return Literal("MIDDLE");
   case Mouse::RIGHT:
-    return MESSAGE("RIGHT");
+    return Literal("RIGHT");
   case Mouse::EXTRA:
-    return MESSAGE("EXTRA");
+    return Literal("EXTRA");
   case Mouse::EXTRA2:
-    return MESSAGE("EXTRA2");
+    return Literal("EXTRA2");
   case Mouse::WHEEL:
-    return MESSAGE("WHEEL");
+    return Literal("WHEEL");
   case Mouse::LEFT:
   default:
-    return MESSAGE("LEFT");
+    return Literal("LEFT");
   }
 }
 

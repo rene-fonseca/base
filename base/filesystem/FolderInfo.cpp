@@ -239,7 +239,7 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
   }
 
   static const long long fileTimeOffset = 116444736000000000LL;
-  path -= MESSAGE("\\");
+  path -= Literal("\\");
   access = (Cast::impersonate<int64>(information.ftLastAccessTime) - fileTimeOffset)/10;
   modification = (Cast::impersonate<int64>(information.ftLastWriteTime) - fileTimeOffset)/10;
   change = (Cast::impersonate<int64>(information.ftCreationTime) - fileTimeOffset)/10;
@@ -355,10 +355,10 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   HANDLE handle;
   WIN32_FIND_DATA entry;
 
-  if (path.endsWith(MESSAGE("\\"))) {
-    handle = ::FindFirstFile((path + MESSAGE("*")).getElements(), &entry);
+  if (path.endsWith("\\")) {
+    handle = ::FindFirstFile((path + Literal("*")).getElements(), &entry);
   } else {
-    handle = ::FindFirstFile((path + MESSAGE("\\*")).getElements(), &entry);
+    handle = ::FindFirstFile((path + Literal("\\*")).getElements(), &entry);
   }
   
   if (handle == INVALID_HANDLE_VALUE) {

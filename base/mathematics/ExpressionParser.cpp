@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -791,12 +791,13 @@ String ExpressionParser::getString() const throw() {
         String arguments;
         if (node.function.arguments > 0) {
           for (unsigned int i = 0; (i + 1) < node.function.arguments; ++i) {
-            arguments = MESSAGE("; ") + stack.pop() + arguments;
+            arguments = String("; ") + stack.pop() + arguments;
           }
           arguments = stack.pop() + arguments;
         }
         StringOutputStream stream;
-        stream << provider.getFunction(node.function.id) << '(' << arguments << ')' << FLUSH;
+        stream << provider.getFunction(node.function.id)
+               << '(' << arguments << ')' << FLUSH;
         stack.push(stream.getString());
       }
       break;

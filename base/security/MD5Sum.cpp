@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,29 +21,42 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class MD5SumImpl {
 public:
 
-  static inline unsigned int F(unsigned int X, unsigned int Y, unsigned int Z) throw() {
+  static inline unsigned int F(
+    unsigned int X, unsigned int Y, unsigned int Z) throw() {
     return X & Y | ~X & Z;
   }
 
-  static inline unsigned int G(unsigned int X, unsigned int Y, unsigned int Z) throw() {
+  static inline unsigned int G(
+    unsigned int X, unsigned int Y, unsigned int Z) throw() {
     return X & Z | Y & ~Z;
   }
 
-  static inline unsigned int H(unsigned int X, unsigned int Y, unsigned int Z) throw() {
+  static inline unsigned int H(
+    unsigned int X, unsigned int Y, unsigned int Z) throw() {
     return X ^ Y ^ Z;
   }
 
-  static inline unsigned int I(unsigned int X, unsigned int Y, unsigned int Z) throw() {
+  static inline unsigned int I(
+    unsigned int X, unsigned int Y, unsigned int Z) throw() {
     return Y ^ (X | ~Z);
   }
 
   typedef unsigned int (*Operation)(unsigned int, unsigned int, unsigned int);
 
-  static inline unsigned int rotate(unsigned int value, unsigned int bits) throw() {
+  static inline unsigned int rotate(
+    unsigned int value, unsigned int bits) throw() {
     return (value << bits) | (value >> (32 - bits));
   }
 
-  static inline void translate(Operation opr, unsigned int& a, unsigned int b, unsigned int c, unsigned int d, unsigned int k, unsigned int s, unsigned int T) throw() {
+  static inline void translate(
+    Operation opr,
+    unsigned int& a,
+    unsigned int b,
+    unsigned int c,
+    unsigned int d,
+    unsigned int k,
+    unsigned int s,
+    unsigned int T) throw() {
     a = b + rotate(a + opr(b, c, d) + k + T, s);
   }
 };

@@ -235,7 +235,7 @@ bool FileSystem::isFolderPath(const String& path) throw() {
   char lastChar = path[length - 1];
   return (lastChar == '/') || (lastChar == '\\');
 #else // unix
-  return path.endsWith(MESSAGE("/"));
+  return path.endsWith("/");
 #endif // flavor
 }
 
@@ -291,9 +291,9 @@ String FileSystem::findFile(const Array<String>& searchPaths, const String& rela
 
 String FileSystem::toUrl(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  static const Literal PREFIX = MESSAGE("file:///");
+  static const Literal PREFIX = "file:///";
 #else // unix
-  static const Literal PREFIX = MESSAGE("file://");
+  static const Literal PREFIX = "file://";
 #endif // flavor
   if (isAbsolutePath(path)) {
     throw FileSystemException(Type::getType<FileSystem>());
@@ -1190,7 +1190,7 @@ void FileSystem::makeLink(const String& target, const String& path)
   );
   
 	// make the native target name
-	String nativePath(MESSAGE("\\??\\"));
+	String nativePath("\\??\\");
   nativePath += NativeString(fullTargetPath);
   
   DWORD attributes = ::GetFileAttributes(target.getElements());
@@ -1203,8 +1203,8 @@ void FileSystem::makeLink(const String& target, const String& path)
   
   HANDLE link;
   if (isDirectory) {
-    if (!nativePath.endsWith(MESSAGE(":\\"))) {
-      nativePath -= MESSAGE("\\");
+    if (!nativePath.endsWith(":\\")) {
+      nativePath -= Literal("\\");
     }
     assert(
       nativePath.getLength() <= MAX_PATH,
@@ -1224,7 +1224,7 @@ void FileSystem::makeLink(const String& target, const String& path)
     );
   } else {
     assert(
-      !nativePath.endsWith(MESSAGE("\\")),
+      !nativePath.endsWith("\\"),
       FileSystemException(Type::getType<FileSystem>())
     );
     assert(
@@ -1241,7 +1241,10 @@ void FileSystem::makeLink(const String& target, const String& path)
       0
     );
   }
-  assert(link != INVALID_HANDLE_VALUE, FileSystemException(Type::getType<FileSystem>()));
+  assert(
+    link != INVALID_HANDLE_VALUE,
+    FileSystemException(Type::getType<FileSystem>())
+  );
   
   uint8 reparseBuffer[sizeof(REPARSE_DATA_BUFFER) + MAX_PATH * sizeof(WCHAR)];
   REPARSE_DATA_BUFFER* reparseInfo = (REPARSE_DATA_BUFFER*)reparseBuffer;
@@ -1604,16 +1607,16 @@ String FileSystem::getTempFolder(TemporaryFolder folder) throw() {
     }
   case FileSystem::MACHINE_NONPERSISTENT:
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-    return MESSAGE("C:\\temp"); // TAG: fixme - use same drive as windows directory
+    return Literal("C:\\temp"); // TAG: fixme - use same drive as windows directory
 #else // unix
-    return MESSAGE("/tmp");
+    return Literal("/tmp");
 #endif // flavor
   case FileSystem::MACHINE_PERSISTENT:
   default:
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-    return MESSAGE("C:\\temp"); // TAG: fixme - use same drive as windows directory
+    return Literal("C:\\temp"); // TAG: fixme - use same drive as windows directory
 #else // unix
-    return MESSAGE("/var/tmp");
+    return Literal("/var/tmp");
 #endif // flavor
   }
 }
@@ -1773,7 +1776,7 @@ String FileSystem::getFolder(Folder folder) throw() {
       return String(buffer);
     }
   case FileSystem::DEVICES:
-    return MESSAGE("\\\\.");
+    return Literal("\\\\.");
   case FileSystem::TEMP:
   default:
     {
@@ -1784,9 +1787,9 @@ String FileSystem::getFolder(Folder folder) throw() {
   }
 #else // unix
   static const Literal FOLDERS[] = {
-    MESSAGE("/"),
-    MESSAGE("/dev"),
-    MESSAGE("/tmp")
+    Literal("/"),
+    Literal("/dev"),
+    Literal("/tmp")
   };
   return String(FOLDERS[folder]);
 #endif // flavor

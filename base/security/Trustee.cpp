@@ -272,7 +272,7 @@ bool Trustee::isMemberOf(const Trustee& trustee) const throw(TrusteeException) {
 String Trustee::getName() const throw(TrusteeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!id.isValid()) {
-    return MESSAGE("<unknown>");
+    return Literal("<unknown>");
   }
   SID_NAME_USE sidType;
   char name[UNLEN+1];
@@ -333,7 +333,7 @@ String Trustee::getName() const throw(TrusteeException) {
     }
   case Trustee::EVERYONE:
   default: // UNSPECIFIED and CLASS are not possible
-    return MESSAGE("other");
+    return Literal("other");
   }
 #endif // flavor
 }

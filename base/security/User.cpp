@@ -148,7 +148,7 @@ User::User(const String& name) throw(UserException) {
 // TAG: select full name domain/user with option: LOCAL prefix?, BUILTIN prefix (no)?
 String User::getName(bool fallback) const throw(UserException) {
   if (!isValid()) {
-    return MESSAGE("<unknown>");
+    return Literal("<unknown>");
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SID_NAME_USE sidType;

@@ -158,7 +158,8 @@ private:
   unsigned int retryAttempts;
 protected:
 
-  static bool translateReplyCode(char a, char b, char c, ReplyCode& result) throw() {
+  static bool translateReplyCode(
+    char a, char b, char c, ReplyCode& result) throw() {
     result.valid = false;
 
     switch (a) {
@@ -662,10 +663,13 @@ public:
     request(CMD_RETRIEVE, filename);
     getResponse();
 
-    int i = response.indexOf(MESSAGE(" byte"), 4);
+    int i = response.indexOf(" byte", 4);
     assert(i >= 0, FTPException("Invalid reply"));
     --i; // possible last digit
-    assert((response[i] >= '0') && (response[i] <= '9'), FTPException("Invalid reply"));
+    assert(
+      (response[i] >= '0') && (response[i] <= '9'),
+      FTPException("Invalid reply")
+    );
     while ((response[i] >= '0') && (response[i] <= '9')) { // find first digit
       --i;
     }
@@ -869,21 +873,25 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  FTPApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("ftp"), numberOfArguments, arguments, environment) {
+  FTPApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("ftp", numberOfArguments, arguments, environment) {
   }
 
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     Array<String> arguments = getArguments();
     
-    String url = MESSAGE("ftp.sunsite.auc.dk"); // default url
-    String file = MESSAGE("welcome.msg"); // default file
+    String url = "ftp.sunsite.auc.dk"; // default url
+    String file = "welcome.msg"; // default file
     
     switch (arguments.getSize()) {
     case 0:
@@ -897,12 +905,12 @@ public:
       file = arguments[1]; // the service
       break;
     default:
-      fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [url] [output]") << ENDL;
+      fout << "Usage: " << getFormalName() << " [url] [output]" << ENDL;
       return;
     }
     
     try {
-      fout << MESSAGE("Testing File Transfer Protocol (FTP) class...") << ENDL;
+      fout << "Testing File Transfer Protocol (FTP) class..." << ENDL;
       ftpclient(url, file);
     } catch (Exception& e) {
       setExitCode(EXIT_CODE_ERROR);

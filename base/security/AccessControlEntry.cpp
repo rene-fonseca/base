@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,13 +22,15 @@ AccessControlEntry::AccessControlEntry() throw()
   permissions.denied = 0;
 }
 
-AccessControlEntry::AccessControlEntry(const Trustee& _trustee, AccessMask allowed) throw()
+AccessControlEntry::AccessControlEntry(
+  const Trustee& _trustee, AccessMask allowed) throw()
   : trustee(_trustee) {
   permissions.allowed = allowed;
   permissions.denied = 0;
 }
 
-AccessControlEntry::AccessControlEntry(const Trustee& _trustee, const Permissions& _permissions) throw()
+AccessControlEntry::AccessControlEntry(
+  const Trustee& _trustee, const Permissions& _permissions) throw()
   : trustee(_trustee), permissions(_permissions) {
 }
 
@@ -36,7 +38,8 @@ AccessControlEntry::AccessControlEntry(const AccessControlEntry& copy) throw()
   : trustee(copy.trustee), permissions(copy.permissions) {
 }
 
-AccessControlEntry& AccessControlEntry::operator=(const AccessControlEntry& eq) throw() {
+AccessControlEntry& AccessControlEntry::operator=(
+  const AccessControlEntry& eq) throw() {
   trustee = eq.trustee;
   permissions = eq.permissions;
   return *this;
@@ -74,9 +77,9 @@ String AccessControlEntry::maskToString(AccessMask mask) throw() {
   mask &= FULL; // filters out SYNCHRONIZE
   
   if (mask == FULL) {
-    return MESSAGE("F");
+    return Literal("F");
   } else if (mask == MODIFY) {
-    return MESSAGE("M");
+    return Literal("M");
   }
 
   if (mask & READ) {
@@ -138,7 +141,9 @@ String AccessControlEntry::maskToString(AccessMask mask) throw() {
   return result;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const AccessControlEntry& ace) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  const AccessControlEntry& ace) throw(IOException) {
   StringOutputStream s;
   s << ace.getTrustee().getName() << ':';
   

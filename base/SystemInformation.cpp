@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 String SystemInformation::getVendor() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return MESSAGE("Microsoft");
+  return Literal("Microsoft");
 #else
   struct utsname name;
   int result = ::uname(&name);
@@ -34,7 +34,7 @@ String SystemInformation::getVendor() throw() {
     return String(name.sysname);
     return String(name.nodename);
   } else {
-    return MESSAGE("Unspecified");
+    return Literal("Unspecified");
   }
 #endif
 }
@@ -45,15 +45,15 @@ String SystemInformation::getSystem() throw() {
   versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
   ::GetVersionEx(&versionInfo); // never fails
   if ((versionInfo.dwMajorVersion == 4) && (versionInfo.dwMinorVersion == 0)) {
-    return MESSAGE("Windows NT");
+    return Literal("Windows NT");
   } else if ((versionInfo.dwMajorVersion == 5) &&
              (versionInfo.dwMinorVersion == 0)) {
-    return MESSAGE("Windows 2000");
+    return Literal("Windows 2000");
   } else if ((versionInfo.dwMajorVersion == 5) &&
              (versionInfo.dwMinorVersion == 1)) {
-    return MESSAGE("Windows XP");
+    return Literal("Windows XP");
   } else {
-    return MESSAGE("Windows later than XP");
+    return Literal("Windows later than XP");
   }
 #else
   struct utsname name;
@@ -64,7 +64,7 @@ String SystemInformation::getSystem() throw() {
 
 String SystemInformation::getRelease() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return MESSAGE("Unspecified");
+  return Literal("Unspecified");
 #else
   struct utsname name;
   int result = ::uname(&name);
@@ -74,7 +74,7 @@ String SystemInformation::getRelease() throw() {
 
 String SystemInformation::getVersion() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return MESSAGE("Unspecified");
+  return Literal("Unspecified");
 #else
   struct utsname name;
   int result = ::uname(&name);
@@ -84,7 +84,7 @@ String SystemInformation::getVersion() throw() {
 
 String SystemInformation::getMachine() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return MESSAGE("Unspecified");
+  return Literal("Unspecified");
 #else
   struct utsname name;
   int result = ::uname(&name);

@@ -29,7 +29,7 @@ FormatOutputStream& operator<<(
   for (unsigned int i = 64/4; i > value.offsetDigits; --i) {
     offsetMask >>= 4;
   }
-  String underlineOffset = MESSAGE("----------------");
+  String underlineOffset = "----------------";
   underlineOffset.forceToLength(value.offsetDigits);
     
   unsigned int rows = (value.size + bytesPerRow - 1)/bytesPerRow;

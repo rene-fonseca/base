@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,11 +33,14 @@ private:
   String otherYearFormat;
 public:
 
-  FileSystemApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("filesystem"), numberOfArguments, arguments, environment) {
+  FileSystemApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("filesystem", numberOfArguments, arguments, environment) {
     currentYear = Date::getNow().getYear();
-    thisYearFormat = MESSAGE("%b %#d %H:%M");
-    otherYearFormat = MESSAGE("%b %#d  %Y");
+    thisYearFormat = "%b %#d %H:%M";
+    otherYearFormat = "%b %#d  %Y";
   }
 
   inline String getTime(const Date& date) const throw() {
@@ -45,13 +48,14 @@ public:
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
 
-    String path = MESSAGE("."); // use current folder by default
+    String path = "."; // use current folder by default
     
     Array<String> arguments = getArguments();
     switch (arguments.getSize()) {
@@ -62,7 +66,7 @@ public:
       path = arguments[0]; // get the path
       break;
     default:
-      fout << MESSAGE("filesystem [path]") << ENDL;
+      fout << "filesystem [path]" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
@@ -70,12 +74,12 @@ public:
     FolderInfo folder(path);
     Array<String> entries = folder.getEntries();
     
-    fout << MESSAGE("Folder: ") << folder.getPath() << EOL
-         << MESSAGE("Number of entries: ") << entries.getSize() << EOL
-         << MESSAGE("Entries: ") << entries << EOL
+    fout << "Folder: " << folder.getPath() << EOL
+         << "Number of entries: " << entries.getSize() << EOL
+         << "Entries: " << entries << EOL
          << EOL;
     
-    fout << MESSAGE("Support for symbolic links: ") << FileSystem::supportsLinks() << EOL
+    fout << "Support for symbolic links: " << FileSystem::supportsLinks() << EOL
          << EOL;
     
     FileSystem::setCurrentFolder(path);
@@ -100,9 +104,9 @@ public:
           }
         } catch (Exception& e) {
           if (link && !linkTarget) {
-            target = MESSAGE("<unknown>");
+            target = "<unknown>";
           }
-          ferr << entry << MESSAGE(": ") << e << ENDL; // ignore exception
+          ferr << entry << ": " << e << ENDL; // ignore exception
         }
         
         {
@@ -179,7 +183,7 @@ public:
                  << getTime(info.getLastModification()) << ' '
                  << entry;
             if (link) {
-              fout << MESSAGE(" -> ") << target;
+              fout << " -> " << target;
             }
             fout << EOL;    
           } else if (type & FileSystem::FOLDER) {
@@ -255,11 +259,11 @@ public:
                  << getTime(info.getLastModification()) << ' '
                  << entry;
             if (link) {
-              fout << MESSAGE(" -> ") << target;
+              fout << " -> " << target;
             }
             fout << EOL;
           } else { // unknown entry type
-            fout << MESSAGE("----------") << ' '
+            fout << "----------" << ' '
                  << setWidth(4) << ' ' << ' '
                  << setWidth(16) << ' ' << ' '
                  << setWidth(16) << ' ' << ' '
@@ -267,13 +271,13 @@ public:
                  << setWidth(12) << ' ' << ' '
                  << entry;
             if (link) {
-              fout << MESSAGE(" -> ") << target;
+              fout << " -> " << target;
             }
             fout << EOL;
           }
         }
       } catch (Exception& e) {
-        ferr << entry << MESSAGE(": ") << e << ENDL; // ignore exception - unless in debug mode?
+        ferr << entry << ": " << e << ENDL; // ignore exception - unless in debug mode?
       }
     }
   }

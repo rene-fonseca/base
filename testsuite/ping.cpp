@@ -62,7 +62,7 @@ public:
   }
   
   String getTimeAsString2(uint64 microseconds) throw() {
-    return MESSAGE("");
+    return Literal("");
   }
   
   String getTimeAsString(uint64 microseconds) throw() {

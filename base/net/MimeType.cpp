@@ -49,17 +49,17 @@ public:
   }
 };
 
-const Literal MimeTypeImpl::APPLICATION = MESSAGE("application");
-const Literal MimeTypeImpl::AUDIO = MESSAGE("audio");
-const Literal MimeTypeImpl::IMAGE = MESSAGE("image");
-const Literal MimeTypeImpl::MESSAGE = MESSAGE("message");
-const Literal MimeTypeImpl::MULTIPART = MESSAGE("multipart");
-const Literal MimeTypeImpl::TEXT = MESSAGE("text");
-const Literal MimeTypeImpl::VIDEO = MESSAGE("video");
+const Literal MimeTypeImpl::APPLICATION = Literal("application");
+const Literal MimeTypeImpl::AUDIO = Literal("audio");
+const Literal MimeTypeImpl::IMAGE = Literal("image");
+const Literal MimeTypeImpl::MESSAGE = Literal("message");
+const Literal MimeTypeImpl::MULTIPART = Literal("multipart");
+const Literal MimeTypeImpl::TEXT = Literal("text");
+const Literal MimeTypeImpl::VIDEO = Literal("video");
 
 MimeType::MimeType() throw(MemoryException) {
   type = MimeTypeImpl::APPLICATION;
-  subtype = MESSAGE("octet-stream");
+  subtype = "octet-stream";
   mediaType = APPLICATION;
 }
 

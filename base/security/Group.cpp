@@ -133,7 +133,7 @@ Group::Group(const User& user) throw(GroupException) {
 
 String Group::getName() const throw(GroupException) {
   if (!isValid()) {
-    return MESSAGE("<unknown>");
+    return Literal("<unknown>");
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SID_NAME_USE sidType;

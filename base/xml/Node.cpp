@@ -49,15 +49,15 @@ String Node::getName() const throw() {
       return NativeString((const char*)node->name);
     }
   case XML_CDATA_SECTION_NODE:
-    return MESSAGE("#cdata-section");
+    return Literal("#cdata-section");
   case XML_COMMENT_NODE:
-    return MESSAGE("#comment");
+    return Literal("#comment");
   case XML_DOCUMENT_NODE:
-    return MESSAGE("#document");
+    return Literal("#document");
   case XML_DOCUMENT_FRAG_NODE:
-    return MESSAGE("#document-fragment");
+    return Literal("#document-fragment");
   case XML_TEXT_NODE:
-    return MESSAGE("#text");
+    return Literal("#text");
   case XML_ATTRIBUTE_DECL:
   case XML_DTD_NODE: // not XML_DOCUMENT_TYPE_NODE
   case XML_ELEMENT_DECL:

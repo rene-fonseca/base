@@ -44,15 +44,15 @@ unsigned int Version::getMicroVersion() const throw() {
 }
 
 String Version::getRelease() const throw() {
-  return MESSAGE(_DK_SDU_MIP__BASE__RELEASE);
+  return Literal(_DK_SDU_MIP__BASE__RELEASE);
 }
 
 String Version::getVersion() const throw() {
-  return MESSAGE(_DK_SDU_MIP__BASE__VERSION);
+  return Literal(_DK_SDU_MIP__BASE__VERSION);
 }
 
 String Version::getBanner() const throw() {
-  return MESSAGE(banner);
+  return Literal(banner);
 }
 
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) && \

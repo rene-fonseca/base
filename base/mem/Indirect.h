@@ -31,7 +31,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   relocateable. Accessing the object through this automation object results in
   an overhead because an additional pointer must be dereferenced. However, the
   overhead can be avoided by doing a dynamic cast and then copying the "new"
-  object onto the stack.
+  object onto the stack. This automation pointer only makes sense if the type
+  in question is itself some pointer.
   
   @code
   class MyClass : public Object {
@@ -58,7 +59,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   };
   @endcode
   
-  @short Automation pointer that counts the number of references to an object.
+  @short Automation pointer for direct values.
   @ingroup memory
   @see Reference
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -86,7 +87,7 @@ public:
     @param value The desired pointer value.
   */
   inline Indirect(TYPE _value) /*throw(...)*/
-    : value(new TYPE(value)) {
+    : value(new TYPE(_value)) {
   }
   
   /**
@@ -102,7 +103,7 @@ public:
   */
   template<class POLY>
   inline Indirect(const Indirect<POLY>& copy) /*throw(...)*/
-    : value(new TYPE(copy.cast<TYPE>().value)) {
+    : value(new TYPE(*copy.cast<TYPE>().value)) {
   }
   
   /**

@@ -17,13 +17,14 @@
 #include <base/collection/Hash.h>
 #include <base/mem/NullPointer.h>
 #include <base/Functor.h>
+#include <base/CastException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Automation pointer which checks the pointer value before use.
   
-  @short Checked pointer.
+  @short Checked automation pointer.
   @ingroup memory
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -54,7 +55,8 @@ public:
   /**
     Initialization of automation pointer from other automation pointer.
   */
-  inline CheckedPointer(const CheckedPointer& copy) throw() : value(copy.value) {
+  inline CheckedPointer(const CheckedPointer& copy) throw()
+    : value(copy.value) {
   }
 
   /**
@@ -105,6 +107,25 @@ public:
   inline bool operator!=(const CheckedPointer& eq) const throw() {
     return value != eq.value;
   }
+
+  /**
+    Returns true if the object may be cast to the specified type.
+  */
+  template<class POLY>
+  inline bool isType() const throw() {
+    return dynamic_cast<const POLY*>(value);
+  }
+  
+  /**
+    Dynamic cast to the specified type. Raises CastException if the reference
+    is invalid or the reference cannot be cast to the specified type.
+  */
+  template<class POLY>
+  inline CheckedPointer<POLY> cast() throw(CastException) {
+    POLY* temp = dynamic_cast<POLY*>(value);
+    assert(temp, CastException(this));
+    return temp;
+  }
   
   /**
     Returns mutable object.
@@ -139,10 +160,10 @@ public:
   }
   
   /**
-    Returns true if valid pointer.
+    Returns true if the pointer is valid (i.e. not 0).
   */
   inline operator bool() const throw() {
-    return value != 0;
+    return value;
   }
 };
 

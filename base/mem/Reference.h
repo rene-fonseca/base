@@ -14,6 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_H
 #define _DK_SDU_MIP__BASE_MEM__REFERENCE_H
 
+#include <base/CastException.h>
 #include <base/Functor.h>
 #include <base/collection/Hash.h>
 #include <base/mem/ReferenceCountedObject.h>
@@ -88,21 +89,24 @@ public:
   }
 
   /**
-    Dynamic cast.
+    Returns true if the object may be cast to the specified type.
   */
   template<class POLY>
-  inline Reference<POLY> cast() throw() {
-    return dynamic_cast<POLY*>(value);
-  }
-  
-  /**
-    Dynamic cast.
-  */
-  template<class POLY>
-  inline const Reference<POLY> cast() const throw() {
+  inline bool isType() const throw() {
     return dynamic_cast<const POLY*>(value);
   }
   
+  /**
+    Dynamic cast to the specified type. Raises CastException if the reference
+    is invalid or the reference cannot be cast to the specified type.
+  */
+  template<class POLY>
+  inline Reference<POLY> cast() throw(CastException) {
+    POLY* temp = dynamic_cast<POLY*>(value);
+    assert(temp, CastException(this));
+    return temp;
+  }
+
   /**
     Assignment of automation pointer to this automation pointer.
   */
@@ -237,6 +241,14 @@ public:
     return value;
   }
 
+  /**
+    Returns true if the automation pointer is valid (i.e. it is pointing to an
+    object).
+  */
+  inline operator bool() const throw() {
+    return value;
+  }
+  
   /**
     Destroys the automation pointer.
   */

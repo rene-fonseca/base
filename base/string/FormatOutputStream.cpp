@@ -527,10 +527,13 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, char value) throw(IOE
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const char* value) throw(OutOfDomain, OutOfRange, IOException) {
-  assert(value, OutOfDomain(Type::getType<FormatOutputStream>()));
-  const char* terminator = find<char>(value, 1U << 16 - 1, 0); // find terminator
-  assert(terminator, OutOfRange(Type::getType<FormatOutputStream>())); // maximum length exceeded
-  stream.addCharacterField(value, terminator - value);
+  if (value) {
+    const char* terminator = find<char>(value, 1U << 16 - 1, 0); // find terminator
+    assert(terminator, OutOfRange(Type::getType<FormatOutputStream>())); // maximum length exceeded
+    stream.addCharacterField(value, terminator - value);
+  } else {
+    stream.addCharacterField("", 0);
+  }
   return stream;
 }
 
@@ -1467,7 +1470,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) th
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const void* value) throw(IOException) {
-  return stream << HEX << PREFIX << ZEROPAD << reinterpret_cast<unsigned long>(value); // TAG: problem for 64bit Windows
+  return stream << HEX << PREFIX << ZEROPAD << Cast::getOffset(value);
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Exception& e) throw(IOException) {

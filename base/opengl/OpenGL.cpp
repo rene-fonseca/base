@@ -18,13 +18,18 @@
 #include <base/mathematics/Math.h>
 #include <base/mathematics/Vector3D.h>
 
+// TAG: put in static description
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  define _DK_SDU_MIP__BASE__OPENGL_LIBRARY "OPENGL32.DLL"
+#else // win32
+#  define _DK_SDU_MIP__BASE__OPENGL_LIBRARY "libGL.so"
+#endif // flavor
+
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  define CALL_OPENGL CALL_PASCAL
 #else
 #  define CALL_OPENGL
 #endif
-
-extern "C" void* CALL_OPENGL wglGetProcAddress(const char* name);
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -43,6 +48,9 @@ namespace opengl {
   // TAG: pthread_once functionality is better
   SpinLock spinLock;
   DynamicLinker* dynamicLinker = 0;
+
+  typedef OpenGL::Function (CALL_OPENGL *GetFunction)(const char* name);
+  GetFunction getFunction = 0;  
   
   OpenGL::Descriptor OPEN_GL_1_1[] = {
     GL(Accum),
@@ -558,15 +566,6 @@ namespace opengl {
   };
 
 #undef GL
-  
-  typedef OpenGL::Function (CALL_OPENGL *GetFunction)(const char* name);
-  GetFunction getFunction = 0;
-  
-// #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-//   extern "C" void* CALL_OPENGL wglGetProcAddress(const char* name);
-// #else // unix
-//   extern "C" GLfunction glXGetProcAddressARB(const char* name); // const GLubyte* name
-// #endif // flavor
 
 }; // end of opengl namespace
 
@@ -589,7 +588,8 @@ void OpenGL::loadFunctions(Descriptor* descriptor, unsigned int size) throw() {
     ASSERT(descriptor->name && !descriptor->function);
     this->*(descriptor->function) = getFunction(descriptor->name);
     if (this->*(descriptor->function) == 0) {
-      this->*(descriptor->function) = (OpenGL::Function)opengl::dynamicLinker->getSymbol(descriptor->name);
+      this->*(descriptor->function) =
+        (OpenGL::Function)opengl::dynamicLinker->getUncertainSymbol(descriptor->name);
       if (this->*(descriptor->function) == 0) {
         this->*(descriptor->function) = (OpenGL::Function)&missing;
       }
@@ -614,10 +614,16 @@ OpenGL::OpenGL(unsigned int latest) throw(OpenGLException) {
   // TAG: determine supported
   opengl::spinLock.exclusiveLock();
   specification = 0x000000;
-  opengl::dynamicLinker = new DynamicLinker(MESSAGE("opengl32.dll")); // never release (should support explicit release)
+  // library is never released
+  opengl::dynamicLinker = new DynamicLinker(MESSAGE(_DK_SDU_MIP__BASE__OPENGL_LIBRARY));
   assert(opengl::dynamicLinker, OpenGLException("Unable to load OpenGL module", this));
-  opengl::getFunction = (opengl::GetFunction)opengl::dynamicLinker->getSymbol(MESSAGE("wglGetProcAddress")); // TAG: fix cast
-  GetString glGetString = (GetString)opengl::dynamicLinker->getSymbol(MESSAGE("glGetString")); // TAG: fix cast
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  opengl::getFunction = (opengl::GetFunction)opengl::dynamicLinker->getUncertainSymbol(MESSAGE("wglGetProcAddress")); // TAG: fix cast
+#else // unix (glx)
+  opengl::getFunction = (opengl::GetFunction)opengl::dynamicLinker->getUncertainSymbol(MESSAGE("glXGetProcAddressARB")); // TAG: fix cast  
+#endif // flavor
+  // TAG: use getFunction for glGetString?
+  GetString glGetString = (GetString)opengl::dynamicLinker->getUncertainSymbol(MESSAGE("glGetString")); // TAG: fix cast
   assert(opengl::getFunction, OpenGLException(this));
   assert(glGetString, OpenGLException(this));
   
@@ -990,6 +996,58 @@ void OpenGL::sphere(double radius, unsigned int slices, unsigned int stacks) thr
       glNormal3f(x, y, z);
       glVertex3f(x * radius, y * radius, z * radius);
     }
+    glEnd();
+  }
+}
+
+// TAG: need Dimension3D
+void OpenGL::box(double width, double length, double height, unsigned int flags) throw() {
+  // OpenGL::Flag POINTS
+  // OpenGL::Flag LINES
+  // OpenGL::Flag POLYGONS  
+  
+  {
+    glBegin(OpenGL::LINES);
+    
+    // min y
+    glVertex3f(0, 0, 0);
+    glVertex3f(width, 0, 0);
+    
+    glVertex3f(width, 0, 0);
+    glVertex3f(width, 0, height);
+    
+    glVertex3f(width, 0, height);
+    glVertex3f(0, 0, height);
+    
+    glVertex3f(0, 0, height);
+    glVertex3f(0, 0, 0);
+    
+    // max y
+    glVertex3f(0, length, 0);
+    glVertex3f(width, length, 0);
+    
+    glVertex3f(width, length, 0);
+    glVertex3f(width, length, height);
+    
+    glVertex3f(width, length, height);
+    glVertex3f(0, length, height);
+    
+    glVertex3f(0, length, height);
+    glVertex3f(0, length, 0);
+    
+    // from min y to max y
+    glVertex3f(0, 0, 0);
+    glVertex3f(0, length, 0);
+    
+    glVertex3f(width, 0, 0);
+    glVertex3f(width, length, 0);
+    
+    glVertex3f(width, 0, height);
+    glVertex3f(width, length, height);
+
+    glVertex3f(0, 0, height);
+    glVertex3f(0, length, height);
+    
     glEnd();
   }
 }

@@ -959,24 +959,6 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
 
 
 
-template<>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Sequence<unsigned int>& value) throw() {
-  const unsigned int* begin = value.getValue();
-  const unsigned int* src = begin + value.getSize();
-  while (src > begin) {
-    if (*--src != 0) {
-      ++src;
-      while (src > begin) {
-        stream << HEX << NOPREFIX << ZEROPAD << setWidth(sizeof(unsigned int) * 2) << *--src;
-      }
-      return stream;
-    }
-  }
-  return stream << HEX << NOPREFIX << ZEROPAD << setWidth(sizeof(unsigned int) * 2) << 0;
-}
-
-
-
 class LargeInteger {
 public:
 

@@ -23,7 +23,7 @@ Name: base-framework
 Version: 0.9.1
 Release: 1
 License: GPL
-Source: http://www.mip.sdu.dk/~fonseca/distribution/base-framework
+Source: %{name}-%{version}-%{release}.tar.bz2
 Url: http://www.mip.sdu.dk/~fonseca/base
 Vendor: Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 Packager: Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -114,3 +114,4 @@ rm -rf %{_builddir}/%{name}
 * Sat Apr 20 2002 Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 - created a subpackage for development specific files
 - added external package dependencies
+- moved from tar.gz to tar.bz2

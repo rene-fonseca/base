@@ -13,6 +13,8 @@
 
 #include <base/string/WideString.h>
 #include <base/Functor.h>
+//#undef __STRICT_ANSI__
+#include <string.h>
 #include <stdlib.h>
 #include <wchar.h>
 #include <limits.h> // defines MB_LEN_MAX
@@ -35,23 +37,23 @@ WideString::WideString(unsigned int capacity) throw(MemoryException) : elements(
 
 WideString::WideString(const WideStringLiteral& str) throw(WideStringException, MemoryException) : elements(0) {
   unsigned int length = str.getLength();
-  assert(length <= MAXIMUM_LENGTH, WideStringException()); // TAG: this is not required
+  assert(length <= MAXIMUM_LENGTH, WideStringException(this)); // TAG: this is not required
   elements = new ReferenceCountedCapacityAllocator<Character>(length + 1, GRANULARITY);
   copy<Character>(elements->getElements(), str, length); // no overlap
 }
 
 WideString::WideString(const Character* string) throw(WideStringException, MemoryException) : elements(0) {
-  assert(string, WideStringException()); // make sure string is proper (not empty)
+  assert(string, WideStringException(this)); // make sure string is proper (not empty)
   const Character* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
-  assert(terminator, WideStringException()); // maximum length exceeded
+  assert(terminator, WideStringException(this)); // maximum length exceeded
   int numberOfCharacters = terminator - string;
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
   copy(elements->getElements(), string, numberOfCharacters); // no overlap
 }
 
 WideString::WideString(const Character* string, unsigned int maximum) throw(OutOfDomain, MemoryException) : elements(0) {
-  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
-  assert(string, WideStringException()); // make sure string is proper (not empty)
+  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
+  assert(string, WideStringException(this)); // make sure string is proper (not empty)
   const Character* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
   int numberOfCharacters = terminator ? (terminator - string) : maximum;
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
@@ -69,8 +71,8 @@ WideString::WideString(const char* string) throw(MultibyteException, MemoryExcep
 #else
     size_t result = mbstowcs(0, string, 0);
 #endif
-    assert(result != size_t(-1), MultibyteException());
-    assert(result <= MAXIMUM_LENGTH, MemoryException()); // maximum length exceeded
+    assert(result != size_t(-1), MultibyteException(this));
+    assert(result <= MAXIMUM_LENGTH, MemoryException(this)); // maximum length exceeded
     numberOfCharacters = result;
   }
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
@@ -87,7 +89,7 @@ WideString::WideString(const char* string) throw(MultibyteException, MemoryExcep
 }
 
 WideString::WideString(const char* string, unsigned int maximum) throw(OutOfDomain, MultibyteException, MemoryException) : elements(0) {
-  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
+  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
   int numberOfCharacters = 0;
   if (string) { // is string proper
 #if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
@@ -98,8 +100,8 @@ WideString::WideString(const char* string, unsigned int maximum) throw(OutOfDoma
 #else
     size_t result = mbstowcs(0, string, maximum);
 #endif
-    assert(result != size_t(-1), MultibyteException());
-    assert(result <= MAXIMUM_LENGTH, MemoryException()); // maximum length exceeded
+    assert(result != size_t(-1), MultibyteException(this));
+    assert(result <= MAXIMUM_LENGTH, MemoryException(this)); // maximum length exceeded
     numberOfCharacters = minimum(static_cast<unsigned int>(result), maximum);
   }
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
@@ -132,12 +134,12 @@ void WideString::setGranularity(unsigned int granularity) throw() {
 }
 
 WideString::Character WideString::getAt(unsigned int index) const throw(OutOfRange) {
-  assert(index < getLength(), OutOfRange());
+  assert(index < getLength(), OutOfRange(this));
   return getBuffer()[index];
 }
 
 void WideString::setAt(unsigned int index, Character value) throw(OutOfRange) {
-  assert(index < getLength(), OutOfRange());
+  assert(index < getLength(), OutOfRange(this));
   if (value != Traits::TERMINATOR) {
     getBuffer()[index] = value;
   } else {
@@ -223,7 +225,7 @@ WideString& WideString::append(const WideStringLiteral& str) throw(WideStringExc
 }
 
 WideString& WideString::append(const WideStringLiteral& str, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException) {
-  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
+  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
   int length = getLength();
   setLength(length + minimum(str.getLength(), maximum));
   Character* buffer = elements->getElements();
@@ -232,8 +234,8 @@ WideString& WideString::append(const WideStringLiteral& str, unsigned int maximu
 }
 
 WideString& WideString::append(const Character* str, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException) {
-  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
-  assert(str, WideStringException()); // make sure string is proper (not empty)
+  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
+  assert(str, WideStringException(this)); // make sure string is proper (not empty)
   int strlength = 0;
   const Character* terminator = find(str, maximum, Traits::TERMINATOR); // find terminator
   strlength = terminator ? (terminator - str) : maximum;
@@ -335,7 +337,7 @@ int WideString::compareTo(const WideString& str) const throw() {
 }
 
 int WideString::compareTo(const Character* str) const throw(WideStringException) {
-  assert(str, WideStringException());
+  assert(str, WideStringException(this));
   return wcscmp(getElements(), str);
 }
 
@@ -356,21 +358,23 @@ int WideString::compareToIgnoreCase(const Character* left, const Character* righ
 
 int WideString::compareToIgnoreCase(const WideString& str) const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return _wcsicmp(getElements(), str.getElements());
+  return compareToIgnoreCase(getElements(), str.getElements());
+  //return _wcsicmp(getElements(), str.getElements());
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   return wcscasecmp(getElements(), str.getElements());
-#else // Unix
+#else // unix
   return compareToIgnoreCase(getElements(), str.getElements());
 #endif
 }
 
 int WideString::compareToIgnoreCase(const Character* str) const throw(WideStringException) {
-  assert(str, WideStringException());
+  assert(str, WideStringException(this));
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return _wcsicmp(getElements(), str);
+  return compareToIgnoreCase(getElements(), str);
+  //return _wcsicmp(getElements(), str);
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   return wcscasecmp(getElements(), str);
-#else // Unix
+#else // unix
   return compareToIgnoreCase(getElements(), str);
 #endif
 }

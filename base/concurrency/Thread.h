@@ -215,8 +215,7 @@ public:
   Thread(Runnable* runnable) throw(ResourceException);
 
   /**
-    Returns the thread that created this thread. Returns NULL for the main
-    thread.
+    Returns the thread that created this thread. Returns 0 for the main thread.
   */
   inline Thread* getParent() const throw() {return parent;}
 
@@ -239,6 +238,11 @@ public:
     Returns true if the executing thread is a child of this thread.
   */
   bool isChild() const throw();
+
+  /**
+    Returns true if the thread is the main thread.
+  */
+  inline bool isMainThread() const throw() {return parent == 0;}
 
   /**
     Returns true if the executing thread is the parent of this thread.

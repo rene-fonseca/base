@@ -21,14 +21,15 @@ libplatform_la_SOURCES = features.cpp specific.cpp
 sectiondir = $(includedir)/base/platforms
 section_HEADERS = symbols.h features.h
 
-nobase_section_HEADERS = \
+subsectiondir = $(includedir)/base/platforms
+nobase_subsection_HEADERS = \
   arch/architecture.h arch/sse/sse.h arch/sse2/sse2.h arch/sse3/sse3.h arch/x87/x87.h \
   backend/WindowImpl.h \
   compiler/compiler.h compiler/doxygen/doxygen.h compiler/gcc/gcc.h compiler/msc/msc.h compiler/v3mv/exception.h \
   os/os.h os/cygwin/cygwin.h os/solaris/solaris.h os/winnt4/winnt4.h
 
 # temporary fix
-EXTRA_DIST = $(nobase_section_HEADERS) \
+EXTRA_DIST = $(nobase_subsection_HEADERS) \
   os/unix/GLX.h \
   os/unix/GLX.cpp \
   win32/GDI.h \

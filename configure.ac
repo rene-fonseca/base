@@ -1215,7 +1215,7 @@ AC_SUBST(MODULE_ARGUMENTS_BASE)
 
 dnl Store the public configuration
 ac_base_header=base/configuration.h
-if test -f ${ac_base_header} && diff -q ${ac_base_public_config} ${ac_base_header}; then
+if test -f ${ac_base_header} && diff -q ${ac_base_public_config} ${ac_base_header} >&AC_FD_CC 2>&AC_FD_CC; then
   echo "public configuration header is already up-to-date..."
 else
   echo "updating public configuration header..."
@@ -1227,7 +1227,7 @@ fi
 
 dnl Store the private configuration
 ac_base_header=base/platforms/configuration.h
-if test -f ${ac_base_header} && diff -q ${ac_base_private_config} ${ac_base_header}; then
+if test -f ${ac_base_header} && diff -q ${ac_base_private_config} ${ac_base_header} >&AC_FD_CC 2>&AC_FD_CC; then
   echo "private configuration header is already up-to-date..."
 else
   echo "updating private configuration header..."

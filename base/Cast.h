@@ -24,9 +24,16 @@ class CastAssert {};
 template<>
 class CastAssert<true> {
 public:
-  
+
+  /** Casting error codes. */
   enum Error {
+    /** This error specifies that the impersonator type does not occupy the exact same memory as the impersonated type. */
     MISMATCH_OF_IMPERSONATOR_FOOTPRINT,
+    /** Specifies that the container type occupies less memory than the element type. */
+    CONTAINER_FOOTPRINT_TOO_SMALL,
+    /** Specifies that the element tyoe occupies more memory than the container type. */
+    ELEMENT_FOOTPRINT_TOO_LARGE,
+    /** Specifies that the type is not a pointer. */
     NOT_A_POINTER
   };
 };
@@ -352,10 +359,82 @@ public:
       return *reinterpret_cast<const RESULT*>(&value);
     }
   };
-  
+
+  /**
+    Casts the argument to the specified type. The argument and result types must
+    have the exact same memory size.
+    
+    @see container
+  */
   template<class RESULT, class ARGUMENT>
   static inline RESULT impersonate(ARGUMENT value) throw() {
     return Impersonate<RESULT>::cast(value);
+  }
+
+  template<class RESULT>
+  class Container {
+  public:
+    
+    template<class ARGUMENT>
+    static inline RESULT cast(ARGUMENT& value) throw() {
+      CastAssert<sizeof(RESULT) >= sizeof(ARGUMENT)>::CONTAINER_FOOTPRINT_TOO_SMALL;
+      union {
+        ARGUMENT argument;
+        RESULT result; // make sure we do get an access violation in the cast
+      } temp;
+      temp.argument = value;
+      return *reinterpret_cast<RESULT*>(&temp.argument); // partial garbage
+    }
+    
+    template<class ARGUMENT>
+    static inline const RESULT cast(const ARGUMENT& value) throw() {
+      CastAssert<sizeof(RESULT) >= sizeof(ARGUMENT)>::CONTAINER_FOOTPRINT_TOO_SMALL;
+      union {
+        const ARGUMENT argument;
+        const RESULT result; // make sure we do get an access violation in the cast
+      } temp;
+      temp.argument = value;
+      return *reinterpret_cast<const RESULT*>(&temp.argument); // partial garbage
+    }
+  };
+
+  /**
+    Casts the argument to the specified type. The result type must not occupy
+    less memory than the argument type.
+    
+    @see impersonate
+  */
+  template<class RESULT, class ARGUMENT>
+  static inline RESULT container(ARGUMENT value) throw() {
+    return Container<RESULT>::cast(value);
+  }
+
+  template<class RESULT>
+  class Extract {
+  public:
+    
+    template<class ARGUMENT>
+    static inline RESULT cast(ARGUMENT& value) throw() {
+      CastAssert<sizeof(RESULT) <= sizeof(ARGUMENT)>::ELEMENT_FOOTPRINT_TOO_LARGE;
+      return *reinterpret_cast<RESULT*>(&value);
+    }
+    
+    template<class ARGUMENT>
+    static inline const RESULT cast(const ARGUMENT& value) throw() {
+      CastAssert<sizeof(RESULT) <= sizeof(ARGUMENT)>::ELEMENT_FOOTPRINT_TOO_LARGE;
+      return *reinterpret_cast<const RESULT*>(&value);
+    }
+  };
+
+  /**
+    Casts the argument to the specified type. The result type must not occupy
+    more memory than the argument type.
+    
+    @see container
+  */
+  template<class RESULT, class ARGUMENT>
+  static inline RESULT extract(ARGUMENT value) throw() {
+    return Extract<RESULT>::cast(value);
   }
 };
 

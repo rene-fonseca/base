@@ -54,13 +54,16 @@ bool SelectFolderDialog::execute() throw(UserInterfaceException) {
     // BOOL SHGetPathFromIDList(LPCITEMIDLIST pidl, LPTSTR pszPath);
     folder = buffer;
     LPMALLOC malloc;
-    HRESULT rr = ::CoGetMalloc(1, &malloc);
+    /*HRESULT r =*/ ::CoGetMalloc(1, &malloc);
     malloc->Free(result);
   }
   return result != 0;
 #else // unix
   throw NotImplemented(this);
 #endif // flavor
+}
+
+SelectFolderDialog::~SelectFolderDialog() throw() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

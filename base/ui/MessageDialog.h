@@ -126,6 +126,8 @@ public:
   inline Answer getAnswer() throw() {
     return answer;
   }
+
+  ~MessageDialog() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -148,6 +148,8 @@ public:
     Executes the dialog.
   */
   bool execute() throw(UserInterfaceException);
+
+  ~OpenFileDialog() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -92,6 +92,8 @@ public:
     Executes the dialog.
   */
   bool execute() throw(UserInterfaceException);
+
+  ~SelectFolderDialog() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

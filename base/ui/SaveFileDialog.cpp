@@ -88,6 +88,9 @@ bool SaveFileDialog::execute() throw(UserInterfaceException) {
 #endif // flavor
 }
 
+SaveFileDialog::~SaveFileDialog() throw() {
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 // TAG: remove folder attribute if not required

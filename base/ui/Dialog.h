@@ -39,6 +39,11 @@ public:
     Executes the dialog.
   */
   virtual bool execute() throw(UserInterfaceException) = 0;
+
+  /**
+    Destroys the dialog.
+  */
+  virtual ~Dialog() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

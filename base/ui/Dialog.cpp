@@ -15,4 +15,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+Dialog::~Dialog() throw() {
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -94,6 +94,9 @@ bool OpenFileDialog::execute() throw(UserInterfaceException) {
 #endif // flavor
 }
 
+OpenFileDialog::~OpenFileDialog() throw() {
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 // TAG: remove folder attribute if not required

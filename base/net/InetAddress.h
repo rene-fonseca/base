@@ -20,7 +20,7 @@
   @version 1.0
 */
 
-class InetAddress : public Object {
+class InetAddress : public virtual Object {
 public:
 
   /** Family of internet addresses. */
@@ -147,7 +147,7 @@ public:
   /**
     Writes a string representation of the address to a stream.
   */
-  FormatOutputStream& toFormatStream(FormatOutputStream& stream) const;
+  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value);
 };
 
 /**

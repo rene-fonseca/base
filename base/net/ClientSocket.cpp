@@ -5,18 +5,21 @@
 
 #include <base/net/ClientSocket.h>
 
-ClientSocket::ClientSocket() throw(IOException) :
-  Socket() {
+StreamSocket::StreamSocket() throw(IOException) {
+  create(true);
 }
 
-ClientSocket::ClientSocket(const InetAddress& addr, unsigned short port) throw(IOException) :
-  Socket() {
+StreamSocket::StreamSocket(const InetAddress& addr, unsigned short port) throw(IOException) {
   create(true);
   connect(addr, port);
 }
 
-ClientSocket::ClientSocket(const InetAddress& addr, unsigned short port, InetAddress& localAddr, unsigned short localPort) throw(IOException) :
-  Socket() {
+StreamSocket::StreamSocket(const InetAddress& addr, unsigned short port, InetAddress& localAddr, unsigned short localPort) throw(IOException) {
   create(true);
+  bind(localAddr, localPort);
   connect(addr, port);
+}
+
+StreamSocket::StreamSocket(ServerSocket& socket) throw(IOException) {
+  accept(*(Socket*)&socket);
 }

@@ -7,9 +7,11 @@
 #define _DK_SDU_MIP__BASE_NET__SERVER_SOCKET_H
 
 #include <base/net/Socket.h>
+#include <base/net/ClientSocket.h>
 
 /**
-  This class implements a stream server socket. A socket is an endpoint for communication between two machines.
+  This class implements a stream server socket. A socket is an endpoint for
+  communication between two hosts.
 
   @author René Møller Fonseca
   @version 1.0
@@ -18,55 +20,43 @@
 class ServerSocket : protected Socket {
 public:
 
-  ServerSocket() throw(IOException);
-
   /**
-    Creates a stream socket and connects it to the specified port at the specified IP address.
+    Creates a server stream socket and binds it to the specified port and IP address.
 
     @param addr The IP address of the host to connect to.
     @param port The port to connect to on the host.
+    @param backlog The maxium length of the queue.
   */
-  ServerSocket(const InetAddress& addr, unsigned short port) throw(IOException);
+  ServerSocket(const InetAddress& addr, unsigned short port, unsigned int backlog) throw(IOException);
+
+  /**
+    Accepts the first connection from the queue of pending connections on this
+    socket. This function is used with a connection-oriented socket.
+
+    @return True if connection has been accepted. False, if connection could
+    not be accepted without blocking.
+  */
+  inline StreamSocket accept() throw(IOException) {return StreamSocket(*this);}
 
   /**
     Closes this socket.
   */
-  void close() throw(IOException);
-
-  /**
-    Returns the IP address to which the socket is connected.
-  */
-  InetAddress getAddress();
-
-  /**
-    Returns the remote port to which the socket is connected.
-  */
-  short int getPort();
+  inline void close() throw(IOException) {return Socket::close();}
 
   /**
     Returns the local IP address to which the socket is bound.
   */
-  InetAddress getLocalAddress();
+  inline const InetAddress& getLocalAddress() const throw() {return Socket::getLocalAddress();}
 
   /**
     Returns the local port to which the socket is bound.
   */
-  short int getLocalPort();
+  inline unsigned short getLocalPort() const throw() {return Socket::getLocalPort();}
 
   /**
-    Returns the input stream of socket.
+    Sets the blocking mode of the socket.
   */
-  InputStream* getInputStream();
-
-  /**
-    Returns the output stream of socket.
-  */
-  OutputStream* getOutputStream();
-
-  /**
-    Destroys the socket.
-  */
-  ~ServerSocket();
+  inline void setNonBlocking(bool value) throw(IOException) {Socket::setNonBlocking(value);}
 };
 
 #endif

@@ -18,7 +18,7 @@
   @version 1.0
 */
 
-class InetService : public Object {
+class InetService : public virtual Object {
 private:
 
   /** Specifies the official name of the service. */
@@ -89,11 +89,6 @@ public:
     Returns the protocol of the service.
   */
   const String<>& getProtocol() const throw();
-
-  /**
-    Destroys the service object.
-  */
-  ~InetService() throw();
 
   /**
     Writes a string representation of a InetService object to a format stream.

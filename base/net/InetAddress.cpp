@@ -51,17 +51,22 @@ List<InetAddress> InetAddress::getAddressesByName(const String<>& name) throw(Ho
       addr = (char*)&((struct sockaddr_in6*)(i->ai_addr))->sin6_addr;
       result.append(InetAddress(addr, IPv6));
       break;
-    default:
-      throw NetworkException("Unsupported family");
+//    default:
+// just ignore the unsupported families
+//      throw NetworkException("Unsupported family");
     }
     i = i->ai_next; // go to the next info entry
   }
 
   freeaddrinfo(ai); // release resources - MT-level is safe
-#else
+#else // use ordinary BSD sockets
   struct hostent* hp;
 
-  #if defined(__sgi__) || defined(__solaris__)
+  #if defined(__win32__)
+    if (!(hp = gethostbyname((const char*)name))) { // MT-safe
+      throw HostNotFound("Unable to lookup host by name");
+    }
+  #elif defined(__sgi__) || defined(__solaris__)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
@@ -150,10 +155,14 @@ String<> InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound)
   }
 
   return String<>(hostname);
-#else
+#else // use ordinary BSD sockets
   struct hostent* hp;
 
-  #if defined(__sgi__) || defined(__solaris__)
+  #if defined(__win32__)
+    if (!(hp = gethostbyaddr((const char*)&address, sizeof(address), AF_INET))) { // MT-safe
+      throw HostNotFound("Unable to resolve IP address");
+    }
+  #elif defined(__sgi__) || defined(__solaris__)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error;
@@ -271,7 +280,7 @@ void InetAddress::setAddress(const char* addr, Family family) throw(NetworkExcep
 #endif // HAVE_INET_IPV6
 }
 
-FormatOutputStream& InetAddress::toFormatStream(FormatOutputStream& stream) const {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) {
 #if defined(HAVE_INET_IPV6)
   #if (INET6_ADDRSTRLEN > THREAD_LOCAL_STORAGE)
     #error The requested amount of local storage is not available.
@@ -280,24 +289,20 @@ FormatOutputStream& InetAddress::toFormatStream(FormatOutputStream& stream) cons
   char* buffer = (char*)&qwerty;
 //  char* buffer = Thread::getLocalStorage();
   if (isV4Mapped()) {
-    inet_ntop(AF_INET, &((uint32_t*)(&address))[3], buffer, THREAD_LOCAL_STORAGE); // MT-level is safe
+    inet_ntop(AF_INET, &((uint32_t*)(&value.address))[3], buffer, THREAD_LOCAL_STORAGE); // MT-level is safe
   } else {
-    inet_ntop(AF_INET6, &address, buffer, THREAD_LOCAL_STORAGE); // MT-level is safe
+    inet_ntop(AF_INET6, &value.address, buffer, THREAD_LOCAL_STORAGE); // MT-level is safe
   }
   return stream << buffer;
 /*  char buffer[INET6_ADDRSTRLEN]; // longest possible string is "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"
   if (isV4Mapped()) {
-    inet_ntop(AF_INET, &((uint32_t*)(&address))[3], buffer, sizeof(buffer)); // MT-level is safe
+    inet_ntop(AF_INET, &((uint32_t*)(&value.address))[3], buffer, sizeof(buffer)); // MT-level is safe
   } else {
-    inet_ntop(AF_INET6, &address, buffer, sizeof(buffer)); // MT-level is safe
+    inet_ntop(AF_INET6, &value.address, buffer, sizeof(buffer)); // MT-level is safe
   }
   return stream << buffer;*/
 #else
   // longest possible string is "255.255.255.255"
-  return stream << inet_ntoa(*(struct in_addr*)&address); // MT-level is safe but uses static buffer
+  return stream << inet_ntoa(*(struct in_addr*)&value.address); // MT-level is safe but uses static buffer
 #endif // HAVE_INET_IPV6
-}
-
-FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) {
-  return value.toFormatStream(stream);
 }

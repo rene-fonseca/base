@@ -11,44 +11,77 @@
 #include <base/io/AccessDenied.h>
 #include <base/io/TimedOut.h>
 #include <base/io/FileDescriptor.h>
-#include <base/io/FileDescriptorInputStream.h>
-#include <base/io/FileDescriptorOutputStream.h>
 #include <base/net/NetworkException.h>
 #include <base/net/InetAddress.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/mem/ReferenceCountedObjectPointer.h>
 
 /**
   This class implements a socket. A socket is an endpoint for communication
-  between two machines. MT-level is safe.
+  between two hosts on a network. MT-level is safe.
 
-  @see ClientSocket ServerSocket
+  @see StreamSocket ServerSocket
   @author René Møller Fonseca
-  @version 1.1
+  @version 1.2
 */
 
-class Socket : public virtual Object, public Synchronizeable<DefaultLock> {
+class Socket : public virtual Object, public Synchronizeable<Unsafe> {
 private:
 
-  typedef DefaultLock LOCK;
+  typedef Unsafe LOCK;
 
-  /** Specifies the remote address to which the socket is connected. */
-  InetAddress remoteAddress;
-  /** Specifies the remote port (in host byte order) to which the socket is connected (unconnected if 0). */
-  unsigned short remotePort;
-  /** Specifies the local address to which the socket is bound. */
-  InetAddress localAddress;
-  /** Specifies the local port (in host byte order) to which the socket is bound (unbound if 0). */
-  unsigned short localPort;
-  /** Handle to the socket. */
-  FileDescriptor fd;
+  class SocketImpl : public virtual ReferenceCountedObject {
+  private:
+
+    /** Specifies the remote address to which the socket is connected. */
+    InetAddress remoteAddress;
+    /** Specifies the remote port (in host byte order) to which the socket is connected (unconnected if 0). */
+    unsigned short remotePort;
+    /** Specifies the local address to which the socket is bound. */
+    InetAddress localAddress;
+    /** Specifies the local port (in host byte order) to which the socket is bound (unbound if 0). */
+    unsigned short localPort;
+    /** Handle to the socket. */
+    int handle;
+  public:
+
+    /** Initializes invalid socket. */
+    SocketImpl() throw();
+    /** Returns the socket handle. */
+    inline int getHandle() const throw() {return handle;}
+    /** Sets the socket handle. */
+    inline void setHandle(int handle) throw() {this->handle = handle;}
+    /** Returns the local address. */
+    inline InetAddress* getLocalAddress() throw() {return &localAddress;}
+    /** Returns the local port. */
+    inline unsigned short getLocalPort() const throw() {return localPort;}
+    /** Sets the local port. */
+    inline void setLocalPort(unsigned short port) throw() {localPort = port;}
+    /** Returns the remote address. */
+    inline InetAddress* getRemoteAddress() throw() {return &remoteAddress;}
+    /** Returns the remote port. */
+    inline unsigned short getRemotePort() const throw() {return remotePort;}
+    /** Sets the remote port. */
+    inline void setRemotePort(unsigned short port) throw() {remotePort = port;}
+    /** Returns true if socket has been created. */
+    inline bool isCreated() const throw() {return getHandle() != -1;}
+    /** Returns true if socket is connected. */
+    inline bool isConnected() const throw() {return getRemotePort() != 0;}
+    /** Returns true if socket is bound. */
+    inline bool isBound() const throw() {return getLocalPort() != 0;}
+    /** Releases the resources use by the socket. */
+    ~SocketImpl() throw(IOException);
+  };
+
 protected:
 
-  /** Returns true if socket has been created. */
-  inline bool isCreated() const throw() {return fd.getHandle() != -1;}; // read atomically
-  /** Returns true if socket is connected. */
-  inline bool isConnected() const throw() {return remotePort != 0;}; // read atomically
-  /** Returns true if socket is bound. */
-  inline bool isBound() const throw() {return localPort != 0;}; // read atomically
+  /** The internal socket representation. */
+  ReferenceCountedObjectPointer<SocketImpl> socket;
+
+  /** Returns the handle. */
+  inline int getHandle() const throw() {return socket->getHandle();}
+  /** Set the handle. */
+  inline void setHandle(int handle) throw() {socket->setHandle(handle);}
   /** Get boolean socket option. */
   bool getBooleanOption(int option) const throw(IOException);
   /** Set boolean socket option. */
@@ -56,13 +89,28 @@ protected:
 public:
 
   /**
-    Initializes unconnected socket object.
+    Initializes an invalidated socket object (ie. unconnected and unbound).
   */
   Socket() throw();
 
   /**
-    Accepts a connection from specified socket. This is not allowed with a
-    stream socket.
+    Initialization of socket from other socket.
+  */
+  inline Socket(const Socket& copy) throw() : socket(copy.socket) {}
+
+  /**
+    Assignment of socket to socket.
+  */
+  inline Socket& operator=(const Socket& eq) throw() {
+    if (&eq != this) { // protect against self assignment
+      socket = eq.socket;
+    }
+    return *this;
+  }
+
+  /**
+    Accepts the first connection from the queue of pending connections on the
+    specified socket. This function is used with a connection-oriented socket.
 
     @param socket Specifies the socket to accept a connection from.
 
@@ -72,7 +120,7 @@ public:
   bool accept(Socket& socket) throw(IOException);
 
   /**
-    Associates name (address and port) with this socket.
+    Associates a local name (address and port) with this socket.
 
     @param addr The IP address the socket should be bound to.
     @param port The port the socket should be bound to.
@@ -101,11 +149,6 @@ public:
   void create(bool stream) throw(IOException);
 
   /**
-    Returns true if socket is a stream socket.
-  */
-  bool isStream() const throw();
-
-  /**
     Returns the IP address to which the socket is connected.
   */
   const InetAddress& getAddress() const throw();
@@ -126,23 +169,14 @@ public:
   unsigned short getLocalPort() const throw();
 
   /**
-    Sets the maximum length the queue of pending connections may grow to. The
-    backlog argument may be silently reduced. This is not allowed with a stream
-    socket.
+    This function places the socket in a state where it is listening for
+    incoming connections. It also sets the maximum length of the queue of
+    pending connections. The backlog argument may be silently reduced. The
+    socket must be bound and unconnected.
 
     @param backlog The maxium length of the queue.
   */
   void listen(unsigned int backlog) throw(IOException);
-
-  /**
-    Returns the input stream of socket.
-  */
-  FileDescriptorInputStream getInputStream() throw();
-
-  /**
-    Returns the output stream of socket.
-  */
-  FileDescriptorOutputStream getOutputStream() throw();
 
   /**
     Disables the input stream for this socket.
@@ -185,7 +219,9 @@ public:
   void setBroadcast(bool value) throw(IOException);
 
   /**
-    Gets the linger interval. Returns -1 if linger is disabled.
+    Gets the linger interval.
+
+    @return -1 if linger is disabled.
   */
   int getLinger() const throw(IOException);
 
@@ -202,7 +238,7 @@ public:
   /**
     Sets the size of the receive buffer.
   */
-  void setReceiveBufferSize(int size) const throw(IOException);
+  void setReceiveBufferSize(int size) throw(IOException);
 
   /**
     Gets the size of the send buffer.
@@ -215,6 +251,37 @@ public:
   void setSendBufferSize(int size) throw(IOException);
 
   /**
+    Sets the blocking mode of the socket.
+  */
+  void setNonBlocking(bool value) throw(IOException);
+
+  /**
+    Returns the number of bytes that can be read or skipped over without blocking.
+
+    @return Available number of bytes in stream.
+  */
+  unsigned int available() const throw(IOException);
+
+  /**
+    Fills the buffer with bytes from the socket input stream. Blocks if asked
+    to read more bytes than available.
+
+    @param buffer The buffer.
+    @param size The size of the buffer.
+    @return The actual number of bytes read.
+  */
+  unsigned int read(char* buffer, unsigned int size) throw(IOException);
+
+  /**
+    Writes bytes in buffer to stream.
+
+    @param buffer The buffer containing the bytes to be written.
+    @param size The number of bytes to be written.
+    @return The actual number of bytes written.
+  */
+  unsigned int write(const char* buffer, unsigned int size) throw(IOException);
+
+  /**
     Sends the contents of the buffer to the specified address using an unconnected socket.
 
     @param buffer The buffer.
@@ -223,7 +290,7 @@ public:
     @param port The port.
     @return The number of bytes sent.
   */
-  unsigned int sendTo(const char* buffer, unsigned int size, InetAddress address, unsigned short port) throw(IOException);
+  unsigned int sendTo(const char* buffer, unsigned int size, InetAddress& address, unsigned short port) throw(IOException);
 
   /**
     Receives data from any address using an unconnected socket.

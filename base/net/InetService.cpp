@@ -9,7 +9,9 @@
 
 unsigned short InetService::getByName(const String<>& name, const String<>& protocol) throw() {
   struct servent* sp;
-#if defined(__sgi__) || defined(__solaris__)
+#if defined(__win32__)
+  sp = getservbyname((const char*)name, (const char*)protocol); // MT-safe
+#elif defined(__sgi__) || defined(__solaris__)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   sp = getservbyname_r((const char*)name, (const char*)protocol, &result, buffer, sizeof(buffer));
@@ -26,7 +28,9 @@ unsigned short InetService::getByName(const String<>& name, const String<>& prot
 
 String<> InetService::getByPort(unsigned short port, const String<>& protocol) throw() {
   struct servent* sp;
-#if defined(__sgi__) || defined(__solaris__)
+#if defined(__win32__)
+  sp = getservbyport(htons(port), (const char*)protocol); // MT-safe
+#elif defined(__sgi__) || defined(__solaris__)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   sp = getservbyport_r(htons(port), (const char*)protocol, &result, buffer, sizeof(buffer));
@@ -80,9 +84,6 @@ unsigned short InetService::getPort() const throw() {
 
 const String<>& InetService::getProtocol() const throw() {
   return protocol;
-}
-
-InetService::~InetService() throw() {
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const InetService& value) {

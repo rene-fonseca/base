@@ -5,13 +5,8 @@
 
 #include <base/net/ServerSocket.h>
 
-ServerSocket::ServerSocket() throw(IOException) :
-  Socket() {
-}
-
-ServerSocket::ServerSocket(const InetAddress& addr, unsigned short port) throw(IOException) :
-  Socket() {
-}
-
-ServerSocket::~ServerSocket() {
+ServerSocket::ServerSocket(const InetAddress& addr, unsigned short port, unsigned int backlog) throw(IOException) {
+  create(true);
+  bind(addr, port);
+  listen(backlog);
 }

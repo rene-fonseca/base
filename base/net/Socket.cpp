@@ -8,23 +8,29 @@
 
 #if defined(__win32__)
   #include <winsock2.h>
-#else
+#else // __unix__
   #include <sys/types.h>
+  #include <sys/stat.h>
   #include <sys/socket.h>
   #include <netinet/in.h> // defines ntohs...
   #include <unistd.h>
+  #include <fcntl.h>
   #include <errno.h>
-  #include <string.h>
+//  #include <string.h>
 #endif
 
 #if !defined(HAVE_TYPE_SOCKLEN_T)
   typedef int socklen_t;
 #endif
 
-#if !defined(INVALID_SOCKET)
-  #define INVALID_SOCKET -1
-#endif
+/*
+  __win32__ specific:
+    SOCKET is compatible with int (it is really an unsigned int).
+    INVALID_SOCKET is equal to int(-1) (it is defined as unsigned int(~0)).
 
+  I have decided not to use these definitions to avoid a platform specific Socket
+  interface. Is this going to be a problem?
+*/
 
 class SocketAddress {
 private:
@@ -42,12 +48,22 @@ public:
   SocketAddress(InetAddress addr, unsigned short port) throw() {
     fill<char>((char*)&sa, sizeof(sa), 0);
 #if defined(HAVE_INET_IPV6)
+//    switch (addr.getFamily()) {
+//    case IPv4:
+//      sa.sin_family = AF_INET;
+//      sa.sin_port = htons(port);
+//   #error PROBLEM HERE address not in beginning or what??
+//      copy<char>((char*)&sa.sin_addr, addr.getAddress(), sizeof(struct in_addr));
+//      break;
+//    case IPv6:
 #if defined(SIN6_LEN)
-    sa.sin6_len = sizeof(sa);
+      sa.sin6_len = sizeof(sa);
 #endif // SIN6_LEN
-    sa.sin6_family = AF_INET6;
-    sa.sin6_port = htons(port);
-    copy<char>((char*)&sa.sin6_addr, addr.getAddress(), sizeof(struct in6_addr));
+      sa.sin6_family = AF_INET6;
+      sa.sin6_port = htons(port);
+      copy<char>((char*)&sa.sin6_addr, addr.getAddress(), sizeof(struct in6_addr));
+//      break;
+//    }
 #else
     sa.sin_family = AF_INET;
     sa.sin_port = htons(port);
@@ -87,25 +103,39 @@ void setSocketOption(int handle, int option, const void* buffer, socklen_t len) 
   }
 }
 
-Socket::Socket() throw() {
-  remotePort = 0;
-  localPort = 0;
-//  inputStream = NULL;
-//  outputStream = NULL;
+
+
+Socket::SocketImpl::SocketImpl() throw() :  handle(-1), remotePort(0), localPort(0) {
+}
+
+Socket::SocketImpl::~SocketImpl() throw(IOException) {
+  if (handle != -1) {
+#if defined(__win32__)
+    if (::closesocket(getHandle())) {
+      throw NetworkException("Unable to close socket");
+    }
+#else // __unix__
+    if (::close(getHandle())) {
+      throw NetworkException("Unable to close socket");
+    }
+#endif
+  }
+}
+
+
+
+Socket::Socket() throw() : socket(new SocketImpl()) {
 }
 
 bool Socket::accept(Socket& socket) throw(IOException) {
   SynchronizeExclusively();
 
-  if (isCreated()) {
-//    close(); // alternative
-//  setHandle(INVALID_SOCKET);
+  if (this->socket->isCreated()) {
     SynchronizeRelease();
     throw NetworkException("Attempt to overwrite socket");
   }
 
   // don't know if accept() fills 'sa' with something different from sockaddr_in6 - do you know this
-  int handle;
 #if defined(HAVE_INET_IPV6)
   struct sockaddr_in6 sa;
 #else
@@ -113,8 +143,9 @@ bool Socket::accept(Socket& socket) throw(IOException) {
 #endif // HAVE_INET_IPV6
   socklen_t sl = sizeof(sa);
 
+  int handle = ::accept(socket.getHandle(), (struct sockaddr*)&sa, &sl);
+  if (handle == -1) {
 #if defined(__win32__)
-  if ((handle = ::accept(socket.fd.getHandle(), (struct sockaddr*)&sa, &sl)) == INVALID_SOCKET) {
     switch (WSAGetLastError()) {
     case WSAEWOULDBLOCK:
       return false;
@@ -122,9 +153,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
       SynchronizeRelease();
       throw NetworkException("Unable to accept connection");
     }
-  }
-#else
-  if ((handle = ::accept(socket.fd.getHandle(), (struct sockaddr*)&sa, &sl)) == -1) {
+#else // __unix__
     switch (errno) {
     case EAGAIN: // EWOULDBLOCK
       return false;
@@ -132,16 +161,16 @@ bool Socket::accept(Socket& socket) throw(IOException) {
       SynchronizeRelease();
       throw NetworkException("Unable to accept connection");
     }
-  }
 #endif
+  }
 
-  fd.setHandle(handle);
+  setHandle(handle);
 #if defined(HAVE_INET_IPV6)
-  remoteAddress.setAddress((char*)&(sa.sin6_addr), InetAddress::IPv6);
-  remotePort = ntohs(sa.sin6_port);
+  this->socket->getRemoteAddress()->setAddress((char*)&(sa.sin6_addr), InetAddress::IPv6);
+  this->socket->setRemotePort(ntohs(sa.sin6_port));
 #else
-  remoteAddress.setAddress((char*)&(sa.sin_addr), InetAddress::IPv4);
-  remotePort = ntohs(sa.sin_port);
+  this->socket->getRemoteAddress()->setAddress((char*)&(sa.sin_addr), InetAddress::IPv4);
+  this->socket->setRemotePort(ntohs(sa.sin_port));
 #endif // HAVE_INET_IPV6
   return true;
 }
@@ -149,28 +178,30 @@ bool Socket::accept(Socket& socket) throw(IOException) {
 void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOException) {
   SynchronizeExclusively();
   SocketAddress sa(addr, port);
-  if (::bind(fd.getHandle(), sa.getValue(), sa.getSize())) {
+  if (::bind(getHandle(), sa.getValue(), sa.getSize())) {
+    SynchronizeRelease();
     throw NetworkException("Unable to associate name with socket");
   }
-  localAddress = addr;
-  localPort = port;
+  *socket->getLocalAddress() = addr;
+  socket->setLocalPort(port);
 }
 
 void Socket::close() throw(IOException) {
   SynchronizeExclusively();
 #if defined(__win32__)
-  if (::closesocket(fd.getHandle())) {
+  if (::closesocket(getHandle())) {
+    SynchronizeRelease();
     throw NetworkException("Unable to close socket");
   }
-//  fd.setHandle(INVALID_SOCKET); // invalidate socket handle
-#else
-  fd.close();
-//  if (::close(fd.getHandle())) {
-//    throw NetworkException("Unable to close socket");
-//  }
+#else // __unix__
+  if (::close(getHandle())) {
+    SynchronizeRelease();
+    throw NetworkException("Unable to close socket");
+  }
 #endif
-  remotePort = 0; // make unconnected
-  localPort = 0; // make unbound
+  socket->setHandle(-1); // invalidate socket handle
+  socket->setRemotePort(0); // make unconnected
+  socket->setLocalPort(0); // make unbound
 }
 
 void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOException) {
@@ -178,45 +209,47 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
 
   SocketAddress sa(addr, port);
 
-  if (::connect(fd.getHandle(), sa.getValue(), sa.getSize())) {
+  if (::connect(getHandle(), sa.getValue(), sa.getSize())) {
+    SynchronizeRelease();
 #if defined(__win32__)
     switch (WSAGetLastError()) {
     case WSAECONNREFUSED:
       throw AccessDenied();
-      break;
     case WSAETIMEDOUT:
       throw TimedOut();
-      break;
+    default:
+      throw NetworkException("Unable to connect to socket");
     }
-#else
+#else // __unix__
     switch (errno) {
     case ECONNREFUSED: 
       throw AccessDenied();
-      break;
     case ETIMEDOUT:
       throw TimedOut();
-      break;
+    default:
+      throw NetworkException("Unable to connect to socket");
     }
 #endif
-    throw NetworkException("Unable to connect to socket");
   }
-  remoteAddress = addr;
-  remotePort = port;
+  *socket->getRemoteAddress() = addr;
+  socket->setRemotePort(port);
 }
 
 void Socket::create(bool stream) throw(IOException) {
   SynchronizeExclusively();
   int handle;
 #if defined(HAVE_INET_IPV6)
-  if (isCreated() || ((handle = ::socket(PF_INET6, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == INVALID_SOCKET)) {
+  if (socket->isCreated() || ((handle = ::socket(PF_INET6, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == -1)) {
+    SynchronizeRelease();
     throw NetworkException("Unable to create socket");
   }
 #else
-  if (isCreated() || ((handle = ::socket(PF_INET, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == INVALID_SOCKET)) {
+  if (socket->isCreated() || ((handle = ::socket(PF_INET, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == -1)) {
+    SynchronizeRelease();
     throw NetworkException("Unable to create socket");
   }
 #endif
-  fd.setHandle(handle);
+  setHandle(handle);
 }
 
 void Socket::listen(unsigned int backlog) throw(IOException) {
@@ -224,61 +257,67 @@ void Socket::listen(unsigned int backlog) throw(IOException) {
   if (backlog > INT_MAX) { // does backlog fit in 'int' type
     backlog = INT_MAX; // silently reduce the backlog argument
   }
-  if (::listen(fd.getHandle(), backlog)) { // may also silently limit backlog
+  if (::listen(getHandle(), backlog)) { // may also silently limit backlog
     throw NetworkException("Unable to set queue limit for incomming connections");
   }
 }
 
 const InetAddress& Socket::getAddress() const throw() {
   SynchronizeShared();
-  return remoteAddress;
+  return *socket->getRemoteAddress();
 }
 
 unsigned short Socket::getPort() const throw() {
-  return remotePort;
+  return socket->getRemotePort();
 }
 
 const InetAddress& Socket::getLocalAddress() const throw() {
   SynchronizeShared();
-  return localAddress;
+  return *socket->getLocalAddress();
 }
 
 unsigned short Socket::getLocalPort() const throw() {
-  return localPort;
-}
-
-FileDescriptorInputStream Socket::getInputStream() throw() {
-  return FileDescriptorInputStream(fd);
+  return socket->getLocalPort();
 }
 
 void Socket::shutdownInputStream() throw(IOException) {
   SynchronizeExclusively();
-  if (::shutdown(fd.getHandle(), 0)) { // disallow further receives
-    throw IOException();
+#if defined(__win32__)
+  if (::shutdown(getHandle(), SD_RECEIVE)) { // disallow further receives
+    SynchronizeRelease();
+    throw IOException("Unable to shutdown socket for reading");
   }
-}
-
-FileDescriptorOutputStream Socket::getOutputStream() throw() {
-  return FileDescriptorOutputStream(fd);
+#else // __unix__
+  if (::shutdown(getHandle(), 0)) { // disallow further receives
+    SynchronizeRelease();
+    throw IOException("Unable to shutdown socket for reading");
+  }
+#endif
 }
 
 void Socket::shutdownOutputStream() throw(IOException) {
-  SynchronizeExclusively();
-  if (::shutdown(fd.getHandle(), 1)) { // disallow further sends
-    throw IOException();
+  // synchronization not required
+#if defined(__win32__)
+  if (::shutdown(getHandle(), SD_SEND)) { // disallow further sends
+    throw IOException("Unable to shutdown socket for writing");
   }
+#else // __unix__
+  if (::shutdown(getHandle(), 1)) { // disallow further sends
+    throw IOException("Unable to shutdown socket for writing");
+  }
+#endif
 }
 
 bool Socket::getBooleanOption(int option) const throw(IOException) {
   int buffer;
   socklen_t len = sizeof(buffer);
-  getSocketOption(fd.getHandle(), option, &buffer, &len);
+  getSocketOption(getHandle(), option, &buffer, &len);
   return buffer != 0;
 }
 
 void Socket::setBooleanOption(int option, bool value) throw(IOException) {
   int buffer = value;
-  setSocketOption(fd.getHandle(), option, &buffer, sizeof(buffer));
+  setSocketOption(getHandle(), option, &buffer, sizeof(buffer));
 }
 
 bool Socket::getReuseAddress() const throw(IOException) {
@@ -308,7 +347,7 @@ void Socket::setBroadcast(bool value) throw(IOException) {
 int Socket::getLinger() const throw(IOException) {
   struct linger buffer;
   socklen_t len = sizeof(buffer);
-  getSocketOption(fd.getHandle(), SO_LINGER, &buffer, &len);
+  getSocketOption(getHandle(), SO_LINGER, &buffer, &len);
   return (buffer.l_onoff != 0) ? buffer.l_linger : -1;
 }
 
@@ -320,40 +359,134 @@ void Socket::setLinger(int seconds) throw(IOException) {
     buffer.l_onoff = 1; // enable linger
     buffer.l_linger = seconds;
   }
-  setSocketOption(fd.getHandle(), SO_LINGER, &buffer, sizeof(buffer));
+  setSocketOption(getHandle(), SO_LINGER, &buffer, sizeof(buffer));
 }
 
 int Socket::getReceiveBufferSize() const throw(IOException) {
   int buffer;
   socklen_t len = sizeof(buffer);
-  getSocketOption(fd.getHandle(), SO_RCVBUF, &buffer, &len);
+  getSocketOption(getHandle(), SO_RCVBUF, &buffer, &len);
   return buffer;
 }
 
-void Socket::setReceiveBufferSize(int size) const throw(IOException) {
+void Socket::setReceiveBufferSize(int size) throw(IOException) {
   int buffer = size;
-  setSocketOption(fd.getHandle(), SO_RCVBUF, &buffer, sizeof(buffer));
+  setSocketOption(getHandle(), SO_RCVBUF, &buffer, sizeof(buffer));
 }
 
 int Socket::getSendBufferSize() const throw(IOException) {
   int buffer;
   socklen_t len = sizeof(buffer);
-  getSocketOption(fd.getHandle(), SO_SNDBUF, &buffer, &len);
+  getSocketOption(getHandle(), SO_SNDBUF, &buffer, &len);
   return buffer;
 }
 
 void Socket::setSendBufferSize(int size) throw(IOException) {
   int buffer = size;
-  setSocketOption(fd.getHandle(), SO_SNDBUF, &buffer, sizeof(buffer));
+  setSocketOption(getHandle(), SO_SNDBUF, &buffer, sizeof(buffer));
 }
 
-unsigned int Socket::sendTo(const char* buffer, unsigned int size, InetAddress address, unsigned short port) throw(IOException) {
-  unsigned int result = 0;
-  const SocketAddress sa(address, port);
-  if ((result = ::sendto(fd.getHandle(), buffer, size, 0, sa.getValue(), sa.getSize())) == -1) {
-    throw IOException("Unable to send to");
+void Socket::setNonBlocking(bool value) throw(IOException) {
+#if defined(__win32__)
+  unsigned int buffer = value; // set to zero to disable nonblocking
+  if (ioctlsocket(getHandle(), FIONBIO, &buffer)) {
+    throw IOException("Unable to set blocking mode");
+  }
+#else // __unix__
+  int flags;
+  if ((flags = fcntl(getHandle(), F_GETFL)) == -1) {
+    throw IOException("Unable to get flags for socket");
+  }
+  if (value) {
+    if (flags & O_NONBLOCK == 0) { // do we need to set flag
+      flags |= O_NONBLOCK;
+      if (fcntl(getHandle(), F_SETFL, flags) != 0) {
+        throw IOException("Unable to set flags of socket");
+      }
+    }
+  } else {
+    if (flags & O_NONBLOCK != 0) { // do we need to clear flag
+      flags &= ~O_NONBLOCK;
+      if (fcntl(getHandle(), F_SETFL, flags) != 0) {
+        throw IOException("Unable to set flags of socket");
+      }
+    }
+  }
+#endif
+}
+
+unsigned int Socket::available() const throw(IOException) {
+#if defined(__win32__)
+  unsigned int result;
+  if (ioctlsocket(getHandle(), FIONREAD, &result)) {
+    throw IOException("Unable to determine the amount of data pending in the input buffer");
   }
   return result;
+#else // __unix__
+  struct stat status;
+  if (fstat(getHandle(), &status) != 0) {
+    throw IOException("Unable to get status of socket");
+  }
+  return status.st_size;
+#endif
+}
+
+unsigned int Socket::read(char* buffer, unsigned int size) throw(IOException) {
+  unsigned int totalBytesRead = 0;
+
+  while (totalBytesRead < size) {
+    int result = ::read(getHandle(), &buffer[totalBytesRead], (size - totalBytesRead) % SSIZE_MAX);
+
+    if (result == 0) { // has end of file been reached
+//      if (eof) {
+//        throw EndOfFile();
+//      }
+//      eof = true; // remember end of file
+      return totalBytesRead; // early return
+    } else if (result == -1) { // has an error occured
+      switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
+      case EINTR: // interrupted by signal before any data was read
+        // try again
+        break;
+      case EAGAIN: // no data available (only in non-blocking mode)
+        return totalBytesRead; // early return
+      default:
+        throw IOException("Unable to read from socket");
+      }
+    } else {
+      totalBytesRead += result;
+    }
+  }
+
+  return totalBytesRead;
+}
+
+unsigned int Socket::write(const char* buffer, unsigned int size) throw(IOException) {
+  unsigned int totalBytesWritten = 0;
+
+  while (totalBytesWritten < size) {
+    int result = ::write(getHandle(), &buffer[totalBytesWritten], (size - totalBytesWritten) % SSIZE_MAX);
+
+    if (result == 0) {
+      // do not know if it is possible to end up here
+      return totalBytesWritten;
+    } else if (result == -1) { // has an error occured
+      switch (errno) {
+      case EINTR: // interrupted by signal before any data was written
+        // try again
+        break;
+      case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
+        return totalBytesWritten; // early return
+        break;
+      default:
+        throw IOException("Unable to write to socket");
+      }
+    } else {
+      totalBytesWritten += result;
+    }
+  }
+
+  return totalBytesWritten;
 }
 
 unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(IOException) {
@@ -366,7 +499,7 @@ unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& a
 #endif // HAVE_INET_IPV6
   socklen_t sl = sizeof(sa);
 
-  if ((result = ::recvfrom(fd.getHandle(),  buffer, size, 0, (struct sockaddr*)&sa, &sl)) == -1) {
+  if ((result = ::recvfrom(getHandle(),  buffer, size, 0, (struct sockaddr*)&sa, &sl)) == -1) {
     throw IOException("Unable to receive from");
   }
 
@@ -382,16 +515,25 @@ unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& a
   return result;
 }
 
+unsigned int Socket::sendTo(const char* buffer, unsigned int size, InetAddress& address, unsigned short port) throw(IOException) {
+  unsigned int result = 0;
+  const SocketAddress sa(address, port);
+  if ((result = ::sendto(getHandle(), buffer, size, 0, sa.getValue(), sa.getSize())) == -1) {
+    throw IOException("Unable to send to");
+  }
+  return result;
+}
+
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) {
   stream << "Socket{";
   stream << "connected to=";
-  if (value.isConnected()) {
+  if (value.socket->isConnected()) {
     stream << "{address=" << value.getAddress() << ",port="<< value.getPort() << "}";
   } else {
     stream << "UNCONNECTED";
   }
   stream << "bound to=";
-  if (value.isBound()) {
+  if (value.socket->isBound()) {
     stream << "{address=" << value.getLocalAddress() << ",port="<< value.getLocalPort() << "}";
   } else {
     stream << "UNBOUND";

@@ -7,124 +7,195 @@
 #define _DK_SDU_MIP__BASE_NET__CLIENT_SOCKET_H
 
 #include <base/net/Socket.h>
+#include <base/io/InputStream.h>
+#include <base/io/OutputStream.h>
+
+class ServerSocket;
 
 /**
-  This class implements a client stream socket. A socket is an endpoint for communication between two machines.
+  This class implements a client stream socket. A socket is an endpoint for
+  communication between two hosts.
 
   @author René Møller Fonseca
   @version 1.0
 */
 
-class ClientSocket : protected Socket {
+class StreamSocket : protected Socket, public virtual InputStream, public virtual OutputStream {
 public:
 
   /**
     Creates an unconnected stream socket.
   */
-  ClientSocket() throw(IOException);
+  StreamSocket() throw(IOException);
 
   /**
-    Creates a stream socket and connects it to the specified port at the specified IP address.
+    Creates a stream socket and connects it to the specified port at the
+    specified IP address.
 
     @param addr The IP address of the host to connect to.
     @param port The port to connect to on the host.
   */
-  ClientSocket(const InetAddress& addr, unsigned short port) throw(IOException);
+  StreamSocket(const InetAddress& addr, unsigned short port) throw(IOException);
 
   /**
-    Creates a stream socket and connects it to the specified port at the specified IP address and also binds the socket to the local address and local port.
+    Creates a stream socket and connects it to the specified port at the
+    specified IP address and also binds the socket to the local address and
+    local port.
 
     @param addr The IP address of the host to connect to.
     @param port The port to connect to on the host.
     @param localAddr The local IP address the socket should be bound to.
     @param localPort The local port the socket should be bound to.
   */
-  ClientSocket(const InetAddress& addr, unsigned short port, InetAddress& localAddr, unsigned short localPort) throw(IOException);
+  StreamSocket(const InetAddress& addr, unsigned short port, InetAddress& localAddr, unsigned short localPort) throw(IOException);
 
   /**
-    Returns the IP address to which the socket is connected.
+    Accept connect from
   */
-  InetAddress getAddress();
+  StreamSocket(ServerSocket& socket) throw(IOException);
 
   /**
-    Returns the remote port to which the socket is connected.
+    Initialization of socket from other socket.
   */
-  unsigned short getPort();
+  inline StreamSocket(const StreamSocket& copy) throw() : Socket(copy) {}
 
   /**
-    Returns the local IP address to which the socket is bound.
-  */
-  inline InetAddress getLocalAddress() {return Socket::getLocalAddress();}
+    Associates a local name (address and port) with this socket.
 
-  /**
-    Returns the local port to which the socket is bound.
+    @param addr The IP address the socket should be bound to.
+    @param port The port the socket should be bound to.
   */
-  inline unsigned short getLocalPort() {return Socket::getLocalPort();}
-
-  /**
-    Returns the input stream of socket.
-  */
-//  inline FileDescriptorInputStream* getInputStream() {return Socket::getInputStream();}
-
-  /**
-    Returns the output stream of socket.
-  */
-//  inline FileDescriptorOutputStream* getOutputStream() {return Socket::getOutputStream();}
-
-  /**
-    Gets the size of the receive buffer.
-  */
-  inline unsigned int getReceiveBufferSize() const {return Socket::getReceiveBufferSize();}
-
-  /**
-    Sets the size of the receive buffer.
-  */
-  void setReceiveBufferSize(unsigned int size) const;
-
-  /**
-    Gets the size of the send buffer.
-  */
-  inline unsigned int getSendBufferSize() const {return Socket::getSendBufferSize();}
-
-  /**
-    Sets the size of the send buffer.
-  */
-  void setSendBufferSize(unsigned int size);
+  inline void bind(const InetAddress& addr, unsigned short port) throw(IOException) {Socket::bind(addr, port);}
 
   /**
     Closes this socket.
   */
   inline void close() throw(IOException) {Socket::close();}
 
-  inline bool getKeepAlive() const throw() {return Socket::getKeepAlive();}
+  /**
+    Connects this socket to the specified address and port.
 
-  inline unsigned int getLinger() const throw() {return Socket::getLinger();}
-
-//  inline  getTimeout() const throw(IOException) {return Socket::getTimeout();}
-
-//  inline void getTcpNoDelay() const throw(IOException) {return Socket::getTcpNoDelay();}
-
-//  void setKeepAlive(bool value) throw(IOException);
-
+    @param addr The IP address to connect to.
+    @param port The port to connect to.
+  */
+  inline void connect(const InetAddress& addr, unsigned short port) throw(IOException) {Socket::connect(addr, port);}
 
   /**
-    Returns the input stream of socket.
+    Returns the IP address to which the socket is connected.
   */
-//  InputStream* getInputStream();
-
-  void shutdownInputStream() throw(IOException);
+  inline const InetAddress& getAddress() const throw() {return Socket::getAddress();}
 
   /**
-    Returns the output stream of socket.
+    Returns the remote port to which the socket is connected.
   */
-//  OutputStream* getOutputStream();
-
-  void shutdownOutputStream() throw(IOException);
+  inline unsigned short getPort() const throw() {return Socket::getPort();}
 
   /**
-    Writes string representation of socket to a stream.
+    Returns the local IP address to which the socket is bound.
   */
-  FormatOutputStream& operator<<(FormatOutputStream& stream);
+  inline const InetAddress& getLocalAddress() const throw() {return Socket::getLocalAddress();}
+
+  /**
+    Returns the local port to which the socket is bound.
+  */
+  inline unsigned short getLocalPort() const throw() {return Socket::getLocalPort();}
+
+  /**
+    Disables the input stream for this socket.
+  */
+  inline void shutdownInputStream() throw(IOException) {Socket::shutdownInputStream();}
+
+  /**
+    Disables the output stream for this socket.
+  */
+  inline void shutdownOutputStream() throw(IOException) {Socket::shutdownOutputStream();}
+
+  /**
+    Returns true if 'bind' allows local addresses to be reused.
+  */
+  inline bool getReuseAddress() const throw(IOException) {return Socket::getReuseAddress();}
+
+  /**
+    Sets the local address reuse flag of this socket.
+  */
+  inline void setReuseAddress(bool value) throw(IOException) {Socket::setReuseAddress(value);}
+
+  /**
+    Returns true if connection is kept alive.
+  */
+  inline bool getKeepAlive() const throw(IOException) {return Socket::getKeepAlive();}
+
+  /**
+    Sets the keep alive flag of this socket.
+  */
+  inline void setKeepAlive(bool value) throw(IOException) {Socket::setKeepAlive(value);}
+
+  /**
+    Gets the linger interval.
+
+    @return -1 if linger is disabled.
+  */
+  inline int getLinger() const throw() {return Socket::getLinger();}
+
+  /**
+    Sets the linger interval. Negative time disables the linger.
+  */
+  inline void setLinger(int seconds) throw(IOException) {Socket::setLinger(seconds);}
+
+  /**
+    Gets the size of the receive buffer.
+  */
+  inline int getReceiveBufferSize() const {return Socket::getReceiveBufferSize();}
+
+  /**
+    Sets the size of the receive buffer.
+  */
+  inline void setReceiveBufferSize(int size) throw(IOException) {Socket::setReceiveBufferSize(size);}
+
+  /**
+    Gets the size of the send buffer.
+  */
+  inline int getSendBufferSize() const throw(IOException) {return Socket::getSendBufferSize();}
+
+  /**
+    Sets the size of the send buffer.
+  */
+  inline void setSendBufferSize(int size) throw(IOException) {Socket::setSendBufferSize(size);}
+
+  /**
+    Sets the blocking mode of the socket.
+  */
+  inline void setNonBlocking(bool value) throw(IOException) {Socket::setNonBlocking(value);}
+
+  /**
+    Returns the number of bytes that can be read or skipped over without blocking.
+
+    @return Available number of bytes in stream.
+  */
+  inline unsigned int available() const throw(IOException) {return Socket::available();}
+
+  /**
+    Fills the buffer with bytes from the socket input stream. Blocks if asked
+    to read more bytes than available.
+
+    @param buffer The buffer.
+    @param size The size of the buffer.
+    @return The actual number of bytes read.
+  */
+  inline unsigned int read(char* buffer, unsigned int size) throw(IOException) {return Socket::read(buffer, size);}
+
+  /**
+    Writes bytes in buffer to stream.
+
+    @param buffer The buffer containing the bytes to be written.
+    @param size The number of bytes to be written.
+    @return The actual number of bytes written.
+  */
+  inline unsigned int write(const char* buffer, unsigned int size) throw(IOException) {return Socket::write(buffer, size);}
+
+  inline bool atEnd() const throw(IOException) {return false;}
+  inline unsigned int skip(unsigned int count) throw(IOException) {return 0;}
+  inline void flush() throw(IOException) {}
 };
 
 #endif

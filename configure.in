@@ -3,7 +3,7 @@ AC_INIT(Makefile.am)
 
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(ellert,0.9)
+AM_INIT_AUTOMAKE(ellert,0.91)
 
 AC_LIBTOOL_WIN32_DLL()
 AM_PROG_LIBTOOL()
@@ -11,76 +11,107 @@ AM_PROG_LIBTOOL()
 AC_CANONICAL_HOST()
 dnl The following variables have been set: $host, $host_cpu, $host_vendor, and $host_os
 
+base_define_xopen=no
+base_define_reentrant=no
+
 case "$host_os" in
 cygwin)
-  AC_DEFINE(__win32__, 1, Specifies that the WIN32 API is available)
-
-  CPPFLAGS="${CPPFLAGS}${CPPFLAGS:+ }"'-I/usr/include/w32api'
-  LIBS="${LIBS}${LIBS:+ }"'-lwsock32'
+  AC_DEFINE(__win32__, 1, Specifies that the WIN32 API is available and should be used)
+  CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }"'-mno-cygwin -mthreads'
+  LIBS="${LIBS}${LIBS:+ }"'-lws2_32'
 ;;
 linux-gnu)
   AC_DEFINE(_GNU_SOURCE, 1, Specifies that the UNIX 98 functionality and GNU extensions are utilized)
+  base_define_reentrant=yes
 ;;
 irix*)
   AC_DEFINE(_SGI_SOURCE, 1, Specifies that the UNIX 98 functionality and SGI extensions are utilized)
+  base_define_reentrant=yes
 ;;
 solaris*)
-  AC_DEFINE(_XOPEN_SOURCE, 500, Specifies that the UNIX 98 functionality is utilized)
+  AC_DEFINE(__solaris__, 1, Specifies that the Solaris specific functions are available)
   AC_DEFINE(__EXTENSIONS__, 1, Specifies that the Solaris extensions are utilized)
+  base_define_xopen=yes
+  base_define_reentrant=yes
 ;;
 *)
-  AC_DEFINE(_XOPEN_SOURCE, 500, Specifies that the UNIX 98 functionality is utilized)
+  base_define_xopen=yes
+  base_define_reentrant=yes
 ;;
 esac
 
-AC_DEFINE(_REENTRANT, 1, Select additionally reentrant object)
+if test $base_define_xopen = yes; then
+  AC_DEFINE(_XOPEN_SOURCE, 500, Specifies that the UNIX 98 functionality is utilized)
+fi
+
+if test $base_define_reentrant = yes; then
+  AC_DEFINE(_REENTRANT, 1, Select additionally reentrant object)
+fi
 
 
 
 dnl Checks for programs.
 AC_PREREQ(2.13)
-AC_PROG_CC
-AC_PROG_CXX
+#AC_PROG_CC
+#AC_PROG_CXX
+AC_CHECK_PROG(CC, cc gcc, gcc)
+AC_CHECK_PROGS(CXX, $CCC c++ g++ gcc CC cxx cc++ cl, gcc)
 
 
 
 dnl Manual configuration
 
-base_explicit_namespaces=yes
+base_explicit_trace=no
 AC_ARG_ENABLE(
-  namespaces,[
-  --enable-namespaces=[yes|no]
+  trace,[
+  --enable-trace=[yes|no]
+      Specifies that selected functions should dump tracing information to
+      stderr. This feature is disabled by default.],
+  if test "$enableval" = no; then
+    base_explicit_trace=no
+  elif test "$enableval" = yes; then
+    base_explicit_trace=yes
+  else
+    AC_MSG_ERROR(The trace flag must be either 'yes' or 'no'.)
+  fi
+)
+if test "$base_explicit_trace" = yes; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__TRACE, 1, Specifies that selected functions should dump tracing information to stderr.)
+fi
 
+base_explicit_namespace=yes
+AC_ARG_ENABLE(
+  namespace,[
+  --enable-namespace=[yes|no]
       Specifies that the symbols of this framework should by placed in the
       namespace 'base'. Disabling this feature will put the symbols into the
       global namespace. This feature is enabled by default.],
-  if test $enableval = no; then
-    base_explicit_namespaces=no
-  elif test $enableval = yes; then
-    base_explicit_namespaces=yes
+  if test "$enableval" = no; then
+    base_explicit_namespace=no
+  elif test "$enableval" = yes; then
+    base_explicit_namespace=yes
   else
-    AC_MSG_ERROR(The namespaces must be either 'yes' or 'no'.)
+    AC_MSG_ERROR(The namespace flag must be either 'yes' or 'no'.)
   fi
 )
-if test $base_explicit_namespaces = yes; then
-  AC_DEFINE(BASE_USE_NAMESPACE, 1, Specifies that the symbols of this framework should be placed in the namespace 'base')
+if test "$base_explicit_namespace" = yes; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__NAMESPACE, 1, Specifies that the symbols of this framework should be placed in the namespace 'base')
 fi
 
-base_explicit_ipv6=auto
+base_explicit_inet_ipv6=auto
 AC_ARG_ENABLE(
   ipv6,[
   --enable-ipv6=[auto|yes|no]
-
       Specifies whether the framework should use the interface extensions for
       IP version 6 or not. If the protocol version is not specified then IPv6
       will be used if available. Automatic detection will fail if using a
       cross compiler.],
   if test $enableval = auto; then
-    base_explicit_ipv6=auto
+    base_explicit_inet_ipv6=auto
   elif test $enableval = no; then
-    base_explicit_ipv6=no
+    base_explicit_inet_ipv6=no
   elif test $enableval = yes; then
-    base_explicit_ipv6=yes
+    base_explicit_inet_ipv6=yes
   else
     AC_MSG_ERROR(IP version must be either 'auto', 'yes', or 'no'.)
   fi
@@ -90,7 +121,6 @@ base_explicit_big_endian=auto
 AC_ARG_ENABLE(
   big-endian,[
   --enable-big-endian=[auto|yes|no]
-
       Specifies that byte order of the target architecture is big endian. The
       byte order will be detected by default. The byte order detection will
       fail if the compiler is a cross compiler.],
@@ -297,8 +327,6 @@ if AC_BASE_TRY_EXEC(base_c_link); then
   if test -s ${base_app_temp} && AC_BASE_TRY_EXEC(base_run); then
     [$1]=yes
   fi
-else
-  AC_MSG_ERROR(Unable to compile and link test application.)
 fi
 ${base_cleanup}
 ])
@@ -320,8 +348,6 @@ if AC_BASE_TRY_EXEC(base_cxx_link); then
   if test -s ${base_app_temp} && AC_BASE_TRY_EXEC(base_run); then
     [$1]=yes
   fi
-else
-  AC_MSG_ERROR(Unable to compile and link test application.)
 fi
 ${base_cleanup}
 ])
@@ -334,25 +360,24 @@ done
 ])
 
 
-
 AC_BASE_CHECK(
-  checking whether C compiler ($CC) works,
+  checking whether C compiler (`echo $CC $CFLAGS $CPPFLAGS $LIBS`) works,
   AC_BASE_TRY_C_LINK(base_c_compiler_works, config/cross.c),
   base_c_compiler_works)
 
 AC_BASE_CHECK(
-  checking whether C compiler ($CC) is a cross compiler,
+  checking whether C compiler (`echo $CC $CFLAGS $CPPFLAGS $LIBS`) is a cross compiler,
   AC_BASE_TRY_C_RUN(base_c_not_cross, config/cross.c,)
   AC_BASE_NOT(base_cv_c_cross, base_c_not_cross),
   base_cv_c_cross)
 
 AC_BASE_CHECK(
-  checking whether C++ compiler ($CXX) works,
+  checking whether C++ compiler (`echo $CXX $CXXFLAGS $CPPFLAGS $LIBS`) works,
   AC_BASE_TRY_CXX_LINK(base_cxx_compiler_works, config/cross++.cpp),
   base_cxx_compiler_works)
 
 AC_BASE_CHECK(
-  checking whether C++ compiler ($CXX) is a cross compiler,
+  checking whether C++ compiler (`echo $CXX $CXXFLAGS $CPPFLAGS $LIBS`) is a cross compiler,
   AC_BASE_CACHE(
     base_cv_cxx_cross base_cv_cxx_libs,
     AC_BASE_ATTEMPT(
@@ -430,8 +455,8 @@ AC_BASE_CHECK(
     AC_BASE_TRY_CXX_COMPILE(base_cv_anonymous_struct, config/anonymous_struct.c, )
   ),
   base_cv_anonymous_struct)
-if test $base_cv_anonymous_struct = yes; then
-  AC_DEFINE(HAVE_ANONYMOUS_STRUCT, 1, Specifies that anonymous struct is supported by the compiler)
+if test "$base_cv_anonymous_struct" != yes; then
+  AC_MSG_ERROR(The compiler does not support anonymous struct)
 fi
 
 if test $base_explicit_big_endian = auto; then
@@ -446,7 +471,7 @@ if test $base_explicit_big_endian = auto; then
 fi
 AC_BASE_YES(
   base_explicit_big_endian,
-  AC_DEFINE(HAVE_BIG_ENDIAN, 1, Specifies that the byte order of the architecture is big endian)
+  AC_DEFINE(_DK_SDU_MIP__BASE__BIG_ENDIAN, 1, Specifies that the byte order of the architecture is big endian)
 )
 
 AC_BASE_CHECK(
@@ -456,32 +481,37 @@ AC_BASE_CHECK(
     AC_BASE_TRY_CXX_LINK(base_cv_type_socklen_t, config/socklen_t.c)
   ),
   base_cv_type_socklen_t)
-if test $base_cv_type_socklen_t = yes; then
-  AC_DEFINE(HAVE_TYPE_SOCKLEN_T, 1, Specifies that the type socklen_t is available)
+if test "$base_cv_type_socklen_t" = yes; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__SOCKLEN_T, 1, Specifies that the type socklen_t is available)
 fi
 
 
 
 dnl Checks for library functions.
 
-AC_BASE_CHECK(
-  checking whether IPv6 is supported by the operating system,
-  AC_BASE_CACHE(
-    base_cv_inet_ipv6 base_cv_inet_ipv6_libs,
-    AC_BASE_ATTEMPT(
-      base_cv_inet_ipv6,
-      base_cv_inet_ipv6_libs,
-      "" -lsocket "-lsocket -lnsl",
-      AC_BASE_TRY_CXX_LINK(base_cv_inet_ipv6, config/ipv6.c, $base_cv_inet_ipv6_libs)dnl
-    )dnl
-  ),
-  base_cv_inet_ipv6,
-  base_cv_inet_ipv6_libs)
+if test $base_explicit_inet_ipv6 = auto; then
+  AC_BASE_CHECK(
+    checking whether IPv6 is supported by the operating system,
+    AC_BASE_CACHE(
+      base_cv_inet_ipv6 base_cv_inet_ipv6_libs,
+      AC_BASE_ATTEMPT(
+        base_cv_inet_ipv6,
+        base_cv_inet_ipv6_libs,
+        "" -lsocket "-lsocket -lnsl",
+        AC_BASE_TRY_CXX_RUN(base_cv_inet_ipv6, config/ipv6.c, $base_cv_inet_ipv6_libs, AC_MSG_ERROR(Autodetection of IPv6 support does not work with cross compiler.))dnl
+      )dnl
+    ),
+    base_cv_inet_ipv6,
+    base_cv_inet_ipv6_libs)
+  base_explicit_ipv6=$base_cv_inet_ipv6
+fi
 AC_BASE_YES(
-  base_cv_inet_ipv6,
-  AC_DEFINE(HAVE_INET_IPV6, 1, Specifies that the interface extensions for IP version 6 are present)
+  base_explicit_inet_ipv6,
+  AC_DEFINE(_DK_SDU_MIP__BASE__INET_IPV6, 1, Specifies that the interface extensions for IP version 6 are present)
 )
 AC_BASE_ADDLIB($base_cv_inet_ipv6_libs)
+
+
 
 AC_BASE_CHECK(
   checking whether pthread_yield is provided by the POSIX thread library,
@@ -496,8 +526,8 @@ AC_BASE_CHECK(
   ),
   base_cv_pthread_yield,
   base_cv_pthread_yield_libs)
-if test $base_cv_pthread_yield = yes; then
-  AC_DEFINE(HAVE_PTHREAD_YIELD, 1, Specifies that pthread_yield is provided by the POSIX threads library)
+if test "$base_cv_pthread_yield" = yes; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__PTHREAD_YIELD, 1, Specifies that pthread_yield is provided by the POSIX threads library)
 fi
 AC_BASE_ADDLIB($base_cv_pthread_yield_libs)
 
@@ -514,8 +544,8 @@ AC_BASE_CHECK(
   ),
   base_cv_pthread_semaphore,
   base_cv_pthread_semaphore_libs)
-if test $base_cv_pthread_semaphore = yes; then
-  AC_DEFINE(HAVE_PTHREAD_SEMAPHORE, 1, Specifies that Posix semaphore is supported)
+if test "$base_cv_pthread_semaphore" = yes; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE, 1, Specifies that Posix semaphore is supported)
 fi
 AC_BASE_ADDLIB($base_cv_pthread_semaphore_libs)
 
@@ -532,16 +562,16 @@ AC_BASE_CHECK(
   ),
   base_cv_pthread_rwlock,
   base_cv_pthread_rwlock_libs)
-if test $base_cv_pthread_rwlock = yes; then
-  AC_DEFINE(HAVE_PTHREAD_RWLOCK, 1, Specifies that Posix read-write lock is supported)
+if test "$base_cv_pthread_rwlock" = yes; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK, 1, Specifies that Posix read-write lock is supported)
 fi
 AC_BASE_ADDLIB($base_cv_pthread_rwlock_libs)
 
-AC_CHECK_FUNCS(memchr memcmp memmove)
+#AC_CHECK_FUNCS(memchr memcmp memmove)
 
 
 
-CPPFLAGS="${CPPFLAGS}${CPPFLAGS:+ }"'-I${top_srcdir} -I${top_srcdir}/ellert'
+CPPFLAGS="${CPPFLAGS}${CPPFLAGS:+ }"'-I${top_srcdir}/ellert'
 
 
 

@@ -21,9 +21,11 @@ libmem_la_SOURCES = \
   DebugDynamicMemory.cpp \
   DynamicMemory.cpp \
   Heap.cpp \
+  Indirect.cpp \
   MemoryCorruption.cpp \
   MemoryDump.cpp \
   NullPointer.cpp \
+  Pointer.cpp \
   ProtectedPointer.cpp \
   Reference.cpp \
   SharedMemory.cpp \
@@ -45,6 +47,7 @@ section_HEADERS = \
   MemoryDump.h \
   NullPointer.h \
   OwnershipPointer.h \
+  Pointer.h \
   ProtectedPointer.h \
   Reference.h \
   ReferenceCountedAllocator.h \

@@ -46,7 +46,7 @@ public:
   
   void inet() throw() {
     try {
-      {
+      if (false) {
         HashTable<String, unsigned int> names = InetInterface::getInterfaceNames();
         HashTable<String, unsigned int>::ReadEnumerator enu = names.getReadEnumerator();
         fout << MESSAGE("Interfaces:") << ENDL;
@@ -60,19 +60,37 @@ public:
       List<InetInterface>::ReadEnumerator enu = interfaces.getReadEnumerator();
       while (enu.hasNext()) {
         InetInterface interface = *enu.next();
+
+        unsigned int flags = interface.getFlags();
+        String temp;
+        if (flags & InetInterface::UP) {
+          temp += MESSAGE(" UP");
+        }
+        if (flags & InetInterface::LOOPBACK) {
+          temp += MESSAGE(" LOOPBACK");
+        }
+        if (flags & InetInterface::POINT_TO_POINT) {
+          temp += MESSAGE(" POINT_TO_POINT");
+        }
+        if (flags & InetInterface::BROADCAST) {
+          temp += MESSAGE(" BROADCAST");
+        }
+        if (flags & InetInterface::MULTICAST) {
+          temp += MESSAGE(" MULTICAST");
+        }
+        if (flags & InetInterface::DYNAMIC) {
+          temp += MESSAGE(" DYNAMIC");
+        }
+        
         fout << interface.getName() << ' ' << interface.getIndex() << EOL
-             << indent(2) << MESSAGE("flags: ") << interface.getFlags() << EOL
+             << indent(2) << MESSAGE("flags:") << temp << EOL
              << indent(2) << MESSAGE("address: ") << interface.getAddress() << EOL
+             << indent(2) << MESSAGE("netmask: ") << interface.getNetmask() << EOL
              << indent(2) << MESSAGE("broadcast: ") << interface.getBroadcast() << EOL
              << indent(2) << MESSAGE("destination: ") << interface.getDestination() << EOL
              << indent(2) << MESSAGE("metric: ") << interface.getMetric() << EOL
-             << indent(2) << MESSAGE("ethernet: ") << interface.getEthernetAddress() << EOL
+             << indent(2) << MESSAGE("ethernet (EUI-64): ") << interface.getEthernetAddress() << EOL
              << ENDL;
-//     UP
-//     LOOPBACK
-//     POINT_TO_POINT
-//     BROADCAST
-//     MULTICAST
       }
     } catch (...) {
       setExitCode(EXIT_CODE_ERROR);

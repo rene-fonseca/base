@@ -26,7 +26,10 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ArrayApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+  ArrayApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
     : Application(MESSAGE("Array"), numberOfArguments, arguments, environment) {
   }
   

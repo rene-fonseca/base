@@ -20,6 +20,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  @defgroup communications Communications
+*/
+
+/**
   A communications port.
 
   @see Communications port.

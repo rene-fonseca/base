@@ -8,7 +8,7 @@
 #include <base/concurrency/Thread.h>
 
 #if defined(__win32__)
-#elif defined(HAVE_INET_IPV6)
+#elif defined(_DK_SDU_MIP__BASE__INET_IPV6)
   #include <sys/types.h>
   #include <sys/socket.h>
   #include <net/if.h>
@@ -23,7 +23,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 List<InetInterface> InetInterface::getInetInterfaces() throw(NetworkException) {
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   List<InetInterface> interfaces;
   struct if_nameindex* ni;
   if ((ni = if_nameindex()) == NULL) { // MT-safe

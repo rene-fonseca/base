@@ -221,7 +221,7 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
 void Thread::yield() throw() {
 #if defined(__win32__)
   SwitchToThread(); // no errors
-#elif defined(HAVE_PTHREAD_YIELD)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_YIELD)
   pthread_yield(); // ignore errors
 #else // __unix__
   sched_yield(); // ignore errors

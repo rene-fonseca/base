@@ -30,7 +30,7 @@ public:
 private:
 
   /** Internal structure holding the IP address in network byte order. */
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct {char buffer[16];} address; // enough for IPv6 and IPv4 addresses
 #else
   struct {char buffer[4];} address; // enough for IPv4 addresses

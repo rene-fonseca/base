@@ -19,7 +19,7 @@ Semaphore::Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceExceptio
   if (!(semaphore = CreateSemaphore(NULL, value, MAXIMUM, NULL))) {
     throw ResourceException();
   }
-#elif defined(HAVE_PTHREAD_SEMAPHORE)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   if (sem_init(&semaphore, 0, value)) {
     throw ResourceException();
   }
@@ -48,7 +48,7 @@ Semaphore::Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceExceptio
 
 #if !defined(__win32__)
 unsigned int Semaphore::getValue() const throw(SemaphoreException) {
-#if defined(HAVE_PTHREAD_SEMAPHORE)
+#if defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   int value;
   if (sem_getvalue(&semaphore, &value)) { // value is not negative
     throw SemaphoreException();
@@ -73,7 +73,7 @@ void Semaphore::post() throw(Overflow, SemaphoreException) {
   if (!ReleaseSemaphore(semaphore, 1, NULL)) {
     throw SemaphoreException();
   }
-#elif defined(HAVE_PTHREAD_SEMAPHORE)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   if (sem_post(&semaphore) == ERANGE) { // otherwise sem_post returns successfully
     throw Overflow();
   }
@@ -100,7 +100,7 @@ void Semaphore::wait() throw(SemaphoreException) {
   if (WaitForSingleObject(semaphore, INFINITE) != WAIT_OBJECT_0) {
     throw SemaphoreException();
   }
-#elif defined(HAVE_PTHREAD_SEMAPHORE)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   if (sem_wait(&semaphore)) {
     throw SemaphoreException();
   }
@@ -121,7 +121,7 @@ void Semaphore::wait() throw(SemaphoreException) {
 bool Semaphore::tryWait() throw(SemaphoreException) {
 #if defined(__win32__)
   return WaitForSingleObject(semaphore, 0) == WAIT_OBJECT_0;
-#elif defined(HAVE_PTHREAD_SEMAPHORE)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   return sem_trywait(&semaphore) == 0; // did we decrement?
 #else
   bool result;
@@ -143,7 +143,7 @@ Semaphore::~Semaphore() throw(SemaphoreException) {
   if (!CloseHandle(semaphore)) {
     throw SemaphoreException();
   }
-#elif defined(HAVE_PTHREAD_SEMAPHORE)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   if (sem_destroy(&semaphore) != 0) {
     throw SemaphoreException();
   }

@@ -37,7 +37,7 @@ protected:
   /** Internal mutex representation. */
 #if defined(__win32__)
   mutable CRITICAL_SECTION lock;
-#elif defined(HAVE_PTHREAD_RWLOCK)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   mutable pthread_rwlock_t lock;
 #else
   mutable pthread_mutex_t lock;

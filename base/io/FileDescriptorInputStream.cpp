@@ -3,7 +3,6 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/io/FileDescriptorInputStream.h>
 #include <base/io/EndOfFile.h>
 #include <base/concurrency/Thread.h>
@@ -18,6 +17,7 @@
   #include <unistd.h>
   #include <fcntl.h>
   #include <errno.h>
+  #include <string.h> // required by FD_SET on solaris
 
   #ifndef SSIZE_MAX
     #define SSIZE_MAX (1024*1024)

@@ -42,11 +42,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class SocketAddress {
 private:
 
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct sockaddr_in6 sa;
 #else
   struct sockaddr_in sa;
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 public:
 
   /**
@@ -54,7 +54,7 @@ public:
   */
   SocketAddress(InetAddress addr, unsigned short port) throw() {
     fill<char>((char*)&sa, sizeof(sa), 0);
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
 //    switch (addr.getFamily()) {
 //    case IPv4:
 //      sa.sin_family = AF_INET;
@@ -75,7 +75,7 @@ public:
     sa.sin_family = AF_INET;
     sa.sin_port = htons(port);
     copy<char>((char*)&sa.sin_addr, addr.getAddress(), sizeof(struct in_addr));
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
   }
 
   /**
@@ -145,11 +145,11 @@ bool Socket::accept(Socket& socket) throw(IOException) {
   }
 
   // don't know if accept() fills 'sa' with something different from sockaddr_in6 - do you know this
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct sockaddr_in6 sa;
 #else
   struct sockaddr_in sa;
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
   socklen_t sl = sizeof(sa);
 
   int handle = ::accept(socket.getHandle(), (struct sockaddr*)&sa, &sl);
@@ -174,13 +174,13 @@ bool Socket::accept(Socket& socket) throw(IOException) {
 #endif
 
   this->socket = new SocketImpl(handle);
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   this->socket->getRemoteAddress()->setAddress((char*)&(sa.sin6_addr), InetAddress::IPv6);
   this->socket->setRemotePort(ntohs(sa.sin6_port));
 #else
   this->socket->getRemoteAddress()->setAddress((char*)&(sa.sin_addr), InetAddress::IPv4);
   this->socket->setRemotePort(ntohs(sa.sin_port));
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
   return true;
 }
 
@@ -216,7 +216,7 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
     }
 #else // __unix__
     switch (errno) {
-    case ECONNREFUSED: 
+    case ECONNREFUSED:
       throw AccessDenied();
     case ETIMEDOUT:
       throw TimedOut();
@@ -232,7 +232,7 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
 void Socket::create(bool stream) throw(IOException) {
   SynchronizeExclusively();
   int handle;
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   if (socket->isCreated() || ((handle = ::socket(PF_INET6, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == -1)) {
     throw NetworkException("Unable to create socket");
   }
@@ -519,25 +519,25 @@ unsigned int Socket::write(const char* buffer, unsigned int size) throw(IOExcept
 unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(IOException) {
   int result = 0;
 
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct sockaddr_in6 sa;
 #else
   struct sockaddr_in sa;
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
   socklen_t sl = sizeof(sa);
 
   if ((result = ::recvfrom(getHandle(),  buffer, size, 0, (struct sockaddr*)&sa, &sl)) == -1) {
     throw IOException("Unable to receive from");
   }
 
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   // check if really an IPv4 address
   address.setAddress((char*)&(sa.sin6_addr), InetAddress::IPv6);
   port = ntohs(sa.sin6_port);
 #else
   address.setAddress((char*)&(sa.sin_addr), InetAddress::IPv4);
   port = ntohs(sa.sin_port);
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 
   return result;
 }

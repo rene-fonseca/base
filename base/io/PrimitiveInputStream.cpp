@@ -25,7 +25,7 @@ char PrimitiveInputStream::readChar() throw(IOException) {
 
 short PrimitiveInputStream::readShortInteger() throw(IOException) {
   short value;
-#if defined(HAVE_BIG_ENDIAN)
+#if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
   read((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -39,7 +39,7 @@ short PrimitiveInputStream::readShortInteger() throw(IOException) {
 
 unsigned short PrimitiveInputStream::readUnsignedShortInteger() throw(IOException) {
   unsigned short value;
-#if defined(HAVE_BIG_ENDIAN)
+#if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
   read((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -53,7 +53,7 @@ unsigned short PrimitiveInputStream::readUnsignedShortInteger() throw(IOExceptio
 
 int PrimitiveInputStream::readInteger() throw(IOException) {
   int value;
-#if defined(HAVE_BIG_ENDIAN)
+#if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
   read((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -69,7 +69,7 @@ int PrimitiveInputStream::readInteger() throw(IOException) {
 
 unsigned int PrimitiveInputStream::readUnsignedInteger() throw(IOException) {
   unsigned int value;
-#if defined(HAVE_BIG_ENDIAN)
+#if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
   read((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -85,7 +85,7 @@ unsigned int PrimitiveInputStream::readUnsignedInteger() throw(IOException) {
 
 long long PrimitiveInputStream::readLongInteger() throw(IOException) {
   long long value;
-#if defined(HAVE_BIG_ENDIAN)
+#if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
   read((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -105,7 +105,7 @@ long long PrimitiveInputStream::readLongInteger() throw(IOException) {
 
 unsigned long long PrimitiveInputStream::readUnsignedLongInteger() throw(IOException) {
   unsigned long long value;
-#if defined(HAVE_BIG_ENDIAN)
+#if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
   read((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -126,7 +126,7 @@ unsigned long long PrimitiveInputStream::readUnsignedLongInteger() throw(IOExcep
 float PrimitiveInputStream::readFloat() throw(IOException) {
   float value;
 // float may have different order
-#if defined(HAVE_BIG_ENDIAN)
+#if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
   read((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -143,7 +143,7 @@ float PrimitiveInputStream::readFloat() throw(IOException) {
 double PrimitiveInputStream::readDouble() throw(IOException) {
   double value;
 
-#if defined(HAVE_BIG_ENDIAN)
+#if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
   read((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -164,7 +164,7 @@ double PrimitiveInputStream::readDouble() throw(IOException) {
 long double PrimitiveInputStream::readLongDouble() throw(IOException) {
   long double value;
 
-#if defined(HAVE_BIG_ENDIAN)
+#if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
   read((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;

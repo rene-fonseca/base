@@ -15,7 +15,7 @@
 
 #if defined(__win32__)
   #include <windows.h>
-#elif HAVE_PTHREAD_SEMAPHORE
+#elif _DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE
   #include <semaphore.h>
 #else
   #include <pthread.h>
@@ -35,7 +35,7 @@ public:
 
 #if defined(__win32__)
   static const unsigned int MAXIMUM = INT_MAX;
-#elif HAVE_PTHREAD_SEMAPHORE
+#elif _DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE
   static const unsigned int MAXIMUM = _POSIX_SEM_VALUE_MAX;
 #else
   static const unsigned int MAXIMUM = INT_MAX;
@@ -44,7 +44,7 @@ private:
 
 #if defined(__win32__)
   HANDLE semaphore;
-#elif HAVE_PTHREAD_SEMAPHORE
+#elif _DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE
   mutable sem_t semaphore;
 #else
   /** The value of the semaphore. */

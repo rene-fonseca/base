@@ -71,7 +71,7 @@ String<> InetAddress::getLocalHost() throw(NetworkException) {
 List<InetAddress> InetAddress::getAddressesByName(const String<>& name) throw(HostNotFound) {
   List<InetAddress> result;
 
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct addrinfo hint;
   fill<char>((char*)&hint, sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
@@ -132,7 +132,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String<>& name) throw(Ho
   for (char** p = hp->h_addr_list; *p != 0; p++) {
     result.append(InetAddress(*p, IPv4));
   }
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
   return result;
 }
 
@@ -145,7 +145,7 @@ InetAddress::InetAddress(const char* addr, Family family) throw(NetworkException
 }
 
 InetAddress::InetAddress(const String<>& addr) throw(InvalidFormat) {
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct in_addr temp;
   if (inet_pton(AF_INET, addr.getBytes(), &temp) > 0) { // try IPv4 format - MT-level is safe
     // make IPv4-mapped IPv6 address (network byte order)
@@ -164,7 +164,7 @@ InetAddress::InetAddress(const String<>& addr) throw(InvalidFormat) {
     throw InvalidFormat("Not a valid IPv4 address");
   }
   ((uint32_t*)(&address))[0] = ((uint32_t*)(&temp))[0];
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 InetAddress::InetAddress(const InetAddress& copy) throw() : address(copy.address) {
@@ -182,7 +182,7 @@ const char* InetAddress::getAddress() const throw() {
 }
 
 String<> InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct sockaddr_in6 addr;
   fill<char>((char*)&addr, sizeof(addr), 0);
 #if defined(SIN6_LEN)
@@ -226,75 +226,75 @@ String<> InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound)
   #endif
 
   return String<>(hp->h_name);
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 bool InetAddress::operator==(const InetAddress& eq) throw() {
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   return IN6_ARE_ADDR_EQUAL((struct in6_addr*)&address, (struct in6_addr*)&eq.address);
 #else
   return address.buffer == eq.address.buffer;
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 bool InetAddress::isUnspecified() const throw() {
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   return IN6_IS_ADDR_UNSPECIFIED((struct in6_addr*)&address);
 #else
   return (uint32_t)address.buffer == htonl(0x00000000);
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 bool InetAddress::isLoopback() const throw() {
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   return IN6_IS_ADDR_LOOPBACK((struct in6_addr*)&address);
 #else
   return (uint32_t)address.buffer == htonl(0x7f000001);
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 bool InetAddress::isMulticast() const throw() {
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   return IN6_IS_ADDR_MULTICAST((struct in6_addr*)&address);
 #else
   return false;
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 bool InetAddress::isLinkLocal() const throw() {
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   return IN6_IS_ADDR_LINKLOCAL((struct in6_addr*)&address);
 #else
   return false;
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 bool InetAddress::isSiteLocal() const throw() {
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   return IN6_IS_ADDR_SITELOCAL((struct in6_addr*)&address);
 #else
   return false;
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 bool InetAddress::isV4Mapped() const throw() {
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   return IN6_IS_ADDR_V4MAPPED((struct in6_addr*)&address);
 #else
   return false;
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 bool InetAddress::isV4Compatible() const throw() {
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   return IN6_IS_ADDR_V4COMPAT((struct in6_addr*)&address);
 #else
   return true;
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 void InetAddress::setAddress(const char* addr, Family family) throw(NetworkException) {
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   switch (family) {
   case IPv4:
     // make IPv4-mapped IPv6 address (network byte order)
@@ -319,11 +319,11 @@ void InetAddress::setAddress(const char* addr, Family family) throw(NetworkExcep
     throw NetworkException("Operating system does not support IPv6");
     break;
   }
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) {
-#if defined(HAVE_INET_IPV6)
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   #if (INET6_ADDRSTRLEN > THREAD_LOCAL_STORAGE)
     #error The requested amount of local storage is not available.
   #endif
@@ -338,7 +338,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
 #else
   // longest possible string is "255.255.255.255"
   return stream << inet_ntoa(*(struct in_addr*)&value.address); // Uses static buffer
-#endif // HAVE_INET_IPV6
+#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

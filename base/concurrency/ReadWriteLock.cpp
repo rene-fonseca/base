@@ -18,7 +18,7 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException) {
     //  } __except(STATUS_NO_MEMORY) {
     // throw ResourceException();
     //  }
-#elif defined(HAVE_PTHREAD_RWLOCK)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   pthread_rwlockattr_t attributes;
   if (pthread_rwlockattr_init(&attributes) != 0) {
     throw ResourceException();
@@ -57,7 +57,7 @@ void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
     //  } __except(STATUS_INVALID_HANDLE) {
     //    throw ReadWriteLockException();
     //  }
-#elif defined(HAVE_PTHREAD_RWLOCK)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_wrlock(&lock)) {
     throw ReadWriteLockException();
   }
@@ -82,7 +82,7 @@ bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
     //    throw ReadWriteLockException();
     //  }
   return result;
-#elif defined(HAVE_PTHREAD_RWLOCK)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   int result = pthread_rwlock_trywrlock(&lock);
   if (result == 0) {
     return true;
@@ -110,7 +110,7 @@ void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
     //  } __except(STATUS_INVALID_HANDLE) {
     //    throw ReadWriteLockException();
     //  }
-#elif defined(HAVE_PTHREAD_RWLOCK)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_rdlock(&lock)) {
     throw ReadWriteLockException();
   }
@@ -135,7 +135,7 @@ bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
     //    throw ReadWriteLockException();
     //  }
   return result;
-#elif defined(HAVE_PTHREAD_RWLOCK)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   int result = pthread_rwlock_tryrdlock(&lock);
   if (result == 0) {
     return true;
@@ -159,7 +159,7 @@ bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
 void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
 #if defined(__win32__)
   LeaveCriticalSection(&lock);
-#elif defined(HAVE_PTHREAD_RWLOCK)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_unlock(&lock)) {
     throw ReadWriteLockException();
   }
@@ -173,7 +173,7 @@ void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
 ReadWriteLock::~ReadWriteLock() throw(ReadWriteLockException) {
 #if defined(__win32__)
   DeleteCriticalSection(&lock);
-#elif defined(HAVE_PTHREAD_RWLOCK)
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_destroy(&lock)) {
     throw ReadWriteLockException();
   }

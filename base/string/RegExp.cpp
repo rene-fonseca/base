@@ -15,13 +15,13 @@
 #include <base/string/RegExp.h>
 
 #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
-  #include <regex.h>
+#  include <regex.h>
 #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
-    #include <pcre.h>
-  #else
-    #include <pcre/pcre.h>
-  #endif
+#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+#    include <pcre.h>
+#  else
+#    include <pcre/pcre.h>
+#  endif
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -36,7 +36,11 @@ void RegExp::compile() throw(MemoryException) {
     int result = regcomp(&preq, pattern.getElements(), options);
     if (result) { // succesful
       compiled = new char[sizeof(regex_t)];
-      copy<char>(Cast::pointer<char*>(compiled), Cast::pointer<const char*>(&preq), sizeof(regex_t));
+      copy<char>(
+        Cast::pointer<char*>(compiled),
+        Cast::pointer<const char*>(&preq),
+        sizeof(regex_t)
+      );
     }
   #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
     int errorOffset;
@@ -64,7 +68,8 @@ void RegExp::release() throw() {
 RegExp::RegExp() throw() : compiled(0), caseSensitive(true) {
 }
 
-RegExp::RegExp(const String& p, bool c) throw(MemoryException) : pattern(p), compiled(0), caseSensitive(c) {
+RegExp::RegExp(const String& _pattern, bool _caseSensitive) throw(MemoryException)
+  : pattern(_pattern), compiled(0), caseSensitive(_caseSensitive) {
   compile();
 }
 
@@ -74,12 +79,20 @@ void RegExp::setPattern(const String& pattern) throw(MemoryException) {
   compile();
 }
 
-RegExp::Substring RegExp::match(const String& value, unsigned int start) const throw(RegExpException, OutOfRange) {
+RegExp::Substring RegExp::match(
+  const String& value,
+  unsigned int start) const throw(RegExpException, OutOfRange) {
   assert(compiled, RegExpException("Regular expression is invalid", this));
   assert(start < value.getLength(), OutOfRange(this));
   #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
     regmatch_t pmatch[1];
-    int code = regexec(static_cast<regex_t*>(compiled), value.getElements(), 1, pmatch, 0);
+    int code = regexec(
+      static_cast<regex_t*>(compiled),
+      value.getElements(),
+      1,
+      pmatch,
+      0
+    );
     if (!code) { // successful
       return Substring(pmatch[0].rm_so, pmatch[0].rm_eo);
     } else if (code == REG_NOMATCH) {
@@ -105,12 +118,21 @@ RegExp::Substring RegExp::match(const String& value, unsigned int start) const t
   #endif
 }
 
-RegExp::Substring RegExp::match(const String& value, Array<Substring>& result, unsigned int start) const throw(RegExpException, OutOfRange) {
+RegExp::Substring RegExp::match(
+  const String& value,
+  Array<Substring>& result,
+  unsigned int start) const throw(RegExpException, OutOfRange) {
   assert(compiled, RegExpException("Regular expression is invalid", this));
   assert(start < value.getLength(), OutOfRange(this));
   #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
     regmatch_t pmatch[result.getSize()];
-    int code = regexec(static_cast<regex_t*>(compiled), value.getElements(), result.getSize(), pmatch, 0);
+    int code = regexec(
+      static_cast<regex_t*>(compiled),
+      value.getElements(),
+      result.getSize(),
+      pmatch,
+      0
+    );
     if (!code) { // successful
       for (int i = 1; i < result.getSize(); ++i) {
         result[i] = Substring(pmatch[i].rm_so, pmatch[i].rm_eo);
@@ -124,7 +146,16 @@ RegExp::Substring RegExp::match(const String& value, Array<Substring>& result, u
   #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
     unsigned int size = result.getSize() * 3;
     int offsets[size];
-    int code = pcre_exec((const pcre*)compiled, 0, value.getElements(), value.getLength(), start, 0, offsets, size);
+    int code = pcre_exec(
+      (const pcre*)compiled,
+      0,
+      value.getElements(),
+      value.getLength(),
+      start,
+      0,
+      offsets,
+      size
+    );
     if (code < 0) { // handle any error
       if (code == PCRE_ERROR_NOMATCH) {
         return Substring();

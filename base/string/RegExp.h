@@ -160,7 +160,8 @@ public:
       Returns true if this object describes the specified string completely.
     */
     inline bool isComplete(const String& value) const throw() {
-      return (offset == 0) && (static_cast<unsigned int>(end) == value.getLength());
+      return (offset == 0) &&
+        (static_cast<unsigned int>(end) == value.getLength());
     }
   };
 private:
@@ -190,7 +191,8 @@ public:
     @param pattern The pattern.
     @param caseSensitive Specifies the case sensitivity. Default is true.
   */
-  RegExp(const String& pattern, bool caseSensitivity = true) throw(MemoryException);
+  RegExp(
+    const String& pattern, bool caseSensitivity = true) throw(MemoryException);
 
   /**
     Returns true if case sensitive.
@@ -216,7 +218,8 @@ public:
   /**
     Sets the case sensitivity mode.
 
-    @param caseSensitive Specifies the case sensitivity. True selects case sensitive matching.
+    @param caseSensitive Specifies the case sensitivity. True selects case
+    sensitive matching.
   */
   inline void setCaseSensitivity(bool value) throw() {
     this->caseSensitive = caseSensitive;
@@ -235,18 +238,24 @@ public:
     @param start The start index. The default is 0.
     @return The substring matched by the entire pattern.
   */
-  Substring match(const String& value, unsigned int start = 0) const throw(RegExpException, OutOfRange);
+  Substring match(
+    const String& value,
+    unsigned int start = 0) const throw(RegExpException, OutOfRange);
 
   /**
     Matches the specified string with the regular expression. Raises OutOfRange
     if the start index exceeds the end of the string to be matched.
 
     @param value The string to be matched.
-    @param arguments The array to receive the captured substrings from the matched string.
+    @param arguments The array to receive the captured substrings from the matched
+    string.
     @param start The start index. The default is 0.
     @return The substring matched by the entire pattern.
   */
-  Substring match(const String& value, Array<Substring>& arguments, unsigned int start = 0) const throw(RegExpException, OutOfRange);
+  Substring match(
+    const String& value,
+    Array<Substring>& arguments,
+    unsigned int start = 0) const throw(RegExpException, OutOfRange);
 
   /**
     Destroys the regular expression.

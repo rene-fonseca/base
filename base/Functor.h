@@ -468,7 +468,7 @@ inline void clear(TYPE& value) throw() {
 
 
 
-/** Base class of unary operations. */
+/** @short Base class of unary operations. */
 template<class ARGUMENT, class RESULT>
 class UnaryOperation {
 public:
@@ -476,7 +476,7 @@ public:
   typedef RESULT Result;
 };
 
-/** Base class of binary operations. */
+/** @short Base class of binary operations. */
 template<class FIRST, class SECOND, class RESULT>
 class BinaryOperation {
 public:
@@ -487,7 +487,11 @@ public:
 
 
 
-/** Binds a value to the first argument of a binary operation. */
+/**
+  Binds a value to the first argument of a binary operation.
+
+  @short Binds to a value to the first operand of a binary operation.
+*/
 template<class BINOPR>
 class Binder2First : UnaryOperation<typename BINOPR::SecondArgument, typename BINOPR::Result> {
 protected:
@@ -519,7 +523,11 @@ inline Binder2First<BINOPR> bind2First(
   return Binder2First<BINOPR>(operation, value);
 }
 
-/** Binds a value to the second argument of a binary operation. */
+/**
+  Binds a value to the second argument of a binary operation.
+  
+  @short Binds to a value to the second operand of a binary operation.
+*/
 template<class BINOPR>
 class Binder2Second : UnaryOperation<typename BINOPR::FirstArgument, typename BINOPR::Result> {
 protected:

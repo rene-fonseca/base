@@ -413,7 +413,8 @@ public:
 
 /**
   Arithmetic expression parser.
-
+  
+  @short Expression parser.
   @see ExpressionProvider
   @see ExpressionEvaluator
   @ingroup mathematics

@@ -21,11 +21,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Implementation of Uniform Resource Locator (URL) as specified by RFC 1738.
-  A compact string representation for a resource available via the Internet.
-  This class is used to break down a url into its components. The components
-  of the url are stored internally in decoded format.
-
+  Implementation of Uniform Resource Locator (URL) as specified by RFC 1738 and
+  2732. A compact string representation for a resource available via the
+  Internet. This class is used to break down a url into its components. The
+  components of the url are stored internally in decoded format.
+  
   <pre>
   Url url("http://www.mip.sdu.dk")
   Url url("ftp://ftp.gnu.org")

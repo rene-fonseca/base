@@ -17,7 +17,7 @@ Event::Event() throw(ResourceException) {
   if ((event = CreateEvent(NULL, true, false, NULL)) == NULL) {
     throw ResourceException("Unable to initialize event");
   }
-#else
+#else // pthread
   signaled = false;
 
   pthread_mutexattr_t attributes;
@@ -42,8 +42,8 @@ Event::Event() throw(ResourceException) {
 
 bool Event::isSignaled() const throw(EventException) {
 #if defined(__win32__)
-  return WaitForSingleObject(event, 0) == WAIT_OBJECT_0;
-#else
+  return WaitForSingleObject(event, 0) == WAIT_OBJECT_0; // should never fail
+#else // pthread
   bool result;
   if (pthread_mutex_lock(&mutex)) {
     throw EventException(__func__);
@@ -58,10 +58,10 @@ bool Event::isSignaled() const throw(EventException) {
 
 void Event::reset() throw(EventException) {
 #if defined(__win32__)
-  if (ResetEvent(event)) {
+  if (!ResetEvent(event)) {
     throw EventException("Unable to reset event");
   }
-#else
+#else // pthread
   if (pthread_mutex_lock(&mutex)) {
     throw EventException("Unable to reset event");
   }
@@ -74,10 +74,10 @@ void Event::reset() throw(EventException) {
 
 void Event::signal() throw(EventException) {
 #if defined(__win32__)
-  if (SetEvent(event)) {
+  if (!SetEvent(event)) {
     throw EventException("Unable to signal event");
   }
-#else
+#else // pthread
   if (pthread_mutex_lock(&mutex)) {
     throw EventException("Unable to signal event");
   }
@@ -96,7 +96,7 @@ void Event::wait() const throw(EventException) {
   if (WaitForSingleObject(event, INFINITE) != WAIT_OBJECT_0) {
     throw EventException("Unable to wait for event");
   }
-#else
+#else // pthread
   if (pthread_mutex_lock(&mutex)) {
     throw EventException("Unable to wait for event");
   }
@@ -124,7 +124,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
   default:
     throw EventException("Unable to wait for event");
   }
-#else
+#else // pthread
   int result = true; // no assignment gives warning
 
   if (pthread_mutex_lock(&mutex)) {
@@ -159,7 +159,7 @@ Event::~Event() throw(EventException) {
   if (!CloseHandle(event)) {
     throw EventException("Unable to destroy event");
   }
-#else
+#else // pthread
   if (pthread_cond_destroy(&condition)) {
     throw EventException("Unable to destroy event");
   }

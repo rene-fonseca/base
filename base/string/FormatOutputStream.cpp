@@ -270,7 +270,7 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
   SynchronizeExclusively();
   unsigned int requiredWidth = size;
 
-  if (isSigned) {
+  if (isSigned && ((integerBase != Symbols::BINARY) && (integerBase != Symbols::HEXADECIMAL))) {
     ++requiredWidth; // "-"
   }
 
@@ -299,7 +299,7 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
     }
   }
 
-  if (isSigned) {
+  if (isSigned && ((integerBase != Symbols::BINARY) && (integerBase != Symbols::HEXADECIMAL))) {
     write("-", 1); // write sign
   }
 
@@ -378,7 +378,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) thro
   switch (stream.getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
-      unsigned short int temp = (unsigned short int)value; // no sign
+      unsigned short int temp = *pointer_cast<const unsigned short int*>(&value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000001); // get digit
         temp >>= 1; // bits per digit
@@ -389,7 +389,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) thro
     }
   case FormatOutputStream::Symbols::OCTAL:
     {
-      unsigned short int temp = (unsigned short int)value; // no sign
+      unsigned short int temp = *pointer_cast<const unsigned short int*>(&value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000007); // get digit
         temp >>= 3; // bits per digit
@@ -411,7 +411,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) thro
     }
   case FormatOutputStream::Symbols::HEXADECIMAL:
     {
-      unsigned short int temp = (unsigned short int)value; // no sign
+      unsigned short int temp = *pointer_cast<const unsigned short int*>(&value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
         temp >>= 4; // bits per digit
@@ -488,7 +488,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) throw(IOEx
   switch (stream.getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
-      unsigned int temp = (unsigned int)value; // no sign
+      unsigned int temp = *pointer_cast<const unsigned int*>(&value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000001); // get digit
         temp >>= 1; // bits per digit
@@ -499,7 +499,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) throw(IOEx
     }
   case FormatOutputStream::Symbols::OCTAL:
     {
-      unsigned int temp = (unsigned int)value; // no sign
+      unsigned int temp = *pointer_cast<const unsigned int*>(&value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000007); // get digit
         temp >>= 3; // bits per digit
@@ -521,7 +521,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) throw(IOEx
     }
   case FormatOutputStream::Symbols::HEXADECIMAL:
     {
-      unsigned int temp = (unsigned int)value; // no sign
+      unsigned int temp = *pointer_cast<const unsigned int*>(&value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
         temp >>= 4; // bits per digit
@@ -598,7 +598,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long value) throw(IOE
   switch (stream.getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
-      unsigned long temp = (unsigned long)value; // no sign
+      unsigned long temp = *pointer_cast<const unsigned long*>(&value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000001); // get digit
         temp >>= 1; // bits per digit
@@ -609,7 +609,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long value) throw(IOE
     }
   case FormatOutputStream::Symbols::OCTAL:
     {
-      unsigned long temp = (unsigned long)value; // no sign
+      unsigned long temp = *pointer_cast<const unsigned long*>(&value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000007); // get digit
         temp >>= 3; // bits per digit
@@ -631,7 +631,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long value) throw(IOE
     }
   case FormatOutputStream::Symbols::HEXADECIMAL:
     {
-      unsigned long temp = (unsigned long)value; // no sign
+      unsigned long temp = *pointer_cast<const unsigned long*>(&value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
         temp >>= 4; // bits per digit
@@ -708,7 +708,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
   switch (stream.getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
-      unsigned long long int temp = (unsigned long long int)value; // no sign
+      unsigned long long int temp = *pointer_cast<const unsigned long long int*>(&value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000001); // get digit
         temp >>= 1; // bits per digit
@@ -719,7 +719,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
     }
   case FormatOutputStream::Symbols::OCTAL:
     {
-      unsigned long long int temp = (unsigned long long int)value; // no sign
+      unsigned long long int temp = *pointer_cast<const unsigned long long int*>(&value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000007); // get digit
         temp >>= 3; // bits per digit
@@ -741,7 +741,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
     }
   case FormatOutputStream::Symbols::HEXADECIMAL:
     {
-      unsigned long long int temp = (unsigned long long int)value; // no sign
+      unsigned long long int temp = *pointer_cast<const unsigned long long int*>(&value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
         temp >>= 4; // bits per digit

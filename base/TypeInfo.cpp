@@ -1,13 +1,13 @@
 /***************************************************************************
     The Base Framework
     A framework for developing platform independent applications
-
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-
+    
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
+    
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
@@ -58,7 +58,7 @@ public:
 
   inline V3MultiVendorABIDemangler(const char* mangled) throw(InvalidFormat) : p(mangled) {
     end = find<char>(mangled, 1024, 0); // find terminator
-    assert(end, InvalidFormat());
+    assert(end, InvalidFormat(this));
     encoding();
   }
 
@@ -110,7 +110,7 @@ public:
         }
         if (demangled[demangled.getLength() - 1] == '>') { // handle return type // TAG: are there other cases
           unsigned int beginReturnType = demangled.getLength();
-          assert(type(), InvalidFormat());
+          assert(type(), InvalidFormat(this));
           dump(MESSAGE(" "));
           String returnTypeString(demangled.substring(beginReturnType));
           demangled.removeFrom(beginReturnType);
@@ -132,12 +132,12 @@ public:
         dump(MESSAGE("("));
         if (*p == 'v') { // special case
           ++p;
-          assert(p == end, InvalidFormat());
+          assert(p == end, InvalidFormat(this));
         } else {
-          assert(type(), InvalidFormat());
+          assert(type(), InvalidFormat(this));
           while (p < end) {
             dump(MESSAGE(", "));
-            assert(type(), InvalidFormat());
+            assert(type(), InvalidFormat(this));
           }
         }
         dump(MESSAGE(")"));
@@ -169,7 +169,7 @@ public:
     switch (*p) {
     case 'L': // literal
       ++p; // skip L
-      assert(type(), InvalidFormat());
+      assert(type(), InvalidFormat(this));
       if (*p == 'n') {
         demangled += '-'; // negative number
       }
@@ -183,7 +183,7 @@ public:
       break;
     default:
       unsigned int beginTemplateArgument = demangled.getLength();
-      assert(type(), InvalidFormat());
+      assert(type(), InvalidFormat(this));
       addTemplateCandidate(beginTemplateArgument);
       return true;
     }
@@ -194,10 +194,10 @@ public:
     if (*p == 'I') {
       ++p; // skip I
       demangled += '<';
-      assert(templateArgument(), InvalidFormat());
+      assert(templateArgument(), InvalidFormat(this));
       while (*p != 'E') {
         dump(MESSAGE(", "));
-        assert(templateArgument(), InvalidFormat());
+        assert(templateArgument(), InvalidFormat(this));
       }
       if (demangled.endsWith(MESSAGE(">"))) {
         dump(MESSAGE(" >"));
@@ -224,7 +224,7 @@ public:
     } else if (substitution()) {
       className.begin = begin;
       className.end = demangled.getLength();
-      assert(templateArguments(), InvalidFormat());
+      assert(templateArguments(), InvalidFormat(this));
       addCandidate(begin);
       return true;
     } else {
@@ -236,7 +236,7 @@ public:
     if ((*p == 'S') && (p[1] == 't')) {
       p += 2; // skip St
       dump(MESSAGE("std::"));
-      assert(unqualifiedName(), InvalidFormat());
+      assert(unqualifiedName(), InvalidFormat(this));
       // FIXME: insert candidate?
       return true;
     } else if (unqualifiedName()) {
@@ -253,30 +253,36 @@ public:
 
       unsigned int begin = demangled.getLength(); // beginning of substitution range
 
+      bool delimiterPending = false;
       if (substitution()) { // not required
-        dump(MESSAGE("::"));
+        delimiterPending = true;
       }
 
       while (true) { // prefix+
         unsigned int beginClassName = demangled.getLength();
-        if (sourceName()) {
-          className.begin = beginClassName;
-          className.end = demangled.getLength();
-          addCandidate(begin);
-        } else if (operatorName()) {
-        } else if (constructorAndDestructorName()) {
-        } else {
-          throw InvalidFormat(this);
-        }
         if (templateArguments()) {
           addCandidate(begin);
+        } else {
+          if (delimiterPending) {
+            demangled.append(MESSAGE("::")); // delimiter
+          }
+          if (sourceName()) {
+            className.begin = beginClassName;
+            className.end = demangled.getLength();
+            addCandidate(begin);
+          } else if (operatorName()) {
+          } else if (constructorAndDestructorName()) {
+          } else {
+            throw InvalidFormat(this);
+          }
         }
+        delimiterPending = true;
         if (*p == 'E') {
           break;
         }
-        demangled.append(MESSAGE("::")); // delimiter
       }
       ++p; // skip E
+      ASSERT(!delimiterPending);
       return true;
     }
     return false;
@@ -323,22 +329,22 @@ public:
       case 'V':
         ++p; // skip V
         dump(MESSAGE("virtual table for "));
-        assert(type(), InvalidFormat());
+        assert(type(), InvalidFormat(this));
         return true;
       case 'T':
         ++p; // skip T
         dump(MESSAGE("VTT for "));
-        assert(type(), InvalidFormat());
+        assert(type(), InvalidFormat(this));
         return true;
       case 'I':
         ++p; // skip I
         dump(MESSAGE("typeinfo for "));
-        assert(type(), InvalidFormat());
+        assert(type(), InvalidFormat(this));
         return true;
       case 'S':
         ++p; // skip S
         dump(MESSAGE("typeinfo name for "));
-        assert(type(), InvalidFormat());
+        assert(type(), InvalidFormat(this));
         return true;
       }
     }
@@ -362,42 +368,42 @@ public:
     switch (*p) {
     case 'r':
       ++p;
-      assert(type(), InvalidFormat());
+      assert(type(), InvalidFormat(this));
       dump(MESSAGE(" restrict"));
       break;
     case 'V':
       ++p;
-      assert(type(), InvalidFormat());
+      assert(type(), InvalidFormat(this));
       dump(MESSAGE(" volatile"));
       break;
     case 'K':
       ++p;
-      assert(type(), InvalidFormat());
+      assert(type(), InvalidFormat(this));
       dump(MESSAGE(" const"));
       break;
     case 'P':
       ++p;
-      assert(type(), InvalidFormat());
+      assert(type(), InvalidFormat(this));
       dump(MESSAGE("*"));
       break;
     case 'R':
       ++p;
-      assert(type(), InvalidFormat());
+      assert(type(), InvalidFormat(this));
       dump(MESSAGE("&"));
       break;
     case 'C':
       ++p;
-      assert(type(), InvalidFormat());
+      assert(type(), InvalidFormat(this));
       dump(MESSAGE("complex "));
       break;
     case 'G':
       ++p;
-      assert(type(), InvalidFormat());
+      assert(type(), InvalidFormat(this));
       dump(MESSAGE("imaginary "));
       break;
     case 'U':
       ++p;
-      assert(type(), InvalidFormat());
+      assert(type(), InvalidFormat(this));
       return sourceName();
       break;
     case 'A': // array type
@@ -407,16 +413,16 @@ public:
         while (ASCIITraits::isDigit(*p)) {
           dimension = dimension * 10 + ASCIITraits::digitToValue(*p++);
         }
-        assert(*p++ == '_', InvalidFormat());
-        assert(type(), InvalidFormat());
+        assert(*p++ == '_', InvalidFormat(this));
+        assert(type(), InvalidFormat(this));
         dump(MESSAGE("["));
         StringOutputStream stream; // insert dimension
         stream << dimension << FLUSH;
         demangled.append(stream.getString());
         dump(MESSAGE("]"));
       } else { // variable length array
-        assert(*p++ == '_', InvalidFormat());
-        assert(type(), InvalidFormat());
+        assert(*p++ == '_', InvalidFormat(this));
+        assert(type(), InvalidFormat(this));
         dump(MESSAGE("[]"));
       }
 // FIXME: need support for - A [<dimension expression>] _ <element type>
@@ -427,12 +433,12 @@ public:
         ++p; // skip Y
         dump(MESSAGE("extern \"C\" "));
       }
-      assert(type(), InvalidFormat()); // return type
+      assert(type(), InvalidFormat(this)); // return type
       dump(MESSAGE(" (*)("));
-      assert(type(), InvalidFormat());
+      assert(type(), InvalidFormat(this));
       while (*p != 'E') {
         dump(MESSAGE(", "));
-        assert(type(), InvalidFormat());
+        assert(type(), InvalidFormat(this));
       }
       dump(MESSAGE(")"));
       ++p; // skip E
@@ -442,7 +448,7 @@ public:
         ++p; // skip M
 
         unsigned int beginName = demangled.getLength();
-        assert(name(), InvalidFormat());
+        assert(name(), InvalidFormat(this));
         String nameString = demangled.substring(beginName);
 
         if (*p == 'F') { // special case
@@ -453,7 +459,7 @@ public:
           }
 
           unsigned int beginType = demangled.getLength();
-          assert(type(), InvalidFormat()); // return type
+          assert(type(), InvalidFormat(this)); // return type
 
           unsigned int lengthOfName = beginType - beginName;
           unsigned int lengthOfType = demangled.getLength() - beginType;
@@ -487,16 +493,16 @@ public:
           demangled.append(nameString);
           dump(MESSAGE("::*)("));
 
-          assert(type(), InvalidFormat());
+          assert(type(), InvalidFormat(this));
           while (*p != 'E') {
             dump(MESSAGE(", "));
-            assert(type(), InvalidFormat());
+            assert(type(), InvalidFormat(this));
           }
           dump(MESSAGE(")"));
           ++p; // skip E
         } else {
           unsigned int beginType = demangled.getLength();
-          assert(type(), InvalidFormat());
+          assert(type(), InvalidFormat(this));
 
           unsigned int lengthOfName = beginType - beginName;
           unsigned int lengthOfType = demangled.getLength() - beginType;
@@ -608,7 +614,7 @@ public:
       return true; // no substitution for builtin type
     case 'u': // vendor specific
       ++p;
-      assert(sourceName(), InvalidFormat());
+      assert(sourceName(), InvalidFormat(this));
       break; // substitute
     default:
       if (nested()) {
@@ -800,7 +806,7 @@ public:
   }
 
   inline void appendTemplateCandidate(unsigned int candidate) throw(InvalidFormat) {
-    assert(candidate < templateCandidates.getSize(), InvalidFormat());
+    assert(candidate < templateCandidates.getSize(), InvalidFormat(this));
     demangled.append(demangled.substring(static_cast<CandidateRange>(templateCandidates[candidate]).begin, static_cast<CandidateRange>(templateCandidates[candidate]).end));
   }
 
@@ -827,7 +833,7 @@ public:
             }
             ++p;
           }
-          assert(*p++ == '_', InvalidFormat()); // skip underscore
+          assert(*p++ == '_', InvalidFormat(this)); // skip underscore
           appendTemplateCandidate(id + 1);
         }
         return true;
@@ -837,7 +843,7 @@ public:
   }
 
   inline void appendCandidate(unsigned int candidate) throw(InvalidFormat) {
-    assert(candidate < candidates.getSize(), InvalidFormat());
+    assert(candidate < candidates.getSize(), InvalidFormat(this));
     demangled.append(demangled.substring(static_cast<CandidateRange>(candidates[candidate]).begin, static_cast<CandidateRange>(candidates[candidate]).end));
   }
 
@@ -864,7 +870,7 @@ public:
             }
             ++p;
           }
-          assert(*p++ == '_', InvalidFormat()); // skip underscore
+          assert(*p++ == '_', InvalidFormat(this)); // skip underscore
           appendCandidate(id + 1);
         }
         break;

@@ -1,14 +1,14 @@
 Begin3
-Title:          Ellert 
-Version:        0.1
+Title:          The Base Framework
+Version:        1.0 (prerelease)
 Entered-date:   
-Description:    Autonomous Guided Vehicle
-Keywords:       AGV
-Author:         René Møller Fonseca <fonseca@mip.sdu.dk> 
-Maintained-by:  René Møller Fonseca <fonseca@mip.sdu.dk> 
-Primary-site:   	        
-Home-page:      http://www.mip.sdu.dk/ellert
+Description:    A framework for developing platform independent applications.
+Keywords:       base c++
+Author:         René Møller Fonseca <fonseca@mip.sdu.dk>
+Maintained-by:  René Møller Fonseca <fonseca@mip.sdu.dk>
+Primary-site:   
+Home-page:      http://www.mip.sdu.dk/base
 Original-site:  
-Platforms:      Linux and other Unices
+Platforms:      Linux, Irix, Solaris, and Windows NT.
 Copying-policy: GNU Public License
 End

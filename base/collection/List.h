@@ -271,7 +271,7 @@ protected:
     /**
       Inserts the value at the specified node of this list.
 
-      @param node Node specifying the position. Must not be NULL.
+      @param node Node specifying the position. Must not be 0.
       @param value The value to be inserted.
     */
     inline void insert(Node* node, const TYPE& value) throw() {

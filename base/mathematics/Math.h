@@ -261,7 +261,11 @@ public:
     Returns the square root of the value.
   */
   static long double inline sqrt(long double value) throw() {
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+    return isoc::sqrt(value);
+#else
     return isoc::sqrtl(value);
+#endif
   }
 
   /**
@@ -557,7 +561,11 @@ public:
     Returns the arc tangent of y/x using the signs of both arguments to determine the proper quadrant.
   */
   static long double inline atan2(long double y, long double x) throw() {
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+    return isoc::atan2(y, x);
+#else
     return isoc::atan2l(y, x);
+#endif
   }
 
 

@@ -12,47 +12,116 @@
  ***************************************************************************/
 
 #include <base/io/FileInputStream.h>
+#include <base/io/FileOutputStream.h> // temp
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/Application.h>
 #include <base/Type.h>
+#include <base/security/MD5Sum.h>
 
 using namespace base;
 
-void readFile(const String& filename) {
-  fout << "Initializing file input stream" << ENDL;
-  FileInputStream file(filename, 0);
+enum Job {MD5SUM, DUMP};
 
-  fout << "Binding file input stream to format input stream" << ENDL;
-  FormatInputStream format(file);
+void testChecksum(const String& str) {
+  MD5Sum checksum;
+  checksum.push((const byte*)str.getElements(), str.getLength());
+  checksum.pushEnd();
 
-  while (format.available()) {
-    char ch;
-    format >> ch;
-    fout << ch;
-  }
+  fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
+       << "Original message: " << str << EOL
+       << "Checksum (hex): " << checksum.getValue() << EOL
+       << ENDL;
 }
 
-int entry() {
-  fout << "Testing implementation of the FileInputStream" << ENDL;
+void testChecksums() {
+  testChecksum("");
+  testChecksum("a");
+  testChecksum("abc");
+  testChecksum("message digest");
+  testChecksum("abcdefghijklmnopqrstuvwxyz");
+  testChecksum("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+}
 
-  const Array<String> arguments = Application::getApplication()->getArguments();
-  if (arguments.getSize() != 1) {
-    fout << Application::getApplication()->getName() << " filename" << ENDL;
-    return 0; // stop
+void jobMD5Sum(const String& filePath) {
+  fout << "Calculating MD5 checksum";
+  FileInputStream file(filePath, 0);
+
+  byte buffer[4096];
+  MD5Sum sum;
+  unsigned int count;
+  while ((count = file.read((char*)&buffer[0], 4096, true)) > 0) {
+    fout << '.' << FLUSH;
+    sum.push(buffer, count);
   }
+  sum.pushEnd();
+  fout << ENDL;
 
-  readFile(arguments[0]);
-  return 0;
+  fout << "Total number of bytes: " << sum.getTotalSize() << EOL
+       << "Checksum (hex encoding): " << sum.getValue() << EOL
+       << "Checksum (Base64 encoding): " << sum.getBase64() << ENDL;
+}
+
+void jobDump(const String& filePath) {
+  fout << "Dumping contents of file" << ENDL;
+  FileInputStream file(filePath, 0);
+  FormatInputStream stream(file);
+
+  String line;
+  while (stream.available()) {
+    stream >> line;
+    fout << line << EOL;
+  }
+  fout << FLUSH;
+  // TAG: does not work!
+}
+
+void entry(Job job, const String& filePath) {
+  switch (job) {
+  case MD5SUM:
+    jobMD5Sum(filePath);
+    break;
+  case DUMP:
+    jobDump(filePath);
+    break;
+  }
 }
 
 int main(int argc, const char* argv[], const char *envp[]) {
+  fout << "Testing implementation of the FileInputStream" << ENDL;
   Application app("fileInput", argc, argv, envp);
+
+  Array<String> arguments = Application::getApplication()->getArguments();
+  Job job = MD5SUM;
+  String jobString;
+  String filePath = "/etc/services";
+
+  switch (arguments.getSize()) {
+  case 0: // use default
+    break;
+  case 2:
+    jobString = arguments[0]; // job
+    if (jobString == "MD5SUM") {
+      job = MD5SUM;
+    } else if (jobString == "DUMP") {
+      job = DUMP;
+    } else {
+      fout << "usage: " << Application::getApplication()->getName() << " MD5SUM|DUMP file" << ENDL;
+      return Application::EXIT_CODE_NORMAL; // stop
+    }
+    filePath = arguments[1]; // file path
+    break;
+  default:
+    fout << "usage: " << Application::getApplication()->getName() << " MD5SUM|DUMP file" << ENDL;
+    return Application::EXIT_CODE_NORMAL; // stop
+  }
+
   try {
-    return entry();
+    entry(job, filePath);
   } catch(Exception& e) {
     return Application::getApplication()->exceptionHandler(e);
   } catch(...) {
     return Application::getApplication()->exceptionHandler();
   }
+  return Application::EXIT_CODE_NORMAL;
 }

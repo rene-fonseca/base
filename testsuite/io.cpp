@@ -60,7 +60,7 @@ void test() {
   }
   fout << "Map<int, int>: "<< mss << ENDL;
 
-  fout << "Url: " << Url("http://fonseca:password@www.mip.sdu.dk:80/~fonseca/base/") << ENDL;
+  fout << "Url: " << Url("http://fonseca:password@www.mip.sdu.dk:80/~fonseca/base/", false) << ENDL;
 }
 
 int main() {

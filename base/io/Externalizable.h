@@ -32,7 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class Externalizable {
 public:
 
-//  static TYPE readType(InputStream* in) {
+//  static TYPE readType(InputStream* in) throw(IOException) {
 //    PrimitiveInputStream stream(in);
 //    unsigned int length = stream->readUnsignedInteger();
 //    char id[length];
@@ -41,7 +41,7 @@ public:
 //  }
 //
 //  template<class TYPE>
-//  static void writeType(OutputStream* out, TYPE object) {
+//  static void writeType(OutputStream* out, TYPE object) throw(IOException) {
 //    PrimitiveOutputStream stream(out);
 //    const char* id = typeid(object).name();
 //    unsigned int length = strlen(id);
@@ -54,14 +54,14 @@ public:
 
     @param in The stream to get the object from.
   */
-  virtual void readExternal(InputStream* in) = 0;
+  virtual void readExternal(InputStream* in) throw(IOException) = 0;
 
   /**
     Writes object to output stream.
 
     @param out The stream to receive the object.
   */
-  virtual void writeExternal(OutputStream* out) = 0;
+  virtual void writeExternal(OutputStream* out) throw(IOException) = 0;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -34,15 +34,18 @@ private:
 
   class MappedFileImpl : public ReferenceCountedObject {
   private:
-
+    
     File file; // ensure that the file is not closed before map has been closed - may not be required
     FileRegion region;
     bool writeable;
     void* bytes;
   public:
 
-    MappedFileImpl(const File& file, const FileRegion& region, bool writeable) throw(FileException);
-
+    MappedFileImpl(
+      const File& file,
+      const FileRegion& region,
+      bool writeable) throw(FileException);
+    
     inline void* getBytes() const throw() {
       return bytes;
     }
@@ -73,7 +76,7 @@ protected:
   /**
     Returns the handle of the specified file.
   */
-  inline static OperatingSystem::Handle getHandle(File& file) {
+  inline static OperatingSystem::Handle getHandle(File& file) throw() {
     return file.fd->getHandle();
   }
 public:

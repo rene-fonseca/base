@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,16 +37,16 @@ String Node::getName() const throw() {
   case XML_ATTRIBUTE_NODE: // name of attribute
     if (node->ns && node->ns->prefix) {
       return String((const char*)node->ns->prefix) + MESSAGE(":") +
-        (const char*)node->name;
+        NativeString((const char*)node->name);
     } else {
-      return (const char*)node->name;
+      return NativeString((const char*)node->name);
     }
   case XML_ELEMENT_NODE: // tag name
     if (node->ns && node->ns->prefix) {
       return String((const char*)node->ns->prefix) + MESSAGE(":") +
-        (const char*)node->name;
+        NativeString((const char*)node->name);
     } else {
-      return (const char*)node->name;
+      return NativeString((const char*)node->name);
     }
   case XML_CDATA_SECTION_NODE:
     return MESSAGE("#cdata-section");
@@ -65,10 +65,10 @@ String Node::getName() const throw() {
   case XML_ENTITY_REF_NODE:
   case XML_NOTATION_NODE:
   case XML_PI_NODE: // target
-    return (const char*)node->name;
+    return NativeString((const char*)node->name);
   case XML_ENTITY_NODE:
     // TAG: is this ok
-    return (const char*)((const xmlEntity*)(node->name))->name;
+    return NativeString((const char*)((const xmlEntity*)(node->name))->name);
   default:
     throw UnexpectedFailure(this);
   }
@@ -86,7 +86,7 @@ String Node::getValue() const throw(DOMException) {
   case XML_COMMENT_NODE:
   case XML_PI_NODE:
   case XML_TEXT_NODE:
-    return (const char*)node->content;
+    return NativeString((const char*)node->content);
   case XML_DOCUMENT_NODE:
   case XML_DOCUMENT_FRAG_NODE:
   case XML_ATTRIBUTE_DECL:
@@ -667,7 +667,7 @@ String Node::getNamespaceURI() const throw() {
   if (node->ns &&
       ((node->type == XML_ELEMENT_NODE) ||
        (node->type == XML_ATTRIBUTE_NODE))) {
-    return (const char*)node->ns->href;
+    return NativeString((const char*)node->ns->href);
   } else {
     return String();
   }
@@ -679,11 +679,11 @@ String Node::getNamespaceURI() const throw() {
 String Node::getPrefix() const throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
-  return (const char*)node->ns->prefix;
+  return NativeString((const char*)node->ns->prefix);
   if (node->ns &&
       ((node->type == XML_ELEMENT_NODE) ||
        (node->type == XML_ATTRIBUTE_NODE))) {
-    return (const char*)node->ns->prefix;
+    return NativeString((const char*)node->ns->prefix);
   } else {
     return String();
   }
@@ -726,7 +726,7 @@ String Node::getLocalName() const throw() {
   if (/*node->ns &&*/ // TAG: should ns be ignored
       ((node->type == XML_ELEMENT_NODE) ||
        (node->type == XML_ATTRIBUTE_NODE))) {
-		return (const char*)node->name;
+		return NativeString((const char*)node->name);
   } else {
     return String();
   }

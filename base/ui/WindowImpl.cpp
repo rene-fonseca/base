@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -897,11 +897,12 @@ String WindowImpl::getServerVendor() const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return MESSAGE("UNSPECIFIED");
 #else // unix
-  return ::XServerVendor((Display*)displayHandle);
+  return NativeString(::XServerVendor((Display*)displayHandle));
 #endif // flavor
 }
 
-unsigned int WindowImpl::getServerRelease() const throw(UserInterfaceException) {
+unsigned int WindowImpl::getServerRelease() const
+  throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return 0;
 #else // unix
@@ -909,7 +910,8 @@ unsigned int WindowImpl::getServerRelease() const throw(UserInterfaceException) 
 #endif // flavor
 }
 
-void WindowImpl::displayMenu(const Position& position, const Menu& menu) throw(UserInterfaceException) {
+void WindowImpl::displayMenu(
+  const Position& position, const Menu& menu) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::SetForegroundWindow((HWND)drawableHandle);
   POINT point;
@@ -1168,7 +1170,8 @@ void WindowImpl::setCursor(Cursor cursor) throw(UserInterfaceException) {
 }
 
 // TAG: display, screen, or other window?
-Position WindowImpl::toGlobalPosition(const Position& position) const throw(UserInterfaceException) {
+Position WindowImpl::toGlobalPosition(
+  const Position& position) const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return this->position + position;
 #else // unix
@@ -1190,7 +1193,7 @@ Position WindowImpl::toGlobalPosition(const Position& position) const throw(User
 }
 
 // TAG: global or window position
-Position WindowImpl::getCursorPosition() const throw(UserInterfaceException) {  
+Position WindowImpl::getCursorPosition() const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   POINT point;
   ::GetCursorPos(&point);
@@ -1259,7 +1262,10 @@ void WindowImpl::setCursorConfinement() throw(UserInterfaceException) {
   offset.y = 0;
   ::ClientToScreen((HWND)drawableHandle, &offset);
   RECT rect;  
-  assert(::GetClientRect((HWND)drawableHandle, &rect), UserInterfaceException(this));
+  assert(
+    ::GetClientRect((HWND)drawableHandle, &rect),
+    UserInterfaceException(this)
+  );
   rect.left += offset.x;
   rect.top += offset.y;
   rect.right += offset.x;
@@ -1280,7 +1286,9 @@ void WindowImpl::setCursorConfinement() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-void WindowImpl::setCursorConfinement(const Position& position, const Dimension& dimension) throw(UserInterfaceException) {
+void WindowImpl::setCursorConfinement(
+  const Position& position,
+  const Dimension& dimension) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();
@@ -1295,12 +1303,16 @@ void WindowImpl::setCursorConfinement(const Position& position, const Dimension&
 
 void WindowImpl::disableClipping() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(::SelectClipRgn((HDC)graphicsContextHandle, 0) != ERROR, UserInterfaceException(this));
+  assert(
+    ::SelectClipRgn((HDC)graphicsContextHandle, 0) != ERROR,
+    UserInterfaceException(this)
+  );
 #else // unix
 #endif // flavor
 }
 
-WindowImpl::Region WindowImpl::getClipping() const throw(UserInterfaceException) {
+WindowImpl::Region WindowImpl::getClipping() const
+  throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return Region(); // TAG: fixme
 #else // unix
@@ -1308,7 +1320,9 @@ WindowImpl::Region WindowImpl::getClipping() const throw(UserInterfaceException)
 #endif // flavor
 }
 
-void WindowImpl::setClipping(const Position& position, const Dimension& dimension) throw(UserInterfaceException) {
+void WindowImpl::setClipping(
+  const Position& position,
+  const Dimension& dimension) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();
@@ -1324,7 +1338,10 @@ void WindowImpl::setClipping(const Position& position, const Dimension& dimensio
 void WindowImpl::close() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (drawableHandle) {
-    assert(::DestroyWindow((HWND)drawableHandle), UserInterfaceException(this));
+    assert(
+      ::DestroyWindow((HWND)drawableHandle),
+      UserInterfaceException(this)
+    );
   }
 #else // unix
   if (drawableHandle) {
@@ -1346,12 +1363,14 @@ void WindowImpl::close() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-bool WindowImpl::isChildOf(const WindowImpl& object) throw(UserInterfaceException) {
+bool WindowImpl::isChildOf(
+  const WindowImpl& object) throw(UserInterfaceException) {
   // TAG: fixme
   return false;
 }
 
-bool WindowImpl::isParentOf(const WindowImpl& object) throw(UserInterfaceException) {
+bool WindowImpl::isParentOf(
+  const WindowImpl& object) throw(UserInterfaceException) {
   // TAG: fixme
   return false;
 }
@@ -1652,19 +1671,26 @@ void WindowImpl::onMove(const Position& position) throw() {
 void WindowImpl::onResize(const Dimension& dimension) throw() {
 }
 
-void WindowImpl::onMouseMove(const Position& position, unsigned int buttons) throw() {
+void WindowImpl::onMouseMove(
+  const Position& position, unsigned int buttons) throw() {
 }
 
 void WindowImpl::onMouseScope(bool scope) throw() {
 }
 
-void WindowImpl::onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) throw() {
+void WindowImpl::onMouseButton(
+  const Position& position,
+  Mouse::Button button,
+  Mouse::Event event,
+  unsigned int state) throw() {
 }
 
-void WindowImpl::onMouseWheel(const Position& position, int delta, unsigned int buttons) throw() {
+void WindowImpl::onMouseWheel(
+  const Position& position, int delta, unsigned int buttons) throw() {
 }
 
-void WindowImpl::onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
+void WindowImpl::onKey(
+  unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
 }
 
 void WindowImpl::onIdle() throw() {

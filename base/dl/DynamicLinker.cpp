@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +26,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerException) {
+void* DynamicLinker::getGlobalSymbolImpl(
+  const String& symbol) throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // GetModuleHandle does not increment reference count
   void* result = (void*)(::GetProcAddress(::GetModuleHandle(0), symbol.getElements()));
@@ -70,7 +71,8 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerExcep
 //#endif // flavor
 //}
 
-DynamicLinker::DynamicLinker(const String& module, unsigned int options) throw(LinkerException) {
+DynamicLinker::DynamicLinker(
+  const String& module, unsigned int options) throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if ((handle = ::LoadLibraryEx(module.getElements(), 0, 0)) == 0) {
     throw LinkerException("Unable to open module", this);
@@ -92,7 +94,8 @@ DynamicLinker::DynamicLinker(const String& module, unsigned int options) throw(L
 #endif // flavor
 }
 
-void* DynamicLinker::getSymbol(const StringLiteral& symbol) const throw(LinkerException) {
+void* DynamicLinker::getSymbol(
+  const StringLiteral& symbol) const throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol));
   assert(result != 0, LinkerException("Unable to resolve symbol", this));
@@ -104,7 +107,8 @@ void* DynamicLinker::getSymbol(const StringLiteral& symbol) const throw(LinkerEx
 #endif // flavor
 }
 
-void* DynamicLinker::getSymbol(const String& symbol) const throw(LinkerException) {
+void* DynamicLinker::getSymbol(
+  const String& symbol) const throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));
   assert(result != 0, LinkerException("Unable to resolve symbol", this));
@@ -116,7 +120,8 @@ void* DynamicLinker::getSymbol(const String& symbol) const throw(LinkerException
 #endif // flavor
 }
 
-void* DynamicLinker::getUncertainSymbol(const StringLiteral& symbol) const throw() {
+void* DynamicLinker::getUncertainSymbol(
+  const StringLiteral& symbol) const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return (void*)(::GetProcAddress((HMODULE)handle, symbol));
 #else // unix
@@ -132,10 +137,13 @@ void* DynamicLinker::getUncertainSymbol(const String& symbol) const throw() {
 #endif // flavor
 }
 
-bool DynamicLinker::import(StaticFunctionDescriptor* functions, unsigned int numberOfFunctions, bool flags) throw() {
+bool DynamicLinker::import(
+  StaticFunctionDescriptor* functions,
+  unsigned int numberOfFunctions,
+  bool flags) throw() {
   bool result = true;
   for (unsigned int i = 0; i < numberOfFunctions; ++i) {
-    void* address = getUncertainSymbol(functions[i].symbol);
+    void* address = getUncertainSymbol(NativeString(functions[i].symbol));
     if (!address) {
       result = false;
       if ((flags & CONTINUE) == 0) {
@@ -149,9 +157,15 @@ bool DynamicLinker::import(StaticFunctionDescriptor* functions, unsigned int num
 
 DynamicLinker::~DynamicLinker() throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(::FreeLibrary((HMODULE)handle), LinkerException("Unable to close module", this));
+  assert(
+    ::FreeLibrary((HMODULE)handle),
+    LinkerException("Unable to close module", this)
+  );
 #else // unix
-  assert(::dlclose(handle) == 0, LinkerException("Unable to close module", this));
+  assert(
+    ::dlclose(handle) == 0,
+    LinkerException("Unable to close module", this)
+  );
 #endif // flavor
 }
 

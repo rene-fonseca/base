@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,7 +29,10 @@ void OpenGLContextImpl::loadModule() throw(OpenGLException) {
   // TAG: never release ui component?
   assert(
     Backend<WindowImpl>::loadModule(true),
-    OpenGLException("Unable to load module", Type::getType<OpenGLContextImpl>())
+    OpenGLException(
+      "Unable to load module",
+      Type::getType<OpenGLContextImpl>()
+    )
   );
   static SpinLock spinLock;
   spinLock.exclusiveLock();
@@ -41,7 +44,10 @@ void OpenGLContextImpl::loadModule() throw(OpenGLException) {
   spinLock.releaseLock();
   assert(
     success,
-    OpenGLException("Unable to load module", Type::getType<OpenGLContextImpl>())
+    OpenGLException(
+      "Unable to load module",
+      Type::getType<OpenGLContextImpl>()
+    )
   );
 }
 
@@ -52,7 +58,12 @@ String OpenGLContextImpl::getGLClientVendor() const throw(OpenGLException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
-  return native::GLX::glXGetClientString((Display*)Backend<WindowImpl>::getDisplay(), native::GLX::VENDOR);
+  return NativeString(
+    native::GLX::glXGetClientString(
+      (Display*)Backend<WindowImpl>::getDisplay(),
+      native::GLX::VENDOR
+    )
+  );
 #endif // flavor
 }
 
@@ -60,7 +71,12 @@ String OpenGLContextImpl::getGLClientRelease() const throw(OpenGLException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
-  return native::GLX::glXGetClientString((Display*)Backend<WindowImpl>::getDisplay(), native::GLX::VERSION);
+  return NativeString(
+    native::GLX::glXGetClientString(
+      (Display*)Backend<WindowImpl>::getDisplay(),
+      native::GLX::VERSION
+    )
+  );
 #endif // flavor
 }
 
@@ -68,7 +84,12 @@ String OpenGLContextImpl::getGLClientExtensions() const throw(OpenGLException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
-  return native::GLX::glXGetClientString((Display*)Backend<WindowImpl>::getDisplay(), native::GLX::EXTENSIONS);
+  return NativeString(
+    native::GLX::glXGetClientString(
+      (Display*)Backend<WindowImpl>::getDisplay(),
+      native::GLX::EXTENSIONS
+    )
+  );
 #endif // flavor
 }
 
@@ -77,10 +98,12 @@ String OpenGLContextImpl::getGLServerVendor() const throw(OpenGLException) {
   return String(); // TAG: fixme
 #else // unix
   void* screenHandle = 0; // TAG: fixme move method to OpenGLWindowContext?
-  return native::GLX::glXQueryServerString(
-    (Display*)Backend<WindowImpl>::getDisplay(),
-    ::XScreenNumberOfScreen((Screen*)screenHandle),
-    native::GLX::VENDOR
+  return NativeString(
+    native::GLX::glXQueryServerString(
+      (Display*)Backend<WindowImpl>::getDisplay(),
+      ::XScreenNumberOfScreen((Screen*)screenHandle),
+      native::GLX::VENDOR
+    )
   );
 #endif // flavor
 }
@@ -90,10 +113,12 @@ String OpenGLContextImpl::getGLServerRelease() const throw(OpenGLException) {
   return String(); // TAG: fixme
 #else // unix
   void* screenHandle = 0; // TAG: fixme move method to OpenGLWindowContext?
-  return native::GLX::glXQueryServerString(
-    (Display*)Backend<WindowImpl>::getDisplay(),
-    ::XScreenNumberOfScreen((Screen*)screenHandle),
-    native::GLX::VERSION
+  return NativeString(
+    native::GLX::glXQueryServerString(
+      (Display*)Backend<WindowImpl>::getDisplay(),
+      ::XScreenNumberOfScreen((Screen*)screenHandle),
+      native::GLX::VERSION
+    )
   );
 #endif // flavor
 }
@@ -103,10 +128,12 @@ String OpenGLContextImpl::getGLServerExtensions() const throw(OpenGLException) {
   return String(); // TAG: fixme
 #else // unix
   void* screenHandle = 0; // TAG: fixme move method to OpenGLWindowContext?
-  return native::GLX::glXQueryServerString(
-    (Display*)Backend<WindowImpl>::getDisplay(),
-    ::XScreenNumberOfScreen((Screen*)screenHandle),
-    native::GLX::EXTENSIONS
+  return NativeString(
+    native::GLX::glXQueryServerString(
+      (Display*)Backend<WindowImpl>::getDisplay(),
+      ::XScreenNumberOfScreen((Screen*)screenHandle),
+      native::GLX::EXTENSIONS
+    )
   );
 #endif // flavor
 }
@@ -134,17 +161,22 @@ bool OpenGLContextImpl::isCurrent() const throw(OpenGLException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return native::GDI::wglGetCurrentContext() == (HGLRC)renderingContextHandle;
 #else // unix
-  return native::GLX::glXGetCurrentContext() == (native::GLX::GLXContext)renderingContextHandle;
+  return native::GLX::glXGetCurrentContext() ==
+    (native::GLX::GLXContext)renderingContextHandle;
 #endif // flavor
 }
 
 void OpenGLContextImpl::makeCurrent() throw(OpenGLException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::SetLastError(0);
-  native::GDI::wglMakeCurrent((HDC)graphicsContextHandle, (HGLRC)renderingContextHandle);
-  fout << MESSAGE("Failed to make current: ") << ::GetLastError() << ENDL;
+  native::GDI::wglMakeCurrent(
+    (HDC)graphicsContextHandle,
+    (HGLRC)renderingContextHandle
+  );
   assert(
-    native::GDI::wglMakeCurrent((HDC)graphicsContextHandle, (HGLRC)renderingContextHandle),
+    native::GDI::wglMakeCurrent(
+      (HDC)graphicsContextHandle,
+      (HGLRC)renderingContextHandle
+    ),
     OpenGLException(this)
   );
 #else // unix
@@ -196,13 +228,17 @@ void OpenGLContextImpl::swap() throw(OpenGLException) {
 //     OpenGLException("Unable to swap buffers", this)
 //   );
 #else // unix
-  native::GLX::glXSwapBuffers((Display*)Backend<WindowImpl>::getDisplay(), (native::GLX::GLXDrawable)drawableHandle);
+  native::GLX::glXSwapBuffers(
+    (Display*)Backend<WindowImpl>::getDisplay(),
+    (native::GLX::GLXDrawable)drawableHandle
+  );
 #endif // flavor
 }
 
 void OpenGLContextImpl::swap(int plane) throw(OutOfRange, OpenGLException) {
   assert(
-    (plane >= -static_cast<int>(numberOfUnderlayPlanes)) && (plane <= numberOfOverlayPlanes),
+    (plane >= -static_cast<int>(numberOfUnderlayPlanes)) &&
+    (plane <= numberOfOverlayPlanes),
     OutOfRange(this)
   );
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
@@ -240,7 +276,10 @@ void OpenGLContextImpl::swap(int plane) throw(OutOfRange, OpenGLException) {
     WGL_SWAP_OVERLAY15
   };
   assert(
-    native::GDI::wglSwapLayerBuffers((HDC)graphicsContextHandle, NATIVE_PLANES[plane + 15]),
+    native::GDI::wglSwapLayerBuffers(
+      (HDC)graphicsContextHandle,
+      NATIVE_PLANES[plane + 15]
+    ),
     OpenGLException("Unable to swap plane", this)
   );
 #else // unix

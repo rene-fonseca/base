@@ -27,7 +27,7 @@ String Entity::getPublicId() const throw() {
   if (entity->etype != XML_EXTERNAL_GENERAL_UNPARSED_ENTITY) {
     return String();
   } else {
-    return (const char*)entity->ExternalID;
+    return NativeString((const char*)entity->ExternalID);
   }
 #else
   return String();
@@ -41,7 +41,7 @@ String Entity::getSystemId() const throw() {
   if (entity->etype != XML_EXTERNAL_GENERAL_UNPARSED_ENTITY) {
     return String();
   } else {
-    return (const char*)entity->SystemID;
+    return NativeString((const char*)entity->SystemID);
   }
 #else
   return String();
@@ -55,7 +55,7 @@ String Entity::getNotationName() const throw() {
   if (entity->etype != XML_EXTERNAL_GENERAL_UNPARSED_ENTITY) { // TAG: check
     return String();
   } else {
-    return (const char*)entity->content;
+    return NativeString((const char*)entity->content);
   }
 #else
   return String();

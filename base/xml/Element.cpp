@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,9 +25,9 @@ String Element::getTagName() const throw() {
   xmlNode* node = (xmlNode*)getContext();
   if (node->ns && node->ns->prefix) {
     return String((const char*)node->ns->prefix) + MESSAGE(":") +
-      (const char*)node->name;
+      NativeString((const char*)node->name);
   } else {
-    return (const char*)node->name;
+    return NativeString((const char*)node->name);
   }
 #else
   throw DOMException(this);
@@ -142,10 +142,12 @@ String Element::getAttributeNS(
   const String& namespaceURI, const String& localName) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
-  return (const char*)xmlGetNsProp(
-    node,
-    (const xmlChar*)localName.getElements(),
-    (const xmlChar*)namespaceURI.getElements()
+  return NativeString(
+    (const char*)xmlGetNsProp(
+      node,
+      (const xmlChar*)localName.getElements(),
+      (const xmlChar*)namespaceURI.getElements()
+    )
   );
 #else
   throw DOMException(this);

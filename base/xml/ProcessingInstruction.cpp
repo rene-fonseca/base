@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 String ProcessingInstruction::getTarget() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
-  return (const char*)node->name;
+  return NativeString((const char*)node->name);
 #else
   throw DOMException(this);
 #endif
@@ -32,7 +32,7 @@ String ProcessingInstruction::getTarget() const throw() {
 String ProcessingInstruction::getData() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
-  return (const char*)node->content;
+  return NativeString((const char*)node->content);
 #else
   throw DOMException(this);
 #endif

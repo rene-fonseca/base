@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -98,7 +98,7 @@ String Stylesheet::getOutputMethod() const throw() {
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   assert(temp, Exception(this));
-  return Cast::pointer<const char*>(temp->method);
+  return NativeString(Cast::pointer<const char*>(temp->method));
 #endif
 }
 
@@ -107,7 +107,7 @@ String Stylesheet::getNamespace() const throw() {
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   assert(temp, Exception(this));
-  return Cast::pointer<const char*>(temp->methodURI);
+  return NativeString(Cast::pointer<const char*>(temp->methodURI));
 #endif
 }
 
@@ -116,7 +116,7 @@ String Stylesheet::getVersion() const throw() {
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   assert(temp, Exception(this));
-  return Cast::pointer<const char*>(temp->version);
+  return NativeString(Cast::pointer<const char*>(temp->version));
 #endif
 }
 
@@ -125,7 +125,7 @@ String Stylesheet::getEncoding() const throw() {
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   assert(temp, Exception(this));
-  return Cast::pointer<const char*>(temp->encoding);
+  return NativeString(Cast::pointer<const char*>(temp->encoding));
 #endif
 }
 
@@ -143,7 +143,7 @@ String Stylesheet::getPublicId() const throw() {
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   assert(temp, Exception(this));
-  return Cast::pointer<const char*>(temp->doctypePublic);
+  return NativeString(Cast::pointer<const char*>(temp->doctypePublic));
 #endif
 }
 
@@ -152,7 +152,7 @@ String Stylesheet::getSystemId() const throw() {
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   assert(temp, Exception(this));
-  return Cast::pointer<const char*>(temp->doctypeSystem);
+  return NativeString(Cast::pointer<const char*>(temp->doctypeSystem));
 #endif
 }
 
@@ -161,7 +161,7 @@ String Stylesheet::getMediaType() const throw() {
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   assert(temp, Exception(this));
-  return Cast::pointer<const char*>(temp->mediaType);
+  return NativeString(Cast::pointer<const char*>(temp->mediaType));
 #endif
 }
 
@@ -200,7 +200,7 @@ Array<String> Stylesheet::getExcludedPrefixes() const throw() {
   Array<String> result;
   xmlChar** current = temp->exclPrefixTab;
   while (*current) { // FIXME
-    result.append(Cast::pointer<const char*>(*current));
+    result.append(NativeString(Cast::pointer<const char*>(*current)));
     ++current;
   }
   return result;

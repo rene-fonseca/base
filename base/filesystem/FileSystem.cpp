@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -1168,7 +1168,8 @@ void FileSystem::makeHardLink(const String& target, const String& path) throw(No
 #endif // flavor
 }
 
-void FileSystem::makeLink(const String& target, const String& path) throw(NotSupported, FileSystemException) {
+void FileSystem::makeLink(const String& target, const String& path)
+  throw(NotSupported, FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (cachedSupportsLinks == -1) {
     supportsLinks();
@@ -1179,16 +1180,24 @@ void FileSystem::makeLink(const String& target, const String& path) throw(NotSup
   
 	char fullTargetPath[MAX_PATH];
   assert(
-    ::GetFullPathName(target.getElements(), MAX_PATH, fullTargetPath, &fileNameComponent),
+    ::GetFullPathName(
+      target.getElements(),
+      MAX_PATH,
+      fullTargetPath,
+      &fileNameComponent
+    ),
     FileSystemException(Type::getType<FileSystem>())
   );
   
 	// make the native target name
 	String nativePath(MESSAGE("\\??\\"));
-  nativePath += fullTargetPath;
+  nativePath += NativeString(fullTargetPath);
   
   DWORD attributes = ::GetFileAttributes(target.getElements());
-  assert(attributes != INVALID_FILE_ATTRIBUTES, FileSystemException(Type::getType<FileSystem>()));
+  assert(
+    attributes != INVALID_FILE_ATTRIBUTES,
+    FileSystemException(Type::getType<FileSystem>())
+  );
   bool isDirectory = attributes & FILE_ATTRIBUTE_DIRECTORY;
   bool directoryCreated = false;
   

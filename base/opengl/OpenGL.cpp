@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -601,7 +601,9 @@ void OpenGL::loadFunctions(Descriptor* descriptor, unsigned int size) throw() {
     }
     if (this->*(descriptor->function) == 0) {
       this->*(descriptor->function) =
-        (OpenGL::Function)opengl::dynamicLinker->getUncertainSymbol(descriptor->name);
+        (OpenGL::Function)opengl::dynamicLinker->getUncertainSymbol(
+          NativeString(descriptor->name)
+        );
       if (this->*(descriptor->function) == 0) {
         this->*(descriptor->function) = (OpenGL::Function)&opengl::missing;
       }

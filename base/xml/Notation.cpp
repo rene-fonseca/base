@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,7 @@ String Notation::getPublicId() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   const xmlNotation* notation = (const xmlNotation*)node->name;
-  return (const char*)notation->PublicID;
+  return NativeString((const char*)notation->PublicID);
 #else
   return String();
 #endif
@@ -34,7 +34,7 @@ String Notation::getSystemId() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   const xmlNotation* notation = (const xmlNotation*)node->name;
-  return (const char*)notation->SystemID;
+  return NativeString((const char*)notation->SystemID);
 #else
   return String();
 #endif

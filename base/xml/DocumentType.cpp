@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 String DocumentType::getName() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
-  return (const char*)documentType->name;
+  return NativeString((const char*)documentType->name);
 #else
   throw DOMException(this);
 #endif
@@ -50,7 +50,7 @@ NamedNodeMap DocumentType::getNotations() const throw() {
 String DocumentType::getPublicId() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
-  return (const char*)documentType->ExternalID;
+  return NativeString((const char*)documentType->ExternalID);
 #else
   throw DOMException(this);
 #endif
@@ -59,7 +59,7 @@ String DocumentType::getPublicId() const throw() {
 String DocumentType::getSystemId() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
-  return (const char*)documentType->SystemID;
+  return NativeString((const char*)documentType->SystemID);
 #else
   throw DOMException(this);
 #endif

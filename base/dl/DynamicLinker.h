@@ -34,7 +34,8 @@ private:
   void* handle;
   
   /** Returns a pointer to the global symbol. */
-  static void* getGlobalSymbolImpl(const String& symbol) throw(LinkerException);
+  static void* getGlobalSymbolImpl(
+    const String& symbol) throw(LinkerException);
 public:
 
   typedef void (*Function)();
@@ -117,7 +118,9 @@ public:
     
     @return True if all functions are available.
   */
-  bool import(StaticFunctionDescriptor* functions, unsigned int numberOfFunctions, bool flags = 0) throw();
+  bool import(
+    StaticFunctionDescriptor* functions,
+    unsigned int numberOfFunctions, bool flags = 0) throw();
   
   /**
     Closes the module.

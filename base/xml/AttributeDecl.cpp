@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -75,7 +75,7 @@ AttributeDecl::DefaultType AttributeDecl::getDefaultValueType() const throw() {
 String AttributeDecl::getDefaultValue() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
-  return (const char*)attribute->defaultValue;
+  return NativeString((const char*)attribute->defaultValue);
 #else
   throw DOMException(this);
 #endif
@@ -91,7 +91,7 @@ Array<String> AttributeDecl::getEnumerationValues() const throw(DOMException) {
   Array<String> result;
   xmlEnumeration* e = attribute->tree;
   while (e) {
-    result.append((const char*)e->name);
+    result.append(NativeString((const char*)e->name));
     e = e->next;
   }
   return result;

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,18 +34,48 @@ namespace native {
     BOOL (CALL_GDI *wglSwapBuffers)(HDC hdc);
     BOOL (CALL_GDI *wglSwapLayerBuffers)(HDC hdc, UINT planes);
     BOOL (CALL_GDI *wglDescribeLayerPlane)(HDC hdc, int pixelFormat, int layerPlane, UINT bytes, LPLAYERPLANEDESCRIPTOR lpd);
-  
+    
     FunctionDescriptor FUNCTIONS[] = {
-      {"wglCreateContext", Cast::pointer<Function*>((void*)&wglCreateContext)},
-      {"wglCreateLayerContext", Cast::pointer<Function*>((void*)&wglCreateLayerContext)},
-      {"wglDeleteContext", Cast::pointer<Function*>((void*)&wglDeleteContext)},
-      {"wglGetCurrentContext", Cast::pointer<Function*>((void*)&wglGetCurrentContext)},
-      {"wglGetCurrentDC", Cast::pointer<Function*>((void*)&wglGetCurrentDC)},
-      {"wglGetProcAddress", Cast::pointer<Function*>((void*)&wglGetProcAddress)},
-      {"wglMakeCurrent", Cast::pointer<Function*>((void*)&wglMakeCurrent)},
-      {"wglSwapBuffers", Cast::pointer<Function*>((void*)&wglSwapBuffers)},
-      {"wglSwapLayerBuffers", Cast::pointer<Function*>((void*)&wglSwapLayerBuffers)},
-      {"wglDescribeLayerPlane", Cast::pointer<Function*>((void*)&wglDescribeLayerPlane)}
+      {
+        "wglCreateContext",
+        Cast::pointer<Function*>((void*)&wglCreateContext)
+      },
+      {
+        "wglCreateLayerContext",
+        Cast::pointer<Function*>((void*)&wglCreateLayerContext)
+      },
+      {
+        "wglDeleteContext",
+        Cast::pointer<Function*>((void*)&wglDeleteContext)
+      },
+      {
+        "wglGetCurrentContext",
+        Cast::pointer<Function*>((void*)&wglGetCurrentContext)
+      },
+      {
+        "wglGetCurrentDC",
+        Cast::pointer<Function*>((void*)&wglGetCurrentDC)
+      },
+      {
+        "wglGetProcAddress",
+        Cast::pointer<Function*>((void*)&wglGetProcAddress)
+      },
+      {
+        "wglMakeCurrent",
+        Cast::pointer<Function*>((void*)&wglMakeCurrent)
+      },
+      {
+        "wglSwapBuffers",
+        Cast::pointer<Function*>((void*)&wglSwapBuffers)
+      },
+      {
+        "wglSwapLayerBuffers",
+        Cast::pointer<Function*>((void*)&wglSwapLayerBuffers)
+      },
+      {
+        "wglDescribeLayerPlane",
+        Cast::pointer<Function*>((void*)&wglDescribeLayerPlane)
+      }
     };
 
     bool import() throw() {
@@ -59,7 +89,9 @@ namespace native {
         }
         for (unsigned int i = 0; i < getArraySize(FUNCTIONS); ++i) {
           *FUNCTIONS[i].function =
-            (Function)dynamicLinker->getUncertainSymbol(FUNCTIONS[i].symbol);
+            (Function)dynamicLinker->getUncertainSymbol(
+              NativeString(FUNCTIONS[i].symbol)
+            );
           if (!*FUNCTIONS[i].function) {
             dynamicLinker = 0;
             return false;

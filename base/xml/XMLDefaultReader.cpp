@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -47,9 +47,9 @@ public:
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->dtdHandler) {
       p->reader->dtdHandler->startDTD(
-        (const char*)name,
-        (const char*)publicId,
-        (const char*)systemId
+        NativeString((const char*)name),
+        NativeString((const char*)publicId),
+        NativeString((const char*)systemId)
       );
       p->reader->dtdHandler->endDTD(); // TAG: where should this go
     }
@@ -86,15 +86,15 @@ public:
       switch (type) {
       case XML_INTERNAL_GENERAL_ENTITY:
         p->reader->dtdHandler->internalEntityDecl(
-          (const char*)name,
-          (const char*)content
+          NativeString((const char*)name),
+          NativeString((const char*)content)
         );
         break;
       case XML_EXTERNAL_GENERAL_PARSED_ENTITY:
         p->reader->dtdHandler->externalEntityDecl(
-          (const char*)name,
-          (const char*)publicId,
-          (const char*)systemId
+          NativeString((const char*)name),
+          NativeString((const char*)publicId),
+          NativeString((const char*)systemId)
         );
         break;
       case XML_EXTERNAL_GENERAL_UNPARSED_ENTITY:
@@ -104,22 +104,22 @@ public:
       case XML_INTERNAL_PARAMETER_ENTITY:
         // TAG: use % prefix or other method
         p->reader->dtdHandler->internalEntityDecl(
-          (const char*)name,
-          (const char*)content
+          NativeString((const char*)name),
+          NativeString((const char*)content)
         );
         break;
       case XML_EXTERNAL_PARAMETER_ENTITY:
         // TAG: use % prefix or other method
         p->reader->dtdHandler->externalEntityDecl(
-          (const char*)name,
-          (const char*)publicId,
-          (const char*)systemId
+          NativeString((const char*)name),
+          NativeString((const char*)publicId),
+          NativeString((const char*)systemId)
         );
         break;
       case XML_INTERNAL_PREDEFINED_ENTITY:
         p->reader->dtdHandler->internalEntityDecl(
-          (const char*)name,
-          (const char*)content
+          NativeString((const char*)name),
+          NativeString((const char*)content)
         );
         break;
       default:
@@ -136,9 +136,9 @@ public:
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->dtdHandler) {
       p->reader->dtdHandler->notationDecl(
-        (const char*)name,
-        (const char*)publicId,
-        (const char*)systemId
+        NativeString((const char*)name),
+        NativeString((const char*)publicId),
+        NativeString((const char*)systemId)
       );
     }
   }
@@ -212,16 +212,16 @@ public:
       Array<String> enumeration;
       if (valueType == AttributeDecl::ENUMERATION) {
         while (tree) {
-          enumeration.append((const char*)tree->name);
+          enumeration.append(NativeString((const char*)tree->name));
           tree = tree->next;
         }
       }
       p->reader->dtdHandler->attributeDecl(
-        (const char*)name,
-        (const char*)elementName,
+        NativeString((const char*)name),
+        NativeString((const char*)elementName),
         valueType,
         defaultType,
-        (const char*)defaultValue,
+        NativeString((const char*)defaultValue),
         enumeration
       );
     }
@@ -254,7 +254,10 @@ public:
         throw SAXException();
       }
       
-      p->reader->dtdHandler->elementDecl((const char*)name, valueType);
+      p->reader->dtdHandler->elementDecl(
+        NativeString((const char*)name),
+        valueType
+      );
 
       // TAG: how should element content be handled
     }
@@ -269,10 +272,10 @@ public:
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->dtdHandler) {
       p->reader->dtdHandler->unparsedEntityDecl(
-        (const char*)name,
-        (const char*)publicId,
-        (const char*)systemId,
-        (const char*)notationName
+        NativeString((const char*)name),
+        NativeString((const char*)publicId),
+        NativeString((const char*)systemId),
+        NativeString((const char*)notationName)
       );
     }
   }
@@ -304,8 +307,8 @@ public:
         for (const xmlChar** current = atts; *current;) {
           attributes.append(
             Attributes::Attribute(
-              Cast::pointer<const char*>(*current++),
-              Cast::pointer<const char*>(*current++)
+              NativeString(Cast::pointer<const char*>(*current++)),
+              NativeString(Cast::pointer<const char*>(*current++))
             )
           );
         }
@@ -344,7 +347,7 @@ public:
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->entityReference(
-        Cast::pointer<const char*>(name)
+        NativeString(Cast::pointer<const char*>(name))
       );
     }
   }
@@ -373,8 +376,8 @@ public:
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->processingInstruction(
-        Cast::pointer<const char*>(target),
-        Cast::pointer<const char*>(data)
+        NativeString(Cast::pointer<const char*>(target)),
+        NativeString(Cast::pointer<const char*>(data))
       );
     }
   }
@@ -382,7 +385,9 @@ public:
   static void comment(void* parser, const xmlChar* value) throw() {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
-      p->reader->contentHandler->comment(Cast::pointer<const char*>(value));
+      p->reader->contentHandler->comment(
+        NativeString(Cast::pointer<const char*>(value))
+      );
     }
   }
   
@@ -413,8 +418,8 @@ public:
         SAXParseException(
           buffer,
           Type::getType<XMLDefaultReader>(),
-          Cast::pointer<const char*>(getPublicId(p->context)),
-          Cast::pointer<const char*>(getSystemId(p->context)),
+          NativeString(Cast::pointer<const char*>(getPublicId(p->context))),
+          NativeString(Cast::pointer<const char*>(getSystemId(p->context))),
           getLineNumber(p->context),
           getColumnNumber(p->context)
         )
@@ -439,8 +444,8 @@ public:
         SAXParseException(
           buffer,
           Type::getType<XMLDefaultReader>(),
-          Cast::pointer<const char*>(getPublicId(p->context)),
-          Cast::pointer<const char*>(getSystemId(p->context)),
+          NativeString(Cast::pointer<const char*>(getPublicId(p->context))),
+          NativeString(Cast::pointer<const char*>(getSystemId(p->context))),
           getLineNumber(p->context),
           getColumnNumber(p->context)
         )
@@ -465,8 +470,8 @@ public:
         SAXParseException(
           buffer,
           Type::getType<XMLDefaultReader>(),
-          Cast::pointer<const char*>(getPublicId(p->context)),
-          Cast::pointer<const char*>(getSystemId(p->context)),
+          NativeString(Cast::pointer<const char*>(getPublicId(p->context))),
+          NativeString(Cast::pointer<const char*>(getSystemId(p->context))),
           getLineNumber(p->context),
           getColumnNumber(p->context)
         )

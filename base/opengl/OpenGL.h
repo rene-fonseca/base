@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -3165,7 +3165,7 @@ public:
   */
   inline String getVendor() throw() {
     const GLubyte* vendor = glGetString(OpenGL::VENDOR);
-    return Cast::pointer<const char*>(vendor);
+    return NativeString(Cast::pointer<const char*>(vendor));
   }
 
   /**
@@ -3173,7 +3173,7 @@ public:
   */
   inline String getRenderer() throw() {
     const GLubyte* renderer = glGetString(OpenGL::RENDERER);
-    return Cast::pointer<const char*>(renderer);
+    return NativeString(Cast::pointer<const char*>(renderer));
   }
   
   /**
@@ -3181,7 +3181,7 @@ public:
   */
   inline String getVersion() throw() {
     const GLubyte* version = glGetString(OpenGL::VERSION);
-    return Cast::pointer<const char*>(version);
+    return NativeString(Cast::pointer<const char*>(version));
   }
 
   /**
@@ -3189,7 +3189,7 @@ public:
   */
   inline String getExtensions() throw() {
     const GLubyte* extensions = glGetString(OpenGL::EXTENSIONS);
-    return Cast::pointer<const char*>(extensions);
+    return NativeString(Cast::pointer<const char*>(extensions));
   }
   
   /**

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -134,13 +134,17 @@ namespace native {
     static DynamicLinker* dynamicLinker = 0;
     if (!dynamicLinker) {
       // never release
-      dynamicLinker = new DynamicLinker(MESSAGE(_DK_SDU_MIP__BASE__GLX_LIBRARY));
+      dynamicLinker = new DynamicLinker(
+        MESSAGE(_DK_SDU_MIP__BASE__GLX_LIBRARY)
+      );
       if (!dynamicLinker) {
         return false;
       }
       for (unsigned int i = 0; i < getArraySize(GLX_FUNCTIONS_1_0); ++i) {
         *GLX_FUNCTIONS_1_0[i].function =
-          (Function)dynamicLinker->getUncertainSymbol(GLX_FUNCTIONS_1_0[i].symbol);
+          (Function)dynamicLinker->getUncertainSymbol(
+            NativeString(GLX_FUNCTIONS_1_0[i].symbol)
+          );
         if (!*GLX_FUNCTIONS_1_0[i].function) {
           dynamicLinker = 0;
           return false;
@@ -168,7 +172,9 @@ namespace native {
       if (version >= 0x010100) {
         for (unsigned int i = 0; i < getArraySize(GLX_FUNCTIONS_1_1); ++i) {
           *GLX_FUNCTIONS_1_1[i].function =
-            (Function)dynamicLinker->getUncertainSymbol(GLX_FUNCTIONS_1_1[i].symbol);
+            (Function)dynamicLinker->getUncertainSymbol(
+              NativeString(GLX_FUNCTIONS_1_1[i].symbol)
+            );
           if (!*GLX_FUNCTIONS_1_1[i].function) {
             dynamicLinker = 0;
             return false;
@@ -177,7 +183,9 @@ namespace native {
         if (version >= 0x010300) {
           for (unsigned int i = 0; i < getArraySize(GLX_FUNCTIONS_1_3); ++i) {
             *GLX_FUNCTIONS_1_3[i].function =
-              (Function)dynamicLinker->getUncertainSymbol(GLX_FUNCTIONS_1_3[i].symbol);
+              (Function)dynamicLinker->getUncertainSymbol(
+                NativeString(GLX_FUNCTIONS_1_3[i].symbol)
+              );
             if (!*GLX_FUNCTIONS_1_3[i].function) {
               dynamicLinker = 0;
               return false;

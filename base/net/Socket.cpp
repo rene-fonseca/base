@@ -125,9 +125,9 @@ public:
     if (addr.getFamily() == InetAddress::IP_VERSION_4) {
       InetAddress temp(addr);
       temp.convertToIPv6();
-      copy<byte>(getByteAddress(sa.sin6_addr), temp.getAddress(), sizeof(struct in6_addr));
+      copy<uint8>(Cast::getAddress(sa.sin6_addr), temp.getAddress(), sizeof(struct in6_addr));
     } else {
-      copy<byte>(getByteAddress(sa.sin6_addr), addr.getAddress(), sizeof(struct in6_addr));
+      copy<uint8>(Cast::getAddress(sa.sin6_addr), addr.getAddress(), sizeof(struct in6_addr));
     }
   #else // only IPv4 support
     assert(
@@ -136,7 +136,7 @@ public:
     );
     sa.sin_family = AF_INET;
     sa.sin_port = ByteOrder::toBigEndian<unsigned short>(port);
-    copy<byte>(getByteAddress(sa.sin_addr), addr.getIPv4Address(), sizeof(struct in_addr));
+    copy<uint8>(Cast::getAddress(sa.sin_addr), addr.getIPv4Address(), sizeof(struct in_addr));
   #endif // _DK_SDU_MIP__BASE__INET_IPV6
   }
 
@@ -154,15 +154,15 @@ public:
   #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
     switch (sa.sin6_family) {
     case AF_INET:
-      return InetAddress(getByteAddress(Cast::pointer<const struct sockaddr_in*>(&sa)->sin_addr), InetAddress::IP_VERSION_4);
+      return InetAddress(Cast::getAddress(Cast::pointer<const struct sockaddr_in*>(&sa)->sin_addr), InetAddress::IP_VERSION_4);
     case AF_INET6:
-      return InetAddress(getByteAddress(Cast::pointer<const struct sockaddr_in6*>(&sa)->sin6_addr), InetAddress::IP_VERSION_6);
+      return InetAddress(Cast::getAddress(Cast::pointer<const struct sockaddr_in6*>(&sa)->sin6_addr), InetAddress::IP_VERSION_6);
     default:
       return InetAddress(); // TAG: or should I throw an exception or just ignore
     }
   #else
     if (sa.sin_family == AF_INET) {
-      return InetAddress(getByteAddress(Cast::pointer<const struct sockaddr_in*>(&sa)->sin_addr), InetAddress::IP_VERSION_4);
+      return InetAddress(Cast::getAddress(Cast::pointer<const struct sockaddr_in*>(&sa)->sin_addr), InetAddress::IP_VERSION_4);
     } else {
       return InetAddress(); // TAG: or should I throw an exception or just ignore
     }

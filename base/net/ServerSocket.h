@@ -15,7 +15,7 @@
 #define _DK_SDU_MIP__BASE_NET__SERVER_SOCKET_H
 
 #include <base/net/Socket.h>
-#include <base/net/ClientSocket.h>
+#include <base/net/StreamSocket.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

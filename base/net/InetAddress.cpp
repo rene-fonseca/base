@@ -83,11 +83,11 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
     uint8* addr;
     switch (i->ai_family) {
     case PF_INET:
-      addr = getByteAddress(Cast::pointer<struct sockaddr_in*>(i->ai_addr)->sin_addr);
+      addr = Cast::getAddress(Cast::pointer<struct sockaddr_in*>(i->ai_addr)->sin_addr);
       result.append(InetAddress(addr, IP_VERSION_4));
       break;
     case PF_INET6:
-      addr = getByteAddress(Cast::pointer<struct sockaddr_in6*>(i->ai_addr)->sin6_addr);
+      addr = Cast::getAddress(Cast::pointer<struct sockaddr_in6*>(i->ai_addr)->sin6_addr);
       result.append(InetAddress(addr, IP_VERSION_6));
       break;
 //    default:
@@ -150,10 +150,10 @@ InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound
     uint8* addr;
     switch (i->ai_family) {
     case PF_INET:
-      addr = getByteAddress(Cast::pointer<struct sockaddr_in*>(i->ai_addr)->sin_addr);
+      addr = Cast::getAddress(Cast::pointer<struct sockaddr_in*>(i->ai_addr)->sin_addr);
       return InetAddress(addr, IP_VERSION_4);
     case PF_INET6:
-      addr = getByteAddress(Cast::pointer<struct sockaddr_in6*>(i->ai_addr)->sin6_addr);
+      addr = Cast::getAddress(Cast::pointer<struct sockaddr_in6*>(i->ai_addr)->sin6_addr);
       return InetAddress(addr, IP_VERSION_6);
     }
     i = i->ai_next; // go to the next info entry
@@ -330,7 +330,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
   addr.sin6_len = sizeof(addr);
 #endif
   addr.sin6_family = AF_INET6;
-  copy<char>(Cast::getCharAddress(addr.sin6_addr), getCharAddress(address), sizeof(address));
+  copy<char>(Cast::getCharAddress(addr.sin6_addr), Cast::getCharAddress(address), sizeof(address));
   char hostname[NI_MAXHOST]; // includes space for terminator
 
   if (getnameinfo(

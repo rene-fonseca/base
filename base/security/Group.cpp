@@ -42,7 +42,7 @@ Group::Group(unsigned long long _id) throw(OutOfDomain) : id(_id) {
 Group::Group(const String& name) throw(GroupException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__HAVE__GETGRNAM_R)
+  #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     Allocator<char>* buffer = Thread::getLocalStorage();
     struct group grp;
@@ -77,8 +77,9 @@ Group::Group(const Group& copy) throw() : id(copy.id) {
 
 String Group::getName() const throw(GroupException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  return String();
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__HAVE__GETGRNAM_R)
+  #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     Allocator<char>* buffer = Thread::getLocalStorage();
     struct group grp;
@@ -97,8 +98,10 @@ String Group::getName() const throw(GroupException) {
 
 Array<String> Group::getMembers() const throw(GroupException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  Array<String> members;
+  return members;
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__HAVE__GETGRGID_R)
+  #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRGID_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     Allocator<char>* buffer = Thread::getLocalStorage();
     struct group grp;

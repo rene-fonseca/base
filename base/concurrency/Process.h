@@ -134,7 +134,8 @@ public:
   }
   
   /**
-    Returns true if the process is alive.
+    Returns true if the process is alive. On some platforms this will only work
+    if the process is a child process of the current process.
   */
   bool isAlive() const throw(ProcessException);
   
@@ -149,7 +150,7 @@ public:
     @return The exit code (Application::EXIT_CODE_INVALID if exit code is not available).
   */
   int wait() const throw(ProcessException);
-
+  
   /**
     Requests the process to terminate.
     

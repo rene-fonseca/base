@@ -38,26 +38,16 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
     }
 
     void main() throw() {
-      ...
+      // ...
     }
   };
-  
-  int main(int argc, const char* argv[], const char *env[]) {
-    MyApplication application(argc, argv, env);
-    try {
-      application.main();
-    } catch(Exception& e) {
-      return Application::getApplication()->exceptionHandler(e);
-    } catch(...) {
-      return Application::getApplication()->exceptionHandler();
-    }
-    return Application::getApplication()->getExitCode();
-  }
-  </pre>
 
+  STUB(MyApplication);
+  </pre>
+  
   @short Application context wrapper.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.2
+  @version 1.3
 */
 
 class Application : public Object {
@@ -84,7 +74,7 @@ public:
     EXIT_CODE_EXTERNAL = 127
   };
 private:
-
+  
   /** The application object. */
   static Application* application;
   /** The formal name of the application. */
@@ -107,12 +97,29 @@ private:
   /** Common initialization method used by constructors. */
   void initialize() throw();
 public:
-
+  
   /**
     Returns the application object.
   */
-  inline static Application* getApplication() throw() {return application;}
-
+  static inline Application* getApplication() throw() {return application;}
+  
+  template<class APPLICATION>
+  static inline int stub(int numberOfArguments, const char* arguments[], const char* environment[]) throw() {
+    try {
+      APPLICATION application(numberOfArguments, arguments, environment);
+      try {
+        application.main();
+      } catch (Exception& e) {
+        return Application::getApplication()->exceptionHandler(e);
+      } catch (...) {
+        return Application::getApplication()->exceptionHandler();
+      }
+      return Application::getApplication()->getExitCode();
+    } catch (...) {
+      return Application::EXIT_CODE_INITIALIZATION;
+    }
+  }
+  
   /**
     Initializes application with no arguments and no environment variables.
 
@@ -210,6 +217,15 @@ public:
   */
   ~Application() throw();
 };
+
+#define _DK_SDU_MIP__BASE__STUB(APPLICATION) \
+int main(int argc, const char* argv[], const char* env[]) throw() { \
+  return Application::stub<APPLICATION>(argc, argv, env); \
+}
+
+#if (!defined(STUB))
+#  define STUB _DK_SDU_MIP__BASE__STUB
+#endif
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

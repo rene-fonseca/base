@@ -16,6 +16,8 @@ include $(top_srcdir)/common.am
 noinst_LTLIBRARIES = libcollection.la
 
 libcollection_la_SOURCES = \
+  AlreadyKeyException.cpp \
+  AmbiguousRegistration.cpp \
   BitSet.cpp \
   EndOfEnumeration.cpp \
   HashSet.cpp \
@@ -26,6 +28,8 @@ libcollection_la_SOURCES = \
 
 sectiondir = $(includedir)/base/collection
 section_HEADERS = \
+  AlreadyKeyException.h \
+  AmbiguousRegistration.h \
   Array.h \
   Association.h \
   BinaryNode.h \

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,199 +15,125 @@
 #define _DK_SDU_MIP__BASE__TYPE_H
 
 #include <base/features.h>
+#include <typeinfo>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
-  class Char {
-  public:
-#if defined(_DK_SDU_MIP__BASE__UNSIGNED_CHAR)
-    static const char MAXIMUM = 255;
-    static const char MINIMUM = 0;
-#else // signed
-    static const char MAXIMUM = 127;
-    static const char MINIMUM = -128;
-#endif
-  };
-
-  class UnsignedChar {
-  public:
-    static const unsigned char MAXIMUM = 255;
-    static const unsigned char MINIMUM = 0;
-  };
-#endif
-
-#if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
-  class Short {
-  public:
-    static const short int MAXIMUM = 32767;
-    static const short int MINIMUM = -32768;
-  };
-
-  class UnsignedShort {
-  public:
-    static const unsigned short int MAXIMUM = 65535;
-    static const unsigned short int MINIMUM = 0;
-  };
-#elif (_DK_SDU_MIP__BASE__SHORT_SIZE = 4)
-  class Short {
-  public:
-    static const short int MAXIMUM = 2147483647;
-    static const short int MINIMUM = -MAXIMUM - 1;
-  };
-
-  class UnsignedShort {
-  public:
-    static const unsigned short int MAXIMUM = 4294967295U;
-    static const unsigned short int MINIMUM = 0;
-  };
-#endif
-
-#if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
-  class Int {
-  public:
-    static const int MAXIMUM = 2147483647;
-    static const int MINIMUM = -MAXIMUM - 1;
-  };
-
-  class UnsignedInt {
-  public:
-    static const unsigned int MAXIMUM = 4294967295U;
-    static const unsigned int MINIMUM = 0;
-  };
-#elif (_DK_SDU_MIP__BASE__INT_SIZE == 8)
-  class Int {
-  public:
-    static const int MAXIMUM = 9223372036854775807;
-    static const int MINIMUM = -MAXIMUM - 1;
-  };
-
-  class UnsignedInt {
-  public:
-    static const unsigned int MAXIMUM = 18446744073709551615U;
-    static const unsigned int MINIMUM = 0;
-  };
-#endif
-
-#if (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
-  class Long {
-  public:
-    static const long MAXIMUM = 2147483647L;
-    static const long MINIMUM = -MAXIMUM - 1L;
-  };
-
-  class UnsignedLong {
-  public:
-    static const unsigned long MAXIMUM = 4294967295UL;
-    static const unsigned long MINIMUM = 0;
-  };
-#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 8)
-  class Long {
-  public:
-    static const long MAXIMUM = 9223372036854775807;
-    static const long MINIMUM = -MAXIMUM - 1L;
-  };
-
-  class UnsignedLong {
-  public:
-    static const unsigned long MAXIMUM = 18446744073709551615UL;
-    static const unsigned long MINIMUM = 0;
-  };
-#endif
-
-#if (_DK_SDU_MIP__BASE__LONG_LONG_SIZE == 8)
-  class LongLong {
-  public:
-    static const long long MAXIMUM = 9223372036854775807LL;
-    static const long long MINIMUM = -MAXIMUM - 1LL;
-  };
-
-  class UnsignedLongLong {
-  public:
-    static const unsigned long long MAXIMUM = 18446744073709551615ULL;
-    static const unsigned long long MINIMUM = 0;
-  };
-#endif
-
-
-
-#if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
-  /** 8 bit unsigned integer (a.k.a. octet). */
-  typedef unsigned char byte;
-#endif
-
-#if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
-  /** 16 bit unsigned integer. */
-  typedef unsigned short uint16;
-#endif
-
-#if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
-  /** 32 bit unsigned integer. */
-  typedef unsigned int uint32;
-#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
-  /** 32 bit unsigned integer. */
-  typedef unsigned long uint32;
-#elif (_DK_SDI_MIP__BASE__LONG_LONG_SIZE == 4)
-  /** 32 bit unsigned integer. */
-  typedef unsigned long long uint32;
-#endif
-
 /**
-  Returns the higher half-word of the specified value.
+  This class is used to identify any type within the application.
+
+  @short Type identity.
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.0
 */
-inline byte getHighWord(unsigned short value) throw() {
-  return value >> (sizeof(unsigned short) * 8/2);
-}
 
-/**
-  Returns the lower half-word of the specified value.
-*/
-inline byte getLowWord(unsigned short value) throw() {
-  return value;
-}
+class Type {
+private:
 
-/**
-  Returns the higher half-word of the specified value.
-*/
-inline unsigned short getHighWord(unsigned int value) throw() {
-  return value >> (sizeof(unsigned int) * 8/2);
-}
+  const std::type_info* type;
 
-/**
-  Returns the lower half-word of the specified value.
-*/
-inline unsigned short getLowWord(unsigned int value) throw() {
-  return value;
-}
+  class Unintialized {
+  };
 
-/**
-  Returns the higher half-word of the specified value.
-*/
-inline unsigned int getHighWord(unsigned long long value) throw() {
-  return value >> (sizeof(unsigned long long) * 8/2);
-}
+  inline Type(std::type_info* _type) throw() : type(_type) {
+  }
+  
+  template<class TYPE>
+  class GetType {
+  public:
 
-/**
-  Returns the lower half-word of the specified value.
-*/
-inline unsigned int getLowWord(unsigned long long value) throw() {
-  return value;
-}
+    inline Type operator()() const throw() {
+      return Type(&typeid(TYPE));
+    }
+    
+    inline Type operator()(const TYPE& object) const throw() {
+      return Type(&typeid(TYPE));
+    }
+  };
+  
+  template<class TYPE>
+  class GetType<TYPE*> { // prevent pointer types
+  public:
 
-/**
-  Returns the address of the specified object as a byte pointer.
-*/
-template<class TYPE>
-inline byte* getByteAddress(TYPE& value) throw() {return reinterpret_cast<byte*>(&value);}
+    inline Type operator()() const throw() {
+      // TAG: it is better to raise OutOfDomain and even better to generate compilation error
+      return GetType<TYPE>(); // recursive
+    }
 
-template<class TYPE>
-inline const byte* getByteAddress(const TYPE& value) throw() {return reinterpret_cast<const byte*>(&value);}
+    inline Type operator()(const TYPE* object) const throw() {
+      // TAG: it is better to raise OutOfDomain and even better to generate compilation error
+      return GetType<TYPE>(*object); // recursive
+    }
+  };
+public:
 
-template<class TYPE>
-inline char* getCharAddress(TYPE& value) throw() {return reinterpret_cast<char*>(&value);}
+  /**
+    Returns the type object for the specified type.
+  */
+  template<class TYPE>
+  static inline Type getType() throw() {
+    return GetType<TYPE>();
+  }
 
-template<class TYPE>
-inline const char* getCharAddress(const TYPE& value) throw() {return reinterpret_cast<const char*>(&value);}
+  /**
+    Returns the type object for the type of the specified object.
+  */
+  template<class TYPE>
+  static inline Type getType(const TYPE& object) throw() {
+    return GetType<TYPE>(object);
+  }
+
+  /**
+    Initializes type object in uninitialized state.
+  */
+  inline Type() throw() : type(&typeid(Unintialized)) {
+  }
+
+  /**
+    Initialized type object from other type object.
+  */
+  inline Type(const Type& copy) throw() : type(copy.type) {
+  }
+
+  /**
+    Assignment of type object from type object.
+  */
+  inline Type& operator=(const Type& eq) throw() {
+    type = eq.type;
+    return *this;
+  }
+
+  /**
+    Returns true if the type object has been initialized.
+  */
+  inline bool isUninitialized() const throw() {
+    return *type == typeid(Unintialized);
+  }
+
+  /**
+    Returns true if the types are identical.
+  */
+  bool operator==(const Type& eq) const throw() {
+    return *type == *eq.type; // some implementations allow pointers to be compared (but NOT all)
+  }
+
+  /**
+    Returns true if the types are different.
+  */
+  bool operator!=(const Type& eq) const throw() {
+    return *type != *eq.type; // some implementations allow pointers to be compared (but NOT all)
+  }
+
+  /**
+    Returns a compiler specific string identifying the type uniquely. The return
+    value is unspecified for uninitialized type objects.
+
+    @see getTypename
+  */
+  const char* getLocalName() const throw() {
+    return type->name();
+  }
+};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

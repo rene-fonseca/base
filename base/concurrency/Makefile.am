@@ -17,6 +17,7 @@ noinst_LTLIBRARIES = libconcurrency.la
 
 libconcurrency_la_SOURCES = \
   AtomicCounter.cpp \
+  Barrier.cpp \
   ConcurrencyException.cpp \
   Event.cpp \
   ExclusiveSynchronize.cpp \
@@ -41,6 +42,7 @@ libconcurrency_la_SOURCES = \
 sectiondir = $(includedir)/base/concurrency
 section_HEADERS = \
   AtomicCounter.h \
+  Barrier.h \
   ConcurrencyException.h \
   Event.h \
   ExclusiveSynchronize.h \

@@ -31,22 +31,26 @@ template<class TRAITS>
 class MatrixRowIterator : public InterleavedIterator<TRAITS> {
 public:
 
+  typedef typename InterleavedIterator<TRAITS>::Distance Distance;
+  typedef typename InterleavedIterator<TRAITS>::Pointer Pointer;
   typedef SequenceIterator<TRAITS> ElementIterator;
-
+  
   /**
     Reference to an element within the iterator.
   */
   class Reference {
     friend class MatrixRowIterator;
+  public:
+    typedef typename ElementIterator::Value Value;
   private:
     ElementIterator iterator;
     Reference(const Reference& copy); // prohibit default copy initialization
     Reference& operator=(const Reference& eq); // prohibit default assignment
-    inline Reference(const ElementIterator& _iterator) : iterator(_iterator) {}
+    inline Reference(const ElementIterator& _iterator) throw() : iterator(_iterator) {}
   public:
-    inline Reference& operator=(ElementIterator::Value value) throw() {*iterator = value; return *this;}
+    inline Reference& operator=(Value value) throw() {*iterator = value; return *this;}
     inline operator ElementIterator() const throw() {return iterator;}
-    inline operator ElementIterator::Value() const throw() {return *iterator;}
+    inline operator Value() const throw() {return *iterator;}
   };
   
   

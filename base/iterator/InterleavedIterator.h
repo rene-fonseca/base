@@ -27,8 +27,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 template<class TRAITS>
 class InterleavedIterator : public Iterator<TRAITS> {
+public:
+  
+  typedef typename Iterator<TRAITS>::Distance Distance;
+  typedef typename Iterator<TRAITS>::Pointer Pointer;
+  typedef typename Iterator<TRAITS>::Reference Reference;
 protected:
-
+  
   /** The position of the iterator. */
   Pointer element;
   /** The fixed distance between "consecutive" elements. */

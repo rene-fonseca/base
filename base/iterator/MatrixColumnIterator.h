@@ -33,9 +33,13 @@ template<class TRAITS>
 class MatrixColumnIterator : public SequenceIterator<TRAITS> {
 private:
 
+  /** The dimension of the matrix. */
   Dimension dimension;
 public:
 
+  typedef typename SequenceIterator<TRAITS>::Distance Distance;
+  typedef typename SequenceIterator<TRAITS>::Pointer Pointer;
+  typedef typename SequenceIterator<TRAITS>::Reference Reference;
   typedef InterleavedIterator<TRAITS> ElementIterator;
 
   inline MatrixColumnIterator(Pointer value, const Dimension& _dimension) throw() :

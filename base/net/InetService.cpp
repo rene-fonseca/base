@@ -15,18 +15,18 @@
 #include <base/net/InetService.h>
 #include <base/ByteOrder.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <winsock.h>
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  include <winsock.h>
 #else // unix
-  #include <netdb.h>
-  #include <netinet/in.h>
+#  include <netdb.h>
+#  include <netinet/in.h>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 unsigned short InetService::getByName(const String& name, const String& protocol) throw() {
   struct servent* sp;
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   sp = getservbyname(name.getElements(), protocol.getElements()); // MT-safe
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   struct servent result;
@@ -45,7 +45,7 @@ unsigned short InetService::getByName(const String& name, const String& protocol
 
 String InetService::getByPort(unsigned short port, const String& protocol) throw() {
   struct servent* sp;
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   sp = getservbyport(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements()); // MT-safe
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   struct servent result;

@@ -272,7 +272,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
 void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOException) {
   ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
   SocketAddress sa(addr, port);
-  if (int rr = ::bind((int)getHandle(), sa.getValue(), sa.getSize())) {
+  if (::bind((int)getHandle(), sa.getValue(), sa.getSize())) {
     throw NetworkException("Unable to assign name to socket", this);
   }
 //  if ((addr.isUnspecified()) || (port == 0)) { // do we need to determine assigned name
@@ -694,6 +694,9 @@ bool Socket::wait(unsigned int microseconds) const throw(IOException) {
     throw IOException("Unable to wait for input", this);
   }
   return result != 0; // return true if data available
+}
+
+Socket::~Socket() throw(IOException) {
 }
 
 //class FileDescriptorEvent {

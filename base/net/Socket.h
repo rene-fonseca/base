@@ -360,6 +360,11 @@ public:
   bool wait(unsigned int microseconds) const throw(IOException);
 
   /**
+    Releases the socket.
+  */
+  ~Socket() throw(IOException);
+  
+  /**
     Writes a string representation of a Socket object to a format stream.
   */
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value);

@@ -19,17 +19,17 @@
 #include <base/ByteOrder.h>
 #include <base/Type.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32) // temporary solution until arch independant types have been defined
-  #include <winsock.h>
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32) // temporary solution until arch independant types have been defined
+#  include <winsock.h>
   typedef DWORD uint32_t;
 #else // unix
-  #include <sys/types.h>
-  #include <sys/socket.h>
-  #include <sys/param.h> // may define MAXHOSTNAMELEN (linux, irix)
-  #include <netinet/in.h> // define IP address
-  #include <netdb.h> // gethostbyname, may define MAXHOSTNAMELEN (solaris)
-  #include <arpa/inet.h> // defines inet_ntop...
-  #include <unistd.h> // defines gethostname
+#  include <sys/types.h>
+#  include <sys/socket.h>
+#  include <sys/param.h> // may define MAXHOSTNAMELEN (linux, irix)
+#  include <netinet/in.h> // define IP address
+#  include <netdb.h> // gethostbyname, may define MAXHOSTNAMELEN (solaris)
+#  include <arpa/inet.h> // defines inet_ntop...
+#  include <unistd.h> // defines gethostname
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -438,7 +438,6 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
         ++i; // also skip non-zero element after zero element
       }
 
-      bool anythingWritten = false;
       for (int i = 0; i < firstZero;) { // write values before zeros
         stream << NOPREFIX << HEX << ByteOrder::fromBigEndian<unsigned short>(addr[i++]);
         if (i < firstZero) {

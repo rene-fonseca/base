@@ -15,17 +15,17 @@
 #include <base/net/InetInterface.h>
 #include <base/concurrency/Thread.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #elif defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  #include <sys/types.h>
-  #include <sys/socket.h>
-  #include <net/if.h>
+#  include <sys/types.h>
+#  include <sys/socket.h>
+#  include <net/if.h>
 #else // unix
-  #include <sys/types.h>
-  #include <sys/socket.h>
-  #include <net/if.h>
-  #include <sys/ioctl.h>
-  #include <unistd.h>
+#  include <sys/types.h>
+#  include <sys/socket.h>
+#  include <net/if.h>
+#  include <sys/ioctl.h>
+#  include <unistd.h>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

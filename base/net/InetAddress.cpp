@@ -193,9 +193,9 @@ const unsigned char* InetAddress::getAddress() const throw() {
 
 const unsigned char* InetAddress::getIPv4Address() const throw() {
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  return (unsigned char*)&address[12];
+  return (unsigned char*)&address.buffer[12];
 #else
-  return (unsigned char*)&address;
+  return (unsigned char*)&address.buffer;
 #endif
 }
 

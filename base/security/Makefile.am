@@ -15,7 +15,31 @@ include $(top_srcdir)/common.am
 
 noinst_LTLIBRARIES = libsecurity.la
 
-libsecurity_la_SOURCES = AccessControlEntry.cpp AccessControlList.cpp CRC32.cpp MD5Sum.cpp SHA1.cpp Base64.cpp Group.cpp User.cpp Trustee.cpp
+libsecurity_la_SOURCES = \
+  AccessControlEntry.cpp \
+  AccessControlList.cpp \
+  Base64.cpp \
+  CRC32.cpp \
+  Group.cpp \
+  MD5Sum.cpp \
+  SHA1.cpp \
+  SHA256.cpp \
+  SHA384.cpp \
+  SHA512.cpp \
+  User.cpp \
+  Trustee.cpp
 
 sectiondir = $(includedir)/base/security
-section_HEADERS = AccessControlEntry.h AccessControlList.h CRC32.h MD5Sum.h SHA1.h Base64.h Group.h User.h Trustee.h
+section_HEADERS = \
+  AccessControlEntry.h \
+  AccessControlList.h \
+  Base64.h \
+  CRC32.h \
+  Group.h \
+  MD5Sum.h \
+  SHA1.h \
+  SHA256.h \
+  SHA384.h \
+  SHA512.h \
+  User.h \
+  Trustee.h

@@ -63,7 +63,7 @@ protected:
   /**
     Returns the handle of the specified file.
   */
-  inline static int getHandle(File& file) {return file.fd->getHandle();}
+  inline static OperatingSystem::Handle getHandle(File& file) {return file.fd->getHandle();}
 public:
 
   /**

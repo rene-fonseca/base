@@ -44,11 +44,11 @@ public:
   public:
 
     /** Initializes invalid pipe. */
-    inline PipeImpl() throw() : handle(-1) {}
+    inline PipeImpl() throw() : handle(OperatingSystem::INVALID_HANDLE) {}
     /** Initializes pipe by handle. */
     PipeImpl(OperatingSystem::Handle handle) throw() : handle(handle) {}
     /** Returns the handle. */
-    inline int getHandle() const throw() {return handle;}
+    inline OperatingSystem::Handle getHandle() const throw() {return handle;}
     /** Releases the resources use by the pipe. */
     ~PipeImpl() throw(PipeException);
   };

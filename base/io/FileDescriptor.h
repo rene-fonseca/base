@@ -52,7 +52,7 @@ protected:
     /**
       Initializes invalid descriptor.
     */
-    inline Descriptor() throw() : handle(-1) {}
+    inline Descriptor() throw() : handle(OperatingSystem::INVALID_HANDLE) {}
 
     /**
       Initializes descriptor.

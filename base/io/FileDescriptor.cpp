@@ -70,7 +70,7 @@ void FileDescriptor::Descriptor::setNonBlocking(bool value) throw(IOException) {
 }
 
 FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
-  if (handle != -1) {
+  if (handle != OperatingSystem::INVALID_HANDLE) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     if (!CloseHandle((HANDLE)handle)) {
       throw IOException("Unable to close file descriptor");
@@ -118,7 +118,7 @@ OperatingSystem::Handle FileDescriptor::getHandle() const throw() {
 }
 
 bool FileDescriptor::isValid() const throw() {
-  return fd->getHandle() != -1;
+  return fd->getHandle() != OperatingSystem::INVALID_HANDLE;
 }
 
 void FileDescriptor::setHandle(OperatingSystem::Handle handle) throw() {

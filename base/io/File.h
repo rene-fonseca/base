@@ -137,8 +137,8 @@ private:
     OperatingSystem::Handle handle;
   public:
 
-    FileImpl() throw() : handle(-1) {}
-    explicit FileImpl(int h) throw() : handle(h) {}
+    FileImpl() throw() : handle(OperatingSystem::INVALID_HANDLE) {}
+    explicit FileImpl(OperatingSystem::Handle h) throw() : handle(h) {}
     OperatingSystem::Handle getHandle() const throw() {return handle;}
     ~FileImpl() throw(FileException);
   };

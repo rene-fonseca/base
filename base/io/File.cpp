@@ -49,7 +49,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 File::FileImpl::~FileImpl() throw(FileException) {
 // TAG: throw exception if region of file is still locked
-  if (handle != -1) { // dont try to close if handle is invalidated
+  if (handle != OperatingSystem::INVALID_HANDLE) { // dont try to close if handle is invalidated
   #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     if (!CloseHandle(handle)) {
       throw FileException("Unable to close file");
@@ -125,7 +125,7 @@ File::File(const String& path, Access access, unsigned int options) throw(FileNo
   }
 
   OperatingSystem::Handle handle;
-  if ((handle = ::open(path.getElements(), flags, S_IRUSR | S_IWUSR | S_IRGRP)) == -1) {
+  if ((handle = ::open(path.getElements(), flags, S_IRUSR | S_IWUSR | S_IRGRP)) == OperatingSystem::INVALID_HANDLE) {
     throw FileNotFound("Unable to open file");
   }
   fd = new FileImpl(handle);

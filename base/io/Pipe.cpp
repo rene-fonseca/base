@@ -52,13 +52,13 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
 
 Pipe::PipeImpl::~PipeImpl() throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (getHandle() != -1) {
+  if (getHandle() != OperatingSystem::INVALID_HANDLE) {
     if (::CloseHandle(getHandle())) {
       throw PipeException("Unable to close pipe");
     }
   }
 #else // __unix__
-  if (getHandle() != -1) {
+  if (getHandle() != OperatingSystem::INVALID_HANDLE) {
     if (::close(getHandle())) {
       throw PipeException("Unable to close pipe");
     }

@@ -31,26 +31,8 @@ section_HEADERS += sparc-sun-solaris.h
 # generated during configuration
 section_HEADERS += platform.h
 
-archdir = $(includedir)/base/platforms/arch
-arch_HEADERS = arch/architecture.h
+nobase_section_HEADERS = arch/architecture.h arch/sse/sse.h arch/sse2/sse2.h arch/sse3/sse3.h arch/x87/x87.h
 
-compilerdir = $(includedir)/base/platforms/compiler
-compiler_HEADERS = compiler/compiler.h
+nobase_section_HEADERS += compiler/compiler.h compiler/doxygen/doxygen.h compiler/gcc/gcc.h compiler/msc/msc.h compiler/v3mv/exception.h
 
-gccdir = $(includedir)/base/platforms/compiler/gcc
-gcc_HEADERS = compiler/gcc/gcc.h
-
-mscdir = $(includedir)/base/platforms/compiler/msc
-msc_HEADERS = compiler/msc/msc.h
-
-v3mvdir = $(includedir)/base/platforms/compiler/v3mv
-v3mv_HEADERS = compiler/v3mv/exception.h
-
-osdir = $(includedir)/base/platforms/os
-os_HEADERS = os/os.h
-
-cygwindir = $(includedir)/base/platforms/os/cygwin
-cygwin_HEADERS = os/cygwin/cygwin.h
-
-solarisdir = $(includedir)/base/platforms/os/solaris
-solaris_HEADERS = os/solaris/solaris.h
+nobase_section_HEADERS += os/os.h os/cygwin/cygwin.h os/solaris/solaris.h os/w2k/w2k.h os/win32/winnt4.h os/winnt4/winnt4.h

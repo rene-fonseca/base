@@ -1328,7 +1328,12 @@ FileSystem::Quota FileSystem::getQuota(const String& path, Trustee trustee) thro
   }
   
   struct dqblk temp;
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
+  // TAG: casting away const (temporary fix)
+  int res = ::quotactl(Q_GETQUOTA, (char*)path.getElements(), id, Cast::pointer<caddr_t>(&temp));
+#else
   int res = ::quotactl(Q_GETQUOTA, path.getElements(), id, Cast::pointer<caddr_t>(&temp));
+#endif
   if (res == -1) {
     if (errno == EINVAL) {
       result.hardLimit = 0;
@@ -1338,9 +1343,15 @@ FileSystem::Quota FileSystem::getQuota(const String& path, Trustee trustee) thro
     }
     throw FileSystemException(Type::getType<FileSystem>());
   }
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
+  result.hardLimit = temp.dqb_bhardlimit;
+  result.softLimit = temp.dqb_bsoftlimit;
+  result.currentUsage = temp.dqb_curblocks;
+#else
   result.hardLimit = temp.dqb_ihardlimit;
   result.softLimit = temp.dqb_isoftlimit;
   result.currentUsage = temp.dqb_curinodes;
+#endif
   return result;
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   struct dqblk temp;

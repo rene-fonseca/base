@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @ingroup concurrency
   @see MutualExclusion
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.2
 */
 
 class SpinLock {
@@ -34,9 +34,11 @@ private:
   
   volatile mutable unsigned int value;
   // TAG: reduce crosstalk through cache line
-  
-  // TAG: optimize: exlusiveLock should invoke exclusiveLockImpl if unable to acquire lock
-  // void exclusiveLockImpl() const throw();
+
+  /**
+    Acquires the exclusive lock.
+  */
+  void acquireExclusiveLock() const throw();
 public:
   
   /**
@@ -50,32 +52,25 @@ public:
   */
   inline void exclusiveLock() const throw() {
 #if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
-    // TAG: do not use pause if optimized for Pentimum 3 or earlier
-    asm volatile (
-      "1:      xchgl %1, %0\n\t" // try to acquire lock
-      "        cmp %1, 0\n\t"
-      "        je 3f\n"
-      "2:      pause\n\t" // spin
-      "        cmp %1, %0\n\t"
-      "        jne 2b\n\t"
-      "        jmp 1b\n"
-      "3:      \n"
-      : "=m" (value) // output
-      : "r" (1) // input
-    );
+    register unsigned int previous;
+    asm (
+      "        xchgl %0, %1\n"
+      : "=&r" (previous), "=m" (value) // output (value is clobbered)
+      : "0" (1) // input
+    ); // TAG: get redundant instruction (mov to stack)
+    if (!previous) {
+      acquireExclusiveLock();
+    }
 #elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64)
-    asm volatile (
-      "1:      xchgl %1, %0\n\t" // try to acquire lock
-      "        cmp %1, 0\n\t"
-      "        je 3f\n"
-      "2:      pause\n\t" // spin // TAG: should pause be removed here
-      "        cmp %1, %0\n\t"
-      "        jne 2b\n\t"
-      "        jmp 1b\n"
-      "3:      \n"
-      : "=m" (value) // output
-      : "r" (1) // input
+    register unsigned int previous;
+    asm (
+      "        xchgl %0, %1\n"
+      : "=&r" (previous), "=m" (value) // output (value is clobbered)
+      : "0" (1) // input
     );
+    if (!previous) {
+      acquireExclusiveLock();
+    }
 #elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__IA64)
     asm volatile (
       "        mov ar.ccv = r0; \n\t" // free value
@@ -91,7 +86,9 @@ public:
       : "r2", "r29" // clobbered
     );
 #else
-    while (!tryExclusiveLock());
+    if (!tryExclusiveLock()) {
+      acquireExclusiveLock();
+    }
 #endif // architecture
   }
   
@@ -102,7 +99,7 @@ public:
   */
   inline bool tryExclusiveLock() const throw() {
 #if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
-    unsigned int previous;
+    register unsigned int previous;
     asm volatile (
       "        xchgl %0, %1\n"
       : "=&r" (previous), "=m" (value)
@@ -146,10 +143,10 @@ public:
     asm volatile (
       "1:      ll %0, %1\n\t" // get state of lock: 0 (unlocked), or 1 (locked)
       "        xor %0, %0, 1\n\t" // flip bit
-      "        beq %0, 0, 2f\n\t" // check if already locked
+      "        beq %0, $0, 2f\n\t" // check if already locked
       "        nop\n\t"
       "        sc %0, %1\n\t" // try to lock
-      "        beq %0, 0, 1b\n\t" // retry if we did not succeed
+      "        beq %0, $0, 1b\n\t" // retry if we did not succeed
       "        nop\n"
       "2:\n"
       : "=&r" (success), "=m" (value) // output

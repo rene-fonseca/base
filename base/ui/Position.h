@@ -11,11 +11,10 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_OPENGL__POSITION_H
-#define _DK_SDU_MIP__BASE_OPENGL__POSITION_H
+#ifndef _DK_SDU_MIP__BASE_UI__POSITION_H
+#define _DK_SDU_MIP__BASE_UI__POSITION_H
 
-#include <base/Object.h>
-#include <base/string/FormatOutputStream.h>
+#include <base/Dimension.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -24,7 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
     @short A two-dimensional coordinate.
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
+    @version 1.1
   */
   
 class Position : public Object {
@@ -46,6 +45,20 @@ public:
     Initializes position with specified x and y values.
   */
   inline Position(int _x, int _y) throw() : x(_x), y(_y) {
+  }
+
+  /**
+    Initializes position from dimension (width, height) as (width - 1, height - 1).
+  */
+  inline Position(const Dimension& dimension) throw()
+    : x(dimension.getWidth()),
+      y(dimension.getHeight()) {
+    if (x > 0) {
+      --x;
+    }
+    if (y > 0) {
+      --y;
+    }
   }
   
   /**
@@ -69,7 +82,77 @@ public:
   inline bool isOrigin() const throw() {
     return (x == 0) && (y == 0);
   }
+  
+  /**
+    Returns true if the position if with the rectangle specified by the corners
+    a and b.
 
+    @param a Corner.
+    @param b Corner.
+  */
+  inline bool isWithin(const Position& a, const Position& b) const throw() {
+    return (x >= a.x) && (y >= a.y) && (x <= b.x) && (y <= b.y);
+  }
+
+  /**
+    Returns true if the position if with the rectangle specified by the upper
+    left corner and the dimension.
+    
+    @param position Upper left corner.
+    @param dimension Dimension of the rectangle.
+  */
+  inline bool isWithin(const Position& position, const Dimension& dimension) const throw() {
+    return (x >= position.x) &&
+      (y >= position.y) &&
+      (x < (position.x + dimension.getWidth())) &&
+      (y < (position.y + dimension.getHeight()));
+  }
+
+  /**
+    Confines the position to the specified rectangle.
+    
+    @param a Corner.
+    @param b Corner.
+
+    @return Returns true if position was NOT changed.
+  */
+  inline bool confineTo(const Position& a, const Position& b) throw() {
+    bool ok = true;
+    if (x < minimum(a.x, b.x)) {
+      x = minimum(a.x, b.x);
+      ok = false;
+    } else if (x > maximum(a.x, b.x)) {
+      x = maximum(a.x, b.x);
+      ok = false;
+    }
+    if (y < minimum(a.y, b.y)) {
+      y = minimum(a.y, b.y);
+      ok = false;
+    } else if (y > maximum(a.y, b.y)) {
+      y = maximum(a.y, b.y);
+      ok = false;
+    }
+    return ok;
+  }
+  
+  /**
+    Returns true if the positions are equal.
+
+    @param position The position to be compared.
+  */
+  inline bool operator==(const Position& position) const throw() {
+    return (x == position.x) && (y == position.y);
+  }
+  
+  /**
+    Returns true if the positions are different.
+
+    @param position The position to be compared.
+  */
+  inline bool operator!=(const Position& position) const throw() {
+    return (x != position.x) || (y != position.y);
+  }
+  
   /**
     Returns the X coordinate.
   */

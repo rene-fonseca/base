@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -314,19 +314,19 @@ public:
     ASSERT(result == size);
     bytesWritten += size;
     if (totalSize > 0) {
-      fout << MESSAGE("  bytes written=") << bytesWritten
-           << MESSAGE("  completed=") << base::FIXED << setWidth(7) << setPrecision(3)
+      fout << "  bytes written=" << bytesWritten
+           << "  completed=" << base::FIXED << setWidth(7) << setPrecision(3)
            << static_cast<long double>(bytesWritten)/totalSize*100 << '%'
-           << MESSAGE("  time=") << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
-           << MESSAGE("  rate=") << base::FIXED << setWidth(12) << setPrecision(3)
+           << "  time=" << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
+           << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3)
            << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds())
-           << MESSAGE("kb/s\r") << FLUSH;
+           << "kb/s\r" << FLUSH;
     } else {
-      fout << MESSAGE("  bytes written=") << bytesWritten
-           << MESSAGE("  time=") << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
-           << MESSAGE("  rate=") << base::FIXED << setWidth(12) << setPrecision(3)
+      fout << "  bytes written=" << bytesWritten
+           << "  time=" << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
+           << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3)
            << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds())
-           << MESSAGE("kb/s\r") << FLUSH;
+           << "kb/s\r" << FLUSH;
     }
     return size;
   }
@@ -493,12 +493,12 @@ protected:
     
     StringOutputStream stream;
     stream << methods[method] << Traits::SP << resourceUri << Traits::SP
-           << MESSAGE("HTTP/1.1") << CRLF // Request-Line
-           << MESSAGE("Host: ") << host << CRLF // Section 14.23 (required)
-           << MESSAGE("User-Agent: ") << AGENT << CRLF // Section 14.43
+           << "HTTP/1.1" << CRLF // Request-Line
+           << "Host: " << host << CRLF // Section 14.23 (required)
+           << "User-Agent: " << AGENT << CRLF // Section 14.43
            << CRLF << FLUSH;
     if (verbosity >= DEBUG) {
-      fout << MESSAGE("Request: ") << stream.getString() << ENDL;
+      fout << "Request: " << stream.getString() << ENDL;
     }
     return stream.getString();
   }
@@ -510,7 +510,7 @@ protected:
     FormatInputStream instream(controlConnection);
 
     if (verbosity >= DEBUG) {
-      fout << MESSAGE("DEBUG: bytes available: ") << instream.available() << ENDL;
+      fout << "DEBUG: bytes available: " << instream.available() << ENDL;
     }
     ASSERT(instream.available() == controlConnection.available());
     
@@ -521,7 +521,7 @@ protected:
     instream >> statusLine;
     
     if (verbosity >= DEBUG) {
-      fout << MESSAGE("Status-Line: ") << statusLine << ENDL;
+      fout << "Status-Line: " << statusLine << ENDL;
     }
     translateStatus(statusLine);
     
@@ -536,7 +536,7 @@ protected:
       instream >> line;
 
       if (verbosity >= ALL) {
-        fout << MESSAGE(">> ") << line << ENDL;
+        fout << ">> " << line << ENDL;
       }
 
       if (line.isEmpty()) {
@@ -544,21 +544,21 @@ protected:
       }
 
       MessageHeader header(line);
-      fout << MESSAGE("name=") << header.getName() << Traits::SP
-           << MESSAGE("value=") << header.getValue() << ENDL;
+      fout << "name=" << header.getName() << Traits::SP
+           << "value=" << header.getValue() << ENDL;
       
-      if (header.getName() == MESSAGE("Transfer-Encoding")) {
-        if (header.getValue().toLowerCase() == MESSAGE("chunked")) {
+      if (header.getName() == "Transfer-Encoding") {
+        if (header.getValue().toLowerCase() == "chunked") {
           chunkedTransferEncoding = true;
         }
-      } else if (header.getName() == MESSAGE("Content-Length")) {
+      } else if (header.getName() == "Content-Length") {
         try {
           contentLength = UnsignedInteger(header.getValue());
           hasContentLength = true;
         } catch (InvalidFormat& e) {
           throw HTTPException("Invalid value for Content-Length field");
         }
-      } else if (header.getName() == MESSAGE("Content-Type")) {
+      } else if (header.getName() == "Content-Type") {
         contentType = header.getValue();
       }
     }
@@ -612,7 +612,7 @@ protected:
         instream >> line;
 
         if (verbosity >= ALL) {
-          fout << MESSAGE(">> ") << line << ENDL;
+          fout << ">> " << line << ENDL;
         }
 
         if (line.isEmpty()) {
@@ -621,7 +621,7 @@ protected:
       }
     } else if (hasContentLength) { // message-body - See section 7.2 in RFC
       if (verbosity >= DEBUG) {
-        fout << MESSAGE("Reading content: ") << contentLength << MESSAGE(" byte(s)") << ENDL;
+        fout << "Reading content: " << contentLength << " byte(s)" << ENDL;
       }
 
       if (push) {
@@ -637,7 +637,7 @@ protected:
         }
       } else {
         if (verbosity >= DEBUG) {
-          fout << MESSAGE("DEBUG: skipping ") << contentLength << MESSAGE(" byte(s)") << ENDL;
+          fout << "DEBUG: skipping " << contentLength << " byte(s)" << ENDL;
         }
         instream.skip(contentLength);
       }
@@ -701,9 +701,9 @@ public:
 
   void connect() throw(HTTPException) {
     if (verbosity >= DEBUG) {
-      fout << MESSAGE("DEBUG: Establishing control connection to: ")
-           << MESSAGE("address=") << endPoint.getAddress() << ' '
-           << MESSAGE("port=") << endPoint.getPort() << ENDL;
+      fout << "DEBUG: Establishing control connection to: "
+           << "address=" << endPoint.getAddress() << ' '
+           << "port=" << endPoint.getPort() << ENDL;
     }
     controlConnection.connect(endPoint.getAddress(), endPoint.getPort());
     controlConnection.getName();
@@ -732,7 +732,7 @@ public:
 
   ~HypertextTransferProtocolClient() {
     if (verbosity >= DEBUG) {
-      fout << MESSAGE("DEBUG: Closing sockets...") << ENDL;
+      fout << "DEBUG: Closing sockets..." << ENDL;
     }
     controlConnection.shutdownOutputStream();
     controlConnection.close();
@@ -749,42 +749,47 @@ public:
       url.setScheme("http");
     }
 
-    fout << MESSAGE("Individual parts of the specified url:") << EOL
-         << MESSAGE("  scheme: ") << url.getScheme() << EOL
-         << MESSAGE("  user: ") << url.getUser() << EOL
-         << MESSAGE("  password: ") << url.getPassword() << EOL
-         << MESSAGE("  host: ") << url.getHost() << EOL
-         << MESSAGE("  port: ") << (url.getPort().isProper() ? url.getPort() : String(MESSAGE("80"))) << EOL
-         << MESSAGE("  path: ") << url.getPath() << ENDL;
+    fout << "Individual parts of the specified url:" << EOL
+         << "  scheme: " << url.getScheme() << EOL
+         << "  user: " << url.getUser() << EOL
+         << "  password: " << url.getPassword() << EOL
+         << "  host: " << url.getHost() << EOL
+         << "  port: "
+         << (url.getPort().isProper() ? url.getPort() : String("80")) << EOL
+         << "  path: " << url.getPath() << ENDL;
 
     if (url.getScheme() != "http") {
-      fout << MESSAGE("Invalid url") << ENDL;
+      fout << "Invalid url" << ENDL;
       return;
     }
 
     InetAddress address; // the address of the remote host
     {
-      fout << MESSAGE("Server addresses:") << ENDL;
-      List<InetAddress> addresses = InetAddress::getAddressesByName(url.getHost());
+      fout << "Server addresses:" << ENDL;
+      List<InetAddress> addresses =
+        InetAddress::getAddressesByName(url.getHost());
       List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
       unsigned int index = 0;
       while (enu.hasNext()) {
         const InetAddress* temp = enu.next();
         if (index == 0) { // use the first address
           address = *temp;
-          fout << MESSAGE("  address ") << index++ << MESSAGE(": ") << *temp << MESSAGE(" (USING THIS)") << ENDL;
+          fout << "  address " << index++ << ": "
+               << *temp << " (USING THIS)" << ENDL;
         } else {
-          fout << MESSAGE("  address ") << index++ << MESSAGE(": ") << *temp << ENDL;
+          fout << "  address " << index++ << ": " << *temp << ENDL;
         }
       }
     }
 
-    InetEndPoint endPoint(address, (url.getPort().isProper() ? url.getPort() : String(MESSAGE("80"))));
+    InetEndPoint endPoint(
+      address, (url.getPort().isProper() ? url.getPort() : String("80"))
+    );
 
     String host;
     String port = url.getPort();
     if (port.isProper()) {
-      host = url.getHost() + String(MESSAGE(":")) + port;  
+      host = url.getHost() + String(":") + port;  
     } else {
       host = url.getHost();
     }
@@ -810,15 +815,19 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  HTTPApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() 
-    : Application(MESSAGE("http"), numberOfArguments, arguments, environment) {
+  HTTPApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw() 
+    : Application("http", numberOfArguments, arguments, environment) {
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     Array<String> arguments = getArguments();
@@ -838,7 +847,7 @@ public:
       file = arguments[1]; // the service
       break;
     default:
-      fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [url] [output]") << ENDL;
+      fout << "Usage: " << getFormalName() << " [url] [output]" << ENDL;
       setExitCode(Application::EXIT_CODE_ERROR);
       return;
     }

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,9 +30,12 @@ private:
   static const unsigned int MINOR_VERSION = 1;
   static const unsigned int MAXIMUM_TRUSTEE_LENGTH = 10;
   
-  static const ANSIEscapeSequence::Color COLOR_FOLDER = ANSIEscapeSequence::BLUE;
-  static const ANSIEscapeSequence::Color COLOR_EXECUTABLE = ANSIEscapeSequence::YELLOW;
-  static const ANSIEscapeSequence::Color COLOR_LINK = ANSIEscapeSequence::WHITE;
+  static const ANSIEscapeSequence::Color COLOR_FOLDER =
+    ANSIEscapeSequence::BLUE;
+  static const ANSIEscapeSequence::Color COLOR_EXECUTABLE =
+    ANSIEscapeSequence::YELLOW;
+  static const ANSIEscapeSequence::Color COLOR_LINK =
+    ANSIEscapeSequence::WHITE;
 
   enum Command {
     COMMAND_HELP,
@@ -49,8 +52,12 @@ private:
   String path;
 public:
   
-  ListApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("ls"), numberOfArguments, arguments, environment) {
+  ListApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("ls", numberOfArguments, arguments, environment) {
+    
     currentYear = Date::getNow().getYear();
     thisYearFormat = MESSAGE("%b %#d %H:%M");
     otherYearFormat = MESSAGE("%b %#d  %Y");
@@ -61,7 +68,10 @@ public:
   }
   
   inline String getTime(const Date& date) const throw() {
-    return date.format((date.getYear() == currentYear) ? thisYearFormat : otherYearFormat, false);
+    return date.format(
+      (date.getYear() == currentYear) ? thisYearFormat : otherYearFormat,
+      true
+    );
   }
   
   void parseArguments() throw() {
@@ -71,23 +81,23 @@ public:
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
       String argument = *enu.next();
-      if (argument == MESSAGE("--help")) {
+      if (argument == "--help") {
         command = COMMAND_HELP;
         return;
-      } else if (argument == MESSAGE("--color")) {
+      } else if (argument == "--color") {
         colorize = true;
-      } else if (argument == MESSAGE("--nocolor")) {
+      } else if (argument == "--nocolor") {
         colorize = false;
-      } else if (argument == MESSAGE("--limit")) {
+      } else if (argument == "--limit") {
         limitTrustees = true;
-      } else if (argument == MESSAGE("--nolimit")) {
+      } else if (argument == "--nolimit") {
         limitTrustees = false;
-      } else if (argument == MESSAGE("--version")) {
+      } else if (argument == "--version") {
         command = COMMAND_VERSION;
         return;
       } else {
         if (pathSpecified) {
-          ferr << MESSAGE("Error: ") << MESSAGE("Invalid argument") << ENDL;
+          ferr << "Error: " << "Invalid argument" << ENDL;
           setExitCode(EXIT_CODE_ERROR);
           return;
         }
@@ -98,30 +108,31 @@ public:
   }
 
   void version() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
   }
   
   void help() throw() {
     version();
-    fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [options] [path]") << EOL
+    fout << "Usage: " << getFormalName() << " [options] [path]" << EOL
          << EOL
-         << MESSAGE("--help      this message") << EOL
-         << MESSAGE("--version   dump the version") << EOL
+         << "--help      this message" << EOL
+         << "--version   dump the version" << EOL
          << EOL
-         << MESSAGE("--color     enable colorization of output") << EOL
-         << MESSAGE("--nocolor   disable colorization of output") << EOL
-         << MESSAGE("--limit     limit trustee fields to fixed size") << EOL
-         << MESSAGE("--nolimit   disable fixed trustee fields") << EOL
+         << "--color     enable colorization of output" << EOL
+         << "--nocolor   disable colorization of output" << EOL
+         << "--limit     limit trustee fields to fixed size" << EOL
+         << "--nolimit   disable fixed trustee fields" << EOL
          << ENDL;
   }
 
   void list() throw() {
     if (!FileSystem::folderExists(path)) {
-      ferr << MESSAGE("Error: ") << MESSAGE("Path does not exist") << ENDL;
+      ferr << "Error: " << "Path does not exist" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
@@ -153,7 +164,7 @@ public:
           if (link && !linkTarget) {
             target = MESSAGE("<unknown>");
           }
-          ferr << entry << MESSAGE(": ") << e << ENDL; // ignore exception
+          ferr << entry << ": " << e << ENDL; // ignore exception
         }
         
         {
@@ -225,10 +236,14 @@ public:
             
             if (limitTrustees) {
               if (ownerName.getLength() > MAXIMUM_TRUSTEE_LENGTH) {
-                ownerName = ownerName.substring(ownerName.getLength() - MAXIMUM_TRUSTEE_LENGTH);
+                ownerName = ownerName.substring(
+                  ownerName.getLength() - MAXIMUM_TRUSTEE_LENGTH
+                );
               }
               if (groupName.getLength() > MAXIMUM_TRUSTEE_LENGTH) {
-                groupName = groupName.substring(groupName.getLength() - MAXIMUM_TRUSTEE_LENGTH);
+                groupName = groupName.substring(
+                  groupName.getLength() - MAXIMUM_TRUSTEE_LENGTH
+                );
               }
             }
             
@@ -243,7 +258,7 @@ public:
               } else {
                 fout << entry;
               }
-              fout << MESSAGE(" -> ") << target;
+              fout << " -> " << target;
             } else {
               if (colorize && (mode & FileInfo::XUSR)) {
                 fout << setForeground(COLOR_EXECUTABLE) << entry << normal();
@@ -320,10 +335,14 @@ public:
 
             if (limitTrustees) {
               if (ownerName.getLength() > MAXIMUM_TRUSTEE_LENGTH) {
-                ownerName = ownerName.substring(ownerName.getLength() - MAXIMUM_TRUSTEE_LENGTH);
+                ownerName = ownerName.substring(
+                  ownerName.getLength() - MAXIMUM_TRUSTEE_LENGTH
+                );
               }
               if (groupName.getLength() > MAXIMUM_TRUSTEE_LENGTH) {
-                groupName = groupName.substring(groupName.getLength() - MAXIMUM_TRUSTEE_LENGTH);
+                groupName = groupName.substring(
+                  groupName.getLength() - MAXIMUM_TRUSTEE_LENGTH
+                );
               }
             }
             
@@ -338,7 +357,7 @@ public:
               } else {
                 fout << entry;
               }
-              fout << MESSAGE(" -> ") << target;
+              fout << " -> " << target;
               // TAG: colorize target: folder, link, or other?
             } else {
               if (colorize) {
@@ -349,7 +368,7 @@ public:
             }
             fout << EOL;
           } else { // unknown entry type
-            fout << MESSAGE("----------") << ' '
+            fout << "----------" << ' '
                  << setWidth(4) << ' ' << ' '
                  << setWidth(MAXIMUM_TRUSTEE_LENGTH) << ' ' << ' '
                  << setWidth(MAXIMUM_TRUSTEE_LENGTH) << ' ' << ' '
@@ -361,7 +380,7 @@ public:
               } else {
                 fout << entry;
               }
-              fout << MESSAGE(" -> ") << target;
+              fout << " -> " << target;
               // TAG: colorize target: folder, link, or other?
             } else {
               fout <<  entry;
@@ -371,7 +390,8 @@ public:
         }
         fout << FLUSH;
       } catch (FileSystemException& e) {
-        ferr << entry << MESSAGE(": ") << e << ENDL; // ignore exception - unless in debug mode?
+        // TAG: ignore exception - unless in debug mode?
+        ferr << entry << ": " << e << ENDL;
       }
     }
   }

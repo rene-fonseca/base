@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -277,8 +277,11 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  OpenGLApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("opengl"), numberOfArguments, arguments, environment) {
+  OpenGLApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("opengl", numberOfArguments, arguments, environment) {
   }
   
   class MyOpenGLContext : public OpenGLContext {
@@ -652,13 +655,13 @@ public:
     
     void onMove(const Position& position) throw() {
       if (verbosity >= Verbosity::ALL_MOUSE_EVENTS) {
-        fout << MESSAGE("Window move event: ") << position << ENDL;
+        fout << "Window move event: " << position << ENDL;
       }
     }
     
     void onResize(const Dimension& dimension) throw() {
       if (verbosity >= Verbosity::ALL_MOUSE_EVENTS) {
-        fout << MESSAGE("Resize event: ") << dimension << ENDL;
+        fout << "Resize event: " << dimension << ENDL;
       }
       
       openGL.glViewport(0, 0, dimension.getWidth(), dimension.getHeight());
@@ -684,7 +687,7 @@ public:
     void onMouseMove(const Position& position, unsigned int state) throw() {
       const Position difference = position - mouseButtonPosition;
       if (verbosity >= Verbosity::ALL_MOUSE_EVENTS) {
-        fout << MESSAGE("Mouse motion event: ") << position << ENDL;
+        fout << "Mouse motion event: " << position << ENDL;
       }
       setCursor(OpenGLContext::HAND); // TAG: remove
       
@@ -731,14 +734,14 @@ public:
         invalidate();
       }
 //         if (buttons != 0) {
-//           fout << MESSAGE("Mouse move: ") << position << ' ' << MESSAGE("ACTIVE") << ENDL;
+//           fout << "Mouse move: " << position << ' ' << "ACTIVE" << ENDL;
 //         } else {
-//           fout << MESSAGE("Mouse move: ") << position << ' ' << MESSAGE("PASSIVE") << ENDL;
+//           fout << "Mouse move: " << position << ' ' << "PASSIVE" << ENDL;
 //         }
     }
 
     void onMouseScope(bool scope) throw() {
-      fout << MESSAGE("Event: mouse scope ")
+      fout << "Event: mouse scope "
            << (scope ? MESSAGE("INSIDE SCOPE") : MESSAGE("OUT OF SCOPE")) << ENDL;
     }
     
@@ -770,13 +773,13 @@ public:
       };
       
       if (verbosity >= Verbosity::ACTIVE_MOUSE_EVENTS) {
-        fout << MESSAGE("Mouse button event: ")
+        fout << "Mouse button event: "
              << getMouseButtonName(button) << ' ';
         
         if (event < getArraySize(EVENT_STRING)) {
           fout << EVENT_STRING[event];
         } else {
-          fout << MESSAGE("[UNNAMED EVENT]") << ' ' << static_cast<unsigned int>(event);
+          fout << "[UNNAMED EVENT]" << ' ' << static_cast<unsigned int>(event);
         }
         fout << ' ';
         
@@ -824,9 +827,10 @@ public:
       drag.setZ(0);
     }
     
-    void onMouseWheel(const Position& position, int delta, unsigned int buttons) throw() {
+    void onMouseWheel(
+      const Position& position, int delta, unsigned int buttons) throw() {
       if (verbosity >= Verbosity::ACTIVE_MOUSE_EVENTS) {
-        fout << MESSAGE("Mouse wheel") << ENDL;
+        fout << "Mouse wheel" << ENDL;
       }
       setTranslation(view.getTranslation() + Vector3D<long double>(0, 0, 0.1 * delta/120));
       invalidate();
@@ -839,18 +843,18 @@ public:
         }
 
         if ((flags & Key::ASCII) && ASCIITraits::isGraph(key)) {
-          fout << MESSAGE("Key: ") << PREFIX << HEX << key << ' '
+          fout << "Key: " << PREFIX << HEX << key << ' '
                << '\'' << static_cast<char>(key) << '\''
-               << ' ' << MESSAGE("PRESSED");
+               << ' ' << "PRESSED";
         } else {
-          fout << MESSAGE("Key: ") << PREFIX << HEX << key << ' ' << MESSAGE("PRESSED");
+          fout << "Key: " << PREFIX << HEX << key << ' ' << "PRESSED";
         }
         if (flags & Key::FIRST_TIME) {
-          fout << ' ' << MESSAGE("FIRST");
+          fout << ' ' << "FIRST";
         }
         fout << ENDL;
       } else {
-        fout << MESSAGE("Key: ") << PREFIX << HEX << key << ' ' << MESSAGE("RELEASED") << ENDL;
+        fout << "Key: " << PREFIX << HEX << key << ' ' << "RELEASED" << ENDL;
       }
 
       if (flags & Key::PRESSED) {
@@ -943,7 +947,7 @@ public:
     }
     
     bool onClose() throw() {
-      fout << MESSAGE("Event: close ") << ENDL;
+      fout << "Event: close " << ENDL;
       MessageDialog dialog(MESSAGE("Quit"), MESSAGE("Do you really wan't to quit?"), MessageDialog::QUESTION);
       dialog.execute();
       if (dialog.getAnswer() == MessageDialog::YES) {
@@ -954,7 +958,7 @@ public:
     
     void onVisibility(Visibility visibility) throw() {
       if (verbosity >= Verbosity::ACTIVE_MOUSE_EVENTS) {
-        fout << MESSAGE("Visibility event: ")
+        fout << "Visibility event: "
              << ((visibility == VISIBLE) ? MESSAGE("VISIBLE") : MESSAGE("INVISIBLE"))
              << ENDL;
       }
@@ -962,42 +966,42 @@ public:
     
     void onFocus(Focus focus) throw() {
       if (verbosity >= Verbosity::ACTIVE_MOUSE_EVENTS) {
-        fout << MESSAGE("Focus event: ")
+        fout << "Focus event: "
              << ((focus == ACQUIRED_FOCUS) ? MESSAGE("ACQUIRED FOCUS") : MESSAGE("LOST FOCUS"))
              << ENDL;
       }
     }
 
     void dumpOpenGLInformation() throw() {
-      fout << MESSAGE("Vendor: ") << openGL.getVendor() << EOL
-           << MESSAGE("Renderer: ") << openGL.getRenderer() << EOL
-           << MESSAGE("Version: ") << openGL.getVersion() << EOL
-           << MESSAGE("Extensions: ") << openGL.getExtensions() << EOL
+      fout << "Vendor: " << openGL.getVendor() << EOL
+           << "Renderer: " << openGL.getRenderer() << EOL
+           << "Version: " << openGL.getVersion() << EOL
+           << "Extensions: " << openGL.getExtensions() << EOL
            << EOL
-           << MESSAGE("Rendering context:") << EOL
-           << indent(2) << MESSAGE("red bits: ") << redBits << EOL
-           << indent(2) << MESSAGE("green bits: ") << greenBits << EOL
-           << indent(2) << MESSAGE("blue bits: ") << blueBits << EOL
-           << indent(2) << MESSAGE("alpha bits: ") << alphaBits << EOL
-           << indent(2) << MESSAGE("accumulator red bits: ") << accumulatorRedBits << EOL
-           << indent(2) << MESSAGE("accumulator green bits: ") << accumulatorGreenBits << EOL
-           << indent(2) << MESSAGE("accumulator blue bits: ") << accumulatorBlueBits << EOL
-           << indent(2) << MESSAGE("accumulator alpha bits: ") << accumulatorAlphaBits << EOL
-           << indent(2) << MESSAGE("depth bits: ") << depthBits << EOL
-           << indent(2) << MESSAGE("stencil bits: ") << stencilBits << EOL
-           << indent(2) << MESSAGE("aux buffers: ") << auxBuffers << EOL
-           << indent(2) << MESSAGE("overlay planes: ") << numberOfOverlayPlanes << EOL
-           << indent(2) << MESSAGE("underlay planes: ") << numberOfUnderlayPlanes << EOL
-           << indent(2) << MESSAGE("double buffered: ") << isDoubleBuffered() << EOL
-           << indent(2) << MESSAGE("stereoscopic: ") << isStereoscopic() << EOL
-           << indent(2) << MESSAGE("direct: ") << isDirect() << EOL
-           << indent(2) << MESSAGE("generic: ") << isGeneric() << EOL
+           << "Rendering context:" << EOL
+           << indent(2) << "red bits: " << redBits << EOL
+           << indent(2) << "green bits: " << greenBits << EOL
+           << indent(2) << "blue bits: " << blueBits << EOL
+           << indent(2) << "alpha bits: " << alphaBits << EOL
+           << indent(2) << "accumulator red bits: " << accumulatorRedBits << EOL
+           << indent(2) << "accumulator green bits: " << accumulatorGreenBits << EOL
+           << indent(2) << "accumulator blue bits: " << accumulatorBlueBits << EOL
+           << indent(2) << "accumulator alpha bits: " << accumulatorAlphaBits << EOL
+           << indent(2) << "depth bits: " << depthBits << EOL
+           << indent(2) << "stencil bits: " << stencilBits << EOL
+           << indent(2) << "aux buffers: " << auxBuffers << EOL
+           << indent(2) << "overlay planes: " << numberOfOverlayPlanes << EOL
+           << indent(2) << "underlay planes: " << numberOfUnderlayPlanes << EOL
+           << indent(2) << "double buffered: " << isDoubleBuffered() << EOL
+           << indent(2) << "stereoscopic: " << isStereoscopic() << EOL
+           << indent(2) << "direct: " << isDirect() << EOL
+           << indent(2) << "generic: " << isGeneric() << EOL
            << ENDL;
     }
     
     void dumpCommand(const StringLiteral& description) throw() {
       if (verbosity >= Verbosity::COMMANDS) {
-        fout << MESSAGE("Command: ") << description << ENDL;
+        fout << "Command: " << description << ENDL;
       }
     }
      
@@ -1198,10 +1202,11 @@ public:
   };
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
 
     MyOpenGLContext::Format desiredFormat;
@@ -1215,29 +1220,29 @@ public:
     );
     Array<MyOpenGLContext::Format>::ReadEnumerator enu = formats.getReadEnumerator();
     
-    fout << MESSAGE("Available formats:") << ENDL;
+    fout << "Available formats:" << ENDL;
     for (unsigned int i = 0; enu.hasNext(); ++i) {
       const MyOpenGLContext::Format* format = enu.next();
       if (false) {
-        fout << indent(2) << MESSAGE("Format: ") << i << EOL
-             << indent(4) << MESSAGE("color indexed: ") << ((format->flags & MyOpenGLContext::COLOR_INDEXED) != 0) << EOL
-             << indent(4) << MESSAGE("rgb: ") << ((format->flags & MyOpenGLContext::RGB) != 0) << EOL
-             << indent(4) << MESSAGE("double buffered: ") << ((format->flags & MyOpenGLContext::DOUBLE_BUFFERED) != 0) << EOL
-             << indent(4) << MESSAGE("stereoscopic: ") << ((format->flags & MyOpenGLContext::STEREO) != 0) << EOL
-             << indent(4) << MESSAGE("generic: ") << ((format->flags & MyOpenGLContext::GENERIC) != 0) << EOL
-             << indent(4) << MESSAGE("color bits: ") << format->colorBits << EOL
-             << indent(6) << MESSAGE("red bits: ") << format->redBits << EOL
-             << indent(6) << MESSAGE("green bits: ") << format->greenBits << EOL
-             << indent(6) << MESSAGE("blue bits: ") << format->blueBits << EOL
-             << indent(6) << MESSAGE("alpha bits: ") << format->alphaBits << EOL
-             << indent(4) << MESSAGE("accumulator bits: ") << format->accumulatorBits << EOL
-             << indent(6) << MESSAGE("accumulator red bits: ") << format->accumulatorRedBits << EOL
-             << indent(6) << MESSAGE("accumulator green bits: ") << format->accumulatorGreenBits << EOL
-             << indent(6) << MESSAGE("accumulator blue bits: ") << format->accumulatorBlueBits << EOL
-             << indent(6) << MESSAGE("accumulator alpha bits: ") << format->accumulatorAlphaBits << EOL
-             << indent(4) << MESSAGE("depthBits: ") << format->depthBits << EOL
-             << indent(4) << MESSAGE("stencilBits: ") << format->stencilBits << EOL
-             << indent(4) << MESSAGE("auxBuffers: ") << format->auxBuffers << EOL
+        fout << indent(2) << "Format: " << i << EOL
+             << indent(4) << "color indexed: " << ((format->flags & MyOpenGLContext::COLOR_INDEXED) != 0) << EOL
+             << indent(4) << "rgb: " << ((format->flags & MyOpenGLContext::RGB) != 0) << EOL
+             << indent(4) << "double buffered: " << ((format->flags & MyOpenGLContext::DOUBLE_BUFFERED) != 0) << EOL
+             << indent(4) << "stereoscopic: " << ((format->flags & MyOpenGLContext::STEREO) != 0) << EOL
+             << indent(4) << "generic: " << ((format->flags & MyOpenGLContext::GENERIC) != 0) << EOL
+             << indent(4) << "color bits: " << format->colorBits << EOL
+             << indent(6) << "red bits: " << format->redBits << EOL
+             << indent(6) << "green bits: " << format->greenBits << EOL
+             << indent(6) << "blue bits: " << format->blueBits << EOL
+             << indent(6) << "alpha bits: " << format->alphaBits << EOL
+             << indent(4) << "accumulator bits: " << format->accumulatorBits << EOL
+             << indent(6) << "accumulator red bits: " << format->accumulatorRedBits << EOL
+             << indent(6) << "accumulator green bits: " << format->accumulatorGreenBits << EOL
+             << indent(6) << "accumulator blue bits: " << format->accumulatorBlueBits << EOL
+             << indent(6) << "accumulator alpha bits: " << format->accumulatorAlphaBits << EOL
+             << indent(4) << "depthBits: " << format->depthBits << EOL
+             << indent(4) << "stencilBits: " << format->stencilBits << EOL
+             << indent(4) << "auxBuffers: " << format->auxBuffers << EOL
              << ENDL;
       }
       if ((formatId == -1) || (format->alphaBits && (!desiredFormat.alphaBits))) {
@@ -1247,7 +1252,7 @@ public:
     }
     
     if (formatId == -1) {
-      ferr << MESSAGE("Format not available") << ENDL;
+      ferr << "Format not available" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
@@ -1259,14 +1264,14 @@ public:
       desiredFormat
     );
 
-    fout << MESSAGE("OpenGL context information: ") << EOL
-         << indent(2) << MESSAGE("client vendor: ") << myOpenGLContext.getGLClientVendor() << EOL
-         << indent(2) << MESSAGE("client release: ") << myOpenGLContext.getGLClientRelease() << EOL
-         << indent(2) << MESSAGE("client extensions: ") << myOpenGLContext.getGLClientExtensions() << EOL
-         << indent(2) << MESSAGE("server vendor: ") << myOpenGLContext.getGLServerVendor() << EOL
-         << indent(2) << MESSAGE("server release: ") << myOpenGLContext.getGLServerRelease() << EOL
-         << indent(2) << MESSAGE("server extensions: ") << myOpenGLContext.getGLServerExtensions() << EOL
-         << indent(2) << MESSAGE("direct context: ") << myOpenGLContext.isDirect() << EOL
+    fout << "OpenGL context information: " << EOL
+         << indent(2) << "client vendor: " << myOpenGLContext.getGLClientVendor() << EOL
+         << indent(2) << "client release: " << myOpenGLContext.getGLClientRelease() << EOL
+         << indent(2) << "client extensions: " << myOpenGLContext.getGLClientExtensions() << EOL
+         << indent(2) << "server vendor: " << myOpenGLContext.getGLServerVendor() << EOL
+         << indent(2) << "server release: " << myOpenGLContext.getGLServerRelease() << EOL
+         << indent(2) << "server extensions: " << myOpenGLContext.getGLServerExtensions() << EOL
+         << indent(2) << "direct context: " << myOpenGLContext.isDirect() << EOL
          << ENDL;
 
     myOpenGLContext.show();

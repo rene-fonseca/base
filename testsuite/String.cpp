@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,6 +20,25 @@
 #include <base/collection/Functor.h>
 
 using namespace dk::sdu::mip::base;
+
+template<class TYPE>
+class Validate {
+private:
+
+  TYPE value;
+public:
+  
+  inline Validate(const TYPE& _value, const TYPE& expected) throw()
+    : value(_value) {
+    if (_value != expected) {
+      ferr << "Error: expected " << expected << " but got " << value << ENDL;
+    }
+  }
+
+  inline operator TYPE() const throw() {
+    return value;
+  }
+};
 
 /** Invert case of character. */
 class InvertCase : public UnaryOperation<char, char> {
@@ -42,14 +61,15 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  StringApplication(int argc, const char* argv[], const char* env[]) : Application(MESSAGE("String"), argc, argv, env) {
+  StringApplication(int argc, const char* argv[], const char* env[])
+    : Application(MESSAGE("String"), argc, argv, env) {
   }
   
   void main() throw() {
     fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << MESSAGE("The Base Framework (Test Suite)") << EOL
          << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << MESSAGE("Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
     
     Allocator<char> a(1234);
@@ -124,12 +144,26 @@ public:
 
     String string(MESSAGE("This is a string"));
     const char* temp1 = string.getElements();
-    fout << MESSAGE("Testing direct read access (This is a string): ") << temp1 << ENDL;
+    fout << MESSAGE("Testing direct read access (This is a string): ")
+         << temp1 << ENDL;
 
     char* temp2 = string.getElements();
     fout << MESSAGE("Testing direct read and write access (This is a string): ") << temp2 << ENDL;
 
-    fout << MESSAGE("Test: ") << getFormalName().getElements() << ENDL;
+    fout << MESSAGE("Test: ") << getFormalName() << ENDL;
+    
+    fout << "String(\"prefix suffix\").startsWith(\"prefix\"): "
+         << Validate<bool>(String("prefix suffix").startsWith("prefix"), true) << ENDL;
+    fout << "String(\"prefix suffix\").startsWith(\"suffix\"): "
+         << Validate<bool>(String("prefix suffix").startsWith("suffix"), false) << ENDL;
+    fout << "String(\"prefix suffix\").endsWith(\"prefix\"): "
+         << Validate<bool>(String("prefix suffix").endsWith("prefix"), false) << ENDL;
+    fout << "String(\"prefix suffix\").endsWith(\"suffix\"): "
+         << Validate<bool>(String("prefix suffix").endsWith("suffix"), true) << ENDL;
+    
+    fout << String("String literal") << ENDL;
+    
+    fout << "String literal" << ENDL;
   }
 };
 

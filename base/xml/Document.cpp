@@ -14,7 +14,7 @@
 #include <base/platforms/features.h>
 #include <base/xml/Document.h>
 #include <base/Cast.h>
-#include <base/string/FormatOutputStream.h> // REMOVE FIXME
+#include <base/string/FormatOutputStream.h> // TAG: remove when done
 
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
 #  include <libxml/xmlmemory.h>
@@ -26,33 +26,24 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-Document::DocumentImpl::DocumentImpl() throw() {
-  context = 0;
-}
-
-Document::DocumentImpl::DocumentImpl(void* context) throw() {
-  this->context = context;
-}
-
-Document::DocumentImpl::~DocumentImpl() throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  if (context) {
-    xmlFreeDoc((xmlDocPtr)context);
-  }
-#endif
-}
+// Document::DocumentImpl::~DocumentImpl() throw() {
+// #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+//   if (context) {
+//     xmlFreeDoc((xmlDocPtr)context);
+//   }
+// #endif
+// }
 
 Document::Document() throw(DOMException) {
-  document = new DocumentImpl();
 }
 
-void Document::create(const String& version) throw(DOMException) {
+Document Document::createDocument(const String& version) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = xmlNewDoc(
     Cast::pointer<const xmlChar*>(version.getElements())
   );
-  assert(doc, DOMException(this));
-  document = new DocumentImpl(doc);
+  assert(doc, DOMException(Type::getType<Document>()));
+  return doc;
 #else
   throw DOMException(this);
 #endif
@@ -60,7 +51,7 @@ void Document::create(const String& version) throw(DOMException) {
 
 DocumentType Document::getDocumentType() throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   xmlDtd* documentType = doc->intSubset;
   return documentType;
 #else
@@ -74,7 +65,7 @@ DOMImplementation Document::getImplementation() throw() {
 
 Element Document::getDocumentElement() throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlDocGetRootElement(doc);
   return node;
 #else
@@ -84,7 +75,7 @@ Element Document::getDocumentElement() throw() {
 
 Attribute Document::createAttribute(const String& name) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   xmlAttr* node = xmlNewDocProp(
     doc,
     Cast::pointer<const xmlChar*>(name.getElements()),
@@ -100,7 +91,7 @@ Attribute Document::createAttribute(const String& name) throw(DOMException) {
 Attribute Document::createAttribute(
   const String& name, const String& value) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   assert(doc, DOMException(this));
   xmlAttr* node = xmlNewDocProp(
     doc,
@@ -117,7 +108,7 @@ Attribute Document::createAttributeNS(
   const String& qualifiedName) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   //  TAG: fixme
-//   xmlDoc* doc = (xmlDoc*)document->getContext();
+//   xmlDoc* doc = (xmlDoc*)getContext();
 //   xmlAttr* node = xmlNewDocProp(
 //     doc,
 //     Cast::pointer<const xmlChar*>(name.getElements()),
@@ -131,9 +122,28 @@ Attribute Document::createAttributeNS(
 #endif
 }
 
+DocumentType Document::createDocumentType(
+  const String& qualifiedName,
+  const String& publicId,
+  const String& systemId) throw(DOMException) {
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+  xmlDoc* doc = (xmlDoc*)getContext();
+  xmlDtd* node = xmlCreateIntSubset(
+    doc,
+    Cast::pointer<const xmlChar*>(qualifiedName.getElements()),
+    Cast::pointer<const xmlChar*>(publicId.getElements()),    
+    Cast::pointer<const xmlChar*>(systemId.getElements())
+  );
+  assert(node, DOMException(this));
+  return node;
+#else
+  throw DOMException(this);
+#endif
+}
+
 Element Document::createElement(const String& name) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocNode(
     doc,
     0, // namespace
@@ -151,7 +161,7 @@ Element Document::createElementNS(
   const String& namespaceURI,
   const String& qualifiedName) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   xmlNs* ns = xmlSearchNsByHref(
     doc,
     0,
@@ -170,7 +180,7 @@ Element Document::createElementNS(
 
 DocumentFragment Document::createDocumentFragment() throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocFragment(doc);
   assert(node, DOMException(this));
   return node;
@@ -181,7 +191,7 @@ DocumentFragment Document::createDocumentFragment() throw(DOMException) {
 
 Text Document::createText(const String& data) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocText(
     doc,
     Cast::pointer<const xmlChar*>(data.getElements())
@@ -195,7 +205,7 @@ Text Document::createText(const String& data) throw(DOMException) {
 
 Comment Document::createComment(const String& data) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewComment(
     Cast::pointer<const xmlChar*>(data.getElements())
   );
@@ -210,7 +220,7 @@ Comment Document::createComment(const String& data) throw(DOMException) {
 CDATASection Document::createCDATASection(
   const String& data) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   assert(doc, DOMException(this));
   xmlNode* node = xmlNewCDataBlock(
     doc,
@@ -229,7 +239,7 @@ ProcessingInstruction Document::createProcessingInstruction(
   const String& target,
   const String& data) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewPI(
     Cast::pointer<const xmlChar*>(target.getElements()),
     Cast::pointer<const xmlChar*>(data.getElements())
@@ -245,7 +255,7 @@ ProcessingInstruction Document::createProcessingInstruction(
 EntityReference Document::createEntityReference(
   const String& name) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewReference(
     doc,
     Cast::pointer<const xmlChar*>(name.getElements())
@@ -259,7 +269,7 @@ EntityReference Document::createEntityReference(
 
 Element Document::getElementById(const String& elementId) throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   assert(doc, DOMException(this));
   void* node = xmlHashLookup(
     (xmlHashTable*)doc->ids,
@@ -273,7 +283,7 @@ Element Document::getElementById(const String& elementId) throw() {
 
 Node Document::importNode(Node importedNode, bool deep) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDoc* doc = (xmlDoc*)getContext();
   assert(doc, DOMException(this));
   xmlNode* node = (xmlNode*)importedNode.context;
 
@@ -307,20 +317,10 @@ Node Document::importNode(Node importedNode, bool deep) throw(DOMException) {
 #endif
 }
 
-Document::Document(const String& filename) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* temp = xmlParseFile(filename.getElements());
-  assert(temp, DOMException(this));
-  document = new DocumentImpl(temp);
-#else
-  throw DOMException(this);
-#endif
-}
-
 void Document::doXIncludeProcess() throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   int code = xmlXIncludeProcess(
-    Cast::pointer<xmlDocPtr>(document->getContext())
+    Cast::pointer<xmlDocPtr>(getContext())
   );
   assert(code >= 0, Exception(this));
 #else
@@ -332,7 +332,7 @@ void Document::save(const String& filename) throw(IOException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   int bytesWritten = xmlSaveFile(
     filename.getElements(),
-    Cast::pointer<xmlDocPtr>(document->getContext())
+    Cast::pointer<xmlDocPtr>(getContext())
   );
   assert(bytesWritten >= 0, Exception(this));
 #else

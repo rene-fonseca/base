@@ -44,64 +44,31 @@ class DOMImplementation;
   @version 1.0
 */
 
-class Document : public Object {
+class Document : public Node {
   friend class Stylesheet;
   friend class Transformer;
   friend class DOMImplementation;
-private:
-
-  class DocumentImpl : public ReferenceCountedObject {
-  private:
-    
-    /** Context. */
-    void* context;
-  public:
-    
-    /**
-      Initializes invalid document.
-    */
-    DocumentImpl() throw();
-    
-    /**
-      Initializes document.
-    */
-    DocumentImpl(void* context) throw();
-    
-    /**
-      Returns the context.
-    */
-    inline void* getContext() const throw() {
-      return context;
-    }
-    
-    /**
-      Destroys the document.
-    */
-    ~DocumentImpl() throw();
-  };
+protected:
   
   /**
-    The document.
+    Internal constructor.
   */
-  Reference<DocumentImpl> document;
+  inline Document(void* context) throw() : Node(context) {
+  }
 public:
-
-  // sources: File, String, URI, ...
-  // static Document parseFile(File file) throw(IOException, DOMException);
-  // static Document parseString(const String& document) throw(DOMException);
+  
+  /**
+    Creates a new document with the speicified version.
+    
+    @param version The version of XML (e.g. "1.0").
+  */
+  static Document createDocument(const String& version) throw(DOMException);
   
   /**
     Initializes the document as invalid.
   */
   Document() throw(DOMException);
-
-  /**
-    Creates a new document with the speicified version.
-
-    @param version The version of XML (e.g. "1.0").
-  */
-  void create(const String& version) throw(DOMException);
-
+  
   /**
     The Document Type Declaration associated with this document.
   */
@@ -129,7 +96,15 @@ public:
   Attribute createAttributeNS(
     const String& namespaceURI,
     const String& qualifiedName) throw(DOMException);
-
+  
+  /**
+    Creates an empty DocumentType node.
+  */
+  DocumentType createDocumentType(
+    const String& qualifiedName,
+    const String& publicId,
+    const String& systemId) throw(DOMException);
+  
   /**
     Creates an element of the type specified.
   */
@@ -188,33 +163,11 @@ public:
     const String& name, const String& value) throw(DOMException);
 
   /**
-    Imports a node from another document to this document. The returned node has
-    no parent. The source node is not altered or removed from the original
+    Imports a node from another document to this document. The returned node
+    has no parent. The source node is not altered or removed from the original
     document; this method creates a new copy of the source node.
   */
-  Node importNode(Node importedNode, bool deep) throw(DOMException);
-  
-  /**
-    Initializes the document from a file.
-
-    @param filename The name of the file.
-  */
-  Document(const String& filename) throw(DOMException);
-  
-  /**
-    Initializes document from other document.
-  */
-  inline Document(const Document& copy) throw()
-    : document(copy.document) {
-  }
-  
-  /**
-    Assignment of document by document.
-  */
-  inline Document& operator=(const Document& eq) throw() {
-    document = eq.document;
-    return *this;
-  }
+  Node importNode(Node importedNode, bool deep) throw(DOMException);  
   
   /**
     XInclude process.

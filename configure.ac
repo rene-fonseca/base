@@ -698,13 +698,22 @@ AC_BASE_CHECK(
 AC_BASE_YES(base_cv_bool, AC_BASE_DEFINE(CPP_BOOL))
 
 AC_BASE_CHECK(
-  whether const is supported by the compiler,
+  whether const qualifier is supported by the compiler,
   AC_BASE_CACHE(
     base_cv_const,
     AC_BASE_TRY_CXX_COMPILE(base_cv_const, config/const.cpp)dnl
   ),
   base_cv_const)
 AC_BASE_YES(base_cv_const, AC_BASE_DEFINE(CPP_CONST))
+
+AC_BASE_CHECK(
+  whether restrict qualifier is supported by the compiler,
+  AC_BASE_CACHE(
+    base_cv_restrict,
+    AC_BASE_TRY_CXX_COMPILE(base_cv_restrict, config/restrict.cpp)dnl
+  ),
+  base_cv_restrict)
+AC_BASE_YES(base_cv_restrict, AC_BASE_DEFINE(CPP_RESTRICT))
 
 AC_BASE_CHECK(
   whether inline is supported by the compiler,

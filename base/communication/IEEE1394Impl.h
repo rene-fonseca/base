@@ -45,7 +45,12 @@ public:
     Acknowledges the bus reset.
   */
   virtual void acknowledgeReset() throw() = 0;
-  
+
+  /**
+    Resets the bus.
+  */
+  virtual void resetBus() throw(IEEE1394Exception) = 0;
+    
   /**
     Returns the adapters available.
   */

@@ -46,6 +46,11 @@ public:
   void acknowledgeReset() throw();
 
   /**
+    Resets the bus.
+  */
+  void resetBus() throw(IEEE1394Exception);
+
+  /**
     Returns the adapters available.
   */
   Array<EUI64> getAdapters() throw(IEEE1394Exception);

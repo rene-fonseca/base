@@ -25,6 +25,10 @@ bool DummyIEEE1394::hasBeenReset() const throw() {
 void DummyIEEE1394::acknowledgeReset() throw() {
 }
 
+void DummyIEEE1394::resetBus() throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Unable to reset bus", this);
+}
+
 Array<EUI64> DummyIEEE1394::getAdapters() throw(IEEE1394Exception) {
   return Array<EUI64>();
 }

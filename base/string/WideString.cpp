@@ -279,7 +279,11 @@ StringLiteral WideString::toString(MultibyteEncoding encoding) throw() {
   }
 }
 
-unsigned int WideString::UCS2ToUTF8(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags) throw(WideStringException) {
+unsigned int WideString::UCS2ToUTF8(
+  uint8* dest,
+  const ucs2* src,
+  unsigned int size,
+  unsigned int flags) throw(WideStringException) {
   if (src == 0) {
     return 0;
   }
@@ -299,7 +303,10 @@ unsigned int WideString::UCS2ToUTF8(uint8* dest, const ucs2* src, unsigned int s
         *dest++ = 0xc0 | (code >> 6); // 5 bit - most significant
         *dest++ = 0x80 | (code >> 0) & ((1 << 6) - 1); // 6 bit
       } else {
-        assert(!((code >= 0xdc00) && (code <= 0xdfff)), WideStringException("Reserved code"));
+        assert(
+          !((code >= 0xdc00) && (code <= 0xdfff)),
+          WideStringException("Reserved code")
+        );
         if ((code >= 0xd800) && (code <= 0xdbff)) {
           assert(src < end, WideStringException("Incomplete sequence"));
           const ucs2 lowSurrogate = *src++;
@@ -419,7 +426,11 @@ unsigned int WideString::UCS4ToUTF8(uint8* dest, const ucs4* src, unsigned int s
   }
 }
 
-unsigned int WideString::UTF8ToUCS2(ucs2* dest, const uint8* src, unsigned int size, unsigned int flags) throw(MultibyteException) {
+unsigned int WideString::UTF8ToUCS2(
+  ucs2* dest,
+  const uint8* src,
+  unsigned int size,
+  unsigned int flags) throw(MultibyteException) {
   if (src == 0) {
     return 0;
   }
@@ -524,7 +535,39 @@ unsigned int WideString::UTF8ToUCS2(ucs2* dest, const uint8* src, unsigned int s
   }
 }
 
-unsigned int WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, unsigned int size, unsigned int flags) throw(MultibyteException) {
+#if 0 // TAG: fixme
+inline /*???*/
+void WideString::invalidCode(
+  int octetIndex, int suboctetIndex) throw(MultibyteException) {
+  MultibyteException e(
+    "Invalid character code",
+    Type::getType<WideString>()
+  );
+  e.setCause(MultibyteException::INVALID_CHARACTER_CODE);
+  e.setOctetIndex(octetIndex);
+  e.setSuboctetIndex(suboctetIndex);
+  throw e;
+}
+
+inline /*???*/
+void WideString::incompleteCode(
+  int octetIndex, int suboctetIndex) throw(MultibyteException) {
+  MultibyteException e(
+    "Incomplete character code",
+    Type::getType<WideString>()
+  );
+  e.setCause(MultibyteException::INCOMPLETE_CHARACTER_CODE);
+  e.setOctetIndex(octetIndex);
+  e.setSuboctetIndex(suboctetIndex);
+  throw e;
+}
+#endif
+
+unsigned int WideString::UTF8ToUCS4(
+  ucs4* dest,
+  const uint8* src,
+  unsigned int size,
+  unsigned int flags) throw(MultibyteException) {
   if (src == 0) {
     return 0;
   }
@@ -533,10 +576,16 @@ unsigned int WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, unsigned int s
       src += 3;
     }
   } else {
-    assert((flags & EXPECT_BOM) == 0, MultibyteException("BOM is excepted"));
+    assert(
+      (flags & EXPECT_BOM) == 0,
+      MultibyteException("BOM is excepted", Type::getType<WideString>())
+    );
   }
+  
+  const uint8* const srcBegin = src;
   const ucs4* const begin = dest;
   const uint8* const end = src + size;
+  
   if (dest) {
     while (src < end) {
       uint8 value = *src++;
@@ -544,9 +593,21 @@ unsigned int WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, unsigned int s
         *dest++ = value;
       } else if ((value & 0xe0) == 0xc0) {
         ucs4 code = value & ~0xe0;
-        assert(src < end, MultibyteException("Incomplete character code"));
+        assert(
+          src < end,
+          MultibyteException(
+            "Incomplete character code",
+            Type::getType<WideString>()
+          )
+        );
         uint8 temp = *src++;
-        assert((temp & 0xc0) == 0x80, MultibyteException("Invalid character code"));
+        assert(
+          (temp & 0xc0) == 0x80,
+          MultibyteException(
+            "Invalid character code",
+            Type::getType<WideString>()
+          )
+        );
         code = (code << 6) | temp;
         *dest++ = code;
       } else if ((value & 0xf0) == 0xe0) {
@@ -554,7 +615,10 @@ unsigned int WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, unsigned int s
         for (int i = 0; i < 2; ++i) {
           assert(src < end, MultibyteException("Incomplete character code"));
           uint8 temp = *src++;
-          assert((temp & 0xc0) == 0x80, MultibyteException("Invalid character code"));
+          assert(
+            (temp & 0xc0) == 0x80,
+            MultibyteException("Invalid character code")
+          );
           code = (code << 6) | temp;
         }
         *dest++ = code;
@@ -563,7 +627,10 @@ unsigned int WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, unsigned int s
         for (int i = 0; i < 3; ++i) {
           assert(src < end, MultibyteException("Incomplete character code"));
           uint8 temp = *src++;
-          assert((temp & 0xc0) == 0x80, MultibyteException("Invalid character code"));
+          assert(
+            (temp & 0xc0) == 0x80,
+            MultibyteException("Invalid character code")
+          );
           code = (code << 6) | temp;
         }
         *dest++ = code;
@@ -572,7 +639,10 @@ unsigned int WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, unsigned int s
         for (int i = 0; i < 4; ++i) {
           assert(src < end, MultibyteException("Incomplete character code"));
           uint8 temp = *src++;
-          assert((temp & 0xc0) == 0x80, MultibyteException("Invalid character code"));
+          assert(
+            (temp & 0xc0) == 0x80,
+            MultibyteException("Invalid character code")
+          );
           code = (code << 6) | temp;
         }
         *dest++ = code;
@@ -581,7 +651,10 @@ unsigned int WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, unsigned int s
         for (int i = 0; i < 5; ++i) {
           assert(src < end, MultibyteException("Incomplete character code"));
           uint8 temp = *src++;
-          assert((temp & 0xc0) == 0x80, MultibyteException("Invalid character code"));
+          assert(
+            (temp & 0xc0) == 0x80,
+            MultibyteException("Invalid character code")
+          );
           code = (code << 6) | temp;
         }
         *dest++ = code;
@@ -608,11 +681,33 @@ unsigned int WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, unsigned int s
       } else if ((value & 0xfe) == 0xfc) {
         numberOfOctets = 5;
       } else {
-        throw MultibyteException("Invalid character code");
+        MultibyteException e(
+          "Invalid character code",
+          Type::getType<WideString>()
+        );
+        e.setCause(MultibyteException::INVALID_CHARACTER_CODE);
+        e.setOctetIndex(src - srcBegin);
+        e.setSuboctetIndex(0);
+        throw e;
       }
-      assert(src + numberOfOctets < end, MultibyteException("Incomplete character code"));
+      assert(
+        src + numberOfOctets <= end,
+        bindCause(
+          MultibyteException(
+            "Incomplete character code",
+            Type::getType<WideString>()
+          ),
+          MultibyteException::INCOMPLETE_CHARACTER_CODE
+        )
+      );
       for (unsigned int i = 0; i < numberOfOctets; ++i) {
-        assert((*src++ & 0xc0) == 0x80, MultibyteException("Invalid character code"));
+        assert(
+          (*src++ & 0xc0) == 0x80,
+          MultibyteException(
+            "Invalid character code",
+            Type::getType<WideString>()
+          )
+        );
       }
       ++length;
     }
@@ -620,7 +715,11 @@ unsigned int WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, unsigned int s
   }
 }
 
-unsigned int WideString::UCS2ToUTF16BE(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags) throw(WideStringException) {
+unsigned int WideString::UCS2ToUTF16BE(
+  uint8* dest,
+  const ucs2* src,
+  unsigned int size,
+  unsigned int flags) throw(WideStringException) {
   if (src == 0) {
     return 0;
   }
@@ -628,7 +727,11 @@ unsigned int WideString::UCS2ToUTF16BE(uint8* dest, const ucs2* src, unsigned in
   return 0;
 }
 
-unsigned int WideString::UCS2ToUTF16LE(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags) throw(WideStringException) {
+unsigned int WideString::UCS2ToUTF16LE(
+  uint8* dest,
+  const ucs2* src,
+  unsigned int size,
+  unsigned int flags) throw(WideStringException) {
   if (src == 0) {
     return 0;
   }
@@ -650,7 +753,10 @@ unsigned int WideString::UCS4ToUTF16BE(uint8* dest, const ucs4* src, unsigned in
     while (src < end) {
       unsigned int value = *src++;
       if (value <= 0x0000ffff) {
-        assert(!((value >= 0x0000d800) && (value <= 0x0000dfff)), WideStringException("Value reserved for UTF-16"));
+        assert(
+          !((value >= 0x0000d800) && (value <= 0x0000dfff)),
+          WideStringException("Value reserved for UTF-16")
+        );
         *dest++ = value >> 8; // most significant
         *dest++ = value >> 0;
       } else if (value <= 0x0010ffff) {
@@ -700,7 +806,10 @@ unsigned int WideString::UCS4ToUTF16LE(uint8* dest, const ucs4* src, unsigned in
     while (src < end) {
       unsigned int value = *src++;
       if (value <= 0x0000ffff) {
-        assert(!((value >= 0x0000d800) && (value <= 0x0000dfff)), WideStringException("Value reserved for UTF-16"));
+        assert(
+          !((value >= 0x0000d800) && (value <= 0x0000dfff)),
+          WideStringException("Value reserved for UTF-16")
+        );
         *dest++ = value >> 0; // least significant
         *dest++ = value >> 8;
       } else if (value <= 0x0010ffff) {
@@ -723,10 +832,19 @@ unsigned int WideString::UCS4ToUTF16LE(uint8* dest, const ucs4* src, unsigned in
     while (src < end) {
       unsigned int value = *src++;
       if (value <= 0x0000ffff) {
-        assert(!((value >= 0x0000d800) && (value <= 0x0000dfff)), WideStringException("Value reserved for UTF-16"));
+        assert(
+          !((value >= 0x0000d800) && (value <= 0x0000dfff)),
+          WideStringException("Value reserved for UTF-16")
+        );
         length += 2;
       } else if (value <= 0x0010ffff) {
-        assert((value & 0xf) < 0xe, WideStringException("Invalid UCS-4 character", Type::getType<WideString>()));
+        assert(
+          (value & 0xf) < 0xe,
+          WideStringException(
+            "Invalid UCS-4 character",
+            Type::getType<WideString>()
+          )
+        );
         length += 4;
       } else {
         throw WideStringException("Value incompatible with UTF-16", Type::getType<WideString>());
@@ -745,11 +863,17 @@ unsigned int WideString::UCS2ToUCS4(ucs4* dest, const ucs2* src, unsigned int si
   if (dest) {
     while (src < end) {
       const ucs2 code = *src++;
-      assert(!((code >= 0xdc00) && (code <= 0xdfff)), WideStringException("Reserved code"));
+      assert(
+        !((code >= 0xdc00) && (code <= 0xdfff)),
+        WideStringException("Reserved code")
+      );
       if ((code >= 0xd800) && (code <= 0xdbff)) {
         assert(src < end, WideStringException("Incomplete sequence"));
         const ucs2 lowSurrogate = *src++;
-        assert((lowSurrogate >= 0xdc00) && (lowSurrogate <= 0xdfff), WideStringException("Invalid sequence"));
+        assert(
+          (lowSurrogate >= 0xdc00) && (lowSurrogate <= 0xdfff),
+          WideStringException("Invalid sequence")
+        );
         *dest++ = 0x00010000U +
           (static_cast<ucs4>(code) - 0xd800) * 0x0400 +
           (static_cast<ucs4>(lowSurrogate) - 0xdc00);
@@ -762,11 +886,17 @@ unsigned int WideString::UCS2ToUCS4(ucs4* dest, const ucs2* src, unsigned int si
     MemorySize length = 0;
     while (src < end) {
       const ucs2 code = *src++;
-      assert(!((code >= 0xdc00) && (code <= 0xdfff)), WideStringException("Reserved code"));
+      assert(
+        !((code >= 0xdc00) && (code <= 0xdfff)),
+        WideStringException("Reserved code")
+      );
       if ((code >= 0xd800) && (code <= 0xdbff)) {
         assert(src < end, WideStringException("Incomplete sequence"));
         const ucs2 lowSurrogate = *src++;
-        assert((lowSurrogate >= 0xdc00) && (lowSurrogate <= 0xdfff), WideStringException("Invalid sequence"));
+        assert(
+          (lowSurrogate >= 0xdc00) && (lowSurrogate <= 0xdfff),
+          WideStringException("Invalid sequence")
+        );
       }
       ++length;
     }
@@ -810,7 +940,10 @@ unsigned int WideString::UCS4ToUCS2(ucs2* dest, const ucs4* src, unsigned int si
       } else if (value <= 0x0010ffff) {
         assert(
           (value & 0xf) < 0xe,
-          WideStringException("Invalid UCS-4 character", Type::getType<WideString>())
+          WideStringException(
+            "Invalid UCS-4 character",
+            Type::getType<WideString>()
+          )
         );
         length += 2;
       } else {
@@ -1416,12 +1549,20 @@ WideString::WideString(const wchar* string, unsigned int maximum) throw(OutOfDom
   }
 }
 
-WideString::WideString(const String& string) throw(MultibyteException, MemoryException) {
+WideString::WideString(
+  const String& string) throw(MultibyteException, MemoryException) {
   unsigned int multibyteLength = string.getLength();
   unsigned int numberOfCharacters =
-    UTF8ToUCS4(0, Cast::pointer<const uint8*>(string.getElements()), multibyteLength);
+    UTF8ToUCS4(
+      0,
+      Cast::pointer<const uint8*>(string.getElements()),
+      multibyteLength
+    );
   assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
-  elements = new ReferenceCountedCapacityAllocator<ucs4>(numberOfCharacters + 1, GRANULARITY);
+  elements = new ReferenceCountedCapacityAllocator<ucs4>(
+    numberOfCharacters + 1,
+    GRANULARITY
+  );
   if (numberOfCharacters) {
     UTF8ToUCS4(
       Cast::pointer<ucs4*>(elements->getElements()),
@@ -1431,20 +1572,29 @@ WideString::WideString(const String& string) throw(MultibyteException, MemoryExc
   }
 }
 
-WideString::WideString(const char* string) throw(MultibyteException, MemoryException) : elements(0) {
+WideString::WideString(
+  const char* string) throw(MultibyteException, MemoryException)
+  : elements(0) {
   if (!string) { // is string null
     elements = DEFAULT_STRING.elements;
     return;
   }
   
-  const char* terminator = find<char>(string, MAXIMUM_LENGTH, 0); // find terminator
-  assert(terminator, WideStringException(Type::getType<WideString>())); // maximum length exceeded
+  const char* terminator =
+    find<char>(string, MAXIMUM_LENGTH, 0); // find terminator
+  assert(
+    terminator,
+    WideStringException(Type::getType<WideString>())
+  ); // maximum length exceeded
   const unsigned int multibyteLength = terminator - string;
 
   unsigned int numberOfCharacters =
     UTF8ToUCS4(0, Cast::pointer<const uint8*>(string), multibyteLength);
   assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
-  elements = new ReferenceCountedCapacityAllocator<ucs4>(numberOfCharacters + 1, GRANULARITY);
+  elements = new ReferenceCountedCapacityAllocator<ucs4>(
+    numberOfCharacters + 1,
+    GRANULARITY
+  );
   if (numberOfCharacters) {
     UTF8ToUCS4(
       Cast::pointer<ucs4*>(elements->getElements()),
@@ -1548,7 +1698,8 @@ void WideString::setAt(unsigned int index, ucs4 value) throw(OutOfRange) {
   }
 }
 
-WideString& WideString::remove(unsigned int start, unsigned int end) throw(MemoryException) {
+WideString& WideString::remove(
+  unsigned int start, unsigned int end) throw(MemoryException) {
   unsigned int length = getLength();
   if ((start < end) && (start < length)) { // protect against some cases
     if (end >= length) {
@@ -1775,7 +1926,8 @@ unsigned int WideString::replaceAll(const WideString& fromStr, const WideString&
   return count;
 }
 
-WideString WideString::substring(unsigned int start, unsigned int end) const throw(MemoryException) {
+WideString WideString::substring(
+  unsigned int start, unsigned int end) const throw(MemoryException) {
   unsigned int length = getLength();
   if ((start < end) && (start < length)) {
     if (end > length) {

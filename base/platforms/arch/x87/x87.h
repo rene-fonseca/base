@@ -120,7 +120,7 @@ namespace base {
       }
 
 #define _DK_SDU_MIP__BASE__BUILTIN_ATAN2L builtin::atan2l
-      inline long double atan2l(long double y, long double x) {
+      inline long double atan2l(long double y, long double x) throw() {
         long double result;
         asm (
           "fpatan\n\t" // replaces st(1) with atan(st(1)/st(0)) and pops the stack (sign is ok)
@@ -361,7 +361,7 @@ namespace base {
       }
 
 #define _DK_SDU_MIP__BASE__BUILTIN_LDEXPL builtin::ldexpl
-      inline long double ldexpl(long double value, int exponent) {
+      inline long double ldexpl(long double value, int exponent) throw() {
         long double result;
         asm (
           "fildl %2\n\t"

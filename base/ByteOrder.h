@@ -98,12 +98,6 @@ struct SignedShort {
   unsigned char lowByte;
   unsigned char highByte;
 
-  inline SignedShort() throw() {}
-
-  inline SignedShort(short value) throw()
-    : lowByte(value), highByte(value >> 8) {
-  }
-
   inline short operator=(short eq) throw() {
     lowByte = eq;
     highByte = eq >> 8;
@@ -117,12 +111,6 @@ struct SignedShort {
 struct UnsignedShort {
   unsigned char lowByte;
   unsigned char highByte;
-
-  inline UnsignedShort() throw() {}
-
-  inline UnsignedShort(unsigned short value) throw()
-    : lowByte(value), highByte(value >> 8) {
-  }
 
   inline unsigned short operator=(unsigned short eq) throw() {
     lowByte = eq;
@@ -142,12 +130,6 @@ struct SignedInt {
   unsigned char c;
   unsigned char d;
 
-  inline SignedInt() throw() {}
-
-  inline SignedInt(int value) throw()
-    : a(value), b(value >> 8), c(value >> 16), d(value >> 24) {
-  }
-
   inline int operator=(int eq) throw() {
     a = eq;
     b = eq >> 8;
@@ -166,12 +148,6 @@ struct UnsignedInt {
   unsigned char c;
   unsigned char d;
 
-  inline UnsignedInt() throw() {}
-
-  inline UnsignedInt(unsigned int value) throw()
-    : a(value), b(value >> 8), c(value >> 16), d(value >> 24) {
-  }
-
   inline unsigned int operator=(unsigned int eq) throw() {
     a = eq;
     b = eq >> 8;
@@ -188,12 +164,6 @@ struct SignedLongLong {
   UnsignedInt a;
   UnsignedInt b;
 
-  inline SignedLongLong() throw() {}
-
-  inline SignedLongLong(long long value) throw()
-    : a(value), b(value >> 32) {
-  }
-
   inline long long operator=(long long eq) throw() {
     a = eq;
     b = eq >> 32;
@@ -209,12 +179,6 @@ struct SignedLongLong {
 struct UnsignedLongLong {
   UnsignedInt b;
   UnsignedInt a;
-
-  inline UnsignedLongLong() throw() {}
-
-  inline UnsignedLongLong(unsigned long long value) throw()
-    : a(value), b(value >> 32) {
-  }
 
   inline unsigned long long operator=(unsigned long long eq) throw() {
     a = eq;
@@ -282,12 +246,6 @@ struct SignedShort {
   unsigned char highByte;
   unsigned char lowByte;
 
-  inline SignedShort() throw() {}
-
-  inline SignedShort(short value) throw()
-    : highByte(value >> 8), lowByte(value) {
-  }
-
   inline short operator=(short eq) throw() {
     highByte = eq >> 8;
     lowByte = eq;
@@ -302,12 +260,6 @@ struct UnsignedShort {
   unsigned char highByte;
   unsigned char lowByte;
 
-  inline UnsignedShort() throw() {}
-
-  inline UnsignedShort(unsigned short value) throw()
-    : highByte(value >> 8), lowByte(value) {
-  }
-  
   inline unsigned short operator=(unsigned short eq) throw() {
     highByte = eq >> 8;
     lowByte = eq;
@@ -323,12 +275,6 @@ struct SignedInt {
   unsigned char c;
   unsigned char b;
   unsigned char a;
-
-  inline SignedInt() throw() {}
-
-  inline SignedInt(int value) throw()
-    : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {
-  }
 
   inline int operator=(int eq) throw() {
     d = eq >> 24;
@@ -348,12 +294,6 @@ struct UnsignedInt {
   unsigned char b;
   unsigned char a;
 
-  inline UnsignedInt() throw() {}
-
-  inline UnsignedInt(int value) throw()
-    : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {
-  }
-
   inline unsigned int operator=(unsigned int eq) throw() {
     d = eq >> 24;
     c = eq >> 16;
@@ -369,12 +309,6 @@ struct UnsignedInt {
 struct SignedLongLong {
   UnsignedInt b;
   UnsignedInt a;
-
-  inline SignedLongLong() throw() {}
-
-  inline SignedLongLong(long long value) throw()
-    : b(value >> 32), a(value) {
-  }
 
   inline long long operator=(long long eq) throw() {
     b = eq >> 32;
@@ -392,12 +326,6 @@ struct UnsignedLongLong {
   UnsignedInt b;
   UnsignedInt a;
 
-  inline UnsignedLongLong() throw() {}
-  
-  inline UnsignedLongLong(unsigned long long value) throw()
-    : b(value >> 32), a(value) {
-  }
-  
   inline UnsignedLongLong& operator=(unsigned long long eq) throw() {
     b = eq >> 32;
     a = eq;

@@ -1,5 +1,5 @@
 /***************************************************************************
-    The Base Framework
+    The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
     Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>

@@ -1,8 +1,8 @@
 /***************************************************************************
-    The Base Framework
+    The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,47 +25,47 @@ public:
   }
   
   void main() throw() {
-    fout << "Testing List implementation" << ENDL;
+    fout << MESSAGE("Testing List implementation") << ENDL;
 
-    fout << "Initializing list" << ENDL;
+    fout << MESSAGE("Initializing list") << ENDL;
     List<int> li;
 
-    fout << "Appending elements to list (4, 5, 6, and 7)" << ENDL;
+    fout << MESSAGE("Appending elements to list (4, 5, 6, and 7)") << ENDL;
     li.append(4);
     li.append(5);
     li.append(6);
     li.append(7);
-    fout << "li: " << li << ENDL;
+    fout << MESSAGE("li: ") << li << ENDL;
 
-    fout << "Prepending elements to list (3, 2, 1, and 0)" << ENDL;
+    fout << MESSAGE("Prepending elements to list (3, 2, 1, and 0)") << ENDL;
     li.prepend(3);
     li.prepend(2);
     li.prepend(1);
     li.prepend(0);
-    fout << "li: " << li << ENDL;
+    fout << MESSAGE("li: ") << li << ENDL;
 
-    fout << "Adding elements to list (8, 9, 10, and 11)" << ENDL;
+    fout << MESSAGE("Adding elements to list (8, 9, 10, and 11)") << ENDL;
     li.add(8);
     li.add(9);
     li.add(10);
     li.add(11);
-    fout << "li: " << li << ENDL;
+    fout << MESSAGE("li: ") << li << ENDL;
 
-    fout << "Size of list: " << li.getSize() << ENDL;
+    fout << MESSAGE("Size of list: ") << li.getSize() << ENDL;
 
-    fout << "Modifying enumerating elements of list (multiplying by 2)" << ENDL;
+    fout << MESSAGE("Modifying enumerating elements of list (multiplying by 2)") << ENDL;
     transform(li, bind2First(Multiply<int>(), 2));
-    fout << "li: " << li << ENDL;
+    fout << MESSAGE("li: ") << li << ENDL;
 
-    fout << "Non-modifying enumerating elements of list (calculating sum)" << ENDL;
+    fout << MESSAGE("Non-modifying enumerating elements of list (calculating sum)") << ENDL;
     Sum<int> sum;
     forEach(li, sum);
-    fout << "Sum: " << sum.getResult() << ENDL;
+    fout << MESSAGE("Sum: ") << sum.getResult() << ENDL;
 
-    fout << "Size: " << li.getSize() << ENDL;
-    fout << "Removing all the elements" << ENDL;
+    fout << MESSAGE("Size: ") << li.getSize() << ENDL;
+    fout << MESSAGE("Removing all the elements") << ENDL;
     li.removeAll();
-    fout << "Size: " << li.getSize() << ENDL;
+    fout << MESSAGE("Size: ") << li.getSize() << ENDL;
   }
 };
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-    The Base Framework
+    The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
     Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -19,12 +19,12 @@ using namespace base;
 
 MyLinkerModule::MyLinkerModule(const String& identity, const String& name, const String& version) throw() :
   LinkerModule(identity, name, version) {
-  fout << "Initializing MyLinkerModule..." << ENDL;
+  fout << MESSAGE("Initializing MyLinkerModule...") << ENDL;
 }
 
 void MyLinkerModule::myFunction() throw() {
   for (unsigned int count = 0; count < 16; ++count) {
-    fout << "Written by MyLinkerModule: " << count << ENDL;
+    fout << MESSAGE("Written by MyLinkerModule: ") << count << ENDL;
     Thread::sleep(1);
   }
 }

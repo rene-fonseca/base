@@ -15,15 +15,17 @@
 #define _DK_SDU_MIP__BASE_COMMUNICATION__IEEE_1394_H
 
 #include <base/communication/CommunicationsPort.h>
+#include <base/communication/EUI64.h>
 #include <base/communication/IEEE1394Exception.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/mem/Allocator.h>
 #include <base/collection/Array.h>
+#include <base/ByteOrder.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  IEEE-1394 (also known as FireWire (Apple Computer) and iLINK (Sony Corp.))
+  IEEE-1394 (also known as FireWire (Apple Computer) and i.LINK (Sony Corp.))
   support. See 1394 Trade Association (http://www.1394ta.org).
   
   @short IEEE-1394 (FireWire)
@@ -35,58 +37,93 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class IEEE1394 : public CommunicationsPort {
 public:
 
+  /** Specifies the maximum number of retries. */
+  static const unsigned int MAXIMUM_ATTEMPTS = 5;
+  /** The CSR base address. */
+  static const uint64 CSR_BASE_ADDRESS = 0xfffff0000000ULL;
   /** Broadcast id. */
   static const unsigned int BROADCAST = 63;
   
+  typedef BigEndian<uint32> Quadlet;
+  
+  enum CSRRegister {
+    STATE_CLEAR = 0x000,
+    STATE_SET = 0x004,
+    NODE_IDS = 0x008,
+    RESET_START = 0x00c,
+    SPLIT_TIMEOUT_HI = 0x018,
+    SPLIT_TIMEOUT_LO = 0x01c,
+    ARGUMENT_HI = 0x0020,
+    ARGUMENT_LO = 0x0024,
+    TEST_START = 0x028,
+    TEST_STATUS = 0x02c,
+    CYCLE_TIME = 0x200,
+    BUS_TIME = 0x204,
+    POWER_FAIL_IMMINENT = 0x208,
+    POWER_SOURCE = 0x20c,
+    BUSY_TIMEOUT = 0x210,
+    CONFIGURATION_ROM = 0x400,
+    BUS_INFO_BLOCK = 0x404,
+    TOPOLOGY_MAP = 0x1000,
+    SPEED_MAP = 0x2000
+  };
+  
   /**
-    Globally Unique Identifier (GUID).
-
-    @ingroup communications
-    @short Globally unique identifier.
+    This exception is raised on bus resets. The reset must be acknowledged
+    to bring the IEEE-1394 interface back into the working operating mode.
+    
+    @short IEEE 1394 bus reset exception.
+    @ingroup exceptions communication
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
-  class GloballyUniqueIdentifier {
-  private:
-    
-    /** Unique identifier. */
-    unsigned char id[8];
-  public:
-
-    /**
-      Initializes identifier as invalid.
-    */
-    GloballyUniqueIdentifier() throw();
-
-    /**
-      Initializes identifier.
-    */
-    GloballyUniqueIdentifier(const unsigned char value[8]) throw();
-    
-    /**
-      Initializes identifier from other identifier.
-    */
-    GloballyUniqueIdentifier(const GloballyUniqueIdentifier& copy) throw();
-    
-    /**
-      Assignment of identifier by identifier.
-    */
-    GloballyUniqueIdentifier& operator=(const GloballyUniqueIdentifier& eq) throw();
-    
-    /**
-      Returns the identifier.
-    */
-    inline const unsigned char* getBytes() const throw() {
-      return reinterpret_cast<const unsigned char*>(&id);
-    }
+  class BusReset {
   };
 
 
 
+  /** IEEE 1394 standard. */
+  enum Standard {
+    STANDARD_UNSPECIFIED,
+    STANDARD_IEEE_1394,
+    STANDARD_IEEE_1394A,
+    STANDARD_IEEE_1394B
+  };
+
+  enum Flag {
+    ASYNCHRONOUS_TRANSMISSION = 1,
+    ISOCHRONOUS_TRANSMISSION = 2
+  };
+
+  struct Descriptor {
+    unsigned int flags;
+    EUI64 guid;
+    Standard standard;
+  };
+protected:
+
+  bool reset;
+  EUI64 adapterGuid;
+  unsigned int adapterId;
+  uint64 presentNodes;
+  uint64 linkOnNodes;
+  Descriptor node[63];
+public:
+  
+  /**
+    Returns true if the bus has been reset.
+  */
+  virtual bool hasBeenReset() const throw(); // TAG: fixme
+  
+  /**
+    Acknowledges the bus reset.
+  */
+  virtual void acknowledgeReset() throw(); // TAG: fixme
+  
   /**
     Returns the adapters available.
   */
-  virtual Array<GloballyUniqueIdentifier> getAdapters() throw(IEEE1394Exception) = 0;
+  virtual Array<EUI64> getAdapters() throw(IEEE1394Exception) = 0;
 
   /**
     Opens a connection to the primary adapter.
@@ -98,7 +135,7 @@ public:
     
     @param adapter The id of the adapter.
   */
-  virtual void open(const GloballyUniqueIdentifier& adapter) throw(IEEE1394Exception) = 0;
+  virtual void open(const EUI64& adapter) throw(IEEE1394Exception) = 0;
   
   /**
     Closes the handle to the adapter. The adapter is destroyed when all handles
@@ -107,16 +144,68 @@ public:
   virtual void close() throw(IEEE1394Exception) = 0;
   
   /**
-    Returns the devices on the bus.
+    Returns the guid's of the available nodes on the bus.
   */
-  virtual Array<GloballyUniqueIdentifier> getDevices() throw(IEEE1394Exception) = 0;
+  Array<EUI64> getNodes() throw(IEEE1394Exception);
+
+  /**
+    Returns the GUID of the adapter.
+  */
+  inline EUI64 getGuid() const throw() {
+    return adapterGuid;
+  }
+
+  /**
+    Returns the physical id of the adapter.
+  */
+  inline unsigned int getPhysicalId() const throw() {
+    return adapterId;
+  }
+  
+  /**
+    Returns the vendor id of the adapter.
+  */
+  virtual unsigned int getVendorId() const throw(IEEE1394Exception) = 0;
+  
+  /**
+    Returns the product id of the adapter.
+  */
+  virtual unsigned int getProductId() const throw(IEEE1394Exception) = 0;
+
+  /**
+    Returns the IEEE 1394 standard of the adapter.
+  */
+  virtual Standard getCompliance() const throw(IEEE1394Exception) = 0;
+
+  /**
+    Returns the vendor name of the specified node.
+    
+    @param node The physical id of the node [0; 63[.
+  */
+  String getVendorName(unsigned int node) throw(IEEE1394Exception);
+
+  /**
+    Returns the model name of the specified node.
+    
+    @param node The physical id of the node [0; 63[.
+  */
+  String getModelName(unsigned int node) throw(IEEE1394Exception);
   
   /**
     Returns the unique identifier of the specified node.
 
-    @param physicalId The physical id of the node [0; 63[.
+    @param node The physical id of the node [0; 63[.
   */
-  virtual GloballyUniqueIdentifier getIdentifier(unsigned int physicalId) throw(OutOfDomain, IEEE1394Exception) = 0;
+  EUI64 getIdentifier(unsigned int node) throw(OutOfDomain, IEEE1394Exception);
+
+  /**
+    Returns the physical id ([0; 63[) of the specified device.
+    
+    @param guid The unique id of the device.
+
+    @return -1 is not found.
+  */
+  int getPhysicalId(const EUI64& guid) throw(IEEE1394Exception);
   
   /**
     Returns the current error status.
@@ -129,35 +218,63 @@ public:
   virtual unsigned int getFIFOSize() const throw(IEEE1394Exception) = 0;
   
   /**
+    Returns the present nodes on the bus.
+  */
+  virtual uint64 getPresentNodes() const throw(IEEE1394Exception) = 0;
+
+  /**
     Returns true if the specified node is a contended for...
 
-    @param physicalId The id of the node [0; 63[.
+    @param node The physical id of the node [0; 63[.
   */
-  virtual bool isPresent(unsigned int physicalId) const throw(OutOfDomain, IEEE1394Exception) = 0;
+  inline bool isPresent(unsigned int node) const throw(OutOfDomain, IEEE1394Exception) {
+    assert(node < BROADCAST, OutOfDomain(this));
+    return (getPresentNodes() >> node) & 1;
+  }
+
+  /**
+    Returns the nodes which have the link layer activated.
+  */
+  virtual uint64 getLinkOnNodes() const throw(IEEE1394Exception) = 0;
+
+  /**
+    Returns true if the specified node has the link layer activated.
+
+    @param node The physical id of the node [0; 63[.
+  */
+  inline bool isLinkLayerActivated(unsigned int node) const throw(OutOfDomain, IEEE1394Exception) {
+    assert(node < BROADCAST, OutOfDomain(this));
+    return (getLinkOnNodes() >> node) & 1;  
+  }
+
+  /**
+    Returns the contender nodes.
+  */
+  virtual uint64 getContenders() const throw(IEEE1394Exception) = 0;
   
   /**
-    Returns true if the specified node is a contended for...
-
-    @param physicalId The id of the node [0; 63[.
+    Returns true if the specified node is a contended.
+    
+    @param node The physical id of the node [0; 63[.
   */
-  virtual bool isLinkLayerActivated(unsigned int physicalId) const throw(OutOfDomain, IEEE1394Exception) = 0;
-
-  /**
-    Returns true if the specified node is a contended for...
-
-    @param physicalId The id of the node [0; 63[.
-  */
-  virtual bool isContended(unsigned int physicalId) const throw(OutOfDomain, IEEE1394Exception) = 0;
+  inline bool isContender(unsigned int node) const throw(OutOfDomain, IEEE1394Exception) {    
+    assert(node < BROADCAST, OutOfDomain(this));
+    return (getContenders() >> node) & 1;
+  }
   
   /**
     Returns the maximum speed of a node.
+    
+    @param node The physical id the the node.
   */
-  virtual unsigned int getSpeedOfNode(unsigned int physicalId) const throw(OutOfDomain, IEEE1394Exception) = 0;
+  virtual unsigned int getSpeedOfNode(unsigned int node) const throw(OutOfDomain, IEEE1394Exception) = 0;
   
   /**
     Returns the maximum speed for communication with node.
+
+    @param node The physical id the the node.
   */
-  virtual unsigned int getMaximumSpeedToNode(unsigned int physicalId) const throw(OutOfDomain, IEEE1394Exception) = 0;
+  virtual unsigned int getMaximumSpeedToNode(unsigned int node) const throw(OutOfDomain, IEEE1394Exception) = 0;
   
   /**
     Returns the maximum broadcast speed.
@@ -168,21 +285,21 @@ public:
     Read data from device.
 
     @param node The physical id of source node.
-    @param offset The offset of the data to read from.
+    @param address The base address of the memory region to read from.
     @param buffer The data buffer.
     @param size The number of bytes to read.
   */
-  virtual unsigned int read(unsigned short node, uint64 offset, char* buffer, unsigned int size) throw(OutOfDomain, IOException) = 0;
+  virtual unsigned int read(unsigned short node, uint64 address, char* buffer, unsigned int size) const throw(OutOfDomain, IOException) = 0;
 
   /**
     Write data to device.
 
     @param node The physical id of destination node.
-    @param offset The offset of the data to write to.
+    @param address The base address of the memory region to write to.
     @param buffer The data buffer.
     @param size The number of bytes to write.
   */
-  virtual unsigned int write(unsigned short node, uint64 offset, const char* buffer, unsigned int size) throw(OutOfDomain, IOException) = 0;
+  virtual unsigned int write(unsigned short node, uint64 address, const char* buffer, unsigned int size) throw(OutOfDomain, IOException) = 0;
 
 
 
@@ -275,6 +392,8 @@ public:
       Resets the request. Raises IEEE1394Exception is request is pending.
     */
     void reset() throw(IEEE1394Exception);
+
+    virtual ~IsochronousRequestImpl() throw();
   };
 
   /**
@@ -308,7 +427,7 @@ public:
     virtual void resetContext() throw() {
       receivedPackets = 0;
     }
-  public:    
+  public:
 
     IsochronousReadRequestImpl() throw();
 
@@ -374,6 +493,23 @@ public:
     @version 1.0
   */
   class IsochronousReadFixedPacketsRequestImpl : public IsochronousReadRequestImpl {
+  private:
+
+    /** The maximum payload in bytes per packet. */
+    unsigned int payload;
+  public:
+
+    /**
+      Returns the maximum payload in bytes per packet.
+    */
+    inline unsigned int getPayload() const throw() {
+      return payload;
+    }
+    
+    /**
+      Sets the maximum payload in bytes per packet.
+    */
+    void setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception);
   };
 
   /**
@@ -387,9 +523,51 @@ public:
   class IsochronousReadFixedDataRequestImpl : public IsochronousReadRequestImpl {
   private:
 
+    /** The desired number of packets to be received. */
+    unsigned int numberOfPackets;
+    /** The size of the header in bytes per packet. */
+    unsigned int headerSize;
+    /** The maximum payload in bytes per packet. */
+    unsigned int payload;
     /** The secondary buffer for header data. */
     char* secondaryBuffer;
   public:
+    
+    /**
+      Returns the desired number of packets to be received.
+    */
+    inline unsigned int getNumberOfPackets() const throw() {
+      return numberOfPackets;
+    }
+    
+    /**
+      Sets the desired number of packets to be received.
+    */
+    void setNumberOfPackets(unsigned int packets) throw(OutOfDomain, IEEE1394Exception);
+    
+    /**
+      Returns the size of the header in bytes per packet.
+    */
+    inline unsigned int getHeaderSize() const throw() {
+      return headerSize;
+    }
+    
+    /**
+      Sets the size of the header in bytes per packet (the size must be an integral number of 32 bit words).
+    */
+    void setHeaderSize(unsigned int size) throw(OutOfDomain, IEEE1394Exception);
+    
+    /**
+      Returns the maximum payload in bytes per packet.
+    */
+    inline unsigned int getPayload() const throw() {
+      return payload;
+    }
+    
+    /**
+      Sets the maximum payload in bytes per packet (the payload must be an integral number of 32 bit words).
+    */
+    void setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception);
     
     /**
       Returns the secondary buffer used for header data.
@@ -549,6 +727,8 @@ public:
 
 
 
+  class IsochronousReadRequest;
+  
   /**
     Isochronous read packets request (READ_PACKETS_REQUEST).
     
@@ -558,6 +738,8 @@ public:
     @version 1.0
   */
   class IsochronousReadPacketsRequest : public Object {
+    friend class IEEE1394;
+    friend class IsochronousReadRequest;
   private:
 
     /** Context information. */
@@ -625,7 +807,7 @@ public:
       Returns the size of the buffer.
     */
     inline unsigned int getBufferSize() const throw() {
-      context->getBufferSize();
+      return context->getBufferSize();
     }
 
     /**
@@ -655,6 +837,16 @@ public:
     inline char* getBuffer() const throw() {
       return context->getBuffer();
     }
+    
+    /**
+      Sets the buffer.
+
+      @param buffer The location of the buffer.
+      @param size The size of the buffer in bytes.
+    */
+    inline void setBuffer(char* buffer, unsigned int size) throw(IEEE1394Exception) {
+      context->setBuffer(buffer, size);
+    }
   };
   
   /**
@@ -666,6 +858,8 @@ public:
     @version 1.0
   */
   class IsochronousReadFixedPacketsRequest : public Object {
+    friend class IEEE1394;
+    friend class IsochronousReadRequest;
   private:
 
     /** Context information. */
@@ -733,7 +927,7 @@ public:
       Returns the size of the buffer.
     */
     inline unsigned int getBufferSize() const throw() {
-      context->getBufferSize();
+      return context->getBufferSize();
     }
 
     /**
@@ -758,13 +952,37 @@ public:
     }
 
     /**
+      Returns the maximum payload in bytes per packet.
+    */
+    inline unsigned int getPayload() const throw() {
+      return context->getPayload();
+    }
+
+    /**
+      Sets the payload in bytes per packet.
+    */
+    inline void setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
+      context->setPayload(payload);
+    }
+
+    /**
       Returns the buffer.
     */
     inline char* getBuffer() const throw() {
       return context->getBuffer();
     }
+    
+    /**
+      Sets the buffer.
+
+      @param buffer The location of the buffer.
+      @param size The size of the buffer in bytes.
+    */
+    inline void setBuffer(char* buffer, unsigned int size) throw(IEEE1394Exception) {
+      context->setBuffer(buffer, size);
+    }
   };
-  
+
   /**
     Isochronous read fixed data request (READ_FIXED_DATA_REQUEST).
     
@@ -774,6 +992,8 @@ public:
     @version 1.0
   */
   class IsochronousReadFixedDataRequest : public Object {
+    friend class IEEE1394;
+    friend class IsochronousReadRequest;
   private:
 
     /** Context information. */
@@ -841,7 +1061,7 @@ public:
       Returns the size of the buffer.
     */
     inline unsigned int getBufferSize() const throw() {
-      context->getBufferSize();
+      return context->getBufferSize();
     }
 
     /**
@@ -866,6 +1086,48 @@ public:
     }
 
     /**
+      Returns the desired number of packets to be received.
+    */
+    inline unsigned int getNumberOfPackets() const throw() {
+      return context->getNumberOfPackets();
+    }
+    
+    /**
+      Sets the desired number of packets to be received.
+    */
+    inline void setNumberOfPackets(unsigned int packets) throw(OutOfDomain, IEEE1394Exception) {
+      context->setNumberOfPackets(packets);
+    }
+
+    /**
+      Returns the size of the header in bytes per packet.
+    */
+    inline unsigned int getHeaderSize() const throw() {
+      return context->getHeaderSize();
+    }
+    
+    /**
+      Sets the size of the header in bytes per packet (the size must be an integral number of 32 bit words).
+    */
+    inline void setHeaderSize(unsigned int size) throw(OutOfDomain, IEEE1394Exception) {
+      context->setHeaderSize(size);
+    }
+    
+    /**
+      Returns the maximum payload in bytes per packet.
+    */
+    inline unsigned int getPayload() const throw() {
+      return context->getPayload();
+    }
+
+    /**
+      Sets the payload in bytes per packet (the size must be an integral number of 32 bit words).
+    */
+    inline void setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
+      context->setPayload(payload);
+    }
+    
+    /**
       Returns the buffer.
     */
     inline char* getBuffer() const throw() {
@@ -878,6 +1140,17 @@ public:
     inline char* getSecondaryBuffer() const throw() {
       return context->getSecondaryBuffer();
     }
+    
+    /**
+      Sets the buffer.
+
+      @param buffer The location of the buffer.
+      @param size The size of the buffer in bytes.
+      @param secondaryBuffer The secondary buffer.
+    */
+    inline void setBuffer(char* buffer, unsigned int size, char* secondaryBuffer) throw(IEEE1394Exception) {
+      context->setBuffer(buffer, size, secondaryBuffer);
+    }
   };
 
   /**
@@ -889,6 +1162,7 @@ public:
     @version 1.0
   */
   class IsochronousReadRequest : public Object {
+    friend class IEEE1394;
   private:
 
     /** Context information. */
@@ -896,10 +1170,31 @@ public:
   public:
 
     /**
-      Initializes object.
+      Initializes read request.
     */
-    inline IsochronousReadRequest(IsochronousReadRequestImpl* _context) throw()
+    inline IsochronousReadRequest(IsochronousReadRequestImpl* _context) throw() // TAG: must be private
       : context(_context) {
+    }
+
+    /**
+      Initialize read request from read packets request.
+    */
+    inline IsochronousReadRequest(const IsochronousReadPacketsRequest& request) throw()
+      : context(request.context.getValue()) {
+    }
+
+    /**
+      Initialize read request from read packets request.
+    */
+    inline IsochronousReadRequest(const IsochronousReadFixedPacketsRequest& request) throw()
+      : context(request.context.getValue()) {
+    }
+
+    /**
+      Initialize read request from read packets request.
+    */
+    inline IsochronousReadRequest(const IsochronousReadFixedDataRequest& request) throw()
+      : context(request.context.getValue()) {
     }
 
     /**
@@ -917,13 +1212,6 @@ public:
       return *this;
     }
     
-    /**
-      Returns the context.
-    */
-    inline ReferenceCountedObjectPointer<IsochronousReadRequestImpl> getContext() const throw() {
-      return context;
-    }
-
     /**
       Returns the type of the request.
     */
@@ -969,6 +1257,8 @@ public:
 
 
 
+  class IsochronousWriteRequest;
+  
   /**
     Isochronous write packets request (WRITE_PACKETS_REQUEST).
     
@@ -978,6 +1268,8 @@ public:
     @version 1.0
   */
   class IsochronousWritePacketsRequest : public Object {
+    friend class IEEE1394;
+    friend class IsochronousWriteRequest;
   private:
 
     /** Context information. */
@@ -1045,7 +1337,7 @@ public:
       Returns the size of the buffer.
     */
     inline unsigned int getBufferSize() const throw() {
-      context->getBufferSize();
+      return context->getBufferSize();
     }
     
     /**
@@ -1086,6 +1378,8 @@ public:
     @version 1.0
   */
   class IsochronousWriteFixedPacketsRequest : public Object {
+    friend class IEEE1394;
+    friend class IsochronousWriteRequest;
   private:
 
     /** Context information. */
@@ -1153,7 +1447,7 @@ public:
       Returns the size of the buffer.
     */
     inline unsigned int getBufferSize() const throw() {
-      context->getBufferSize();
+      return context->getBufferSize();
     }
     
     /**
@@ -1194,6 +1488,8 @@ public:
     @version 1.0
   */
   class IsochronousWriteDataRequest : public Object {
+    friend class IEEE1394;
+    friend class IsochronousWriteRequest;
   private:
 
     /** Context information. */
@@ -1201,21 +1497,21 @@ public:
   public:
 
     /**
-      Initializes object.
+      Initializes write request.
     */
-    inline IsochronousWriteDataRequest(IsochronousWriteDataRequestImpl* _context) throw()
+    inline IsochronousWriteDataRequest(IsochronousWriteDataRequestImpl* _context) throw() // TAG: must be private
       : context(_context) {
     }
 
     /**
-      Initializes object from other object.
+      Initializes write request from other write request.
     */
     inline IsochronousWriteDataRequest(const IsochronousWriteDataRequest& copy) throw()
       : context(copy.context) {
     }
 
     /**
-      Assignment of object by object.
+      Assignment of write request by write request.
     */
     inline IsochronousWriteDataRequest& operator=(const IsochronousWriteDataRequest& eq) throw() {
       context = eq.context;
@@ -1261,7 +1557,7 @@ public:
       Returns the size of the buffer.
     */
     inline unsigned int getBufferSize() const throw() {
-      context->getBufferSize();
+      return context->getBufferSize();
     }
     
     /**
@@ -1302,6 +1598,7 @@ public:
     @version 1.0
   */
   class IsochronousWriteRequest : public Object {
+    friend class IEEE1394;
   private:
 
     /** Context information. */
@@ -1309,10 +1606,31 @@ public:
   public:
 
     /**
-      Initializes object.
+      Initializes write request.
     */
-    inline IsochronousWriteRequest(IsochronousWriteRequestImpl* _context) throw()
+    inline IsochronousWriteRequest(IsochronousWriteRequestImpl* _context) throw() // TAG: must be private
       : context(_context) {
+    }
+
+    /**
+      Initialize write request from write packets request.
+    */
+    inline IsochronousWriteRequest(const IsochronousWritePacketsRequest& request) throw()
+      : context(request.context.getValue()) {
+    }
+
+    /**
+      Initialize write request from write fixed packets request.
+    */
+    inline IsochronousWriteRequest(const IsochronousWriteFixedPacketsRequest& request) throw()
+      : context(request.context.getValue()) {
+    }
+
+    /**
+      Initialize write request from write data request.
+    */
+    inline IsochronousWriteRequest(const IsochronousWriteDataRequest& request) throw()
+      : context(request.context.getValue()) {
     }
 
     /**
@@ -1330,13 +1648,6 @@ public:
       return *this;
     }
     
-    /**
-      Returns the context.
-    */
-    inline ReferenceCountedObjectPointer<IsochronousWriteRequestImpl> getContext() const throw() {
-      return context;
-    }
-
     /**
       Returns the type of the request.
     */
@@ -1380,7 +1691,74 @@ public:
     }
   };
   
-
+  
+  
+protected:
+  
+  /**
+    Returns the context.
+  */
+  static inline ReferenceCountedObjectPointer<IsochronousReadPacketsRequestImpl>
+  getContext(IsochronousReadPacketsRequest& request) throw() {
+    return request.context;
+  }
+  
+  /**
+    Returns the context.
+  */
+  static inline ReferenceCountedObjectPointer<IsochronousReadFixedPacketsRequestImpl>
+  getContext(IsochronousReadFixedPacketsRequest& request) throw() {
+    return request.context;
+  }
+  
+  /**
+    Returns the context.
+  */
+  static inline ReferenceCountedObjectPointer<IsochronousReadFixedDataRequestImpl>
+  getContext(IsochronousReadFixedDataRequest& request) throw() {
+    return request.context;
+  }
+  
+  /**
+    Returns the context.
+  */
+  static inline ReferenceCountedObjectPointer<IsochronousReadRequestImpl>
+  getContext(IsochronousReadRequest& request) throw() {
+    return request.context;
+  }
+  
+  /**
+    Returns the context.
+  */
+  static inline ReferenceCountedObjectPointer<IsochronousWritePacketsRequestImpl>
+  getContext(IsochronousWritePacketsRequest& request) throw() {
+    return request.context;
+  }
+  
+  /**
+    Returns the context.
+  */
+  static inline ReferenceCountedObjectPointer<IsochronousWriteFixedPacketsRequestImpl>
+  getContext(IsochronousWriteFixedPacketsRequest& request) throw() {
+    return request.context;
+  }
+  
+  /**
+    Returns the context.
+  */
+  static inline ReferenceCountedObjectPointer<IsochronousWriteDataRequestImpl>
+  getContext(IsochronousWriteDataRequest& request) throw() {
+    return request.context;
+  }
+  
+  /**
+    Returns the context.
+  */
+  static inline ReferenceCountedObjectPointer<IsochronousWriteRequestImpl>
+  getContext(IsochronousWriteRequest& request) throw() {
+    return request.context;
+  }
+public:
 
   /**
     Isochronous communication channel.
@@ -1438,6 +1816,21 @@ public:
       Queues the specified read request.
     */
     virtual void queue(IsochronousReadRequest& request) throw(IEEE1394Exception) = 0;
+
+    /**
+      Queues the specified read request.
+    */
+    virtual void queue(IsochronousReadPacketsRequest& request) throw(IEEE1394Exception) = 0;
+
+    /**
+      Queues the specified read request.
+    */
+    virtual void queue(IsochronousReadFixedPacketsRequest& request) throw(IEEE1394Exception) = 0;
+
+    /**
+      Queues the specified read request.
+    */
+    virtual void queue(IsochronousReadFixedDataRequest& request) throw(IEEE1394Exception) = 0;
     
     /**
       Queues the specified read requests.
@@ -1508,6 +1901,21 @@ public:
     virtual void queue(IsochronousWriteRequest& request) throw(IEEE1394Exception) = 0;
 
     /**
+      Queues the specified write request.
+    */
+    virtual void queue(IsochronousWritePacketsRequest& request) throw(IEEE1394Exception) = 0;
+
+    /**
+      Queues the specified write request.
+    */
+    virtual void queue(IsochronousWriteFixedPacketsRequest& request) throw(IEEE1394Exception) = 0;
+
+    /**
+      Queues the specified write request.
+    */
+    virtual void queue(IsochronousWriteDataRequest& request) throw(IEEE1394Exception) = 0;
+
+    /**
       Queues the specified write requests.
     */
     virtual void queue(Allocator<IsochronousWriteRequest>& request) throw(IEEE1394Exception) = 0;
@@ -1529,11 +1937,6 @@ public:
     virtual bool wait(unsigned int nanoseconds) throw(OutOfDomain) = 0;
   };
 };
-
-/**
-  Writes the globally unique identifier to the format output stream.
-*/
-FormatOutputStream& operator<<(FormatOutputStream& stream, const IEEE1394::GloballyUniqueIdentifier& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

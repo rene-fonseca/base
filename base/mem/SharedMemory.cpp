@@ -20,6 +20,7 @@
 #    define _LARGEFILE64_SOURCE 1
 #  endif
 #  include <sys/mman.h>
+#  include <unistd.h>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -69,10 +70,10 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(const File& _file, const FileRe
   }
   
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    address = ::mmap64(0, region.getSize(), protection, MAP_SHARED, getHandle(file), region.getOffset());
+    address = (char*)::mmap64(0, region.getSize(), protection, MAP_SHARED, getHandle(file), region.getOffset());
   #else
     assert((region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM), MemoryException("Unable to open shared memory", this));
-    address = ::mmap(0, region.getSize(), protection, MAP_SHARED, getHandle(file), region.getOffset());
+    address = (char*)::mmap(0, region.getSize(), protection, MAP_SHARED, getHandle(file), region.getOffset());
   #endif
   assert(address !=  MAP_FAILED, MemoryException("Unable to open shared memory", this));
 #endif // flavor
@@ -85,7 +86,7 @@ void SharedMemory::SharedMemoryImpl::lock() throw(MemoryException) {
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
     throw NotSupported(this);
   #else
-    assert(::mlock(address, size) == 0, MemoryException("Unable to lock memory", this));
+    assert(::mlock(address, region.getSize()) == 0, MemoryException("Unable to lock memory", this));
   #endif
 #endif // flavor
 }
@@ -97,7 +98,7 @@ void SharedMemory::SharedMemoryImpl::unlock() throw(MemoryException) {
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
     throw NotSupported(this);
   #else  
-    assert(::munlock(address, size) == 0, MemoryException("Unable to unlock process memory", this));
+    assert(::munlock(address, region.getSize()) == 0, MemoryException("Unable to unlock process memory", this));
   #endif
 #endif // flavor
 }

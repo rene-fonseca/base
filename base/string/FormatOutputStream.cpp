@@ -15,6 +15,7 @@
 #include <base/io/FileDescriptorOutputStream.h>
 #include <base/concurrency/Thread.h>
 #include <base/FloatingPoint.h>
+#include <base/concurrency/ExclusiveSynchronize.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -32,20 +33,20 @@ FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) thr
 }
 
 FormatOutputStream& FormatOutputStream::setWidth(unsigned int width) throw() {
-  SynchronizeExclusively();
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
   this->width = minimum(width, MAXIMUM_WIDTH);
   return *this;
 }
 
 FormatOutputStream& FormatOutputStream::setPrecision(unsigned int precision) throw() {
-  SynchronizeExclusively();
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
   flags &= ~Symbols::NECESSARY;
   this->precision = minimum(precision, MAXIMUM_PRECISION);
   return *this;
 }
 
 FormatOutputStream& FormatOutputStream::setRadixPosition(unsigned int position) throw() {
-  SynchronizeExclusively();
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
   justification = Symbols::RADIX;
   this->radixPosition = position;
   return *this;
@@ -57,7 +58,7 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
   static const char* LFCR_STR = "\n\r";
   static const char* CRLF_STR = "\r\n";
 
-  SynchronizeExclusively();
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
   switch (action) {
   case BIN:
     integerBase = Symbols::BINARY;
@@ -245,7 +246,7 @@ FormatOutputStream& FormatOutputStream::setContext(const Context& context) throw
 }
 
 void FormatOutputStream::addCharacterField(const char* buffer, unsigned int size) throw(IOException) {
-  SynchronizeExclusively();
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
   if (justification == Symbols::LEFT) { // left justification
     write(buffer, size); // write characters
   }
@@ -259,7 +260,7 @@ void FormatOutputStream::addCharacterField(const char* buffer, unsigned int size
 }
 
 void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, bool isSigned) throw(IOException) {
-  SynchronizeExclusively();
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
   unsigned int requiredWidth = size;
 
   if (isSigned && ((integerBase != Symbols::BINARY) && (integerBase != Symbols::HEXADECIMAL))) {
@@ -1291,7 +1292,7 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
         int cutDigits = precision + (exponent - adjustedExponent);
         if (cutDigits < 1) {
           numberOfDigits = 0;
-	} else if (cutDigits < numberOfDigits) { // cut off digits
+        } else if (cutDigits < numberOfDigits) { // cut off digits
           bool carrier = false;
           if (digitBuffer[cutDigits] > 4) {
             carrier = true;
@@ -1412,7 +1413,7 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
   }
 
   {
-    SynchronizeExclusively();
+    ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
     unsigned int length = (output - buffer);
     if (width <= length) {
       write(buffer, length); // write characters

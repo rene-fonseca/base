@@ -15,34 +15,40 @@ include $(top_srcdir)/common.am
 
 noinst_LTLIBRARIES = libstring.la
 
-libstring_la_SOURCES = ANSIEscapeSequence.cpp \
-                       ASCIITraits.cpp \
-                       CharacterSet.cpp \
-                       FormatInputStream.cpp \
-                       FormatOutputStream.cpp \
-                       InvalidFormat.cpp \
-                       Locale.cpp \
-                       RegExp.cpp \
-                       String.cpp \
-                       StringInputStream.cpp \
-                       StringOutputStream.cpp \
-                       WideString.cpp
+libstring_la_SOURCES = \
+  ANSIEscapeSequence.cpp \
+  ASCIITraits.cpp \
+  CharacterSet.cpp \
+  FormatInputStream.cpp \
+  FormatOutputStream.cpp \
+  InvalidFormat.cpp \
+  Locale.cpp \
+  MultibyteException.cpp \
+  RegExp.cpp \
+  String.cpp \
+  StringException.cpp \
+  StringInputStream.cpp \
+  StringOutputStream.cpp \
+  WideString.cpp \
+  WideStringException.cpp
 
 sectiondir = $(includedir)/base/string
-section_HEADERS = ANSIEscapeSequence.h \
-                  ASCIITraits.h \
-                  FormatInputStream.h \
-                  FormatOutputStream.h \
-                  InvalidFormat.h \
-                  Locale.h \
-                  MultibyteException.h \
-                  RegExp.h \
-                  String.h \
-                  StringException.h \
-                  StringInputStream.h \
-                  StringOutputStream.h \
-                  WideStringException.h \
-                  WideString.h
+section_HEADERS = \
+  ANSIEscapeSequence.h \
+  ASCIITraits.h \
+  CharacterSet.h \
+  FormatInputStream.h \
+  FormatOutputStream.h \
+  InvalidFormat.h \
+  Locale.h \
+  MultibyteException.h \
+  RegExp.h \
+  String.h \
+  StringException.h \
+  StringInputStream.h \
+  StringOutputStream.h \
+  WideString.h \
+  WideStringException.h
 
 EXTRA_DIST = unicode/UnicodeFolding.cpp \
              unicode/UnicodeLookup.cpp

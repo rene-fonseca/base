@@ -53,8 +53,10 @@ public:
   class ThreadKeyException : public Exception {
   public:
     
-    ThreadKeyException() throw() {}
+    ThreadKeyException() throw() : Exception() {}
     ThreadKeyException(const char* message) throw() : Exception(message) {}
+    ThreadKeyException(Type type) throw() : Exception(type) {}
+    ThreadKeyException(const char* message, Type type) throw() : Exception(message, type) {}
   };
 
   /**

@@ -46,9 +46,9 @@ public:
         const InetAddress* temp = enu.next();
         if (index == 0) { // use the first address
           address = *temp;
-          fout << "  address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
+          fout << indent(2) << "address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
         } else {
-          fout << "  address " << index++ << ": " << *temp << ENDL;
+          fout << indent(2) << "address " << index++ << ": " << *temp << ENDL;
         }
       }
     }
@@ -65,8 +65,8 @@ public:
         InetService s(service);
         port = s.getPort();
         fout << "Service: name=" << s.getName()
-             << "  port=" << s.getPort()
-             << "  protocol=" << s.getProtocol() << ENDL;
+             << indent(2) << "port=" << s.getPort()
+             << indent(2) << "protocol=" << s.getProtocol() << ENDL;
       } catch (ServiceNotFound& e) {
         fout << "Warning: " << e.getMessage() << ENDL;
         fout << "Service: port=" << port << ENDL;
@@ -77,7 +77,7 @@ public:
     Socket socket;
 
     fout << "Creating datagram socket..." << ENDL;
-    socket.create(false);
+    socket.create(Socket::DATAGRAM);
 
     fout << "Requesting permission to send broadcast messages..." << ENDL;
     socket.setBroadcast(true);

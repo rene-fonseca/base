@@ -61,7 +61,7 @@ public:
     Socket serverSocket;
 
     fout << "Creating datagram socket..." << ENDL;
-    serverSocket.create(false);
+    serverSocket.create(Socket::DATAGRAM);
 
     fout << "Binding to address..." << ENDL;
     serverSocket.bind(address, port);

@@ -16,7 +16,6 @@
 #include "base/mem/Array.h"
 #include "base/string/FormatOutputStream.h"
 
-
 /**
   Matrix implementation.
 
@@ -39,9 +38,9 @@ protected:
   unsigned int columns;
 
   /**
-    Returns the elements of the matrix for modification.
+    Returns the elements of the matrix for modification. May copy all elements of the matrix.
   */
-  inline TYPE* getElements() throw(MemoryException) {
+  inline TYPE* getMutableElements() throw(MemoryException) {
     if (elements.isMultiReferenced()) { // do we have the elements for our self
       elements = new Array<TYPE>(*elements); // make copy of the elements
     }
@@ -58,7 +57,7 @@ protected:
   /**
     Returns true if this matrix and the specified matrix have identical dimensions.
   */
-  inline bool areCompatible(const Matrix& value) const throw() {
+  inline bool isCompatible(const Matrix& value) const throw() {
     return (rows == value.rows) && (columns == value.columns);
   }
 
@@ -120,14 +119,23 @@ public:
   /** Exception thrown by the Matrix class. */
   class MatrixException : public Exception {
   };
+
   /** Thrown if an operation is given incompatible matrices to work on. */
   class IncompatibleMatrices : public IncompatibleOperands {
+  };
+
+  /** Thrown by some operations if matrix is non-square. */
+  class NotSquare : public MatrixException {
+  };
+
+  /** Thrown by some operations if matrix is singular. */
+  class Singular : public MatrixException {
   };
 
   /**
     Initializes a matrix with no elements.
   */
-  inline Matrix() throw() : elements(NULL), rows(0), columns(0) {}
+//  inline Matrix() throw() : elements(NULL), rows(0), columns(0) {}
 
   /**
     Initializes matrix with the specified dimension.
@@ -190,12 +198,103 @@ public:
   */
   inline unsigned int getColumns() const throw() {return columns;}
 
+
+
+  // Matrix type
+
+
+
+  /**
+    Returns true if the matrix is empty (i.e. has no elements).
+  */
+//  inline bool isEmpty() const throw() {return (rows == 0) || (columns == 0);}
+
   /**
     Returns true if the matrix is a square matrix.
-
-    @return True if the matrix is square.
   */
   inline bool isSquare() const throw() {return (rows == columns);}
+
+  /**
+    Returns true if the matrices are equal.
+  */
+  bool isEqual(const Matrix& value) const throw();
+
+  /**
+    Returns true if the matrix is the zero matrix.
+
+    @return false if matrix contains no elements.
+  */
+  bool isZero() const throw();
+
+  /**
+    Returns true if this matrix is a diagonal matrix.
+
+    @return false if matrix is not square or contains no elements.
+  */
+  bool isDiagonal() const throw();
+
+  /**
+    Returns true if this matrix is lower triangular (i.e. the matrix has no
+    non-zero values above the diagonal line).
+
+    @return false if matrix is not square or contains no elements.
+  */
+  bool isLowerTriangular() const throw();
+
+  /**
+    Returns true if this matrix is upper triangular (i.e. the matrix has no
+    non-zero values below the diagonal line).
+
+    @return false if matrix is not square or contains no elements.
+  */
+  bool isUpperTriangular() const throw();
+
+  /**
+    Returns true if this matrix is symmetric.
+
+    @return false if matrix is not square or contains no elements.
+  */
+  bool isSymmetric() const throw();
+
+
+
+  /**
+    Returns the norm of this matrix.
+  */
+  TYPE getNorm() const throw();
+
+  /**
+    Returns the determinant of this matrix.
+  */
+  TYPE getDeterminant() const throw(NotSquare, MemoryException);
+
+  /**
+    Returns the minor of this matrix.
+
+    @param row The row to be thrown away.
+    @param column The column to be thrown away.
+  */
+  Matrix getMinor(unsigned int row, unsigned int column) const throw(OutOfRange, NotSquare, MemoryException);
+
+  /**
+    Returns the cofactor of this matrix for the specified element.
+
+    @param row The row of the element.
+    @param column The column of the element.
+  */
+  TYPE getCofactor(unsigned int row, unsigned int column) const throw(OutOfRange, NotSquare, MemoryException);
+
+  /**
+    Returns the adjoint of this matrix.
+  */
+  Matrix getAdjoint() const throw(NotSquare, MemoryException);
+
+  /**
+    Returns the solution(s) for the linear system(s).
+
+    @param value The constant column vector(s).
+  */
+  Matrix solve(const Matrix<TYPE>& value) const throw(IncompatibleOperands, Singular);
 
 
 
@@ -258,6 +357,12 @@ public:
   */
   void setAt(unsigned int row, unsigned int column, const TYPE& value) throw(OutOfRange);
 
+  /**
+    Returns the element at the specified position.
+  */
+  inline TYPE operator()(unsigned int row, unsigned int column) const throw(OutOfRange) {
+    return getAt(row, column);
+  }
 
 
   // Modification section
@@ -275,57 +380,104 @@ public:
   Matrix minus() const throw();
 
   /**
+    Unary inversion.
+  */
+  Matrix invert() const throw(NotSquare, Singular, MemoryException);
+
+  /**
     Returns a new matrix that is the transpose of this matrix.
   */
   Matrix transpose() const throw();
 
+
+
   /**
     Sets this matrix to the zero matrix.
   */
-  Matrix& clear() throw();
+  Matrix& clear() throw(MemoryException);
 
   /**
     Sets this matrix to the identity matrix.
   */
-  Matrix& identity() throw();
+  Matrix& identity() throw(MemoryException);
+
+  /**
+    Pivot transformation of this matrix.
+  */
+//  Matrix& pivot(unsigned int row, unsigned int column) throw(OutOfRange, Singular);
+
+  /**
+    Solves the equations.
+  */
+//  Matrix solve(const Matrix& value) const throw(IncompatibleOperands, Singular, MemoryException);
+
+  /**
+    Sets the values of this matrix that exceed the specified value to zero (0).
+
+    @param zero Specifies the zero limit.
+  */
+  Matrix& zeroAdjust(const TYPE& zero) throw(MemoryException);
+
+  /**
+    Does a row echelon transformation of this matrix.
+  */
+  Matrix& rowEchelon() throw(MemoryException);
+
+  /**
+    Does a reduced row echelon transformation of this matrix for the specified
+    element. The element value is transformed to 1 and the other values of the
+    column are transformed to 0.
+
+    @param row The row of the element.
+    @param column The column of the element.
+  */
+  Matrix& pivot(unsigned int row, unsigned int column) throw(OutOfRange, Singular, MemoryException);
+
+  /**
+    Throws away any elements that exceed the specified dimension.
+
+    @param rows The desired number of row.
+    @param columns The desired number of columns.
+  */
+  Matrix& clip(unsigned int rows, unsigned int columns) throw(OutOfRange, MemoryException);
 
   /**
     Negates this matrix.
   */
-  Matrix& negate() throw();
+  Matrix& negate() throw(MemoryException);
 
   /**
     Adds the specified matrix to this matrix.
 
     @param value The matrix to be added.
   */
-  Matrix& add(const Matrix& value) throw(IncompatibleOperands);
+  Matrix& add(const Matrix& value) throw(IncompatibleOperands, MemoryException);
 
   /**
     Subtracts the specified matrix from this matrix.
 
     @param value The matrix to be subtracted.
   */
-  Matrix& subtract(const Matrix& value) throw(IncompatibleOperands);
+  Matrix& subtract(const Matrix& value) throw(IncompatibleOperands, MemoryException);
 
   /**
     Multiplies this matrix with the specified value.
 
     @param value The multiplicator.
   */
-  Matrix& multiply(const TYPE& value) throw();
+  Matrix& multiply(const TYPE& value) throw(MemoryException);
 
   /**
     Divides this matrix with the specified value.
 
     @param value The divisor.
   */
-  Matrix& divide(const TYPE& value) throw();
+  Matrix& divide(const TYPE& value) throw(MemoryException);
 
   /**
     Negates the specified matrix and stores the result in this matrix.
   */
-  Matrix& negate(const Matrix& value) throw();
+  Matrix& negate(const Matrix& value) throw(MemoryException);
 
   /**
     Sets this matrix to the sum of the specified matrices.
@@ -333,7 +485,7 @@ public:
     @param left Matrix.
     @param right Matrix.
   */
-  Matrix& add(const Matrix& left, const Matrix& right) throw(IncompatibleOperands);
+  Matrix& add(const Matrix& left, const Matrix& right) throw(IncompatibleOperands, MemoryException);
 
   /**
     Sets this matrix to the difference of the specified matrices.
@@ -341,7 +493,7 @@ public:
     @param left Matrix.
     @param right Matrix.
   */
-  Matrix& subtract(const Matrix& left, const Matrix& right) throw(IncompatibleOperands);
+  Matrix& subtract(const Matrix& left, const Matrix& right) throw(IncompatibleOperands, MemoryException);
 
   /**
     Sets this matrix to the product of the specified matrices.
@@ -349,7 +501,7 @@ public:
     @param left Matrix.
     @param right Matrix.
   */
-  Matrix& multiply(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(IncompatibleOperands);
+  Matrix& multiply(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(IncompatibleOperands, MemoryException);
 
   /**
     Sets this matrix to the product of the operands.
@@ -357,7 +509,7 @@ public:
     @param left The left operand.
     @param right The right operand.
   */
-  Matrix& multiply(const Matrix& left, const TYPE& right) throw();
+  Matrix& multiply(const Matrix& left, const TYPE& right) throw(MemoryException);
 
   /**
     Sets this matrix to the product of the operands.
@@ -365,7 +517,7 @@ public:
     @param left The left operand.
     @param right The right operand.
   */
-  Matrix& multiply(const TYPE& left, const Matrix& right) throw();
+  Matrix& multiply(const TYPE& left, const Matrix& right) throw(MemoryException);
 
   /**
     Sets this matrix to the result of the division of the left by right operand.
@@ -373,14 +525,14 @@ public:
     @param left The left operand.
     @param right The right operand.
   */
-  Matrix& divide(const Matrix& left, const TYPE& right) throw();
+  Matrix& divide(const Matrix& left, const TYPE& right) throw(MemoryException);
 
   /**
     Sets this matrix to the transpose of the specified matrix.
 
     @param matrix The matrix to be transposed.
   */
-  Matrix& transpose(const Matrix& matrix) throw();
+  Matrix& transpose(const Matrix& matrix) throw(MemoryException);
 
 
 
@@ -394,45 +546,45 @@ public:
 
     @param value Matrix to be compared.
   */
-  bool operator==(const Matrix& value) const throw(IncompatibleOperands);
+  inline bool operator==(const Matrix& value) const throw() {return isEqual(value);}
 
   /**
     Adds the specified matrix from this matrix.
 
     @param value The value to be added.
   */
-  inline Matrix& operator+=(const Matrix& value) throw(IncompatibleOperands) {return add(value);}
+  inline Matrix& operator+=(const Matrix& value) throw(IncompatibleOperands, MemoryException) {return add(value);}
 
   /**
     Subtracts the specified matrix from this matrix.
 
     @param value The value to be subtracted.
   */
-  inline Matrix& operator-=(const Matrix& value) throw(IncompatibleOperands) {return subtract(value);}
+  inline Matrix& operator-=(const Matrix& value) throw(IncompatibleOperands, MemoryException) {return subtract(value);}
 
   /**
     Multiplies this matrix with the specified value.
 
     @param value The multiplicator.
   */
-  inline Matrix& operator*=(const TYPE& value) throw() {return multiply(value);}
+  inline Matrix& operator*=(const TYPE& value) throw(MemoryException) {return multiply(value);}
 
   /**
     Divides this matrix with the specified value.
 
     @param value The divisor.
   */
-  inline Matrix& operator/=(const TYPE& value) throw() {return divide(value);}
+  inline Matrix& operator/=(const TYPE& value) throw(MemoryException) {return divide(value);}
 
   /**
     Unary plus.
   */
-  inline Matrix operator+() const throw() {return plus();}
+  inline Matrix operator+() const throw(MemoryException) {return plus();}
 
   /**
     Unary minus.
   */
-  inline Matrix operator-() const throw() {return minus();}
+  inline Matrix operator-() const throw(MemoryException) {return minus();}
 
 
 
@@ -443,7 +595,7 @@ public:
   /**
     Returns the product of the matrices.
   */
-  friend Matrix operator* <>(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException);
+  friend Matrix operator* <>(const Matrix& left, const Matrix& right) throw(MemoryException);
 
   /**
     Returns the product of the matrix and the value.
@@ -451,14 +603,24 @@ public:
   friend Matrix operator* <>(const Matrix& left, const TYPE& right) throw(MemoryException);
 
   /**
-    Returns the product of the matrix and the value.
+    Returns the product of the value and matrix.
   */
   friend Matrix operator* <>(const TYPE& left, const Matrix& right) throw(MemoryException);
 
   /**
-    Returns the result of the matrix divided by the value.
+    Returns the result of matrix divided by matrix.
+  */
+  friend Matrix operator/ <>(const Matrix& left, const Matrix& right) throw(MemoryException);
+
+  /**
+    Returns the result of matrix divided by value.
   */
   friend Matrix operator/ <>(const Matrix& left, const TYPE& right) throw(MemoryException);
+
+  /**
+    Returns the result of value divided by matrix.
+  */
+  friend Matrix operator/ <>(const TYPE& left, const Matrix& right) throw(MemoryException);
 
   /**
     Writes a string representation of a matrix object to a format stream.
@@ -466,29 +628,32 @@ public:
   friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Matrix& value);
 };
 
-/**
-  Returns the product of the matrices.
-*/
+template<class TYPE>
+bool operator==(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw();
+
+template<class TYPE>
+Matrix<TYPE> operator+(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException);
+
+template<class TYPE>
+Matrix<TYPE> operator-(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException);
+
 template<class TYPE>
 Matrix<TYPE> operator*(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException);
 
-/**
-  Returns the product of the matrix and the value.
-*/
 template<class TYPE>
 Matrix<TYPE> operator*(const Matrix<TYPE>& left, const TYPE& right) throw(MemoryException);
 
-/**
-  Returns the product of the matrix and the value.
-*/
 template<class TYPE>
 Matrix<TYPE> operator*(const TYPE& left, const Matrix<TYPE>& right) throw(MemoryException);
 
-/**
-  Returns the result of the matrix divided by the value.
-*/
+template<class TYPE>
+Matrix<TYPE> operator/(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException);
+
 template<class TYPE>
 Matrix<TYPE> operator/(const Matrix<TYPE>& left, const TYPE& right) throw(MemoryException);
+
+template<class TYPE>
+Matrix<TYPE> operator/(const TYPE& left, const Matrix<TYPE>& right) throw(MemoryException);
 
 /**
   Writes a string representation of a matrix object to a format stream.

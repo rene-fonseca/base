@@ -35,36 +35,25 @@ public:
   Vector3D() throw();
 
   /**
-    Initializes vector by copying the coordinates from the specified vector.
-
-    @param vector The desired vector.
-  */
-  Vector3D(const Vector3D& vector) throw();
-
-  /**
     Initializes vector from the specified coordinates.
 
-    @param x The desired X coordinate.
-    @param y The desired Y coordinate.
-    @param z The desired Z coordinate.
+    @param xx The desired X coordinate.
+    @param yy The desired Y coordinate.
+    @param zz The desired Z coordinate.
   */
-  Vector3D(const TYPE& x, const TYPE& y, const TYPE& z) throw();
+  Vector3D(const TYPE& xx, const TYPE& yy, const TYPE& zz) throw();
 
   /**
-    Assignment of vector to vector.
+    Initializes vector by copying from the specified vector.
 
     @param vector The desired vector.
   */
-  void assign(const Vector3D& vector) throw();
+  Vector3D(const Vector3D& copy) throw();
 
   /**
-    Sets the X, Y and Z coordinates of the vector.
-
-    @param x The desired X coordinate.
-    @param y The desired Y coordinate.
-    @param z The desired Z coordinate.
+    Assignment of this vector from vector.
   */
-  void assign(const TYPE& x, const TYPE& y, const TYPE& z) throw();
+  Vector3D& operator=(const Vector3D& eq) throw();
 
   /**
     Returns the modulus of the vector.
@@ -108,27 +97,186 @@ public:
   void setZ(const TYPE& z) throw();
 
   /**
+    Sets values less than the specified value to zero.
+  */
+  Vector3D& zeroAdjust(const TYPE& zero) throw();
+
+  /**
+    Returns true if the vectors are equal.
+  */
+  bool isEqual(const Vector3D& value) const throw();
+
+  /**
+    Returns true if the length of this vector is zero.
+  */
+  bool isZero() const throw();
+
+  /**
+    Returns true if the length of this vector is greater zero.
+  */
+  bool isProper() const throw();
+
+  /**
+    Returns true if this vector is orthogonal with the specified vector.
+  */
+  bool isOrthogonal(const Vector3D& value) const throw();
+
+  /**
+    Returns true if this vector is parallel with the specified vector.
+  */
+  bool isParallel(const Vector3D& value) const throw();
+
+  /**
+    Unary plus.
+  */
+  Vector3D plus() const throw();
+
+  /**
+    Unary minus.
+  */
+  Vector3D minus() const throw();
+
+  /**
+    Negates this vector.
+  */
+  Vector3D& negate() throw();
+
+  /**
+    Adds the specified vector to this vector.
+  */
+  Vector3D& add(const Vector3D& value) throw();
+
+  /**
+    Subtracts the specified vector from this vector.
+  */
+  Vector3D& subtract(const Vector3D& value) throw();
+
+  /**
+    Multiplies this vector with the specified value.
+  */
+  Vector3D& multiply(const TYPE& value) throw();
+
+  /**
+    Divides this vector with the specified value.
+  */
+  Vector3D& divide(const TYPE& value) throw();
+
+  /**
+    Returns the dot product of this vector and the specified vector.
+  */
+  TYPE dot(const Vector3D& value) const throw();
+
+  /**
+    Returns the cross product of this vector and the specified vector.
+  */
+  Vector3D cross(const Vector3D& value) const throw();
+
+  /**
+    Returns the angle between this vector and the specified vector.
+  */
+  TYPE getAngle(const Vector3D& value) const throw();
+
+  /**
+    Returns the projection of this vector onto the specified vector.
+  */
+  Vector3D getProjection(const Vector3D& value) const throw();
+
+
+
+
+  /**
+    Returns true if the vectors are equal.
+
+    @param vector Vector to be compared.
+  */
+  inline bool operator==(const Vector3D& value) const throw() {return isEqual(value);}
+
+  /**
+    Adds the specified vector from this vector.
+
+    @param value The value to be added.
+  */
+  inline Vector3D& operator+=(const Vector3D& value) throw() {return add(value);}
+
+  /**
+    Subtracts the specified vector from this vector.
+
+    @param value The value to be subtracted.
+  */
+  inline Vector3D& operator-=(const Vector3D& value) throw() {return subtract(value);}
+
+  /**
+    Multiplies this vector with the specified value.
+
+    @param value The multiplicator.
+  */
+  inline Vector3D& operator*=(const TYPE& value) throw() {return multiply(value);}
+
+  /**
+    Divides this vector with the specified value.
+
+    @param value The divisor.
+  */
+  inline Vector3D& operator/=(const TYPE& value) throw() {return divide(value);}
+
+  /**
+    Unary plus.
+  */
+  inline Vector3D operator+() const throw() {return plus();}
+
+  /**
+    Unary minus.
+  */
+  inline Vector3D operator-() const throw() {return minus();}
+
+
+
+  /**
+    Returns the product of the vector and the value.
+  */
+  friend Vector3D operator* <>(const Vector3D& left, const TYPE& right) throw();
+
+  /**
+    Returns the product of the vector and the value.
+  */
+  friend Vector3D operator* <>(const TYPE& left, const Vector3D& right) throw();
+
+  /**
+    Returns the result of the vector divided by the value.
+  */
+  friend Vector3D operator/ <>(const Vector3D& left, const TYPE& right) throw();
+
+  /**
     Writes a string representation of a Vector3D object to a format stream. The format is "(x, y, z)".
   */
   friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Vector3D& value);
 };
+
+template<class TYPE>
+Vector3D<TYPE> operator*(const Vector3D<TYPE>& left, const TYPE& right) throw();
+
+template<class TYPE>
+Vector3D<TYPE> operator*(const TYPE& left, const Vector3D<TYPE>& right) throw();
+
+template<class TYPE>
+Vector3D<TYPE> operator/(const Vector3D<TYPE>& left, const TYPE& right) throw();
+
+/**
+  Returns the dot product of the two vectors.
+*/
+template<class TYPE>
+TYPE dot(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw();
+
+/**
+  Returns the cross product of the two vectors.
+*/
+template<class TYPE>
+Vector3D<TYPE> cross(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw();
 
 /**
   Writes a string representation of a Vector3D object to a format stream. The format is "(x, y, z)".
 */
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector3D<TYPE>& value);
-
-/** 3D vector of float. */
-typedef Vector3D<float> Float3D;
-
-/** 3D vector of double. */
-typedef Vector3D<double> Double3D;
-
-/** 3D vector of float holding the origin. */
-extern const Float3D zeroFloat3D;
-
-/** 3D vector of double holding the origin. */
-extern const Double3D zeroDouble3D;
 
 #endif

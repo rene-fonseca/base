@@ -12,16 +12,6 @@ template Vector<double>;
 template Vector<long double>;
 
 template<class TYPE>
-class DotProduct : public BinaryOperation<TYPE, TYPE, TYPE> {
-protected:
-  TYPE result;
-public:
-  inline DotProduct() throw() : result(0) {};
-  inline void operator()(const TYPE& left, const TYPE& right) throw() {result += left * right;};
-  inline TYPE getResult() const throw() {return result;};
-};
-
-template<class TYPE>
 Vector<TYPE>::Vector(unsigned int size) throw(OutOfDomain) {
   if (size < 1) {
     throw OutOfDomain();
@@ -140,16 +130,16 @@ Vector<TYPE>& Vector<TYPE>::negate(const Vector<TYPE>& value) throw() {
 
 template<class TYPE>
 TYPE Vector<TYPE>::dotdot() const throw() {
-  DotProduct<TYPE> dotProduct;
-  forEachDoBinary(getReadOnlyElements(), getSize(), dotProduct);
-  return dotProduct.getResult();
+  SquareSum<TYPE> squareSum;
+  forEach(getReadOnlyElements(), getSize(), squareSum);
+  return squareSum.getResult();
 }
 
 template<class TYPE>
 TYPE Vector<TYPE>::norm() const throw() {
-  DotProduct<TYPE> dotProduct;
-  forEachDoBinary(getReadOnlyElements(), getSize(), dotProduct);
-  return sqrt(dotProduct.getResult());
+  SquareSum<TYPE> squareSum;
+  forEach(getReadOnlyElements(), getSize(), squareSum);
+  return sqrt(squareSum.getResult());
 }
 
 template<class TYPE>

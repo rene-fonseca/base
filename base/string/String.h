@@ -28,45 +28,15 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This class binds together a string literal and its length. Use the macro
-  MESSAGE to generate an object of this class for a given string literal (e.g.
-  MESSAGE("Hello World")). Do not call the constructor manually.
-
-  @short String literal
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.1
-*/
-class StringLiteral {
-private:
-
-  /** The number of characters occupied by the message without the terminator. */
-  const unsigned int length;
-  /** NULL-terminated message. */
-  const char* message;
-public:
-
-  /** Initializes message. Automatically invocated by the macro MESSAGE. */
-  inline StringLiteral(unsigned int l, const char* m) throw() : length(l), message(m) {}
-  /** Cast to the usual message type. */
-  inline operator const char*() const throw() {return message;}
-  /** Returns the length of the string literal. */
-  inline unsigned int getLength() const throw() {return length;}
-};
-
-/** This macro generates a StringLiteral object from a string literal. */
-#define MESSAGE(msg) StringLiteral(sizeof(msg) - 1, msg)
-
-
-
-/**
   Default character manipulators.
 
+  @short ASCII character characteristics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 class CharTraits {
 public:
-
+  
   /** The type of a single character. */
   typedef char Character;
   /** Specifies the terminator for null-terminated strings. */
@@ -117,7 +87,7 @@ public:
   String class. The first modifing operation on a string may force the internal
   buffer to be duplicated. The implementation is currently NOT MT-safe.
 
-  @short String.
+  @short String
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -824,14 +794,6 @@ int compare<String>(const String& a, const String& b) throw();
   Writes string to format stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
-
-/**
-  Writes a string literal to a format stream.
-*/
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, const StringLiteral& value) throw(IOException) {
-  stream.addCharacterField(value, value.getLength());
-  return stream;
-}
 
 /**
   Returns a new string that is the concatenation of the two specified strings.

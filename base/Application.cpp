@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -129,7 +129,7 @@ public:
     Trace::message(stream.getString().getElements());
 #endif
     // TAG: either use SystemLogger or ferr but not both
-    SystemLogger::write(SystemLogger::ERROR, stream.getString().getElements());
+    SystemLogger::write(SystemLogger::ERROR, stream.getString());
     // TAG: only if ferr is valid
     ferr << stream.getString() << ENDL;
     exit(Application::EXIT_CODE_INTERNAL_ERROR); // TAG: is abort() or terminate() better
@@ -381,13 +381,17 @@ Application::Application(const String& _formalName) throw(SingletonException) :
   application = this;
 }
 
-Application::Application(const String& _formalName, int numberOfArguments, const char* arguments[], const char* environment[]) throw(SingletonException, OutOfDomain) :
-  formalName(_formalName),
-  exitCode(EXIT_CODE_NORMAL),
-  terminated(false),
-  hangingup(false) {
+Application::Application(
+  const String& _formalName,
+  int numberOfArguments,
+  const char* arguments[],
+  const char* environment[]) throw(SingletonException, OutOfDomain)
+  : formalName(_formalName),
+    exitCode(EXIT_CODE_NORMAL),
+    terminated(false),
+    hangingup(false) {
   initialize();
-
+  
   assert((numberOfArguments > 0) && (arguments), OutOfDomain(this));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   char buffer[MAX_PATH + 1]; // what if path starts with "\\?\"
@@ -398,7 +402,7 @@ Application::Application(const String& _formalName, int numberOfArguments, const
   path = arguments[0]; // TAG: fixme
 #endif
   for (int i = 1; i < numberOfArguments; ++i) {
-    this->arguments.append(arguments[i]);
+    this->arguments.append(NativeString(arguments[i]));
   }
 
   if (environment) {
@@ -406,7 +410,8 @@ Application::Application(const String& _formalName, int numberOfArguments, const
       String temp(*environment);
       int index = temp.indexOf('=');
       if (index != -1) { // ignore the environment string if it doesn't contain '='
-        this->environment[temp.substring(0, index - 1)] = temp.substring(index + 1);
+        this->environment[temp.substring(0, index - 1)] =
+          temp.substring(index + 1);
       }
     }
   }

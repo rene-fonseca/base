@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-unsigned short InetService::getByName(const String& name, const String& protocol) throw() {
+unsigned short InetService::getByName(
+  const String& name, const String& protocol) throw() {
   struct servent* sp;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   sp = getservbyname(name.getElements(), protocol.getElements()); // MT-safe
@@ -44,7 +45,8 @@ unsigned short InetService::getByName(const String& name, const String& protocol
   return sp ? ByteOrder::fromBigEndian<unsigned short>(sp->s_port) : 0;
 }
 
-String InetService::getByPort(unsigned short port, const String& protocol) throw() {
+String InetService::getByPort(
+  unsigned short port, const String& protocol) throw() {
   struct servent* sp;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   sp = getservbyport(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements()); // MT-safe
@@ -64,16 +66,20 @@ String InetService::getByPort(unsigned short port, const String& protocol) throw
   return sp ? String(sp->s_name) : String();
 }
 
-InetService::InetService(const String& name, const String& protocol) throw(ServiceNotFound) {
-  if ((port = getByName(name.getElements(), protocol.getElements())) == 0) {
-    throw ServiceNotFound("Unable to resolve service by name", this);
-  }
+InetService::InetService(
+  const String& name, const String& protocol) throw(ServiceNotFound) {
+  port = getByName(name, protocol);
+  assert(
+    port != 0,
+    ServiceNotFound("Unable to resolve service by name", this)
+  );
   this->name = name;
   this->protocol = protocol;
 }
 
-InetService::InetService(unsigned short port, const String& protocol) throw(ServiceNotFound) {
-  name = getByPort(port, protocol.getElements());
+InetService::InetService(
+  unsigned short port, const String& protocol) throw(ServiceNotFound) {
+  name = getByPort(port, protocol);
   assert(
     name.isProper(),
     ServiceNotFound("Unable to resolve service by port", this)
@@ -107,7 +113,8 @@ const String& InetService::getProtocol() const throw() {
   return protocol;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const InetService& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const InetService& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);
   return stream << value.name << ' ' << value.port << '/' << value.protocol;
 }

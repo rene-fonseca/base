@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,11 +26,18 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 void SystemLogger::write(MessageType type, const String& message) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  static WORD messageType[] = {EVENTLOG_INFORMATION_TYPE, EVENTLOG_WARNING_TYPE, EVENTLOG_ERROR_TYPE};
+  static WORD messageType[] = {
+    EVENTLOG_INFORMATION_TYPE,
+    EVENTLOG_WARNING_TYPE,
+    EVENTLOG_ERROR_TYPE
+  };
   HANDLE eventSource;
   Application* application = Application::getApplication();
   if (application) {
-    eventSource = ::RegisterEventSource(0, application->getFormalName().getElements());
+    eventSource = ::RegisterEventSource(
+      0,
+      application->getFormalName().getElements()
+    );
   } else {
     eventSource = ::RegisterEventSource(0, "Unspecified");
   }

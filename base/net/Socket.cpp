@@ -94,6 +94,7 @@
 #endif
 
 #if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
+     (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__SOLARIS) && \
      !defined(_DK_SDU_MIP__BASE__SOCKLEN_T))
   typedef int socklen;
 #else

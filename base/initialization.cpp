@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -119,7 +119,10 @@ namespace internal {
   
   void terminationExceptionHandler() throw() {
     Trace::message("Exception was raised during application initialization or cleanup.");
-    SystemLogger::write(SystemLogger::ERROR, MESSAGE("Exception was raised during application initialization or cleanup."));
+    SystemLogger::write(
+      SystemLogger::ERROR,
+      MESSAGE("Exception was raised during application initialization or cleanup.")
+    );
     // ferr has not been initialized
     exit(Application::EXIT_CODE_INITIALIZATION);
   }
@@ -129,7 +132,8 @@ namespace internal {
     try {
       throw;
     } catch (Exception& e) {
-      stream << MESSAGE("Internal error: exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
+      stream << MESSAGE("Internal error: exception '")
+             << TypeInfo::getTypename(e) << MESSAGE("' was raised");
       if (e.getType().isInitialized()) {
         stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
       }
@@ -152,10 +156,10 @@ namespace internal {
       stream << MESSAGE("Internal error: unsupported exception was raised in violation with exception specification during application initialization or cleanup.") << FLUSH;
     }
     Trace::message(stream.getString().getElements());
-    SystemLogger::write(SystemLogger::ERROR, stream.getString().getElements());
+    SystemLogger::write(SystemLogger::ERROR, stream.getString());
     exit(Application::EXIT_CODE_INITIALIZATION);
   }
-
+  
   class ExceptionHandlers {
   public:
     

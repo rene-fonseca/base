@@ -32,36 +32,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-class WindowsSocketsInitializer {
-public:
-
-  WindowsSocketsInitializer::WindowsSocketsInitializer() throw(NetworkException) {
-    WORD wVersionRequested;
-    WSADATA wsaData;
-    wVersionRequested = MAKEWORD(2, 2);
-
-    if (WSAStartup(wVersionRequested, &wsaData)) {
-      throw NetworkException("Unable to startup Windows Sockets");
-    }
-
-    if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {
-      WSACleanup();
-      throw NetworkException("Unable to startup Windows Sockets");
-    }
-  }
-
-  ~WindowsSocketsInitializer() throw(NetworkException) {
-    if (WSACleanup()) {
-      throw NetworkException("Unable to cleanup Windows Sockets");
-    }
-  }
-};
-
-// Request access to the Windows Sockets interface
-WindowsSocketsInitializer windowsSockets;
-#endif // win32
-
 String InetAddress::getLocalHost() throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   // I use thread local storage 'cause I don't know what the maximum length is

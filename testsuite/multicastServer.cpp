@@ -26,8 +26,11 @@ private:
 
   static const unsigned int MAJOR_VERSION = 1;
   static const unsigned int MINOR_VERSION = 0;
-public:
 
+  InetAddress interface;
+  InetAddress group;
+public:
+  
   MulticastServerApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
     : Application(MESSAGE("multicastServer"), numberOfArguments, arguments, environment) {
   }
@@ -72,8 +75,6 @@ public:
     fout << MESSAGE("Default multicast interface for outgoing packets: ")
          << socket.getMulticastInterface() << ENDL;
     
-    InetAddress interface; // unspecified
-    InetAddress group("ff00::1234"); // group("234.5.6.7");
     fout << MESSAGE("Joining multicast group ") << group
          << MESSAGE(" on interface ") << interface << ENDL;
     socket.joinGroup(interface, group);
@@ -143,14 +144,15 @@ public:
 
     const Array<String> arguments = getArguments();  
     switch (arguments.getSize()) {
-    case 0:
-      // use defaults
-      break;
     case 1:
-      service = arguments[1]; // the service
+      group = InetAddress(arguments[0]);
+      break;
+    case 2:
+      group = InetAddress(arguments[0]);
+      service = arguments[1];
       break;
     default:
-      fout << getFormalName() << MESSAGE(" [service]") << ENDL;
+      fout << getFormalName() << MESSAGE(" group [service]") << ENDL;
       return; // stop
     }
     server(service);

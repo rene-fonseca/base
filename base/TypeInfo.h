@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   This class provides type name demangling support.
 
   @short Type name
-  @auther Rene Moeller Fonseca
+  @author Rene Moeller Fonseca
   @version 1.0
 */
 

@@ -23,7 +23,7 @@
   #include <sys/ioctl.h> // defines FIONREAD
 #endif
 
-#if !defined(HAVE_TYPE_SOCKLEN_T)
+#if !defined(_DK_SDU_MIP__BASE__SOCKLEN_T)
   typedef int socklen_t;
 #endif
 

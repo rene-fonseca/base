@@ -41,8 +41,9 @@ unsigned int BufferedInputStream::read(char* buffer, unsigned int size, bool non
     }
 
     position = 0;
-    count = FilterInputStream::read(getBuffer(), getSize(), true); // refill of internal buffer with blocking
+    count = FilterInputStream::read(getBuffer(), getSize(), true); // refill of internal buffer with non-blocking
     if (count == 0) {
+      // TAG: use wait instead?
       if (!nonblocking) {
         count = FilterInputStream::read(getBuffer(), 1, false); // refill of internal buffer with blocking
       }

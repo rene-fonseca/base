@@ -526,13 +526,14 @@ unsigned int Socket::read(char* buffer, unsigned int size, bool nonblocking) thr
       }
     }
 #endif
+    bytesRead += result;
+    if (nonblocking) { // accept whatever has been read in nonblocking mode
+      break;
+    }
     if (result == 0) { // has end been reached
       socket->onEnd(); // remember end of file
-      if (bytesRead < size) {
-        throw EndOfFile(); // attempt to read beyond end of stream
-      }
+      throw EndOfFile(); // attempt to read beyond end of stream
     }
-    bytesRead += result;
   }
   return bytesRead;
 }

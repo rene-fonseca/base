@@ -696,14 +696,13 @@ unsigned int File::read(char* buffer, unsigned int size, bool nonblocking) throw
       }
     } while (result < 0);
 #endif
-    if (result == 0) { // has end been reached
-      if (nonblocking) {
-        break;
-      } else {
-        throw EndOfFile(); // attempt to read beyond end of stream
-      }
-    }
     bytesRead += result;
+    if (nonblocking) { // accept whatever has been read in nonblocking mode
+      break;
+    }
+    if (result == 0) { // has end been reached
+      throw EndOfFile(); // attempt to read beyond end of stream
+    }
   }
   return bytesRead;
 }

@@ -120,7 +120,7 @@ Group::Group(const User& user) throw(GroupException) {
   struct passwd pw;
   struct passwd* entry;
   int result = ::getpwuid_r((gid_t)id, &pw, buffer->getElements(), buffer->getSize(), &entry);
-  assert(result, GroupException(this));
+  assert(result == 0, GroupException(this));
   id = (void*)entry->pw_gid;
 #endif // flavor
 }

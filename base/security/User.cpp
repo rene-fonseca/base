@@ -134,7 +134,7 @@ User::User(const String& name) throw(UserException) {
   struct passwd pw;
   struct passwd* entry;
   int result = ::getpwnam_r(name.getElements(), &pw, buffer->getElements(), buffer->getSize(), &entry);
-  assert(result, UserException(this));
+  assert(result == 0, UserException(this));
   id = (void*)entry->pw_uid;
 #endif // flavor
 }
@@ -166,7 +166,7 @@ String User::getName() const throw(UserException) {
   struct passwd pw;
   struct passwd* entry;
   int result = ::getpwuid_r((uid_t)id, &pw, buffer->getElements(), buffer->getSize(), &entry);
-  assert(result, UserException("Unable to lookup name", this));
+  assert(result == 0, UserException("Unable to lookup name", this));
   return String(entry->pw_name);
 #endif // flavor
 }
@@ -179,7 +179,7 @@ String User::getHomeFolder() const throw(UserException) {
   struct passwd pw;
   struct passwd* entry;
   int result = ::getpwuid_r((uid_t)id, &pw, buffer->getElements(), buffer->getSize(), &entry);
-  assert(result, UserException(this));
+  assert(result == 0, UserException(this));
   return String(entry->pw_dir);
 #endif // flavor
 }

@@ -38,7 +38,7 @@ private:
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   /** Event handle. */
-  OperatingSystem::Handle event;
+  OperatingSystem::Handle handle;
 #else
   /** Indicates that the event has been signaled. */
   bool signaled;
@@ -55,13 +55,13 @@ public:
   class EventException : public Exception {
   public:
 
-    EventException() throw() {}
+    EventException() throw() : Exception() {}
 
     EventException(const char* message) throw() : Exception(message) {}
   };
 
   /**
-    Initializes the event.
+    Initializes the event in the non-signaled state.
   */
   explicit Event() throw(ResourceException);
 
@@ -104,7 +104,7 @@ public:
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   /** Returns the event handle. */
-  inline OperatingSystem::Handle getHandle() const throw() {return event;}
+  inline OperatingSystem::Handle getHandle() const throw() {return handle;}
 #endif
 
   /**

@@ -108,23 +108,26 @@ class Synchronize {
 private:
 
   /** The synchronize able object to be synchronized. */
-  const Synchronizeable<LOCK>& obj;
+  const Synchronizeable<LOCK>& object;
 
-  Synchronize(const Synchronize& copy); // prohibit copy construction
-  Synchronize& operator=(const Synchronize& eq); // prohibit assignment
+  Synchronize(const Synchronize& copy) throw();
+  Synchronize& operator=(const Synchronize& eq) throw();
 public:
-
+  
   /**
     Initializes the synchronization object.
 
-    @param obj The synchronize able object to be synchronized.
-    @param exclusive Specifies if the lock should be exclusive (write-lock) or shared (read-lock). Default is exclusive.
+    @param object The synchronize able object to be synchronized.
+    @param exclusive Specifies if the lock should be exclusive (write-lock) or
+    shared (read-lock). Default is exclusive.
   */
-  inline explicit Synchronize(const Synchronizeable<LOCK>& o, bool exclusive = true) throw() : obj(o) {
+  inline explicit Synchronize(
+    const Synchronizeable<LOCK>& _object, bool exclusive = true) throw()
+    : object(_object) {
     if (exclusive) {
-      obj.exclusiveLock();
+      object.exclusiveLock();
     } else {
-      obj.sharedLock();
+      object.sharedLock();
     }
   }
 
@@ -132,22 +135,23 @@ public:
     Forces the lock to be released.
   */
 //    inline void release() throw() {
-//      obj.releaseLock();
+//      object.releaseLock();
 //    }
 
   /**
-    Releases the lock if not already released and destroys the synchronization object.
+    Releases the lock if not already released and destroys the synchronization
+    object.
   */
   inline ~Synchronize() throw() {
-    obj.releaseLock();
+    object.releaseLock();
   }
 };
 
 
 
-/**
+/*
   Optimized version of Synchronize intended for single threaded appliances.
-
+  
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
   @deprecated
@@ -157,17 +161,19 @@ template<>
 class Synchronize<Unsafe> {
 private:
 
-  Synchronize(const Synchronize& copy); // prohibit copy construction
-  Synchronize& operator=(const Synchronize& eq); // prohibit assignment
+  Synchronize(const Synchronize& copy) throw();
+  Synchronize& operator=(const Synchronize& eq) throw();
 public:
-
+  
   /**
     Initializes the synchronization object.
-
-    @param obj The synchronize able object to be synchronized.
-    @param exclusive Specifies if the lock should be exclusive (write-lock) or shared (read-lock). Default is exclusive.
+    
+    @param object The synchronize able object to be synchronized.
+    @param exclusive Specifies if the lock should be exclusive (write-lock) or
+    shared (read-lock). Default is exclusive.
   */
-  inline explicit Synchronize(const Synchronizeable<Unsafe>& o, bool exclusive = true) throw() {
+  inline explicit Synchronize(
+    const Synchronizeable<Unsafe>& object, bool exclusive = true) throw() {
   }
 
   /**
@@ -177,7 +183,8 @@ public:
   }
 
   /**
-    Releases the lock if not already released and destroys the synchronization object.
+    Releases the lock if not already released and destroys the synchronization
+    object.
   */
   inline ~Synchronize() throw() {
   }

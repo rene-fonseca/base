@@ -31,14 +31,31 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  FileNotFound();
+  FileNotFound() throw();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  FileNotFound(const char* message);
+  FileNotFound(const char* message) throw();
+
+  /**
+    Initializes the exception object without an associated message.
+
+    @param type The identity of the type.
+  */
+  FileNotFound(Type type) throw() : FileException(type) {
+  }
+
+  /**
+    Initializes the exception object.
+
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  FileNotFound(const char* message, Type type) throw() : FileException(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

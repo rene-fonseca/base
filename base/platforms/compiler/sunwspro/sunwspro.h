@@ -25,13 +25,13 @@ namespace base {
     namespace sun2 {
 
       namespace sunwspro {
-      };
-    };
-  };
+      }
+    }
+  }
   
   // import data types
   using com::sun2::sunwspro;
   
-}; // end of namespace base
+} // end of namespace base
 
 #endif

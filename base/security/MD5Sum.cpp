@@ -47,8 +47,11 @@ public:
   }
 };
 
-MD5Sum::MD5Sum() throw() {
-  reset();
+MD5Sum::MD5Sum() throw() : totalSize(0), bytesInBuffer(0) {
+  messageDigest[0] = 0x67452301;
+  messageDigest[1] = 0xefcdab89;
+  messageDigest[2] = 0x98badcfe;
+  messageDigest[3] = 0x10325476;
 }
 
 void MD5Sum::pushBlock(const byte* block) throw() {
@@ -214,16 +217,7 @@ String MD5Sum::getBase64() const throw() {
       *p++ = word & 0xff;
     }
   }
-  return Base64::toString(&temp[0], 16);
-}
-
-void MD5Sum::reset() throw() {
-  totalSize = 0;
-  bytesInBuffer = 0;
-  messageDigest[0] = 0x67452301;
-  messageDigest[1] = 0xefcdab89;
-  messageDigest[2] = 0x98badcfe;
-  messageDigest[3] = 0x10325476;
+  return Base64::encode(&temp[0], 16);
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

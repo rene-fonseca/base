@@ -35,12 +35,12 @@ int Base64::valueToDigit(char digit) throw() {
   }
 }
 
-String Base64::toString(const byte* buffer, unsigned int size) throw() {
+String Base64::encode(const byte* buffer, unsigned int size) throw() {
   unsigned int length = (size * 8 + 5) / 6;
   String result(length);
   result.forceToLength(length);
   String::Iterator i = result.getBeginIterator();
-  String::Iterator end = result.getEndIterator();
+  const String::Iterator end = result.getEndIterator();
 
   unsigned int bitBuffer = 0;
   unsigned int bitsInBuffer = 0;

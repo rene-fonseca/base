@@ -53,7 +53,7 @@ public:
     @param buffer Buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  static String Base64::toString(const byte* buffer, unsigned int size) throw();
+  static String encode(const byte* buffer, unsigned int size) throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -30,7 +30,7 @@ void testChecksum(const String& str) {
 
   fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
        << "Original message: " << str << EOL
-       << "Checksum (hex): " << checksum.getValue() << EOL
+       << "Message digest (hex): " << checksum.getValue() << EOL
        << ENDL;
 }
 
@@ -58,8 +58,8 @@ void jobMD5Sum(const String& filePath) {
   fout << ENDL;
 
   fout << "Total number of bytes: " << sum.getTotalSize() << EOL
-       << "Checksum (hex encoding): " << sum.getValue() << EOL
-       << "Checksum (Base64 encoding): " << sum.getBase64() << ENDL;
+       << "Message digest (hex): " << sum.getValue() << EOL
+       << "Message digest (Base64): " << sum.getBase64() << ENDL;
 }
 
 void jobDump(const String& filePath) {

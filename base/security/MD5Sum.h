@@ -14,17 +14,28 @@
 #ifndef _DK_SDU_MIP__BASE_SECURITY__MD5SUM_H
 #define _DK_SDU_MIP__BASE_SECURITY__MD5SUM_H
 
-#include <base/Type.h>
 #include <base/string/String.h>
 #include <base/OutOfRange.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Implementation of the MD5 Message-Digest Algorithm (see RFC 1321).
-  128 bit checksum.
+  Implementation of the MD5 message-digest algorithm (see RFC 1321).
+  This class takes a message of arbitrary length and produces a 128-bit
+  "fingerprint"/"message digest" of the message. According to the RFC it is
+  computationally infeasible to produce two messages having the same message
+  digest, or to produce any message having a given prespecified target message
+  digest.
 
-  @short MD5 Message-Digest checksum calculator.
+  <pre>
+  String message = "abcdefghijklmnopqrstuvwxyz";
+  MD5Sum checksum;
+  checksum.push((const byte*)message.getElements(), message.getLength());
+  checksum.pushEnd();
+  fout << MESSAGE("message digest: ") << checksum.getValue() << ENDL;
+  </pre>
+
+  @short MD5 message-digest.
   @author René Møller Fonseca
   @version 1.0
 */
@@ -34,15 +45,15 @@ public:
 
   /** Internal block size in bytes. */
   static const unsigned int BLOCK_SIZE = 64;
-  /** Specifies the maximum size of the original message. */
-  static const unsigned long long MAXIMUM_SIZE = UnsignedLongLong::MAXIMUM/8;
+  /** Specifies the maximum length (in bytes) of the original message. */
+  static const unsigned long long MAXIMUM_SIZE = (1ULL << (64 - 3)) - 1;
 private:
 
   /** Message digest buffer. */
   unsigned int messageDigest[4];
   /** The total number of bytes pushed. */
   unsigned long long totalSize;
-  /** Temporary container for incomplete 16 word blocks. */
+  /** Temporary container for incomplete 16 word block. */
   byte buffer[BLOCK_SIZE];
   /** The number of bytes in the buffer. */
   unsigned int bytesInBuffer;
@@ -52,7 +63,7 @@ private:
 public:
 
   /**
-    Initialize object.
+    Initializes object.
   */
   MD5Sum() throw();
 
@@ -67,8 +78,8 @@ public:
   void push(const byte* buffer, unsigned int size) throw(OutOfRange);
 
   /**
-    Tell object that the end has been reached. Do NOT use push() after invoking
-    this function.
+    This function should be invoked when the entire message has been pushed.
+    Do NOT use push() after invoking this function.
   */
   void pushEnd() throw();
 
@@ -78,20 +89,16 @@ public:
   unsigned long long getTotalSize() const throw();
 
   /**
-    Returns the hash value in hex. This is only valid after pushEnd() has been invoked.
+    Returns the message digest encoded in hex. This is only valid after
+    pushEnd() has been invoked.
   */
   String getValue() const throw();
 
   /**
-    Returns the hash value . This is only valid after pushEnd() has been invoked.
+    Returns the message digest encoded in Base64. This is only valid after
+    pushEnd() has been invoked.
   */
   String getBase64() const throw();
-
-  /**
-    Resets the checksum. This function is used after a pushEnd() to start a new
-    checksum calculation.
-  */
-  void reset() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -19,6 +19,7 @@ SUBDIRS = orb ui
 LIBS=-lbase
 
 bin_PROGRAMS = Array
+bin_PROGRAMS += BitSet
 bin_PROGRAMS += List
 bin_PROGRAMS += Queue
 bin_PROGRAMS += Set
@@ -70,6 +71,7 @@ bin_PROGRAMS += Version
 #lib_LTLIBRARIES = dlmodule.la
 
 Array_SOURCES = Array.cpp
+BitSet_SOURCES = BitSet.cpp
 List_SOURCES = List.cpp
 Queue_SOURCES = Queue.cpp
 Set_SOURCES = Set.cpp

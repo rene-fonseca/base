@@ -32,16 +32,16 @@ protected:
   /** The position of the iterator. */
   Pointer element;
   /** The fixed distance between "consecutive" elements. */
-  const unsigned int step;
+  unsigned int step;
 public:
 
   /**
     Initializes iterator.
 
-    @param value The initial value of the iterator.
+    @param element The initial value of the iterator.
     @param step The number of elements to skip over per element.
   */
-  InterleavedIterator(Pointer value, unsigned int step) throw();
+  InterleavedIterator(Pointer element, unsigned int step) throw();
 
   /**
     Prefix increment.
@@ -123,8 +123,21 @@ public:
 };
 
 template<class TRAITS>
-inline InterleavedIterator<TRAITS>::InterleavedIterator(Pointer value, unsigned int s) throw()
-  : element(value), step(s) {}
+inline InterleavedIterator<TRAITS>::InterleavedIterator(Pointer _element, unsigned int _step) throw()
+  : element(_element), step(_step) {
+}
+
+template<class TRAITS>
+inline InterleavedIterator<TRAITS> operator+(const InterleavedIterator<TRAITS>& left, int right) throw() {
+  InterleavedIterator<TRAITS> result(left);
+  return result += right;
+}
+
+template<class TRAITS>
+inline InterleavedIterator<TRAITS> operator-(const InterleavedIterator<TRAITS>& left, int right) throw() {
+  InterleavedIterator<TRAITS> result(left);
+  return result -= right;
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

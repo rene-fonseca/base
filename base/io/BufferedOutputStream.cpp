@@ -4,31 +4,25 @@
  ***************************************************************************/
 
 #include <base/io/BufferedOutputStream.h>
-#include <base/Base.h>
 #include <string.h>
 
-BufferedOutputStream::BufferedOutputStream(OutputStream& out, unsigned int size) throw(BindException) :
-  FilterOutputStream(out) {
-  this->size = maximum(size, MINIMUM_BUFFER_SIZE);
-  buffer = new char[this->size];
-  if (!buffer) {
-    throw BindException();
-  }
+BufferedOutputStream::BufferedOutputStream(OutputStream& out, unsigned int size) throw(BindException, MemoryException) :
+  FilterOutputStream(out), buffer(maximum(size, MINIMUM_BUFFER_SIZE)) {
   count = 0;
 }
 
 void BufferedOutputStream::flush() throw(IOException) {
-  FilterOutputStream::write(buffer, count);
+  FilterOutputStream::write(getBuffer(), count);
   count = 0;
   FilterOutputStream::flush();
 }
 
 unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {
 
-  unsigned int bytesLeft = this->size - count; // bytes left in internal buffer
+  unsigned int bytesLeft = getSize() - count; // bytes left in internal buffer
 
   if (size <= bytesLeft) { // do we have enough space left in the internal buffer
-    memcpy(this->buffer + count, buffer, size); // copy from external to internal
+    memcpy(getBuffer() + count, buffer, size); // copy from external to internal
     count += size;
     return size;
   }
@@ -38,20 +32,20 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size) 
 
   // fill internal buffer and write it to the stream
   if (bytesLeft > 0) {
-    memcpy(this->buffer + count, buffer, bytesLeft); // copy from external to internal
+    memcpy(getBuffer() + count, buffer, bytesLeft); // copy from external to internal
     count += bytesLeft;
     position += bytesLeft;
   }
-  result = FilterOutputStream::write(this->buffer, count); // write internal buffer
+  result = FilterOutputStream::write(getBuffer(), count); // write internal buffer
   count -= result;
   if (count > 0) { // did we empty the internal buffer
     if (result > 0) {
-      memmove(this->buffer, this->buffer + result, count); // move bytes to beginning of buffer
+      memmove(getBuffer(), getBuffer() + result, count); // move bytes to beginning of buffer
     }
     return position; // # of bytes read from external buffer
   }
 
-  unsigned int bytesToCopy = (size - position) % this->size; // # of bytes to copy to internal buffer
+  unsigned int bytesToCopy = (size - position) % getSize(); // # of bytes to copy to internal buffer
   unsigned int bytesToWrite = (size - position) - bytesToCopy; // # of bytes to write from external buffer
 
   // write directly from external buffer to stream
@@ -64,12 +58,11 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size) 
   }
 
   // copy rest from external buffer to internal buffer
-  memcpy(this->buffer, buffer + position, bytesToCopy); // copy external to internal
+  memcpy(getBuffer(), buffer + position, bytesToCopy); // copy external to internal
   count += bytesToCopy;
   return size; // # of bytes read from external buffer
 }
 
 BufferedOutputStream::~BufferedOutputStream() {
   flush();
-  delete[] buffer;
 }

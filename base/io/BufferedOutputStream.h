@@ -7,6 +7,7 @@
 #define _DK_SDU_MIP__BASE_IO__BUFFERED_OUTPUT_STREAM_H
 
 #include <base/io/FilterOutputStream.h>
+#include <base/mem/Allocator.h>
 
 /**
   A FilterOutputStream that adds buffer functionality to an OutputStream for added performance. MT-unsafe implementation.
@@ -25,11 +26,23 @@ public:
 protected:
 
   /** The buffer. */
-  char* buffer;
-  /** The size of the buffer. */
-  unsigned int size;
+  Allocator<char> buffer;
   /** The number of bytes in the buffer. */
   unsigned int count;
+
+  /**
+    Returns the buffer.
+  */
+  inline char* getBuffer() throw() {
+    return buffer.getElements();
+  }
+
+  /**
+    Returns the size of the buffer.
+  */
+  inline unsigned int getSize() const throw() {
+    return buffer.getSize();
+  }
 public:
 
   /**
@@ -38,7 +51,7 @@ public:
     @param out The output stream.
     @param size The size of the buffer. Default is given by DEFAULT_BUFFER_SIZE.
   */
-  BufferedOutputStream(OutputStream& out, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException);
+  BufferedOutputStream(OutputStream& out, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException, MemoryException);
 
   /**
     Forces any buffered bytes to be written out.

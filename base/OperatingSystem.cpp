@@ -39,11 +39,11 @@
 #    define _SC_SYMLOOP_MAX -1
 #  endif
 
-#  if (!defined(_SC_ACL_MAX))
+#  if (!defined(_SC_ACL))
 #    define _SC_ACL -1
 #  endif
 
-#  if (!defined(_SC_AUDIT_MAX))
+#  if (!defined(_SC_AUDIT))
 #    define _SC_AUDIT -1
 #  endif
 

@@ -47,15 +47,33 @@ private:
   unsigned int size;
 public:
 
-  /** Enumerator of set. */
-  template<class TRAITS, class ENU>
-  class MapEnumerator : public Enumerator<TRAITS> {
+//  /** Enumerator of Map. */
+//  template<class TRAITS, class ENU>
+//  class MapEnumerator : public Enumerator<TRAITS> {
+//  private:
+//
+//    ENU enu;
+//  public:
+//
+//    inline MapEnumerator(ENU e) : enu(e) {}
+//
+//    inline bool hasNext() const throw() {
+//      return enu.hasNext();
+//    }
+//
+//    inline Pointer next() throw(EndOfEnumeration) {
+//      return enu.next()->getValue();
+//    }
+//  };
+
+  /** Enumerator of map. */
+  class ReadEnumerator : public Enumerator<ReadEnumeratorTraits<Node> > {
   private:
 
-    ENU enu;
+    OrderedBinaryTree<Node>::ReadEnumerator enu;
   public:
 
-    inline MapEnumerator(ENU e) : enu(e) {}
+    inline ReadEnumerator(OrderedBinaryTree<Node>::ReadEnumerator e) : enu(e) {}
 
     inline bool hasNext() const throw() {
       return enu.hasNext();
@@ -66,10 +84,33 @@ public:
     }
   };
 
+  /**
+    Modifying enumerator of values of map.
+
+    @author René Møller Fonseca
+    @version 1.0
+  */
+  class ValueEnumerator : public Enumerator<EnumeratorTraits<Value> > {
+  private:
+
+    OrderedBinaryTree<Node>::Enumerator enu;
+  public:
+
+    inline ValueEnumerator(OrderedBinaryTree<Node>::Enumerator e) : enu(e) {}
+
+    inline bool hasNext() const throw() {
+      return enu.hasNext();
+    }
+
+    inline Pointer next() throw(EndOfEnumeration) {
+      return enu.next()->getValue()->getValue();
+    }
+  };
+
   /** Modifying enumerator. */
-  typedef MapEnumerator<EnumeratorTraits<Node>, OrderedBinaryTree<Node>::Enumerator> Enumerator;
+//  typedef MapEnumerator<EnumeratorTraits<Node>, OrderedBinaryTree<Node>::Enumerator> Enumerator;
   /** Non-modifying enumerator. */
-  typedef MapEnumerator<ReadEnumeratorTraits<Node>, OrderedBinaryTree<Node>::ReadEnumerator> ReadEnumerator;
+//  typedef MapEnumerator<ReadEnumeratorTraits<Node>, OrderedBinaryTree<Node>::ReadEnumerator> ReadEnumerator;
 
 
   /**
@@ -146,12 +187,12 @@ public:
   */
   inline bool isEmpty() const throw() {return size == 0;}
 
-//  /**
-//    Returns a modifying enumerator of the ordered binary tree.
-//  */
-//  inline Enumerator getEnumerator() throw() {
-//    return elements.getEnumerator();
-//  }
+  /**
+    Returns a modifying enumerator of the ordered binary tree.
+  */
+  inline ValueEnumerator getValueEnumerator() throw() {
+    return elements.getEnumerator();
+  }
 
   /**
     Returns a non-modifying enumerator of the ordered binary tree.

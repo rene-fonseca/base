@@ -17,37 +17,7 @@
 #include <base/Base.h>
 #include <new>
 #include <typeinfo>
-#include <stdio.h>
-
-
-
-// standard c library functions
-
-extern "C" {
-
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCPY)
-  void* memcpy(void*, const void*, size_t);
-#endif
-
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMMOVE)
-  void* memmove(void*, const void*, size_t);
-#endif
-
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMSET)
-  void* memset(void*, int, size_t);
-#endif
-
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCHR)
-  void* memchr(const void*, int, size_t);
-#endif
-
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCMP)
-  int memcmp(const void*, const void*, size_t);
-#endif
-
-} // end of extern "C"
-
-
+#include <string.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

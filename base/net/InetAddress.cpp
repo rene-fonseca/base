@@ -285,22 +285,14 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
   #if (INET6_ADDRSTRLEN > THREAD_LOCAL_STORAGE)
     #error The requested amount of local storage is not available.
   #endif
-  char qwerty[1234];
-  char* buffer = (char*)&qwerty;
-//  char* buffer = Thread::getLocalStorage();
+// char buffer[INET6_ADDRSTRLEN]; // longest possible string is "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"
+  Allocator<char>* buffer = Thread::getLocalStorage();
   if (isV4Mapped()) {
-    inet_ntop(AF_INET, &((uint32_t*)(&value.address))[3], buffer, THREAD_LOCAL_STORAGE); // MT-level is safe
+    inet_ntop(AF_INET, &((uint32_t*)(&value.address))[3], buffer->getElements(), buffer->getSize()); // MT-level is safe
   } else {
-    inet_ntop(AF_INET6, &value.address, buffer, THREAD_LOCAL_STORAGE); // MT-level is safe
+    inet_ntop(AF_INET6, &value.address, buffer->getElements(), buffer->getSize()); // MT-level is safe
   }
   return stream << buffer;
-/*  char buffer[INET6_ADDRSTRLEN]; // longest possible string is "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"
-  if (isV4Mapped()) {
-    inet_ntop(AF_INET, &((uint32_t*)(&value.address))[3], buffer, sizeof(buffer)); // MT-level is safe
-  } else {
-    inet_ntop(AF_INET6, &value.address, buffer, sizeof(buffer)); // MT-level is safe
-  }
-  return stream << buffer;*/
 #else
   // longest possible string is "255.255.255.255"
   return stream << inet_ntoa(*(struct in_addr*)&value.address); // MT-level is safe but uses static buffer

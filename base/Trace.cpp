@@ -18,7 +18,9 @@
   #include <string.h>
   #include <stdio.h>
 #else // unix
+  #include <string.h>
   #include <stdio.h>
+  #include <syslog.h>
 #endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -27,18 +29,28 @@ void Trace::message(const char* message) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ::OutputDebugString(message);
 #else // unix
-  fprintf(stderr, "TRACE %s\n", message); // fprintf must be MT-safe
+  const char* ident;
+  openlog("TRACE", LOG_PID, 0); // TAG: fixme - do not reopen
+  syslog(LOG_USER | LOG_INFO, message);
+  closelog();
+//  fprintf(stderr, "TRACE %s\n", message); // fprintf must be MT-safe
 #endif // flavour
 }
 
 void Trace::member(const void* ptr, const char* message) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int length = strlen(message);
-  char buffer[sizeof("0x12345678 >> ") + length];
+  char buffer[sizeof("0x1234567812345678 >> ") + length];
   sprintf(buffer, "%08x >> %s", ptr, message); // sprintf must be MT-safe
   ::OutputDebugString(buffer);
 #else // unix
-  fprintf(stderr, "TRACE %08x >> %s\n", ptr, message); // fprintf must be MT-safe
+  unsigned int length = strlen(message);
+  char buffer[sizeof("0x1234567812345678 >> ") + length];
+  sprintf(buffer, "%08x >> %s", ptr, message); // sprintf must be MT-safe
+  openlog("TRACE", LOG_PID, 0); // TAG: fixme - do not reopen
+  syslog(LOG_USER | LOG_INFO, message);
+  closelog();
+//  fprintf(stderr, "TRACE %08x >> %s\n", ptr, message); // fprintf must be MT-safe
 #endif // flavour
 }
 

@@ -19,9 +19,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This class returns information concerning the framework.
+  This class returns information concerning some component (default is this framework).
 
-  @short Framework information.
+  @short Component information
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -36,34 +36,35 @@ public:
   /**
     Returns the major version of the framework.
   */
-  unsigned int getMajorVersion() const throw();
+  virtual unsigned int getMajorVersion() const throw();
 
   /**
-    Returns the minor version of the framework.
+    Returns the minor version of the framework. By convention equal and
+    unequal numbers indicate a final and a debug release, respectively.
   */
-  unsigned int getMinorVersion() const throw();
+  virtual unsigned int getMinorVersion() const throw();
 
   /**
     Returns the micro version of the framework.
   */
-  unsigned int getMicroVersion() const throw();
+  virtual unsigned int getMicroVersion() const throw();
 
   /**
     Returns the release of the framework as a string. The format of the string
     is unspecified.
   */
-  String getRelease() const throw();
+  virtual String getRelease() const throw();
 
   /**
-    Returns the version of the framework as a string. The format of the string
+    Returns the version of the framework as a string. The recommended format
     is 'major.minor.micro suffix' where suffix could be anything.
   */
-  String getVersion() const throw();
+  virtual String getVersion() const throw();
 
   /**
     Returns a short banner (multiple lines) describing the framework.
   */
-  String getBanner() const throw();
+  virtual String getBanner() const throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

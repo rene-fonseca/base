@@ -25,6 +25,7 @@
 #endif
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+//  #defined _WIN32_WINNT 0x0400
   #include <windows.h>
 #else // pthread
   #include <pthread.h>
@@ -102,8 +103,16 @@ Allocator<char>* Thread::getLocalStorage() throw() {
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
   assert(nanoseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::Sleep((nanoseconds+999999)/1000000); // round up
   // TAG: use select (but test if better)
+  HANDLE timer = ::CreateWaitableTimer(0, TRUE, 0);
+  if (timer) {
+    long long timeout = -(nanoseconds+99)/100; // "-" selects relative mode
+    ::SetWaitableTimer(timer, (const FILETIME*)&timeout, 0, 0, 0, FALSE);
+    ::WaitForSingleObject(timer);
+    ::CloseHandle(timer);
+  } else {
+    ::Sleep((nanoseconds+999999)/1000000); // round up
+  }
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP)
     struct timespec interval;
@@ -352,6 +361,21 @@ bool Thread::isSelf() const throw() {
 #endif
 }
 
+Thread::Times Thread::getTimes() const throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  Thread::Times result;
+  HANDLE thread = ::OpenThread(THREAD_QUERY_INFORMATION, FALSE, (DWORD)identifier);
+  ::GetThreadTimes(thread, 0, 0, (FILETIME*)&result.system, (FILETIME*)&result.user);
+  ::CloseHandle(thread);
+  return result;
+#else // unix
+  Thread::Times result;
+  result.user = 0;
+  result.system = 0;
+  return result;
+#endif // flavor
+}
+
 bool Thread::join() const throw(ThreadException) {
   if (state == NOTSTARTED) {
     return false;
@@ -418,12 +442,5 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value) 
          << '}';
   return stream;
 }
-
-/*
-#include <sys/times.h>
-#include <limits.h>
-
-clock_t times(struct tms *buffer);
-*/
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -461,7 +461,11 @@ protected:
       Destroys the list.
     */
     ~ListImpl() throw() {
-      removeAll();
+      while (first) {
+        Node* node = first;
+        first = first->getNext();
+        delete node;
+      }
     }
   };
 

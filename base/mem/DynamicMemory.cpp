@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/mem/DynamicMemory.h>
 #include <base/OperatingSystem.h>
 
@@ -35,7 +36,7 @@ void* DynamicMemory::allocate(unsigned int size) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
 #else // unix
-  result = malloc(size); // unspecified behavior if size is 0
+  result = ::malloc(size); // unspecified behavior if size is 0
 #endif // flavor
   return result;
 }

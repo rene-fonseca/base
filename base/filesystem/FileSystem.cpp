@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/filesystem/FileSystem.h>
 #include <base/concurrency/Thread.h>
 #include <base/NotImplemented.h>

@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/mem/DebugDynamicMemory.h>
 #include <base/Primitives.h>
 #include <base/OperatingSystem.h>
@@ -142,7 +143,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return ::HeapFree(internal::specific::processHeap, 0, memory);
 #else // unix
-  free(memory); // works with 0 pointer
+  ::free(memory); // works with 0 pointer
   return true;
 #endif // flavor
 }

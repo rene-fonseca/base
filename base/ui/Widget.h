@@ -193,6 +193,11 @@ private:
   Pen pen;
   Brush brush;
   Font font;
+
+  /**
+    Releases the rendering context.
+  */
+  void onDestruction() throw();
 public:
   
   /* named binding points (could also have offsets default is (0,0)) */

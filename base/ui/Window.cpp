@@ -26,10 +26,33 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-Window::Window(const String& title, const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException)
-  : WindowImpl(title, position, dimension, flags) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+void Window::onDestruction() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
+  if (graphicsContextHandle) {
+    ::DeleteDC((HDC)graphicsContextHandle);
+    graphicsContextHandle = 0;
+  }
+  if (windowHandle) {
+    ::DestroyWindow((HWND)windowHandle); // TAG: recursive?
+    windowHandle = 0;
+  }
+#else // unix
+  if (graphicsContextHandle) {
+    graphicsContextHandle = 0; // nothing to destroy
+  }
+  if (windowHandle) {
+    ::XDestroyWindow((Display*)displayHandle, (::Window)windowHandle);
+    windowHandle = 0;
+  }
+  if (screenHandle) {
+    screenHandle = 0; // nothing to destroy
+  }
+#endif
+}
 
+Window::Window(const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException)
+  : WindowImpl(position, dimension, flags) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();
   rect.right = position.getX() + dimension.getWidth();
@@ -59,7 +82,7 @@ Window::Window(const String& title, const Position& position, const Dimension& d
   windowHandle = ::CreateWindowEx(
     extendedStyle, // extended style
     "mip.sdu.dk/~fonseca/base/ui/Window", // class name
-    title.getElements(), // window title
+    "", // window title
     style | // window style
     WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // required for OpenGL // TAG: what should this be
     rect.left, // x position,
@@ -83,15 +106,54 @@ Window::Window(const String& title, const Position& position, const Dimension& d
   
   onConstruction();
   
-  // make window visible and update client area
-  // TAG: need support for creating window without changing focus...
-  // TAG: fixme fixme fixme me soon
-  ::ShowWindow((HWND)windowHandle, SW_SHOWNORMAL); // TAG: or use SW_SHOW
-  ::SetForegroundWindow((HWND)windowHandle);
-	::SetFocus((HWND)windowHandle);
   ::InvalidateRect((HWND)windowHandle, 0, FALSE);
   ::UpdateWindow((HWND)windowHandle); // send WM_PAINT message
 #else // unix
+  fout << MESSAGE("Number of available screens: ") << ::XScreenCount((Display*)displayHandle) << ENDL;
+  fout << MESSAGE("Default screen: ") << ::XDefaultScreen((Display*)displayHandle) << ENDL;
+  
+  int screenId = ::XDefaultScreen((Display*)displayHandle);
+  screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
+  assert(screenHandle, UserInterfaceException("Unable to open screen", this));
+
+  fout << MESSAGE("default depth of screen: ") << DefaultDepthOfScreen((Screen*)screenHandle) << ENDL;
+  
+  int blackPixel = ::XBlackPixelOfScreen((Screen*)screenHandle);
+  int whitePixel = ::XWhitePixelOfScreen((Screen*)screenHandle);
+  
+  windowHandle = (void*)::XCreateSimpleWindow(
+    (Display*)displayHandle,
+    DefaultRootWindow((Display*)displayHandle),
+    position.getX(),
+    position.getY(),
+    dimension.getWidth(),
+    dimension.getHeight(),
+    0, // border width
+    blackPixel, // border color
+    blackPixel // background
+  );
+  // TAG: detect error and raise exception
+  
+  ::XSelectInput(
+    (Display*)displayHandle,
+    (::Window)windowHandle,
+    StructureNotifyMask |
+    FocusChangeMask |
+    VisibilityChangeMask |
+    KeyPressMask |
+    KeyReleaseMask |
+    KeymapStateMask |
+    ButtonPressMask |
+    ButtonReleaseMask |
+    EnterWindowMask |
+    LeaveWindowMask |
+    PointerMotionMask
+  );
+  graphicsContextHandle = (void*)::XCreateGC((Display*)displayHandle, (::Window)windowHandle, 0, 0);
+  ::XSetForeground((Display*)displayHandle, (GC)graphicsContextHandle, whitePixel);
+
+  setTitle(title);
+  setIconTitle(title);
 #endif // flavor
 }
 
@@ -400,12 +462,6 @@ void Window::text(const Position& position, const Dimension& dimension, const St
     text.getElements(),
     text.getLength()
   );
-#endif // flavor  
-}
-
-Window::~Window() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#else // unix
 #endif // flavor  
 }
 

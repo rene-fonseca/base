@@ -29,12 +29,18 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class Window : public WindowImpl {
   friend class Widget;
+private:
+  
+  /**
+    Releases the rendering context.
+  */
+  void onDestruction() throw();
 public:
   
   /**
     Initializes a window.
   */
-  Window(const String& title, const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException);
+  Window(const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException);
   
   enum GraphicsFlag {
     FILLED = 1
@@ -92,11 +98,6 @@ public:
     Draws text.
   */
   void text(const Position& position, const Dimension& dimension, const String& text, unsigned int flags = 0) throw(UserInterfaceException);
-
-  /**
-    Releases the window.
-  */
-  ~Window() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

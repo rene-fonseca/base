@@ -147,12 +147,36 @@ Color Widget::getNamedColor(NamedColor color) throw() {
   return result;
 }
 
+void Widget::onDestruction() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
+  if (graphicsContextHandle) {
+    ::DeleteDC((HDC)graphicsContextHandle);
+    graphicsContextHandle = 0;
+  }
+  if (windowHandle) {
+    ::DestroyWindow((HWND)windowHandle); // TAG: recursive?
+    windowHandle = 0;
+  }
+#else // unix
+  if (graphicsContextHandle) {
+    graphicsContextHandle = 0; // nothing to destroy
+  }
+  if (windowHandle) {
+    ::XDestroyWindow((Display*)displayHandle, (::Window)windowHandle);
+    windowHandle = 0;
+  }
+  if (screenHandle) {
+    screenHandle = 0; // nothing to destroy
+  }
+#endif
+}
+
 Widget::Widget(Window& owner) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   windowHandle = ::CreateWindowEx(
     0, // extended style
     "mip.sdu.dk/~fonseca/base/ui/Window", // class name // TAG: "mip.sdu.dk/~fonseca/base/ui/Widget"
-    0, // window title
+    "", // window title
     WS_CHILD | WS_VISIBLE, // window style // TAG: what should this be
     position.getX(),
     position.getY(),
@@ -163,7 +187,7 @@ Widget::Widget(Window& owner) throw(UserInterfaceException) {
     (HINSTANCE)::GetModuleHandle(0), // the instance that owns the window (ignored on NT)
     0 // application window data structure
   );
-  if (!(HWND)windowHandle) {
+  if (!windowHandle) {
     throw UserInterfaceException("Unable to create widget", this);
   }
   if (!(graphicsContextHandle = ::GetDC((HWND)windowHandle))) {
@@ -175,6 +199,49 @@ Widget::Widget(Window& owner) throw(UserInterfaceException) {
   ::InvalidateRect((HWND)windowHandle, 0, FALSE);
   ::UpdateWindow((HWND)windowHandle); // send WM_PAINT message
 #else // unix
+  int screenId = ::XDefaultScreen((Display*)displayHandle);
+  screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
+  assert(screenHandle, UserInterfaceException("Unable to open screen", this));
+  
+  int blackPixel = ::XBlackPixelOfScreen((Screen*)screenHandle);
+  int whitePixel = ::XWhitePixelOfScreen((Screen*)screenHandle);
+  
+  windowHandle = (void*)::XCreateSimpleWindow(
+    (Display*)displayHandle,
+    (::Window)owner.windowHandle, // parent
+    position.getX(),
+    position.getY(),
+    dimension.getWidth(),
+    dimension.getHeight(),
+    0, // border width
+    blackPixel, // border color
+    blackPixel // background
+  );
+
+  ::XSelectInput(
+    (Display*)displayHandle,
+    (::Window)windowHandle,
+    StructureNotifyMask |
+    FocusChangeMask |
+    VisibilityChangeMask |
+    KeyPressMask |
+    KeyReleaseMask |
+    KeymapStateMask |
+    ButtonPressMask |
+    ButtonReleaseMask |
+    EnterWindowMask |
+    LeaveWindowMask |
+    PointerMotionMask
+  );
+  graphicsContextHandle = (void*)::XCreateGC(
+    (Display*)displayHandle,
+    (::Window)windowHandle,
+    0,
+    0
+  );
+  ::XSetForeground((Display*)displayHandle, (GC)graphicsContextHandle, whitePixel);
+  
+  onConstruction();
 #endif // flavor
 }
 
@@ -285,6 +352,14 @@ Widget::Font::Font(const String& name) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: fixme
 #else // unix
+//   fs = ::XCreateFontSet(
+//     (Display*)displayHandle,
+//     DEFAULT_FONT,
+//     &missingList,
+//     &missingCount,
+//     &string
+//   );
+//   assert(fs, UserInterfaceException(this));
 #endif // flavor
 }
 

@@ -18,9 +18,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 BufferedInputStream::BufferedInputStream(InputStream& in, unsigned int size) throw(BindException, MemoryException) :
-  FilterInputStream(in), buffer(maximum(size, MINIMUM_BUFFER_SIZE)) {
-  count = 0;
-  position = 0;
+  FilterInputStream(in),
+  buffer(maximum(size, MINIMUM_BUFFER_SIZE)),
+  count(0),
+  position(0) {
 }
 
 unsigned int BufferedInputStream::available() const throw(IOException) {
@@ -32,7 +33,7 @@ unsigned int BufferedInputStream::read(char* buffer, unsigned int size, bool non
   while (true) {
     // copy from internal to external buffer - no overlap
     unsigned int bytesToCopy = minimum(size - bytesRead, count - position);
-    copy(buffer + bytesRead, getBuffer() + this->position, bytesToCopy);
+    copy(buffer + bytesRead, this->buffer.getElements() + this->position, bytesToCopy);
     bytesRead += bytesToCopy;
     position += bytesToCopy;
 
@@ -41,34 +42,47 @@ unsigned int BufferedInputStream::read(char* buffer, unsigned int size, bool non
     }
 
     position = 0;
-    count = FilterInputStream::read(getBuffer(), getSize(), true); // refill of internal buffer with non-blocking
-    if (count == 0) {
-      // TAG: use wait instead?
-      if (!nonblocking) {
-        count = FilterInputStream::read(getBuffer(), 1, false); // refill of internal buffer with blocking
-      }
-      if (count == 0) {
-        break; // prevent infinite loop - we have tried to fill the buffer prior to this
-      }
+    unsigned int available = FilterInputStream::available();
+    if (available > 0) {
+      count = FilterInputStream::read(this->buffer.getElements(), minimum(this->buffer.getSize(), available)); // refill of internal buffer without blocking
+      ASSERT(count == available);
+    } else if (nonblocking) {
+      break;
+    } else { // blocking
+      FilterInputStream::wait(); // TAG: what about EOF
+      unsigned int available = FilterInputStream::available();
+      count = FilterInputStream::read(this->buffer.getElements(), minimum(this->buffer.getSize(), available)); // refill of internal buffer without blocking
+      ASSERT((count > 0) && (count == available));
     }
   }
   return bytesRead;
 }
 
-unsigned int BufferedInputStream::skip(unsigned int count) throw(IOException) {
-  if (isEmpty()) {
-    return FilterInputStream::skip(count);
-  } else {
-    unsigned int bytes = this->count - position;
-    if (count > bytes) {
-      // skip all bytes in buffer and more
-      this->count = 0; // empty buffer
-      return bytes + FilterInputStream::skip(bytes - count);
-    } else {
-      // skip bytes in buffer
-      position += count;
-      return count;
+unsigned int BufferedInputStream::peek(unsigned int count) throw(OutOfDomain, IOException) {
+  unsigned int unreadBytes = this->count - position;
+  if (count > unreadBytes) { // request for more than currently available in this buffer
+    assert(count <= buffer.getSize(), OutOfDomain());
+    move(buffer.getElements(), buffer.getElements() + position, unreadBytes); // move unread elements to beginning of buffer
+    position = 0;
+    this->count -= position;
+    // only read count bytes in blocking mode
+    this->count += FilterInputStream::read(buffer.getElements() + this->count, buffer.getSize() - this->count, true); // fill internal buffer (non-blocking)
+    if (this->count < count) {
+      this->count += FilterInputStream::read(buffer.getElements() + this->count, count - this->count, false); // fill internal buffer (blocking)
     }
+  }
+  ASSERT(position <= this->count);
+  return count;
+}
+
+unsigned int BufferedInputStream::skip(unsigned int count) throw(IOException) {
+  unsigned int unreadBytes = this->count - position;
+  if (count > unreadBytes) {
+    position = this->count; // skip all bytes in buffer and more
+    return unreadBytes + FilterInputStream::skip(count - unreadBytes);
+  } else {
+    position += count; // skip bytes in buffer
+    return count;
   }
 }
 

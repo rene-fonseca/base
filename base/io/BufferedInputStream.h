@@ -16,6 +16,7 @@
 
 #include <base/io/FilterInputStream.h>
 #include <base/mem/Allocator.h>
+#include <base/OutOfDomain.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -41,25 +42,6 @@ protected:
   unsigned int count;
   /** The current position in the buffer. */
   unsigned int position;
-
-  /**
-    Returns the buffer.
-  */
-  inline char* getBuffer() throw() {
-    return buffer.getElements();
-  }
-
-  /**
-    Returns the size of the buffer.
-  */
-  inline unsigned int getSize() const throw() {
-    return buffer.getSize();
-  }
-
-  /**
-    Returns true if the internal buffer is empty.
-  */
-  inline bool isEmpty() const throw() {return position >= count;}
 public:
 
   /**
@@ -69,6 +51,24 @@ public:
     @param size The size of the buffer. Default is given by DEFAULT_BUFFER_SIZE. The size cannot...
   */
   BufferedInputStream(InputStream& in, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException, MemoryException);
+
+  /**
+    Returns the unread bytes of the internal buffer as sequence. The size of
+    the sequence is returned by getNumberOfBytes() or peek().
+  */
+  inline const char* getElements() const throw() {return getElements() + position;}
+
+  /**
+    Returns the number of bytes currently available in the internal buffer.
+    This is not the same as available() which also includes buffered bytes of
+    the linked input stream.
+  */
+  inline unsigned int getNumberOfBytes() const throw() {return count - position;}
+
+  /**
+    Returns true if the internal buffer is empty.
+  */
+  inline bool isEmpty() const throw() {return position >= count;}
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.
@@ -109,9 +109,15 @@ public:
   bool wait(unsigned int timeout) const throw(IOException);
 
   /**
-    Returns buffer.
+    This function ensures that the requested number of bytes is available in
+    the internal buffer. Use getElements() afterwards to examine the content of
+    the buffer.
+
+    @param count The number of bytes to peek ahead.
+    @return The number of bytes in the internal buffer (only less than the
+    requested number of bytes if EOF is hit).
   */
-//  const char* peek(unsigned int count) throw(IOException);
+  unsigned int peek(unsigned int count) throw(OutOfDomain, IOException);
 
   /**
     Destroy buffered input stream.

@@ -24,7 +24,7 @@
 #include <base/Functor.h>
 #include <base/ByteOrder.h>
 #include <base/mathematics/Constants.h>
-#include <math.h>
+#include <math.h> // TAG: alien header file
 
 using namespace base;
 
@@ -38,6 +38,8 @@ void test() {
   fout << "long long (-1234567890): " << -1234567890LL << ENDL;
   fout << "char (A): " << 'A' << ENDL;
   fout << "char* (Hello, World!): " << "Hello, World!" << ENDL;
+  fout << "void* (0): " << static_cast<void*>(0) << ENDL;
+  fout << "void* (Application::getApplication): " << Application::getApplication() << ENDL;  
 
   ferr << "Writing to ferr: " << "This is written to standard error" << ENDL;
 

@@ -52,5 +52,4 @@ section_HEADERS = \
   ReferenceCountedAllocator.h \
   ReferenceCountedCapacityAllocator.h \
   SharedMemory.h \
-  StrictPointer.h \
   VirtualMemory.h

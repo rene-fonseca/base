@@ -18,8 +18,8 @@
 #include <base/Exception.h>
 #include <base/ResourceException.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
-  #include <pthread.h>
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+  #include <pthread.h> // TAG: fixme
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -36,7 +36,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class ThreadKeyImpl : public Object {
 private:
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   /** Internal data. */
   unsigned long key;
 #else

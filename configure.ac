@@ -273,7 +273,7 @@ AC_ARG_ENABLE(
       This feature enables additional runtime checks. The feature is
       disabled by default.],
   AC_BASE_CHECK_ARG(base_explicit_debug, yes no, The debug flag must be either 'yes' or 'no'.))
-AC_BASE_YES(base_explicit_debug, AC_BASE_DEFINE(DEBUG))
+AC_BASE_YES(base_explicit_debug, AC_BASE_DEFINE_PRIVATE(DEBUG))
 
 base_explicit_memory=no
 AC_ARG_ENABLE(
@@ -372,6 +372,15 @@ AC_ARG_ENABLE(
       feature is auto-detected by default. The auto-detection will fail if the
       compiler is a cross compiler. The option is only valid in Unix mode.],
   AC_BASE_CHECK_ARG(base_explicit_large_file_system, auto yes no, The Large File System (LFS) flag must be either 'auto', 'yes', or 'no'.))
+
+base_explicit_aio=auto
+AC_ARG_ENABLE(
+  aio,[
+  --enable-aio=[auto|yes|no]
+      Specifies that the asynchronous io (aio) interface should be utilized.
+      This feature is auto-detected by default. The auto-detection will fail
+      if the compiler is a cross compiler.],
+  AC_BASE_CHECK_ARG(base_explicit_aio, auto yes no, The asynchronous io (aio) flag must be either 'auto', 'yes', or 'no'.))
 
 base_explicit_regexp=auto
 AC_ARG_ENABLE(
@@ -1012,6 +1021,24 @@ if test ${base_explicit_large_file_system} = auto; then
   base_explicit_large_file_system=${base_cv_large_file_system}
 fi
 AC_BASE_YES(base_explicit_large_file_system, AC_BASE_DEFINE_PRIVATE(LARGE_FILE_SYSTEM))
+
+
+
+if test ${base_explicit_aio} = auto; then
+  AC_BASE_CHECK(
+    whether asynchronous io is supported by the operating system,
+    AC_BASE_CACHE(
+      base_cv_aio,
+      AC_BASE_TRY_CXX_COMPILE(base_cv_aio, aio.c, , Auto-detection of asynchronous io does not work with cross compiler.)
+    ),
+    base_cv_aio)
+  base_explicit_aio=${base_cv_aio}
+fi
+AC_BASE_YES(
+  base_explicit_aio,
+  AC_BASE_DEFINE_PRIVATE(AIO)
+  AC_BASE_ADDLIB(-lrt))
+
 fi dnl end of unix
 
 

@@ -92,6 +92,7 @@ namespace RandomImpl {
     inline Randomizer() throw() {Random::randomize();}
   };
 
+  // TAG: fixme
   SpinLock lock; // before randomization!
   Randomizer randomizer; // randomize during application initialization
 

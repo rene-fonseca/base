@@ -40,6 +40,7 @@ void SystemLogger::write(MessageType type, const String& message) throw() {
     ::DeregisterEventSource(eventSource);
   }
 #else // unix
+  // TAG: not MT-safe
   static int messageType[] = {LOG_INFO, LOG_WARNING, LOG_ERR};
   const char* ident;
   if (Application::getApplication()) {

@@ -27,7 +27,7 @@ unsigned int FileInputStream::available() const throw(FileException) {
   if (position >= size) {
     return 0;
   }
-  return minimum<long long>(size - position, UINT_MAX);
+  return minimum<long long>(size - position, UnsignedInt::MAXIMUM);
 }
 
 void FileInputStream::close() throw(FileException) {

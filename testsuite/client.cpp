@@ -73,7 +73,7 @@ void client(String<> host, String<> service) {
     fout << "Sending request" << ENDL;
     outstream << "Hi, I'm the client" << ENDL;
 
-    fout << "Waiting for response";
+    fout << "Waiting for response" << FLUSH;
     while (!instream.wait(1000000)) {
       fout << "." << FLUSH;
     }

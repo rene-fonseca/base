@@ -87,7 +87,7 @@ void server(String<> a, String<> servicename) {
       FormatOutputStream outstream(socket); // must be destroyed before socket is closed
       FormatInputStream instream(socket);
 
-      fout << "Waiting for request";
+      fout << "Waiting for request" << FLUSH;
       while (!instream.wait(1000000)) {
         fout << "." << FLUSH;
       }
@@ -104,7 +104,7 @@ void server(String<> a, String<> servicename) {
       fout << "Sending acknowledge" << ENDL;
       outstream << "Hi, I'm the server and this is my response" << ENDL;
 
-      fout << "Waiting for termination request";
+      fout << "Waiting for termination request" << FLUSH;
       while (!instream.wait(1000000)) {
         fout << "." << FLUSH;
       }

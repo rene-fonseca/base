@@ -23,6 +23,12 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+unsigned int FormatOutputStream::Debug::counter = 0;
+
+FormatOutputStream& FormatOutputStream::operator<<(const Debug& debug) throw(IOException) {
+  return *this << debug.getLocation() << ' ' << '[' << DEC << debug.getCount() << ']';
+}
+
 const FormatOutputStream::Context FormatOutputStream::DEFAULT_CONTEXT = {
   DEFAULT_FLAGS,
   DEFAULT_EOL,
@@ -265,6 +271,17 @@ FormatOutputStream& FormatOutputStream::getContext(Context& context) throw() {
 }
 
 FormatOutputStream& FormatOutputStream::setContext(const Context& context) throw() {
+}
+
+void FormatOutputStream::indent(unsigned int size) throw(IOException) {
+  static const char INDENT[] = "                                                                                ";
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  if (size <= sizeof(INDENT)) {
+    write(INDENT, size); // write characters
+  } else {
+    unfoldValue(' ', size);
+  }
+  // context is not reset to default
 }
 
 void FormatOutputStream::addCharacterField(const char* buffer, unsigned int size) throw(IOException) {

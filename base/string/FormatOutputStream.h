@@ -269,6 +269,27 @@ public:
       stream.context = context;
     }
   };
+
+  class Debug {
+  private:
+    
+    static unsigned int counter; // TAG: need atomic access
+    unsigned int count;
+    StringLiteral location;
+  public:
+    
+    inline Debug(const StringLiteral& _location)
+      : location(_location), count(counter++) {
+    }
+    
+    inline const StringLiteral& getLocation() const throw() {
+      return location;
+    }
+    
+    inline unsigned int getCount() const throw() {
+      return count;
+    }
+  };
 protected:
   
   friend class PushContext;
@@ -377,9 +398,38 @@ public:
     Send action to stream.
   */
   FormatOutputStream& operator<<(Action action) throw(IOException);  
+
+  class Indent {
+  private:
+    
+    unsigned int length;
+  public:
+    
+    inline Indent(unsigned int _length) throw()
+      : length(_length) {
+    }
+    
+    inline unsigned int getIndent() const throw() {
+      return length;
+    }
+  };
   
   /**
-    Writes a character to the stream.
+    Indent.
+  */
+  inline FormatOutputStream& operator<<(Indent indent) throw(IOException) {
+    this->indent(indent.getIndent());
+    return *this;
+  }
+
+  /**
+    Writes the specified number of spaces to the stream. The current context is
+    ignored and not reset by this method.
+  */
+  void indent(unsigned int size) throw(IOException);
+  
+  /**
+    Writes the specifies number of characters to the stream.
   */
   void addCharacterField(const char* buffer, unsigned int size) throw(IOException);
 
@@ -409,6 +459,11 @@ public:
   FormatOutputStream& setContext(const Context& context) throw();
 
   /**
+    Writes the debug information to the stream.
+  */
+  FormatOutputStream& operator<<(const Debug& debug) throw(IOException);
+  
+  /**
     Destroy format output stream.
   */
   ~FormatOutputStream() throw(IOException);
@@ -433,6 +488,13 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, char value) throw(IOE
   Writes a NULL-terminated string literal to a format output stream (you are advised against using this function).
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const char* value) throw(OutOfDomain, OutOfRange, IOException);
+
+/**
+  Indent.
+*/
+inline FormatOutputStream::Indent indent(unsigned int length) throw() {
+  return FormatOutputStream::Indent(length);
+}
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) throw(IOException);
 FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int value) throw(IOException);

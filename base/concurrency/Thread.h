@@ -448,10 +448,6 @@ public:
   ~Thread() throw(ThreadException);
 };
 
-/**
-  @example testsuite/Thread.cpp
-*/
-
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -356,26 +356,6 @@ public:
   static Quota getQuota(const String& path, Trustee trustee) throw(FileSystemException);
 };
 
-/**
-  @example testsuite/Quota.cpp
-*/
-
-/**
-  @example testsuite/du.cpp
-*/
-
-/**
-  @example testsuite/ln.cpp
-*/
-
-/**
-  @example testsuite/ls.cpp
-*/
-
-/**
-  @example testsuite/rm.cpp
-*/
-
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

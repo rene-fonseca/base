@@ -145,10 +145,6 @@ public:
   String getBase64() const throw();
 };
 
-/**
-  @example testsuite/digest.cpp
-*/
-
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

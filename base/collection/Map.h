@@ -23,10 +23,6 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  @example testsuite/Map.cpp
-*/
-
-/**
   Map collection implemented using an ordered binary tree.
 
   @short Map collection.

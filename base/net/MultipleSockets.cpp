@@ -57,42 +57,42 @@ MultipleSockets::MultipleSockets() throw(MemoryException) {
 }
 
 void MultipleSockets::add(
-  Indirect<Socket> socket,
+  StreamSocket socket,
   unsigned int events)
   throw(ConcurrencyException, AlreadyKeyException, MemoryException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
-  
-  pollfd fd;
-  fd.fd = socket->getHandle();
-  fd.events = events;
-  fd.revents = 0;
+
+  pollfd entry;
+  entry.fd = socket.getHandle();
+  entry.events = events;
+  entry.revents = 0;
   
   {
     ExclusiveSynchronize<Guard> _guard(guard);
     {
       const pollfd* fd = Cast::pointer<const pollfd*>(context.getElements());
-      const pollfd* const end = fd + sockets.getSize();
+      const pollfd* const end = fd + streamSockets.getSize();
       while (fd != end) {
-        if (fd->fd == socket->getHandle()) {
+        if (fd->fd == entry.fd) {
           throw AlreadyKeyException(this);
         }
         ++fd;
       };
     }
     const unsigned int desiredCapacity =
-      (sockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
+      (streamSockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
     if (sizeof(pollfd) * desiredCapacity != context.getSize()) {
       context.setSize(sizeof(pollfd) * desiredCapacity);
     }
-    sockets.append(socket);
+    streamSockets.append(socket);
     pollfd* fds = Cast::pointer<pollfd*>(context.getElements());
-    fds[sockets.getSize() - 1] = fd;
+    fds[streamSockets.getSize() - 1] = entry;
   }
 #elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL))
   struct pollfd fd;
   clear(fd);
-  fd.fd = socket->getHandle();
+  fd.fd = socket.getHandle();
   fd.events |= (events & MultipleSockets::INPUT) ? POLLRDNORM : 0;
   fd.events |= (events & MultipleSockets::PRIORITY_INPUT) ? POLLRDBAND : 0;
   fd.events |= (events & MultipleSockets::HIGH_PRIORITY_INPUT) ? POLLPRI : 0;
@@ -105,71 +105,71 @@ void MultipleSockets::add(
     {
       const struct pollfd* fd =
         Cast::pointer<const struct pollfd*>(context.getElements());
-      const struct pollfd* const end = fd + sockets.getSize();
+      const struct pollfd* const end = fd + streamSockets.getSize();
       while (fd != end) {
-        if (fd->fd == socket->getHandle()) {
+        if (fd->fd == socket.getHandle()) {
           throw AlreadyKeyException(this);
         }
         ++fd;
       };
     }
     const unsigned int desiredCapacity =
-      (sockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
+      (streamSockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
     if (sizeof(struct pollfd) * desiredCapacity != context.getSize()) {
       context.setSize(sizeof(struct pollfd) * desiredCapacity);
     }
-    sockets.append(socket);
+    streamSockets.append(socket);
     struct pollfd* fds = Cast::pointer<struct pollfd*>(context.getElements());
-    fds[sockets.getSize() - 1] = fd;
+    fds[streamSockets.getSize() - 1] = fd;
   }
 #else // unix (select)
   typedef internal::MultipleSockets::pollfd pollfd;
   
-  pollfd fd;
-  fd.fd = socket->getHandle();
-  fd.events = events;
-  fd.revents = 0;
+  pollfd entry;
+  entry.fd = socket.getHandle();
+  entry.events = events;
+  entry.revents = 0;
   
   {
     ExclusiveSynchronize<Guard> _guard(guard);
     {
       const pollfd* fd = Cast::pointer<const pollfd*>(context.getElements());
-      const pollfd* const end = fd + sockets.getSize();
+      const pollfd* const end = fd + streamSockets.getSize();
       while (fd != end) {
-        if (fd->fd == socket->getHandle()) {
+        if (fd->fd == entry.fd) {
           throw AlreadyKeyException(this);
         }
         ++fd;
       };
     }
     const unsigned int desiredCapacity =
-      (sockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
+      (streamSockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
     if (sizeof(pollfd) * desiredCapacity != context.getSize()) {
       context.setSize(sizeof(pollfd) * desiredCapacity);
     }
-    sockets.append(socket);
+    streamSockets.append(socket);
     pollfd* fds = Cast::pointer<pollfd*>(context.getElements());
-    fds[sockets.getSize() - 1] = fd;
+    fds[streamSockets.getSize() - 1] = entry;
   }
 #endif
 }
 
 void MultipleSockets::remove(
-  Indirect<Socket> socket) throw(ConcurrencyException, InvalidKey) {
+  StreamSocket socket) throw(ConcurrencyException, InvalidKey) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
   SingleExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fds = Cast::pointer<pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
-    if (fds[i].fd == socket->getHandle()) {
-      sockets.remove(i);
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
+    if (fds[i].fd == socket.getHandle()) {
+      streamSockets.remove(i);
       if (fds[i].revents) {
         --numberOfSelected;
       }
-      fds[i] = fds[sockets.getSize() + 1 - 1];
+      fds[i] = fds[streamSockets.getSize() + 1 - 1];
       const unsigned int desiredCapacity =
-        (sockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
+        (streamSockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
       if (sizeof(pollfd) * desiredCapacity != context.getSize()) {
         context.setSize(sizeof(pollfd) * desiredCapacity);
       }
@@ -180,15 +180,15 @@ void MultipleSockets::remove(
 #elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL)) // unix (poll)
   SingleExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fds = Cast::pointer<struct pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
-    if (fds[i].fd == socket->getHandle()) {
-      sockets.remove(i);
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
+    if (fds[i].fd == socket.getHandle()) {
+      streamSockets.remove(i);
       if (fds[i].revents) {
         --numberOfSelected;
       }
-      fds[i] = fds[sockets.getSize() + 1 - 1];
+      fds[i] = fds[streamSockets.getSize() + 1 - 1];
       const unsigned int desiredCapacity =
-        (sockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
+        (streamSockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
       if (sizeof(struct pollfd) * desiredCapacity != context.getSize()) {
         context.setSize(sizeof(struct pollfd) * desiredCapacity);
       }
@@ -201,15 +201,15 @@ void MultipleSockets::remove(
   
   SingleExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fds = Cast::pointer<pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
-    if (fds[i].fd == socket->getHandle()) {
-      sockets.remove(i);
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
+    if (fds[i].fd == socket.getHandle()) {
+      streamSockets.remove(i);
       if (fds[i].revents) {
         --numberOfSelected;
       }
-      fds[i] = fds[sockets.getSize() + 1 - 1];
+      fds[i] = fds[streamSockets.getSize() + 1 - 1];
       const unsigned int desiredCapacity =
-        (sockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
+        (streamSockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
       if (sizeof(pollfd) * desiredCapacity != context.getSize()) {
         context.setSize(sizeof(pollfd) * desiredCapacity);
       }
@@ -221,15 +221,15 @@ void MultipleSockets::remove(
 }
 
 unsigned int MultipleSockets::getEvents(
-  Indirect<Socket> socket) throw(ConcurrencyException, InvalidKey) {
+  StreamSocket socket) throw(ConcurrencyException, InvalidKey) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
   assert(socket.isValid(), InvalidKey(this));
   SingleExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
-    if (fd->fd == socket->getHandle()) {
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
+    if (fd->fd == socket.getHandle()) {
       unsigned int result = fd->revents;
       if (fd->revents) {
         fd->revents = 0;
@@ -244,8 +244,8 @@ unsigned int MultipleSockets::getEvents(
   assert(socket.isValid(), InvalidKey(this));
   SingleExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fd = Cast::pointer<struct pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
-    if (fd->fd == socket->getHandle()) {
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
+    if (fd->fd == socket.getHandle()) {
       unsigned int events = 0;
       events |=
         (fd->revents & POLLRDNORM) ? MultipleSockets::INPUT : 0;
@@ -276,8 +276,8 @@ unsigned int MultipleSockets::getEvents(
   assert(socket.isValid(), InvalidKey(this));
   SingleExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
-    if (fd->fd == socket->getHandle()) {
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
+    if (fd->fd == socket.getHandle()) {
       unsigned int result = fd->revents;
       if (fd->revents) {
         fd->revents = 0;
@@ -292,26 +292,24 @@ unsigned int MultipleSockets::getEvents(
 }
 
 unsigned int MultipleSockets::getFilter(
-  Indirect<Socket> socket) const throw(ConcurrencyException, InvalidKey) {
+  StreamSocket socket) const throw(ConcurrencyException, InvalidKey) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
-  assert(socket, InvalidKey(this));
   ExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
-    if (fd->fd == socket->getHandle()) {
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
+    if (fd->fd == socket.getHandle()) {
       return fd->events;
     }
     ++fd;
   }
   throw InvalidKey(this);
 #elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL)) // unix (poll)
-  assert(socket, InvalidKey(this));
   ExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fd = Cast::pointer<struct pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
-    if (fd->fd == socket->getHandle()) {
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
+    if (fd->fd == socket.getHandle()) {
       unsigned int events = 0;
       events |=
         (fd->events & POLLRDNORM) ? MultipleSockets::INPUT : 0;
@@ -331,11 +329,10 @@ unsigned int MultipleSockets::getFilter(
 #else // unix (select)
   typedef internal::MultipleSockets::pollfd pollfd;
   
-  assert(socket, InvalidKey(this));
   ExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
-    if (fd->fd == socket->getHandle()) {
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
+    if (fd->fd == socket.getHandle()) {
       return fd->events;
     }
     ++fd;
@@ -345,15 +342,15 @@ unsigned int MultipleSockets::getFilter(
 }
 
 void MultipleSockets::setFilter(
-  Indirect<Socket> socket,
+  StreamSocket socket,
   unsigned int events) throw(ConcurrencyException, InvalidKey) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
   SingleExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
-    if (fd->fd == socket->getHandle()) {
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
+    if (fd->fd == socket.getHandle()) {
       fd->events = events;
       return;
     }
@@ -363,8 +360,8 @@ void MultipleSockets::setFilter(
 #elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL)) // unix (poll)
   SingleExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fd = Cast::pointer<struct pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
-    if (fd->fd == socket->getHandle()) {
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
+    if (fd->fd == socket.getHandle()) {
       fd->events = 0;
       fd->events |=
         (events & MultipleSockets::INPUT) ? POLLRDNORM : 0;
@@ -386,8 +383,8 @@ void MultipleSockets::setFilter(
   
   SingleExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
-    if (fd->fd == socket->getHandle()) {
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
+    if (fd->fd == socket.getHandle()) {
       fd->events = events;
       return;
     }
@@ -413,7 +410,7 @@ unsigned int MultipleSockets::poll() throw(ConcurrencyException, IOException) {
   {
     const pollfd* fd =
       Cast::pointer<const pollfd*>(context.getElements());
-    for (unsigned int i = 0; i < sockets.getSize(); ++i) {
+    for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
       if (fd->events & MultipleSockets::INPUT) {
         FD_SET((SOCKET)fd->fd, &readfds);
       }
@@ -436,7 +433,7 @@ unsigned int MultipleSockets::poll() throw(ConcurrencyException, IOException) {
   }
   
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
     fd->revents = 0;
     if (FD_ISSET((SOCKET)fd->fd, &readfds)) {
       fd->revents |= MultipleSockets::INPUT;
@@ -453,7 +450,7 @@ unsigned int MultipleSockets::poll() throw(ConcurrencyException, IOException) {
 #elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL)) // unix (poll)
   SingleExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fds = Cast::pointer<struct pollfd*>(context.getElements());
-  int result = ::poll(fds, sockets.getSize(), -1);
+  int result = ::poll(fds, streamSockets.getSize(), -1);
   if (result < 0) {
     if ((errno == EINTR) || (errno == EAGAIN)) {
       return 0;
@@ -477,7 +474,7 @@ unsigned int MultipleSockets::poll() throw(ConcurrencyException, IOException) {
   {
     const pollfd* fd =
       Cast::pointer<const pollfd*>(context.getElements());
-    for (unsigned int i = 0; i < sockets.getSize(); ++i) {
+    for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
       nfds = maximum(nfds, fd->fd);
       if (fd->events & MultipleSockets::INPUT) {
         FD_SET(fd->fd, &readfds);
@@ -501,7 +498,7 @@ unsigned int MultipleSockets::poll() throw(ConcurrencyException, IOException) {
   }
   
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
     fd->revents = 0;
     if (FD_ISSET(fd->fd, &readfds)) {
       fd->revents |= MultipleSockets::INPUT;
@@ -540,7 +537,7 @@ unsigned int MultipleSockets::poll(
   {
     const pollfd* fd =
       Cast::pointer<const pollfd*>(context.getElements());
-    for (unsigned int i = 0; i < sockets.getSize(); ++i) {
+    for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
       if (fd->events & MultipleSockets::INPUT) {
         FD_SET((SOCKET)fd->fd, &readfds);
       }
@@ -563,7 +560,7 @@ unsigned int MultipleSockets::poll(
   }
   
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
     fd->revents = 0;
     if (FD_ISSET((SOCKET)fd->fd, &readfds)) {
       fd->revents |= MultipleSockets::INPUT;
@@ -580,7 +577,7 @@ unsigned int MultipleSockets::poll(
 #elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL)) // unix (poll)
   SingleExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fds = Cast::pointer<pollfd*>(context.getElements());
-  int result = ::poll(fds, sockets.getSize(), milliseconds);
+  int result = ::poll(fds, streamSockets.getSize(), milliseconds);
   if (result < 0) {
     if ((errno == EINTR) || (errno == EAGAIN)) {
       return 0;
@@ -608,7 +605,7 @@ unsigned int MultipleSockets::poll(
   {
     const pollfd* fd =
       Cast::pointer<const pollfd*>(context.getElements());
-    for (unsigned int i = 0; i < sockets.getSize(); ++i) {
+    for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
       nfds = maximum(nfds, fd->fd);
       if (fd->events & MultipleSockets::INPUT) {
         FD_SET(fd->fd, &readfds);
@@ -632,7 +629,7 @@ unsigned int MultipleSockets::poll(
   }
   
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
-  for (unsigned int i = 0; i < sockets.getSize(); ++i) {
+  for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
     fd->revents = 0;
     if (FD_ISSET(fd->fd, &readfds)) {
       fd->revents |= MultipleSockets::INPUT;
@@ -664,7 +661,7 @@ void MultipleSockets::signal(
       unsigned int events = fd->revents;
       fd->revents = 0; // deselect
       --numberOfSelected;
-      listener->onSocketEvent(sockets[i], events);
+      listener->onSocketEvent(streamSockets[i], events);
     }
     ++fd;
   }
@@ -693,7 +690,7 @@ void MultipleSockets::signal(
         (fd->revents & POLLHUP) ? MultipleSockets::DISCONNECTED : 0;
       fd->revents = 0; // deselect
       --numberOfSelected;
-      listener->onSocketEvent(sockets[i], events);
+      listener->onSocketEvent(streamSockets[i], events);
     }
     ++fd;
   }
@@ -707,7 +704,7 @@ void MultipleSockets::signal(
       unsigned int events = fd->revents;
       fd->revents = 0; // deselect
       --numberOfSelected;
-      listener->onSocketEvent(sockets[i], events);
+      listener->onSocketEvent(streamSockets[i], events);
     }
     ++fd;
   }

@@ -334,7 +334,7 @@ public:
   */
   inline bool isValid() const throw() {
     return Socket::isValid();
-  }  
+  }
 
   /**
     Skips the specified number of bytes.
@@ -350,22 +350,6 @@ public:
     Socket::flush();
   }
 };
-
-/**
-  @example testsuite/client.cpp
-*/
-
-/**
-  @example testsuite/ftp.cpp
-*/
-
-/**
-  @example testsuite/http.cpp
-*/
-
-/**
-  @example testsuite/ping.cpp
-*/
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -21,10 +21,7 @@
 #include <base/concurrency/SpinLock.h>
 #include <base/concurrency/ConcurrencyException.h>
 #include <base/mem/Allocator.h>
-#include <base/mem/Indirect.h>
-#include <base/net/Socket.h>
 #include <base/net/StreamSocket.h>
-#include <base/net/ServerSocket.h>
 #include <base/Listener.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -33,7 +30,7 @@ class SocketListener : public Listener {
 public:
   
   virtual void onSocketEvent(
-    Indirect<Socket> socket, unsigned int events) throw() = 0;
+    StreamSocket socket, unsigned int events) throw() = 0;
 };
 
 /**
@@ -52,7 +49,7 @@ private:
   /** Guard. */
   Guard guard;
   /** Sockets. */
-  Array<Indirect<Socket> > sockets;
+  Array<StreamSocket> streamSockets;
   /** Context. */
   Allocator<uint8> context;
   /** The current number of selected sockets. */
@@ -86,6 +83,13 @@ public:
   MultipleSockets() throw(MemoryException);
   
   /**
+    Returns the current number of selected sockets.
+  */
+  inline unsigned int getSelected() const throw() {
+    return numberOfSelected;
+  }
+  
+  /**
     Adds a socket with the specified events filter (only INPUT, PRIORITY_INPUT,
     HIGH_PRIORITY_INPUT, OUTPUT, and PRIORITY_OUTPUT are significant).
 
@@ -93,7 +97,7 @@ public:
     @param events The filter events. The default is all events.
   */
   void add(
-    Indirect<Socket> socket,
+    StreamSocket socket,
     unsigned int events =
       INPUT|PRIORITY_INPUT|HIGH_PRIORITY_INPUT|OUTPUT|PRIORITY_OUTPUT)
     throw(ConcurrencyException, AlreadyKeyException, MemoryException);
@@ -103,7 +107,7 @@ public:
     
     @param socket The socket to be removed.
   */
-  void remove(Indirect<Socket> socket) throw(ConcurrencyException, InvalidKey);
+  void remove(StreamSocket socket) throw(ConcurrencyException, InvalidKey);
   
   /**
     Returns the events for the specified socket. Raises InvalidKey if socket is
@@ -111,21 +115,21 @@ public:
     set.
   */
   unsigned int getEvents(
-    Indirect<Socket> socket) throw(ConcurrencyException, InvalidKey);
+    StreamSocket socket) throw(ConcurrencyException, InvalidKey);
   
   /**
     Returns the currently filtered events (mask of INPUT, PRIORITY_INPUT,
     HIGH_PRIORITY_INPUT, OUTPUT, and PRIORITY_OUTPUT).    
   */
   unsigned int getFilter(
-    Indirect<Socket> socket) const throw(ConcurrencyException, InvalidKey);
+    StreamSocket socket) const throw(ConcurrencyException, InvalidKey);
   
   /**
     Sets the events filter (only INPUT, PRIORITY_INPUT, HIGH_PRIORITY_INPUT,
     OUTPUT, and PRIORITY_OUTPUT are significant).
   */
   void setFilter(
-    Indirect<Socket> socket,
+    StreamSocket socket,
     unsigned int events) throw(ConcurrencyException, InvalidKey);
   
   /**

@@ -263,10 +263,6 @@ public:
   Times getTimes() throw();
 };
 
-/**
-  @example testsuite/Process.cpp
-*/
-
 inline Process::Process(unsigned long _id) throw()
   : id(_id), handle(ProcessHandle::invalid) {
 }

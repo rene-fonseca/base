@@ -333,10 +333,6 @@ public:
 };
 
 /**
-  @example testsuite/Array.cpp
-*/
-
-/**
   Writes a string representation of an array to a format stream.
 */
 template<class TYPE>

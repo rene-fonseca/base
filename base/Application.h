@@ -231,10 +231,6 @@ public:
   virtual ~Application() throw();
 };
 
-/**
-  @example testsuite/Version.cpp
-*/
-
 #define _DK_SDU_MIP__BASE__STUB(APPLICATION) \
 int main(int argc, const char* argv[], const char* env[]) throw() { \
   return Application::stub<APPLICATION>(argc, argv, env); \

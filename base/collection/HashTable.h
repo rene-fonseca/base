@@ -25,10 +25,6 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  @example testsuite/HashTable.cpp
-*/
-
-/**
   A hash table implementation.
   
   @short Hash table collection.

@@ -22,10 +22,6 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  @example testsuite/Stack.cpp
-*/
-
-/**
   A stack is a last-in-first-out data structure. This class is implemented as a
   linked list.
   

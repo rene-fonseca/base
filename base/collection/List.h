@@ -25,10 +25,6 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  @example testsuite/List.cpp
-*/
-
-/**
   A node in a list.
 
   @short A node in a list.

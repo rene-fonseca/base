@@ -37,9 +37,9 @@
 // TAG: temporary fix until all symbols have been replaced
 #define _DK_SDU_MIP__BASE__FLAVOUR _DK_SDU_MIP__BASE__FLAVOR
 
-#if defined(_DK_SDU_MIP__BASE__NAMESPACE)
-  #define _DK_SDU_MIP__BASE__ENTER_NAMESPACE namespace base {
-  #define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE };
+#if (defined(_DK_SDU_MIP__BASE__NAMESPACE))
+#  define _DK_SDU_MIP__BASE__ENTER_NAMESPACE namespace base {
+#  define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE };
 
 /**
   This is the root namespace of <strong>The Base Framework</strong>. All the
@@ -58,20 +58,29 @@ namespace base {
 };
 
 #else
-  #define _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-  #define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+#  define _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+#  define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 #endif
 
+#define _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE) #VALUE
+#define _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(VALUE) _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE)
+
 // allow macros to be overridden
-#if defined(DEBUG) && !defined(ASSERT) && !defined(ASSERTION)
-  #include <base/Trace.h>
-  #define _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE) #VALUE
-  #define _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(VALUE) _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE)
-  #define ASSERT(expression) {if (!(expression)) {Trace::message("Assertion failure of (" #expression ") at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__));}}
-  #define ASSERTION(expression) namespace {Assertion assertion(expression, "Assertion failure of (" #expression ") at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__));}
+#if (defined(DEBUG))
+#  include <base/Trace.h>
+#  if (!defined(ASSERT))
+#    define ASSERT(expression) {if (!(expression)) {Trace::message("Assertion failure of (" #expression ") at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__));}}
+#  endif
+#  if (!defined(ASSERTION))
+#    define ASSERTION(expression) namespace {Assertion assertion(expression, "Assertion failure of (" #expression ") at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__));}
+#  endif
 #else
-  #define ASSERT(expression)
-  #define ASSERTION(expression)
+#  if (!defined(ASSERT))
+#    define ASSERT(expression)
+#  endif
+#  if (!defined(ASSERTION))
+#    define ASSERTION(expression)
+#  endif
 #endif
 
 #endif

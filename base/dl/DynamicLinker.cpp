@@ -24,8 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  // ASSERT(sizeof(void*) == sizeof(FARPROC));
-  void* result = pointer_cast<void*>(GetProcAddress(GetModuleHandle(0), symbol.getElements())); // TAG: possible resource leak? - should I handle possible error
+  void* result = (void*)(GetProcAddress(GetModuleHandle(0), symbol.getElements())); // TAG: possible resource leak? - should I handle possible error
   assert(result != 0, LinkerException("Unable to resolve symbol")); // (GetLastError() != ERROR_SUCCESS)
   return result;
 #else // Unix
@@ -58,7 +57,7 @@ DynamicLinker::DynamicLinker(const String& module, unsigned int options) throw(L
 
 void* DynamicLinker::getSymbol(const StringLiteral& symbol) const throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  void* result = pointer_cast<void*>(GetProcAddress((HMODULE)handle, symbol));
+  void* result = (void*)(GetProcAddress((HMODULE)handle, symbol));
   assert(result != 0, LinkerException("Unable to resolve symbol")); // (GetLastError() != ERROR_SUCCESS)
   return result;
 #else // Unix
@@ -70,7 +69,7 @@ void* DynamicLinker::getSymbol(const StringLiteral& symbol) const throw(LinkerEx
 
 void* DynamicLinker::getSymbol(const String& symbol) const throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  void* result = pointer_cast<void*>(GetProcAddress((HMODULE)handle, symbol.getElements()));
+  void* result = (void*)(GetProcAddress((HMODULE)handle, symbol.getElements()));
   assert(result != 0, LinkerException("Unable to resolve symbol")); // (GetLastError() != ERROR_SUCCESS)
   return result;
 #else // Unix

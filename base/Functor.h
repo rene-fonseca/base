@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -393,6 +393,21 @@ inline void fill<char>(char* dest, unsigned int count, char value) throw() {
 
 
 
+/** Initializes an object to zero. This function should only be used for types with small memory footprints. */
+template<class TYPE>
+inline void clear(TYPE& value) throw() {
+  unsigned long* p = pointer_cast<unsigned long*>(&value);
+  for (unsigned int i = 0; i < sizeof(TYPE)/sizeof(unsigned long); ++i) {
+    *p++ = 0;
+  }
+  unsigned char* q = pointer_cast<unsigned char*>(p);
+  for (unsigned int i = 0; i < sizeof(TYPE)%sizeof(unsigned long); ++i) {
+    *q++ = 0;
+  }
+}
+
+
+
 /** Base class of unary operations. */
 template<class ARGUMENT, class RESULT>
 class UnaryOperation {
@@ -649,7 +664,7 @@ public:
 /**
   Class responsible for invocating member functions that takes no arguments.
 
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -744,7 +759,7 @@ inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) {
     }
   </pre>
 
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 template<class TYPE, class PREFIX, class SUFFIX>

@@ -28,7 +28,7 @@ os=CYGWIN
 features="_XOPEN_SOURCE=600"
 
 # functions
-functions="memchr memcmp memcpy memmove memset"
+functions="memchr memcmp memcpy memmove memset poll"
 
 # apis
 apis="pthread regexp"

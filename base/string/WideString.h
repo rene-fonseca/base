@@ -417,6 +417,13 @@ public:
   WideString& remove(unsigned int start, unsigned int end) throw(MemoryException);
 
   /**
+    Removes the characters from the specified index to the end of the string.
+
+    @param start Specifies the start of the string.
+  */
+  WideString& removeFrom(unsigned int start) throw(MemoryException);
+
+  /**
     Removes the character at the specified position in this string.
 
     @param index Specifies the character to be removed.

@@ -163,6 +163,14 @@ WideString& WideString::remove(unsigned int start, unsigned int end) throw(Memor
   return *this;
 }
 
+WideString& WideString::removeFrom(unsigned int start) throw(MemoryException) {
+  if (start < getLength()) { // protect against some cases
+    elements.copyOnWrite(); // we are about to modify the buffer
+    elements->setSize(start + 1); // remove section from end of string
+  }
+  return *this;
+}
+
 WideString& WideString::insert(unsigned int index, Character ch) throw(WideStringException, MemoryException) {
   int length = getLength();
   setLength(length + 1);

@@ -112,6 +112,14 @@ String& String::remove(unsigned int start, unsigned int end) throw(MemoryExcepti
   return *this;
 }
 
+String& String::removeFrom(unsigned int start) throw(MemoryException) {
+  if (start < getLength()) { // protect against some cases
+    elements.copyOnWrite(); // we are about to modify the buffer
+    elements->setSize(start + 1); // remove section from end of string
+  }
+  return *this;
+}
+
 String& String::insert(unsigned int index, char ch) throw(StringException, MemoryException) {
   int length = getLength();
   setLength(length + 1);

@@ -35,8 +35,62 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class FileSystem : public Object {
+private:
+
+  /** Counter used for generating temporary file names. */
+  static unsigned int counter;
 public:
 
+  /** The temporary folder. */
+  enum TemporaryFolder {
+    /**
+      Uses the temporary folder specified by the 'TMP' environment variable. If
+      the variable doesn't exist the TEMP variable is used. If neither are
+      defined this falls back on MACHINE_NONPERSISTENT.
+    */
+    USER_SPECIFIED,
+    /** Specifies the temporary folder intended for non-persistent temporary files. */
+    MACHINE_NONPERSISTENT,
+    /** Specifies the temporary folder intended for persistent temporary files. */
+    MACHINE_PERSISTENT
+  };
+  
+  /** The fields of a temporary file. */
+  enum TemporaryFileNameField {
+    /** Add the prefix '~'. */
+    PREFIX = 1,
+    /** Add the user name. */
+    USER = 2,
+    /** Add the formal name of application. */
+    APPLICATION = 4,
+    /** Add the process id. */
+    PROCESS = 8,
+    /** Add the host name. */
+    HOST = 16,
+    /** Add internal counter (an increment). */
+    COUNTER = 32,
+    /** Add the current time. */
+    TIME = 64,
+    /** Add a random number. */
+    RANDOM = 128,
+    /** Add the suffix '.tmp'. */
+    SUFFIX = 256
+  };
+
+  /** Temporary file options. */
+  enum TemporaryFileOption {
+    /** Sets the access control of the file such that only the owner of the process has access to it. */
+    STRICT_ACCESS = 1,
+    /** The content of the file is overwritten when the file is closed (this implies REMOVE_ON_CLOSE). */
+    OVERWRITE_ON_CLOSE = 2,
+    /** The file is removed when closed. */
+    REMOVE_ON_CLOSE = 4,
+    /** The file is opened in exclusive mode. */
+    EXCLUSIVE = 8,
+    /** The file is opened in secure mode. */
+    SECURE = STRICT_ACCESS | OVERWRITE_ON_CLOSE | REMOVE_ON_CLOSE
+  };
+  
   /**
     Returns the combined path of the specified base and relative path.
 
@@ -82,18 +136,29 @@ public:
   
   /**
     Returns the path to the folder intended for temporary files.
+
+    @param folder Specifies the folder to be used. The default is USER_SPECIFIED.
   */
-  static String getTempFolder() throw(FileSystemException);
+  static String getTempFolder(TemporaryFolder folder = USER_SPECIFIED) throw();
   
   /**
-    Returns the path of a temporary file.
+    Generates a temporary file name. The returned name should be used in
+    conjuction with a folder path returned by getTempFolder or other folder
+    path. Every field is separated by a '-' except for the PREFIX and SUFFIX.
+    The order of the fields are fixed and given by the order of the fields
+    within the enumeration TemporaryFileNameField.
+    
+    @param fields Specifies the fields to include in the name. The default is
+    PREFIX|APPLICATION|USER|SUFFIX.
   */
-  static String getTempFileName() throw(FileSystemException);
+  static String getTempFileName(unsigned int fields = PREFIX|APPLICATION|USER|SUFFIX) throw();
   
   /**
-    Returns a temporary file. The file is opened for exclusive accesss.
+    Returns a temporary file.
+    
+    @param options The file options. The default is SECURE.
   */
-  static File getTempFile() throw(IOException);
+  static File getTempFile(unsigned int options = SECURE) throw(IOException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

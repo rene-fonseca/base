@@ -47,7 +47,10 @@ private:
   };
 public:
   
-  PingApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+  PingApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
     : Application(MESSAGE("ping"), numberOfArguments, arguments, environment) {
     port = ECHO_SERVICE_PORT;
     dataSize = 32;
@@ -58,14 +61,16 @@ public:
   void onTermination() throw() {
   }
   
-  String getTimeAsString(long long microseconds) throw() {
+  String getTimeAsString(uint64 microseconds) throw() {
     StringOutputStream stream;
     if (microseconds < 1000) {
       stream << microseconds << MESSAGE("us");
     } else if (microseconds < 1000000) {
-      stream << FIXED << setPrecision(3) << microseconds/1000.0 << MESSAGE("ms");
+      stream << FIXED
+             << setPrecision(3) << microseconds/1000.0 << MESSAGE("ms");
     } else {
-      stream << FIXED << setPrecision(3) << microseconds/1000000.0 << MESSAGE("s");
+      stream << FIXED
+             << setPrecision(3) << microseconds/1000000.0 << MESSAGE("s");
     }
     stream << FLUSH;
     return stream.getString();
@@ -123,9 +128,9 @@ public:
     
     unsigned int packetsTransmitted = 0;
     unsigned int packetsReceived = 0;
-    long long minimumTime = PrimitiveTraits<long long>::MAXIMUM;
-    long long maximumTime = 0;
-    unsigned long long totalTime = 0;
+    uint64 minimumTime = PrimitiveTraits<uint64>::MAXIMUM;
+    uint64 maximumTime = 0;
+    uint64 totalTime = 0;
     
     Allocator<char> outgoing(dataSize);
     Allocator<char> incoming(dataSize);
@@ -142,7 +147,8 @@ public:
       // TAG: use timer to check for timeout
       unsigned int bytesAvailable = socket.available();
       if (bytesAvailable < incoming.getSize()) {
-        fout << name << ' ' << '(' << address << ')' << ':' << MESSAGE(" request timed out") << ENDL;
+        fout << name << ' ' << '(' << address << ')'
+             << ':' << MESSAGE(" request timed out") << ENDL;
       } else {
         timer.stop();
         minimumTime = minimum(minimumTime, timer.getMicroseconds());
@@ -152,7 +158,8 @@ public:
           socket.read(incoming.getElements(), incoming.getSize());
           if (compare(incoming.getElements(), outgoing.getElements(), dataSize) == 0) {
             ++packetsReceived;
-            fout << incoming.getSize() << MESSAGE(" bytes from ") << name << ' '
+            fout << incoming.getSize()
+                 << MESSAGE(" bytes from ") << name << ' '
                  << '(' << address << ')' << ':' << ' '
                  << MESSAGE("n=") << packetsReceived << ' '
                  << MESSAGE("time=") << getTimeAsString(timer.getMicroseconds())
@@ -180,7 +187,7 @@ public:
          << MESSAGE("Time minimum/maximum/mean: ")
          << getTimeAsString(minimumTime) << '/'
          << getTimeAsString(maximumTime) << '/'
-         << getTimeAsString(static_cast<long long>(meanTime)) << EOL
+         << getTimeAsString(static_cast<uint64>(meanTime)) << EOL
          << ENDL;
   }
   

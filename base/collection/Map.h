@@ -179,6 +179,15 @@ public:
   Map(const Map& copy) throw(MemoryException) : elements(copy.elements), size(copy.size) {}
 
   /**
+    Assignment of map to map.
+  */
+  Map& operator=(const Map& eq) throw(MemoryException) {
+    elements = eq.elements;
+    size = eq.size;
+    return *this;
+  }
+
+  /**
     Returns the number of associations in the map.
   */
   inline unsigned int getSize() const throw() {return size;}

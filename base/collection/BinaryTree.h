@@ -605,6 +605,14 @@ public:
   BinaryTree(const BinaryTree& copy) throw() : elements(copy.elements) {}
 
   /**
+    Assignment of binary tree to binary tree.
+  */
+  BinaryTree& operator=(const BinaryTree& eq) throw() {
+    elements = eq.elements;
+    return this;
+  }
+  
+  /**
     Returns true if the tree has a root node.
   */
   inline bool isEmpty() const throw() {

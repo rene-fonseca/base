@@ -32,7 +32,21 @@ public:
     fout << MESSAGE("Current user: ") << User::getCurrentUser().getName() << ENDL;
     fout << MESSAGE("Current process: ") << Process::getProcess().getId() << ENDL;
     fout << MESSAGE("Parent process: ") << Process::getParentProcess().getId() << ENDL;
-    fout << MESSAGE("Is parent process alive: ") << Process::getParentProcess().isAlive() << ENDL;
+
+    try {
+      fout << MESSAGE("Name of process: ") << Process::getProcess().getName() << ENDL;
+    } catch(Process::ProcessException) {
+      fout << MESSAGE("Name of process: ") << MESSAGE("unknown") << ENDL;
+    }
+
+    fout << MESSAGE("Is parent process alive: "); 
+    try {
+      fout << Process::getParentProcess().isAlive();
+    } catch(Process::ProcessException) {
+      fout << MESSAGE("unknown");
+    }
+    fout << ENDL;
+    
     fout << MESSAGE("Priority of process: ") << Process::getProcess().getPriority() << ENDL;
     fout << MESSAGE("Priority of parent process: ") << Process::getParentProcess().getPriority() << ENDL;
 

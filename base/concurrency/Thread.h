@@ -106,14 +106,14 @@ typedef enum {
     volatile bool terminated;
     /** Termination status. */
     ThreadTermination termination;
+    /** Event used to start thread. */
+    //    Event event;
 #if defined(__win32__)
     /** Handle to the thread. */
     HANDLE threadHandle;
     /** Identifier for the thread. */
     DWORD threadID;
 #else // pthread
-    /** Event used to start thread. */
-    Event event;
     /** Identifier for the thread. */
     pthread_t threadID;
 #endif

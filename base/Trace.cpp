@@ -12,7 +12,7 @@ void Trace::message(const char* message) {
   printf("TRACE %s\n", message); // printf must be MT-safe
 }
 
-void Trace::member(void* ptr, const char* message) {
+void Trace::member(const void* ptr, const char* message) {
   printf("TRACE %p >> %s\n", ptr, message); // printf must be MT-safe
 }
 

@@ -7,7 +7,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-Object::~Object() throw() {
-}
+//  Object::~Object() throw() {
+//  }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

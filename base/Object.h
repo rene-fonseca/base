@@ -34,7 +34,7 @@ public:
   /**
     Destroys the object. Ensure envocation of correct destructor when using polymorphism.
   */
-  virtual ~Object() throw();
+  virtual inline ~Object() throw() {}
 };
 
 

@@ -3,8 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <base/features.h>
 #include <base/io/FileDescriptorOutputStream.h>
 #include <base/io/EndOfFile.h>
+#include <base/Trace.h>
 
 #if defined(__win32__)
   #include <windows.h>
@@ -80,6 +82,10 @@ unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int 
   }
   return result;
 #endif
+}
+
+FileDescriptorOutputStream::~FileDescriptorOutputStream() {
+  TRACE_MEMBER();
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorOutputStream& value) {

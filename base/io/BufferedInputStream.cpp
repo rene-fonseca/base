@@ -3,8 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <base/features.h>
 #include <base/io/BufferedInputStream.h>
 #include <base/Base.h>
+#include <base/Trace.h>
 #include <string.h>
 
 BufferedInputStream::BufferedInputStream(InputStream& in, unsigned int size) throw(BindException, MemoryException) :
@@ -85,4 +87,8 @@ bool BufferedInputStream::wait(unsigned int timeout) const throw(IOException) {
   } else {
     return true; // data is available in buffer
   }
+}
+
+BufferedInputStream::~BufferedInputStream() {
+  TRACE_MEMBER();
 }

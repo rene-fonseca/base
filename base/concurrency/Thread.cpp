@@ -6,6 +6,8 @@
 #include <base/features.h>
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/MutualExclusion.h>
+#include <base/Trace.h>
+#include <stdio.h>
 
 #if defined(__win32__)
   #include <windows.h>
@@ -16,6 +18,17 @@
   #include <sys/time.h>
   #include <unistd.h>
 #endif
+
+// The original unhandled exception filter
+static LPTOP_LEVEL_EXCEPTION_FILTER originalExceptionFilter = NULL;
+
+// win32 - structured exception handler
+LONG __stdcall exceptionFilter(EXCEPTION_POINTERS* exception) {
+  //  LONG result = EXCEPTION_CONTINUE_SEARCH;
+  printf("System exception: 0x%8x at %p\n", exception->ExceptionRecord->ExceptionCode, exception->ExceptionRecord->ExceptionAddress);
+  return originalExceptionFilter(exception);
+  //  return result;
+}
 
 /**
   The class is used to make a Thread object for the current context.
@@ -29,10 +42,23 @@ public:
   /**
     Initialize thread object for the current context.
   */
-  inline MainThread() throw() : thread() {}
+  MainThread() throw() : thread() {
+    TRACE_MEMBER();
+    if (originalExceptionFilter == NULL) {
+      originalExceptionFilter = SetUnhandledExceptionFilter(exceptionFilter);
+    }
+  }
 
   inline Thread* getThread() throw() {
     return &thread;
+  }
+
+  ~MainThread() {
+    // Restore the original unhandled exception filter
+    if (originalExceptionFilter != NULL) {
+      SetUnhandledExceptionFilter(originalExceptionFilter);
+    }
+    TRACE_MEMBER();
   }
 };
 
@@ -52,6 +78,7 @@ private:
 public:
 
   ThreadLocal(Thread* thread) {
+    TRACE_MEMBER();
     this->thread.setKey(thread);
     storage.setKey(new Allocator<char>(THREAD_LOCAL_STORAGE));
   }
@@ -65,6 +92,7 @@ public:
   }
 
   ~ThreadLocal() {
+    TRACE_MEMBER();
     delete getStorage(); // free thread local storage
   }
 };
@@ -80,6 +108,7 @@ ThreadLocal threadLocal(mainThread.getThread());
 
 
 void* Thread::entry(Thread* thread) throw() {
+  //  TRACE("TRACE %p >> %s\n", thread, __PRETTY_FUNCTION__);
   try {
     ThreadLocal local(thread);
 #if !defined(__win32__)
@@ -98,7 +127,7 @@ void* Thread::entry(Thread* thread) throw() {
   } catch(...) {
     thread->termination = INTERNAL; // hopefully we will never end up here
   }
-
+  //  TRACE("TRACE %p << %s\n", thread, __PRETTY_FUNCTION__);
   return 0;
 }
 
@@ -203,9 +232,8 @@ void Thread::onChildTermination(Thread* thread) {
 
 
 Thread::Thread() throw() :
-  parent(0), runnable(0), terminated(false), termination(ALIVE) {
+  parent(0), runnable(0), terminated(false), termination(ALIVE), threadHandle(0) {
 #if defined(__win32__)
-  threadHandle = GetCurrentThread();
   threadID = GetCurrentThreadId();
 #else // pthread
   threadID = pthread_self();
@@ -256,6 +284,10 @@ Thread::Thread(Runnable* runnable) throw(ResourceException) :
     throw ResourceException("Unable to create thread");
   }
 
+  /*  if (!CloseHandle(threadHandle)) { // ignore error???
+    ThreadException("Unable to release thread");
+    }*/
+  
   //  LocalFree(sd);
   //  LocalFree(newACL);
 #else // pthread
@@ -317,9 +349,10 @@ bool Thread::isSelf() const throw() {
 }
 
 void Thread::join() const throw(ThreadException) {
-  if (isSelf()) { // is thread trying to wait for itself to exit
-    throw Self();
-  }
+  TRACE_MEMBER();
+//    if (isSelf()) { // is thread trying to wait for itself to exit
+//      throw Self();
+//    }
 #if defined(__win32__)
   WaitForSingleObject(threadHandle, INFINITE);
 #else // pthread
@@ -331,6 +364,7 @@ void Thread::join() const throw(ThreadException) {
 
 void Thread::start() throw() {
 #if defined(__win32__)
+  //  event.signal();
   ResumeThread((HANDLE)threadHandle);
 #else // pthread
   event.signal();
@@ -348,6 +382,7 @@ void Thread::terminate() throw() {
 
 Thread::~Thread() throw(ThreadException) {
   // do not close handle for main thread
+  TRACE_MEMBER();
   if (getParent() != 0) {
     if (isAlive()) {
       throw ThreadException();

@@ -3,8 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <base/features.h>
 #include <base/io/FileDescriptor.h>
 #include <base/io/EndOfFile.h>
+#include <base/Trace.h>
 
 #if defined(__win32__)
   #include <windows.h>
@@ -117,6 +119,10 @@ void FileDescriptor::setHandle(int handle) throw() {
 
 void FileDescriptor::setNonBlocking(bool value) throw(IOException) {
   fd->setNonBlocking(value);
+}
+
+FileDescriptor::~FileDescriptor() {
+  TRACE_MEMBER();
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor& value) {

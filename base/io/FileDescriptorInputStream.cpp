@@ -3,9 +3,11 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <base/features.h>
 #include <base/io/FileDescriptorInputStream.h>
 #include <base/io/EndOfFile.h>
 #include <base/concurrency/Thread.h>
+#include <base/Trace.h>
 
 #if defined(__win32__)
   #include <windows.h>
@@ -149,6 +151,10 @@ bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOExcepti
   }
   return result; // return true if data available
 #endif
+}
+
+FileDescriptorInputStream::~FileDescriptorInputStream() {
+  TRACE_MEMBER();
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorInputStream& value) {

@@ -3,7 +3,9 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <base/features.h>
 #include <base/io/BufferedOutputStream.h>
+#include <base/Trace.h>
 #include <string.h>
 
 BufferedOutputStream::BufferedOutputStream(OutputStream& out, unsigned int size) throw(BindException, MemoryException) :
@@ -64,5 +66,6 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size) 
 }
 
 BufferedOutputStream::~BufferedOutputStream() {
+  TRACE_MEMBER();
   flush();
 }

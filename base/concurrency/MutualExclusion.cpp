@@ -3,6 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <base/features.h>
 #include <base/concurrency/MutualExclusion.h>
 
 #if !defined(__win32__)
@@ -11,11 +12,7 @@
 
 MutualExclusion::MutualExclusion() throw(ResourceException) {
 #if defined(__win32__)
-  __try {
-    InitializeCriticalSection(&lock);
-  } __except(STATUS_NO_MEMORY) {
-    throw ResourceException();
-  }
+  InitializeCriticalSection(&lock);
 #else
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
@@ -35,12 +32,8 @@ MutualExclusion::MutualExclusion() throw(ResourceException) {
 
 void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
 #if defined(__win32__)
-  __try {
-    EnterCriticalSection(&lock);
-  } __except(STATUS_INVALID_HANDLE) {
-    throw MutualExclusionException();
-  }
-#else
+  EnterCriticalSection(&lock);
+#else // pthread
   int result = pthread_mutex_lock(&lock);
   if (result == 0) {
     return;
@@ -55,13 +48,9 @@ void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
 bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
 #if defined(__win32__)
   BOOL result;
-  __try {
-    result = TryEnterCriticalSection(&lock);
-  } __except(STATUS_INVALID_HANDLE) {
-    throw MutualExclusionException();
-  }
+  result = TryEnterCriticalSection(&lock);
   return result;
-#else
+#else // pthread
   int result = pthread_mutex_trylock(&lock);
   if (result == 0) {
     return true;
@@ -76,7 +65,7 @@ bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
 void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
 #if defined(__win32__)
   LeaveCriticalSection(&lock);
-#else
+#else // pthread
   if (pthread_mutex_unlock(&lock)) {
     throw MutualExclusionException();
   }
@@ -86,7 +75,7 @@ void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
 MutualExclusion::~MutualExclusion() throw(MutualExclusionException) {
 #if defined(__win32__)
   DeleteCriticalSection(&lock);
-#else
+#else // pthread
   if (pthread_mutex_destroy(&lock)) {
     throw MutualExclusionException();
   }

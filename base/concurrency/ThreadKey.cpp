@@ -3,6 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <base/features.h>
 #include <base/concurrency/ThreadKey.h>
 
 ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {

@@ -3,9 +3,12 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <base/features.h>
 #include <base/concurrency/Event.h>
 
-#if !defined(__win32__)
+#if defined(__win32__)
+  #include <windows.h>
+#else // pthread
   #include <pthread.h>
   #include <sys/time.h>
   #include <unistd.h>

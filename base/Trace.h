@@ -28,7 +28,7 @@ public:
   /**
     Write pointer and message to standard output.
   */
-  static void member(void* ptr, const char* message);
+  static void member(const void* ptr, const char* message);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

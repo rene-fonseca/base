@@ -101,6 +101,11 @@ public:
     Returns buffer.
   */
 //  const char* peek(unsigned int count) throw(IOException);
+
+  /**
+    Destroy buffered input stream.
+  */
+  ~BufferedInputStream();
 };
 
 #endif

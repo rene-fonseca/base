@@ -92,6 +92,11 @@ public:
   bool wait(unsigned int timeout) const throw(IOException);
 
   /**
+    Release file descriptor.
+  */
+  ~FileDescriptorInputStream();
+
+  /**
     Writes a string representation of a FileDescriptorInputStream object to a format stream.
   */
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorInputStream& value);

@@ -6,9 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_STRING__FORMAT_OUTPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_STRING__FORMAT_OUTPUT_STREAM_H
 
-#include <base/Object.h>
 #include <base/io/BufferedOutputStream.h>
 #include <base/io/BindException.h>
+#include <base/concurrency/Synchronize.h>
+#include <base/concurrency/MutualExclusion.h>
 
 /*
 struct DateFormatSet {
@@ -49,7 +50,7 @@ typedef enum {BIN, OCT, DEC, HEX, ZEROPAD, NOZEROPAD, PREFIX, NOPREFIX, EOL, FLU
   @version 1.0
 */
 
-class FormatOutputStream : public BufferedOutputStream {
+class FormatOutputStream : public BufferedOutputStream, public Synchronizeable<MutualExclusion> {
 public:
 
   /** Digits of all bases. */
@@ -64,6 +65,8 @@ protected:
   unsigned int base;
   unsigned int flags;
 public:
+
+  typedef MutualExclusion LOCK;
 
   /**
     Initializes the format output stream.
@@ -119,6 +122,11 @@ public:
     Write preformated double to stream.
   */
   void addDoubleField(const char* early, unsigned int earlySize, const char* late, unsigned int lateSize, bool isSigned) throw(IOException);
+
+  /**
+    Destroy format output stream.
+  */
+  ~FormatOutputStream();
 };
 
 /**

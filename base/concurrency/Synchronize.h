@@ -117,15 +117,15 @@ public:
   /**
     Forces the lock to be released.
   */
-  inline void release() throw() {
-    obj.releaseLock();
-  }
+//    inline void release() throw() {
+//      obj.releaseLock();
+//    }
 
   /**
     Releases the lock if not already released and destroys the synchronization object.
   */
   inline ~Synchronize() throw() {
-    release();
+    obj.releaseLock();
   }
 };
 

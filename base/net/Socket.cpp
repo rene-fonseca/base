@@ -7,6 +7,7 @@
 #include <base/net/Socket.h>
 #include <base/Functor.h>
 #include <base/io/EndOfFile.h>
+#include <base/Trace.h>
 
 #if defined(__win32__)
   #include <winsock2.h>
@@ -135,7 +136,7 @@ Socket::Socket() throw() : socket(new SocketImpl()) {
 }
 
 bool Socket::accept(Socket& socket) throw(IOException) {
-  SynchronizeExclusively();
+  //  SynchronizeExclusively();
 
   if (this->socket->isCreated()) {
     throw NetworkException("Attempt to overwrite socket");
@@ -576,6 +577,10 @@ bool Socket::wait(unsigned int timeout) const throw(IOException) {
     throw IOException("Unable to wait for input");
   }
   return result; // return true if data available
+}
+
+Socket::~Socket() {
+  TRACE_MEMBER();
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) {

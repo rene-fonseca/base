@@ -31,6 +31,11 @@ public:
     Read a character from the stream.
   */
   char getCharacter() throw(IOException);
+
+  /**
+    Destroy format input stream.
+  */
+  ~FormatInputStream();
 };
 
 /**

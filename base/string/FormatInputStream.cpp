@@ -3,8 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <base/features.h>
 #include <base/string/FormatInputStream.h>
 #include <base/io/FileDescriptorInputStream.h>
+#include <base/Trace.h>
 
 FileDescriptorInputStream standardInputStream(FileDescriptor::getStandardInput());
 FormatInputStream fin(standardInputStream);
@@ -17,6 +19,10 @@ char FormatInputStream::getCharacter() throw(IOException) {
   char buffer;
   read(&buffer, sizeof(buffer));
   return buffer;
+}
+
+FormatInputStream::~FormatInputStream() {
+  TRACE_MEMBER();
 }
 
 FormatInputStream& operator>>(FormatInputStream& stream, bool& value) {

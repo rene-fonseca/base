@@ -331,6 +331,11 @@ public:
   bool wait(unsigned int timeout) const throw(IOException);
 
   /**
+    Destroy socket.
+  */
+  ~Socket();
+
+  /**
     Writes a string representation of a Socket object to a format stream.
   */
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value);

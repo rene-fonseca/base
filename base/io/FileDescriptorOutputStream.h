@@ -58,6 +58,11 @@ public:
   unsigned int write(const char* buffer, unsigned int size) throw(IOException);
 
   /**
+    Release file descriptor.
+  */
+  ~FileDescriptorOutputStream();
+
+  /**
     Writes a string representation of a FileDescriptorOutputStream object to a format stream.
   */
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorOutputStream& value);

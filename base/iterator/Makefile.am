@@ -4,7 +4,7 @@ DEFS =
 
 noinst_LTLIBRARIES = libiterator.la
 
-libiterator_la_SOURCES = SequenceIterator.cpp InterleavedIterator.cpp
+libiterator_la_SOURCES = InterleavedIterator.cpp MatrixColumnIterator.cpp MatrixRowIterator.cpp SequenceIterator.cpp
 
 sectiondir = $(includedir)/base/iterator
-section_HEADERS = SequenceIterator.h InterleavedIterator.h
+section_HEADERS = InterleavedIterator.h MatrixColumnIterator.h MatrixRowIterator.h SequenceIterator.h

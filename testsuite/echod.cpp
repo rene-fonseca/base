@@ -41,7 +41,8 @@ public:
   
   void run() throw() {
     Thread* thread = Thread::getThread();
-    while (true) {
+    while (!thread->isTerminated()) {
+      WRITE_SOURCE_LOCATION();
       semaphore.wait(); // wait for job
       
       StreamSocket* job = jobs.pop();
@@ -52,7 +53,9 @@ public:
       
       try {
         while (!thread->isTerminated()) {
-          socket.wait(250);
+          socket.wait(250000);
+          WRITE_SOURCE_LOCATION();
+          fout << MESSAGE("Error state: ") << socket.getErrorState() << ENDL;
           unsigned int availableBytes = socket.available();
           while (availableBytes) {
             unsigned int bytesToRead = minimum(availableBytes, buffer.getSize());
@@ -69,10 +72,11 @@ public:
         socket.close();
       } catch (IOException& e) {
       }
+      WRITE_SOURCE_LOCATION();
     }
   }
 
-  ~EchoThread() throw() {
+  virtual ~EchoThread() throw() {
   }
 };
 
@@ -224,6 +228,9 @@ public:
       echod();
       break;
     }
+  }
+
+  ~EchoServiceApplication() throw() {
   }
 };
 

@@ -14,6 +14,7 @@
 #include <base/platforms/features.h>
 #include <base/concurrency/ReadWriteLock.h>
 #include <base/concurrency/SpinLock.h>
+#include <base/Base.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <windows.h>
@@ -38,7 +39,7 @@ public:
   
   inline ReadWriteLockImpl() throw(ResourceException) : readers(0), writers(0) {
     blockReaders = ::CreateEvent(0, TRUE, TRUE, 0); // allow shared locks initially
-    assert(blockReaders != 0, ResourceException());
+    assert(blockReaders != 0, ResourceException(this));
     ::InitializeCriticalSection(&common);
   }
 

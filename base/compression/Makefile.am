@@ -15,7 +15,7 @@ include $(top_srcdir)/common.am
 
 noinst_LTLIBRARIES = libcompression.la
 
-libcompression_la_SOURCES =
+libcompression_la_SOURCES = Huffman.cpp
 
 sectiondir = $(includedir)/base/compression
-section_HEADERS =
+section_HEADERS = Huffman.h

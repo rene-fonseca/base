@@ -1,0 +1,81 @@
+/***************************************************************************
+    The Base Framework
+    A framework for developing platform independent applications
+
+    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+
+    This framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    For the licensing terms refer to the file 'LICENSE'.
+ ***************************************************************************/
+
+#ifndef _DK_SDU_MIP__BASE_COMPRESSION__HUFFMAN_H
+#define _DK_SDU_MIP__BASE_COMPRESSION__HUFFMAN_H
+
+#include <base/Object.h>
+#include <base/io/File.h>
+#include <base/string/InvalidFormat.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+/**
+  Huffman compression.
+  
+  @short Huffman compression.
+  @ingroup compression
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.0
+*/
+
+class Huffman : public Object {
+private:
+
+  enum {
+    CODE_SIZE = 8,
+    ALPHABET_SIZE = 1 << CODE_SIZE
+  };
+  
+  struct Node {
+    /** The frequency of the symbol (and possibly linked list). */
+    unsigned int frequency;
+    /** The next node in the linked list. */
+    unsigned int next;
+    /** The length of the Huffman code. */
+    unsigned int length;
+    /** The Huffman code. */
+    unsigned int code;
+  };
+  
+  /** The symbols. */
+  Node nodes[ALPHABET_SIZE];
+public:
+
+  /**
+    Initializes the object.
+  */
+  Huffman() throw();
+
+  /**
+    Encodes the content of the specified buffer.
+    
+    @param stream The output stream.
+    @param buffer The buffer.
+    @param size The size of the buffer in bytes.
+  */
+  void encode(OutputStream& stream, const uint8* buffer, unsigned int size) throw();
+  
+  /**
+    Decodes the content of the specified buffer.
+    
+    @param stream The output stream.
+    @param buffer The buffer.
+    @param size The size of the buffer in bytes.
+  */
+  void decode(OutputStream& stream, const uint8* buffer, unsigned int size) throw(InvalidFormat);  
+};
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+
+#endif

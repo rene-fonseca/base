@@ -45,7 +45,7 @@ public:
   /**
     Initializes a pair with default values.
   */
-  inline Pair() : first(), second() {
+  inline Pair() throw() : first(), second() {
   }
 
   /**
@@ -54,18 +54,19 @@ public:
     @param first The first value.
     @param second The second value.
   */
-  Pair(const First& first, const Second& second);
+  Pair(const First& first, const Second& second) throw();
 
   /**
     Initializes a pair from other pair.
   */
-  inline Pair(const Pair& copy) : first(copy.first), second(copy.second) {
+  inline Pair(const Pair& copy) throw()
+    : first(copy.first), second(copy.second) {
   }
 
   /**
     Assignment of pair by pair.
   */
-  inline Pair& operator=(const Pair& eq) {
+  inline Pair& operator=(const Pair& eq) throw() {
     if (&eq != this) { // protect against self assignment
       first = eq.first;
       second = eq.second;
@@ -76,35 +77,36 @@ public:
   /**
     Returns the first value.
   */
-  inline const First& getFirst() const {
+  inline const First& getFirst() const throw() {
     return first;
   }
 
   /**
     Returns the second value.
   */
-  inline const Second& getSecond() const {
+  inline const Second& getSecond() const throw() {
     return second;
   }
 
   /**
     Sets the first value.
   */
-  inline void setFirst(const First& value) {
+  inline void setFirst(const First& value) throw() {
     first = value;
   }
 
   /**
     Sets the second value.
   */
-  inline void setSecond(const Second& value) {
+  inline void setSecond(const Second& value) throw() {
     second = value;
   }
 
   /**
-    Returns -1, 0, or 1 if this pair is less than, equal to, or greater than the specified pair.
+    Returns -1, 0, or 1 if this pair is less than, equal to, or greater than
+    the specified pair.
   */
-  inline int compareTo(const Pair& eq) const {
+  inline int compareTo(const Pair& eq) const throw() {
     int result = compareTo(first, eq.first);
     return (result != 0) ? result : compareTo(second, eq.second);
   }
@@ -112,29 +114,32 @@ public:
   /**
     Returns true if this pair is equal to the specified pair.
   */
-  inline bool operator==(const Pair& eq) const {
+  inline bool operator==(const Pair& eq) const throw() {
     return (first == eq.first) && (second == eq.second);
   }
 
   /**
     Returns true if this pair is less than the specified pair.
   */
-  inline bool operator<(const Pair& eq) const {
+  inline bool operator<(const Pair& eq) const throw() {
     return (first < eq.first) || (first == eq.first) && (second < eq.second);
   }
 
   /**
     Compares the specified pairs with each other.
   */
-  friend int compare<>(const Pair& left, const Pair& right);
+  friend int compare<>(const Pair& left, const Pair& right) throw();
 };
 
 template<class FIRST, class SECOND>
-inline Pair<FIRST, SECOND>::Pair(const First& _first, const Second& _second) : first(_first), second(_second) {
+inline Pair<FIRST, SECOND>::Pair(
+  const First& _first, const Second& _second) throw()
+  : first(_first), second(_second) {
 }
 
 template<class FIRST, class SECOND>
-inline int compare(const Pair<FIRST, SECOND>& left, const Pair<FIRST, SECOND>& right) {
+inline int compare(
+  const Pair<FIRST, SECOND>& left, const Pair<FIRST, SECOND>& right) throw() {
   if (left.first < right.first) {
     return -1;
   } else if (left.first == right.first) {
@@ -158,7 +163,8 @@ inline int compare(const Pair<FIRST, SECOND>& left, const Pair<FIRST, SECOND>& r
 */
 
 template<class FIRST, class SECOND>
-inline Pair<FIRST, SECOND> makePair(const FIRST& first, const SECOND& second) {
+inline Pair<FIRST, SECOND> makePair(
+  const FIRST& first, const SECOND& second) throw() {
   return Pair<FIRST, SECOND>(first, second);
 }
 

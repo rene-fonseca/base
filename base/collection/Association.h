@@ -121,11 +121,13 @@ public:
   /**
     Compares the specified associations with each other.
   */
-  friend int compare<>(const Association& left, const Association& right);
+  friend int compare<>(const Association& left, const Association& right) throw();
 };
 
 template<class KEY, class VALUE>
-inline int compare(const Association<KEY, VALUE>& left, const Association<KEY, VALUE>& right) {
+inline int compare(
+  const Association<KEY, VALUE>& left,
+  const Association<KEY, VALUE>& right) throw() {
   return compare(left.key, right.key);
 }
 
@@ -133,7 +135,9 @@ inline int compare(const Association<KEY, VALUE>& left, const Association<KEY, V
   Writes association to format output stream.
 */
 template<class KEY, class VALUE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Association<KEY, VALUE>& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  const Association<KEY, VALUE>& value) throw(IOException) {
   return stream << '[' << *value.getKey() << ']' << '=' << *value.getValue();
 }
 

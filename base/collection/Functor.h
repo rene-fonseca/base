@@ -26,10 +26,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 
 /**
-  Invocates the specified unary operation for each element (non-modifying operation).
+  Invocates the specified unary operation for each element (non-modifying
+  operation).
 */
 template<class COLLECTION, class UNOPR>
-void forEach(COLLECTION collection, UNOPR function) {
+void forEach(COLLECTION collection, UNOPR function) /*throw(...)*/ {
   typename COLLECTION::ReadEnumerator enu = collection.getReadEnumerator();
   while (enu.hasNext()) {
     function(*enu.next());
@@ -43,7 +44,8 @@ void forEach(COLLECTION collection, UNOPR function) {
 
 
 /**
-  Apply an unary operation to every element of the enumeration (modifying operation).
+  Apply an unary operation to every element of the enumeration (modifying
+  operation).
 */
 template<class COLLECTION, class UNOPR>
 inline void transform(COLLECTION& collection, UNOPR function) throw() {

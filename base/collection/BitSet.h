@@ -137,7 +137,8 @@ public:
     /** The bit within the word. */
     unsigned long mask;
     
-    inline BitReadReference(const unsigned long* _word, unsigned long _mask) throw()
+    inline BitReadReference(
+      const unsigned long* _word, unsigned long _mask) throw()
       : word(_word), mask(_mask) {
     }
   public:
@@ -244,7 +245,8 @@ public:
       @param word Specifies the beginning of the enumeration.
       @param count The number of bits in the set.
     */
-    explicit inline BitSetEnumerator(unsigned long* _word, unsigned int _count) throw()
+    explicit inline BitSetEnumerator(
+      unsigned long* _word, unsigned int _count) throw()
       : word(_word), count(_count) {
     }
   public:
@@ -272,7 +274,9 @@ public:
         --word;
       }
       --count;
-      return BitPointer(BitReference(word, 1UL << (count % (sizeof(unsigned long) * 8))));
+      return BitPointer(
+        BitReference(word, 1UL << (count % (sizeof(unsigned long) * 8)))
+      );
     }
     
     /**
@@ -327,7 +331,8 @@ public:
       @param word Specifies the beginning of the enumeration.
       @param count The number of bits in the set.
     */
-    explicit inline BitSetReadEnumerator(const unsigned long* _word, unsigned int _count) throw()
+    explicit inline BitSetReadEnumerator(
+      const unsigned long* _word, unsigned int _count) throw()
       : word(_word), count(_count) {
     }
   public:
@@ -415,14 +420,16 @@ private:
 protected:
   
   /**
-    Returns the number of required elements to hold the specified number of bits.
+    Returns the number of required elements to hold the specified number of
+    bits.
   */
   static inline unsigned int getNumberOfElements(unsigned int size) throw() {
     return (size + sizeof(unsigned long) * 8 - 1)/(sizeof(unsigned long) * 8);
   }
   
   /**
-    Returns the index of the internal element holding the bit at the specified index.
+    Returns the index of the internal element holding the bit at the specified
+    index.
   */
   static inline unsigned int getElementIndex(unsigned int index) throw() {
     return index/(sizeof(unsigned long) * 8);
@@ -518,17 +525,17 @@ public:
   }
 
   /**
-    Returns the bit state at the specified index. Raises OutOfRange if the index
-    is invalid.
-
+    Returns the bit state at the specified index. Raises OutOfRange if the
+    index is invalid.
+    
     @param index The index of the element.
   */
   bool getAt(unsigned int index) const throw(OutOfRange);
 
   /**
-    Sets the bit state at the specified index. Raises OutOfRange if the index is
-    invalid.
-
+    Sets the bit state at the specified index. Raises OutOfRange if the index
+    is invalid.
+    
     @param index The index of the element.
     @param value The desired value.
   */
@@ -664,13 +671,15 @@ public:
   */
   void removeAll() throw();
 
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value) throw(IOException);
+  friend FormatOutputStream& operator<<(
+    FormatOutputStream& stream, const BitSet& value) throw(IOException);
 };
 
 /**
   Writes a string representation of a bit set to a format stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value) throw(IOException);
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const BitSet& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -310,7 +310,7 @@ public:
 //    Invocates the specified unary operation for each element (non-modifying operation).
 //  */
 //  template<class TYPE, class UNOPR>
-//  void traversePrefixOrder(const BinaryNode* root, UNOPR& function) {
+//  void traversePrefixOrder(const BinaryNode* root, UNOPR& function) throw() {
 //    const BinaryNode* node = root;
 //    while (true) {
 //      function(node);
@@ -334,7 +334,7 @@ public:
 //  }
 //
 //  template<class TYPE, class UNOPR>
-//  void traverseInfixOrder(const BinaryNode* root, UNOPR& function) {
+//  void traverseInfixOrder(const BinaryNode* root, UNOPR& function) throw() {
 //    const BinaryNode* node = root;
 //    while (true) {
 //      if (node->getLeft()) { // traverse left subtree
@@ -358,7 +358,7 @@ public:
 //  }
 //
 //  template<class TYPE, class UNOPR>
-//  void traversePostfixOrder(const BinaryNode* root, UNOPR& function) {
+//  void traversePostfixOrder(const BinaryNode* root, UNOPR& function) throw() {
 //    const BinaryNode* node = root;
 //    while (true) {
 //      if (node->getLeft()) { // traverse left subtree
@@ -400,48 +400,8 @@ public:
 
   typedef PrefixOrderEnumerator<EnumeratorTraits<Node> > Enumerator;
   typedef PrefixOrderEnumerator<ReadEnumeratorTraits<Node> > ReadEnumerator;
-
-//  /**
-//    Enumeration of all the elements of a binary tree.
-//
-//    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-//    @version 1.0
-//  */
-//  class Enumeration : public PrefixOrderEnumeration<Value, Value&, Value*, Node*> {
-//  public:
-//
-//    /**
-//      Initializes an enumeration of all the elements of the specified binary
-//      tree.
-//
-//      @param tree The binary tree being enumerated.
-//    */
-//    inline Enumeration(BinaryTree& tree) throw()
-//      : PrefixOrderEnumeration<Value, Value&, Value*, Node*>(tree.getRoot()) {
-//    }
-//  };
-//
-//  /**
-//    Non-modifying enumeration of all the elements of a binary tree.
-//
-//    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-//    @version 1.0
-//  */
-//  class ReadOnlyEnumeration : public PrefixOrderEnumeration<Value, const Value&, const Value*, const Node*> {
-//  public:
-//
-//    /**
-//      Initializes a non-modifying enumeration of all the elements of the
-//      specified binary tree.
-//
-//      @param tree The binary tree being enumerated.
-//    */
-//    inline ReadOnlyEnumeration(const BinaryTree& tree) throw()
-//      : PrefixOrderEnumeration<Value, const Value&, const Value*, const Node*>(tree.getRoot()) {
-//    }
-//  };
-
-  /**
+  
+  /*
     Internal binary tree implementation.
 
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>

@@ -308,9 +308,9 @@ public:
   typedef ListReadEnumerator<ReadEnumeratorTraits<TYPE> > ReadEnumerator;
 protected:
 
-  /**
+  /*
     Internal list implementation.
-
+    
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */

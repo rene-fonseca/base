@@ -34,7 +34,7 @@ template<class TYPE>
 class Stack : public Collection {
 protected:
 
-  /**
+  /*
     A node of a stack.
   */
   class StackNode {
@@ -79,7 +79,7 @@ protected:
 
 
 
-  /**
+  /*
     Enumerator of elements of a stack.
     
     @short Non-modifying enumerator of elements of a stack.
@@ -152,7 +152,7 @@ protected:
   
   
   
-  /**
+  /*
     Internal stack implementation.
 
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>

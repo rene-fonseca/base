@@ -48,27 +48,9 @@ private:
   unsigned int size;
 public:
 
-//  /** Enumerator of Map. */
-//  template<class TRAITS, class ENU>
-//  class MapEnumerator : public Enumerator<TRAITS> {
-//  private:
-//
-//    ENU enu;
-//  public:
-//
-//    inline MapEnumerator(ENU e) : enu(e) {
-//    }
-//
-//    inline bool hasNext() const throw() {
-//      return enu.hasNext();
-//    }
-//
-//    inline Pointer next() throw(EndOfEnumeration) {
-//      return enu.next()->getValue();
-//    }
-//  };
-
-  /** Enumerator of map. */
+  /**
+    @short Non-modifying enumerator of map.
+  */
   class ReadEnumerator : public Enumerator<ReadEnumeratorTraits<Node> > {
   private:
 
@@ -76,7 +58,8 @@ public:
     typename OrderedBinaryTree<Node>::ReadEnumerator enu;
   public:
 
-    inline ReadEnumerator(typename OrderedBinaryTree<Node>::ReadEnumerator _enu)
+    inline ReadEnumerator(
+      typename OrderedBinaryTree<Node>::ReadEnumerator _enu) throw()
       : enu(_enu) {
     }
 
@@ -90,8 +73,7 @@ public:
   };
 
   /**
-    Modifying enumerator of values of map.
-
+    @short Modifying enumerator of values of map.
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
@@ -102,7 +84,8 @@ public:
     typename OrderedBinaryTree<Node>::Enumerator enu;
   public:
 
-    inline ValueEnumerator(typename OrderedBinaryTree<Node>::Enumerator _enu)
+    inline ValueEnumerator(
+      typename OrderedBinaryTree<Node>::Enumerator _enu) throw()
       : enu(_enu) {
     }
 
@@ -114,51 +97,6 @@ public:
       return enu.next()->getValue()->getValue();
     }
   };
-
-  /** Modifying enumerator. */
-//  typedef MapEnumerator<EnumeratorTraits<Node>, OrderedBinaryTree<Node>::Enumerator> Enumerator;
-  /** Non-modifying enumerator. */
-//  typedef MapEnumerator<ReadEnumeratorTraits<Node>, OrderedBinaryTree<Node>::ReadEnumerator> ReadEnumerator;
-
-
-  /**
-    Enumeration of all the elements of a map.
-
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
-  */
-//  class Enumeration : public OrderedBinaryTree<Node>::Enumeration {
-//  public:
-//
-//    /**
-//      Initializes an enumeration of all the elements of the specified map.
-//
-//      @param map The map being enumerated.
-//    */
-//    inline Enumeration(Map& map) throw() :
-//      OrderedBinaryTree<Node>::Enumeration(map.elements) {
-//    }
-//  };
-
-//  /**
-//    Non-modifying enumeration of all the elements of a map.
-//
-//    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-//    @version 1.0
-//  */
-//  class ReadOnlyEnumeration : public OrderedBinaryTree<Node>::ReadOnlyEnumeration {
-//  public:
-//
-//    /**
-//      Initializes a non-modifying enumeration of all the elements of the
-//      specified map.
-//
-//      @param map The map being enumerated.
-//    */
-//    inline ReadOnlyEnumeration(const Map& map) throw() :
-//      OrderedBinaryTree<Node>::ReadOnlyEnumeration(map.elements) {
-//    }
-//  };
 
   /*
     Reference to an element within a map.
@@ -172,7 +110,7 @@ public:
     Element(const Element& copy) throw();
     Element& operator=(const Element& eq) throw();
     
-    inline Element(Map& _map, const Key& _key) : map(_map), key(_key) {
+    inline Element(Map& _map, const Key& _key) throw() : map(_map), key(_key) {
     }
   public:
     

@@ -16,11 +16,11 @@
 
 #include <base/Object.h>
 #include <base/string/String.h>
+#include <base/collection/AmbiguousRegistration.h>
 #include <base/collection/Stack.h>
 #include <base/collection/List.h>
 #include <base/collection/HashTable.h>
 #include <base/mathematics/ExpressionException.h>
-#include <base/mathematics/AmbiguousRegistration.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -47,7 +47,7 @@ public:
     UNKNOWN /**< Unknown. */
   };
 
-  /** Node of expression. */
+  /* Node of expression. */
   struct Node {
     NodeType type;
     union {

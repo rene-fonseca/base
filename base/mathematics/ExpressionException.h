@@ -22,6 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   This exception is raised by ExpressionParser on errors in an expression
   representation.
 
+  @short Expression exception.
   @see ExpressionParser
   @ingroup exceptions mathematics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>

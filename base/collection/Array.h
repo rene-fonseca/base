@@ -32,6 +32,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   provides random access to the individual elements. Elements must have a default
   constructor.
   
+  @example testsuite/Array.cpp
+  
   @short Array.
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>

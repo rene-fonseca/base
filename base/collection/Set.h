@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Set collection implemented using an ordered binary tree.
 
-  @short Set of elements
+  @short Set of elements.
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
@@ -38,7 +38,7 @@ private:
   unsigned int size;
 public:
 
-  /** Enumerator of set. */
+  /* Enumerator of set. */
   template<class TRAITS, class ENU>
   class SetEnumerator : public Enumerator<TRAITS> {
   private:
@@ -49,13 +49,13 @@ public:
     ENU enu;
   public:
 
-    inline SetEnumerator(ENU _enu) : enu(_enu) {
+    inline SetEnumerator(ENU _enu) throw() : enu(_enu) {
     }
-
+    
     inline bool hasNext() const throw() {
       return enu.hasNext();
     }
-
+    
     inline Pointer next() throw(EndOfEnumeration) {
       return enu.next()->getValue();
     }
@@ -65,107 +65,20 @@ public:
   typedef SetEnumerator<EnumeratorTraits<KEY>, typename OrderedBinaryTree<KEY>::Enumerator> Enumerator;
   /** Non-modifying enumerator. */
   typedef SetEnumerator<ReadEnumeratorTraits<KEY>, typename OrderedBinaryTree<KEY>::ReadEnumerator> ReadEnumerator;
-
-//  /** Non-modifying enumerator. */
-//  class ReadEnumerator : public Enumerator<ReadEnumeratorTraits<KEY> > {
-//  private:
-//
-//    OrderedBinaryTree<KEY>::ReadEnumerator enu;
-//  public:
-//
-//    inline ReadEnumerator(OrderedBinaryTree<KEY>::ReadEnumerator _enu) : enu(_enu) {
-//    }
-//
-//    inline bool hasNext() const throw() {
-//      return enu.hasNext();
-//    }
-//
-//    inline const KEY* next() throw(EndOfEnumeration) {
-//      return enu.next()->getValue();
-//    }
-//  };
-
-//  /** Modifying enumerator. */
-//  class Enumerator : public OrderedBinaryTree<KEY>::Enumerator {
-//  public:
-//
-//    Enumerator(OrderedBinaryTree<KEY>::Enumerator enu) : OrderedBinaryTree<KEY>::Enumerator(enu) {
-//    }
-//
-//    KEY* next() throw(EndOfEnumeration) {
-//      return OrderedBinaryTree<KEY>::Enumerator::next()->getValue();
-//    }
-//  };
-//
-//  /** Non-modifying enumerator. */
-//  class ReadEnumerator : public OrderedBinaryTree<KEY>::ReadEnumerator {
-//  public:
-//
-//    ReadEnumerator(OrderedBinaryTree<KEY>::ReadEnumerator enu) : OrderedBinaryTree<KEY>::ReadEnumerator(enu) {
-//    }
-//
-//    const KEY* next() throw(EndOfEnumeration) {
-//      return OrderedBinaryTree<KEY>::ReadEnumerator::next()->getValue();
-//    }
-//  };
-
-//  class Enumeration;
-//  friend class Enumeration;
-//  class ReadOnlyEnumeration;
-//  friend class ReadOnlyEnumeration;
-//
-//  /**
-//    Enumeration of all the elements of a set.
-//
-//    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-//    @version 1.0
-//  */
-//  class Enumeration : public OrderedBinaryTree<KEY>::Enumeration {
-//  public:
-//
-//    /**
-//      Initializes an enumeration of all the elements of the specified set.
-//
-//      @param set The set being enumerated.
-//    */
-//    inline Enumeration(Set& set) throw() :
-//      OrderedBinaryTree<KEY>::Enumeration(set.elements) {
-//    }
-//  };
-//
-//  /**
-//    Non-modifying enumeration of all the elements of a set.
-//
-//    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-//    @version 1.0
-//  */
-//  class ReadOnlyEnumeration : public OrderedBinaryTree<KEY>::ReadOnlyEnumeration {
-//  public:
-//
-//    /**
-//      Initializes a non-modifying enumeration of all the elements of the
-//      specified set.
-//
-//      @param set The set being enumerated.
-//    */
-//    inline ReadOnlyEnumeration(const Set& set) throw() :
-//      OrderedBinaryTree<KEY>::ReadOnlyEnumeration(set.elements) {
-//    }
-//  };
 public:
 
   /**
     Initializes an empty set.
   */
-  Set() throw() : size(0) {
+  inline Set() throw() : size(0) {
   }
 
   /**
     Initializes set from other set.
   */
-  Set(const Set& copy) throw(MemoryException) : elements(copy.elements) {
+  inline  Set(const Set& copy) throw() : elements(copy.elements) {
   }
-
+  
   /**
     Returns the number of elements in the collection.
   */

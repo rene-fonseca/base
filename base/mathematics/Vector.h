@@ -67,38 +67,6 @@ public:
       return vector.getAt(index);
     }
   };
-
-//  /**
-//    Enumeration of all the elements of a vector.
-//  */
-//  class Enumeration : public AllocatorEnumeration<TYPE, TYPE&, TYPE*> {
-//  public:
-//
-//    /**
-//      Initializes an enumeration of all the elements of the specified vector.
-//
-//      @param vector The vector being enumerated.
-//    */
-//    Enumeration(Vector& vector) throw()
-//      : AllocatorEnumeration<TYPE, TYPE&, TYPE*>(vector.getElements(), vector.getElements() + vector.getSize()) {
-//    }
-//  };
-//
-//  /**
-//    Non-modifying enumeration of all the elements of a vector.
-//  */
-//  class ReadOnlyEnumeration : public AllocatorEnumeration<TYPE, const TYPE&, const TYPE*> {
-//  public:
-//
-//    /**
-//      Initializes a non-modifying enumeration of all the elements of the specified vector.
-//
-//      @param vector The vector being enumerated.
-//    */
-//    ReadOnlyEnumeration(const Vector& vector) throw()
-//      : AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(vector.getElements(), vector.getElements() + vector.getSize()) {
-//    }
-//  };
 protected:
 
   /**
@@ -145,14 +113,20 @@ public:
   }
 public:
 
-  /** Exception raised by the Vector class. */
+  /**
+    @short Exception raised by the Vector class.
+  */
   class VectorException : public Exception {
   };
-
-  /** Raised if an operation is given incompatible vectors to work on. */
+  
+  /**
+    Raised if an operation is given incompatible vectors to work on.
+    
+    @short Incompatible vector exception.
+  */
   class IncompatibleVectors : public VectorException {
   };
-
+  
   /**
     Initializes vector of the specified size. The elements are not initialized.
 

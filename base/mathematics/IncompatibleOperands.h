@@ -20,8 +20,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   This exception is raised when specified operands are incompatible with each
-  other.
-
+  other for some operation.
+  
+  @short Incompatible operands exception.
   @ingroup exceptions mathematics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

@@ -16,7 +16,7 @@
 
 #include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
-#include <math.h> // not nice; but what can I do
+#include <math.h> // TAG: not nice; but what can I do
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -31,9 +31,9 @@ class Complex {
 private:
 
   /** The real part of the complex number. */
-  double real;
+  long double real;
   /** The imaginary part the complex number. */
-  double imaginary;
+  long double imaginary;
 public:
 
   /**
@@ -47,7 +47,7 @@ public:
 
     @param real The real part.
   */
-  inline Complex(double real) throw();
+  inline Complex(long double real) throw();
 
   /**
     Initializes complex number of the specified real and imaginary parts.
@@ -55,7 +55,7 @@ public:
     @param real The desired real part.
     @param imaginary The desired imaginary part.
   */
-  inline Complex(double real, double imaginary) throw();
+  inline Complex(long double real, long double imaginary) throw();
 
   /**
     Initializes complex number of other complex number.
@@ -74,7 +74,7 @@ public:
   /**
     Assignment of complex number by real number.
   */
-  inline Complex& operator=(double real) throw() {
+  inline Complex& operator=(long double real) throw() {
     this->real = real; // no need to protect against self-assignment
     imaginary = 0;
     return *this;
@@ -83,41 +83,41 @@ public:
   /**
     Returns the real part of the complex number.
   */
-  inline double getReal() const throw() {return real;}
+  inline long double getReal() const throw() {return real;}
 
   /**
     Returns the imaginary part of the complex number.
   */
-  inline double getImaginary() const throw() {return imaginary;}
+  inline long double getImaginary() const throw() {return imaginary;}
 
   /**
     Sets the real part of the complex number.
   */
-  inline void setReal(const double& value) throw() {real = value;}
+  inline void setReal(const long double& value) throw() {real = value;}
 
   /**
     Sets the imaginary part of the complex number.
   */
-  inline void setImaginary(const double& value) throw() {imaginary = value;}
+  inline void setImaginary(const long double& value) throw() {imaginary = value;}
 
   /**
     Returns the square of the modulus of the complex number.
   */
-  inline double getSqrModulus() const throw() {
+  inline long double getSqrModulus() const throw() {
     return real * real + imaginary * imaginary;
   }
 
   /**
     Returns the modulus of the complex number.
   */
-  inline double getModulus() const throw() {
+  inline long double getModulus() const throw() {
     return sqrt(getSqrModulus());
   }
 
   /**
     Returns the angle of the complex number.
   */
-  inline double getAngle() const throw() {
+  inline long double getAngle() const throw() {
     return atan2(imaginary, real);
   }
 
@@ -145,13 +145,22 @@ public:
   }
 
   /**
+    Conjugates this number.
+  */
+  inline Complex& conjugate() throw() {
+    imaginary = -imaginary;
+    return *this;
+  }
+
+  /**
     Inverts this number.
   */
   inline Complex& invert() throw() {
-    double modulus = 1/getModulus(); // possible division by zero
-    double angle = -getAngle();
-    real = modulus * cos(angle);
-    imaginary = modulus * sin(angle);
+    long double scale = getSqrModulus(); // TAG: possible division by zero
+    //assert(scale != 0, DivisionByZero());
+    scale = 1/scale;
+    real *= scale;
+    imaginary *= -scale;
     return *this;
   }
 
@@ -176,7 +185,7 @@ public:
   /**
     Multiplies this number with the specified value.
   */
-  inline Complex& multiply(double value) throw() {
+  inline Complex& multiply(long double value) throw() {
     real *= value;
     imaginary *= value;
     return *this;
@@ -186,7 +195,7 @@ public:
     Multiplies this number with the specified value.
   */
   inline Complex& multiply(const Complex& value) throw() {
-    double temp = real * value.real - imaginary * value.imaginary;
+    long double temp = real * value.real - imaginary * value.imaginary;
     imaginary = real * value.imaginary + imaginary * value.real;
     real = temp;
     return *this;
@@ -195,7 +204,7 @@ public:
   /**
     Divides this number with the specified value.
   */
-  inline Complex& divide(double value) throw() {
+  inline Complex& divide(long double value) throw() {
     return multiply(1/value);
   }
 
@@ -203,7 +212,14 @@ public:
     Divides this number with the specified value.
   */
   inline Complex& divide(const Complex& value) throw() {
-    return multiply(Complex(value).invert());
+    long double scale = value.getSqrModulus(); // TAG: possible division by zero
+    //assert(scale != 0, DivisionByZero());
+    scale = 1/scale;
+    long double temp = (real * value.real - imaginary * -value.imaginary) * scale;
+    imaginary = (real * -value.imaginary + imaginary * value.real) * scale;
+    real = temp;
+    // return multiply(Complex(value).invert());
+    return *this;
   }
 
 
@@ -243,14 +259,14 @@ public:
 
     @param value The multiplicator.
   */
-  inline Complex& operator*=(double value) throw() {return multiply(value);}
+  inline Complex& operator*=(long double value) throw() {return multiply(value);}
 
   /**
     Divides this number with the specified value.
 
     @param value The divisor.
   */
-  inline Complex& operator/=(double value) throw() {return divide(value);}
+  inline Complex& operator/=(long double value) throw() {return divide(value);}
 
   /**
     Unary plus.
@@ -282,22 +298,22 @@ public:
   /**
     Returns the product of the complex number and the real value.
   */
-  friend Complex operator*(const Complex& left, double right) throw();
+  friend Complex operator*(const Complex& left, long double right) throw();
 
   /**
     Returns the product of the real value and the complex number.
   */
-  friend Complex operator*(double left, const Complex& right) throw();
+  friend Complex operator*(long double left, const Complex& right) throw();
 
   /**
     Returns the result of the number divided by the value.
   */
-  friend Complex operator/(const Complex& left, double right) throw();
+  friend Complex operator/(const Complex& left, long double right) throw();
 };
 
-inline Complex::Complex(double r) throw() : real(r) {}
+inline Complex::Complex(long double r) throw() : real(r) {}
 
-inline Complex::Complex(double r, double i) throw() : real(r), imaginary(i) {}
+inline Complex::Complex(long double r, long double i) throw() : real(r), imaginary(i) {}
 
 inline Complex operator+(const Complex& left, const Complex& right) throw() {
   return Complex(left.real + right.real, left.imaginary + right.imaginary);
@@ -314,20 +330,20 @@ inline Complex operator*(const Complex& left, const Complex& right) throw() {
   );
 }
 
-inline Complex operator*(const Complex& left, double right) throw() {
+inline Complex operator*(const Complex& left, long double right) throw() {
   return Complex(left.real * right, left.imaginary * right);
 }
 
-inline Complex operator*(double left, const Complex& right) throw() {
+inline Complex operator*(long double left, const Complex& right) throw() {
   return Complex(right.real * left, right.imaginary * left);
 }
 
 inline Complex operator/(const Complex& left, const Complex& right) throw() {
-  return left * Complex(right).invert();
+  return Complex(left).divide(right);
 }
 
-inline Complex operator/(const Complex& left, double right) throw() {
-  double temp = 1/right;
+inline Complex operator/(const Complex& left, long double right) throw() {
+  long double temp = 1/right;
   return Complex(left.real * temp, left.imaginary * temp);
 }
 

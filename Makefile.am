@@ -48,7 +48,7 @@ module-testsuite-configure:
 .phony: module-testsuite-configure
 
 module-testsuite-build: module-testsuite-configure
-	echo "Building test suite"
+	@echo "Building test suite"
 	@if test -f testsuite/Makefile; then \
 	  make -C testsuite; \
 	fi

@@ -11,51 +11,130 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/concurrency/Process.h>
-#include <base/TypeInfo.h>
+#include <base/Type.h>
 #include <base/Application.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#include <windows.h>
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  #include <windows.h>
 #else // unix
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <unistd.h>
-#include <signal.h>
-#include <errno.h>
-#include <stdlib.h>
+  #include <sys/types.h>
+  #include <sys/wait.h>
+  #include <sys/time.h>
+  #include <sys/resource.h> // getpriority
+  #include <unistd.h>
+  #include <signal.h>
+  #include <errno.h>
+  #include <stdlib.h>
 #endif
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
   extern "C" char** environ;
 #endif
 
+// TAG: need to symbol to enable use of undocumented API (e.g. _DK_SDU_MIP__BASE__UNDOCUMENTED)
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K)
+namespace ntapi {
+  
+  typedef long NTSTATUS;
+  typedef long KPRIORITY;
+  
+  struct ProcessBasicInformation {
+    NTSTATUS exitStatus;
+    void* /*PPEB*/ PEBBaseAddress;
+    unsigned long* affinityMask;
+    KPRIORITY basePriority;
+    unsigned long* uniqueProcessId;
+    unsigned long inheritedFromUniqueProcessId; // TAG: is the type correct
+  };
+
+  typedef NTSTATUS (__stdcall *PNtQueryInformationProcess)(HANDLE, unsigned int /*PROCESSINFOCLASS*/, void*, unsigned long, unsigned long*);
+};
+#endif
+
 Process Process::getProcess() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return Process(::GetCurrentProcessId());
 #else // unix
-  return Process(getpid());
+  return Process(::getpid());
 #endif
 }
 
 Process Process::getParentProcess() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K)
+    // MT-safe 'cause DWORD is written atomically
+    static bool isPIDCached = false;
+    static unsigned long cachedPID = Process::INVALID;
+    
+    if (!isPIDCached) {
+      ntapi::PNtQueryInformationProcess NtQueryInformationProcess =
+        (ntapi::PNtQueryInformationProcess)::GetProcAddress(::GetModuleHandle("ntdll"), "NtQueryInformationProcess");
+      if (NtQueryInformationProcess) {
+        ntapi::ProcessBasicInformation information;
+        if (!NtQueryInformationProcess(::GetCurrentProcess(),
+                                       0, // process basic information class
+                                       &information,
+                                       sizeof(information),
+                                       0)) {
+          cachedPID = information.inheritedFromUniqueProcessId;
+        }
+      }
+      isPIDCached = true; // cached pid is set to invalid by default
+    }
+    return Process(cachedPID);
+  #else
+    return Process(Process::INVALID); // win32 doesn't support this (WINNT 4)
+  #endif
 #else // unix
   return Process(::getppid());
 #endif
 }
 
 Process Process::fork() throw(NotSupported, ProcessException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  throw NotSupported(TypeInfo::getTypename<Process>());
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  throw NotSupported(Type::getType<Process>());
+
+//   NTSYSAPI NTSTATUS NTAPI NtCreateProcess(
+//                       OUT PHANDLE ProcessHandle,
+//                       IN ACCESS_MASK DesiredAccess,
+//                       IN POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
+//                       IN HANDLE ParentProcess,
+//                       IN BOOLEAN InheritObjectTable,
+//                       IN HANDLE SectionHandle OPTIONAL,
+//                       IN HANDLE DebugPort OPTIONAL,
+//                       IN HANDLE ExceptionPort OPTIONAL
+//                    );
+//   NTSYSAPI NTSTATUS NTAPI NtCreateThread(
+//                        OUT PHANDLE ThreadHandle,
+//                        IN ACCESS_MASK DesiredAccess,
+//                        IN POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
+//                        IN HANDLE ProcessHandle,
+//                        OUT PCLIENT_ID ClientId,
+//                        IN PCONTEXT ThreadContext,
+//                        IN PINITIAL_TEB InitialTeb,
+//                        IN BOOLEAN CreateSuspended
+//                      );
+//   NTSYSAPI NTSTATUS NTAPI NtTerminateProcess(
+//                        IN HANDLE ProcessHandle OPTIONAL,
+//                        IN NTSTATUS ExitStatus
+//                      );
+//   NTSYSAPI NTSTATUS NTAPI NtTerminateThread(
+//                        IN HANDLE ThreadHandle OPTIONAL,
+//                        IN NTSTATUS ExitStatus
+//                      );
+//   NTSYSAPI NTSTATUS NTAPI NtSuspendThread(
+//                           IN HANDLE ThreadHandle,
+//                           OUT PULONG PreviousSuspendCount OPTIONAL
+//                           );
 #else // unix
-  pid_t result = ::fork(); // should use fork1 on solaris
+  pid_t result = ::fork(); // should we use fork1 on solaris
   if (result == (pid_t)-1) {
-    throw ProcessException("Unable to fork child process", TypeInfo::getTypename<Process>());
+    throw ProcessException("Unable to fork child process", Type::getType<Process>());
   }
   return Process(result);
 #endif
@@ -70,10 +149,10 @@ Process Process::fork() throw(NotSupported, ProcessException) {
 #endif
 
 int Process::getPriority() throw(ProcessException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   switch (::GetPriorityClass(::GetCurrentProcess())) { // no need to close handle
   case 0:
-    throw ProcessException("Unable to get priority of process", TypeInfo::getTypename<Process>());
+    throw ProcessException("Unable to get priority of process", Type::getType<Process>());
   case REALTIME_PRIORITY_CLASS:
     return -20;
   case HIGH_PRIORITY_CLASS:
@@ -88,17 +167,22 @@ int Process::getPriority() throw(ProcessException) {
     return 19;
   }
 #else // unix
-  errno = 0;
-  int priority = ::getpriority(PRIO_PROCESS, getpid());
-  if ((priority == -1) && (errno != 0)) {
-    throw ProcessException("Unable to get priority of process", TypeInfo::getTypename<Process>());
-  }
-  return priority;
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+    #warning Process::getPriority() is not supported
+    return 0; // TAG: api cygwin
+  #else
+    errno = 0;
+    int priority = ::getpriority(PRIO_PROCESS, getpid());
+    if ((priority == -1) && (errno != 0)) {
+      throw ProcessException("Unable to get priority of process", Type::getType<Process>());
+    }
+    return priority;
+  #endif
 #endif
 }
 
 void Process::setPriority(int priority) throw(ProcessException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   DWORD priorityClass;
   if (priority <= -20) {
     priorityClass = REALTIME_PRIORITY_CLASS;
@@ -114,18 +198,22 @@ void Process::setPriority(int priority) throw(ProcessException) {
     priorityClass = IDLE_PRIORITY_CLASS;
   }
   if (!::SetPriorityClass(::GetCurrentProcess(), priorityClass)) {
-    throw ProcessException("Unable to set priority of process", TypeInfo::getTypename<Process>());
+    throw ProcessException("Unable to set priority of process", Type::getType<Process>());
   }
 #else // unix
-  if (::setpriority(PRIO_PROCESS, getpid(), priority)) {
-    ProcessException("Unable to set priority", TypeInfo::getTypename<Process>());
-  }
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+    #warning Process::setPriority() is not supported
+  #else
+    if (::setpriority(PRIO_PROCESS, ::getpid(), priority)) {
+      ProcessException("Unable to set priority", Type::getType<Process>());
+    }
+  #endif
 #endif
 }
 
 Process Process::execute(const String& command) throw(ProcessException) {
   // inherit handles, environment, use current working directory, and allow this app to wait for process to terminate
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   String commandLine = command;
   STARTUPINFO startInfo;
   PROCESS_INFORMATION processInformation;
@@ -144,16 +232,18 @@ Process Process::execute(const String& command) throw(ProcessException) {
                                 &processInformation // receives PROCESS_INFORMATION
   );
   if (result != 0) {
-    throw ProcessException("Unable to execute command", TypeInfo::getTypename<Process>());
+    throw ProcessException("Unable to execute command", Type::getType<Process>());
   }
   // TAG: return special Process object - close handles in processInformation later
 #else
+  // TAG: use spawn if available
+  
   pid_t pid;
   int status;
 
   pid = ::fork();
   if (pid == -1) {
-    throw ProcessException("Unable to execute command", TypeInfo::getTypename<Process>());
+    throw ProcessException("Unable to execute command", Type::getType<Process>());
   }
   if (pid == 0) { // is this the child
     // setup arguments list
@@ -168,14 +258,10 @@ Process Process::execute(const String& command) throw(ProcessException) {
 #endif // flavor
 }
 
-Process::Process(unsigned int id) throw() : id(id) {
+Process::Process(unsigned long _id) throw() : id(_id) {
 }
 
 Process::Process(const Process& copy) throw() : id(copy.id) {
-}
-
-unsigned int Process::getId() throw() {
-  return id;
 }
 
 Process& Process::operator=(const Process& eq) throw() {
@@ -186,7 +272,7 @@ Process& Process::operator=(const Process& eq) throw() {
 }
 
 bool Process::isAlive() const throw(ProcessException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 //   HANDLE newHandle;
 //   BOOL res = ::DuplicateHandle(
 //     ::GetCurrentProcess(), // handle to source process
@@ -224,7 +310,7 @@ bool Process::isAlive() const throw(ProcessException) {
 
 int Process::wait() const  throw(ProcessException) {
   // TAG: need timeout support
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HANDLE handle = ::OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(id));
   assert(handle != 0, ProcessException("Unable to wait for process", this));
   ::WaitForSingleObject(handle, INFINITE);
@@ -249,7 +335,7 @@ int Process::wait() const  throw(ProcessException) {
 
 // TAG: need process group support
 void Process::terminate(bool force) throw(ProcessException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (force) {
     HANDLE handle = ::OpenProcess(PROCESS_TERMINATE, FALSE, (DWORD)id);
     assert(handle != 0, ProcessException("Unable to terminate process", this));

@@ -12,7 +12,7 @@
  ***************************************************************************/
 
 #include <base/platforms/features.h>
-#include <base/compression/ZLibDeflater.h>
+#include <base/compression/BZip2Deflater.h>
 #include <base/io/EndOfFile.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/NotSupported.h>
@@ -21,24 +21,22 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 namespace internal {
   
-  class ZLibDeflater {
+  class BZip2Deflater {
   public:
     
     struct Context {
       const uint8* nextInput;
       unsigned int bytesToWrite;
-      unsigned long totalInput;
+      unsigned int totalInputLow;
+      unsigned int totalInputHigh;
       uint8* nextOutput;
       unsigned int bytesToRead;
-      unsigned long totalOutput;
-      char* message;
+      unsigned int totalOutputLow;
+      unsigned int totalOutputHigh;
       void* state;
       void* (*allocate)(void*, int, int) throw();
       void (*release)(void*, void*) throw();
       void* opaque;
-      int dataType;
-      unsigned long adler;
-      unsigned long reserved;
     };
     
     static void* allocate(void*, int n, int m) throw() {
@@ -58,107 +56,102 @@ namespace internal {
     }
     
     enum Action {
-      NO_FLUSH = 0,
-      SYNC_FLUSH = 2,
-      FULL_FLUSH = 3,
-      FINISH = 4
+      RUN = 0,
+      FLUSH = 1,
+      FINISH = 2
     };
     
     enum Code {
       OK = 0,
-      STREAM_END = 1,
-      NEED_DICT = 2,
-      VERSION_ERROR = -6
+      RUN_OK = 1,
+      FLUSH_OK = 2,
+      FINISH_OK = 3,
+      STREAM_END = 4,
+      ERROR_SEQUENCE = -1,
+      ERROR_PARAM = -2
     };
   };
-  
+
   // TAG: dll support
-  extern "C" int deflateInit_(ZLibDeflater::Context* stream, int level, const char* version, int size);
-  extern "C" int deflate(ZLibDeflater::Context* stream, int flush);
-  extern "C" int deflateEnd(ZLibDeflater::Context* stream);
+  extern "C" int BZ2_bzCompressInit(BZip2Deflater::Context* stream, int blockSize, int verbosity, int workFactor);
+  extern "C" int BZ2_bzCompress(BZip2Deflater::Context* stream, int action);
+  extern "C" int BZ2_bzCompressEnd(BZip2Deflater::Context* stream);
 };
 
-ZLibDeflater::ZLibDeflater() throw(MemoryException)
+BZip2Deflater::BZip2Deflater() throw(MemoryException)
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
-  internal::ZLibDeflater::Context* context = new internal::ZLibDeflater::Context;
+#if (defined(_DK_SDU_MIP__BASE__BZ2))
+  internal::BZip2Deflater::Context* context = new internal::BZip2Deflater::Context;
   this->context = context;
   clear(*context);
-  context->allocate = internal::ZLibDeflater::allocate;
-  context->release = internal::ZLibDeflater::release;
+  context->allocate = internal::BZip2Deflater::allocate;
+  context->release = internal::BZip2Deflater::release;
   unsigned int compressionLevel = minimum(maximum(DEFAULT_COMPRESSION_LEVEL, 1U), 9U);
-  int code = internal::deflateInit_(context, compressionLevel, "1.1.4", sizeof(*context));
-  switch (code) {
-  case internal::ZLibDeflater::OK:
-    break;
-  case internal::ZLibDeflater::VERSION_ERROR:
-    throw NotSupported(this);
-  default:
-    throw MemoryException(this);
-  }
+  int code = internal::BZ2_bzCompressInit(context, compressionLevel, 0, 30);
+  assert(
+    code == internal::BZip2Deflater::OK,
+    MemoryException(this)
+  );
 #else
   throw NotSupported(this);
 #endif
 }
 
-ZLibDeflater::ZLibDeflater(unsigned int compressionLevel) throw(MemoryException)
+BZip2Deflater::BZip2Deflater(unsigned int compressionLevel) throw(MemoryException)
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
-  internal::ZLibDeflater::Context* context = new internal::ZLibDeflater::Context;
+#if (defined(_DK_SDU_MIP__BASE__BZ2))
+  internal::BZip2Deflater::Context* context = new internal::BZip2Deflater::Context;
   this->context = context;
   clear(*context);
-  context->allocate = internal::ZLibDeflater::allocate;
-  context->release = internal::ZLibDeflater::release;
+  context->allocate = internal::BZip2Deflater::allocate;
+  context->release = internal::BZip2Deflater::release;
   compressionLevel = minimum(maximum(compressionLevel, 1U), 9U);
-  int code = internal::deflateInit_(context, compressionLevel, "1.1.4", sizeof(*context));
-  switch (code) {
-  case internal::ZLibDeflater::OK:
-    break;
-  case internal::ZLibDeflater::VERSION_ERROR:
-    throw NotSupported(this);
-  default:
-    throw MemoryException(this);
-  }
+  int code = internal::BZ2_bzCompressInit(context, compressionLevel, 0, 30);
+  assert(
+    code == internal::BZip2Deflater::OK,
+    MemoryException(this)
+  );
 #else
   throw NotSupported(this);
 #endif
 }
 
-void ZLibDeflater::flush() throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+void BZip2Deflater::flush() throw(IOException) {
+#if (defined(_DK_SDU_MIP__BASE__BZ2))
   assert(state != ENDED, EndOfFile());
-  assert(state == RUNNING, IOException(this)); // TAG: should we accept FLUSHING
+  assert(state == RUNNING, IOException(this));
   state = FLUSHING;
 #else
   throw IOException(this);
 #endif
 }
 
-unsigned int ZLibDeflater::push(const uint8* buffer, unsigned int size) throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+unsigned int BZip2Deflater::push(const uint8* buffer, unsigned int size) throw(IOException) {
+#if (defined(_DK_SDU_MIP__BASE__BZ2))
   assert(state != ENDED, EndOfFile());
   assert(state == RUNNING, IOException(this));
   if (availableBytes == this->buffer.getSize()) {
     return 0; // no storage available
   }
-  internal::ZLibDeflater::Context* context =
-    Cast::pointer<internal::ZLibDeflater::Context*>(this->context);
+  internal::BZip2Deflater::Context* context =
+    Cast::pointer<internal::BZip2Deflater::Context*>(this->context);
   context->nextInput = buffer;
   context->bytesToWrite = size;
-  context->totalInput = 0;
+  context->totalInputLow = 0;
+  context->totalInputHigh = 0;
   context->nextOutput = this->buffer.getElements() + availableBytes;
   context->bytesToRead = this->buffer.getSize() - availableBytes;
-  int code = internal::deflate(context, internal::ZLibDeflater::NO_FLUSH);
-  assert(code == internal::ZLibDeflater::OK, IOException(this));
+  int code = internal::BZ2_bzCompress(context, internal::BZip2Deflater::RUN);
+  assert(code == internal::BZip2Deflater::RUN_OK, IOException(this));
   availableBytes = this->buffer.getSize() - context->bytesToRead;
-  return context->totalInput;
+  return context->totalInputLow;
 #else
   throw IOException(this);
 #endif
 }
 
-void ZLibDeflater::pushEnd() throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+void BZip2Deflater::pushEnd() throw(IOException) {
+#if (defined(_DK_SDU_MIP__BASE__BZ2))
   assert(state != ENDED, EndOfFile());
   assert(state == RUNNING, IOException(this));
   state = FINISHING;
@@ -167,8 +160,8 @@ void ZLibDeflater::pushEnd() throw(IOException) {
 #endif
 }
 
-unsigned int ZLibDeflater::pull(uint8* buffer, unsigned int size) throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+unsigned int BZip2Deflater::pull(uint8* buffer, unsigned int size) throw(IOException) {
+#if (defined(_DK_SDU_MIP__BASE__BZ2))
   assert(state != ENDED, EndOfFile());
   
   if ((state == RUNNING) &&
@@ -176,7 +169,7 @@ unsigned int ZLibDeflater::pull(uint8* buffer, unsigned int size) throw(IOExcept
     return 0; // wait for full buffer
   }
   
-  if (size <= availableBytes) {
+  if (size <= availableBytes) { // TAG: what if size = availableBytes = 0
     copy(buffer, this->buffer.getElements(), size);
     move(this->buffer.getElements(), this->buffer.getElements() + size, availableBytes - size);
     availableBytes -= size;
@@ -197,18 +190,19 @@ unsigned int ZLibDeflater::pull(uint8* buffer, unsigned int size) throw(IOExcept
     break;
   case FLUSHING:
     {
-      internal::ZLibDeflater::Context* context =
-        Cast::pointer<internal::ZLibDeflater::Context*>(this->context);
+      internal::BZip2Deflater::Context* context =
+        Cast::pointer<internal::BZip2Deflater::Context*>(this->context);
       context->nextInput = 0;
       context->bytesToWrite = 0;
-      context->totalInput = 0;
+      context->totalInputLow = 0;
+      // context->totalInputHigh = 0; // TAG: not required
       context->nextOutput = buffer;
       context->bytesToRead = size;
-      int code = internal::deflate(context, internal::ZLibDeflater::SYNC_FLUSH);
-      if (code == internal::ZLibDeflater::OK) {
-        if (context->bytesToRead != 0) { // done flushing
-          state = RUNNING;
-        }
+      int code = internal::BZ2_bzCompress(context, internal::BZip2Deflater::FLUSH);
+      if (code == internal::BZip2Deflater::FLUSH_OK) {
+        // continue flushing
+      } else if (code == internal::BZip2Deflater::RUN_OK) {
+        state = RUNNING;
       } else {
         throw IOException(this);
       }
@@ -216,18 +210,19 @@ unsigned int ZLibDeflater::pull(uint8* buffer, unsigned int size) throw(IOExcept
     }
   case FINISHING:
     {
-      internal::ZLibDeflater::Context* context =
-        Cast::pointer<internal::ZLibDeflater::Context*>(this->context);
+      internal::BZip2Deflater::Context* context =
+        Cast::pointer<internal::BZip2Deflater::Context*>(this->context);
       context->nextInput = 0;
       context->bytesToWrite = 0;
-      context->totalInput = 0;
+      context->totalInputLow = 0;
+      // context->totalInputHigh = 0; // TAG: not required
       context->nextOutput = buffer;
       context->bytesToRead = size;
-      int code = internal::deflate(context, internal::ZLibDeflater::FINISH);
-      if (code == internal::ZLibDeflater::OK) {
+      int code = internal::BZ2_bzCompress(context, internal::BZip2Deflater::FINISH);
+      if (code == internal::BZip2Deflater::FINISH_OK) {
         // continue finishing
-      } else if (code == internal::ZLibDeflater::STREAM_END) {
-        state = ENDED; // availableBytes = 0
+      } else if (code == internal::BZip2Deflater::STREAM_END) {
+        state = ENDED; // availableBytes = 0 (no need for FINISHED)
       } else {
         throw IOException(this);
       }
@@ -245,11 +240,11 @@ unsigned int ZLibDeflater::pull(uint8* buffer, unsigned int size) throw(IOExcept
 #endif
 }
 
-ZLibDeflater::~ZLibDeflater() throw() {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
-  internal::ZLibDeflater::Context* context =
-    Cast::pointer<internal::ZLibDeflater::Context*>(this->context);
-  internal::deflateEnd(context);
+BZip2Deflater::~BZip2Deflater() throw() {
+#if (defined(_DK_SDU_MIP__BASE__BZ2))
+  internal::BZip2Deflater::Context* context =
+    Cast::pointer<internal::BZip2Deflater::Context*>(this->context);
+  internal::BZ2_bzCompressEnd(context);
   delete context;
 #endif
 }

@@ -15,7 +15,21 @@ include $(top_srcdir)/common.am
 
 noinst_LTLIBRARIES = libcompression.la
 
-libcompression_la_SOURCES = Huffman.cpp
+libcompression_la_SOURCES = \
+  BZip2Deflater.cpp \
+  BZip2Inflater.cpp \
+  Deflater.cpp \
+  Inflater.cpp \
+  Huffman.cpp \
+  ZLibDeflater.cpp \
+  ZLibInflater.cpp
 
 sectiondir = $(includedir)/base/compression
-section_HEADERS = Huffman.h
+section_HEADERS = \
+  BZip2Deflater.h \
+  BZip2Inflater.h \
+  Deflater.h \
+  Inflater.h \
+  Huffman.h \
+  ZLibDeflater.h \
+  ZLibInflater.h

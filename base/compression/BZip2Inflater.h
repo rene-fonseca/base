@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COMPRESSION__ZLIB_INFLATER_H
-#define _DK_SDU_MIP__BASE_COMPRESSION__ZLIB_INFLATER_H
+#ifndef _DK_SDU_MIP__BASE_COMPRESSION__BZIP2_INFLATER_H
+#define _DK_SDU_MIP__BASE_COMPRESSION__BZIP2_INFLATER_H
 
 #include <base/Object.h>
 #include <base/compression/Inflater.h>
@@ -21,15 +21,15 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  ZLIB inflater push stream.
+  BZip2 inflater push stream.
   
-  @short ZLIB inflater.
+  @short BZip2 inflater.
   @ingroup compression
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
-class ZLibInflater : public Object, public virtual Inflater {
+class BZip2Inflater : public Object, public virtual Inflater {
 public:
   
   /** The size of the decompression buffer. */
@@ -57,7 +57,7 @@ public:
   /**
     Initializes the inflater.
   */
-  ZLibInflater() throw(MemoryException);  
+  BZip2Inflater() throw(MemoryException);
   
   /**
     Returns true if the end has been reached. This may return true before
@@ -101,7 +101,7 @@ public:
   /**
     Destroys the inflater.
   */
-  virtual ~ZLibInflater() throw();
+  virtual ~BZip2Inflater() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COMPRESSION__ZLIB_DEFLATER_H
-#define _DK_SDU_MIP__BASE_COMPRESSION__ZLIB_DEFLATER_H
+#ifndef _DK_SDU_MIP__BASE_COMPRESSION__BZIP2_DEFLATER_H
+#define _DK_SDU_MIP__BASE_COMPRESSION__BZIP2_DEFLATER_H
 
 #include <base/Object.h>
 #include <base/compression/Deflater.h>
@@ -21,23 +21,23 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  ZLIB deflater push stream.
+  BZip2 deflater push stream.
   
-  @short ZLIB deflater.
+  @short BZip2 deflater.
   @ingroup compression
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
-class ZLibDeflater : public Object, public virtual Deflater {
+class BZip2Deflater : public Object, public virtual Deflater {
 public:
   
   /** The size of the compression buffer. */
   static const unsigned int BUFFER_SIZE = 64 * 1024;
   /** The default compression level. */
-  static const unsigned int DEFAULT_COMPRESSION_LEVEL = 6;
+  static const unsigned int DEFAULT_COMPRESSION_LEVEL = 4;
 private:
-  
+
   enum State {
     RUNNING,
     FLUSHING,
@@ -59,14 +59,14 @@ public:
   /**
     Initializes the deflater with the default compression level.
   */
-  ZLibDeflater() throw(MemoryException);
+  BZip2Deflater() throw(MemoryException);
   
   /**
     Initializes the deflater with the specified compression level.
     
     @param compressionLevel The compression level.
   */
-  ZLibDeflater(unsigned int compressionLevel) throw(MemoryException);
+  BZip2Deflater(unsigned int compressionLevel) throw(MemoryException);
   
   /**
     Returns true if the end has been reached. This always returns false until
@@ -116,7 +116,7 @@ public:
   /**
     Destroys the deflater.
   */
-  virtual ~ZLibDeflater() throw();
+  virtual ~BZip2Deflater() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

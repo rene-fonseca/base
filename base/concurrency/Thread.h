@@ -192,6 +192,11 @@ public:
     @param priority The named priority.
   */
   static int getNamedPriority(Priority priority) throw();
+
+  /**
+    Returns the identifier of the executing thread.
+  */
+  static Identifier getIdentifier() throw();
 private:
 
   /** The parent thread of the thread. */

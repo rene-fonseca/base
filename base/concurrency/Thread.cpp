@@ -398,6 +398,23 @@ int Thread::getNamedPriority(Priority priority) throw() {
   return PRIORITY[priority];
 }
 
+Thread::Identifier Thread::getIdentifier() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  return Cast::container<Identifier>(::GetCurrentThreadId());
+
+  // add optimized method for windows nt and intel platform
+  // structured exception handling: fs:[0x00]
+  // stack user top: fs:[0x04]
+  // stack user base: fs:[0x08]
+  // arbitrary: fs:[0x14]
+  // pointer to thread local storage: fs:[0x2c]
+  // process id: fs:[0x20]
+  // thread id: fs:[0x24]
+#else // pthread
+  return Cast::container<Identifier>(::pthread_self());
+#endif
+}
+
 #if !defined(BELOW_NORMAL_PRIORITY_CLASS) // should have been in winbase.h
 #  define BELOW_NORMAL_PRIORITY_CLASS ((DWORD)0x00004000)
 #endif

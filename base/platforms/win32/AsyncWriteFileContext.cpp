@@ -15,7 +15,7 @@
 #include <base/Primitives.h>
 
 #if !(_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #error Inclusion of platform specific source file
+#  error Inclusion of platform specific source file
 #endif
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -52,7 +52,7 @@ namespace win32 {
     callbackInfo.overlapped.OffsetHigh = getHighWordOf64(offset);
     callbackInfo.context = this;
     
-    BOOL result = ::WriteFileEx(handle, buffer, bytesToWrite, &callbackInfo.overlapped, Cast::pointer<LPOVERLAPPED_COMPLETION_ROUTINE>(&asyncWriteFileCallback));
+    BOOL result = ::WriteFileEx(handle, buffer, bytesToWrite, &callbackInfo.overlapped, asyncWriteFileCallback);
     if (!result) {
       //DWORD lastError = ::GetLastError();
       selfReference = 0; // release destruction lock (do NOT access state hereafter)

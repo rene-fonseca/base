@@ -14,7 +14,7 @@
 #include <base/platforms/win32/AsyncReadStreamContext.h>
 
 #if !(_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #error Inclusion of platform specific source file
+#  error Inclusion of platform specific source file
 #endif
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -50,7 +50,7 @@ namespace win32 {
     clear(callbackInfo.overlapped);
     callbackInfo.context = this;
     
-    BOOL result = ::ReadFileEx(handle, buffer, bytesToRead, &callbackInfo.overlapped, Cast::pointer<LPOVERLAPPED_COMPLETION_ROUTINE>(&asyncReadStreamCallback));
+    BOOL result = ::ReadFileEx(handle, buffer, bytesToRead, &callbackInfo.overlapped, asyncReadStreamCallback);
     if (!result) {
       DWORD lastError = ::GetLastError();
       if (lastError == ERROR_HANDLE_EOF) {

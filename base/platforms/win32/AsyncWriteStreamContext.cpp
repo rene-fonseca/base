@@ -14,7 +14,7 @@
 #include <base/platforms/win32/AsyncWriteStreamContext.h>
 
 #if !(_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #error Inclusion of incompatible platform specific source file
+#  error Inclusion of incompatible platform specific source file
 #endif
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -48,7 +48,7 @@ namespace win32 {
     clear(callbackInfo.overlapped);
     callbackInfo.context = this;
     
-    BOOL result = ::WriteFileEx(handle, buffer, bytesToWrite, &callbackInfo.overlapped, Cast::pointer<LPOVERLAPPED_COMPLETION_ROUTINE>(&asyncWriteStreamCallback));
+    BOOL result = ::WriteFileEx(handle, buffer, bytesToWrite, &callbackInfo.overlapped, asyncWriteStreamCallback);
     if (!result) {
       //DWORD lastError = ::GetLastError();
       selfReference = 0; // release destruction lock (do NOT access state hereafter)

@@ -91,7 +91,7 @@ public:
         char high = *++i;
         char low = *++i;
         assert(ASCIITraits::isHexDigit(high) && ASCIITraits::isHexDigit(low), UrlException("Invalid encoding"));
-        ch = ASCIITraits::digitToValue(high) << 4 + ASCIITraits::digitToValue(low); // replace with decoded char
+        ch = (ASCIITraits::digitToValue(high) << 4) + ASCIITraits::digitToValue(low); // replace with decoded char
       } else {
         Encode encode = encoding(ch);
         assert(strict ? (encode == NEVER) : (encode <= RELAXED), UrlException("Part contains unencoded character"));

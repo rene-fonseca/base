@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__NULL_POINTER_H
 #define _DK_SDU_MIP__BASE_MEM__NULL_POINTER_H
 
-#include "../MemoryException.h"
+#include <base/MemoryException.h>
 
 /**
   Thrown if NULL pointer was unexprected.

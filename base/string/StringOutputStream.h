@@ -6,8 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE_STRING__STRING_OUTPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_STRING__STRING_OUTPUT_STREAM_H
 
-#include "base/Object.h"
-#include "base/string/String.h"
+#include <base/Object.h>
+#include <base/string/String.h>
 
 /**
   A string output stream is a format output stream that directs the stream data into a string.

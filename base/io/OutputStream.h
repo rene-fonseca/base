@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_IO__OUTPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__OUTPUT_STREAM_H
 
-#include "Stream.h"
+#include <base/io/Stream.h>
 
 /**
   Class representing an output stream of bytes.

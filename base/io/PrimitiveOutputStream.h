@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_IO__PRIMITIVE_OUTPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__PRIMITIVE_OUTPUT_STREAM_H
 
-#include "FilterOutputStream.h"
+#include <base/io/FilterOutputStream.h>
 
 /**
   A FilterOutputStream that allows you to write primitive data types to an output stream in big-endian format. MT-Safe implementation if used with MT-safe input stream.

@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_IO__END_OF_FILE_H
 #define _DK_SDU_MIP__BASE_IO__END_OF_FILE_H
 
-#include "IOException.h"
+#include <base/io/IOException.h>
 
 /**
   Specifies that the end of stream has been reached unexpectedly during input.

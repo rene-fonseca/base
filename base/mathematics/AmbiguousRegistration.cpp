@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "AmbiguousRegistration.h"
+#include <base/mathematics/AmbiguousRegistration.h>
 
 AmbiguousRegistration::AmbiguousRegistration() throw() {
 }

@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "EndOfFile.h"
+#include <base/io/EndOfFile.h>
 
 EndOfFile::EndOfFile() {
 }

@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "FileOutputStream.h"
+#include <base/io/FileOutputStream.h>
 #include <fcntl.h>
 
 FileOutputStream::FileOutputStream(const String<>& p, unsigned int flags, unsigned int permissions) throw(FileNotFound) :

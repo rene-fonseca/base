@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "OutOfDomain.h"
+#include <base/OutOfDomain.h>
 
 OutOfDomain::OutOfDomain() throw() {
 }

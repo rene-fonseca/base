@@ -6,9 +6,9 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_POINTER_H
 #define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_POINTER_H
 
-#include "ReferenceCountedObject.h"
-#include "NullPointer.h"
-#include "base/Base.h"
+#include <base/mem/ReferenceCountedObject.h>
+#include <base/mem/NullPointer.h>
+#include <base/Base.h>
 
 /**
   This class is only introduced to give the general

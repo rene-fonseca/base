@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "StringOutputStream.h"
+#include <base/string/StringOutputStream.h>
 /*
 StringOutputStream::StringOutputStream(unsigned int increment) throw(BindException) : FormatOutputStream(this), str(1) {
 }

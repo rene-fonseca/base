@@ -3,4 +3,4 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "OutputStream.h"
+#include <base/io/OutputStream.h>

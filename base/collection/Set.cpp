@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Set.h"
+#include <base/collection/Set.h>
 
 template Set<void*>;
 

@@ -13,25 +13,24 @@ inline TYPE down_cast(TYPE argument) throw() {return argument;}
 /**
   Returns the minimum value.
 */
-/*template<class TYPE>
-inline TYPE min(TYPE a, TYPE b) {return (a <= b) ? a : b;}
-*/
+template<class TYPE>
+inline TYPE minimum(TYPE a, TYPE b) throw() {return (a <= b) ? a : b;}
+
 /**
   Returns the maximum value.
 */
-/*
 template<class TYPE>
-inline TYPE max(TYPE a, TYPE b) {return (a >= b) ? a : b;}
-*/
+inline TYPE maximum(TYPE a, TYPE b) throw() {return (a >= b) ? a : b;}
+
 /**
   Swaps the values.
 */
-/*template<class TYPE>
-inline void swap(TYPE& a, TYPE& b) {
+template<class TYPE>
+inline void swapper(TYPE& a, TYPE& b) throw() {
   TYPE temp = a;
   a = b;
   b = temp;
-};*/
+}
 
 /**
   Returns the absolute value of the specified argument.

@@ -6,14 +6,14 @@
 #ifndef _DK_SDU_MIP__BASE_MATHEMATICS__EVALUATE_H
 #define _DK_SDU_MIP__BASE_MATHEMATICS__EVALUATE_H
 
-#include "base/Object.h"
-#include "base/string/String.h"
-#include "base/string/FormatOutputStream.h"
-#include "base/collection/Stack.h"
-#include "base/collection/List.h"
-#include "base/collection/Map.h"
-#include "ExpressionException.h"
-#include "AmbiguousRegistration.h"
+#include <base/Object.h>
+#include <base/string/String.h>
+#include <base/string/FormatOutputStream.h>
+#include <base/collection/Stack.h>
+#include <base/collection/List.h>
+#include <base/collection/Map.h>
+#include <base/mathematics/ExpressionException.h>
+#include <base/mathematics/AmbiguousRegistration.h>
 
 namespace eval {
 

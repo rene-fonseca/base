@@ -6,8 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE_IO__FILTER_INPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__FILTER_INPUT_STREAM_H
 
-#include "InputStream.h"
-#include "BindException.h"
+#include <base/io/InputStream.h>
+#include <base/io/BindException.h>
 
 /**
   A FilterInputStream redirects requests to an ordinary InputStream possibly transforming data and providing additional functionality in the process. A FilterInputStream is itself an InputStream. MT-Safe implementation if used with MT-safe input stream.

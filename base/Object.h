@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE__OBJECT_H
 #define _DK_SDU_MIP__BASE__OBJECT_H
 
-#include "config.h"
+#include <config.h>
 
 /**
   The base class of all non-abstract classes. Objects are not copyable as default.

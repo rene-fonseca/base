@@ -6,8 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE_IO__STREAM_H
 #define _DK_SDU_MIP__BASE_IO__STREAM_H
 
-#include "base/Object.h"
-#include "IOException.h"
+#include <base/Object.h>
+#include <base/io/IOException.h>
 
 /**
   Base class of all streams of bytes.

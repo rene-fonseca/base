@@ -6,8 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE_IO__FILE_DESCRIPTOR_INPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__FILE_DESCRIPTOR_INPUT_STREAM_H
 
-#include "InputStream.h"
-#include "FileDescriptor.h"
+#include <base/io/InputStream.h>
+#include <base/io/FileDescriptor.h>
 
 /**
   Input stream where source is a file descriptor.

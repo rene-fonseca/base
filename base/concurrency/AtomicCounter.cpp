@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "AtomicCounter.h"
+#include <base/concurrency/AtomicCounter.h>
 
 template AtomicCounter<unsigned int>;
 template AtomicCounter<unsigned long long>;

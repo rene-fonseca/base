@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "FileInputStream.h"
+#include <base/io/FileInputStream.h>
 #include <fcntl.h>
 
 FileInputStream::FileInputStream(const String<>& p, unsigned int flags) throw(FileNotFound) :

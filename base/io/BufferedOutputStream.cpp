@@ -3,15 +3,13 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "BufferedOutputStream.h"
+#include <base/io/BufferedOutputStream.h>
+#include <base/Base.h>
 #include <string.h>
-
-template<class TYPE> inline TYPE min(TYPE left, TYPE right) {return (left <= right) ? left : right;};
-template<class TYPE> inline TYPE max(TYPE left, TYPE right) {return (left >= right) ? left : right;};
 
 BufferedOutputStream::BufferedOutputStream(OutputStream& out, unsigned int size) throw(BindException) :
   FilterOutputStream(out) {
-  this->size = max(size, MINIMUM_BUFFER_SIZE);
+  this->size = maximum(size, MINIMUM_BUFFER_SIZE);
   buffer = new char[this->size];
   if (buffer == NULL) {
     throw BindException();

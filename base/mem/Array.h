@@ -6,6 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__ARRAY_H
 #define _DK_SDU_MIP__BASE_MEM__ARRAY_H
 
+#include <base/Base.h>
 #include <base/Object.h>
 #include <base/collection/Enumeration.h>
 #include <base/MemoryException.h>
@@ -168,7 +169,7 @@ public:
   */
   inline ArrayEnumeration(Array<TYPE>& array, unsigned int first, unsigned int end) throw() {
     current = array.getElements();
-    end = current + min(array.getSize(), end);
+    end = current + minimum(array.getSize(), end);
     current += first;
   }
 
@@ -243,7 +244,7 @@ public:
   */
   inline ArrayEnumeration(const Array<TYPE>& array, unsigned int first, unsigned int end) throw() {
     current = array.getElements();
-    end = current + min(array.getSize(), end);
+    end = current + minimum(array.getSize(), end);
     current += first;
   }
 

@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP_BASE_RANDOM_ITERATOR_H
 #define _DK_SDU_MIP_BASE_RANDOM_ITERATOR_H
 
-#include "base/BidirectionalIterator.h"
+#include <base/BidirectionalIterator.h>
 
 /**
   Random iterator interface.

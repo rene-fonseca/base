@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Vector2D.h"
+#include <base/mathematics/Vector2D.h>
 #include <math.h>
 
 template Vector2D<float>;

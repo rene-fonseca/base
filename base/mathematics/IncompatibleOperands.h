@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_MATHEMATICS__INCOMPATIBLE_OPERANDS_H
 #define _DK_SDU_MIP__BASE_MATHEMATICS__INCOMPATIBLE_OPERANDS_H
 
-#include "base/Exception.h"
+#include <base/Exception.h>
 
 /**
   This exception is thrown when specified operands are incompatible with each

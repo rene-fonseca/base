@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "IncompatibleOperands.h"
+#include <base/mathematics/IncompatibleOperands.h>
 
 IncompatibleOperands::IncompatibleOperands() {
 }

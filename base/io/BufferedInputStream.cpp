@@ -3,15 +3,13 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "BufferedInputStream.h"
+#include <base/io/BufferedInputStream.h>
+#include <base/Base.h>
 #include <string.h>
-
-template<class TYPE> inline TYPE min(TYPE left, TYPE right) {return (left <= right) ? left : right;};
-template<class TYPE> inline TYPE max(TYPE left, TYPE right) {return (left >= right) ? left : right;};
 
 BufferedInputStream::BufferedInputStream(InputStream& in, unsigned int size) throw(BindException) :
   FilterInputStream(in) {
-  this->size = max(size, MINIMUM_BUFFER_SIZE);
+  this->size = maximum(size, MINIMUM_BUFFER_SIZE);
   buffer = new char[this->size];
   if (buffer == NULL) {
     throw BindException();
@@ -41,7 +39,7 @@ unsigned int BufferedInputStream::read(char* buffer, unsigned int size) throw(IO
 
   unsigned int position = 0; // position in external buffer
   while (true) {
-    unsigned int bytes = min(size - position, this->count - this->position); // bytes to copy
+    unsigned int bytes = minimum(size - position, this->count - this->position); // bytes to copy
 
     if (bytes == 0) { // is internal buffer empty
       break; // prevent infinite loop - we have tried to fill the buffer prior to this

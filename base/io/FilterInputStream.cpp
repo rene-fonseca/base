@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "FilterInputStream.h"
+#include <base/io/FilterInputStream.h>
 
 FilterInputStream::FilterInputStream(InputStream& i) throw(BindException) : in(i) {
 }

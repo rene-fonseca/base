@@ -6,9 +6,9 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__LIST_H
 #define _DK_SDU_MIP__BASE_COLLECTION__LIST_H
 
-#include "Collection.h"
-#include "Enumeration.h"
-#include "base/MemoryException.h"
+#include <base/collection/Collection.h>
+#include <base/collection/Enumeration.h>
+#include <base/MemoryException.h>
 
 /**
   List.

@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "FileDescriptorInputStream.h"
-#include "EndOfFile.h"
+#include <base/io/FileDescriptorInputStream.h>
+#include <base/io/EndOfFile.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

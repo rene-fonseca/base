@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Map.h"
+#include <base/collection/Map.h>
 
 template<class KEY, class VALUE>
 Map<KEY, VALUE>::Map() throw() : first(0) {

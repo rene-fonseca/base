@@ -6,8 +6,8 @@
 #ifndef _DK_SDU_MIP_BASE_FORWARD_ITERATOR_H
 #define _DK_SDU_MIP_BASE_FORWARD_ITERATOR_H
 
-#include "base/Iterator.h"
-#include "base/OutOfBounds.h"
+#include <base/Iterator.h>
+#include <base/OutOfBounds.h>
 
 /**
   Forward iterator interface.

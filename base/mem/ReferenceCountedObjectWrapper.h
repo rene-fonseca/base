@@ -6,8 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_WRAPPER_H
 #define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_WRAPPER_H
 
-#include "ReferenceCountedObject.h"
-#include "NullPointer.h"
+#include <base/mem/ReferenceCountedObject.h>
+#include <base/mem/NullPointer.h>
 
 /**
   This is a wrapper for a Reference Counted Object. Use this class if you need

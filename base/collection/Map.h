@@ -6,11 +6,11 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__MAP_H
 #define _DK_SDU_MIP__BASE_COLLECTION__MAP_H
 
-#include "Collection.h"
-#include "Enumeration.h"
-#include "base/Exception.h"
-#include "base/MemoryException.h"
-#include "InvalidKey.h"
+#include <base/collection/Collection.h>
+#include <base/collection/Enumeration.h>
+#include <base/Exception.h>
+#include <base/MemoryException.h>
+#include <base/collection/InvalidKey.h>
 
 /**
   Map.

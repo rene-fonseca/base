@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "ExpressionParser.h"
+#include <base/mathematics/ExpressionParser.h>
 #include <stdlib.h>
 #include <errno.h>
 

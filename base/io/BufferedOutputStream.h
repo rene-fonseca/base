@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_IO__BUFFERED_OUTPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__BUFFERED_OUTPUT_STREAM_H
 
-#include "FilterOutputStream.h"
+#include <base/io/FilterOutputStream.h>
 
 /**
   A FilterOutputStream that adds buffer functionality to an OutputStream for added performance. MT-unsafe implementation.

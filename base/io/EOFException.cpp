@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "EOFException.h"
+#include <base/io/EOFException.h>
 
 EOFException::EOFException() {
 }

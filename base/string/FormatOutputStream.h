@@ -6,10 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_STRING__FORMAT_OUTPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_STRING__FORMAT_OUTPUT_STREAM_H
 
-#include "base/Object.h"
-#include "base/io/BufferedOutputStream.h"
-#include "base/io/BindException.h"
-//#include "base/io/FileDescriptorOutputStream.h"
+#include <base/Object.h>
+#include <base/io/BufferedOutputStream.h>
+#include <base/io/BindException.h>
+//#include <base/io/FileDescriptorOutputStream.h>
 
 /**
   Format output stream.

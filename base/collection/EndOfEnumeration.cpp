@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "EndOfEnumeration.h"
+#include <base/collection/EndOfEnumeration.h>
 
 EndOfEnumeration::EndOfEnumeration() {
 }

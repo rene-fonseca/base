@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__COLLECTION_H
 #define _DK_SDU_MIP__BASE_COLLECTION__COLLECTION_H
 
-#include "base/Object.h"
+#include <base/Object.h>
 
 /**
   Collection is the common interface implemented containers.

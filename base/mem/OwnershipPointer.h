@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__OWNERSHIP_POINTER_H
 #define _DK_SDU_MIP__BASE_MEM__OWNERSHIP_POINTER_H
 
-#include "NullPointer.h"
+#include <base/mem/NullPointer.h>
 
 //BEGIN_OF_BASE_NAMESPACE
 

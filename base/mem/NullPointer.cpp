@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "NullPointer.h"
+#include <base/mem/NullPointer.h>
 
 NullPointer::NullPointer() {
 }

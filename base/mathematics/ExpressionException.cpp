@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "ExpressionException.h"
+#include <base/mathematics/ExpressionException.h>
 
 ExpressionException::ExpressionException() throw() : index(0) {
 }

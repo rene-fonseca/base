@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "FileNotFound.h"
+#include <base/io/FileNotFound.h>
 
 FileNotFound::FileNotFound() {
 }

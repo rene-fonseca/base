@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "InvalidKey.h"
+#include <base/collection/InvalidKey.h>
 
 InvalidKey::InvalidKey() {
 }

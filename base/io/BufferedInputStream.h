@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_IO__BUFFERED_INPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__BUFFERED_INPUT_STREAM_H
 
-#include "FilterInputStream.h"
+#include <base/io/FilterInputStream.h>
 
 /**
   A FilterInputStream that adds buffer functionality to an InputStream for added performance. MT-unsafe implementation.

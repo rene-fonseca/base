@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_IO__FILE_NOT_FOUND_H
 #define _DK_SDU_MIP__BASE_IO__FILE_NOT_FOUND_H
 
-#include "IOException.h"
+#include <base/io/IOException.h>
 
   /**
     Specifies that the file doesn't exist or couldn't be opened.

@@ -12,16 +12,6 @@
 template String<DefaultLock>;
 template String<Unsafe>;
 
-template<class TYPE> inline TYPE min(TYPE a, TYPE b) {return (a <= b) ? a : b;}
-
-template<class TYPE> inline TYPE max(TYPE a, TYPE b) {return (a >= b) ? a : b;}
-
-template<class TYPE> inline void swap(TYPE& a, TYPE& b) {
-  TYPE temp = a;
-  a = b;
-  b = temp;
-};
-
 #if !defined(HAVE_MEMCHR)
 inline const char* memchr(const char* src, int value, unsigned int count) {
   return find<char>(src, count, bind2Second(Equal<char>(), value));
@@ -74,8 +64,8 @@ void String<LOCK>::setLength(unsigned int length) throw(MemoryException) {
 
 template<class LOCK>
 void String<LOCK>::createString(const char* buffer, unsigned int length, unsigned int capacity) throw(MemoryException) {
-  capacity = max(capacity, length + sizeof(TERMINATOR));
-  capacity = max(capacity, DEFAULT_CAPACITY);
+  capacity = maximum(capacity, length + sizeof(TERMINATOR));
+  capacity = maximum(capacity, DEFAULT_CAPACITY);
   this->elements = new Array<char>(capacity); // no granularity
   len = length;
   memcpy(this->elements->getElements(), buffer, len);
@@ -116,7 +106,7 @@ String<LOCK>::String(const char* str, unsigned int maximum) throw(MemoryExceptio
     if (length < 0) { // maximum length exceeded
       throw MemoryException();
     }
-    createString(str, min((unsigned int)length, maximum), DEFAULT_CAPACITY);
+    createString(str, minimum((unsigned int)length, maximum), DEFAULT_CAPACITY);
   } else {
     createString(0, 0, DEFAULT_CAPACITY);
   }

@@ -3,4 +3,4 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Enumeration.h"
+#include <base/collection/Enumeration.h>

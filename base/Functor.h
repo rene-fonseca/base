@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE__FUNCTOR_H
 #define _DK_SDU_MIP__BASE__FUNCTOR_H
 
-#include "Base.h"
+#include <base/Base.h>
 
 
 
@@ -198,7 +198,7 @@ inline void copy(TYPE* dest, const TYPE* src, unsigned int count) throw() {
 template<class TYPE>
 inline void swap(TYPE* left, TYPE* right, unsigned int count) throw() {
   while (count) {
-    swap(*left, *right);
+    swapper(*left, *right);
     ++left;
     ++right;
     --count;

@@ -6,8 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE_IO__FILTER_OUTPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__FILTER_OUTPUT_STREAM_H
 
-#include "OutputStream.h"
-#include "BindException.h"
+#include <base/io/OutputStream.h>
+#include <base/io/BindException.h>
 
 /**
   A FilterOutputStream redirects requests to an ordinary OutputStream possibly transforming data and providing additional functionality in the process. A FilterOutputStream is itself an OutputStream.

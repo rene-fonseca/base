@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE__INVALID_FORMAT_H
 #define _DK_SDU_MIP__BASE__INVALID_FORMAT_H
 
-#include "base/Exception.h"
+#include <base/Exception.h>
 
 /**
   Invalid format exception is thrown when a string does not comply with a given format.

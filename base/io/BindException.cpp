@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "BindException.h"
+#include <base/io/BindException.h>
 
 BindException::BindException() {
 }

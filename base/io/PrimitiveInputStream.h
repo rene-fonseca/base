@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_IO__PRIMITIVE_INPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__PRIMITIVE_INPUT_STREAM_H
 
-#include "FilterInputStream.h"
+#include <base/io/FilterInputStream.h>
 
 /**
   A FilterOutputStream that allows you to read primitive data types from an input stream in big-endian format. MT-Safe implementation if used with MT-safe input stream.

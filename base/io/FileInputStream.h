@@ -6,10 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_IO__FILE_INPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__FILE_INPUT_STREAM_H
 
-#include "FileDescriptorInputStream.h"
-#include "FileNotFound.h"
-#include "BindException.h"
-#include "base/string/String.h"
+#include <base/io/FileDescriptorInputStream.h>
+#include <base/io/FileNotFound.h>
+#include <base/io/BindException.h>
+#include <base/string/String.h>
 
 /**
   File input stream.

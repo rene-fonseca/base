@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Vector3D.h"
+#include <base/mathematics/Vector3D.h>
 #include <math.h>
 
 template Vector3D<float>;

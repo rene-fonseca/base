@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__INVALID_KEY_H
 #define _DK_SDU_MIP__BASE_COLLECTION__INVALID_KEY_H
 
-#include "base/Exception.h"
+#include <base/Exception.h>
 
 /**
   This class fundamental exception.

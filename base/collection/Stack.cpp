@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Stack.h"
+#include <base/collection/Stack.h>
 
 template<class TYPE>
 Stack<TYPE>::Stack() throw() : top(NULL) {

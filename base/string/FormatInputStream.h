@@ -6,8 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE_STRING__FORMAT_INPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_STRING__FORMAT_INPUT_STREAM_H
 
-#include "base/io/BufferedInputStream.h"
-#include "base/io/BindException.h"
+#include <base/io/BufferedInputStream.h>
+#include <base/io/BindException.h>
 
 /**
   Format input stream. This class provides...

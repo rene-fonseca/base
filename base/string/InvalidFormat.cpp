@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "InvalidFormat.h"
+#include <base/string/InvalidFormat.h>
 
 InvalidFormat::InvalidFormat() {
 }

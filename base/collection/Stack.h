@@ -6,9 +6,9 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__STACK_H
 #define _DK_SDU_MIP__BASE_COLLECTION__STACK_H
 
-#include "Collection.h"
-#include "base/OutOfRange.h"
-#include "base/MemoryException.h"
+#include <base/collection/Collection.h>
+#include <base/OutOfRange.h>
+#include <base/MemoryException.h>
 
 /**
   Stack using a linked list implementation.

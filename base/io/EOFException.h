@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_IO__EOF_EXCEPTION_H
 #define _DK_SDU_MIP__BASE_IO__EOF_EXCEPTION_H
 
-#include "base/Exception.h"
+#include <base/Exception.h>
 
 /**
   Thrown on attempt to read stream beyond end of stream.

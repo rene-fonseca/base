@@ -7,11 +7,11 @@
 #define _DK_SDU_MIP__BASE_THREAD__SEMAPHORE_H
 
 #include <config.h>
-#include "base/Object.h"
-#include "base/Exception.h"
-#include "base/ResourceException.h"
-#include "base/OutOfDomain.h"
-#include "base/Overflow.h"
+#include <base/Object.h>
+#include <base/Exception.h>
+#include <base/ResourceException.h>
+#include <base/OutOfDomain.h>
+#include <base/Overflow.h>
 #include <limits.h>
 
 #if defined(__win32__)

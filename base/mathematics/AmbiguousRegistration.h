@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_MATHEMATICS__AMBIGUOUS_REGISTRATION_H
 #define _DK_SDU_MIP__BASE_MATHEMATICS__AMBIGUOUS_REGISTRATION_H
 
-#include "base/Exception.h"
+#include <base/Exception.h>
 
 /**
   This exception is thrown by ExpressionParser on registration of identifiers

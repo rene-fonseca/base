@@ -6,9 +6,9 @@
 #ifndef _DK_SDU_MIP__BASE_IO__FILE_DESCRIPTOR_H
 #define _DK_SDU_MIP__BASE_IO__FILE_DESCRIPTOR_H
 
-#include "Stream.h"
-#include "base/string/FormatOutputStream.h"
-#include "base/mem/ReferenceCountedObjectPointer.h"
+#include <base/io/Stream.h>
+#include <base/string/FormatOutputStream.h>
+#include <base/mem/ReferenceCountedObjectPointer.h>
 
 /**
   The FileDescriptor class serves as a general handle to a source or sink of bytes within the operatingsystem (e.g. file, socket and pipe). This class is normally not used directly by the application.

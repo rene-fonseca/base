@@ -6,8 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE_MATH__VECTOR3D_H
 #define _DK_SDU_MIP__BASE_MATH__VECTOR3D_H
 
-#include "base/Object.h"
-#include "base/string/FormatOutputStream.h"
+#include <base/Object.h>
+#include <base/string/FormatOutputStream.h>
 
 /**
   A three-dimensional vector represented by X, Y, and Z coordinates.

@@ -6,8 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE_IO__FILE_DESCRIPTOR_OUTPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__FILE_DESCRIPTOR_OUTPUT_STREAM_H
 
-#include "OutputStream.h"
-#include "FileDescriptor.h"
+#include <base/io/OutputStream.h>
+#include <base/io/FileDescriptor.h>
 
 /**
   The FileDescriptorOutputStream class serves as a general handle to a sink of

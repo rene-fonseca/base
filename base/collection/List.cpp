@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "List.h"
+#include <base/collection/List.h>
 
 template List<void*>;
 

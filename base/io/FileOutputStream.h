@@ -6,10 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_IO__FILE_OUTPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__FILE_OUTPUT_STREAM_H
 
-#include "FileDescriptorOutputStream.h"
-#include "FileNotFound.h"
-#include "BindException.h"
-#include "base/string/String.h"
+#include <base/io/FileDescriptorOutputStream.h>
+#include <base/io/FileNotFound.h>
+#include <base/io/BindException.h>
+#include <base/string/String.h>
 
 /**
   File output stream.

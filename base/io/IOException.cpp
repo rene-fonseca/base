@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "IOException.h"
+#include <base/io/IOException.h>
 
 IOException::IOException() throw() : Exception() {
 }

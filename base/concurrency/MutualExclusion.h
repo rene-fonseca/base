@@ -7,10 +7,10 @@
 #define _DK_SDU_MIP__BASE_THREAD__MUTUAL_EXCLUSION_H
 
 #include <config.h>
-#include "base/Object.h"
-#include "base/Exception.h"
-#include "base/ResourceException.h"
-#include "Lock.h"
+#include <base/Object.h>
+#include <base/Exception.h>
+#include <base/ResourceException.h>
+#include <base/concurrency/Lock.h>
 
 #if defined(__win32__)
   #include <windows.h>

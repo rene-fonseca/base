@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "FormatOutputStream.h"
+#include <base/string/FormatOutputStream.h>
 #include <string.h>
 
 const char FormatOutputStream::DIGITS[] = "0123456789abcdef";

@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Event.h"
+#include <base/concurrency/Event.h>
 
 #if !defined(__win32__)
   #include <pthread.h>

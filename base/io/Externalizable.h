@@ -6,8 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE_IO__EXTERNALIZABLE_H
 #define _DK_SDU_MIP__BASE_IO__EXTERNALIZABLE_H
 
-#include "InputStream.h"
-#include "OutputStream.h"
+#include <base/io/InputStream.h>
+#include <base/io/OutputStream.h>
 
 /**
   Interface implemented by classes that can be externalized (i.e. instances can be read from and written to a stream).

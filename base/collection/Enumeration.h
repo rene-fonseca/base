@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__ENUMERATION_H
 #define _DK_SDU_MIP__BASE_COLLECTION__ENUMERATION_H
 
-#include "EndOfEnumeration.h"
+#include <base/collection/EndOfEnumeration.h>
 
 /**
   Enumeration interface that is used to traverse individual elements of a

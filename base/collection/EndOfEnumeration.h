@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__END_OF_ENUMERATION_H
 #define _DK_SDU_MIP__BASE_COLLECTION__END_OF_ENUMERATION_H
 
-#include "base/Exception.h"
+#include <base/Exception.h>
 
 /**
 

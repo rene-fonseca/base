@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "ThreadKey.h"
+#include <base/concurrency/ThreadKey.h>
 
 class Thread;
 template ThreadKey<Thread>;

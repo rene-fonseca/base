@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "MutualExclusion.h"
+#include <base/concurrency/MutualExclusion.h>
 
 #if !defined(__win32__)
   #include <errno.h>

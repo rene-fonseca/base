@@ -3,4 +3,4 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Stream.h"
+#include <base/io/Stream.h>

@@ -7,10 +7,10 @@
 #define _DK_SDU_MIP__BASE_THREAD__EVENT_H
 
 #include <config.h>
-#include "base/Object.h"
-#include "base/OutOfDomain.h"
-#include "base/Overflow.h"
-#include "base/ResourceException.h"
+#include <base/Object.h>
+#include <base/OutOfDomain.h>
+#include <base/Overflow.h>
+#include <base/ResourceException.h>
 
 #if defined(__win32__)
   #include <windows.h>

@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "FormatInputStream.h"
+#include <base/string/FormatInputStream.h>
 
 FormatInputStream::FormatInputStream(InputStream& in) throw(BindException) :
   BufferedInputStream(in) {

@@ -6,10 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__SET_H
 #define _DK_SDU_MIP__BASE_COLLECTION__SET_H
 
-#include "Collection.h"
-#include "Enumeration.h"
-#include "InvalidKey.h"
-#include "base/MemoryException.h"
+#include <base/collection/Collection.h>
+#include <base/collection/Enumeration.h>
+#include <base/collection/InvalidKey.h>
+#include <base/MemoryException.h>
 
 /**
   Set.

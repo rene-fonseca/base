@@ -65,4 +65,12 @@ void RecursiveMutualExclusion::releaseLock() const
   }
 }
 
+RecursiveMutualExclusion::~RecursiveMutualExclusion()
+  throw(MutualExclusionException) {
+  assert(
+    guard.tryExclusiveLock() && lock.tryExclusiveLock(),
+    MutualExclusionException(this)
+  );
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

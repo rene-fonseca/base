@@ -70,6 +70,7 @@ bin_PROGRAMS += rm
 bin_PROGRAMS += time
 bin_PROGRAMS += dom
 bin_PROGRAMS += sax
+bin_PROGRAMS += validate
 bin_PROGRAMS += xsltprocessor
 
 #lib_LTLIBRARIES = dlmodule.la
@@ -126,6 +127,7 @@ rm_SOURCES = rm.cpp
 time_SOURCES = time.cpp
 dom_SOURCES = dom.cpp
 sax_SOURCES = sax.cpp
+validate_SOURCES = validate.cpp
 xsltprocessor_SOURCES = xsltprocessor.cpp
 
 #dlmodule_la_SOURCES = dlmodule.cpp MyLinkerModule.cpp

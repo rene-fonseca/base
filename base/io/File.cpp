@@ -453,13 +453,13 @@ AccessControlList File::getACL() const throw(FileException) {
 //   const unsigned int ownerMode = ((status.st_mode & S_IRUSR) ? AccessControlEntry::READ : 0) |
 //     ((status.st_mode & S_IWUSR) ? AccessControlEntry::WRITE : 0) |
 //     ((status.st_mode & S_IXUSR) ? AccessControlEntry::EXECUTE : 0);
-//   result.add(AccessControlEntry(User((const void*)(ptrdiff_t)status.st_uid), AccessControlEntry::ALLOW, ownerMode)); // TAG: mark as owner in ACL?
+//   result.add(AccessControlEntry(User((const void*)(MemoryDiff)status.st_uid), AccessControlEntry::ALLOW, ownerMode)); // TAG: mark as owner in ACL?
   
 //   const unsigned int groupMode = ((status.st_mode & S_IRGRP) ? AccessControlEntry::READ : 0) |
 //     ((status.st_mode & S_IWGRP) ? AccessControlEntry::WRITE : 0) |
 //     ((status.st_mode & S_IXGRP) ? AccessControlEntry::EXECUTE : 0);
 //   if (groupMode != 0) {
-//     result.add(AccessControlEntry(Group((const void*)(ptrdiff_t)status.st_gid), AccessControlEntry::ALLOW, groupMode));
+//     result.add(AccessControlEntry(Group((const void*)(MemoryDiff)status.st_gid), AccessControlEntry::ALLOW, groupMode));
 //   }
   
 //   const unsigned int otherMode = ((status.st_mode & S_IROTH) ? AccessControlEntry::READ : 0) |

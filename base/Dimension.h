@@ -84,7 +84,16 @@ public:
   inline bool operator==(const Dimension& dimension) const throw() {
     return (width == dimension.width) && (height == dimension.height);
   }
+  
+  /**
+    Returns true if the dimensions are different.
 
+    @param dimension The dimension to be compared.
+  */
+  inline bool operator!=(const Dimension& dimension) const throw() {
+    return (width != dimension.width) || (height != dimension.height);
+  }
+  
   /**
     Returns true if the dimension is proper (i.e. both the width and height are non-zero).
   */

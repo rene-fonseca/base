@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/Application.h>
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/Integer.h>
@@ -19,107 +20,117 @@
 #include <base/net/InetService.h>
 #include <base/net/InetEndPoint.h>
 #include <base/concurrency/Thread.h>
-#include <base/TypeInfo.h>
 
 using namespace base;
 
-void client(String host, String service) {
-  fout << "Server: " << host << ENDL;
+class ClientApplication : public Application {
+public:
 
-  InetAddress address; // the address of the remote host
-  {
-    fout << "Server addresses:" << ENDL;
-    List<InetAddress> addresses = InetAddress::getAddressesByName(host);
-    List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
-    unsigned int index = 0;
-    while (enu.hasNext()) {
-      const InetAddress* temp = enu.next();
-      if (index == 0) { // use the first address
-        address = *temp;
-        fout << "  address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
-      } else {
-        fout << "  address " << index++ << ": " << *temp << ENDL;
+  ClientApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() :
+    Application(MESSAGE("client"), numberOfArguments, arguments, environment) {
+  }
+
+  void client(String host, String service) {
+    fout << MESSAGE("Server: ") << host << ENDL;
+
+    InetAddress address; // the address of the remote host
+    {
+      fout << MESSAGE("Server addresses:") << ENDL;
+      List<InetAddress> addresses = InetAddress::getAddressesByName(host);
+      List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
+      unsigned int index = 0;
+      while (enu.hasNext()) {
+        const InetAddress* temp = enu.next();
+        if (index == 0) { // use the first address
+          address = *temp;
+          fout << MESSAGE("  address ") << index++ << MESSAGE(": ") << *temp << MESSAGE(" (USING THIS)") << ENDL;
+        } else {
+          fout << MESSAGE("  address ") << index++ << MESSAGE(": ") << *temp << ENDL;
+        }
       }
     }
-  }
 
-  InetEndPoint endPoint(address, service);
-  fout << "End point: address=" << endPoint.getAddress() << " port=" << endPoint.getPort() << ENDL;
+    InetEndPoint endPoint(address, service);
+    fout << MESSAGE("End point: address=") << endPoint.getAddress() << MESSAGE(" port=") << endPoint.getPort() << ENDL;
 
-  fout << "Initializing socket..." << ENDL;
-  StreamSocket socket;
+    fout << MESSAGE("Initializing socket...") << ENDL;
+    StreamSocket socket;
 
-  fout << "Connecting socket..." << ENDL;
-  socket.connect(endPoint.getAddress(), endPoint.getPort());
+    fout << MESSAGE("Connecting socket...") << ENDL;
+    socket.connect(endPoint.getAddress(), endPoint.getPort());
 
-  fout << "socket: remote address=" << socket.getAddress() << " remote port=" << socket.getPort() << ENDL;
+    fout << MESSAGE("socket: remote address=") << socket.getAddress() << MESSAGE(" remote port=") << socket.getPort() << ENDL;
 
-  fout << "Talking with server..." << ENDL;
+    fout << MESSAGE("Talking with server...") << ENDL;
 
-  {
-    FormatOutputStream outstream(socket); // must be destroyed before socket is closed
-    FormatInputStream instream(socket);
+    {
+      FormatOutputStream outstream(socket); // must be destroyed before socket is closed
+      FormatInputStream instream(socket);
 
-    fout << "Press enter to continue" << ENDL;
-    fin.wait();
-    fin.skip(1);
+      fout << MESSAGE("Press enter to continue") << ENDL;
+      fin.wait();
+      fin.skip(1);
 
-    fout << "Sending request" << ENDL;
-    outstream << "Hi, I'm the client" << ENDL;
+      fout << MESSAGE("Sending request") << ENDL;
+      outstream << MESSAGE("Hi, I'm the client") << ENDL;
 
-    fout << "Waiting for response" << FLUSH;
-    while (!instream.wait(1000000)) {
-      fout << "." << FLUSH;
+      fout << MESSAGE("Waiting for response") << FLUSH;
+      while (!instream.wait(1000000)) {
+        fout << '.' << FLUSH;
+      }
+      fout << ENDL;
+
+      fout << MESSAGE("Processing response") << ENDL;
+      fout << MESSAGE(">: ");
+      while (instream.available()) { // read response
+        char ch;
+        instream >> ch;
+        fout << ch;
+      }
+
+      fout << MESSAGE("Sending termination request") << ENDL;
+      outstream << MESSAGE("Thank you and have a nice day") << ENDL;
     }
-    fout << ENDL;
 
-    fout << "Processing response" << ENDL;
-    fout << ">: ";
-    while (instream.available()) { // read response
-      char ch;
-      instream >> ch;
-      fout << ch;
+    fout << MESSAGE("Closing socket") << ENDL;
+    socket.close();
+  }
+
+  void main() throw() {
+    fout << MESSAGE("Testing ClientSocket...") << ENDL;
+
+    String host = InetAddress::getLocalHost(); // default host
+    String service = "1234"; // default service
+    
+    const Array<String> arguments = getArguments();
+    
+    switch (arguments.getSize()) {
+    case 1:
+      // use defaults
+      break;
+    case 2:
+      host = arguments[1]; // the address
+      break;
+    case 3:
+      host = arguments[1]; // the address
+      service = arguments[2]; // the service
+      break;
+    default:
+      fout << MESSAGE("client [host] [service]") << ENDL;
+      return;
     }
-
-    fout << "Sending termination request" << ENDL;
-    outstream << "Thank you and have a nice day" << ENDL;
-  }
-
-  fout << "Closing socket" << ENDL;
-  socket.close();
-}
-
-int main(int argc, char* argv[]) {
-  fout << "Testing ClientSocket..." << ENDL;
-
-  String host = InetAddress::getLocalHost(); // default host
-  String service = "1234"; // default service
-
-  switch (argc) {
-  case 1:
-    // use defaults
-    break;
-  case 2:
-    host = argv[1]; // the address
-    break;
-  case 3:
-    host = argv[1]; // the address
-    service = argv[2]; // the service
-    break;
-  default:
-    fout << "client [host] [service]" << ENDL;
-    return 0; // stop
-  }
-
-  try {
     client(host, service);
-  } catch(Exception& e) {
-    ferr << getTypename(e) << ": "<< e.getMessage() << ENDL;
-    return 1;
-  } catch(...) {
-    ferr << "Unknown exception" << ENDL;
-    return 1;
   }
-  fout << "Completed" << ENDL;
-  return 0;
+};
+
+int main(int argc, const char* argv[], const char* env[]) {
+  ClientApplication application(argc, argv, env);
+  try {
+    application.main();
+  } catch(Exception& e) {
+    return Application::getApplication()->exceptionHandler(e);
+  } catch(...) {
+    return Application::getApplication()->exceptionHandler();
+  }
+  return Application::getApplication()->getExitCode();
 }

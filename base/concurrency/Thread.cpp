@@ -306,7 +306,7 @@ Thread::Thread(Runnable* runnable) throw(ResourceException) :
   sa.lpSecurityDescriptor = sd;
   sa.bInheritHandle = false;
 */
-  if ((threadHandle = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)entry, this, CREATE_SUSPENDED, &threadID)) == NULL) {
+  if ((threadHandle = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)entry, this, CREATE_SUSPENDED, &threadID)) == 0) {
     //    LocalFree(sd);
     //    LocalFree(newACL);
     throw ResourceException("Unable to create thread");

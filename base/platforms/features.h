@@ -14,8 +14,14 @@
 #ifndef _DK_SDU_MIP__BASE__PLATFORMS_FEATURES_H
 #define _DK_SDU_MIP__BASE__PLATFORMS_FEATURES_H
 
-#include <base/features.h>
+#include <base/platforms/symbols.h> // must be first
 #include <base/platforms/configuration.h>
+
+#if defined(_DK_SDU_MIP__BASE__DEBUG)
+  #define DEBUG // enable ASSERT and ASSERTION
+#endif
+
+#include <base/features.h>
 
 #if !defined(TRACE) && !defined(TRACE_MEMBER) // allow macros to be overridden
 #if defined(_DK_SDU_MIP__BASE__TRACE)

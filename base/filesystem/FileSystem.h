@@ -188,7 +188,7 @@ public:
     
     @return Empty string if not found. The relative path if it is really an absolute path.
   */
-  String findFile(const Array<String>& searchPaths, const String& relative, unsigned int index = 0) throw(FileSystemException);
+  static String findFile(const Array<String>& searchPaths, const String& relative, unsigned int index = 0) throw(FileSystemException);
 
   /**
     Returns a URL from the specified path. The URL has the following format:

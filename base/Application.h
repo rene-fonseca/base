@@ -66,14 +66,14 @@ public:
   /**
     Returns the application object.
   */
-  inline static const Application* getApplication() throw() {return application;}
+  inline static Application* getApplication() throw() {return application;}
 
   /**
     Initializes application with no arguments and no environment variables.
 
     @param name The formal name.
   */
-  Application(const String& name) throw(SingletonException);
+  Application(const String& name) throw(SingletonException); 
 
   /**
     Initializes application.
@@ -150,6 +150,11 @@ public:
     Returns true if the application has been signaled to terminate.
   */
   inline bool isTerminated() const throw() {return terminated;}
+
+  /**
+    Invoked on application termination. Exits the application immediately by default (i.e. does not return).
+  */
+  virtual void onTermination() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

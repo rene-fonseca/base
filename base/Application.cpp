@@ -31,19 +31,19 @@ class ApplicationImpl {
 public:
 
   static void terminationExceptionHandler() {
-    ferr << "Internal error: Exception handling abandoned" << ENDL;
+    ferr << MESSAGE("Internal error: Exception handling abandoned") << ENDL;
     exit(Application::EXIT_CODE_ERROR); // TAG: is abort() better
   }
 
   static void unexpectedExceptionHandler() {
-//    ferr << "Internal error: Violation of exception specification" << ENDL;
+//    ferr << MESSAGE("Internal error: Violation of exception specification") << ENDL;
     try {
       throw;
     } catch(Exception& e) {
-      ferr << "Internal error: Violation of exception specification with" << EOL
-           << "  " << getTypename(e) << ": " << e.getMessage() << ENDL;
+      ferr << MESSAGE("Internal error: Violation of exception specification with") << EOL
+           << MESSAGE("  ") << getTypename(e) << MESSAGE(": ") << e.getMessage() << ENDL;
     } catch(...) {
-      ferr << "Internal error: Exception violates exception specification" << ENDL;
+      ferr << MESSAGE("Internal error: Exception violates exception specification") << ENDL;
     }
     exit(Application::EXIT_CODE_ERROR); // TAG: is abort() or terminate() better
   }
@@ -56,6 +56,7 @@ public:
     case CTRL_CLOSE_EVENT: // console is closing
     case CTRL_BREAK_EVENT: // Ctrl+Break
     case CTRL_C_EVENT: // Ctrl+C
+      SystemLogger::write(SystemLogger::INFORMATION, "TERMINATE SIGNAL");
       if (Application::application) {
         Application::application->terminate();
         return TRUE;
@@ -74,6 +75,7 @@ public:
       }
       break;
     case SIGTERM: // terminate
+      SystemLogger::write(SystemLogger::INFORMATION, "TERMINATE SIGNAL");
       if (Application::application) {
         Application::application->terminate();
       }
@@ -148,12 +150,12 @@ Application::Application(const String& name, int numberOfArguments, const char* 
 }
 
 int Application::exceptionHandler(const Exception& e) const throw() {
-  ferr << getTypename(e) << ": " << e.getMessage() << ENDL;
+  ferr << getTypename(e) << MESSAGE(": ") << e.getMessage() << ENDL;
   return Application::EXIT_CODE_ERROR;
 }
 
 int Application::exceptionHandler() const throw() {
-  ferr << "Internal error: Unspecified exception" << ENDL;
+  ferr << MESSAGE("Internal error: Unspecified exception") << ENDL;
   return Application::EXIT_CODE_ERROR;
 }
 
@@ -165,8 +167,8 @@ void Application::hangup() throw() {
 }
 
 void Application::terminate() throw() {
-  SystemLogger::write(SystemLogger::INFORMATION, "TERMINATE SIGNAL");
   terminated = true;
+  onTermination();
 }
 
 bool Application::isHangingup() throw() {
@@ -176,6 +178,10 @@ bool Application::isHangingup() throw() {
   hangingup = false;
   lock.releaseLock();
   return result;
+}
+
+void Application::onTermination() throw() {
+  exit(Application::EXIT_CODE_NORMAL);
 }
 
 /*

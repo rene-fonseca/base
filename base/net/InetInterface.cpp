@@ -92,11 +92,16 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
     );
   }
   try {
-    interfaces.add(String(ni->if_name), ni->if_index);
+    const struct if_nameindex* current = ni;
+    while (current->if_index) {
+      interfaces.add(String(current->if_name), current->if_index);
+      ++current;
+    }
   } catch (...) {
     if_freenameindex(ni); // MT-safe
     throw;
   }
+  if_freenameindex(ni); // MT-safe
 #elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned;
@@ -185,7 +190,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
 
 List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
   List<InetInterface> interfaces;
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)) // currently disabled
   struct if_nameindex* ni;
   if ((ni = if_nameindex()) == 0) { // MT-safe
     throw NetworkException(
@@ -193,11 +198,19 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
       Type::getType<InetInterface>()
     );
   }
-  // TAG: fixme
-  InetInterface interface;
-  interface.index = ni->if_index;
-  interface.name = ni->if_name;
-  interfaces.append(interface);
+  try {
+    const struct if_nameindex* current = ni;
+    while (current->if_index) {
+      InetInterface interface;
+      interface.index = current->if_index;
+      interface.name = current->if_name;
+      interfaces.append(interface);
+      ++current;
+    }
+  } catch (...) {
+    if_freenameindex(ni); // MT-safe
+    throw;
+  }
   if_freenameindex(ni); // MT-safe
 #elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
@@ -253,21 +266,10 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
     interfaces.append(interface);
     ++current;
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || \
+       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
+       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-//   int numberOfInterfaces;
-// #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-//   const int command = SIOCGIFCOUNT;
-// #else
-//   const int command = SIOCGIFNUM;
-// #endif
-//   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
-//     close(handle);
-//     throw NetworkException(
-//       "Unable to get interfaces",
-//       Type::getType<InetInterface>()
-//     );
-//   }
   try {
     struct ifconf ifc;
     ifc.ifc_len = Thread::getLocalStorage()->getSize();

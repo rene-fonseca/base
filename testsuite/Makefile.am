@@ -1,8 +1,11 @@
 ####### kdevelop will overwrite this part!!! (begin)##########
 ####### kdevelop will overwrite this part!!! (end)############
 DEFS =
+DEFAULT_INCLUDES =
 
-bin_PROGRAMS = Array List Queue Set Map String io client server datagramClient datagramServer Thread referenceCounting fileInput mtServer filesystem xml daemon Exception ftp http dlapp dlmodule
+bin_PROGRAMS = Array List Queue Set Map String io client server datagramClient datagramServer Thread referenceCounting fileInput mtServer filesystem xml daemon Exception ftp http dlapp
+
+lib_LTLIBRARIES = dlmodule.la
 
 Array_SOURCES = Array.cpp
 List_SOURCES = List.cpp
@@ -26,7 +29,8 @@ Exception_SOURCES = Exception.cpp
 ftp_SOURCES = ftp.cpp
 http_SOURCES = http.cpp
 dlapp_SOURCES = dlapp.cpp MyLinkerModule.cpp
-dlmodule_SOURCES = dlmodule.cpp MyLinkerModule.cpp
-dlmodule_LDFLAGS = -nostartfiles
+
+dlmodule_la_SOURCES = dlmodule.cpp MyLinkerModule.cpp
+dlmodule_la_LDFLAGS = -avoid-version -module -no-undefined -version-info 0:1:0
 
 EXTRA_DIST = Array.cpp List.cpp Queue.cpp Set.cpp Map.cpp String.cpp io.cpp client.cpp server.cpp datagramClient.cpp datagramServer.cpp Thread.cpp referenceCounting.cpp fileInput.cpp mtServer.cpp filesystem.cpp xml.cpp daemon.cpp Exception.cpp ftp.cpp http.cpp

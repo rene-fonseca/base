@@ -16,9 +16,9 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // __unix__
+#else // unix
   #include <sys/time.h>
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -30,22 +30,22 @@ void Timer::start() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
   QueryPerformanceCounter(pointer_cast<LARGE_INTEGER*>(&startTime));
-#else // __unix__
+#else // unix
   struct timeval temp;
   gettimeofday(&temp, 0);
   startTime = 1000000l * temp.tv_sec + temp.tv_usec;
-#endif
+#endif // flavour
 }
 
 void Timer::stop() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
   QueryPerformanceCounter(pointer_cast<LARGE_INTEGER*>(&stopTime));
-#else // __unix__
+#else // unix
   struct timeval temp;
   gettimeofday(&temp, 0);
   stopTime = 1000000l * temp.tv_sec + temp.tv_usec;
-#endif
+#endif // flavour
 }
 
 long long Timer::getStartTime() const throw() {
@@ -53,9 +53,9 @@ long long Timer::getStartTime() const throw() {
   LARGE_INTEGER frequency; // ticks per second
   QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>(startTime * 1000000./frequency.QuadPart);
-#else // __unix__
+#else // unix
   return startTime;
-#endif
+#endif // flavour
 }
 
 long long Timer::getStopTime() const throw() {
@@ -63,9 +63,9 @@ long long Timer::getStopTime() const throw() {
   LARGE_INTEGER frequency; // ticks per second
   QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>(stopTime * 1000000./frequency.QuadPart);
-#else // __unix__
+#else // unix
   return stopTime;
-#endif
+#endif // flavour
 }
 
 long long Timer::getMicroseconds() const throw() {
@@ -73,9 +73,9 @@ long long Timer::getMicroseconds() const throw() {
   LARGE_INTEGER frequency; // ticks per second
   QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>((stopTime - startTime) * 1000000./frequency.QuadPart);
-#else // __unix__
+#else // unix
   return stopTime - startTime;
-#endif
+#endif // flavour
 }
 
 long long Timer::getLiveMicroseconds() const throw() {
@@ -85,11 +85,11 @@ long long Timer::getLiveMicroseconds() const throw() {
   LARGE_INTEGER frequency; // ticks per second
   QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>((now.QuadPart - startTime) * 1000000./frequency.QuadPart);
-#else // __unix__
+#else // unix
   struct timeval temp;
   gettimeofday(&temp, 0);
   return 1000000l * temp.tv_sec + temp.tv_usec - startTime;
-#endif
+#endif // flavour
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Timer& value) throw(IOException) {

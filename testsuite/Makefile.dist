@@ -28,5 +28,5 @@ klampenborg-gcc-2.95: all
 	CC="gcc -mno-cygwin -mthreads" LTCC='"gcc -mno-cygwin -mthreads"' CXX="gcc -mno-cygwin -mthreads" CXXFLAGS="-O0 -g3" ./configure --target=mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
 #LDFLAGS="-Wl,--enable-auto-import"
 
-klampenborg-gcc-3.0.3: all
+klampenborg-gcc-3.0.4: all
 	CC="gcc -mno-cygwin -mthreads" CXX="g++ -mno-cygwin -mthreads" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-O0 -g3" ./configure --target=mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..

@@ -4,8 +4,13 @@
  ***************************************************************************/
 
 #include <base/net/InetService.h>
-#include <netdb.h>
-#include <netinet/in.h>
+
+#if defined(__win32__)
+  #include <winsock.h>
+#else // __unix__
+  #include <netdb.h>
+  #include <netinet/in.h>
+#endif
 
 unsigned short InetService::getByName(const String<>& name, const String<>& protocol) throw() {
   struct servent* sp;

@@ -12,8 +12,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  File output stream.
+  Output stream with a file as the destination.
 
+  @short File output stream.
   @author René Møller Fonseca
   @version 1.0
 */
@@ -22,9 +23,28 @@ class FileOutputStream : public virtual Object, public OutputStream {
 public:
 
   /** The flags. */
-  enum {CREATE = 0x01, TRUNCATE = 0x02, APPEND = 0x04, NONBLOCK = 0x08, SYNC = 0x10};
+  enum {
+    CREATE = 0x01, /**< Specifies that the file should be created if it doesn't exist. */
+    TRUNCATE = 0x02, /**< Specifies that the file should be truncated if it already exists. */
+    APPEND = 0x04, /**< Specifies that data should be appended to the file. */
+    NONBLOCK = 0x08, /**< Specifies that the file should be opened in non-blocking mode. */
+    SYNC = 0x10 /**< Specifies that the file should be opened in synchronous mode. */
+  };
   /** Permissions. */
-  enum {RWXU = 0x700, RUSR = 0x400, WUSR = 0x200, XUSR = 0x100, RWXG = 0x70, RGRP = 0x40, WGRP = 0x20, XGRP = 0x10, RWXO = 0x7, ROTH = 0x4, WOTH = 0x2, XOTH = 0x1};
+  enum {
+    RWXU = 0x700, /**< Read, write, and execute permissions for the owner of the file. */
+    RUSR = 0x400, /**< Read permission for the owner of the file. */
+    WUSR = 0x200, /**< Write permission for the owner of the file. */
+    XUSR = 0x100, /**< Execute permission for the owner of the file. */
+    RWXG = 0x70, /**< Read, write, and execute permissions for the group associated with the file. */
+    RGRP = 0x40, /**< Read permission for the group associated with the file. */
+    WGRP = 0x20, /**< Write permission for the group associated with the file. */
+    XGRP = 0x10, /**< Execute permission for the group associated with the file. */
+    RWXO = 0x7, /**< Read, write, and execute permissions for other users. */
+    ROTH = 0x4, /**< Read permission for other users. */
+    WOTH = 0x2, /**< Write permission for other users. */
+    XOTH = 0x1 /**< Execute permission for other users. */
+  };
 private:
 
   /** The file. */
@@ -52,7 +72,7 @@ public:
   inline void flush() throw(IOException) {file.flush();}
 
   inline unsigned int write(const char* buffer, unsigned int count, bool nonblocking = false) throw(IOException) {
-    file.write(buffer, count, nonblocking);
+    return file.write(buffer, count, nonblocking);
   }
 };
 

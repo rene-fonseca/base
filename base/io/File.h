@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_FILESYSTEM__FILE_H
-#define _DK_SDU_MIP__BASE_FILESYSTEM__FILE_H
+#ifndef _DK_SDU_MIP__BASE_IO__FILE_H
+#define _DK_SDU_MIP__BASE_IO__FILE_H
 
 #include <base/Object.h>
 #include <base/io/FileException.h>
@@ -13,6 +13,7 @@
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/string/String.h>
 #include <base/Date.h>
+#include <base/Type.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -29,10 +30,10 @@ private:
   /** The offset of the region from the beginning of the file. */
   long long offset;
   /** The size of the region (in bytes). */
-  long long size;
+  unsigned int size;
 public:
 
-  FileRegion(long long o, long long s) throw() : offset(o), size(s) {}
+  FileRegion(long long o, unsigned int s) throw() : offset(o), size(s) {}
 
   FileRegion(const FileRegion& copy) throw() : offset(copy.offset), size(copy.size) {}
 
@@ -52,7 +53,25 @@ public:
   /**
     Returns the size of the file region.
   */
-  inline long long getSize() const throw() {return size;}
+  inline unsigned int getSize() const throw() {return size;}
+
+  /**
+    Sets the offset of the file region.
+  */
+  inline void setOffset(long long offset) throw() {this->offset = offset;}
+
+  /**
+    Sets the size of the file region.
+  */
+  inline void setSize(unsigned int size) throw() {this->size = size;}
+
+  /**
+    Returns true if the specified region is contained in this region.
+  */
+  inline bool isWithin(const FileRegion& region) const throw() {
+    const long long difference = region.offset - offset;
+    return (difference >= 0) && ((difference + region.size - size) <= 0);
+  }
 };
 
 class MappedFile;
@@ -75,15 +94,15 @@ public:
   } Access;
   /** Type used to specify the relative offset. */
   typedef enum {
-    BEGIN, /**< Position is relative to begining of file */
-    CURRENT, /**< Position is relative to current position of file */
-    END /**< Position is relative to end of file */
+    BEGIN, /**< Position is relative to begining of file. */
+    CURRENT, /**< Position is relative to current position of file. */
+    END /**< Position is relative to end of file. */
   } Whence;
   /** File initialization options. */
   enum Options {
-    CREATE = 1, /**< Specifies that the file should be created if it doesn't exist */
-    TRUNCATE = 2, /**< Specifies that the file should be truncated if it already exists */
-    EXCLUSIVE = 4 /**< Specifies that the file should be opened in exclusive mode */
+    CREATE = 1, /**< Specifies that the file should be created if it doesn't exist. */
+    TRUNCATE = 2, /**< Specifies that the file should be truncated if it already exists. */
+    EXCLUSIVE = 4 /**< Specifies that the file should be opened in exclusive mode. */
   };
 private:
 
@@ -221,6 +240,14 @@ public:
   unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(FileException);
 
   /**
+    Read the specified type.
+  */
+  template<class TYPE>
+  inline unsigned int read(TYPE& buffer) throw(FileException) {
+    return read((char*)&buffer, sizeof(TYPE));
+  }
+
+  /**
     Throws EndOfFile if minimum number of bytes cannot be read without
     exceeding the end of the file.
   */
@@ -258,83 +285,104 @@ public:
 
 
 
-/**
-  Mapping of file into processes address space.
-
-  @author René Møller Fonseca
-  @version 1.0
-*/
-class MappedFile : public Object {
-private:
-
-  class MappedFileImpl : public ReferenceCountedObject {
-  private:
-
-    File file; // ensure that the file is not closed before map has been closed
-    void* bytes;
-    unsigned int size;
-  public:
-
-    MappedFileImpl(const File& file, void* bytes, unsigned int size) throw(FileException);
-
-    inline void* getBytes() const throw() {
-      return bytes;
-    }
-
-    inline unsigned int getSize() const throw() {
-      return size;
-    }
-
-    void flush() throw(FileException);
-
-    ~MappedFileImpl() throw(FileException);
-  };
-
-  /** The internal mapping representation. */
-  ReferenceCountedObjectPointer<MappedFileImpl> map;
-public:
-
-  /**
-    Returns the required granularity of the offset used to initialize mappings.
-  */
-  static unsigned int getGranularity() throw();
-
-  /**
-    Initializes a file mapping.
-
-    @param file The file to be mapped into memory.
-    @param offset The offset of the map. The value must honour the granularity returned by getGranularity.
-    @param size The number of bytes to map.
-    @param writeable Specifies that write access is required. Default is false.
-  */
-  MappedFile(const File& file, long long offset, unsigned int size, bool writeable = false) throw(FileException);
-
-  /**
-    Initializes mapping from other mapping.
-  */
-  inline MappedFile(const MappedFile& copy) throw() : map(copy.map) {}
-
-  /**
-    Assignment of mapping by mapping.
-  */
-  MappedFile& operator=(const MappedFile& eq) throw();
-
-  /**
-    Returns the mapped bytes. Do not use the mapping outside the requested
-    mapping range.
-  */
-  inline char* getBytes() const throw() {return static_cast<char*>(map->getBytes());}
-
-  /**
-    Returns the size of the mapping.
-  */
-  inline unsigned int getSize() const throw() {return map->getSize();}
-
-  /**
-    Flushes the mapping.
-  */
-  inline void flush() const throw(FileException) {map->flush();}
-};
+///**
+//  This class is used to map a specified file region into the address space of the process.
+//
+//  @short File region mapper.
+//  @author René Møller Fonseca
+//  @version 1.0
+//*/
+//
+//class MappedFile : public Object {
+//private:
+//
+//  class MappedFileImpl : public ReferenceCountedObject {
+//  private:
+//
+//    File file; // ensure that the file is not closed before map has been closed - may not be required
+//    FileRegion region;
+//    bool writeable;
+//    void* bytes;
+//  public:
+//
+//    MappedFileImpl(const File& file, const FileRegion& region, bool writeable) throw(FileException);
+//
+//    inline void* getBytes() const throw() {return bytes;}
+//
+//    inline File& getFile() throw() {return file;}
+//
+//    inline const FileRegion& getRegion() const throw() {return region;}
+//
+//    inline bool isWriteable() throw() {return writeable;}
+//
+//    void flush() const throw(FileException);
+//
+//    ~MappedFileImpl() throw(FileException);
+//  };
+//
+//  /** The internal mapping representation. */
+//  ReferenceCountedObjectPointer<MappedFileImpl> map;
+//protected:
+//
+//  /**
+//    Returns the handle of the specified file.
+//  */
+//  inline static int getHandle(File& file) {return file.fd->getHandle();}
+//public:
+//
+//  /**
+//    Returns the required granularity of the file region offset.
+//  */
+//  static unsigned int getGranularity() throw();
+//
+//  /**
+//  */
+//  MappedFile() throw();
+//
+//  /**
+//    Initializes a file mapping.
+//
+//    @param file The file to be mapped into memory.
+//    @param region The file region to be mapped. The offset of the region must honour the granularity returned by getGranularity.
+//    @param writeable Specifies that write access is required. Default is false.
+//  */
+//  MappedFile(const File& file, const FileRegion& region, bool writeable = false) throw(FileException);
+//
+//  /**
+//    Initializes mapping from other mapping.
+//  */
+//  inline MappedFile(const MappedFile& copy) throw() : map(copy.map) {}
+//
+//  /**
+//    Assignment of mapping by mapping.
+//  */
+//  MappedFile& operator=(const MappedFile& eq) throw();
+//
+//  /**
+//    Returns the mapped bytes. Do not use the mapping outside the requested
+//    mapping range.
+//  */
+//  inline byte* getBytes() const throw() {return static_cast<byte*>(map->getBytes());}
+//
+//  /**
+//    Returns the mapped file region.
+//  */
+//  inline const FileRegion& getRegion() const throw() {return map->getRegion();}
+//
+//  /**
+//    Flushes the mapping.
+//  */
+//  inline void flush() const throw(FileException) {map->flush();}
+//
+//  /**
+//    Maps the specified file region.
+//
+//    @region The file region to be mapped.
+//  */
+//  inline void remap(const FileRegion& region) throw(FileException) {
+//    map = new MappedFileImpl(map->getFile(), region, map->isWriteable());
+//  }
+//};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

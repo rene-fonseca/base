@@ -16,7 +16,10 @@
 #include <base/concurrency/Thread.h>
 #include <base/FloatingPoint.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
-#include <base/OutOfRange.h> // TAG: move to header
+#include <base/string/Locale.h>
+#include <base/Date.h>
+#include <base/string/StringOutputStream.h>
+#include <base/TypeInfo.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -27,6 +30,8 @@ const FormatOutputStream::Context FormatOutputStream::DEFAULT_CONTEXT = {
   DEFAULT_REAL_BASE,
   DEFAULT_REAL_STYLE,
   DEFAULT_RADIX_POSITION,
+  DEFAULT_MAJOR_DATE_FORMAT,
+  DEFAULT_NAMED_DATE_FORMAT,
   DEFAULT_JUSTIFICATION,
   DEFAULT_WIDTH,
   DEFAULT_PRECISION
@@ -59,6 +64,14 @@ FormatOutputStream& FormatOutputStream::setPrecision(unsigned int precision) thr
   ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
   context.flags &= ~Symbols::NECESSARY;
   context.precision = minimum(precision, MAXIMUM_PRECISION);
+  return *this;
+}
+
+FormatOutputStream& FormatOutputStream::setDateFormat(const String& format) throw() {
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  context.majorDateFormat = Symbols::EXPLICIT_DATE_FORMAT;
+  // namedDateFormat is ignored (but unchanged)
+  context.dateFormat = format;
   return *this;
 }
 
@@ -147,6 +160,36 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
     break;
   case LOCALE:
     context.flags &= ~Symbols::POSIX;
+    break;
+  case LOCAL:
+    context.flags |= Symbols::LOCAL_TIME;
+    break;
+  case UTC:
+    context.flags &= ~Symbols::LOCAL_TIME;
+    break;
+  case DATETIME:
+    context.majorDateFormat = Symbols::DATETIME;
+    break;
+  case TIME:
+    context.majorDateFormat = Symbols::TIME;
+    break;
+  case DATE:
+    context.majorDateFormat = Symbols::DATE;
+    break;
+  case SHORT_FORMAT:
+    context.namedDateFormat = Symbols::SHORT_FORMAT;
+    break;
+  case MEDIUM_FORMAT:
+    context.namedDateFormat = Symbols::MEDIUM_FORMAT;
+    break;
+  case LONG_FORMAT:
+    context.namedDateFormat = Symbols::LONG_FORMAT;
+    break;
+  case RFC2822_FORMAT:
+    context.namedDateFormat = Symbols::RFC2822_FORMAT;
+    break;
+  case ISO8601_FORMAT:
+    context.namedDateFormat = Symbols::ISO8601_FORMAT;
     break;
   case DEPENDENT:
     context.justification = Symbols::DEPENDENT;
@@ -349,6 +392,111 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
   context = defaultContext;
 }
 
+void FormatOutputStream::addDateField(const Date& date) throw(IOException) {
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  const bool localTime = ((context.flags & Symbols::LOCAL_TIME) != 0);
+  const bool posix = ((context.flags & Symbols::POSIX) != 0);
+//  const Locale* locale = posix ? &Locale::POSIX : &locale; // FIXME
+  const Locale* locale = &Locale::POSIX;
+  String format;
+  switch (context.majorDateFormat) {
+  case Symbols::DATETIME:
+    switch (context.namedDateFormat) {
+    case Symbols::SHORT_FORMAT:
+      format = locale->getShortDateFormat() + MESSAGE(" ") + locale->getShortTimeFormat(); // TAG: optimize
+      break;
+    case Symbols::MEDIUM_FORMAT:
+      format = locale->getMediumDateFormat() + MESSAGE(" ") + locale->getMediumTimeFormat(); // TAG: optimize
+      break;
+    case Symbols::LONG_FORMAT:
+      format = locale->getLongDateFormat() + MESSAGE(" ") + locale->getLongTimeFormat(); // TAG: optimize
+      break;
+    case Symbols::RFC2822_FORMAT:
+      format = MESSAGE("RFC2822");
+      break;
+    case Symbols::ISO8601_FORMAT:
+      if (localTime) {
+        format = MESSAGE("%Y-%m-%dT%H:%M:%S");
+      } else {
+        format = MESSAGE("%Y-%m-%dT%H:%M:%SZ");
+      }
+      break;
+    }
+    break;
+  case Symbols::TIME:
+    switch (context.namedDateFormat) {
+    case Symbols::SHORT_FORMAT:
+      format = locale->getShortTimeFormat();
+      break;
+    case Symbols::MEDIUM_FORMAT:
+      format = locale->getMediumTimeFormat();
+      break;
+    case Symbols::LONG_FORMAT:
+      format = locale->getLongTimeFormat();
+      break;
+    case Symbols::RFC2822_FORMAT:
+      format = MESSAGE("RFC2822");
+      break;
+    case Symbols::ISO8601_FORMAT:
+      if (localTime) {
+        format = MESSAGE("%H:%M:%S");
+      } else {
+        format = MESSAGE("%H:%M:%SZ");
+      }
+      break;
+    }
+    break;
+  case Symbols::DATE:
+    switch (context.namedDateFormat) {
+    case Symbols::SHORT_FORMAT:
+      format = locale->getShortDateFormat();
+      break;
+    case Symbols::MEDIUM_FORMAT:
+      format = locale->getMediumDateFormat();
+      break;
+    case Symbols::LONG_FORMAT:
+      format = locale->getLongDateFormat();
+      break;
+    case Symbols::RFC2822_FORMAT:
+      format = MESSAGE("<RFC2822>");
+      break;
+    case Symbols::ISO8601_FORMAT:
+      format = MESSAGE("%y-%m-%d");
+      break;
+    }
+    break;
+  case Symbols::EXPLICIT_DATE_FORMAT:
+    format = context.dateFormat;
+    break;
+  }
+  String field = date.format(format, localTime);
+  
+  Symbols::Justification justification;
+  switch (context.justification) {
+  case Symbols::RIGHT:
+    justification = Symbols::RIGHT;
+    break;
+  case Symbols::LEFT:
+    justification = Symbols::LEFT;
+    break;
+  case Symbols::RADIX: // no radix - use default
+  case Symbols::DEPENDENT:
+    justification = Symbols::LEFT; // TAG: is this locale specific
+  }
+
+  const int size = field.getLength();
+  if (justification == Symbols::LEFT) {
+    write(field.getBytes(), size); // write characters
+  }
+  if (size < context.width) { // write blanks if required
+    unfoldValue(' ', context.width - size);
+  }
+  if (context.justification == Symbols::RIGHT) {
+    write(field.getBytes(), size); // write characters
+  }
+  context = defaultContext;  
+}
+
 FormatOutputStream::~FormatOutputStream() throw(IOException) {
 }
 
@@ -361,11 +509,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, char value) throw(IOE
   return stream;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const char* value) throw(IOException) {
-  // TAG: fix exception specification
-  assert(value, OutOfDomain());
+FormatOutputStream& operator<<(FormatOutputStream& stream, const char* value) throw(OutOfDomain, OutOfRange, IOException) {
+  assert(value, OutOfDomain(Type::getType<FormatOutputStream>()));
   const char* terminator = find<char>(value, 1U << 16 - 1, 0); // find terminator
-  assert(terminator, OutOfRange()); // maximum length exceeded
+  assert(terminator, OutOfRange(Type::getType<FormatOutputStream>())); // maximum length exceeded
   stream.addCharacterField(value, terminator - value);
   return stream;
 }
@@ -812,26 +959,8 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
 
 
 
-class Sequence {
-private:
-
-  const unsigned int* value;
-  const unsigned int size;
-public:
-
-  Sequence(unsigned int* _value, unsigned int _size) throw() : value(_value), size(_size) {
-  }
-
-  inline const unsigned int* getValue() const throw() {
-    return value;
-  }
-
-  inline unsigned int getSize() const throw() {
-    return size;
-  }
-};
-
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Sequence& value) throw() {
+template<>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Sequence<unsigned int>& value) throw() {
   const unsigned int* begin = value.getValue();
   const unsigned int* src = begin + value.getSize();
   while (src > begin) {
@@ -1339,8 +1468,45 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) th
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const void* value) throw(IOException) {
-  return stream << HEX << PREFIX << ZEROPAD << reinterpret_cast<unsigned long>(value);
+  return stream << HEX << PREFIX << ZEROPAD << reinterpret_cast<unsigned long>(value); // TAG: problem for 64bit Windows
 }
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Exception& e) throw(IOException) {
+  StringOutputStream s;
+  s << MESSAGE("Exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
+  if (e.getType().isInitialized()) {
+    s << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
+  }
+  if (e.getMessage()) {
+    s << MESSAGE(" with message '") << e.getMessage() << '\'';
+  }
+  s << '.' << FLUSH;
+  return stream << s.getString();
+}
+
+/*
+  0xhex_digit_seq[.hex_digit_seq]p[+|-]binary_exponent[suffix]
+
+*/
+// void FormatOutputStream::writeFloatingHEX...() throw() {
+//   if ((context.flags & Symbols::PREFIX) != 0) { // is prefix requested
+//     switch (context.integerBase) {
+//     case Symbols::BINARY:
+//       write("0", 1);
+//       write(((context.flags & FormatOutputStream::Symbols::UPPER) == 0) ? "b" : "B", 1);
+//       break;
+//     case Symbols::OCTAL:
+//       write("0", 1);
+//       break;
+//     case Symbols::DECIMAL:
+//       break;
+//     case Symbols::HEXADECIMAL:
+//       write("0", 1);
+//       write(((context.flags & FormatOutputStream::Symbols::UPPER) == 0) ? "x" : "X", 1);
+//       break;
+//     }
+//   }
+// }
 
 void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsigned int* mantissa, unsigned int mantissaSize, int base2Exponent, unsigned int valueFlags) throw(IOException) {
   char buffer[128 + 2 + significant/3]; // N = 2 + floor[n/log2(10)] => N < 2 + n/3 // TAG: 128 should be calculated

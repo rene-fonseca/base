@@ -21,41 +21,14 @@
 #include <base/concurrency/SpinLock.h>
 #include <base/string/ASCIITraits.h>
 #include <base/Primitives.h>
+#include <base/OutOfDomain.h>
+#include <base/OutOfRange.h>
+#include <base/string/String.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-/**
-  This class binds together a string literal and its length. Use the macro
-  MESSAGE to generate an object of this class for a given string literal (e.g.
-  MESSAGE("Hello World")). Do not call the constructor directly.
-
-  @short String literal
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.1
-*/
-
-class StringLiteral {
-private:
-
-  /** The number of characters occupied by the message without the terminator. */
-  const unsigned int length;
-  /** NULL-terminated message. */
-  const char* message;
-public:
-
-  /** Initializes message. Automatically invocated by the macro MESSAGE. */
-  inline StringLiteral(unsigned int _length, const char* _message) throw() : length(_length), message(_message) {}
-  /** Cast to the usual message type. */
-  inline operator const char*() const throw() {return message;}
-  /** Returns the length of the string literal. */
-  inline unsigned int getLength() const throw() {return length;}
-};
-
-/** This macro returns a StringLiteral object from a string literal (e.g. MESSAGE("Hello, World")). */
-#define MESSAGE(msg) StringLiteral(sizeof(msg) - 1, msg) // TAG: replace with symbol LITERAL
-
-
-
+class Date;
+class String;
 class Locale; // forward declaration
 
 /**
@@ -86,13 +59,23 @@ enum Action {
   FPLUS, /**< Forces plus sign to be written for floating-point types. */
   PLUSEXP, /**< Show positive exponent for floating-point types explicitly. */
   ZEROPADEXP, /**< Zero pads the exponent of floating-point types to the maximum number of digits. */
-  PREFIX, /**< Enable prefixes for integers. */
+  PREFIX, /**< Enable prefixes for integers. This is the default if the prefix is defined for the field content. */
   NOPREFIX, /**< Disable prefixes for integers. */
   NECESSARY, /**< Specifies that no garbage digits should be output for floating-point numbers. This is the default behaviour. */
   UPPER, /**< Selects capital letters (both integers and real numbers). */
   LOWER, /**< Selects lower case letters (both integers and real numbers). */
   POSIX, /**< Override current locale and use POSIX formatting. */
   LOCALE, /**< Use current locale during formatting. */
+  LOCAL, /**< Specifies that the date is in local time. */
+  UTC, /**< Specifies that the date is in Coordinated Universal Time (UTC). This is the default. */
+  DATETIME, /**< Selects both date and time. This is the default. */
+  TIME, /**< Selects time only. */
+  DATE, /**< Selects date only. */
+  SHORT_FORMAT, /**< Selects short format. */
+  MEDIUM_FORMAT, /**< Selects medium format. */
+  LONG_FORMAT, /**< Selects long format. */
+  RFC2822_FORMAT, /** Selects RFC2822-conformant format (e.g. Tue, 07 May 2002 12:35:54 GMT). */
+  ISO8601_FORMAT, /**< Selects ISO 8601:2000-conformant format. */
   DEPENDENT, /**< Selects default justification of the field type. This is the default. */
   LEFT, /**< Selects left justification within field. */
   RIGHT, /**< Selects right justification within field. */
@@ -115,7 +98,7 @@ enum Action {
 
   @short Format output stream.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.3.1
+  @version 1.4
 */
 
 class FormatOutputStream : public BufferedOutputStream, public Synchronizeable<SpinLock> {
@@ -127,7 +110,21 @@ public:
     enum RealStyle {SCIENTIFIC, FIXED, ENGINEERING};
     enum EndOfLine {UNIXEOL, WINDOWSEOL, MACEOL};
     enum Justification {DEPENDENT, LEFT, RIGHT, RADIX};
-    enum {ZEROPAD = 1, PREFIX = 2, GROUPING = 4, PLUS = 8, FPLUS = 16, PLUSEXP = 32, ZEROPADEXP = 64, NECESSARY = 128, UPPER = 256, POSIX = 512};
+    enum MajorDateFormat {DATETIME, TIME, DATE, EXPLICIT_DATE_FORMAT};
+    enum NamedDateFormat {SHORT_FORMAT, MEDIUM_FORMAT, LONG_FORMAT, RFC2822_FORMAT, ISO8601_FORMAT};
+    enum {
+      ZEROPAD = 1,
+      PREFIX = 2,
+      GROUPING = 4,
+      PLUS = 8,
+      FPLUS = 16,
+      PLUSEXP = 32,
+      ZEROPADEXP = 64,
+      NECESSARY = 128,
+      UPPER = 256,
+      POSIX = 512,
+      LOCAL_TIME = 1024
+    };
   };
   
   static const unsigned int DEFAULT_FLAGS = Symbols::PREFIX | Symbols::NECESSARY | Symbols::POSIX;
@@ -136,12 +133,14 @@ public:
   static const Symbols::Base DEFAULT_REAL_BASE = Symbols::DECIMAL;
   static const Symbols::RealStyle DEFAULT_REAL_STYLE = Symbols::FIXED;
   static const int DEFAULT_RADIX_POSITION = 0;
+  static const Symbols::MajorDateFormat DEFAULT_MAJOR_DATE_FORMAT = Symbols::DATETIME;
+  static const Symbols::NamedDateFormat DEFAULT_NAMED_DATE_FORMAT = Symbols::MEDIUM_FORMAT;
   static const Symbols::Justification DEFAULT_JUSTIFICATION = Symbols::DEPENDENT;
   static const int DEFAULT_WIDTH = 0;
   static const int DEFAULT_PRECISION = 6;
   
   /** Context of format output stream object. */
-  struct Context {
+  struct Context { // TAG: need to compress structure using bit-fields
     /** The format flags. */
     unsigned int flags;
     /** The eol. */
@@ -154,12 +153,18 @@ public:
     Symbols::RealStyle realStyle;
     /** The desired radix position. */
     int radixPosition;
+    /** The major date/time format. */
+    Symbols::MajorDateFormat majorDateFormat;
+    /** Selects named subformat. */
+    Symbols::NamedDateFormat namedDateFormat;
     /** Justification within field. */
     Symbols::Justification justification;
     /** Specifies the field width. */
     int width;
     /** Specifies the number of digits to be written after the radix character. */
     int precision;
+    /** The date format. */
+    String dateFormat;
   };
   
   class Manipulator {
@@ -167,19 +172,32 @@ public:
     typedef FormatOutputStream& (FormatOutputStream::*Method)(unsigned int);
   private:
     Method method;
-    unsigned int value;
+    const unsigned int value;
   public:
-    inline Manipulator(Method m, unsigned int v) : method(m), value(v) {}
+    inline Manipulator(Method _method, unsigned int _value) throw() : method(_method), value(_value) {}
     inline FormatOutputStream& operator()(FormatOutputStream& stream) {
       return (stream.*method)(value);
     }
   };
   
+  class StringManipulator {
+  public:
+    typedef FormatOutputStream& (FormatOutputStream::*Method)(const String&);
+  private:
+    Method method;
+    const String value;
+  public:
+    inline StringManipulator(Method _method, const String& _value) throw() : method(_method), value(_value) {}
+    inline FormatOutputStream& operator()(FormatOutputStream& stream) {
+      return (stream.*method)(value);
+    }
+  };
+
   class GetContext {
   private:
     Context& context;
   public:
-    inline GetContext(Context& c) throw() : context(c) {}
+    inline GetContext(Context& _context) throw() : context(_context) {}
     inline FormatOutputStream& operator()(FormatOutputStream& stream) throw() {
       return stream.getContext(context);
     }
@@ -189,7 +207,7 @@ public:
   private:
     const Context& context;
   public:
-    inline SetContext(const Context& c) throw() : context(c) {}
+    inline SetContext(const Context& _context) throw() : context(_context) {}
     inline FormatOutputStream& operator()(FormatOutputStream& stream) throw() {
       return stream.setContext(context);
     }
@@ -312,6 +330,13 @@ public:
     @param precision The desired precision.
   */
   FormatOutputStream& setPrecision(unsigned int precision) throw();  
+
+  /**
+    Sets the date format.
+
+    @param format The desired date format.
+  */
+  FormatOutputStream& setDateFormat(const String& format) throw();
   
   /**
     Sets the locale of the stream. The locale is global for the stream. The
@@ -359,9 +384,14 @@ public:
   void addCharacterField(const char* buffer, unsigned int size) throw(IOException);
 
   /**
-    Writes a preformated integer to stream.
+    Writes a preformated integer to the stream.
   */
   void addIntegerField(const char* buffer, unsigned int size, bool isSigned) throw(IOException);
+  
+  /**
+    Writes a date object to the stream.
+  */
+  void addDateField(const Date& date) throw(IOException);
 
   /**
     Writes a preformated floating point value to stream.
@@ -402,7 +432,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, char value) throw(IOE
 /**
   Writes a NULL-terminated string literal to a format output stream (you are advised against using this function).
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const char* value) throw(IOException);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const char* value) throw(OutOfDomain, OutOfRange, IOException);
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) throw(IOException);
 FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int value) throw(IOException);
@@ -430,6 +460,109 @@ inline FormatOutputStream& operator<<(FormatOutputStream& stream, const StringLi
   return stream;
 }
 
+/**
+  Writes a nice description of the exception to the format output stream.
+*/
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Exception& e) throw(IOException);
+
+
+
+/**
+  This class describes a seqence of elements to be written to a format output stream.
+
+  <pre>
+  class MyClass : public Object {
+  private:
+  
+    char guid[16];
+  public:
+  
+    void myMethod() throw() {
+      if (debugLevel >= VERY_VERBOSE) {
+        fout << HEX << ZEROPAD << NOPREFIX << Sequence<unsigned char>(guid, sizeof(guid), MESSAGE(":")) << ENDL;
+      }
+      // do something
+    }
+  };
+  </pre>
+
+  @short Sequence descriptor
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.0
+*/
+template<class TYPE>
+class Sequence {
+private:
+
+  const TYPE* value;
+  const unsigned int size;
+  const StringLiteral separator;
+public:
+
+  /**
+    Initializes sequence descriptor with no separator.
+
+    @param value The beginning of the sequence.
+    @param size The number of elements in the sequence.
+  */
+  Sequence(const TYPE* _value, unsigned int _size) throw()
+    : value(_value), size(_size), separator(MESSAGE("")) {
+  }
+  
+  /**
+    Initializes sequence descriptor.
+
+    @param value The beginning of the sequence.
+    @param size The number of elements in the sequence.
+    @param separator The separator to be written between elements.
+  */
+  Sequence(const TYPE* _value, unsigned int _size, const StringLiteral& _separator) throw()
+    : value(_value), size(_size), separator(_separator) {
+  }
+  
+  /** Returns the beginning of the sequence. */
+  inline const TYPE* getValue() const throw() {
+    return value;
+  }
+
+  /** Returns the number of elements in the sequence. */
+  inline unsigned int getSize() const throw() {
+    return size;
+  }
+
+  /** Returns the separator to be used between elements. */
+  inline const StringLiteral& getSeparator() const throw() {
+    return separator;
+  }
+};
+
+/**
+  Writes a sequence to the format output stream.
+*/
+template<class TYPE>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Sequence<TYPE>& value) throw(IOException) {
+  FormatOutputStream::PushContext push(stream);
+  const TYPE* src = value.getValue();
+  const TYPE* end = src + value.getSize();
+  const StringLiteral& separator = value.getSeparator();
+  if (separator.getLength() > 0) {
+    --end;
+    while (src < end) {
+      stream << *src << separator;
+      ++src;
+    }
+    if (src == end) { // if not empty
+      stream << *src;
+    }
+  } else {
+    while (src < end) {
+      stream << *src;
+      ++src;
+    }
+  }
+  return stream;
+}
+
 
 
 /** Sets the desired width of the field. */
@@ -447,7 +580,18 @@ inline FormatOutputStream::Manipulator setRadixPosition(unsigned int position) t
   return FormatOutputStream::Manipulator(&FormatOutputStream::setRadixPosition, position);
 }
 
+/** Sets the desired date format. */
+inline FormatOutputStream::StringManipulator setDateFormat(const String& format) throw() {
+  return FormatOutputStream::StringManipulator(&FormatOutputStream::setDateFormat, format);
+}
+
+
+
 inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::Manipulator manipulator) {
+  return manipulator(stream);
+}
+
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::StringManipulator manipulator) {
   return manipulator(stream);
 }
 

@@ -18,38 +18,43 @@
 #include <base/Base.h>
 #include <base/Functor.h>
 #include <base/NotImplemented.h>
+#include <base/security/User.h>
 #include <stdio.h>
 
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #define _LARGEFILE64_SOURCE 1
+#  define _LARGEFILE64_SOURCE 1
 #endif
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <base/platforms/win32/AsyncReadFileContext.h> // platform specific
-  #include <base/platforms/win32/AsyncWriteFileContext.h> // platform specific
-  #if !defined(_WIN32_WINNT)
-    #define _WIN32_WINNT 0x0400
-  #endif
-  #include <windows.h>
-  #include <aclapi.h>
-  #include <winioctl.h>
+#  include <base/platforms/win32/AsyncReadFileContext.h> // platform specific
+#  include <base/platforms/win32/AsyncWriteFileContext.h> // platform specific
+#  if !defined(_WIN32_WINNT)
+#    define _WIN32_WINNT 0x0400
+#  endif
+#  include <windows.h>
+#  include <aclapi.h>
+#  include <winioctl.h>
 #else // unix
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  #include <sys/time.h>
-  #include <unistd.h>
-  #include <fcntl.h>
-  #include <errno.h>
-  #include <limits.h>
-  #include <string.h> // required by FD_SET on solaris
-  #include <sys/mman.h>
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <sys/time.h>
+#  include <unistd.h>
+#  include <fcntl.h>
+#  include <errno.h>
+#  include <limits.h>
+#  include <string.h> // required by FD_SET on solaris
+#  include <sys/mman.h>
 
-  #if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) || \
+#  if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) || \
        (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX))
-    #include <sys/acl.h> // solaris and irix
-  #endif
+#    include <sys/acl.h> // solaris and irix
+#    define _COM_SUN__ACL_USER USER
+#    undef USER
+#    define _COM_SUN__ACL_GROUP GROUP
+#    undef GROUP
+#  endif
 
-  #undef assert
+#  undef assert
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -257,18 +262,224 @@ bool File::isClosed() const throw() {
   return !fd->isValid();
 }
 
+// TAG: need methods get owner, get group...
+
+unsigned int File::getMode() const throw(FileException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  throw NotImplemented(this); // TAG: FIXME
+  #warning File::getMode() not implemented
+
+  // effective permissions for owner
+  // effective permissions for primary group
+  // effective permissions for everyone
+#else // unix
+  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64 bit aligned
+    int error = ::fstat64(fd->getHandle(), (struct stat64*)&status);
+  #else
+    struct stat64 status;
+    int error = ::fstat64(fd->getHandle(), &status);
+  #endif // GNU Linux
+  #else
+    struct stat status;
+    int error = ::fstat(fd->getHandle(), &status);
+  #endif
+  assert(error == 0, FileException(this));
+
+  if ((S_IRUSR == File::RUSR) && (S_IWUSR == File::WUSR) && (S_IXUSR == File::XUSR) &&
+      (S_IRGRP == File::RGRP) && (S_IWGRP == File::WGRP) && (S_IXGRP == File::XGRP) &&
+      (S_IROTH == File::ROTH) && (S_IWOTH == File::WOTH) && (S_IXOTH == File::XOTH)) {
+    return status.st_mode & File::ANY;
+  } else {
+    unsigned int result = 0;    
+    if (status.st_mode & S_IRUSR) { // mode reset above
+      result |= File::RUSR;
+    }
+    if (status.st_mode & S_IWUSR) {
+      result |= File::WUSR;
+    }
+    if (status.st_mode & S_IXUSR) {
+      result |= File::XUSR;
+    }
+    if (status.st_mode & S_IRGRP) {
+      result |= File::RGRP;
+    }
+    if (status.st_mode & S_IWGRP) {
+      result |= File::WGRP;
+    }
+    if (status.st_mode & S_IXGRP) {
+      result |= File::XGRP;
+    }
+    if (status.st_mode & S_IROTH) {
+      result |= File::ROTH;
+    }
+    if (status.st_mode & S_IWOTH) {
+      result |= File::WOTH;
+    }
+    if (status.st_mode & S_IXOTH) {
+      result |= File::XOTH;
+    }
+    return result;
+  }
+#endif // flavor
+}
+
 AccessControlList File::getACL() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  SECURITY_DESCRIPTOR* securityDescriptor;
+  PACL acl;
+  assert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
+                           0, 0, &acl, 0, &securityDescriptor) == ERROR_SUCCESS,
+         FileException("Unable to get ACL", this)
+  );
+
+  SECURITY_DESCRIPTOR_CONTROL control;
+  DWORD revision;
+	if (::GetSecurityDescriptorControl(securityDescriptor, &control, &revision)) {
+		throw FileException("Unable to get security descriptor control", this);
+	}
+  DWORD length = ::GetSecurityDescriptorLength(securityDescriptor);
+
+  fout << "SD:" << EOL
+       << "  length: " << length << EOL
+       << "  revision: " << revision << EOL
+       << "  control: " << HEX << (unsigned int)control << EOL;
+  
+//   ::GetSecurityDescriptorOwner();
+//   ::GetSecurityDescriptorGroup();
+  
+  BOOL hasDACL;
+//  PACL acl;
+//  BOOL defaulted;
+// 	if (::GetSecurityDescriptorDacl(securityDescriptor, &hasDACL, &acl, &defaulted) == 0) {
+//     throw FileException("Unable to get DACL", this);
+// 	}
+  
+  ACL_SIZE_INFORMATION information;
+  if (::GetAclInformation(acl, &information, sizeof(information), AclSizeInformation) == 0) {
+    throw FileException("Unable to get ACL information", this);
+	}
+  
+  fout << "ACL:" << EOL
+       << "  #entries: " << information.AceCount << EOL
+       << "  bytes used: " << information.AclBytesInUse << EOL
+       << "  bytes free: " << information.AclBytesFree << EOL;
+  
+	for (unsigned int i = 0; i < information.AceCount; ++i) {
+    ACE_HEADER* ace;
+    ::GetAce(acl, i, (void**)&ace);
+    
+    PSID trustee;
+    switch (ace->AceType) {
+    case ACCESS_ALLOWED_ACE_TYPE:
+      trustee = &((ACCESS_ALLOWED_ACE*)ace)->SidStart;
+      break;
+    case ACCESS_DENIED_ACE_TYPE:
+      trustee = &((ACCESS_DENIED_ACE*)ace)->SidStart;
+      break;
+    default:
+      Trace::message("default");
+    }
+    
+    fout << "ACE:" << EOL
+         << "  entry: " << i << EOL
+         << "  type: " << HEX << ace->AceType << EOL
+         << "  trustee: " << User(trustee).getName() << EOL;
+  }
+  
+//   ULONG numberOfEntries;
+//   PEXPLICIT_ACCESS entries;
+//   bool error = ::GetExplicitEntriesFromAcl(acl, &numberOfEntries, &entries) != ERROR_SUCCESS;
+//   if (error) {
+//     ::LocalFree(securityDescriptor);
+//     throw FileException("Unable to get ACL", this);
+//   }
+  
+//   PEXPLICIT_ACCESS entry = entries;
+//   for (int i = 0; i < numberOfEntries; ++i) {
+//     ferr << "permissions: " << HEX << entry->grfAccessPermissions << EOL
+//          << "access mode: " << entry->grfAccessMode << EOL
+//          << "inherit: " << HEX << entry->grfInheritance << EOL
+//          << "form: " << entry->Trustee.TrusteeForm << EOL
+//          << "type: " << entry->Trustee.TrusteeType << ENDL;
+//     ++entry;
+//   }
+//   ::LocalFree(entry);
+  ::LocalFree(securityDescriptor);
+#if 0 // disabled
+#endif // disabled
   throw NotImplemented(this);
-#else // unix
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
-  throw NotImplemented(this);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+  aclent_t entries[MAX_ACL_ENTRIES];
+  int numerOfEntries = ::facl(fd->getHandle(), GETACL, MAX_ACL_ENTRIES, &entries);
+  assert(numerOfEntries >= 0, FileException("Unable to get ACL", this));
+  
+  AccessControlList result;
+  for (int i = 0; i < numberOfEnties; ++i) {
+    const unsigned int mode = ((entries[i].a_perm & S_IRGRP) ? AccessControl::READ : 0) |
+      ((entries[i].a_perm & S_IWGRP) ? AccessControl::WRITE : 0) |
+      ((entries[i].a_perm & S_IXGRP) ? AccessControl::EXECUTE : 0);
+    const int type = entries[i].a_type;
+    if (type & USER_OBJ) {
+      result.add(AccessControlEntry(Trustee(Trustee::USER, entries[i].a_id), AccessControl::ALLOW, mode));
+    } else if (type & USER) {
+      result.add(AccessControlEntry(Trustee(Trustee::USER, entries[i].a_id), AccessControl::ALLOW, mode));
+    } else if (type & GROUP_OBJ) {
+      result.add(AccessControlEntry(Trustee(Trustee::GROUP, entries[i].a_id), AccessControl::ALLOW, mode));
+    } else if (type & GROUP) {
+      result.add(AccessControlEntry(Trustee(Trustee::GROUP, entries[i].a_id), AccessControl::ALLOW, mode));
+    } else if (type & CLASS_OBJ) {
+      result.add(AccessControlEntry(Trustee(Trustee::CLASS, entries[i].a_id), AccessControl::ALLOW, mode));
+    } else if (type & OTHER_OBJ) {
+      result.add(AccessControlEntry(Trustee::EVERYONE, AccessControl::ALLOW, mode));
+    }
+  }
+  return result;
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX)
   throw NotImplemented(this);
-#else
-  throw NotImplemented(this);
-#endif
+#else // unix
+  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+    struct stat64 status;
+    assert(::fstat64(fd->getHandle(), &status) == 0, FileException(this));
+  #else
+    struct stat status;
+    assert(::fstat(fd->getHandle(), &status) == 0, FileException(this));
+  #endif
+  
+  AccessControlList result;
+//   const unsigned int ownerMode = ((status.st_mode & S_IRUSR) ? AccessControlEntry::READ : 0) |
+//     ((status.st_mode & S_IWUSR) ? AccessControlEntry::WRITE : 0) |
+//     ((status.st_mode & S_IXUSR) ? AccessControlEntry::EXECUTE : 0);
+//   result.add(AccessControlEntry(User((const void*)(ptrdiff_t)status.st_uid), AccessControlEntry::ALLOW, ownerMode)); // TAG: mark as owner in ACL?
+  
+//   const unsigned int groupMode = ((status.st_mode & S_IRGRP) ? AccessControlEntry::READ : 0) |
+//     ((status.st_mode & S_IWGRP) ? AccessControlEntry::WRITE : 0) |
+//     ((status.st_mode & S_IXGRP) ? AccessControlEntry::EXECUTE : 0);
+//   if (groupMode != 0) {
+//     result.add(AccessControlEntry(Group((const void*)(ptrdiff_t)status.st_gid), AccessControlEntry::ALLOW, groupMode));
+//   }
+  
+//   const unsigned int otherMode = ((status.st_mode & S_IROTH) ? AccessControlEntry::READ : 0) |
+//     ((status.st_mode & S_IWOTH) ? AccessControlEntry::WRITE : 0) |
+//     ((status.st_mode & S_IXOTH) ? AccessControlEntry::EXECUTE : 0);
+//   if (otherMode != 0) {
+//     result.add(AccessControlEntry(Trustee::EVERYONE, AccessControlEntry::ALLOW, otherMode));
+//   }
+  return result;
 #endif // flavor
+}
+
+Trustee File::getOwner() const throw(FileException) {
+  throw NotImplemented(this);
+}
+
+Trustee File::getGroup() const throw(FileException) {
+  throw NotImplemented(this);
+}
+
+void File::setOwner(const Trustee& owner) throw(FileException) {
+  throw NotImplemented(this);
 }
 
 long long File::getSize() const throw(FileException) {
@@ -287,21 +498,18 @@ long long File::getSize() const throw(FileException) {
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-    int result = fstat64(fd->getHandle(), (struct stat64*)&status);
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64 bit aligned
+    int result = ::fstat64(fd->getHandle(), (struct stat64*)&status);
   #else
     struct stat64 status;
-    int result = fstat64(fd->getHandle(), &status);
+    int result = ::fstat64(fd->getHandle(), &status);
   #endif // GNU Linux
-    assert(result == 0, FileException("Unable to get file size", this));
-    return status.st_size;
   #else
     struct stat status;
-    if (::fstat(fd->getHandle(), &status)) {
-      throw FileException("Unable to get file size", this);
-    }
+    int result = ::fstat(fd->getHandle(), &status);
+  #endif // LFS
+    assert(result == 0, FileException("Unable to get file size", this));
     return status.st_size;
-  #endif
 #endif
 }
 
@@ -604,11 +812,11 @@ Date File::getLastModification() throw(FileException) {
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-    int result = fstat64(fd->getHandle(), (struct stat64*)&status);
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64 bit aligned
+    int result = ::fstat64(fd->getHandle(), (struct stat64*)&status);
   #else
     struct stat64 status;
-    int result = fstat64(fd->getHandle(), &status);
+    int result = ::fstat64(fd->getHandle(), &status);
   #endif // GNU Linux
   #else
     struct stat status;

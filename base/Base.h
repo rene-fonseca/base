@@ -18,9 +18,27 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-/** This cast function is used to down cast pointers. */
+/**
+  This cast function is used to up cast pointers (i.e. you can explicitly
+  specify the desired pointer type). This function only works if there exists
+  implicit rules which convert the input type to the desired type.
+*/
 template<class TYPE>
-inline TYPE down_cast(TYPE argument) throw() {return argument;}
+inline TYPE up_cast(TYPE argument) throw() {return argument;}
+
+/**
+  Implicit casting function.
+*/
+template<class RESULT, class ARGUMENT>
+inline RESULT implicit_cast(ARGUMENT argument) throw() {return argument;}
+
+/**
+  This function casts any pointer type to any other pointer type (at compile
+  time). You should definitely avoid this function when possible. However, it
+  is not as dangerous as using reinterpret_cast directly.
+*/
+template<class TYPE*>
+inline TYPE* pointer_cast(void* value) throw() {return reinterpret_cast<TYPE*>(value);}
 
 /**
   Returns the minimum value.

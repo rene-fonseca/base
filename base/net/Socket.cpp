@@ -3,6 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <config.h>
 #include <base/net/Socket.h>
 #include <base/Functor.h>
 #include <base/io/EndOfFile.h>
@@ -434,19 +435,6 @@ bool Socket::atEnd() const throw() {
 }
 
 void Socket::flush() throw(IOException) {
-  SynchronizeShared();
-#if defined(__win32__)
-  if (!FlushFileBuffers((void*)getHandle())) {
-    throw IOException("Unable to flush socket");
-  }
-#else // __unix__
-  // How do you flush the output stream of a socket?
-  // How about waiting with select
-//  int command = FLUSHW;
-//  if (ioctl(getHandle(), I_FLUSH, &command)) {
-//    throw IOException("Unable to flush socket");
-//  }
-#endif
 }
 
 unsigned int Socket::read(char* buffer, unsigned int size) throw(IOException) {

@@ -14,17 +14,10 @@
 #ifndef _DK_SDU_MIP__BASE_CONCURRENCY__READ_WRITE_LOCK_H
 #define _DK_SDU_MIP__BASE_CONCURRENCY__READ_WRITE_LOCK_H
 
-#include <base/features.h>
-#include <base/Object.h>
 #include <base/Exception.h>
+#include <base/Object.h>
 #include <base/ResourceException.h>
 #include <base/concurrency/Lock.h>
-
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-#else
-  #include <pthread.h>
-#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -36,20 +29,14 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @see MutualExclusion Lock
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.1
+  @version 1.2
 */
 
 class ReadWriteLock : public virtual Object, public virtual Lock {
 protected:
 
-  /** Internal mutex representation. */
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  mutable CRITICAL_SECTION lock;
-#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
-  mutable pthread_rwlock_t lock;
-#else
-  mutable pthread_mutex_t lock;
-#endif
+  /** Internal representation of object. */
+  void* representation;
 public:
 
   /** Exception thrown directly by the ReadWriteLock class. */

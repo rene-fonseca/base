@@ -12,20 +12,126 @@
  ***************************************************************************/
 
 #include <base/concurrency/ReadWriteLock.h>
+#include <base/concurrency/SpinLock.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  #include <windows.h>
+#else // unix
+  #include <pthread.h>
   #include <errno.h>
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+
+class ReadWriteLockImpl {
+private:
+
+  unsigned int readers;
+  unsigned int writers;
+  SpinLock spinLock;
+  CRITICAL_SECTION common;
+  HANDLE blockReaders;
+public:
+  
+  inline ReadWriteLockImpl() throw(ResourceException) : readers(0), writers(0) {
+    Trace::message(__PRETTY_FUNCTION__);
+    blockReaders = ::CreateEvent(0, TRUE, TRUE, 0); // allow shared locks initially
+    assert(blockReaders != 0, ResourceException());
+    ::InitializeCriticalSection(&common);
+  }
+
+  inline void exclusiveLock() throw() {
+    spinLock.exclusiveLock();
+    if (writers++ == 0) {
+      ::ResetEvent(blockReaders); // prevent shared locks
+    }
+    spinLock.releaseLock();
+    ::EnterCriticalSection(&common); // wait for exclusive lock
+  }
+
+  inline bool tryExclusiveLock() throw() {
+    // we do not want to relinquish execution context if we not required to do so
+    spinLock.exclusiveLock();
+    bool result = (::TryEnterCriticalSection(&common) != 0); // must not block
+    if (result) {
+      if (writers++ == 0) {
+        ::ResetEvent(blockReaders); // prevent shared locks
+      }
+    }
+    spinLock.releaseLock();
+    return result;
+  }
+  
+  inline void sharedLock() throw() {
+    // we do not want to relinquish execution context if we not required to do so
+    spinLock.exclusiveLock();
+    while (true) {
+      if (writers == 0) {
+        // no writers are waiting (or have the lock)
+        if (readers++ == 0) {
+          // first reader must get the exclusive lock
+          ::EnterCriticalSection(&common); // must not block
+        }
+        break;
+      }
+      spinLock.releaseLock();
+      ::WaitForSingleObject(blockReaders, INFINITE); // block until all writers have completed
+      spinLock.exclusiveLock();
+      // writers could have reacquired the lock here
+    }
+    spinLock.releaseLock();
+  }
+
+  inline bool trySharedLock() throw() {
+    // we do not want to relinquish execution context if we not required to do so
+    bool result = false;
+    spinLock.exclusiveLock();
+    // writers have higher priority than readers and readers may already have the lock
+    if (writers == 0) {
+      result = true;
+      if (readers++ == 0) {
+        // first reader must get the exclusive lock
+        ::EnterCriticalSection(&common); // must not block
+      }
+    }    
+    spinLock.releaseLock();
+    return result;
+  }
+
+  inline void releaseLock() throw() {
+    spinLock.exclusiveLock();
+    if (readers > 0) {
+      // release shared lock
+      if (--readers == 0) {
+        ::LeaveCriticalSection(&common);
+      }
+    } else {
+      // release exclusive lock
+      ::LeaveCriticalSection(&common);
+      ASSERT(writers > 0);
+      if (--writers == 0) {
+        ::SetEvent(blockReaders);
+      }
+    }
+    ASSERT(::WaitForSingleObject(blockReaders, 0) == WAIT_OBJECT_0);
+    spinLock.releaseLock();
+  }
+  
+  inline ~ReadWriteLockImpl() throw() {
+    ASSERT(::TryEnterCriticalSection(&common) != 0);
+    ::DeleteCriticalSection(&common);
+    ::CloseHandle(blockReaders);
+    ASSERT((spinLock.tryExclusiveLock()) && (readers == 0) && (writers == 0));
+  }
+};
+
+#endif // flavour
+
 ReadWriteLock::ReadWriteLock() throw(ResourceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  //  __try {
-    InitializeCriticalSection(&lock);
-    //  } __except(STATUS_NO_MEMORY) {
-    // throw ResourceException();
-    //  }
+  representation = new ReadWriteLockImpl();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   pthread_rwlockattr_t attributes;
   if (pthread_rwlockattr_init(&attributes) != 0) {
@@ -36,7 +142,7 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException) {
     pthread_rwlockattr_destroy(&attributes); // should never fail
     throw ResourceException();
   }
-  if (pthread_rwlock_init(&lock, &attributes) != 0) {
+  if (pthread_rwlock_init((pthread_rwlock_t*)representation, &attributes) != 0) {
     pthread_rwlockattr_destroy(&attributes); // should never fail
     throw ResourceException();
   }
@@ -50,7 +156,7 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     throw ResourceException();
   }
-  if (pthread_mutex_init(&lock, &attributes) != 0) {
+  if (pthread_mutex_init((pthread_mutex_t*)representation, &attributes) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     throw ResourceException();
   }
@@ -60,17 +166,13 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException) {
 
 void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  //  __try {
-    EnterCriticalSection(&lock);
-    //  } __except(STATUS_INVALID_HANDLE) {
-    //    throw ReadWriteLockException();
-    //  }
+  ((ReadWriteLockImpl*)representation)->exclusiveLock();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
-  if (pthread_rwlock_wrlock(&lock)) {
+  if (pthread_rwlock_wrlock((pthread_rwlock_t*)representation)) {
     throw ReadWriteLockException();
   }
 #else
-  int result = pthread_mutex_lock(&lock);
+  int result = pthread_mutex_lock((pthread_mutex_t*)representation);
   if (result == 0) {
     return;
   } else if (result == EDEADLK) {
@@ -83,15 +185,9 @@ void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
 
 bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  BOOL result;
-  //  __try {
-    result = TryEnterCriticalSection(&lock);
-    //  } __except(STATUS_INVALID_HANDLE) {
-    //    throw ReadWriteLockException();
-    //  }
-  return result;
+  return ((ReadWriteLockImpl*)representation)->tryExclusiveLock();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
-  int result = pthread_rwlock_trywrlock(&lock);
+  int result = pthread_rwlock_trywrlock((pthread_rwlock_t*)representation);
   if (result == 0) {
     return true;
   } else if (result == EBUSY) {
@@ -100,7 +196,7 @@ bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
     throw ReadWriteLockException();
   }
 #else
-  int result = pthread_mutex_trylock(&lock);
+  int result = pthread_mutex_trylock((pthread_mutex_t*)representation);
   if (result == 0) {
     return true;
   } else if (result == EBUSY) {
@@ -113,17 +209,13 @@ bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
 
 void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  //  __try {
-    EnterCriticalSection(&lock);
-    //  } __except(STATUS_INVALID_HANDLE) {
-    //    throw ReadWriteLockException();
-    //  }
+  ((ReadWriteLockImpl*)representation)->sharedLock();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
-  if (pthread_rwlock_rdlock(&lock)) {
+  if (pthread_rwlock_rdlock((pthread_rwlock_t*)representation)) {
     throw ReadWriteLockException();
   }
 #else
-  int result = pthread_mutex_lock(&lock);
+  int result = pthread_mutex_lock((pthread_mutex_t*)representation);
   if (result == 0) {
     return;
   } else if (result == EDEADLK) {
@@ -136,15 +228,9 @@ void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
 
 bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  BOOL result;
-  //  __try {
-    result = TryEnterCriticalSection(&lock);
-    //  } __except(STATUS_INVALID_HANDLE) {
-    //    throw ReadWriteLockException();
-    //  }
-  return result;
+  return ((ReadWriteLockImpl*)representation)->trySharedLock();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
-  int result = pthread_rwlock_tryrdlock(&lock);
+  int result = pthread_rwlock_tryrdlock((pthread_rwlock_t*)representation);
   if (result == 0) {
     return true;
   } else if (result == EBUSY) {
@@ -153,7 +239,7 @@ bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
     throw ReadWriteLockException();
   }
 #else
-  int result = pthread_mutex_trylock(&lock);
+  int result = pthread_mutex_trylock((pthread_mutex_t*)representation);
   if (result == 0) {
     return true;
   } else if (result == EBUSY) {
@@ -165,14 +251,15 @@ bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
 }
 
 void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
+  // must be invoked by a thread which has already has a acquired an exclusive or shared lock!
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  LeaveCriticalSection(&lock);
+  ((ReadWriteLockImpl*)representation)->releaseLock();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
-  if (pthread_rwlock_unlock(&lock)) {
+  if (pthread_rwlock_unlock((pthread_rwlock_t*)representation)) {
     throw ReadWriteLockException();
   }
 #else
-  if (pthread_mutex_unlock(&lock)) {
+  if (pthread_mutex_unlock((pthread_mutex_t*)representation)) {
     throw ReadWriteLockException();
   }
 #endif
@@ -180,15 +267,17 @@ void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
 
 ReadWriteLock::~ReadWriteLock() throw(ReadWriteLockException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  DeleteCriticalSection(&lock);
+  delete (ReadWriteLockImpl*)representation;
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
-  if (pthread_rwlock_destroy(&lock)) {
+  if (pthread_rwlock_destroy((pthread_rwlock_t*)representation)) {
     throw ReadWriteLockException();
   }
+  delete[] (pthread_rwlock_t*)representation;
 #else
-  if (pthread_mutex_destroy(&lock)) {
+  if (pthread_mutex_destroy((pthread_mutex_t*)representation)) {
     throw ReadWriteLockException();
   }
+  delete[] (pthread_mutex_t*)representation;
 #endif
 }
 

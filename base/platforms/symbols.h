@@ -105,6 +105,8 @@
 #define _DK_SDU_MIP__BASE__WINNT4 5 // only WIN32
 #define _DK_SDU_MIP__BASE__W2K 6 // only WIN32
 #define _DK_SDU_MIP__BASE__WXP 7 // only WIN32
+#define _DK_SDU_MIP__BASE__BEOS 8
+#define _DK_SDU_MIP__BASE__AIX 9
 
 // Major architecture groups
 #define _DK_SDU_MIP__BASE__X86 1
@@ -114,14 +116,20 @@
 #define _DK_SDU_MIP__BASE__ALPHA 5
 #define _DK_SDU_MIP__BASE__PPC 6
 #define _DK_SDU_MIP__BASE__RS 7
+#define _DK_SDU_MIP__BASE__X86_64 8
 
 // Architectures (minor)
 #define _DK_SDU_MIP__BASE__486 1 // only with X86
 #define _DK_SDU_MIP__BASE__586 2 // only with X86
 #define _DK_SDU_MIP__BASE__686 3 // only with X86
-#define _DK_SDU_MIP__BASE__MIPSI 1 // only with MIPS
-#define _DK_SDU_MIP__BASE__MIPSII 2 // only with MIPS
-#define _DK_SDU_MIP__BASE__MIPSIII 3 // only with MIPS
+#define _DK_SDU_MIP__BASE__MIPSI 1
+#define _DK_SDU_MIP__BASE__MIPSII 2
+#define _DK_SDU_MIP__BASE__MIPSIII 3
+#define _DK_SDU_MIP__BASE__SPARC_V7 1
+#define _DK_SDU_MIP__BASE__SPARC_V8 2
+#define _DK_SDU_MIP__BASE__SPARC_SPARCLITE 3
+#define _DK_SDU_MIP__BASE__SPARC_SPARCLET 4
+#define _DK_SDU_MIP__BASE__SPARC_V9 5
 
 // Supported byte orders
 #define _DK_SDU_MIP__BASE__BIG_ENDIAN 1

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,7 +30,7 @@ int main() {
   char buffer[INET6_ADDRSTRLEN];
   int handle;
 
-  getaddrinfo("localhost", NULL, NULL, &ai);
+  getaddrinfo("localhost", 0, 0, &ai);
   freeaddrinfo(ai);
   inet_pton(AF_INET6, "::", &ia);
   inet_ntop(AF_INET6, &ia, buffer, sizeof(buffer));

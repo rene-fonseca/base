@@ -165,7 +165,7 @@ inline unsigned int mismatch(const TYPE* left, const TYPE* right, unsigned int c
 */
 template<class TYPE>
 inline int compare(const TYPE* left, const TYPE* right, unsigned int count) {
-  // I'm not using memcpy here 'cause this will give problems for big-endian architectures
+  // I'm not using memcmp here 'cause this will give problems for big-endian architectures
   const TYPE* end = left + count;
   while (left < end) {
     int temp;

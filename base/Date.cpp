@@ -13,6 +13,7 @@
 
 #include <base/features.h>
 #include <base/Date.h>
+#include <base/concurrency/Thread.h>
 
 #if defined(__win32__)
   #include <windows.h>
@@ -286,6 +287,41 @@ int Date::getUTCYear() const throw() {
   struct tm result;
   gmtime_r(&(time_t)date, &result); // MT-safe
   return result.tm_year;
+#endif
+}
+
+String Date::format(const String& format, bool local) const throw(MemoryException) {
+#if defined(__win32__)
+#else // __unix__
+  Allocator<char>* buffer = Thread::getLocalStorage();
+  struct tm time;
+  if (local) {
+    localtime_r(&(time_t)date, &time);
+  } else {
+    gmtime_r(&(time_t)date, &time); // MT-safe
+  }
+  size_t result = strftime(buffer->getElements(), buffer->getSize(), format.getElements(), &time);
+  return String(buffer->getElements(), result);
+#endif
+}
+
+WideString Date::format(const WideString& format, bool local) const throw(MemoryException) {
+#if defined(_DK_SDU_MIP__BASE__WCSFTIME)
+#if defined(__win32__)
+#else // __unix__
+  Allocator<char>* buffer = Thread::getLocalStorage();
+  struct tm time;
+  if (local) {
+    localtime_r(&(time_t)date, &time);
+  } else {
+    gmtime_r(&(time_t)date, &time); // MT-safe
+  }
+  size_t result = wcsftime((const wchar_t*)buffer->getElements(), buffer->getSize()/sizeof(wchar_t), format.getElements(), &time);
+  return WideString((wchar_t*)buffer->getElements(), result);
+#endif
+#else
+  #warning WideString Date::format(const WideString& format, bool local) const throw(MemoryException) not available
+  return WideString();
 #endif
 }
 

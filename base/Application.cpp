@@ -28,6 +28,24 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class ApplicationImpl {
 public:
 
+  static void terminationExceptionHandler() {
+    ferr << "Internal error: Exception handling abandoned" << ENDL;
+    exit(Application::EXIT_CODE_ERROR); // TAG: is abort() better
+  }
+
+  static void unexpectedExceptionHandler() {
+//    ferr << "Internal error: Violation of exception specification" << ENDL;
+    try {
+      throw;
+    } catch(Exception& e) {
+      ferr << "Internal error: Violation of exception specification with" << EOL
+           << "  " << getTypename(e) << ": " << e.getMessage() << ENDL;
+    } catch(...) {
+      ferr << "Internal error: Exception violates exception specification" << ENDL;
+    }
+    exit(Application::EXIT_CODE_ERROR); // TAG: is abort() or terminate() better
+  }
+
   /* The application signal handler. */
 #if defined(__win32__)
 
@@ -37,8 +55,8 @@ public:
     case CTRL_BREAK_EVENT: // Ctrl+Break
     case CTRL_C_EVENT: // Ctrl+C
       if (Application::application) {
-	Application::application->terminate();
-	return TRUE;
+        Application::application->terminate();
+        return TRUE;
       }
     }
     return FALSE;
@@ -50,12 +68,12 @@ public:
     switch (signal) {
     case SIGHUP: // reload
       if (Application::application) {
-	Application::application->hangup();
+        Application::application->hangup();
       }
       break;
     case SIGTERM: // terminate
       if (Application::application) {
-	Application::application->terminate();
+        Application::application->terminate();
       }
       break;
     case SIGCHLD: // child state changed
@@ -66,6 +84,8 @@ public:
 #endif
 
 }; // end of ApplicationImpl
+
+
 
 Application* Application::application = 0; // initialize application as uninitialized
 
@@ -85,6 +105,10 @@ Application::Application(const String& name, int argc, const char* argv[], const
   assert(signal(SIGCHLD, ApplicationImpl::signalHandler) != SIG_ERR, Exception("Unable to install signal handler"));
 #endif
 
+  // install exception handlers
+  std::set_terminate(ApplicationImpl::terminationExceptionHandler);
+  std::set_unexpected(ApplicationImpl::unexpectedExceptionHandler);
+
   assert((argc > 0) && (argv), OutOfDomain());
   path = argv[0];
   for (unsigned int i = 1; i < argc; ++i) {
@@ -102,14 +126,14 @@ Application::Application(const String& name, int argc, const char* argv[], const
   application = this;
 }
 
-int Application::exceptionHandler(Exception& e) const throw() {
+int Application::exceptionHandler(const Exception& e) const throw() {
   ferr << getTypename(e) << ": " << e.getMessage() << ENDL;
-  return 1;
+  return Application::EXIT_CODE_ERROR;
 }
 
 int Application::exceptionHandler() const throw() {
-  ferr << "Unspecified exception" << ENDL;
-  return 1;
+  ferr << "Internal error: Unspecified exception" << ENDL;
+  return Application::EXIT_CODE_ERROR;
 }
 
 void Application::hangup() throw() {
@@ -142,7 +166,7 @@ int run() throw() {
   } catch(...) {
     return Application::getApplication()->exceptionHandler();
   }
-  return 0;
+  return Application::EXIT_CODE_NORMAL;
 }
 */
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

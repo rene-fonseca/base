@@ -34,6 +34,12 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class Application : public Object {
 friend class ApplicationImpl;
 friend class DaemonImpl;
+public:
+
+  /** The normal exit code of the application (indicating no errors). */
+  static const int EXIT_CODE_NORMAL = 0;
+  /** The exit code returned by the application on errors. */
+  static const int EXIT_CODE_ERROR = 1;
 private:
 
   /** The application object. */
@@ -107,7 +113,7 @@ public:
     Handler of uncaught exceptions. By default this handler writes the exception
     to stderr and returns error code 1.
   */
-  virtual int exceptionHandler(Exception& e) const throw();
+  virtual int exceptionHandler(const Exception& e) const throw();
 
   /**
     Handler of uncaught unknown exceptions. By default this handler writes an

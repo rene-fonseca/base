@@ -17,14 +17,17 @@
 #include <base/Object.h>
 #include <base/DateException.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/string/String.h>
+#include <base/string/WideString.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Representation of date/time in Coordinated Universal Time (UTC).
 
+  @short Date and time.
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.1
 */
 
 class Date : public Object {
@@ -178,9 +181,28 @@ public:
     Returns the year in UTC.
   */
   int getUTCYear() const throw();
+
+  /**
+    Returns the date/time as a string.
+
+    @param format The desired format of the resulting string.
+    @param local When true, specifies that the time should be presented in local time otherwise UTC is assumed. The Default is true (local).
+  */
+  String format(const String& format, bool local = true) const throw(MemoryException);
+
+  /**
+    Returns the date/time as a string.
+
+    @param format The desired format of the resulting string.
+    @param local When true, specifies that the time should be presented in local time otherwise UTC is assumed. The Default is true (local).
+  */
+  WideString format(const WideString& format, bool local = true) const throw(MemoryException);
 };
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Date& value);
+
+template<>
+inline bool isRelocateable<Date>() throw() {return isRelocateable<Object>() && isRelocateable<int>();}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

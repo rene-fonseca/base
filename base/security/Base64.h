@@ -20,8 +20,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Base64 encoding (see RFC ???).
-
+  Base64 encoding (see RFC 2045).
+  
+  @short Base64 encoding support.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

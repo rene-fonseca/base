@@ -50,14 +50,6 @@ public:
          << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
 
-    try {
-//       FileSystem::makeLink(MESSAGE("D:\\WWWpublic"), MESSAGE("mysymlinkdir"));
-//       FileSystem::makeLink(MESSAGE("D:\\WWWpublic\\gip-framework.chm"), MESSAGE("mysymlink"));
-//      FileSystem::makeHardLink(MESSAGE("D:\\WWWpublic\\base-framework.chm"), MESSAGE("myhardlink"));
-    } catch (Exception& e) {
-      ferr << e << ENDL;
-    }
-    
     String path = MESSAGE("."); // use current folder by default
     
     Array<String> arguments = getArguments();
@@ -121,14 +113,26 @@ public:
             flags[0] = (link) ? 'l' : '-';
             flags[1] = (mode & FileInfo::RUSR) ? 'r' : '-';
             flags[2] = (mode & FileInfo::WUSR) ? 'w' : '-';
-            flags[3] = (mode & FileInfo::XUSR) ? 'x' : '-';
+            if (mode & FileInfo::SET_UID) {
+              flags[3] = (mode & FileInfo::XUSR) ? 's' : 'S';
+            } else {
+              flags[3] = (mode & FileInfo::XUSR) ? 'x' : '-';
+            }
             flags[4] = (mode & FileInfo::RGRP) ? 'r' : '-';
             flags[5] = (mode & FileInfo::WGRP) ? 'w' : '-';
-            flags[6] = (mode & FileInfo::XGRP) ? 'x' : '-';
+            if (mode & FileInfo::SET_GID) {
+              flags[6] = (mode & FileInfo::XGRP) ? 'S' : 's';
+            } else {
+              flags[6] = (mode & FileInfo::XGRP) ? 'x' : '-';
+            }
             flags[7] = (mode & FileInfo::ROTH) ? 'r' : '-';
             flags[8] = (mode & FileInfo::WOTH) ? 'w' : '-';
-            flags[9] = (mode & FileInfo::XOTH) ? 'x' : '-';
-
+            if (mode & FileInfo::RESTRICT) {
+              flags[9] = (mode & FileInfo::XOTH) ? 's' : 'S';
+            } else {
+              flags[9] = (mode & FileInfo::XOTH) ? 'x' : '-';
+            }
+            
             if (cachedOwner != info.getOwner()) {
               cachedOwner = info.getOwner();
               try {
@@ -176,13 +180,25 @@ public:
             flags[0] = (link) ? 'l' : 'd';
             flags[1] = (mode & FolderInfo::RUSR) ? 'r' : '-';
             flags[2] = (mode & FolderInfo::WUSR) ? 'w' : '-';
-            flags[3] = (mode & FolderInfo::XUSR) ? 'x' : '-';
+            if (mode & FolderInfo::SET_UID) {
+              flags[3] = (mode & FolderInfo::XUSR) ? 'S' : 's';
+            } else {
+              flags[3] = (mode & FolderInfo::XUSR) ? 'x' : '-';
+            }
             flags[4] = (mode & FolderInfo::RGRP) ? 'r' : '-';
             flags[5] = (mode & FolderInfo::WGRP) ? 'w' : '-';
-            flags[6] = (mode & FolderInfo::XGRP) ? 'x' : '-';
+            if (mode & FolderInfo::SET_GID) {
+              flags[6] = (mode & FolderInfo::XGRP) ? 'S' : 's';
+            } else {
+              flags[6] = (mode & FolderInfo::XGRP) ? 'x' : '-';
+            }
             flags[7] = (mode & FolderInfo::ROTH) ? 'r' : '-';
             flags[8] = (mode & FolderInfo::WOTH) ? 'w' : '-';
-            flags[9] = (mode & FolderInfo::XOTH) ? 'x' : '-';
+            if (mode & FolderInfo::RESTRICT) {
+              flags[9] = (mode & FolderInfo::XOTH) ? 'S' : 's';
+            } else {
+              flags[9] = (mode & FolderInfo::XOTH) ? 'x' : '-';
+            }
             
             if (cachedOwner != info.getOwner()) {
               cachedOwner = info.getOwner();
@@ -223,7 +239,7 @@ public:
               fout << MESSAGE(" -> ") << target;
             }
             fout << EOL;
-          } else {            
+          } else { // unknown entry type
             fout << MESSAGE("----------") << ' '
                  << setWidth(4) << ' ' << ' '
                  << setWidth(16) << ' ' << ' '

@@ -21,6 +21,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/mem/Allocator.h>
 #include <base/collection/Array.h>
+#include <base/Cast.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -48,10 +49,11 @@ public:
     RESET_START = 0x00c,
     SPLIT_TIMEOUT_HI = 0x018,
     SPLIT_TIMEOUT_LO = 0x01c,
-    ARGUMENT_HI = 0x0020,
-    ARGUMENT_LO = 0x0024,
+    ARGUMENT_HI = 0x020,
+    ARGUMENT_LO = 0x024,
     TEST_START = 0x028,
     TEST_STATUS = 0x02c,
+    BUS_DEPENDENT = 0x200,
     CYCLE_TIME = 0x200,
     BUS_TIME = 0x204,
     POWER_FAIL_IMMINENT = 0x208,
@@ -61,10 +63,14 @@ public:
     BANDWIDTH_AVAILABLE = 0x220,
     CHANNELS_AVAILABLE_HI = 0x224,
     CHANNELS_AVAILABLE_LO = 0x228,
+    BROADCAST_CHANNEL = 0x234,
     CONFIGURATION_ROM = 0x400,
-    BUS_INFO_BLOCK = 0x404,
-    FCP_COMMAND = 0xb00,
-    FCP_RESPONSE = 0xd00,
+    BUS_INFO_BLOCK = CONFIGURATION_ROM + 0x04,
+    BUS_INFO_NAME = BUS_INFO_BLOCK,
+    BUS_INFO_FLAGS = BUS_INFO_BLOCK + 0x04,
+    BUS_INFO_GUID = BUS_INFO_BLOCK + 0x08,
+    FCP_COMMAND_FRAME = 0xb00,
+    FCP_RESPONSE_FRAME = 0xd00,
     TOPOLOGY_MAP = 0x1000,
     SPEED_MAP = 0x2000
   };
@@ -107,6 +113,53 @@ public:
     KEY_3f = 0x3f
   };
 
+  /** Power class. */
+  enum PowerClass {
+    /**
+      The node does not need power from the bus and does not repeat power.
+    */
+    POWER_NO_REPEAT,
+    /**
+      The node is self-powered and privides a minimum of 15W on the bus.
+    */
+    POWER_SELF_POWERED_15W,
+    /**
+      The node is self-powered and privides a minimum of 30W on the bus.
+    */
+    POWER_SELF_POWERED_30W,
+    /**
+      The node is self-powered and privides a minimum of 45W on the bus.
+    */
+    POWER_SELF_POWERED_45W,
+    /**
+      The node may be powered from the bus and uses up to 1W.
+    */
+    POWER_CONSUMES_1W,
+    /**
+      The node may be powered from the bus and uses up to 1W plus an additional
+      2W to enable higher layers.
+    */
+    POWER_CONSUMES_1W_2W,
+    /**
+      The node may be powered from the bus and uses up to 1W plus an additional
+      5W to enable higher layers.
+    */
+    POWER_CONSUMES_1W_5W,
+    /**
+      The node may be powered from the bus and uses up to 1W plus an additional
+      9W to enable higher layers.
+    */
+    POWER_CONSUMES_1W_9W
+  };
+  
+  /** The role of a node. */
+  enum Role {
+    BUS_MANAGER, /**< Bus manager. */
+    ISOCHRONOUS_RESOURCE_MANAGER, /**< Isochronous resource manager. */
+    CYCLE_MASTER, /**< Cycle master. */
+    ROOT /** The root of the bus. */
+  };
+  
   /**
     Returns the CSR key for the specified CSR key and value.
     
@@ -132,6 +185,20 @@ public:
   }
   
   /**
+    Returns the maximum payload for asynchronous packets for the specified speed.
+  */
+  static inline unsigned int getMaximumAsyncPayloadForSpeed(Speed speed) throw() {
+    return 1 << (static_cast<unsigned int>(speed) + 9);
+  }
+  
+  /**
+    Returns the maximum payload for isochronous packets for the specified speed.
+  */
+  static inline unsigned int getMaximumIsoPayloadForSpeed(Speed speed) throw() {
+    return 1 << (static_cast<unsigned int>(speed) + 10);
+  }
+
+  /**
     This exception is raised on bus resets. The reset must be acknowledged
     to bring the IEEE-1394 interface back into the working operating mode.
     
@@ -143,8 +210,6 @@ public:
   class BusReset {
   public:
   };
-
-
 
   /** Exception causes. */
   enum ExceptionCause {
@@ -165,13 +230,14 @@ public:
   
   /** Capability flags of nodes. */
   enum Capability {
-    ISOCHRONOUS_RESOURCE_MANAGER = 1 << 0,
-    CYCLE_MASTER = 1 << 1,
-    ISOCHRONOUS_TRANSMISSION = 1 << 2,
-    BUS_MASTER = 1 << 3,
-    POWER_MANAGEMENT = 1 << 4
+    ISOCHRONOUS_RESOURCE_MANAGER_CAPABLE = 1 << 0,
+    CYCLE_MASTER_CAPABLE = 1 << 1,
+    ISOCHRONOUS_TRANSACTION_CAPABLE = 1 << 2,
+    BUS_MASTER_CAPABLE = 1 << 3,
+    POWER_MANAGER_CAPABLE = 1 << 4
   };
 
+  /** Transaction code. */
   enum TransactionCode {
     TCODE_WRITE_REQUEST_FOR_DATA_QUADLET,
     TCODE_WRITE_REQUEST_FOR_DATA_BLOCK,
@@ -191,6 +257,7 @@ public:
     TCODE_RESERVED_15
   };
 
+  /** Port state. */
   enum PortState {
     PORT_NOT_CONNECTED,
     PORT_CONNECTED_TO_OHTER_LAYER,
@@ -236,21 +303,32 @@ protected:
   struct NodeDescriptor {
     /** Specifies that the node is present. */
     bool present;
-    /** Specifies that the link layer is active. */
+    /** Specifies that the node has an active link and transaction layer. */
     bool link;
     /** Specifies that the node is a contender for the bus manager or isochronous resource manager. */
     bool contender;
+    /** The gap count. */
+    unsigned int gapCount;
     /** The physical speed of the node. */
     Speed speed;
+    /** The link speed of the node. */
+    Speed linkSpeed;
     /** The GUID of the node if available. */
     EUI64 guid;
+    /** Capabilities. */
+    unsigned int capabilities;
     /** The IEEE 1394 specification. */
     Standard standard;
+    /** The number of ports. */
+    unsigned int numberOfPorts;
     /** The port connections. */
     PortState ports[3 + 3 * 8];
     /** Specifies that the node initiated the last reset. */
     bool initiatedReset;
-    // asynchronousPayload;
+    /** The power class of the node. */
+    PowerClass powerClass;
+    /** The maximum payload. */
+    unsigned int maximumPayload;
   };
 
   /** Holds the reset generation number. */
@@ -265,6 +343,8 @@ protected:
   unsigned int busManagerId;
   /** The physical id of the current isochronous resource manager. */
   unsigned int isochronousResourceManagerId;
+  /** The physical id of the current cycle master. */
+  unsigned int cycleMasterId;
   /** The maximum speeds of the nodes. */
   Speed speedMap[63][64];
   /** Mask specifying the nodes with the link layer activated. */
@@ -272,6 +352,24 @@ protected:
   /** Mask specifying the contenders. */
   uint64 contenderNodes;
 
+  /**
+    Returns the guid of the specified node.
+  */
+  inline EUI64 getEUI64(unsigned short node) throw(IEEE1394Exception) {
+    Quadlet guid[2];
+    ieee1394impl->read(
+      node,
+      IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BUS_INFO_GUID,
+      Cast::getCharAddress(guid[0]), sizeof(guid[0])
+    );
+    ieee1394impl->read(
+      node,
+      IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BUS_INFO_GUID + sizeof(Quadlet),
+      Cast::getCharAddress(guid[1]), sizeof(guid[1])
+    );
+    return EUI64(Cast::getAddress(guid[0]));
+  }
+  
   /**
     Loads the topology map from the bus manager.
   */
@@ -288,6 +386,16 @@ protected:
   void checkResetGeneration() throw(IEEE1394Exception);
 public:
 
+  /**
+    Returns the node id of the node with the desired role.
+    
+    @param role The role of the desired node.
+    @param busId The bus id of the bus ([0; 1023]). The default is the local bus.
+
+    @return Returns the broadcast id for the specified bus if no node is found.
+  */
+  unsigned short findRole(Role role, unsigned int busId = LOCAL_BUS) throw(OutOfDomain, IEEE1394Exception);
+  
   void reload() throw(IEEE1394Exception);
 
   /**
@@ -305,6 +413,20 @@ public:
   }
 
   /**
+    Returns the physical id of the root node.
+  */
+  inline unsigned int getRootNode() const throw() {
+    return numberOfNodes - 1; // the largest physical id
+  }
+
+  /**
+    Returns the physical id of the cycle master.
+  */
+  inline unsigned int getCycleMaster() const throw() {
+    return cycleMasterId;
+  }
+  
+  /**
     Returns the physical id of the bus manager.
   */
   inline unsigned int getBusManager() const throw() {
@@ -317,7 +439,7 @@ public:
   inline unsigned int getIsochronousResourceManager() const throw() {
     return isochronousResourceManagerId;
   }
-  
+
   /**
     Returns the cycle time (in units of 125 micro seconds) of the specified
     node. The node should be isochronous capable.
@@ -343,7 +465,7 @@ public:
     Returns the available isochronous channels from the current isochronous reource manager.
   */
   uint64 getAvailableIsochronousChannels() throw(IEEE1394Exception);
-
+  
   /**
     Returns the maximum physical speed of the specified node.
 
@@ -351,6 +473,13 @@ public:
   */
   Speed getMaximumSpeed(unsigned int physicalId) const throw(OutOfDomain);
 
+  /**
+    Returns the maximum link speed of the specifed local node.
+
+    @param physicalId The physical id of the node.
+  */
+  Speed getMaximumLinkSpeed(unsigned int physicalId) const throw(OutOfDomain);
+  
   /**
     Returns the maximum speed between the specified local nodes.
 
@@ -372,6 +501,11 @@ public:
     Returns the maximum broadcast speed.
   */
   Speed getBroadcastSpeed() const throw(OutOfDomain);
+  
+  /**
+    Returns the maximum speed supported by all the specified nodes (bit mask).
+  */
+  Speed getMaximumSpeed(uint64 nodes) const throw();
   
   /**
     Creates a IEEE 1394 object with the specified implementation.
@@ -448,20 +582,20 @@ public:
   Array<EUI64> getNodes() throw();
   
   /**
-    Returns the IEEE 1394 standard of the adapter.
-  */
-  inline Standard getCompliance() const throw(IEEE1394Exception) {
-    return ieee1394impl->getCompliance();
-  }
-  
-  /**
     Returns the unique identifier of the specified local node. The returned
     guid is invalid if the node does not have a general configuration ROM.
     
     @param physicalId The physical id of the local node.
   */
   EUI64 getLocalIdentifier(unsigned int physicalId) const throw(OutOfDomain);
-
+  
+  /**
+    Returns the IEEE 1394 standard of the specified node.
+    
+    @param node The node id.
+  */
+  Standard getCompliance(unsigned short node) throw(IEEE1394Exception);
+  
   /**
     Returns the unique identifier of the specified node. Raises
     IEEE1394Exception if the node has not general configuration ROM.
@@ -580,6 +714,81 @@ public:
   }
   
   /**
+    Returns true if the local node is transaction capable.
+
+    @param physicalId The physical id the node.    
+  */
+  inline bool isTransactionCapable(unsigned int physicalId) const throw() {
+    assert(physicalId < numberOfNodes, OutOfDomain(this));
+    return nodes[physicalId].link;
+  }
+
+  /**
+    Returns the maximum payload of the specified local node.
+
+    @param physicalId The physical id the node.
+  */
+  inline unsigned int getGapCount(unsigned int physicalId) const throw(OutOfDomain) {
+    assert(physicalId < numberOfNodes, OutOfDomain(this));
+    return nodes[physicalId].gapCount;
+  }
+
+  /**
+    Returns the maximum payload of the specified local node.
+
+    @param physicalId The physical id the node.
+  */
+  inline unsigned int getNumberOfPorts(unsigned int physicalId) const throw(OutOfDomain) {
+    assert(physicalId < numberOfNodes, OutOfDomain(this));
+    return nodes[physicalId].numberOfPorts;
+  }
+
+  /**
+    Returns the state of the port of the local node.
+    
+    @param physicalId The physical id of the node.
+    @param port The port of the node.
+  */
+  inline PortState getPortState(unsigned int physicalId, unsigned int port) const throw(OutOfDomain) {
+    assert((physicalId < numberOfNodes) && (port < nodes[physicalId].numberOfPorts), OutOfDomain(this));
+    return nodes[physicalId].ports[port];
+  }
+  
+  /**
+    Returns the maximum payload of the specified local node.
+
+    @param physicalId The physical id the node.
+  */
+  inline unsigned int getLocalMaximumPayload(unsigned int physicalId) const throw(OutOfDomain) {
+    assert(physicalId < numberOfNodes, OutOfDomain(this));
+    return nodes[physicalId].maximumPayload;
+  }
+  
+  /**
+    Returns the power class of the specified local node.
+
+    @param physicalId The physical id the node.
+  */
+  inline PowerClass getPowerClass(unsigned int physicalId) const throw(OutOfDomain) {
+    assert(physicalId < numberOfNodes, OutOfDomain(this));
+    return nodes[physicalId].powerClass;
+  }
+  
+  /**
+    Read quadlet from node.
+
+    @param node The node id of source node.
+    @param offset The offset of the quadlet from the CSR base address.
+    
+    @return The quadlet in native byte order.
+  */
+  inline uint32 getQuadlet(unsigned short node, uint32 offset) throw(IEEE1394Exception) {
+    Quadlet quadlet;
+    ieee1394impl->read(node, IEEE1394::CSR_BASE_ADDRESS + offset, Cast::getCharAddress(quadlet), sizeof(quadlet));
+    return quadlet;
+  }
+
+  /**
     Read data from device.
 
     @param node The node id of source node.
@@ -587,7 +796,7 @@ public:
     @param buffer The data buffer.
     @param size The number of bytes to read.
   */
-  inline void read(unsigned short node, uint64 address, char* buffer, unsigned int size) throw(IOException) {
+  inline void read(unsigned short node, uint64 address, char* buffer, unsigned int size) throw(IEEE1394Exception) {
     ieee1394impl->read(node, address, buffer, size);
   }
 
@@ -599,7 +808,7 @@ public:
     @param buffer The data buffer.
     @param size The number of bytes to write.
   */
-  inline void write(unsigned short node, uint64 address, const char* buffer, unsigned int size) throw(IOException) {
+  inline void write(unsigned short node, uint64 address, const char* buffer, unsigned int size) throw(IEEE1394Exception) {
     ieee1394impl->write(node, address, buffer, size);
   }
 
@@ -639,7 +848,7 @@ public:
   }
 
   inline void readIsochronous(char* buffer, unsigned int size, unsigned int channel) throw(OutOfDomain, IEEE1394Exception) {
-    ieee1394impl->readIsochronous(buffer, size, channel);
+    //    ieee1394impl->readIsochronous(buffer, size, channel);
   }
 };
 

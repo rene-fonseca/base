@@ -32,6 +32,11 @@ class IEEE1394Impl : public ReferenceCountedObject, public IEEE1394Common {
 public:
 
   /**
+    Returns the default IEEE 1394 implementation.
+  */
+  static IEEE1394Impl* getDefault() throw();
+  
+  /**
     Returns true if the bus has been reset since last check.
   */
   virtual bool hasBeenReset() const throw() = 0;

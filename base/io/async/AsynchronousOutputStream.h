@@ -31,7 +31,7 @@ public:
     @param bytesToWrite The number of bytes to be written.
     @param listener The listener to be notified on completion.
   */
-  virtual AsynchronousWriteOperation write(const void* buffer, unsigned int bytesToWrite, AsynchronousWriteEventListener* listener) throw(AsynchronousException) = 0;
+  virtual AsynchronousWriteOperation write(const char* buffer, unsigned int bytesToWrite, AsynchronousWriteEventListener* listener) throw(AsynchronousException) = 0;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

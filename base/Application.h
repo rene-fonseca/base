@@ -33,13 +33,14 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class Application : public Object {
   friend class ApplicationImpl;
-  friend class DaemonImpl;
 public:
 
   /** The normal exit code of the application (indicating no errors). */
   static const int EXIT_CODE_NORMAL = 0;
   /** The exit code returned by the application on errors. */
   static const int EXIT_CODE_ERROR = 1;
+  /** The exit code returned by the application on initialization error. */
+  static const int EXIT_CODE_INITIALIZATION = 2;
 private:
 
   /** The application object. */

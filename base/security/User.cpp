@@ -15,11 +15,13 @@
 #include <base/security/User.h>
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
+#include <base/string/WideString.h>
 #include <base/NotImplemented.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
   #include <aclapi.h>
+  #include <lm.h>
 #else // unix
   #include <sys/types.h>
   #include <pwd.h>
@@ -27,6 +29,31 @@
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+class UserImpl {
+public:
+
+  union AnyId {
+    void* opaque;
+    uid_t system;
+  };
+
+  static inline void* getOpaque(uid_t id) throw() {
+    UserImpl::AnyId anyId;
+    anyId.opaque = 0;
+    anyId.system= id;
+    return anyId.opaque;
+  }
+  
+  static inline uid_t getSystem(void* id) throw() {
+    UserImpl::AnyId anyId;
+    anyId.system = 0;
+    anyId.opaque = id;
+    return anyId.system;
+  }
+};
+#endif // unix
 
 User User::getCurrentUser() throw(UserException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -48,8 +75,7 @@ User User::getCurrentUser() throw(UserException) {
   ::LocalFree(securityDescriptor);
   return result;
 #else // unix
-  uid_t uid = ::getuid();
-  return User((void*)(ptrditt_t)uid);
+  return User(UserImpl::getOpaque(::getuid()));
 #endif // flavor
 }
 
@@ -62,7 +88,7 @@ User::User(const void* _id) throw(OutOfDomain) {
   copy<char>((char*)id, (const char*)_id, size);
 #else // unix
   assert((unsigned long)id <= PrimitiveTraits<uid_t>::MAXIMUM, OutOfDomain("Invalid user id", this));
-  id = (void*)(ptrditt_t)_id;
+  id = (void*)_id; // we only cast away const 'cause we do not dereference it
 #endif // flavor
 }
 
@@ -135,14 +161,14 @@ User::User(const String& name) throw(UserException) {
   struct passwd* entry;
   int result = ::getpwnam_r(name.getElements(), &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result == 0, UserException(this));
-  id = (void*)(ptrditt_t)entry->pw_uid;
+  id = UserImpl::getOpaque(entry->pw_uid);
 #endif // flavor
 }
 
 // TAG: select full name domain/user with option: LOCAL prefix?, BUILTIN prefix (no)?
 String User::getName(bool fallback) const throw(UserException) {
   if (id == User::INVALID) {
-    return MESSAGE("UNKNOWN");
+    return MESSAGE("unknown");
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SID_NAME_USE sidType;
@@ -162,7 +188,6 @@ String User::getName(bool fallback) const throw(UserException) {
     s << *this << FLUSH;
     return s.getString();
   }
-  // ASSERT((sidType == SidTypeUser) || ...???); // check type
   if (domainName[0] != 0) {
     return String(domainName) + MESSAGE("\\") + String(name);
   } else {
@@ -172,7 +197,7 @@ String User::getName(bool fallback) const throw(UserException) {
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwuid_r((uid_t)id, &pw, buffer->getElements(), buffer->getSize(), &entry);
+  int result = ::getpwuid_r(UserImpl::getSystem(id), &pw, buffer->getElements(), buffer->getSize(), &entry);
   if (result != 0) {
     assert(fallback, UserException("Unable to lookup name", this));
     StringOutputStream s;
@@ -190,7 +215,7 @@ String User::getHomeFolder() const throw(UserException) {
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwuid_r((uid_t)id, &pw, buffer->getElements(), buffer->getSize(), &entry);
+  int result = ::getpwuid_r(UserImpl::getSystem(id), &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result == 0, UserException(this));
   return String(entry->pw_dir);
 #endif // flavor
@@ -222,6 +247,56 @@ bool User::isMemberOf(const Group& group) throw(UserException) {
 #else // unix
   throw NotImplemented(this);
 #endif // flavor
+}
+
+Array<String> User::getGroups() throw(UserException) {
+  Array<String> result;
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  SID_NAME_USE sidType;
+  char name[4096]; // TAG: what is the maximum size
+  DWORD nameSize = sizeof(name);
+  char domainName[64]; // TAG: what is the maximum size
+  DWORD domainNameSize = sizeof(domainName);
+  assert(::LookupAccountSid(0,
+                            (PSID)id, // must be valid
+                            name,
+                            &nameSize,
+                            domainName,
+                            &domainNameSize,
+                            &sidType) == 0,
+         UserException("Unable to lookup name", this)
+  );
+//   if (domainName[0] != 0) {
+//     return String(domainName) + MESSAGE("\\") + String(name);
+//   } else {
+//     return String(name); // TAG: does nameSize hold length of name
+//   }
+
+  WideString wideName(name);
+  GROUP_USERS_INFO_0* buffer = 0;
+  DWORD numberOfEntries = 0;
+  DWORD totalEntries = 0;
+  NET_API_STATUS status = ::NetUserGetGroups(0,
+                                             wideName.getElements(),
+                                             0,
+                                             (LPBYTE*)&buffer,
+                                             MAX_PREFERRED_LENGTH,
+                                             &numberOfEntries,
+                                             &totalEntries);
+  assert((status == NERR_Success) || (status == ERROR_MORE_DATA), UserException(this));
+  if (buffer != 0) {
+    const GROUP_USERS_INFO_0* p = buffer;
+    const GROUP_USERS_INFO_0* end = p + numberOfEntries;
+    while (p < end) {
+      result.append(WideString::getMultibyteString(p->grui0_name));
+      ++p;
+    }
+    ::NetApiBufferFree(buffer);
+  }
+#else // unix
+  throw NotImplemented(this);
+#endif // flavor
+  return result;
 }
 
 User::~User() throw() {

@@ -16,6 +16,7 @@
 
 #include <base/security/User.h>
 #include <base/string/String.h>
+#include <base/collection/Array.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -170,6 +171,11 @@ public:
     @return false if the group doesn't exist.
   */
   bool isMemberOf(const Group& group) throw(UserException);
+
+  /**
+    Returns the groups to which the user belongs.
+  */
+  Array<String> getGroups() throw(UserException);
   
   /**
     Destroys the user object.

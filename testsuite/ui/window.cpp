@@ -17,6 +17,9 @@
 #include <base/ui/Label.h>
 #include <base/ui/Split.h>
 #include <base/ui/Button.h>
+#include <base/ui/ProgressBar.h>
+#include <base/ui/Picture.h>
+#include <base/opengl/OpenGLWidget.h>
 
 using namespace base;
 
@@ -31,32 +34,107 @@ public:
     : Application(MESSAGE("Window"), numberOfArguments, arguments, environment) {
   }
 
+  class MyOpenGLWidget : public OpenGLWidget {
+  public:
+    
+    MyOpenGLWidget(Window& owner, const Format& format) throw(OpenGLException, UserInterfaceException)
+      : OpenGLWidget(owner, format) {
+    }
+    
+    void onDisplay() throw() {
+      static uint8 gray = 0;
+      openGL.glClearColor(gray++/255.0, 0.0, 0.0, 1.0);
+      openGL.glClear(OpenGL::COLOR_BUFFER_BIT);
+      openGL.glFlush();
+      swap();
+    }
+    
+    ~MyOpenGLWidget() throw() {
+    }
+  };
+  
   class MyWindow : public Window {
   private:
-
+    
     Label label;
     Split split;
     Button button;
+    ProgressBar progressBar;
+    Picture picture;
+    MyOpenGLWidget openGLWidget;
+
+    inline OpenGLWidget::Format makeFormat() throw() {
+      OpenGLWidget::Format format;
+      format.id = 1;
+      format.flags = OpenGLWidget::RGB|OpenGLWidget::DEPTH;
+      format.colorBits = 32;
+      format.redBits = 8;
+      format.greenBits = 8;
+      format.blueBits = 8;
+      format.alphaBits = 8;
+      format.accumulatorBits = 64;
+      format.accumulatorRedBits = 16;
+      format.accumulatorGreenBits = 16;
+      format.accumulatorBlueBits = 16;
+      format.accumulatorAlphaBits = 16;
+      format.depthBits = 24;
+      format.stencilBits = 0;
+      format.auxBuffers = 0;
+      return format;
+    }
   public:
 
-    MyWindow(const String& title, const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException)
+    MyWindow(
+      const String& title,
+      const Position& position,
+      const Dimension& dimension,
+      unsigned int flags) throw(UserInterfaceException)
       : Window(position, dimension, flags),
         label(*this),
         split(*this),
-        button(*this) {
+        button(*this),
+        progressBar(*this),
+        picture(*this),
+        openGLWidget(*this, makeFormat()) {
+      
       setTitle(title);
       setIconTitle(title);
+      
       label.setPosition(Position(16, 16));
       label.setDimension(Dimension(256, 32));
-      label.setText(MESSAGE("This is a labal"));
-//       split.setPosition(Position(8, 8));
-//       split.setDimension(Dimension(128, 128));
-//       split.setOffset(64, Split::FIRST);
-//       button.setText(MESSAGE("Accept"));
-//       button.setPosition(Position(8, 8));
-//       button.setDimension(Dimension(128, 64));
-//       button.setBackground(makeColor(0xa0, 0xa0, 0x30));
-      //split.enable();
+      label.setText(MESSAGE("This is a label"));
+      label.setTextFormat(TextFormat::RIGHT | TextFormat::MIDDLE);
+      label.setBrush(Color(192, 192, 192));
+      label.setFont(Font(MESSAGE("Arial"), 16));
+      
+      split.setPosition(Position(8, 8));
+      split.setDimension(Dimension(128, 128));
+      split.setOffset(64, Split::FIRST);
+      
+      button.setText(MESSAGE("Accept"));
+      button.setPosition(Position(512, 64));
+      button.setDimension(button.getPreferredSize());
+
+      progressBar.setPosition(Position(16, 256));
+      progressBar.setDimension(Dimension(256, 16));
+      progressBar.setMaximumValue(256);
+      
+      picture.setPosition(Position(128, 128));
+      picture.setDimension(Dimension(128, 128));
+
+      Color data[128][128];
+      for (unsigned int y = 0; y < 128; ++y) {
+        for (unsigned int x = 0; x < 128; ++x) {
+          data[y][x] = Color(y, x, y + x);
+        }
+      }
+      
+      Bitmap bitmap(Dimension(128, 128), Bitmap::RGB, Bitmap::RGB_32, data);
+      picture.setBitmap(bitmap);
+      fout << MESSAGE("Bitmap: ") << picture.getBitmap().getDimension() << ENDL;
+      
+      openGLWidget.setPosition(Position(256, 32));
+      openGLWidget.setDimension(Dimension(128, 128));
     }
     
     void onDisplay() throw() {
@@ -68,6 +146,7 @@ public:
     
     void onMove(const Position& position) throw() {
       fout << MESSAGE("Event: move ") << position << ENDL;
+      progressBar.setCurrentValue(position.getX());
     }
     
     void onResize(const Dimension& dimension) throw() {
@@ -114,7 +193,12 @@ public:
            << (scope ? MESSAGE("INSIDE SCOPE") : MESSAGE("OUT OF SCOPE")) << ENDL;
     }
     
-    void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) throw() {
+    void onMouseButton(
+      const Position& position,
+      Mouse::Button button,
+      Mouse::Event event,
+      unsigned int state) throw() {
+      
       static const Flag STATES[] = {
         {Mouse::LEFT, MESSAGE("LEFT")},
         {Mouse::MIDDLE, MESSAGE("MIDDLE")},
@@ -205,6 +289,11 @@ public:
         fout << MESSAGE("Key: ") << PREFIX << HEX << key << ' ' << MESSAGE("RELEASED") << ENDL;
       }
     }
+
+    void onDestruction() throw() {
+      fout << MESSAGE("Event: destruction") << ENDL;
+      exit();
+    }
     
     bool onClose() throw() {
       fout << MESSAGE("Event: close ") << ENDL;
@@ -212,11 +301,17 @@ public:
     }
     
     void onVisibility(Visibility visibility) throw() {
-      fout << MESSAGE("Event: visibility ")
-           << ((visibility == VISIBLE) ? MESSAGE("VISIBLE") : MESSAGE("INVISIBLE")) << ENDL;
+      static const StringLiteral VISIBILITY[] = {
+        MESSAGE("INVISIBLE"),
+        MESSAGE("PARTIALLY VISIBLE"),
+        MESSAGE("VISIBLE")
+      };
+      
+      fout << MESSAGE("Event: visibility ") << VISIBILITY[visibility] << ENDL;
     }
     
     void onFocus(Focus focus) throw() {
+      update();
       fout << MESSAGE("Event: focus ")
            << ((focus == ACQUIRED_FOCUS) ? MESSAGE("ACQUIRED") : MESSAGE("LOST")) << ENDL;
     }
@@ -237,9 +332,17 @@ public:
          << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
 
+    //Display display();
+    
     MyWindow myWindow(MESSAGE("Hello, World"), Position(123, 312), Dimension(256, 128), 0);
+
+    fout << MESSAGE("Server vendor: ") << myWindow.getServerVendor() << ENDL;
+    fout << MESSAGE("Server release: ") << myWindow.getServerRelease() << ENDL;
+    
+    myWindow.show();
     myWindow.raise();
-    myWindow.dispatch();
+    myWindow.acquireFocus();
+    Window::dispatch();
   }
 };
 

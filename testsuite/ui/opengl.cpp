@@ -16,8 +16,6 @@
 #include <base/opengl/OpenGLContext.h>
 #include <base/Version.h>
 #include <base/ui/MessageDialog.h>
-#include <base/ui/OpenFileDialog.h>
-#include <base/ui/SaveFileDialog.h>
 
 using namespace base;
 
@@ -33,7 +31,7 @@ public:
     ACTIVE_MOUSE_EVENTS,
     ALL_MOUSE_EVENTS,
     EVERYTHING,
-    DEFAULT = NORMAL
+    DEFAULT = EVERYTHING // NORMAL
   };
 };
 
@@ -98,8 +96,10 @@ public:
     TRANSLATE_ALONG_Z_NEG,
     TRANSLATE_ALONG_Z_POS,
 
-    SELECT_MODE_IMAGE,
     SELECT_MODE_SYSTEM,
+    SELECT_MODE_FLOOR,
+    SELECT_MODE_CUBE,
+    SELECT_MODE_CONE,
     SELECT_MODE_TORUS,
 
     SELECT_QUALITY_WORST,
@@ -115,10 +115,8 @@ public:
   enum Model {
     FLAT,
     SMOOTH,
-    INVALID,
     FIRST_MODEL = FLAT,
-    LAST_MODEL = SMOOTH,
-    DEFAULT = FLAT,
+    LAST_MODEL = SMOOTH
   };
 };
     
@@ -130,10 +128,8 @@ public:
     FILL,
     LINE,
     POINT,
-    INVALID,
     FIRST_MODE = FILL,
-    LAST_MODE = POINT,
-    DEFAULT = FILL
+    LAST_MODE = POINT
   };
 };
 
@@ -146,8 +142,10 @@ enum Quality {
 
 /** The mode. */
 enum Mode {
-  MODE_IMAGE,
   MODE_SYSTEM,
+  MODE_FLOOR,
+  MODE_CUBE,
+  MODE_CONE,
   MODE_TORUS
 };
 
@@ -177,8 +175,10 @@ public:
   public:
     
     ModeMenu() throw(UserInterfaceException) {
-      append(MESSAGE("&Image"), Command::SELECT_MODE_IMAGE);
       append(MESSAGE("&System"), Command::SELECT_MODE_SYSTEM);
+      append(MESSAGE("&Floor"), Command::SELECT_MODE_FLOOR);
+      append(MESSAGE("&Cube"), Command::SELECT_MODE_CUBE);
+      append(MESSAGE("C&one"), Command::SELECT_MODE_CONE);
       append(MESSAGE("&Torus"), Command::SELECT_MODE_TORUS);
     }
   };
@@ -226,14 +226,6 @@ public:
     append(MESSAGE("&Quit\t(C-q)"), Command::QUIT);
   }
 };
-
-// TAG: check if GCC bug
-// class A;
-// class B: public A
-// class C: public B:
-//   C::C() throw() 
-//     : A() {
-// }
 
 class View {
 public:
@@ -292,13 +284,9 @@ public:
   class MyOpenGLContext : public OpenGLContext {
   private:
 
-    //MyApplication* application;
     Verbosity::Value verbosity;
     MyMenu menu;
-    //ColorImage* frame;
-    //Renderable* renderable;
     Mode mode;
-    
     View view;
     
     unsigned int displayMode;
@@ -339,32 +327,19 @@ public:
       OBJECT_FLOOR,
       OBJECT_CUBE,
       OBJECT_CONE,
-      OBJECT_TORUS,
-      OBJECT_IMAGE
+      OBJECT_TORUS
     };
     
-    MyOpenGLContext(const String& title, const Position& position, const Dimension& dimension) throw(UserInterfaceException)
-      : OpenGLContext(
-        position,
-        dimension,
-        OpenGLContext::DOUBLE_BUFFERED|OpenGLContext::DEPTH
-      ) {
+    MyOpenGLContext(
+      const String& title,
+      const Position& position,
+      const Dimension& dimension,
+      const Format& format) throw(UserInterfaceException)
+      : OpenGLContext(position, dimension, format) {
       setTitle(title);
       setIconTitle(title);
       verbosity = Verbosity::DEFAULT;
-        
-      //         openFile.setFilters(encoderRegistry.getFilters());
-      //         openFile.setTitle(MESSAGE("Open image..."));
-      //         saveFile.setFilters(encoderRegistry.getFilters());
-      //         saveFile.setTitle(MESSAGE("Save image..."));
-
-      //         {
-      //           ColorImage* image = new ColorImage(Dimension(16, 16));
-      //           // TAG: init image
-      //           setImage(image);
-      //           delete image;
-      //         }
-        
+      
       openGL.glPolygonMode(OpenGL::FRONT_AND_BACK, OpenGL::FILL);
       
       static const OpenGL::GLfloat lightDiffuse[] = {1.0, 0.5, 1.0, 1.0};
@@ -374,31 +349,36 @@ public:
       
       // openGL.glMateriali(OpenGL::FRONT_AND_BACK, OpenGL::SHININESS, ?);
       // param: LIGHT_MODEL_AMBIENT, LIGHT_MODEL_LOCAL_VIEWER, LIGHT_MODEL_TWO_SIDE, LIGHT_MODEL_COLOR_CONTROL
-      // openGL.glLightModel();
+      //openGL.glLightModel();
 
-      //openGL.glLightfv(OpenGL::LIGHT0, OpenGL::DIFFUSE, lightDiffuse);
-      //openGL.glLightfv(OpenGL::LIGHT0, OpenGL::POSITION, lightPosition); // uses current model-view matrix
+      openGL.glLightfv(OpenGL::LIGHT0, OpenGL::DIFFUSE, lightDiffuse);
+      openGL.glLightfv(OpenGL::LIGHT0, OpenGL::POSITION, lightPosition); // uses current model-view matrix
       openGL.glEnable(OpenGL::LIGHT0);
 
       // FRONT, BACK, or FRONT_AND_BACK; EMISSION, AMBIENT, DIFFUSE, SPECULAR, or AMBIENT AND DIFFUSE
-      // openGL.glColorMaterial(OpenGL::FRONT, OpenGL::AMBIENT);
-          //openGL.glColorMaterial(OpenGL::FRONT_AND_BACK, OpenGL::DIFFUSE);
+      //openGL.glColorMaterial(OpenGL::FRONT, OpenGL::AMBIENT);
+      openGL.glColorMaterial(OpenGL::FRONT_AND_BACK, OpenGL::DIFFUSE);
       openGL.glEnable(OpenGL::COLOR_MATERIAL);
 
       //openGL.glEnable(OpenGL::MULTISAMPLE); // OpenGL 1.3
       
       openGL.glEnable(OpenGL::DEPTH_TEST);
-      //openGL.glDepthFunc(OpenGL::LEQUAL);
-      
-      setQuality(QUALITY_NORMAL);
-      shadingModel = ShadingModel::INVALID;
-      setShadingModel(ShadingModel::DEFAULT);
-      polygonMode = PolygonMode::INVALID;
-      setPolygonMode(PolygonMode::DEFAULT);
+      openGL.glDepthFunc(OpenGL::LEQUAL);
+
+      mode = MODE_TORUS;
+      openGL.glHint(OpenGL::PERSPECTIVE_CORRECTION_HINT, OpenGL::DONT_CARE);
+      openGL.glHint(OpenGL::POINT_SMOOTH_HINT, OpenGL::DONT_CARE);
+      openGL.glHint(OpenGL::LINE_SMOOTH_HINT, OpenGL::DONT_CARE);
+      openGL.glHint(OpenGL::POLYGON_SMOOTH_HINT, OpenGL::DONT_CARE);
+      openGL.glDisable(OpenGL::LINE_SMOOTH);
+      shadingModel = ShadingModel::FLAT;
+      openGL.glShadeModel(OpenGL::FLAT);
+      polygonMode = PolygonMode::FILL;
+      openGL.glPolygonMode(OpenGL::FRONT_AND_BACK, OpenGL::FILL);
       blending = false;
-      setBlending(true);
-      lighting = false;
-      setLighting(true);
+      openGL.glDisable(OpenGL::BLEND);
+      lighting = true;
+      openGL.glEnable(OpenGL::LIGHTING);
       
       scale = 20;
       xAngle = 0;
@@ -411,15 +391,17 @@ public:
       mouseMiddleButtonPressed = false;
       mouseRightButtonPressed = false;
 
-     //makeSystem();
-     //makeCone();
+      makeSystem();
+      makeFloor();
       makeCube();
-      //makeTorus();
-     WRITE_SOURCE_LOCATION();
+      makeCone();
+      makeTorus();
     }
 
+    ~MyOpenGLContext() throw() {
+    }
+    
     void setQuality(Quality quality) throw() {
-      return; // TAG: fixme
       // TAG: need attribute
       switch (quality) {
       case QUALITY_WORST:
@@ -471,7 +453,6 @@ public:
     }
       
     void setShadingModel(ShadingModel::Model shadingModel) throw() {
-      return; // TAG: fixme unix
       if (shadingModel != this->shadingModel) {
         this->shadingModel = shadingModel;
         switch (shadingModel) {
@@ -482,11 +463,11 @@ public:
           openGL.glShadeModel(OpenGL::FLAT);
           break;
         }
+        invalidate();
       }
     }
     
     void setPolygonMode(PolygonMode::Mode polygonMode) throw() {
-      return; // TAG: fixme unix
       if (polygonMode != this->polygonMode) {
         this->polygonMode = polygonMode;
         switch (polygonMode) {
@@ -500,11 +481,11 @@ public:
           openGL.glPolygonMode(OpenGL::FRONT_AND_BACK, OpenGL::POINT);
           break;
         }
+        invalidate();
       }
     }
       
     void setBlending(bool blending) throw() {
-      return; // TAG: fixme unix
       if (blending != this->blending) {
         this->blending = blending;
         if (blending) {
@@ -514,11 +495,11 @@ public:
         } else {
           openGL.glDisable(OpenGL::BLEND);
         }
+        invalidate();
       }
     }
       
     void setLighting(bool lighting) throw() {
-      return; // TAG: fixme unix
       if (lighting != this->lighting) {
         this->lighting = lighting;
         if (lighting) {
@@ -526,20 +507,14 @@ public:
         } else {
           openGL.glDisable(OpenGL::LIGHTING);
         }
+        invalidate();
       }
     }
 
     void setMode(Mode mode) throw() {
       if (mode != this->mode) {
         this->mode = mode;
-        switch (mode) {
-        case MODE_IMAGE:
-          break;
-        case MODE_SYSTEM:
-          break;
-        case MODE_TORUS:
-          break;
-        }
+        invalidate();
       }
     }
 
@@ -553,7 +528,7 @@ public:
         orthoNear
       );
     }
-    
+
     void makeSystem() throw() {
       OpenGL::DisplayList displayList(openGL, OBJECT_SYSTEM);
       //         openGL.glColor4f(0.8, 0.8, 0.8, 0.5);
@@ -584,10 +559,8 @@ public:
       openGL.cone(0.5, 1.0, 16, 1);
     }
      
-    void makeCone() throw() {
-      OpenGL::DisplayList displayList(openGL, OBJECT_CONE);
-      openGL.glColor4f(0.25, 0.5, 0.75, 0.5);
-      openGL.cone(6.0, 12.0, 8, 8);
+    void makeFloor() throw() {
+      OpenGL::DisplayList displayList(openGL, OBJECT_FLOOR);
     }
 
     void makeCube() throw() {
@@ -596,16 +569,12 @@ public:
       openGL.glColor4f(0.0, 1.0, 0.0, 0.75);
       
       {
-        WRITE_SOURCE_LOCATION();
         OpenGL::Block block(openGL, OpenGL::QUAD_STRIP); // draw the sides of the cube
-        WRITE_SOURCE_LOCATION();
         static double X[3] = {3, 3, 3};
         openGL.glVertex3dv(X);
-        WRITE_SOURCE_LOCATION();
        
         // Normal A
         openGL.glNormal3f(0.0, 0.0, -1.0);
-        WRITE_SOURCE_LOCATION();
         
         openGL.glVertex3i(3, 3, -3); // vertex 1
         openGL.glVertex3i(3, 3, -3); // vertex 1
@@ -630,13 +599,19 @@ public:
       }
     }
     
+    void makeCone() throw() {
+      OpenGL::DisplayList displayList(openGL, OBJECT_CONE);
+      openGL.glColor4f(0.25, 0.5, 0.75, 0.5);
+      openGL.cone(6.0, 12.0, 8, 8);
+    }
+    
     void makeTorus() throw() {
       OpenGL::DisplayList displayList(openGL, OBJECT_TORUS);
       openGL.glColor4f(0.25, 0.5, 0.75, 0.5);
       openGL.torus(4.0, 8.0, 64, 16);
     }
     
-    void displayTorus() throw() {        
+    void displayObject(unsigned int object) throw() {
       openGL.glClearColor(0.0, 0.0, 0.0, 1.0);
       openGL.glClear(OpenGL::COLOR_BUFFER_BIT | OpenGL::DEPTH_BUFFER_BIT);
       
@@ -649,17 +624,36 @@ public:
       openGL.glRotatef(rotation.getY(), 1.0, 0.0, 0.0);
       openGL.glRotatef(rotation.getZ(), 0.0, 0.0, 1.0);
       openGL.glScalef(view.getScale() * 0.005, view.getScale() * 0.005, view.getScale() * 0.005);
-      openGL.glCallList(OBJECT_CUBE); // TAG: fixme TORUS
+      openGL.glCallList(object);
       
       openGL.glFlush();
       swap();
     }
     
     void onDisplay() throw() {
-      displayTorus();
+      switch (mode) {
+      case MODE_SYSTEM:
+        displayObject(OBJECT_SYSTEM);
+        break;
+      case MODE_FLOOR:
+        displayObject(OBJECT_FLOOR);
+        break;
+      case MODE_CUBE:
+        displayObject(OBJECT_CUBE);
+        break;
+      case MODE_CONE:
+        displayObject(OBJECT_CONE);
+        break;
+      case MODE_TORUS:
+        displayObject(OBJECT_TORUS);
+        break;
+      }
     }
     
     void onMove(const Position& position) throw() {
+      if (verbosity >= Verbosity::ALL_MOUSE_EVENTS) {
+        fout << MESSAGE("Window move event: ") << position << ENDL;
+      }
     }
     
     void onResize(const Dimension& dimension) throw() {
@@ -668,7 +662,7 @@ public:
       }
       
       openGL.glViewport(0, 0, dimension.getWidth(), dimension.getHeight());
-      onDisplay();
+      invalidate();
       
 //         orthoTop = 1.0;
 //         orthoBottom = -1.0;
@@ -712,6 +706,7 @@ public:
           }
           view.setScale(scale);
         }
+        invalidate();
       } else if (mouseLeftButtonPressed) {
         if (modifiers & Key::CONTROL) {
           view.rotation.setZ(rotationBegin.getZ() + difference.getX()/(256/*dimension.getWidth()*//180.0));
@@ -732,8 +727,9 @@ public:
             //long double axisY = invertedModelViewMatrix[1] * ax + invertedModelViewMatrix[5] * ay + invertedModelViewMatrix[8] * az;
             //long double axisZ = invertedModelViewMatrix[2] * ax + invertedModelViewMatrix[6] * ay + invertedModelViewMatrix[9] * az;
             //openGL.glRotatef(angle, axisX, axisY, axisZ);
-          }
         }
+        invalidate();
+      }
 //         if (buttons != 0) {
 //           fout << MESSAGE("Mouse move: ") << position << ' ' << MESSAGE("ACTIVE") << ENDL;
 //         } else {
@@ -792,37 +788,26 @@ public:
         
         fout << position << ENDL;
       }
-      
-//       if (event == Mouse::PRESSED) {
-//         if (button == Mouse::RIGHT) {
-//           unsigned int cursor = static_cast<unsigned int>(getCursor());
-//           if (cursor == WAITING) {
-//             cursor = 0;
-//           } else {
-//             cursor += 1;
-//           }
-//           setCursor(static_cast<Cursor>(cursor));
-//         }
-//       }
-      
-      setCapture((event == Mouse::PRESSED) && (button == Mouse::LEFT));
-      unsigned int modifiers = getModifiers();
+
       switch (button) {
       case Mouse::LEFT:
         mouseLeftButtonPressed = event == Mouse::PRESSED;
+        setCapture(mouseLeftButtonPressed);
         break;
       case Mouse::MIDDLE:
         mouseMiddleButtonPressed = event == Mouse::PRESSED;
+        setCapture(mouseMiddleButtonPressed);
         break;
       case Mouse::RIGHT:        
         mouseRightButtonPressed = event == Mouse::PRESSED;
+        setCapture(false);
         if (event == Mouse::PRESSED) {
           displayMenu(position, menu);
         }
         break;
       }
       mouseButtonPosition = position;
-        
+      
       if (event == Mouse::PRESSED) {
         // command: TRANSLATE_IN_XY_PLANE
         // command: ROTATE_AROUND_X_AND_Y
@@ -836,7 +821,7 @@ public:
       int viewPort[4];
       openGL.glGetIntegerv(OpenGL::VIEWPORT, viewPort);
       Vector3D<long double> drag = getPosition(position, viewPort);    
-      drag.setZ(0);      
+      drag.setZ(0);
     }
     
     void onMouseWheel(const Position& position, int delta, unsigned int buttons) throw() {
@@ -844,6 +829,7 @@ public:
         fout << MESSAGE("Mouse wheel") << ENDL;
       }
       setTranslation(view.getTranslation() + Vector3D<long double>(0, 0, 0.1 * delta/120));
+      invalidate();
     }
     
     void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
@@ -953,7 +939,7 @@ public:
     }
     
     void onIdle() throw() {
-      onDisplay();
+      invalidate();
     }
     
     bool onClose() throw() {
@@ -980,6 +966,33 @@ public:
              << ((focus == ACQUIRED_FOCUS) ? MESSAGE("ACQUIRED FOCUS") : MESSAGE("LOST FOCUS"))
              << ENDL;
       }
+    }
+
+    void dumpOpenGLInformation() throw() {
+      fout << MESSAGE("Vendor: ") << openGL.getVendor() << EOL
+           << MESSAGE("Renderer: ") << openGL.getRenderer() << EOL
+           << MESSAGE("Version: ") << openGL.getVersion() << EOL
+           << MESSAGE("Extensions: ") << openGL.getExtensions() << EOL
+           << EOL
+           << MESSAGE("Rendering context:") << EOL
+           << indent(2) << MESSAGE("red bits: ") << redBits << EOL
+           << indent(2) << MESSAGE("green bits: ") << greenBits << EOL
+           << indent(2) << MESSAGE("blue bits: ") << blueBits << EOL
+           << indent(2) << MESSAGE("alpha bits: ") << alphaBits << EOL
+           << indent(2) << MESSAGE("accumulator red bits: ") << accumulatorRedBits << EOL
+           << indent(2) << MESSAGE("accumulator green bits: ") << accumulatorGreenBits << EOL
+           << indent(2) << MESSAGE("accumulator blue bits: ") << accumulatorBlueBits << EOL
+           << indent(2) << MESSAGE("accumulator alpha bits: ") << accumulatorAlphaBits << EOL
+           << indent(2) << MESSAGE("depth bits: ") << depthBits << EOL
+           << indent(2) << MESSAGE("stencil bits: ") << stencilBits << EOL
+           << indent(2) << MESSAGE("aux buffers: ") << auxBuffers << EOL
+           << indent(2) << MESSAGE("overlay planes: ") << numberOfOverlayPlanes << EOL
+           << indent(2) << MESSAGE("underlay planes: ") << numberOfUnderlayPlanes << EOL
+           << indent(2) << MESSAGE("double buffered: ") << isDoubleBuffered() << EOL
+           << indent(2) << MESSAGE("stereoscopic: ") << isStereoscopic() << EOL
+           << indent(2) << MESSAGE("direct: ") << isDirect() << EOL
+           << indent(2) << MESSAGE("generic: ") << isGeneric() << EOL
+           << ENDL;
     }
     
     void dumpCommand(const StringLiteral& description) throw() {
@@ -1024,10 +1037,7 @@ public:
         break;
       case Command::SHOW_OPENGL_INFORMATION:
         dumpCommand(MESSAGE("Show OpenGL information"));
-        fout << MESSAGE("Vendor: ") << openGL.getVendor() << EOL;
-        fout << MESSAGE("Renderer: ") << openGL.getRenderer() << EOL;
-        fout << MESSAGE("Version: ") << openGL.getVersion() << EOL;
-        fout << MESSAGE("Extensions: ") << openGL.getExtensions() << EOL << ENDL;
+        dumpOpenGLInformation();
         break;
       case Command::ABOUT:
         dumpCommand(MESSAGE("About"));
@@ -1147,12 +1157,20 @@ public:
         dumpCommand(MESSAGE("Translate along Z axis (pos)"));
         setTranslation(view.getTranslation() + Vector3D<long double>(0, 0, 0.1));
         break;
-      case Command::SELECT_MODE_IMAGE:
-        dumpCommand(MESSAGE("Select view mode: image"));
-        setMode(MODE_IMAGE);
-        break;
       case Command::SELECT_MODE_SYSTEM:
         dumpCommand(MESSAGE("Select view mode: system"));
+        setMode(MODE_SYSTEM);
+        break;
+      case Command::SELECT_MODE_FLOOR:
+        dumpCommand(MESSAGE("Select view mode: floor"));
+        setMode(MODE_SYSTEM);
+        break;
+      case Command::SELECT_MODE_CUBE:
+        dumpCommand(MESSAGE("Select view mode: cube"));
+        setMode(MODE_SYSTEM);
+        break;
+      case Command::SELECT_MODE_CONE:
+        dumpCommand(MESSAGE("Select view mode: cone"));
         setMode(MODE_SYSTEM);
         break;
       case Command::SELECT_MODE_TORUS:
@@ -1186,10 +1204,59 @@ public:
          << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
 
+    MyOpenGLContext::Format desiredFormat;
+    int formatId = -1;
+    
+    Array<MyOpenGLContext::Format> formats = MyOpenGLContext::getFormats(
+      OpenGLContext::RGB |
+      OpenGLContext::DOUBLE_BUFFERED |
+      OpenGLContext::DEPTH |
+      OpenGLContext::DIRECT
+    );
+    Array<MyOpenGLContext::Format>::ReadEnumerator enu = formats.getReadEnumerator();
+    
+    fout << MESSAGE("Available formats:") << ENDL;
+    for (unsigned int i = 0; enu.hasNext(); ++i) {
+      const MyOpenGLContext::Format* format = enu.next();
+      if (false) {
+        fout << indent(2) << MESSAGE("Format: ") << i << EOL
+             << indent(4) << MESSAGE("color indexed: ") << ((format->flags & MyOpenGLContext::COLOR_INDEXED) != 0) << EOL
+             << indent(4) << MESSAGE("rgb: ") << ((format->flags & MyOpenGLContext::RGB) != 0) << EOL
+             << indent(4) << MESSAGE("double buffered: ") << ((format->flags & MyOpenGLContext::DOUBLE_BUFFERED) != 0) << EOL
+             << indent(4) << MESSAGE("stereoscopic: ") << ((format->flags & MyOpenGLContext::STEREO) != 0) << EOL
+             << indent(4) << MESSAGE("generic: ") << ((format->flags & MyOpenGLContext::GENERIC) != 0) << EOL
+             << indent(4) << MESSAGE("color bits: ") << format->colorBits << EOL
+             << indent(6) << MESSAGE("red bits: ") << format->redBits << EOL
+             << indent(6) << MESSAGE("green bits: ") << format->greenBits << EOL
+             << indent(6) << MESSAGE("blue bits: ") << format->blueBits << EOL
+             << indent(6) << MESSAGE("alpha bits: ") << format->alphaBits << EOL
+             << indent(4) << MESSAGE("accumulator bits: ") << format->accumulatorBits << EOL
+             << indent(6) << MESSAGE("accumulator red bits: ") << format->accumulatorRedBits << EOL
+             << indent(6) << MESSAGE("accumulator green bits: ") << format->accumulatorGreenBits << EOL
+             << indent(6) << MESSAGE("accumulator blue bits: ") << format->accumulatorBlueBits << EOL
+             << indent(6) << MESSAGE("accumulator alpha bits: ") << format->accumulatorAlphaBits << EOL
+             << indent(4) << MESSAGE("depthBits: ") << format->depthBits << EOL
+             << indent(4) << MESSAGE("stencilBits: ") << format->stencilBits << EOL
+             << indent(4) << MESSAGE("auxBuffers: ") << format->auxBuffers << EOL
+             << ENDL;
+      }
+      if ((formatId == -1) || (format->alphaBits && (!desiredFormat.alphaBits))) {
+        formatId = i;
+        desiredFormat = *format;
+      }
+    }
+    
+    if (formatId == -1) {
+      ferr << MESSAGE("Format not available") << ENDL;
+      setExitCode(EXIT_CODE_ERROR);
+      return;
+    }
+    
     MyOpenGLContext myOpenGLContext(
       MESSAGE("OpenGL rules"),
       Position(123, 312),
-      Dimension(256, 128)
+      Dimension(256, 128),
+      desiredFormat
     );
 
     fout << MESSAGE("OpenGL context information: ") << EOL
@@ -1201,7 +1268,8 @@ public:
          << indent(2) << MESSAGE("server extensions: ") << myOpenGLContext.getGLServerExtensions() << EOL
          << indent(2) << MESSAGE("direct context: ") << myOpenGLContext.isDirect() << EOL
          << ENDL;
-    
+
+    myOpenGLContext.show();
     myOpenGLContext.raise();
     myOpenGLContext.dispatch();
   }

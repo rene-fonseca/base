@@ -31,6 +31,13 @@ Split::Split(Window& owner) throw(UserInterfaceException)
     split(0x808080) { // normal
 }
 
+// void Split::setState(unsigned int state) throw() {
+//   if (state != this->state) {
+//     this->state = state;
+//     invalidate();
+//   }
+// }
+
 void Split::setOffset(int offset, Field field) throw() {
   const Dimension dimension = getDimension();
   int total;
@@ -56,14 +63,19 @@ void Split::setOffset(int offset, Field field) throw() {
   }
   // first widget setDimension();
   // second widget setDimension();
-  // invalidate();
-  onDisplay();
+  invalidate();
 }
 
 void Split::onResize(const Dimension& dimension) throw() {
   fout << MESSAGE("Split: Event: resize ") << dimension << ENDL;
   setOffset(offset, FIRST); // keep but honor limit
-  onDisplay();
+  invalidate();
+}
+
+void Split::onMouseScope(bool scope) throw() {
+  split = Brush(0x808080); // normal
+  setCursor(HAND);
+  invalidate();
 }
 
 void Split::onMouseMove(const Position& position, unsigned int state) throw() {
@@ -78,7 +90,7 @@ void Split::onMouseMove(const Position& position, unsigned int state) throw() {
       split = Brush(0x808080); // normal
       setCursor(HAND);
     }
-    onDisplay();
+    invalidate();
   }
 }
 
@@ -105,7 +117,7 @@ void Split::onMouseButton(const Position& position, Mouse::Button button, Mouse:
         setCursor(WEST_EAST);
       }
     }
-    onDisplay();
+    invalidate();
   }
 }
 

@@ -16,13 +16,22 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Label::Label(Window& owner) throw(UserInterfaceException)
-  : Widget(owner) {
+  : Widget(owner),
+    textFormat(TextFormat::LEFT|TextFormat::MIDDLE) {
+  setBackgroundMode(true);
+  setTextColor(Color(0, 0, 0));
 }
 
 void Label::onDisplay() throw() {
-  rectangle(Position(0, 0), getDimension(), brush);
-  // set foreground
-  Widget::text(Position(0, 0), getDimension(), text, 0);
+  const Dimension dimension = getDimension();
+  if (dimension.isProper()) {
+    const Position lowerRight(dimension.getWidth() - 1, dimension.getHeight() - 1);
+    // if not transparent do
+    if (true) {
+      rectangle(Position(0, 0), dimension, getBrush());
+    }
+    Widget::text(Position(0, 0), dimension, text, textFormat);
+  }
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

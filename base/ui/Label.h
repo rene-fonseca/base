@@ -31,44 +31,72 @@ class Label : public Widget {
 private:
 
   String text;
-  Brush brush;
   Color background;
   Color foreground;
-  // justification
-  // flags
-  // font
+  unsigned int textFormat;
 public:
-
-  // border color
-  // border width
-  // border style
-  // enum {
-  // };
-  // TAG: transparent
   
+  enum Flag {
+    BORDER = 1,
+    TRANSPARENT = 2
+  };
+  
+  /**
+    Initializes the label.
+  */
   Label(Window& owner) throw(UserInterfaceException);
-  
+
+  /**
+    Returns the text.
+  */
   inline String getText() const throw(UserInterfaceException) {
     return text;
   }
-  
+
+  /**
+    Sets the text.
+  */
   void setText(const String& text) throw(UserInterfaceException) {
     if (text != this->text) {
       this->text = text;
-      update();
+      invalidate();
     }
   }
 
+  /**
+    Returns the text format.
+  */
+  unsigned int getTextFormat() const throw() {
+    return textFormat;
+  }
+
+  /**
+    Sets the text format.
+  */
+  void setTextFormat(unsigned int textFormat) throw() {
+    this->textFormat = textFormat;
+    invalidate();
+  }
+
+  /**
+    Sets the background color.
+  */
   inline void setBackground(Color background) throw() {
     this->background = background;
-    update();
+    invalidate();
   }
-  
+
+  /**
+    Sets the text color.
+  */
   inline void setForeground(Color foreground) throw() {
     this->foreground = foreground;
-    update();
+    invalidate();
   }
-  
+
+  /**
+    Invoked when the widget should be repainted.
+  */
   void onDisplay() throw();
 
   /**

@@ -109,6 +109,8 @@ public:
   }
   
   void onResize(const Dimension& dimension) throw();
+
+  void onMouseScope(bool scope) throw();
   
   void onMouseMove(const Position& position, unsigned int state) throw();
 

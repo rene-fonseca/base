@@ -73,18 +73,21 @@ void ProgressBar::onDisplay() throw() {
   
   // draw raised/sunken frame  
   setPen(darkPen);
-  line(getLocalBindingOffset(UPPER_LEFT), getLocalBindingOffset(UPPER_RIGHT));
-  line(getLocalBindingOffset(UPPER_LEFT), getLocalBindingOffset(LOWER_LEFT));
+  line(Position(0, 0), getLocalBindingOffset(UPPER_RIGHT));
+  line(Position(0, 0), getLocalBindingOffset(LOWER_LEFT));
+
+  Position lowerRight = getLocalBindingOffset(LOWER_RIGHT);
+
   setPen(lightPen);
-  line(getLocalBindingOffset(UPPER_RIGHT), getLocalBindingOffset(LOWER_RIGHT));
-  line(getLocalBindingOffset(LOWER_LEFT), getLocalBindingOffset(LOWER_RIGHT));
+  line(getLocalBindingOffset(UPPER_RIGHT), lowerRight);
+  line(getLocalBindingOffset(LOWER_LEFT), lowerRight);
   
   Dimension dimension = getDimension();
   if ((dimension.getWidth() > 2) && (dimension.getHeight() > 2)) {
-    const Position lowerRight(dimension.getWidth() - 1, dimension.getHeight() - 1);
+    lowerRight -= Position(1, 1);
     
     int offset = (value * (dimension.getWidth() - 2))/maximumValue;
-    rectangle(Position(1, 1), Position(offset + 1, dimension.getHeight() - 1), progressBrush);
+    rectangle(Position(1, 1), Position(offset + 1, lowerRight.getY()), progressBrush);
     
     // clear background
     rectangle(Position(offset + 1, 1), lowerRight, getBrush());

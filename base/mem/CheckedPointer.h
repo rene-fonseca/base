@@ -85,7 +85,14 @@ public:
     value = eq.value;
     return *this;
   }
-  
+
+  /**
+    Invalidates the pointer.
+  */
+  inline void invalidate() throw() {
+    value = 0;
+  }
+
   /**
     Returns true if the automation pointer is valid (i.e. it is pointing to an
     object).

@@ -100,6 +100,13 @@ public:
   }
   
   /**
+    Invalidates the pointer.
+  */
+  inline void invalidate() throw() {
+    value = 0;
+  }
+  
+  /**
     Returns true if the pointer is valid (not 0).
   */
   inline bool isValid() const throw() {

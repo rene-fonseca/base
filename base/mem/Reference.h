@@ -200,6 +200,18 @@ public:
   }
 
   /**
+    Invalidates the reference.
+  */
+  inline void invalidate() /*throw(...)*/ {
+    if (value) { // skip if pointer is invalid
+      if (ReferenceCountedObject::ReferenceImpl(*value).removeReference()) {
+        delete value;
+      }
+    }
+    value = 0;
+  }
+  
+  /**
     Returns true if the automation pointer is valid (i.e. it is pointing to an
     object).
   */
@@ -209,6 +221,8 @@ public:
 
   /**
     Returns the reference counted object.
+    
+    @deprecated
   */
   inline TYPE& operator*() throw(NullPointer) {
     if (!value) {
@@ -219,6 +233,8 @@ public:
   
   /**
     Returns the reference counted object.
+
+    @deprecated
   */
   inline const TYPE& operator*() const throw(NullPointer) {
     if (!value) {

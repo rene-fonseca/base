@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/UnsignedInteger.h>
+#include <base/string/ASCIITraits.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

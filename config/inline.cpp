@@ -12,7 +12,7 @@
  ***************************************************************************/
 
 /*
-  This program compiles if the compiler supports inline keyword.
+  This program compiles if the compiler supports inline specifier.
 */
 
 class MyClass {

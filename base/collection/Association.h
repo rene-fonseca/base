@@ -56,12 +56,22 @@ public:
   /**
     Returns the key value of the association.
   */
-  inline KEY getKey() const throw() {return key;}
+  inline KEY* getKey() throw() {return &key;}
+
+  /**
+    Returns the key value of the association.
+  */
+  inline const KEY* getKey() const throw() {return &key;}
 
   /**
     Returns the value of the association.
   */
-  inline VALUE getValue() const throw() {return value;}
+  inline VALUE* getValue() throw() {return &value;}
+
+  /**
+    Returns the value of the association.
+  */
+  inline const VALUE* getValue() const throw() {return &value;}
 
   /**
     Sets the value of the association.
@@ -71,27 +81,32 @@ public:
   inline void setValue(const VALUE& value) throw() {this->value = value;}
 
   /**
+    Returns true if the associations are equal.
+  */
+  inline bool operator==(const Association& eq) const throw() {return key == eq.key;}
+
+  /**
     Returns true if this association is less than the specified association.
   */
   inline bool operator<(const Association& eq) const throw() {return key < eq.key;}
 
   /**
-    Returns true if this association is greater than the specified association.
+    Compares the specified associations with each other.
   */
-  inline bool operator>(const Association& eq) const throw() {return key > eq.key;}
-
-  /**
-    Returns true if the associations are equal.
-  */
-  inline bool operator==(const Association& eq) const throw() {return key == eq.key;}
+  friend int compare<>(const Association& left, const Association& right);
 };
+
+template<class KEY, class VALUE>
+inline int compare(const Association<KEY, VALUE>& left, const Association<KEY, VALUE>& right) {
+  return compare(left.key, right.key);
+}
 
 /**
   Writes association to format output stream.
 */
 template<class KEY, class VALUE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Association<KEY, VALUE>& value) {
-  return stream << '[' << value.getKey() << ']' << '=' << value.getValue();
+  return stream << '[' << *value.getKey() << ']' << '=' << *value.getValue();
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

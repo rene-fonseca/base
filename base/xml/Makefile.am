@@ -15,7 +15,57 @@ include $(top_srcdir)/common.am
 
 noinst_LTLIBRARIES = libxml.la
 
-libxml_la_SOURCES = XMLException.cpp XMLNode.cpp XMLParser.cpp XMLProperty.cpp XMLTree.cpp
+libxml_la_SOURCES = \
+  Attribute.cpp \
+  CDATASection.cpp \
+  CharacterData.cpp \
+  Comment.cpp \
+  Document.cpp \
+  DocumentFragment.cpp \
+  DocumentType.cpp \
+  DOMImplementation.cpp \
+  Element.cpp \
+  Entity.cpp \
+  EntityReference.cpp \
+  Node.cpp \
+  Notation.cpp \
+  ProcessingInstruction.cpp \
+  Stylesheet.cpp \
+  Text.cpp \
+  Transformer.cpp \
+  XMLException.cpp \
+  XMLNode.cpp \
+  XMLParser.cpp \
+  XMLProperty.cpp \
+  XMLTree.cpp
 
 sectiondir = $(includedir)/base/xml
-section_HEADERS = XMLException.h XMLNode.h XMLParser.h XMLProperty.h XMLTree.h
+section_HEADERS = \
+  Attribute.h \
+  CDATASection.h \
+  CharacterData.h \
+  Comment.h \
+  Document.h \
+  DocumentFragment.h \
+  DocumentType.h \
+  DOMException.h \
+  DOMImplementation.h \
+  Element.h \
+  Entity.h \
+  EntityReference.h \
+  NamedNodeMap.h \
+  Node.h \
+  Notation.h \
+  ProcessingInstruction.h \
+  SAXException.h \
+  SAXParseException.h \
+  Stylesheet.h \
+  Text.h \
+  Transformer.h \
+  TransformerException.h \
+  XMLException.h \
+  XMLNode.h \
+  XMLParser.h \
+  XMLProperty.h \
+  XMLTree.h \
+  XPathException.h

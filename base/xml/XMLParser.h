@@ -34,7 +34,7 @@ typedef Map<String, XMLProperty> XMLPropertyHash;
 */
 
 class XMLParser : public Object {
-friend class XMLParserImpl;
+  friend class XMLParserImpl;
 public:
 
   /**

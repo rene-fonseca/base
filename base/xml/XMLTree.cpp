@@ -14,14 +14,14 @@
 #include <base/platforms/features.h>
 #include <base/xml/XMLTree.h>
 
-#if defined(_DK_SDU_MIP__BASE__XML_GNOME)
-#  include <gnome-xml/parser.h>
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#  include <libxml/parser.h>
 #  include <stdlib.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if defined(_DK_SDU_MIP__BASE__XML_GNOME)
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
 
 class XMLTreeImpl {
 public:
@@ -30,24 +30,23 @@ static XMLNode* buildInternalTree(xmlNodePtr node) throw() {
   String name;
   String content;
 
-  xmlNodePtr child;
   XMLNode* temp;
 
-  name = (node->name) ? static_cast<char*>(node->name) : String();
+  name = (node->name) ? Cast::pointer<char*>(node->name) : String();
   temp = new XMLNode(name);
 
   for (xmlAttrPtr attr = node->properties; attr; attr = attr->next) {
-    name = static_cast<char*>(attr->name);
+    name = Cast::pointer<char*>(attr->name);
     content = String();
 //    if (attr->children) {
-//      content = static_cast<char*>(attr->children->content);
+//      content = Cast::pointer<char*>(attr->children->content);
 //    }
     temp->addProperty(name, content);
   }
 
-  temp->setContent(node->content ? static_cast<char*>(node->content) : String());
+  temp->setContent(node->content ? Cast::pointer<char*>(node->content) : String());
 
-  for (child = node->childs; child; child = child->next) {
+  for (xmlNodePtr child = node->xmlChildrenNode; child; child = child->next) {
     temp->addChild(buildInternalTree(child));
   }
 
@@ -58,14 +57,28 @@ static void buildExternalTree(xmlDocPtr doc, XMLNode* n, xmlNodePtr p, bool root
   xmlNodePtr node;
 
   if (root) {
-    node = doc->root = xmlNewDocNode(doc, 0, static_cast<xmlChar*>(n->getName()).getElements(), static_cast<xmlChar*>(n->getContent().getElements()));
+    node = doc->children = ::xmlNewDocNode(
+      doc,
+      0,
+      Cast::pointer<const xmlChar*>(n->getName().getElements()),
+      Cast::pointer<const xmlChar*>(n->getContent().getElements())
+    );
   } else {
-    node = xmlNewChild(p, 0, static_cast<xmlChar*>(n->getName().getElements()), static_cast<xmlChar*>(n->getContent().getElements()));
+    node = ::xmlNewChild(
+      p,
+      0,
+      Cast::pointer<const xmlChar*>(n->getName().getElements()),
+      Cast::pointer<const xmlChar*>(n->getContent().getElements())
+    );
   }
 
   if (n->isContent()) {
     node->type = XML_TEXT_NODE;
-    xmlNodeSetContentLen(node, static_cast<const xmlChar*>(n->getContent().getElements()), n->getContent().getLength());
+    ::xmlNodeSetContentLen(
+      node,
+      Cast::pointer<const xmlChar*>(n->getContent().getElements()),
+      n->getContent().getLength()
+    );
   }
 
   List<XMLProperty> props = n->getProperties();
@@ -151,14 +164,17 @@ void XMLTree::release() throw() {
 
 bool XMLTree::read(const String& buffer) throw(MemoryException) {
   release();
-  xmlDocPtr doc = xmlParseMemory(static_cast<char*>(buffer.getElements()), buffer.getLength()); // TAG: wrong type of first arg - should be const
+  xmlDocPtr doc = ::xmlParseMemory(
+    buffer.getElements(),
+    buffer.getLength()
+  ); // TAG: wrong type of first arg - should be const
 
   if (!doc) { // check for error
     return false;
   }
 
   root = XMLTreeImpl::buildInternalTree(xmlDocGetRootElement(doc));
-  xmlFreeDoc(doc);
+  ::xmlFreeDoc(doc);
   initialized = true;
   return true;
 }
@@ -169,12 +185,12 @@ bool XMLTree::write(String& buffer) const throw(MemoryException) {
   xmlDocPtr doc;
   List<XMLNode> children;
 
-  xmlKeepBlanksDefault(0);
-  doc = xmlNewDoc(static_cast<xmlChar*>("1.0"));
-  xmlSetDocCompressMode(doc, 0);
-  XMLTreeImpl::buildExternalTree(doc, root, doc->root, true);
-  xmlDocDumpMemory(doc, static_cast<xmlChar**>(&buf), &size);
-  xmlFreeDoc(doc);
+  ::xmlKeepBlanksDefault(0);
+  doc = ::xmlNewDoc(Cast::pointer<xmlChar*>("1.0"));
+  ::xmlSetDocCompressMode(doc, 0);
+  XMLTreeImpl::buildExternalTree(doc, root, doc->children, true);
+  ::xmlDocDumpMemory(doc, Cast::pointer<xmlChar**>(&buf), &size);
+  ::xmlFreeDoc(doc);
 
 //  retval = buf;
 // copy to string

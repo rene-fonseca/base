@@ -304,7 +304,7 @@ ${base_cleanup}
 dnl AC_BASE_ADDLIB(library list)
 AC_DEFUN(AC_BASE_ADDLIB, [dnl
 for ac_temp in [$1]; do
-  LIBS="${LIBS:-" "} ${ac_temp}"
+  LIBS="${LIBS}${LIBS:+\" \"}${ac_temp}"
 done
 ])
 

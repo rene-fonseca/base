@@ -105,7 +105,7 @@ public:
       if (p < end) {
         // remove candidate for function (if present)
         if (candidates.getSize() > 0) {
-          if (static_cast<CandidateRange>(candidates[candidates.getSize() - 1]).end = demangled.getLength()) {
+          if (static_cast<CandidateRange>(candidates[candidates.getSize() - 1]).end == demangled.getLength()) {
             candidates.remove(candidates.getSize() - 1);
           }
         }

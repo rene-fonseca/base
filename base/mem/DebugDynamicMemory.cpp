@@ -24,13 +24,18 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+unsigned long DebugDynamicMemory::currentAllocations;
 SpinLock DebugDynamicMemory::spinLock; // init before all other objects
 
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 class DynamicMemoryImpl {
 public:
 
   static OperatingSystem::Handle processHeap;
 };
+
+OperatingSystem::Handle DynamicMemoryImpl::processHeap = ::GetProcessHeap();
+#endif // flavour
 
 class DebugDynamicMemoryImpl {
 public:
@@ -40,10 +45,7 @@ public:
   }
   
   ~DebugDynamicMemoryImpl() throw() {
-    
-    DebugDynamicMemory::currentAllocations;
-    
-    // output currentAllocations
+    ASSERT(DebugDynamicMemory::currentAllocations == 0); // output value
   }
 };
 
@@ -112,7 +114,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
     const unsigned int* end = src + PREFIX_WORDS;
     for (; src < end; ++src) {
       if (*src != (pointer_cast<const char*>(src) - static_cast<const char*>(0))) {
-        throw MemoryCorruption();
+        throw MemoryCorruption(Type::getType<DebugDynamicMemory>());
       }
     }
   }
@@ -145,7 +147,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
     const unsigned int* end = src + SUFFIX_WORDS;
     for (; src < end; ++src) {
       if (*src != (pointer_cast<const char*>(src) - static_cast<const char*>(0))) {
-        throw MemoryCorruption();
+        throw MemoryCorruption(Type::getType<DebugDynamicMemory>());
       }
     }
   }

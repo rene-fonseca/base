@@ -30,7 +30,7 @@ public:
   static OperatingSystem::Handle processHeap;
 };
 
-// must be initialized before any other object
+// must be initialized very early
 OperatingSystem::Handle DynamicMemoryImpl::processHeap = ::GetProcessHeap();
 #endif
 

@@ -32,13 +32,44 @@ inline TYPE up_cast(TYPE argument) throw() {return argument;}
 template<class RESULT, class ARGUMENT>
 inline RESULT implicit_cast(ARGUMENT argument) throw() {return argument;}
 
+template<class TYPE> class ConstPointerHelper {
+public:
+  enum {IS_CONSTANT=false};
+};
+
+template<class TYPE> class ConstPointerHelper<const TYPE*> {
+public:
+  enum {IS_CONSTANT=true};
+};
+
+template<class TYPE> inline bool isConstPointer() throw() {
+  return ConstPointerHelper<TYPE>::IS_CONSTANT;
+}
+
+template<class RESULT, class ARG> class PointerCastHelper {
+public:
+  // no casting function available
+};
+
+template<class RESULT, class ARG> class PointerCastHelper<RESULT*, ARG*> {
+public:
+  static inline RESULT* pointer_cast(ARG* value) throw() {return reinterpret_cast<RESULT*>(value);}
+};
+
+template<class RESULT, class ARG> class PointerCastHelper<const RESULT*, const ARG*> {
+public:
+  static inline const RESULT* pointer_cast(const ARG* value) throw() {return reinterpret_cast<const RESULT*>(value);}
+};
+
 /**
   This function casts any pointer type to any other pointer type (at compile
   time). You should definitely avoid this function when possible. However, it
-  is not as dangerous as using reinterpret_cast directly.
+  is not as dangerous as using reinterpret_cast directly. This function does
+  not cast away the const qualifier.
 */
-template<class TYPE*>
-inline TYPE* pointer_cast(void* value) throw() {return reinterpret_cast<TYPE*>(value);}
+template<class RESULT, class ARG> inline RESULT pointer_cast(ARG value) throw() {
+  return PointerCastHelper<RESULT, ARG>::pointer_cast(value);
+}
 
 /**
   Returns the minimum value.

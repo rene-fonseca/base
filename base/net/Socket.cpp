@@ -483,7 +483,7 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
   SynchronizeShared();
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int buffer = value; // set to zero to disable nonblocking
-  if (ioctlsocket(getHandle(), FIONBIO, pointer_cast<u_long*>(&buffer)) {
+  if (ioctlsocket(getHandle(), FIONBIO, pointer_cast<u_long*>(&buffer))) {
     throw IOException("Unable to set blocking mode");
   }
 #else // Unix
@@ -513,7 +513,7 @@ unsigned int Socket::available() const throw(IOException) {
   SynchronizeShared();
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int result;
-  if (ioctlsocket(getHandle(), FIONREAD, pointer_cast<u_long*>(&result)) {
+  if (ioctlsocket(getHandle(), FIONREAD, pointer_cast<u_long*>(&result))) {
     throw IOException("Unable to determine the amount of data pending in the input buffer");
   }
   return result;

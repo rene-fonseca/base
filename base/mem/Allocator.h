@@ -11,7 +11,8 @@
 #include <base/Functor.h>
 
 /**
-  This class encapsulates the implementation used by the Allocator class. Do not use directly.
+  This class encapsulates the implementation used by the Allocator class. Do
+  not use directly.
 
   @see Allocator
   @author René Møller Fonseca
@@ -33,8 +34,9 @@ public:
 
 
 /**
-  Allocator of resizeable memory block.
+  Allocator of resizeable memory block. The implementation is not MT-safe.
 
+  @see ReferenceCountedAllocator CapacityAllocator
   @author René Møller Fonseca
   @version 1.01
 */
@@ -87,8 +89,8 @@ public:
 
   /**
     Initializes an allocator of the specified size without initializing the
-    elements. Throws 'MemoryException' if unable to allocate the requested
-    number of elements.
+    elements. Throws 'MemoryException' if unable to allocate enough memory to
+    hold the requested number of elements.
 
     @param size Specifies the initial size of the allocator.
   */
@@ -144,7 +146,14 @@ public:
   }
 
   /**
-    Sets the size of the allocated memory.
+    Sets the number of elements of the allocator. If the size is increased the
+    original elements are not modified and the newly allocated elements are not
+    initialized. Throws 'MemoryException' if unable to allocate additional
+    memory (does not throw an exception when the size is decreased or
+    unchanged). If the size is reduced the elements up to the new size are
+    unchanged.
+
+    @param size The desired size.
   */
   inline void setSize(unsigned int size) throw(MemoryException) {
     if (size != this->size) {

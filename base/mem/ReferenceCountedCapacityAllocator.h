@@ -3,55 +3,61 @@
     email                : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_ALLOCATOR_H
-#define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_ALLOCATOR_H
+#ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_CAPACITY_ALLOCATOR_H
+#define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_CAPACITY_ALLOCATOR_H
 
 #include <base/Base.h>
 #include <base/MemoryException.h>
-#include <base/mem/Allocator.h>
-#include <base/mem/AllocatorEnumeration.h>
+#include <base/mem/CapacityAllocator.h>
 #include <base/mem/ReferenceCountedObject.h>
-#include <base/string/FormatOutputStream.h>
 
 /**
   This class is a reference counted, low-level, and resizeable implementation
   of an array of elements. The implementation is not MT-safe and the class is
   mainly used by other container classes.
 
-  @short Reference counted allocator.
+  @see CapacityAllocator
+  @short Reference counted capacity allocator.
   @author René Møller Fonseca
   @version 1.0
 */
 
 template<class TYPE>
-class ReferenceCountedAllocator : public ReferenceCountedObject, public Allocator<TYPE> {
+class ReferenceCountedCapacityAllocator : public ReferenceCountedObject, public CapacityAllocator<TYPE> {
 private:
 
   /**
     Default assignment is prohibited.
   */
-  ReferenceCountedAllocator& operator=(const ReferenceCountedAllocator& eq);
+  ReferenceCountedCapacityAllocator& operator=(const ReferenceCountedCapacityAllocator& eq);
 public:
 
   /**
     Initializes an empty allocator.
+
+    @param blockSize The desired blockSize.
   */
-  inline explicit ReferenceCountedAllocator() throw() {}
+  inline explicit ReferenceCountedCapacityAllocator(unsigned int blockSize) throw(OutOfRange) :
+    CapacityAllocator<TYPE>(blockSize) {}
 
   /**
     Initializes an allocator of the specified size without initializing the
     elements. Throws 'MemoryException' if unable to allocate enough memory to
-    hold the requested number of elements.
+    hold the requested number of elements. Throws 'OutOfRange' is blockSize is
+    less than MINIMUM_BLOCK_SIZE.
 
     @param size Specifies the initial size of the allocator.
+    @param blockSize Specifies the number of elements to allocate at a time.
   */
-  inline explicit ReferenceCountedAllocator(unsigned int size) throw(MemoryException) : Allocator<TYPE>(size) {}
+  inline ReferenceCountedCapacityAllocator(unsigned int size, unsigned int blockSize) throw(OutOfRange, MemoryException) :
+    CapacityAllocator<TYPE>(size, blockSize) {}
 
   /**
     Initializes the allocator by copying from the specified allocator. Throws
     'MemoryException' if unable to allocate the required memory.
   */
-  ReferenceCountedAllocator(const ReferenceCountedAllocator& copy) throw(MemoryException) : Allocator<TYPE>(copy) {}
+  ReferenceCountedCapacityAllocator(const ReferenceCountedCapacityAllocator& copy) throw(MemoryException) :
+    CapacityAllocator<TYPE>(copy) {}
 };
 
 #endif

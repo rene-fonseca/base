@@ -9,6 +9,7 @@
   #include <windows.h>
 #else // __unix
   #include <fcntl.h>
+  #include <unistd.h>
 #endif
 
 FileOutputStream::FileOutputStream(const String<>& p, unsigned int flags, unsigned int permissions) throw(FileNotFound) :

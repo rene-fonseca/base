@@ -30,7 +30,7 @@
 #define __EXTENSIONS__ 1
 
 // Specifies that the UNIX 98 functionality is utilized
-#define _XOPEN_SOURCE 500
+#define _XOPEN_SOURCE 600
 
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
   #define _LARGEFILE64_SOURCE 1

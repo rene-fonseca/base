@@ -3,7 +3,9 @@ AC_INIT(Makefile.am)
 
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(ellert,0.55)
+AM_INIT_AUTOMAKE(ellert, 0.55)
+
+AM_PROG_LIBTOOL()
 
 AC_CANONICAL_HOST()
 dnl The following variables have been set: $host, $host_cpu, $host_vendor, and $host_os
@@ -35,7 +37,6 @@ dnl Checks for programs.
 AC_PREREQ(2.13)
 AC_PROG_CC
 AC_PROG_CXX
-AC_PROG_RANLIB
 
 
 

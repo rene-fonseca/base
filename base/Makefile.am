@@ -1,11 +1,12 @@
 ####### kdevelop will overwrite this part!!! (begin)##########
-noinst_LIBRARIES = libbase.a
+####### kdevelop will overwrite this part!!! (end)##########
 
-libbase_a_SOURCES = LongInteger.cpp ShortInteger.cpp Character.cpp Integer.cpp ResourceException.cpp OutOfDomain.cpp OutOfBounds.cpp OutOfRange.cpp MemoryException.cpp DeviceException.cpp Destruct.cpp Construct.cpp Overflow.cpp Underflow.cpp Range2D.cpp Object.cpp Exception.cpp Dimension.cpp 
-
-SUBDIRS = concurrency mathematics io string mem net collection 
-
-EXTRA_DIST = Dimension.cpp Dimension.h Exception.cpp Exception.h Object.cpp Object.h Range2D.cpp Range2D.h Underflow.cpp Underflow.h Overflow.cpp Overflow.h Construct.cpp Construct.h Destruct.cpp Destruct.h DeviceException.cpp DeviceException.h MemoryException.cpp OutOfRange.cpp OutOfBounds.cpp OutOfDomain.cpp OutOfBounds.h MemoryException.h ResourceException.h ResourceException.cpp OutOfDomain.h OutOfRange.h Iterator.h ForwardIterator.h RandomIterator.h Integer.h Integer.cpp Character.cpp Character.h ShortInteger.h ShortInteger.cpp LongInteger.h LongInteger.cpp Functor.h Base.h 
-
-####### kdevelop will overwrite this part!!! (end)############
 DEFS = @DEFS@
+
+SUBDIRS = collection concurrency io mathematics mem net string
+
+lib_LTLIBRARIES = libbase.la
+
+libbase_la_SOURCES = Character.cpp Construct.cpp Destruct.cpp DeviceException.cpp Dimension.cpp Exception.cpp Integer.cpp LongInteger.cpp MemoryException.cpp Object.cpp OutOfBounds.cpp OutOfDomain.cpp OutOfRange.cpp Overflow.cpp Range2D.cpp ResourceException.cpp ShortInteger.cpp Underflow.cpp
+
+libbase_la_LIBADD = collection/Collection.lo collection/EndOfEnumeration.lo collection/Enumeration.lo collection/InvalidKey.lo collection/List.lo collection/Map.lo collection/Set.lo collection/Stack.lo concurrency/AtomicCounter.lo concurrency/Event.lo concurrency/MutualExclusion.lo concurrency/ReadWriteLock.lo concurrency/Semaphore.lo concurrency/SpinLock.lo concurrency/Synchronize.lo concurrency/Synchronizeable.lo concurrency/Thread.lo concurrency/ThreadKey.lo io/AccessDenied.lo io/BindException.lo io/BufferedInputStream.lo io/BufferedOutputStream.lo io/EOFException.lo io/EndOfFile.lo io/FileDescriptor.lo io/FileDescriptorInputStream.lo io/FileDescriptorOutputStream.lo io/FileInputStream.lo io/FileNotFound.lo io/FileOutputStream.lo io/FilterInputStream.lo io/FilterOutputStream.lo io/IOException.lo io/InputStream.lo io/OutputStream.lo io/PrimitiveInputStream.lo io/PrimitiveOutputStream.lo io/Stream.lo io/TimedOut.lo mathematics/AmbiguousRegistration.lo mathematics/ExpressionException.lo mathematics/ExpressionParser.lo mathematics/IncompatibleOperands.lo mathematics/Matrix.lo mathematics/Vector.lo mathematics/Vector2D.lo mathematics/Vector3D.lo mem/Allocator.lo mem/Array.lo mem/Buffer.lo mem/NullPointer.lo mem/OwnershipPointer.lo mem/ReferenceCountedObject.lo mem/ReferenceCountedObjectPointer.lo mem/ReferenceCountedObjectWrapper.lo net/ClientSocket.lo net/HostNotFound.lo net/InetAddress.lo net/InetInterface.lo net/InetService.lo net/NetworkException.lo net/ServerSocket.lo net/ServiceNotFound.lo net/Socket.lo string/FormatInputStream.lo string/FormatOutputStream.lo string/InvalidFormat.lo string/String.lo string/StringInputStream.lo string/StringOutputStream.lo

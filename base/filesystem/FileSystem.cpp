@@ -1153,6 +1153,25 @@ unsigned long FileSystem::getVariable(const String& path, Variable variable) thr
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   throw NotSupported(Type::getType<FileSystem>());
 #else // unix
+#  if (!(defined(_PC_FILESIZEBITS)))
+#    define _PC_FILESIZEBITS -1
+#  endif
+#  if (!(defined(_PC_LINK_MAX)))
+#    define _PC_LINK_MAX -1
+#  endif
+#  if (!(defined(_PC_NAME_MAX)))
+#    define _PC_NAME_MAX -1
+#  endif
+#  if (!(defined(_PC_PATH_MAX)))
+#    define _PC_PATH_MAX -1
+#  endif
+#  if (!(defined(_PC_PIPE_BUF)))
+#    define _PC_PIPE_BUF -1
+#  endif
+#  if (!(defined(_PC_SYMLINK_MAX)))
+#    define _PC_SYMLINK_MAX -1
+#  endif
+  
   static int FILE_SYSTEM_VARIABLES[MAX_SIZE_OF_SYMLINK + 1] = {
     _PC_FILESIZEBITS, // MIN_FILE_SIZE_BITS
     _PC_LINK_MAX, // MAX_NUM_OF_LINKS
@@ -1256,9 +1275,9 @@ FileSystem::Quota FileSystem::getQuota(const String& path, Trustee trustee) thro
   return result;
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   struct dqblk temp;
-  struct quotcl operation;
+  struct quotctl operation;
   operation.op = Q_GETQUOTA;
-  operation.addr = &temp;
+  operation.addr = Cast::pointer<caddr_t>(&temp);
 
   switch (trustee.getType()) {
   case Trustee::USER:

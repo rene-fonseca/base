@@ -1430,48 +1430,66 @@ void convertFloatingPoint(unsigned int significant, unsigned int precision, CutM
 FormatOutputStream& operator<<(FormatOutputStream& stream, float value) throw(IOException) {
   union {
     float primitive;
-    FloatRepresentation fields;
+    FloatingPoint::FloatRepresentation fields;
   } representation;
   representation.primitive = value;
 
   unsigned int precision;
-  unsigned int mantissa[(FloatRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
+  unsigned int mantissa[(FloatingPoint::FloatRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
   int exponent;
   unsigned int flags;
   analyseFloatingPoint(representation.fields, precision, mantissa, exponent, flags);
-  stream.writeFloatingPointType(precision, mantissa, (FloatRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8), exponent, flags);
+  stream.writeFloatingPointType(
+    precision,
+    mantissa,
+    (FloatingPoint::FloatRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8),
+    exponent,
+    flags
+  );
   return stream;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, double value) throw(IOException) {
   union {
     double primitive;
-    DoubleRepresentation fields;
+    FloatingPoint::DoubleRepresentation fields;
   } representation;
   representation.primitive = value;
-
+  
   unsigned int precision;
-  unsigned int mantissa[(DoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
+  unsigned int mantissa[(FloatingPoint::DoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
   int exponent;
   unsigned int flags;
   analyseFloatingPoint(representation.fields, precision, mantissa, exponent, flags);
-  stream.writeFloatingPointType(precision, mantissa, (DoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8), exponent, flags);
+  stream.writeFloatingPointType(
+    precision,
+    mantissa,
+    (FloatingPoint::DoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8),
+    exponent,
+    flags
+  );
   return stream;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) throw(IOException) {
   union {
     long double primitive;
-    LongDoubleRepresentation fields;
+    FloatingPoint::LongDoubleRepresentation fields;
   } representation;
   representation.primitive = value;
 
   unsigned int precision;
-  unsigned int mantissa[(LongDoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
+  unsigned int mantissa[(FloatingPoint::LongDoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
   int exponent;
   unsigned int flags;
   analyseFloatingPoint(representation.fields, precision, mantissa, exponent, flags);
-  stream.writeFloatingPointType(precision, mantissa, (LongDoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8), exponent, flags);
+  stream.writeFloatingPointType(
+    precision,
+    mantissa,
+    (FloatingPoint::LongDoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8),
+    exponent,
+    flags
+  );
   return stream;
 }
 
@@ -1527,13 +1545,18 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Exception& e) t
 //   }
 // }
 
-void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsigned int* mantissa, unsigned int mantissaSize, int base2Exponent, unsigned int valueFlags) throw(IOException) {
+void FormatOutputStream::writeFloatingPointType(
+  unsigned int significant,
+  unsigned int* mantissa,
+  unsigned int mantissaSize,
+  int base2Exponent,
+  unsigned int valueFlags) throw(IOException) {
   char buffer[128 + 2 + significant/3]; // N = 2 + floor[n/log2(10)] => N < 2 + n/3 // TAG: 128 should be calculated
   char* output = buffer;
   const char* radix = 0;
   unsigned int flags = context.flags;
 
-  if ((valueFlags & FP_NAN) != 0) {
+  if ((valueFlags & FloatingPoint::FP_NAN) != 0) {
     if ((flags & Symbols::UPPER) == 0) {
       copy(output, "nan", sizeof("nan") - 1); // TAG: I guess this should be locale specific
       output += sizeof("nan") - 1;
@@ -1544,18 +1567,18 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
   } else {
 
     if ((flags & Symbols::POSIX) != 0) { // use POSIX
-      if ((valueFlags & FP_NEGATIVE) != 0) {
+      if ((valueFlags & FloatingPoint::FP_NEGATIVE) != 0) {
         *output++ = '-';
       } else if ((flags & Symbols::FPLUS) != 0) { // show plus if sign is forced
         *output++ = '+';
       }
     } else { // use locale
       // numeric or currency
-      // const char* str = (valueFlags & FP_NEGATIVE) ? locale->getBeginNegative() : locale->getBeginPositive();
+      // const char* str = (valueFlags & FloatingPoint::FP_NEGATIVE) ? locale->getBeginNegative() : locale->getBeginPositive();
       // copy to output
     }
 
-    if ((valueFlags & FP_INFINITY) != 0) {
+    if ((valueFlags & FloatingPoint::FP_INFINITY) != 0) {
       if ((flags & Symbols::UPPER) == 0) {
         copy(output, "infinity", sizeof("infinity") - 1); // TAG: I guess this should be locale specific
         output += sizeof("infinity") - 1;
@@ -1575,13 +1598,24 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
         cutMode = CUT_MODE_RELATIVE;
       }
 
-      convertFloatingPoint(significant, context.precision, cutMode, context.realStyle, mantissa, mantissaSize, base2Exponent, digitBuffer, numberOfDigits, exponent);
+      convertFloatingPoint(
+        significant,
+        context.precision,
+        cutMode,
+        context.realStyle,
+        mantissa,
+        mantissaSize,
+        base2Exponent,
+        digitBuffer,
+        numberOfDigits,
+        exponent
+      );
       bool showExponent = true;
 
       int adjustedExponent = exponent;
       switch (context.realStyle) {
       case Symbols::SCIENTIFIC: // one digit before radix character
-        if ((valueFlags & FP_ZERO) == 0) {
+        if ((valueFlags & FloatingPoint::FP_ZERO) == 0) {
           adjustedExponent = exponent - 1;
         }
         break;
@@ -1611,7 +1645,7 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
 
       const byte* digit = digitBuffer;
       const byte* endDigit = digit + numberOfDigits;
-      int digitsBeforeRadix = ((valueFlags & FP_ZERO) == 0) ? maximum(exponent - adjustedExponent, 0) : 1;
+      int digitsBeforeRadix = ((valueFlags & FloatingPoint::FP_ZERO) == 0) ? maximum(exponent - adjustedExponent, 0) : 1;
       int denormalizingZeros = minimum(maximum(adjustedExponent - exponent, 0), context.precision);
 
       if (digitsBeforeRadix > 0) {
@@ -1693,7 +1727,7 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
 
       if ((flags & Symbols::POSIX) == 0) { // use locale
         // numeric or monetary
-        // const char* str = (valueFlags & FP_NEGATIVE) ? locale->getEndNegative() : locale->getEndPositive();
+        // const char* str = (valueFlags & FloatingPoint::FP_NEGATIVE) ? locale->getEndNegative() : locale->getEndPositive();
         // copy to output
       }
     }

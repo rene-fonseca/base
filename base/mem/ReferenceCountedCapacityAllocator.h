@@ -45,15 +45,18 @@ public:
   /**
     Initializes an empty allocator with the default granularity.
   */
-  inline explicit ReferenceCountedCapacityAllocator() throw() : CapacityAllocator<TYPE>() {}
+  inline explicit ReferenceCountedCapacityAllocator() throw()
+    : CapacityAllocator<TYPE>() {
+  }
 
   /**
     Initializes an empty allocator.
 
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline explicit ReferenceCountedCapacityAllocator(unsigned int granularity) throw(OutOfRange) :
-    CapacityAllocator<TYPE>(granularity) {}
+  inline explicit ReferenceCountedCapacityAllocator(unsigned int granularity) throw(OutOfRange)
+    : CapacityAllocator<TYPE>(granularity) {
+  }
 
   /**
     Initializes an allocator of the specified size without initializing the
@@ -64,15 +67,17 @@ public:
     @param size Specifies the initial size of the allocator.
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline ReferenceCountedCapacityAllocator(unsigned int size, unsigned int granularity) throw(OutOfRange, MemoryException) :
-    CapacityAllocator<TYPE>(size, granularity) {}
+  inline ReferenceCountedCapacityAllocator(unsigned int size, unsigned int granularity) throw(OutOfRange, MemoryException)
+    : CapacityAllocator<TYPE>(size, granularity) {
+  }
 
   /**
     Initializes the allocator by copying from the specified allocator. Throws
     'MemoryException' if unable to allocate the required memory.
   */
-  ReferenceCountedCapacityAllocator(const ReferenceCountedCapacityAllocator& copy) throw(MemoryException) :
-    CapacityAllocator<TYPE>(copy) {}
+  ReferenceCountedCapacityAllocator(const ReferenceCountedCapacityAllocator& copy) throw(MemoryException)
+    : CapacityAllocator<TYPE>(copy) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

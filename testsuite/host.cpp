@@ -126,8 +126,4 @@ public:
   }    
 };
 
-  namespace x {
-    using ::HostApplication;
-  };
-  
-STUB(x::HostApplication);
+STUB(HostApplication);

@@ -66,28 +66,6 @@ namespace httpCommands {
   const StringLiteral CMD_REPRESENTATION = MESSAGE("TYPE"); // request data representation (AEIL)
   const StringLiteral CMD_FILE_STRUCTURE = MESSAGE("STRU"); // request file structure (file/record/page)
   const StringLiteral CMD_TRANSFER_MODE = MESSAGE("MODE"); // (stream/block/compressed)
-
-  // FTP service commands
-  const StringLiteral CMD_RETRIEVE = MESSAGE("RETR"); // retrieve file from server
-  const StringLiteral CMD_STORE = MESSAGE("STOR"); // store file on server
-  const StringLiteral CMD_STORE_UNIQUE = MESSAGE("STOU"); // store unique file on server
-  const StringLiteral CMD_APPEND = MESSAGE("APPE"); // append data to file on server
-  const StringLiteral CMD_ALLOCATE = MESSAGE("ALLO"); // allocate storage for specified number of bytes
-  const StringLiteral CMD_RESTART = MESSAGE("REST"); // restart transfer at marker
-  const StringLiteral CMD_RENAME_FROM = MESSAGE("RNFR"); // rename from
-  const StringLiteral CMD_RENAME_TO = MESSAGE("RNTO"); // rename to
-  const StringLiteral CMD_ABORT = MESSAGE("ABOR"); // abort transfers
-  const StringLiteral CMD_DELETE = MESSAGE("DELE"); // delete file
-  const StringLiteral CMD_REMOVE_DIRECTORY = MESSAGE("RMD"); // remove directory
-  const StringLiteral CMD_MAKE_DIRECTORY = MESSAGE("MKD"); // make directory
-  const StringLiteral CMD_PWD = MESSAGE("PWD"); // print working directory
-  const StringLiteral CMD_LIST = MESSAGE("LIST"); // list directory or file content
-  const StringLiteral CMD_NAME_LIST = MESSAGE("NLST"); // request name list
-  const StringLiteral CMD_SITE = MESSAGE("SITE"); // site specific
-  const StringLiteral CMD_SYSTEM = MESSAGE("SYST"); // system type
-  const StringLiteral CMD_STATUS = MESSAGE("STAT"); // status
-  const StringLiteral CMD_HELP = MESSAGE("HELP"); // request help
-  const StringLiteral CMD_NOOP = MESSAGE("NOOP"); // no operation
   
 }; // httpCommands namespace
 
@@ -111,16 +89,20 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline HTTPException() : permanent(true) {}
-
+  inline HTTPException() : permanent(true) {
+  }
+  
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline HTTPException(const char* message) : IOException(message) {}
-
-  inline bool isPermanent() throw() {return permanent;}
+  inline HTTPException(const char* message) : IOException(message) {
+  }
+  
+  inline bool isPermanent() throw() {
+    return permanent;
+  }
 };
 
 
@@ -159,9 +141,40 @@ public:
   static const char* SHORT_MONTH[12];
 };
 
-const char* HTTPTraits::SHORT_WEEKDAY[7] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-const char* HTTPTraits::LONG_WEEKDAY[7] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-const char* HTTPTraits::SHORT_MONTH[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+const char* HTTPTraits::SHORT_WEEKDAY[7] = {
+  "Mon",
+  "Tue",
+  "Wed",
+  "Thu",
+  "Fri",
+  "Sat",
+  "Sun"
+};
+
+const char* HTTPTraits::LONG_WEEKDAY[7] = {
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday"
+};
+
+const char* HTTPTraits::SHORT_MONTH[12] = {
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec"
+};
 
 class MessageHeader : public Object {
 private:
@@ -227,6 +240,7 @@ class PushToNothing {
 public:
 
   bool pushBegin(long long totalSize) throw() {
+    return true;
   }
 
   void push(const char* buffer, unsigned int size) throw() {
@@ -303,13 +317,18 @@ public:
     bytesWritten += size;
     if (totalSize > 0) {
       fout << "  bytes written=" << bytesWritten
-           << "  completed=" << base::FIXED << setWidth(7) << setPrecision(3) << static_cast<long double>(bytesWritten)/totalSize*100 << "%"
+           << "  completed=" << base::FIXED << setWidth(7) << setPrecision(3)
+           << static_cast<long double>(bytesWritten)/totalSize*100 << "%"
            << "  time=" << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
-           << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3) << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds()) << "kbs\r" << FLUSH;
+           << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3)
+           << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds())
+           << MESSAGE("kb/s\r") << FLUSH;
     } else {
       fout << "  bytes written=" << bytesWritten
            << "  time=" << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
-           << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3) << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds()) << "kbs\r" << FLUSH;
+           << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3)
+           << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds())
+           << MESSAGE("kb/s\r") << FLUSH;
     }
   }
 
@@ -341,14 +360,16 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline InvalidResponse() : HTTPException() {}
-
+    inline InvalidResponse() : HTTPException() {
+    }
+    
     /**
       Initializes the exception object.
 
       @param message The message.
     */
-    inline InvalidResponse(const char* message) : HTTPException(message) {}
+    inline InvalidResponse(const char* message) : HTTPException(message) {
+    }
   };
 
   typedef HTTPTraits Traits;
@@ -361,7 +382,7 @@ public:
   enum Method {OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT};
   /** Content types. */
   enum ContentType {TEXT, IMAGE, UNSPECIFIED}; // FIXME: need mime-type support
-
+  
   struct Status {
     StatusClass statusClass;
     int code;
@@ -383,7 +404,7 @@ private:
   String reasonPhrase;
   /** Specifies the verbosity. */
   Verbosity verbosity;
-
+  
   /** The retry delay in seconds. */
   unsigned int retryDelay;
   /** The number of retry attempts. */
@@ -455,12 +476,22 @@ protected:
   /* See chapter 5 of RFC */
   String makeRequest(Method method, const String& host, const String& resourceUri) throw(IOException) {
     static const StringLiteral AGENT = MESSAGE("http/0.1 (http://www.mip.sdu.dk/~fonseca/base)");
-    static const StringLiteral methods[] = {METHOD_OPTIONS, METHOD_GET, METHOD_HEAD, METHOD_POST, METHOD_PUT, METHOD_DELETE, METHOD_TRACE, METHOD_CONNECT};
+    static const StringLiteral methods[] = {
+      METHOD_OPTIONS,
+      METHOD_GET,
+      METHOD_HEAD,
+      METHOD_POST,
+      METHOD_PUT,
+      METHOD_DELETE,
+      METHOD_TRACE,
+      METHOD_CONNECT
+    };
 
     assert(resourceUri != "", HTTPException("Empty resourceUri"));
     
     StringOutputStream stream;
-    stream << methods[method] << Traits::SP << resourceUri << Traits::SP << MESSAGE("HTTP/1.1") << CRLF // Request-Line
+    stream << methods[method] << Traits::SP << resourceUri << Traits::SP
+           << MESSAGE("HTTP/1.1") << CRLF // Request-Line
            << MESSAGE("Host: ") << host << CRLF // Section 14.23 (required)
            << MESSAGE("User-Agent: ") << AGENT << CRLF // Section 14.43
            << CRLF << FLUSH;
@@ -511,20 +542,21 @@ protected:
       }
 
       MessageHeader header(line);
-      fout << MESSAGE("name=") << header.getName() << Traits::SP << MESSAGE("value=") << header.getValue() << ENDL;
-
-      if (header.getName() == "Transfer-Encoding") {
-        if (header.getValue().toLowerCase() == "chunked") {
+      fout << MESSAGE("name=") << header.getName() << Traits::SP
+           << MESSAGE("value=") << header.getValue() << ENDL;
+      
+      if (header.getName() == MESSAGE("Transfer-Encoding")) {
+        if (header.getValue().toLowerCase() == MESSAGE("chunked")) {
           chunkedTransferEncoding = true;
         }
-      } else if (header.getName() == "Content-Length") {
+      } else if (header.getName() == MESSAGE("Content-Length")) {
         try {
           contentLength = UnsignedInteger(header.getValue());
           hasContentLength = true;
         } catch (InvalidFormat& e) {
           throw HTTPException("Invalid value for Content-Length field");
         }
-      } else if (header.getName() == "Content-Type") {
+      } else if (header.getName() == MESSAGE("Content-Type")) {
         contentType = header.getValue();
       }
     }
@@ -634,7 +666,10 @@ public:
     return true;
   }
 
-  HypertextTransferProtocolClient(const String& _host, InetEndPoint _endPoint, Verbosity _verbosity = DEBUG_EXTENDED) throw()
+  HypertextTransferProtocolClient(
+    const String& _host,
+    InetEndPoint _endPoint,
+    Verbosity _verbosity = DEBUG_EXTENDED) throw()
     : host(_host),
       endPoint(_endPoint),
       verbosity(_verbosity),

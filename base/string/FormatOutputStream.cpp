@@ -1237,7 +1237,7 @@ enum CutMode {
   CUT_MODE_RELATIVE
 };
 
-void convertFloatingPoint(unsigned int significant, unsigned int precision, CutMode cutMode, FormatOutputStream::Symbols::RealStyle realStyle, unsigned int* restrict mantissa, unsigned int mantissaSize, int base2Exponent, byte* restrict buffer, unsigned int& numberOfDigits, int& exponent) throw() {
+void convertFloatingPoint(unsigned int significant, unsigned int precision, CutMode cutMode, FormatOutputStream::Symbols::RealStyle realStyle, unsigned int* restrict mantissa, unsigned int mantissaSize, int base2Exponent, uint8* restrict buffer, unsigned int& numberOfDigits, int& exponent) throw() {
   // TAG: there is plenty room for optimization
   static const unsigned int power[] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 
@@ -1588,7 +1588,7 @@ void FormatOutputStream::writeFloatingPointType(
       }
     } else {
 
-      byte digitBuffer[(significant + 1)/3]; // N = 2 + floor[n/log2(10)] => N < 3 + n/3 // TAG: check if stack is aligned
+      uint8 digitBuffer[(significant + 1)/3]; // N = 2 + floor[n/log2(10)] => N < 3 + n/3 // TAG: check if stack is aligned
       unsigned int numberOfDigits;
       int exponent;
       CutMode cutMode;
@@ -1643,8 +1643,8 @@ void FormatOutputStream::writeFloatingPointType(
         break;
       }
 
-      const byte* digit = digitBuffer;
-      const byte* endDigit = digit + numberOfDigits;
+      const uint8* digit = digitBuffer;
+      const uint8* endDigit = digit + numberOfDigits;
       int digitsBeforeRadix = ((valueFlags & FloatingPoint::FP_ZERO) == 0) ? maximum(exponent - adjustedExponent, 0) : 1;
       int denormalizingZeros = minimum(maximum(adjustedExponent - exponent, 0), context.precision);
 

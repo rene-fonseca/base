@@ -34,7 +34,7 @@ FileReader::FileReader(File& file, long long position, unsigned int windowSize) 
   current = begin + (position - mapping.getRegion().getOffset());
 }
 
-void FileReader::read(byte* buffer, unsigned int size) throw(IOException) {
+void FileReader::read(uint8* buffer, unsigned int size) throw(IOException) {
   peek(size);
   copy(buffer, current, size);
   skip(size);

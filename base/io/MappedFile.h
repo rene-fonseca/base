@@ -106,8 +106,8 @@ public:
     Returns the mapped bytes. Do not use the mapping outside the requested
     mapping range.
   */
-  inline byte* getBytes() const throw() {
-    return static_cast<byte*>(map->getBytes());
+  inline uint8* getBytes() const throw() {
+    return static_cast<uint8*>(map->getBytes());
   }
 
   /**

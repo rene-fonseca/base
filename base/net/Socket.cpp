@@ -125,7 +125,10 @@ public:
       copy<byte>(getByteAddress(sa.sin6_addr), addr.getAddress(), sizeof(struct in6_addr));
     }
   #else // only IPv4 support
-    assert((addr.getFamily() == InetAddress::IP_VERSION_4) || addr.isIPv4Mapped(), NetworkException("Address not supported"));
+    assert(
+      (addr.getFamily() == InetAddress::IP_VERSION_4) || addr.isIPv4Mapped() || addr.isUnspecified(),
+      NetworkException("Address not supported")
+    );
     sa.sin_family = AF_INET;
     sa.sin_port = ByteOrder::toBigEndian<unsigned short>(port);
     copy<byte>(getByteAddress(sa.sin_addr), addr.getIPv4Address(), sizeof(struct in_addr));

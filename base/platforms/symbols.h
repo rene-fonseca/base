@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -61,6 +61,18 @@
 
 #define _DK_SDU_MIP__BASE__UNSPECIFIED 0
 
+// Named built-in primitives
+#define _DK_SDU_MIP__BASE__CHAR 1
+#define _DK_SDU_MIP__BASE__UNSIGNED_CHAR 2
+#define _DK_SDU_MIP__BASE__SHORT 3
+#define _DK_SDU_MIP__BASE__UNSIGNED_SHORT 4
+#define _DK_SDU_MIP__BASE__INT 5
+#define _DK_SDU_MIP__BASE__UNSIGNED_INT 6
+#define _DK_SDU_MIP__BASE__LONG 7
+#define _DK_SDU_MIP__BASE__UNSIGNED_LONG 8
+#define _DK_SDU_MIP__BASE__LONG_LONG 9
+#define _DK_SDU_MIP__BASE__UNSIGNED_LONG_LONG 10
+
 // Supported flavors
 #define _DK_SDU_MIP__BASE__UNIX 1 // selects The Single UNIX Specification 2
 #define _DK_SDU_MIP__BASE__WIN32 2 // selects WIN32 api
@@ -118,6 +130,7 @@
 #define _DK_SDU_MIP__BASE__PPC 6
 #define _DK_SDU_MIP__BASE__RS 7
 #define _DK_SDU_MIP__BASE__X86_64 8
+#define _DK_SDU_MIP__BASE__S390 9
 
 // Architectures (minor)
 #define _DK_SDU_MIP__BASE__486 1 // only with X86

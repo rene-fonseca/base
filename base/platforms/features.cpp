@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,24 +41,25 @@
      (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__ALPHA) || \
      (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__PPC) || \
      (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__RS) || \
-     (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64))
+     (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64) || \
+     (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__S390))
 #else
 #  error Invalid architecture (ARCH) specification
 #endif
 
-#if defined(_DK_SDU_MIP__BASE__EXPERIMENTAL)
+#if (defined(_DK_SDU_MIP__BASE__EXPERIMENTAL))
 #  warning Experimental components have been enabled
 #endif
 
-#if !defined(_DK_SDU_MIP__BASE__CPP_BOOL)
+#if (!defined(_DK_SDU_MIP__BASE__CPP_BOOL))
 #  error Compiler does not support the bool primitive
 #endif
 
-#if !defined(_DK_SDU_MIP__BASE__CPP_CONST)
+#if (!defined(_DK_SDU_MIP__BASE__CPP_CONST))
 #  error Compiler does not support the const qualifier
 #endif
 
-#if !defined(_DK_SDU_MIP__BASE__CPP_RESTRICT) && !defined(restrict)
+#if (!defined(_DK_SDU_MIP__BASE__CPP_RESTRICT) && !defined(restrict))
 #  if defined(_DK_SDU_MIP__BASE__COMPILER_RESTRICT)
 #    warning Using alternative restrict qualifier keyword
 #  else
@@ -66,7 +67,7 @@
 #  endif
 #endif
 
-#if !defined(_DK_SDU_MIP__BASE__CPP_INLINE) && !defined(inline)
+#if (!defined(_DK_SDU_MIP__BASE__CPP_INLINE) && !defined(inline))
 #  if defined(_DK_SDU_MIP__BASE__COMPILER_INLINE)
 #    warning Using alternative inline specifier keyword
 #  else
@@ -74,15 +75,15 @@
 #  endif
 #endif
 
-#if !defined(_DK_SDU_MIP__BASE__CPP_STATIC_CONST)
+#if (!defined(_DK_SDU_MIP__BASE__CPP_STATIC_CONST))
 #  error Compiler does not support initialization of static constants inside class definition
 #endif
 
-#if !defined(_DK_SDU_MIP__BASE__CPP_ANONYMOUS)
+#if (!defined(_DK_SDU_MIP__BASE__CPP_ANONYMOUS))
 #  warning Compiler does not support anonymous structures (and unions)
 #endif
 
-#if !defined(_DK_SDU_MIP__BASE__CPP_SPECIFICATION)
+#if (!defined(_DK_SDU_MIP__BASE__CPP_SPECIFICATION))
 #  error Compiler does not support exception specifications
 #endif
 
@@ -90,7 +91,7 @@
 #  warning ABI of compiler is different from configured ABI
 #endif
 
-#if !defined(_DK_SDU_MIP__BASE__ARCH_ABI)
+#if (!defined(_DK_SDU_MIP__BASE__ARCH_ABI))
 #  warning Unsupported architecture ABI
 #endif
 

@@ -10,12 +10,13 @@
 #include "base/Object.h"
 #include "base/Exception.h"
 #include "base/ResourceException.h"
+#include "Lock.h"
 
 #ifdef __win32__
-  #include <Windows.h>
+  #include <windows.h>
 #else
   #include <pthread.h>
-#endif // __win32__
+#endif
 
 /**
   This class implements a mutual exclusion object used to protect shared
@@ -23,21 +24,26 @@
   and monitors. Please note that the lock/unlock mechanism is considered a
   non-modifying property of a class.
 
+  @see Lock
   @author René Møller Fonseca
   @version 1.1
 */
 
-class MutualExclusion : public Object {
+class MutualExclusion : public Object, public virtual Lock {
 protected:
 
 #ifdef __win32__
   /** Internal mutex representation. */
-  mutable CRITICAL_SECTION criticalSection;
+  mutable CRITICAL_SECTION lock;
 #else
   /** Internal mutex representation. */
-  mutable pthread_mutex_t mutex;
+  mutable pthread_mutex_t lock;
 #endif // __win32__
 public:
+
+  /** Exception thrown directly by the MutualExclusion class. */
+  class MutualExclusionException : public Exception {
+  };
 
   /**
     Initializes a mutual exclusion object in the unlocked state. Throws
@@ -48,31 +54,55 @@ public:
   /**
     Requests a lock on this mutual exclusion object. The calling thread is
     suspended if the mutex has been locked by another thread. Does nothing if
-    the calling thread already has a lock on the object. Throws 'Exception'
-    on undefined failure.
+    the calling thread already has a lock on the object. Throws
+    'MutualExclusionException' on undefined failure.
   */
-  void lock() const throw(Exception);
+  void exclusiveLock() const throw(MutualExclusionException);
 
   /**
-    Tries to lock this mutual exclusion object. Throws 'Exception' on
-    undefined failure.
+    Attempts to lock this mutual exclusion object. Throws
+    'MutualExclusionException' on failure.
 
-    @return True if the mutual exclusion was locked successfully or already was locked by the calling thread.
+    @return True if the mutual exclusion was locked successfully or already
+    was locked by the calling thread.
   */
-  bool tryLock() const throw(Exception);
+  bool tryExclusiveLock() const throw(MutualExclusionException);
 
   /**
-    This method unlocks this mutual exclusion object. Throws 'Exception' on
-    undefined failure. The calling thread must have a lock on this mutual
-    exlusion object prior to invocation otherwise the behaviour is undefined.
+    Requests a lock on this mutual exclusion object. The calling thread is
+    suspended if the mutex has been locked by another thread. Does nothing if
+    the calling thread already has a lock on the object. Throws
+    'MutualExclusionException' on undefined failure.
   */
-  void unlock() const throw(Exception);
+  inline void sharedLock() const throw(MutualExclusionException) {
+    exclusiveLock();
+  }
+
+  /**
+    Attempts to lock this mutual exclusion object. Throws
+    'MutualExclusionException' on failure.
+
+    @return True if the mutual exclusion was locked successfully or already
+    was locked by the calling thread.
+  */
+  inline bool trySharedLock() const throw(MutualExclusionException) {
+    return tryExclusiveLock();
+  }
+
+  /**
+    This method unlocks this mutual exclusion object. The calling thread must
+    have a lock on this mutual exlusion object prior to invocation otherwise
+    the behaviour is undefined. Throws 'MutualExclusionException' on
+    failure.
+  */
+  void releaseLock() const throw(MutualExclusionException);
 
   /**
     Destroys the mutual exclusion object. The mutual exclusion must be
-    in the unlocked state prior to destruction.
+    in the unlocked state prior to destruction. Throws
+    'ReadWriteLockException' on failure. 
   */
-  ~MutualExclusion() throw();
+  ~MutualExclusion() throw(MutualExclusionException);
 };
 
 #endif

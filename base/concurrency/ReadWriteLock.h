@@ -8,90 +8,95 @@
 
 #include <config.h>
 #include "base/Object.h"
-#include "base/Construct.h"
-#include "base/Destruct.h"
+#include "base/Exception.h"
+#include "base/ResourceException.h"
 #include "Lock.h"
-#include <pthread.h>
+
+#ifdef __win32__
+  #include <windows.h>
+#else
+  #include <pthread.h>
+#endif
 
 /**
   The ReadWriteLock class implements a read-write lock for optimal reader
   performance on systems which have rwlock support and reverts to a simple
   mutex for those that do not. Please note that the lock/unlock mechanism is
-  considered const.
+  considered a non-modifying property of a class.
 
+  @see MutualExclusion Lock
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.1
 */
 
 class ReadWriteLock : public Object, public virtual Lock {
 protected:
 
-  /* Internal lock representation. */
-#ifdef HAVE_PTHREAD_RWLOCK
+  /** Internal mutex representation. */
+#ifdef __win32__
+  mutable CRITICAL_SECTION lock;
+#elif HAVE_PTHREAD_RWLOCK
   mutable pthread_rwlock_t lock;
 #else
   mutable pthread_mutex_t lock;
 #endif
 public:
 
-  /** Group of exceptions thrown directly by the ReadWriteLock class. */
+  /** Exception thrown directly by the ReadWriteLock class. */
   class ReadWriteLockException : public Exception {
   };
-  /** Thrown on failure to lock the read-write lock object. */
-  class Lock : public ReadWriteLockException {
-  };
-  /** Thrown on failure to unlock the read-write lock object. */
-  class Unlock : public ReadWriteLockException {
-  };
 
   /**
-    Initializes a read-write lock in the unlocked state.
+    Initializes a read-write lock in the unlocked state. Throws
+    'ResourceException' if unable to initialize the object.
   */
-  ReadWriteLock() throw(Construct);
+  ReadWriteLock() throw(ResourceException);
 
   /**
-    Lock the read-write lock for writing. The calling thread acquires the lock
-    if no other thread (reader or writer) holds the lock. Otherwise, the thread
-    blocks until it can be acquired. Results are undefined if the calling
-    thread holds the read-write lock. Throws 'ReadWriteLock:Lock' on failure.
+    Acquires an exclusive lock (write-lock) on the read-write lock. The
+    calling thread acquires the lock if no other thread (reader or writer)
+    currently holds the lock. Otherwise, the thread blocks until the lock can
+    be acquired. Results are undefined if the calling thread holds the
+    read-write lock. Throws 'ReadWriteLockException' on failure.
   */
-  void exclusiveLock() const throw();
+  void exclusiveLock() const throw(ReadWriteLockException);
 
   /**
-    Attempts to lock the read-write object for writing. Throws the exception
-    'ReadWriteLock::Lock' on failure.
+    Attempts to acquire an exclusive lock on the read-write lock. Throws the
+    exception 'ReadWriteLockException' on failure.
 
-    @return True if the read-write lock was successfully acquired for writing.
+    @return True if the exclusive lock was successfully acquired.
   */
-  bool tryExclusiveLock() const throw();
+  bool tryExclusiveLock() const throw(ReadWriteLockException);
 
   /**
-    Applies a read lock to the read-write lock object. The calling thread does
-    not return until the lock can be acquired. The calling thread is allowed to
-    hold several simultaneous read locks. Results are undefined if the calling
-    thread already holds a write lock. Throws the exception 'ReadWriteLock:Lock'
-    on failure.
+    Acquires a shared lock (read-lock) on the read-write lock. The calling
+    thread blocks until the lock can be acquired. Results are undefined if the
+    calling thread already holds a lock. Throws the exception
+    'ReadWriteLockException' on failure.
   */
-  void sharedLock() const throw();
+  void sharedLock() const throw(ReadWriteLockException);
 
   /**
-    Attempts to lock the read-write object for reading. Throws the exception
-    'ReadWriteLock::Lock' on failure.
+    Attempts to acquire a shared lock on the read-write lock. Throws the
+    exception 'ReadWriteLockException' on failure.
 
-    @return True if the read-write lock was successfully acquired for reading.
+    @return True if the shared lock was successfully acquired.
   */
-  bool trySharedLock() const throw();
-
-  /**
-    This method unlocks the read-write lock. Throws the exception
-    'ReadWriteLock::Unlock' on failure.
-  */
-  void releaseLock() const throw();
+  bool trySharedLock() const throw(ReadWriteLockException);
 
   /**
-    Destroys the read-write lock object.
+    This method unlocks the read-write lock. Results are undefines if the
+    calling thread does not hold the lock. Throws the exception
+    'ReadWriteLockException' on failure.
   */
-  ~ReadWriteLock() throw(Destruct);
+  void releaseLock() const throw(ReadWriteLockException);
+
+  /**
+    Destroys the read-write lock object. The lock must be in the unlocked
+    state prior to destruction.Throws 'ReadWriteLockException' on failure. 
+  */
+  ~ReadWriteLock() throw(ReadWriteLockException);
 };
 
 #endif

@@ -4,128 +4,156 @@
  ***************************************************************************/
 
 #include "Event.h"
-#include <pthread.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <errno.h>
 
-Event::Event(unsigned int maximum) throw(Construct, ResourceException) {
-  this->maximum = maximum;
-  resetting = false;
+#ifndef __win32__
+  #include <pthread.h>
+  #include <sys/time.h>
+  #include <unistd.h>
+  #include <errno.h>
+#endif // __win32__
+
+Event::Event() throw(ResourceException) {
+#ifdef __win32__
+  if ((event = CreateEvent(NULL, true, false, NULL)) == NULL) {
+    throw ResourceException("Unable to initialize event");
+  }
+#else
   signaled = false;
-  waitingThreads = 0;
+
+  pthread_mutexattr_t attributes = PTHREAD_MUTEX_ERRORCHECK;
+  if (pthread_mutex_init(&mutex, &attributes)) {
+    throw ResourceException("Unable to initialize Event");
+  }
 
   if (pthread_cond_init(&condition, NULL)) {
-    throw ResourceException();
+    throw ResourceException("Unable to initialize event");
   }
+#endif // __win32__
 }
 
-void Event::reset() throw(MutualExclusion::MutualExclusionException) {
-  MutualExclusion::lock();
-
-    if (waitingThreads) {
-      resetting = true;
-      signaled = true;
-      pthread_cond_broadcast(&condition); // make sure the waiting threads can continue
-
-      while (resetting) { // wait until threads have been reset
-        pthread_cond_wait(&condition, &mutex);
-      }
-    } else {
-      signaled = false;
-    }
-
-  MutualExclusion::unlock();
+bool Event::isSignaled() const throw(EventException) {
+#ifdef __win32__
+  return WaitForSingleObject(event, 0) == WAIT_OBJECT_0;
+#else
+  bool result;
+  if (pthread_mutex_lock(&mutex)) {
+    throw EventException(__func__);
+  }
+  result = signaled;
+  if (pthread_mutex_unlock(&mutex)) {
+    throw EventException(__func__);
+  }
+  return result;
+#endif // __win32__
 }
 
-void Event::signal() throw(MutualExclusion::MutualExclusionException) {
-  MutualExclusion::lock();
-    signaled = true;
-    pthread_cond_broadcast(&condition); // make blocked threads unblocked
-  MutualExclusion::unlock();
+void Event::reset() throw(EventException) {
+#ifdef __win32__
+  if (ResetEvent(event)) {
+    throw EventException("Unable to reset event");
+  }
+#else
+  if (pthread_mutex_lock(&mutex)) {
+    throw EventException("Unable to reset event");
+  }
+  signaled = false;
+  if (pthread_mutex_unlock(&mutex)) {
+    throw EventException("Unable to reset event");
+  }
+#endif // __win32__
 }
 
-void Event::wait() throw(OutOfRange, MutualExclusion::MutualExclusionException) {
-  MutualExclusion::lock();
-
-    while (resetting) { // wait if resetting
-      pthread_cond_wait(&condition, &mutex); // concurrent envocations of signal() does not matter
-    }
-
-    if (waitingThreads == maximum) {
-      MutualExclusion::unlock();
-      throw OutOfRange();
-    }
-
-    ++waitingThreads;
-    while (!signaled) {
-      pthread_cond_wait(&condition, &mutex); // concurrent envocations of signal() does not matter
-    }
-    --waitingThreads;
-
-    if (!waitingThreads && resetting) { // can reset be completed
-      signaled = false;
-      resetting = false;
-      pthread_cond_broadcast(&condition); // unblocked threads waiting for reset to complete
-    }
-
-  MutualExclusion::unlock();
+void Event::signal() throw(EventException) {
+#ifdef __win32__
+  if (SetEvent(event)) {
+    throw EventException("Unable to signal event");
+  }
+#else
+  if (pthread_mutex_lock(&mutex)) {
+    throw EventException("Unable to signal event");
+  }
+  signaled = true;
+  if (pthread_mutex_unlock(&mutex)) {
+    throw EventException("Unable to signal event");
+  }
+  if (pthread_cond_broadcast(&condition)) { // unblock all blocked threads
+    throw EventException("Unable to signal event");
+  }
+#endif // __win32__
 }
 
-bool Event::wait(unsigned int microseconds) throw(OutOfRange, MutualExclusion::MutualExclusionException) {
+void Event::wait() const throw(EventException) {
+#ifdef __win32__
+  if (WaitForSingleObject(event, INFINITE) != WAIT_OBJECT_0) {
+    throw EventException("Unable to wait for event");
+  }
+#else
+  if (pthread_mutex_lock(&mutex)) {
+    throw EventException("Unable to wait for event");
+  }
+
+  while (!signaled) { // wait for signal
+    pthread_cond_wait(&condition, &mutex);
+  }
+
+  if (pthread_mutex_unlock(&mutex)) {
+    throw EventException("Unable to wait for event");
+  }
+#endif // __win32__
+}
+
+bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventException) {
+  if (microseconds >= 1000000) {
+    throw OutOfDomain();
+  }
+#ifdef __win32__
+  switch (WaitForSingleObject(event, microseconds/1000)) {
+  case WAIT_OBJECT_0:
+    return true;
+  case WAIT_TIMEOUT:
+    return false;
+  default:
+    throw EventException("Unable to wait for event");
+  }
+#else
   int result = true; // no assignment gives warning
 
-  MutualExclusion::lock();
+  if (pthread_mutex_lock(&mutex)) {
+    throw EventException("Unable to wait for event");
+  }
 
-    while (resetting) { // wait if resetting
-      pthread_cond_wait(&condition, &mutex); // concurrent envocations of signal() does not matter
+  struct timespec absoluteTime;
+  struct timeval now; // microsecond resolution
+  gettimeofday(&now, NULL);
+  long long nanoseconds = (now.tv_usec + microseconds) * 1000;
+  absoluteTime.tv_sec = now.tv_sec + nanoseconds/1000000000;
+  absoluteTime.tv_nsec = nanoseconds % 1000000000;
+
+  while (!signaled) { // wait for signal
+    // concurrent envocations of signal() does not matter
+    if (pthread_cond_timedwait(&condition, &mutex, &absoluteTime) == ETIMEDOUT) {
+      result = false;
+      break; // timed out
     }
+  }
 
-    if (waitingThreads == maximum) {
-      MutualExclusion::unlock();
-      throw OutOfRange();
-    }
+  if (pthread_mutex_unlock(&mutex)) {
+    throw EventException("Unable to wait for event");
+  }
 
-    struct timespec absoluteTime;
-    struct timeval now; // microsecond resolution
-    gettimeofday(&now, NULL);
-    long long nanoseconds = (now.tv_usec + microseconds) * 1000;
-    absoluteTime.tv_sec = now.tv_sec + nanoseconds/1000000000;
-    absoluteTime.tv_nsec = nanoseconds % 1000000000;
-
-    ++waitingThreads;
-    while (!signaled) { // wait for signal
-      // concurrent envocations of signal() does not matter
-      if (pthread_cond_timedwait(&condition, &mutex, &absoluteTime) == ETIMEDOUT) { // success, signal intr or timeout excepted
-        break; // timed out
-      }
-    }
-    --waitingThreads;
-
-    if (!waitingThreads && resetting) { // can reset be completed
-      signaled = false;
-      resetting = false;
-      pthread_cond_broadcast(&condition); // unblocked threads waiting for reset to complete
-    }
-
-  MutualExclusion::unlock();
-
-  return result != ETIMEDOUT;
+  return result;
+#endif // __win32__
 }
 
-Event::~Event() throw() {
-//  destroying = true;
-//  waitingThreads -= maximum; // suspend if any waiting threads
-
-//  signal();
-
-  try {
-    MutualExclusion::lock(); // possible exception
-    MutualExclusion::unlock(); // possible exception
-
-    pthread_cond_destroy(&condition); // should always succeed
-  } catch(...) {
-    // now what
-    // cout << "Exception in Event::~Event()\n.";
+Event::~Event() throw(EventException) {
+#ifdef __win32__
+  if (!CloseHandle(event)) {
+    throw EventException("Unable to destroy event");
   }
+#else
+  if (pthread_cond_destroy(&condition)) {
+    throw EventException("Unable to destroy event");
+  }
+  pthread_mutex_destroy(&mutex); // lets just hope that this doesn't fail
+#endif // __win32__
 }

@@ -7,34 +7,41 @@
 #define _DK_SDU_MIP__BASE_THREAD__SEMAPHORE_H
 
 #include <config.h>
-#include "MutualExclusion.h"
+#include "base/Object.h"
 #include "base/Exception.h"
-#include "base/Construct.h"
-#include "base/Destruct.h"
+#include "base/ResourceException.h"
+#include "base/OutOfDomain.h"
 #include "base/Overflow.h"
 #include <limits.h>
 
-#ifdef HAVE_PTHREAD_SEMAPHORE
-#include <semaphore.h>
+#ifdef __win32__
+  #include <Windows.h>
+#elif HAVE_PTHREAD_SEMAPHORE
+  #include <semaphore.h>
 #endif
 
 /**
   Semaphore. Synchronization object.
 
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.1
 */
 
-class Semaphore : private MutualExclusion {
+class Semaphore : public Object {
+public:
+
+#ifdef __win32__
+  static const unsigned int MAXIMUM = UINT_MAX;
+#elif HAVE_PTHREAD_SEMAPHORE
+  static const unsigned int MAXIMUM = SEM_VALUE_MAX;
+#else
+  static const unsigned int MAXIMUM = UINT_MAX;
+#endif
 private:
 
-#ifdef HAVE_PTHREAD_SEMAPHORE
-  #define MAXIMUM SEM_VALUE_MAX
-#else
-  #define MAXIMUM INT_MAX
-#endif
-
-#ifdef HAVE_PTHREAD_SEMAPHORE
+#ifdef __win32__
+  HANDLE semaphore;
+#elif HAVE_PTHREAD_SEMAPHORE
   mutable sem_t semaphore;
 #else
   /** The value of the semaphore. */
@@ -44,48 +51,48 @@ private:
 #endif
 public:
 
-  /** Group of exceptions thrown directly by the Semaphore class. */
+  /** Exception thrown directly by the Semaphore class. */
   class SemaphoreException : public Exception {
+  public:
+    SemaphoreException(const char* message) throw() : Exception(message) {}
   };
 
   /**
     Initializes the semaphore object.
   */
-  Semaphore(unsigned int value = 0) throw(Construct);
+  Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceException);
 
+#ifndef __win32__
   /**
-    Returns the maximum value.
+    Returns the current value of the semaphore. Warning this is a non-portable
+    method.
   */
-  int getMaximum() const throw();
-
-  /**
-    Returns the current value of the semaphore.
-  */
-  int getValue() const throw();
+  unsigned int getValue() const throw(SemaphoreException);
+#endif // __win32__
 
   /**
     Increments the semaphore and signals any thread waiting for a change. This
     method never blocks.
   */
-  void post() throw(Overflow);
+  void post() throw(Overflow, SemaphoreException);
 
   /**
     Decrements the semaphore and blocks if the semaphore is less than zero
     until another thread signals a change.
   */
-  void wait() throw();
+  void wait() throw(SemaphoreException);
 
   /**
     Non-blocking variant of wait.
 
     @return True if the semaphore was decremented.
   */
-  bool tryWait() throw();
+  bool tryWait() throw(SemaphoreException);
 
   /**
     Destroys the semaphore object.
   */
-  ~Semaphore() throw(Destruct);
+  ~Semaphore() throw(SemaphoreException);
 };
 
 #endif

@@ -12,33 +12,33 @@
 MutualExclusion::MutualExclusion() throw(ResourceException) {
 #ifdef __win32__
   __try {
-    InitializeCriticalSection(&criticalSection);
+    InitializeCriticalSection(&lock);
   } __except(STATUS_NO_MEMORY) {
-    throw ResourceException("Unable to initialize MutualExclusion");
+    throw ResourceException();
   }
-#else // __win32__
+#else
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
-    throw ResourceException("Unable to initialize MutualExclusion");
+    throw ResourceException();
   }
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    throw ResourceException("Unable to initialize MutualExclusion");
+    throw ResourceException();
   }
   if (pthread_mutex_init(&mutex, &attributes) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    throw ResourceException("Unable to initialize MutualExclusion");
+    throw ResourceException();
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
-#endif // __win32__
+#endif
 }
 
-void MutualExclusion::lock() const throw(Exception) {
+void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
 #ifdef __win32__
   __try {
-    EnterCriticalSection(&criticalSection);
+    EnterCriticalSection(&lock);
   } __except(STATUS_INVALID_HANDLE) {
-    throw Exception("Unable to acquire lock on MutualExclusion");
+    throw MutualExclusionException();
   }
 #else
   int result = pthread_mutex_lock(&mutex);
@@ -47,51 +47,48 @@ void MutualExclusion::lock() const throw(Exception) {
   } else if (result == EDEADLK) {
     return;
   } else {
-    throw Exception("Unable to acquire lock on MutualExclusion");
+    throw MutualExclusionException();
   }
-#endif // __win32__
+#endif
 }
 
-bool MutualExclusion::tryLock() const throw(Exception) {
+bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
 #ifdef __win32__
   BOOL result;
   __try {
-    result = TryEnterCriticalSection(&criticalSection);
+    result = TryEnterCriticalSection(&lock);
   } __except(STATUS_INVALID_HANDLE) {
-    throw Exception("Unable to attempt to acquire lock on MutualExclusion");
+    throw MutualExclusionException();
   }
   return result;
 #else
-  int result = pthread_mutex_trylock(&mutex);
+  int result = pthread_mutex_trylock(&lock);
   if (result == 0) {
     return true;
   } else if (result == EBUSY) {
     return false;
   } else {
-    throw Exception("Unable to attempt to acquire lock on MutualExclusion");
+    throw MutualExclusionException();
   }
-#endif // __win32__
+#endif
 }
 
-void MutualExclusion::unlock() const throw(Exception) {
+void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
 #ifdef __win32__
-  LeaveCriticalSection(&criticalSection);
+  LeaveCriticalSection(&lock);
 #else
-  int result = pthread_mutex_unlock(&mutex);
-  if (result == 0) {
-    return;
-  } else if (result == EPERM) {
-    throw Exception("Unable to unlock MutualExclusion");
-  } else {
-    throw Exception("Unable to unlock MutualExclusion");
+  if (pthread_mutex_unlock(&lock)) {
+    throw MutualExclusionException();
   }
-#endif // __win32__
+#endif
 }
 
-MutualExclusion::~MutualExclusion() throw() {
+MutualExclusion::~MutualExclusion() throw(MutualExclusionException) {
 #ifdef __win32__
-  DeleteCriticalSection(&criticalSection);
+  DeleteCriticalSection(&lock);
 #else
-  pthread_mutex_destroy(&mutex); // lets just hope that this doesn't fail
-#endif // __win32__
+  if (pthread_mutex_destroy(&lock)) {
+    throw MutualExclusionException();
+  }
+#endif
 }

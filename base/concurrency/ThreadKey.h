@@ -7,48 +7,63 @@
 #define _DK_SDU_MIP__BASE_THREAD__THREAD_KEY_H
 
 #include <config.h>
+#include "base/Object.h"
 #include "base/Exception.h"
 #include "base/ResourceException.h"
-#include <pthread.h>
+
+#ifdef __win32__
+  #include <windows.h>
+#else
+  #include <pthread.h>
+#endif
 
 /**
   This class allows global and static variables to hold thread-specific data.
+
+  @author René Møller Fonseca
+  @version 1.1
 */
 
 template<class TYPE>
-class ThreadKey {
+class ThreadKey : public Object {
 private:
 
+#ifdef __win32__
+  /** Internal data. */
+  DWORD key;
+#else
   /** Internal data. */
   pthread_key_t key;
+#endif
 public:
 
-  /** The type of the ThreadKey clean-up routine. */
-  typedef void (*CleanUp)(void*);
+  /** Exception thrown directly by the ThreadKey class. */
+  class ThreadKeyException : public Exception {
+  public:
+    ThreadKeyException(const char* message) throw() : Exception(message) {}
+  };
 
   /**
     Initializes the key object.
-
-    @param cleanUp The clean-up routine to be called when the thread is exited. Default is NULL.
   */
-  ThreadKey(CleanUp cleanUp = NULL) throw(ResourceException);
+  ThreadKey() throw(ResourceException);
 
   /**
     Returns the key.
   */
-  TYPE* getKey() const throw();
+  TYPE* getKey() const throw(ThreadKeyException);
 
   /**
     Sets the key.
 
     @param value The desired value of the key for the executing thread.
   */
-  void setKey(TYPE* value) throw(ResourceException);
+  void setKey(TYPE* value) throw(ThreadKeyException);
 
   /**
     Destroys the key object.
   */
-  ~ThreadKey() throw();
+  ~ThreadKey() throw(ThreadKeyException);
 };
 
 #endif

@@ -4,101 +4,142 @@
  ***************************************************************************/
 
 #include "Semaphore.h"
-#include <errno.h>
 
-Semaphore::Semaphore(unsigned int value = 0) throw(Construct) {
-#ifdef HAVE_PTHREAD_SEMAPHORE
+#ifndef __win32__
+  #include <errno.h>
+#endif // __win32__
+
+Semaphore::Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceException) {
+  if (value > MAXIMUM) {
+    OutOfDomain();
+  }
+#ifdef __win32__
+  if (!(semaphore = CreateSemaphore(NULL, value, MAXIMUM, NULL))) {
+    throw ResourceException(__func__);
+  }
+#elif HAVE_PTHREAD_SEMAPHORE
   if (sem_init(&semaphore, 0, value) != 0) {
-    throw Construct();
+    throw ResourceException(__func__);
   }
 #else
   this->value = value;
-  if (value > (unsigned int)getMaximum()) {
-    throw Construct();
+
+  pthread_mutexattr_t attributes = PTHREAD_MUTEX_ERRORCHECK;
+  if (pthread_mutex_init(&mutex, &attributes)) {
+    throw ResourceException(__func__);
   }
-  pthread_condattr_t attributes;
-  if (pthread_condattr_init(&attributes) != 0) {
-    throw Construct();
+
+  if (pthread_cond_init(&condition, NULL)) {
+    throw ResourceException(__func__);
   }
-  if (pthread_cond_init(&condition, &attributes) != 0) {
-    pthread_condattr_destroy(&attributes); // this should never fail
-    throw Construct();
-  }
-  pthread_condattr_destroy(&attributes); // this should never fail
 #endif
 }
 
-int Semaphore::getMaximum() const throw() {
-  return MAXIMUM;
-}
-
-int Semaphore::getValue() const throw() {
+#ifndef __win32__
+unsigned int Semaphore::getValue() const throw(SemaphoreException) {
 #ifdef HAVE_PTHREAD_SEMAPHORE
-  int value;
-  sem_getvalue(&semaphore, &value); // should never fail
+  unsigned int value;
+  if (sem_getvalue(&semaphore, &value)) { // value is not negative
+    throw SemaphoreException(__func__);
+  }
   return value;
 #else
-  int result;
-  MutualExclusion::lock(); // does not throw exception when used correctly
+  unsigned int result;
+  if (pthread_mutex_lock(&mutex)) {
+    throw SemaphoreException(__func__);
+  }
   result = value;
-  MutualExclusion::unlock(); // does not throw exception when used correctly
+  if (pthread_mutex_unlock(&mutex)) {
+    throw SemaphoreException(__func__);
+  }
   return result;
 #endif
 }
+#endif // __win32__
 
-void Semaphore::post() throw(Overflow) {
-#ifdef HAVE_PTHREAD_SEMAPHORE
+void Semaphore::post() throw(Overflow, SemaphoreException) {
+#ifdef __win32__
+  if (!ReleaseSemaphore(semaphore, 1, NULL)) {
+    throw SemaphoreException(__func__);
+  }
+#elif HAVE_PTHREAD_SEMAPHORE
   if (sem_post(&semaphore) == ERANGE) { // otherwise sem_post returns successfully
     throw Overflow();
   }
 #else
-  MutualExclusion::lock(); // does not throw exception when used correctly
+  if (pthread_mutex_lock(&mutex)) {
+    throw SemaphoreException(__func__);
+  }
   if (value == MAXIMUM) {
-    MutualExclusion::unlock(); // does not throw exception when used correctly
+    if (pthread_mutex_unlock(&mutex)) {
+      throw SemaphoreException(__func__);
+    }
     throw Overflow();
   }
   value++;
-  MutualExclusion::unlock(); // does not throw exception when used correctly
+  if (pthread_mutex_unlock(&mutex)) {
+    throw SemaphoreException(__func__);
+  }
   pthread_cond_signal(&condition); // we only need to signal one thread
 #endif
 }
 
-void Semaphore::wait() throw() {
-#ifdef HAVE_PTHREAD_SEMAPHORE
-  sem_wait(&semaphore);
+void Semaphore::wait() throw(SemaphoreException) {
+#ifdef __win32__
+  if (WaitForSingleObject(semaphore, INFINITE) != WAIT_OBJECT_0) {
+    throw SemaphoreException(__func__);
+  }
+#elif HAVE_PTHREAD_SEMAPHORE
+  if (sem_wait(&semaphore)) {
+    throw SemaphoreException(__func__);
+  }
 #else
-  MutualExclusion::lock(); // does not throw exception when used correctly
-  while (value == 0) { // wait for resource
+  if (pthread_mutex_lock(&mutex)) {
+    throw SemaphoreException(__func__);
+  }
+  while (value == 0) { // wait for resource to become available
     pthread_cond_wait(&condition, &mutex);
   }
   value--;
-  MutualExclusion::unlock(); // does not throw exception when used correctly
+  if (pthread_mutex_unlock(&mutex)) {
+    throw SemaphoreException(__func__);
+  }
 #endif
 }
 
-bool Semaphore::tryWait() throw() {
-#ifdef HAVE_PTHREAD_SEMAPHORE
+bool Semaphore::tryWait() throw(SemaphoreException) {
+#ifdef __win32__
+  return WaitForSingleObject(semaphore, 0) == WAIT_OBJECT_0;
+#elif HAVE_PTHREAD_SEMAPHORE
   return sem_trywait(&semaphore) == 0; // did we decrement?
 #else
   bool result;
-  MutualExclusion::lock(); // does not throw exception when used correctly
-  result = value > 0;
-  if (result) {
+  if (pthread_mutex_lock(&mutex)) {
+    throw SemaphoreException(__func__);
+  }
+  if (result = value > 0) {
     value--;
   }
-  MutualExclusion::unlock();  // does not throw exception when used correctly
+  if (pthread_mutex_unlock(&mutex)) {
+    throw SemaphoreException(__func__);
+  }
   return result;
 #endif
 }
 
-Semaphore::~Semaphore() throw(Destruct) {
-#ifdef HAVE_PTHREAD_SEMAPHORE
-  if (sem_destroy(&semaphore) != 0) { // possible resource leak - semaphore could be busy
-    throw Destruct();
+Semaphore::~Semaphore() throw(SemaphoreException) {
+#ifdef __win32__
+  if (!CloseHandle(semaphore)) {
+    throw SemaphoreException(__func__);
+  }
+#elif HAVE_PTHREAD_SEMAPHORE
+  if (sem_destroy(&semaphore) != 0) {
+    throw SemaphoreException(__func__);
   }
 #else
-  if (pthread_cond_destroy(&condition)) { // possible resource leak - condition could be busy
-    throw Destruct();
+  if (pthread_cond_destroy(&condition)) {
+    throw SemaphoreException(__func__);
   }
+  pthread_mutex_destroy(&mutex); // lets just hope that this doesn't fail
 #endif
 }

@@ -7,66 +7,92 @@
 #define _DK_SDU_MIP__BASE_THREAD__EVENT_H
 
 #include <config.h>
-#include "MutualExclusion.h"
-#include "base/Construct.h"
-#include "base/OutOfRange.h"
+#include "base/Object.h"
+#include "base/OutOfDomain.h"
+#include "base/Overflow.h"
 #include "base/ResourceException.h"
+
+#ifdef __win32__
+  #include <Windows.h>
+#endif // __win32__
 
 /**
   Event.
 
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.01
 */
 
-class Event : public MutualExclusion {
+class Event : public Object {
 private:
 
-  /** The maximum number of concurrent waiting threads. */
-  unsigned int maximum;
-  /** Indicates that the event is being reset. */
-  bool resetting;
+#ifdef __win32__
+  /** Event handle. */
+  HANDLE event;
+#else
   /** Indicates that the event has been signaled. */
   bool signaled;
-  /** The number of waiting threads. */
-  unsigned int waitingThreads;
   /** Conditional. */
   pthread_cond_t condition;
+  /** Internal mutex representation. */
+  mutable pthread_mutex_t mutex;
+#endif // __win32__
 public:
 
   /**
-    Initializes the event.
-
-    @param maximum The maximum number of waiting thread. The default is one.
+    Exception thrown by the Event class.
   */
-  explicit Event(unsigned int maximum = 1) throw(Construct, ResourceException);
+  class EventException : public Exception {
+  public:
+    EventException(const char* message) throw() : Exception(message) {}
+  };
+
+  /**
+    Initializes the event.
+  */
+  explicit Event() throw(ResourceException);
+
+  /**
+    Returns true if this event is in the signaled state.
+  */
+  bool isSignaled() const throw(EventException);
 
   /**
     Resets the event. Returns when all waiting threads.
   */
-  void reset() throw(MutualExclusion::MutualExclusionException);
+  void reset() throw(EventException);
 
   /**
     Signal the waiting threads. Control is returned immediately.
   */
-  void signal() throw(MutualExclusion::MutualExclusionException);
+  void signal() throw(EventException);
 
   /**
-    Wait for signal. The executing thread is suspended until event is signaled. Will wait forever if never signaled. If the event if currently being reset the thread is suspended. Throws an 'RangeException' exception if the maximum number of waiting threads is exceeded.
+    Waits for signal. The executing thread is suspended until event is
+    signaled. Will wait forever if the event is never signaled. Throws an
+    'Overflow' exception if the maximum number of waiting threads is exceeded.
   */
-  void wait() throw(OutOfRange, MutualExclusion::MutualExclusionException);
+  void wait() const throw(EventException);
 
   /**
-    Wait for signal. The executing thread is suspended until event is signaled or a time out occures. If the event if currently being reset the thread is suspended. Throws an 'RangeException' exception if the maximum number of waiting threads is exceeded.
+    Waits for the event to be signaled. The executing thread is suspended
+    until the event is signaled or the specified time-out interval expires.
+    May throw an 'Overflow' exception if the maximum number of waiting
+    threads is exceeded.
 
-    @param microseconds The desired time out interval in microseconds.
+    @param microseconds The desired time out interval in microseconds. The
+    value must be in the range from 0 to 999999. The exception 'OutOfDomain'
+    is thrown if this range is violated.
+
+    @return True, if the event was signaled before the time-out interval
+    expired.
   */
-  bool wait(unsigned int microseconds) throw(OutOfRange, MutualExclusion::MutualExclusionException);
+  bool wait(unsigned int microseconds) const throw(OutOfDomain, EventException);
 
   /**
-    Destroys the event.
+    Destroys the event object.
   */
-  ~Event() throw();
+  ~Event() throw(EventException);
 };
 
 #endif

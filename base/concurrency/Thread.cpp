@@ -3,167 +3,139 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#define D_POSIX_PTHREAD_SEMANTICS
-
-/*
-  TODO
-
-  1. Parent thread must wait for children threads?
-  2. Which signals to block?
-  3. Which signals to handle? SIGINT?
-*/
-
 #include "Thread.h"
 #include "MutualExclusion.h"
+
+#ifndef __win32__
+#define D_POSIX_PTHREAD_SEMANTICS
 #include <pthread.h>
 #include <signal.h>
 #include <time.h>
 #include <sys/time.h>
 #include <unistd.h>
-
-/*
-#ifndef HAVE_PTHREAD_DELAY
-
-struct timespec* getAbsoluteTime(struct timespec* absoluteTime, const struct timespec* interval) {
-  if (!absoluteTime) {
-    return NULL;
-  }
-  struct timeval now; // only microsecond resolution :-(
-  gettimeofday(&now, NULL);
-  long long nanoseconds = now.tv_usec * 1000 + interval->tv_nsec;
-  absoluteTime->tv_sec = now.tv_sec + interval->tv_sec + nanoseconds/1000000000;
-  absoluteTime->tv_nsec = nanoseconds % 1000000000;
-  return absoluteTime;
-}
-
 #endif
-*/
 
+// Pointer to thread object of executing thread
+ThreadKey<Thread> executingThread;
+// The main thread object.
+//Thread mainThread;
 
+#ifdef __win32__
+DWORD WINAPI Thread::execute(Thread* thread) throw() {
+#else
 void* Thread::execute(Thread* thread) throw() {
+#endif
   try {
     executingThread.setKey(thread);
-
-    thread->mutex->lock(); // wait for start
-    thread->mutex->unlock();
-
-    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL); // should not fail
-    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL); // should not fail
-
+    thread->event.wait(); // wait until signaled
+ 
     try {
       thread->runnable->run();
       thread->termination = NORMAL;
-    } catch(Thread::Exit) {
-      thread->termination = EXIT; // valid exit - but may have created resource leaks on the heap
+      Thread* parent = thread->getParent();
+      if (parent) {
+        parent->onChildTermination(thread);
+      }
     } catch(...) {
       thread->termination = EXCEPTION; // uncaugth exception
     }
-
   } catch(...) {
-    thread->termination = INTERNAL; // hopefully we will never end up here - critical error
+    thread->termination = INTERNAL; // hopefully we will never end up here
   }
-
-  return NULL;
+  return 0;
 }
 
-void Thread::exited(Thread* thread) throw() {
-// which thread runs this code?
-  try {
-    thread->mutex->lock(); // expected NOT to throw MutualExclusion::Lock here
-    thread->threadID = 0;
-    Thread* parent = thread->getParent();
-    if (parent) {
-      parent->onChildExit(thread); // signal cancellation to parent - warning - any exception could be thrown
-    }
-  } catch(...) {
+void Thread::exit() throw() {
+#ifdef __win32__
+  ExitThread(0); // will properly create resource leaks
+#else
+  pthread_exit(0); // will properly create resource leaks
+#endif
+}
+
+Thread* Thread::getThread() throw() {
+  return (Thread*)executingThread.getKey();
+}
+
+void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
+  if (nanoseconds >= 1000000000) {
+    throw OutOfDomain();
   }
-  thread->mutex->unlock(); // this should not throw MutualExclusion::Unlock unless Thread has been implemented with errors
-}
-
-/*
-void Thread::signalHandler(int signal) throw() {
-}
-
-void Thread::cancelHandler(int signal) throw() {
-  pthread_exit((void*)0);
-}
-
-void Thread::suspendHandler(int signal) throw() {
-  sigset_t set;
-  sigemptyset(&set);
-  sigaddset(&set, SIGNAL_RESUME);
-  sigwait(&set, NULL);
-}
-*/
-
-void Thread::installSignalHandler(int signal, SignalHandler handler, int flags) throw(Construct) {
-  struct sigaction action;
-  action.sa_handler = handler;
-  sigemptyset(&action.sa_mask);
-  action.sa_flags = flags;
-  if (sigaction(signal, &action, NULL)) {
-    throw Construct();
-  }
-}
-
-
-
-void Thread::exit() throw(Thread::Exit) {
-  throw Thread::Exit(); // make sure local objects are destructed
-//  pthread_exit(0); // will properly create resource leaks
-}
-
-void Thread::nanosleep(unsigned int nanoseconds) throw() {
+#ifdef __win32__
+  Sleep(nanoseconds/1000);
+#else
   struct timespec interval;
   interval.tv_sec = nanoseconds / 1000000000;
   interval.tv_nsec = nanoseconds % 1000000000;
   do {
     ::nanosleep(&interval, &interval);
   } while ((interval.tv_sec != 0) || (interval.tv_nsec != 0));
+#endif
 }
 
-void Thread::microsleep(unsigned int microseconds) throw() {
+void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
+  if (microseconds >= 1000000000) {
+    throw OutOfDomain();
+  }
+#ifdef __win32__
+  Sleep(microseconds/1000);
+#else
   struct timespec interval;
   interval.tv_sec = microseconds / 1000000;
   interval.tv_nsec = (microseconds % 1000000) * 1000;
   do {
     ::nanosleep(&interval, &interval);
   } while ((interval.tv_sec != 0) || (interval.tv_nsec != 0));
+#endif
 }
 
-void Thread::millisleep(unsigned int milliseconds) throw() {
+void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
+  if (milliseconds >= 1000000000) {
+    throw OutOfDomain();
+  }
+#ifdef __win32__
+  Sleep(milliseconds);
+#else
   struct timespec interval;
   interval.tv_sec = milliseconds / 1000;
   interval.tv_nsec = (milliseconds % 1000) * 1000000;
   do {
     ::nanosleep(&interval, &interval);
   } while ((interval.tv_sec != 0) || (interval.tv_nsec != 0));
+#endif
 }
 
-void Thread::sleep(unsigned int seconds) throw() {
+void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
+  if (seconds >= 1000000) {
+    throw OutOfDomain();
+  }
+#ifdef __win32__
+  Sleep(seconds * 1000);
+#else
   struct timespec interval;
   interval.tv_sec = seconds;
   interval.tv_nsec = 0;
   do {
     ::nanosleep(&interval, &interval);
   } while (interval.tv_sec != 0);
+#endif
 }
 
 void Thread::yield() throw() {
-#ifdef HAVE_PTHREAD_YIELD
+#ifdef __win32__
+  Sleep(0);
+#elif HAVE_PTHREAD_YIELD
   pthread_yield();
-#else
-  #ifdef HAVE_SCHED_YIELD
+#elif HAVE_SCHED_YIELD
   sched_yield();
-  #else
+#else
   sleep(0);
-  #endif
 #endif
 }
 
 
 
-void Thread::onChildExit(Thread* thread) {
+void Thread::onChildTermination(Thread* thread) {
   if (runnable) {
     runnable->onChild(thread);
   }
@@ -171,46 +143,46 @@ void Thread::onChildExit(Thread* thread) {
 
 
 
-Thread::Thread() {
-  runnable = NULL;
-  stackSize = 0;
+Thread::Thread() throw() {
+  this->runnable = NULL;
+#ifdef __win32__
+  threadHandle = GetCurrentThread();
+  threadID = GetCurrentThreadId();
+#else
   threadID = pthread_self();
+#endif
   terminated = false;
+  termination = ALIVE;
   parent = NULL;
   executingThread.setKey(this);
-// not implemented
 }
 
-Thread::Thread(Runnable& runnable, SchedulingPolicy schedulingPolicy = INHERITED, size_t stackSize = DEFAULT_STACK_SIZE) throw(Construct, ResourceException, MutualExclusion::MutualExclusionException) {
+Thread::Thread(Runnable& runnable) throw(ResourceException) {
   this->runnable = &runnable;
-  this->stackSize = stackSize;
   threadID = 0;
   terminated = false;
   termination = ALIVE;
   parent = getThread(); // must never be NULL
 
-  mutex->lock(); // make sure the new thread can't run - exception???
-
+#ifdef __win32__
+  if (threadHandle = CreateThread(NULL, 0, execute, this, 0, &threadID)) {
+    throw ResourceException(__func__);
+  }
+#else
   pthread_attr_t attributes;
   pthread_attr_init(&attributes);
   pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_JOINABLE);
   pthread_attr_setinheritsched(&attributes, PTHREAD_INHERIT_SCHED);
-#ifdef PTHREAD_STACK_MIN
-  if (pthread_attr_setstacksize(&attributes, stackSize <= PTHREAD_STACK_MIN ? PTHREAD_STACK_MIN : stackSize)) {
-    pthread_attr_destroy(&attributes);
-    throw Construct();
-  }
-#else
-  if (pthread_attr_setstacksize(&attributes, stackSize)) {
-    pthread_attr_destroy(&attributes);
-    throw Construct();
-  }
-#endif
   if (pthread_create(&threadID, &attributes, (void*(*)(void*))&execute, (void*) this)) {
     pthread_attr_destroy(&attributes);
     throw Construct();
   }
   pthread_attr_destroy(&attributes);
+#endif
+}
+
+bool Thread::isAlive() const throw() {
+  return termination == ALIVE;
 }
 
 bool Thread::isAncestor() const throw() {
@@ -242,95 +214,60 @@ bool Thread::isChild() const throw() {
   return false;
 }
 
-void Thread::cancel() throw(Thread::Self, Thread::Child, Thread::ThreadException) {
-  if (isSelf()) {
-    throw Self();
-  }
-  if (isChild()) { // is executing thread child of this thread
-    throw Child();
-  }
-  mutex->lock();
-    if (isAlive()) {
-      pthread_cancel(threadID); // ask thread to cancel - should only fail if threadID is not valid
-      if (pthread_join(threadID, NULL)) { // wait for thread to cancel
-        mutex->unlock();
-        throw ThreadException();
-      }
-    }
-  mutex->unlock();
+bool Thread::isParent() const throw() {
+  return getThread() == getParent();
 }
 
-void Thread::join() throw(Thread::Self, Thread::Child, Thread::ThreadException) {
-  if (isSelf()) {
+bool Thread::isSelf() const throw() {
+#ifdef __win32__
+  return GetCurrentThreadId() == threadID;
+#else
+  return pthread_self() == threadID;
+#endif
+}
+
+void Thread::join() const throw(ThreadException) {
+  if (isSelf()) { // is thread trying to wait for itself to exit
     throw Self();
   }
-  if (isChild()) { // is executing thread child of this thread
-    throw Child();
-  }
+#ifdef __win32__
+  WaitForSingleObject(threadHandle, INFINITE);
+#else
   if (pthread_join(threadID, NULL)) {
-    throw ThreadException();
+    throw ThreadException(__func__);
   }
+#endif
 }
 
-void Thread::start() throw(Thread::Self, Thread::Child, MutualExclusion::Unlock) {
-  if (isSelf()) {
-    throw Self();
-  }
-  if (isChild()) { // is executing thread child of this thread
-    throw Child();
-  }
-  mutex->unlock();
+void Thread::start() throw() {
+  event.signal();
 }
 
-void Thread::terminate() {
+void Thread::terminate() throw() {
   if (!terminated) {
     terminated = true;
-    runnable->onTermination(); // signal the runnable object that it should terminate as soon as possible
-  }
-}
-
-Thread::~Thread() throw() {
-
-/*  semaphore -= children;
-  while (children()) { // have all the children been destroyed
-    childEvent->wait(); // wait for signal from child
-  }*/
-
-  try {
-    if (isAlive()) {
-      cancel(); // also joins
+    if (runnable) {
+      runnable->onTermination();
     }
-  } catch(...) {
-    // now what?
-//    bout << "Exception in Thread::~Thread()\n";
+  }
+}
+
+Thread::~Thread() throw(ThreadException) {
+  if (isAlive()) {
+    throw ThreadException(__func__);
   }
 
-/*  if (parent) { // if thread has parent
-    parent->children--;
-  }*/
+#ifdef __win32__
+  if (!CloseHandle(threadHandle)) {
+    ThreadException(__func__);
+  }
+#endif
 }
-
-
-/*
-MainThread::MainThread() : Thread(NULL, other) {
-  runnable = NULL;
-  suspended = false;
-  terminated = false;
-  parent = NULL;
-  _executingThread.setKey(this);
-
-  installSignalHandler(SIGUSR3, &signalHandler, 0);
-  installSignalHandler(SIGUSR3, &cancelHandler, 0);
-  installSignalHandler(SIGUSR3, &suspendHandler, 0);
-}
-*/
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value) {
   stream << "Thread{"
-         << "minimumStackSize=" << value.getMinimumStackSize()
-         << ",id=" << (int)value.threadID
-         << ",alive=" << value.isAlive()
+         << "alive=" << value.isAlive()
          << ",terminated=" << value.isTerminated()
-         << ",termination=" << value.getTerminationState() << "}";
+         << "}";
   return stream;
 }

@@ -9,11 +9,19 @@
 #include <config.h>
 #include "base/Object.h"
 #include "base/Exception.h"
-#include "Runnable.h"
+#include "base/OutOfDomain.h"
 #include "MutualExclusion.h"
+#include "Event.h"
+#include "Runnable.h"
 #include "ThreadKey.h"
-#include <pthread.h>
 #include "base/string/FormatOutputStream.h"
+#include "Synchronize.h"
+
+#ifdef __win32__
+  #include <windows.h>
+#else
+  #include <pthread.h>
+#endif
 
 class Runnable;
 
@@ -35,10 +43,36 @@ typedef enum {
 */
 
   /**
-    Thread (a single flow of control) implementation using Posix Threads. Do NOT call any pthread functions directly.
+    Thread (a single flow of control).
 
+    Example:
+    <pre>
+    class MyActiveObject : public Object, public Runnable {
+    protected:
+
+      unsigned int count;
+    public:
+
+      MyThread(unsigned int c) throw() : count(c) {}
+
+      void run() throw() {
+        while (count--) {
+        }
+      }
+    };
+
+    int main() {
+      MyActiveObject myActiveObject(100);
+      Thread myThread(myActiveObject);
+      myThread.start(); // start thread
+      myThread.join(); // wait for thread to complete
+      return 0;
+    }
+    </pre>
+
+    @see Runnable
     @author René Møller Fonseca
-    @version 1.0
+    @version 1.1
   */
 
   class Thread : public Object {
@@ -46,151 +80,126 @@ typedef enum {
 
     /** Group of exceptions thrown directly by the Thread class. */
     class ThreadException : public Exception {
+    public:
+      ThreadException() throw() : Exception() {}
+      ThreadException(const char* message) throw() : Exception(message) {}
     };
-    /** Thrown if thread was expected to be alive. */
-    class NotAlive : public ThreadException {
-    };
+
     /** Thrown if thread tries to manage itself when disallowed. */
     class Self : public ThreadException {
     };
-    /** Thrown if child thread tries to manage parent thread when disallowed. */
-    class Child : public ThreadException {
-    };
-    /** Allows objects that have been constructed on the stack to be destructed. */
-    class Exit : public ThreadException {
-    };
   private:
 
-    /** The main thread. */
-    static Thread* mainThread;
-    /** The executing thread. */
-    static ThreadKey<Thread> executingThread;
-    /** The default stack size. */
-    const static size_t DEFAULT_STACK_SIZE = 4096; // may be too small
+#ifdef __win32__
+    /** Redirects a thread to a specified runnable object. */
+    static DWORD WINAPI execute(Thread* thread) throw();
+#else
     /** Redirects a thread to a specified runnable object. */
     static void* execute(Thread* thread) throw();
-    /** Called when a thread is exited. */
-    static void exited(Thread* thread) throw();
+#endif
   private:
 
     /** The parent thread of the thread. */
     Thread* parent;
     /** The runnable object. */
     Runnable* runnable;
-    /** The minimum stack size. */
-    unsigned int stackSize;
-    /** Posix thread identifier. */
-    pthread_t threadID;
     /** Specifies that the thread should be terminated. */
     volatile bool terminated;
-    /** Mutual exclusion. */
-    MutualExclusion* mutex;
     /** Termination status. */
     ThreadTermination termination;
-  protected:
-
-    /** Type of signal handlers. */
-    typedef void (*SignalHandler)(int);
-
-    /**
-      Install a signal handler.
-
-      @param signal The signal to be handled.
-      @param handler The signal handler.
-      @param flags Flags determining the behavior.
-    */
-    void installSignalHandler(int signal, SignalHandler handler, int flags) throw(Construct);
-
-//    static void suspendHandler(int signal);
-//    static void signalHandler(int signal);
-//    static void cancelHandler(int signal);
-
-    /**
-      Pass event to runnable object.
-    */
-//    void onChild(Thread* thread);
+    /** Event used to start thread. */
+    Event event;
+#ifdef __win32__
+    /** Handle to the thread. */
+    HANDLE threadHandle;
+    /** Identifier for the thread. */
+    DWORD threadID;
+#else
+    /** Identifier for the thread. */
+    pthread_t threadID;
+#endif
   public:
 
     /**
-      Inserts a cancellation point that allows the thread to be cancelled.
+      Exits the executing thread. May result in resource leaks if objects
+      have been created on the heap. It is not recommended that you use this
+      method.
     */
-    inline void allowCancellation() throw() {pthread_testcancel();};
+    static void exit() throw();
 
     /**
-      Exits the executing thread. May result in resource leaks if objects have been created on the heap. It's safe the create the objects on the stack.
+      Returns the thread object associated with the executing thread.
     */
-    static void exit() throw(Thread::Exit);
-
-    /**
-      Returns the thread object of the executing thread.
-    */
-    inline static Thread* getThread() throw() {return (Thread*)executingThread.getKey();};
+    static Thread* getThread() throw();
 
     /**
       Makes the executing thread sleep for at least the specified time.
 
-      @param nanoseconds The desired time in nanoseconds to make the thread sleep.
+      @param nanoseconds The desired time in nanoseconds to make the thread
+      sleep. The value must be within the domain from 0 to 999999999.
     */
-    static void nanosleep(unsigned int nanoseconds) throw();
+    static void nanosleep(unsigned int nanoseconds) throw(OutOfDomain);
 
     /**
       Makes the executing thread sleep for at least the specified time.
 
-      @param microseconds The desired time in microseconds to make the thread sleep.
+      @param microseconds The desired time in microseconds to make the thread
+      sleep. The value must be within the domain from 0 to 999999999.
     */
-    static void microsleep(unsigned int microseconds) throw();
+    static void microsleep(unsigned int microseconds) throw(OutOfDomain);
 
     /**
       Makes the executing thread sleep for at least the specified time.
 
-      @param milliseconds The desired time in milliseconds to make the thread sleep.
+      @param milliseconds The desired time in milliseconds to make the thread
+      sleep. The value must be within the domain from 0 to 999999999.
     */
-    static void millisleep(unsigned int milliseconds) throw();
+    static void millisleep(unsigned int milliseconds) throw(OutOfDomain);
 
     /**
       Makes the executing thread sleep for at least the specified time.
 
       @param seconds The desired time in seconds to make the thread sleep.
+      The value must be within the domain from 0 to 999999.
     */
-    static void sleep(unsigned int seconds) throw();
+    static void sleep(unsigned int seconds) throw(OutOfDomain);
 
     /**
       Relinquishes the currently executing thread voluntarily without blocking.
-      Notifies the scheduler that the current thread is willing to release its processor to other threads of the same or higher priority.
+      Notifies the scheduler that the current thread is willing to release its
+      time slice to other threads of the same or higher priority.
     */
     static void yield() throw();
-  protected:
-
-    /**
-      Called when child thread exists.
-    */
-    void onChildExit(Thread* thread);
   private:
 
     /**
-      Constructor used to create a thread object for the current execution context. Only used to create the object for the main thread.
+      Initializes thread object for the current execution context. Only to be
+      used for the main thread.
     */
-    Thread();
+    Thread() throw();
+  protected:
+
+    /**
+      Invocated by a child thread of this thread upon termination.
+
+      @param child The child thread.
+    */
+    void onChildTermination(Thread* child);
   public:
 
     /**
-      Initializes the thread object. Initially the thread is suspended.
+      Initializes thread object. The thread is suspended until it is
+      explicitly started.
 
-      @param runnable The desired object to be run.
-      @param schedulingPolicy The desired scheduling policy. The thread will inherit the policy from the parent thread as default.
-      @param stackSize The minimum stack size.
+      @param runnable The desired object to be run when the thread is started.
     */
-    Thread(Runnable& runnable, SchedulingPolicy schedulingPolicy = INHERITED, size_t stackSize = DEFAULT_STACK_SIZE) throw(Construct, ResourceException, MutualExclusion::MutualExclusionException);
+    Thread(Runnable& runnable) throw(ResourceException);
 
     /**
-      Returns the thread that created the thread object. Returns NULL for the main thread.
+      Returns the thread that created this thread. Returns NULL for the main
+      thread.
     */
     inline Thread* getParent() const throw() {return parent;};
-
-    /**
-      Returns the minimum stack size.
-    */
-    unsigned int getMinimumStackSize() const throw() {return stackSize;};
 
     /**
       Returns the termination state.
@@ -198,67 +207,67 @@ typedef enum {
     ThreadTermination getTerminationState() const throw() {return termination;};
 
     /**
-      Returns true if the thread is alive.
+      Returns true if the thread is alive and kicking.
     */
-    inline bool isAlive() const throw() {return threadID != 0;};
+    bool isAlive() const throw();
 
     /**
-      Returns true if the executing thread is an ancestor of the thread.
+      Returns true if the executing thread is an ancestor of this thread.
     */
     bool isAncestor() const throw();
 
     /**
-      Returns true if the executing thread is a child of the thread..
+      Returns true if the executing thread is a child of this thread.
     */
     bool isChild() const throw();
 
     /**
-      Returns true if the executing thread is the parent of the thread.
+      Returns true if the executing thread is the parent of this thread.
     */
-    inline bool isParent() const throw() {return getThread() == getParent();};
+    bool isParent() const throw();
 
     /**
       Returns true if the thread is the executing thread.
     */
-    inline bool isSelf() const throw() {return pthread_self() == threadID;};
+    bool isSelf() const throw();
 
     /**
       Returns true if the thread has been asked to terminate.
     */
-    inline bool isTerminated() const throw() {return terminated;};
+    inline bool isTerminated() const throw() {return terminated;}
 
     /**
-      Cancels the thread at a cancellation point. Objects will not have their destructors called. This is a problem if the objects have allocated memory on the heap. The executing thread is suspended until the thread has been canceled. Throws a 'ThreadException' if the thread is not alive. Throws a 'ThreadException' if the thread tries to cancel itself. If you want the executing thread to terminate use 'Thread::exit()' at any point. Throws a 'ThreadException' if a child tries to cancel an ancestor.
+      Waits for this thread to terminate. Throws a 'ThreadException' if a
+      thread tries to wait for itself to exit. Several threads are not allowed
+      to be waiting for the same thread to complete.
     */
-    void cancel() throw(Self, Child, Thread::ThreadException);
+    void join() const throw(ThreadException);
 
     /**
-      Waits for the thread to terminate. Throws a 'ThreadException' if a thread tries to wait for itself. Throws a 'ThreadException' if thread is ancestor of the executing thread.
-      CONST
+      Starts the thread. Has no effect the second time.
     */
-    void join() throw(Thread::Self, Thread::Child, Thread::ThreadException);
+    void start() throw();
 
     /**
-      Throws an exception if called by........... Calling this routine multiple times has no effect.
-      THINK THINK THINK... Second time call -> Exception
+      Asks the thread to terminate as soon as possible. This does not block
+      the executing thread.
     */
-    void start() throw(Thread::Self, Thread::Child, MutualExclusion::Unlock);
+    void terminate() throw();
 
     /**
-      Asks the thread to terminate as soon as possible. This does not suspend the executing thread. Use cancel() if termination should be enforced.
+      Destroys the thread object. The thread must be completed prior to
+      destruction.
     */
-    void terminate();
+    ~Thread() throw(ThreadException);
 
     /**
-      Destroys the thread object. The thread is canceled if it is still alive.
+      Writes a string representation of a thread object to a format stream.
     */
-    ~Thread() throw();
-
     friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value);
   };
 
 /**
-  Writes a string representation of a Thread object to a format stream.
+  Writes a string representation of a thread object to a format stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value);
 

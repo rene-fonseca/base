@@ -30,12 +30,14 @@ public:
   virtual bool tryExclusiveLock() const = 0;
 
   /**
-    Acquires a shared lock. For some lock implementations this will acquire an exclusive lock.
+    Acquires a shared lock. For some lock implementations this will acquire an
+    exclusive lock.
   */
   virtual void sharedLock() const = 0;
 
   /**
-    Tries to acquire a shared lock. For some lock implementations this will acquire an exclusive lock.
+    Tries to acquire a shared lock. For some lock implementations this will
+    acquire an exclusive lock.
 
     @return True on success.
   */

@@ -6,21 +6,31 @@
 #ifndef _DK_SDU_MIP__BASE_THREAD__RUNNABLE_H
 #define _DK_SDU_MIP__BASE_THREAD__RUNNABLE_H
 
+#include "base/Object.h"
 #include "Thread.h"
 
 class Thread;
 
 /**
-  This interface is implemented by active objects. An active object can be run by a thread object.
+  Base class of active objects. An active object can be run by a thread object.
 
-  @short Interface implemented by active objects.
+  @short Base class of active objects.
   @see Thread
   @author René Møller Fonseca
   @version 1.0
 */
 
-class Runnable {
+class Runnable : public Object {
+protected:
+
+  /** Specifies that the active object should be terminated. */
+  bool terminated;
 public:
+ 
+  /**
+    Initializes runnable object.
+  */
+  inline Runnable() throw() : terminated(false) {}
 
   /**
     Entry point for the thread.
@@ -28,26 +38,21 @@ public:
   virtual void run() = 0;
 
   /**
-    Returns true if the object should terminate (includes a cancellation point).
+    Returns true if the active object should be terminated.
   */
-//  inline virtual bool isTerminated() {Thread::allowCancellation(); return Thread::getTread()->isTerminated();};
+  inline virtual bool isTerminated() throw() {return terminated;}
 
   /**
-    Called if the thread is cancelled. It is possible that the thread is killed while holding a resource, such as a lock or allocated memory. Watch out for MT-safety.
+    Invocated when a child thread is completed. Watch out for MT-safety.
+
+    @param child The child thread.
   */
-  inline virtual void onCancellation() {};
+  inline virtual void onChild(Thread* child) throw() {}
 
   /**
-    Called when a child thread is terminated (stops running). Watch out for MT-safety.
-
-    @param thread The child thread.
+    Invocated when the thread is asked to terminate. Watch out for MT-safety.
   */
-  inline virtual void onChild(Thread* thread) {};
-
-  /**
-    Called when the thread is asked to terminate. Watch out for MT-safety.
-  */
-  inline virtual void onTermination() {};
+  inline virtual void onTermination() throw() {terminated = true;}
 };
 
 #endif

@@ -34,6 +34,12 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class IOException : public Exception {
 public:
 
+  /** Cause. */
+  enum Cause {
+    ABORTED, /**< Operation aborted. */
+    PENDING, /**< I/O is pending. */
+  };
+  
   /**
     Initializes the exception object with no message.
   */

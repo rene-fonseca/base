@@ -34,37 +34,37 @@ char PrimitiveInputStream::readChar() throw(IOException) {
 }
 
 short PrimitiveInputStream::readShortInteger() throw(IOException) {
-  BigEndian::SignedShort value;
+  BigEndian<int16> value;
   read(getCharAddress(value), sizeof(value));
   return value;
 }
 
 unsigned short PrimitiveInputStream::readUnsignedShortInteger() throw(IOException) {
-  BigEndian::UnsignedShort value;
+  BigEndian<uint16> value;
   read(getCharAddress(value), sizeof(value));
   return value;
 }
 
 int PrimitiveInputStream::readInteger() throw(IOException) {
-  BigEndian::SignedInt value;
+  BigEndian<int32> value;
   read(getCharAddress(value), sizeof(value));
   return value;
 }
 
 unsigned int PrimitiveInputStream::readUnsignedInteger() throw(IOException) {
-  BigEndian::UnsignedInt value;
+  BigEndian<uint32> value;
   read(getCharAddress(value), sizeof(value));
   return value;
 }
 
 long long PrimitiveInputStream::readLongInteger() throw(IOException) {
-  BigEndian::SignedLongLong value;
+  BigEndian<int64> value;
   read(getCharAddress(value), sizeof(value));
   return value;
 }
 
 unsigned long long PrimitiveInputStream::readUnsignedLongInteger() throw(IOException) {
-  BigEndian::UnsignedLongLong value;
+  BigEndian<uint64> value;
   read(getCharAddress(value), sizeof(value));
   return value;
 }

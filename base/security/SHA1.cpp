@@ -14,6 +14,7 @@
 #include <base/security/SHA1.h>
 #include <base/Functor.h>
 #include <base/security/Base64.h>
+#include <base/string/ASCIITraits.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

@@ -992,7 +992,7 @@ unix)
     AC_BASE_ADDLIB(${base_cv_inet_ipv6_libs}))
 ;;
 win32)
-  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-lws2_32 -lpsapi'
+  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-lws2_32 -lpsapi -lnetapi32'
 ;;
 esac
 

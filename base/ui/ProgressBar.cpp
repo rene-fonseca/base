@@ -79,7 +79,7 @@ void ProgressBar::onDisplay() throw() {
   Position lowerRight = getLocalBindingOffset(LOWER_RIGHT);
 
   setPen(lightPen);
-  line(getLocalBindingOffset(UPPER_RIGHT), lowerRight);
+  line(lowerRight, getLocalBindingOffset(UPPER_RIGHT));
   line(getLocalBindingOffset(LOWER_LEFT), lowerRight);
   
   Dimension dimension = getDimension();

@@ -53,6 +53,7 @@ public:
     Opens a Dynamic Shared Object (DSO) with the specified options. LACY
     relocations may not be supported the particular platform in which case all
     relocations will be resolved during object initialization.
+    
 
     @param module The path of the module to open.
     @param options The linking options. Default is LAZY.

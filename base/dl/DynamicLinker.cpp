@@ -82,7 +82,11 @@ DynamicLinker::DynamicLinker(const String& module, unsigned int options) throw(L
   #else
     int flags = RTLD_NOW; // we only end up here if dlfcn.h is non-compliant
   #endif
-  flags |= (options & GLOBAL) ? RTLD_GLOBAL : RTLD_LOCAL;
+  #if defined(RTLD_LOCAL)
+    flags |= (options & GLOBAL) ? RTLD_GLOBAL : RTLD_LOCAL;
+  #else
+    flags |= RTLD_GLOBAL;
+  #endif
   if ((handle = dlopen(module.getElements(), flags)) == 0) {
     throw LinkerException("Unable to open module", this);
   }

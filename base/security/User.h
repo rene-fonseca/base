@@ -48,7 +48,7 @@ public:
   User(unsigned long long id) throw();
 
   /**
-    Initializaes user from other user.
+    Initializes user from other user.
   */
   User(const User& copy) throw();
 

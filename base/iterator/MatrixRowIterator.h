@@ -22,6 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Row iterator for matrix.
 
+  @short Matrix row iterator
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -31,9 +32,60 @@ public:
 
   typedef SequenceIterator<TRAITS> ElementIterator;
 
-  inline MatrixRowIterator(Pointer value, unsigned int columns) throw() :
-    InterleavedIterator<TRAITS>(value, columns) {}
+  inline MatrixRowIterator(Pointer element, unsigned int columns) throw()
+    : InterleavedIterator<TRAITS>(element, columns) {
+  }
 
+  /**
+    Prefix increment.
+  */
+  inline MatrixRowIterator& operator++() throw() {
+    element += step;
+    return *this;
+  }
+
+  /**
+    Postfix decrement.
+  */
+  inline MatrixRowIterator operator++(int) throw() {
+    MatrixRowIterator result(*this);
+    element += step;
+    return result;
+  }
+
+  /**
+    Prefix decrement.
+  */
+  inline MatrixRowIterator& operator--() throw() {
+    element -= step;
+    return *this;
+  }
+
+  /**
+    Postfix decrement.
+  */
+  inline MatrixRowIterator operator--(int) throw() {
+    MatrixRowIterator result(*this);
+    element -= step;
+    return result;
+  }
+
+  /**
+    Move the specified distance forward.
+  */
+  inline MatrixRowIterator& operator+=(Distance distance) throw() {
+    element += step * distance;
+    return *this;
+  }
+
+  /**
+    Move the specified distance backwards.
+  */
+  inline MatrixRowIterator& operator-=(Distance distance) throw() {
+    element -= step * distance;
+    return *this;
+  }
+  
   inline ElementIterator getFirst() const throw() {
     return ElementIterator(element);
   }
@@ -47,6 +99,18 @@ public:
     return ElementIterator(element + index);
   }
 };
+
+template<class TRAITS>
+inline MatrixRowIterator<TRAITS> operator+(const MatrixRowIterator<TRAITS>& left, int right) throw() {
+  MatrixRowIterator<TRAITS> result(left);
+  return result += right;
+}
+
+template<class TRAITS>
+inline MatrixRowIterator<TRAITS> operator-(const MatrixRowIterator<TRAITS>& left, int right) throw() {
+  MatrixRowIterator<TRAITS> result(left);
+  return result -= right;
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

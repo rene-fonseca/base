@@ -21,7 +21,53 @@
   #include <errno.h>
   #include <sys/time.h> // defines timeval on Linux systems
   #include <stropts.h> // defines FLUSH macros
+  #include <string.h> // memset (required on solaris)
+
+  #if defined(__solaris__)
+    #define BSD_COMP 1 // request BSD flags - don't known if this is ok to do
+  #endif
   #include <sys/ioctl.h> // defines FIONREAD
+#endif
+
+// do we need to repair bad header file
+#if defined(__solaris__)
+  #define _DK_SDU_MIP__BASE__SOCKET_BIND bind
+  #define _DK_SDU_MIP__BASE__SOCKET_CONNECT connect
+  #define _DK_SDU_MIP__BASE__SOCKET_RECVMSG recvmsg
+  #define _DK_SDU_MIP__BASE__SOCKET_SENDMSG sendmsg
+  #define _DK_SDU_MIP__BASE__SOCKET_SENDTO sendto
+  #define _DK_SDU_MIP__BASE__SOCKET_SOCKET socket
+
+  #undef bind
+  #undef connect
+  #undef recvmsg
+  #undef sendmsg
+  #undef sendto
+  #undef socket
+
+  inline int bind(int s, const struct sockaddr* name, int namelen) {
+    return _DK_SDU_MIP__BASE__SOCKET_BIND(s, name, namelen);
+  }
+
+  inline int connect(int s, const struct sockaddr* name, int namelen) {
+    return _DK_SDU_MIP__BASE__SOCKET_CONNECT(s, name, namelen);
+  }
+
+  inline ssize_t recvmsg(int s, struct msghdr* msg, int flags) {
+    return _DK_SDU_MIP__BASE__SOCKET_RECVMSG(s, msg, flags);
+  }
+
+  inline ssize_t sendmsg(int s, const struct msghdr* msg, int flags) {
+    return _DK_SDU_MIP__BASE__SOCKET_SENDMSG(s, msg, flags);
+  }
+
+  inline ssize_t sendto(int s, const void* msg, size_t len, int flags, const struct sockaddr* to, int tolen) {
+    return _DK_SDU_MIP__BASE__SOCKET_SENDTO(s, msg, len, flags, to, tolen);
+  }
+
+  inline int socket(int domain, int type, int protocol) {
+    return _DK_SDU_MIP__BASE__SOCKET_SOCKET(domain, type, protocol);
+  }
 #endif
 
 #if !defined(_DK_SDU_MIP__BASE__SOCKLEN_T)

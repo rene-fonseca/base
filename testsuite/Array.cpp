@@ -6,7 +6,7 @@
 #include <base/collection/Array.h>
 
 int main() {
-  fout << "Testing Array implementation\n";
+  fout << "Testing implementation of the Array class\n";
 
   fout << "Initializing array\n";
 

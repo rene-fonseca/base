@@ -5,8 +5,8 @@
 
 #include <base/string/FormatOutputStream.h>
 #include <base/net/InetService.h>
-#include <base/net/Socket.h>
 #include <base/net/ServerSocket.h>
+#include <base/net/ClientSocket.h>
 
 void test() {
   fout << "Testing ServerSocket...\n";
@@ -43,45 +43,35 @@ void test() {
   }
   port = 1234;
 
-  Socket serverSocket;
-
-  fout << "Creating stream socket...\n";
-  serverSocket.create(true);
-
-  fout << "Binding to address...\n";
-  serverSocket.bind(address, port);
+  fout << "Initializing server socket...\n";
+  ServerSocket serverSocket(address, port, 1);
 
   fout << "Server address...\n";
   fout << "  address=" << serverSocket.getLocalAddress() << " port=" << serverSocket.getLocalPort() << EOL;
-
-  fout << "Listening for one client...\n";
-  serverSocket.listen(1);
 
   fout << "Waiting for client to connect...\n";
 
   unsigned int connection = 1; // the number of connections so far
 
   while (connection < 4) {
-    Socket client;
-    client.accept(serverSocket);
+    fout << "Initializing socket...\n";
+    StreamSocket socket(serverSocket.accept());
 
     fout << "Connection number " << connection++ << " established from\n";
-    fout << "  remote: address=" << client.getAddress() << " port=" << client.getPort() << EOL;
+    fout << "  remote: address=" << socket.getAddress() << " port=" << socket.getPort() << EOL;
 
     fout << "Talking with client...\n";
-    FileDescriptorOutputStream socketOutput = client.getOutputStream();
-    FileDescriptorInputStream socketInput = client.getInputStream();
-    FormatOutputStream fstream(socketOutput);
+    FormatOutputStream fstream(socket);
 
     char buffer[4096];
-    socketInput.read((char*)&buffer, sizeof(buffer));
+    socket.read((char*)&buffer, sizeof(buffer));
     fout << buffer;
 
     fstream << "Thanks for your reply\n";
-    client.shutdownOutputStream();
+    socket.shutdownOutputStream();
 
-//    fout << "Closing connection...\n";
-//    client.close();
+    fout << "Closing connection...\n";
+    socket.close();
   }
 
   fout << "Closing server socket...\n";

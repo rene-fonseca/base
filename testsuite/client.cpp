@@ -13,7 +13,7 @@ char* hostname = 0;
 char* servicename = 0;
 
 void test() {
-  fout << "Testing client socket...\n";
+  fout << "Testing StreamSocket...\n";
 
   fout << "Server: " << hostname << EOL;
 
@@ -57,38 +57,38 @@ void test() {
   port = 1234;
 
   fout << "Initializing socket...\n";
-  Socket socket;
+  StreamSocket socket;
 
-  fout << "Creating stream socket...\n";
-  socket.create(true);
-
-  fout << "Connecting to server...\n";
+  fout << "Connecting socket...\n";
   socket.connect(address, port);
+
   fout << "socket: remote address=" << socket.getAddress() << " remote port=" << socket.getPort() << EOL;
 
   fout << "Talking with server...\n";
-  FileDescriptorOutputStream socketOutput = socket.getOutputStream();
-  FileDescriptorInputStream socketInput = socket.getInputStream();
-  FormatOutputStream fstream(socketOutput);
+  FormatOutputStream fstream(socket);
 
   fstream << "Hi, I'm the client\n";
   socket.shutdownOutputStream();
 
   char buffer[4096];
-  socketInput.read((char*)&buffer, sizeof(buffer));
+  socket.read((char*)&buffer, sizeof(buffer));
   fout << buffer;
 
+  fout << "Closing socket\n";
   socket.close();
 }
 
 int main(int argc, char* argv[]) {
 
-  if (argc != 3) {
-    fout << "client hostname service\n";
-    return 0;
-  }
-  hostname = argv[1]; // the hostname of the server
-  servicename = argv[2]; // the name of the service
+//  if (argc != 3) {
+//    fout << "client hostname service\n";
+//    return 0;
+//  }
+//  hostname = argv[1]; // the hostname of the server
+//  servicename = argv[2]; // the name of the service
+
+  hostname = "lendum";
+  servicename = "1234";
 
   try {
     test();

@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include "features.h"
-#include "winver.h"
+#include <base/features.h>
+#include <winver.h>
 
 #define _DK_SDU_MIP__BASE__MAKE_PRIVATE_BUILD(DATE,USER,HOST,SYSTEM,TARGET) "This application was built at " DATE " by " USER " on host " HOST " a " SYSTEM " system. The application is intended for the target systems " TARGET ".\0"
 

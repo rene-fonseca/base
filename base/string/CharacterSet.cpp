@@ -97,8 +97,7 @@ CharacterSet CharacterSet::load(const Array<String>& searchPaths, const String& 
       if (FileSystem::fileExists(absolutePath)) {
         try {
           return load(absolutePath);
-        } catch (FileException& e) {
-          // TAG: } catch (InvalidFormat& e) {
+        } catch (Exception& e) {
         }
       }
     }

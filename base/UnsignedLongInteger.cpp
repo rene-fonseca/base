@@ -20,7 +20,7 @@ unsigned long long UnsignedLongInteger::parse(const String& str, unsigned int ac
   String::ReadIterator i = str.getBeginReadIterator();
   const String::ReadIterator end = str.getEndReadIterator();
 
-  assert(i < end, InvalidFormat("Not an integer")); // do not accept empty strings
+  assert(i < end, InvalidFormat("Not an integer", Type::getType<UnsignedLongInteger>())); // do not accept empty strings
 
   switch (accept) {
   case BIN:
@@ -68,7 +68,7 @@ unsigned long long UnsignedLongInteger::parse(const String& str, unsigned int ac
       ((base == 8) && (accept & OCT)) ||
       ((base == 10) && (accept & DEC)) ||
       ((base == 16) && (accept & HEX)),
-      InvalidFormat("Not an integer")
+      InvalidFormat("Not an integer", Type::getType<UnsignedLongInteger>())
     );
   }
 
@@ -82,7 +82,7 @@ unsigned long long UnsignedLongInteger::parse(const String& str, unsigned int ac
       ASCIITraits::isHexDigit(ch) &&
       (digitValue < base) &&
       ((temp < highLimit) || ((temp == highLimit) && (digitValue <= lowLimit))),
-      InvalidFormat("Not an integer")
+      InvalidFormat("Not an integer", Type::getType<UnsignedLongInteger>())
     );
     temp = temp * base + digitValue;
   }

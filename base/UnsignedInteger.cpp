@@ -20,7 +20,7 @@ unsigned int UnsignedInteger::parse(const String& str, unsigned int accept) thro
   String::ReadIterator i = str.getBeginReadIterator();
   const String::ReadIterator end = str.getEndReadIterator();
 
-  assert(i < end, InvalidFormat("Not an integer")); // do not accept empty strings
+  assert(i < end, InvalidFormat("Not an integer", Type::getType<UnsignedInteger>())); // do not accept empty strings
 
   switch (accept) {
   case BIN:
@@ -68,7 +68,7 @@ unsigned int UnsignedInteger::parse(const String& str, unsigned int accept) thro
       ((base == 8) && (accept & OCT)) ||
       ((base == 10) && (accept & DEC)) ||
       ((base == 16) && (accept & HEX)),
-      InvalidFormat("Not an integer")
+      InvalidFormat("Not an integer", Type::getType<UnsignedInteger>())
     );
   }
 
@@ -82,7 +82,7 @@ unsigned int UnsignedInteger::parse(const String& str, unsigned int accept) thro
       ASCIITraits::isHexDigit(ch) &&
       (digitValue < base) &&
       ((temp < highLimit) || ((temp == highLimit) && (digitValue <= lowLimit))),
-      InvalidFormat("Not an integer")
+      InvalidFormat("Not an integer", Type::getType<UnsignedInteger>())
     );
     temp = temp * base + digitValue;
   }

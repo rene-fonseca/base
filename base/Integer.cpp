@@ -20,7 +20,7 @@ int Integer::parse(const String& str) throw(InvalidFormat) {
   bool sign = false;
   unsigned int index = 0;
 
-  assert(length > 0, InvalidFormat("Not an Integer"));
+  assert(length > 0, InvalidFormat("Not an Integer", Type::getType<Integer>()));
 
   if (str[0] == '-') {
     sign = true;
@@ -32,11 +32,11 @@ int Integer::parse(const String& str) throw(InvalidFormat) {
   while (index < length) {
     char ch = str[index++];
 
-    assert(ASCIITraits::isDigit(ch), InvalidFormat("Not an Integer"));
+    assert(ASCIITraits::isDigit(ch), InvalidFormat("Not an Integer", Type::getType<Integer>()));
     temp = temp * 10 + ASCIITraits::digitToValue(ch);
 
     if ((sign && (-temp < Integer::MINIMUM)) || (!sign && (temp > Integer::MAXIMUM))) {
-      throw InvalidFormat("Not an Integer");
+      throw InvalidFormat("Not an Integer", Type::getType<Integer>());
     }
   }
 

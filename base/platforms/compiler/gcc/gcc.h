@@ -17,7 +17,7 @@
 namespace base {
 
 #define _DK_SDU_MIP__BASE__COMPILER_VERSION __GNUC__
-#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE compiler::org::gnu
+#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE org::gnu::compiler
 
 #define _DK_SDU_MIP__BASE__FUNCTION __PRETTY_FUNCTION__
 
@@ -63,12 +63,12 @@ namespace base {
 #  endif
 #endif
 
-  namespace compiler {
-    
-    namespace org {
+  namespace org {
       
-      namespace gnu {
+    namespace gnu {
 
+      namespace compiler {
+        
 #if defined(_DK_SDU_MIP__BASE__COMPILER_MMX_EXTENSION)
         /** MMX extension data type. */
         typedef int v8qi __attribute__ ((mode (V8QI)));
@@ -124,15 +124,15 @@ namespace base {
         /** Offset data type. */
         typedef unsigned int size __attribute__ ((mode (__pointer__)));
         
-      }; // end of namespace gnu
+      } // end of namespace compiler
   
-    }; // end of namespace org
+    } // end of namespace gnu
  
-  }; // end of namespace compiler
-
-  // import GCC data types
-  using compiler::org::gnu;
+  } // end of namespace org
   
-}; // end of namespace base
+  // import GCC data types
+  using org::gnu::compiler;
+  
+} // end of namespace base
 
 #endif

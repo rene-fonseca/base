@@ -20,10 +20,6 @@
 #include <base/ResourceException.h>
 #include <base/OperatingSystem.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
-  #include <pthread.h>
-#endif // flavor
-
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
@@ -32,23 +28,14 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Event signaling mechanism
   @ingroup concurrency
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.01
+  @version 1.0.2
 */
 
 class Event : public virtual Object {
 private:
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  /** Event handle. */
-  OperatingSystem::Handle handle;
-#else
-  /** Indicates that the event has been signaled. */
-  bool signaled;
-  /** Conditional. */
-  mutable pthread_cond_t condition;
-  /** Internal mutex representation. */
-  mutable pthread_mutex_t mutex;
-#endif
+  /** Internal data. */
+  void* context;
 public:
   
   /**
@@ -132,9 +119,11 @@ public:
   */
   bool wait(unsigned int microseconds) const throw(OutOfDomain, EventException);
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   /** Returns the event handle. */
-  inline OperatingSystem::Handle getHandle() const throw() {return handle;}
+  inline OperatingSystem::Handle getHandle() const throw() { // TAG: fixme
+    return Cast::pointer<OperatingSystem::Handle>(context);
+  }
 #endif
 
   /**

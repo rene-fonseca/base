@@ -25,16 +25,30 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+class EventImpl {
+public:
+  
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+  struct Context {
+    bool signaled;
+    pthread_cond_t condition;
+    pthread_mutex_t mutex;
+  };
+#endif
+};
+
 Event::Event() throw(ResourceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if ((handle = ::CreateEvent(0, TRUE, FALSE, 0)) == 0) {
+  if ((context = Cast::pointer<void*>(::CreateEvent(0, TRUE, FALSE, 0))) == 0) {
     throw ResourceException("Unable to initialize event", this);
   }
 #else // pthread
-  signaled = false;
+  EventImpl::Context* context = new EventImpl::Context[1];
+  context->signaled = false;
 
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes)) {
+    delete[] context;
     throw ResourceException(this);
   }
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
@@ -42,31 +56,36 @@ Event::Event() throw(ResourceException) {
 #else
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
+    delete[] context;
     throw ResourceException(this);
   }
 #endif // cygwin temporary bug fix
-  if (pthread_mutex_init(&mutex, &attributes)) {
+  if (pthread_mutex_init(&Cast::pointer<EventImpl::Context*>(context)->mutex, &attributes)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
+    delete[] context;
     throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 
-  if (pthread_cond_init(&condition, 0)) {
+  if (pthread_cond_init(&Cast::pointer<EventImpl::Context*>(context)->condition, 0)) {
+    pthread_mutex_destroy(&Cast::pointer<EventImpl::Context*>(context)->mutex);
+    delete[] context;
     throw ResourceException(this);
   }
+  this->context = context;
 #endif
 }
 
 bool Event::isSignaled() const throw(EventException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return ::WaitForSingleObject(handle, 0) == WAIT_OBJECT_0; // should never fail
+  return ::WaitForSingleObject(context, 0) == WAIT_OBJECT_0; // should never fail
 #else // pthread
   bool result;
-  if (pthread_mutex_lock(&mutex)) {
+  if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException(this);
   }
-  result = signaled;
-  if (pthread_mutex_unlock(&mutex)) {
+  result = Cast::pointer<EventImpl::Context*>(context)->signaled;
+  if (pthread_mutex_unlock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException(this);
   }
   return result;
@@ -75,15 +94,15 @@ bool Event::isSignaled() const throw(EventException) {
 
 void Event::reset() throw(EventException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (!::ResetEvent(handle)) {
+  if (!::ResetEvent(context)) {
     throw EventException("Unable to reset event", this);
   }
 #else // pthread
-  if (pthread_mutex_lock(&mutex)) {
+  if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException("Unable to reset event", this);
   }
-  signaled = false;
-  if (pthread_mutex_unlock(&mutex)) {
+  Cast::pointer<EventImpl::Context*>(context)->signaled = false;
+  if (pthread_mutex_unlock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException("Unable to reset event", this);
   }
 #endif
@@ -91,18 +110,18 @@ void Event::reset() throw(EventException) {
 
 void Event::signal() throw(EventException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (!::SetEvent(handle)) {
+  if (!::SetEvent(context)) {
     throw EventException("Unable to signal event", this);
   }
 #else // pthread
-  if (pthread_mutex_lock(&mutex)) {
+  if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException("Unable to signal event", this);
   }
-  signaled = true;
-  if (pthread_mutex_unlock(&mutex)) {
+  Cast::pointer<EventImpl::Context*>(context)->signaled = true;
+  if (pthread_mutex_unlock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException("Unable to signal event", this);
   }
-  if (pthread_cond_broadcast(&condition)) { // unblock all blocked threads
+  if (pthread_cond_broadcast(&Cast::pointer<EventImpl::Context*>(context)->condition)) { // unblock all blocked threads
     throw EventException("Unable to signal event", this);
   }
 #endif
@@ -110,19 +129,22 @@ void Event::signal() throw(EventException) {
 
 void Event::wait() const throw(EventException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (::WaitForSingleObject(handle, INFINITE) != WAIT_OBJECT_0) {
+  if (::WaitForSingleObject(context, INFINITE) != WAIT_OBJECT_0) {
     throw EventException("Unable to wait for event", this);
   }
 #else // pthread
-  if (pthread_mutex_lock(&mutex)) {
+  if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException("Unable to wait for event", this);
   }
 
-  while (!signaled) { // wait for signal
-    pthread_cond_wait(&condition, &mutex);
+  while (!Cast::pointer<EventImpl::Context*>(context)->signaled) { // wait for signal
+    pthread_cond_wait(
+      &Cast::pointer<EventImpl::Context*>(context)->condition,
+      &Cast::pointer<EventImpl::Context*>(context)->mutex
+    );
   }
 
-  if (pthread_mutex_unlock(&mutex)) {
+  if (pthread_mutex_unlock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException("Unable to wait for event", this);
   }
 #endif
@@ -133,7 +155,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
     throw OutOfDomain(this);
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  switch (::WaitForSingleObject(handle, microseconds/1000)) {
+  switch (::WaitForSingleObject(context, microseconds/1000)) {
   case WAIT_OBJECT_0:
     return true;
   case WAIT_TIMEOUT:
@@ -144,7 +166,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
 #else // pthread
   int result = true; // no assignment gives warning
 
-  if (pthread_mutex_lock(&mutex)) {
+  if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException("Unable to wait for event", this);
   }
 
@@ -155,15 +177,18 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
   absoluteTime.tv_sec = now.tv_sec + nanoseconds/1000000000;
   absoluteTime.tv_nsec = nanoseconds % 1000000000;
 
-  while (!signaled) { // wait for signal
+  while (!Cast::pointer<EventImpl::Context*>(context)->signaled) { // wait for signal
     // concurrent envocations of signal() does not matter
-    if (pthread_cond_timedwait(&condition, &mutex, &absoluteTime) == ETIMEDOUT) {
+    if (pthread_cond_timedwait(
+          &Cast::pointer<EventImpl::Context*>(context)->condition,
+          &Cast::pointer<EventImpl::Context*>(context)->mutex, &absoluteTime
+        ) == ETIMEDOUT) {
       result = false;
       break; // timed out
     }
   }
 
-  if (pthread_mutex_unlock(&mutex)) {
+  if (pthread_mutex_unlock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException("Unable to wait for event", this);
   }
 
@@ -173,14 +198,14 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
 
 Event::~Event() throw(EventException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (::CloseHandle(handle) == 0) {
+  if (::CloseHandle(context) == 0) {
     throw EventException("Unable to destroy event", this);
   }
 #else // pthread
-  if (pthread_cond_destroy(&condition)) {
+  if (pthread_cond_destroy(&Cast::pointer<EventImpl::Context*>(context)->condition)) {
     throw EventException("Unable to destroy event", this);
   }
-  pthread_mutex_destroy(&mutex); // lets just hope that this doesn't fail
+  pthread_mutex_destroy(&Cast::pointer<EventImpl::Context*>(context)->mutex); // lets just hope that this doesn't fail
 #endif
 }
 

@@ -400,6 +400,9 @@ AC_BASE_CHECK(
     AC_BASE_TRY_CXX_COMPILE(base_cv_anonymous_struct, config/anonymous_struct.c, )
   ),
   base_cv_anonymous_struct)
+if test $base_cv_anonymous_struct = yes; then
+  AC_DEFINE(HAVE_ANONYMOUS_STRUCT, 1, Specifies that anonymous struct is supported by the compiler)
+fi
 
 if test $base_explicit_big_endian = auto; then
   AC_BASE_CHECK(

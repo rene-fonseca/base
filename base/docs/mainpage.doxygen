@@ -1,0 +1,19 @@
+/*! \mainpage Main Page
+
+\section legal Legal Notice
+Copyright (C) 2000, 2001 by René Møller Fonseca
+
+Warning and Disclaimer: Every effort has been made to make this documentation
+as complete and accurate as possible, but no warranty or fitness is implied.
+The information is provided on an as-is basis. The author shall have neither
+liability nor responsibility to any person or entity with respect to any loss
+or damages arising from the information contained in this documentation or from
+the use of any software that may accompany it.
+
+
+\section intro Introduction
+This is the API documentation of <The Base Framework>. A framework for
+developing platform independent applications in C++. The home of this project
+is http://www.mip.sdu.dk/~fonseca/base.
+
+*/

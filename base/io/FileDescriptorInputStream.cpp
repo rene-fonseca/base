@@ -65,7 +65,7 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int size) th
       case EAGAIN: // no data available (only in non-blocking mode)
         return totalBytesRead; // early return
       default:
-        throw IOException("Unable to read from file decriptor");
+        throw IOException("Unable to read from file descriptor");
       }
     } else {
       totalBytesRead += result;

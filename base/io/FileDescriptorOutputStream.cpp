@@ -66,7 +66,7 @@ unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int 
         return totalBytesWritten; // early return
         break;
       default:
-        throw IOException("Unable to write to file decriptor");
+        throw IOException("Unable to write to file descriptor");
       }
     } else {
       totalBytesWritten += result;

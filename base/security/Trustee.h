@@ -14,7 +14,6 @@
 #ifndef _DK_SDU_MIP__BASE_SECURITY__TRUSTEE_H
 #define _DK_SDU_MIP__BASE_SECURITY__TRUSTEE_H
 
-#include <base/security/Trustee.h>
 #include <base/string/String.h>
 #include <base/mem/ReferenceCountedAllocator.h>
 

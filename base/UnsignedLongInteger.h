@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   <unsigned long long> primitive. There is no wrapper class available for the
   <long> primitive.
 
-  @short Unsigned long integer.
+  @short An unsigned long integer
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -38,9 +38,9 @@ public:
   /** True if the integer type is signed. */
   static const bool SIGNED = false;
   /** Specifies the minimum value. */
-  static const unsigned long long MINIMUM = UnsignedLongLong::MINIMUM;
+  static const unsigned long long MINIMUM = PrimitiveTraits<unsigned long long>::MINIMUM;
   /** Specifies the maximum value. */
-  static const unsigned long long MAXIMUM = UnsignedLongLong::MAXIMUM;
+  static const unsigned long long MAXIMUM = PrimitiveTraits<unsigned long long>::MAXIMUM;
 
   enum BaseOptions {
     BIN = 1, /**< Specifies binary integer base (2). */

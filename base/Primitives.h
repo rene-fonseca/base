@@ -18,122 +18,18 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
-  class Char {
-  public:
-#if defined(_DK_SDU_MIP__BASE__UNSIGNED_CHAR)
-    static const char MAXIMUM = 255;
-    static const char MINIMUM = 0;
-#else // signed
-    static const char MAXIMUM = 127;
-    static const char MINIMUM = -128;
-#endif
-  };
-
-  class UnsignedChar {
-  public:
-    static const unsigned char MAXIMUM = 255;
-    static const unsigned char MINIMUM = 0;
-  };
-#endif
-
-#if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
-  class Short {
-  public:
-    static const short int MAXIMUM = 32767;
-    static const short int MINIMUM = -32768;
-  };
-
-  class UnsignedShort {
-  public:
-    static const unsigned short int MAXIMUM = 65535;
-    static const unsigned short int MINIMUM = 0;
-  };
-#elif (_DK_SDU_MIP__BASE__SHORT_SIZE = 4)
-  class Short {
-  public:
-    static const short int MAXIMUM = 2147483647;
-    static const short int MINIMUM = -MAXIMUM - 1;
-  };
-
-  class UnsignedShort {
-  public:
-    static const unsigned short int MAXIMUM = 4294967295U;
-    static const unsigned short int MINIMUM = 0;
-  };
-#endif
-
-#if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
-  class Int {
-  public:
-    static const int MAXIMUM = 2147483647;
-    static const int MINIMUM = -MAXIMUM - 1;
-  };
-
-  class UnsignedInt {
-  public:
-    static const unsigned int MAXIMUM = 4294967295U;
-    static const unsigned int MINIMUM = 0;
-  };
-#elif (_DK_SDU_MIP__BASE__INT_SIZE == 8)
-  class Int {
-  public:
-    static const int MAXIMUM = 9223372036854775807;
-    static const int MINIMUM = -MAXIMUM - 1;
-  };
-
-  class UnsignedInt {
-  public:
-    static const unsigned int MAXIMUM = 18446744073709551615U;
-    static const unsigned int MINIMUM = 0;
-  };
-#endif
-
-#if (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
-  class Long {
-  public:
-    static const long MAXIMUM = 2147483647L;
-    static const long MINIMUM = -MAXIMUM - 1L;
-  };
-
-  class UnsignedLong {
-  public:
-    static const unsigned long MAXIMUM = 4294967295UL;
-    static const unsigned long MINIMUM = 0;
-  };
-#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 8)
-  class Long {
-  public:
-    static const long MAXIMUM = 9223372036854775807;
-    static const long MINIMUM = -MAXIMUM - 1L;
-  };
-
-  class UnsignedLong {
-  public:
-    static const unsigned long MAXIMUM = 18446744073709551615UL;
-    static const unsigned long MINIMUM = 0;
-  };
-#endif
-
-#if (_DK_SDU_MIP__BASE__LONG_LONG_SIZE == 8)
-  class LongLong {
-  public:
-    static const long long MAXIMUM = 9223372036854775807LL;
-    static const long long MINIMUM = -MAXIMUM - 1LL;
-  };
-
-  class UnsignedLongLong {
-  public:
-    static const unsigned long long MAXIMUM = 18446744073709551615ULL;
-    static const unsigned long long MINIMUM = 0;
-  };
-#endif
-
-
+// Primitive constraints
+// TAG: check char
+// TAG: check short
+// TAG: check int
+// TAG: check long
+// TAG: check long long
 
 #if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
   /** 8 bit unsigned integer (a.k.a. octet). */
   typedef unsigned char byte;
+#else
+  #error char primitive is not 8 bits
 #endif
 
 #if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
@@ -151,6 +47,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   /** 32 bit unsigned integer. */
   typedef unsigned long long uint32;
 #endif
+
+
 
 /**
   Returns the higher half-word of the specified value.
@@ -244,6 +142,8 @@ namespace primitives {
   template<> class Cardinal<signed char> {public: enum {IS_CARDINAL = true};};
   template<> class Cardinal<unsigned char> {public: enum {IS_CARDINAL = true};};
   template<> class Cardinal<wchar_t> {public: enum {IS_CARDINAL = true};};
+  template<> class Cardinal<short> {public: enum {IS_CARDINAL = true};};
+  template<> class Cardinal<unsigned short> {public: enum {IS_CARDINAL = true};};
   template<> class Cardinal<int> {public: enum {IS_CARDINAL = true};};
   template<> class Cardinal<unsigned int> {public: enum {IS_CARDINAL = true};};
   template<> class Cardinal<long> {public: enum {IS_CARDINAL = true};};
@@ -298,6 +198,215 @@ namespace primitives {
       IS_PRIMITIVE = Void<TYPE>::IS_VOID || Arithmetic<TYPE>::IS_ARITHMETIC
     };
   };
+
+}; // end of primitives namespace
+
+/**
+  Contains information about the primitive type.
+*/
+template<class PRIMITIVE>
+class PrimitiveTraits {
+public:
+};
+
+template<class TYPE>
+class PrimitiveTraits<TYPE*> {
+public:
+  
+  /** The type of pointer differences. */
+#if (_DK_SDU_MIP__BASE__POINTER_SIZE == _DK_SDU_MIP__BASE__LONG_SIZE)
+  typedef long Distance;
+#elif (_DK_SDU_MIP__BASE__POINTER_SIZE == _DK_SDU_MIP__BASE__LONG_LONG_SIZE)
+  typedef long long Distance;
+#else
+  #error Pointer not compatible with long or long long primitives
+#endif
+};
+
+template<>
+class PrimitiveTraits<bool> {
+public:
+  
+  typedef bool Signed;
+  typedef bool Unsigned;
+  
+  static const bool MINIMUM = false;
+  static const bool MAXIMUM = true;
+};
+
+template<>
+class PrimitiveTraits<signed char> {
+public:
+  
+  typedef signed char Signed;
+  typedef unsigned char Unsigned;
+  
+#if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
+  static const signed char MAXIMUM = 127;
+  static const signed char MINIMUM = -MAXIMUM - 1;
+#endif
+};
+
+template<>
+class PrimitiveTraits<unsigned char> {
+public:
+  
+  typedef signed char Signed;
+  typedef unsigned char Unsigned;
+  
+#if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
+  static const unsigned char MAXIMUM = 255;
+  static const unsigned char MINIMUM = 0;
+#endif
+};
+
+template<>
+class PrimitiveTraits<short> {
+public:
+  
+  typedef short Signed;
+  typedef unsigned short Unsigned;
+  
+#if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
+  static const short MAXIMUM = 32767;
+#elif (_DK_SDU_MIP__BASE__SHORT_SIZE = 4)
+  static const short MAXIMUM = 2147483647;
+#endif
+  static const short MINIMUM = -MAXIMUM - 1;
+};
+
+template<>
+class PrimitiveTraits<unsigned short> {
+public:
+  
+  typedef short Signed;
+  typedef unsigned short Unsigned;
+  
+#if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
+  static const unsigned short MAXIMUM = 65535U;
+#elif (_DK_SDU_MIP__BASE__SHORT_SIZE = 4)
+  static const unsigned short MAXIMUM = 4294967295U;
+#endif
+  static const unsigned short MINIMUM = 0;
+};
+
+template<>
+class PrimitiveTraits<int> {
+public:
+  
+  typedef int Signed;
+  typedef unsigned int Unsigned;
+  
+#if (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
+  static const int MAXIMUM = 2147483647;
+#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 8)
+  static const int MAXIMUM = 9223372036854775807;
+#endif
+  static const int MINIMUM = -MAXIMUM - 1L;
+};
+
+template<>
+class PrimitiveTraits<unsigned int> {
+public:
+  
+  typedef int Signed;
+  typedef unsigned int Unsigned;
+  
+#if (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
+  static const unsigned int MAXIMUM = 4294967295U;
+#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 8)
+  static const unsigned int MAXIMUM = 18446744073709551615U;
+#endif
+  static const unsigned int MINIMUM = 0;
+};
+
+template<>
+class PrimitiveTraits<long> {
+public:
+  
+  typedef long Signed;
+  typedef unsigned long Unsigned;
+  
+#if (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
+  static const long MAXIMUM = 2147483647L;
+#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 8)
+  static const long MAXIMUM = 9223372036854775807L;
+#endif
+  static const long MINIMUM = -MAXIMUM - 1L;
+};
+
+template<>
+class PrimitiveTraits<unsigned long> {
+public:
+  
+  typedef long Signed;
+  typedef unsigned long Unsigned;
+  
+#if (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
+  static const unsigned long MAXIMUM = 4294967295UL;
+#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 8)
+  static const unsigned long MAXIMUM = 18446744073709551615UL;
+#endif
+  static const unsigned long MINIMUM = 0;
+};
+
+template<>
+class PrimitiveTraits<long long> {
+public:
+  
+  typedef long long Signed;
+  typedef unsigned long long Unsigned;
+  
+#if (_DK_SDU_MIP__BASE__LONG_LONG_SIZE == 8)
+  static const long long MAXIMUM = 9223372036854775807LL;
+#endif
+  static const long long MINIMUM = -MAXIMUM - 1LL;
+};
+
+template<>
+class PrimitiveTraits<unsigned long long> {
+public:
+  
+  typedef long long Signed;
+  typedef unsigned long long Unsigned;
+  
+#if (_DK_SDU_MIP__BASE__LONG_LONG_SIZE == 8)
+  static const unsigned long long MAXIMUM = 18446744073709551615ULL;
+#endif
+  static const unsigned long long MINIMUM = 0;
+};
+
+template<>
+class PrimitiveTraits<float> {
+public:
+  
+  typedef float Signed;
+  typedef float Unsigned;
+  
+  static const float MAXIMUM = 0; // TAG: get maximum from proper representation
+  static const float MINIMUM = -MAXIMUM;
+};
+
+template<>
+class PrimitiveTraits<double> {
+public:
+  
+  typedef double Signed;
+  typedef double Unsigned;
+  
+  static const double MAXIMUM = 0; // TAG: get maximum from proper representation
+  static const double MINIMUM = -MAXIMUM;
+};
+
+template<>
+class PrimitiveTraits<long double> {
+public:
+  
+  typedef long double Signed;
+  typedef long double Unsigned;
+  
+  static const long double MAXIMUM = 0; // TAG: get maximum from proper representation
+  static const long double MINIMUM = -MAXIMUM;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

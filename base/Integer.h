@@ -35,9 +35,9 @@ public:
   /** True if the integer type is signed. */
   static const bool SIGNED = true;
   /** Specifies the minimum value. */
-  static const int MINIMUM = Int::MINIMUM;
+  static const int MINIMUM = PrimitiveTraits<int>::MINIMUM;
   /** Specifies the maximum value. */
-  static const int MAXIMUM = Int::MAXIMUM;
+  static const int MAXIMUM = PrimitiveTraits<int>::MAXIMUM;
 protected:
 
   /** The value. */

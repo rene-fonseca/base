@@ -22,6 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Signed and short integer (16 bits or more).
 
+  @short A signed short integer
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -32,9 +33,9 @@ public:
   /** True if the integer type is signed. */
   static const bool SIGNED = true;
   /** Specifies the maximum value. */
-  static const short int MAXIMUM = Short::MAXIMUM;
+  static const short int MAXIMUM = PrimitiveTraits<short>::MAXIMUM;
   /** Specifies the minimum value. */
-  static const short int MINIMUM = Short::MINIMUM;
+  static const short int MINIMUM = PrimitiveTraits<short>::MINIMUM;
 protected:
 
   /** The value. */

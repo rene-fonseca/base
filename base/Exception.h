@@ -31,8 +31,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   exceptions will terminate the executing context with an error (in the case of
   the main context the entire application is terminated).
 
-  @ingroup exceptions
   @short The general exception class
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.02
 */

@@ -21,6 +21,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Signed and long integer (64 bits or more).
 
+  @short A signed long integer
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -31,9 +32,9 @@ public:
   /** True if the integer type is signed. */
   static const bool SIGNED = true;
   /** Specifies the maximum value. */
-  static const long long MAXIMUM = 9223372036854775807LL;
+  static const long long MAXIMUM = PrimitiveTraits<long long>::MINIMUM;
   /** Specifies the minimum value. */
-  static const long long MINIMUM = (-9223372036854775807LL - 1LL);
+  static const long long MINIMUM = PrimitiveTraits<long long>::MAXIMUM;
 protected:
 
   /** The value. */

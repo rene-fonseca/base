@@ -532,8 +532,8 @@ void GraphicsContext::rectangle(const Position& upperLeft, const Position& lower
       (HDC)graphicsContextHandle,
       upperLeft.getX(),
       upperLeft.getY(),
-      lowerRight.getX(),
-      lowerRight.getY()
+      lowerRight.getX() + 1,
+      lowerRight.getY() + 1
     ),
     UserInterfaceException(this)
   );
@@ -569,8 +569,8 @@ void GraphicsContext::rectangle(const Position& position, const Dimension& dimen
       (HDC)graphicsContextHandle,
       position.getX(),
       position.getY(),
-      position.getX() + dimension.getWidth() - 1,
-      position.getY() + dimension.getHeight() - 1
+      position.getX() + dimension.getWidth(),
+      position.getY() + dimension.getHeight()
     ),
     UserInterfaceException(this)
   );

@@ -163,16 +163,39 @@ inline const char* getCharAddress(const TYPE& value) throw() {return reinterpret
   Returns true if the primitive variable is aligned properly.
 */
 template<class TYPE>
-bool inline isAligned(const TYPE& value) throw() {
+inline bool isAligned(const TYPE& value) throw() {
   unsigned int alignment;
-  if (sizeof(value) <= 4) {
-    alignment = 4;
-  } else if (sizeof(value) <= 8) {
-    alignment = 8;
+  if (sizeof(value) <= sizeof(long)) {
+    alignment = sizeof(long);
+  } else if (sizeof(value) <= 2 * sizeof(long)) {
+    alignment = 2 * sizeof(long);
   } else {
-    alignment = 16;
+    alignment = 4 * sizeof(long);
   }
   return (reinterpret_cast<const char*>(&value) - static_cast<const char*>(0)) & (alignment - 1) == 0;
+}
+
+/**
+  Returns the requested primitive data type aligned at an appropriate address
+  for the architecture. The buffer is expected to be of at least
+  sizeof(TYPE) + n * sizeof(long) - 1 bytes (where n is the minimum value for
+  which sizeof(TYPE) <= n * sizeof(long) is true).
+  
+  @param buffer The buffer.
+*/
+template<class TYPE>
+inline TYPE& getAligned(char* buffer) throw() {
+  unsigned int alignment;
+  if (sizeof(value) <= sizeof(long)) {
+    alignment = sizeof(long);
+  } else if (sizeof(value) <= 2 * sizeof(long)) {
+    alignment = 2 * sizeof(long);
+  } else {
+    alignment = 4 * sizeof(long);
+  }
+  return reinterpret_cast<TYPE*>(
+    (((buffer - static_cast<char*>(0)) + alignment - 1) & ~(alignment - 1)) + static_cast<char*>(0)
+  );
 }
 
 /**

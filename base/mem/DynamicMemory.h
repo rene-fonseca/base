@@ -14,14 +14,16 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__DYNAMIC_MEMORY_H
 #define _DK_SDU_MIP__BASE_MEM__DYNAMIC_MEMORY_H
 
+#include <base/Primitives.h>
+#include <base/Base.h>
 #include <base/MemoryException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 namespace alloc {
-  void* operator new(unsigned int) throw(MemoryException);
+  void* operator new(MemorySize) throw(MemoryException);
   void operator delete(void*) throw(MemoryException);
-  void* operator new[](unsigned int) throw(MemoryException);
+  void* operator new[](MemorySize) throw(MemoryException);
   void operator delete[](void*) throw(MemoryException);
 };
 
@@ -29,14 +31,15 @@ namespace alloc {
   This class provides support for dynamic memory allocation/deallocation.
 
   @see DebugDynamicMemory
+  @short Dynamic memory.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
 class DynamicMemory {
-  friend void* alloc::operator new(unsigned int) throw(MemoryException);
+  friend void* alloc::operator new(MemorySize) throw(MemoryException);
   friend void alloc::operator delete(void*) throw(MemoryException);
-  friend void* alloc::operator new[](unsigned int) throw(MemoryException);
+  friend void* alloc::operator new[](MemorySize) throw(MemoryException);
   friend void alloc::operator delete[](void*) throw(MemoryException);
 private:
 
@@ -48,7 +51,7 @@ private:
 
     @return 0 if not successful.
   */
-  static void* allocate(unsigned int size) throw();
+  static void* allocate(MemorySize size) throw();
 
   /**
     Frees the specified memory block previously allocated by allocate(). Does
@@ -66,42 +69,37 @@ namespace alloc {
   /**
     Dynamic memory placement operator.
   */
-  inline void* operator new(unsigned int, void* place) throw() {return place;}
+  inline void* operator new(MemorySize, void* place) throw() {return place;}
 
   /**
     Dynamic memory placement operator for arrays.
   */
-  inline void* operator new[](unsigned int, void* place) throw() {return place;}
+  inline void* operator new[](MemorySize, void* place) throw() {return place;}
 
   /**
     Allocates a block of dynamic memory of the specified size in bytes. Raises
     MemoryException if the requested size is 0.
   */
-  inline void* operator new(unsigned int size) throw(MemoryException) {
-    if (size == 0) { // should optimized out by compiler under normal circumstances
-      throw MemoryException();
-    }
+  inline void* operator new(MemorySize size) throw(MemoryException) {
+    assert(size > 0, MemoryException()); // should optimized out by compiler under normal circumstances
     void* result = DynamicMemory::allocate(size);
-    if (result == 0) {
-      throw MemoryException();
-    }
+    assert(result == 0, MemoryException());
     return result;
   }
   
   /**
-    Releases a dynamic memory block previously allocated by new.
+    Releases a dynamic memory block previously allocated by new. Raises
+    MemoryException if memory is 0.
   */
   inline void operator delete(void* memory) throw(MemoryException) {
-    if (!DynamicMemory::release(memory)) {
-      throw MemoryException();
-    }
+    assert(memory && DynamicMemory::release(memory), MemoryException());
   }
   
   /**
     Allocates a block of dynamic memory for an array of the specified size in
     bytes. Raises MemoryException if the requested size is 0.
   */
-  inline void* operator new[](unsigned int size) throw(MemoryException) {
+  inline void* operator new[](MemorySize size) throw(MemoryException) {
     if (size == 0) { // should optimized out by compiler under normal circumstances
       throw MemoryException();
     }
@@ -113,22 +111,22 @@ namespace alloc {
   }
 
   /**
-    Releases dynamic memory previously allocated by new[].
+    Releases dynamic memory previously allocated by new[]. Raises
+    MemoryException is memory is 0.
   */
   inline void operator delete[](void* memory) throw(MemoryException) {
-    if (!DynamicMemory::release(memory)) {
-      throw MemoryException();
-    }
+    assert(memory && DynamicMemory::release(memory), MemoryException());
   }
 }; // end of namespace - alloc
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
-inline void* operator new(unsigned int, void* place) throw() {return place;}
+#if (!defined(_DK_SDU_MIP__BASE__DEFAULT_MEMORY) && defined(_DK_SDU_MIP__BASE__NAMESPACE))
+inline void* operator new(base::MemorySize, void* place) throw() {return place;}
 
-inline void* operator new[](unsigned int, void* place) throw() {return place;}
+inline void* operator new[](base::MemorySize, void* place) throw() {return place;}
 
-inline void* operator new(unsigned int size) throw(base::MemoryException) {
+inline void* operator new(base::MemorySize size) throw(base::MemoryException) {
   return base::alloc::operator new(size);
 }
 
@@ -136,12 +134,13 @@ inline void operator delete(void* memory) throw(base::MemoryException) {
   base::alloc::operator delete(memory);
 }
 
-inline void* operator new[](unsigned int size) throw(base::MemoryException) {
+inline void* operator new[](base::MemorySize size) throw(base::MemoryException) {
   return base::alloc::operator new[](size);
 }
 
 inline void operator delete[](void* memory) throw(base::MemoryException) {
   base::alloc::operator delete[](memory);
 }
+#endif
 
 #endif

@@ -31,7 +31,7 @@ namespace internal {
 };
 #endif // flavor
 
-void* DynamicMemory::allocate(unsigned int size) throw() {
+void* DynamicMemory::allocate(MemorySize size) throw() {
   void* result;
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
@@ -45,7 +45,7 @@ bool DynamicMemory::release(void* memory) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return (memory == 0) || (::HeapFree(internal::specific::processHeap, 0, memory) != 0);
 #else // unix
-  free(memory); // works with 0 pointer
+  ::free(memory); // works with 0 pointer
   return true;
 #endif // flavor
 }

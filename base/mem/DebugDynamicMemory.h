@@ -30,9 +30,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class DebugDynamicMemory {
-//   friend void* operator new(unsigned int) throw(MemoryException);
+//   friend void* operator new(MemorySize) throw(MemoryException);
 //   friend void operator delete(void*) throw(MemoryException);
-//   friend void* operator new[](unsigned int) throw(MemoryException);
+//   friend void* operator new[](MemorySize) throw(MemoryException);
 //   friend void operator delete[](void*) throw(MemoryException);
   friend class DebugDynamicMemoryImpl;
 private:
@@ -84,24 +84,19 @@ public:
   
 //   @return 0 if the requested size is 0.
 // */
-// inline void* operator new(unsigned int size) throw(MemoryException) {
-//   if (size == 0) {
-//     return 0;
-//   }
+// inline void* operator new(MemorySize size) throw(MemoryException) {
+//   assert(size > 0, MemoryException());
 //   void* result = DebugDynamicMemory::allocate(size);
-//   if (result == 0) {
-//     throw MemoryException();
-//   }
+//   assert(result != 0, MemoryException());
 //   return result;
 // }
 
 // /**
-//   Releases a dynamic memory block previously allocated by new.
+//   Releases a dynamic memory block previously allocated by new. Raises
+//   MemoryException is memory is 0.
 // */
 // inline void operator delete(void* memory) throw(MemoryException) {
-//   if (!DebugDynamicMemory::release(memory)) {
-//     throw MemoryException(); // TAG: is this allowed
-//   }
+//   assert(memory && DebugDynamicMemory::release(memory), MemoryException());
 // }
 
 // /**
@@ -109,14 +104,10 @@ public:
 
 //   @return 0 if the requested size is 0.
 // */
-// inline void* operator new[](unsigned int size) throw(MemoryException) {
-//   if (size == 0) {
-//     return 0;
-//   }
+// inline void* operator new[](MemorySize size) throw(MemoryException) {
+//   assert(size > 0, MemoryException());
 //   void* result = DebugDynamicMemory::allocate(size);
-//   if (result == 0) {
-//     throw MemoryException();
-//   }
+//   assert(result, MemoryException());
 //   return result;
 // }
 
@@ -124,9 +115,7 @@ public:
 //   Releases dynamic memory previously allocated by new[].
 // */
 // inline void operator delete[](void* memory) throw(MemoryException) {
-//   if (!DebugDynamicMemory::release(memory)) {
-//     throw MemoryException(); // TAG: is this allowed
-//   }
+//   assert(memory && DebugDynamicMemory::release(memory), MemoryException());
 // }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

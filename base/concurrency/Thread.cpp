@@ -20,7 +20,7 @@ ThreadKey<Thread> executingThread;
 // The main thread object.
 //Thread mainThread;
 
-#ifdef __win32__
+#if defined(__win32__)
 DWORD WINAPI Thread::execute(Thread* thread) throw() {
 #else
 void* Thread::execute(Thread* thread) throw() {
@@ -46,7 +46,7 @@ void* Thread::execute(Thread* thread) throw() {
 }
 
 void Thread::exit() throw() {
-#ifdef __win32__
+#if defined(__win32__)
   ExitThread(0); // will properly create resource leaks
 #else
   pthread_exit(0); // will properly create resource leaks
@@ -61,7 +61,7 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
   if (nanoseconds >= 1000000000) {
     throw OutOfDomain();
   }
-#ifdef __win32__
+#if defined(__win32__)
   Sleep(nanoseconds/1000);
 #else
   struct timespec interval;
@@ -77,7 +77,7 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
   if (microseconds >= 1000000000) {
     throw OutOfDomain();
   }
-#ifdef __win32__
+#if defined(__win32__)
   Sleep(microseconds/1000);
 #else
   struct timespec interval;
@@ -93,7 +93,7 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
   if (milliseconds >= 1000000000) {
     throw OutOfDomain();
   }
-#ifdef __win32__
+#if defined(__win32__)
   Sleep(milliseconds);
 #else
   struct timespec interval;
@@ -109,7 +109,7 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
   if (seconds >= 1000000) {
     throw OutOfDomain();
   }
-#ifdef __win32__
+#if defined(__win32__)
   Sleep(seconds * 1000);
 #else
   struct timespec interval;
@@ -122,14 +122,12 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
 }
 
 void Thread::yield() throw() {
-#ifdef __win32__
+#if defined(__win32__)
   Sleep(0);
-#elif HAVE_PTHREAD_YIELD
-  pthread_yield();
-#elif HAVE_SCHED_YIELD
-  sched_yield();
+#elif defined(HAVE_PTHREAD_YIELD)
+  pthread_yield(); // ignore errors
 #else
-  sleep(0);
+  sched_yield(); // ignore errors
 #endif
 }
 

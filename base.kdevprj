@@ -176,7 +176,7 @@ ldflags=
 addcxxflags=-DDEBUG_VEHICLE -DDEBUG_IO -I/home/fonseca/src/ellert -I/home/fonseca/src/ellert/ellert
 ldadd=
 bin_program=ellert
-cxxflags= -O0 -g3 -Wall
+cxxflags=-O0 -g3 -Wall
 [ellert/vehicle/VehicleComponent.h]
 install_location=
 dist=true
@@ -1116,7 +1116,7 @@ files=ellert/base/string/String.cpp,ellert/base/string/String.h,ellert/base/stri
 sub_dirs=
 type=static_library
 [General]
-make_options= -j1
+make_options=-j1
 makefiles=Makefile.am,ellert/Makefile.am,ellert/docs/Makefile.am,ellert/docs/en/Makefile.am,ellert/base/Makefile.am,ellert/vehicle/Makefile.am,ellert/base/concurrency/Makefile.am,ellert/base/mathematics/Makefile.am,ellert/io/Makefile.am,ellert/base/io/Makefile.am,ellert/base/string/Makefile.am,ellert/base/mem/Makefile.am,ellert/base/net/Makefile.am,ellert/control/Makefile.am,ellert/base/collection/Makefile.am,
 version_control=CVS
 project_type=normal_cpp

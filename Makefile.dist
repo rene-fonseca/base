@@ -21,4 +21,4 @@ all:
 	autoheader
 	automake
 	autoconf
-
+	rm -f config.cache

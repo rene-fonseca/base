@@ -56,7 +56,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String<>& name) throw(Ho
 #else
   struct hostent* hp;
 
-  #if defined(__irix__) || defined(__solaris__)
+  #if defined(__sgi__) || defined(__solaris__)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
@@ -146,7 +146,7 @@ String<> InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound)
 #else
   struct hostent* hp;
 
-  #if defined(__irix__) || defined(__solaris__)
+  #if defined(__sgi__) || defined(__solaris__)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error;

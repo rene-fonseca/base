@@ -17,85 +17,16 @@
 #include <base/Object.h>
 #include <base/io/FileException.h>
 #include <base/io/FileNotFound.h>
+#include <base/io/FileRegion.h>
 #include <base/mem/ReferenceCountedObject.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/string/String.h>
 #include <base/Date.h>
 #include <base/Type.h>
 #include <base/OperatingSystem.h>
+#include <base/io/async/AsynchronousIOStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
-/**
-  Description of a file region represented by an offset (64 bit) and a size (32 bit).
-
-  @short A region of a file.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
-*/
-
-class FileRegion : public Object {
-private:
-
-  /** The offset of the region from the beginning of the file. */
-  long long offset;
-  /** The size of the region (in bytes). */
-  unsigned int size;
-public:
-
-  /**
-    Initializes the file region.
-
-    @param offset The offset (from the beginning of the file) of the region.
-    @param size The size (in bytes) of the region.
-  */
-  FileRegion(long long offset, unsigned int size) throw();
-
-  /**
-    Initializes region from other region.
-  */
-  inline FileRegion(const FileRegion& copy) throw() : offset(copy.offset), size(copy.size) {}
-
-  /**
-    Assignment of region by region.
-  */
-  inline FileRegion& operator=(const FileRegion& eq) throw() {
-    // no need to protect against self-assignment
-    offset = eq.offset;
-    size = eq.size;
-    return *this;
-  }
-
-  /**
-    Returns the offset of the file region.
-  */
-  inline long long getOffset() const throw() {return offset;}
-
-  /**
-    Returns the size of the file region.
-  */
-  inline unsigned int getSize() const throw() {return size;}
-
-  /**
-    Sets the offset of the file region.
-  */
-  inline void setOffset(long long offset) throw() {this->offset = offset;}
-
-  /**
-    Sets the size of the file region.
-  */
-  inline void setSize(unsigned int size) throw() {this->size = size;}
-
-  /**
-    Returns true if the specified region is contained in this region.
-  */
-  inline bool isWithin(const FileRegion& region) const throw() {
-    const long long difference = region.offset - offset;
-    return (difference >= 0) && ((difference + region.size - size) <= 0);
-  }
-};
-
-inline FileRegion::FileRegion(long long o, unsigned int s) throw() : offset(o), size(s) {}
 
 class MappedFile;
 
@@ -106,46 +37,53 @@ class MappedFile;
   @version 1.0
 */
 
-class File : public Object {
+class File : public Object, public AsynchronousIOStream {
+  friend class MappedFile;
 public:
 
   /** File access. */
-  typedef enum {
+  enum Access {
     READ, /**< Request read access. */
     WRITE, /**< Request write access. */
     READWRITE /**< Request read and write access. */
-  } Access;
+  };
+  
   /** Type used to specify the relative offset. */
-  typedef enum {
+  enum Whence {
     BEGIN, /**< Position is relative to begining of file. */
     CURRENT, /**< Position is relative to current position of file. */
     END /**< Position is relative to end of file. */
-  } Whence;
+  };
+  
   /** File initialization options. */
   enum Options {
     CREATE = 1, /**< Specifies that the file should be created if it doesn't exist. */
     TRUNCATE = 2, /**< Specifies that the file should be truncated if it already exists. */
-    EXCLUSIVE = 4 /**< Specifies that the file should be opened in exclusive mode. */
+    EXCLUSIVE = 4, /**< Specifies that the file should be opened in exclusive mode. */
+    ASYNCHRONOUS = 8 /**< Specifies that the file should be opened for asynchronous IO (disables the synchronous IO interface). */
   };
-private:
 
-  friend class MappedFile;
-
-  class FileImpl : public ReferenceCountedObject {
+  class FileImpl : public virtual ReferenceCountedObject {
   private:
 
     OperatingSystem::Handle handle;
   public:
 
-    FileImpl() throw() : handle(OperatingSystem::INVALID_HANDLE) {}
-    explicit FileImpl(OperatingSystem::Handle h) throw() : handle(h) {}
-    OperatingSystem::Handle getHandle() const throw() {return handle;}
+    inline FileImpl() throw() : handle(OperatingSystem::INVALID_HANDLE) {}
+    explicit inline FileImpl(OperatingSystem::Handle _handle) throw() : handle(_handle) {}
+    inline OperatingSystem::Handle getHandle() const throw() {return handle;}
     ~FileImpl() throw(FileException);
   };
+private:
 
   /** The handle of the file. */
-  ReferenceCountedObjectPointer<FileImpl > fd;
+  ReferenceCountedObjectPointer<FileImpl> fd;
 public:
+
+  /**
+    Initializes an invalid file object (correspons to a closed file).
+  */
+  File() throw();
 
   /**
     Initializes a file. If no options are specified the initialization will
@@ -174,6 +112,11 @@ public:
   */
   void close() throw(FileException);
 
+  /**
+    Returns true if the file object has been closed (or need has been opened).
+  */
+  bool isClosed() const throw();
+  
   /**
     Returns the size of the file in bytes.
   */
@@ -275,51 +218,42 @@ public:
     exceeding the end of the file.
   */
   unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(FileException);
-};
 
 
-
-/**
-  @short Locked file region.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
-*/
-
-class LockableRegion : public Object {
-private:
-
-  /** The file. */
-  File file;
-  /** The region. */
-  FileRegion region;
+  
+protected:
+  
+  OperatingSystem::Handle getHandle() const throw() {
+    return fd->getHandle();
+  }
 public:
 
   /**
-    Initializes the file region lock.
-
-    @param file The file.
-    @param region The file region to be locked.
-    @param exclusive Specifies that the region should be locked exclusively (if false the region is locked shared). This argument is true by default.
+    Aborts any pending asynchronous operations (read as well as write).
   */
-  LockableRegion(const File& file, const FileRegion& region, bool exclusive) throw(FileException);
+  void asyncCancel() throw(AsynchronousException);
+  
+  /**
+    Requests and asynchronous read operation. Asynchronous IO is only supported
+    if the file has been opened in asynchronous mode.
+
+    @param buffer The bytes to be read.
+    @param bytesToRead The number of bytes to be read.
+    @param offset The offset from the beginning of the file.
+    @param listener The listener to be notified on completion.
+  */
+  AsynchronousReadOperation read(void* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(AsynchronousException);
 
   /**
-    Returns the locked file region.
-  */
-  inline FileRegion getRegion() const throw() {return region;}
+    Requests and asynchronous write operation. Asynchronous IO is only supported
+    if the file has been opened in asynchronous mode.
 
-  /**
-    Lock the specified file region (the old region is unlocked first).
-
-    @param region The new file region to be locked.
-    @param exclusive Specifies that the region should be locked exclusively (if false the region is locked shared). This argument is true by default.
+    @param buffer The bytes to be written.
+    @param bytesToWrite The number of bytes to be written.
+    @param offset The offset from the beginning of the file.
+    @param listener The listener to be notified on completion.
   */
-  void lock(const FileRegion& region, bool exclusive = true) throw(FileException);
-
-  /**
-    Destroys the file region lock (unlocks the region).
-  */
-  ~LockableRegion() throw(FileException);
+  AsynchronousWriteOperation write(const void* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(AsynchronousException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

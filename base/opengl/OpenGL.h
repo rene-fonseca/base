@@ -422,7 +422,16 @@ namespace opengl {
 #endif // _DK_SDU_MIP__BASE__EXPORT_OPEN_GL_1_4
 
 }; // end of opengl namespace
+
+/**
+  This exception is raised by the OpenGL class.
   
+  @short OpenGL exception
+  @ingroup opengl ui exceptions
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.0
+*/
+
 class OpenGLException : public Exception {
 public:
 
@@ -457,6 +466,15 @@ public:
   inline OpenGLException(const char* message, Type type) throw() : Exception(message, type) {
   }
 };
+
+/**
+  This class provides access to a specific OpenGL implementation.
+  
+  @short OpenGL implementation.
+  @ingroup opengl ui
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.0
+*/
 
 class OpenGL {
 public:
@@ -3085,6 +3103,16 @@ public:
   void pickMatrix(GLdouble x, GLdouble y, GLdouble width, GLdouble height, GLint viewport[4]) throw();
   
   Vector3D<double> unProject(const Vector3D<double>& window, const Matrix4x4<double>& model, const Matrix4x4<double>& projection, const GLint viewport[4]) throw(OpenGLException);
+
+  /**
+    Draws a box.
+    
+    @width The width of the box.
+    @length The length of the box.
+    @height The height of the box.
+    @flags The flags.
+  */
+  void box(double width, double length, double height, unsigned int flags) throw();
   
   void cylinder(GLdouble baseRadius, GLdouble topRadius, GLdouble height, unsigned int slices, unsigned int stacks) throw();
   

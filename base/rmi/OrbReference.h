@@ -15,6 +15,8 @@
 #define _DK_SDU_MIP__BASE_RMI__ORB_REFERENCE_H
 
 #include <base/Object.h>
+#include <base/Primitives.h>
+#include <base/rmi/OrbException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

@@ -20,48 +20,48 @@
 #include <base/concurrency/SharedSynchronize.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <base/platforms/win32/AsyncReadStreamContext.h> // platform specific
-  #include <base/platforms/win32/AsyncWriteStreamContext.h> // platform specific
-  #include <winsock2.h>
+#  include <base/platforms/win32/AsyncReadStreamContext.h> // platform specific
+#  include <base/platforms/win32/AsyncWriteStreamContext.h> // platform specific
+#  include <winsock2.h>
 #else // unix
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  #include <sys/socket.h>
-  #include <netinet/in.h> // defines ntohs...
-  #include <unistd.h>
-  #include <fcntl.h>
-  #include <errno.h>
-  #include <sys/time.h> // defines timeval on Linux systems
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <sys/socket.h>
+#  include <netinet/in.h> // defines ntohs...
+#  include <unistd.h>
+#  include <fcntl.h>
+#  include <errno.h>
+#  include <sys/time.h> // defines timeval on Linux systems
 
-  #if (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__CYGWIN)
-    #include <stropts.h> // defines FLUSH macros
-  #endif
+#  if (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__CYGWIN)
+#    include <stropts.h> // defines FLUSH macros
+#  endif
 
-  #include <string.h> // memset (required on solaris)
-  #include <limits.h> // defines SSIZE_MAX
-  #include <arpa/inet.h>
+#  include <string.h> // memset (required on solaris)
+#  include <limits.h> // defines SSIZE_MAX
+#  include <arpa/inet.h>
 
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
-    #define BSD_COMP 1 // request BSD flags - don't known if this is ok to do
-  #endif
-  #include <sys/ioctl.h> // defines FIONREAD
+#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#    define BSD_COMP 1 // request BSD flags - don't known if this is ok to do
+#  endif
+#  include <sys/ioctl.h> // defines FIONREAD
 #endif // flavor
 
 // do we need to repair bad header file
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) && defined(bind)
-  #define _DK_SDU_MIP__BASE__SOCKET_BIND __xnet_bind
-  #define _DK_SDU_MIP__BASE__SOCKET_CONNECT __xnet_connect
-  #define _DK_SDU_MIP__BASE__SOCKET_RECVMSG __xnet_recvmsg
-  #define _DK_SDU_MIP__BASE__SOCKET_SENDMSG __xnet_sendmsg
-  #define _DK_SDU_MIP__BASE__SOCKET_SENDTO __xnet_sendto
-  #define _DK_SDU_MIP__BASE__SOCKET_SOCKET __xnet_socket
+#  define _DK_SDU_MIP__BASE__SOCKET_BIND __xnet_bind
+#  define _DK_SDU_MIP__BASE__SOCKET_CONNECT __xnet_connect
+#  define _DK_SDU_MIP__BASE__SOCKET_RECVMSG __xnet_recvmsg
+#  define _DK_SDU_MIP__BASE__SOCKET_SENDMSG __xnet_sendmsg
+#  define _DK_SDU_MIP__BASE__SOCKET_SENDTO __xnet_sendto
+#  define _DK_SDU_MIP__BASE__SOCKET_SOCKET __xnet_socket
 
-  #undef bind
-  #undef connect
-  #undef recvmsg
-  #undef sendmsg
-  #undef sendto
-  #undef socket
+#  undef bind
+#  undef connect
+#  undef recvmsg
+#  undef sendmsg
+#  undef sendto
+#  undef socket
 
   inline int bind(int s, const struct sockaddr* name, int namelen) {
     return _DK_SDU_MIP__BASE__SOCKET_BIND(s, name, namelen);
@@ -596,6 +596,8 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
         continue; // try again
       case WSAEWOULDBLOCK: // no data could be written without blocking (only in non-blocking mode)
 //      return 0; // try later
+      case WSAESHUTDOWN:
+        throw EndOfFile(this);
       default:
         throw IOException("Unable to write to socket", this);
       }
@@ -608,6 +610,8 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
         continue; // try again
       case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
 //      return 0; // try later
+      case EPIPE:
+        throw EndOfFile(this);
       default:
         throw IOException("Unable to write to socket", this);
       }

@@ -19,20 +19,20 @@
 #include <base/string/String.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
+#  include <windows.h>
 #else // unix
-  #include <sys/types.h>
-  #include <sys/time.h> // defines timeval on Linux systems
-  #include <sys/stat.h>
-  #include <limits.h> // defines PIPE_BUF...
-  #include <unistd.h>
-  #include <errno.h>
-  #include <string.h> // required on solaris 'cause FD_ZERO uses memset
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
-    #warning ioctl is not supported (CYGWIN)
-  #else
-    #include <stropts.h> // defines FLUSH macros
-  #endif
+#  include <sys/types.h>
+#  include <sys/time.h> // defines timeval on Linux systems
+#  include <sys/stat.h>
+#  include <limits.h> // defines PIPE_BUF...
+#  include <unistd.h>
+#  include <errno.h>
+#  include <string.h> // required on solaris 'cause FD_ZERO uses memset
+#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+#    warning ioctl is not supported (CYGWIN)
+#  else
+#    include <stropts.h> // defines FLUSH macros
+#  endif
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -256,6 +256,8 @@ unsigned int Pipe::write(const char* buffer, unsigned int bytesToWrite, bool non
         continue; // try again
       case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
 //      return 0; // try later
+      case EPIPE:
+        throw EndOfFile(this);
       default:
         throw PipeException("Unable to write to pipe", this);
       }

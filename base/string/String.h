@@ -26,21 +26,34 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This structure binds together a string literal and its size. Use the macro MESSAGE to generate an object of this class for a given string literal (e.g. MESSAGE("Hello World")). Do not call the constructor manually.
+  This class binds together a string literal and its length. Use the macro
+  MESSAGE to generate an object of this class for a given string literal (e.g.
+  MESSAGE("Hello World")). Do not call the constructor manually.
+
+  @short String literal
+  @author René Møller Fonseca
+  @version 1.1
 */
-struct StringLiteral {
-  /** The number of bytes occupied by the message including a terminator. */
-  const unsigned int size;
+class StringLiteral {
+private:
+
+  /** The number of characters occupied by the message without the terminator. */
+  const unsigned int length;
   /** NULL-terminated message. */
   const char* message;
+public:
+
   /** Initializes message. Automatically invocated by the macro MESSAGE. */
-  inline StringLiteral(unsigned int s, const char* m) : size(s), message(m) {}
+  inline StringLiteral(unsigned int l, const char* m) throw() : length(l), message(m) {}
   /** Cast to the usual message type. */
-  inline operator const char*() const {return message;}
+  inline operator const char*() const throw() {return message;}
+  /** Returns the length of the string literal. */
+  inline unsigned int getLength() const throw() {return length;}
 };
 
 /** This macro generates a StringLiteral object from a string literal. */
-#define MESSAGE(msg) StringLiteral(sizeof(msg), msg)
+#define MESSAGE(msg) StringLiteral(sizeof(msg) - 1, msg)
+
 
 
 /**
@@ -101,6 +114,7 @@ class String : public virtual Object {
 public:
 
   typedef CharTraits Traits;
+  typedef CharTraits::Character Character;
 
   /** Specifies the string terminator. */
   static const char TERMINATOR = '\0';
@@ -233,9 +247,14 @@ public:
   inline unsigned int getLength() const throw() {return elements->getSize() - 1;}
 
   /**
-    Returns true if the string contains no characters.
+    Returns true if the string does not contain characters.
   */
-  inline bool isEmpty() const throw() {return elements->isEmpty();}
+  inline bool isEmpty() const throw() {return elements->getSize() == 1;}
+
+  /**
+    Returns true if the string contains characters.
+  */
+  inline bool isProper() const throw() {return elements->getSize() > 1;}
 
   /**
     Returns the capacity of the string.
@@ -279,22 +298,22 @@ public:
     Returns the end of the string as a modifying iterator.
   */
   inline Iterator getEndIterator() throw() {
-    return elements->getEndIterator();
+    return elements->getEndIterator() - 1; // remember terminator
   }
 
-//  /**
-//    Returns the first element of the string as a non-modifying iterator.
-//  */
-//  inline ReadIterator getBeginReadIterator() const throw() {
-//    return elements->getBeginIterator();
-//  }
-//
-//  /**
-//    Returns the end of the string as a non-modifying iterator.
-//  */
-//  inline ReadIterator getEndReadIterator() const throw() {
-//    return elements->getEndIterator();
-//  }
+  /**
+    Returns the first element of the string as a non-modifying iterator.
+  */
+  inline ReadIterator getBeginReadIterator() const throw() {
+    return elements->getBeginReadIterator();
+  }
+
+  /**
+    Returns the end of the string as a non-modifying iterator.
+  */
+  inline ReadIterator getEndReadIterator() const throw() {
+    return elements->getEndReadIterator() - 1; // remember terminator
+  }
 
   /**
     Returns a modifying enumerator of the string.
@@ -486,6 +505,13 @@ public:
   inline String& operator+=(const String& suffix) throw(MemoryException) {return append(suffix);}
 
   /**
+    Appends the character to this string.
+
+    @param suffix The character to be appended.
+  */
+  inline String& operator+=(Character suffix) throw(MemoryException) {return append(suffix);}
+
+  /**
     String reduction operator. Removes suffix from this string if and only if
     it ends with the suffix (e.g. ("presuf"-"suf") results in a new string
     "pre" whereas ("pre"-"suf") results in "pre").
@@ -505,7 +531,7 @@ public:
 
     @return The specified buffer.
   */
-  char* substring(char* buffer, unsigned int start, unsigned int end) const throw();
+  //char* substring(char* buffer, unsigned int start, unsigned int end) const throw();
 
 // *******************************************************************************************
 //   UNARY SECTION
@@ -729,6 +755,14 @@ int compare<String>(const String& a, const String& b) throw();
 FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
 
 /**
+  Writes a string literal to a format stream.
+*/
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const StringLiteral& value) throw(IOException) {
+  stream.addCharacterField(value, value.getLength());
+  return stream;
+}
+
+/**
   Returns a new string that is the concatenation of the two specified strings.
 */
 inline String operator+(const String& left, const String& right) throw(MemoryException) {
@@ -740,7 +774,7 @@ inline String operator+(const String& left, const String& right) throw(MemoryExc
 */
 inline String operator-(const String& left, const String& right) throw(MemoryException) {
   if (left.endsWith(right)) {
-    return left.substring(0, left.getLength() - right.getLength() - 1); // return copy of left without suffix
+    return left.substring(0, left.getLength() - right.getLength()); // return copy of left without suffix
   } else {
     return String(left); // return copy of left
   }

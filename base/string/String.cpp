@@ -47,10 +47,10 @@ String::String(unsigned int capacity) throw(MemoryException) : elements(0) {
 }
 
 String::String(const StringLiteral& str) throw(MemoryException) : elements(0) {
-  unsigned int length = str.size - 1;
+  unsigned int length = str.getLength();
   assert(length <= MAXIMUM_LENGTH, MemoryException()); // choose better exception
   elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
-  copy(elements->getElements(), str.message, length); // no overlap
+  copy<char>(elements->getElements(), str, length); // no overlap
   elements->getElements()[length] = TERMINATOR; // terminate
 }
 
@@ -233,12 +233,13 @@ unsigned int String::replaceAll(const String& fromStr, const String& toStr) thro
 }
 
 String String::substring(unsigned int start, unsigned int end) const throw(MemoryException) {
-  if ((start <= end) && (start < getLength())) {
-    if (end >= getLength()) {
-      end = getLength() - 1; // index of last char in this string
+  int length = getLength();
+  if ((start < end) && (start < length)) {
+    if (end > length) {
+      end = length; // force to end of string
     }
-    // 0 <= start <= end < getLength()
-    unsigned int lengthOfSubstring = end - start + 1;
+    // 0 <= start < end <= getLength()
+    unsigned int lengthOfSubstring = end - start;
     String result(lengthOfSubstring);
     result.setLength(lengthOfSubstring);
     copy(result.getMutableBuffer(), getReadOnlyBuffer() + start, lengthOfSubstring); // buffers do not overlap
@@ -269,22 +270,22 @@ String& String::reverse() throw() {
   return *this;
 }
 
-char* String::substring(char* buffer, unsigned int start, unsigned int end) const throw() {
-  if (buffer) {
-    if ((start <= end) && (start < getLength())) {
-      if (end >= getLength()) {
-        end = getLength() - 1; // index of last char in this string
-      }
-      // 0 <= start <= end < getLength()
-      unsigned int lengthOfSubstring = end - start + 1;
-      copy(buffer, getReadOnlyBuffer() + start, lengthOfSubstring); // buffers do not overlap
-      buffer[lengthOfSubstring] = TERMINATOR;
-    } else {
-      *buffer = TERMINATOR;
-    }
-  }
-  return buffer;
-}
+//char* String::substring(char* buffer, unsigned int start, unsigned int end) const throw() {
+//  if (buffer) {
+//    if ((start <= end) && (start < getLength())) {
+//      if (end >= getLength()) {
+//        end = getLength() - 1; // index of last char in this string
+//      }
+//      // 0 <= start <= end < getLength()
+//      unsigned int lengthOfSubstring = end - start + 1;
+//      copy(buffer, getReadOnlyBuffer() + start, lengthOfSubstring); // buffers do not overlap
+//      buffer[lengthOfSubstring] = TERMINATOR;
+//    } else {
+//      *buffer = TERMINATOR;
+//    }
+//  }
+//  return buffer;
+//}
 
 String& String::toLowerCase() throw() {
   char* p = getMutableBuffer();

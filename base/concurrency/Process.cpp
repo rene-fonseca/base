@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
+#include <stdlib.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

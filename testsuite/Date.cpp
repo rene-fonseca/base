@@ -14,6 +14,7 @@
 #include <base/Application.h>
 #include <base/Date.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/Literal.h>
 
 using namespace dk::sdu::mip::base;
 
@@ -93,10 +94,32 @@ public:
          << "Date::isLeapYear(2000): " << Date::isLeapYear(2000) << EOL
          << "Date::Date(DateTime): " << Date(dateTime) << EOL
          << ENDL;
+
+    static const Literal DAY_NAMES[] = {
+      Literal("Sunday"),
+      Literal("Monday"),
+      Literal("Tuesday"),
+      Literal("Wednesday"),
+      Literal("Thursday"),
+      Literal("Friday"),
+      Literal("Saturday")
+    };
+
+    // Sunday
+    fout << "Date::getDayOfWeek(2-1, Date::AUGUST, 1953): "
+         << DAY_NAMES[Date::getDayOfWeek(2-1, Date::AUGUST, 1953)] << ENDL;
+
+    // Thursday
+    fout << "Date::getDayOfWeek(13-1, Date::FEBRUARY, 2053): "
+         << DAY_NAMES[Date::getDayOfWeek(13-1, Date::FEBRUARY, 2053)] << ENDL;
+
+    // Saturday
+    fout << "Date::getDayOfWeek(20-1, Date::NOVEMBER, 2055): "
+         << DAY_NAMES[Date::getDayOfWeek(20-1, Date::NOVEMBER, 2055)] << ENDL;
   }
 
   ~DateApplication() throw() {
-  }    
+  }
 };
 
 STUB(DateApplication);

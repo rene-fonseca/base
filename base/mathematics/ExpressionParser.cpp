@@ -13,201 +13,382 @@
 
 #include <base/platforms/features.h>
 #include <base/mathematics/ExpressionParser.h>
-#include <stdlib.h>
-#include <errno.h>
+#include <base/string/StringOutputStream.h>
+#include <stdlib.h> // TAG: remove when done
+#include <errno.h> // TAG: remove when done
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-namespace eval {
-
-  EvaluationNode makeValueNode(double value) {
-    EvaluationNode result;
-    result.type = VALUE;
-    result.value = value;
-    return result;
-  }
-
-  EvaluationNode makeConstantNode(unsigned int id) {
-    EvaluationNode result;
-    result.type = CONSTANT;
-    result.constant = id;
-    return result;
-  }
-
-  EvaluationNode makeVariableNode(unsigned int id) {
-    EvaluationNode result;
-    result.type = VARIABLE;
-    result.variable = id;
-    return result;
-  }
-
-  EvaluationNode makeFunctionNode(unsigned int id, unsigned int arguments) {
-    EvaluationNode result;
-    result.type = FUNCTION;
-    result.func.function = id;
-    result.func.arguments = arguments;
-    return result;
-  }
-
-  EvaluationNode makeNodeFromOperation(Operation opr) {
-    EvaluationNode result;
-    // must not be parenthesis
-    if (opr.isBuiltin()) {
-      result.type = BUILTIN;
-      result.builtin = opr.getId();
-    } else {
-      result.type = FUNCTION;
-      result.func.function = opr.getId();
-      result.func.arguments = opr.getArguments();
-    }
-    return result;
-  }
-
-  // built-in unary operator
-  class UnaryOperator : public Operation {
-  public:
-    
-    UnaryOperator(unsigned int i, unsigned int p, Glue g, bool po) throw()
-      : Operation(i, 1, p, g, true, po, false) {
-    }
-  };
-
-  // built-in binary operator
-  class BinaryOperator : public Operation {
-  public:
-    
-    BinaryOperator(unsigned int i, unsigned int p, Glue g, bool po) throw()
-      : Operation(i, 2, p, g, true, po, false) {
-    }
-  };
-
-  class Function : public Operation {
-  public:
-    
-    Function(unsigned int i, unsigned int a) throw()
-      : Operation(i, a, 100, RIGHT, false, false, true) {
-    }
-  };
-
-  // built-in operations
-  UnaryOperator plus(0, 2, RIGHT, true);
-  UnaryOperator minus(1, 2, RIGHT, true);
-  BinaryOperator add(2, 0, LEFT, true);
-  BinaryOperator subtract(3, 0, LEFT, true);
-  BinaryOperator multiply(4, 1, LEFT, true);
-  BinaryOperator divide(5, 1, LEFT, true);
-  BinaryOperator power(6, 3, RIGHT, true);
-  UnaryOperator parenthesis(7, 100, RIGHT, false);
+ExpressionEvaluator::ExpressionEvaluator() throw() {
 }
 
-using namespace eval;
+double ExpressionEvaluator::onConstant(
+  unsigned int constant) const throw(ExpressionException) {
+  throw ExpressionException("Invalid constant", this);
+}
 
+double ExpressionEvaluator::onFunction(
+  unsigned int function,
+  const double* value) const throw(ExpressionException) {
+  throw ExpressionException("Invalid function", this);
+}
 
+double ExpressionEvaluator::evaluate() const throw(ExpressionException) {
+  List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
+  double stack[nodes.getSize()];
+  int index = -1;
+  while (enu.hasNext()) {
+    Node node = *enu.next();
+    switch (node.type) {
+    case ExpressionEvaluator::VALUE:
+      stack[++index] = node.value;
+      break;
+    case ExpressionEvaluator::VARIABLE:
+      throw ExpressionException("Variable in constant expression", this);
+      // stack[++index] = lookup node.variable;
+    case ExpressionEvaluator::CONSTANT:
+      stack[++index] = onConstant(node.constant);
+      break;
+    case ExpressionEvaluator::BUILTIN:
+      switch (node.builtin) {
+      case PLUS:
+        // stack[index] = stack[index];
+        break;
+      case MINUS:
+        stack[index] = -stack[index];
+        break;
+      case ADD:
+        stack[index - 1] += stack[index];
+        --index;
+        break;
+      case SUBTRACT:
+        stack[index - 1] -= stack[index];
+        --index;
+        break;
+      case MULTIPLY:
+        stack[index - 1] *= stack[index];
+        --index;
+        break;
+      case DIVIDE:
+        if (stack[index] == 0) {
+          throw ExpressionException("Division by zero", this);
+        }
+        stack[index - 1] /= stack[index];
+        --index;
+        break;
+      case POWER:
+        stack[index - 1] = Math::power(stack[index - 1], stack[index]);
+        --index;
+        break;
+      case PARENTHESIS:
+        break;
+      default:
+        throw ExpressionException("Invalid built-in operator", this);
+      }
+      break;
+    case ExpressionEvaluator::FUNCTION:
+      if (node.function.arguments == 0) {
+        stack[++index] = onFunction(node.function.id, 0);
+      } else {
+        if (static_cast<unsigned int>(index + 1) < node.function.arguments) {
+          throw ExpressionException("Arguments exhausted", this);
+        }
+        index -= node.function.arguments - 1;
+        stack[index] = onFunction(node.function.id, &stack[index]);
+      }
+      break;
+    case ExpressionEvaluator::UNKNOWN:
+      throw ExpressionException("Unknown", this);
+    }
+  }
+  return stack[0];
+}
+  
+double ExpressionEvaluator::evaluate(const double* variables) const throw(ExpressionException) {
+  List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
+  double stack[nodes.getSize()];
+  int index = -1;
+  while (enu.hasNext()) {
+    Node node = *enu.next();
+    switch (node.type) {
+    case ExpressionEvaluator::VALUE:
+      stack[++index] = node.value;
+      break;
+    case ExpressionEvaluator::VARIABLE:
+      stack[++index] = variables[node.variable];
+      break;
+    case ExpressionEvaluator::CONSTANT:
+      stack[++index] = onConstant(node.constant);
+      break;
+    case ExpressionEvaluator::BUILTIN:
+      switch (node.builtin) {
+      case PLUS:
+        // stack[index] = stack[index];
+        break;
+      case MINUS:
+        stack[index] = -stack[index];
+        break;
+      case ADD:
+        stack[index - 1] += stack[index];
+        --index;
+        break;
+      case SUBTRACT:
+        stack[index - 1] -= stack[index];
+        --index;
+        break;
+      case MULTIPLY:
+        stack[index - 1] *= stack[index];
+        --index;
+        break;
+      case DIVIDE:
+        if (stack[index] == 0) {
+          throw ExpressionException("Division by zero", this);
+        }
+        stack[index - 1] /= stack[index];
+        --index;
+        break;
+      case POWER:
+        stack[index - 1] = Math::power(stack[index - 1], stack[index]);
+        --index;
+        break;
+      case PARENTHESIS:
+        break;
+      default:
+        throw ExpressionException("Invalid built-in operator", this);
+      }
+      break;
+    case ExpressionEvaluator::FUNCTION:
+      if (node.function.arguments == 0) {
+        stack[++index] = onFunction(node.function.id, 0);
+      } else {
+        if (static_cast<unsigned int>(index + 1) < node.function.arguments) {
+          throw ExpressionException("Arguments exhausted", this);
+        }
+        index -= node.function.arguments - 1;
+        stack[index] = onFunction(node.function.id, &stack[index]);
+      }
+      break;
+    case ExpressionEvaluator::UNKNOWN:
+      throw ExpressionException("Unknown", this);
+    }
+  }
+  return stack[0];
+}
+
+void ExpressionEvaluator::evaluate(const double* variables, double* results, unsigned int count) const throw(ExpressionException) {
+  double stack[nodes.getSize()];
+  for (unsigned int i = 0; i < count; ++i) {
+    List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
+    int index = -1;
+    while (enu.hasNext()) {
+      Node node = *enu.next();
+      switch (node.type) {
+      case ExpressionEvaluator::VALUE:
+        stack[++index] = node.value;
+        break;
+      case ExpressionEvaluator::VARIABLE:
+        stack[++index] = variables[node.variable];
+        break;
+      case ExpressionEvaluator::CONSTANT:
+        stack[++index] = onConstant(node.constant);
+        break;
+      case ExpressionEvaluator::BUILTIN:
+        switch (node.builtin) {
+        case PLUS:
+          // stack[index] = stack[index];
+          break;
+        case MINUS:
+          stack[index] = -stack[index];
+          break;
+        case ADD:
+          stack[index - 1] += stack[index];
+          --index;
+          break;
+        case SUBTRACT:
+          stack[index - 1] -= stack[index];
+          --index;
+          break;
+        case MULTIPLY:
+          stack[index - 1] *= stack[index];
+          --index;
+          break;
+        case DIVIDE:
+          if (stack[index] == 0) {
+            throw ExpressionException("Division by zero", this);
+          }
+          stack[index - 1] /= stack[index];
+          --index;
+          break;
+        case POWER:
+          stack[index - 1] = Math::power(stack[index - 1], stack[index]);
+          --index;
+          break;
+        case PARENTHESIS:
+          break;
+        default:
+          throw ExpressionException("Invalid built-in operator", this);
+        }
+        break;
+      case ExpressionEvaluator::FUNCTION:
+        if (node.function.arguments == 0) {
+          stack[++index] = onFunction(node.function.id, 0);
+        } else {
+          if (static_cast<unsigned int>(index + 1) < node.function.arguments) {
+            throw ExpressionException("Arguments exhausted", this);
+          }
+          index -= node.function.arguments - 1;
+          stack[index] = onFunction(node.function.id, &stack[index]);
+        }
+        break;
+      case ExpressionEvaluator::UNKNOWN:
+        throw ExpressionException("Unknown", this);
+      }
+    }
+    *results++ = stack[0];
+  }
+}
+
+ExpressionEvaluator::~ExpressionEvaluator() throw() {
+}
 
 ExpressionProvider::ExpressionProvider() throw() {
 }
 
-void ExpressionProvider::registerConstant(const char* name, unsigned int id) throw(AmbiguousRegistration) {
+void ExpressionProvider::registerConstant(
+  const String& name,
+  unsigned int id) throw(AmbiguousRegistration) {
   if (identifiers.isKey(name)) {
     throw AmbiguousRegistration(this);
   }
-  identifiers[name] = makeConstantNode(id);
+  identifiers[name] = ExpressionEvaluator::makeConstantNode(id);
+  constants[id] = name;
 }
 
-void ExpressionProvider::registerVariable(const char* name, unsigned int id) throw(AmbiguousRegistration) {
+void ExpressionProvider::registerVariable(
+  const String& name,
+  unsigned int id) throw(AmbiguousRegistration) {
   if (identifiers.isKey(name)) {
     throw AmbiguousRegistration(this);
   }
-  identifiers[name] = makeVariableNode(id);
+  identifiers[name] = ExpressionEvaluator::makeVariableNode(id);
+  variables[id] = name;
 }
 
-void ExpressionProvider::registerFunction(const char* name, unsigned int id, unsigned int arguments) throw(AmbiguousRegistration) {
+void ExpressionProvider::registerFunction(
+  const String& name,
+  unsigned int id,
+  unsigned int arguments) throw(AmbiguousRegistration) {
   if (identifiers.isKey(name)) {
     throw AmbiguousRegistration(this);
   }
-  identifiers[name] = makeFunctionNode(id, arguments);
+  identifiers[name] = ExpressionEvaluator::makeFunctionNode(id, arguments);
+  functions[id] = name;
 }
 
-eval::EvaluationNode ExpressionProvider::getNode(const char* name) const throw(InvalidKey) {
+ExpressionEvaluator::Node ExpressionProvider::getNode(
+  const String& name) const throw(InvalidKey) {
   return identifiers.getValue(name);
 }
 
-ExpressionProvider::~ExpressionProvider() {
+ExpressionProvider::~ExpressionProvider() throw() {
 }
 
 
 
-ExpressionParser::ExpressionParser(const String& e, ExpressionProvider& p) throw() : expression(e), provider(p) {
+ExpressionParser::ExpressionParser(
+  const String& _expression,
+  ExpressionProvider& _provider) throw()
+  : expression(_expression),
+    provider(_provider) {
+  autoRegister = false;
+  index = 0;
   length = expression.getLength();
 }
 
 void ExpressionParser::pop() throw(ExpressionException) {
-  Operation opr = stack.pop();
-  if (operands >= opr.getArguments()) {
-    nodes.append(makeNodeFromOperation(opr));
-    operands = operands - opr.getArguments() + 1;
-  } else {
+  Operation operation = stack.pop();
+  if (operands < operation.getArguments()) {
     throw ExpressionException(index, "Operand expected");
   }
+  nodes.append(ExpressionEvaluator::makeNodeFromOperation(operation));
+  operands = operands - operation.getArguments() + 1;
 }
 
-void ExpressionParser::push(Operation opr) throw(ExpressionException) {
-  while (!stack.isEmpty() && (stack.peek().getPrecedence() > opr.getPrecedence())) {
+void ExpressionParser::push(Operation operation) throw(ExpressionException) {
+  while (!stack.isEmpty() &&
+         stack.peek().isPopable() &&
+         (stack.peek().getPrecedence() > operation.getPrecedence())) {
     pop();
   }
-
+  
   if (!stack.isEmpty() &&
-       (stack.peek().getPrecedence() == opr.getPrecedence()) &&
-       (stack.peek().getGlue() == eval::LEFT)
-  ) {
+      stack.peek().isPopable() &&
+      (stack.peek().getPrecedence() == operation.getPrecedence()) &&
+      (stack.peek().getGlue() == ExpressionEvaluator::LEFT)) {
     pop();
   }
-
-  stack.push(opr);
+  stack.push(operation);
   unary = true;
 }
 
 void ExpressionParser::readIdentifier() throw(ExpressionException) {
   unsigned int begin = index;
-
+  assert(
+    (index < length) && ASCIITraits::isAlpha(expression[index]),
+    ExpressionException(begin, "Not an identifier")
+  );
+  ++index;
+  
   while (index < length) {
     char ch = expression[index];
-    if (!(ASCIITraits::isLower(ch) || ASCIITraits::isDigit(ch))) {
+    if (!(ASCIITraits::isAlphaNum(ch))) {
       break;
     }
     ++index;
   }
-  assert(index > begin, ExpressionException(begin, "Not an identifier")); // make sure an identifier has been read
-
+  
   String identifier = expression.substring(begin, index);
-
-  try {
-    Node node = provider.getNode(identifier.getElements());
-    switch (node.type) {
-    case VARIABLE:
-      nodes.append(node);
-      ++operands;
-      unary = false;
-      break;
-    case CONSTANT:
-      nodes.append(node);
-      ++operands;
-      unary = false;
-      break;
-    case FUNCTION:
-      push(Function(node.func.function, node.func.arguments));
-      break;
-    default:
-      // internal knowledge - not returned by ExpressionProvider
-      throw ExpressionException(index, "Identifier registered as unsupported type");
+  
+  if (!provider.isIdentifier(identifier)) {
+    if (!autoRegister) {
+      throw ExpressionException(begin, "Identifier not recognized");
     }
-  } catch (InvalidKey e) {
-    throw ExpressionException(begin, "Identifier not recognized");
-//    if (autoRegisterAsVariable) {
-//      unknowns[name] = makeVariable(id???);
-//      node = identifiers[name];
-//    } else {
-//    }
+    if (unknowns.isKey(identifier)) {
+      nodes.append(unknowns[identifier]);
+    } else {
+      Node node = ExpressionEvaluator::makeUnknownNode(unknowns.getSize());
+      unknowns[identifier] = node;
+      unknownsId[node.unknown] = identifier;
+      nodes.append(node);
+    }
+    ++operands;
+    unary = false;
+    return;
+  }
+  
+  Node node = provider.getNode(identifier);
+  switch (node.type) {
+  case ExpressionEvaluator::VARIABLE:
+    nodes.append(node);
+    ++operands;
+    unary = false;
+    break;
+  case ExpressionEvaluator::CONSTANT:
+    nodes.append(node);
+    ++operands;
+    unary = false;
+    break;
+  case ExpressionEvaluator::FUNCTION:
+    push(
+      ExpressionEvaluator::Function(node.function.id, node.function.arguments)
+    );
+    break;
+  default:
+    // internal knowledge - not returned by ExpressionProvider
+    throw ExpressionException(
+      index,
+      "Identifier registered as unsupported type"
+    );
   }
 }
 
@@ -223,7 +404,7 @@ void ExpressionParser::readValue() throw(ExpressionException) {
       ++index;
     }
   }
-
+  
   // read digits if present before possible dot
   if ((index < length) && ASCIITraits::isDigit(expression[index])) {
     digits = true;
@@ -231,7 +412,7 @@ void ExpressionParser::readValue() throw(ExpressionException) {
       ++index;
     }
   }
-
+  
   // read dot if present
   if ((index < length) && (expression[index] == '.')) {
     ++index;
@@ -251,7 +432,8 @@ void ExpressionParser::readValue() throw(ExpressionException) {
 
   // read exponent if present
   if ((index < length) && (expression[index] == 'e')) {
-
+    ++index;
+    
     // read sign of exponent if present
     if (index < length) {
       if (expression[index] == '+') {
@@ -260,7 +442,7 @@ void ExpressionParser::readValue() throw(ExpressionException) {
         ++index;
       }
     }
-
+    
     // read exponent value
     if ((index < length) && ASCIITraits::isDigit(expression[index])) {
       while ((index < length) && ASCIITraits::isDigit(expression[index])) {
@@ -270,28 +452,85 @@ void ExpressionParser::readValue() throw(ExpressionException) {
       throw ExpressionException(begin, "Not a number");
     }
   }
-
-  //char buffer[index - begin + 1]; // i is index of character after number chars
+  
   String buffer = expression.substring(begin, index);
   char* end;
-  double value = strtod(buffer.getElements(), &end); // TAG: not the best solution - but it works for now
+  // TAG: not the best solution - but it works for now
+  double value = strtod(buffer.getElements(), &end);
   if ((end != &buffer.getElements()[index - begin]) || (errno == ERANGE)) {
     throw ExpressionException(begin, "Not a number");
   }
-
-  nodes.append(makeValueNode(value));
+  nodes.append(ExpressionEvaluator::makeValueNode(value));
   ++operands;
   unary = false;
 }
 
 void ExpressionParser::parse() throw(ExpressionException) {
-  unsigned int index = 0;
-  unsigned int operands = 0;
-  bool unary = true;
+  const ExpressionEvaluator::UnaryOperator plus(
+    ExpressionEvaluator::PLUS,
+    3,
+    ExpressionEvaluator::RIGHT,
+    true
+  );
+  
+  const ExpressionEvaluator::UnaryOperator minus(
+    ExpressionEvaluator::MINUS,
+    3,
+    ExpressionEvaluator::RIGHT,
+    true
+  );
+  
+  const ExpressionEvaluator::BinaryOperator add(
+    ExpressionEvaluator::ADD,
+    0,
+    ExpressionEvaluator::LEFT,
+    true
+  );
+  
+  const ExpressionEvaluator::BinaryOperator subtract(
+    ExpressionEvaluator::SUBTRACT,
+    0,
+    ExpressionEvaluator::LEFT,
+    true
+  );
+  
+  const ExpressionEvaluator::BinaryOperator multiply(
+    ExpressionEvaluator::MULTIPLY,
+    1,
+    ExpressionEvaluator::LEFT,
+    true
+  );
+  
+  const ExpressionEvaluator::BinaryOperator divide(
+    ExpressionEvaluator::DIVIDE,
+    1,
+    ExpressionEvaluator::LEFT,
+    true
+  );
+  
+  const ExpressionEvaluator::BinaryOperator power(
+    ExpressionEvaluator::POWER,
+    2,
+    ExpressionEvaluator::RIGHT,
+    true
+  );
+  
+  const ExpressionEvaluator::UnaryOperator parenthesis(
+    ExpressionEvaluator::PARENTHESIS,
+    100,
+    ExpressionEvaluator::RIGHT,
+    false
+  );
+  
+  index = 0;
+  operands = 0;
+  unary = true;
+  
+  unknowns.removeAll();
   stack.removeAll();
   nodes.removeAll();
-
-  while (index < length) { // until all chars have been read
+  
+  while (index < length) { // until all chars have been read    
     switch (expression[index]) {
     case ' ':
       ++index;
@@ -314,7 +553,10 @@ void ExpressionParser::parse() throw(ExpressionException) {
       break;
     case '*':
       if (unary) {
-        throw ExpressionException(index, "Left operand expected by multiplication operator");
+        throw ExpressionException(
+          index,
+          "Left operand expected by multiplication operator"
+        );
       } else {
         push(multiply);
       }
@@ -322,7 +564,10 @@ void ExpressionParser::parse() throw(ExpressionException) {
       break;
     case '/':
       if (unary) {
-        throw ExpressionException(index, "Left operand expected by division operator");
+        throw ExpressionException(
+          index,
+          "Left operand expected by division operator"
+        );
       } else {
         push(divide);
       }
@@ -330,7 +575,10 @@ void ExpressionParser::parse() throw(ExpressionException) {
       break;
     case '^':
       if (unary) {
-        throw ExpressionException(index, "Left operand expected by power operator");
+        throw ExpressionException(
+          index,
+          "Left operand expected by power operator"
+        );
       } else {
         push(power);
       }
@@ -340,100 +588,227 @@ void ExpressionParser::parse() throw(ExpressionException) {
       if (unary) {
         push(parenthesis);
       } else {
-        throw ExpressionException(index, "Operator expected instead of opening parenthesis");
+        throw ExpressionException(
+          index,
+          "Operator expected instead of opening parenthesis"
+        );
       }
       ++index;
       break;
     case ')':
       if (unary) {
-        throw ExpressionException(index, "Operand expected before closing parenthesis");
+        throw ExpressionException(
+          index,
+          "Operand expected before closing parenthesis"
+        );
       } else {
-
         while (!stack.isEmpty() && stack.peek().isPopable()) {
           pop();
         }
-
-        if (!stack.isEmpty() && !stack.peek().isPopable()) {
-          Operation opr = stack.pop(); // get object - function or parenthesis
-
-          if (opr.isFunction()) {
-            if (operands < opr.getArguments()) {
-              throw ExpressionException(index, "Operand(s) missing from subexpression");
-            }
-            operands = operands - opr.getArguments() + 1;
-            nodes.append(makeNodeFromOperation(opr));
-          } else { // must be opening parenthesis
-            // nothing should be added to the nodes list
+        if (stack.isEmpty() || (stack.peek().getId() != ExpressionEvaluator::PARENTHESIS)) {
+          throw ExpressionException(
+            index,
+            "Closing parenthesis has no matching opening parenthesis"
+          );
+        }
+        stack.pop(); // eat parenthesis
+        if (!stack.isEmpty() && stack.peek().isFunction()) {
+          Operation operation = stack.pop();
+          if (operands < operation.getArguments()) {
+            throw ExpressionException(
+              index,
+              "Operand(s) missing from subexpression"
+            );
           }
-        } else {
-          throw ExpressionException(index, "Closing parenthesis has no matching opening parenthesis");
+          operands = operands - operation.getArguments() + 1;
+          nodes.append(ExpressionEvaluator::makeNodeFromOperation(operation));
         }
       }
       ++index;
       break;
     case ';':
       if (unary) {
-        throw ExpressionException(index, "Operand expected before argument separator");
+        throw ExpressionException(
+          index,
+          "Operand expected before argument separator"
+        );
       } else {
-
         while (!stack.isEmpty() && stack.peek().isPopable()) {
           pop();
         }
-
-        if (!stack.isEmpty() && !stack.peek().isPopable()) {
-          Operation opr = stack.peek(); // get function? - do not remove from stack
-
-          if (opr.isFunction()) {
-            if (opr.getArguments() == 0) {
-              throw ExpressionException(index, "Function does not take any arguments");
-            } else if (opr.getArguments() == 1) {
-              throw ExpressionException(index, "Function only takes one argument");
-            }
-          } else {
-            throw ExpressionException(index, "Opening parenthesis does not take argument list");
-          }
-        } else {
-          throw ExpressionException(index, "Argument separator used outside function argument list");
+        if (stack.isEmpty() || (stack.peek().getId() != ExpressionEvaluator::PARENTHESIS)) {
+          throw ExpressionException(
+            index,
+            "Argument separator outside of argument list"
+          );
         }
-
+        stack.pop(); // eat parenthesis
+        if (stack.isEmpty() || !stack.peek().isFunction()) {
+          throw ExpressionException(
+            index,
+            "Argument separator outside of argument list"
+          );
+        }
+        Operation operation = stack.peek(); // do not remove from stack
+        if (operation.getArguments() == 0) {
+          throw ExpressionException(
+            index,
+            "Function does not take any arguments"
+          );
+        } else if (operation.getArguments() == 1) {
+          throw ExpressionException(
+            index,
+            "Function only takes one argument"
+          );
+        }
+        stack.push(parenthesis);
         unary = true;
       }
       ++index;
       break;
     default:
       char ch = expression[index];
-      if (ASCIITraits::isLower(ch)) { // is this an identifier
+      if (ASCIITraits::isAlpha(ch)) { // is this an identifier
         if (unary) {
           readIdentifier();
         } else {
-          throw ExpressionException(index, "Binary operator expected instead of operand/unary operation");
+          throw ExpressionException(
+            index,
+            "Binary operator expected instead of operand/unary operation"
+          );
         }
       } else if (ASCIITraits::isDigit(ch) || (ch == '.')) { // is this a value
         if (unary) {
           readValue();
         } else {
-          throw ExpressionException(index, "Binary operator expected instead of operand/unary operation");
+          throw ExpressionException(
+            index,
+            "Binary operator expected instead of operand/unary operation"
+          );
         }
       } else {
         throw ExpressionException(index, "Invalid symbol");
       }
     }
   }
-
+  
   while (!stack.isEmpty() && stack.peek().isPopable()) {
     pop();
   }
-
+  
   if (!stack.isEmpty() || (operands != 1)) {
     throw ExpressionException(index, "Unexpected end of expression");
   }
 }
 
-//List<>::ListEnumeration ExpressionParser::getNodes() const throw() {
-// return List<>::getEnumeration();
-//}
+String ExpressionParser::getString() const throw() {
+  List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
+  Stack<String> stack;
+  while (enu.hasNext()) {
+    Node node = *enu.next();
+    switch (node.type) {
+    case ExpressionEvaluator::VALUE:
+      {
+        StringOutputStream stream;
+        stream << node.value << FLUSH;
+        stack.push(stream.getString());
+      }
+      break;
+    case ExpressionEvaluator::VARIABLE:
+      {
+        StringOutputStream stream;
+        stream << provider.getVariable(node.variable) << FLUSH;
+        stack.push(stream.getString());
+      }
+      break;
+    case ExpressionEvaluator::CONSTANT:
+      {
+        StringOutputStream stream;
+        stream << provider.getConstant(node.constant) << FLUSH;
+        stack.push(stream.getString());
+      }
+      break;
+    case ExpressionEvaluator::BUILTIN:
+      switch (node.builtin) {
+      case ExpressionEvaluator::PLUS:
+        {
+          String argument = stack.pop();
+          stack.push(MESSAGE("+") + argument);
+        }
+        break;
+      case ExpressionEvaluator::MINUS:
+        {
+          String argument = stack.pop();
+          stack.push(MESSAGE("-") + argument);
+        }
+        break;
+      case ExpressionEvaluator::ADD:
+        {
+          String right = stack.pop();
+          String left = stack.pop();
+          stack.push(MESSAGE("(") + left + MESSAGE("+") + right + MESSAGE(")"));
+        }
+        break;
+      case ExpressionEvaluator::SUBTRACT:
+        {
+          String right = stack.pop();
+          String left = stack.pop();
+          stack.push(MESSAGE("(") + left + MESSAGE("-") + right + MESSAGE(")"));
+        }
+        break;
+      case ExpressionEvaluator::MULTIPLY:
+        {
+          String right = stack.pop();
+          String left = stack.pop();
+          stack.push(MESSAGE("(") + left + MESSAGE("*") + right + MESSAGE(")"));
+        }
+        break;
+      case ExpressionEvaluator::DIVIDE:
+        {
+          String right = stack.pop();
+          String left = stack.pop();
+          stack.push(MESSAGE("(") + left + MESSAGE("/") + right + MESSAGE(")"));
+        }
+        break;
+      case ExpressionEvaluator::POWER:
+        {
+          String right = stack.pop();
+          String left = stack.pop();
+          stack.push(MESSAGE("(") + left + MESSAGE("^") + right + MESSAGE(")"));
+        }
+        break;
+      case ExpressionEvaluator::PARENTHESIS:
+        break;
+      default:
+        throw ExpressionException("Invalid built-in operator", this);
+      }
+      break;
+    case ExpressionEvaluator::FUNCTION:
+      {
+        if (static_cast<unsigned int>(index + 1) < node.function.arguments) {
+          throw ExpressionException("Arguments exhausted", this);
+        }
+        String arguments;
+        if (node.function.arguments > 0) {
+          for (unsigned int i = 0; (i + 1) < node.function.arguments; ++i) {
+            arguments = MESSAGE("; ") + stack.pop() + arguments;
+          }
+          arguments = stack.pop() + arguments;
+        }
+        StringOutputStream stream;
+        stream << provider.getFunction(node.function.id) << '(' << arguments << ')' << FLUSH;
+        stack.push(stream.getString());
+      }
+      break;
+    case ExpressionEvaluator::UNKNOWN:
+      stack.push(unknownsId[node.unknown]);
+      break;
+    }
+  }
+  return stack.pop();
+}
 
-ExpressionParser::~ExpressionParser() {
+ExpressionParser::~ExpressionParser() throw() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -16,22 +16,39 @@
 
 #include <base/Object.h>
 #include <base/string/String.h>
-#include <base/string/FormatOutputStream.h>
 #include <base/collection/Stack.h>
 #include <base/collection/List.h>
-#include <base/collection/Map.h>
+#include <base/collection/HashTable.h>
 #include <base/mathematics/ExpressionException.h>
 #include <base/mathematics/AmbiguousRegistration.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-namespace eval {
+/**
+  Arithmetic expression evaluator.
+  
+  @short Expression evaluator
+  @see ExpressionParser
+  @ingroup mathematics
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.0
+*/
+
+class ExpressionEvaluator : public Object {
+public:
 
   /** The valid types of a node in an expression. */
-  enum NodeType {VALUE, VARIABLE, CONSTANT, BUILTIN, FUNCTION, UNKNOWN};
+  enum NodeType {
+    VALUE, /**< A value. */
+    VARIABLE, /**< A variable. */
+    CONSTANT, /**< A constant. */
+    BUILTIN, /**< Built-in. */
+    FUNCTION, /**< A function. */
+    UNKNOWN /**< Unknown. */
+  };
 
   /** Node of expression. */
-  struct EvaluationNode {
+  struct Node {
     NodeType type;
     union {
       double value; // type should be determined by template argument
@@ -39,19 +56,34 @@ namespace eval {
       unsigned int constant;
       unsigned int builtin;
       struct {
-        unsigned int function;
+        unsigned int id;
         unsigned int arguments;
-      } func;
+      } function;
       unsigned int unknown;
     };
   };
+  
+  /* Determines the order when operators have same precedence. */
+  enum Glue {
+    LEFT, /**< Bind to the left. */
+    RIGHT /**< Bind to the right. */
+  };
 
-  typedef EvaluationNode Node;
-
-  enum Glue {LEFT, RIGHT}; // determines order when operators have same precedence
-
+  /** Built-in operators. */
+  enum Builtin {
+    PLUS = 0, /**< Plus. */
+    MINUS = 1, /**< Minus. */
+    ADD = 2, /**< Add. */
+    SUBTRACT = 3, /**< Subtract. */
+    MULTIPLY = 4, /**< Multiply. */
+    DIVIDE = 5, /**< Divide. */
+    POWER = 6, /**< Power. */
+    PARENTHESIS = 7 /**< Parenthesis. */
+  };
+  
   class Operation {
   private:
+    
     unsigned int id;
     unsigned int arguments;
     unsigned int precedence;
@@ -61,105 +93,225 @@ namespace eval {
     bool function;
   public:
     
-    inline Operation(unsigned int i, unsigned int a, unsigned int p, Glue g, bool b, bool po, bool f) throw()
-      : id(i),
-        arguments(a),
-        precedence(p),
-        glue(g),
-        builtin(b),
-        popable(po),
-        function(f) {
+    inline Operation(
+      unsigned int _id,
+      unsigned int _arguments,
+      unsigned int _precedence,
+      Glue _glue,
+      bool _builtin,
+      bool _popable,
+      bool _function) throw()
+      : id(_id),
+        arguments(_arguments),
+        precedence(_precedence),
+        glue(_glue),
+        builtin(_builtin),
+        popable(_popable),
+        function(_function) {
     }
-
-    unsigned int getArguments() const throw() {
+    
+    inline unsigned int getArguments() const throw() {
       return arguments;
     }
     
-    unsigned int getPrecedence() const throw() {
+    inline unsigned int getPrecedence() const throw() {
       return precedence;
     }
     
-    Glue getGlue() const throw() {
+    inline Glue getGlue() const throw() {
       return glue;
     }
     
-    bool isBuiltin() const throw() {
+    inline bool isBuiltin() const throw() {
       return builtin;
     }
     
-    bool isPopable() const throw() {
+    inline bool isPopable() const throw() {
       return popable;
     }
 
-    bool isFunction() const throw() {
+    inline bool isFunction() const throw() {
       return function;
     }
 
-    unsigned int getId() const throw() {
+    inline unsigned int getId() const throw() {
       return id;
     }
   };
-
-};
-
-
-
-/**
-  Arithmetic expression evaluator.
-
-  @see ExpressionParser
-  @ingroup mathematics
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
-*/
-
-class ExpressionEvaluator : public Object {
+  
+  /* Built-in unary operator. */
+  class UnaryOperator : public Operation {
+  public:
+    
+    inline UnaryOperator(
+      unsigned int id,
+      unsigned int precedence,
+      Glue glue,
+      bool popable) throw()
+      : Operation(id, 1, precedence, glue, true, popable, false) {
+    }
+  };
+  
+  /* Built-in binary operator. */
+  class BinaryOperator : public Operation {
+  public:
+    
+    inline BinaryOperator(
+      unsigned int id,
+      unsigned int precedence,
+      Glue glue,
+      bool popable) throw()
+      : Operation(id, 2, precedence, glue, true, popable, false) {
+    }
+  };
+  
+  /* Function. */
+  class Function : public Operation {
+  public:
+    
+    inline Function(unsigned int id, unsigned int arguments) throw()
+      : Operation(id, arguments, 100, RIGHT, false, false, true) {
+    }
+  };
+  
+  static inline Node makeValueNode(double value) throw() {
+    Node result;
+    result.type = VALUE;
+    result.value = value;
+    return result;
+  }
+  
+  static inline Node makeConstantNode(unsigned int id) throw() {
+    Node result;
+    result.type = CONSTANT;
+    result.constant = id;
+    return result;
+  }
+  
+  static inline Node makeVariableNode(unsigned int id) throw() {
+    Node result;
+    result.type = VARIABLE;
+    result.variable = id;
+    return result;
+  }  
+ 
+  static inline Node makeFunctionNode(unsigned int id, unsigned int arguments) throw() {
+    Node result;
+    result.type = FUNCTION;
+    result.function.id = id;
+    result.function.arguments = arguments;
+    return result;
+  }
+  
+  static inline Node makeUnknownNode(unsigned int id) throw() {
+    Node result;
+    result.type = UNKNOWN;
+    result.unknown = id;
+    return result;
+  }
+  
+  static inline Node makeNodeFromOperation(Operation operation) throw() {
+    Node result;
+    // must not be parenthesis
+    if (operation.isBuiltin()) {
+      result.type = BUILTIN;
+      result.builtin = operation.getId();
+    } else {
+      result.type = FUNCTION;
+      result.function.id = operation.getId();
+      result.function.arguments = operation.getArguments();
+    }
+    return result;
+  }
 private:
 
   /** Container for the names of the variables in the formula. */
-  List<String> variableNames;
+  List<String> variables;
   /** Container for the parsed formula. */
-  eval::EvaluationNode* nodes;
+  List<Node> nodes;
 public:
-
+  
+  virtual double onConstant(
+    unsigned int constant) const throw(ExpressionException);
+  
+  virtual double onFunction(
+    unsigned int function,
+    const double* value) const throw(ExpressionException);
+  
   /**
     Initializes expression evaluator.
   */
-  ExpressionEvaluator();
+  ExpressionEvaluator() throw();
 
   /**
-    Returns the names of variables of the formula in the order expected by the evaluate methods.
+    Returns the expression.
   */
-  const List<String> getVariables() const throw();
+  inline List<Node> getExpression() const throw() {
+    return nodes;
+  }
 
+  /**
+    Sets the expression.
+  */
+  inline void setExpression(const List<Node>& nodes) throw() {
+    this->nodes = nodes;
+  }
+
+  /**
+    Returns the names of variables of the formula in the order expected by the
+    evaluate methods.
+  */
+  inline List<String> getVariables() const throw() {
+    return variables;
+  }
+  
+  /**
+    Sets the variables.
+  */
+  inline void setVariables(const List<String>& variables) throw() {
+    this->variables = variables;
+  }
+  
+  /**
+    Evaluates the constant expression once.
+    
+    @return The result of the evaluation.
+  */
+  double evaluate() const throw(ExpressionException);
+  
   /**
     Evaluates the formula once.
 
-    @param variables The array containing the values of the variables (e.g. x0, y0, z0).
+    @param variables The array containing the values of the variables (e.g. x0,
+    y0, z0).
     @return The result of the evaluation.
   */
-  double evaluate(const double* variables) const throw();
-
+  double evaluate(const double* variables) const throw(ExpressionException);
+  
   /**
     Evaluates the formula several times.
 
-    @param variable The values of the variables (e.g. x0, y0, z0, x1, y1, z1, x2, ...).
-    @param results The array to store the results in. (e.g. res0, res1, res3, ...).
+    @param variable The values of the variables (e.g. x0, y0, z0, x1, y1, z1,
+    x2, ...).
+    @param results The array to store the results in. (e.g. res0, res1, res3,
+    ...).
     @param count The desired number of evaluations.
   */
-  void evaluate(const double* variables, double* results, unsigned int count) const throw();
-
-  /**
-    Destroys the expression evaluator.
-  */
-  ~ExpressionEvaluator() throw();
+  void evaluate(
+    const double* variables,
+    double* results,
+    unsigned int count) const throw(ExpressionException);
+  
+  virtual ~ExpressionEvaluator() throw();
 };
 
 
 
 /**
-  Expression provider responsible for mapping identifiers into constants, variables, and functions.
+  The expression provider is responsible for mapping identifiers into constants,
+  variables, and functions.
 
+  @short Expression provider.
   @see ExpressionParser
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -167,11 +319,17 @@ public:
 
 class ExpressionProvider : public Object {
 protected:
-
+  
   /** Collection holding the registered identifiers. */
-  Map<const char*, eval::EvaluationNode> identifiers;
+  HashTable<String, ExpressionEvaluator::Node> identifiers;
+  /** Constants. */
+  HashTable<unsigned int, String> constants;
+  /** Variables. */
+  HashTable<unsigned int, String> variables;
+  /** Functions. */
+  HashTable<unsigned int, String> functions;
 public:
-
+  
   /**
     Initializes an expression provider.
   */
@@ -183,7 +341,9 @@ public:
     @param name The identifier to be registered.
     @param id The desired id of the constant.
   */
-  void registerConstant(const char* name, unsigned int id) throw(AmbiguousRegistration);
+  void registerConstant(
+    const String& name,
+    unsigned int id) throw(AmbiguousRegistration);
 
   /**
     Registers an identifier as a variable.
@@ -191,7 +351,9 @@ public:
     @param name The identifier to be registered.
     @param id The desired id of the variable.
   */
-  void registerVariable(const char* name, unsigned int id) throw(AmbiguousRegistration);
+  void registerVariable(
+    const String& name,
+    unsigned int id) throw(AmbiguousRegistration);
 
   /**
     Registers an identifier as a function.
@@ -200,20 +362,51 @@ public:
     @param id The desired id of the function.
     @param arguments The number of arguments taken by the function.
   */
-  void registerFunction(const char* name, unsigned int id, unsigned int arguments) throw(AmbiguousRegistration);
+  void registerFunction(
+    const String& name,
+    unsigned int id,
+    unsigned int arguments) throw(AmbiguousRegistration);
 
+  /**
+    Returns true if the identifier has been registered.
+  */
+  inline bool isIdentifier(const String& name) const throw() {
+    return identifiers.isKey(name);
+  }
+
+  /**
+    Returns the name of the constant with the given id.
+  */
+  inline String getConstant(unsigned int id) const throw() {
+    return constants[id];
+  }
+  
+  /**
+    Returns the name of the variable with the given id.
+  */
+  inline String getVariable(unsigned int id) const throw() {
+    return variables[id];
+  }
+  
+  /**
+    Returns the name of the function with the given id.
+  */
+  inline String getFunction(unsigned int id) const throw() {
+    return functions[id];
+  }
+  
   /**
     Returns the evaluation node associated with the specified identifier.
     Raises InvalidKey if the identifier has not been registered.
 
     @param name The identifier to be looked up.
   */
-  eval::EvaluationNode getNode(const char* name) const throw(InvalidKey);
-
+  ExpressionEvaluator::Node getNode(const String& name) const throw(InvalidKey);
+  
   /**
     Destroys the expression provider.
   */
-  ~ExpressionProvider();
+  ~ExpressionProvider() throw();
 };
 
 
@@ -230,15 +423,24 @@ public:
 
 class ExpressionParser : public Object {
 protected:
+  
+  typedef ExpressionEvaluator::Node Node;
+  typedef ExpressionEvaluator::Operation Operation;
 
+  /** The auto-register mode. Default is disabled. */
+  bool autoRegister;
+  /** Unknowns. */
+  HashTable<String, Node> unknowns;
+  /** Lookup of the unknowns by id. */
+  HashTable<unsigned int, String> unknownsId;
   /** The expression representation. */
   String expression;
   /** The expression provider. */
   ExpressionProvider& provider;
   /** Stack holding operations. */
-  Stack<eval::Operation> stack;
+  Stack<Operation> stack;
   /** List holding the parsed expression. */
-  List<eval::EvaluationNode> nodes;
+  List<Node> nodes;
   /** Specifies the current number of operands. */
   unsigned int operands;
   /** Specifies that an unary expression is expected. */
@@ -247,50 +449,86 @@ protected:
   unsigned int index;
   /** The length of the expression. */
   unsigned int length;
-
+  
   /**
     Pops one operation from the stack.
   */
   void pop() throw(ExpressionException);
-
+  
   /**
     Pushed the specified operation onto the stack.
   */
-  void push(eval::Operation opr) throw(ExpressionException);
-
+  void push(Operation operation) throw(ExpressionException);
+  
   /**
     Reads an identifier from the representation.
   */
   void readIdentifier() throw(ExpressionException);
-
+  
   /**
     Reads a number from the representation.
   */
   void readValue() throw(ExpressionException);
-public:
-
+public:  
+  
   /**
     Initializes an expression parser.
-
-    @param expression The string representation of the expression to be parsed (e.g. "4+5*x/7").
+    
+    @param expression The string representation of the expression to be parsed
+    (e.g. "4+5*x/7").
     @param provider The expression provider.
   */
   ExpressionParser(const String& expression, ExpressionProvider& provider) throw();
-
+  
   /**
     Parses the specified arithmetic expression representation.
   */
   void parse() throw(ExpressionException);
-
+  
   /**
     Returns the result of the parser.
   */
-//  Nodes getNodes const throw();
-
+  inline List<Node> getExpression() const throw() {
+    return nodes;
+  }
+  
+  /**
+    Returns the auto-register mode.
+  */
+  inline bool getAutoRegister() const throw() {
+    return autoRegister;
+  }
+  
+  /**
+    Sets the auto-register mode.
+  */
+  inline void setAutoRegister(bool value) throw() {
+    autoRegister = value;
+  }
+  
+  /**
+    Returns the unknowns.
+  */
+  inline HashTable<String, Node> getUnknowns() const throw() {
+    return unknowns;
+  }
+  
+  /**
+    Returns true if the expression contains unknowns.
+  */
+  inline bool hasUnknowns() const throw() {
+    return unknowns.getSize();
+  }
+  
+  /**
+    Builds string expression from internal representation.
+  */
+  String getString() const throw();  
+  
   /**
     Destroys the expression parser.
   */
-  ~ExpressionParser();
+  ~ExpressionParser() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -168,12 +168,18 @@ protected:
   
   /** The internal socket representation. */
   ReferenceCountedObjectPointer<SocketImpl> socket;
+
+  /** Socket options. */
+  enum {
+    OPTION_DONT_ROUTE,
+    OPTION_TCP_NO_DELAY
+  };
   
   /** Get boolean socket option. */
-  bool getBooleanOption(int option) const throw(IOException);
+  bool getBooleanOption(int option) const throw(NetworkException);
 
   /** Set boolean socket option. */
-  void setBooleanOption(int option, bool value) throw(IOException);
+  void setBooleanOption(int option, bool value) throw(NetworkException);
 public:
 
   /**
@@ -206,7 +212,7 @@ public:
     @return True if connection has been accepted. False, if connection could
     not be accepted without blocking.
   */
-  bool accept(Socket& socket) throw(IOException);
+  bool accept(Socket& socket) throw(NetworkException);
 
   /**
     Associates a local name (address and port) with this socket.
@@ -214,12 +220,12 @@ public:
     @param addr The IP address the socket should be bound to. If unspecified the assigned address may not be known until the socket has been connected with connect or accept.
     @param port The port the socket should be bound to. If zero the socket is assigned to a unique port.
   */
-  void bind(const InetAddress& addr, unsigned short port) throw(IOException);
+  void bind(const InetAddress& addr, unsigned short port) throw(NetworkException);
 
   /**
     Closes this socket.
   */
-  void close() throw(IOException);
+  void close() throw(NetworkException);
 
   /**
     Connects this socket to the specified address and port.
@@ -227,14 +233,14 @@ public:
     @param addr The IP address to connect to.
     @param port The port to connect to.
   */
-  void connect(const InetAddress& addr, unsigned  short port) throw(IOException);
+  void connect(const InetAddress& addr, unsigned  short port) throw(NetworkException);
 
   /**
     Creates either a stream or a datagram socket.
 
     @param kind The socket type (e.g. STREAM).
   */
-  void create(Kind kind) throw(IOException);
+  void create(Kind kind) throw(NetworkException);
 
   /**
     Caches the locally assigned address and port of the socket. This member
@@ -271,170 +277,211 @@ public:
 
     @param backlog The maxium length of the queue.
   */
-  void listen(unsigned int backlog) throw(IOException);
+  void listen(unsigned int backlog) throw(NetworkException);
 
   /**
     Disables the input stream for this socket.
   */
-  void shutdownInputStream() throw(IOException);
+  void shutdownInputStream() throw(NetworkException);
 
   /**
     Disables the output stream for this socket.
   */
-  void shutdownOutputStream() throw(IOException);
+  void shutdownOutputStream() throw(NetworkException);
 
   /**
     Returns the error state of the socket.
   */
-  int getErrorState() const throw(IOException);
+  int getErrorState() const throw(NetworkException);
   
   /**
     Returns true if 'bind' allows local addresses to be reused.
   */
-  bool getReuseAddress() const throw(IOException);
+  bool getReuseAddress() const throw(NetworkException);
 
   /**
     Sets the local address reuse flag of this socket.
   */
-  void setReuseAddress(bool value) throw(IOException);
+  void setReuseAddress(bool value) throw(NetworkException);
 
   /**
     Returns true if connection is kept alive.
   */
-  bool getKeepAlive() const throw(IOException);
+  bool getKeepAlive() const throw(NetworkException);
 
   /**
     Sets the keep alive flag of this socket.
   */
-  void setKeepAlive(bool value) throw(IOException);
+  void setKeepAlive(bool value) throw(NetworkException);
 
   /**
     Returns true if broadcast datagrams allowed on this socket.
   */
-  bool getBroadcast() const throw(IOException);
+  bool getBroadcast() const throw(NetworkException);
 
   /**
     Sets the broadcast datagram flag of this socket.
   */
-  void setBroadcast(bool value) throw(IOException);
+  void setBroadcast(bool value) throw(NetworkException);
 
   /**
     Gets the linger interval.
 
     @return -1 if linger is disabled.
   */
-  int getLinger() const throw(IOException);
+  int getLinger() const throw(NetworkException);
 
   /**
     Sets the linger interval. Negative time disables the linger.
   */
-  void setLinger(int seconds) throw(IOException);
+  void setLinger(int seconds) throw(NetworkException);
 
   /**
     Gets the size of the receive buffer.
   */
-  int getReceiveBufferSize() const throw(IOException);
+  int getReceiveBufferSize() const throw(NetworkException);
 
   /**
     Sets the size of the receive buffer.
   */
-  void setReceiveBufferSize(int size) throw(IOException);
+  void setReceiveBufferSize(int size) throw(NetworkException);
 
   /**
     Gets the size of the send buffer.
   */
-  int getSendBufferSize() const throw(IOException);
+  int getSendBufferSize() const throw(NetworkException);
 
   /**
     Sets the size of the send buffer.
   */
-  void setSendBufferSize(int size) throw(IOException);
+  void setSendBufferSize(int size) throw(NetworkException);
 
   /**
-    Returns true of the Nagle's algorithm is disabled.
+    Returns true if the standard routing facilities have been disabled.
   */
-  bool getTcpNoDelay() const throw(IOException);
+  bool getDontRoute() const throw(NetworkException);
+
+  /**
+    Disables/enables the standard routing facilities.
+  */
+  void setDontRoute(bool value) throw(NetworkException);
+
+  /**
+    Returns the timeout period in nanoseconds for receive.
+  */
+  uint64 getReceiveTimeout() const throw(NetworkException);
+
+  /**
+    Sets the timeout period for receive (clamped to one day).
+  */
+  void setReceiveTimeout(uint64 nanoseconds) throw(NetworkException);
+
+  /**
+    Returns the timeout period in nanoseconds for send.
+  */
+  uint64 getSendTimeout() const throw(NetworkException);
+
+  /**
+    Sets the timeout period for send (clamped to one day).
+  */
+  void setSendTimeout(uint64 nanoseconds) throw(NetworkException);
+  
+  /**
+    Returns true if the Nagle's algorithm is disabled.
+  */
+  bool getTcpNoDelay() const throw(NetworkException);
 
   /**
     Disables/enables the Nagle's algorithm.
   */
-  void setTcpNoDelay(bool value) throw(IOException);
-
-  // SO_DONTROUTE int (boolean)
-  // SO_ERROR
-  // SO_RCVTIMEO timeval
-  // SO_SNDTIMEO timeval
-  // SO_TYPE
-  
-  // IPV6_V6ONLY
-  // IPV6_UNICAST_HOPS int -1 to select default, range 0-255
-  // IPV6_MULTICAST_IF unsigned int
-  // IPV6_MULTICAST_HOPS int range 0-255
-
-//   bool getIPv6Restriction() const throw();
-//   void setIPv6Restriction(bool value) throw();
+  void setTcpNoDelay(bool value) throw(NetworkException);
   
   /**
     Returns the current time to live (TTL) value.
   */
-  unsigned int getTimeToLive() const throw(IOException);
+  unsigned int getTimeToLive() const throw(NetworkException);
   
   /**
     Sets the time to live (TTL) value.
   */
-  void setTimeToLive(unsigned int value) throw(IOException);
+  void setTimeToLive(unsigned int value) throw(NetworkException);
 
   /**
-    Returns the multicast time to live (TTL) value.
+    Returns the maximum number of multicast hops (time to live).
   */
-  uint8 getMulticastTTL() const throw(IOException);
+  uint8 getMulticastHops() const throw(NetworkException);
   
   /**
-    Sets the multicast time to live (TTL) value.
+    Sets the maximum number of multicast hops (time to live).
   */
-  void setMulticastTTL(uint8 value) throw(IOException);
+  void setMulticastHops(uint8 value) throw(NetworkException);
 
   /**
     Returns the multicast loop-back value.
   */
-  bool getMulticastLoopback() const throw(IOException);
+  bool getMulticastLoopback() const throw(NetworkException);
 
   /**
     Sets the multicast loop-back value.
   */
-  void setMulticastLoopback(bool value) throw(IOException);
+  void setMulticastLoopback(bool value) throw(NetworkException);
 
   /**
     Returns the default interface for outgoing multicast packets.
   */
-  InetAddress getMulticastInterface() const throw(IOException);
+  InetAddress getMulticastInterface() const throw(NetworkException);
   
   /**
     Sets the default interface for outgoing multicast packets.
   */
-  void setMulticastInterface(const InetAddress& interface) throw(IOException);
+  void setMulticastInterface(const InetAddress& interface) throw(NetworkException);
 
   /**
-    Joins the specified multicast group of the specified interface.
+    Returns the maximum number of unicast hops (time to live).
   */
-  void joinGroup(const InetAddress& interface, const InetAddress& group) throw(IOException);
+  uint8 getUnicastHops() const throw(NetworkException);
+  
+  /**
+    Sets the maximum number of unicast hops (time to live).
+  */
+  void setUnicastHops(uint8 value) throw(NetworkException);
+  
+  /**
+    Joins the specified multicast group on the default interface.
+  */
+  void joinGroup(const InetAddress& group) throw(NetworkException);
+  
+  /**
+    Joins the specified multicast group on the specified interface.
+  */
+  void joinGroup(const InetAddress& interface, const InetAddress& group) throw(NetworkException);
 
   /**
     Leaves the specified multicast group of the specified interface.
   */
-  void leaveGroup(const InetAddress& interface, const InetAddress& group) throw(IOException);
+  void leaveGroup(const InetAddress& interface, const InetAddress& group) throw(NetworkException);
 
+  /**
+    Returns the IPv6 packet restriction flag.
+  */
+  bool getIPv6Restriction() const throw(NetworkException);
+
+  /**
+    Sets the IPv6 packet restriction flag.
+  */
+  void setIPv6Restriction(bool value) throw(NetworkException);
+  
   /**
     Sets the blocking mode of the socket.
   */
-  void setNonBlocking(bool value) throw(IOException);
+  void setNonBlocking(bool value) throw(NetworkException);
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.
 
     @return Available number of bytes in stream.
   */
-  unsigned int available() const throw(IOException);
+  unsigned int available() const throw(NetworkException);
 
   /**
     Returns true if the socket is valid.
@@ -446,7 +493,7 @@ public:
   /**
     Forces any buffered bytes to be written out.
   */
-  void flush() throw(IOException); 
+  void flush() throw(NetworkException); 
 
   /**
     Fills the buffer with bytes from the socket input stream. Blocks if asked
@@ -458,7 +505,7 @@ public:
     @param nonblocking Select nonblocking mode.
     @return The actual number of bytes read.
   */
-  unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
+  unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(NetworkException);
 
   /**
     Writes bytes in buffer to stream.
@@ -468,7 +515,7 @@ public:
     @param nonblocking Select nonblocking mode.
     @return The actual number of bytes written.
   */
-  unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
+  unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(NetworkException);
 
   /**
     Sends the contents of the buffer to the specified address using an unconnected socket.
@@ -479,7 +526,7 @@ public:
     @param port The port of the remote host.
     @return The number of bytes sent.
   */
-  unsigned int sendTo(const char* buffer, unsigned int size, const InetAddress& address, unsigned short port) throw(IOException);
+  unsigned int sendTo(const char* buffer, unsigned int size, const InetAddress& address, unsigned short port) throw(NetworkException);
 
   /**
     Receives data from any address using an unconnected socket.
@@ -491,7 +538,7 @@ public:
 
     @return The number of bytes received.
   */
-  unsigned int receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(IOException);
+  unsigned int receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(NetworkException);
 
   void asyncCancel() throw(AsynchronousException);
   
@@ -502,7 +549,7 @@ public:
   /**
     Blocking wait for input to become available.
   */
-  void wait() const throw(IOException);
+  void wait() const throw(NetworkException);
 
   /**
     Blocking wait for input to become available.
@@ -511,7 +558,7 @@ public:
     
     @return True, if data is available. False, if the timeout periode expired.
   */
-  bool wait(unsigned int microseconds) const throw(IOException);
+  bool wait(unsigned int microseconds) const throw(NetworkException);
 
   /**
     Releases the socket.

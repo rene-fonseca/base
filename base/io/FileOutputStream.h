@@ -10,6 +10,7 @@
 #include "OutputStream.h"
 #include "FileNotFound.h"
 #include "FileDescriptor.h"
+#include "BindException.h"
 
 /**
   File output stream.
@@ -32,6 +33,38 @@ public:
     @param options (CREATE, REPLACE, APPEND, NONBLOCK).
   */
   FileOutputStream(const char* name) throw(FileNotFound);
+
+  /**
+    Initializes the file input stream with file descriptor as source of stream.
+
+    @param handle The file descriptor.
+  */
+  FileOutputStream(int handle) throw(BindException);
+
+  /**
+    Closes the output stream and releases any system resources associated with the stream.
+  */
+  void close() throw(IOException);
+
+  /**
+    Forces any buffered bytes to be written out.
+  */
+  void flush() throw(IOException);
+
+  /**
+    Writes a single value to the stream.
+
+    @param value The value to be written.
+  */
+  void write(char value) throw(IOException);
+
+  /**
+    Writes bytes in buffer to stream.
+
+    @param buffer The buffer containing the bytes to be written.
+    @param size The number of bytes to be written.
+  */
+  void write(const char* buffer, unsigned int size) throw(IOException);
 
   /**
     Destroys the file output stream.

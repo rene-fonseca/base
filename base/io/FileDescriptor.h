@@ -33,6 +33,14 @@ public:
 
   unsigned int available() throw(IOException);
 
+  /**
+    Synchronizes a file's in-core data with that on disk. ??????????? socket???
+  */
+  void flush() throw(IOException);
+
+  /**
+    Closes the file descriptor.
+  */
   void close() throw(IOException);
 
   int read() throw(IOException);

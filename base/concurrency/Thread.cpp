@@ -15,13 +15,13 @@
 
 #include "Thread.h"
 #include "MutualExclusion.h"
+#include "base/io/Streams.h"
 #include <pthread.h>
 #include <signal.h>
 #include <time.h>
 #include <sys/time.h>
 #include <unistd.h>
 
-using namespace ::std;
 /*
 #ifndef HAVE_PTHREAD_DELAY
 
@@ -291,13 +291,13 @@ void Thread::terminate() {
 }
 
 void Thread::debug() const {
-  cout << "CLASS/Thread\n";
-  cout << "  this=" << this << "\n";
-  cout << "  minimumStackSize=" << getMinimumStackSize() << "\n";
-  cout << "  id=" << threadID << "\n";
-  cout << "  alive=" << isAlive() << "\n";
-  cout << "  terminated=" << isTerminated() << "\n";
-  cout << "  termination=" << getTerminationState() << "\n";
+  bout << "CLASS/Thread\n";
+  bout << "  this=" << this << "\n";
+  bout << "  minimumStackSize=" << getMinimumStackSize() << "\n";
+  bout << "  id=" << threadID << "\n";
+  bout << "  alive=" << isAlive() << "\n";
+  bout << "  terminated=" << isTerminated() << "\n";
+  bout << "  termination=" << getTerminationState() << "\n";
 //  cout << "  children=" << children << "\n";
 }
 
@@ -314,7 +314,7 @@ Thread::~Thread() throw() {
     }
   } catch(...) {
     // now what?
-    cout << "Exception in Thread::~Thread()\n";
+    bout << "Exception in Thread::~Thread()\n";
   }
 
 /*  if (parent) { // if thread has parent

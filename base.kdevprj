@@ -54,6 +54,11 @@ install_location=
 dist=true
 install=false
 type=HEADER
+[ellert/base/io/Streams.h]
+install_location=
+dist=true
+install=false
+type=HEADER
 [ellert/docs/en/index-2.html]
 install_location=
 dist=true
@@ -135,7 +140,7 @@ type=HEADER
 ldflags=
 addcxxflags=-DDEBUG_VEHICLE -DDEBUG_IO -I/home/fonseca/src/ellert/ellert -I/usr/include
 ldadd=-lpthread
-cxxflags=-O2 -g3 -Wall
+cxxflags= -O2 -g3 -Wall
 bin_program=ellert
 [ellert/base/io/FileOutputStream.cpp]
 install_location=
@@ -627,6 +632,11 @@ install_location=
 dist=true
 install=false
 type=HEADER
+[ellert/base/io/Streams.cpp]
+install_location=
+dist=true
+install=false
+type=SOURCE
 [ellert/base/mem/ReferenceCountedObjectPointer.cpp]
 install_location=
 dist=true
@@ -808,7 +818,7 @@ dist=true
 install=false
 type=SOURCE
 [General]
-make_options=-j1
+make_options= -j1
 makefiles=Makefile.am,ellert/Makefile.am,ellert/docs/Makefile.am,ellert/docs/en/Makefile.am,ellert/base/Makefile.am,ellert/vehicle/Makefile.am,ellert/base/concurrency/Makefile.am,ellert/base/mathematics/Makefile.am,ellert/io/Makefile.am,ellert/base/io/Makefile.am,ellert/base/string/Makefile.am,ellert/base/mem/Makefile.am,
 version_control=CVS
 author=René Møller Fonseca
@@ -823,6 +833,7 @@ sgml_file=/home/fonseca/src/ellert/ellert/docs/en/index.sgml
 short_info=,
 email=fonseca@mip.sdu.dk
 kdevprj_version=1.2
+configure_args=
 modifyMakefiles=true
 [ellert/base/string/Makefile.am]
 files=ellert/base/string/String.cpp,ellert/base/string/String.h,ellert/base/string/InvalidFormat.h,ellert/base/string/InvalidFormat.cpp,ellert/base/string/FormatInputStream.cpp,ellert/base/string/FormatInputStream.h,ellert/base/string/FormatOutputStream.cpp,ellert/base/string/FormatOutputStream.h,ellert/base/string/StringInputStream.h,ellert/base/string/StringOutputStream.h,ellert/base/string/StringOutputStream.cpp,ellert/base/string/StringInputStream.cpp,
@@ -944,7 +955,7 @@ dist=true
 install=false
 type=SOURCE
 [ellert/base/io/Makefile.am]
-files=ellert/base/io/BufferedInputStream.h,ellert/base/io/BufferedInputStream.cpp,ellert/base/io/BufferedOutputStream.cpp,ellert/base/io/Externalizable.h,ellert/base/io/FilterOutputStream.cpp,ellert/base/io/FilterInputStream.h,ellert/base/io/FileDescriptor.h,ellert/base/io/FileDescriptor.cpp,ellert/base/io/FileOutputStream.h,ellert/base/io/FileOutputStream.cpp,ellert/base/io/FileInputStream.h,ellert/base/io/FileInputStream.cpp,ellert/base/io/BufferedOutputStream.h,ellert/base/io/PrimitiveInputStream.cpp,ellert/base/io/PrimitiveOutputStream.cpp,ellert/base/io/PrimitiveInputStream.h,ellert/base/io/PrimitiveOutputStream.h,ellert/base/io/FilterInputStream.cpp,ellert/base/io/OutputStream.cpp,ellert/base/io/OutputStream.h,ellert/base/io/InputStream.h,ellert/base/io/InputStream.cpp,ellert/base/io/FilterOutputStream.h,ellert/base/io/EOFException.cpp,ellert/base/io/EOFException.h,ellert/base/io/EndOfFile.cpp,ellert/base/io/EndOfFile.h,ellert/base/io/IOException.h,ellert/base/io/IOException.cpp,ellert/base/io/FileNotFound.h,ellert/base/io/FileNotFound.cpp,
+files=ellert/base/io/BufferedInputStream.h,ellert/base/io/BufferedInputStream.cpp,ellert/base/io/BufferedOutputStream.cpp,ellert/base/io/Externalizable.h,ellert/base/io/FilterOutputStream.cpp,ellert/base/io/FilterInputStream.h,ellert/base/io/FileDescriptor.h,ellert/base/io/FileDescriptor.cpp,ellert/base/io/FileOutputStream.h,ellert/base/io/FileOutputStream.cpp,ellert/base/io/FileInputStream.h,ellert/base/io/FileInputStream.cpp,ellert/base/io/BufferedOutputStream.h,ellert/base/io/PrimitiveInputStream.cpp,ellert/base/io/PrimitiveOutputStream.cpp,ellert/base/io/PrimitiveInputStream.h,ellert/base/io/PrimitiveOutputStream.h,ellert/base/io/FilterInputStream.cpp,ellert/base/io/OutputStream.cpp,ellert/base/io/OutputStream.h,ellert/base/io/InputStream.h,ellert/base/io/InputStream.cpp,ellert/base/io/FilterOutputStream.h,ellert/base/io/EOFException.cpp,ellert/base/io/EOFException.h,ellert/base/io/EndOfFile.cpp,ellert/base/io/EndOfFile.h,ellert/base/io/IOException.h,ellert/base/io/IOException.cpp,ellert/base/io/FileNotFound.h,ellert/base/io/FileNotFound.cpp,ellert/base/io/Streams.h,ellert/base/io/Streams.cpp,
 type=static_library
 sub_dirs=
 [ellert/base/io/InputStream.cpp]

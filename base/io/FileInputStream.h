@@ -10,6 +10,7 @@
 #include "InputStream.h"
 #include "FileNotFound.h"
 #include "FileDescriptor.h"
+#include "BindException.h"
 
 /**
   File input stream.
@@ -31,6 +32,13 @@ public:
     @param name The name of the file.
   */
   FileInputStream(const char* name) throw(FileNotFound);
+
+  /**
+    Initializes the file input stream with file descriptor as source of stream.
+
+    @param handle The file descriptor.
+  */
+  FileInputStream(int handle) throw(BindException);
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.

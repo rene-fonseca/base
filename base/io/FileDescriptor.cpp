@@ -32,7 +32,7 @@ unsigned int FileDescriptor::available() throw(IOException) {
   tv.tv_sec = 0;
   tv.tv_usec = 0;
 
-  int result = select(1, &rfds, NULL, NULL, &tv);
+  int result = ::select(1, &rfds, NULL, NULL, &tv);
   // signal could have happened.
 
   if (result == 1) {
@@ -41,6 +41,12 @@ unsigned int FileDescriptor::available() throw(IOException) {
     // FD_ISSET(0, &rfds) will be true
   } else {
     return 0;
+  }
+}
+
+void FileDescriptor::flush() throw(IOException) {
+  if (::fdatasync(handle) != 0) {
+    throw IOException("Unable to flush file descriptor");
   }
 }
 

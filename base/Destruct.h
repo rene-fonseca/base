@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_DESTRUCT_H
-#define _DK_SDU_MIP_BASE_DESTRUCT_H
+#ifndef _DK_SDU_MIP__BASE__DESTRUCT_H
+#define _DK_SDU_MIP__BASE__DESTRUCT_H
 
 #include "Exception.h"
 
@@ -28,12 +28,7 @@ public:
 
     @param message The message.
   */
-  Destruct(const string& message);
-
-  /**
-    Destroys exception object.
-  */
-  ~Destruct();
+  Destruct(const char* message);
 };
 
 #endif

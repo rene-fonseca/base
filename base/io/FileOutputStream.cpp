@@ -14,6 +14,24 @@ FileOutputStream::FileOutputStream(const char* name) throw(FileNotFound) {
   fd = new FileDescriptor(handle);
 }
 
+FileOutputStream::FileOutputStream(int handle) throw(BindException) {
+  fd = new FileDescriptor(handle);
+}
+
+void FileOutputStream::close() throw(IOException) {
+  fd->close();
+}
+
+void FileOutputStream::flush() throw(IOException) {
+  fd->flush();
+}
+
+void FileOutputStream::write(char value) throw(IOException) {
+}
+
+void FileOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {
+}
+
 FileOutputStream::~FileOutputStream() {
   delete fd;
 }

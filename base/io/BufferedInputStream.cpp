@@ -4,6 +4,7 @@
  ***************************************************************************/
 
 #include "BufferedInputStream.h"
+#include <string.h>
 
 void BufferedInputStream::fillBuffer() throw(IOException) {
   if (position >= count) {

@@ -14,6 +14,10 @@ FileInputStream::FileInputStream(const char* path) throw(FileNotFound) {
   fd = new FileDescriptor(handle);
 }
 
+FileInputStream::FileInputStream(int handle) throw(BindException) {
+  fd = new FileDescriptor(handle);
+}
+
 unsigned int FileInputStream::available() {
   // NOT IMPLEMENTED
   return 0;

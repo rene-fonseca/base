@@ -217,6 +217,13 @@ public:
   inline String& append(const String& str) throw(MemoryException) {return insert(length(), str);};
 
   /**
+    Appends the NULL-terminated string to this string.
+
+    @param str The string to be appended.
+  */
+  inline String& append(const char* str) throw(MemoryException) {return insert(length(), str);};
+
+  /**
     Prepends the character to this string.
 
     @param ch The character to be prepended.

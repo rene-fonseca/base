@@ -4,6 +4,7 @@
  ***************************************************************************/
 
 #include "BufferedOutputStream.h"
+#include <string.h>
 
 void BufferedOutputStream::flushBuffer() {
   FilterOutputStream::write(buffer, count);

@@ -28,12 +28,7 @@ public:
 
     @param message The message.
   */
-  Construct(const string& message);
-
-  /**
-    Destroys exception object.
-  */
-  ~Construct();
+  Construct(const char* message);
 };
 
 #endif

@@ -48,17 +48,22 @@ unsigned int Architecture::getTechonologies() throw() {
   if (eflags & ID) { // is CPUID supported
     unsigned int eax, ebx, ecx, edx; // result
     asm (
-      "        cpuid\n\t"
-      : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) // output
-      : "a" (0) // input // ask for vendor string
+      "        pushl %%ebx\n" // TAG: fix for gcc under linux
+      "        cpuid\n"
+      "        movl %%ebx,%1\n"
+      "        popl %%ebx\n"
+      : "=a" (eax), "=m" (ebx), "=c" (ecx), "=d" (edx) // output
+      : "a" (0) // input // ask for maximum input value and vendor string
     );
-
     const bool genuineIntel = (ebx == 0x756e6547) && (edx == 0x49656e69) && (ecx == 0x6c65746e);
     if (genuineIntel) {
       asm (
-        "        cpuid\n\t"
-        : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) // output
-        : "a" (1) // input // ask for feature flags
+        "        pushl %%ebx\n" // TAG: fix for gcc under linux
+        "        cpuid\n"
+        "        movl %%ebx,%1\n"
+        "        popl %%ebx\n"
+        : "=a" (eax), "=m" (ebx), "=c" (ecx), "=d" (edx) // output
+        : "0" (1) // input // ask for feature flags
       );
       
       result |= ((edx >> 28) & 1) ? HYPER_THREADING : 0;
@@ -130,8 +135,11 @@ Architecture::Minor Architecture::getMinorArchitecture() throw() {
   if (eflags & ID) { // is CPUID supported
     unsigned int eax, ebx, ecx, edx; // result
     asm (
-      "        cpuid\n\t"
-      : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) // output
+      "        pushl %%ebx\n" // TAG: fix for gcc under linux
+      "        cpuid\n"
+      "        movl %%ebx,%1\n"
+      "        popl %%ebx\n"
+      : "=a" (eax), "=m" (ebx), "=c" (ecx), "=d" (edx) // output
       : "a" (0) // input // ask for maximum input value and vendor string
     );
 
@@ -140,9 +148,12 @@ Architecture::Minor Architecture::getMinorArchitecture() throw() {
 
       if (eax > 0) {
         asm (
-          "        cpuid\n\t"
-          : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) // output
-          : "a" (1) // input // ask for version information
+          "        pushl %%ebx\n" // TAG: fix for gcc under linux
+          "        cpuid\n"
+          "        movl %%ebx,%0\n"
+          "        popl %%ebx\n"
+          : "=a" (eax), "=m" (ebx), "=c" (ecx), "=d" (edx) // output
+          : "0" (1) // input // ask for version information
         );
         
         const unsigned int type = (eax >> 12) & 0x3;

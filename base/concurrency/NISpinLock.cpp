@@ -63,15 +63,15 @@ void NISpinLock::exclusiveLock() const throw() {
 
 bool NISpinLock::tryExclusiveLock() const throw() {
 #if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
-  unsigned int previous;
+  register unsigned int previous;
   asm volatile (
     "        xchgl %0, %1\n"
     : "=&r" (previous), "=m" (value)
     : "0" (1)
   );
-  return !previous;
+  return (previous & 1) == 0;
 #elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64)
-  unsigned int previous;
+  register unsigned int previous;
   asm volatile (
     "        xchgl %0, %1\n"
     : "=&r" (previous), "=m" (value)

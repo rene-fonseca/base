@@ -49,7 +49,7 @@ User User::getCurrentUser() throw(UserException) {
   return result;
 #else // unix
   uid_t uid = ::getuid();
-  return User((void*)uid);
+  return User((void*)(ptrditt_t)uid);
 #endif // flavor
 }
 
@@ -62,7 +62,7 @@ User::User(const void* _id) throw(OutOfDomain) {
   copy<char>((char*)id, (const char*)_id, size);
 #else // unix
   assert((unsigned long)id <= PrimitiveTraits<uid_t>::MAXIMUM, OutOfDomain("Invalid user id", this));
-  id = (void*)_id;
+  id = (void*)(ptrditt_t)_id;
 #endif // flavor
 }
 
@@ -135,12 +135,12 @@ User::User(const String& name) throw(UserException) {
   struct passwd* entry;
   int result = ::getpwnam_r(name.getElements(), &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result == 0, UserException(this));
-  id = (void*)entry->pw_uid;
+  id = (void*)(ptrditt_t)entry->pw_uid;
 #endif // flavor
 }
 
 // TAG: select full name domain/user with option: LOCAL prefix?, BUILTIN prefix (no)?
-String User::getName() const throw(UserException) {
+String User::getName(bool fallback) const throw(UserException) {
   if (id == User::INVALID) {
     return MESSAGE("UNKNOWN");
   }
@@ -150,23 +150,35 @@ String User::getName() const throw(UserException) {
   DWORD nameSize = sizeof(name);
   char domainName[64]; // TAG: what is the maximum size
   DWORD domainNameSize = sizeof(domainName);
-  assert(::LookupAccountSid(0,
-                            (PSID)id, // must be valid
-                            name,
-                            &nameSize,
-                            domainName,
-                            &domainNameSize,
-                            &sidType) != 0,
-         UserException("Unable to lookup name", this)
-  );
+  if (::LookupAccountSid(0,
+                         (PSID)id, // must be valid
+                         name,
+                         &nameSize,
+                         domainName,
+                         &domainNameSize,
+                         &sidType) == 0) {
+    assert(fallback, UserException("Unable to lookup name", this));
+    StringOutputStream s;
+    s << *this << FLUSH;
+    return s.getString();
+  }
   // ASSERT((sidType == SidTypeUser) || ...???); // check type
-  return String(name); // TAG: does nameSize hold length of name
+  if (domainName[0] != 0) {
+    return String(domainName) + MESSAGE("\\") + String(name);
+  } else {
+    return String(name); // TAG: does nameSize hold length of name
+  }
 #else // unix
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
   int result = ::getpwuid_r((uid_t)id, &pw, buffer->getElements(), buffer->getSize(), &entry);
-  assert(result == 0, UserException("Unable to lookup name", this));
+  if (result != 0) {
+    assert(fallback, UserException("Unable to lookup name", this));
+    StringOutputStream s;
+    s << *this << FLUSH;
+    return s.getString();
+  }
   return String(entry->pw_name);
 #endif // flavor
 }

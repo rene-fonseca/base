@@ -57,7 +57,7 @@ void FileDescriptorOutputStream::flush() throw(IOException) {
 unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {
 #if defined(__win32__)
   DWORD bytesWritten;
-  BOOL success = WriteFile((HANDLE)fd->getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, &bytesWritten, 0);
+  BOOL success = WriteFile((HANDLE)fd->getHandle(), buffer, size, &bytesWritten, 0);
   if (success) {
     return bytesWritten;
   } else {

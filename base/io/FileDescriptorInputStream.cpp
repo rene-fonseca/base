@@ -64,7 +64,7 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int size) th
   }
 #if defined(__win32__)
   DWORD bytesRead;
-  BOOL success = ReadFile((void*)fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX, &bytesRead, NULL);
+  BOOL success = ReadFile((void*)fd->getHandle(), buffer, size, &bytesRead, NULL);
   if (success) {
     if (bytesRead == 0) { // has end of file been reached
       eof = true; // remember end of file
@@ -119,6 +119,8 @@ void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
 }
 
 void FileDescriptorInputStream::wait() const throw(IOException) {
+#if defined(__win32__)
+#else // __unix__
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET(fd->getHandle(), &rfds);
@@ -127,9 +129,12 @@ void FileDescriptorInputStream::wait() const throw(IOException) {
   if (result == -1) {
     throw IOException("Unable to wait for input");
   }
+#endif
 }
 
 bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOException) {
+#if defined(__win32__)
+#else // __unix__
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET(fd->getHandle(), &rfds);
@@ -143,6 +148,7 @@ bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOExcepti
     throw IOException("Unable to wait for input");
   }
   return result; // return true if data available
+#endif
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorInputStream& value) {

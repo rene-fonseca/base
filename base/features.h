@@ -31,7 +31,7 @@
 #endif
 
 #if !defined(_DK_SDU_MIP__BASE__CPP_ANONYMOUS)
-  #error Anonymous structure (and union) is not supported by compiler
+//  #error Anonymous structure (and union) is not supported by compiler
 #endif
 
 #if (_DK_SDU_MIP__BASE__LONG_SIZE < _DK_SDU_MIP__BASE__POINTER_SIZE)
@@ -49,6 +49,20 @@
 #if defined(_DK_SDU_MIP__BASE__NAMESPACE)
   #define _DK_SDU_MIP__BASE__ENTER_NAMESPACE namespace base {
   #define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE }
+
+/**
+  This is the primary namespace of The Base Framework. All the symbols defined
+  by the framework are contained within this particular namespace. You should
+  not add your own symbols to this namespace. Ignoring this rule will put your
+  application at risk of clashing with a future release of this framework. You
+  should therefore consider this namespace reserved solely for this project just
+  like the 'std' namespace is allocated for the Standard Template Library (and
+  C++ language).
+*/
+
+namespace base {
+};
+
 #else
   #define _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   #define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

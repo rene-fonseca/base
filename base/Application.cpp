@@ -46,16 +46,16 @@ public:
         }
         const char* message = e.getMessage();
         unsigned int cause = e.getCause();
-        if (message || cause) {
+        if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
           stream << MESSAGE(" with");
         }
         if (message) {
           stream << MESSAGE(" message '") << message << '\'';
         }
-        if (message && cause) {
+        if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
           stream << MESSAGE(" and");
         }
-        if (cause) {
+        if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
           stream << MESSAGE(" cause ") << HEX << setWidth(10) << ZEROPAD << cause;
         }
         stream << '.' << FLUSH;
@@ -86,16 +86,16 @@ public:
         }
         const char* message = e.getMessage();
         unsigned int cause = e.getCause();
-        if (message || cause) {
+        if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
           stream << MESSAGE(" with");
         }
         if (message) {
           stream << MESSAGE(" message '") << message << '\'';
         }
-        if (message && cause) {
+        if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
           stream << MESSAGE(" and");
         }
-        if (cause) {
+        if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
           stream << MESSAGE(" cause ") << HEX << setWidth(10) << ZEROPAD << cause;
         }
         stream << MESSAGE(" in violation with exception specification.") << FLUSH;
@@ -368,13 +368,15 @@ Application::Application(const String& name, int numberOfArguments, const char* 
   application = this;
 }
 
-int Application::exceptionHandler(const Exception& e) const throw() {
-  ferr << MESSAGE("Exception: ") << TypeInfo::getTypename(e) << MESSAGE(": ") << e.getMessage() << ENDL;
+int Application::exceptionHandler(const Exception& e) throw() {
+  ferr << e << ENDL;
+  setExitCode(Application::EXIT_CODE_ERROR);
   return Application::EXIT_CODE_ERROR;
 }
 
-int Application::exceptionHandler() const throw() {
+int Application::exceptionHandler() throw() {
   ferr << MESSAGE("Internal error: unspecified exception.") << ENDL;
+  setExitCode(Application::EXIT_CODE_ERROR);
   return Application::EXIT_CODE_ERROR;
 }
 

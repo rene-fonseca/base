@@ -25,21 +25,20 @@ public:
     StringOutputStream stream;
     stream << HEX << (unsigned int)Thread::getThread() << FLUSH;
     SystemLogger::write(SystemLogger::INFORMATION, stream.getString());
- 
+
     while (!Thread::getThread()->isTerminated()) {
-      if (Application::getApplication()->isTerminated()) {
+      if (Application::getApplication() && Application::getApplication()->isTerminated()) {
         Thread::getThread()->terminate();
       }
       Thread::sleep(0);
     }
+    SystemLogger::write(SystemLogger::INFORMATION, "Daemon has completed");
   }
 };
 
 int entry() {
   //fout << "Testing implementation of the Daemon..." << ENDL;
   if (Application::getApplication()->getArguments().getSize() > 0) {
-    fout << "Installing daemon..." << ENDL;
-    Daemon::install();
   } else {
     SystemLogger::write(SystemLogger::INFORMATION, "Attempting to start daemon...");
     MyDaemon myDaemon;

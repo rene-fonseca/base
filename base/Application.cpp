@@ -6,8 +6,7 @@
 #include <base/features.h>
 #include <base/Application.h>
 #include <base/Type.h>
-//#include <base/Trace.h>
-//#include <base/SystemLogger.h>
+#include <base/SystemLogger.h>
 #include <stdlib.h>
 
 #if defined(__win32__)
@@ -62,7 +61,7 @@ public:
 
 Application* Application::application = 0; // initialize application as uninitialized
 
-Application::Application(const String& name, int argc, const char* argv[], const char* envp[]) throw(SingletonException, OutOfDomain) : formalName(name) {
+Application::Application(const String& name, int argc, const char* argv[], const char* envp[]) throw(SingletonException, OutOfDomain) : formalName(name), terminated(false), hangingup(false) {
   static unsigned int singleton = 0;
   assert(singleton == 0, SingletonException("Application has been instantiated"));
   ++singleton;
@@ -73,13 +72,9 @@ Application::Application(const String& name, int argc, const char* argv[], const
     throw Exception("Unable to install signal handler");
   }
 #else // __unix__
-  struct sigaction action;
-  action.sa_handler = ApplicationImpl::signalHandler;
-  action.sa_mask = 0;
-  action.sa_flags = SA_RESTART;
-  assert(!sigaction(SIGHUP, &action, 0), Exception("Unable to install signal handler"));
-  assert(!sigaction(SIGTERM, &action, 0), Exception("Unable to install signal handler"));
-  assert(!sigaction(SIGCHLD, &action, 0), Exception("Unable to install signal handler"));
+  assert(signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR, Exception("Unable to install signal handler"));
+  assert(signal(SIGTERM, ApplicationImpl::signalHandler) != SIG_ERR, Exception("Unable to install signal handler"));
+  assert(signal(SIGCHLD, ApplicationImpl::signalHandler) != SIG_ERR, Exception("Unable to install signal handler"));
 #endif
 
   assert((argc > 0) && (argv), OutOfDomain());
@@ -110,12 +105,14 @@ int Application::exceptionHandler() const throw() {
 }
 
 void Application::hangup() throw() {
+  SystemLogger::write(SystemLogger::INFORMATION, "HANGUP SIGNAL");
   lock.exclusiveLock();
   hangingup = true;
   lock.releaseLock();
 }
 
 void Application::terminate() throw() {
+  SystemLogger::write(SystemLogger::INFORMATION, "TERMINATE SIGNAL");
   terminated = true;
 }
 

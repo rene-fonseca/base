@@ -124,6 +124,8 @@ Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) 
   static unsigned int singleton = 0;
   assert(singleton == 0, SingletonException("Daemon has been instantiated"));
   ++singleton;
+  assert(runnable, OutOfDomain());
+  assert(Application::getApplication(), Exception("Application has not been institiated"));
   DaemonImpl::runnable = runnable;
 
   SERVICE_TABLE_ENTRY dispatchTable[] = {
@@ -192,14 +194,18 @@ Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) 
   static unsigned int singleton = 0;
   assert(singleton == 0, SingletonException("Daemon has been instantiated"));
   ++singleton;
+  assert(runnable, OutOfDomain());
+  assert(Application::getApplication(), Exception("Application has not been institiated"));
 
   switch(fork()) {
   case 0:
     setsid();
     runnable->run();
+    break;
   case -1:
     SystemLogger::write(SystemLogger::ERROR, "Unable to daemonize process.");
     throw ResourceException("Unable to daemonize process");
+    break;
   }
 }
 

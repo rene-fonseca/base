@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_OPENGL__MENU_H
-#define _DK_SDU_MIP__BASE_OPENGL__MENU_H
+#ifndef _DK_SDU_MIP__BASE_UI__MENU_H
+#define _DK_SDU_MIP__BASE_UI__MENU_H
 
 #include <base/collection/Array.h>
 #include <base/Object.h>

@@ -269,7 +269,7 @@ namespace extension {
     /**
       Returns the primary group of the key.
     */
-    Trustee RegistryKey::getGroup() const throw(RegistryException);
+    Trustee getGroup() const throw(RegistryException);
 
     /**
       Returns the ACL for the key.

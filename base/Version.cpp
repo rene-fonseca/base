@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/Version.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -54,11 +55,10 @@ String Version::getBanner() const throw() {
   return MESSAGE(banner);
 }
 
-// FIXME: need ELF autodetection
-//#define _DK_SDU_MIP__BASE__ELF
-
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) && \
+    (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
+// TAG: platform specific - and only shared library
 // entry point of library when run as an ordinary application
-#if defined(_DK_SDU_MIP__BASE__ELF) // check for i386
 extern "C" void libbase_entry() {
   // exit without segmentation fault
   volatile asm(

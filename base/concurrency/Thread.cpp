@@ -13,6 +13,7 @@
 
 #include <base/concurrency/Thread.h>
 #include <base/string/String.h>
+#include <base/Cast.h>
 
 #if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
   #include <base/platforms/compiler/v3mv/exception.h> // includes private features
@@ -285,9 +286,9 @@ Thread::Thread(Thread* _parent) throw()
   const abi::__cxa_eh_globals* abi::__cxa_get_globals(); // this allows us to use __cxa_get_globals_fast
 #endif
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  identifier = (Identifier)::GetCurrentThreadId();
+  identifier = Cast::container<Identifier>(::GetCurrentThreadId());
 #else // pthread
-  identifier = (Identifier)::pthread_self();
+  identifier = Cast::container<Identifier>(::pthread_self());
 #endif
 }
 
@@ -348,7 +349,7 @@ bool Thread::isSelf() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return ::GetCurrentThreadId() == (DWORD)identifier;
 #else // pthread
-  return ::pthread_self() == (pthread_t)identifier;
+  return ::pthread_self() == Cast::extract<pthread_t>(identifier);
 #endif
 }
 
@@ -516,8 +517,8 @@ Thread::Times Thread::getTimes() throw() {
   FILETIME system;
   FILETIME user;
   ::GetThreadTimes(::GetCurrentThread(), 0, 0, &system, &user);
-  result.user = *(unsigned long long*)&user * 100ULL;
-  result.system = *(unsigned long long*)&system * 100ULL;
+  result.user = Cast::impersonate<unsigned long long>(user) * 100ULL;
+  result.system = Cast::impersonate<unsigned long long>(system) * 100ULL;
   return result;
 #else // unix
   #if defined(_POSIX_THREAD_CPUTIME)
@@ -555,7 +556,7 @@ void Thread::start() throw(ThreadException) {
   if ((handle = ::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)entry, this, 0, &id)) == 0) {
     throw ResourceException("Unable to create thread", this);
   }
-  identifier = (Identifier)id;
+  identifier = Cast::container<Identifier>(id);
   ::CloseHandle(handle); // detach
   // TAG: does this always work or must this be postponed until entry function
 #else // pthread
@@ -568,7 +569,7 @@ void Thread::start() throw(ThreadException) {
     pthread_attr_destroy(&attributes);
     throw ResourceException("Unable to create thread", this);
   }
-  identifier = (Identifier)id;
+  identifier = Cast::container<Identifier>(id);
   pthread_attr_destroy(&attributes);
 #endif
 }

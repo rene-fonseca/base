@@ -16,6 +16,7 @@
 
 #include <base/string/String.h>
 #include <base/OutOfRange.h>
+#include <base/io/PushInterface.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -47,7 +48,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SHA256 : public Object {
+class SHA256 : public Object, public PushInterface {
 public:
 
   /** Internal block size in bytes. */
@@ -118,8 +119,8 @@ public:
     @param buffer The buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  void push(const uint8* buffer, unsigned int size) throw(OutOfRange);
-
+  unsigned int push(const uint8* buffer, unsigned int size) throw(OutOfRange);
+  
   /**
     This function should be invoked when the entire message has been pushed.
     Do NOT use push() after invoking this function.

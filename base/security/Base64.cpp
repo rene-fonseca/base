@@ -73,7 +73,7 @@ const signed char Base64::VALUES[256] = {
 //   }
 // }
 
-String Base64::encode(const byte* buffer, unsigned int size) throw() {
+String Base64::encode(const uint8* buffer, unsigned int size) throw() {
   unsigned int length = (size * 8 + 5) / 6;
   String result(length);
   result.forceToLength(length);

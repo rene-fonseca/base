@@ -55,7 +55,7 @@ SHA256::SHA256() throw() : totalSize(0), bytesInBuffer(0) {
   messageDigest[7] = 0x5be0cd19; // H7
 }
 
-void SHA256::pushBlock(const byte* block) throw() {
+void SHA256::pushBlock(const uint8* block) throw() {
   uint32 a = messageDigest[0]; // A = H0
   uint32 b = messageDigest[1]; // B = H1
   uint32 c = messageDigest[2]; // C = H2
@@ -100,8 +100,9 @@ void SHA256::pushBlock(const byte* block) throw() {
   messageDigest[7] += h;
 }
 
-void SHA256::push(const uint8* buffer, unsigned int size) throw(OutOfRange) {
+unsigned int SHA256::push(const uint8* buffer, unsigned int size) throw(OutOfRange) {
   assert(size < MAXIMUM_SIZE - totalSize, OutOfRange());
+  unsigned int result = size;
   totalSize += size;
   if (size + bytesInBuffer >= BLOCK_SIZE) { // do we have a complete block
     if (bytesInBuffer > 0) { // do we need to empty internal buffer
@@ -120,6 +121,7 @@ void SHA256::push(const uint8* buffer, unsigned int size) throw(OutOfRange) {
 
   copy(this->buffer + bytesInBuffer, buffer, size); // put remaining octets into internal buffer
   bytesInBuffer += size;
+  return result;
 }
 
 void SHA256::pushEnd() throw() {

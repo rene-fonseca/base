@@ -55,7 +55,7 @@ MD5Sum::MD5Sum() throw() : totalSize(0), bytesInBuffer(0) {
   messageDigest[3] = 0x10325476;
 }
 
-void MD5Sum::pushBlock(const byte* block) throw() {
+void MD5Sum::pushBlock(const uint8* block) throw() {
   unsigned int a = messageDigest[0];
   unsigned int b = messageDigest[1];
   unsigned int c = messageDigest[2];
@@ -145,8 +145,9 @@ void MD5Sum::pushBlock(const byte* block) throw() {
   messageDigest[3] += d;
 }
 
-void MD5Sum::push(const byte* buffer, unsigned int size) throw(OutOfRange) {
+unsigned int MD5Sum::push(const uint8* buffer, unsigned int size) throw(OutOfRange) {
   assert(size < MAXIMUM_SIZE - totalSize, OutOfRange());
+  unsigned int result = size;
   totalSize += size;
   if (size + bytesInBuffer >= BLOCK_SIZE) { // do we have a complete block
     if (bytesInBuffer > 0) { // do we need to empty internal buffer
@@ -165,6 +166,7 @@ void MD5Sum::push(const byte* buffer, unsigned int size) throw(OutOfRange) {
 
   copy(this->buffer + bytesInBuffer, buffer, size); // put remaining octets into internal buffer
   bytesInBuffer += size;
+  return result;
 }
 
 void MD5Sum::pushEnd() throw() {
@@ -210,8 +212,8 @@ String MD5Sum::getValue() const throw() {
 }
 
 String MD5Sum::getBase64() const throw() {
-  byte temp[16];
-  byte* p = &temp[0];
+  uint8 temp[16];
+  uint8* p = &temp[0];
   for (unsigned int j = 0; j < 4; ++j) {
     unsigned int word = messageDigest[j];
     for (unsigned int k = 0; k < 4; ++k, word >>= 8) {

@@ -63,20 +63,22 @@ const uint32 CRC32::LOOKUP[256] = {
   0xb3667a2e, 0xc4614ab8, 0x5d681b02, 0x2a6f2b94, 0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
-CRC32::CRC32() throw() : checksum(0) {
+CRC32::CRC32() throw() : checksum(0), totalSize(0) {
 }
 
-void CRC32::push(const char* buffer, unsigned int size) throw() {
-  const char* const end = buffer + size;
+unsigned int CRC32::push(const uint8* buffer, unsigned int size) throw() {
+  const uint8* const end = buffer + size;
   uint32 crc = checksum ^ 0xffffffffU;
   while (buffer < end) {
-    crc = LOOKUP[(crc ^ static_cast<unsigned char>(*buffer++)) & 0xff] ^ (crc >> 8);
+    crc = LOOKUP[(crc ^ static_cast<uint8>(*buffer++)) & 0xff] ^ (crc >> 8);
   }
   checksum = crc ^ 0xffffffffL;
+  totalSize += size;
+  return size;
 }
 
-void CRC32::pushEnd() throw() {
-  // nothing to push
+unsigned long long CRC32::getTotalSize() const throw() {
+  return totalSize;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -16,6 +16,7 @@
 
 #include <base/string/String.h>
 #include <base/OutOfRange.h>
+#include <base/io/PushInterface.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -30,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   <pre>
   String message = "abcdefghijklmnopqrstuvwxyz";
   MD5Sum checksum;
-  checksum.push(Cast::pointer<const byte*>(message.getElements()), message.getLength());
+  checksum.push(Cast::pointer<const uint8*>(message.getElements()), message.getLength());
   checksum.pushEnd();
   fout << MESSAGE("message digest: ") << checksum.getValue() << ENDL;
   </pre>
@@ -42,7 +43,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class MD5Sum : public Object {
+class MD5Sum : public Object, public PushInterface {
 public:
 
   /** Internal block size in bytes. */
@@ -56,12 +57,12 @@ private:
   /** The total number of bytes pushed. */
   unsigned long long totalSize;
   /** Temporary container for incomplete 16 word block. */
-  byte buffer[BLOCK_SIZE];
+  uint8 buffer[BLOCK_SIZE];
   /** The number of bytes in the buffer. */
   unsigned int bytesInBuffer;
 
   /** Push one block (16 words). */
-  void pushBlock(const byte* block) throw();
+  void pushBlock(const uint8* block) throw();
 public:
 
   /**
@@ -77,19 +78,19 @@ public:
     @param buffer The buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  void push(const byte* buffer, unsigned int size) throw(OutOfRange);
-
+  unsigned int push(const uint8* buffer, unsigned int size) throw(OutOfRange);
+  
   /**
     This function should be invoked when the entire message has been pushed.
     Do NOT use push() after invoking this function.
   */
   void pushEnd() throw();
-
+  
   /**
     Returns the total size of the original message.
   */
   unsigned long long getTotalSize() const throw();
-
+  
   /**
     Returns the message digest encoded in hex. This is only valid after
     pushEnd() has been invoked.

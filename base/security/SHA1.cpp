@@ -136,8 +136,9 @@ void SHA1::pushBlock(const uint8* block) throw() {
   messageDigest[4] += e;
 }
 
-void SHA1::push(const uint8* buffer, unsigned int size) throw(OutOfRange) {
+unsigned int SHA1::push(const uint8* buffer, unsigned int size) throw(OutOfRange) {
   assert(size < MAXIMUM_SIZE - totalSize, OutOfRange());
+  unsigned int result = size;
   totalSize += size;
   if (size + bytesInBuffer >= BLOCK_SIZE) { // do we have a complete block
     if (bytesInBuffer > 0) { // do we need to empty internal buffer
@@ -156,6 +157,7 @@ void SHA1::push(const uint8* buffer, unsigned int size) throw(OutOfRange) {
 
   copy(this->buffer + bytesInBuffer, buffer, size); // put remaining octets into internal buffer
   bytesInBuffer += size;
+  return result;
 }
 
 void SHA1::pushEnd() throw() {

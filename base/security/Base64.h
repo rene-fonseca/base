@@ -102,7 +102,7 @@ public:
     @param buffer Buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  static String encode(const byte* buffer, unsigned int size) throw();
+  static String encode(const uint8* buffer, unsigned int size) throw();
 };
 
 inline Base64::Descriptor::Descriptor(const char* _buffer, unsigned int _size) throw()

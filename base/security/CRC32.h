@@ -16,6 +16,7 @@
 
 #include <base/Object.h>
 #include <base/Primitives.h>
+#include <base/io/PushInterface.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -25,16 +26,18 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short CRC-32.
   @ingroup security
-  @see MD5Sum SHA1
+  @see Adler32 MD5Sum SHA1
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
-class CRC32 : public Object {
+class CRC32 : public Object, public PushInterface {
 private:
 
   /** The current checksum. */
   uint32 checksum;
+  /** The total number of bytes pushed. */
+  unsigned long long totalSize;
 public:
 
   /** Lookup table of CRCs of all 8-bit messages. */
@@ -52,15 +55,13 @@ public:
     @param buffer The buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  void push(const char* buffer, unsigned int size) throw();
-
+  unsigned int push(const uint8* buffer, unsigned int size) throw();
+  
   /**
-    This function should be invoked when the entire message has been pushed.
-    Do NOT use push() after invoking this function. This method only provided
-    for compatibility with MD5SUM and SHA1 classes.
+    Returns the total size of the original message.
   */
-  void pushEnd() throw();
-
+  unsigned long long getTotalSize() const throw();
+  
   /**
     Returns the checksum.
   */
@@ -74,7 +75,6 @@ public:
   inline void setValue(uint32 value) throw() {
     checksum = value;
   }
-  
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

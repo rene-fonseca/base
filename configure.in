@@ -301,6 +301,13 @@ fi
 ${base_cleanup}
 ])
 
+dnl AC_BASE_ADDLIB(library list)
+AC_DEFUN(AC_BASE_ADDLIB, [dnl
+for ac_temp in [$1]; do
+  LIBS="${LIBS:-" "} ${ac_temp}"
+done
+])
+
 
 
 AC_BASE_CHECK(
@@ -333,7 +340,7 @@ AC_BASE_CHECK(
   ),
   base_cv_cxx_cross,
   base_cv_cxx_libs)
-LIBS="$LIBS $base_cv_cxx_libs"
+AC_BASE_ADDLIB($base_cv_cxx_libs)
 
 AC_BASE_CHECK(
   checking whether Standard Template Library is working,
@@ -348,7 +355,7 @@ AC_BASE_CHECK(
   ),
   base_cv_stl_available,
   base_cv_stl_libs)
-LIBS="$LIBS $base_cv_stl_libs"
+AC_BASE_ADDLIB($base_cv_stl_libs)
 
 
 
@@ -405,7 +412,7 @@ AC_BASE_YES(
   base_cv_inet_ipv6,
   AC_DEFINE(HAVE_INET_IPV6, 1, Specifies that the interface extensions for IP version 6 are present)
 )
-LIBS="$LIBS $base_cv_inet_libs"
+AC_BASE_ADDLIB($base_cv_inet_libs)
 
 AC_BASE_CHECK(
   checking whether pthread_yield is provided by the POSIX thread library,
@@ -423,7 +430,7 @@ AC_BASE_CHECK(
 if test $base_cv_pthread_yield = yes; then
   AC_DEFINE(HAVE_PTHREAD_YIELD, 1, Specifies that pthread_yield is provided by the POSIX threads library)
 fi
-LIBS="$LIBS $base_cv_pthread_yield_libs"
+AC_BASE_ADDLIB($base_cv_pthread_yield_libs)
 
 AC_BASE_CHECK(
   checking whether Posix semaphore is supported,
@@ -441,7 +448,7 @@ AC_BASE_CHECK(
 if test $base_cv_pthread_semaphore = yes; then
   AC_DEFINE(HAVE_PTHREAD_SEMAPHORE, 1, Specifies that Posix semaphore is supported)
 fi
-LIBS="$LIBS $base_cv_pthread_semaphore_libs"
+AC_BASE_ADDLIB($base_cv_pthread_semaphore_libs)
 
 AC_BASE_CHECK(
   checking whether Posix read-write lock is supported,
@@ -459,7 +466,7 @@ AC_BASE_CHECK(
 if test $base_cv_pthread_rwlock = yes; then
   AC_DEFINE(HAVE_PTHREAD_RWLOCK, 1, Specifies that Posix read-write lock is supported)
 fi
-LIBS="$LIBS $base_cv_pthread_rwlock_libs"
+AC_BASE_ADDLIB($base_cv_pthread_rwlock_libs)
 
 AC_CHECK_FUNCS(memchr memcmp memmove)
 

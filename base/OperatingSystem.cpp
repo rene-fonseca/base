@@ -12,24 +12,30 @@
  ***************************************************************************/
 
 #include <base/OperatingSystem.h>
+#include <base/Exception.h>
+
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  #include <windows.h>
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 #if (defined(_DK_SDU_MIP__BASE__DEBUG) && (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32))
 
-// anonymous namespace
-namespace {
+class CheckCondition {
+public:
 
-  class OperatingSystemCheck {
-  public:
-
-    OperatingSystemCheck() throw() {
-      ASSERT(sizeof(OperatingSystem::Handle) == sizeof(HANDLE));
-    }
-  };
-
-  OperatingSystemCheck check;
+  CheckCondition(bool condition, const char* message) throw() {
+    assert(condition, Exception(message));
+  }
 };
+
+#if defined(_DK_SDU_MIP__BASE__DEBUG)
+namespace { // anonymous namespace
+
+  CheckCondition check(sizeof(OperatingSystem::Handle) == sizeof(HANDLE), "Type mismatch");
+};
+#endif // debug
 
 #endif
 

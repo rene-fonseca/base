@@ -28,11 +28,18 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class OperatingSystem : public Object {
 public:
 
-  /** The type of an ordinary resource handle (do NOT assume anything about this type). */
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  typedef unsigned long Handle;
+  /** The type of an ordinary resource handle (do NOT assume anything about this type). */
+  typedef void* Handle;
+
+  /** This constants indicates an invalid handle. */
+  static const Handle INVALID_HANDLE = static_cast<char*>(0) - 1;
 #else
+  /** The type of an ordinary resource handle (do NOT assume anything about this type). */
   typedef int Handle;
+  
+  /** This constants indicates an invalid handle. */
+  static const Handle INVALID_HANDLE = -1;
 #endif
 };
 

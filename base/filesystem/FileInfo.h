@@ -34,21 +34,30 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class FileInfo : public Object {
 public:
+
+  /** Sticky bit. */
+  enum Sticky {
+    SET_UID = 0x4000, /**< Set user id on execution. */
+    SET_GID = 0x2000, /**< Set group id on execution. */
+    RESTRICT = 0x1000, /**< Restrict flag. */
+    STICKY_MASK = SET_UID|SET_GID|RESTRICT /**< All sticky bits. */
+  };
   
   /** Permissions. */
   enum Permissions {
-    RWXU = 0x700, /**< Read, write, and execute permissions for the owner of the file. */
     RUSR = 0x400, /**< Read permission for the owner of the file. */
     WUSR = 0x200, /**< Write permission for the owner of the file. */
     XUSR = 0x100, /**< Execute permission for the owner of the file. */
-    RWXG = 0x70, /**< Read, write, and execute permissions for the group associated with the file. */
+    RWXU = RUSR|WUSR|XUSR, /**< Read, write, and execute permissions for the owner of the file. */
     RGRP = 0x40, /**< Read permission for the group associated with the file. */
     WGRP = 0x20, /**< Write permission for the group associated with the file. */
     XGRP = 0x10, /**< Execute permission for the group associated with the file. */
-    RWXO = 0x7, /**< Read, write, and execute permissions for other users. */
+    RWXG = RGRP|WGRP|XGRP, /**< Read, write, and execute permissions for the group associated with the file. */
     ROTH = 0x4, /**< Read permission for other users. */
     WOTH = 0x2, /**< Write permission for other users. */
-    XOTH = 0x1 /**< Execute permission for other users. */
+    XOTH = 0x1, /**< Execute permission for other users. */
+    RWXO = ROTH|WOTH|XOTH, /**< Read, write, and execute permissions for other users. */
+    PERMISSION_MASK = RWXU|RWXG|RWXO /**< Any access. */
   };
 private:
 

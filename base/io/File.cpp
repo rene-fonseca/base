@@ -292,13 +292,31 @@ unsigned int File::getMode() const throw(FileException) {
   #endif
   assert(error == 0, FileException(this));
 
-  if ((S_IRUSR == File::RUSR) && (S_IWUSR == File::WUSR) && (S_IXUSR == File::XUSR) &&
+#if defined(S_ISUID) && defined(S_ISGID) && defined(S_ISVTX)
+  if ((S_ISUID == File::SET_UID) && (S_ISGID == File::SET_GID) && (S_ISVTX == File::RESTRICT) &&
+      (S_IRUSR == File::RUSR) && (S_IWUSR == File::WUSR) && (S_IXUSR == File::XUSR) &&
       (S_IRGRP == File::RGRP) && (S_IWGRP == File::WGRP) && (S_IXGRP == File::XGRP) &&
       (S_IROTH == File::ROTH) && (S_IWOTH == File::WOTH) && (S_IXOTH == File::XOTH)) {
-    return status.st_mode & File::ANY;
+    return status.st_mode & (File::PERMISSION_MASK|STICKY_MASK);
   } else {
-    unsigned int result = 0;    
-    if (status.st_mode & S_IRUSR) { // mode reset above
+#endif
+    unsigned int result = 0;
+#if defined(S_ISUID)
+    if (status.st_mode & S_ISUID) {
+      result |= File::SET_UID;
+    }
+#endif
+#if defined(S_ISGID)
+    if (status.st_mode & S_ISGID) {
+      result |= File::SET_GID;
+    }
+#endif
+#if defined(S_ISVTX)
+    if (status.st_mode & S_ISVTX) {
+      result |= File::RESTRICT;
+    }
+#endif
+    if (status.st_mode & S_IRUSR) {
       result |= File::RUSR;
     }
     if (status.st_mode & S_IWUSR) {
@@ -326,7 +344,9 @@ unsigned int File::getMode() const throw(FileException) {
       result |= File::XOTH;
     }
     return result;
+#if defined(S_ISUID) && defined(S_ISGID) && defined(S_ISVTX)
   }
+#endif  
 #endif // flavor
 }
 

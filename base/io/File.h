@@ -69,6 +69,14 @@ public:
     APPEND = 16 /**< Specifies that data should be appended to the file. */
   };
 
+  /** Sticky bit. */
+  enum Sticky {
+    SET_UID = 0x4000, /**< Set user id on execution. */
+    SET_GID = 0x2000, /**< Set group id on execution. */
+    RESTRICT = 0x1000, /**< Restrict flag. */
+    STICKY_MASK = SET_UID|SET_GID|RESTRICT /**< All sticky bits. */
+  };
+
   /** Permissions. */
   enum Permissions {
     RUSR = 0x400, /**< Read permission for the owner of the file. */
@@ -83,9 +91,9 @@ public:
     WOTH = 0x2, /**< Write permission for other users. */
     XOTH = 0x1, /**< Execute permission for other users. */
     RWXO = ROTH|WOTH|XOTH, /**< Read, write, and execute permissions for other users. */
-    ANY = RWXU|RWXG|RWXO /**< Any access. */
+    PERMISSION_MASK = RWXU|RWXG|RWXO /**< Any access. */
   };
-
+  
   class FileHandle : public Handle {
     friend class Initialization;
     friend class File;

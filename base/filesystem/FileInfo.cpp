@@ -274,8 +274,32 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException) : path(_path)
       throw FileSystemException("Not a file", this);
     }
   #endif
-    
-  if (status.st_mode & S_IRUSR) { // mode reset above
+
+  // mode reset above
+#if defined(S_ISUID) && defined(S_ISGID) && defined(S_ISVTX)
+  if ((S_ISUID == FileInfo::SET_UID) && (S_ISGID == FileInfo::SET_GID) && (S_ISVTX == FileInfo::RESTRICT) &&
+      (S_IRUSR == FileInfo::RUSR) && (S_IWUSR == FileInfo::WUSR) && (S_IXUSR == FileInfo::XUSR) &&
+      (S_IRGRP == FileInfo::RGRP) && (S_IWGRP == FileInfo::WGRP) && (S_IXGRP == FileInfo::XGRP) &&
+      (S_IROTH == FileInfo::ROTH) && (S_IWOTH == FileInfo::WOTH) && (S_IXOTH == FileInfo::XOTH)) {
+    return status.st_mode & (File::PERMISSION_MASK|STICKY_MASK);
+  } else {
+#endif
+#if defined(S_ISUID)
+  if (status.st_mode & S_ISUID) {
+    mode |= FileInfo::SET_UID;
+  }
+#endif
+#if defined(S_ISGID)
+  if (status.st_mode & S_ISGID) {
+    mode |= FileInfo::SET_GID;
+  }
+#endif
+#if defined(S_ISVTX)
+  if (status.st_mode & S_ISVTX) {
+    mode |= FileInfo::RESTRICT;
+  }
+#endif
+  if (status.st_mode & S_IRUSR) {
     mode |= FileInfo::RUSR;
   }
   if (status.st_mode & S_IWUSR) {
@@ -302,6 +326,9 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException) : path(_path)
   if (status.st_mode & S_IXOTH) {
     mode |= FileInfo::XOTH;
   }
+#if defined(S_ISUID) && defined(S_ISGID) && defined(S_ISVTX)
+  }
+#endif
   
   size = status.st_size;
   owner = User((const void*)(MemoryDiff)status.st_uid);

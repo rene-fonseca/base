@@ -273,7 +273,31 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
     }
   #endif
     
-  if (status.st_mode & S_IRUSR) { // mode reset above
+  // mode reset above
+#if defined(S_ISUID) && defined(S_ISGID) && defined(S_ISVTX)
+  if ((S_ISUID == FolderInfo::SET_UID) && (S_ISGID == FolderInfo::SET_GID) && (S_ISVTX == FolderInfo::RESTRICT) &&
+      (S_IRUSR == FolderInfo::RUSR) && (S_IWUSR == FolderInfo::WUSR) && (S_IXUSR == FolderInfo::XUSR) &&
+      (S_IRGRP == FolderInfo::RGRP) && (S_IWGRP == FolderInfo::WGRP) && (S_IXGRP == FolderInfo::XGRP) &&
+      (S_IROTH == FolderInfo::ROTH) && (S_IWOTH == FolderInfo::WOTH) && (S_IXOTH == FolderInfo::XOTH)) {
+    return status.st_mode & (File::PERMISSION_MASK|STICKY_MASK);
+  } else {
+#endif
+#if defined(S_ISUID)
+  if (status.st_mode & S_ISUID) {
+    mode |= FolderInfo::SET_UID;
+  }
+#endif
+#if defined(S_ISGID)
+  if (status.st_mode & S_ISGID) {
+    mode |= FolderInfo::SET_GID;
+  }
+#endif
+#if defined(S_ISVTX)
+  if (status.st_mode & S_ISVTX) {
+    mode |= FolderInfo::RESTRICT;
+  }
+#endif
+  if (status.st_mode & S_IRUSR) {
     mode |= FolderInfo::RUSR;
   }
   if (status.st_mode & S_IWUSR) {
@@ -300,6 +324,9 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
   if (status.st_mode & S_IXOTH) {
     mode |= FolderInfo::XOTH;
   }
+#if defined(S_ISUID) && defined(S_ISGID) && defined(S_ISVTX)
+  }
+#endif
 
   owner = User((const void*)(MemoryDiff)status.st_uid);
   group = Group((const void*)(MemoryDiff)status.st_gid);

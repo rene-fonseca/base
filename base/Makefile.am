@@ -13,6 +13,7 @@
 
 include $(top_srcdir)/common.am
 
+# the "platforms" directory must be built before all other source
 SUBDIRS = docs platforms collection communication concurrency dl filesystem io iterator mathematics mem net security sound string xml
 
 lib_LTLIBRARIES = libbase.la
@@ -22,15 +23,13 @@ libbase_la_SOURCES = Character.cpp Construct.cpp Date.cpp DateException.cpp Dest
 sectiondir = $(includedir)/base
 section_HEADERS = configuration.h features.h Dimension.h Exception.h FloatingPoint.h Object.h Character.h Range2D.h ShortInteger.h Iterator.h Trace.h RandomIterator.h ForwardIterator.h BidirectionalIterator.h Comparable.h Copyable.h Integer.h UnsignedInteger.h LongInteger.h UnsignedLongInteger.h Overflow.h Underflow.h OutOfRange.h OutOfBounds.h OutOfDomain.h Primitives.h ResourceException.h MemoryException.h DeviceException.h Construct.h Destruct.h Base.h Functor.h Date.h DateException.h Listener.h Timer.h Type.h TypeInfo.h ByteOrder.h Application.h SingletonException.h Daemon.h SystemLogger.h NotImplemented.h NotSupported.h UnexpectedFailure.h Version.h OperatingSystem.h SystemInformation.h ProcessPreinitialization.h
 
-libbase_la_LIBADD = collection/libcollection.la communication/libcommunication.la concurrency/libconcurrency.la filesystem/libfilesystem.la io/libio.la io/async/libaio.la iterator/libiterator.la mathematics/libmathematics.la mem/libmem.la net/libnet.la platforms/libplatform.la string/libstring.la dl/libdl.la xml/libxml.la security/libsecurity.la sound/libsound.la @BASE_LIBADD@ @BASE_LIBS@
+libbase_la_LIBADD = collection/libcollection.la communication/libcommunication.la concurrency/libconcurrency.la filesystem/libfilesystem.la io/libio.la io/async/libaio.la iterator/libiterator.la mathematics/libmathematics.la mem/libmem.la net/libnet.la platforms/libplatform.la string/libstring.la dl/libdl.la xml/libxml.la security/libsecurity.la sound/libsound.la @LIBADD_BASE@ @LIBS_BASE@
 
-libbase_la_LDFLAGS = -no-undefined -version-info 0:0:0 @BASE_LDFLAGS@
+libbase_la_LDFLAGS = -no-undefined -version-info 0:0:0 @LDFLAGS_BASE@
 
-libbase_la_DEPENDENCIES = collection/libcollection.la communication/libcommunication.la concurrency/libconcurrency.la filesystem/libfilesystem.la io/libio.la io/async/libaio.la iterator/libiterator.la mathematics/libmathematics.la mem/libmem.la net/libnet.la platforms/libplatform.la string/libstring.la dl/libdl.la xml/libxml.la security/libsecurity.la sound/libsound.la @BASE_DEPENDENCIES@
+libbase_la_DEPENDENCIES = collection/libcollection.la communication/libcommunication.la concurrency/libconcurrency.la filesystem/libfilesystem.la io/libio.la io/async/libaio.la iterator/libiterator.la mathematics/libmathematics.la mem/libmem.la net/libnet.la platforms/libplatform.la string/libstring.la dl/libdl.la xml/libxml.la security/libsecurity.la sound/libsound.la @DEPENDENCIES_BASE@
 
 # Windows version resource
 # TAG: move to platform specific directory
 winrcver.o: base.rc
-	cp $< temp.h
-	windres --preprocessor "${CXXCPP} ${INCLUDES} ${CPPFLAGS}" --output-format coff temp.h $@
-	-rm -f temp.h
+	cat $< | windres --preprocessor "${CXXCPP} ${INCLUDES} ${CPPFLAGS}" -o $@ --output-format coff

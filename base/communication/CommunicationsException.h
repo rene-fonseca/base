@@ -19,7 +19,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Exception thrown by communications ports.
+  Exception raised by communications ports.
 
   @short General communications exception
   @ingroup exceptions

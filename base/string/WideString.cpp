@@ -19,6 +19,10 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if !defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
+  #warning Assumes that mbstowcs is reentrant
+#endif
+
 const WideString WideString::DEFAULT_STRING(WIDEMESSAGE(""));
 
 WideString::WideString() throw() : elements(DEFAULT_STRING.elements) {

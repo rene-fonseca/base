@@ -23,7 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   representation.
 
   @see ExpressionParser
-  @ingroup exceptions
+  @ingroup exceptions mathematics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -55,6 +55,23 @@ public:
   */
   ExpressionException(unsigned int index, const char* message) throw();
 
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
+  inline ExpressionException(Type type) throw() : Exception(type) {
+  }
+  
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  inline ExpressionException(const char* message, Type type) throw() : Exception(message, type) {
+  }
+  
   /**
     Returns the index of the error in the expression representation.
   */

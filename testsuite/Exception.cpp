@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -99,6 +99,9 @@ public:
 
   void testDemangling() throw() {
     foo::bar<int, unsigned int>::myFunction<long long>(foo(), foo::bar<int, unsigned int>(), Hello(), World(), World(), Hello(), 0);
+
+    testDemangling(MESSAGE("N3gip7ConvertINS_10ArrayImageIfEENS1_INS_8RGBPixelIhEEEENS_10RGBToFloatEEE"),
+                          MESSAGE("gip::Convert<gip::ArrayImage<float>, gip::ArrayImage<gip::RGBPixel<unsigned char> >, gip::RGBToFloat>"));
 
     // member type
     testDemangling(MESSAGE("10myFunctionM5HelloFixE"), MESSAGE("myFunction(int (Hello::*)(long long))"));

@@ -18,6 +18,10 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+/**
+  @defgroup mathematics Mathematics
+*/
+
 namespace isoc {
   extern "C" float fabsf(float);
   extern "C" double fabs(double);
@@ -127,7 +131,8 @@ namespace isoc {
 
 /**
   This class is a placeholder for mathematical functions.
-  
+
+  @ingroup mathematics
   @short Mathematical functions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

@@ -67,6 +67,7 @@ libbase_la_SOURCES = \
   OutOfDomain.cpp \
   OutOfRange.cpp \
   Overflow.cpp \
+  Polymorphic.cpp \
   Primitives.cpp \
   Range2D.cpp \
   ResourceException.cpp \
@@ -122,6 +123,7 @@ section_HEADERS = \
   OutOfRange.h \
   OutOfBounds.h \
   OutOfDomain.h \
+  Polymorphic.h \
   Primitives.h \
   ResourceException.h \
   MemoryException.h \

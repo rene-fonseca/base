@@ -12,7 +12,7 @@
  ***************************************************************************/
 
 #include <base/platforms/win32/AsyncReadFileContext.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 #include <base/Trace.h>
 
 #if !(_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
@@ -43,7 +43,7 @@ namespace win32 {
     context->selfReference = 0; // release destruction lock (do NOT access state hereafter)
   }
 
-  AsyncReadFileContext::AsyncReadFileContext(OperatingSystem::Handle handle, void* _buffer, unsigned int _bytesToRead, unsigned long long _offset, AsynchronousReadEventListener* _listener) throw(IOException) 
+  AsyncReadFileContext::AsyncReadFileContext(OperatingSystem::Handle handle, char* _buffer, unsigned int _bytesToRead, unsigned long long _offset, AsynchronousReadEventListener* _listener) throw(IOException) 
     : listener(_listener),
       buffer(_buffer),
       bytesToRead(_bytesToRead),

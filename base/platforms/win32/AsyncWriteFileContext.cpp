@@ -12,7 +12,7 @@
  ***************************************************************************/
 
 #include <base/platforms/win32/AsyncWriteFileContext.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 #include <base/Trace.h>
 
 #if !(_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
@@ -41,7 +41,7 @@ namespace win32 {
     context->selfReference = 0; // release destruction lock (do NOT access state hereafter)
   }
 
-  AsyncWriteFileContext::AsyncWriteFileContext(OperatingSystem::Handle handle, const void* _buffer, unsigned int _bytesToWrite, unsigned long long _offset, AsynchronousWriteEventListener* _listener) throw(IOException) 
+  AsyncWriteFileContext::AsyncWriteFileContext(OperatingSystem::Handle handle, const char* _buffer, unsigned int _bytesToWrite, unsigned long long _offset, AsynchronousWriteEventListener* _listener) throw(IOException) 
     : listener(_listener),
       buffer(_buffer),
       bytesToWrite(_bytesToWrite),

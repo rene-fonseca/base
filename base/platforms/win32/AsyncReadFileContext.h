@@ -21,7 +21,7 @@
 #include <base/io/async/AsynchronousReadContext.h>
 #include <base/io/IOException.h>
 #include <base/OperatingSystem.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 
 #include <windows.h>
 
@@ -41,7 +41,7 @@ namespace win32 {
     
     AsynchronousReadEventListener* listener;
     CallbackInfo callbackInfo;
-    void* buffer;
+    char* buffer;
     unsigned int bytesToRead;
     unsigned long long offset;
     unsigned int bytesRead;
@@ -52,7 +52,7 @@ namespace win32 {
     }
   public:
     
-    AsyncReadFileContext(OperatingSystem::Handle handle, void* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(IOException);
+    AsyncReadFileContext(OperatingSystem::Handle handle, char* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(IOException);
   public:
 
     AsynchronousReadCompletion getCompletion() const throw() {

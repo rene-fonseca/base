@@ -21,7 +21,7 @@
 #include <base/io/async/AsynchronousWriteContext.h>
 #include <base/io/IOException.h>
 #include <base/OperatingSystem.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 
 #include <windows.h>
 
@@ -41,7 +41,7 @@ namespace win32 {
     
     AsynchronousWriteEventListener* listener;
     CallbackInfo callbackInfo;
-    const void* buffer;
+    const char* buffer;
     unsigned int bytesToWrite;
     unsigned long long offset;
     unsigned int bytesWritten;
@@ -52,7 +52,7 @@ namespace win32 {
       listener->asynchronousCompletion(AsynchronousWriteCompletion(buffer, bytesToWrite, offset, bytesWritten, flags));
     }
     
-    AsyncWriteFileContext(OperatingSystem::Handle handle, const void* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(IOException);
+    AsyncWriteFileContext(OperatingSystem::Handle handle, const char* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(IOException);
   public:
 
     AsynchronousWriteCompletion getCompletion() const throw() {

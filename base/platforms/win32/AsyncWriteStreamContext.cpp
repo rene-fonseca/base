@@ -40,7 +40,7 @@ namespace win32 {
     context->selfReference = 0; // release destruction lock (do NOT access state hereafter)
   }
 
-  AsyncWriteStreamContext::AsyncWriteStreamContext(OperatingSystem::Handle handle, const void* _buffer, unsigned int _bytesToWrite, AsynchronousWriteEventListener* _listener) throw(IOException)
+  AsyncWriteStreamContext::AsyncWriteStreamContext(OperatingSystem::Handle handle, const char* _buffer, unsigned int _bytesToWrite, AsynchronousWriteEventListener* _listener) throw(IOException)
     : listener(_listener),
       buffer(_buffer),
       bytesToWrite(_bytesToWrite),

@@ -42,7 +42,7 @@ namespace win32 {
     context->selfReference = 0; // release destruction lock (do NOT access state hereafter)
   }
 
-  AsyncReadStreamContext::AsyncReadStreamContext(OperatingSystem::Handle handle, void* _buffer, unsigned int _bytesToRead, AsynchronousReadEventListener* _listener) throw(IOException)
+  AsyncReadStreamContext::AsyncReadStreamContext(OperatingSystem::Handle handle, char* _buffer, unsigned int _bytesToRead, AsynchronousReadEventListener* _listener) throw(IOException)
     : listener(_listener),
       buffer(_buffer),
       bytesToRead(_bytesToRead),

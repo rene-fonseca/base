@@ -378,7 +378,7 @@ namespace primitives {
   /**
     Specifies whether or not the type is void.
 
-    @short Void information.
+    @short Is void primitive type.
   */
   template<class TYPE> class Void {
   public:
@@ -409,7 +409,7 @@ namespace primitives {
     }
     @endcode
 
-    @short Cardinal information.
+    @short Is cardinal primitive type.
   */
   template<class TYPE> class Cardinal {
   public:
@@ -513,7 +513,7 @@ namespace primitives {
     }
     @endcode
 
-    @short Floating point information.
+    @short Is floating point primitive type.
   */
   template<class TYPE> class FloatingPoint {
   public:
@@ -543,7 +543,7 @@ namespace primitives {
     Specifies whether or not the given type is an arithmetic (i.e. cardinal or
     floating) type.
     
-    @short Arithmetic information.
+    @short Is arithmetic primitive type.
   */
   template<class TYPE>
   class Arithmetic {
@@ -557,6 +557,8 @@ namespace primitives {
 
   /**
     Specifies whether or not the given type is a primitive (built-in) type.
+    
+    @short Is primitive type.
   */
   template<class TYPE>
   class Primitive {
@@ -571,6 +573,8 @@ namespace primitives {
 
 /**
   Contains information about the primitive type.
+  
+  @short Provides information for a primitive type.
 */
 template<class PRIMITIVE>
 class PrimitiveTraits {

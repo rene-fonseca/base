@@ -33,7 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   An ordered sequence of boolean values (bits). The is offen used to represent
   a set of flags. This class does not take up as much memory as Array<bool>.
   
-  @short Set of bits
+  @short Set of bits collection.
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

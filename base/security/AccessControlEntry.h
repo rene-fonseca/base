@@ -87,7 +87,7 @@ public:
   /** The access mask. */
   typedef uint32 AccessMask;
   
-  /** Access masks. */
+  /* Access masks. */
   struct Permissions {
     /** The allowed permissions. */
     AccessMask allowed;
@@ -108,7 +108,8 @@ public:
   AccessControlEntry() throw();
   
   /**
-    Initializes ACE with specified trustee and no allowed access (and no denied access).
+    Initializes ACE with specified trustee and no allowed access (and no denied
+    access).
   */
   AccessControlEntry(const Trustee& trustee) throw();
   
@@ -128,7 +129,8 @@ public:
     @param trustee The trustee.
     @param permissions The allowed/denied permissions (e.g. READ, WRITE, ...).
   */
-  AccessControlEntry(const Trustee& trustee, const Permissions& permissions) throw();
+  AccessControlEntry(
+    const Trustee& trustee, const Permissions& permissions) throw();
   
   /**
     Initialization of object from other object.
@@ -197,7 +199,8 @@ public:
 /**
   Writes an Access Control Entry (ACE) to a format output stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const AccessControlEntry& ace) throw(IOException);
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const AccessControlEntry& ace) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

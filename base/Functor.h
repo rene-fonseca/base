@@ -811,7 +811,33 @@ public:
 };
 
 /**
-  This function object calculates the sums of the square of objects of a
+  This function object calculates the sum the absolute value of the objects of a
+  sequence.
+
+  @short Absolute summation function object.
+*/
+template<class TYPE, class RESULT = TYPE>
+class AbsoluteSum : public UnaryOperation<TYPE, RESULT> {
+protected:
+  
+  RESULT result;
+public:
+  
+  inline AbsoluteSum() throw()
+    : result(0) {
+  }
+  
+  inline void operator()(const TYPE& value) throw() {
+    result += absolute(value);
+  }
+  
+  inline RESULT getResult() const throw() {
+    return result;
+  }
+};
+
+/**
+  This function object calculates the sum of the square of the objects of a
   sequence.
 
   @short Square summation function object.

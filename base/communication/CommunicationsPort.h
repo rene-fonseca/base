@@ -24,8 +24,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 /**
-  A communications port.
-
+  This is the base class of all communication ports.
+  
+  @short A communications port.
   @see Communications port.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -33,7 +34,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class CommunicationsPort : public Object {
 public:
-
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -59,7 +59,8 @@ class Synchronizeable : public virtual LOCK {
 private:
 
   /**
-    Copy constructor. Does not copy the internal locking object but creates a new locking object.
+    Copy constructor. Does not copy the internal locking object but creates a new
+    locking object.
   */
   inline Synchronizeable(const Synchronizeable& copy) : LOCK() {
   }
@@ -105,9 +106,11 @@ public:
 
 
 
-/**
-  Specialization of the template class Synchronizeable that is intended for single threaded appliances.
-
+/*
+  Specialization of the template class Synchronizeable that is intended for
+  single threaded appliances.
+  
+  @short Unsafe synchronizeable.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -32,7 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   provides random access to the individual elements. Elements must have a
   default constructor.
   
-  @short Array.
+  @short Array collection.
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   A node in a list.
 
-  @short A node in a list
+  @short A node in a list.
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -83,63 +83,6 @@ public:
     this->value = value;
   }
 };
-
-
-
-//template<class TYPE>
-//class ListNodePointer {
-//private:
-//
-//  ListNode<TYPE>* node;
-//public:
-//
-//  ListNodePointer(ListNode<TYPE>* node) : node(node) {
-//  }
-//
-//  ListNodePointer(const ListNodePointer& copy) : node(copy.node) {
-//  }
-//
-//  ListNodePointer& operator=(const ListNodePointer& eq) {
-//    node = eq.node;
-//    return *this;
-//  }
-//
-//  void operator--() {
-//    node = node->getPrevious();
-//  }
-//
-//  void operator--(int) {
-//    ListNode<TYPE>* temp = node;
-//    node = node->getPrevious();
-//    return temp;
-//  }
-//
-//  void operator++() {
-//    node = node->getNext();
-//  }
-//
-//  void operator++(int) {
-//    ListNode<TYPE>* temp = node;
-//    node = node->getNext();
-//    return temp;
-//  }
-//
-//  TYPE* operator*() {
-//    return node->getValue();
-//  }
-//
-//  TYPE* operator->() {
-//    return node->getValue();
-//  }
-//
-//  inline bool operator==(const ListNodePointer& eq) const throw() {
-//    return node == eq.node;
-//  }
-//
-//  inline bool operator!=(const ListNodePointer& eq) const throw() {
-//    return node != eq.node;
-//  }
-//};
 
 
 
@@ -293,7 +236,7 @@ public:
     }
   @endcode
 
-  @short List.
+  @short List collection.
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

@@ -104,7 +104,7 @@ namespace ByteOrder {
   struct LittleEndian {
   };
 
-  /** 16 bit signed integer represented in little endian byte order. */
+  /* 16 bit signed integer represented in little endian byte order. */
   template<>
   struct LittleEndian<int16> {
     uint8 a;
@@ -128,7 +128,7 @@ namespace ByteOrder {
     }
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /** 16 bit unsigned integer represented in little endian byte order. */
+  /* 16 bit unsigned integer represented in little endian byte order. */
   template<>
   struct LittleEndian<uint16> {
     uint8 a;
@@ -152,7 +152,7 @@ namespace ByteOrder {
     }
   } _DK_SDU_MIP__BASE__PACKED;
 
-  /** 32 bit signed integer represented in little endian byte order. */
+  /* 32 bit signed integer represented in little endian byte order. */
   template<>
   struct LittleEndian<int32> {
     uint8 a;
@@ -180,7 +180,7 @@ namespace ByteOrder {
     }
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /** 32 bit unsigned integer represented in little endian byte order. */
+  /* 32 bit unsigned integer represented in little endian byte order. */
   template<>
   struct LittleEndian<uint32> {
     uint8 a;
@@ -208,7 +208,7 @@ namespace ByteOrder {
     }
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /** 64 bit signed integer represented in little endian byte order. */
+  /* 64 bit signed integer represented in little endian byte order. */
   template<>
   struct LittleEndian<int64> {
     LittleEndian<uint32> a;
@@ -232,7 +232,7 @@ namespace ByteOrder {
     }
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /** 64 bit unsigned integer represented in little endian byte order. */
+  /* 64 bit unsigned integer represented in little endian byte order. */
   template<>
   struct LittleEndian<uint64> {
     LittleEndian<uint32> a;
@@ -333,7 +333,7 @@ namespace ByteOrder {
   struct BigEndian {
   };
 
-  /** 16 bit signed integer represented in big endian byte order. */
+  /* 16 bit signed integer represented in big endian byte order. */
   template<>
   struct BigEndian<int16> {
     uint8 b;
@@ -357,7 +357,7 @@ namespace ByteOrder {
     }
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /** 16 bit unsigned integer represented in big endian byte order. */
+  /* 16 bit unsigned integer represented in big endian byte order. */
   template<>
   struct BigEndian<uint16> {
     uint8 b;
@@ -381,7 +381,7 @@ namespace ByteOrder {
     }
   } _DK_SDU_MIP__BASE__PACKED;
 
-  /** 32 bit signed integer represented in big endian byte order. */
+  /* 32 bit signed integer represented in big endian byte order. */
   template<>
   struct BigEndian<int32> {
     uint8 d;
@@ -409,7 +409,7 @@ namespace ByteOrder {
     }
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /** 32 bit unsigned integer represented in big endian byte order. */
+  /* 32 bit unsigned integer represented in big endian byte order. */
   template<>
   struct BigEndian<uint32> {
     uint8 d;
@@ -437,7 +437,7 @@ namespace ByteOrder {
     }
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /** 64 bit signed integer represented in big endian byte order. */
+  /* 64 bit signed integer represented in big endian byte order. */
   template<>
   struct BigEndian<int64> {
     BigEndian<uint32> b;
@@ -461,7 +461,7 @@ namespace ByteOrder {
     }
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /** 64 bit unsigned integer represented in big endian byte order. */
+  /* 64 bit unsigned integer represented in big endian byte order. */
   template<>
   struct BigEndian<uint64> {
     BigEndian<uint32> b;

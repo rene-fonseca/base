@@ -38,7 +38,7 @@ friend class XMLParserImpl;
 public:
 
   /**
-    @short Call back interface.
+    @short XML parser call back interface.
   */
   class Callback : public virtual Object {
   public:

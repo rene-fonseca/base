@@ -29,11 +29,12 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   A stack is a last-in-first-out data structure. This class is implemented as a
   linked list.
   
-  @short Stack of elements
+  @short Stack collection.
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */
+
 template<class TYPE>
 class Stack : public Collection {
 protected:

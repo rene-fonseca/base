@@ -73,10 +73,10 @@ public:
   };
 private:
 
-  /**
+  /*
     Wrapper runnable used by ThreadPool to run the jobs. All the threads of the
     thread pool share one runnable object.
-
+    
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */

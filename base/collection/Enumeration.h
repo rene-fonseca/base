@@ -20,6 +20,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Defines the types of a modifying (has write access to the elements) enumerator.
+
+  @short Descriptor for modifying enumerator.
+  @ingroup collections
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.0
 */
 template<class VALUE>
 class EnumeratorTraits {
@@ -36,8 +41,8 @@ public:
 /**
   Defines the types of a non-modifying enumerator (may only read the values of
   the elements).
-
-  @short Enumeration interface for non-modifying access
+  
+  @short Descriptor for non-modifying enumerator.
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

@@ -142,7 +142,7 @@ public:
     EXTENSION /**< The extension (excluding the dot). */
   };
   
-  /** Quota. */
+  /* Quota. */
   struct Quota {
     /** Hard limit. */
     uint64 softLimit;

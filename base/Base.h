@@ -105,6 +105,7 @@ template<class TYPE> inline TYPE absolute(const TYPE& value) {
   @param assertion The assertion.
   @param exception The exception.
 
+  @ingroup debugging
   @see Assertion
 */
 template<class EXCEPTION>
@@ -115,8 +116,10 @@ inline void assert(bool assertion, EXCEPTION exception) throw(EXCEPTION) {
 }
 
 /**
-  Assertion.
-
+  This class allows assertions to be specified outside a function body. This
+  class may be used to check an assertion during application initialization.
+  
+  @short Assertion.
   @ingroup debugging
   @see assert
 */

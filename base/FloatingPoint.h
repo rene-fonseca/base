@@ -79,7 +79,7 @@ public:
   public:
     // TAG: problem if sizeof(uint32) != sizeof(unsigned int)
     
-    /** Representation of single precision (32-bit) floating point type as specified by IEEE 754. */
+    /* Representation of single precision (32-bit) floating point type as specified by IEEE 754. */
     struct IEEE754SinglePrecision {
       static const bool HAS_IMPLIED_ONE = true;
       static const int MINIMUM_EXPONENT = -125;
@@ -109,7 +109,7 @@ public:
 #endif // bit allocation
     } _DK_SDU_MIP__BASE__PACKED;
     
-    /** Representation of double precision (64-bit) floating point type as specified by IEEE 754. */
+    /* Representation of double precision (64-bit) floating point type as specified by IEEE 754. */
     struct IEEE754DoublePrecision {
       static const bool HAS_IMPLIED_ONE = true;
       static const int MINIMUM_EXPONENT = -1021;
@@ -143,7 +143,7 @@ public:
 #endif // bit allocation
     } _DK_SDU_MIP__BASE__PACKED;
     
-    /** Representation of double-extended precision (96-bit) floating point type. */
+    /* Representation of double-extended precision (96-bit) floating point type. */
     struct IEEEExtendedDoublePrecision96 {
       static const bool HAS_IMPLIED_ONE = false;
       static const int MINIMUM_EXPONENT = -16381;
@@ -181,7 +181,7 @@ public:
 #endif // bit allocation
     } _DK_SDU_MIP__BASE__PACKED;
     
-    /** Representation of double-extended precision (128-bit) floating point type. */
+    /* Representation of double-extended precision (128-bit) floating point type. */
     struct IEEEExtendedDoublePrecision128 {
       static const bool HAS_IMPLIED_ONE = false;
       static const int BIAS = 0x3fff;
@@ -221,7 +221,7 @@ public:
 #endif // bit allocation
     } _DK_SDU_MIP__BASE__PACKED;
   
-    /** Representation of quadruple precision (128-bit) floating point type. */
+    /* Representation of quadruple precision (128-bit) floating point type. */
     struct IEEEQuadruplePrecision {
       static const bool HAS_IMPLIED_ONE = true;
       static const int MINIMUM_EXPONENT = -16381;
@@ -306,7 +306,7 @@ public:
 #  error Invalid floating-point representation of type long double
 #endif
   
-  /* IEEE 754 single precision convertion support. */
+  /** @short IEEE 754 single precision convertion support. */
   struct IEEE754SinglePrecision {
     Representation::IEEE754SinglePrecision value;
     
@@ -401,7 +401,7 @@ public:
     operator long double() const throw();
   } _DK_SDU_MIP__BASE__PACKED;
 
-  /* IEEE 754 double precision convertion support. */
+  /** @short IEEE 754 double precision convertion support. */
   struct IEEE754DoublePrecision {
     Representation::IEEE754DoublePrecision value;
     
@@ -487,7 +487,7 @@ public:
     operator long double() const throw();
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /* IEEE extended double precision (96 bit) convertion support. */
+  /** @short IEEE extended double precision (96 bit) convertion support. */
   struct IEEEExtendedDoublePrecision96 {
     Representation::IEEEExtendedDoublePrecision128 value;
     
@@ -584,7 +584,7 @@ public:
     operator long double() const throw();
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /* IEEE extended double precision (128 bit) convertion support. */
+  /** @short IEEE extended double precision (128 bit) convertion support. */
   struct IEEEExtendedDoublePrecision128 {
     Representation::IEEEExtendedDoublePrecision128 value;
     
@@ -681,7 +681,7 @@ public:
     operator long double() const throw();
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /* IEEE quadruple precision convertion support. */
+  /** @short IEEE quadruple precision convertion support. */
   struct IEEEQuadruplePrecision {
     Representation::IEEEQuadruplePrecision value;
     

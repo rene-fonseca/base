@@ -76,7 +76,7 @@ public:
   /** Thread resource identifier type. */
   typedef void* Identifier;
 
-  /** Structure holding the user and system times. */
+  /* Structure holding the user and system times. */
   struct Times {
     /** The user mode time in nanoseconds. */
     unsigned long long user;
@@ -204,7 +204,7 @@ private:
   /** Termination synchronization object. */
   Event terminationEvent;
   
-  /**
+  /*
     This class is used to initialize and destroy the thread local resources.
   */
   class ThreadLocal {

@@ -146,7 +146,7 @@ public:
   static const int DEFAULT_WIDTH = 0;
   static const int DEFAULT_PRECISION = 6;
   
-  /** Context of format output stream object. */
+  /** @short Context of format output stream object. */
   struct Context { // TAG: need to compress structure using bit-fields
     /** The format flags. */
     unsigned int flags;

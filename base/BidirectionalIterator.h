@@ -19,8 +19,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Bidirectional iterator interface.
-
+  @short Bidirectional iterator interface.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

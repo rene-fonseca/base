@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   queue is also the first to be pop'ed. However, values associated with higher
   priority get to the top before values of less priority.
 
-  @short Priority queue
+  @short Priority queue collection.
   @ingroup collections
   @see Queue
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>

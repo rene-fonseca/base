@@ -22,7 +22,7 @@ LinkerManager* LinkerManager::linkerManager = 0; // TAG: need support for any nu
 
 LinkerManager* LinkerManager::getManager() throw() {
   if (!linkerManager) {
-    ferr << "Internal error: LinkerManager has not been instantiated" << ENDL;
+    ferr << MESSAGE("Internal error: LinkerManager has not been instantiated") << ENDL;
     exit(Application::EXIT_CODE_ERROR);
   }
   return linkerManager;

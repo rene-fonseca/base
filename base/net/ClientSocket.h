@@ -157,6 +157,13 @@ public:
   }
 
   /**
+    Returns the error state of the socket.
+  */
+  inline int getErrorState() const throw(IOException) {
+    return Socket::getErrorState();
+  }
+  
+  /**
     Returns true if 'bind' allows local addresses to be reused.
   */
   inline bool getReuseAddress() const throw(IOException) {

@@ -24,6 +24,7 @@
 #  include <base/platforms/win32/AsyncReadStreamContext.h> // platform specific
 #  include <base/platforms/win32/AsyncWriteStreamContext.h> // platform specific
 #  include <winsock2.h>
+#  include <ws2tcpip.h>
 #else // unix
 #  include <sys/types.h>
 #  include <sys/stat.h>
@@ -451,6 +452,14 @@ void Socket::setBooleanOption(int option, bool value) throw(IOException) {
   internal::SocketImpl::setSocketOption((int)getHandle(), option, &buffer, sizeof(buffer));
 }
 
+int Socket::getErrorState() const throw(IOException) {
+  SharedSynchronize<Guard>(*this);
+  int buffer;
+  unsigned int length = sizeof(buffer);
+  internal::SocketImpl::getSocketOption((int)getHandle(), SO_ERROR, &buffer, &length);
+  return buffer; // TAG: map to socket::ErrorState enum
+}
+
 bool Socket::getReuseAddress() const throw(IOException) {
   return getBooleanOption(SO_REUSEADDR);
 }
@@ -622,6 +631,17 @@ void Socket::setMulticastLoopback(bool value) throw(IOException) {
 
 #if 0
 void Socket::joinGroup() throw(IOException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  unsigned int buffer = value; // set to zero to disable nonblocking
+  if (ioctlsocket((int)getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
+    throw IOException("Unable to set blocking mode", this);
+  }
+  IPPROTO_IP
+  IP_MREQ FAR *structure
+  // IP_ADD_MEMBERSHIP
+  // IP_DROP_MEMBERSHIP
+#else // unix
+#endif // flavor
 //   struct ip_mreq buffer;
 //   internal::SocketImpl::setOption((int)getHandle(), IPPROTO_IP, IP_ADD_MEMBERSHIP, &buffer, sizeof(buffer));
 // // struct ip_mreq {
@@ -675,14 +695,14 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
     throw IOException("Unable to get flags for socket", this);
   }
   if (value) {
-    if (flags & O_NONBLOCK == 0) { // do we need to set flag
+    if ((flags & O_NONBLOCK) == 0) { // do we need to set flag
       flags |= O_NONBLOCK;
       if (fcntl((int)getHandle(), F_SETFL, flags) != 0) {
         throw IOException("Unable to set flags of socket", this);
       }
     }
   } else {
-    if (flags & O_NONBLOCK != 0) { // do we need to clear flag
+    if ((flags & O_NONBLOCK) != 0) { // do we need to clear flag
       flags &= ~O_NONBLOCK;
       if (fcntl((int)getHandle(), F_SETFL, flags) != 0) {
         throw IOException("Unable to set flags of socket", this);
@@ -691,6 +711,54 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
   }
 #endif // flavor
 }
+
+#if 0
+bool Socket::getAsynchronous() throw(IOException) {
+  SharedSynchronize<Guard>(*this);
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+//   unsigned int buffer = value; // set to zero to disable nonblocking
+//   if (ioctlsocket((int)getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
+//     throw IOException("Unable to set blocking mode", this);
+//   }
+#else // unix
+  int flags;
+  if ((flags = fcntl((int)getHandle(), F_GETFL)) == -1) {
+    throw IOException("Unable to get flags for socket", this);
+  }
+  return flags & FASYNC;
+#endif // flavor
+}
+
+void Socket::setAsynchronous(bool value) throw(IOException) {
+  SharedSynchronize<Guard>(*this);
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+//   unsigned int buffer = value; // set to zero to disable nonblocking
+//   if (ioctlsocket((int)getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
+//     throw IOException("Unable to set blocking mode", this);
+//   }
+#else // unix
+  int flags;
+  if ((flags = fcntl((int)getHandle(), F_GETFL)) == -1) {
+    throw IOException("Unable to get flags for socket", this);
+  }
+  if (value) {
+    if ((flags & FASYNC) == 0) { // do we need to set flag
+      flags |= FASYNC;
+      if (fcntl((int)getHandle(), F_SETFL, flags) != 0) {
+        throw IOException("Unable to set flags of socket", this);
+      }
+    }
+  } else {
+    if ((flags & FASYNC) != 0) { // do we need to clear flag
+      flags &= ~FASYNC;
+      if (fcntl((int)getHandle(), F_SETFL, flags) != 0) {
+        throw IOException("Unable to set flags of socket", this);
+      }
+    }
+  }
+#endif // flavor
+}
+#endif
 
 unsigned int Socket::available() const throw(IOException) {
   SharedSynchronize<Guard>(*this);
@@ -873,18 +941,44 @@ AsynchronousWriteOperation Socket::write(const char* buffer, unsigned int bytesT
 
 void Socket::wait() const throw(IOException) {
   SharedSynchronize<Guard>(*this);
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET((int)getHandle(), &rfds);
-
+  
+  int result = ::select((int)getHandle() + 1, &rfds, 0, 0, 0);
+  if (result == SOCKET_ERROR) {
+    throw IOException("Unable to wait for input", this);
+  }
+#else // unix
+  fd_set rfds;
+  FD_ZERO(&rfds);
+  FD_SET((int)getHandle(), &rfds);
+  
   int result = ::select((int)getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
     throw IOException("Unable to wait for input", this);
   }
+#endif // flavor
 }
 
 bool Socket::wait(unsigned int microseconds) const throw(IOException) {
   SharedSynchronize<Guard>(*this);
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  fd_set rfds;
+  FD_ZERO(&rfds);
+  FD_SET((int)getHandle(), &rfds);
+  
+  struct timeval tv;
+  tv.tv_sec = microseconds/1000000;
+  tv.tv_usec = microseconds % 1000000;
+  
+  int result = ::select((int)getHandle() + 1, &rfds, 0, 0, &tv);
+  if (result == SOCKET_ERROR) {
+    throw IOException("Unable to wait for input", this);
+  }
+  return result != 0; // return true if data available
+#else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET((int)getHandle(), &rfds);
@@ -898,6 +992,7 @@ bool Socket::wait(unsigned int microseconds) const throw(IOException) {
     throw IOException("Unable to wait for input", this);
   }
   return result != 0; // return true if data available
+#endif // flavor
 }
 
 Socket::~Socket() throw(IOException) {

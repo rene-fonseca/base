@@ -266,6 +266,11 @@ public:
   void shutdownOutputStream() throw(IOException);
 
   /**
+    Returns the error state of the socket.
+  */
+  int getErrorState() const throw(IOException);
+  
+  /**
     Returns true if 'bind' allows local addresses to be reused.
   */
   bool getReuseAddress() const throw(IOException);

@@ -152,7 +152,47 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   typedef unsigned long long uint32;
 #endif
 
+/**
+  Returns the higher half-word of the specified value.
+*/
+inline byte getHighWord(unsigned short value) throw() {
+  return value >> (sizeof(unsigned short) * 8/2);
+}
 
+/**
+  Returns the lower half-word of the specified value.
+*/
+inline byte getLowWord(unsigned short value) throw() {
+  return value;
+}
+
+/**
+  Returns the higher half-word of the specified value.
+*/
+inline unsigned short getHighWord(unsigned int value) throw() {
+  return value >> (sizeof(unsigned int) * 8/2);
+}
+
+/**
+  Returns the lower half-word of the specified value.
+*/
+inline unsigned short getLowWord(unsigned int value) throw() {
+  return value;
+}
+
+/**
+  Returns the higher half-word of the specified value.
+*/
+inline unsigned int getHighWord(unsigned long long value) throw() {
+  return value >> (sizeof(unsigned long long) * 8/2);
+}
+
+/**
+  Returns the lower half-word of the specified value.
+*/
+inline unsigned int getLowWord(unsigned long long value) throw() {
+  return value;
+}
 
 /**
   Returns the address of the specified object as a byte pointer.

@@ -21,10 +21,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ASSERTION(sizeof(unsigned long) == sizeof(DWORD));
-#endif // flavour
-
 ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if ((key = ::TlsAlloc()) == TLS_OUT_OF_INDEXES) {

@@ -13,24 +13,17 @@
 
 #include <base/io/FileOutputStream.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-#else // Unix
-#endif
-
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FileOutputStream::FileOutputStream(const String& p, unsigned int options, unsigned int permissions) throw(FileNotFound) :
-  file(p, File::WRITE, options) {
+FileOutputStream::FileOutputStream(const String& path, unsigned int options, unsigned int permissions) throw(FileNotFound) :
+  file(path, File::WRITE, options) {
 }
 
 FileOutputStream::FileOutputStream(const FileOutputStream& copy) throw() : file(copy.file) {
 }
 
 FileOutputStream& FileOutputStream::operator=(const FileOutputStream& eq) throw() {
-  if (&eq == this) {
-    file = eq.file;
-  }
+  file = eq.file;
   return *this;
 }
 

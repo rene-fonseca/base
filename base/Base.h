@@ -131,7 +131,6 @@ inline void swapper(TYPE& a, TYPE& b) throw() {
   Returns the absolute value of the specified argument.
 */
 template<class TYPE> inline TYPE absolute(const TYPE& value) {return (value >= TYPE(0)) ? value : -value;}
-//template<class TYPE> inline TYPE absolute<double>(const TYPE& value) {return fabs(value);}
 
 /**
   Throws the specified exception if the assertion is false.
@@ -142,7 +141,7 @@ template<class TYPE> inline TYPE absolute(const TYPE& value) {return (value >= T
   @see Assertion
 */
 template<class EXCEPTION>
-inline void assert(bool assertion, EXCEPTION exception) {
+inline void assert(bool assertion, EXCEPTION exception) throw(EXCEPTION) {
   if (!assertion) {
     throw exception;
   }

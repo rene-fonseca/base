@@ -21,6 +21,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Collection is the common interface implemented by containers.
 
+  \addtogroup collection Collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */

@@ -1,0 +1,3 @@
+. i386-unknown-mingw32
+
+arch_minor=486

@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MATH__MATRIX_H
-#define _DK_SDU_MIP__BASE_MATH__MATRIX_H
+#ifndef _DK_SDU_MIP__BASE_MATHEMATICS__MATRIX_H
+#define _DK_SDU_MIP__BASE_MATHEMATICS__MATRIX_H
 
 #include <base/Object.h>
 #include <base/Dimension.h>
@@ -49,7 +49,7 @@ public:
     unsigned int row;
     unsigned int column;
 
-    ElementReference(Matrix& m, unsigned int r, unsigned int c) throw() : matrix(m), row(r), column(c) {}
+    ElementReference(Matrix& _matrix, unsigned int _row, unsigned int _column) throw() : matrix(_matrix), row(_row), column(_column) {}
   public:
 
     inline ElementReference& operator=(bool value) throw(OutOfRange) {matrix.setAt(row, column, value); return *this;}
@@ -64,7 +64,7 @@ public:
     friend class Matrix;
     Matrix& matrix; // use reference to avoid 'copy on write'
     unsigned int row;
-    inline RowReference(Matrix& m, unsigned int r) throw() : matrix(m), row(r) {}
+    inline RowReference(Matrix& _matrix, unsigned int _row) throw() : matrix(_matrix), row(_row) {}
   public:
 
     inline ElementReference operator[](unsigned int column) throw(OutOfRange) {
@@ -359,7 +359,7 @@ public:
 
 
   /**
-    Returns the norm of this matrix.
+    Returns the Hilbert-Schmidt norm of the matrix.
   */
   TYPE getNorm() const throw();
 

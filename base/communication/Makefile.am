@@ -15,7 +15,7 @@ include $(top_srcdir)/common.am
 
 noinst_LTLIBRARIES = libcommunication.la
 
-libcommunication_la_SOURCES = CommunicationsException.cpp CommunicationsPort.cpp SerialPort.cpp
+libcommunication_la_SOURCES = CommunicationsException.cpp CommunicationsPort.cpp EUI64.cpp IEEE1394.cpp IEEE1394Exception.cpp SerialPort.cpp 
 
 sectiondir = $(includedir)/base/communication
-section_HEADERS = CommunicationsException.h CommunicationsPort.h SerialPort.h
+section_HEADERS = CommunicationsException.h CommunicationsPort.h EUI64.h IEEE1394.h IEEE1394Exception.h SerialPort.h

@@ -14,6 +14,7 @@
   #include <sys/stat.h>
   #include <unistd.h>
   #include <dirent.h>
+  #include <errno.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -103,15 +104,17 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
       int status;
       struct dirent64* entry;
 
+      errno = 0;
       if ((status = ::readdir64_r(directory, (struct dirent64*)buffer->getElements(), &entry)) != 0) {
+        if (errno == 0) { // stop if last entry has been read
+          break;
+        }
         ::closedir(directory);
         throw FileSystemException("Unable to read entries of folder");
       }
-
-      if (entry == 0) { // stop if last entry has been read
+      if (!entry) { // only required for Linux
         break;
       }
-
       result.append(String(entry->d_name));
     }
 
@@ -129,15 +132,17 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
       int status;
       struct dirent* entry;
 
+      errno = 0;
       if ((status = ::readdir_r(directory, (struct dirent*)buffer->getElements(), &entry)) != 0) {
+        if (errno == 0) { // stop if last entry has been read
+          break;
+        }
         ::closedir(directory);
         throw FileSystemException("Unable to read entries of folder");
       }
-
-      if (entry == 0) { // stop if last entry has been read
+      if (!entry) { // only required for Linux
         break;
       }
-
       result.append(String(entry->d_name));
     }
 

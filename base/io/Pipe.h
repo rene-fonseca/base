@@ -79,9 +79,9 @@ public:
     Assignment of pipe to pipe.
   */
   inline Pipe& operator=(const Pipe& eq) throw() {
-    if (&eq != this) { // protect against self assignment
-      fd = eq.fd;
-    }
+    // no need to protect against self assignment
+    fd = eq.fd;
+    end = eq.end;
     return *this;
   }
 

@@ -110,6 +110,9 @@ bool FileSystem::isSubPathOf(const String& root, const String& path) throw() {
 #else // unix
 #  include <sys/types.h>
 #  include <sys/stat.h> // lstat
+// TAG: need more file system support
+// #  include <ustat.h>
+// #  include <sys/statvfs.h>
 #  include <fcntl.h>
 #  include <unistd.h> // readlink, symlink
 #  include <limits.h> // defines PATH_MAX
@@ -1775,7 +1778,8 @@ String FileSystem::getFolder(Folder folder) throw() {
 #endif // flavor
 }
 
-FileSystem::Quota FileSystem::getQuota(const String& path, Trustee trustee) throw(FileSystemException) {
+FileSystem::Quota FileSystem::getQuota(
+  const String& path, Trustee trustee) throw(FileSystemException) {
   Quota result;
 #if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || \
      (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65))
@@ -1822,7 +1826,7 @@ FileSystem::Quota FileSystem::getQuota(const String& path, Trustee trustee) thro
   struct quotctl operation;
   operation.op = Q_GETQUOTA;
   operation.addr = Cast::pointer<caddr_t>(&temp);
-
+  
   switch (trustee.getType()) {
   case Trustee::USER:
     operation.uid = trustee.getIntegralId();
@@ -1830,7 +1834,7 @@ FileSystem::Quota FileSystem::getQuota(const String& path, Trustee trustee) thro
   default:
     throw FileSystemException(Type::getType<FileSystem>());
   }
-
+  
   int fd = ::open(path.getElements(), O_RDONLY, 0);
   if (fd != -1) {
     if (::ioctl(fd, Q_QUOTACTL, &operation) == 0) {
@@ -1842,7 +1846,7 @@ FileSystem::Quota FileSystem::getQuota(const String& path, Trustee trustee) thro
     }
     ::close(fd);
   }
-  throw FileSystemException(Type::getType<FileSystem>());
+  throw bindError(FileSystemException(Type::getType<FileSystem>()), errno);
 #else
   result.hardLimit = 0;
   result.softLimit = 0;

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,11 +40,11 @@ float FloatingPoint::getFloatAsHex(const String& value) throw(InvalidFormat) {
   // TAG: check flags if named special values are allowed
   if ((i != end) && !ASCIITraits::isHexDigit(*i)) {
     // compare case-less from i to end (possible excluding ending spaces)
-    if (value == MESSAGE("nan")) {
+    if (value == "nan") {
       return 0; // TAG: fixme
-    } else if ((value == MESSAGE("+infinity")) || (value == MESSAGE("infinity"))) {
+    } else if ((value == "+infinity") || (value == "infinity")) {
       return 0; // TAG: fixme
-    } else if (value == MESSAGE("-infinity")) {
+    } else if (value == "-infinity") {
       return 0; // TAG: fixme
     } else {
       throw InvalidFormat("Not a number", Type::getType<FloatingPoint>());

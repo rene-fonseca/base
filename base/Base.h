@@ -138,6 +138,8 @@ template<class TYPE> inline TYPE absolute(const TYPE& value) {return (value >= T
 
   @param assertion The assertion.
   @param exception The exception.
+
+  @see Assertion
 */
 template<class EXCEPTION>
 inline void assert(bool assertion, EXCEPTION exception) {
@@ -148,6 +150,9 @@ inline void assert(bool assertion, EXCEPTION exception) {
 
 /**
   Assertion.
+
+  @ingroup debugging
+  @see assert
 */
 class Assertion {
 public:

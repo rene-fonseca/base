@@ -8,6 +8,7 @@
 
 #include <base/Object.h>
 #include <base/string/String.h>
+#include <base/filesystem/FileSystemException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -24,32 +25,42 @@ public:
   /**
     Returns the path of the current folder.
   */
-  static String getCurrentFolder() throw(Exception);
+  static String getCurrentFolder() throw(FileSystemException);
 
   /**
     Sets the current folder.
   */
-  static void setCurrentFolder(const String& path) throw(Exception);
-
-/*
-  Folder getRoot() throw();
-*/
+  static void setCurrentFolder(const String& path) throw(FileSystemException);
 
   /**
     Returns true if the file exists.
   */
-  static bool fileExists(const String& path) throw();
+  static bool fileExists(const String& path) throw(FileSystemException);
 
   /**
     Returns true if the folder exists.
   */
-  static bool folderExists(const String& path) throw();
+  static bool folderExists(const String& path) throw(FileSystemException);
 
   /**
-    Creates a temporary file.
+    Removes the specified file.
   */
-//  File tempFile() throw(FileException);
+  static void removeFile(const String& path) throw(FileSystemException);
 
+  /**
+    Removes the specified folder. The folder must be empty.
+  */
+  static void removeFolder(const String& path) throw(FileSystemException);
+
+  /**
+    Makes a folder.
+  */
+  static void makeFolder(const String& path) throw(FileSystemException);
+
+  /**
+    Returns the path of a temporary file.
+  */
+//  static String getTempFileName() throw(FileException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -3,12 +3,11 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_FILESYSTEM__FOLDER_H
-#define _DK_SDU_MIP__BASE_FILESYSTEM__FOLDER_H
+#ifndef _DK_SDU_MIP__BASE_FILESYSTEM__FOLDER_INFO_H
+#define _DK_SDU_MIP__BASE_FILESYSTEM__FOLDER_INFO_H
 
 #include <base/Object.h>
-#include <base/filesystem/FolderException.h>
-#include <base/filesystem/File.h>
+#include <base/filesystem/FileSystemException.h>
 #include <base/collection/Array.h>
 #include <base/string/String.h>
 #include <base/Date.h>
@@ -16,13 +15,13 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Folder.
+  Folder information.
 
   @author René Møller Fonseca
   @version 1.0
 */
 
-class Folder : public Object {
+class FolderInfo : public Object {
 private:
 
   /** The path of the folder. */
@@ -40,22 +39,22 @@ public:
 
     @param path the path of the folder.
   */
-  Folder(const String& path) throw(FolderException);
+  FolderInfo(const String& path) throw(FileSystemException);
 
   /**
     Initializes folder from other folder.
   */
-  Folder(const Folder& copy) throw() : path(copy.path), modification(copy.modification), access(copy.access), change(copy.change) {}
+  FolderInfo(const FolderInfo& copy) throw() : path(copy.path), modification(copy.modification), access(copy.access), change(copy.change) {}
 
   /**
     Returns a folder object for the parent folder.
   */
-  Folder getParent() const throw(FolderException);
+  FolderInfo getParent() const throw(FileSystemException);
 
   /**
     Returns the names of the entries (files and subfolders) of this folder.
   */
-  Array<String> getEntries() const throw(FolderException);
+  Array<String> getEntries() const throw(FileSystemException);
 
   /**
     Returns the last modification time of the folder.

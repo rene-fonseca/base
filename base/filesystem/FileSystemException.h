@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_FILESYSTEM__FILE_EXCEPTION_H
-#define _DK_SDU_MIP__BASE_FILESYSTEM__FILE_EXCEPTION_H
+#ifndef _DK_SDU_MIP__BASE_FILESYSTEM__FILE_SYSTEM_EXCEPTION_H
+#define _DK_SDU_MIP__BASE_FILESYSTEM__FILE_SYSTEM_EXCEPTION_H
 
 #include <base/Exception.h>
 
@@ -17,20 +17,20 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class FileException : public Exception {
+class FileSystemException : public Exception {
 public:
 
   /**
     Initializes the exception object with no message.
   */
-  FileException() throw() : Exception() {}
+  FileSystemException() throw() : Exception() {}
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  FileException(const char* message) throw() : Exception(message) {}
+  FileSystemException(const char* message) throw() : Exception(message) {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -3,11 +3,11 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_FILESYSTEM__FILE_H
-#define _DK_SDU_MIP__BASE_FILESYSTEM__FILE_H
+#ifndef _DK_SDU_MIP__BASE_FILESYSTEM__FILE_INFO_H
+#define _DK_SDU_MIP__BASE_FILESYSTEM__FILE_INFO_H
 
 #include <base/Object.h>
-#include <base/filesystem/FileException.h>
+#include <base/filesystem/FileSystemException.h>
 #include <base/string/String.h>
 #include <base/Date.h>
 
@@ -20,7 +20,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class File : public Object {
+class FileInfo : public Object {
 private:
 
   /** The path of the file. */
@@ -40,7 +40,7 @@ public:
 
     @param path the path of the file.
   */
-  File(const String& path) throw(FileException);
+  FileInfo(const String& path) throw(FileSystemException);
 /*
   use flock
   void lock() throw(FileException);

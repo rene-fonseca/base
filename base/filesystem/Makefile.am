@@ -4,4 +4,4 @@ DEFS = @DEFS@
 
 noinst_LTLIBRARIES = libfilesystem.la
 
-libfilesystem_la_SOURCES = FileSystem.cpp File.cpp Folder.cpp
+libfilesystem_la_SOURCES = FileSystem.cpp FileInfo.cpp FolderInfo.cpp

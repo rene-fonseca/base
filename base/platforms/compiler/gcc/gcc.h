@@ -18,6 +18,8 @@
 #define _DK_SDU_MIP__BASE__COMPILER_VERSION __GNUC__
 #define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE org::gnu
 
+#define _DK_SDU_MIP__BASE__FUNCTION __PRETTY_FUNCTION__
+
 #define _DK_SDU_MIP__BASE__ALIGNED(alignment) __attribute__ ((aligned (alignment)))
 #define _DK_SDU_MIP__BASE__DEPRECATED __attribute__ ((deprecated))
 #define _DK_SDU_MIP__BASE__NORETURN __attribute__ ((noreturn))

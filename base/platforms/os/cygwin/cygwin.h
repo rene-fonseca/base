@@ -63,7 +63,7 @@
 #    define _DK_SDU_MIP__BASE__COMPILER_ISOC_ATAN2L _DK_SDU_MIP__BASE__COMPILER_ISOC_ATAN2F
 #  else
 #    define _DK_SDU_MIP__BASE__COMPILER_ISOC_ATAN2L isoc::atan2
-#  endif     
+#  endif
 #endif
 
 #endif

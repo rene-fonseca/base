@@ -11,7 +11,7 @@ BufferedInputStream::BufferedInputStream(InputStream& in, unsigned int size) thr
   FilterInputStream(in) {
   this->size = maximum(size, MINIMUM_BUFFER_SIZE);
   buffer = new char[this->size];
-  if (buffer == NULL) {
+  if (!buffer) {
     throw BindException();
   }
   count = 0;

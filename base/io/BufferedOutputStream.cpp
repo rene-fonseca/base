@@ -11,7 +11,7 @@ BufferedOutputStream::BufferedOutputStream(OutputStream& out, unsigned int size)
   FilterOutputStream(out) {
   this->size = maximum(size, MINIMUM_BUFFER_SIZE);
   buffer = new char[this->size];
-  if (buffer == NULL) {
+  if (!buffer) {
     throw BindException();
   }
   count = 0;

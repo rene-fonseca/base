@@ -567,6 +567,29 @@ public:
 
 
 
+/** Bitwise and. */
+template<class TYPE>
+class BitwiseAnd : public BinaryOperation<TYPE, TYPE, TYPE> {
+public:
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {return left & right;}
+};
+
+/** Bitwise or. */
+template<class TYPE>
+class BitwiseOr : public BinaryOperation<TYPE, TYPE, TYPE> {
+public:
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {return left | right;}
+};
+
+/** Bitwise exclusive or. */
+template<class TYPE>
+class BitwiseExclusiveOr : public BinaryOperation<TYPE, TYPE, TYPE> {
+public:
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {return left ^ right;}
+};
+
+
+
 /** Returns the element unchanged. */
 /*template<class TYPE>
 class Same : UnaryOperation<TYPE, TYPE> {

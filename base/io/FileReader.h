@@ -23,14 +23,16 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   File reader utilizing the file mapping support.
   
   @short Optimal file reader.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
+
 class FileReader : public Object {
 public:
 
   /** Iterator used to traverse the elements within the current file mapping window. */
-  typedef SequenceIterator<ReadIteratorTraits<byte> > ReadIterator;
+  typedef SequenceIterator<ReadIteratorTraits<uint8> > ReadIterator;
   /** The default preferred window size. */
   static const unsigned int DEFAULT_WINDOW_SIZE = 0x10000;
 private:
@@ -44,13 +46,13 @@ private:
   /** The current mapping. */
   MappedFile mapping;
   /** The beginning of the window. */
-  byte* begin;
+  uint8* begin;
   /** The end of the window. */
-  byte* end;
+  uint8* end;
   /** The current position in the window. */
-  byte* current;
+  uint8* current;
 protected:
-
+  
   inline FileRegion fixRegion(const FileRegion& region) throw() {
     unsigned int index = region.getOffset() % granularity;
     long long offset = region.getOffset()/granularity*granularity;
@@ -65,7 +67,7 @@ protected:
     }
     return FileRegion(offset, size);
   }
-
+  
   /**
     Requests mapping of the specified region.
 
@@ -73,16 +75,31 @@ protected:
   */
   void requestRegion(const FileRegion& region) throw(IOException);
 public:
-
+  
   /**
     Initializes the object.
 
     @param file The file.
     @param position The initial position.
-    @param windowSize The preferred size of the mapping window. The actual window size used may be less or greater.
+    @param windowSize The preferred size of the mapping window. The actual
+    window size used may be less or greater.
   */
   FileReader(File& file, long long position, unsigned int windowSize = DEFAULT_WINDOW_SIZE) throw(IOException);
-
+  
+  /**
+    Returns the bytes of the entire window.
+  */
+  inline const uint8* getBytes() const throw() {
+    return begin;
+  }
+  
+  /**
+    Returns the available bytes.
+  */
+  inline unsigned int getSize() const throw() {
+    return end - begin;
+  }
+  
   /**
     Returns the current position indexed from the beginning of the file.
   */
@@ -112,7 +129,7 @@ public:
     @param buffer The buffer.
     @param size The number of bytes the copy to the buffer.
   */
-  void read(byte* buffer, unsigned int size) throw(IOException);
+  void read(uint8* buffer, unsigned int size) throw(IOException);
 
   /**
     Sets the current position indexed from the beginning of the file. Used this
@@ -134,7 +151,9 @@ public:
   inline void skip(unsigned int size) throw(IOException) {
     current += size;
     if (current > end) {
-      requestRegion(FileRegion(mapping.getRegion().getOffset() + mapping.getRegion().getSize() + (current - end), 0));
+      requestRegion(
+        FileRegion(mapping.getRegion().getOffset() + mapping.getRegion().getSize() + (current - end), 0)
+      );
     }
   }
 };
@@ -179,7 +198,7 @@ public:
 //public:
 //
 //  /** Iterator used to traverse the elements within the current file mapping window. */
-//  typedef SequenceIterator<ReadIteratorTraits<byte> > ReadIterator;
+//  typedef SequenceIterator<ReadIteratorTraits<uint8> > ReadIterator;
 //protected:
 //
 //  /** The granularity of the position. */
@@ -192,9 +211,9 @@ public:
 //  /** The file providing the stream. */
 //  MappedFile mapping;
 //  /** The beginning of the internal buffer. */
-//  byte* begin;
+//  uint8* begin;
 //  /** The end of the internal buffer. */
-//  byte* end;
+//  uint8* end;
 //protected:
 //
 //  /**
@@ -231,7 +250,7 @@ public:
 //  /**
 //    Returns the first byte of the mapping.
 //  */
-//  inline const byte* getBytes() const throw() {
+//  inline const uint8* getBytes() const throw() {
 //    return begin;
 //  }
 //

@@ -68,10 +68,10 @@ class Runnable;
   @ingroup concurrency
   @see Runnable
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.2
+  @version 1.3
 */
 
-class Thread : public Object {
+class Thread : public Runnable {
   friend class ThreadImpl;
   friend class DaemonImpl;
 public:
@@ -344,11 +344,17 @@ public:
   /**
     Initializes thread object. The thread is suspended until it is
     explicitly started.
+  */
+  Thread() throw(ResourceException);
+  
+  /**
+    Initializes thread object. The thread is suspended until it is
+    explicitly started.
 
     @param runnable The desired object to be run when the thread is started.
   */
   Thread(Runnable* runnable) throw(NullPointer, ResourceException);
-
+  
   /**
     Returns the thread that created this thread. Returns 0 for the main thread.
   */
@@ -430,7 +436,12 @@ public:
     otherwise true.
   */
   bool join() const throw(ThreadException);
-
+  
+  /**
+    Entry point for the thread.
+  */
+  void run() /*throw(...)*/;
+  
   /**
     Starts the thread. The underlying context of execution is allocated here
     and not in the thread constructor.

@@ -292,6 +292,15 @@ Thread::Thread(Thread* _parent) throw()
 #endif
 }
 
+Thread::Thread() throw(ResourceException)
+  : runnable(this),
+    terminated(false),
+    state(NOTSTARTED),
+    identifier(0) {
+  parent = Thread::getThread();
+  ASSERT(parent); // a parent must always exist
+}
+
 Thread::Thread(Runnable* _runnable) throw(NullPointer, ResourceException)
   : runnable(_runnable),
     terminated(false),
@@ -563,16 +572,24 @@ bool Thread::join() const throw(ThreadException) {
   return true;
 }
 
+void Thread::run() /*throw(...)*/ {
+}
+
 void Thread::start() throw(ThreadException) {
   // TAG: don't forget the thread priority
   assert(state == NOTSTARTED, ThreadException(this));
   state = STARTING;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  HANDLE handle;
   DWORD id;
-  if ((handle = ::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)entry, this, 0, &id)) == 0) {
-    throw ResourceException("Unable to create thread", this);
-  }
+  HANDLE handle = ::CreateThread(
+    0,
+    0,
+    (LPTHREAD_START_ROUTINE)entry,
+    this,
+    0,
+    &id
+  );
+  assert(handle, ResourceException("Unable to create thread", this));
   identifier = Cast::container<Identifier>(id);
   ::CloseHandle(handle); // detach
   // TAG: does this always work or must this be postponed until entry function

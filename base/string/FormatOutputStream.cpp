@@ -25,8 +25,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 unsigned int FormatOutputStream::Debug::counter = 0;
 
-FormatOutputStream& FormatOutputStream::operator<<(const Debug& debug) throw(IOException) {
-  return *this << debug.getLocation() << ' ' << '[' << DEC << debug.getCount() << ']';
+FormatOutputStream& FormatOutputStream::operator<<(
+  const Debug& debug) throw(IOException) {
+  return *this << debug.getLocation() << ' '
+               << '[' << DEC << debug.getCount() << ']';
 }
 
 const FormatOutputStream::Context FormatOutputStream::DEFAULT_CONTEXT = {
@@ -43,51 +45,59 @@ const FormatOutputStream::Context FormatOutputStream::DEFAULT_CONTEXT = {
   DEFAULT_PRECISION
 };
 
-FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) throw(BindException)
-  : BufferedOutputStream(out, size), defaultContext(DEFAULT_CONTEXT), context(DEFAULT_CONTEXT) {
+FormatOutputStream::FormatOutputStream(
+  OutputStream& out, unsigned int size) throw(BindException)
+  : BufferedOutputStream(out, size),
+    defaultContext(DEFAULT_CONTEXT),
+    context(DEFAULT_CONTEXT) {
 }
 
-FormatOutputStream& FormatOutputStream::setRadixPosition(unsigned int position) throw() {
-  ExclusiveSynchronize<Guard>(*this);
+FormatOutputStream& FormatOutputStream::setRadixPosition(
+  unsigned int position) throw() {
+  ExclusiveSynchronize<Guard> _guard(guard);
   context.justification = Symbols::RADIX;
   context.radixPosition = position;
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::setJustification(Symbols::Justification justification) throw() {
-  ExclusiveSynchronize<Guard>(*this);
+FormatOutputStream& FormatOutputStream::setJustification(
+  Symbols::Justification justification) throw() {
+  ExclusiveSynchronize<Guard> _guard(guard);
   context.justification = justification;
   return *this;
 }
 
 FormatOutputStream& FormatOutputStream::setWidth(unsigned int width) throw() {
-  ExclusiveSynchronize<Guard>(*this);
+  ExclusiveSynchronize<Guard> _guard(guard);
   context.width = minimum(width, MAXIMUM_WIDTH);
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::setPrecision(unsigned int precision) throw() {
-  ExclusiveSynchronize<Guard>(*this);
+FormatOutputStream& FormatOutputStream::setPrecision(
+  unsigned int precision) throw() {
+  ExclusiveSynchronize<Guard> _guard(guard);
   context.flags &= ~Symbols::NECESSARY;
   context.precision = minimum(precision, MAXIMUM_PRECISION);
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::setDateFormat(const String& format) throw() {
-  ExclusiveSynchronize<Guard>(*this);
+FormatOutputStream& FormatOutputStream::setDateFormat(
+  const String& format) throw() {
+  ExclusiveSynchronize<Guard> _guard(guard);
   context.majorDateFormat = Symbols::EXPLICIT_DATE_FORMAT;
   // namedDateFormat is ignored (but unchanged)
   context.dateFormat = format;
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(
+  Action action) throw(IOException) {
   static const char* CR_STR = "\r";
   static const char* LF_STR = "\n";
   static const char* LFCR_STR = "\n\r";
   static const char* CRLF_STR = "\r\n";
 
-  ExclusiveSynchronize<Guard>(*this);
+  ExclusiveSynchronize<Guard> _guard(guard);
   switch (action) {
   case BIN:
     context.integerBase = Symbols::BINARY;
@@ -271,13 +281,14 @@ FormatOutputStream& FormatOutputStream::getContext(Context& context) throw() {
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::setContext(const Context& context) throw() {
+FormatOutputStream& FormatOutputStream::setContext(
+  const Context& context) throw() {
   return *this;
 }
 
 void FormatOutputStream::indent(unsigned int size) throw(IOException) {
   static const char INDENT[] = "                                                                                ";
-  ExclusiveSynchronize<Guard>(*this);
+  ExclusiveSynchronize<Guard> _guard(guard);
   if (size <= sizeof(INDENT)) {
     write(INDENT, size); // write characters
   } else {
@@ -286,8 +297,9 @@ void FormatOutputStream::indent(unsigned int size) throw(IOException) {
   // context is not reset to default
 }
 
-void FormatOutputStream::addCharacterField(const char* buffer, unsigned int size) throw(IOException) {
-  ExclusiveSynchronize<Guard>(*this);
+void FormatOutputStream::addCharacterField(
+  const char* buffer, unsigned int size) throw(IOException) {
+  ExclusiveSynchronize<Guard> _guard(guard);
 
   Symbols::Justification justification;
   switch (context.justification) {
@@ -316,7 +328,7 @@ void FormatOutputStream::addCharacterField(const char* buffer, unsigned int size
 }
 
 void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, bool isSigned) throw(IOException) {
-  ExclusiveSynchronize<Guard>(*this);
+  ExclusiveSynchronize<Guard> _guard(guard);
   unsigned int requiredWidth = size;
 
   if (isSigned && ((context.integerBase != Symbols::BINARY) && (context.integerBase != Symbols::HEXADECIMAL))) {
@@ -415,7 +427,7 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
 }
 
 void FormatOutputStream::addDateField(const Date& date) throw(IOException) {
-  ExclusiveSynchronize<Guard>(*this);
+  ExclusiveSynchronize<Guard> _guard(guard);
   const bool localTime = ((context.flags & Symbols::LOCAL_TIME) != 0);
   const bool posix = ((context.flags & Symbols::POSIX) != 0);
 //  const Locale* locale = posix ? &Locale::POSIX : &locale; // FIXME
@@ -1734,7 +1746,7 @@ void FormatOutputStream::writeFloatingPointType(
   }
 
   {
-    ExclusiveSynchronize<Guard>(*this);
+    ExclusiveSynchronize<Guard> _guard(guard);
     unsigned int length = (output - buffer);
     if (static_cast<unsigned int>(context.width) <= length) {
       write(buffer, length); // write characters

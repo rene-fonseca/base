@@ -16,8 +16,6 @@
 
 #include <base/io/BufferedOutputStream.h>
 #include <base/io/BindException.h>
-#include <base/concurrency/Synchronizeable.h>
-#include <base/concurrency/Synchronize.h>
 #include <base/concurrency/SpinLock.h>
 #include <base/mem/Reference.h>
 #include <base/string/ASCIITraits.h>
@@ -104,9 +102,9 @@ enum Action {
   @version 1.4
 */
 
-class FormatOutputStream : public BufferedOutputStream, public Synchronizeable<SpinLock> {
+class FormatOutputStream : public BufferedOutputStream {
 public:
-
+  
   /** The type of the guard. */
   typedef SpinLock Guard;
   
@@ -118,7 +116,15 @@ public:
     enum EndOfLine {UNIXEOL, WINDOWSEOL, MACEOL};
     enum Justification {DEPENDENT, LEFT, RIGHT, RADIX};
     enum MajorDateFormat {DATETIME, TIME, DATE, EXPLICIT_DATE_FORMAT};
-    enum NamedDateFormat {SHORT_FORMAT, MEDIUM_FORMAT, LONG_FORMAT, RFC2822_FORMAT, ISO8601_FORMAT};
+    
+    enum NamedDateFormat {
+      SHORT_FORMAT,
+      MEDIUM_FORMAT,
+      LONG_FORMAT,
+      RFC2822_FORMAT,
+      ISO8601_FORMAT
+    };
+    
     enum {
       ZEROPAD = 1,
       PREFIX = 2,
@@ -134,15 +140,19 @@ public:
     };
   };
   
-  static const unsigned int DEFAULT_FLAGS = Symbols::PREFIX | Symbols::NECESSARY | Symbols::POSIX;
+  static const unsigned int DEFAULT_FLAGS =
+    Symbols::PREFIX | Symbols::NECESSARY | Symbols::POSIX;
   static const Symbols::EndOfLine DEFAULT_EOL = Symbols::UNIXEOL;
   static const Symbols::Base DEFAULT_INTEGER_BASE = Symbols::DECIMAL;
   static const Symbols::Base DEFAULT_REAL_BASE = Symbols::DECIMAL;
   static const Symbols::RealStyle DEFAULT_REAL_STYLE = Symbols::FIXED;
   static const int DEFAULT_RADIX_POSITION = 0;
-  static const Symbols::MajorDateFormat DEFAULT_MAJOR_DATE_FORMAT = Symbols::DATETIME;
-  static const Symbols::NamedDateFormat DEFAULT_NAMED_DATE_FORMAT = Symbols::MEDIUM_FORMAT;
-  static const Symbols::Justification DEFAULT_JUSTIFICATION = Symbols::DEPENDENT;
+  static const Symbols::MajorDateFormat DEFAULT_MAJOR_DATE_FORMAT =
+    Symbols::DATETIME;
+  static const Symbols::NamedDateFormat DEFAULT_NAMED_DATE_FORMAT =
+    Symbols::MEDIUM_FORMAT;
+  static const Symbols::Justification DEFAULT_JUSTIFICATION =
+    Symbols::DEPENDENT;
   static const int DEFAULT_WIDTH = 0;
   static const int DEFAULT_PRECISION = 6;
   
@@ -188,7 +198,8 @@ public:
       : method(_method), value(_value) {
     }
     
-    inline FormatOutputStream& operator()(FormatOutputStream& stream) /*throw(...)*/ {
+    inline FormatOutputStream& operator()(
+      FormatOutputStream& stream) /*throw(...)*/ {
       return (stream.*method)(value);
     }
   };
@@ -280,10 +291,11 @@ public:
   public:
 
     /**
-      Stores the current default context onto the and makes the current context the new default context of the
-      stream object.
+      Stores the current default context onto the and makes the current context
+      the new default context of the stream object.
     */
-    PushContext(FormatOutputStream& _stream) throw() : stream(_stream), context(_stream.defaultContext) {
+    PushContext(FormatOutputStream& _stream) throw()
+      : stream(_stream), context(_stream.defaultContext) {
       _stream.defaultContext = _stream.context;
     }
     
@@ -322,6 +334,8 @@ protected:
   friend class PushContext;
   /** The initial context. */
   static const Context DEFAULT_CONTEXT;
+  /** Guard. */
+  Guard guard;
   /** The current default context. */
   Context defaultContext;
   /** The current context. */

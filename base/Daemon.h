@@ -39,7 +39,7 @@ public:
   */
   Daemon(Runnable* runnable) throw(SingletonException, ResourceException);
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   static void install();
 #endif
 };

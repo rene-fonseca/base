@@ -215,7 +215,7 @@ public:
   /**
     Destroys the application object.
   */
-  ~Application() throw();
+  virtual ~Application() throw();
 };
 
 #define _DK_SDU_MIP__BASE__STUB(APPLICATION) \

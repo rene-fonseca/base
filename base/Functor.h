@@ -415,7 +415,7 @@ inline void fill<uint8>(uint8* dest, unsigned int count, uint8 value) throw() {
 template<class TYPE>
 inline void clear(TYPE& value) throw() {
   long* p = Cast::pointer<long*>(&value);
-  for (int i = 0; i < sizeof(TYPE)/sizeof(long); ++i) {
+  for (unsigned int i = 0; i < sizeof(TYPE)/sizeof(long); ++i) {
     *p++ = 0;
   }
   uint8* q = Cast::pointer<uint8*>(p);
@@ -427,7 +427,7 @@ inline void clear(TYPE& value) throw() {
   case 0:
     break;
   default:
-    for (int i = 0; i < rest; ++i) {
+    for (unsigned int i = 0; i < rest; ++i) {
       *q++ = 0;
     }
   }
@@ -732,17 +732,23 @@ public:
 
     @param member The member function to be invocated.
   */
-  explicit inline InvokeMember(Member member) throw() : member(member) {}
+  explicit inline InvokeMember(Member _member) throw()
+    : member(_member) {
+  }
 
   /**
     Initializes object from other object.
   */
-  inline InvokeMember(const InvokeMember& copy) throw() : member(copy.member) {}
+  inline InvokeMember(const InvokeMember& copy) throw()
+    : member(copy.member) {
+  }
 
   /**
     Invocate member function.
   */
-  inline RESULT operator()(TYPE* object) const {(object->*member)();}
+  inline RESULT operator()(TYPE* object) const {
+    return (object->*member)();
+  }
 };
 
 
@@ -822,8 +828,10 @@ public:
     Invoke(const Invoke& copy); // disable default copy constructor
     Invoke& operator=(const Invoke& eq); // disable default assignment
   public:
-
-    inline Invoke(TYPE* o, PREFIX p, SUFFIX s) : object(o), prefix(p), suffix(s) {}
+    
+    inline Invoke(TYPE* _object, PREFIX _prefix, SUFFIX _suffix)
+      : object(_object), prefix(_prefix), suffix(_suffix) {
+    }
 
     inline TYPE* operator->() {
       prefix();
@@ -842,7 +850,9 @@ public:
   /**
     Initialize object with specified prefix and suffix.
   */
-  inline InvokeOutfix(TYPE* object, PREFIX prefix, SUFFIX suffix) : invoke(object, prefix, suffix) {}
+  inline InvokeOutfix(TYPE* object, PREFIX prefix, SUFFIX suffix)
+    : invoke(object, prefix, suffix) {
+  }
 
   /**
     Dereference.

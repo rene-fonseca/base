@@ -34,9 +34,6 @@
   (minor <= _DK_SDU_MIP__BASE__MINOR_VERSION) && \
   (micro <= _DK_SDU_MIP__BASE__MICRO_VERSION))
 
-// TAG: temporary fix until all symbols have been replaced
-#define _DK_SDU_MIP__BASE__FLAVOUR _DK_SDU_MIP__BASE__FLAVOR
-
 #if (defined(_DK_SDU_MIP__BASE__NAMESPACE))
 #  define _DK_SDU_MIP__BASE__ENTER_NAMESPACE namespace base {
 #  define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE };

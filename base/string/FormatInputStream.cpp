@@ -13,7 +13,6 @@
 
 #include <base/string/FormatInputStream.h>
 #include <base/io/FileDescriptorInputStream.h>
-#include <base/Trace.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

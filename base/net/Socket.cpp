@@ -16,6 +16,7 @@
 #include <base/Functor.h>
 #include <base/io/EndOfFile.h>
 #include <base/Trace.h>
+#include <base/ByteOrder.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <winsock2.h>
@@ -31,15 +32,16 @@
   #include <stropts.h> // defines FLUSH macros
   #include <string.h> // memset (required on solaris)
   #include <limits.h> // defines SSIZE_MAX
+     #include <arpa/inet.h>
 
-  #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__SOLARIS)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     #define BSD_COMP 1 // request BSD flags - don't known if this is ok to do
   #endif
   #include <sys/ioctl.h> // defines FIONREAD
 #endif
 
 // do we need to repair bad header file
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__SOLARIS) && defined(bind)
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) && defined(bind)
   #define _DK_SDU_MIP__BASE__SOCKET_BIND __xnet_bind
   #define _DK_SDU_MIP__BASE__SOCKET_CONNECT __xnet_connect
   #define _DK_SDU_MIP__BASE__SOCKET_RECVMSG __xnet_recvmsg
@@ -97,7 +99,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class SocketAddress { // Internet end point
 private:
 
-  struct sockaddr sa;
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
+  struct sockaddr_in6 sa;
+#else
+  struct sockaddr_in sa;
+#endif
 public:
 
   inline SocketAddress() throw() {}
@@ -106,34 +112,31 @@ public:
   SocketAddress(const InetAddress& addr, unsigned short port) throw(NetworkException) {
     fill<char>((char*)&sa, sizeof(sa), 0);
   #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-    if (addr.getFamily() == IP_VERSION_6) {
-      struct sockaddr_in6& sa6 = *(struct sockaddr_in6*)&sa;
-    #if defined(SIN6_LEN)
-      sa6.sin6_len = sizeof(sa);
-    #endif // SIN6_LEN
-      sa6.sin6_family = AF_INET6;
-      sa6.sin6_port = htons(port);
-      copy<byte>((byte*)&sa6.sin6_addr, addr.getAddress(), sizeof(struct in6_addr));
-    } else { // its an IPv4 address
-      struct sockaddr_in& sa4 = *(struct sockaddr_in*)&sa;
-      sa4.sin_family = AF_INET;
-      sa4.sin_port = htons(port);
-      copy<byte>((byte*)&(sa4.sin_addr), addr.getIPv4Address(), sizeof(struct in_addr));
+  #if defined(SIN6_LEN)
+    sa.sin6_len = sizeof(sa);
+  #endif // SIN6_LEN
+    sa.sin6_family = AF_INET6;
+    sa.sin6_port = ByteOrder::toBigEndian<unsigned short>(port);
+    if (addr.getFamily() == InetAddress::IP_VERSION_4) {
+      InetAddress temp(addr);
+      temp.convertToIPv6();
+      copy<byte>((byte*)&sa.sin6_addr, temp.getAddress(), sizeof(struct in6_addr));
+    } else {
+      copy<byte>((byte*)&sa.sin6_addr, addr.getAddress(), sizeof(struct in6_addr));
     }
   #else // only IPv4 support
     assert((addr.getFamily() == InetAddress::IP_VERSION_4) || addr.isIPv4Mapped(), NetworkException("Address not supported"));
-    struct sockaddr_in& sa4 = *(struct sockaddr_in*)&sa;
-    sa4.sin_family = AF_INET;
-    sa4.sin_port = htons(port);
-    copy<byte>((byte*)&(sa4.sin_addr), addr.getIPv4Address(), sizeof(struct in_addr));
+    sa.sin_family = AF_INET;
+    sa.sin_port = ByteOrder::toBigEndian<unsigned short>(port);
+    copy<byte>((byte*)&(sa.sin_addr), addr.getIPv4Address(), sizeof(struct in_addr));
   #endif // _DK_SDU_MIP__BASE__INET_IPV6
   }
 
   /** Returns pointer to socket address. */
-  inline struct sockaddr* getValue() throw() {return &sa;}
+  inline struct sockaddr* getValue() throw() {return (struct sockaddr*)&sa;}
 
   /** Returns pointer to socket address. */
-  inline const struct sockaddr* getValue() const throw() {return &sa;}
+  inline const struct sockaddr* getValue() const throw() {return (const struct sockaddr*)&sa;}
 
   /** Returns the size of the socket address structure. */
   inline socklen_t getSize() const throw() {return sizeof(sa);}
@@ -141,7 +144,7 @@ public:
   /** Returns the address. */
   inline InetAddress getAddress() const throw() {
   #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-    switch (sa.sa_family) {
+    switch (sa.sin6_family) {
     case AF_INET:
       return InetAddress((const byte*)&(((const struct sockaddr_in*)&sa)->sin_addr), InetAddress::IP_VERSION_4);
     case AF_INET6:
@@ -161,17 +164,17 @@ public:
   /** Returns the port. */
   inline unsigned short getPort() const throw() {
   #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-    switch (sa.sa_family) {
+    switch (sa.sin6_family) {
     case AF_INET:
-      return ntohs(((const struct sockaddr_in*)&sa)->sin_port);
+      return ByteOrder::fromBigEndian<unsigned short>(((const struct sockaddr_in*)&sa)->sin_port);
     case AF_INET6:
-      return ntohs(((const struct sockaddr_in6*)&sa)->sin6_port);
+      return ByteOrder::fromBigEndian<unsigned short>(((const struct sockaddr_in6*)&sa)->sin6_port);
     default:
       return 0; // TAG: or should I throw an exception
     }
   #else
     if (sa.sa_family == AF_INET) {
-      return ntohs(((const struct sockaddr_in*)&sa)->sin_port);
+      return ByteOrder::fromBigEndian<unsigned short>(((const struct sockaddr_in*)&sa)->sin_port);
     } else {
       return 0; // TAG: or should I throw an exception
     }
@@ -266,7 +269,8 @@ bool Socket::accept(Socket& socket) throw(IOException) {
 void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOException) {
   SynchronizeExclusively();
   SocketAddress sa(addr, port);
-  if (::bind(getHandle(), sa.getValue(), sa.getSize())) {
+  if (int rr = ::bind(getHandle(), sa.getValue(), sa.getSize())) {
+    ferr << "bind result: " << rr << "  errno:" << errno << ENDL;
     throw NetworkException("Unable to assign name to socket");
   }
 //  if ((addr.isUnspecified()) || (port == 0)) { // do we need to determine assigned name

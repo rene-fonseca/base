@@ -325,9 +325,9 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
   #if (INET6_ADDRSTRLEN > THREAD_LOCAL_STORAGE)
     #error The requested amount of local storage is not available.
   #endif
-// char buffer[INET6_ADDRSTRLEN]; // longest possible string is "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"
+  // longest possible string is "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"
   Allocator<char>* buffer = Thread::getLocalStorage();
-  if (isV4Mapped()) {
+  if (value.isV4Mapped()) {
     inet_ntop(AF_INET, &((uint32_t*)(&value.address))[3], buffer->getElements(), buffer->getSize()); // MT-level is safe
   } else {
     inet_ntop(AF_INET6, &value.address, buffer->getElements(), buffer->getSize()); // MT-level is safe
@@ -335,6 +335,6 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
   return stream << buffer;
 #else
   // longest possible string is "255.255.255.255"
-  return stream << inet_ntoa(*(struct in_addr*)&value.address); // MT-level is safe but uses static buffer
+  return stream << inet_ntoa(*(struct in_addr*)&value.address); // Uses static buffer
 #endif // HAVE_INET_IPV6
 }

@@ -15,12 +15,15 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-void SystemLogger::write(Type type, const String& message) throw() {
+void SystemLogger::write(MessageType type, const String& message) throw() {
 #if defined(__win32__)
   static WORD messageType[] = {EVENTLOG_INFORMATION_TYPE, EVENTLOG_WARNING_TYPE, EVENTLOG_ERROR_TYPE};
-  HANDLE eventSource = RegisterEventSource(NULL, Application::getApplication()->getFormalName());
+  LPCTSTR source = Application::getApplication()->getFormalName().getBytes();
+  HANDLE eventSource = RegisterEventSource(NULL, source);
   if (eventSource != NULL) {
-    ReportEvent(eventSource, messageType[type], 0, 0, NULL, 1, 0, message, NULL);
+    LPCTSTR strings[1];
+    strings[0] = message.getBytes();
+    ReportEvent(eventSource, messageType[type], 0, 0, NULL, 1, 0, strings, NULL);
     DeregisterEventSource(eventSource);
   }
 #else // __unix__

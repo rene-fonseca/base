@@ -70,7 +70,7 @@ public:
 };
 
 // Setup main thread object
-MainThread mainThread; // used this variable through 'threadLocal'
+MainThread mainThread; // use this variable through 'threadLocal'
 
 /**
   This class is used to initialize and destroy the thread local resources.

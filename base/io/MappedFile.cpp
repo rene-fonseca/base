@@ -32,12 +32,14 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& f, const FileRegion& r, b
 #if defined(__win32__)
   HANDLE handle = CreateFileMapping((HANDLE)getHandle(file), NULL, writeable ? PAGE_READWRITE : PAGE_READONLY, 0, 0, NULL);
   assert(handle != NULL, FileException("Unable to map file region"));
+  LARGE_INTEGER offset;
+  offset.QuadPart = region.getOffset();
 
   void* address = MapViewOfFile(
     handle,
     writeable ? FILE_MAP_WRITE : FILE_MAP_READ,
-    ((LARGE_INTEGER*)&offset)->HighPart,
-    ((LARGE_INTEGER*)&offset)->LowPart,
+    offset.HighPart,
+    offset.LowPart,
     region.getSize()
   );
 

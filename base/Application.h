@@ -12,6 +12,7 @@
 #include <base/collection/Map.h>
 #include <base/OutOfDomain.h>
 #include <base/SingletonException.h>
+#include <base/concurrency/SpinLock.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -23,6 +24,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class Application : public Object {
+friend class ApplicationImpl;
+friend class DaemonImpl;
 private:
 
   /** The application object. */
@@ -35,6 +38,12 @@ private:
   Array<String> arguments;
   /** Container for the environment variables. */
   Map<String, String> environment;
+  /** Specifies whether the application should be terminated. */
+  bool terminated;
+  /** Specifies whether the application should reload its configuration. */
+  bool hangingup;
+  /** Synchronization object. */
+  SpinLock lock;
 public:
 
   /**
@@ -97,6 +106,26 @@ public:
     error message to stderr and returns error code 1.
   */
   virtual int exceptionHandler() const throw();
+
+  /**
+    Signals the application to reload its configuration.
+  */
+  void hangup() throw();
+
+  /**
+    Signals the application to terminate itself.
+  */
+  void terminate() throw();
+
+  /**
+    Returns true if the application has been signaled to hangup. The hangup flag is automatically reset.
+  */
+  bool isHangingup() throw();
+
+  /**
+    Returns true if the application has been signaled to terminate.
+  */
+  inline bool isTerminated() const throw() {return terminated;}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

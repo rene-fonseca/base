@@ -10,7 +10,7 @@
   #include <stdlib.h> // provides malloc...
   #include <regex.h>
 #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
-  #include <pcre/pcre.h>
+  #include <pcre.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

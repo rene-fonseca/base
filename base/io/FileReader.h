@@ -48,7 +48,7 @@ protected:
     unsigned int minimumSize = region.getSize() + index;
     unsigned int size = (maximum(minimumSize, preferredWindowSize) + granularity - 1)/granularity*granularity;
     long long availableBytes = fileSize - offset;
-    if ((availableBytes > 0) and (size > availableBytes)) {
+    if ((availableBytes > 0) && (size > availableBytes)) {
       size = availableBytes;
     }
     if (size < minimumSize) { // force IOException if minimumSize bytes is not available

@@ -9,6 +9,11 @@
 #include <base/Object.h>
 #include <base/string/String.h>
 
+// protect against the evil programmers
+#undef INFORMATION
+#undef WARNING
+#undef ERROR
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
@@ -25,12 +30,12 @@ public:
     INFORMATION = 0, /**< Informational message. */
     WARNING = 1, /**< Warning message. */
     ERROR = 2 /**< Error message. */
-  } Type;
+  } MessageType;
 
   /**
     Sends the specified message to the system logger.
   */
-  static void write(Type type, const String& message) throw();
+  static void write(MessageType type, const String& message) throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -182,7 +182,7 @@ void XMLParser::release() throw() {}
 XMLParser::XMLParser(Callback* cb = 0) throw(XMLException) : callback(cb), context(0) {}
 
 void XMLParser::parse(const char* buffer, unsigned int size) throw(XMLException) {
-  throw XMLException("XML not supported"));
+  throw XMLException("XML not supported");
 }
 
 void XMLParser::terminate() throw() {}

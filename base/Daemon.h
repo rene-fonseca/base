@@ -8,6 +8,8 @@
 
 #include <base/Object.h>
 #include <base/ResourceException.h>
+#include <base/SingletonException.h>
+#include <base/concurrency/Thread.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -21,7 +23,16 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class Daemon : public Object {
 public:
 
-  static bool daemonize() throw(ResourceException);
+  /**
+    Daemonizes the current process.
+
+    @param runnable The entry function of the daemonized process.
+  */
+  Daemon(Runnable* runnable) throw(SingletonException, ResourceException);
+
+#if defined(__win32__)
+  static void install();
+#endif
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

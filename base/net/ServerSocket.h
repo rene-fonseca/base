@@ -46,7 +46,8 @@ public:
 
   /**
     Accepts the first connection from the queue of pending connections on this
-    socket. This function is used with a connection-oriented socket.
+    socket. This function is used with a connection-oriented socket. This will
+    block the calling thread for eternity if not connections are made.
 
     @return True if connection has been accepted. False, if connection could
     not be accepted without blocking.
@@ -54,9 +55,19 @@ public:
   inline StreamSocket accept() throw(IOException) {return StreamSocket(*this);}
 
   /**
+    Accepts the first connection from the queue of pending connections on this
+    socket. This function is used with a connection-oriented socket.
+
+    @param milliseconds The maximum time to block.
+    
+    @return An invalid socket if the timeout period expired.
+  */
+  inline StreamSocket accept(unsigned int milliseconds) throw(IOException) {return StreamSocket(*this);}
+
+  /**
     Closes this socket.
   */
-  inline void close() throw(IOException) {return Socket::close();}
+  inline void close() throw(IOException) {Socket::close();}
 
   /**
     Caches the locally assigned address and port of the socket. This member
@@ -79,6 +90,21 @@ public:
     Sets the blocking mode of the socket.
   */
   inline void setNonBlocking(bool value) throw(IOException) {Socket::setNonBlocking(value);}
+
+  /**
+    Blocking wait for incoming connection request.
+  */
+  inline void wait() const throw(IOException) {Socket::wait();}
+
+  /**
+    Blocking wait for incoming connection request.
+
+    @param microseconds The timeout periode in microseconds.
+    
+    @return True, if incomming connection is available. False, if the timeout periode expired.
+  */
+  inline bool wait(unsigned int microseconds) const throw(IOException) {return Socket::wait(microseconds);}
+  
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

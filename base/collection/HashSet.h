@@ -11,39 +11,34 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COLLECTION__HASH_TABLE_H
-#define _DK_SDU_MIP__BASE_COLLECTION__HASH_TABLE_H
+#ifndef _DK_SDU_MIP__BASE_COLLECTION__HASH_SET_H
+#define _DK_SDU_MIP__BASE_COLLECTION__HASH_SET_H
 
 #include <base/collection/Collection.h>
-#include <base/collection/Association.h>
-#include <base/collection/InvalidKey.h>
+#include <base/collection/InvalidNode.h>
+#include <base/collection/Enumeration.h>
 #include <base/MemoryException.h>
 #include <base/mathematics/Math.h>
-#include <base/mem/ReferenceCountedObject.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/string/FormatOutputStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  A hash table implementation.
+  A hash set implementation.
   
-  @short Hash table.
+  @short Hash set.
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
 
-template<class KEY, class VALUE>
-class HashTable : public Collection {
+template<class TYPE>
+class HashSet : public Collection {
 public:
   
-  /** The type of the key. */
-  typedef KEY Key;
   /** The type of the value. */
-  typedef VALUE Value;
-  /** The type of an association in the hash table. */
-  typedef Association<Key, Value> HashTableAssociation;
+  typedef TYPE Value;
   
   /** The minimum capacity. */
   static const unsigned int MINIMUM_CAPACITY = 16;
@@ -53,50 +48,16 @@ public:
   static const unsigned int DEFAULT_CAPACITY = 16;
   
   /*
-    Reference to an element within a hash table.
-  */
-  class Reference {
-    friend class HashTable;
-  private:
-    
-    HashTable& hashTable;
-    const Key key;
-    Reference(const Reference& copy); // prohibit default copy initialization
-    Reference& operator=(const Reference& eq); // prohibit default assignment
-
-    inline Reference(HashTable& _hashTable, const Key& _key)
-      : hashTable(_hashTable),
-        key(_key) {
-    }
-  public:
-
-    /**
-      Sets the value of the element.
-    */
-    inline Reference& operator=(Value value) throw(MemoryException) {
-      hashTable.add(key, value);
-      return *this;
-    }
-
-    /**
-      Returns the value of the element.
-    */
-    inline operator Value() const throw(InvalidKey) {
-      return hashTable.getValue(key);
-    }
-  };
-
-  /*
     Node in the single linked list of a bucket.
   */
   class Node : public Object {
-    friend class HashTableImpl;
+    friend class HashSetImpl;
   private:
-    
+
     /** The hash of the element. */
     unsigned long hash;
-    /** The key and value of the element. */
-    Association<Key, Value> value;
+    /** The value of the element. */
+    Value value;
     /** The next node in the single linked list. */
     Node* next;
     // TAG: could have been bidirectional
@@ -105,21 +66,21 @@ public:
     /**
       Initializes a node.
     */
-    inline Node(unsigned long _hash, const Key& _key, const Value& _value) throw()
+    inline Node(unsigned long _hash, const Value& _value) throw()
       : hash(_hash),
-        value(_key, _value),
+        value(_value),
         next(0) {
     }
     
     /**
       Initializes a node.
     */
-    inline Node(unsigned long _hash, const Key& _key, const Value& _value, Node* _next) throw()
+    inline Node(unsigned long _hash, const Value& _value, Node* _next) throw()
       : hash(_hash),
-        value(_key, _value),
+        value(_value),
         next(_next) {
     }
-    
+
     /**
       Returns the hash value of the node.
     */
@@ -128,38 +89,17 @@ public:
     }
     
     /**
-      Returns the key of the node.
+      Returns the value of the node.
     */
-    inline const Association<Key, Value>* getKeyValue() const throw() {
-      return &value;
-    }
-    
-    /**
-      Returns the key of the node.
-    */
-    inline Key* getKey() throw() {
-      return value.getKey();
-    }
-    
-    /**
-      Returns the key of the node.
-    */
-    inline const Key* getKey() const throw() {
-      return value.getKey();
+    inline Value& getValue() throw() {
+      return value;
     }
     
     /**
       Returns the value of the node.
     */
-    inline Value* getValue() throw() {
-      return value.getValue();
-    }
-    
-    /**
-      Returns the value of the node.
-    */
-    inline const Value* getValue() const throw() {
-      return value.getValue();
+    inline const Value& getValue() const throw() {
+      return value;
     }
 
     /**
@@ -183,33 +123,33 @@ public:
       next = node;
     }
   };
-  
+
   /*
-    Hash table implementation.
+    Hash set implementation.
   */
-  class HashTableImpl : public ReferenceCountedObject {
+  class HashSetImpl : public ReferenceCountedObject {
   private:
     
     /** Lookup table. */
     Allocator<Node*> table;
-    /** The current capacity of the table. */
-    unsigned int capacity; // use size in table attribute
+    /** The current capacity of the set. */
+    unsigned int capacity;
     /** Cache for (capacity - 1). */
     unsigned int mask;
     /** Base 2 logarithm of the capacity. */
     unsigned int log2OfCapacity;
-    /** The number of elements in the table. */
+    /** The number of elements in the set. */
     unsigned int size;
     
     /**
-      Returns the hash value of the key.
+      Returns the hash value of the value.
     */
-    static inline unsigned long getHash(const Key& key) throw() {
-      Hash<Key> hash; // Hash is a functor
-      return hash(key);
+    static inline unsigned long getHash(const Value& value) throw() {
+      Hash<Value> hash; // Hash is a functor
+      return hash(value);
     }
   public:
-
+    
     /**
       Returns the buckets for modifying access.
     */
@@ -223,11 +163,11 @@ public:
     inline const Node* const* getBuckets() const throw() {
       return table.getElements();
     }
-    
+
     /**
-      Initializes the hash table with the specified capacity.
+      Initializes the hash set with the specified capacity.
     */
-    inline HashTableImpl(unsigned int capacity) throw(MemoryException) {
+    inline HashSetImpl(unsigned int capacity) throw(MemoryException) {
       capacity = maximum(capacity, MINIMUM_CAPACITY);
       capacity = minimum(capacity, MAXIMUM_CAPACITY);
       log2OfCapacity = Math::iLog2(capacity);
@@ -243,9 +183,9 @@ public:
     }
     
     /**
-      Initializes the hash table from another hash table.
+      Initializes the hash set from another hash set.
     */
-    inline HashTableImpl(const HashTableImpl& copy) throw(MemoryException)
+    inline HashSetImpl(const HashSetImpl& copy) throw(MemoryException)
       : table(copy.capacity),
         capacity(copy.capacity),
         mask(copy.mask),
@@ -260,12 +200,12 @@ public:
       while (src != end) {
         const Node* srcNode = *src++;
         if (srcNode) {
-          Node* firstNode = new Node(srcNode->getHash(), *srcNode->getKey(), *srcNode->getValue());
+          Node* firstNode = new Node(srcNode->getHash(), srcNode->getValue());
           *dest++ = firstNode;
           Node* destNode = firstNode;
           srcNode = srcNode->getNext();
           while (srcNode) {
-            destNode->setNext(new Node(srcNode->getHash(), *srcNode->getKey(), *srcNode->getValue()));
+            destNode->setNext(new Node(srcNode->getHash(), srcNode->getValue()));
             destNode = destNode->getNext();
             srcNode = srcNode->getNext();
           }
@@ -276,7 +216,7 @@ public:
     }
     
     /**
-      Increases the capacity of the hash table.
+      Increases the capacity of the hash set.
     */
     inline void grow() throw(MemoryException) {
       if (capacity < MAXIMUM_CAPACITY) {
@@ -365,7 +305,7 @@ public:
     }
     
     /**
-      Reduces the capacity of the hash table.
+      Reduces the capacity of the hash set.
     */
     inline void shrink() throw() {
       if (capacity > MINIMUM_CAPACITY) {
@@ -396,8 +336,66 @@ public:
         table.setSize(capacity);
       }
     }
+    
+    /**
+      Returns the capacity of the hash set.
+    */
+    inline unsigned int getCapacity() const throw() {
+      return capacity;
+    }
+    
+    /**
+      Returns the number of elements in the hash set.
+    */
+    inline unsigned int getSize() const throw() {
+      return size;
+    }
 
-    void dump() throw() {
+    /**
+      Returns true if the specified value is in the hash set.
+    */
+    inline bool hasValue(const Value& value) throw() {
+      const unsigned long hash = getHash(value);
+      Node** bucket = getBuckets() + (hash & mask);
+      Node* grandparent = 0;
+      Node* parent = 0;
+      Node* child = *bucket;
+      while (child && ((child->getHash() != hash) || (child->getValue() != value))) {
+        grandparent = parent;
+        parent = child;
+        child = child->getNext();
+      }
+      if (child) {
+        if (grandparent) {
+          grandparent->setNext(child);
+          parent->setNext(child->getNext());
+          child->setNext(parent);
+        } else if (parent) {
+          // parent is the first node
+          parent->setNext(child->getNext());
+          child->setNext(*bucket);
+          *bucket = child;
+        } else {
+          // child is the first node
+        }
+      }
+      return child;
+    }
+    
+    /**
+      Returns true if the specified value is in the hash set.
+    */
+    inline bool hasValue(const Value& value) const throw() {
+      const unsigned long hash = getHash(value);
+      const Node* const* bucket = getBuckets() + (hash & mask);
+      Node* child = *bucket;
+      while (child && ((child->getHash() != hash) || child->getValue() != value)) {
+        child = child->getNext();
+      }
+      return child;
+    }
+    
+    void dump() const throw() {
       const Node* const* bucket = getBuckets();
       const Node* const* end = bucket + capacity;
       fout << "capacity: " << capacity << " size:" << size << ENDL;
@@ -415,7 +413,7 @@ public:
         fout << indent(2) << "entry:" << entry << " count:"  << count << " ";
         
         while (node) {
-          fout << node->getHash() << "/" << *node->getKeyValue() << "; ";
+          fout << node->getHash() << "/" << node->getValue() << "; ";
           node = node->getNext();
         }
         fout << ENDL;
@@ -426,131 +424,27 @@ public:
     }
     
     /**
-      Returns the capacity of the hash table.
+      Adds the element to the set.
     */
-    inline unsigned int getCapacity() const throw() {
-      return capacity;
-    }
-    
-    /**
-      Returns the number of elements in the hash table.
-    */
-    inline unsigned int getSize() const throw() {
-      return size;
-    }
-
-    /**
-      Returns true if the specified value is a key in the hash table.
-    */
-    inline bool isKey(const Key& key) throw() {
-      const unsigned long hash = getHash(key);
-      Node** bucket = getBuckets() + (hash & mask);
-      Node* grandparent = 0;
-      Node* parent = 0;
-      Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || (child->getKey() != key))) {
-        grandparent = parent;
-        parent = child;
-        child = child->getNext();
-      }
-      if (child) {
-        if (grandparent) {
-          grandparent->setNext(child);
-          parent->setNext(child->getNext());
-          child->setNext(parent);
-        } else if (parent) {
-          // parent is the first node
-          parent->setNext(child->getNext());
-          child->setNext(*bucket);
-          *bucket = child;
-        } else {
-          // child is the first node
-        }
-      }
-      return child;
-    }
-    
-    /**
-      Returns true if the specified value is a key in the hash table.
-    */
-    inline bool isKey(const Key& key) const throw() {
-      const unsigned long hash = getHash(key);
-      const Node* const* bucket = getBuckets() + (hash & mask);
-      Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || child->getKey() != key)) {
-        child = child->getNext();
-      }
-      return child;
-    }
-    
-    /**
-      Returns the value associated with the specified key.
-    */
-    inline Value& getValue(const Key& key) throw(InvalidKey) {
-      const unsigned long hash = getHash(key);
-      Node** bucket = getBuckets() + (hash & mask);
-      Node* grandparent = 0;
-      Node* parent = 0;
-      Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || (child->getKey() != key))) {
-        grandparent = parent;
-        parent = child;
-        child = child->getNext();
-      }
-      if (child) {
-        if (grandparent) {
-          grandparent->setNext(child);
-          parent->setNext(child->getNext());
-          child->setNext(parent);
-        } else if (parent) {
-          // parent is the first node
-          parent->setNext(child->getNext());
-          child->setNext(*bucket);
-          *bucket = child;
-        } else {
-          // child is the first node
-        }
-      }
-      assert(child, InvalidKey(this));
-      return *child->getValue();
-    }
-    
-    /**
-      Returns the value associated with the specified key.
-    */
-    inline const Value& getValue(const Key& key) const throw(InvalidKey) {
-      const unsigned long hash = getHash(key);
-      const Node* const* bucket = getBuckets() + (hash & mask);
-      Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || child->getKey() != key)) {
-        child = child->getNext();
-      }
-      assert(child, InvalidKey(this));
-      return *child->getValue();
-    }
-    
-    /**
-      Adds the element to the table.
-    */
-    inline void add(const Key& key, const Value& value) throw(MemoryException) {
-      const unsigned long hash = getHash(key);
+    inline void add(const Value& value) throw(MemoryException) {
+      const unsigned long hash = getHash(value);
       Node** buckets = getBuckets() + (hash & mask);
       if (*buckets) {
         Node* parent = 0;
         Node* child = *buckets;
-        while (child && ((child->getHash() != hash) || (*child->getKey() != key))) {
+        while (child && ((child->getHash() != hash) || (child->getValue() != value))) {
           parent = child;
           child = child->getNext();
         }
         if (!child) { // if value not already in list
-          child = new Node(hash, key, value);
+          child = new Node(hash, value);
           if (parent) {
             parent->setNext(child);
           }
           ++size;
         }
       } else {
-        *buckets = new Node(hash, key, value);
+        *buckets = new Node(hash, value);
         ++size;
       }
       if (size > capacity) { // TAG: find simple rules that works
@@ -559,23 +453,23 @@ public:
     }
     
     /**
-      Removes the element with the specified key from the table.
+      Removes the specified value from the set.
     */
-    inline void remove(const Key& key) throw(InvalidKey) {
-      const unsigned long hash = getHash(key);
+    inline void remove(const Value& value) throw(InvalidNode) {
+      const unsigned long hash = getHash(value);
       Node** bucket = getBuckets() + (hash & mask);
       Node* child = *bucket;
-      assert(child, InvalidKey(this));
-      if ((child->getHash() == hash) && (*child->getKey() == key)) {
+      assert(child, InvalidNode(this));      
+      if ((child->getHash() == hash) && (child->getValue() == value)) {
         *bucket = child->getNext(); // unlink first node (next could be 0)
       } else {
         Node* parent = child;
         child = child->getNext();
-        while (child && ((child->getHash() != hash) || (*child->getKey() != key))) {
+        while (child && ((child->getHash() != hash) || (child->getValue() != value))) {
           parent = child;
           child = child->getNext();
         }
-        assert(child, InvalidKey(this));      
+        assert(child, InvalidNode(this));      
         parent->setNext(child->getNext()); // unlink node from linked list
       }
       --size;
@@ -584,11 +478,11 @@ public:
         shrink();
       }
     }
-    
+
     /**
-      Destroys the hash table.
+      Destroys the hash set.
     */
-    inline ~HashTableImpl() throw() {
+    inline ~HashSetImpl() throw() {
       Node** bucket = getBuckets();
       const Node* const* endBucket = bucket + capacity;
       while (bucket != endBucket) {
@@ -603,6 +497,8 @@ public:
     }
   };
 
+
+  
   /**
     Enumeration of all the elements of a hash set.
     
@@ -613,15 +509,15 @@ public:
   */
   
   template<class TRAITS>
-  class HashTableEnumerator : public Enumerator<TRAITS> {
-    friend class HashTableImpl;
+  class HashSetEnumerator : public Enumerator<TRAITS> {
+    friend class HashSetImpl;
   private:
     
     typedef typename Enumerator<TRAITS>::Pointer Pointer;
     typedef typename Enumerator<TRAITS>::Value Value;
     
     /** The hash set implementation. */
-    ReferenceCountedObjectPointer<HashTableImpl> impl;
+    ReferenceCountedObjectPointer<HashSetImpl> impl;
     /** The current bucket. */
     Node** bucket;
     /** The current position of the enumeration. */
@@ -631,11 +527,11 @@ public:
   public:
       
     /**
-      Initializes enumeration of hash table.
+      Initializes enumeration of hash set.
       
-      @param hashTable The hash table.
+      @param hashSet The hash set.
     */
-    inline HashTableEnumerator(ReferenceCountedObjectPointer<HashTableImpl> _impl) throw()
+    inline HashSetEnumerator(ReferenceCountedObjectPointer<HashSetImpl> _impl) throw()
       : impl(_impl),
         bucket(impl->getBuckets()),
         node(*bucket),
@@ -659,94 +555,27 @@ public:
         ++bucket;
         node = *bucket;
       }
-      Pointer result = node->getKeyValue();
+      Pointer result = &node->getValue();
       node = node->getNext();
       --numberOfElements;
       return result;
     }
 
-    inline ~HashTableEnumerator() throw() {
-    }
-  };
-
-  /**
-    Value enumerator of values of hash table.
-
-    @short Hash table value enumerator
-    @see HashTable
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
-  */
-  template<class TRAITS>
-  class HashTableValueEnumerator : public Enumerator<TRAITS> {
-    friend class HashTableImpl;
-  private:
-    
-    typedef typename Enumerator<TRAITS>::Pointer Pointer;
-    typedef typename Enumerator<TRAITS>::Value Value;
-    
-    /** The hash set implementation. */
-    ReferenceCountedObjectPointer<HashTableImpl> impl;
-    /** The current bucket. */
-    Node** bucket;
-    /** The current position of the enumeration. */
-    Node* node;
-    /** The number of elements. */
-    unsigned int numberOfElements;
-  public:
-
-    /**
-      Initializes enumeration of hash table.
-      
-      @param hashTable The hash table.
-    */
-    inline HashTableValueEnumerator(ReferenceCountedObjectPointer<HashTableImpl> _impl) throw()
-      : impl(_impl),
-        bucket(impl->getBuckets()),
-        node(*bucket),
-        numberOfElements(impl->getSize()) {
-    }
-
-    /**
-      Returns true if there is more elements in this enumeration.
-    */
-    inline bool hasNext() const throw() {
-      return numberOfElements;
-    }
-
-    /**
-      Returns the current value and increments the position. Raises
-      EndOfEnumeration if the end has been reached.
-    */
-    Pointer next() throw(EndOfEnumeration) {
-      assert(numberOfElements, EndOfEnumeration(this));
-      while (!node) {
-        ++bucket;
-        node = *bucket;
-      }
-      Pointer result = node->getValue();
-      node = node->getNext();
-      --numberOfElements;
-      return result;
-    }
-    
-    inline ~HashTableValueEnumerator() throw() {
+    inline ~HashSetEnumerator() throw() {
     }
   };
   
   
   
+  /** Modifying enumerator. */
+  typedef HashSetEnumerator<EnumeratorTraits<Value> > Enumerator;
   /** Non-modifying enumerator. */
-  typedef HashTableEnumerator<ReadEnumeratorTraits<Association<Key, Value> > > ReadEnumerator;
-  /** Modifying value enumerator. */
-  typedef HashTableValueEnumerator<EnumeratorTraits<Value> > ValueEnumerator;
-  /** Non-modifying value enumerator. */
-  typedef HashTableValueEnumerator<ReadEnumeratorTraits<Value> > ReadValueEnumerator;
+  typedef HashSetEnumerator<ReadEnumeratorTraits<Value> > ReadEnumerator;
   
   
   
-  /** Hash table implementation. */
-  ReferenceCountedObjectPointer<HashTableImpl> impl;
+  /** Hash set implementation. */
+  ReferenceCountedObjectPointer<HashSetImpl> impl;
 
   /**
     Copies the hash set if referenced by multiple automation pointers.
@@ -757,141 +586,105 @@ public:
 public:
 
   /**
-    Initializes an hash table.
+    Initializes an hash set.
   */
-  HashTable() throw(MemoryException)
-    : impl(new HashTableImpl(DEFAULT_CAPACITY)) {
+  HashSet() throw(MemoryException) : impl(new HashSetImpl(DEFAULT_CAPACITY)) {
   }
   
   /**
-    Initializes the hash table with the specified initial capacity.
+    Initializes the hash set with the specified initial capacity.
   */
-  HashTable(unsigned int capacity) throw(OutOfDomain, MemoryException)
-    : impl(new HashTableImpl(capacity)) {
-  }
-
-  /**
-    Initializes hash table from other hash table.
-  */
-  inline HashTable(const HashTable& copy) throw()
-    : impl(copy.impl) {
+  HashSet(unsigned int capacity) throw(MemoryException)
+    : impl(new HashSetImpl(capacity)) {
   }
   
   /**
-    Assignment of hash table by hash table.
+    Initializes hash set from another hash set.
   */
-  inline HashTable& operator=(const HashTable& eq) throw() {
+  HashSet(const HashSet& copy) throw() : impl(copy.impl) {
+  }
+  
+  /**
+    Assignment of hash set by hash set.
+  */
+  HashSet& operator=(const HashSet& eq) throw() {
     impl = eq.impl;
     return *this;
   }
   
   /**
-    Returns the capacity of the hash table.
+    Returns the capacity of the hash set.
   */
   inline unsigned int getCapacity() const throw() {
     return impl->getCapacity();
   }
-  
+
   /**
-    Returns the number of elements in the hash table.
+    Returns the number of elements in the hash set.
   */
   inline unsigned int getSize() const throw() {
     return impl->getSize();
   }
   
   /**
-    Returns true if the hash table is empty.
+    Returns true if the hash set is empty.
   */
   inline bool isEmpty() const throw() {
     return impl->getSize() == 0;
   }
 
   /**
-    Returns true if the specified value is a key in the table.
+    Returns true if the specified value is in the set.
   */
-  inline bool isKey(const Key& key) const throw() {
-    return impl->isKey(key);
+  bool hasValue(const Value& value) const throw() {
+    return impl->hasValue(value);
+  }
+  
+  /**
+    Adds the value to the set.
+  */
+  void add(const Value& value) throw(MemoryException) {
+    copyOnWrite();
+    impl->add(value);
+  }
+  
+  /**
+    Removes the specified value from this hash set. Raises InvalidNode if the
+    value doesn't exist in the set.
+  */
+  void remove(const Value& value) throw(InvalidNode, MemoryException) {
+    copyOnWrite();
+    impl->remove(value);
+  }
+ 
+  /**
+    Removes all the values from the hash set.
+  */
+  void removeAll() throw() {
+    impl = new HashSetImpl(DEFAULT_CAPACITY); // initial capacity is unknown
+  }
+  
+  /**
+    Returns the enumerator of the hash set.
+  */
+  Enumerator getEnumerator() throw() {
+    return Enumerator(impl);
   }
 
   /**
-    Returns the value associated with the specified key. Raises InvalidKey
-    if the specified key doesn't exist in this hash table.
-    
-    @param key The key of the value.
-  */
-  inline Value getValue(const Key& key) const throw(InvalidKey) {
-    return impl->getValue(key);
-  }
-  
-  /**
-    Adds the key and value to the table.
-  */
-  inline void add(const Key& key, const Value& value) throw(MemoryException) {
-    copyOnWrite();
-    impl->add(key, value);
-  }
-  
-  /**
-    Removes the specified key and its associated value from this hash table.
-    Raises InvalidKey if the key doesn't exist in this hash table.
-  */
-  inline void remove(const Key& key) throw(InvalidKey, MemoryException) {
-    copyOnWrite();
-    impl->remove(key);
-  }
-  
-  /**
-    Removes all the keys from this hash table.
-  */
-  void removeAll() throw() {
-    impl = new HashTableImpl(DEFAULT_CAPACITY); // initial capacity is unknown
-  }
-  
-  /**
-    Returns a enumerator of the hash table for non-modifying access.
+    Returns the read enumerator of the hash set.
   */
   ReadEnumerator getReadEnumerator() const throw() {
     return ReadEnumerator(impl);
-  }
-  
-  /**
-    Returns a enumerator of the values of the hash table for modifying access.
-  */
-  ValueEnumerator getValueEnumerator() throw() {
-    return ValueEnumerator(impl);
-  }
-  
-  /**
-    Returns a enumerator of the values of the hash table for non-modifying access.
-  */
-  ReadValueEnumerator getReadValueEnumerator() const throw() {
-    return ReadValueEnumerator(impl);
-  }
-  
-  /**
-    Returns the value associated with the specified key when used as 'rvalue'.
-    When used as 'lvalue' the key is associated with the specified value.
-  */
-  inline Reference operator[](const Key& key) throw(InvalidKey, MemoryException) {
-    return Reference(*this, key);
-  }
-  
-  /**
-    Returns the value associated with the specified key.
-  */
-  inline const Value& operator[](const Key& key) const throw(InvalidKey) {
-    return getValue(key);
   }
 };
 
 /**
   Writes the hash table to the format output stream.
 */
-template<class KEY, class VALUE>
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream,
-  const HashTable<KEY, VALUE>& value) throw(IOException) {
-  typename HashTable<KEY, VALUE>::ReadEnumerator enu = value.getReadEnumerator();
+template<class TYPE>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const HashSet<TYPE>& value) throw(IOException) {
+  typename HashSet<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {
     stream << *enu.next();

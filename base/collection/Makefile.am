@@ -18,6 +18,7 @@ noinst_LTLIBRARIES = libcollection.la
 libcollection_la_SOURCES = \
   BitSet.cpp \
   EndOfEnumeration.cpp \
+  HashSet.cpp \
   HashTable.cpp \
   InvalidEnumeration.cpp \
   InvalidKey.cpp \
@@ -36,6 +37,7 @@ section_HEADERS = \
   Enumeration.h \
   Functor.h \
   Hash.h \
+  HashSet.h \
   HashTable.h \
   InvalidEnumeration.h \
   InvalidKey.h \

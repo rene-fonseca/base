@@ -20,6 +20,7 @@
 #include <base/TypeInfo.h>
 #include <base/mem/DebugDynamicMemory.h>
 #include <base/concurrency/Thread.h>
+#include <base/concurrency/Process.h>
 #include <base/string/String.h>
 #include <base/string/WideString.h>
 #include <base/mathematics/Random.h>
@@ -131,8 +132,19 @@ namespace internal {
       if (e.getType().isInitialized()) {
         stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
       }
-      if (e.getMessage()) {
-        stream << MESSAGE(" with message '") << e.getMessage() << '\'';
+      const char* message = e.getMessage();
+      unsigned int cause = e.getCause();
+      if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
+        stream << MESSAGE(" with");
+      }
+      if (message) {
+        stream << MESSAGE(" message '") << message << '\'';
+      }
+      if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
+        stream << MESSAGE(" and");
+      }
+      if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
+        stream << MESSAGE(" cause ") << HEX << setWidth(10) << ZEROPAD << cause;
       }
       stream << MESSAGE(" in violation with exception specification during application initialization or cleanup.") << FLUSH;
     } catch(...) {
@@ -165,6 +177,7 @@ namespace internal {
 SpinLock Random::spinLock;
 
 Handle* FileDescriptor::Descriptor::invalid; // uninitialized
+Handle* Process::ProcessHandle::invalid; // uninitialized
 Handle* File::FileHandle::invalid; // uninitialized
 Handle* Pipe::PipeHandle::invalid; // uninitialized
 Socket::SocketImpl* Socket::SocketImpl::invalid; // uninitialized
@@ -183,6 +196,7 @@ public:
     ReferenceCountedObjectPointerImpl(invalidHandle).addReference(); // prevent destruction of object
     ReferenceCountedObjectPointerImpl(invalidSocket).addReference(); // prevent destruction of object
     FileDescriptor::Descriptor::invalid = &invalidHandle;
+    Process::ProcessHandle::invalid = &invalidHandle;
     File::FileHandle::invalid = &invalidHandle;
     Pipe::PipeHandle::invalid = &invalidHandle;
     Socket::SocketImpl::invalid = &invalidSocket;

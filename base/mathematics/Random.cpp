@@ -103,10 +103,10 @@ unsigned int Random::nextWord; // initialized by randomize()
 void Random::randomize() throw() {
   Timer timer;
   long long seed = timer.getStartTime();
-  seed += 20010908014640; // magic date/time in UTC - 09/08/2001 01:46:40
+  seed += 20010908014640LL; // magic date/time in UTC - 09/08/2001 01:46:40
   seed &= 0xffffffff;
   if (seed == 0) {
-    seed = 20010908014640;
+    seed = 20010908014640LL;
   }
   randomize(seed);
 }

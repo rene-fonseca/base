@@ -43,8 +43,8 @@ namespace eval {
   EvaluationNode makeFunctionNode(unsigned int id, unsigned int arguments) {
     EvaluationNode result;
     result.type = FUNCTION;
-    result.function = id;
-    result.arguments = arguments;
+    result.func.function = id;
+    result.func.arguments = arguments;
     return result;
   }
 
@@ -56,8 +56,8 @@ namespace eval {
       result.builtin = opr.getId();
     } else {
       result.type = FUNCTION;
-      result.function = opr.getId();
-      result.arguments = opr.getArguments();
+      result.func.function = opr.getId();
+      result.func.arguments = opr.getArguments();
     }
     return result;
   }
@@ -185,7 +185,7 @@ void ExpressionParser::readIdentifier() throw(ExpressionException) {
       unary = false;
       break;
     case FUNCTION:
-      push(Function(node.function, node.arguments));
+      push(Function(node.func.function, node.func.arguments));
       break;
     default:
       // internal knowledge - not returned by ExpressionProvider

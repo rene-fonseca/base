@@ -41,7 +41,7 @@ namespace eval {
       struct {
         unsigned int function;
         unsigned int arguments;
-      };
+      } func;
       unsigned int unknown;
     };
   };

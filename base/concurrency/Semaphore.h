@@ -19,15 +19,13 @@
 #include <base/ResourceException.h>
 #include <base/OutOfDomain.h>
 #include <base/Overflow.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 #include <base/OperatingSystem.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-#elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
+#if defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   #include <semaphore.h>
   #include <limits.h>
-#else
+#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
   #include <pthread.h>
 #endif
 
@@ -93,14 +91,14 @@ public:
     Decrements the semaphore and blocks if the semaphore is less than zero
     until another thread signals a change.
   */
-  void wait() throw(SemaphoreException);
+  void wait() const throw(SemaphoreException);
 
   /**
     Non-blocking variant of wait.
 
     @return True if the semaphore was decremented.
   */
-  bool tryWait() throw(SemaphoreException);
+  bool tryWait() const throw(SemaphoreException);
 
   /**
     Destroys the semaphore object.

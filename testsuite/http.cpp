@@ -18,7 +18,7 @@
 #include <base/UnsignedInteger.h>
 #include <base/concurrency/Thread.h>
 #include <base/io/File.h>
-#include <base/net/ClientSocket.h>
+#include <base/net/StreamSocket.h>
 #include <base/net/InetEndPoint.h>
 #include <base/net/InetInterface.h>
 #include <base/net/InetService.h>
@@ -28,18 +28,9 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
 
-#undef OPTIONS
-#undef GET
-#undef HEAD
-#undef POST
-#undef PUT
-#undef DELETE
-#undef TRACE
-#undef CONNECT
-
 using namespace base;
 
-namespace httpCommands {
+namespace commands {
   
   // Methods
   const StringLiteral METHOD_OPTIONS = MESSAGE("OPTIONS");
@@ -66,10 +57,9 @@ namespace httpCommands {
   const StringLiteral CMD_REPRESENTATION = MESSAGE("TYPE"); // request data representation (AEIL)
   const StringLiteral CMD_FILE_STRUCTURE = MESSAGE("STRU"); // request file structure (file/record/page)
   const StringLiteral CMD_TRANSFER_MODE = MESSAGE("MODE"); // (stream/block/compressed)
-  
-}; // httpCommands namespace
+}; // commands namespace
 
-using namespace httpCommands;
+using namespace commands;
 
 /**
   This exception is raised by the HTTP class.
@@ -220,12 +210,11 @@ public:
   String getValue() const throw() {return value;}
 };
 
-
 class PushInterface {
 public:
 
   virtual bool pushBegin(long long totalSize) throw() = 0;
-  virtual void push(const char* buffer, unsigned int size) throw() = 0;
+  virtual unsigned int push(const uint8* buffer, unsigned int size) throw() = 0;
   virtual void pushEnd() throw() = 0;
 };
 
@@ -233,7 +222,7 @@ class PullInterface {
 public:
 
   virtual long long pullBegin() const throw() = 0;
-  virtual unsigned int pull(char* buffer, unsigned int size) throw() = 0;
+  virtual unsigned int pull(uint8* buffer, unsigned int size) throw() = 0;
 };
 
 class PushToNothing {
@@ -243,7 +232,8 @@ public:
     return true;
   }
 
-  void push(const char* buffer, unsigned int size) throw() {
+  unsigned int push(const uint8* buffer, unsigned int size) throw() {
+    return size;
   }
 
   void pushEnd() throw() {
@@ -260,7 +250,7 @@ public:
     return true;
   }
 
-  void push(const char* buffer, unsigned int size) throw() {
+  unsigned int push(const uint8* buffer, unsigned int size) throw() {
     for (unsigned int i = 0; i < size;) {
       char ch = *buffer++;
       ++i;
@@ -284,10 +274,14 @@ public:
         fout << ' ';
       }
     }
+    return size;
   }
 
   void pushEnd() throw() {
     fout << ENDL;
+  }
+
+  virtual ~PushToStandardOutput() throw() {
   }
 };
 
@@ -310,31 +304,35 @@ public:
     timer.start();
     return true;
   }
-
-  void push(const char* buffer, unsigned int size) throw() {
-    unsigned int result = file.write(buffer, size);
+  
+  unsigned int push(const uint8* buffer, unsigned int size) throw() {
+    file.write(Cast::pointer<const char*>(buffer), size);
     ASSERT(result == size);
     bytesWritten += size;
     if (totalSize > 0) {
-      fout << "  bytes written=" << bytesWritten
-           << "  completed=" << base::FIXED << setWidth(7) << setPrecision(3)
-           << static_cast<long double>(bytesWritten)/totalSize*100 << "%"
-           << "  time=" << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
-           << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3)
+      fout << MESSAGE("  bytes written=") << bytesWritten
+           << MESSAGE("  completed=") << base::FIXED << setWidth(7) << setPrecision(3)
+           << static_cast<long double>(bytesWritten)/totalSize*100 << '%'
+           << MESSAGE("  time=") << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
+           << MESSAGE("  rate=") << base::FIXED << setWidth(12) << setPrecision(3)
            << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds())
            << MESSAGE("kb/s\r") << FLUSH;
     } else {
-      fout << "  bytes written=" << bytesWritten
-           << "  time=" << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
-           << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3)
+      fout << MESSAGE("  bytes written=") << bytesWritten
+           << MESSAGE("  time=") << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
+           << MESSAGE("  rate=") << base::FIXED << setWidth(12) << setPrecision(3)
            << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds())
            << MESSAGE("kb/s\r") << FLUSH;
     }
+    return size;
   }
-
+  
   void pushEnd() throw() {
     fout << ENDL;
     file.close();
+  }
+  
+  virtual ~PushToFile() throw() {
   }
 };
 
@@ -496,7 +494,7 @@ protected:
            << MESSAGE("User-Agent: ") << AGENT << CRLF // Section 14.43
            << CRLF << FLUSH;
     if (verbosity >= DEBUG) {
-      fout << "Request: " << stream.getString() << ENDL;
+      fout << MESSAGE("Request: ") << stream.getString() << ENDL;
     }
     return stream.getString();
   }
@@ -511,30 +509,30 @@ protected:
       fout << MESSAGE("DEBUG: bytes available: ") << instream.available() << ENDL;
     }
     ASSERT(instream.available() == controlConnection.available());
-
-    int terminationCode = -1; // invalidate
-
+    
+    // int terminationCode = -1; // invalidate
+    
     // Status-Line - HTTP-Version SP Status-Code SP Reason-Phrase CRLF - See section 6.1 in RFC
     String statusLine;
     instream >> statusLine;
-
+    
     if (verbosity >= DEBUG) {
       fout << MESSAGE("Status-Line: ") << statusLine << ENDL;
     }
     translateStatus(statusLine);
-
+    
     bool chunkedTransferEncoding = false;
     bool hasContentLength = false;
-    unsigned int contentLength;
+    unsigned int contentLength = 0;
     String contentType;
-
+    
     // Section 4.5, 6.2, and 7.1 in RFC
     while (true) { // read response
       String line;
       instream >> line;
 
       if (verbosity >= ALL) {
-        fout << ">> " << line << ENDL;
+        fout << MESSAGE(">> ") << line << ENDL;
       }
 
       if (line.isEmpty()) {
@@ -573,7 +571,10 @@ protected:
         while ((i < end) && (*i == Traits::SP)) { // skip spaces
           ++i;
         }
-        assert((i < end) && ASCIITraits::isHexDigit(*i), InvalidResponse("Chunk size invalid"));
+        assert(
+          (i < end) && ASCIITraits::isHexDigit(*i),
+          InvalidResponse("Chunk size invalid")
+        );
         unsigned int chunkSize = 0;
         while ((i < end) && ASCIITraits::isHexDigit(*i)) { // read chunk size
           chunkSize = chunkSize * 16 + ASCIITraits::digitToValue(*i);
@@ -593,7 +594,7 @@ protected:
             unsigned int bytesToRead = minimum<long long>(buffer.getSize(), chunkSize - bytesRead);
             unsigned int result = instream.read(buffer.getElements(), bytesToRead);
             bytesRead += result;
-            push->push(buffer.getElements(), result);
+            push->push(Cast::pointer<const uint8*>(buffer.getElements()), result);
           }
         }
 
@@ -607,7 +608,7 @@ protected:
         instream >> line;
 
         if (verbosity >= ALL) {
-          fout << ">> " << line << ENDL;
+          fout << MESSAGE(">> ") << line << ENDL;
         }
 
         if (line.isEmpty()) {
@@ -626,7 +627,7 @@ protected:
             unsigned int bytesToRead = minimum<long long>(buffer.getSize(), contentLength - bytesRead);
             unsigned int result = instream.read(buffer.getElements(), bytesToRead);
             bytesRead += result;
-            push->push(buffer.getElements(), result);
+            push->push(Cast::pointer<const uint8*>(buffer.getElements()), result);
           }
           push->pushEnd();
         }
@@ -696,8 +697,9 @@ public:
 
   void connect() throw(HTTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Establishing control connection to: "
-           << "address=" << endPoint.getAddress() << " port=" << endPoint.getPort() << ENDL;
+      fout << MESSAGE("DEBUG: Establishing control connection to: ")
+           << MESSAGE("address=") << endPoint.getAddress() << ' '
+           << MESSAGE("port=") << endPoint.getPort() << ENDL;
     }
     controlConnection.connect(endPoint.getAddress(), endPoint.getPort());
     controlConnection.getName();

@@ -19,9 +19,15 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This class is used for dumping debugging information to standard error in a
-  very low-level way.
+  @defgroup debugging Debugging
+*/
 
+/**
+  This class is used for dumping tracing information to the dedicated debugging
+  output stream, standard error, or system log dependent on the platform.
+
+  @short Tracing interface
+  @ingroup debugging
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -32,12 +38,12 @@ public:
   /**
     Write message to standard error.
   */
-  static void message(const char* message);
+  static void message(const char* message) throw();
 
   /**
     Write pointer and message to standard error.
   */
-  static void member(const void* ptr, const char* message);
+  static void member(const void* ptr, const char* message) throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

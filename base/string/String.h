@@ -239,6 +239,16 @@ public:
   */
   void optimizeCapacity() throw();
 
+  /**
+    Returns the granularity.
+  */
+  unsigned int getGranularity() const throw();
+
+  /**
+    Sets the granularity.
+  */
+  void setGranularity(unsigned int granularity) throw();
+
 // *******************************************************************************************
 //   CHARACTER SECTION
 // *******************************************************************************************
@@ -311,6 +321,14 @@ public:
     @param str The string to be appended.
   */
   inline String& append(const char* str) throw(MemoryException) {return insert(getLength(), str);}
+
+  /**
+    Appends the NULL-terminated string to this string.
+
+    @param str The string to be appended.
+    @param maximum The maximum length of the to be appended string.
+  */
+  String& append(const char* str, unsigned int maximum) throw(MemoryException);
 
   /**
     Prepends the character to this string.
@@ -636,6 +654,9 @@ public:
   */
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
 };
+
+template<>
+int compare<String>(const String& a, const String& b) throw();
 
 /**
   Writes string to format stream.

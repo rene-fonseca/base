@@ -43,8 +43,27 @@ CollectionFormatSet defaultFormatSet {
 };
 */
 
-/** Actions used to modify a format output stream. Use BIN, OCT, DEC, and HEX to select an appropriate integer base. Use ZEROPAD and NOZEROPAD to enable/disable zero padding. Use PREFIX and NOPREFIX to enable/disable prefixes for numbers. EOL writes a new line to the stream. FLUSH forces the internal buffers to be flushed. Use ENDL to both write a new line and flush the internal buffers. */
-typedef enum {BIN, OCT, DEC, HEX, ZEROPAD, NOZEROPAD, PREFIX, NOPREFIX, EOL, FLUSH, ENDL} Action;
+/**
+  Actions used to modify a format output stream. Use BIN, OCT, DEC, and HEX to
+  select an appropriate integer base. Use ZEROPAD and NOZEROPAD to
+  enable/disable zero padding. Use PREFIX and NOPREFIX to enable/disable
+  prefixes for numbers. EOL writes a new line to the stream. FLUSH forces the
+  internal buffers to be flushed. Use ENDL to both write a new line and flush
+  the internal buffers.
+*/
+typedef enum {
+  BIN, /**< Select binary integer base. */
+  OCT, /**< Select octal integer base. */
+  DEC, /**< Select decimal integer base. */
+  HEX, /**< Select hexadecimal integer base. */
+  ZEROPAD, /**< Enable zero padding. */
+  NOZEROPAD, /**< Disable zero padding. */
+  PREFIX, /**< Enable prefixes for integers. */
+  NOPREFIX, /**< Disable prefixes for integers. */
+  EOL, /**< Writes a new line. */
+  FLUSH, /**< Flushes internal buffers. */
+  ENDL /**< Write a new line and flush stream. */
+} Action;
 
 /**
   Format output stream.
@@ -72,6 +91,14 @@ public:
   typedef SpinLock LOCK;
 
   /**
+    Sets the default field width.
+
+    @param stream The format output stream.
+    @param width The desired width.
+  */
+  static inline FormatOutputStream& setWidth(FormatOutputStream& stream, unsigned int width) throw() {return stream.setWidth(width);}
+
+  /**
     Initializes the format output stream.
 
     @param out The output stream.
@@ -80,16 +107,16 @@ public:
   FormatOutputStream(OutputStream& out, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException);
 
   /**
+    Returns the default field width.
+  */
+  inline unsigned int getWidth() const throw() {return width;}
+
+  /**
     Sets the default field width.
 
     @param width The desired width.
   */
   inline FormatOutputStream& setWidth(unsigned int width) throw() {this->width = width; return *this;}
-
-  /**
-    Returns the default field width.
-  */
-  inline unsigned int getWidth() const throw() {return width;}
 
   /**
     Sets the default base.
@@ -156,6 +183,30 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
 FormatOutputStream& operator<<(FormatOutputStream& stream, float value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, double value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, long double value);
+
+
+
+class FormatOutputStreamManipulator {
+private:
+
+  FormatOutputStream& (*function)(FormatOutputStream&, unsigned int);
+  unsigned int value;
+public:
+
+  inline FormatOutputStreamManipulator(FormatOutputStream& (*f)(FormatOutputStream&, unsigned int), unsigned int v) : function(f), value(v) {}
+
+  inline FormatOutputStream& operator()(FormatOutputStream& stream) {
+    return function(stream, value);
+  }
+};
+
+inline FormatOutputStreamManipulator setWidth(unsigned int width) throw() {
+  return FormatOutputStreamManipulator(&FormatOutputStream::setWidth, width);
+}
+
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStreamManipulator manipulator) {
+  return manipulator(stream);
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

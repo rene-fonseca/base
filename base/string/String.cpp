@@ -33,7 +33,8 @@ String::String() throw(MemoryException) : elements(0) {
 }
 
 String::String(unsigned int capacity) throw(MemoryException) : elements(0) {
-  elements = new ReferenceCountedCapacityAllocator<char>(capacity + 1, GRANULARITY);
+  elements = new ReferenceCountedCapacityAllocator<char>(1, GRANULARITY);
+  elements->ensureCapacity(capacity + 1);
   elements->getElements()[0] = TERMINATOR; // terminate
 }
 
@@ -101,6 +102,14 @@ void String::ensureCapacity(unsigned int capacity) throw(MemoryException) {
 void String::optimizeCapacity() throw() {
   // no need to do copyOnWrite - or should we?
   elements->optimizeCapacity();
+}
+
+unsigned int String::getGranularity() const throw() {
+  return elements->getGranularity();
+}
+
+void String::setGranularity(unsigned int granularity) throw() {
+  elements->setGranularity(granularity);
 }
 
 char String::getChar(unsigned int index) throw(OutOfRange) {
@@ -186,6 +195,20 @@ String& String::insert(unsigned int index, const char* str) throw(MemoryExceptio
     move(buffer + index + strlength, buffer + index, strlength);
     copy(buffer + index, str, strlength);
   }
+  return *this;
+}
+
+String& String::append(const char* str, unsigned int maximum) throw(MemoryException) {
+  int strlength = 0;
+  if (str) { // is string proper
+    strlength = getLengthOfString(str);
+    assert(strlength >= 0, MemoryException()); // maximum length exceeded
+    strlength = minimum((unsigned int)strlength, maximum);
+  }
+  int length = getLength();
+  setLength(length + strlength);
+  char* buffer = getMutableBuffer();
+  copy(buffer + length, str, strlength);
   return *this;
 }
 
@@ -469,8 +492,8 @@ unsigned int String::count(const String& str, unsigned int start) const throw() 
 }
 
 template<>
-int compare<String>(const String& left, const String& right) throw() {
-  return strcmp(left.getBytes(), right.getBytes());
+int compare<String>(const String& a, const String& b) throw() {
+  return strcmp(a.getBytes(), b.getBytes());
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException) {

@@ -87,7 +87,7 @@ public:
   };
 private:
 
-  friend MappedFile;
+  friend class MappedFile;
 
   class FileImpl : public ReferenceCountedObject {
   private:
@@ -264,7 +264,7 @@ public:
   @author René Møller Fonseca
   @version 1.0
 */
-class MappedFile {
+class MappedFile : public Object {
 private:
 
   class MappedFileImpl : public ReferenceCountedObject {

@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  FileSystemException(Type type) throw() {}
+  FileSystemException(Type type) throw() : Exception(type) {}
   
   /**
     Initializes the exception object.
@@ -55,7 +55,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  FileSystemException(const char* message, Type type) throw() {}
+  FileSystemException(const char* message, Type type) throw() : Exception(message, type) {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

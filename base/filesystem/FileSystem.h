@@ -17,6 +17,7 @@
 #include <base/Object.h>
 #include <base/string/String.h>
 #include <base/filesystem/FileSystemException.h>
+#include <base/NotSupported.h>
 #include <base/io/File.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -31,16 +32,21 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short File system
   @ingroup filesystem
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.1
 */
 
 class FileSystem : public Object {
 private:
 
+  /** Internal attribute specifying whether or not file system links are supported by the platform. */
+  static int cachedSupportsLinks;
   /** Counter used for generating temporary file names. */
   static unsigned int counter;
 public:
 
+  /** Specifies the maximum length of a path. */
+  static const unsigned int MAXIMUM_PATH_LENGTH;
+  
   /** The temporary folder. */
   enum TemporaryFolder {
     /**
@@ -96,14 +102,48 @@ public:
 
     @param base The base path.
     @param relative The relative path.
+
+    @return the relative path if base is blank.
   */
   static String getPath(const String& base, const String& relative) throw();
+  
+  enum Component {
+    DIRECTORY, /**< The directory with an ending separator (i.e. '/' or '\'). */
+    FILENAME, /**< The name and extension. */
+    NAME, /**< The name of the entry excluding the extension and dot. */
+    DOTEXTENSION, /**< The extension (including the dot). */
+    EXTENSION /**< The extension (excluding the dot). */
+  };
+  
+  /**
+    Returns the specified component of the path.
 
+    @param path The path.
+    @param component The desired component (DIRECTORY, NAME, or EXTENSION).
+  */
+  static String getComponent(const String& path, Component component) throw(FileSystemException);
+  
+  /**
+    Converts the path to an absolute path.
+
+    @param base The 
+    @param path The path to be converted.
+  */
+  static String toAbsolutePath(const String& base, const String& path) throw(FileSystemException);
+  
+  /**
+    Returns a URL from the specified path. The URL has the following format:
+    "file:///C://WINNT" or "file:///usr/local".
+    
+    @param path The path to convert to a URL.
+  */
+  static String toUrl(const String& path) throw();
+  
   /**
     Returns the path of the current folder.
   */
   static String getCurrentFolder() throw(FileSystemException);
-
+  
   /**
     Sets the current folder.
   */
@@ -133,6 +173,42 @@ public:
     Makes a folder.
   */
   static void makeFolder(const String& path) throw(FileSystemException);
+
+  /**
+    Returns true if symbolic links are supported. This method always returns
+    true for Unices.
+  */
+  static bool supportsLinks() throw();
+  
+  /**
+    Creates a hard link.
+    
+    @param target The target of the link.
+    @param destination The path of the destination file/folder.
+  */
+  static void makeHardLink(const String& target, const String& destination) throw(NotSupported, FileSystemException);
+  
+  /**
+    Returns true if the file object specified by the path is a symbolic link.
+
+    @return False if the path doesn't point to an object.
+  */
+  static bool isLink(const String& path) throw(NotSupported, FileSystemException);
+  
+  /**
+    Creates a symbolic link.
+    
+    @param target The target of the link.
+    @param destination The path of the destination file/folder.
+  */
+  static void makeLink(const String& target, const String& destination) throw(NotSupported, FileSystemException);
+  
+  /**
+    Returns the target of the symbolic link.
+
+    @param path The path of the symbolic link.
+  */
+  static String getLink(const String& path) throw(NotSupported, FileSystemException);
   
   /**
     Returns the path to the folder intended for temporary files.

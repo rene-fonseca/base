@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @ingroup security
   @short CRC-32.
-  @see MD5SUM SHA1
+  @see MD5Sum SHA1
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

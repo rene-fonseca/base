@@ -17,6 +17,7 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <windows.h>
+#  include <aclapi.h>
 #  undef VOID
 #else // unix
 #  error Extension not supported for this flavor
@@ -354,13 +355,31 @@ namespace extension {
     }
     
     Trustee RegistryKey::getOwner() const throw(RegistryException) {
-      throw NotImplemented(this);
+      SECURITY_DESCRIPTOR* securityDescriptor;
+      PSID ownerSID;
+      assert(::GetSecurityInfo((HKEY)key->getHandle(), SE_REGISTRY_KEY,
+                               OWNER_SECURITY_INFORMATION, 0, &ownerSID, 0, 0,
+                               &securityDescriptor) == ERROR_SUCCESS,
+             RegistryException(this)
+      );
+      Trustee owner(Trustee::UNSPECIFIED, (const void*)ownerSID);
+      ::LocalFree(securityDescriptor);
+      return owner;
     }
 
     Trustee RegistryKey::getGroup() const throw(RegistryException) {
-      throw NotImplemented(this);
+      SECURITY_DESCRIPTOR* securityDescriptor;
+      PSID groupSID;
+      assert(::GetSecurityInfo((HKEY)key->getHandle(), SE_REGISTRY_KEY,
+                               GROUP_SECURITY_INFORMATION, 0, &groupSID, 0, 0,
+                               &securityDescriptor) == ERROR_SUCCESS,
+             RegistryException(this)
+      );
+      Trustee group(Trustee::UNSPECIFIED, (const void*)groupSID);
+      ::LocalFree(securityDescriptor);
+      return group;
     }
-
+    
     AccessControlList RegistryKey::getACL() const throw(RegistryException) {
       // see File::getACL()
     }
@@ -568,7 +587,7 @@ namespace extension {
     }
     
     void RegistryKey::setInteger(const String& name, uint32 value) throw(RegistryException) {
-      LittleEndian::UnsignedInt buffer = value;
+      LittleEndian<uint32> buffer = value;
       assert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
                              name.getElements(), // value name
                              0, // reserved

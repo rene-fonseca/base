@@ -1860,8 +1860,14 @@ bool WideString::isLowerCased() const throw() {
 }
 
 bool WideString::isTitleCased() const throw() {
-  // TAG: fixme
-  return false;
+  ReadIterator i = getBeginReadIterator();
+  ReadIterator end = getEndReadIterator();
+  while (i != end) {
+    if (!Traits::isTitle(*i++)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 template<>
@@ -1875,60 +1881,77 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& val
   return stream << value.getMultibyteString();
 }
 
-#if 0
-FormatOutputStream& operator<<(FormatOutputStream& stream, UnicodeCharacter value) throw(IOException) {
-  char buffer[sizeof("&#x12345678;")]; // worst case length
+FormatOutputStream& operator<<(FormatOutputStream& stream, WideString::UnicodeCharacter character) throw(IOException) {
+  char buffer[sizeof("&#4294967295;")]; // worst case length
   char* dest = buffer;
-
-  if (style == STYLE_JAVA) {
-    *dest++ = '\\';
-    *dest++ = 'u';
-    *dest++ = '1';
-    *dest++ = '2';
-    *dest++ = '3';
-    *dest++ = '4';
-  } else if ((style == STYLE_HTML) || (style == STYLE_XML)) {
-    if (DEC) {
+  unsigned int numberOfDigits = 1;
+  unsigned int value = character.getCode();
+  
+  switch (character.getStyle()) {
+  case WideString::STYLE_XML:
+    if (stream.getFlags() & FormatOutputStream::Symbols::DECIMAL) {
       *dest++ = '&';
       *dest++ = '#';
-      *dest++ = '1';
-      *dest++ = '2';
-      *dest++ = '3';
-      *dest++ = '4';
+      unsigned int temp = value/10;
+      while (temp) {
+        temp /= 10;
+        ++numberOfDigits;
+      }
+      temp = value;
+      for (int i = numberOfDigits - 1; i >= 0; --i) {
+        dest[i] = ASCIITraits::valueToDigit(temp % 10);
+        temp /= 10;
+      }
+      dest += numberOfDigits;
       *dest++ = ';';
     } else {
       *dest++ = '&';
       *dest++ = '#';
       *dest++ = 'x';
-      *dest++ = '1';
-      *dest++ = '2';
-      *dest++ = '3';
-      *dest++ = '4';
+      for (unsigned int i = 8; i > 1; --i) {
+        if (value >> ((i - 1) * 4)) {
+          numberOfDigits = i;
+          break;
+        }
+      }
+      for (unsigned int j = numberOfDigits; j > 1; --j) {
+        *dest++ = ASCIITraits::valueToDigit((value >> ((j - 1) * 4)) & 0xf);
+      }
       *dest++ = ';';
     }
-  } else if (style == STYLE_PERL) {
+    break;
+  case WideString::STYLE_PERL:
     *dest++ = '\\';
     *dest++ = 'x';
-    *dest++ = '{'
-    *dest++ = '1';
-    *dest++ = '2';
-    *dest++ = '3';
-    *dest++ = '4';
+    *dest++ = '{';
+    for (unsigned int i = 8; i > 1; --i) {
+      if (value >> ((i - 1) * 4)) {
+        numberOfDigits = i;
+        break;
+      }
+    }
+    for (unsigned int j = numberOfDigits; j > 1; --j) {
+      *dest++ = ASCIITraits::valueToDigit((value >> ((j - 1) * 4)) & 0xf);
+    }
     *dest++ = '}';
-  } else {
+    break;
+  case WideString::STYLE_CPP:
+  default:
     *dest++ = '\\';
     *dest++ = 'u';
-    *dest++ = '1';
-    *dest++ = '2';
-    *dest++ = '3';
-    *dest++ = '4';
+    for (unsigned int i = 8; i > 1; --i) {
+      if (value >> ((i - 1) * 4)) {
+        numberOfDigits = i;
+        break;
+      }
+    }
+    for (unsigned int j = numberOfDigits; j > 1; --j) {
+      *dest++ = ASCIITraits::valueToDigit((value >> ((j - 1) * 4)) & 0xf);
+    }
   }
-
-  unsigned int length = dest - buffer;
   
-  //  write to stream
+  stream.addCharacterField(buffer, dest - buffer);
   return stream;
 }
-#endif
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -385,28 +385,23 @@ public:
   class UnicodeCharacter {
   private:
     
-    static const Style DEFAULT_STYLE = STYLE_C;
+    static const Style DEFAULT_STYLE = STYLE_CPP;
     ucs4 character;
     Style style;
   public:
     
-    inline UnicodeCharacter(char _character) throw()
-      : style(DEFAULT_STYLE), character(_character) { // TAG: is this ok
+    inline UnicodeCharacter(ucs4 _character, Style _style = DEFAULT_STYLE) throw()
+      : character(_character), style(_style) {
     }
-    
-    inline UnicodeCharacter(ucs2 _character) throw()
-      : style(DEFAULT_STYLE) {
-      // TAG: fixme
-    }
-    
-    inline UnicodeCharacter(ucs4 _character) throw()
-      : style(DEFAULT_STYLE), character(_character) {
+
+    inline ucs4 getCode() const throw() {
+      return character;
     }
     
     inline Style getStyle() const throw() {
       return style;
     }
-
+    
     inline UnicodeCharacter& setStyle(Style style) throw() {
       this->style = style;
     }
@@ -1276,6 +1271,11 @@ inline WideString operator-(const WideString& left, const WideString& right) thr
     return WideString(left); // return copy of left
   }
 }
+
+/**
+  Writes a wide character to the format output stream.
+*/
+FormatOutputStream& operator<<(FormatOutputStream& stream, WideString::UnicodeCharacter character) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

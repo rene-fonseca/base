@@ -37,7 +37,7 @@ public:
     fout << MESSAGE("Hostname: ") << InetAddress::getLocalHost() << ENDL;
 
     {
-      List<InetInterface> interfaces = InetInterface::getInetInterfaces();
+      List<InetInterface> interfaces = InetInterface::getInterfaces();
       List<InetInterface>::ReadEnumerator enu = interfaces.getReadEnumerator();
       fout << MESSAGE("Available interfaces:") << ENDL;
       while (enu.hasNext()) {

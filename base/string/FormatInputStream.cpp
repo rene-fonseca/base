@@ -172,7 +172,7 @@ FormatInputStream& operator>>(FormatInputStream& stream, unsigned int& value) th
   do {
     assert(ASCIITraits::isDigit(ch), InvalidFormat("Not an unsigned int"));
     unsigned char temp = ASCIITraits::digitToValue(ch);
-    if ((value < UnsignedInt::MAXIMUM/10) || ((value == UnsignedInt::MAXIMUM/10) && (temp <= UnsignedInt::MAXIMUM%10))) {
+    if ((value < PrimitiveTraits<unsigned int>::MAXIMUM/10) || ((value == PrimitiveTraits<unsigned int>::MAXIMUM/10) && (temp <= PrimitiveTraits<unsigned int>::MAXIMUM%10))) {
       value = ch + 10 * value;
       try {
         ch = stream.getCharacter(); // TAG: must accept eof

@@ -149,7 +149,7 @@ public:
   /** Specifies the granularity of the capacity. Guaranteed to be greater than 0. */
   static const unsigned int GRANULARITY = 16;
   /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. Unresolved problem: size of int depends on architecture. */
-  static const unsigned int MAXIMUM_LENGTH = ((Int::MAXIMUM/sizeof(Character) - 1)/GRANULARITY)*GRANULARITY;
+  static const unsigned int MAXIMUM_LENGTH = ((PrimitiveTraits<int>::MAXIMUM/sizeof(Character) - 1)/GRANULARITY)*GRANULARITY;
 
   /** The type of the modifying string iterator. */
   typedef ReferenceCountedCapacityAllocator<Character>::Iterator Iterator;

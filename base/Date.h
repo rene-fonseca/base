@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,8 +36,8 @@ class Date {
 private:
 
   /**
-    Seconds elapsed since epoch (i.e. 00:00:00 on January 1, 1970, Coordinated
-    Universal Time (UTC)).
+    Microseconds elapsed since epoch (i.e. 00:00:00 on January 1, 1970,
+    Coordinated Universal Time (UTC)).
   */
   int64 date;
 public:
@@ -165,11 +165,11 @@ public:
   static Date getNow() throw(DateException);
   
   /**
-    Returns the bias (in seconds) for convertion from UTC to local time. Bias
-    may change during the lifetime of the process. This method only works on
-    some planet called Earth :-].
+    Returns the bias (in microseconds) for convertion from UTC to local time.
+    Bias may change during the lifetime of the process. This method only works
+    on some planet called Earth :-].
   */
-  static int getBias() throw();
+  static int64 getBias() throw();
   
   /**
     Returns date object for the specified time. Invalid values will be
@@ -233,7 +233,7 @@ public:
   /**
     Initializes the date with the specified date.
 
-    @param date The number of seconds elapsed since 00:00:00 on January 1,
+    @param date The number of microseconds elapsed since 00:00:00 on January 1,
     1970, Coordinated Universal Time (UTC).
   */
   inline Date::Date(int64 _date) throw() : date(_date) {
@@ -259,19 +259,24 @@ public:
   }
 
   /**
-    Returns the seconds elapsed since 00:00:00 on January 1, 1970, Coordinated
-    Universal Time (UTC).
+    Returns the number of microseconds elapsed since 00:00:00 on January 1,
+    1970, Coordinated Universal Time (UTC).
   */
   inline int64 getValue() const throw() {
     return date;
   }
 
   /**
-    Adds a bias (in seconds) to the date.
+    Adds a bias (in microseconds) to the date.
   */
   inline void addBias(int64 bias) throw() {
     date += bias;
   }
+  
+  /**
+    Returns the millisecond in local time.
+  */
+  int getMillisecond() const throw();
   
   /**
     Returns the second in local time.

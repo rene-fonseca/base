@@ -76,6 +76,7 @@ public:
   }
 
   void myOuterFunction() throw() {
+//    throw 4;
     if (true) {
       myInnerFunction();
       // "unexpected" exception expected
@@ -150,8 +151,10 @@ public:
   }
 };
 
+
 int main(int argc, const char* argv[], const char* env[]) {
   ExceptionApplication application(argc, argv, env);
+  
   try {
     application.main();
   } catch(Exception& e) {

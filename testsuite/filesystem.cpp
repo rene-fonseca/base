@@ -91,27 +91,28 @@ public:
     
     Array<String>::ReadEnumerator enu = entries.getReadEnumerator();
     while (enu.hasNext()) {
-      const String* entry = enu.next();
+      const String entry = *enu.next();
+      unsigned int type = FileSystem::getType(entry);
       try {
         bool link = false;
         bool linkTarget = false;
         String target;
         try {
-          if (FileSystem::isLink(*entry)) {
+          if (FileSystem::isLink(entry)) {
             link = true;
-            target = FileSystem::getLink(*entry);
+            target = FileSystem::getLink(entry);
             linkTarget = true;
           }
         } catch (Exception& e) {
           if (link && !linkTarget) {
             target = MESSAGE("<unknown>");
           }
-          ferr << *entry << MESSAGE(": ") << e << ENDL; // ignore exception
+          ferr << entry << MESSAGE(": ") << e << ENDL; // ignore exception
         }
         
         {
-          if (FileSystem::fileExists(*entry)) {
-            FileInfo info(*entry);
+	  if (type & FileSystem::REGULAR) {
+            FileInfo info(entry);
             unsigned int mode = info.getMode();
             char flags[10];
             flags[0] = (link) ? 'l' : '-';
@@ -147,7 +148,7 @@ public:
             }
             
             fout << Sequence<char>(flags, sizeof(flags)) << ' '
-                 << setWidth(2);
+                 << setWidth(4);
             if (info.getLinks() != 0) {
               fout << info.getLinks();
             } else {
@@ -159,13 +160,13 @@ public:
                  << setWidth(16) << groupName << ' '
                  << setWidth(8) << info.getSize() << ' '
                  << getTime(info.getLastModification()) << ' '
-                 << *entry;
+                 << entry;
             if (link) {
               fout << MESSAGE(" -> ") << target;
             }
             fout << EOL;    
-          } else if (FileSystem::folderExists(*entry)) {
-            FolderInfo info(*entry);
+          } else if (type & FileSystem::FOLDER) {
+            FolderInfo info(entry);
             
             unsigned int mode = info.getMode();
             char flags[10];
@@ -202,7 +203,7 @@ public:
             }
             
             fout << Sequence<char>(flags, sizeof(flags)) << ' '
-                 << setWidth(2);
+                 << setWidth(4);
             if (info.getLinks() != 0) {
               fout << info.getLinks();
             } else {
@@ -214,23 +215,24 @@ public:
                  << setWidth(16) << groupName << ' '
                  << setWidth(8) << ' ' << ' '
                  << getTime(info.getLastModification()) << ' '
-                 << *entry;
+                 << entry;
             if (link) {
               fout << MESSAGE(" -> ") << target;
             }
             fout << EOL;
           } else {            
-            fout << MESSAGE("----------")
-                 << setWidth(2) << ' ' << ' '
+            fout << MESSAGE("----------") << ' '
+                 << setWidth(4) << ' ' << ' '
                  << setWidth(16) << ' ' << ' '
                  << setWidth(16) << ' ' << ' '
                  << setWidth(8) << ' ' << ' '
                  << setWidth(12) << ' ' << ' '
-                 << *entry;
+                 << entry
+		 << EOL;
           }
         }
       } catch (Exception& e) {
-        ferr << *entry << MESSAGE(": ") << e << ENDL; // ignore exception - unless in debug mode?
+        ferr << entry << MESSAGE(": ") << e << ENDL; // ignore exception - unless in debug mode?
       }
     }
   }

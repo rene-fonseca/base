@@ -549,6 +549,14 @@ public:
       node->setParent(child);
       child->setParent(parent);
 
+      if (parent) {
+        if (node == parent->getLeft()) {
+          parent->setLeft(child);
+        } else {
+          parent->setRight(child);
+        }
+      }
+
       return child;
     }
 
@@ -571,6 +579,14 @@ public:
       Node* parent = node->getParent();
       node->setParent(child);
       child->setParent(parent);
+
+      if (parent) {
+        if (node == parent->getLeft()) {
+          parent->setLeft(child);
+        } else {
+          parent->setRight(child);
+        }
+      }
 
       return child;
     }

@@ -96,8 +96,8 @@ User& User::operator=(const User& eq) throw() {
 
 bool User::operator==(const User& eq) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (!id.isValid() || (!eq.id.isValid())) {
-    return !id.isValid() && !eq.id.isValid();
+  if (!isValid() || (!eq.isValid())) {
+    return !isValid() && !eq.isValid();
   }
   return ::EqualSid((PSID)id->getElements(), (PSID)eq.id->getElements()) != 0;
 #else // unix
@@ -136,7 +136,7 @@ User::User(const String& name) throw(UserException) {
 
 // TAG: select full name domain/user with option: LOCAL prefix?, BUILTIN prefix (no)?
 String User::getName(bool fallback) const throw(UserException) {
-  if (!id.isValid()) {
+  if (!isValid()) {
     return MESSAGE("<unknown>");
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -179,7 +179,7 @@ String User::getName(bool fallback) const throw(UserException) {
 
 String User::getHomeFolder() const throw(UserException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(id.isValid(), UserException(this));
+  assert(isValid(), UserException(this));
   throw NotImplemented(this);
 #else // unix  
   Allocator<char>* buffer = Thread::getLocalStorage();
@@ -222,7 +222,7 @@ bool User::isMemberOf(const Group& group) throw(UserException) {
 Array<String> User::getGroups() throw(UserException) {
   Array<String> result;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(id.isValid(), UserException(this));
+  assert(isValid(), UserException(this));
   SID_NAME_USE sidType;
   WCHAR name[UNLEN+1];
   DWORD nameSize = sizeof(name);

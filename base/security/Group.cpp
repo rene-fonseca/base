@@ -70,8 +70,8 @@ Group& Group::operator=(const Group& eq) throw() {
 
 bool Group::operator==(const Group& eq) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (!id.isValid() || (!eq.id.isValid())) {
-    return !id.isValid() && !eq.id.isValid();
+  if (!isValid() || (!eq.isValid())) {
+    return !isValid() && !eq.isValid();
   }
   return ::EqualSid((PSID)id->getElements(), (PSID)eq.id->getElements()) != 0;
 #else // unix

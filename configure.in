@@ -373,20 +373,6 @@ AC_BASE_YES(
   AC_DEFINE(HAVE_BIG_ENDIAN, 1, Specifies that the byte order of the architecture is big endian)
 )
 
-dnl NEED TO DETECT IPV4 / IPV6 libraries
-
-AC_BASE_CHECK(
-  checking whether IPv6 is supported by the operating system,
-  AC_BASE_CACHE(
-    base_cv_inet_ipv6,
-    AC_BASE_TRY_CXX_LINK(base_cv_inet_ipv6, config/ipv6.c)
-  ),
-  base_cv_inet_ipv6)
-AC_BASE_YES(
-  base_cv_inet_ipv6,
-  AC_DEFINE(HAVE_INET_IPV6, 1, Specifies that the interface extensions for IP version 6 are present)
-)
-
 AC_BASE_CHECK(
   checking whether the type socklen_t is available,
   AC_BASE_CACHE(
@@ -401,6 +387,25 @@ fi
 
 
 dnl Checks for library functions.
+
+AC_BASE_CHECK(
+  checking whether IPv6 is supported by the operating system,
+  AC_BASE_CACHE(
+    base_cv_inet_ipv6 base_cv_inet_ipv6_libs,
+    AC_BASE_ATTEMPT(
+      base_cv_inet_ipv6,
+      base_cv_inet_ipv6_libs,
+      "" -lsocket,
+      AC_BASE_TRY_CXX_LINK(base_cv_inet_ipv6, config/ipv6.c, $base_cv_inet_ipv6_libs)dnl
+    )dnl
+  ),
+  base_cv_inet_ipv6,
+  base_cv_inet_ipv6_libs)
+AC_BASE_YES(
+  base_cv_inet_ipv6,
+  AC_DEFINE(HAVE_INET_IPV6, 1, Specifies that the interface extensions for IP version 6 are present)
+)
+LIBS="$LIBS $base_cv_inet_libs"
 
 AC_BASE_CHECK(
   checking whether pthread_yield is provided by the POSIX thread library,

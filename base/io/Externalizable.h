@@ -12,7 +12,8 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Interface implemented by classes that can be externalized (i.e. instances can be read from and written to a stream).
+  Interface implemented by classes that can be externalized (i.e. instances can
+  be read from and written to a stream).
 
   @author René Møller Fonseca
   @version 1.0
@@ -20,6 +21,23 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class Externalizable {
 public:
+
+//  static TYPE readType(InputStream* in) {
+//    PrimitiveInputStream stream(in);
+//    unsigned int length = stream->readUnsignedInteger();
+//    char id[length];
+//    stream->read(id, length);
+//    return lookupType(id, length);
+//  }
+//
+//  template<class TYPE>
+//  static void writeType(OutputStream* out, TYPE object) {
+//    PrimitiveOutputStream stream(out);
+//    const char* id = typeid(object).name();
+//    unsigned int length = strlen(id);
+//    out->writeUnsignedInteger(length);
+//    out->write(id, length);
+//  }
 
   /**
     Reads object from input stream.

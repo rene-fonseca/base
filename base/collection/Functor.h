@@ -21,7 +21,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Invocates the specified unary operation for each element (non-modifying operation).
 */
 template<class COLLECTION, class UNOPR>
-void forEach(COLLECTION& collection, UNOPR& function) {
+void forEach(COLLECTION collection, UNOPR function) {
   typename COLLECTION::ReadOnlyEnumeration enu(collection);
   while (enu.hasNext()) {
     function(*enu.next());
@@ -38,7 +38,7 @@ void forEach(COLLECTION& collection, UNOPR& function) {
   Apply an unary operation to every element of the enumeration (modifying operation).
 */
 template<class COLLECTION, class UNOPR>
-inline void transform(COLLECTION& collection, const UNOPR& function) throw() {
+inline void transform(COLLECTION& collection, UNOPR function) throw() {
   typename COLLECTION::Enumeration enu(collection);
   while (enu.hasNext()) {
     typename COLLECTION::Enumeration::Pointer value = enu.next();

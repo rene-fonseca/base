@@ -34,7 +34,7 @@ class Process : public Object {
 public:
 
   /** Value which specifies an invalid process id. */
-  static const unsigned int INVALID = PrimitiveTraits<unsigned int>::MAXIMUM;
+  static const unsigned long INVALID = PrimitiveTraits<unsigned long>::MAXIMUM;
   
   /**
     Exception raised by the Process class.
@@ -91,7 +91,7 @@ public:
 private:
 
   /** The host local id of the process. */
-  unsigned int id;
+  unsigned long id;
 public:
 
   /**
@@ -99,7 +99,7 @@ public:
 
     @param id The id of the process.
   */
-  Process(unsigned int id) throw();
+  Process(unsigned long id) throw();
 
   /**
     Initializes process from other process.
@@ -114,7 +114,9 @@ public:
   /**
     Returns the id of the process.
   */
-  unsigned int getId() throw();
+  inline unsigned long Process::getId() throw() {
+    return id;
+  }
 
   /**
     Returns true if the process id is invalid.

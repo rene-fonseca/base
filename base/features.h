@@ -83,4 +83,15 @@ namespace base {
 #  endif
 #endif
 
+#if (!defined(GET_SOURCE_LOCATION))
+#  define GET_SOURCE_LOCATION() \
+  FormatOutputStream::Debug( \
+    MESSAGE(__FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__)) \
+  )
+#endif
+
+#if (!defined(WRITE_SOURCE_LOCATION))
+#  define WRITE_SOURCE_LOCATION() {fout << GET_SOURCE_LOCATION() << ENDL;}
+#endif
+
 #endif

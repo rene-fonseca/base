@@ -33,10 +33,10 @@ final: all
 
 
 lendum-gcc-2.96: all
-	CC="gcc -pipe" CFLAGS="-x c" CXX="gcc -pipe" CXXFLAGS="-x c++ -ansi -O0 -g3" LDFLAGS="-x none" BASE_LIBS="-lm" ./configure --target=i386-pc-linux --prefix=/usr/local/base --enable-debug --enable-demangle=gccv2 --enable-regexp=pcre --enable-xml=xmlsoft
+	CC="gcc" CFLAGS="-pipe -x c" CXX="gcc" CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" LDFLAGS="-x none" BASE_LIBS="-lm" ./configure --target=i386-pc-linux --prefix=/usr/local/base --enable-debug --enable-demangle=gccv2 --enable-regexp=pcre --enable-xml=xmlsoft
 
 lendum-gcc-3.0.3: all
-	CC="/usr/local/gcc-3.0.3/bin/gcc -pipe" CFLAGS="-x c" CXX="/usr/local/gcc-3.0.3/bin/gcc -pipe" CXXFLAGS="-x c++ -ansi -O0 -g3" LDFLAGS="-x none" BASE_LIBS="`gcc -print-file-name=libgcc.a` `gcc -print-file-name=libsupc++.a` -lm" ./configure --target=i386-pc-linux --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=pcre --enable-xml=xmlsoft
+	CC="/usr/local/gcc-3.0.3/bin/gcc" CFLAGS="-pipe -x c" CXX="/usr/local/gcc-3.0.3/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" LDFLAGS="-x none" BASE_LIBS="`gcc -print-file-name=libgcc.a` `gcc -print-file-name=libsupc++.a` -lm" ./configure --target=i386-pc-linux --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=pcre --enable-xml=xmlsoft
 
 lendum-gcc-3.0.4: all
 	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" LDFLAGS="-x none" BASE_LIBS="`gcc -print-file-name=libgcc.a` `gcc -print-file-name=libsupc++.a` -lm" ./configure --target=i386-pc-linux --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=pcre --enable-xml=xmlsoft

@@ -21,6 +21,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Thrown if unable to bind streams together.
 
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -31,14 +32,14 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  BindException();
+  BindException() throw();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  BindException(const char* message);
+  BindException(const char* message) throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

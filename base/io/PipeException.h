@@ -21,6 +21,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Exception thrown on pipe object exceptions.
 
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -31,7 +32,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  PipeException() throw() : IOException() {}
+  PipeException() throw() {}
 
   /**
     Initializes the exception object.

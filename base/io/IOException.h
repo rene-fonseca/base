@@ -21,6 +21,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Exception thrown on IO errors.
 
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -31,7 +32,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-IOException() throw();
+  IOException() throw();
 
   /**
     Initializes exception object as unspecified.

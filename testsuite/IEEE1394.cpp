@@ -18,6 +18,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/Timer.h>
 #include <base/Cast.h>
+#include <base/UnsignedInteger.h>
 #include <base/UnsignedLongInteger.h>
 #include <base/mem/MemoryDump.h>
 
@@ -38,6 +39,7 @@ public:
     COMMAND_RESET,
     COMMAND_REGISTER_SPACE,
     COMMAND_HELP,
+    COMMAND_USAGE,
     COMMAND_ERROR
   };
   
@@ -72,10 +74,11 @@ public:
     fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
     ieee1394.open(id);
     
-    static const StringLiteral STANDARD[] = {MESSAGE("unspecified"),
-                                             MESSAGE("IEEE 1394"),
-                                             MESSAGE("IEEE 1394A"),
-                                             MESSAGE("IEEE 1394B")
+    static const StringLiteral STANDARD[] = {
+      MESSAGE("unspecified"),
+      MESSAGE("IEEE 1394"),
+      MESSAGE("IEEE 1394A"),
+      MESSAGE("IEEE 1394B")
     };
     
     IEEE1394::Standard standard = ieee1394.getCompliance();
@@ -131,6 +134,11 @@ public:
           }
           
           fout << MESSAGE("  Maximum asynchronous payload: ") << ieee1394.getMaximumPayload(node) << ENDL;
+
+          String description = ieee1394.getDescription(node);
+          if (description.isProper()) {
+            fout << MESSAGE("  Description: ") << description << ENDL;
+          }
         } catch (IEEE1394Exception& e) {
           fout << MESSAGE("Exception: ") << e << ENDL;
           // check cause
@@ -162,13 +170,6 @@ public:
       dumpNodes(ieee1394);
       
       fout << MESSAGE("Status: ") << ieee1394.getStatus() << ENDL;
-
-//       fout << MESSAGE("Opening camera: ") << cameraGuid << ENDL;
-//       unsigned int specification = camera.getSpecification();
-      
-//       fout << MESSAGE("Vendor: ") << camera.getVendorName() << EOL
-//            << MESSAGE("Model: ") << camera.getModelName() << EOL
-//            << MESSAGE("Specification: ") << ((specification >> 16) & 0xff) << '.' << ((specification >> 8) & 0xff) << ENDL;
       
       fout << MESSAGE("Closing IEEE 1394 adapter") << ENDL;
       ieee1394.close();
@@ -180,7 +181,7 @@ public:
     }
   }
 
-  void dumpRegisterSpace(uint64 firstAddress, uint64 lastAddress, const EUI64& guid, unsigned short node) throw() {
+  void dumpRegisterSpace(uint64 firstAddress, uint64 lastAddress, const EUI64& guid, int node) throw() {
     try {
       IEEE1394 ieee1394;
       
@@ -197,6 +198,10 @@ public:
       
       fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
       ieee1394.open(id);
+
+      if (node < 0) {
+        node = IEEE1394::makeNodeId(ieee1394.getPhysicalId());
+      }
       
       const uint32 DEFAULT_VALUE = 0xdccd2332;
       const uint64 endAddress = lastAddress + sizeof(uint32);
@@ -258,11 +263,14 @@ public:
     String guid;
     uint64 firstAddress;
     uint64 lastAddress;
+    int nodeId = -1; // -1 indicates default
     
     const Array<String> arguments = getArguments();
     
-    try {      
-      if (arguments.getSize() == 1) {
+    try {
+      if (arguments.getSize() == 0) {
+        command = COMMAND_USAGE;
+      } else if (arguments.getSize() == 1) {
         if (arguments[0] == "--help") {
           command = COMMAND_HELP;
         } else if (arguments[0] == "--adapters") {
@@ -282,7 +290,7 @@ public:
           command = COMMAND_RESET;
           guid = arguments[1];
         }
-      } else if (arguments.getSize() == 3) {
+      } else if (arguments.getSize() >= 3) {
         if (arguments[0] == "--registers") {
           command = COMMAND_REGISTER_SPACE;
         
@@ -357,10 +365,24 @@ public:
             errorMessage = MESSAGE("Misaligned register(s)");
             command = COMMAND_ERROR;
           }
-          guid = arguments[2];
+          guid = arguments[2]; // TAG: remove when ready
+
+          switch (arguments.getSize()) {
+          case 2:
+            break;
+          case 3:
+            guid = arguments[2];
+            break;
+          case 4:
+            nodeId = UnsignedInteger::parse(
+              arguments[3],
+              UnsignedLongInteger::PREFIX | UnsignedLongInteger::HEX
+            );
+            break;
+          default:
+            command = COMMAND_ERROR;
+          }
         }
-      } else {
-        command = COMMAND_HELP;
       }
     } catch (Exception& e) {
       errorMessage = e.getMessage();
@@ -381,6 +403,16 @@ public:
         errorMessage = MESSAGE("Invalid GUID of adapter");
       }
     }
+
+    if ((command != COMMAND_ERROR) && (nodeId >= 0)) {
+      if (nodeId % 64 == 63) {
+        errorMessage = MESSAGE("Broadcast id not premitted");
+        command = COMMAND_ERROR;
+      } else if (nodeId > PrimitiveTraits<uint16>::MAXIMUM) {
+        errorMessage = MESSAGE("Invalid node id");
+        command = COMMAND_ERROR;
+      }
+    }
     
     switch (command) {
     case COMMAND_DUMP_ADAPTERS:
@@ -393,11 +425,15 @@ public:
       resetBus();
       break;
     case COMMAND_REGISTER_SPACE:
-      dumpRegisterSpace(firstAddress, lastAddress, id, 0);
+      dumpRegisterSpace(firstAddress, lastAddress, id, nodeId);
       break;
     case COMMAND_HELP:
+      // TAG: more help
       fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [options] [adapter EUI-64] [node EUI-64 or physical id]") << ENDL;
       break;
+    case COMMAND_USAGE:
+      fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [options] [adapter EUI-64] [node EUI-64 or physical id]") << ENDL;
+      break;      
     case COMMAND_ERROR:
       // fout has been flushed
       if (errorMessage.isProper()) {

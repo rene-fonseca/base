@@ -142,8 +142,12 @@ public:
   
   /**
     Returns the short name of the account.
+
+    @param fallback Specifies, when true, that a string representation of the
+    id should be returned if the name cannot be resolved. Fall-back is enabled
+    by default.
   */
-  String getName() const throw(UserException);
+  String getName(bool fallback = true) const throw(UserException);
   
   /**
     Returns the full name of the account.

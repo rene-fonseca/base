@@ -17,7 +17,9 @@ noinst_LTLIBRARIES = libui.la
 
 libui_la_SOURCES = Dialog.cpp \
                    OpenFileDialog.cpp \
+                   Menu.cpp \
                    MessageDialog.cpp \
+                   Position.cpp \
                    SaveFileDialog.cpp \
                    SelectFolderDialog.cpp \
                    UserInterfaceException.cpp
@@ -25,7 +27,9 @@ libui_la_SOURCES = Dialog.cpp \
 sectiondir = $(includedir)/base/ui
 section_HEADERS = Dialog.h \
                   OpenFileDialog.h \
+                  Menu.h \
                   MessageDialog.h \
+                  Position.h \
                   SaveFileDialog.h \
                   SelectFolderDialog.h \
                   UserInterfaceException.h

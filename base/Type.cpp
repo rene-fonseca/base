@@ -14,6 +14,7 @@
 #include <base/features.h>
 #include <base/Type.h>
 #include <base/string/String.h>
+#include <base/concurrency/Thread.h>
 #include <stdlib.h>
 
 #if defined(_DK_SDU_MIP__BASE__DEMANGLE_GCCV3)
@@ -79,11 +80,21 @@ String demangleTypename(const char* mangled) throw() {
 
 #elif defined(_DK_SDU_MIP__BASE__DEMANGLE_SUNWSPRO)
 
-#error Demangling not implemented
+String demangleTypename(const char* mangled) throw() {
+  Allocator<char>* buffer = Thread::getLocalStorage();
+  int result = cplus_demangle(mangled, buffer->getElements(), buffer->getSize());
+  ASSERT(!result);
+  return String(buffer->getElements());
+}
 
 #elif defined(_DK_SDU_MIP__BASE__DEMANGLE_MIPSPRO)
 
-#error Demangling not implemented
+String demangleTypename(const char* mangled) throw() {
+  char buffer[MAXDBUF];
+  int result = demangle(mangled, buffer);
+  ASSERT(!result);
+  return String(buffer);
+}
 
 #else // no demangling support
 

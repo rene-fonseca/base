@@ -43,7 +43,7 @@ private:
       : handle(_handle) {
     }
 
-    inline void* getHandle() throw() {
+    inline void* getHandle() const throw() {
       return handle;
     }
     

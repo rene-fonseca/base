@@ -82,7 +82,7 @@ GraphicsContext::Brush::Brush(SystemColor color) throw(UserInterfaceException) {
   assert(brush, UserInterfaceException(this));
   setHandle(brush);
   // prevent destruction of object
-  ReferenceImpl(*handle).addReference();
+  ReferenceCountedObject::ReferenceImpl(*handle).addReference();
   // TAG: need method to query to current number of references
 #else // unix
 #endif // flavor
@@ -97,7 +97,8 @@ GraphicsContext::Brush::Brush(Color color) throw(UserInterfaceException) {
 #endif // flavor
 }
 
-GraphicsContext::Brush::Brush(unsigned int color) throw(UserInterfaceException) {
+GraphicsContext::Brush::Brush(
+  unsigned int color) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HBRUSH brush = ::CreateSolidBrush(color & 0xffffff);
   assert(brush, UserInterfaceException(this));
@@ -295,7 +296,9 @@ void GraphicsContext::clear() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-void GraphicsContext::clear(const Position& position, const Dimension& dimension) throw(UserInterfaceException) {
+void GraphicsContext::clear(
+  const Position& position,
+  const Dimension& dimension) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();
@@ -323,7 +326,10 @@ void GraphicsContext::clear(const Position& position, const Dimension& dimension
 #endif // flavor
 }
 
-void GraphicsContext::setPixel(const Position& position, Color color, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::setPixel(
+  const Position& position,
+  Color color,
+  unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
     ::SetPixel(
@@ -345,7 +351,8 @@ void GraphicsContext::setPixel(const Position& position, Color color, unsigned i
 #endif // flavor
 }
 
-Color GraphicsContext::getPixel(const Position& position) throw(UserInterfaceException) {
+Color GraphicsContext::getPixel(
+  const Position& position) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   COLORREF result = ::GetPixel(
     (HDC)graphicsContextHandle,
@@ -360,11 +367,14 @@ Color GraphicsContext::getPixel(const Position& position) throw(UserInterfaceExc
 #endif // flavor
 }
 
-void GraphicsContext::setPixels(const Array<Position>& positions, Color color, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::setPixels(
+  const Array<Position>& positions,
+  Color color,
+  unsigned int flags) throw(UserInterfaceException) {
 // ::XInitImage, ::XCreateImage, XGetPixel, XPutPixel, XSubImage, XAddPixel, ::XDestroyImage
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  Array<Position>::ReadIterator i = positions.getBeginIterator();
-  const Array<Position>::ReadIterator end = positions.getEndIterator();
+  Array<Position>::ReadIterator i = positions.getBeginReadIterator();
+  const Array<Position>::ReadIterator end = positions.getEndReadIterator();
   while (i != end) {
     assert(
       ::SetPixel(

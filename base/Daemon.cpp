@@ -104,7 +104,7 @@ public:
   static void WINAPI serviceEntry(DWORD argc, LPTSTR* argv) throw() {
     ASSERT(Thread::getThread() == 0); // make sure this is a new context
     // register the service control handler
-    serviceStatusHandle = RegisterServiceCtrlHandler(Application::getApplication()->getFormalName().getElements(), serviceControlHandler);
+    serviceStatusHandle = RegisterServiceCtrlHandler(Application::getApplication()->getFormalName().getElements(), (LPHANDLER_FUNCTION)serviceControlHandler);
     if (!serviceStatusHandle) {
       return;
     }
@@ -137,7 +137,7 @@ Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) 
   DaemonImpl::runnable = runnable;
 
   SERVICE_TABLE_ENTRY dispatchTable[] = {
-    {"", DaemonImpl::serviceEntry}, // name is ignored 'cause using SERVICE_WIN32_OWN_PROCESS
+    {"", (LPSERVICE_MAIN_FUNCTION)DaemonImpl::serviceEntry}, // name is ignored 'cause using SERVICE_WIN32_OWN_PROCESS
     {NULL, NULL}
   };
 

@@ -453,13 +453,13 @@ void FormatOutputStream::addDateField(const Date& date) throw(IOException) {
       format = locale->getLongDateFormat() + MESSAGE(" ") + locale->getLongTimeFormat(); // TAG: optimize
       break;
     case Symbols::RFC2822_FORMAT:
-      format = MESSAGE("RFC2822");
+      format = "RFC2822";
       break;
     case Symbols::ISO8601_FORMAT:
       if (localTime) {
-        format = MESSAGE("%Y-%m-%dT%H:%M:%S");
+        format = "%Y-%m-%dT%H:%M:%S";
       } else {
-        format = MESSAGE("%Y-%m-%dT%H:%M:%SZ");
+        format = "%Y-%m-%dT%H:%M:%SZ";
       }
       break;
     }
@@ -476,13 +476,13 @@ void FormatOutputStream::addDateField(const Date& date) throw(IOException) {
       format = locale->getLongTimeFormat();
       break;
     case Symbols::RFC2822_FORMAT:
-      format = MESSAGE("RFC2822");
+      format = "RFC2822";
       break;
     case Symbols::ISO8601_FORMAT:
       if (localTime) {
-        format = MESSAGE("%H:%M:%S");
+        format = "%H:%M:%S";
       } else {
-        format = MESSAGE("%H:%M:%SZ");
+        format = "%H:%M:%SZ";
       }
       break;
     }
@@ -499,10 +499,10 @@ void FormatOutputStream::addDateField(const Date& date) throw(IOException) {
       format = locale->getLongDateFormat();
       break;
     case Symbols::RFC2822_FORMAT:
-      format = MESSAGE("<RFC2822>");
+      format = "<RFC2822>";
       break;
     case Symbols::ISO8601_FORMAT:
-      format = MESSAGE("%y-%m-%d");
+      format = "%y-%m-%d";
       break;
     }
     break;
@@ -545,7 +545,7 @@ FormatOutputStream::~FormatOutputStream() throw(IOException) {
 FormatOutputStream& FormatOutputStream::operator<<(
   bool value) throw(IOException) {
   // TAG: need locale support
-  return *this << (value ? MESSAGE("true") : MESSAGE("false"));
+  return *this << (value ? Literal("true") : Literal("false"));
 }
 
 FormatOutputStream& FormatOutputStream::operator<<(

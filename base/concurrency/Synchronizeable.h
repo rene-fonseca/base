@@ -31,6 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @ingroup concurrency
   @see Synchronizeable, Synchronize
 */
+
 class Unsafe {
 };
 
@@ -55,52 +56,52 @@ typedef Unsafe DefaultLock;
 */
 
 template<class LOCK = DefaultLock>
-class Synchronizeable : public virtual LOCK {
+class Synchronizeable : public Object {
 private:
 
+  /** Lock. */
+  LOCK lock;
+  
   /**
-    Copy constructor. Does not copy the internal locking object but creates a new
-    locking object.
+    Copy constructor. Does not copy the internal locking object but creates a
+    new locking object.
   */
-  inline Synchronizeable(const Synchronizeable& copy) : LOCK() {
+  inline Synchronizeable(const Synchronizeable& copy) throw(LockException) {
   }
 
   /**
     Assignment operator. Does not modify the internal locking object.
   */
-  inline Synchronizeable& operator=(const Synchronizeable& eq) {
+  inline Synchronizeable& operator=(const Synchronizeable& eq) throw() {
     return *this;
   }
-public:
-
+protected:
+  
   /**
     Initializes a synchronize able object.
   */
-  inline Synchronizeable() : LOCK() {
+  inline Synchronizeable() throw(LockException) {
   }
-
-// protected:
-public:
-
+  
   /**
     Acquires an exclusive lock on this object.
   */
-  inline void exclusiveLock() const throw() {
-    LOCK::exclusiveLock();
+  inline void exclusiveLock() const throw(LockException) {
+    lock.exclusiveLock();
   }
-
+  
   /**
     Acquires a shared lock on this object.
   */
-  inline void sharedLock() const throw() {
-    LOCK::sharedLock();
+  inline void sharedLock() const throw(LockException) {
+    lock.sharedLock();
   }
-
+  
   /**
     Releases the lock on this object.
   */
-  inline void releaseLock() const throw() {
-    LOCK::releaseLock();
+  inline void releaseLock() const throw(LockException) {
+    lock.releaseLock();
   }
 };
 

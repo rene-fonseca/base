@@ -75,7 +75,7 @@ public:
 
     @param guard The synchronize able object to be synchronized.
   */
-  inline explicit SharedSynchronize(const Guard& _guard) throw() 
+  inline explicit SharedSynchronize(const Guard& _guard) throw()
     : guard(_guard) {
     guard.sharedLock();
   }

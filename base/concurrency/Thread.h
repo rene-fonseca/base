@@ -52,13 +52,16 @@ class Runnable;
     }
   };
 
-  int main() {
-    MyActiveObject myActiveObject(100);
-    Thread myThread(myActiveObject);
-    myThread.start(); // start thread
-    myThread.join(); // wait for thread to complete
-    return 0;
-  }
+  class MyApplication : public Application {
+  public:
+  
+    void main() throw() {
+      MyActiveObject myActiveObject(100);
+      Thread myThread(myActiveObject);
+      myThread.start(); // start thread
+      myThread.join(); // wait for thread to complete
+    }
+  };
   @endcode
 
   @short Thread

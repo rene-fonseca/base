@@ -19,7 +19,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/MutualExclusion.h>
 #include <base/concurrency/Semaphore.h>
-#include <base/concurrency/Synchronize.h>
+#include <base/concurrency/ExclusiveSynchronize.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -43,25 +43,29 @@ public:
   @version 1.0
 */
 
-class ThreadPool : public Synchronizeable<MutualExclusion> {
-public:
-
+class ThreadPool {
+private:
+  
   /** The type of the guard. */
   typedef MutualExclusion Guard;
   
+  Guard guard;
+public:
+
   /**
     Exception raised directly by the ThreadPool class.
 
     @short Thread pool exception.
-    @ingroup exceptions
+    @ingroup concurrency exceptions
   */
   class ThreadPoolException : public Exception {
   public:
     
-    inline ThreadPoolException() throw() : Exception() {
+    inline ThreadPoolException() throw() {
     }
     
-    inline ThreadPoolException(const char* message) throw() : Exception(message) {
+    inline ThreadPoolException(const char* message) throw()
+      : Exception(message) {
     }
     
     inline ThreadPoolException(Type type) throw() : Exception(type) {
@@ -103,7 +107,6 @@ private:
   };
 
   friend class Wrapper;
-  typedef MutualExclusion LOCK;
 
   /** Runnable. */
   Wrapper runnable;

@@ -37,7 +37,8 @@ public:
   /** Cause. */
   enum Cause {
     ABORTED, /**< Operation aborted. */
-    PENDING, /**< I/O is pending. */
+    BROKEN_STREAM, /**< Broken stream. */
+    PENDING /**< I/O is pending. */
   };
   
   /**

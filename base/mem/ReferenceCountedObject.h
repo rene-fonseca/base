@@ -53,7 +53,7 @@ friend class ReferenceCountedObjectPointerImpl;
 private:
 
   /** The current number of references to the object. */
-  mutable unsigned int references; // its not likely that we get an overflow or is it
+  mutable unsigned long references; // out of memory before overflow
 public:
 
   /**

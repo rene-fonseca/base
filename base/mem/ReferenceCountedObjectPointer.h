@@ -17,6 +17,7 @@
 #include <base/mem/ReferenceCountedObject.h>
 #include <base/mem/NullPointer.h>
 #include <base/Base.h>
+#include <base/Functor.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -38,7 +39,7 @@ public:
 
     @param ptr Pointer to the reference counted object.
   */
-  inline unsigned int& getReferenceCounter(const ReferenceCountedObject* ptr) const throw() {
+  inline unsigned long& getReferenceCounter(const ReferenceCountedObject* ptr) const throw() {
     return ptr->references;
   }
 };
@@ -49,12 +50,13 @@ public:
   Automation pointer for reference counted objects. This class is responsible
   for counting the total number of references to an object. The pointer
   automatically deletes a reference counted object when the number of
-  references reaches zero.
+  references reaches zero. This pointer can only be used to reference count
+  objects of type ReferenceCountedObject but is faster than ReferenceCounter.
 
   @short Automation pointer that counts the number of references to an object.
-  @see ReferenceCountedObject
+  @see ReferenceCountedObject ReferenceCounter
   @author René Møller Fonseca
-  @version 1.1
+  @version 1.2
 */
 
 template<class TYPE>
@@ -138,7 +140,7 @@ public:
   */
   template<class POLY>
   inline ReferenceCountedObjectPointer& operator=(const ReferenceCountedObjectPointer<POLY>& eq) {
-    // no need to protect against self assignment
+    ASSERT(&eq != this); // no need to protect against self assignment
     setValue(eq.ptr);
     return *this;
   }
@@ -185,7 +187,9 @@ public:
   */
   inline void copyOnWrite() throw() {
     if (isMultiReferenced()) { // do we have the object for our self
-      setValue(new Value(*ptr)); // make a copy of the object
+      --getReferenceCounter(ptr); // remove one reference (no need to delete object since multi-referenced)
+      ptr = new Value(*ptr);
+      ++getReferenceCounter(ptr); // add reference
     }
   }
 
@@ -221,7 +225,6 @@ public:
     if (ptr) { // skip if pointer is invalid
       if (!--getReferenceCounter(ptr)) { // remove reference
         delete ptr; // could throw exception if RCO is destroyed unsuccessfully
-        // no need to invalidate ptr
       }
     }
   }

@@ -13,11 +13,11 @@
 #include <typeinfo>
 
 void client(String<> host, String<> service) {
-  fout << "Server: " << host << EOL;
+  fout << "Server: " << host << ENDL;
 
   InetAddress address; // the address of the remote host
   {
-    fout << "Server addresses:\n";
+    fout << "Server addresses:" << ENDL;
     List<InetAddress> addresses = InetAddress::getAddressesByName(host);
     List<InetAddress>::ReadOnlyEnumeration enu(addresses);
     unsigned int index = 0;
@@ -25,9 +25,9 @@ void client(String<> host, String<> service) {
       const InetAddress* temp = enu.next();
       if (index == 0) { // use the first address
         address = *temp;
-        fout << "  address " << index++ << ": " << *temp << " (USING THIS)" << EOL;
+        fout << "  address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
       } else {
-        fout << "  address " << index++ << ": " << *temp << EOL;
+        fout << "  address " << index++ << ": " << *temp << ENDL;
       }
     }
   }
@@ -45,41 +45,41 @@ void client(String<> host, String<> service) {
       port = s.getPort();
       fout << "Service: name=" << s.getName()
            << "  port=" << s.getPort()
-           << "  protocol=" << s.getProtocol() << EOL;
+           << "  protocol=" << s.getProtocol() << ENDL;
     } catch(ServiceNotFound& e) {
-      fout << "Warning: " << e.getMessage() << EOL;
-      fout << "Service: port=" << port << EOL;
+      fout << "Warning: " << e.getMessage() << ENDL;
+      fout << "Service: port=" << port << ENDL;
     }
   }
 
-  fout << "Initializing socket...\n";
+  fout << "Initializing socket..." << ENDL;
   StreamSocket socket;
 
-  fout << "Connecting socket...\n";
+  fout << "Connecting socket..." << ENDL;
   socket.connect(address, port);
 
-  fout << "socket: remote address=" << socket.getAddress() << " remote port=" << socket.getPort() << EOL;
+  fout << "socket: remote address=" << socket.getAddress() << " remote port=" << socket.getPort() << ENDL;
 
-  fout << "Talking with server...\n";
+  fout << "Talking with server..." << ENDL;
 
   {
     FormatOutputStream outstream(socket); // must be destroyed before socket is closed
     FormatInputStream instream(socket);
 
-    fout << "Press enter to continue\n";
+    fout << "Press enter to continue" << ENDL;
     fin.wait();
     fin.skip(1);
 
-    fout << "Sending request\n";
-    outstream << "Hi, I'm the client\n";
+    fout << "Sending request" << ENDL;
+    outstream << "Hi, I'm the client" << ENDL;
 
     fout << "Waiting for response";
     while (!instream.wait(1000000)) {
-      fout << ".";
+      fout << "." << FLUSH;
     }
-    fout << EOL;
+    fout << ENDL;
 
-    fout << "Processing response\n";
+    fout << "Processing response" << ENDL;
     fout << ">: ";
     while (instream.available()) { // read response
       char ch;
@@ -87,16 +87,16 @@ void client(String<> host, String<> service) {
       fout << ch;
     }
 
-    fout << "Sending termination request\n";
-    outstream << "Thank you and have a nice day\n";
+    fout << "Sending termination request" << ENDL;
+    outstream << "Thank you and have a nice day" << ENDL;
   }
 
-  fout << "Closing socket\n";
+  fout << "Closing socket" << ENDL;
   socket.close();
 }
 
 int main(int argc, char* argv[]) {
-  fout << "Testing ClientSocket...\n";
+  fout << "Testing ClientSocket..." << ENDL;
 
   String<> host = InetAddress::getLocalHost(); // default host
   String<> service = "1234"; // default service
@@ -113,19 +113,19 @@ int main(int argc, char* argv[]) {
     service = argv[2]; // the service
     break;
   default:
-    fout << "client [host] [service]\n";
+    fout << "client [host] [service]" << ENDL;
     return 0; // stop
   }
 
   try {
     client(host, service);
   } catch(Exception& e) {
-    ferr << typeid(e).name() << ": "<< e.getMessage() << EOL;
+    ferr << typeid(e).name() << ": "<< e.getMessage() << ENDL;
     return 1;
   } catch(...) {
-    ferr << "Unknown exception\n";
+    ferr << "Unknown exception" << ENDL;
     return 1;
   }
-  fout << "Completed\n";
+  fout << "Completed" << ENDL;
   return 0;
 }

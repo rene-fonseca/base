@@ -13,21 +13,21 @@
 
 void server(String<> a, String<> servicename) {
 
-  fout << "Hostname: " << InetAddress::getLocalHost() << EOL;
+  fout << "Hostname: " << InetAddress::getLocalHost() << ENDL;
 
   {
     List<InetInterface> interfaces = InetInterface::getInetInterfaces();
     List<InetInterface>::ReadOnlyEnumeration enu(interfaces);
-    fout << "Available interfaces:\n";
+    fout << "Available interfaces:" << ENDL;
     while (enu.hasNext()) {
       const InetInterface* i = enu.next();
-      fout << "  interface: index=" << i->getIndex() << " name=" << i->getName() << EOL;
+      fout << "  interface: index=" << i->getIndex() << " name=" << i->getName() << ENDL;
     }
   }
 
   InetAddress address; // the address to bind the server socket to
   if (a == "") { // should we find an address
-    fout << "Local addresses:\n";
+    fout << "Local addresses:" << ENDL;
     List<InetAddress> addresses = InetAddress::getAddressesByName(InetAddress::getLocalHost());
     List<InetAddress>::ReadOnlyEnumeration enu(addresses);
     unsigned int index = 0;
@@ -35,9 +35,9 @@ void server(String<> a, String<> servicename) {
       const InetAddress* temp = enu.next();
       if (index == 0) { // use the first address
         address = *temp;
-        fout << "  address " << index++ << ": " << *temp << " (USING THIS)" << EOL;
+        fout << "  address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
       } else {
-        fout << "  address " << index++ << ": " << *temp << EOL;
+        fout << "  address " << index++ << ": " << *temp << ENDL;
       }
     }
   } else {
@@ -57,43 +57,43 @@ void server(String<> a, String<> servicename) {
       port = service.getPort();
       fout << "Service: name=" << service.getName()
            << "  port=" << service.getPort()
-           << "  protocol=" << service.getProtocol() << EOL;
+           << "  protocol=" << service.getProtocol() << ENDL;
     } catch(ServiceNotFound& e) {
-      fout << "Warning: " << e.getMessage() << EOL;
-      fout << "Service: port=" << port << EOL;
+      fout << "Warning: " << e.getMessage() << ENDL;
+      fout << "Service: port=" << port << ENDL;
     }
   }
 
-  fout << "Initializing server socket...\n";
+  fout << "Initializing server socket..." << ENDL;
   ServerSocket serverSocket(address, port, 1);
 
-  fout << "Server address...\n";
-  fout << "  address=" << serverSocket.getLocalAddress() << " port=" << serverSocket.getLocalPort() << EOL;
+  fout << "Server address..." << ENDL;
+  fout << "  address=" << serverSocket.getLocalAddress() << " port=" << serverSocket.getLocalPort() << ENDL;
 
-  fout << "Waiting for client to connect...\n";
+  fout << "Waiting for client to connect..." << ENDL;
 
   unsigned int connection = 1; // the number of connections so far
   bool terminate = false; // specifies whether the server should be terminated
 
   while (!terminate) {
-    fout << "Listening for connections...\n";
+    fout << "Listening for connections..." << ENDL;
     StreamSocket socket(serverSocket.accept());
 
-    fout << "Connection number " << connection++ << " established from\n";
-    fout << "  remote: address=" << socket.getAddress() << " port=" << socket.getPort() << EOL;
+    fout << "Connection number " << connection++ << " established from" << ENDL;
+    fout << "  remote: address=" << socket.getAddress() << " port=" << socket.getPort() << ENDL;
 
-    fout << "Talking with client...\n";
+    fout << "Talking with client..." << ENDL;
     {
       FormatOutputStream outstream(socket); // must be destroyed before socket is closed
       FormatInputStream instream(socket);
 
       fout << "Waiting for request";
       while (!instream.wait(1000000)) {
-        fout << ".";
+        fout << "." << FLUSH;
       }
-      fout << EOL;
+      fout << ENDL;
 
-      fout << "Processing request\n";
+      fout << "Processing request" << ENDL;
       fout << ">: ";
       while (instream.available()) {
         char ch;
@@ -101,16 +101,16 @@ void server(String<> a, String<> servicename) {
         fout << ch;
       }
 
-      fout << "Sending acknowledge\n";
-      outstream << "Hi, I'm the server and this is my response\n";
+      fout << "Sending acknowledge" << ENDL;
+      outstream << "Hi, I'm the server and this is my response" << ENDL;
 
       fout << "Waiting for termination request";
       while (!instream.wait(1000000)) {
-        fout << ".";
+        fout << "." << FLUSH;
       }
-      fout << EOL;
+      fout << ENDL;
 
-      fout << "Processing terminating request\n";
+      fout << "Processing terminating request" << ENDL;
       fout << ">: ";
       while (instream.available()) {
         char ch;
@@ -119,7 +119,7 @@ void server(String<> a, String<> servicename) {
       }
     }
 
-    fout << "Closing connection...\n";
+    fout << "Closing connection..." << ENDL;
     socket.close();
 
     if (connection == 5) {
@@ -127,12 +127,12 @@ void server(String<> a, String<> servicename) {
     }
   }
 
-  fout << "Closing server socket...\n";
+  fout << "Closing server socket..." << ENDL;
   serverSocket.close();
 }
 
 int main(int argc, char* argv[]) {
-  fout << "Testing ServerSocket...\n";
+  fout << "Testing ServerSocket..." << ENDL;
 
   String<> address; // default address
   String<> service = "1234"; // default service
@@ -149,19 +149,19 @@ int main(int argc, char* argv[]) {
     service = argv[2]; // the service
     break;
   default:
-    fout << "server [address] [service]\n";
+    fout << "server [address] [service]" << ENDL;
     return 0; // stop
   }
 
   try {
     server(address, service);
   } catch(Exception& e) {
-    ferr << typeid(e).name() << ": "<< e.getMessage() << EOL;
+    ferr << typeid(e).name() << ": "<< e.getMessage() << ENDL;
     return 1;
   } catch(...) {
-    ferr << "Unknown exception\n";
+    ferr << "Unknown exception" << ENDL;
     return 1;
   }
-  fout << "Completed\n";
+  fout << "Completed" << ENDL;
   return 0;
 }

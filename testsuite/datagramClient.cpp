@@ -3,101 +3,113 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/Integer.h>
 #include <base/net/ClientSocket.h>
 #include <base/net/InetInterface.h>
 #include <base/net/InetService.h>
+#include <base/concurrency/Thread.h>
+#include <typeinfo>
 
-char* hostname = 0;
-char* servicename = 0;
+void client(String<> host, String<> service) {
+  fout << "Server: " << host << ENDL;
 
-void test() {
-  fout << "Datagram network client...\n";
-
-  fout << "Server: " << hostname << EOL;
-
-  InetAddress address;
+  InetAddress address; // the address of the remote host
   {
-    fout << "Server addresses:\n";
-    List<InetAddress> addresses = InetAddress::getAddressesByName(hostname);
+    fout << "Server addresses:" << ENDL;
+    List<InetAddress> addresses = InetAddress::getAddressesByName(host);
     List<InetAddress>::ReadOnlyEnumeration enu(addresses);
     unsigned int index = 0;
     while (enu.hasNext()) {
       const InetAddress* temp = enu.next();
       if (index == 0) { // use the first address
         address = *temp;
-        fout << "  address " << index++ << ": " << *temp << " (USING THIS)" << EOL;
+        fout << "  address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
       } else {
-        fout << "  address " << index++ << ": " << *temp << EOL;
+        fout << "  address " << index++ << ": " << *temp << ENDL;
       }
     }
   }
 
-  unsigned short port = 1234; // default
+  unsigned short port; // the port to bind the server socket to
   try {
-    // does not work
-    Integer integer(servicename);
+    Integer integer(service);
     if ((integer < 0) || (integer > 0xffff)) {
       throw OutOfRange("Port is out of range");
     }
     port = integer;
   } catch(InvalidFormat& e) {
     try {
-      InetService service(servicename);
-      port = service.getPort();
-      fout << "Service: name=" << service.getName()
-           << " port=" << service.getPort()
-           << " protocol=" << service.getProtocol() << EOL;
+      InetService s(service);
+      port = s.getPort();
+      fout << "Service: name=" << s.getName()
+           << "  port=" << s.getPort()
+           << "  protocol=" << s.getProtocol() << ENDL;
     } catch(ServiceNotFound& e) {
-      fout << "Warning: " << e.getMessage() << EOL;
-      fout << "Service: port=" << port << EOL;
+      fout << "Warning: " << e.getMessage() << ENDL;
+      fout << "Service: port=" << port << ENDL;
     }
   }
-  port = 1234;
 
-  fout << "Initializing socket...\n";
+  fout << "Initializing socket..." << ENDL;
   Socket socket;
 
-  fout << "Creating datagram socket...\n";
+  fout << "Creating datagram socket..." << ENDL;
   socket.create(false);
 
-  fout << "Requesting permission to send broadcast messages...\n";
+  fout << "Requesting permission to send broadcast messages..." << ENDL;
   socket.setBroadcast(true);
 
-  fout << "Sending datagram...\n";
-  char sendBuffer[] = "THIS IS A DATAGRAM\n";
-  unsigned int bytesSent = socket.sendTo((char*)&sendBuffer, sizeof(sendBuffer), address, port);
+  fout << "Sending datagram..." << ENDL;
+  char sendBuffer[] = "DATAGRAM FROM CLIENT";
+  unsigned int bytesSent = socket.sendTo(sendBuffer, sizeof(sendBuffer), address, port);
 
-  char buffer[4096];
+  char receiveBuffer[4096];
   InetAddress remoteAddress;
   unsigned short remotePort;
 
-  fout << "Waiting for datagram...\n";
-  unsigned int bytesReceived = socket.receiveFrom((char*)&buffer, sizeof(buffer), remoteAddress, remotePort);
-  fout << "Datagram: bytesReceived=" << bytesReceived << EOL;
-  fout << buffer;
+  fout << "Waiting for datagram..." << ENDL;
+  unsigned int bytesReceived = socket.receiveFrom(receiveBuffer, sizeof(receiveBuffer), remoteAddress, remotePort);
+  fout << "Datagram of " << bytesReceived << " bytes received from " << remoteAddress
+       << " on port " << remotePort << ENDL;
+  fout << ">: " << receiveBuffer << ENDL;
 
+  fout << "Closing socket..." << ENDL;
   socket.close();
 }
 
 int main(int argc, char* argv[]) {
+  fout << "Testing datagram socket client..." << ENDL;
 
-  if (argc != 3) {
-    fout << "client hostname service\n";
-    return 0;
+  String<> host = InetAddress::getLocalHost(); // default host
+  String<> service = "1234"; // default service
+
+  switch (argc) {
+  case 1:
+    // use defaults
+    break;
+  case 2:
+    host = argv[1]; // the address
+    break;
+  case 3:
+    host = argv[1]; // the address
+    service = argv[2]; // the service
+    break;
+  default:
+    fout << "datagramClient [host] [service]" << ENDL;
+    return 0; // stop
   }
-  hostname = argv[1]; // the hostname of the server
-  servicename = argv[2]; // the name of the service
 
   try {
-    test();
+    client(host, service);
   } catch(Exception& e) {
-    ferr << "Exception: " << e.getMessage() << "\n";
+    ferr << typeid(e).name() << ": "<< e.getMessage() << ENDL;
     return 1;
   } catch(...) {
-    ferr << "Unknown exception\n";
+    ferr << "Unknown exception" << ENDL;
     return 1;
   }
-  fout << "Completed" << EOL;
+  fout << "Completed" << ENDL;
+  return 0;
 }

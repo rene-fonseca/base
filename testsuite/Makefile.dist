@@ -1,8 +1,20 @@
+# ***************************************************************************
+#    The Base Framework
+#    A framework for developing platform independent applications
+#
+#    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+#
+#    This framework is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#    For the licensing terms refer to the file 'LICENSE'.
+# ***************************************************************************
+
 all:
 	aclocal
 	automake
 	autoconf
-	rm -f config.cache
 
 debug: all
 	CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base
@@ -33,12 +45,12 @@ falster-gcc-3.0.4-release: all
 
 fyn-gcc-3.0.4: all
 
-klampenborg-gcc-2.95: all
+klampenborg-gcc-2.95:
 	CC="/usr/bin/gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="/usr/bin/gcc" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O0 -g3" LDFLAGS="-x none" ./configure --target=i386-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
 #LDFLAGS="-Wl,--enable-auto-import"
 
-klampenborg-gcc-3.0.4: all
+klampenborg-gcc-3.0.4:
 	CC="gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="g++" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O0 -g3" LDFLAGS="-x none" ./configure --target=i386-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
 
-klampenborg-gcc-3.0.4-release: all
+klampenborg-gcc-3.0.4-release:
 	CC="gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="g++" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-pipe -mno-cygwin -mthreads -O3 -g3 -x c++ -ansi -march=i686 -malign-double" LDFLAGS="-x none" ./configure --target=i686-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..

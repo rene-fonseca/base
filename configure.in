@@ -426,7 +426,7 @@ AC_BASE_CHECK(
     AC_BASE_ATTEMPT(
       base_cv_pthread_semaphore,
       base_cv_pthread_semaphore_libs,
-      "" -lpthread,
+      "" -lpthread -lrt,
       AC_BASE_TRY_CXX_LINK(base_cv_pthread_semaphore, config/pthread_semaphore.c, $base_cv_pthread_semaphore_libs)dnl
     )dnl
   ),

@@ -38,7 +38,7 @@ private:
   typedef SENDER Sender;
   /** The type of the listener. */
   typedef LISTENER Listener;
-  /** The type of the memeber function. */
+  /** The type of the member function. */
   typedef void (Listener::*Member)(const Sender*);
   /** The sender. */
   const Sender* sender;
@@ -53,7 +53,7 @@ public:
     Initializes the signal.
 
     @param sender The sender.
-    @param memeber The end-point of the signal.
+    @param member The end-point of the signal.
   */
   inline Signal(const Sender* sender, Member member) throw() : sender(sender), member(member) {}
 

@@ -29,7 +29,7 @@ namespace extension {
 
   namespace win32 {
 
-    ReferenceCountedObjectPointer<RegistryKey::Handle> RegistryKey::invalid;
+    Reference<RegistryKey::Handle> RegistryKey::invalid;
     
     RegistryKey::Handle::~Handle() throw(RegistryException) {
       if (handle) {

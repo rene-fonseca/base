@@ -20,7 +20,7 @@
 #include <base/security/Trustee.h>
 #include <base/security/AccessControlList.h>
 #include <base/OperatingSystem.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/Date.h>
 #include <base/AnyValue.h>
 
@@ -116,10 +116,10 @@ namespace extension {
     };
 
     /** Invalid handle. */
-    static ReferenceCountedObjectPointer<Handle> invalid;
+    static Reference<Handle> invalid;
     
     /** Handle to Registry key. */
-    ReferenceCountedObjectPointer<Handle> key;
+    Reference<Handle> key;
 
     bool removeKeyRecursively(OperatingSystem::Handle key, const char* name) throw();
   public:

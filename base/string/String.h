@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,7 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   MESSAGE("Hello World")). Do not call the constructor manually.
 
   @short String literal
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */
 class StringLiteral {
@@ -61,7 +61,7 @@ public:
 /**
   Default character manipulators.
 
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 class CharTraits {
@@ -118,7 +118,7 @@ public:
   buffer to be duplicated. The implementation is currently NOT MT-safe.
 
   @short String.
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

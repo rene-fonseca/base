@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class Locale {}; // TAG: temp fix
+class Locale; // forward declaration
 
 /**
   Actions used to modify a format output stream. Use BIN, OCT, DEC, and HEX to
@@ -66,6 +66,7 @@ enum Action {
   UNIXEOL, /**< Selects line-feed (LF) as EOL. This is the default for all platforms. */
   WINDOWSEOL, /**< Selects carriage-return followed by line-feed (LF) as EOL. */
   MACEOL, /**< Selects line-feed (LF) followed by carriage-return (CR) as EOL. */
+  CR, /**< Writes a carriage-return (CR). */
   LF, /**< Writes a line-feed (LF). */
   CRLF, /**< Write both a carriage-return (CR) and a line-feed (LF). */
   LFCR, /**< Write both a line-feed (LF) and carriage-return (CR). */
@@ -80,7 +81,7 @@ enum Action {
   Stream used to stringify types.
 
   @short Format output stream.
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
 

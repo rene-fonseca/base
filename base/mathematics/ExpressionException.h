@@ -60,7 +60,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline ExpressionException(Type type) throw() : Exception(type) {
+  inline ExpressionException(Type type) throw() : Exception(type), index(0) {
   }
   
   /**
@@ -69,13 +69,16 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline ExpressionException(const char* message, Type type) throw() : Exception(message, type) {
+  inline ExpressionException(const char* message, Type type) throw()
+    : Exception(message, type), index(0) {
   }
   
   /**
     Returns the index of the error in the expression representation.
   */
-  unsigned int getIndex() const throw();
+  inline unsigned int getIndex() const throw() {
+    return index;
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

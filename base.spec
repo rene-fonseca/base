@@ -42,7 +42,6 @@ BuildRoot: %{_builddir}/%{name}-%{version}-%{release}-root
 
 %prep
 %setup
-mv base/test testsuite
 CFLAGS="${RPM_OPT_FLAGS}" CXXFLAGS="${RPM_OPT_FLAGS}" ./configure \
   --target=%{_target} \
   --prefix=%{_prefix} \

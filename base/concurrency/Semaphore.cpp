@@ -3,9 +3,9 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Semaphore.h"
+#include <base/concurrency/Semaphore.h>
 
-#ifndef __win32__
+#if !defined(__win32__)
   #include <errno.h>
 #endif // __win32__
 
@@ -13,11 +13,11 @@ Semaphore::Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceExceptio
   if (value > MAXIMUM) {
     OutOfDomain();
   }
-#ifdef __win32__
+#if defined(__win32__)
   if (!(semaphore = CreateSemaphore(NULL, value, MAXIMUM, NULL))) {
     throw ResourceException();
   }
-#elif HAVE_PTHREAD_SEMAPHORE
+#elif defined(HAVE_PTHREAD_SEMAPHORE)
   if (sem_init(&semaphore, 0, value)) {
     throw ResourceException();
   }
@@ -44,10 +44,10 @@ Semaphore::Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceExceptio
 #endif
 }
 
-#ifndef __win32__
+#if !defined(__win32__)
 unsigned int Semaphore::getValue() const throw(SemaphoreException) {
-#ifdef HAVE_PTHREAD_SEMAPHORE
-  unsigned int value;
+#if defined(HAVE_PTHREAD_SEMAPHORE)
+  int value;
   if (sem_getvalue(&semaphore, &value)) { // value is not negative
     throw SemaphoreException();
   }
@@ -67,11 +67,11 @@ unsigned int Semaphore::getValue() const throw(SemaphoreException) {
 #endif // __win32__
 
 void Semaphore::post() throw(Overflow, SemaphoreException) {
-#ifdef __win32__
+#if defined(__win32__)
   if (!ReleaseSemaphore(semaphore, 1, NULL)) {
     throw SemaphoreException();
   }
-#elif HAVE_PTHREAD_SEMAPHORE
+#elif defined(HAVE_PTHREAD_SEMAPHORE)
   if (sem_post(&semaphore) == ERANGE) { // otherwise sem_post returns successfully
     throw Overflow();
   }
@@ -94,11 +94,11 @@ void Semaphore::post() throw(Overflow, SemaphoreException) {
 }
 
 void Semaphore::wait() throw(SemaphoreException) {
-#ifdef __win32__
+#if defined(__win32__)
   if (WaitForSingleObject(semaphore, INFINITE) != WAIT_OBJECT_0) {
     throw SemaphoreException();
   }
-#elif HAVE_PTHREAD_SEMAPHORE
+#elif defined(HAVE_PTHREAD_SEMAPHORE)
   if (sem_wait(&semaphore)) {
     throw SemaphoreException();
   }
@@ -117,9 +117,9 @@ void Semaphore::wait() throw(SemaphoreException) {
 }
 
 bool Semaphore::tryWait() throw(SemaphoreException) {
-#ifdef __win32__
+#if defined(__win32__)
   return WaitForSingleObject(semaphore, 0) == WAIT_OBJECT_0;
-#elif HAVE_PTHREAD_SEMAPHORE
+#elif defined(HAVE_PTHREAD_SEMAPHORE)
   return sem_trywait(&semaphore) == 0; // did we decrement?
 #else
   bool result;
@@ -137,11 +137,11 @@ bool Semaphore::tryWait() throw(SemaphoreException) {
 }
 
 Semaphore::~Semaphore() throw(SemaphoreException) {
-#ifdef __win32__
+#if defined(__win32__)
   if (!CloseHandle(semaphore)) {
     throw SemaphoreException();
   }
-#elif HAVE_PTHREAD_SEMAPHORE
+#elif defined(HAVE_PTHREAD_SEMAPHORE)
   if (sem_destroy(&semaphore) != 0) {
     throw SemaphoreException();
   }

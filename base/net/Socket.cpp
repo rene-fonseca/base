@@ -17,8 +17,8 @@
   #include <string.h>
 #endif
 
-#if !defined(socklen_t)
-  #define socklen_t int
+#if !defined(HAVE_TYPE_SOCKLEN_T)
+  typedef int socklen_t;
 #endif
 
 #if !defined(INVALID_SOCKET)

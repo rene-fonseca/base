@@ -162,9 +162,9 @@ rm -rf $TESTEXE]
 
 dnl AC_BASE_CHECK(variable, message, action)
 AC_DEFUN(AC_BASE_CHECK, [
-echo -ne $2"... "
+echo $ac_n $2"... $ac_c" 1>&6
 $3
-echo -ne $$1"\n"]
+echo $$1 1>&6]
 )
 
 
@@ -273,6 +273,14 @@ AC_BASE_YES(
   AC_DEFINE(HAVE_INET_IPV6, 1, Specifies that the interface extensions for IP version 6 are present)
 )
 
+AC_BASE_CHECK_CACHED(
+  base_cv_type_socklen_t,
+  "checking whether the type socklen_t is available",
+  AC_CAN_LINK(base_cv_type_socklen_t, $CC, config/socklen_t.c)
+)
+if test $base_cv_type_socklen_t = yes; then
+  AC_DEFINE(HAVE_TYPE_SOCKLEN_T, 1, Specifies that the type socklen_t is available)
+fi
 
 
 
@@ -283,10 +291,28 @@ AC_BASE_CHECK_CACHED(
   "checking whether pthread_yield is provided by the POSIX thread library",
   AC_CAN_LINK(base_cv_pthread_yield, $CC -pthread, config/pthread_yield.c)
 )
-AC_BASE_YES(
-  base_cv_pthread_yield,
+if test $base_cv_pthread_yield = yes; then
   AC_DEFINE(HAVE_PTHREAD_YIELD, 1, Specifies that pthread_yield is provided by the POSIX threads library)
+fi
+
+AC_BASE_CHECK_CACHED(
+  base_cv_pthread_semaphore,
+  "checking whether Posix semaphore is supported",
+  AC_CAN_LINK(base_cv_pthread_semaphore, $CC -pthread, config/pthread_semaphore.c)
 )
+if test $base_cv_pthread_semaphore = yes; then
+  AC_DEFINE(HAVE_PTHREAD_SEMAPHORE, 1, Specifies that Posix semaphore is supported)
+fi
+
+AC_BASE_CHECK_CACHED(
+  base_cv_pthread_rwlock,
+  "checking whether Posix read-write lock is supported",
+  AC_CAN_LINK(base_cv_pthread_rwlock, $CC -pthread, config/pthread_rwlock.c)
+)
+if test $base_cv_pthread_rwlock = yes; then
+  AC_DEFINE(HAVE_PTHREAD_RWLOCK, 1, Specifies that Posix read-write lock is supported)
+fi
+
 
 AC_CHECK_FUNCS(memchr memcmp memmove)
 

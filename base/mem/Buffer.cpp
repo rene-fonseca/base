@@ -3,7 +3,7 @@
     email                : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Buffer.h"
+#include <base/mem/Buffer.h>
 #include <string.h>
 #include <stdlib.h>
 

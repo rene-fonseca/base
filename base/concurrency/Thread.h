@@ -7,17 +7,17 @@
 #define _DK_SDU_MIP__BASE_THREAD__THREAD_H
 
 #include <config.h>
-#include "base/Object.h"
-#include "base/Exception.h"
-#include "base/OutOfDomain.h"
-#include "MutualExclusion.h"
-#include "Event.h"
-#include "Runnable.h"
-#include "ThreadKey.h"
-#include "base/string/FormatOutputStream.h"
-#include "Synchronize.h"
+#include <base/Object.h>
+#include <base/Exception.h>
+#include <base/OutOfDomain.h>
+#include <base/concurrency/MutualExclusion.h>
+#include <base/concurrency/Event.h>
+#include <base/concurrency/Runnable.h>
+#include <base/concurrency/ThreadKey.h>
+#include <base/string/FormatOutputStream.h>
+#include <base/concurrency/Synchronize.h>
 
-#ifdef __win32__
+#if defined(__win32__)
   #include <windows.h>
 #else
   #include <pthread.h>
@@ -78,6 +78,11 @@ typedef enum {
   class Thread : public Object {
   public:
 
+    /**
+      Specifies the size of the thread local buffer.
+    */
+    static const unsigned int LOCAL_STORAGE_SIZE = 4096;
+
     /** Group of exceptions thrown directly by the Thread class. */
     class ThreadException : public Exception {
     public:
@@ -90,7 +95,7 @@ typedef enum {
     };
   private:
 
-#ifdef __win32__
+#if defined(__win32__)
     /** Redirects a thread to a specified runnable object. */
     static DWORD WINAPI execute(Thread* thread) throw();
 #else
@@ -109,7 +114,7 @@ typedef enum {
     ThreadTermination termination;
     /** Event used to start thread. */
     Event event;
-#ifdef __win32__
+#if defined(__win32__)
     /** Handle to the thread. */
     HANDLE threadHandle;
     /** Identifier for the thread. */
@@ -131,6 +136,11 @@ typedef enum {
       Returns the thread object associated with the executing thread.
     */
     static Thread* getThread() throw();
+
+    /**
+      Returns the thread object associated with the executing thread.
+    */
+    static void* getLocalStorage() throw();
 
     /**
       Makes the executing thread sleep for at least the specified time.

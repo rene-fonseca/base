@@ -6,6 +6,7 @@
 #include <config.h>
 #include <base/net/InetAddress.h>
 #include <base/Functor.h>
+#include <base/concurrency/Thread.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -266,13 +267,22 @@ void InetAddress::setAddress(const char* addr, Family family) throw(NetworkExcep
 
 FormatOutputStream& InetAddress::toFormatStream(FormatOutputStream& stream) const {
 #if defined(HAVE_INET_IPV6)
-  char buffer[INET6_ADDRSTRLEN]; // longest possible string is "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"
+  #ifdef (INET6_ADDRSTRLEN > Thread::LOCAL_STORAGE_SIZE)
+    #error The requested amount of local storage is not available.
+  #endif
+  if (isV4Mapped()) {
+    inet_ntop(AF_INET, &((uint32_t*)(&address))[3], Thread::getLocalStorage, Thread::LOCAL_STORAGE_SIZE); // MT-level is safe
+  } else {
+    inet_ntop(AF_INET6, &address, Thread::getLocalStorage, Thread::LOCAL_STORAGE_SIZE); // MT-level is safe
+  }
+  return stream << buffer;
+/*  char buffer[INET6_ADDRSTRLEN]; // longest possible string is "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"
   if (isV4Mapped()) {
     inet_ntop(AF_INET, &((uint32_t*)(&address))[3], buffer, sizeof(buffer)); // MT-level is safe
   } else {
     inet_ntop(AF_INET6, &address, buffer, sizeof(buffer)); // MT-level is safe
   }
-  return stream << buffer;
+  return stream << buffer;*/
 #else
   // longest possible string is "255.255.255.255"
   return stream << inet_ntoa(*(struct in_addr*)&address); // MT-level is safe but uses static buffer

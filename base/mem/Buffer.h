@@ -6,9 +6,9 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__BUFFER_H
 #define _DK_SDU_MIP__BASE_MEM__BUFFER_H
 
-#include "base/Object.h"
-#include "base/MemoryException.h"
-#include "base/OutOfRange.h"
+#include <base/Object.h>
+#include <base/MemoryException.h>
+#include <base/OutOfRange.h>
 
 /**
   This class implements a resizeable buffer and provides some low-level operations. The implementation is not MT-safe.
@@ -51,17 +51,17 @@ public:
   /**
     Returns the bytes of the buffer.
   */
-  inline char* getBytes() throw() {return bytes;};
+  inline char* getBytes() throw() {return bytes;}
 
   /**
     Returns the bytes of the buffer.
   */
-  inline const char* getBytes() const throw() {return bytes;};
+  inline const char* getBytes() const throw() {return bytes;}
 
   /**
     Returns the size of the buffer.
   */
-  inline unsigned int getSize() const throw() {return size;};
+  inline unsigned int getSize() const throw() {return size;}
 
   /**
     Sets the size of the buffer. The original bytes of the buffer are not changed. If the buffer is expanded the bytes are not initialized. Throws 'MemoryException' if unable to adjust the size of the buffer or the buffer is externally managed.

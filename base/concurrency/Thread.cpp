@@ -3,20 +3,23 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Thread.h"
-#include "MutualExclusion.h"
+#include <base/concurrency/Thread.h>
+#include <base/concurrency/MutualExclusion.h>
 
-#ifndef __win32__
-#define D_POSIX_PTHREAD_SEMANTICS
-#include <pthread.h>
-#include <signal.h>
-#include <time.h>
-#include <sys/time.h>
-#include <unistd.h>
+#if !defined(__win32__)
+  #define D_POSIX_PTHREAD_SEMANTICS
+  #include <pthread.h>
+  #include <signal.h>
+  #include <time.h>
+  #include <sys/time.h>
+  #include <unistd.h>
+  #include <stdlib.h>
 #endif
 
 // Pointer to thread object of executing thread
 ThreadKey<Thread> executingThread;
+// Pointer to thread local storage
+ThreadKey<void> threadLocalStorage;
 // The main thread object.
 //Thread mainThread;
 
@@ -27,6 +30,7 @@ void* Thread::execute(Thread* thread) throw() {
 #endif
   try {
     executingThread.setKey(thread);
+    threadLocalStorage.setKey(malloc(Thread::LOCAL_STORAGE_SIZE));
     thread->event.wait(); // wait until signaled
  
     try {
@@ -39,6 +43,8 @@ void* Thread::execute(Thread* thread) throw() {
     } catch(...) {
       thread->termination = EXCEPTION; // uncaugth exception
     }
+
+    free(getLocalStorage());
   } catch(...) {
     thread->termination = INTERNAL; // hopefully we will never end up here
   }
@@ -55,6 +61,10 @@ void Thread::exit() throw() {
 
 Thread* Thread::getThread() throw() {
   return (Thread*)executingThread.getKey();
+}
+
+void* Thread::getLocalStorage() throw() {
+  return (void*)threadLocalStorage.getKey();
 }
 
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {

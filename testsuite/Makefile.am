@@ -46,6 +46,7 @@ bin_PROGRAMS += Huffman
 bin_PROGRAMS += IEEE1394
 bin_PROGRAMS += floatingPoint
 bin_PROGRAMS += Process
+bin_PROGRAMS += quota
 bin_PROGRAMS += time
 bin_PROGRAMS += Version
 
@@ -81,6 +82,7 @@ floatingPoint_SOURCES = floatingPoint.cpp
 Huffman_SOURCES = Huffman.cpp
 IEEE1394_SOURCES = IEEE1394.cpp
 Process_SOURCES = Process.cpp
+quota_SOURCES = Quota.cpp
 time_SOURCES = time.cpp
 Version_SOURCES = Version.cpp
 

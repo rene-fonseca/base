@@ -36,7 +36,7 @@ public:
     Exception raised by the RegExp class.
     
     @short Regular expression exception
-    @ingroup concurrency exceptions
+    @ingroup exceptions
     @see RegExp
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0

@@ -43,8 +43,8 @@ class Runnable;
     unsigned int count;
   public:
 
-    MyThread(unsigned int c) throw() : count(c) {}
-
+    MyThread(unsigned int _count) throw() : count(_count) {}
+    
     void run() throw() {
       while (count--) {
       }

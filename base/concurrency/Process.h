@@ -18,6 +18,7 @@
 #include <base/string/String.h>
 #include <base/Exception.h>
 #include <base/NotSupported.h>
+#include <base/io/Handle.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -39,9 +40,9 @@ public:
   /** Structure holding the user and system times. */
   struct Times {
     /** The user mode time in nanoseconds. */
-    unsigned long long user;
+    uint64 user;
     /** The system mode time in nanoseconds. */
-    unsigned long long system;
+    uint64 system;
   };
 
   /**
@@ -112,15 +113,31 @@ public:
   static void setPriority(int priority) throw(ProcessException);
  
   /**
-    Executes the specified application.
-
+    Executes the specified application (quotes are required if module contains
+    a space). The return process has been locked.
+    
     @return The child process.
   */
   static Process execute(const String& app) throw(ProcessException);
 private:
 
+  class ProcessHandle : public Handle {
+    friend class Initialization;
+    friend class Process;
+  private:
+
+    /** Invalid handle. */
+    static Handle* invalid;
+    /** Initializes process handle. */
+    inline ProcessHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {}
+    /** Releases the resources used by the process. */
+    ~ProcessHandle() throw();
+  };
+  
   /** The host local id of the process. */
   unsigned long id;
+  /** Handle to the process. */
+  ReferenceCountedObjectPointer<Handle> handle;
 public:
 
   /**
@@ -164,13 +181,29 @@ public:
     Returns the name (path) of the process.
   */
   String getName() const throw(NotSupported, ProcessException);
+
+  /**
+    Acquires a lock of the process which allows synchronization using the wait
+    methods.
+  */
+  void lock() throw(ProcessException);
+
+  /**
+    Waits for the process to terminate. EXIT_CODE_CONFLICT is returned is the
+    true exit code was EXIT_CODE_INVALID.
+    
+    @param microseconds The timeout period.
+    
+    @return The exit code (EXIT_CODE_INVALID if exit code is not available or the timeout period expired).
+  */
+  int wait(unsigned int microseconds) throw();
   
   /**
     Waits for the process to terminate.
 
-    @return The exit code (Application::EXIT_CODE_INVALID if exit code is not available).
+    @return The exit code (EXIT_CODE_INVALID if exit code is not available).
   */
-  int wait() const throw(ProcessException);
+  int wait() throw(ProcessException);
   
   /**
     Requests the process to terminate.
@@ -184,8 +217,11 @@ public:
   /**
     Returns the current processing times (both user and system times).
   */
-  static Times getTimes() throw();
+  Times getTimes() throw();
 };
+
+inline Process::Process(unsigned long _id) throw() : id(_id), handle(ProcessHandle::invalid) {
+}
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Process::Layout& value) throw(IOException);
 

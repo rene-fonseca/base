@@ -15,7 +15,7 @@
 #include <base/concurrency/Process.h>
 #include <base/Type.h>
 #include <base/Application.h>
-#include <base/NotImplemented.h>
+#include <base/Cast.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
@@ -59,6 +59,19 @@ namespace ntapi {
   typedef NTSTATUS (__stdcall *PNtQueryInformationProcess)(HANDLE, unsigned int /*PROCESSINFOCLASS*/, void*, unsigned long, unsigned long*);
 };
 #endif
+
+Process::ProcessHandle::~ProcessHandle() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  if (isValid()) { // dont try to close if handle is invalidated
+    ::CloseHandle(getHandle()); // should never fail
+  }
+#else // unix
+  // nothing to do
+#endif // flavor
+}
+
+Process::Process(const Process& copy) throw() : id(copy.id), handle(copy.handle) {
+}
 
 Process Process::getProcess() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -105,7 +118,11 @@ unsigned long Process::getNumberOfProcessers() throw() {
   ::GetSystemInfo(&systemInfo);
   return systemInfo.dwNumberOfProcessors;
 #else // unix
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX)
+  unsigned long result = sysconf(_SC_NPROC_ONLN);  
+#else
   unsigned long result = sysconf(_SC_NPROCESSORS_ONLN);
+#endif
   return result;
 #endif // flavor
 }
@@ -196,30 +213,59 @@ void Process::setPriority(int priority) throw(ProcessException) {
 #endif
 }
 
+#if 0
+// need mapping from error code to base error codes: ::GetLastError ... but also for unix
+
+// need garbage collector for DLL attach/detach - TerminateThread does not call
+// TAG: !!! Exit of process
+BOOL GetExitCodeProcess(
+  HANDLE hProcess,     // handle to the process
+  LPDWORD lpExitCode   // termination status
+);
+
+// use with ExitProcess(...)
+HANDLE CreateRemoteThread(
+  HANDLE hProcess,                          // handle to process
+  LPSECURITY_ATTRIBUTES lpThreadAttributes, // SD
+  SIZE_T dwStackSize,                       // initial stack size
+  LPTHREAD_START_ROUTINE lpStartAddress,    // thread function
+  LPVOID lpParameter,                       // thread argument
+  DWORD dwCreationFlags,                    // creation option
+  LPDWORD lpThreadId                        // thread identifier
+);
+#endif
+
 Process Process::execute(const String& command) throw(ProcessException) {
   // inherit handles, environment, use current working directory, and allow this app to wait for process to terminate
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   String commandLine = command;
   STARTUPINFO startInfo;
   PROCESS_INFORMATION processInformation;
-  clear(startInfo);
-  startInfo.cb = sizeof(startInfo);
-  startInfo.dwFlags = STARTF_USESTDHANDLES;
-  BOOL result = ::CreateProcess(0,
-                                commandLine.getElements(), // command line (may need quotes)
-                                0, // process security attributes
-                                0, // primary thread security attributes
-                                TRUE, // handles are inherited
-                                0, // creation flags
-                                0, // use parent's environment
-                                0, // use parent's current directory
-                                &startInfo, // STARTUPINFO
-                                &processInformation // receives PROCESS_INFORMATION
+  fill<uint8>(Cast::getAddress(startInfo), sizeof(startInfo), 0);
+//   startInfo.cb = sizeof(startInfo);
+//   startInfo.dwFlags = STARTF_USESTDHANDLES;
+//   startInfo.hStdInput
+//   startInfo.hStdOutput
+//   startInfo.hStdError
+  assert(
+    ::CreateProcess(0,
+                    commandLine.getElements(), // command line (may need quotes)
+                    0, // process security attributes
+                    0, // primary thread security attributes
+                    TRUE, // handles are inherited
+                    0, // creation flags
+                    0, // use parent's environment
+                    0, // use parent's current directory
+                    &startInfo, // STARTUPINFO
+                    &processInformation // receives PROCESS_INFORMATION
+    ) != 0,
+    bindCause(ProcessException("Unable to execute command", Type::getType<Process>()), ::GetLastError())
   );
-  if (result != 0) {
-    throw ProcessException("Unable to execute command", Type::getType<Process>());
-  }
-  // TAG: return special Process object - close handles in processInformation later
+  
+  ::CloseHandle(processInformation.hThread);
+  Process result(processInformation.dwProcessId);
+  result.handle = new ProcessHandle(processInformation.hProcess); // keep lock on process
+  return result;
 #else
   // TAG: use spawn if available
   
@@ -243,15 +289,10 @@ Process Process::execute(const String& command) throw(ProcessException) {
 #endif // flavor
 }
 
-Process::Process(unsigned long _id) throw() : id(_id) {
-}
-
-Process::Process(const Process& copy) throw() : id(copy.id) {
-}
-
 Process& Process::operator=(const Process& eq) throw() {
   if (&eq == this) {
     id = eq.id;
+    handle = eq.handle;
   }
   return *this;
 }
@@ -331,13 +372,43 @@ String Process::getName() const throw(NotSupported, ProcessException) {
 #endif
 }
 
-int Process::wait() const  throw(ProcessException) {
-  // TAG: need timeout support
+void Process::lock() throw(ProcessException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  HANDLE handle = ::OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(id));
-  assert(handle != 0, ProcessException("Unable to wait for process", this));
-  ::WaitForSingleObject(handle, INFINITE);
-  ::CloseHandle(handle);
+  if (!handle->isValid()) {
+    HANDLE result = ::OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(id));
+    assert(result != 0, ProcessException("Unable to acquire lock", this));
+    handle = new ProcessHandle(result);
+  }
+#else // unix
+#endif // flavor
+}
+
+int Process::wait(unsigned int microseconds) throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  if (!handle->isValid()) {
+    lock();
+  }
+  if (::WaitForSingleObject(handle->getHandle(), (microseconds+999)/1000) == WAIT_TIMEOUT) {
+    return Application::EXIT_CODE_INVALID;
+  }
+  DWORD exitCode;
+  ::GetExitCodeProcess(handle->getHandle(), &exitCode);
+  return (exitCode != Application::EXIT_CODE_INVALID) ? exitCode : Application::EXIT_CODE_CONFLICT;
+#else // unix
+#  warning Process::wait(unsigned int microseconds) not implemented
+  return Application::EXIT_CODE_INVALID;
+#endif // flavor
+}
+
+int Process::wait() throw(ProcessException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  if (!handle->isValid()) {
+    lock();
+  }
+  DWORD exitCode;
+  ::WaitForSingleObject(handle->getHandle(), INFINITE);
+  ::GetExitCodeProcess(handle->getHandle(), &exitCode);
+  return exitCode;
 #else // unix
   int status;
   pid_t result = ::waitpid((pid_t)id, &status, 0);
@@ -474,14 +545,20 @@ bool Process::terminate(bool force) throw(ProcessException) {
 
 Process::Times Process::getTimes() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  if (!handle->isValid()) {
+    lock();
+  }
+  FILETIME creationTime;
+  FILETIME exitTime;
+  FILETIME systemTime;
+  FILETIME userTime;
+  ::GetProcessTimes(handle->getHandle(), &creationTime, &exitTime, &systemTime, &userTime);
   Process::Times result;
-  FILETIME system;
-  FILETIME user;
-  ::GetProcessTimes(::GetCurrentProcess(), 0, 0, &system, &user);
-  result.user = *(unsigned long long*)&user * 100ULL;
-  result.system = *(unsigned long long*)&system * 100ULL;
+  result.user = Cast::impersonate<uint64>(userTime) * 100;
+  result.system = Cast::impersonate<uint64>(systemTime) * 100;
   return result;
 #else // unix
+  // TAG: fixme
   #if defined(_DK_SDU_MIP__BASE__HAVE_GETRUSAGE)
     struct rusage usage;
     ::getrusage(RUSAGE_SELF, &usage); // does not fail

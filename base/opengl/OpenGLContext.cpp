@@ -16,8 +16,7 @@
 #include <base/platforms/backend/WindowImpl.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  include <windows.h>
-#  undef DELETE // yikes
+#  include <base/platforms/win32/GDI.h>
 #else // unix
 #  include <base/platforms/os/unix/GLX.h>
 #endif // flavor
@@ -31,11 +30,11 @@ void OpenGLContext::destroy() throw() {
     native::GDI::wglDeleteContext((HGLRC)renderingContextHandle);
     renderingContextHandle = 0;
   }
-  if (graphicsContextHandle) {
-    ::DeleteDC((HDC)graphicsContextHandle);
-    graphicsContextHandle = 0;
+  if (WindowImpl::graphicsContextHandle) {
+    ::DeleteDC((HDC)WindowImpl::graphicsContextHandle);
   }
   if (drawableHandle) {
+    // nothing to destroy
   }
   // screenHandle not used
 #else // unix
@@ -48,17 +47,21 @@ void OpenGLContext::destroy() throw() {
     native::GLX::glXDestroyContext((Display*)displayHandle, (GLXContext)renderingContextHandle);
     renderingContextHandle = 0;
   }
-  // graphicsContextHandle
+  if (WindowImpl::graphicsContextHandle) {
+    // nothing to destroy
+  }
   if (drawableHandle) {
     // GLX 1.3 native::GLX::glXDestroyWindow((Display*)displayHandle, (GLXWindow)drawableHandle);
     ::XDestroyWindow((Display*)displayHandle, (::Window)drawableHandle);
   }
-  // screenHandle
+  if (screenHandle) {
+    // nothing to destroy
+  }
 #endif // flavor
   WindowImpl::destroy();
 }
 
-nothing OpenGLContext::initialize() throw(UserInterfaceException) {
+nothing OpenGLContext::initialize() throw(OpenGLException, UserInterfaceException) {
   OpenGLContextImpl::loadModule();
   
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -97,18 +100,19 @@ nothing OpenGLContext::initialize() throw(UserInterfaceException) {
   );
   assert(drawableHandle, UserInterfaceException("Unable to create window", this));
   
-  if (!(graphicsContextHandle = ::GetDC((HWND)drawableHandle))) {
+  if (!(WindowImpl::graphicsContextHandle = ::GetDC((HWND)drawableHandle))) {
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
     throw UserInterfaceException("Unable to connect to device context", this);
   }
+  OpenGLContextImpl::graphicsContextHandle = WindowImpl::graphicsContextHandle; // TAG: fixme
   
   PIXELFORMATDESCRIPTOR pfd = {
     sizeof(PIXELFORMATDESCRIPTOR), // size of this pfd
     1, // version number
     PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL, // support window and OpenGL (rest set below)
     0, // type set below
-    24, // 24-bit color depth
+    0, // color depth
     0, 0, 0, 0, 0, 0, // color bits ignored
     0, // no alpha buffer
     0, // shift bit ignored
@@ -122,9 +126,13 @@ nothing OpenGLContext::initialize() throw(UserInterfaceException) {
     0, 0, 0 // layer masks ignored
   };
   
-  pfd.dwFlags |= PFD_GENERIC_ACCELERATED; // prefer accelerated
-  // pfd.dwFlags |= PFD_DRAW_TO_BITMAP
-  // pfd.dwFlags |= PFD_SWAP_LAYER_BUFFERS
+  if (flags & OpenGLContext::COLOR_INDEX) {
+    pfd.iPixelType = PFD_TYPE_COLORINDEX;
+    pfd.cColorBits = 8;
+  } else {
+    pfd.iPixelType = PFD_TYPE_RGBA;
+    pfd.cColorBits = 15;
+  }
   if (flags & OpenGLContext::DOUBLE_BUFFERED) {
     pfd.dwFlags |= PFD_DOUBLEBUFFER;
   }
@@ -132,18 +140,22 @@ nothing OpenGLContext::initialize() throw(UserInterfaceException) {
     pfd.dwFlags |= PFD_STEREO;
   }
   if (flags & OpenGLContext::ACCUMULATOR) {
-    // TAG: fixme
+    if (flags & OpenGLContext::COLOR_INDEX) {
+    } else {
+      pfd.cAccumBits = 1;
+    }
   }
   if (flags & OpenGLContext::ALPHA) {
-    // TAG: fixme
+    pfd.cAlphaBits = 1;
   }
   if (flags & OpenGLContext::DEPTH) {
-    // TAG: fixme
-    pfd.cDepthBits = 32;
+    pfd.cDepthBits = 32; // TAG: fixme
   }
   if (flags & OpenGLContext::STENCIL) {
-    // TAG: fixme
-    //pfd.cStencilBits = 32;
+    pfd.cStencilBits = 1; // TAG: fixme
+  }
+  if (flags & OpenGLContext::AUX) {
+    pfd.cAuxBuffers = 1; // TAG: fixme
   }
   if (flags & OpenGLContext::MULTI_SAMPLE) {
     // TAG: fixme
@@ -151,15 +163,16 @@ nothing OpenGLContext::initialize() throw(UserInterfaceException) {
   if (flags & OpenGLContext::LUMINANCE) {
     // TAG: fixme
   }
-  pfd.iPixelType = (flags & OpenGLContext::COLOR_INDEX) ? PFD_TYPE_COLORINDEX : PFD_TYPE_RGBA;    
   
   int index;
-  if (!(index = ::ChoosePixelFormat((HDC)graphicsContextHandle, &pfd))) {
-    throw UserInterfaceException("Format not supported", this);
+  if (!(index = ::ChoosePixelFormat((HDC)WindowImpl::graphicsContextHandle, &pfd))) {
+    throw OpenGLException("Format not supported", this);
   }
 
+  // int index = ::GetPixel((HDC)WindowImpl::graphicsContextHandle);
+  
   ::DescribePixelFormat(
-    (HDC)graphicsContextHandle,
+    (HDC)WindowImpl::graphicsContextHandle,
     index,
     sizeof(PIXELFORMATDESCRIPTOR),
     &pfd
@@ -169,7 +182,7 @@ nothing OpenGLContext::initialize() throw(UserInterfaceException) {
   assert(
     (pfd.dwFlags & PFD_DRAW_TO_WINDOW) &&
     (pfd.dwFlags & PFD_SUPPORT_OPENGL),
-    UserInterfaceException("Format not supported", this)
+    OpenGLException("Format not supported", this)
   );
   
   redBits = pfd.cRedBits;
@@ -191,30 +204,38 @@ nothing OpenGLContext::initialize() throw(UserInterfaceException) {
   
   numberOfOverlayPlanes = (pfd.bReserved >> 0) & 0xf;
   numberOfUnderlayPlanes = (pfd.bReserved >> 4) & 0xf;
+
+  fout << MESSAGE("red bits: ") << redBits << EOL
+       << MESSAGE("green bits: ") << greenBits << EOL
+       << MESSAGE("blue bits: ") << blueBits << EOL
+       << MESSAGE("alpha bits: ") << alphaBits << EOL
+       << MESSAGE("accumulator red bits: ") << accumulatorRedBits << EOL
+       << MESSAGE("accumulator green bits: ") << accumulatorGreenBits << EOL
+       << MESSAGE("accumulator blue bits: ") << accumulatorBlueBits << EOL
+       << MESSAGE("accumulator alpha bits: ") << accumulatorAlphaBits << EOL
+       << MESSAGE("depth bits: ") << depthBits << EOL
+       << MESSAGE("stencil bits: ") << stencilBits << EOL
+       << MESSAGE("aux buffers: ") << auxBuffers << EOL
+       << MESSAGE("overlay planes: ") << numberOfOverlayPlanes << EOL
+       << MESSAGE("underlay planes: ") << numberOfUnderlayPlanes << EOL
+       << ENDL;
   
-  if (!::SetPixelFormat((HDC)graphicsContextHandle, index, &pfd)) {
-    throw UserInterfaceException("Unable to set format", this);
+  if (!::SetPixelFormat((HDC)WindowImpl::graphicsContextHandle, index, &pfd)) {
+    throw OpenGLException("Unable to set format", this);
   }
-  if (!(renderingContextHandle = native::GDI::wglCreateContext((HDC)graphicsContextHandle))) {
+  if (!(renderingContextHandle = native::GDI::wglCreateContext((HDC)WindowImpl::graphicsContextHandle))) {
     ::DestroyWindow((HWND)drawableHandle);
-    throw UserInterfaceException("Unable to create rendering context", this);
+    drawableHandle = 0;
+    throw OpenGLException("Unable to create rendering context", this);
   }
-  if (!native::GDI::wglMakeCurrent((HDC)graphicsContextHandle, (HGLRC)renderingContextHandle)) {
+  if (!native::GDI::wglMakeCurrent((HDC)WindowImpl::graphicsContextHandle, (HGLRC)renderingContextHandle)) {
     ::DestroyWindow((HWND)drawableHandle);
-    throw UserInterfaceException("Invalid rendering context", this);
+    drawableHandle = 0;
+    throw OpenGLException("Invalid rendering context", this);
   }
 #else // unix
-  {
-    int errorBase;
-    int eventBase;
-    Bool result = native::GLX::glXQueryExtension((Display*)displayHandle, &errorBase, &eventBase);
-    assert(result == True, OpenGLException("OpenGL not supported", this));
-    
-    int major;
-    int minor;
-    result = native::GLX::glXQueryVersion((Display*)displayHandle, &major, &minor);
-    version = minimum(major, 255) << 16 | minimum(minor, 255) << 8;
-  }
+
+  fout << MESSAGE("GLX version: ") << HEX << native::GLX::version << ENDL;
   
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
@@ -262,75 +283,88 @@ nothing OpenGLContext::initialize() throw(UserInterfaceException) {
   {
     int attributes[33]; // make sure buffer is big enough
     int* dest = attributes;
-    *dest++ = GLX_USE_GL;
-    *dest++ = GLX_LEVEL;
-    *dest++ = 0; // main layer
+//     *dest++ = GLX_USE_GL;
+//     *dest++ = GLX_LEVEL;
+//     *dest++ = 0; // main layer
     if (flags & OpenGLContext::COLOR_INDEX) {
-      *dest++ = GLX_BUFFER_SIZE;
-      *dest++ = 1; // TAG: fixme
+//       *dest++ = GLX_BUFFER_SIZE;
+//       *dest++ = 1; // TAG: fixme
     } else {
       *dest++ = GLX_RGBA;
-      *dest++ = GLX_RED_SIZE;
-      *dest++ = 1;
-      *dest++ = GLX_GREEN_SIZE;
-      *dest++ = 1;
-      *dest++ = GLX_BLUE_SIZE;
-      *dest++ = 1;
+//       *dest++ = GLX_RED_SIZE;
+//       *dest++ = 1;
+//       *dest++ = GLX_GREEN_SIZE;
+//       *dest++ = 1;
+//       *dest++ = GLX_BLUE_SIZE;
+//       *dest++ = 1;
     }
     if (flags & OpenGLContext::DOUBLE_BUFFERED) {
       *dest++ = GLX_DOUBLEBUFFER;
     }
-    if (flags & OpenGLContext::STEREO) {
-      *dest++ = GLX_STEREO;
-    }
-    if (flags & OpenGLContext::ACCUMULATOR) {
-      if (flags & OpenGLContext::COLOR_INDEX) {
-      } else {
-        *dest++ = GLX_ACCUM_RED_SIZE;
-        *dest++ = 1;
-        *dest++ = GLX_ACCUM_GREEN_SIZE;
-        *dest++ = 1;
-        *dest++ = GLX_ACCUM_BLUE_SIZE;
-        *dest++ = 1;
-      }
-    }
-    if (flags & OpenGLContext::ALPHA) {
-      *dest++ = GLX_ALPHA_SIZE;
-      *dest++ = 1;
-      if (flags & OpenGLContext::ACCUMULATOR) {
-        *dest++ = GLX_ACCUM_ALPHA_SIZE;
-        *dest++ = 1;
-      }
-    }
-    if (flags & OpenGLContext::DEPTH) {
-      *dest++ = GLX_DEPTH_SIZE;
-      *dest++ = 32; // TAG: fixme - minimum value allowed by specification is 12
-    } else {
-      *dest++ = GLX_DEPTH_SIZE;
-      *dest++ = 0;
-    }
-    if (flags & OpenGLContext::AUX) {
-      *dest++ = GLX_AUX_BUFFERS;
-      *dest++= 1;
-    }
-    if (flags & OpenGLContext::STENCIL) {
-      *dest++ = GLX_STENCIL_SIZE;
-      *dest++ = 1; // TAG: fixme
-    }
-    if (flags & OpenGLContext::MULTI_SAMPLE) {
-    }
-    if (flags & OpenGLContext::LUMINANCE) {
-    }
+//     if (flags & OpenGLContext::STEREO) {
+//       *dest++ = GLX_STEREO;
+//     }
+//     if (flags & OpenGLContext::ACCUMULATOR) {
+//       if (flags & OpenGLContext::COLOR_INDEX) {
+//       } else {
+//         *dest++ = GLX_ACCUM_RED_SIZE;
+//         *dest++ = 1;
+//         *dest++ = GLX_ACCUM_GREEN_SIZE;
+//         *dest++ = 1;
+//         *dest++ = GLX_ACCUM_BLUE_SIZE;
+//         *dest++ = 1;
+//       }
+//     }
+//     if (flags & OpenGLContext::ALPHA) {
+//       *dest++ = GLX_ALPHA_SIZE;
+//       *dest++ = 1;
+//       if (flags & OpenGLContext::ACCUMULATOR) {
+//         *dest++ = GLX_ACCUM_ALPHA_SIZE;
+//         *dest++ = 1;
+//       }
+//     }
+//     if (flags & OpenGLContext::DEPTH) {
+//       *dest++ = GLX_DEPTH_SIZE;
+//       *dest++ = 12; // TAG: fixme - minimum value allowed by specification is 12
+//     } else {
+//       *dest++ = GLX_DEPTH_SIZE;
+//       *dest++ = 0;
+//     }
+//     if (flags & OpenGLContext::AUX) {
+//       *dest++ = GLX_AUX_BUFFERS;
+//       *dest++= 1;
+//     }
+//     if (flags & OpenGLContext::STENCIL) {
+//       *dest++ = GLX_STENCIL_SIZE;
+//       *dest++ = 1; // TAG: fixme
+//     }
+//     if (flags & OpenGLContext::MULTI_SAMPLE) {
+//     }
+//     if (flags & OpenGLContext::LUMINANCE) {
+//     }
     *dest++ = None;
+    fout << "disaply: " << (void*)displayHandle << ENDL;
     
+    static int attributeList[] = { GLX_RGBA, None };
+    //static int ATTRIBUTES2[] = {GLX_RGBA, GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4, None};
     visualInfo = native::GLX::glXChooseVisual(
       (Display*)displayHandle,
       screenId,
-      attributes
+      attributeList // attributes
     );
     // TAG: screenHandle = 0
+    WRITE_SOURCE_LOCATION();
     assert(visualInfo, OpenGLException("Format not supported", this));
-    
+    WRITE_SOURCE_LOCATION();
+
+    renderingContextHandle = native::GLX::glXCreateContext(
+    (Display*)displayHandle,
+    visualInfo,
+    0,
+    (flags & OpenGLContext::DIRECT) ? True : False
+  );
+  WRITE_SOURCE_LOCATION();
+  
     static const unsigned int ATTRIBUTES[] = {
       GLX_USE_GL,
       GLX_BUFFER_SIZE,
@@ -384,12 +418,6 @@ nothing OpenGLContext::initialize() throw(UserInterfaceException) {
   );
   // detect error and raise exception
   
-  renderingContextHandle = native::GLX::glXCreateContext(
-    (Display*)displayHandle,
-    visualInfo,
-    0,
-    (flags & OpenGLContext::DIRECT) ? True : False
-  );
   ::XFree(visualInfo);
   if (renderingContextHandle == 0) {
     ::XDestroyWindow((Display*)displayHandle, (::Window)drawableHandle);
@@ -415,6 +443,9 @@ nothing OpenGLContext::initialize() throw(UserInterfaceException) {
     PointerMotionMask
   );
 #endif // flavor
+  construct();
+  invalidate();
+  update();
   return nothing();
 }
 

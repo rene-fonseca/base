@@ -392,6 +392,20 @@ AC_BASE_CHECK(
     AC_BASE_TRY_CXX_COMPILE(base_cv_inline, config/inline.c, )
   ),
   base_cv_inline)
+if test "$base_cv_inline" != yes; then
+  AC_MSG_ERROR(The compiler does not support the inline keyword)
+fi
+
+AC_BASE_CHECK(
+  checking whether static const with initializer is supported by the compiler,
+  AC_BASE_CACHE(
+    base_cv_static_const,
+    AC_BASE_TRY_CXX_COMPILE(base_cv_static_const, config/static_const.c, )
+  ),
+  base_cv_static_const)
+if test "$base_cv_static_const" != yes; then
+  AC_MSG_ERROR(The compiler does not support static const with initializer)
+fi
 
 AC_BASE_CHECK(
   checking whether anonymous struct is supported by the compiler,
@@ -512,13 +526,6 @@ AC_CHECK_FUNCS(memchr memcmp memmove)
 
 
 CPPFLAGS="${CPPFLAGS}${CPPFLAGS:+ }"'-I${top_srcdir} -I${top_srcdir}/ellert'
-
-
-
-dnl Generate late errors
-if test "$base_cv_inline" != yes; then
-  AC_MSG_ERROR(The compiler does not support the inline keyword)
-fi
 
 
 

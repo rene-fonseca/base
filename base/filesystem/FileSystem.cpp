@@ -25,6 +25,8 @@
 #include <base/mathematics/Random.h>
 #include <base/ByteOrder.h>
 
+// TAG: need method to traverse links for win32 platforms
+
 #if 0
 // TAG: need support for following a specified number of links
 // String FileSystem::getFinalPath(const String& path, unsigned int maximumLinks = 8) throw(FileSystemException);
@@ -352,15 +354,18 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
 
 unsigned int FileSystem::getType(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  // TAG: follow link
   unsigned int flags = 0;
   // TAG: FILE_FLAG_POSIX_SEMANTICS
-  HANDLE file = ::CreateFile(path.getElements(), // file name
-                             FILE_READ_ATTRIBUTES | FILE_READ_EA /*| READ_CONTROL*/, // access mode
-                             FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
-                             0, // security descriptor
-                             OPEN_EXISTING, // how to create
-                             FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, // file attributes
-                             0); // handle to template file
+  HANDLE file = ::CreateFile(
+    path.getElements(), // file name
+    FILE_READ_ATTRIBUTES | FILE_READ_EA /*| READ_CONTROL*/, // access mode
+    FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
+    0, // security descriptor
+    OPEN_EXISTING, // how to create
+    FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, // file attributes
+    0
+  ); // handle to template file
   if (file == INVALID_HANDLE_VALUE) {
     switch (::GetLastError()) {
     case ERROR_ACCESS_DENIED:
@@ -372,7 +377,14 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
     }
     
     WIN32_FIND_DATA information;
-    HANDLE find = ::FindFirstFileExA(path.getElements(), FindExInfoStandard, &information, FindExSearchNameMatch, 0, 0);
+    HANDLE find = ::FindFirstFileExA(
+      path.getElements(),
+      FindExInfoStandard,
+      &information,
+      FindExSearchNameMatch,
+      0,
+      0
+    );
     assert(find != INVALID_HANDLE_VALUE, FileSystemException(Type::getType<FileSystem>()));
     ::FindClose(find);
     if (information.dwFileAttributes & FILE_ATTRIBUTE_DEVICE) {
@@ -389,7 +401,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
     }
     return flags;
   }
-
+  
   BY_HANDLE_FILE_INFORMATION information;
   bool error = ::GetFileInformationByHandle(file, &information) == 0;
   if (error) {
@@ -485,10 +497,59 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
 #endif // flavor
 }
 
+bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  WIN32_FIND_DATA information;
+  HANDLE handle = ::FindFirstFile(path.getElements(), &information);
+  if (handle == INVALID_HANDLE_VALUE) {
+    assert(
+      ::GetLastError() == ERROR_FILE_NOT_FOUND,
+      FileSystemException("Unable to examine if entry exists", Type::getType<FileSystem>())
+    );
+    return false;
+  }
+  ::FindClose(handle);
+  return true;
+#else // unix
+  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+    #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+      struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+      int result = stat64(path.getElements(), (struct stat64*)&status);
+    #else
+      struct stat64 status;
+      int result = stat64(path.getElements(), &status);
+    #endif // GNU Linux
+    switch (result) {
+    case 0:
+      return true;
+    case ENOENT:
+      return false;
+    default:
+      throw FileSystemException("Unable to examine if entry exists", Type::getType<FileSystem>());
+    }
+  #else
+    struct stat status;
+    int result = stat(path.getElements(), &status);
+    switch (result) {
+    case 0:
+      return true;      
+    case ENOENT:
+      return false;
+    default:
+      throw FileSystemException("Unable to examine if entry exists", Type::getType<FileSystem>());
+    }
+  #endif
+#endif // flavor
+}
+
 bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   DWORD result = ::GetFileAttributes(path.getElements());
-  assert(result != INVALID_FILE_ATTRIBUTES, FileSystemException(Type::getType<FileSystem>()));
+  if (result == INVALID_FILE_ATTRIBUTES) {
+    // TAG: need support for no access
+    return false;
+  }
+  // TAG: could check if (GetLastError() == ERROR_FILE_NOT_FOUND)
   return ((result & FILE_ATTRIBUTE_DIRECTORY) == 0) && ((result & FILE_ATTRIBUTE_DEVICE) == 0);
   // we ignore FILE_ATTRIBUTE_REPARSE_POINT
 #else // unix
@@ -532,7 +593,11 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   DWORD result = ::GetFileAttributes(path.getElements());
-  assert(result != INVALID_FILE_ATTRIBUTES, FileSystemException(Type::getType<FileSystem>()));
+  if (result == INVALID_FILE_ATTRIBUTES) {
+    // TAG: need support for no access
+    return false;
+  }
+  // TAG: could check if (GetLastError() == ERROR_FILE_NOT_FOUND)
   return ((result & FILE_ATTRIBUTE_DIRECTORY) != 0); // we ignore FILE_ATTRIBUTE_REPARSE_POINT
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
@@ -689,10 +754,16 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
     char* buffer[17000]; // TAG: fixme
     REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)&buffer;
     DWORD bytesWritten;
-    bool error = ::DeviceIoControl(link, FSCTL_GET_REPARSE_POINT,
-                                   0, 0, // input
-                                   reparseHeader, sizeof(buffer), // output
-                                   &bytesWritten, 0) == 0;
+    bool error = ::DeviceIoControl(
+      link,
+      FSCTL_GET_REPARSE_POINT,
+      0,
+      0, // input
+      reparseHeader,
+      sizeof(buffer), // output
+      &bytesWritten,
+      0
+    ) == 0;
     bool isLink = false;
     if (!error) {
       if (IsReparseTagMicrosoft(reparseHeader->ReparseTag)) {
@@ -747,13 +818,15 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
       HAS_COMMAND_LINE_ARGUMENTS = 1 << 5,
       HAS_ICON = 1 << 6
     };
-    HANDLE link = ::CreateFile(path.getElements(),
-                               GENERIC_READ,
-                               FILE_SHARE_READ | FILE_SHARE_WRITE,
-                               0,
-                               OPEN_EXISTING,
-                               0,
-                               0);
+    HANDLE link = ::CreateFile(
+      path.getElements(),
+      GENERIC_READ,
+      FILE_SHARE_READ | FILE_SHARE_WRITE,
+      0,
+      OPEN_EXISTING,
+      0,
+      0
+    );
     if (link == INVALID_HANDLE_VALUE) {
       return false; // we may not have read permission
     }
@@ -788,6 +861,90 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
 class FileSystemImpl {
 public:
 
+  // TAG: the link target may not exist
+  
+  static String getLinkTarget(const String& path) throw(FileSystemException) {
+//     if (cachedSupportsLinks == -1) {
+//       supportsLinks();
+//     }
+//     assert(
+//       cachedSupportsLinks == 1,
+//       NotSupported("Symbolic link", Type::getType<FileSystem>())
+//     );
+    
+    HANDLE link = ::CreateFile(
+      path.getElements(),
+      0,
+      FILE_SHARE_READ | FILE_SHARE_WRITE,
+      0,
+      OPEN_EXISTING,
+      FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
+      0
+    );
+    if (link == INVALID_HANDLE_VALUE) {
+      switch (::GetLastError()) {
+      case ERROR_ACCESS_DENIED:
+      case ERROR_SHARING_VIOLATION: // possible with page file
+      case ERROR_LOCK_VIOLATION:
+        throw FileSystemException("Not a link", Type::getType<FileSystem>());
+      }
+    }
+    while (link != INVALID_HANDLE_VALUE) {
+      // TAG: fix buffer size
+      char* buffer[17000]; // need alternative - first attempt to get length first failed
+      REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)&buffer;
+      DWORD bytesWritten;
+      bool error = ::DeviceIoControl(
+        link,
+        FSCTL_GET_REPARSE_POINT,
+        0,
+        0,
+        reparseHeader,
+        sizeof(buffer),
+        &bytesWritten,
+        0
+      ) == 0;
+      if (error) {
+        // bool reparse = ::GetLastError() != 4390; // ERROR_NOT_A_REPARSE_POINT
+        ::CloseHandle(link);
+        // if (reparse) { // no need to check for shell link
+        //   throw FileSystemException("Not a link", Type::getType<FileSystem>());
+        // }
+        break;
+      }
+      
+      switch (reparseHeader->ReparseTag) {
+      case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
+        {
+          ASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % sizeof(wchar) == 0) &&
+                 (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/sizeof(wchar) > 4));
+          wchar* substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer +
+            reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset + 4;
+          // skip prefix "\??\"
+          unsigned int substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2 - 4;
+          substPath[substLength] = 0; // add terminator
+          return WideString::getMultibyteString(substPath /*, substLength*/);
+        }
+      case IO_REPARSE_TAG_MOUNT_POINT:
+        {
+          ASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % sizeof(wchar) == 0) &&
+                 (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/sizeof(wchar) > 4));
+          wchar* substPath = reparseHeader->MountPointReparseBuffer.PathBuffer +
+            reparseHeader->MountPointReparseBuffer.SubstituteNameOffset + 4;
+          // skip prefix "\??\"
+          unsigned int substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 - 4;
+          substPath[substLength] = 0; // add terminator
+          return WideString::getMultibyteString(substPath /*, substLength*/);
+        }
+      default:
+        error = true;
+      }
+      if (error) {
+        break;
+      }
+    }
+  }
+  
   static inline bool enablePrivileges() throw() {
     HANDLE token;
     char buffer[sizeof(TOKEN_PRIVILEGES) + sizeof(LUID_AND_ATTRIBUTES)]; // make room for backup and restore privileges
@@ -860,9 +1017,24 @@ public:
     bool success = false;
     DWORD bytesWritten;
     void* context = 0;
-    if (::BackupWrite(handle, (BYTE*)&stream, (char*)&stream.cStreamName-(char*)&stream, &bytesWritten, FALSE, FALSE, &context) != 0) {
+    if (::BackupWrite(
+          handle,
+          (BYTE*)&stream,
+          (char*)&stream.cStreamName-(char*)&stream,
+          &bytesWritten,
+          FALSE,
+          FALSE,
+          &context
+        ) != 0) {
       if (bytesWritten == static_cast<MemorySize>((char*)&stream.cStreamName-(char*)&stream)) {
-        if (::BackupWrite(handle, (BYTE*)wideFullPath.getElements(), stream.Size.LowPart, &bytesWritten, FALSE, FALSE, &context) != 0) {
+        if (::BackupWrite(
+              handle,
+              (BYTE*)wideFullPath.getElements(),
+              stream.Size.LowPart,
+              &bytesWritten,
+              FALSE,
+              FALSE,
+              &context) != 0) {
           if (bytesWritten == stream.Size.LowPart) {
             success = true;
           }
@@ -934,30 +1106,37 @@ void FileSystem::makeLink(const String& target, const String& path) throw(NotSup
     if (!nativePath.endsWith(MESSAGE(":\\"))) {
       nativePath -= MESSAGE("\\");
     }
-    assert(nativePath.getLength() <= MAX_PATH, FileSystemException(Type::getType<FileSystem>())); // watch out for buffer overflow
+    assert(
+      nativePath.getLength() <= MAX_PATH,
+      FileSystemException(Type::getType<FileSystem>())
+    ); // watch out for buffer overflow
     directoryCreated = ::CreateDirectory(path.getElements(), 0) != 0; // we do not care whether or not it already exists
     assert(directoryCreated, FileSystemException(Type::getType<FileSystem>()));
-    link = ::CreateFile(path.getElements(),
-                        GENERIC_WRITE,
-                        0,
-                        0,
-                        OPEN_EXISTING,
-                        FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_BACKUP_SEMANTICS,
-                        0);
+    link = ::CreateFile(
+      path.getElements(),
+      GENERIC_WRITE,
+      0,
+      0,
+      OPEN_EXISTING,
+      FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_BACKUP_SEMANTICS,
+      0
+    );
   } else {
     assert(!nativePath.endsWith(MESSAGE("\\")), FileSystemException(Type::getType<FileSystem>()));
     assert(nativePath.getLength() <= MAX_PATH, FileSystemException(Type::getType<FileSystem>())); // watch out for buffer overflow
-    link = ::CreateFile(path.getElements(),
-                        GENERIC_WRITE,
-                        0,
-                        0,
-                        CREATE_NEW,
-                        FILE_FLAG_OPEN_REPARSE_POINT,
-                        0);
+    link = ::CreateFile(
+      path.getElements(),
+      GENERIC_WRITE,
+      0,
+      0,
+      CREATE_NEW,
+      FILE_FLAG_OPEN_REPARSE_POINT,
+      0
+    );
   }
   assert(link != INVALID_HANDLE_VALUE, FileSystemException(Type::getType<FileSystem>()));
   
-  char reparseBuffer[sizeof(REPARSE_DATA_BUFFER) + MAX_PATH * sizeof(WCHAR)];
+  uint8 reparseBuffer[sizeof(REPARSE_DATA_BUFFER) + MAX_PATH * sizeof(WCHAR)];
   REPARSE_DATA_BUFFER* reparseInfo = (REPARSE_DATA_BUFFER*)reparseBuffer;
   clear(*reparseInfo);
   if (isDirectory) {
@@ -965,13 +1144,14 @@ void FileSystem::makeLink(const String& target, const String& path) throw(NotSup
   } else {
     reparseInfo->ReparseTag = 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK;
   }
-
+  
   reparseInfo->ReparseDataLength = nativePath.getLength() * sizeof(WCHAR) + 12;
   reparseInfo->MountPointReparseBuffer.SubstituteNameLength = nativePath.getLength() * sizeof(WCHAR);
-  reparseInfo->MountPointReparseBuffer.PrintNameOffset = reparseInfo->MountPointReparseBuffer.SubstituteNameLength + sizeof(WCHAR);
-
+  reparseInfo->MountPointReparseBuffer.PrintNameOffset =
+    reparseInfo->MountPointReparseBuffer.SubstituteNameLength + sizeof(WCHAR);
+  
   WideString::UTF8ToUCS2(
-    Cast::pointer<WideString::ucs2*>(reparseInfo->MountPointReparseBuffer.PathBuffer),
+    Cast::pointer<ucs2*>(reparseInfo->MountPointReparseBuffer.PathBuffer),
     Cast::pointer<const uint8*>(nativePath.getElements()),
     nativePath.getLength(),
     0
@@ -979,10 +1159,15 @@ void FileSystem::makeLink(const String& target, const String& path) throw(NotSup
   
 	// set the link
   DWORD returnedLength;
-  bool error = ::DeviceIoControl(link, FSCTL_SET_REPARSE_POINT,
-                                 reparseInfo, reparseInfo->ReparseDataLength + REPARSE_DATA_BUFFER_HEADER_SIZE,
-                                 0, 0,
-                                 &returnedLength, 0) == 0;
+  bool error = ::DeviceIoControl(
+    link,
+    FSCTL_SET_REPARSE_POINT,
+    reparseInfo,
+    reparseInfo->ReparseDataLength + REPARSE_DATA_BUFFER_HEADER_SIZE,
+    0,
+    0,
+    &returnedLength,
+    0) == 0;
   ::CloseHandle(link);
   if (error) {
     if (isDirectory) {
@@ -995,8 +1180,10 @@ void FileSystem::makeLink(const String& target, const String& path) throw(NotSup
   }
   assert(!error, FileSystemException("Unable to make link", Type::getType<FileSystem>()));
 #else // unix
-  assert(!::symlink(target.getElements(), path.getElements()),
-         FileSystemException("Unable to make link", Type::getType<FileSystem>()));
+  assert(
+    !::symlink(target.getElements(), path.getElements()),
+    FileSystemException("Unable to make link", Type::getType<FileSystem>())
+  );
 #endif // flavor
 }
 
@@ -1008,13 +1195,15 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
   }
   assert(cachedSupportsLinks == 1, NotSupported("Symbolic link", Type::getType<FileSystem>()));
   
-  HANDLE link = ::CreateFile(path.getElements(),
-                             0,
-                             FILE_SHARE_READ | FILE_SHARE_WRITE,
-                             0,
-                             OPEN_EXISTING,
-                             FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
-                             0);
+  HANDLE link = ::CreateFile(
+    path.getElements(),
+    0,
+    FILE_SHARE_READ | FILE_SHARE_WRITE,
+    0,
+    OPEN_EXISTING,
+    FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
+    0
+  );
   if (link == INVALID_HANDLE_VALUE) {
     switch (::GetLastError()) {
     case ERROR_ACCESS_DENIED:
@@ -1028,10 +1217,16 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
     char* buffer[17000]; // need alternative - first attempt to get length first failed
     REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)&buffer;
     DWORD bytesWritten;
-    bool error = ::DeviceIoControl(link, FSCTL_GET_REPARSE_POINT,
-                                   0, 0,
-                                   reparseHeader, sizeof(buffer),
-                                   &bytesWritten, 0) == 0;
+    bool error = ::DeviceIoControl(
+      link,
+      FSCTL_GET_REPARSE_POINT,
+      0,
+      0,
+      reparseHeader,
+      sizeof(buffer),
+      &bytesWritten,
+      0
+    ) == 0;
     if (error) {
       // bool reparse = ::GetLastError() != 4390; // ERROR_NOT_A_REPARSE_POINT
       ::CloseHandle(link);
@@ -1043,14 +1238,15 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
     
     switch (reparseHeader->ReparseTag) {
     case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
-      {  
+      {
         ASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0) &&
           (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 > 4));
         wchar_t* substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer +
           reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset + 4;
-        unsigned int substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2 - 4; // skip prefix "\??\"
+        // skip prefix "\??\"
+        unsigned int substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2 - 4;
         substPath[substLength] = 0; // add terminator
-        return WideString::getMultibyteString(substPath /*, substLength*/); // TAG: fixme
+        return WideString::getMultibyteString(substPath /*, substLength*/);
       }
     case IO_REPARSE_TAG_MOUNT_POINT:
       {
@@ -1058,9 +1254,10 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
                (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 > 4));
         wchar_t* substPath = reparseHeader->MountPointReparseBuffer.PathBuffer +
           reparseHeader->MountPointReparseBuffer.SubstituteNameOffset + 4;
-        unsigned int substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 - 4; // skip prefix "\??\"
+        // skip prefix "\??\"
+        unsigned int substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 - 4;
         substPath[substLength] = 0; // add terminator
-        return WideString::getMultibyteString(substPath /*, substLength*/); // TAG: fixme
+        return WideString::getMultibyteString(substPath /*, substLength*/);
       }
     default:
       error = true;

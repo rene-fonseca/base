@@ -214,6 +214,11 @@ public:
   static unsigned int getType(const String& path) throw(FileSystemException);
 
   /**
+    Returns true if the entry exists.
+  */
+  static bool entryExists(const String& path) throw(FileSystemException);
+  
+  /**
     Returns true if the file exists.
   */
   static bool fileExists(const String& path) throw(FileSystemException);

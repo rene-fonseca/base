@@ -35,7 +35,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 String InetAddress::getLocalHost() throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // I use thread local storage 'cause I don't know what the maximum length is
   // the microsoft example code that I have seen assumes that the name cannot exceed 200 chars
   Allocator<char>* buffer = Thread::getLocalStorage();
@@ -89,7 +89,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 #else // use ordinary BSD sockets - IPv4
   struct hostent* hp;
 
-  #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
       throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
@@ -217,7 +217,7 @@ bool InetAddress::parse(const String& addr) throw() {
   return i == end;
 }
 
-InetAddress::InetAddress() throw() : family(IP_VERSION_4) {
+InetAddress::InetAddress() throw() : family(IP_VERSION_6) {
   address.words[0] = 0; // set to unspecified address
   address.words[1] = 0;
   address.words[2] = 0;
@@ -266,7 +266,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 #else // use ordinary BSD sockets - IPv4
   struct hostent* hp;
 
-  #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     if (!(hp = gethostbyaddr(getCharAddress(address), sizeof(address), AF_INET))) { // MT-safe
       throw HostNotFound("Unable to resolve IP address", this);
     }

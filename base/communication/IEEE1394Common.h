@@ -124,6 +124,36 @@ public:
     RCODE_RESERVED_15
   };
 
+  /** Transaction code. */
+  enum TransactionCode {
+    TCODE_WRITE_REQUEST_FOR_DATA_QUADLET,
+    TCODE_WRITE_REQUEST_FOR_DATA_BLOCK,
+    TCODE_WRITE_RESPONSE,
+    TCODE_RESERVED_3,
+    TCODE_READ_REQUEST_FOR_DATA_QUADLET,
+    TCODE_READ_REQUEST_FOR_DATA_BLOCK,
+    TCODE_READ_RESPONSE_FOR_DATA_QUADLET,
+    TOCDE_READ_RESPONSE_FOR_DATA_BLOCK,
+    TCODE_CYCLE_START,
+    TCODE_LOCK_REQUEST,
+    TCODE_ISOCHRONOUS_DATA_BLOCK,
+    TCODE_LOCK_RESPONSE,
+    TCODE_RESERVED_12,
+    TCODE_RESERVED_13,
+    TCODE_RESERVED_14,
+    TCODE_RESERVED_15
+  };
+  
+  /** Atomic access instruction. */
+  enum LockInstruction {
+    MASK_SWAP, /**< new = data | (old & ~argument). */
+    COMPARE_SWAP, /**< if (old == argument) new = data. */
+    FETCH_ADD, /**< new = old + data (big endian). */
+    LITTLE_FETCH_ADD, /**< new = old + data (little endian). */
+    BOUNDED_ADD, /**< if (old != argument) new = old + data. */
+    WRAP_ADD /**< new = (old != argument) ? old + data : data. */
+  };
+
   /** Isochronous request options. */
   enum IsochronousRequestOption {
     SWAP_BYTE_ORDER = 1 /**< Activates byte order swapping on quadlet level. */
@@ -136,6 +166,8 @@ public:
   static const unsigned int BROADCAST = 63;
   /** The id of the local bus. */
   static const unsigned int LOCAL_BUS = 1023;
+  /** The number of isochronous channels. */
+  static const unsigned int ISOCHRONOUS_CHANNELS = 64;
   /** Specifies the maximum number of retries. */
   static const unsigned int MAXIMUM_ATTEMPTS = 5;
 
@@ -2112,6 +2144,48 @@ public:
     inline bool wait(unsigned int microseconds) throw(OutOfDomain) {
       return writeChannel->wait(microseconds);
     }
+  };
+
+  /**
+    Isochronous channel listener.
+  */
+  class IsochronousChannelListener {
+  public:
+    
+    /**
+      Invoked on an incomming isochronous packet.
+      
+      @param buffer The buffer.
+      @param size The size of the data.
+      
+      @return False to stop the listener.
+    */
+    virtual bool onIsochronousPacket(const uint8* buffer, unsigned int size) throw() = 0;
+  };
+
+  /**
+    Function Control Protocol (FCP) listener.
+  */
+  class FunctionControlProtocolListener {
+  public:
+    
+    /**
+      Invoked on an incomming FCP request.
+      
+      @param nodeId The id of the source node.
+      @param buffer The buffer.
+      @param size The size of the data.      
+    */
+    virtual void onFCPRequest(unsigned short nodeId, const uint8* buffer, unsigned int size) throw() = 0;
+
+    /**
+      Invoked on an incomming FCP response.
+      
+      @param nodeId The id of the source node.
+      @param buffer The buffer.
+      @param size The size of the data.      
+    */
+    virtual void onFCPResponse(unsigned short nodeId, const uint8* buffer, unsigned int size) throw() = 0;
   };
 };
 

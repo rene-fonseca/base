@@ -43,36 +43,40 @@ public:
   
   /** Control and status register (CSR). */
   enum CSRRegister {
-    STATE_CLEAR = 0x000,
-    STATE_SET = 0x004,
-    NODE_IDS = 0x008,
-    RESET_START = 0x00c,
-    SPLIT_TIMEOUT_HI = 0x018,
-    SPLIT_TIMEOUT_LO = 0x01c,
-    ARGUMENT_HI = 0x020,
-    ARGUMENT_LO = 0x024,
-    TEST_START = 0x028,
-    TEST_STATUS = 0x02c,
-    BUS_DEPENDENT = 0x200,
-    CYCLE_TIME = 0x200,
-    BUS_TIME = 0x204,
-    POWER_FAIL_IMMINENT = 0x208,
-    POWER_SOURCE = 0x20c,
-    BUSY_TIMEOUT = 0x210,
-    BUS_MANAGER_ID = 0x21c,
-    BANDWIDTH_AVAILABLE = 0x220,
-    CHANNELS_AVAILABLE_HI = 0x224,
-    CHANNELS_AVAILABLE_LO = 0x228,
-    BROADCAST_CHANNEL = 0x234,
-    CONFIGURATION_ROM = 0x400,
+    STATE_CLEAR = 0x0000,
+    STATE_SET = 0x0004,
+    NODE_IDS = 0x0008,
+    RESET_START = 0x000c,
+    SPLIT_TIMEOUT_HI = 0x0018,
+    SPLIT_TIMEOUT_LO = 0x001c,
+    ARGUMENT_HI = 0x0020,
+    ARGUMENT_LO = 0x0024,
+    TEST_START = 0x0028,
+    TEST_STATUS = 0x002c,
+    BUS_DEPENDENT = 0x0200,
+    CYCLE_TIME = 0x0200,
+    BUS_TIME = 0x0204,
+    POWER_FAIL_IMMINENT = 0x0208,
+    POWER_SOURCE = 0x020c,
+    BUSY_TIMEOUT = 0x0210,
+    BUS_MANAGER_ID = 0x021c,
+    BANDWIDTH_AVAILABLE = 0x0220,
+    CHANNELS_AVAILABLE_HI = 0x0224,
+    CHANNELS_AVAILABLE_LO = 0x0228,
+    BROADCAST_CHANNEL = 0x0234,
+    CONFIGURATION_ROM = 0x0400,
     BUS_INFO_BLOCK = CONFIGURATION_ROM + 0x04,
     BUS_INFO_NAME = BUS_INFO_BLOCK,
     BUS_INFO_FLAGS = BUS_INFO_BLOCK + 0x04,
     BUS_INFO_GUID = BUS_INFO_BLOCK + 0x08,
-    FCP_COMMAND_FRAME = 0xb00,
-    FCP_RESPONSE_FRAME = 0xd00,
+    FCP_COMMAND_FRAME = 0x0b00,
+    FCP_COMMAND_FRAME_END = 0x0d00,
+    FCP_RESPONSE_FRAME = 0x0d00,
+    FCP_RESPONSE_FRAME_END = 0x0f00,
     TOPOLOGY_MAP = 0x1000,
-    SPEED_MAP = 0x2000
+    TOPOLOGY_MAP_END = 0x1400,
+    SPEED_MAP = 0x2000,
+    SPEED_MAP_END = 0x3000
   };
 
   /** Control and status key type (see CSR Architecture). */
@@ -120,17 +124,17 @@ public:
     */
     POWER_NO_REPEAT,
     /**
-      The node is self-powered and privides a minimum of 15W on the bus.
+      The node is self-powered and provides a minimum of 15W on the bus.
     */
-    POWER_SELF_POWERED_15W,
+    POWER_PROVIDES_15W,
     /**
-      The node is self-powered and privides a minimum of 30W on the bus.
+      The node is self-powered and provides a minimum of 30W on the bus.
     */
-    POWER_SELF_POWERED_30W,
+    POWER_PROVIDES_30W,
     /**
-      The node is self-powered and privides a minimum of 45W on the bus.
+      The node is self-powered and provides a minimum of 45W on the bus.
     */
-    POWER_SELF_POWERED_45W,
+    POWER_PROVIDES_45W,
     /**
       The node may be powered from the bus and uses up to 1W.
     */
@@ -139,17 +143,17 @@ public:
       The node may be powered from the bus and uses up to 1W plus an additional
       2W to enable higher layers.
     */
-    POWER_CONSUMES_1W_2W,
+    POWER_CONSUMES_3W,
     /**
       The node may be powered from the bus and uses up to 1W plus an additional
       5W to enable higher layers.
     */
-    POWER_CONSUMES_1W_5W,
+    POWER_CONSUMES_6W,
     /**
       The node may be powered from the bus and uses up to 1W plus an additional
       9W to enable higher layers.
     */
-    POWER_CONSUMES_1W_9W
+    POWER_CONSUMES_10W
   };
   
   /** The role of a node. */
@@ -235,26 +239,6 @@ public:
     ISOCHRONOUS_TRANSACTION_CAPABLE = 1 << 2,
     BUS_MASTER_CAPABLE = 1 << 3,
     POWER_MANAGER_CAPABLE = 1 << 4
-  };
-
-  /** Transaction code. */
-  enum TransactionCode {
-    TCODE_WRITE_REQUEST_FOR_DATA_QUADLET,
-    TCODE_WRITE_REQUEST_FOR_DATA_BLOCK,
-    TCODE_WRITE_RESPONSE,
-    TCODE_RESERVED_3,
-    TCODE_READ_REQUEST_FOR_DATA_QUADLET,
-    TCODE_READ_REQUEST_FOR_DATA_BLOCK,
-    TCODE_READ_RESPONSE_FOR_DATA_QUADLET,
-    TOCDE_READ_RESPONSE_FOR_DATA_BLOCK,
-    TCODE_CYCLE_START,
-    TCODE_LOCK_REQUEST,
-    TCODE_ISOCHRONOUS_DATA_BLOCK,
-    TCODE_LOCK_RESPONSE,
-    TCODE_RESERVED_12,
-    TCODE_RESERVED_13,
-    TCODE_RESERVED_14,
-    TCODE_RESERVED_15
   };
 
   /** Port state. */
@@ -386,6 +370,13 @@ protected:
   void checkResetGeneration() throw(IEEE1394Exception);
 public:
 
+  /**
+    Returns a convenient string representation of the node id (e.g. "local:0" or "123:broadcast").
+
+    @param nodeId The node id.
+  */
+  static String getAsString(unsigned short nodeId) throw();
+  
   /**
     Returns the node id of the node with the desired role.
     
@@ -847,8 +838,25 @@ public:
     return ieee1394impl->getWriteChannel(maximumPacketsPerRequest, subchannels);
   }
 
-  inline void readIsochronous(char* buffer, unsigned int size, unsigned int channel) throw(OutOfDomain, IEEE1394Exception) {
-    //    ieee1394impl->readIsochronous(buffer, size, channel);
+  inline bool wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) {
+    return ieee1394impl->wait(milliseconds);
+  }
+  
+  inline void dequeue() throw(IEEE1394Exception) {
+    ieee1394impl->dequeue();
+  }
+  
+  inline void registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception) {
+    ieee1394impl->registerFCPListener(listener);
+  }
+  
+  inline void unregisterFCPListener() throw(IEEE1394Exception) {
+    ieee1394impl->unregisterFCPListener();
+  }
+
+  inline void readIsochronous(unsigned int channel, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) {
+    unsigned int maximumPayload = getMaximumIsoPayloadForSpeed(getMaximumSpeed(getLocalId())); // in bytes
+    ieee1394impl->readIsochronous(channel, maximumPayload, listener);
   }
 };
 

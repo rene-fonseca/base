@@ -80,11 +80,6 @@ public:
   virtual unsigned int getNumberOfNodes() const throw() = 0;
   
   /**
-    Returns the IEEE 1394 standard of the adapter.
-  */
-  virtual Standard getCompliance() const throw(IEEE1394Exception) = 0;
-
-  /**
     Returns the current error status.
   */
   virtual unsigned int getStatus() const throw(IEEE1394Exception) = 0;
@@ -142,6 +137,23 @@ public:
     @param subchannel Mask specifying the subchannel to reserve for this channel.
   */
   virtual IsochronousWriteChannel getWriteChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) = 0;
+
+  /**
+    Starts an isochronous packet listener.
+    
+    @param channel The isochronous channel [0; 63].
+    @param maximumPayload The maximum payload of a packet.
+    @param listener The listener to be notified on incomming packets.
+  */
+  virtual void readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) = 0;
+
+  virtual bool wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) = 0;
+  
+  virtual void dequeue() throw(IEEE1394Exception) = 0;
+  
+  virtual void registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception) = 0;
+  
+  virtual void unregisterFCPListener() throw(IEEE1394Exception) = 0;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

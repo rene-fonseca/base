@@ -33,18 +33,9 @@ namespace base {
 #define _DK_SDU_MIP__BASE__COMPILER_INLINE __inline
 #define _DK_SDU_MIP__BASE__COMPILER_RESTRICT __restrict
 
-#define _DK_SDU_MIP__BASE__COMPILER_ISOC_FABSF __builtin_fabsf
-#define _DK_SDU_MIP__BASE__COMPILER_ISOC_FABS __builtin_fabs
-#define _DK_SDU_MIP__BASE__COMPILER_ISOC_FABSL __builtin_fabsl
-#define _DK_SDU_MIP__BASE__COMPILER_ISOC_COSF __builtin_cosf
-#define _DK_SDU_MIP__BASE__COMPILER_ISOC_COS __builtin_cos
-#define _DK_SDU_MIP__BASE__COMPILER_ISOC_COSL __builtin_cosl
-#define _DK_SDU_MIP__BASE__COMPILER_ISOC_SINF __builtin_sinf
-#define _DK_SDU_MIP__BASE__COMPILER_ISOC_SIN __builtin_sin
-#define _DK_SDU_MIP__BASE__COMPILER_ISOC_SINL __builtin_sinl
-#define _DK_SDU_MIP__BASE__COMPILER_ISOC_SQRTF __builtin_sqrtf
-#define _DK_SDU_MIP__BASE__COMPILER_ISOC_SQRT __builtin_sqrt
-#define _DK_SDU_MIP__BASE__COMPILER_ISOC_SQRTL __builtin_sqrtl
+// explicit calling conventions
+#define _DK_SDU_MIP__BASE__CALL_PASCAL __attribute__((stdcall))
+#define _DK_SDU_MIP__BASE__CALL_CPP __attribute__((cdecl))
 
 #if (_DK_SDU_MIP__BASE__COMPILER_VERSION >= 3)
 #  define _DK_SDU_MIP__BASE__COMPILER_ABI _DK_SDU_MIP__BASE__ABI_V3MV

@@ -1,8 +1,8 @@
 /***************************************************************************
-    The Base Framework
+    The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,6 +18,7 @@
 #include <base/collection/List.h>
 #include <base/collection/Set.h>
 #include <base/collection/Map.h>
+#include <base/collection/Pair.h>
 #include <base/Date.h>
 #include <base/net/Url.h>
 #include <base/net/InetAddress.h>
@@ -27,6 +28,15 @@
 #include <math.h> // TAG: alien header file
 
 using namespace base;
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Pair<float, float>& value) throw(IOException) {
+  FormatOutputStream::PushContext push(stream);
+  return stream << '{' << value.getFirst() << ',' << value.getSecond() << '}';
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Pair<double, double>& value) throw(IOException) {
+  return stream << '{' << value.getFirst() << ',' << value.getSecond() << '}';
+}
 
 void test() throw() {
   fout << 0.000009 << ENDL;
@@ -46,7 +56,7 @@ void test() throw() {
   fout << 1123000000000000000000000000000000. << ENDL;
 
   fout << "Testing FormatOutputStream..." << ENDL;
-
+  
   fout << "Writing built-in types to fout" << ENDL;
   fout << "short (-1234): " << short(-1234) << ENDL;
   fout << "int (-123456): " << int(-123456) << ENDL;
@@ -56,16 +66,21 @@ void test() throw() {
   fout << "char* (Hello, World!): " << "Hello, World!" << ENDL;
   fout << "void* (0): " << static_cast<void*>(0) << ENDL;
   fout << "void* (Application::getApplication): " << Application::getApplication() << ENDL;  
-
+  
   ferr << "Writing to ferr: " << "This is written to standard error" << ENDL;
-
+  
   fout << "String<char>: " << String("This is a String object") << ENDL;
   fout << "Date (now): " << Date::getNow() << ENDL;
-
+  
+  Pair<float, float> myFloatPair(1.23456789, 1.23456789);
+  fout << "Pair<float, float>: " << setPrecision(3) << myFloatPair << ENDL;
+  Pair<double, double> myDoublePair(1.23456789, 1.23456789);
+  fout << "Pair<double, double>: " << setPrecision(3) << myDoublePair << ENDL;
+  
   StringOutputStream stream;
   stream << "This " << "is " << "written " << "to " << "a " << "string " << "stream" << FLUSH;
   fout << "String: " << stream.getString() << ENDL;
-
+  
   List<int> li;
   for (unsigned int i = 0; i < 10; i++) {
     li.add(i);
@@ -77,7 +92,7 @@ void test() throw() {
     si.add(i);
   }
   fout << "Set<int>: "<< si << ENDL;
-
+  
   Map<int, int > mss;
   for (unsigned int i = 0; i < 10; i++) {
     mss.add(i, i);

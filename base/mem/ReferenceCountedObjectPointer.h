@@ -16,31 +16,57 @@
 
 #include <base/mem/ReferenceCountedObject.h>
 #include <base/mem/NullPointer.h>
-#include <base/Base.h>
-#include <base/Functor.h>
+#include <base/mem/DynamicMemory.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   This class is only introduced to give the general
   ReferenceCountedObjectPointer template class access to the
-  ReferenceCountedObject. You should not used this class directly.
+  ReferenceCountedObject. You must not use this class directly.
 
   @see ReferenceCountedObjectPointer
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.1
+  @version 1.2
 */
 
 class ReferenceCountedObjectPointerImpl {
+private:
+
+  /** The reference counted object. */
+  const ReferenceCountedObject& object;
+  ReferenceCountedObjectPointerImpl(const ReferenceCountedObjectPointerImpl&) throw();
+  ReferenceCountedObjectPointerImpl& operator=(const ReferenceCountedObjectPointerImpl& eq) throw();
 public:
 
   /**
-    Returns the number of references for the specified reference counted object.
-
-    @param ptr Pointer to the reference counted object.
+    Initializes reference to object.
   */
-  inline unsigned long& getReferenceCounter(const ReferenceCountedObject* ptr) const throw() {
-    return ptr->references;
+  inline ReferenceCountedObjectPointerImpl(const ReferenceCountedObject& _object) throw() : object(_object) {
+  }
+
+  /**
+    Adds one reference to the object.
+  */
+  inline void addReference() const throw() {
+    ++object.references;
+  }
+
+  /**
+    Removes one reference to the object. The object must have at least one reference.
+
+    @return True if all references have been released.
+  */
+  inline bool removeReference() const throw() {
+    // ASSERT(object.references > 0);
+    return --object.references == 0;
+  }
+
+  /**
+    Returns true if the object has multiple references.
+  */
+  inline bool isMultiReferenced() const throw() {
+    return object.references > 1;
   }
 };
 
@@ -60,7 +86,7 @@ public:
 */
 
 template<class TYPE>
-class ReferenceCountedObjectPointer : private ReferenceCountedObjectPointerImpl {
+class ReferenceCountedObjectPointer {
 public:
 
   /** The type of the reference counted object. */
@@ -72,13 +98,13 @@ public:
 private:
 
   /** Pointer to shared reference counted object. */
-  Pointer ptr; // protect pointer value from the evil programmers
+  Pointer pointer; // protect pointer value from the evil programmers
 public:
 
   /**
     Initializes an automation pointer as invalid (i.e. null).
   */
-  inline ReferenceCountedObjectPointer() throw() : ptr(0) {}
+  inline ReferenceCountedObjectPointer() throw() : pointer(0) {}
 
   /**
     Initializes an automation pointer with the specified pointer value. The
@@ -90,18 +116,18 @@ public:
 
     @param value The desired pointer value.
   */
-  inline ReferenceCountedObjectPointer(Pointer value) throw() : ptr(value) {
-    if (ptr) {
-      ++getReferenceCounter(ptr);
+  inline ReferenceCountedObjectPointer(Pointer value) throw() : pointer(value) {
+    if (pointer) {
+      ReferenceCountedObjectPointerImpl(*pointer).addReference();
     }
   }
 
   /**
     Initialization of automation pointer from other automation pointer.
   */
-  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer& copy) : ptr(copy.ptr) {
-    if (ptr) {
-      ++getReferenceCounter(ptr);
+  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer& copy) : pointer(copy.pointer) {
+    if (pointer) {
+      ReferenceCountedObjectPointerImpl(*pointer).addReference();
     }
   }
 
@@ -110,9 +136,9 @@ public:
     compile time polymorphism.
   */
   template<class POLY>
-  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer<POLY>& copy) : ptr(copy.ptr) {
-    if (ptr) {
-      ++getReferenceCounter(ptr);
+  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer<POLY>& copy) : pointer(copy.pointer) {
+    if (pointer) {
+      ReferenceCountedObjectPointerImpl(*pointer).addReference();
     }
   }
 
@@ -129,7 +155,7 @@ public:
   */
   inline ReferenceCountedObjectPointer& operator=(const ReferenceCountedObjectPointer& eq) {
     if (&eq != this) { // protect against self assignment
-      setValue(eq.ptr);
+      setValue(eq.pointer);
     }
     return *this;
   }
@@ -141,7 +167,7 @@ public:
   template<class POLY>
   inline ReferenceCountedObjectPointer& operator=(const ReferenceCountedObjectPointer<POLY>& eq) {
     ASSERT(&eq != this); // no need to protect against self assignment
-    setValue(eq.ptr);
+    setValue(eq.pointer);
     return *this;
   }
 
@@ -151,21 +177,21 @@ public:
     the reference counting rules aren't violated.
   */
   inline Pointer getValue() const throw() {
-    return ptr;
+    return pointer;
   }
 
   /**
     Sets the pointer value of this automation pointer.
   */
   inline void setValue(Pointer value) {
-    if (ptr) { // skip if pointer is invalid
-      if (!--getReferenceCounter(ptr)) { // remove reference and possible destroy object
-        delete ptr; // could throw exception if RCO is destroyed unsuccessfully
+    if (pointer) { // skip if pointer is invalid
+      if (ReferenceCountedObjectPointerImpl(*pointer).removeReference()) { // remove reference and possible destroy object
+        delete pointer; // could throw exception if RCO is destroyed unsuccessfully
       }
     }
-    ptr = value;
-    if (ptr) { // skip if pointer is invalid
-      ++getReferenceCounter(ptr); // add reference
+    pointer = value;
+    if (pointer) { // skip if pointer is invalid
+      ReferenceCountedObjectPointerImpl(*pointer).addReference();
     }
   }
 
@@ -176,7 +202,7 @@ public:
     @return False if the pointer is invalid (i.e. not pointing to an object).
   */
   inline bool isMultiReferenced() const throw() {
-    return (ptr) && (getReferenceCounter(ptr) > 1); // false if the pointer is invalid
+    return pointer && ReferenceCountedObjectPointerImpl(*pointer).isMultiReferenced(); // false if the pointer is invalid
   }
 
   /**
@@ -187,9 +213,9 @@ public:
   */
   inline void copyOnWrite() throw() {
     if (isMultiReferenced()) { // do we have the object for our self
-      --getReferenceCounter(ptr); // remove one reference (no need to delete object since multi-referenced)
-      ptr = new Value(*ptr);
-      ++getReferenceCounter(ptr); // add reference
+      ReferenceCountedObjectPointerImpl(*pointer).removeReference(); // remove one reference (no need to delete object since multi-referenced)
+      pointer = new Value(*pointer);
+      ReferenceCountedObjectPointerImpl(*pointer).addReference();
     }
   }
 
@@ -198,33 +224,34 @@ public:
     object).
   */
   inline bool isValid() const throw() {
-    return ptr != 0;
+    return pointer != 0;
   }
 
   /**
     Returns the reference counted object.
   */
   inline Reference operator*() const throw(NullPointer) {
-    if (!ptr) {
-      throw NullPointer();
+    if (!pointer) {
+      throw NullPointer(this);
     }
-    return *ptr;
+    return *pointer;
   }
 
   /**
     Returns the reference counted object.
   */
   inline Pointer operator->() const throw() {
-    return ptr;
+    // ASSERT(pointer);
+    return pointer;
   }
 
   /**
     Destroys the automation pointer.
   */
   inline ~ReferenceCountedObjectPointer() {
-    if (ptr) { // skip if pointer is invalid
-      if (!--getReferenceCounter(ptr)) { // remove reference
-        delete ptr; // could throw exception if RCO is destroyed unsuccessfully
+    if (pointer) { // skip if pointer is invalid
+      if (ReferenceCountedObjectPointerImpl(*pointer).removeReference()) {
+        delete pointer; // could throw exception if RCO is destroyed unsuccessfully
       }
     }
   }

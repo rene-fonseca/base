@@ -6,6 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_THREAD__SPIN_LOCK_H
 #define _DK_SDU_MIP__BASE_THREAD__SPIN_LOCK_H
 
+#include <base/features.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Spin lock is a synchronization object just like MutualExclusion. SpinLock
   does not use any operating system resources. The SpinLock is fast. The CPU
@@ -44,6 +48,25 @@ public:
     register unsigned int previous;
     asm volatile ("xchgl %0, %1" : "=&r" (previous), "=m" (value) : "0" (1));
     return !previous;
+#elif defined(sparc)
+    register unsigned int previous;
+    asm volatile ("swap %1, %0" : "=&r" (previous), "=m" (value) : "0" (1));
+    return !previous;
+#elif defined(mips) // MIPS II - R4000 processors
+    register unsigned int success;
+    asm volatile (
+      "0:"
+      "lld %0, (%1);" // get state of lock: 0 (unlocked), or 1 (locked)
+      "xor %0, %0, $1;"
+      "beq %0, $0, 1f;" // stop if already locked
+      "nop;"
+      "scd %0, (%1);" // try to lock
+      "beq %0, $0, 0b;" // retry if we did not succeed
+      "nop;"
+      "1:"
+      : "=&r" (success), "=m" (value) // outputs
+    );
+    return success;
 #endif
   }
 
@@ -67,9 +90,11 @@ public:
     Releases the spin lock.
   */
   inline void releaseLock() const throw() {
-    value = 0;
+    value = 0; // atomic operation
   }
 
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

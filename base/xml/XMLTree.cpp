@@ -5,10 +5,15 @@
 
 #include <base/features.h>
 #include <base/xml/XMLTree.h>
-#include <gnome-xml/parser.h>
-#include <stdlib.h>
+
+#if defined(_DK_SDU_MIP__BASE__XML_GNOME)
+  #include <gnome-xml/parser.h>
+  #include <stdlib.h>
+#endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+#if defined(_DK_SDU_MIP__BASE__XML_GNOME)
 
 class XMLTreeImpl {
 public:
@@ -168,5 +173,17 @@ bool XMLTree::write(String& buffer) const throw(MemoryException) {
   free(buf);
   return false;
 };
+
+#else // no xml support
+
+void XMLTree::release() throw() {}
+XMLTree::XMLTree() throw() {}
+XMLTree::XMLTree(const XMLTree& copy) throw() {}
+void XMLTree::setRoot(XMLNode* node) throw() {}
+bool XMLTree::read(const String& buffer) throw(MemoryException) {}
+bool XMLTree::write(String& buffer) const throw(MemoryException) {}
+XMLTree::~XMLTree() throw() {}
+
+#endif
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

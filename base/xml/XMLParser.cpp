@@ -5,9 +5,15 @@
 
 #include <base/features.h>
 #include <base/xml/XMLParser.h>
-#include <gnome-xml/parser.h>
+
+#if defined(_DK_SDU_MIP__BASE__XML_GNOME)
+  #include <gnome-xml/parser.h>
+  #include <stdarg.h>
+#endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+#if defined(_DK_SDU_MIP__BASE__XML_GNOME)
 
 /** Wrapper class for the callback interface. */
 class XMLParserImpl {
@@ -53,60 +59,56 @@ public:
     }
   };
 
-  static void characters(void* parser, const xmlChar* s, int len) {
+  static void characters(void* parser, const xmlChar* s, int length) {
     XMLParser* p = static_cast<XMLParser*>(parser);
     if (p->callback) {
-//      p->callback->characters(String(n, len));
+      p->callback->characters(String((const char*)s, length));
     }
   };
 
   static void comment(void* parser, const xmlChar* s) {
     XMLParser* p = static_cast<XMLParser*>(parser);
     if (p->callback) {
-//      p->callback->comment(String(s));
+      p->callback->comment((const char*)s);
     }
   };
 
   static void warning(void* parser, const char *fmt, ...) {
-  //  va_list arg;
-  //  char buff[1024];
-  //
-  //  va_start(arg, fmt);
-  //  vsprintf(buff, fmt, arg);
-  //  va_end(arg);
-  //
+    va_list arg;
+    char buffer[1024];
+    va_start(arg, fmt);
+    vsprintf(buffer, fmt, arg);
+    va_end(arg);
 
     XMLParser* p = static_cast<XMLParser*>(parser);
     if (p->callback) {
-      p->callback->warning(String()); // buff
+      p->callback->warning(buffer);
     }
   };
 
   static void error(void* parser, const char *fmt, ...) {
-  //  va_list arg;
-  //  char buff[1024];
-  //
-  //  va_start(arg, fmt);
-  //  vsprintf(buff, fmt, arg);
-  //  va_end(arg);
-  //
+    va_list arg;
+    char buffer[1024];
+    va_start(arg, fmt);
+    vsprintf(buffer, fmt, arg);
+    va_end(arg);
+
     XMLParser* p = static_cast<XMLParser*>(parser);
     if (p->callback) {
-      p->callback->error(String()); // buff
+      p->callback->error(buffer);
     }
   };
 
   static void fatalError(void* parser, const char *fmt, ...) {
-  //  va_list arg;
-  //  char buff[1024];
-  //
-  //  va_start(arg, fmt);
-  //  vsprintf(buff, fmt, arg);
-  //  va_end(arg);
-  //
+    va_list arg;
+    char buffer[1024];
+    va_start(arg, fmt);
+    vsprintf(buffer, fmt, arg);
+    va_end(arg);
+
     XMLParser* p = static_cast<XMLParser*>(parser);
     if (p->callback) {
-      p->callback->fatalError(String()); // buff
+      p->callback->fatalError(buffer);
     }
   };
 };
@@ -157,20 +159,35 @@ void XMLParser::release() throw() {
 
 XMLParser::XMLParser(Callback* cb = 0) throw(XMLException) : callback(cb), context(0) {
   prepare();
-};
+}
 
 void XMLParser::parse(const char* buffer, unsigned int size) throw(XMLException) {
   int result = xmlParseChunk(static_cast<xmlParserCtxtPtr>(context), buffer, size, 0);
   assert(result == 0, XMLException("Unable to parse string"));
-};
+}
 
 void XMLParser::terminate() throw() {
   int result = xmlParseChunk(static_cast<xmlParserCtxtPtr>(context), 0, 0, 1);
   assert(result == 0, XMLException("Unable to terminate parsing"));
-};
+}
 
 XMLParser::~XMLParser() throw() {
   release();
-};
+}
+
+#else // no xml support
+
+void XMLParser::prepare() throw(XMLException) {}
+void XMLParser::release() throw() {}
+XMLParser::XMLParser(Callback* cb = 0) throw(XMLException) : callback(cb), context(0) {}
+
+void XMLParser::parse(const char* buffer, unsigned int size) throw(XMLException) {
+  throw XMLException("XML not supported"));
+}
+
+void XMLParser::terminate() throw() {}
+XMLParser::~XMLParser() throw() {}
+
+#endif
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -98,88 +98,103 @@ dnl Checks for libraries.
 
 
 dnl AC_BASE_MKYESNO(variable)
-AC_DEFUN(AC_BASE_MKYESNO, [if test $? = 0; then $1=yes; else $1=no; fi])
-
+AC_DEFUN(AC_BASE_MKYESNO, [dnl
+if test $? = 0; then $1=yes; else $1=no; fi dnl
+])
 
 dnl AC_BASE_YES(variable, yes action)
-AC_DEFUN(AC_BASE_YES, [
-if test $$1 = yes; then
+AC_DEFUN(AC_BASE_YES, [dnl
+if test "[$]$1" = yes; then
   $2
-  true;
-fi]
-)
-
+fi
+])
 
 dnl AC_BASE_NO(variable, no action)
-AC_DEFUN(AC_BASE_NO, [
-if test $$1 = no; then
+AC_DEFUN(AC_BASE_NO, [dnl
+if test "[$]$1" = no; then
   $2
-  true;
-fi]
-)
-
+fi
+])
 
 dnl AC_BASE_YESNO(variable, yes action, no action)
-AC_DEFUN(AC_BASE_YESNO, [
-AC_BASE_YES($1, $2)
-AC_BASE_NO($1, $3)]
-)
-
+AC_DEFUN(AC_BASE_YESNO, [dnl
+if test "[$]$1" = yes; then
+  $2
+else
+  $3
+fi
+])
 
 dnl AC_BASE_NOT(dest variable, source variable)
-AC_DEFUN(AC_BASE_NOT, [
-if test $$2 = yes; then
-  $1=no;
-else
-  $1=yes;
-fi]
-)
+AC_DEFUN(AC_BASE_NOT, [dnl
+if test "[$]$2" = no; then $1=yes; else $1=no; fi dnl
+])
 
+dnl AC_BASE_MSG(message)
+AC_DEFUN(AC_BASE_MSG, [dnl
+echo $ac_n "$1$ac_c" 1>&AC_FD_MSG dnl
+])
+
+dnl AC_BASE_MSGLN(message)
+AC_DEFUN(AC_BASE_MSGLN, [dnl
+echo "$1" 1>&AC_FD_MSG dnl
+])
+
+dnl AC_BASE_CHECK(check message, result message, action)
+AC_DEFUN(AC_BASE_CHECK, [dnl
+AC_BASE_MSG([$1... ])
+$3
+AC_BASE_MSGLN($2)
+])
+
+dnl AC_BASE_CACHE(variable list, action that sets all the specified variables)
+AC_DEFUN(AC_BASE_CACHE, [dnl
+ac_temp_cached=yes
+for ac_temp_var in $1; do
+  if eval "test \"`echo '$''{'$ac_temp_var'+set}'`\" != set"; then
+    ac_temp_cached=no
+    break
+  fi
+done
+if test "$ac_temp_cached" = yes; then
+  AC_BASE_MSG([(cached) ])
+else
+  $2
+fi
+])
+
+dnl AC_BASE_ATTEMPT(result variable, value variable, value list, action setting result)
+AC_DEFUN(AC_BASE_ATTEMPT, [dnl
+for $2 in $3; do
+  $4
+  test "[$]$1" = yes && break
+done
+])
 
 dnl AC_CAN_COMPILE(variable, compiler, source file)
-AC_DEFUN(AC_CAN_COMPILE, [
+AC_DEFUN(AC_CAN_COMPILE, [dnl
 if test ! -r $3; then
   AC_MSG_ERROR(The source file cannot be read.)
 fi
 rm -rf $TESTOBJ
 $2 -c $3 -o $TESTOBJ > $REDIRDEV 2>&1
 AC_BASE_MKYESNO($1)
-rm -rf $TESTOBJ]
-)
-
+rm -rf $TESTOBJ
+])
 
 dnl AC_CAN_LINK(variable, compiler, source file)
-AC_DEFUN(AC_CAN_LINK, [
+AC_DEFUN(AC_CAN_LINK, [dnl
 if test ! -r $3; then
   AC_MSG_ERROR(The source file cannot be read.)
 fi
 rm -rf $TESTEXE
 $2 $3 -o $TESTEXE > $REDIRDEV 2>&1
 AC_BASE_MKYESNO($1)
-rm -rf $TESTEXE]
-)
-
-
-dnl AC_BASE_CHECK(variable, message, action)
-AC_DEFUN(AC_BASE_CHECK, [
-echo $ac_n $2"... $ac_c" 1>&6
-$3
-echo $$1 1>&6]
-)
-
-
-dnl AC_BASE_CHECK_CACHED(variable, message, action)
-AC_DEFUN(AC_BASE_CHECK_CACHED, [
-AC_BASE_CHECK(
-  $1,
-  $2,
-  AC_CACHE_VAL($1, $3)
-)]
-)
-
+rm -rf $TESTEXE
+])
 
 dnl AC_CAN_RUN(variable, compiler, source file, cross compiler message)
-AC_DEFUN(AC_CAN_RUN, [
+AC_DEFUN(AC_CAN_RUN, [dnl
 AC_BASE_YES(base_cxx_is_cross_compiler, AC_MSG_ERROR($4))
 if test ! -r $3; then
   AC_MSG_ERROR(The source file cannot be read.)
@@ -192,50 +207,51 @@ if test $? = 0; then
 else
   AC_MSG_ERROR(Unable to compile and link test application.)
 fi
-rm -rf $TESTEXE]
-)
+rm -rf $TESTEXE
+])
 
 
 
 AC_BASE_CHECK(
-  base_c_compiler_works,
-  "checking whether C compiler ($CC) works",
-  AC_CAN_LINK(base_c_compiler_works, $CC, config/cross.c)
+  checking whether C compiler ($CC) works,
+  $base_c_compiler_works,
+  AC_CAN_LINK(base_c_compiler_works, $CC, config/cross.c)dnl
 )
 
 AC_BASE_CHECK(
-  base_c_is_cross_compiler,
-  "checking whether C compiler ($CC) is a cross compiler",
-  AC_CAN_RUN(base_c_is_not_cross_compiler, $CC, config/cross.c, "Compiler is cross compiler")
-  AC_BASE_NOT(base_c_is_cross_compiler, base_c_is_not_cross_compiler)
+  checking whether C compiler ($CC) is a cross compiler,
+  $base_c_is_cross_compiler,
+  AC_CAN_RUN(base_c_is_not_cross_compiler, $CC, config/cross.c, Compiler is a cross compiler)
+AC_BASE_NOT(base_c_is_cross_compiler, base_c_is_not_cross_compiler)dnl
 )
 
 AC_BASE_CHECK(
-  base_cxx_compiler_works,
-  "checking whether C++ compiler ($CXX) works",
-  AC_CAN_LINK(base_cxx_compiler_works, $CXX, config/cross++.cpp)
+  checking whether C++ compiler ($CXX) works,
+  $base_cxx_compiler_works,
+  AC_CAN_LINK(base_cxx_compiler_works, $CXX, config/cross++.cpp)dnl
 )
 
 AC_BASE_CHECK(
-  base_cxx_is_cross_compiler,
-  "checking whether C++ compiler ($CXX) is a cross compiler",
-  AC_CAN_RUN(base_cxx_is_not_cross_compiler, $CXX, config/cross.c, "Compiler is cross compiler")
-  AC_BASE_NOT(base_cxx_is_cross_compiler, base_cxx_is_not_cross_compiler)
+  checking whether C++ compiler ($CXX) is a cross compiler,
+  $base_cxx_is_cross_compiler,
+  AC_CAN_RUN(base_cxx_is_not_cross_compiler, $CXX, config/cross.c, Compiler is a cross compiler)
+AC_BASE_NOT(base_cxx_is_cross_compiler, base_cxx_is_not_cross_compiler)dnl
 )
 
-
-
-AC_BASE_CHECK_CACHED(
-  base_cv_stl_available,
-  "checking whether Standard Template Library is working",
-  AC_CAN_RUN(base_stl_without_pthread, $CXX, config/stdc++.cpp, "Compiler is cross compiler")
-  AC_BASE_YESNO(
-    base_stl_without_pthread,
-    base_cv_stl_available=yes,
-    AC_CAN_RUN(base_stl_with_pthread, $CXX -lpthread, config/stdc++.cpp, "Compiler is cross compiler")
-    base_cv_stl_available=$base_stl_with_pthread
-  )
+AC_BASE_CHECK(
+  checking whether Standard Template Library is working,
+  $base_cv_stl_available `test -n \"${base_cv_stl_libs}\" && echo \"(${base_cv_stl_libs})\"`,
+  AC_BASE_CACHE(
+    base_cv_stl_available base_cv_stl_libs,
+    AC_BASE_ATTEMPT(
+      base_cv_stl_available,
+      base_cv_stl_libs,
+      "" -lpthread,
+      AC_CAN_RUN(base_cv_stl_available, $CXX $LIBS $base_cv_stl_libs, config/stdc++.cpp, Compiler is a cross compiler)dnl
+    )dnl
+  )dnl
 )
+
 
 
 LIBS="$LIBS -lpthread"
@@ -250,10 +266,13 @@ CPPFLAGS="$CPPFLAGS -I`pwd`/ellert"
 dnl Checks for typedefs, structures, and compiler characteristics.
 
 if test $base_explicit_big_endian = auto; then
-  AC_BASE_CHECK_CACHED(
-    base_cv_big_endian,
-    "checking whether byte order of architecture is big endian",
-    AC_CAN_RUN(base_cv_big_endian, $CC, config/byteorder.c, "Autodetection of byte order does not work with cross compiler.")
+  AC_BASE_CHECK(
+    checking whether byte order of architecture is big endian,
+    $base_cv_big_endian,
+    AC_BASE_CACHE(
+      base_cv_big_endian,
+      AC_CAN_RUN(base_cv_big_endian, $CC, config/byteorder.c, Autodetection of byte order does not work with cross compiler.)
+    )
   )
   base_explicit_big_endian=$base_cv_big_endian
 fi
@@ -263,20 +282,26 @@ AC_BASE_YES(
 )
 
 
-AC_BASE_CHECK_CACHED(
-  base_cv_inet_ipv6,
-  "checking whether IPv6 is supported by the operating system",
-  AC_CAN_LINK(base_cv_inet_ipv6, $CC, config/ipv6.c)
+AC_BASE_CHECK(
+  checking whether IPv6 is supported by the operating system,
+  $base_cv_inet_ipv6,
+  AC_BASE_CACHE(
+    base_cv_inet_ipv6,
+    AC_CAN_LINK(base_cv_inet_ipv6, $CC, config/ipv6.c)
+  )
 )
 AC_BASE_YES(
   base_cv_inet_ipv6,
   AC_DEFINE(HAVE_INET_IPV6, 1, Specifies that the interface extensions for IP version 6 are present)
 )
 
-AC_BASE_CHECK_CACHED(
-  base_cv_type_socklen_t,
-  "checking whether the type socklen_t is available",
-  AC_CAN_LINK(base_cv_type_socklen_t, $CC, config/socklen_t.c)
+AC_BASE_CHECK(
+  checking whether the type socklen_t is available,
+  $base_cv_type_socklen_t,
+  AC_BASE_CACHE(
+    base_cv_type_socklen_t,
+    AC_CAN_LINK(base_cv_type_socklen_t, $CC, config/socklen_t.c)
+  )
 )
 if test $base_cv_type_socklen_t = yes; then
   AC_DEFINE(HAVE_TYPE_SOCKLEN_T, 1, Specifies that the type socklen_t is available)
@@ -286,28 +311,51 @@ fi
 
 dnl Checks for library functions.
 
-AC_BASE_CHECK_CACHED(
-  base_cv_pthread_yield,
-  "checking whether pthread_yield is provided by the POSIX thread library",
-  AC_CAN_LINK(base_cv_pthread_yield, $CC -pthread, config/pthread_yield.c)
+AC_BASE_CHECK(
+  checking whether pthread_yield is provided by the POSIX thread library,
+  $base_cv_pthread_yield `test -n \"${base_cv_yield_libs}\" && echo \"(${base_cv_yield_libs})\"`,
+  AC_BASE_CACHE(
+    base_cv_pthread_yield base_cv_yield_libs,
+    AC_BASE_ATTEMPT(
+      base_cv_pthread_yield,
+      base_cv_yield_libs,
+      "" "-lpthread -lz",
+      AC_CAN_LINK(base_cv_pthread_yield, $CXX $base_cv_yield_libs, config/pthread_yield.c)dnl
+    )dnl
+  )dnl
 )
+
+dnl AC_BASE_CHECK(
+dnl  checking whether pthread_yield is provided by the POSIX thread library,
+dnl  $base_cv_pthread_yield,
+dnl  AC_BASE_CACHE(
+dnl    base_cv_pthread_yield,
+dnl    AC_CAN_LINK(base_cv_pthread_yield, $CC -pthread, config/pthread_yield.c)
+dnl  )
+dnl )
 if test $base_cv_pthread_yield = yes; then
   AC_DEFINE(HAVE_PTHREAD_YIELD, 1, Specifies that pthread_yield is provided by the POSIX threads library)
 fi
 
-AC_BASE_CHECK_CACHED(
-  base_cv_pthread_semaphore,
-  "checking whether Posix semaphore is supported",
-  AC_CAN_LINK(base_cv_pthread_semaphore, $CC -pthread, config/pthread_semaphore.c)
+AC_BASE_CHECK(
+  checking whether Posix semaphore is supported,
+  $base_cv_pthread_semaphore,
+  AC_BASE_CACHE(
+    base_cv_pthread_semaphore,
+    AC_CAN_LINK(base_cv_pthread_semaphore, $CC -pthread, config/pthread_semaphore.c)
+  )
 )
 if test $base_cv_pthread_semaphore = yes; then
   AC_DEFINE(HAVE_PTHREAD_SEMAPHORE, 1, Specifies that Posix semaphore is supported)
 fi
 
-AC_BASE_CHECK_CACHED(
-  base_cv_pthread_rwlock,
-  "checking whether Posix read-write lock is supported",
-  AC_CAN_LINK(base_cv_pthread_rwlock, $CC -pthread, config/pthread_rwlock.c)
+AC_BASE_CHECK(
+  checking whether Posix read-write lock is supported,
+  $base_cv_pthread_rwlock,
+  AC_BASE_CACHE(
+    base_cv_pthread_rwlock,
+    AC_CAN_LINK(base_cv_pthread_rwlock, $CC -pthread, config/pthread_rwlock.c)
+  )
 )
 if test $base_cv_pthread_rwlock = yes; then
   AC_DEFINE(HAVE_PTHREAD_RWLOCK, 1, Specifies that Posix read-write lock is supported)

@@ -267,13 +267,14 @@ void InetAddress::setAddress(const char* addr, Family family) throw(NetworkExcep
 
 FormatOutputStream& InetAddress::toFormatStream(FormatOutputStream& stream) const {
 #if defined(HAVE_INET_IPV6)
-  #ifdef (INET6_ADDRSTRLEN > Thread::LOCAL_STORAGE_SIZE)
+  #if (INET6_ADDRSTRLEN > THREAD_LOCAL_STORAGE)
     #error The requested amount of local storage is not available.
   #endif
+  char* buffer = Thread::getLocalStorage();
   if (isV4Mapped()) {
-    inet_ntop(AF_INET, &((uint32_t*)(&address))[3], Thread::getLocalStorage, Thread::LOCAL_STORAGE_SIZE); // MT-level is safe
+    inet_ntop(AF_INET, &((uint32_t*)(&address))[3], buffer, THREAD_LOCAL_STORAGE); // MT-level is safe
   } else {
-    inet_ntop(AF_INET6, &address, Thread::getLocalStorage, Thread::LOCAL_STORAGE_SIZE); // MT-level is safe
+    inet_ntop(AF_INET6, &address, buffer, THREAD_LOCAL_STORAGE); // MT-level is safe
   }
   return stream << buffer;
 /*  char buffer[INET6_ADDRSTRLEN]; // longest possible string is "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"

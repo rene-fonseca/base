@@ -19,7 +19,7 @@
 // Pointer to thread object of executing thread
 ThreadKey<Thread> executingThread;
 // Pointer to thread local storage
-ThreadKey<void> threadLocalStorage;
+ThreadKey<char> threadLocalStorage;
 // The main thread object.
 //Thread mainThread;
 
@@ -30,7 +30,7 @@ void* Thread::execute(Thread* thread) throw() {
 #endif
   try {
     executingThread.setKey(thread);
-    threadLocalStorage.setKey(malloc(Thread::LOCAL_STORAGE_SIZE));
+    threadLocalStorage.setKey((char*)malloc(THREAD_LOCAL_STORAGE));
     thread->event.wait(); // wait until signaled
  
     try {
@@ -63,8 +63,8 @@ Thread* Thread::getThread() throw() {
   return (Thread*)executingThread.getKey();
 }
 
-void* Thread::getLocalStorage() throw() {
-  return (void*)threadLocalStorage.getKey();
+char* Thread::getLocalStorage() throw() {
+  return (char*)threadLocalStorage.getKey();
 }
 
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
@@ -153,7 +153,7 @@ void Thread::onChildTermination(Thread* thread) {
 
 Thread::Thread() throw() {
   this->runnable = NULL;
-#ifdef __win32__
+#if defined(__win32__)
   threadHandle = GetCurrentThread();
   threadID = GetCurrentThreadId();
 #else
@@ -163,6 +163,7 @@ Thread::Thread() throw() {
   termination = ALIVE;
   parent = NULL;
   executingThread.setKey(this);
+  threadLocalStorage.setKey((char*)malloc(THREAD_LOCAL_STORAGE));
 }
 
 Thread::Thread(Runnable& runnable) throw(ResourceException) {
@@ -172,7 +173,7 @@ Thread::Thread(Runnable& runnable) throw(ResourceException) {
   termination = ALIVE;
   parent = getThread(); // must never be NULL
 
-#ifdef __win32__
+#if defined(__win32__)
   if (threadHandle = CreateThread(NULL, 0, execute, this, 0, &threadID)) {
     throw ResourceException(__func__);
   }
@@ -227,7 +228,7 @@ bool Thread::isParent() const throw() {
 }
 
 bool Thread::isSelf() const throw() {
-#ifdef __win32__
+#if defined(__win32__)
   return GetCurrentThreadId() == threadID;
 #else
   return pthread_self() == threadID;
@@ -238,7 +239,7 @@ void Thread::join() const throw(ThreadException) {
   if (isSelf()) { // is thread trying to wait for itself to exit
     throw Self();
   }
-#ifdef __win32__
+#if defined(__win32__)
   WaitForSingleObject(threadHandle, INFINITE);
 #else
   if (pthread_join(threadID, NULL)) {
@@ -265,7 +266,7 @@ Thread::~Thread() throw(ThreadException) {
     throw ThreadException(__func__);
   }
 
-#ifdef __win32__
+#if defined(__win32__)
   if (!CloseHandle(threadHandle)) {
     ThreadException(__func__);
   }

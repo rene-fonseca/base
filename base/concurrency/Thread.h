@@ -23,6 +23,9 @@
   #include <pthread.h>
 #endif
 
+/** Specifies the size of the thread local buffer. */
+#define THREAD_LOCAL_STORAGE 4096
+
 class Runnable;
 
 /** Scheduling policy type. */
@@ -77,11 +80,6 @@ typedef enum {
 
   class Thread : public Object {
   public:
-
-    /**
-      Specifies the size of the thread local buffer.
-    */
-    static const unsigned int LOCAL_STORAGE_SIZE = 4096;
 
     /** Group of exceptions thrown directly by the Thread class. */
     class ThreadException : public Exception {
@@ -140,7 +138,7 @@ typedef enum {
     /**
       Returns the thread object associated with the executing thread.
     */
-    static void* getLocalStorage() throw();
+    static char* getLocalStorage() throw();
 
     /**
       Makes the executing thread sleep for at least the specified time.

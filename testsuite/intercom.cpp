@@ -58,121 +58,149 @@ public:
       intercomServlet->play();
     }
   };
+
+  class Reader : public virtual Runnable {
+  private:
+
+    IntercomServlet* intercomServlet;
+  public:
+
+    Reader(IntercomServlet* object) throw() : intercomServlet(object) {}
+
+    void run() throw() {
+      intercomServlet->read();
+    }
+  };
+
+  class Writer : public virtual Runnable {
+  private:
+
+    IntercomServlet* intercomServlet;
+  public:
+
+    Writer(IntercomServlet* object) throw() : intercomServlet(object) {}
+
+    void run() throw() {
+      intercomServlet->write();
+    }
+  };
 private:
 
   Recorder recorder;
   Player player;
+  Reader reader;
+  Writer writer;
   Queue<Allocator<short>* > recordingQueue;
   Queue<Allocator<short>* > playingQueue;
+  Queue<Allocator<short>* > readingQueue;
+  Queue<Allocator<short>* > writingQueue;
   Semaphore recordingSemaphore;
   Semaphore playingSemaphore;
+  Semaphore readingSemaphore;
+  Semaphore writingSemaphore;
   MutualExclusion guard;
   unsigned int channels;
   unsigned int sampleRate;
-  unsigned int recorderCount;
-  unsigned int playerCount;
   bool isServer;
   InetEndPoint endPoint;
-  StreamSocket clientSocket;
+  StreamSocket streamSocket;
 public:
 
   IntercomServlet(unsigned int channels, unsigned int sampleRate, bool isServer, const InetEndPoint& endPoint) throw() :
     recorder(this),
-    player(this) {
+    player(this),
+    reader(this),
+    writer(this) {
     this->channels = channels;
     this->sampleRate = sampleRate;
-    recorderCount = 0;
-    playerCount = 0;
     this->isServer = isServer;
     this->endPoint = endPoint;
   }
   
   void record() throw() {
-    if (isServer) {
-      ++recorderCount;
-      SoundInputStream soundInputStream(sampleRate, channels);
-      soundInputStream.resume();
-      while (!Thread::getThread()->isTerminated()) {
-        recordingSemaphore.wait();
-        if (Thread::getThread()->isTerminated()) {
-          break;
-        }
-        if (!recordingQueue.isEmpty()) {
-          guard.exclusiveLock();
-          Allocator<short>* buffer = recordingQueue.pop();
-          guard.releaseLock();
-          unsigned int bytesRecorded = soundInputStream.read(buffer->getElements(), buffer->getByteSize());
-          guard.exclusiveLock();
-          playingQueue.push(buffer);
-          playingSemaphore.post();
-          guard.releaseLock();
-        }
+    SoundInputStream soundInputStream(sampleRate, channels);
+    soundInputStream.resume();
+    while (!Thread::getThread()->isTerminated()) {
+      recordingSemaphore.wait();
+      if (Thread::getThread()->isTerminated()) {
+        break;
       }
-      soundInputStream.pause();
-      ++recorderCount;
-    } else {
-      ++recorderCount;
-      while (!Thread::getThread()->isTerminated()) {
-        recordingSemaphore.wait();
-        if (Thread::getThread()->isTerminated()) {
-          break;
-        }
-        if (!recordingQueue.isEmpty()) {
-          guard.exclusiveLock();
-          Allocator<short>* buffer = recordingQueue.pop();
-          guard.releaseLock();
-          unsigned int bytesRecorded = clientSocket.read(pointer_cast<char*>(buffer->getElements()), buffer->getByteSize());
-          guard.exclusiveLock();
-          playingQueue.push(buffer);
-          playingSemaphore.post();
-          guard.releaseLock();
-        }
+      if (!recordingQueue.isEmpty()) {
+        guard.exclusiveLock();
+        Allocator<short>* buffer = recordingQueue.pop();
+        guard.releaseLock();
+        unsigned int bytesRead = soundInputStream.read(buffer->getElements(), buffer->getByteSize());
+        guard.exclusiveLock();
+        playingQueue.push(buffer);
+        playingSemaphore.post();
+        guard.releaseLock();
       }
-      ++recorderCount;
     }
+    soundInputStream.pause();
+    fout << MESSAGE("Recording thread terminating") << ENDL;
   }
 
   void play() throw() {
-    if (isServer) {
-      ++playerCount;
-      while (!Thread::getThread()->isTerminated()) {
-        playingSemaphore.wait();
-        if (Thread::getThread()->isTerminated()) {
-          break;
-        }
-        if (!playingQueue.isEmpty()) {
-          guard.exclusiveLock();
-          Allocator<short>* buffer = playingQueue.pop();
-          guard.releaseLock();
-          clientSocket.write(pointer_cast<const char*>(buffer->getElements()), buffer->getByteSize());
-          guard.exclusiveLock();
-          recordingQueue.push(buffer);
-          recordingSemaphore.post();
-          guard.releaseLock();
-        }
+    SoundOutputStream soundOutputStream(sampleRate, channels);
+    soundOutputStream.resume();
+    while (!Thread::getThread()->isTerminated()) {
+      playingSemaphore.wait();
+      if (Thread::getThread()->isTerminated()) {
+        break;
       }
-      ++playerCount;
-    } else {
-      ++playerCount;
-      SoundOutputStream soundOutputStream(sampleRate, channels);
-      while (!Thread::getThread()->isTerminated()) {
-        playingSemaphore.wait();
-        if (Thread::getThread()->isTerminated()) {
-          break;
-        }
-        if (!playingQueue.isEmpty()) {
-          guard.exclusiveLock();
-          Allocator<short>* buffer = playingQueue.pop();
-          guard.releaseLock();
-          soundOutputStream.write(buffer->getElements(), buffer->getByteSize());
-          guard.exclusiveLock();
-          recordingQueue.push(buffer);
-          recordingSemaphore.post();
-          guard.releaseLock();
-        }
+      if (!playingQueue.isEmpty()) {
+        guard.exclusiveLock();
+        Allocator<short>* buffer = playingQueue.pop();
+        guard.releaseLock();
+        unsigned int bytesWritten = soundOutputStream.write(buffer->getElements(), buffer->getByteSize());
+        guard.exclusiveLock();
+        recordingQueue.push(buffer);
+        recordingSemaphore.post();
+        guard.releaseLock();
       }
-      ++playerCount;
     }
+    soundOutputStream.reset();
+    fout << MESSAGE("Playing thread terminating") << ENDL;
+  }
+
+  void write() throw() {
+    while (!Thread::getThread()->isTerminated()) {
+      writingSemaphore.wait();
+      if (Thread::getThread()->isTerminated()) {
+        break;
+      }
+      if (!writingQueue.isEmpty()) {
+        guard.exclusiveLock();
+        Allocator<short>* buffer = writingQueue.pop();
+        guard.releaseLock();
+        streamSocket.write(pointer_cast<const char*>(buffer->getElements()), buffer->getByteSize());
+        guard.exclusiveLock();
+        recordingQueue.push(buffer);
+        recordingSemaphore.post();
+        guard.releaseLock();
+      }
+    }
+    fout << MESSAGE("Writing thread terminating") << ENDL;
+  }
+
+  void read() throw() {
+    while (!Thread::getThread()->isTerminated()) {
+      readingSemaphore.wait();
+      if (Thread::getThread()->isTerminated()) {
+        break;
+      }
+      if (!readingQueue.isEmpty()) {
+        guard.exclusiveLock();
+        Allocator<short>* buffer = readingQueue.pop();
+        guard.releaseLock();
+        unsigned int bytesRecorded = streamSocket.read(pointer_cast<char*>(buffer->getElements()), buffer->getByteSize());
+        guard.exclusiveLock();
+        playingQueue.push(buffer);
+        playingSemaphore.post();
+        guard.releaseLock();
+      }
+    }
+    fout << MESSAGE("Reading thread terminating") << ENDL;
   }
 
   bool hostAllowed(const InetAddress& host) throw() {
@@ -185,28 +213,34 @@ public:
     ServerSocket serverSocket(endPoint.getAddress(), endPoint.getPort(), 1);
 
     fout << MESSAGE("Waiting for client...") << ENDL;
-    clientSocket = serverSocket.accept();
-    fout << MESSAGE("Connection from: ") << InetEndPoint(clientSocket.getAddress(), clientSocket.getPort()) << ENDL;
-    assert(hostAllowed(clientSocket.getAddress()), OutOfDomain());
+    streamSocket = serverSocket.accept();
+    fout << MESSAGE("Connection from: ") << InetEndPoint(streamSocket.getAddress(), streamSocket.getPort()) << ENDL;
+    assert(hostAllowed(streamSocket.getAddress()), OutOfDomain());
   }
 
   void client() throw() {
     fout << MESSAGE("Connecting to server: ") << endPoint << ENDL;
-    clientSocket.connect(endPoint.getAddress(), endPoint.getPort());
-    fout << MESSAGE("Connected to: ") << InetEndPoint(clientSocket.getAddress(), clientSocket.getPort())<< ENDL;
+    streamSocket.connect(endPoint.getAddress(), endPoint.getPort());
+    fout << MESSAGE("Connected to: ") << InetEndPoint(streamSocket.getAddress(), streamSocket.getPort())<< ENDL;
   }
   
   void run() throw() {
     fout << MESSAGE("Allocating buffers...") << ENDL;
     for (unsigned int i = 0; i < 16; ++i) {
-      recordingQueue.push(new Allocator<short>(((sampleRate/16+4095)/4096)*4096));
+      recordingQueue.push(new Allocator<short>(16)); //(sampleRate/16+4095)/4096)*4096)
       recordingSemaphore.post();
+    }
+    for (unsigned int i = 0; i < 16; ++i) {
+      readingQueue.push(new Allocator<short>(16)); //(sampleRate/16+4095)/4096)*4096)
+      readingSemaphore.post();
     }
 
     fout << MESSAGE("Creating threads...") << ENDL;
     Thread recorderThread(&recorder);
     Thread playerThread(&player);
-    
+    Thread readerThread(&reader);
+    Thread writerThread(&writer);
+
     if (isServer) {
       server();
     } else {
@@ -216,7 +250,9 @@ public:
     fout << MESSAGE("Starting threads...") << ENDL;
     recorderThread.start();
     playerThread.start();
-    
+    readerThread.start();
+    writerThread.start();
+
     fout << MESSAGE("Waiting...") << ENDL;
     Timer timer;
 
@@ -225,26 +261,46 @@ public:
         break;
       }
       Thread::millisleep(maximum<int>((i+1)*500 - timer.getLiveMicroseconds()/1000, 0));
+      fout << MESSAGE("Time: ") << setPrecision(3) << timer.getLiveMicroseconds()/1000000. << EOL
+           << MESSAGE("Recording queue: ") << recordingQueue.getSize() << EOL
+           << MESSAGE("Playing queue: ") << playingQueue.getSize() << EOL
+           << MESSAGE("Reading queue: ") << readingQueue.getSize() << EOL
+           << MESSAGE("Writing queue: ") << writingQueue.getSize() << EOL
+           << FLUSH;
     }
 
     if (!Application::getApplication()->isTerminated()) {
       fout << MESSAGE("Voluntary termination") << ENDL;
       Application::getApplication()->terminate();
     }
-    
-    /*
-      fout << MESSAGE("Time: ") << setPrecision(3) << timer.getLiveMicroseconds()/1000000. << EOL
-           << FLUSH;
-    */
 
+    fout << MESSAGE("Waiting for threads to terminate...") << ENDL;
+    recorderThread.terminate();
+    recordingSemaphore.post();
+    recorderThread.join();
+    playerThread.terminate();
+    playingSemaphore.post();
+    playerThread.join();
+
+    readerThread.terminate();
+    readingSemaphore.post();
+    readerThread.join();
+    writerThread.terminate();
+    writingSemaphore.post();
+    writerThread.join();
 
     fout << MESSAGE("Releasing buffers...") << ENDL;
-    // clean-up buffers
     while (!recordingQueue.isEmpty()) {
       delete recordingQueue.pop();
     }
     while (!playingQueue.isEmpty()) {
       delete playingQueue.pop();
+    }
+    while (!readingQueue.isEmpty()) {
+      delete readingQueue.pop();
+    }
+    while (!writingQueue.isEmpty()) {
+      delete writingQueue.pop();
     }
 
     fout << MESSAGE("Completed") << ENDL;
@@ -295,13 +351,13 @@ public:
         stereoSpecified = true;
         channels = 2;
       } else if (*argument == "--host") {
-        assert(!hostSpecified && !portSpecified, OutOfDomain("Already specified"));
+        assert(!hostSpecified, OutOfDomain("Already specified"));
         assert(enu.hasNext(), OutOfDomain("Host value missing"));
         host = *enu.next();
         hostSpecified = true;
         isServer = false;
       } else if (*argument == "--port") {
-        assert(!portSpecified && !hostSpecified, OutOfDomain());
+        assert(!portSpecified, OutOfDomain());
         assert(enu.hasNext(), OutOfDomain("Port value missing"));
         const String* rateString = enu.next();
         unsigned int temp = UnsignedInteger(*rateString).getValue();
@@ -321,10 +377,14 @@ public:
       }
     }
   }
-  
+
+  void onTermination() throw() {
+    // override default application termination
+  }
+
   int main() throw(OutOfDomain) {
     fout << Application::getFormalName() << MESSAGE(" Version 1.0") << EOL
-         << MESSAGE("Copyright (c) 2002 by by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << MESSAGE("Copyright (c) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << EOL << FLUSH;
 
     handleArguments();

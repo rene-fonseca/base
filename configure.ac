@@ -3,9 +3,9 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(Makefile.am)
 
-ac_base_build_date=$(date -u +"%D %T UTC")
-ac_base_build_user=$(whoami)
-ac_base_build_host=$(uname -n)
+ac_base_build_date=`date -u +"%D %T UTC"`
+ac_base_build_user=`whoami`
+ac_base_build_host=`uname -n`
 
 AC_PREREQ(2.5)
 AC_CANONICAL_SYSTEM()

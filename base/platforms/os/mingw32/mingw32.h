@@ -1,0 +1,22 @@
+/***************************************************************************
+    The Base Framework
+    A framework for developing platform independent applications
+
+    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+
+    This framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    For the licensing terms refer to the file 'LICENSE'.
+ ***************************************************************************/
+
+#ifndef _DK_SDU_MIP__BASE_PLATFORMS_OS_MINGW32__MINGW32_H
+#define _DK_SDU_MIP__BASE_PLATFORMS_OS_MINGW32__MINGW32_H
+
+#include <base/features.h>
+
+#undef _DK_SDU_MIP__BASE__COMPILER_ISOC_FLOORL
+#define _DK_SDU_MIP__BASE__COMPILER_ISOC_FLOORL isoc::floor
+
+#endif

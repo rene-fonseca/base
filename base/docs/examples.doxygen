@@ -97,3 +97,15 @@
 /**
   @example testsuite/Version.cpp
 */
+
+/**
+  @example testsuite/dom.cpp
+*/
+
+/**
+  @example testsuite/sax.cpp
+*/
+
+/**
+  @example testsuite/xsltprocessor.cpp
+*/

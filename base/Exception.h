@@ -132,7 +132,7 @@ public:
   /**
     Sets the native error code. 0 indicates no error.
   */
-  inline void setError(unsigned int code) throw() {
+  inline void setError(unsigned int error) throw() {
     this->error = error;
   }
   

@@ -13,7 +13,6 @@ section_HEADERS += ReferenceCountedObject.h
 section_HEADERS += Heap.h
 section_HEADERS += OwnershipPointer.h
 section_HEADERS += Allocator.h
-section_HEADERS += CachedAllocator.h
 section_HEADERS += ReferenceCountedAllocator.h
 section_HEADERS += AllocatorEnumeration.h
 section_HEADERS += CapacityAllocator.h

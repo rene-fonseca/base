@@ -13,6 +13,5 @@ section_HEADERS += StringOutputStream.h
 section_HEADERS += InvalidFormat.h
 section_HEADERS += FormatOutputStream.h
 section_HEADERS += FormatInputStream.h
-section_HEADERS += Locale.h
 
 EXTRA_DIST = String.cpp String.h InvalidFormat.h InvalidFormat.cpp FormatInputStream.cpp FormatInputStream.h FormatOutputStream.cpp FormatOutputStream.h StringInputStream.h StringOutputStream.h StringOutputStream.cpp StringInputStream.cpp

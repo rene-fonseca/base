@@ -33,6 +33,5 @@ section_HEADERS += Pipe.h
 section_HEADERS += File.h
 section_HEADERS += FileException.h
 section_HEADERS += PipeException.h
-section_HEADERS += MappedFile.h
 
 EXTRA_DIST = BufferedInputStream.h BufferedInputStream.cpp BufferedOutputStream.cpp Externalizable.h FilterOutputStream.cpp FilterInputStream.h FileDescriptor.h FileDescriptor.cpp FileOutputStream.h FileOutputStream.cpp FileInputStream.h FileInputStream.cpp BufferedOutputStream.h PrimitiveInputStream.cpp PrimitiveOutputStream.cpp PrimitiveInputStream.h PrimitiveOutputStream.h FilterInputStream.cpp OutputStream.cpp OutputStream.h InputStream.h InputStream.cpp FilterOutputStream.h EOFException.cpp EOFException.h EndOfFile.cpp EndOfFile.h IOException.h IOException.cpp FileNotFound.h FileNotFound.cpp Stream.h Stream.cpp FileDescriptorInputStream.h FileDescriptorOutputStream.h FileDescriptorOutputStream.cpp FileDescriptorInputStream.cpp BindException.h BindException.cpp AccessDenied.h AccessDenied.cpp TimedOut.cpp TimedOut.h Pipe.cpp Pipe.h File.cpp File.h

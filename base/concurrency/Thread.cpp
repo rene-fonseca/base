@@ -180,8 +180,10 @@ Thread::Thread(Thread* _parent) throw()
     terminated(false),
     state(ALIVE) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  ASSERT(sizeof(DWORD) <= sizeof(identifier));
   identifier = ::GetCurrentThreadId();
 #else // pthread
+  ASSERT(sizeof(pthread_t) <= sizeof(identifier));
   identifier = pthread_self();
 #endif
 }
@@ -241,8 +243,10 @@ bool Thread::isParent() const throw() {
 
 bool Thread::isSelf() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  ASSERT(sizeof(DWORD) <= sizeof(identifier));
   return ::GetCurrentThreadId() == identifier;
 #else // pthread
+  ASSERT(sizeof(pthread_t) <= sizeof(identifier));
   return pthread_self() == identifier;
 #endif
 }
@@ -261,10 +265,13 @@ void Thread::start() throw(ThreadException) {
   assert(state == NOTSTARTED, ThreadException(this));
   state = STARTING;
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  ASSERT(sizeof(DWORD) <= sizeof(identifier));
   HANDLE handle;
-  if ((handle = ::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)entry, this, 0, &identifier)) == 0) {
+  DWORD id;
+  if ((handle = ::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)entry, this, 0, &id)) == 0) {
     throw ResourceException("Unable to create thread", this);
   }
+  identifier = id;
   ::CloseHandle(handle); // detach
   // TAG: does this always work or must this be postponed until entry function
 #else // pthread
@@ -273,10 +280,12 @@ void Thread::start() throw(ThreadException) {
   pthread_attr_init(&attributes);
   pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_DETACHED);
   pthread_attr_setinheritsched(&attributes, PTHREAD_INHERIT_SCHED);
-  if (pthread_create(pointer_cast<pthread_t*>(&identifier), &attributes, (void*(*)(void*))&entry, (void*)this)) {
+  pthread_t id;
+  if (pthread_create(&id, &attributes, (void*(*)(void*))&entry, (void*)this)) {
     pthread_attr_destroy(&attributes);
     throw ResourceException("Unable to create thread", this);
   }
+  identifier = id;
   pthread_attr_destroy(&attributes);
 #endif
 }

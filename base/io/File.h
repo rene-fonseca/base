@@ -66,10 +66,15 @@ public:
   };
 
   class FileHandle : public Handle {
-  public:
+    friend class Initialization;
+    friend class File;
+  private:
 
+    /** Invalid handle. */
+    static Handle* invalid;
+    /** Initializes file handle. */
     inline FileHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {}
-    
+    /** Releases the resources used by the file. */
     ~FileHandle() throw(FileException);
   };
 private:

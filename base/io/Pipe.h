@@ -37,11 +37,15 @@ class Pipe : public virtual Object, public virtual InputStream, public virtual O
 public:
 
   class PipeHandle : public Handle {
-  public:
+    friend class Initialization;
+    friend class Pipe;
+  private:
 
-    /** Initializes pipe by handle. */
+    /** Invalid handle. */
+    static Handle* invalid;
+    /** Initializes pipe handle. */
     inline PipeHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {}
-    /** Releases the resources use by the pipe. */
+    /** Releases the resources used by the pipe. */
     ~PipeHandle() throw(PipeException);
   };
 protected:

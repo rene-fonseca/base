@@ -17,19 +17,19 @@
 namespace base {
 
 #define _DK_SDU_MIP__BASE__COMPILER_VERSION __INTEL_COMPILER
-#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE compiler::org::intel
+#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE com::intel::compiler
 
-  namespace compiler {
+  namespace com {
     
-    namespace com {
+    namespace intel {
       
-      namespace intel {
+      namespace compiler {
       };
     };
   };
   
   // import data types
-  using compiler::com::intel;
+  using com::intel::compiler;
   
 }; // end of namespace base
 

@@ -17,19 +17,19 @@
 namespace base {
 
 #define _DK_SDU_MIP__BASE__COMPILER_VERSION __BORLANDC__
-#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE compiler::org::borland
+#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE com::borland::compiler
 
-  namespace compiler {
+  namespace com {
     
-    namespace com {
+    namespace borland {
       
-      namespace borland {
+      namespace compiler {
       };
     };
   };
   
   // import data types
-  using compiler::com::borland;
+  using com::borland::compiler;
   
 }; // end of namespace base
 

@@ -14,7 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_DOXYGEN__DOXYGEN_H
 #define _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_DOXYGEN__DOXYGEN_H
 
-#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE compiler::nl::stack
+#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE nl::stack::doxygen
 
 #define _DK_SDU_MIP__BASE__COMPILER_INLINE inline
 #define _DK_SDU_MIP__BASE__COMPILER_RESTRICT restrict
@@ -37,5 +37,16 @@
 #define _DK_SDU_MIP__BASE__CPP_STATIC_CONST
 #define _DK_SDU_MIP__BASE__CPP_ANONYMOUS
 #define _DK_SDU_MIP__BASE__CPP_SPECIFICATION
+
+namespace nl {
+
+  namespace stack {
+
+    namespace doxygen {
+    };
+  };
+};
+
+using namespace nl::stack::doxygen;
 
 #endif

@@ -36,8 +36,8 @@
 
   #define TRACE(text) {Trace::message(text);}
 
-  #if defined(__GNUC__)
-    #define TRACE_MEMBER() {Trace::member(this, __PRETTY_FUNCTION__);}
+  #if defined(_DK_SDU_MIP__BASE__COMPILER_FUNCTION)
+    #define TRACE_MEMBER() {Trace::member(this, _DK_SDU_MIP__BASE__COMPILER_FUNCTION);}
   #else
     #define TRACE_MEMBER() {Trace::member(this, __func__);} // __func__ is ISO C99
   #endif
@@ -48,5 +48,5 @@
 #endif
 
 #else
-  #error Mulitiple inclusion of base/platforms/features header
+  #error Mulitiple inclusions of base/platforms/features header
 #endif

@@ -147,7 +147,7 @@ public:
     testDemangling(MESSAGE("St5state"), MESSAGE("std::state"));
 
     fout << MESSAGE("Demangling of String: ") << TypeInfo::getTypename<String>() << ENDL;
-    fout << MESSAGE("Demangling of Semaphore::SemaphoreException: ") << TypeInfo::getTypename<Semaphore::SemaphoreException>() << ENDL;
+    fout << MESSAGE("Demangling of Semaphore: ") << TypeInfo::getTypename<Semaphore>() << ENDL;
     fout << MESSAGE("Demangling of Array<int>: ") << TypeInfo::getTypename<Array<int> >() << ENDL;
     fout << MESSAGE("Demangling of Map<String, long long>: ") << TypeInfo::getTypename<Map<String, long long> >() << ENDL;
   }

@@ -14,7 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_IO__STREAM_H
 #define _DK_SDU_MIP__BASE_IO__STREAM_H
 
-#include <base/Object.h>
+#include <base/mem/ReferenceCountedObject.h>
 #include <base/io/IOException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Stream {
+class Stream : public virtual ReferenceCountedObject {
 public:
 
   /**

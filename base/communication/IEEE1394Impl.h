@@ -63,6 +63,16 @@ public:
     have been closed.
   */
   virtual void close() throw(IEEE1394Exception) = 0;
+
+  /**
+    Returns the physical id of the adapter.
+  */
+  virtual unsigned int getLocalId() const throw() = 0;
+
+  /**
+    Returns the number of nodes on the local bus.
+  */
+  virtual unsigned int getNumberOfNodes() const throw() = 0;
   
   /**
     Returns the IEEE 1394 standard of the adapter.
@@ -78,65 +88,31 @@ public:
     Returns the size of the FIFO.
   */
   virtual unsigned int getFIFOSize() const throw(IEEE1394Exception) = 0;
-
-  /**
-    Returns the present nodes on the bus.
-  */
-  virtual uint64 getPresentNodes() const throw(IEEE1394Exception) = 0;
-  
-  /**
-    Returns the nodes which have the link layer activated.
-  */
-  virtual uint64 getLinkOnNodes() const throw(IEEE1394Exception) = 0;
-
-  /**
-    Returns the contender nodes.
-  */
-  virtual uint64 getContenders() const throw(IEEE1394Exception) = 0;
-  
-  /**
-    Returns the maximum speed of a node.
-    
-    @param node The physical id the the node.
-  */
-  virtual unsigned int getSpeedOfNode(unsigned int node) const throw(OutOfDomain, IEEE1394Exception) = 0;
-  
-  /**
-    Returns the maximum speed for communication with node.
-    
-    @param node The physical id the the node.
-  */
-  virtual unsigned int getMaximumSpeedToNode(unsigned int node) const throw(OutOfDomain, IEEE1394Exception) = 0;
-  
-  /**
-    Returns the maximum broadcast speed.
-  */
-  virtual unsigned int getBroadcastSpeed() const throw(IEEE1394Exception) = 0;
   
   /**
     Read data from device.
 
-    @param node The physical id of source node.
+    @param node The node id of source node.
     @param address The base address of the memory region to read from.
     @param buffer The data buffer.
-    @param size The number of bytes to read.
+    @param size The number of bytes to read (must be an integral number of quadlets).
   */
-  virtual unsigned int read(unsigned short node, uint64 address, char* buffer, unsigned int size) const throw(OutOfDomain, IOException) = 0;
+  virtual void read(unsigned short node, uint64 address, char* buffer, unsigned int size) throw(IEEE1394Exception) = 0;
 
   /**
     Write data to device.
 
-    @param node The physical id of destination node.
+    @param node The node id of destination node.
     @param address The base address of the memory region to write to.
     @param buffer The data buffer.
-    @param size The number of bytes to write.
+    @param size The number of bytes to write (must be an integral number of quadlets).
   */
-  virtual unsigned int write(unsigned short node, uint64 address, const char* buffer, unsigned int size) throw(OutOfDomain, IOException) = 0;
+  virtual void write(unsigned short node, uint64 address, const char* buffer, unsigned int size) throw(IEEE1394Exception) = 0;
 
   /**
     Read data from device. This method is only used for debugging and development.
 
-    @param node The physical id of source node.
+    @param node The node id of source node.
     @param address The base address of the memory region to read from (must be a quadlet boundary).
     @param buffer The data buffer.
     @param size The number of quadlets to read (not bytes!).
@@ -144,7 +120,7 @@ public:
     
     @return The number of quadlets read successfully.
   */
-  virtual unsigned int read(unsigned short node, uint64 address, uint32* buffer, unsigned int size, uint32 value) const throw(OutOfDomain, IEEE1394Exception) = 0;
+  virtual unsigned int read(unsigned short node, uint64 address, uint32* buffer, unsigned int size, uint32 value) throw(IEEE1394Exception) = 0;
 
   /**
     Returns an isochronous read channel.

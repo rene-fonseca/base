@@ -15,8 +15,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-Handle Handle::invalid;
-
 Handle::~Handle() throw(IOException) {
   // does nothing by default
 }

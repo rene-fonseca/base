@@ -18,12 +18,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FileDescriptorOutputStream standardOutputStream(FileDescriptor::getStandardOutput());
-FormatOutputStream fout(standardOutputStream);
-
-FileDescriptorOutputStream standardErrorStream(FileDescriptor::getStandardError());
-FormatOutputStream ferr(standardErrorStream);
-
 FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) throw(BindException) :
   BufferedOutputStream(out, size) {
 

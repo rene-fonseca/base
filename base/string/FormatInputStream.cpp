@@ -16,9 +16,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FileDescriptorInputStream standardInputStream(FileDescriptor::getStandardInput());
-FormatInputStream fin(standardInputStream);
-
 FormatInputStream::FormatInputStream(InputStream& in) throw(BindException)
   : FilterInputStream(in),
     buffer(WINDOW_SIZE),

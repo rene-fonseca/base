@@ -25,8 +25,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   #warning Assuming that mbstowcs is reentrant
 #endif
 
-const WideString WideString::DEFAULT_STRING(WIDEMESSAGE(""));
-
 WideString::WideString() throw() : elements(DEFAULT_STRING.elements) {
 }
 

@@ -138,7 +138,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 #if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
   /** 16 bit unsigned integer. */
-  typedef unsigned short ushort16;
+  typedef unsigned short uint16;
 #endif
 
 #if (_DK_SDU_MIP__BASE__INT_SIZE == 4)

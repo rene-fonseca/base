@@ -960,4 +960,4 @@ ac_base_header=base/configuration.h
 echo "updating configuration..."
 mv $ac_base_config $ac_base_header
 
-AC_OUTPUT(Makefile base/Makefile base/docs/Makefile base/docs/en/Makefile base/Makefile base/concurrency/Makefile base/mathematics/Makefile base/io/Makefile base/string/Makefile base/mem/Makefile base/net/Makefile base/collection/Makefile base/filesystem/Makefile base/iterator/Makefile base/dl/Makefile base/xml/Makefile base/security/Makefile)
+AC_OUTPUT(Makefile base/Makefile base/docs/Makefile base/docs/en/Makefile base/Makefile base/concurrency/Makefile base/mathematics/Makefile base/io/Makefile base/string/Makefile base/mem/Makefile base/net/Makefile base/collection/Makefile base/filesystem/Makefile base/iterator/Makefile base/dl/Makefile base/xml/Makefile base/security/Makefile base/sound/Makefile)

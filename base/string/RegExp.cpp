@@ -53,7 +53,7 @@ void RegExp::release() throw() {
   if (compiled) {
   #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
     regfree(static_cast<regex_t*>(compiled));
-    delete[] Cast::Pointer<char*>(compiled);
+    delete[] Cast::pointer<char*>(compiled);
   #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
     pcre_free(compiled);
   #endif

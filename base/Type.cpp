@@ -24,7 +24,7 @@ String demangleTypename(const char* mangled) throw() {
   // cplus_demangle only demangles function names - need alternative demangler
   String temp = prefix; // make function name
   temp.append(mangled);
-  char* demangled = cplus_demangle(temp.getBytes(), 1<<1); // include const and volatile
+  char* demangled = cplus_demangle(temp.getElements(), 1<<1); // include const and volatile
   if (!demangled) { // failed?
     return String(mangled); // return mangled type name
   }

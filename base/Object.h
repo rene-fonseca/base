@@ -31,11 +31,6 @@ public:
     Initializes object.
   */
   inline Object() throw() {}
-
-  /**
-    Destroys the object. Ensure envocation of correct destructor when using polymorphism.
-  */
-  virtual inline ~Object() throw() {}
 };
 
 template<>

@@ -7,6 +7,7 @@
 #define _DK_SDU_MIP__BASE__OBJECT_H
 
 #include <base/features.h>
+#include <base/Functor.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -36,6 +37,9 @@ public:
   */
   virtual inline ~Object() throw() {}
 };
+
+template<>
+inline bool isRelocateable<Object>() throw() {return true;}
 
 
 

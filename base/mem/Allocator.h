@@ -15,7 +15,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /** Initializes the elements of the sequence using the default constructor. */
 template<class TYPE>
 inline void initialize(TYPE* element, unsigned int count) throw() {
-  if (!isPrimitive<TYPE>()) {
+  if (!isRelocateable<TYPE>()) {
     const TYPE* end = element + count;
     --element;
     while (++element != end) {
@@ -27,7 +27,7 @@ inline void initialize(TYPE* element, unsigned int count) throw() {
 /** Initializes the elements of the sequence by copying elements from other sequence. */
 template<class TYPE>
 inline void initializeByCopy(TYPE* dest, const TYPE* src, unsigned int count) throw() {
-  if (isPrimitive<TYPE>()) {
+  if (isRelocateable<TYPE>()) {
     copy<TYPE>(dest, src, count); // blocks do not overlap
   } else {
     const TYPE* end = dest + count;
@@ -42,7 +42,7 @@ inline void initializeByCopy(TYPE* dest, const TYPE* src, unsigned int count) th
 /** Initializes the elements of the sequence by moving elements from other sequence. */
 template<class TYPE>
 inline void initializeByMove(TYPE* dest, const TYPE* src, unsigned int count) throw() {
-  if (!isPrimitive<TYPE>()) {
+  if (!isRelocateable<TYPE>()) {
     const TYPE* end = dest + count;
     while (dest != end) {
       new(dest) TYPE(*src); // copy object
@@ -56,7 +56,7 @@ inline void initializeByMove(TYPE* dest, const TYPE* src, unsigned int count) th
 /** Destroys the elements of the sequence. */
 template<class TYPE>
 inline void destroy(TYPE* element, unsigned int count) throw() {
-  if (!isPrimitive<TYPE>()) { // must we destroy the elements
+  if (!isRelocateable<TYPE>()) { // must we destroy the elements
     const TYPE* end = element + count;
     --element;
     while (++element != end) {
@@ -192,7 +192,7 @@ public:
   */
   void setSize(unsigned int size) throw(MemoryException) {
     if (size != this->size) {
-      if (isPrimitive<TYPE>()) {
+      if (isRelocateable<TYPE>()) {
         // no need to destroy or initialize elements
         elements = Heap::resize(elements, size);
       } else {

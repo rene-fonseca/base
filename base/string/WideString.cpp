@@ -57,20 +57,28 @@ WideString::WideString(const Character* string, unsigned int maximum) throw(OutO
 WideString::WideString(const char* string) throw(MultibyteException, MemoryException) : elements(0) {
   int numberOfCharacters = 0;
   if (string) { // is string proper (not empty)
+#if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
     mbstate_t state;
     memset(&state, 0, sizeof(mbstate_t)); // TAG: initial state - need faster alternative
     const char* current = string;
     size_t result = mbsrtowcs(0, &current, 0, &state);
+#else
+    size_t result = mbstowcs(0, &current, 0);
+#endif
     assert(result != size_t(-1), MultibyteException());
     assert(result <= MAXIMUM_LENGTH, MemoryException()); // maximum length exceeded
     numberOfCharacters = result;
   }
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
   if (numberOfCharacters) {
+#if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
     mbstate_t state;
     memset(&state, 0, sizeof(mbstate_t)); // TAG: initial state - need faster alternative
     const char* current = string;
-    mbsrtowcs(elements->getElements(), &current, numberOfCharacters, &state);
+    size_t result = mbsrtowcs(elements->getElements(), &current, numberOfCharacters, &state);
+#else
+    size_t result = mbstowcs(elements->getElements(), &current, numberOfCharacters);
+#endif
   }
 }
 
@@ -78,20 +86,28 @@ WideString::WideString(const char* string, unsigned int maximum) throw(OutOfDoma
   assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
   int numberOfCharacters = 0;
   if (string) { // is string proper
+#if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
     mbstate_t state;
     memset(&state, 0, sizeof(mbstate_t)); // TAG: initial state - need faster alternative
     const char* current = string;
     size_t result = mbsrtowcs(0, &current, maximum, &state);
+#else
+    size_t result = mbstowcs(0, &current, maximum);
+#endif
     assert(result != size_t(-1), MultibyteException());
     assert(result <= MAXIMUM_LENGTH, MemoryException()); // maximum length exceeded
     numberOfCharacters = minimum(static_cast<unsigned int>(result), maximum);
   }
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
   if (numberOfCharacters) {
+#if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
     mbstate_t state;
     memset(&state, 0, sizeof(mbstate_t)); // TAG: initial state - need faster alternative
     const char* current = string;
-    mbsrtowcs(elements->getElements(), &current, numberOfCharacters, &state);
+    size_t result = mbsrtowcs(elements->getElements(), &current, numberOfCharacters, &state);
+#else
+    size_t result = mbstowcs(elements->getElements(), &current, numberOfCharacters);
+#endif
   }
 }
 

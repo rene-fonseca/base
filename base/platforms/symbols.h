@@ -72,6 +72,7 @@
 #define _DK_SDU_MIP__BASE__COMPILER_INTEL 4
 #define _DK_SDU_MIP__BASE__COMPILER_BORLAND 5
 #define _DK_SDU_MIP__BASE__COMPILER_MSC 6
+#define _DK_SDU_MIP__BASE__COMPILER_DOXYGEN 7
 
 // Specific ABIs
 #define _DK_SDU_MIP__BASE__ABI_V3MV 1 // V3 multi vendor ABI

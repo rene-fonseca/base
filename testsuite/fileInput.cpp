@@ -16,7 +16,7 @@
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/Application.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 #include <base/security/MD5Sum.h>
 #include <base/security/SHA1.h>
 
@@ -131,9 +131,9 @@ void entry(Job job, const String& filePath) {
   }
 }
 
-int main(int argc, const char* argv[], const char *envp[]) {
-  fout << "Testing implementation of the FileInputStream" << ENDL;
-  Application app("fileInput", argc, argv, envp);
+int main(int argc, const char* argv[], const char *env[]) {
+  fout << MESSAGE("Testing implementation of the FileInputStream") << ENDL;
+  Application app("fileInput", argc, argv, env);
 
   Array<String> arguments = Application::getApplication()->getArguments();
   Job job = TEST;
@@ -171,5 +171,5 @@ int main(int argc, const char* argv[], const char *envp[]) {
   } catch(...) {
     return Application::getApplication()->exceptionHandler();
   }
-  return Application::EXIT_CODE_NORMAL;
+  return Application::getApplication()->getExitCode();
 }

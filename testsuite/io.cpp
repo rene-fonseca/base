@@ -94,8 +94,8 @@ void test() {
   }
 }
 
-int main(int argc, const char* argv[], const char* envp[]) {
-  Application app("io", argc, argv, envp);
+int main(int argc, const char* argv[], const char* env[]) {
+  Application app("io", argc, argv, env);
   try {
     test();
   } catch(Exception& e) {
@@ -103,5 +103,5 @@ int main(int argc, const char* argv[], const char* envp[]) {
   } catch(...) {
     return Application::getApplication()->exceptionHandler();
   }
-  return Application::EXIT_CODE_NORMAL;
+  return Application::getApplication()->getExitCode();
 }

@@ -263,11 +263,11 @@ public:
   void run() throw() {
     fout << MESSAGE("Allocating buffers...") << ENDL;
     for (unsigned int i = 0; i < 16; ++i) {
-      recordingQueue.push(new Allocator<short>(16)); //(sampleRate/16+4095)/4096)*4096)
+      recordingQueue.push(new Allocator<short>(16*256)); //(sampleRate/16+4095)/4096)*4096)
       recordingSemaphore.post();
     }
     for (unsigned int i = 0; i < 16; ++i) {
-      readingQueue.push(new Allocator<short>(16)); //(sampleRate/16+4095)/4096)*4096)
+      readingQueue.push(new Allocator<short>(16*256)); //(sampleRate/16+4095)/4096)*4096)
       readingSemaphore.post();
     }
 
@@ -437,7 +437,7 @@ public:
 
   void main() throw(OutOfDomain) {
     fout << Application::getFormalName() << MESSAGE(" version 1.0") << EOL
-         << MESSAGE("Copyright (c) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
 
     handleArguments();
@@ -472,8 +472,8 @@ public:
   
 };
 
-int main(int argc, const char* argv[], const char* envp[]) {
-  IntercomApplication application(argc, argv, envp);
+int main(int argc, const char* argv[], const char* env[]) {
+  IntercomApplication application(argc, argv, env);
   try {
     application.main();
   } catch(Exception& e) {
@@ -481,5 +481,5 @@ int main(int argc, const char* argv[], const char* envp[]) {
   } catch(...) {
     return Application::getApplication()->exceptionHandler();
   }
-  return Application::EXIT_CODE_NORMAL;
+  return Application::getApplication()->getExitCode();
 }

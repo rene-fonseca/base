@@ -20,7 +20,7 @@ using namespace base;
 
 void testLinker(const String& modulePath) {
   LinkerManager manager;
-  fout << "Loading module..." << ENDL;
+  fout << MESSAGE("Loading module...") << ENDL;
   LinkerModule* temp = manager.load(modulePath);
   if (temp) {
     MyLinkerModule* module = dynamic_cast<MyLinkerModule*>(temp);
@@ -31,16 +31,16 @@ void testLinker(const String& modulePath) {
            << "  version: " << module->getVersion() << ENDL;
       module->myFunction();
     } else {
-      ferr << "Module is not a MyLinkerModule" << ENDL;
+      ferr << MESSAGE("Module is not a MyLinkerModule") << ENDL;
     }
   } else {
-    ferr << "Error during module loading" << ENDL;
+    ferr << MESSAGE("Error during module loading") << ENDL;
   }
   manager.unload(temp);
 }
 
-int main(int argc, const char* argv[], const char* envp[]) {
-  Application app("dlapp", argc, argv, envp);
+int main(int argc, const char* argv[], const char* env[]) {
+  Application app("dlapp", argc, argv, env);
 
   Array<String> arguments = Application::getApplication()->getArguments();
 
@@ -58,12 +58,12 @@ int main(int argc, const char* argv[], const char* envp[]) {
   }
 
   try {
-    fout << "Testing DynamicLinker..." << ENDL;
+    fout << MESSAGE("Testing DynamicLinker...") << ENDL;
     testLinker(module);
   } catch(Exception& e) {
     return Application::getApplication()->exceptionHandler(e);
   } catch(...) {
     return Application::getApplication()->exceptionHandler();
   }
-  return Application::EXIT_CODE_NORMAL;
+  return Application::getApplication()->getExitCode();
 }

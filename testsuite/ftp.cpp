@@ -22,7 +22,7 @@
 #include <base/net/InetService.h>
 #include <base/net/InetEndPoint.h>
 #include <base/concurrency/Thread.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 #include <base/Timer.h>
 #include <base/io/File.h>
 #include <base/net/Url.h>
@@ -114,13 +114,13 @@ public:
   static const unsigned int DEFAULT_RETRY_ATTEMPTS = 5;
 
   /** Verbosity levels. */
-  typedef enum {SILENT, SHORT, ALL, DEBUG, DEBUG_EXTENDED} Verbosity;
+  enum Verbosity {SILENT, SHORT, ALL, DEBUG, DEBUG_EXTENDED};
 
-  typedef enum {POSITIVE_PRELIMINARY, POSITIVE, POSITIVE_INTERMEDIATE, NEGATIVE, PERMANENT_NEGATIVE} Reply;
-  typedef enum {SYNTAX, INFORMATION, CONNECTIONS, AUTHENTICATION, UNSPECIFIED, FILESYSTEM} ReplyGroup;
-  typedef enum {ASCII, EBCDIC, BINARY, LOCALSIZE} Representation;
-  typedef enum {STREAM, BLOCK, COMPRESSED} Mode;
-  typedef enum {FILE, RECORD, PAGE} Structure;
+  enum Reply {POSITIVE_PRELIMINARY, POSITIVE, POSITIVE_INTERMEDIATE, NEGATIVE, PERMANENT_NEGATIVE};
+  enum ReplyGroup {SYNTAX, INFORMATION, CONNECTIONS, AUTHENTICATION, UNSPECIFIED, FILESYSTEM};
+  enum Representation {ASCII, EBCDIC, BINARY, LOCALSIZE};
+  enum Mode {STREAM, BLOCK, COMPRESSED};
+  enum Structure {FILE, RECORD, PAGE};
 
   typedef struct {
     Reply reply;
@@ -857,8 +857,8 @@ void ftpclient(const String& resource, const String& file) {
   client.logout();
 }
 
-int main(int argc, const char* argv[], const char* envp[]) {
-  Application app("ftp", argc, argv, envp);
+int main(int argc, const char* argv[], const char* env[]) {
+  Application app("ftp", argc, argv, env);
 
   Array<String> arguments = Application::getApplication()->getArguments();
 
@@ -889,5 +889,5 @@ int main(int argc, const char* argv[], const char* envp[]) {
   } catch(...) {
     return Application::getApplication()->exceptionHandler();
   }
-  return Application::EXIT_CODE_NORMAL;
+  return Application::getApplication()->getExitCode();
 }

@@ -44,7 +44,24 @@ public:
     Acquires an exclusive lock.
   */
   inline void exclusiveLock() const throw() {
+#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__IA64)
+    asm volatile (
+      "mov ar.ccv = r0; \n\t" // free value
+      "mov r29 = 1 ;; \n" // locked value
+      "1: \n\t"
+      "ld4 r2 = %0 ;; \n\t" // load lock value
+      "cmp.eq p0, p7 = r0, r2 \n\t" // check if free
+      "(p7) br.cond.dpnt 1b ;; \n\t" // try until free
+      "cmpxchg4.acq r2 = %0, r29, ar.ccv ;; \n\t" // attempt to acquire the lock
+      "cmp.eq p0, p6 = r0, r2 \n\t" // was lock acquired
+      "(p6) br.cond.dpnt 1b ;; \n\t" // try again
+      : "=m" (value) // output
+      : "0" (value) // input
+      : "r2", "r29" // clobbered
+    );
+#else
     while (!tryExclusiveLock());
+#endif // architecture
   }
 
   /**
@@ -53,15 +70,34 @@ public:
     @return True on success.
   */
   inline bool tryExclusiveLock() const throw() {
-#if defined(i386)
-    register unsigned int previous;
+#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
+    unsigned int previous;
     asm volatile ("xchgl %0, %1" : "=&r" (previous), "=m" (value) : "0" (1));
     return !previous;
-#elif defined(sparc)
-    register unsigned int previous;
+#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64)
+    unsigned int previous;
+    asm volatile ("xchgl %0, %1" : "=&r" (previous), "=m" (value) : "0" (1));
+    return !previous;
+#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__IA64)
+    bool success;
+    asm volatile (
+      "mov ar.ccv = r0 \n\t" // released lock value
+      "mov r29 = 1 ;; \n\t" // acquired lock value
+      "ld4 r3 = %1 \n\t" // preload
+      "cmpxchg4.acq r2 = %1, r29, ar.ccv ;; \n\t"
+      "cmp.eq p6, p7 = r2, r0 ;; \n\t" // if ne, lock acq failed
+      "(p6) mov %0 = r29 \n\t" // acquire succeed
+      "(p7) mov %0 = r0 \n\t" // acquire failed
+      : "=r" (success), "=m" (value) // output
+      : "1" (value) // input
+      : "r2", "r3", "r29" // clobbered
+    );
+#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__ALPHA)
+#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__SPARC)
+    unsigned int previous;
     asm volatile ("swap %1, %0" : "=&r" (previous), "=m" (value) : "0" (1));
     return !previous;
-#elif defined(mips) // MIPS II - R4000 processors
+#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__MIPS) // MIPS II - R4000 processors
     register unsigned int success;
     asm volatile (
       "1:"
@@ -76,7 +112,9 @@ public:
       : "=&r" (success), "=m" (value) // outputs
     );
     return success;
-#endif
+#else
+  #error Architecture is not supported
+#endif // architecture
   }
 
   /**

@@ -18,10 +18,6 @@
 #include <base/Exception.h>
 #include <base/ResourceException.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
-  #include <pthread.h> // TAG: fixme
-#endif // flavor
-
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
@@ -30,19 +26,19 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @ingroup concurrency
   @see ThreadKey
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.1
 */
 
 class ThreadKeyImpl : public Object {
 private:
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  union Key {
+    uint64 integer;
+    void* pointer;
+  };
+  
   /** Internal data. */
-  unsigned long key;
-#else
-  /** Internal data. */
-  pthread_key_t key;
-#endif
+  Key key;
 public:
 
   /**

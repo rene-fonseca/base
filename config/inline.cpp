@@ -12,14 +12,19 @@
  ***************************************************************************/
 
 /*
-  Runs if the Standard Template Library is available.
+  This program compiles if the compiler supports inline keyword.
 */
 
-#include <iostream>
+class MyClass {
+public:
 
-using namespace std;
+  inline void myMethod() {
+  }
+
+};
 
 int main() {
-  cout << "Hello, World" << endl;
+  MyClass object;
+  object.myMethod();
   return 0;
 }

@@ -12,14 +12,25 @@
  ***************************************************************************/
 
 /*
-  Runs if the Standard Template Library is available.
+  This program compiles if the compiler supports anonymous structures.
 */
 
-#include <iostream>
+class MyClass {
+public:
 
-using namespace std;
+  void myMethod() {
+    union {
+      struct {
+        int a;
+        int b;
+      };
+    } c;
+  }
+
+};
 
 int main() {
-  cout << "Hello, World" << endl;
+  MyClass object;
+  object.myMethod();
   return 0;
 }

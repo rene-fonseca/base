@@ -12,14 +12,17 @@
  ***************************************************************************/
 
 /*
-  Runs if the Standard Template Library is available.
+  Links if mbsrtowcs is available.
 */
 
-#include <iostream>
-
-using namespace std;
+#include <wchar.h>
 
 int main() {
-  cout << "Hello, World" << endl;
+  wchar_t dest[256];
+  const char* src = "My string";
+  mbstate_t state;
+
+  size_t result = mbsrtowcs(dest, &src, 256, &state);
+
   return 0;
 }

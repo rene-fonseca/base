@@ -12,14 +12,12 @@
  ***************************************************************************/
 
 /*
-  Runs if the Standard Template Library is available.
+  Returns the representation of a double.
 */
 
-#include <iostream>
-
-using namespace std;
+#include "floating.h"
 
 int main() {
-  cout << "Hello, World" << endl;
-  return 0;
+  int floatWordOrder;
+  return checkFloat<double>(floatWordOrder);
 }

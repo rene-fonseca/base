@@ -12,14 +12,14 @@
  ***************************************************************************/
 
 /*
-  Runs if the Standard Template Library is available.
+  Returns 1 if the word order is big endian otherwise 0 (little endian).
 */
 
-#include <iostream>
-
-using namespace std;
+#include "floating.h"
 
 int main() {
-  cout << "Hello, World" << endl;
-  return 0;
+  // TAG: should check float, double, and long double
+  int floatWordOrder;
+  checkFloat<long double>(floatWordOrder);
+  return floatWordOrder;
 }

@@ -12,14 +12,18 @@
  ***************************************************************************/
 
 /*
-  Runs if the Standard Template Library is available.
+  This source compiles if static const with initializer is supported by 
+  the compiler.
 */
 
-#include <iostream>
+class MyClass {
+public:
 
-using namespace std;
-
-int main() {
-  cout << "Hello, World" << endl;
-  return 0;
-}
+  static const char myConstChar = 'A';
+  static const int myConstInt = 123;
+  static const long myConstLong = 123;
+  static const long long myConstLongLong = 123;
+  static const float myConstFloat = 123.456;
+  static const double myConstDouble = 123.456;
+  static const long double myConstLongDouble = 123.456;
+};

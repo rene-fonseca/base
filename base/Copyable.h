@@ -3,8 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_COPYABLE_H
-#define _DK_SDU_MIP_BASE_COPYABLE_H
+#ifndef _DK_SDU_MIP__BASE__COPYABLE_H
+#define _DK_SDU_MIP__BASE__COPYABLE_H
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Copyable interface.
@@ -35,5 +37,7 @@ public:
   */
 //  Copyable& operator=(const Copyable& copyable);
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

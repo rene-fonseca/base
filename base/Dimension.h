@@ -9,6 +9,8 @@
 #include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Dimension.
 
@@ -106,5 +108,7 @@ public:
   Writes a string representation of a Dimension object to a format stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -8,6 +8,8 @@
 
 #include <base/OutOfBounds.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Defines the types of a writeable iterator.
 */
@@ -63,5 +65,7 @@ public:
 
 //  inline Reference operator*() const throw(OutOfBounds) {return getElement();};
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

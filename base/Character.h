@@ -8,6 +8,8 @@
 
 #include <base/Object.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Character.
 
@@ -78,5 +80,7 @@ public:
     return value;
   }
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

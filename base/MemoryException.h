@@ -8,6 +8,8 @@
 
 #include <base/ResourceException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Thrown on memory allocation/deallocation error.
 
@@ -30,5 +32,7 @@ public:
   */
   MemoryException(const char* message) throw();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

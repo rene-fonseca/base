@@ -5,6 +5,8 @@
 
 #include <base/Exception.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 Exception::Exception() throw() : message(0) {
 }
 
@@ -20,3 +22,5 @@ const char* Exception::getMessage() const throw() {
 
 Exception::~Exception() throw() {
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -8,6 +8,8 @@
 
 #include <base/features.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   The base class of all non-abstract classes. Objects are not copyable by default.
 
@@ -51,5 +53,7 @@ public:
   @param p The object to be released.
 */
 //void operator delete(void* p);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

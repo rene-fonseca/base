@@ -9,6 +9,8 @@
 #include <base/Object.h>
 #include <limits.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Signed and short integer (16 bits or more).
 
@@ -79,5 +81,7 @@ public:
     return value;
   }
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

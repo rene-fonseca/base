@@ -8,6 +8,8 @@
 
 #include <base/BidirectionalIterator.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Random iterator interface.
 
@@ -42,5 +44,7 @@ public:
 template<class TYPE>
 class ReadOnlyRandomIterator : public RandomIterator<TYPE, ReadOnlyIteratorTraits<TYPE> > {
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

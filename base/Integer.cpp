@@ -5,6 +5,8 @@
 
 #include <base/Integer.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 Integer::Integer(String<> str) throw(InvalidFormat) {
   unsigned int length = str.length();
   bool sign = false;
@@ -37,3 +39,5 @@ Integer::Integer(String<> str) throw(InvalidFormat) {
 
   value = sign ? -temp : temp;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

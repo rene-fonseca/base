@@ -9,6 +9,8 @@
 #include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A 2D range object is a span from a minimum to a maximum.
 
@@ -123,5 +125,7 @@ public:
   Writes a string representation of a Range2D object to a format stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -8,6 +8,8 @@
 
 #include <base/Exception.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This exception indicates that a resulting value is greater than the maximum
   positive representable value using a given format/type. An overflow condition
@@ -34,5 +36,7 @@ public:
   */
   Overflow(const char* message) throw();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

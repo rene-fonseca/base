@@ -8,6 +8,8 @@
 
 #include <base/Exception.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This exception indicates that a resulting value is less than the maximum
   negative representable value using a given format/type. An underflow
@@ -34,5 +36,7 @@ public:
   */
   Underflow(const char* message) throw();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

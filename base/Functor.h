@@ -8,6 +8,8 @@
 
 #include <base/Base.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 
 
 // Non-modifying operations
@@ -466,5 +468,7 @@ public:
   inline void operator()(const TYPE& value) throw() {if (value > result) {result = value;}}
   inline TYPE getResult() const throw() {return result;}
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

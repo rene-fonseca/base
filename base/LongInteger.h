@@ -8,6 +8,8 @@
 
 #include <base/Object.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Signed and long integer (64 bits or more).
 
@@ -78,5 +80,7 @@ public:
     return value;
   }
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

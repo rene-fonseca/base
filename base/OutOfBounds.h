@@ -8,6 +8,8 @@
 
 #include <base/Exception.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Out of bounds exception.
 
@@ -30,5 +32,7 @@ public:
   */
   OutOfBounds(const char* message) throw();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -9,6 +9,8 @@
 #include <base/Iterator.h>
 #include <base/OutOfBounds.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Forward iterator interface.
 
@@ -50,5 +52,7 @@ public:
 template<class TYPE>
 class ReadOnlyForwardIterator : public ForwardIterator<TYPE, ReadOnlyIteratorTraits<TYPE> > {
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

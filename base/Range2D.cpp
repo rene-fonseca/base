@@ -5,6 +5,8 @@
 
 #include <base/Range2D.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 Range2D::Range2D() throw() {
   assign(0, 0);
 }
@@ -61,3 +63,5 @@ void Range2D::setMaximum(double maximum) throw() {
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value) {
   return stream << "(" << value.minimum << "," << value.maximum << ")";
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

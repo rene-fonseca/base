@@ -6,6 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE__EXCEPTION_H
 #define _DK_SDU_MIP__BASE__EXCEPTION_H
 
+#include <base/features.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   The base class of all exceptions.
 
@@ -53,5 +57,7 @@ public:
   */
   virtual ~Exception() throw();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

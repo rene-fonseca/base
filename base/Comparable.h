@@ -6,6 +6,8 @@
 #ifndef _DK_SDU_MIP_BASE_COMPARABLE_H
 #define _DK_SDU_MIP_BASE_COMPARABLE_H
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Comparable interface.
 
@@ -24,5 +26,7 @@ public:
   */
   virtual bool operator==(const Comparable& comparable) const {return (this == &comparable);}
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

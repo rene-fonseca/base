@@ -5,6 +5,8 @@
 
 #include <base/Dimension.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 Dimension::Dimension() throw() {
   width = 0;
   height = 0;
@@ -58,3 +60,5 @@ void Dimension::setHeight(unsigned int height) throw() {
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value) {
   return stream << '(' << value.width << ',' << value.height << ')';
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

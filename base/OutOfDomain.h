@@ -8,6 +8,8 @@
 
 #include <base/Exception.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Exception used to specify that a variable has been assigned a value not in the valid domain.
 
@@ -30,5 +32,7 @@ public:
   */
   OutOfDomain(const char* message) throw();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -14,7 +14,8 @@
 #include <base/Application.h>
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
-#include <base/Integer.h>
+#include <base/string/StringOutputStream.h>
+#include <base/UnsignedInteger.h>
 #include <base/net/ClientSocket.h>
 #include <base/net/ServerSocket.h>
 #include <base/net/InetInterface.h>
@@ -745,7 +746,7 @@ public:
     String portHigh = clipPassiveResponse(response, i);
     assert(response[i++] == ',', FTPException("Invalid reply"));  // skip ','
     String portLow = clipPassiveResponse(response, i);
-    unsigned short port = Integer(portHigh).getValue() * 256 + Integer(portLow).getValue(); // TAG: make UnsignedInteger class and use this here
+    unsigned short port = UnsignedInteger(portHigh).getValue() * 256 + UnsignedInteger(portLow).getValue(); // TAG: make UnsignedInteger class and use this here
 
     if (verbosity >= DEBUG) {
       fout << "DEBUG: Establishing data connection to: " << address << ":" << port << ENDL;

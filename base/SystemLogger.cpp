@@ -26,7 +26,12 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 void SystemLogger::write(MessageType type, const String& message) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   static WORD messageType[] = {EVENTLOG_INFORMATION_TYPE, EVENTLOG_WARNING_TYPE, EVENTLOG_ERROR_TYPE};
-  LPCTSTR source = Application::getApplication()->getFormalName().getElements();
+  LPCTSTR source;
+  if (Application::getApplication()) {
+    source = Application::getApplication()->getFormalName().getElements();
+  } else {
+    source = "Unspecified";
+  }
   HANDLE eventSource = ::RegisterEventSource(0, source);
   if (eventSource != 0) {
     LPCTSTR strings[1];
@@ -36,7 +41,13 @@ void SystemLogger::write(MessageType type, const String& message) throw() {
   }
 #else // unix
   static int messageType[] = {LOG_INFO, LOG_WARNING, LOG_ERR};
-  openlog(Application::getApplication()->getFormalName().getElements(), LOG_PID, 0);
+  const char* ident;
+  if (Application::getApplication()) {
+    ident = Application::getApplication()->getFormalName().getElements();
+  } else {
+    ident = "Unspecified";
+  }
+  openlog(ident, LOG_PID, 0);
   syslog(LOG_USER | messageType[type], message.getElements());
   closelog();
 #endif // flavour

@@ -11,12 +11,11 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MATH__VECTOR3D_H
-#define _DK_SDU_MIP__BASE_MATH__VECTOR3D_H
+#ifndef _DK_SDU_MIP__BASE_MATHEMATICS__VECTOR3D_H
+#define _DK_SDU_MIP__BASE_MATHEMATICS__VECTOR3D_H
 
-#include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
-#include <math.h>
+#include <base/mathematics/Vector2D.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -29,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class Vector3D : public Object {
+class Vector3D {
 protected:
 
   /** X coordinate. */
@@ -53,7 +52,7 @@ public:
     @param z The desired Z coordinate.
   */
   Vector3D(const TYPE& x, const TYPE& y, const TYPE& z) throw();
-
+  
   /**
     Initializes vector by copying from the specified vector.
 
@@ -67,7 +66,7 @@ public:
   inline Vector3D& operator=(const Vector3D& eq) throw() {
     x = eq.x; // no need to protect against self-assignment
     y = eq.y;
-    x = eq.z;
+    z = eq.z;
     return *this;
   }
 
@@ -323,14 +322,30 @@ public:
 };
 
 template<class TYPE>
-inline Vector3D<TYPE>::Vector3D(const TYPE& xx, const TYPE& yy, const TYPE& zz) throw() : x(xx), y(yy), z(zz) {
+inline Vector3D<TYPE>::Vector3D(const TYPE& _x, const TYPE& _y, const TYPE& _z) throw() : x(_x), y(_y), z(_z) {
+}
+
+/**
+  Returns the sum of the vectors.
+*/
+template<class TYPE>
+inline Vector3D<TYPE> operator+(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
+  return Vector3D<TYPE>(left).add(right);
+}
+
+/**
+  Returns the difference of the vectors.
+*/
+template<class TYPE>
+inline Vector3D<TYPE> operator-(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
+  return Vector3D<TYPE>(left).subtract(right);
 }
 
 /**
   Returns the product of the vector and the value.
 */
 template<class TYPE>
-Vector3D<TYPE> operator*(const Vector3D<TYPE>& left, const TYPE& right) throw() {
+inline Vector3D<TYPE> operator*(const Vector3D<TYPE>& left, const TYPE& right) throw() {
   return Vector3D<TYPE>(left).multiply(right);
 }
 
@@ -338,7 +353,7 @@ Vector3D<TYPE> operator*(const Vector3D<TYPE>& left, const TYPE& right) throw() 
   Returns the product of the vector and the value.
 */
 template<class TYPE>
-Vector3D<TYPE> operator*(const TYPE& left, const Vector3D<TYPE>& right) throw() {
+inline Vector3D<TYPE> operator*(const TYPE& left, const Vector3D<TYPE>& right) throw() {
   return Vector3D<TYPE>(right).multiply(left);
 }
 
@@ -346,7 +361,7 @@ Vector3D<TYPE> operator*(const TYPE& left, const Vector3D<TYPE>& right) throw() 
   Returns the result of the vector divided by the value.
 */
 template<class TYPE>
-Vector3D<TYPE> operator/(const Vector3D<TYPE>& left, const TYPE& right) throw() {
+inline Vector3D<TYPE> operator/(const Vector3D<TYPE>& left, const TYPE& right) throw() {
   return Vector3D<TYPE>(left).divide(right);
 }
 
@@ -354,7 +369,7 @@ Vector3D<TYPE> operator/(const Vector3D<TYPE>& left, const TYPE& right) throw() 
   Returns the dot product of the two vectors.
 */
 template<class TYPE>
-TYPE dot(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
+inline TYPE dot(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
   return left.dot(right);
 }
 
@@ -362,7 +377,7 @@ TYPE dot(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
   Returns the cross product of the two vectors.
 */
 template<class TYPE>
-Vector3D<TYPE> cross(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
+inline Vector3D<TYPE> cross(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
   return left.cross(right);
 }
 
@@ -371,17 +386,15 @@ Vector3D<TYPE> cross(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) th
 */
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector3D<TYPE>& value) {
-  return stream << "(" << value.getX() << ";" << value.getY() << ";" << value.getZ() << ")";
+  return stream << '(' << value.getX() << ';' << value.getY() << ';' << value.getZ() << ')';
 }
 
-template<>
-inline bool isRelocateable<Vector3D<float> >() throw() {return isRelocateable<Object>();}
+template<class TYPE>
+class Relocateable<Vector3D<TYPE> > {
+public:
 
-template<>
-inline bool isRelocateable<Vector3D<double> >() throw() {return isRelocateable<Object>();}
-
-template<>
-inline bool isRelocateable<Vector3D<long double> >() throw() {return isRelocateable<Object>();}
+  static const bool IS_RELOCATEABLE = Relocateable<TYPE>::IS_RELOCATEABLE;
+};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

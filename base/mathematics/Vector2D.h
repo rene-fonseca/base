@@ -11,10 +11,9 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MATH__VECTOR2D_H
-#define _DK_SDU_MIP__BASE_MATH__VECTOR2D_H
+#ifndef _DK_SDU_MIP__BASE_MATHEMATICS__VECTOR2D_H
+#define _DK_SDU_MIP__BASE_MATHEMATICS__VECTOR2D_H
 
-#include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
 #include <math.h>
 
@@ -29,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class Vector2D : public Object {
+class Vector2D {
 protected:
 
   /** The X coordinate. */
@@ -309,20 +308,30 @@ public:
 };
 
 template<class TYPE>
-inline Vector2D<TYPE>::Vector2D(const TYPE& xx, const TYPE& yy) throw() : x(xx), y(yy) {}
+inline Vector2D<TYPE>::Vector2D(const TYPE& _x, const TYPE& _y) throw() : x(_x), y(_y) {}
 
 template<class TYPE>
-Vector2D<TYPE> operator*(const Vector2D<TYPE>& left, const TYPE& right) throw() {
+inline Vector2D<TYPE> operator+(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
+  return Vector2D<TYPE>(left).add(right);
+}
+
+template<class TYPE>
+inline Vector2D<TYPE> operator-(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
+  return Vector2D<TYPE>(left).subtract(right);
+}
+
+template<class TYPE>
+inline Vector2D<TYPE> operator*(const Vector2D<TYPE>& left, const TYPE& right) throw() {
   return Vector2D<TYPE>(left).multiply(right);
 }
 
 template<class TYPE>
-Vector2D<TYPE> operator*(const TYPE& left, const Vector2D<TYPE>& right) throw() {
+inline Vector2D<TYPE> operator*(const TYPE& left, const Vector2D<TYPE>& right) throw() {
   return Vector2D<TYPE>(right).multiply(left);
 }
 
 template<class TYPE>
-Vector2D<TYPE> operator/(const Vector2D<TYPE>& left, const TYPE& right) throw() {
+inline Vector2D<TYPE> operator/(const Vector2D<TYPE>& left, const TYPE& right) throw() {
   return Vector2D<TYPE>(left).divide(right);
 }
 
@@ -330,7 +339,7 @@ Vector2D<TYPE> operator/(const Vector2D<TYPE>& left, const TYPE& right) throw() 
   Returns the dot product of the two vectors.
 */
 template<class TYPE>
-TYPE dot(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
+inline TYPE dot(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
   return left.dot(right);
 }
 
@@ -347,17 +356,15 @@ inline TYPE determinant(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right)
 */
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector2D<TYPE>& value) {
-  return stream << "(" << value.getX() << ";" << value.getY() << ")";
+  return stream << '(' << value.getX() << ';' << value.getY() << ')';
 }
 
-template<>
-inline bool isRelocateable<Vector2D<float> >() throw() {return isRelocateable<Object>();}
+template<class TYPE>
+class Relocateable<Vector2D<TYPE> > {
+public:
 
-template<>
-inline bool isRelocateable<Vector2D<double> >() throw() {return isRelocateable<Object>();}
-
-template<>
-inline bool isRelocateable<Vector2D<long double> >() throw() {return isRelocateable<Object>();}
+  static const bool IS_RELOCATEABLE = Relocateable<TYPE>::IS_RELOCATEABLE;
+};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

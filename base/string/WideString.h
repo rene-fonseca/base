@@ -143,6 +143,9 @@ public:
   
   /** Returns true if the character is in title case. */
   static bool isTitle(Character character) throw();
+
+  /** Returns true if the character is cased. */
+  // static inline bool isCased(Character character) throw();
   
   /** Returns true if the character is a digit. */
   static bool isDigit(Character character) throw();

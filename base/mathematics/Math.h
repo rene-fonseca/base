@@ -373,7 +373,11 @@ public:
     Returns the natural logarithm of the value.
   */
   static inline long double log(long double value) throw() {
-    return isoc::logl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOGL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOGL(value);
+    #else
+      return isoc::logl(value);
+    #endif
   }
 
   /**

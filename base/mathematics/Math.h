@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE_MATHEMATICS__MATH_H
 
 #include <base/Primitives.h>
+#include <base/mathematics/Constants.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -181,7 +182,11 @@ public:
     Rounds (towards +infinity) the value to the nearest integer.
   */
   static inline float ceil(float value) throw() {
-    return isoc::ceilf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_CEILF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_CEILF(value);
+    #else
+      return isoc::ceilf(value);
+    #endif
   }
 
   /**
@@ -195,14 +200,22 @@ public:
     Rounds (towards +infinity) the value to the nearest integer.
   */
   static inline long double ceil(long double value) throw() {
-    return isoc::ceill(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_CEILL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_CEILL(value);
+    #else
+      return isoc::ceill(value);
+    #endif
   }
 
   /**
     Rounds (towards -infinity) the value to the nearest integer.
   */
   static inline float floor(float value) throw() {
-    return isoc::floorf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_FLOORF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_FLOORF(value);
+    #else
+      return isoc::floorf(value);
+    #endif
   }
 
   /**
@@ -216,14 +229,22 @@ public:
     Rounds (towards -infinity) the value to the nearest integer.
   */
   static inline long double floor(long double value) throw() {
-    return isoc::floorl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_FLOORL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_FLOORL(value);
+    #else
+      return isoc::floorl(value);
+    #endif
   }
 
   /**
     Rounds the value to the nearest integer.
   */
   static inline float round(float value) throw() {
-    return isoc::roundf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ROUNDF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ROUNDF(value);
+    #else
+      return isoc::roundf(value);
+    #endif
   }
 
   /**
@@ -237,14 +258,22 @@ public:
     Rounds the value to the nearest integer.
   */
   static inline long double round(long double value) throw() {
-    return isoc::roundl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ROUNDL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ROUNDL(value);
+    #else
+      return isoc::roundl(value);
+    #endif
   }
 
   /**
     Rounds (towards zero) the value to the nearest integer.
   */
   static inline float trunc(float value) throw() {
-    return isoc::truncf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_TRUNCF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_TRUNCF(value);
+    #else
+      return isoc::truncf(value);
+    #endif
   }
 
   /**
@@ -258,7 +287,11 @@ public:
     Rounds (towards zero) the value to the nearest integer.
   */
   static inline long double trunc(long double value) throw() {
-    return isoc::truncl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_TRUNCL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_TRUNCL(value);
+    #else
+      return isoc::truncl(value);
+    #endif
   }
 
 
@@ -300,7 +333,11 @@ public:
     Returns the cube root of the value.
   */
   static inline float cbrt(float value) throw() {
-    return isoc::cbrtf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_CBRTF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_CBRTF(value);
+    #else
+      return isoc::cbrtf(value);
+    #endif
   }
 
   /**
@@ -314,14 +351,22 @@ public:
     Returns the cube root of the value.
   */
   static inline long double cbrt(long double value) throw() {
-    return isoc::cbrtl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_CBRTL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_CBRTL(value);
+    #else
+      return isoc::cbrtl(value);
+    #endif
   }
 
   /**
     Returns the Euclidian distance - sqrt(x^2 + y^2).
   */
   static inline float hypot(float x, float y) throw() {
-    return isoc::hypotf(x, y);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_HYPOTF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_HYPOTF(x, y);
+    #else
+      return isoc::hypotf(x, y);
+    #endif
   }
 
   /**
@@ -335,14 +380,22 @@ public:
     Returns the Euclidian distance - sqrt(x^2 + y^2).
   */
   static inline long double hypot(long double x, long double y) throw() {
-    return isoc::hypotl(x, y);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_HYPOTL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_HYPOTL(x, y);
+    #else
+      return isoc::hypotl(x, y);
+    #endif
   }
 
   /**
     Returns the exponential of the value.
   */
   static inline float exp(float value) throw() {
-    return isoc::expf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_EXPF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_EXPF(value);
+    #else
+      return isoc::expf(value);
+    #endif
   }
 
   /**
@@ -356,14 +409,22 @@ public:
     Returns the exponential of the value.
   */
   static inline long double exp(long double value) throw() {
-    return isoc::expl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_EXPL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_EXPL(value);
+    #else
+      return isoc::expl(value);
+    #endif
   }
 
   /**
     Returns the natural logarithm of the value.
   */
   static inline float log(float value) throw() {
-    return isoc::logf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOGF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOGF(value);
+    #else
+      return isoc::logf(value);
+    #endif
   }
 
   /**
@@ -388,7 +449,19 @@ public:
     Returns the logarithm with base 2 of the value.
   */
   static inline float log2(float value) throw() {
-    return isoc::log2f(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOG2F)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOG2F(value);
+    #else
+      #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2F)
+        return isoc::log2f(value);
+      #else
+        #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOGF)
+          return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOGF(value) * constant::LOG2E;
+        #else
+          return isoc::logf(value) * constant::LOG2E;
+        #endif
+      #endif
+    #endif
   }
 
   /**
@@ -396,20 +469,53 @@ public:
   */
   static inline double log2(double value) throw() {
     return isoc::log2(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOG2)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOG2(value);
+    #else
+      #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2)
+        return isoc::log2(value);
+      #else
+        return log(value) * constant::LOG2E;
+      #endif
+    #endif
   }
 
   /**
     Returns the logarithm with base 2 of the value.
   */
   static inline long double log2(long double value) throw() {
-    return isoc::log2l(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOG2L)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOG2L(value);
+    #else
+      #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2L)
+        return isoc::log2l(value);
+      #else
+        #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOGL)
+          return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOGL(value) * constant::LOG2E;
+        #else
+          return isoc::logl(value) * constant::LOG2E;
+        #endif
+      #endif
+    #endif
   }
 
   /**
     Returns the logarithm with base 10 of the value.
   */
   static inline float log10(float value) throw() {
-    return isoc::log10f(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOG10F)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOG10F(value);
+    #else
+      #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG10F)
+        return isoc::log10f(value);
+      #else
+        #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOGF)
+          return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOGF(value) * constant::LOG10E;
+        #else
+          return isoc::logf(value) * constant::LOG10E;
+        #endif
+      #endif
+    #endif
   }
 
   /**
@@ -418,19 +524,35 @@ public:
   static inline double log10(double value) throw() {
     return isoc::log10(value);
   }
-
+  
   /**
     Returns the logarithm with base 10 of the value.
   */
   static inline long double log10(long double value) throw() {
-    return isoc::log10l(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOG10L)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOG10L(value);
+    #else
+      #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG10L)
+        return isoc::log10l(value);
+      #else
+        #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOGL)
+          return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOGL(value) * constant::LOG10E;
+        #else
+          return isoc::logl(value) * constant::LOG10E;
+        #endif
+      #endif
+    #endif
   }
 
   /**
     Returns the power a^b.
   */
   static inline float pow(float a, float b) throw() {
-    return isoc::powf(a, b);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_POWF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_POWF(a, b);
+    #else
+      return isoc::powf(a, b);
+    #endif
   }
 
   /**
@@ -444,7 +566,11 @@ public:
     Returns the power a^b.
   */
   static inline long double pow(long double a, long double b) throw() {
-    return isoc::powl(a, b);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_POWL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_POWL(a, b);
+    #else
+      return isoc::powl(a, b);
+    #endif
   }
 
 
@@ -486,7 +612,11 @@ public:
     Returns the inverse sine.
   */
   static inline float asin(float value) throw() {
-    return isoc::asinf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ASINF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ASINF(value);
+    #else
+      return isoc::asinf(value);
+    #endif
   }
 
   /**
@@ -500,7 +630,11 @@ public:
     Returns the inverse sine.
   */
   static inline long double asin(long double value) throw() {
-    return isoc::asinl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ASINL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ASINL(value);
+    #else
+      return isoc::asinl(value);
+    #endif
   }
 
   /**
@@ -540,7 +674,11 @@ public:
     Returns the inverse cosine.
   */
   static inline float acos(float value) throw() {
-    return isoc::acosf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSF(value);
+    #else
+      return isoc::acosf(value);
+    #endif
   }
 
   /**
@@ -554,14 +692,22 @@ public:
     Returns the inverse cosine.
   */
   static inline long double acos(long double value) throw() {
-    return isoc::acosl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSL(value);
+    #else
+      return isoc::acosl(value);
+    #endif
   }
 
   /**
     Returns the tangent.
   */
   static inline float tan(float value) throw() {
-    return isoc::tanf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_TANF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_TANF(value);
+    #else
+      return isoc::tanf(value);
+    #endif
   }
 
   /**
@@ -586,7 +732,11 @@ public:
     Returns the inverse tangent.
   */
   static inline float atan(float value) throw() {
-    return isoc::atanf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATANF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ATANF(value);
+    #else
+      return isoc::atanf(value);
+    #endif
   }
 
   /**
@@ -600,7 +750,11 @@ public:
     Returns the inverse tangent.
   */
   static inline long double atan(long double value) throw() {
-    return isoc::atanl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATANL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ATANL(value);
+    #else
+      return isoc::atanl(value);
+    #endif
   }
 
   /**
@@ -638,7 +792,11 @@ public:
     Returns the hyperbolic sine.
   */
   static inline float sinh(float value) throw() {
-    return isoc::sinhf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_SINHF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_SINHF(value);
+    #else
+      return isoc::sinhf(value);
+    #endif
   }
 
   /**
@@ -652,14 +810,22 @@ public:
     Returns the hyperbolic sine.
   */
   static inline long double sinh(long double value) throw() {
-    return isoc::sinhl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_SINHL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_SINHL(value);
+    #else
+      return isoc::sinhl(value);
+    #endif
   }
 
   /**
     Returns the inverse hyperbolic sine.
   */
   static inline float asinh(float value) throw() {
-    return isoc::asinhf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ASINHF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ASINHF(value);
+    #else
+      return isoc::asinhf(value);
+    #endif
   }
 
   /**
@@ -673,14 +839,22 @@ public:
     Returns the inverse hyperbolic sine.
   */
   static inline long double asinh(long double value) throw() {
-    return isoc::asinhl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ASINHL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ASINHL(value);
+    #else
+      return isoc::asinhl(value);
+    #endif
   }
 
   /**
     Returns the hyperbolic cosine.
   */
   static inline float cosh(float value) throw() {
-    return isoc::coshf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_COSHF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_COSHF(value);
+    #else
+      return isoc::coshf(value);
+    #endif
   }
 
   /**
@@ -694,14 +868,22 @@ public:
     Returns the hyperbolic cosine.
   */
   static inline long double cosh(long double value) throw() {
-    return isoc::coshl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_COSHL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_COSHL(value);
+    #else
+      return isoc::coshl(value);
+    #endif
   }
 
   /**
     Returns the inverse hyperbolic cosine.
   */
   static inline float acosh(float value) throw() {
-    return isoc::acoshf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSHF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSHF(value);
+    #else
+      return isoc::acoshf(value);
+    #endif
   }
 
   /**
@@ -715,14 +897,22 @@ public:
     Returns the inverse hyperbolic cosine.
   */
   static inline long double acosh(long double value) throw() {
-    return isoc::acoshl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSHL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSHL(value);
+    #else
+      return isoc::acoshl(value);
+    #endif
   }
 
   /**
     Returns the hyperbolic tangent.
   */
   static inline float tanh(float value) throw() {
-    return isoc::tanhf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_TANHF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_TANHF(value);
+    #else
+      return isoc::tanhf(value);
+    #endif
   }
 
   /**
@@ -736,14 +926,22 @@ public:
     Returns the hyperbolic tangent.
   */
   static inline long double tanh(long double value) throw() {
-    return isoc::tanhl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_TANHL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_TANHL(value);
+    #else
+      return isoc::tanhl(value);
+    #endif
   }
 
   /**
     Returns the inverse hyperbolic tangent.
   */
   static inline float atanh(float value) throw() {
-    return isoc::atanhf(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATANHF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ATANHF(value);
+    #else
+      return isoc::atanhf(value);
+    #endif
   }
 
   /**
@@ -757,7 +955,11 @@ public:
     Returns the inverse hyperbolic tangent.
   */
   static inline long double atanh(long double value) throw() {
-    return isoc::atanhl(value);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATANHL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ATANHL(value);
+    #else
+      return isoc::atanhl(value);
+    #endif
   }
 
 

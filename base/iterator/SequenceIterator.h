@@ -16,6 +16,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short Iterator of elements of a sequence.
   @author René Møller Fonseca
+  @version  1.0
 */
 template<class TRAITS>
 class SequenceIterator : public Iterator<TRAITS> {

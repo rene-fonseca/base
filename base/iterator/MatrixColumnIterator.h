@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_ITERATOR__MATRIXCOLUMNITERATOR_H
-#define _DK_SDU_MIP__BASE_ITERATOR__MATRIXCOLUMNITERATOR_H
+#ifndef _DK_SDU_MIP__BASE_ITERATOR__MATRIX_COLUMN_ITERATOR_H
+#define _DK_SDU_MIP__BASE_ITERATOR__MATRIX_COLUMN_ITERATOR_H
 
 #include <base/iterator/InterleavedIterator.h>
 #include <base/iterator/SequenceIterator.h>
@@ -14,7 +14,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   @author René Møller Fonseca
+  @version  1.0
 */
+
 template<class TRAITS>
 class MatrixColumnIterator : public SequenceIterator<TRAITS> {
 private:

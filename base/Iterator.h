@@ -6,6 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE__ITERATOR_H
 #define _DK_SDU_MIP__BASE__ITERATOR_H
 
+#include <base/features.h>
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**

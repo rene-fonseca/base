@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_ITERATOR__INTERLEAVEDITERATOR_H
-#define _DK_SDU_MIP__BASE_ITERATOR__INTERLEAVEDITERATOR_H
+#ifndef _DK_SDU_MIP__BASE_ITERATOR__INTERLEAVED_ITERATOR_H
+#define _DK_SDU_MIP__BASE_ITERATOR__INTERLEAVED_ITERATOR_H
 
 #include <base/Iterator.h>
 
@@ -15,6 +15,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short Iterator of interleaved elements within a sequence.
   @author René Møller Fonseca
+  @version 1.0
 */
 template<class TRAITS>
 class InterleavedIterator : public Iterator<TRAITS> {

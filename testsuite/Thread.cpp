@@ -13,8 +13,12 @@
 
 #include <base/string/FormatOutputStream.h>
 #include <base/concurrency/Thread.h>
+#include <base/concurrency/ExclusiveSynchronize.h>
+#include <base/string/String.h>
 
 using namespace base;
+
+SpinLock lock;
 
 class MyThread : public Runnable {
 private:
@@ -26,17 +30,21 @@ public:
   MyThread(char v, unsigned int c) throw() : value(v), count(c) {}
 
   void run() {
-    fout << "Written by MyThread object" << ENDL;
+    fout << MESSAGE("Written by MyThread object") << ENDL;
 
     while (count--) {
-      fout << value << FLUSH;
+      {
+        ExclusiveSynchronize<SpinLock> exclusiveSyncrhonize(lock);
+        fout << value; // << FLUSH;
+      }
+      Thread::yield();
     }
   }
 
 };
 
 void test() {
-  fout << "Testing Thread..." << ENDL;
+  fout << MESSAGE("Testing Thread...") << ENDL;
 
   MyThread myThreadA('A', 4096);
   MyThread myThreadB('B', 4096);
@@ -44,11 +52,11 @@ void test() {
   Thread myContextA(&myThreadA);
   Thread myContextB(&myThreadB);
 
-  fout << "Starting threads" << ENDL;
+  fout << MESSAGE("Starting threads") << ENDL;
   myContextA.start();
   myContextB.start();
 
-  fout << "Waiting for threads to complete" << ENDL;
+  fout << MESSAGE("Waiting for threads to complete") << ENDL;
   myContextA.join();
   myContextB.join();
 }
@@ -57,11 +65,11 @@ int main() {
   try {
     test();
   } catch(Exception& e) {
-    ferr << "Exception: " << e.getMessage() << ENDL;
+    ferr << MESSAGE("Exception: ") << e.getMessage() << ENDL;
   } catch(...) {
-    ferr << "Unknown exception" << ENDL;
+    ferr << MESSAGE("Unknown exception") << ENDL;
   }
 
-  fout << "Completed" << ENDL;
+  fout << MESSAGE("Completed") << ENDL;
   return 0;
 }

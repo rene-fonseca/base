@@ -64,15 +64,15 @@ int test(MyFunctionType, MyFunctionType, MyFunctionType* const) {
 }
 
 
-class TestException : public Application {
+class ExceptionApplication : public Application {
 public:
 
-  TestException(int numberOfArguments, const char* arguments[], const char* environment[]) throw() :
+  ExceptionApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() :
     Application(MESSAGE("Exception"), numberOfArguments, arguments, environment) {
   }
 
   void myInnerFunction() throw(OutOfRange) {
-    throw OutOfRange("This is a message");
+    throw OutOfRange("This is a message", this);
   }
 
   void myOuterFunction() throw() {
@@ -83,13 +83,13 @@ public:
       try {
         myInnerFunction();
       } catch(const Exception& e) {
-        fout << "Handled exception" << ENDL;
+        fout << MESSAGE("Handled exception") << ENDL;
       }
     }
   }
 
   void testDemangling(const StringLiteral& mangled, const String& expected) throw() {
-    String demangled = demangleTypename(mangled);
+    String demangled = TypeInfo::demangleName(mangled);
     if (demangled == expected) {
       fout << MESSAGE("Demangling ") << mangled << MESSAGE(": ") << demangled << MESSAGE(" <OK>") << ENDL;
     } else {
@@ -134,27 +134,27 @@ public:
     testDemangling(MESSAGE("NSt3_In4wardE"), MESSAGE("std::_In::ward"));
     testDemangling(MESSAGE("St5state"), MESSAGE("std::state"));
 
-    fout << "Demangling of String: " << getTypename<String>() << ENDL;
-    fout << "Demangling of Semaphore::SemaphoreException: " << getTypename<Semaphore::SemaphoreException>() << ENDL;
-    fout << "Demangling of Array<int>: " << getTypename<Array<int> >() << ENDL;
-    fout << "Demangling of Map<String, long long>: " << getTypename<Map<String, long long> >() << ENDL;
+    fout << "Demangling of String: " << TypeInfo::getTypename<String>() << ENDL;
+    fout << "Demangling of Semaphore::SemaphoreException: " << TypeInfo::getTypename<Semaphore::SemaphoreException>() << ENDL;
+    fout << "Demangling of Array<int>: " << TypeInfo::getTypename<Array<int> >() << ENDL;
+    fout << "Demangling of Map<String, long long>: " << TypeInfo::getTypename<Map<String, long long> >() << ENDL;
   }
 
   int main() throw() {
-    fout << "Testing exception handling..." << EOL << ENDL;
-    testDemangling();
+    fout << MESSAGE("Testing exception handling...") << EOL << ENDL;
+    testDemangling();    
     myOuterFunction();
   }
 };
 
-int main(int argc, const char* argv[], const char* envp[]) {
-  TestException application(argc, argv, envp);
+int main(int argc, const char* argv[], const char* env[]) {
+  ExceptionApplication application(argc, argv, env);
   try {
-    return application.main();
+    application.main();
   } catch(Exception& e) {
     return Application::getApplication()->exceptionHandler(e);
   } catch(...) {
     return Application::getApplication()->exceptionHandler();
   }
-  return Application::EXIT_CODE_NORMAL;
+  return Application::getApplication()->getExitCode();
 }

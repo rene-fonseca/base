@@ -11,44 +11,62 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/Application.h>
 #include <base/collection/Set.h>
 #include <base/collection/Functor.h>
 #include <base/Functor.h>
 
 using namespace base;
 
-int main() {
-  fout << "Testing Set" << ENDL;
+class SetApplication : public Application {
+public:
 
-  fout << "Initializing set" << ENDL;
-  Set<int> si;
-  fout << "si: " << si << EOL;
+  SetApplication(int argc, const char* argv[], const char* env[]) : Application(MESSAGE("Set"), argc, argv, env) {
+  }
+  
+  void main() throw() {
+    fout << "Testing Set" << ENDL;
 
-  fout << "Adding elements to set (4, 7, 2, 3, 8, 6, 1, and 5)" << ENDL;
-  si.add(4);
-  si.add(7);
-  si.add(2);
-  si.add(3);
-  si.add(8);
-  si.add(6);
-  si.add(1);
-  si.add(5);
-  fout << "si: " << si << EOL;
+    fout << "Initializing set" << ENDL;
+    Set<int> si;
+    fout << "si: " << si << EOL;
 
-  Set<int>::Enumerator enu = si.getEnumerator();
+    fout << "Adding elements to set (4, 7, 2, 3, 8, 6, 1, and 5)" << ENDL;
+    si.add(4);
+    si.add(7);
+    si.add(2);
+    si.add(3);
+    si.add(8);
+    si.add(6);
+    si.add(1);
+    si.add(5);
+    fout << "si: " << si << EOL;
 
-  fout << "Non-modifying enumerating elements of set (calculating sum)" << ENDL;
-  Sum<int> sum;
-  forEach(si, sum);
-  fout << "sum: " << sum.getResult() << ENDL;
+    Set<int>::Enumerator enu = si.getEnumerator();
 
-  fout << "Checking whether 4 is in set: " << si.isKey(4) << ENDL;
-  fout << "Checking whether 0 is in set: " << si.isKey(0) << ENDL;
+    fout << "Non-modifying enumerating elements of set (calculating sum)" << ENDL;
+    Sum<int> sum;
+    forEach(si, sum);
+    fout << "sum: " << sum.getResult() << ENDL;
 
-  fout << "Size: " << si.getSize() << ENDL;
-  fout << "Removing all elements from the set" << ENDL;
-  si.removeAll();
-  fout << "Size: " << si.getSize() << ENDL;
+    fout << "Checking whether 4 is in set: " << si.isKey(4) << ENDL;
+    fout << "Checking whether 0 is in set: " << si.isKey(0) << ENDL;
 
-  return 0;
+    fout << "Size: " << si.getSize() << ENDL;
+    fout << "Removing all elements from the set" << ENDL;
+    si.removeAll();
+    fout << "Size: " << si.getSize() << ENDL;
+  }
+};
+
+int main(int argc, const char* argv[], const char* env[]) {
+  SetApplication application(argc, argv, env);
+  try {
+    application.main();
+  } catch(Exception& e) {
+    return Application::getApplication()->exceptionHandler(e);
+  } catch(...) {
+    return Application::getApplication()->exceptionHandler();
+  }
+  return Application::getApplication()->getExitCode();
 }

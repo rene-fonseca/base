@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/Application.h>
 #include <base/mem/Allocator.h>
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/mem/CapacityAllocator.h>
@@ -34,77 +35,94 @@ public:
   }
 };
 
-int main() {
-  fout << "Testing String implementation..." << EOL << ENDL;
+class StringApplication : public Application {
+public:
 
-  Allocator<char> a(1234);
-  fout << "Size of Allocator<char> (a): " << a.getSize() << ENDL;
-  Allocator<char>::ReadEnumerator enua = a.getReadEnumerator();
-  unsigned int counta = 0;
-  while (enua.hasNext()) {
-    enua.next();
-    ++counta;
+  StringApplication(int argc, const char* argv[], const char* env[]) : Application(MESSAGE("String"), argc, argv, env) {
   }
-  fout << "Counted number of elements in (a): " << counta << ENDL;
-  fout << ENDL;
+  
+  void main() throw() {
+    fout << MESSAGE("Testing String implementation...") << EOL << ENDL;
 
-  ReferenceCountedAllocator<char> ra(4321);
-  fout << "Size of ReferenceCountedAllocator<char> (ra): " << ra.getSize() << ENDL;
-  ReferenceCountedAllocator<char>::ReadEnumerator enura = ra.getReadEnumerator();
-  unsigned int countra = 0;
-  while (enura.hasNext()) {
-    enura.next();
-    ++countra;
+    Allocator<char> a(1234);
+    fout << MESSAGE("Size of Allocator<char> (a): ") << a.getSize() << ENDL;
+    Allocator<char>::ReadEnumerator enua = a.getReadEnumerator();
+    unsigned int counta = 0;
+    while (enua.hasNext()) {
+      enua.next();
+      ++counta;
+    }
+    fout << MESSAGE("Counted number of elements in (a): ") << counta << ENDL;
+    fout << ENDL;
+
+    ReferenceCountedAllocator<char> ra(4321);
+    fout << MESSAGE("Size of ReferenceCountedAllocator<char> (ra): ") << ra.getSize() << ENDL;
+    ReferenceCountedAllocator<char>::ReadEnumerator enura = ra.getReadEnumerator();
+    unsigned int countra = 0;
+    while (enura.hasNext()) {
+      enura.next();
+      ++countra;
+    }
+    fout << MESSAGE("Counted number of elements in (ra): ") << countra << ENDL;
+    fout << ENDL;
+
+    CapacityAllocator<char> b(1234, 256);
+    fout << MESSAGE("CapacityAllocator<char>::getSize(): ") << b.getSize() << ENDL;
+    fout << MESSAGE("CapacityAllocator<char>::getGranularity(): ") << b.getGranularity() << ENDL;
+    fout << MESSAGE("CapacityAllocator<char>::getCapacity(): ") << b.getCapacity() << ENDL;
+    CapacityAllocator<char>::ReadEnumerator enub = b.getReadEnumerator();
+    unsigned int countb = 0;
+    while (enub.hasNext()) {
+      enub.next();
+      ++countb;
+    }
+    fout << MESSAGE("Counted number of elements in (b): ") << countb << ENDL;
+    b.optimizeCapacity();
+    fout << MESSAGE("CapacityAllocator<char>::getCapacity(): ") << b.getCapacity() << ENDL;
+    fout << ENDL;
+
+    ReferenceCountedCapacityAllocator<char> rb(1234, 256);
+    fout << MESSAGE("ReferenceCountedCapacityAllocator<char>::getSize(): ") << rb.getSize() << ENDL;
+    fout << MESSAGE("ReferenceCountedCapacityAllocator<char>::getGranularity(): ") << rb.getGranularity() << ENDL;
+    fout << MESSAGE("ReferenceCountedCapacityAllocator<char>::getCapacity(): ") << rb.getCapacity() << ENDL;
+    ReferenceCountedCapacityAllocator<char>::ReadEnumerator enurb = rb.getReadEnumerator();
+    unsigned int countrb = 0;
+    while (enurb.hasNext()) {
+      enurb.next();
+      ++countrb;
+    }
+    fout << MESSAGE("Counted number of elements in (rb): ") << countrb << ENDL;
+    rb.optimizeCapacity();
+    fout << MESSAGE("ReferenceCountedCapacityAllocator<char>::getCapacity(): ") << rb.getCapacity() << ENDL;
+    fout << ENDL;
+
+    fout << MESSAGE("Initializing empty string str1") << ENDL;
+    String str1;
+    fout << MESSAGE("Length of str1: ") << str1.getLength() << ENDL;
+    fout << MESSAGE("Value of str1: ") << str1 << ENDL;
+
+    fout << MESSAGE("Explicit initialization of string str2") << ENDL;
+    String str2 = "Hello, World!";
+    fout << MESSAGE("Length of str2: ") << str2.getLength() << ENDL;
+    fout << MESSAGE("Value of str2: ") << str2 << ENDL;
+
+    fout << MESSAGE("Inverting case of characters") << ENDL;
+    InvertCase ii;
+    transform(str2, ii);
+    fout << MESSAGE("str2: ") << str2 << ENDL;
+
+    fout << MESSAGE("Concatenation: ") << String("first") + String("SECOND") << ENDL;
   }
-  fout << "Counted number of elements in (ra): " << countra << ENDL;
-  fout << ENDL;
+};
 
-  CapacityAllocator<char> b(1234, 256);
-  fout << "CapacityAllocator<char>::getSize(): " << b.getSize() << ENDL;
-  fout << "CapacityAllocator<char>::getGranularity(): " << b.getGranularity() << ENDL;
-  fout << "CapacityAllocator<char>::getCapacity(): " << b.getCapacity() << ENDL;
-  CapacityAllocator<char>::ReadEnumerator enub = b.getReadEnumerator();
-  unsigned int countb = 0;
-  while (enub.hasNext()) {
-    enub.next();
-    ++countb;
+int main(int argc, const char* argv[], const char* env[]) {
+  StringApplication application(argc, argv, env);
+  try {
+    application.main();
+  } catch(Exception& e) {
+    return Application::getApplication()->exceptionHandler(e);
+  } catch(...) {
+    return Application::getApplication()->exceptionHandler();
   }
-  fout << "Counted number of elements in (b): " << countb << ENDL;
-  b.optimizeCapacity();
-  fout << "CapacityAllocator<char>::getCapacity(): " << b.getCapacity() << ENDL;
-  fout << ENDL;
-
-  ReferenceCountedCapacityAllocator<char> rb(1234, 256);
-  fout << "ReferenceCountedCapacityAllocator<char>::getSize(): " << rb.getSize() << ENDL;
-  fout << "ReferenceCountedCapacityAllocator<char>::getGranularity(): " << rb.getGranularity() << ENDL;
-  fout << "ReferenceCountedCapacityAllocator<char>::getCapacity(): " << rb.getCapacity() << ENDL;
-  ReferenceCountedCapacityAllocator<char>::ReadEnumerator enurb = rb.getReadEnumerator();
-  unsigned int countrb = 0;
-  while (enurb.hasNext()) {
-    enurb.next();
-    ++countrb;
-  }
-  fout << "Counted number of elements in (rb): " << countrb << ENDL;
-  rb.optimizeCapacity();
-  fout << "ReferenceCountedCapacityAllocator<char>::getCapacity(): " << rb.getCapacity() << ENDL;
-  fout << ENDL;
-
-  fout << "Initializing empty string str1" << ENDL;
-  String str1;
-  fout << "Length of str1: " << str1.getLength() << ENDL;
-  fout << "Value of str1: " << str1 << ENDL;
-
-  fout << "Explicit initialization of string str2" << ENDL;
-  String str2 = "Hello, World!";
-  fout << "Length of str2: " << str2.getLength() << ENDL;
-  fout << "Value of str2: " << str2 << ENDL;
-
-  fout << "Inverting case of characters" << ENDL;
-  InvertCase ii;
-  transform(str2, ii);
-  fout << "str2: " << str2 << ENDL;
-
-  fout << "Concatenation: " << String("first") + String("SECOND") << ENDL;
-
-  return 0;
+  return Application::getApplication()->getExitCode();
 }

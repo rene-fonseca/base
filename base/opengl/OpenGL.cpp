@@ -603,7 +603,6 @@ void OpenGL::loadFunctions(Descriptor* descriptor, unsigned int size) throw() {
       this->*(descriptor->function) =
         (OpenGL::Function)opengl::dynamicLinker->getUncertainSymbol(descriptor->name);
       if (this->*(descriptor->function) == 0) {
-    fout << "gl function: " << descriptor->name << " NOT AVAILABLE" << ENDL;
         this->*(descriptor->function) = (OpenGL::Function)&opengl::missing;
       }
     }
@@ -657,7 +656,6 @@ OpenGL::OpenGL(unsigned int latest) throw(OpenGLException) {
   const GLubyte* version = glGetString(OpenGL::VERSION); // loaded above
   
   String temp(Cast::pointer<const char*>(version));
-  fout << temp << ENDL;
   int index = temp.indexOf(' ');
   if (index >= 0) {
     temp.removeFrom(index); // remove implementation specific

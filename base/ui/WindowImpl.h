@@ -18,7 +18,6 @@
 #include <base/ui/Menu.h>
 #include <base/ui/Position.h>
 #include <base/ui/Drawable.h>
-#include <base/backend/Backend.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -79,9 +78,7 @@ private:
   
   /** Resource allocation and release lock. */
   static SpinLock spinLock;
-  /** Specifies the current number of windows. */
-  static unsigned int numberOfWindows;
-
+  
   /** The display mode. */
   DisplayMode displayMode;
   Position lastMousePosition;

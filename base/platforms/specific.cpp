@@ -16,10 +16,10 @@
 // include platform specific source files
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <base/platforms/win32/AsyncReadFileContext.cpp>
-  #include <base/platforms/win32/AsyncReadStreamContext.cpp>
-  #include <base/platforms/win32/AsyncWriteFileContext.cpp>
-  #include <base/platforms/win32/AsyncWriteStreamContext.cpp>
+#  include <base/platforms/win32/AsyncReadFileContext.cpp>
+#  include <base/platforms/win32/AsyncReadStreamContext.cpp>
+#  include <base/platforms/win32/AsyncWriteFileContext.cpp>
+#  include <base/platforms/win32/AsyncWriteStreamContext.cpp>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

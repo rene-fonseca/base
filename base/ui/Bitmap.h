@@ -14,7 +14,6 @@
 #ifndef _DK_SDU_MIP__BASE_UI__BITMAP_H
 #define _DK_SDU_MIP__BASE_UI__BITMAP_H
 
-#include <base/features.h>
 #include <base/Dimension.h>
 #include <base/mem/ReferenceCountedObject.h>
 

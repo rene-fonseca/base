@@ -22,16 +22,17 @@ libconcurrency_la_SOURCES = \
   Lock.cpp \
   LockException.cpp \
   MutualExclusion.cpp \
-  Thread.cpp \
-  ThreadKey.cpp \
-  ThreadPool.cpp \
+  NISpinLock.cpp \
   Process.cpp \
   ReadWriteLock.cpp \
   Semaphore.cpp \
   SharedSynchronize.cpp \
   SpinLock.cpp \
   Synchronize.cpp \
-  Synchronizeable.cpp
+  Synchronizeable.cpp \
+  Thread.cpp \
+  ThreadKey.cpp \
+  ThreadPool.cpp
 
 sectiondir = $(includedir)/base/concurrency
 section_HEADERS = \
@@ -41,9 +42,7 @@ section_HEADERS = \
   Lock.h \
   LockException.h \
   MutualExclusion.h \
-  Thread.h \
-  ThreadKey.h \
-  ThreadPool.h \
+  NISpinLock.h \
   Process.h \
   ReadWriteLock.h \
   Runnable.h \
@@ -51,4 +50,7 @@ section_HEADERS = \
   SharedSynchronize.h \
   SpinLock.h \
   Synchronize.h \
-  Synchronizeable.h
+  Synchronizeable.h \
+  Thread.h \
+  ThreadKey.h \
+  ThreadPool.h

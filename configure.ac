@@ -63,12 +63,14 @@ base_symbol_prefix=_DK_SDU_MIP__BASE__
 base_cv_flavor=UNIX
 
 dnl specifies the generic order of libraries for the Unix flavor (some libraries may not be present)
+dnl TAG: FIXME
 ac_base_system_lib_order="-lsocket -lnsl -lrt -lpthread -ldl -lm -lc"
 
 # components
 base_cv_component_aio=no
 base_cv_component_ieee1394=no
 base_cv_component_lfs=no
+base_cv_component_pthread=no
 base_cv_component_socket=no
 base_cv_component_inet_ipv6=no
 base_cv_component_sound=no
@@ -241,6 +243,7 @@ AC_ARG_ENABLE(
   AC_BASE_CHECK_ARG(ac_base_static, yes no, The static option must be either 'yes' or 'no'.))
 
 
+
 ac_base_target=$ac_cv_target
 case $ac_base_target in
 i[[3456]]86-*-cygwin) ac_base_target=i386-unknown-cygwin;;
@@ -258,9 +261,7 @@ i[[3456]]86-*-mingw32) ac_base_target=i386-unknown-mingw32;;
 #    case $ac_base_target in *-pc-*) ac_base_target="*-unknown-*";; esac
 #    case $ac_base_target in *-*-linux*) ac_base_target="$ac_base_target-linux-gnu";; esac
 #    case $ac_base_target in *-*-solaris*) ac_base_target="$ac_base_target-linux-gnu";; esac
-    if test -f ${top_srcdir:-.}/static/$ac_base_target; then : ; else
-      AC_MSG_WARN(This target platform is not directly supported by the framework. Please refer to the section describing how to manually configure the framework.)
-    fi
+    AC_MSG_WARN(This target platform is not directly supported by the framework. Please refer to the section describing how to manually configure the framework.)
   fi
 ;;
 esac
@@ -661,10 +662,6 @@ AC_BASE_CHECK(
   AC_BASE_TRY_CXX_LINK(base_cxx_compiler_works, cross++.cpp),
   base_cxx_compiler_works)
 
-dnl Additional libraries to test
-base_additional_attempts=
-AC_BASE_EQUAL($base_cv_flavor, UNIX, AC_BASE_APPEND(base_additional_attempts, -lpthread))
-
 AC_BASE_CHECK(
   whether C++ compiler (AC_BASE_TRIM($CXX $CPPFLAGS $CXXFLAGS $LDFLAGS $LIBS $BASE_LIBS)) is a cross compiler,
   AC_BASE_CACHE(
@@ -672,7 +669,7 @@ AC_BASE_CHECK(
     AC_BASE_ATTEMPT(
       base_cxx_not_cross,
       base_cv_cxx_libs,
-      "" [${base_additional_attempts}],
+      "" -lpthread,
       AC_BASE_TRY_CXX_RUN(base_cxx_not_cross, cross++.cpp, ${base_cv_cxx_libs})dnl
     )dnl
     AC_BASE_NOT(base_cv_cxx_cross, base_cxx_not_cross)dnl
@@ -690,7 +687,7 @@ AC_BASE_NO(
       AC_BASE_ATTEMPT(
         base_cv_stl_available,
         base_cv_stl_libs,
-        "" ${base_additional_attempts},
+        "" -lpthread,
         AC_BASE_TRY_CXX_RUN(base_cv_stl_available, stdc++.cpp, ${base_cv_stl_libs})dnl
       )
     ),
@@ -1217,10 +1214,7 @@ if test x$base_explicit_aio = xauto; then
 else
   base_cv_api_aio=$base_explicit_aio
 fi
-AC_BASE_YES(
-  base_cv_api_aio,
-  AC_BASE_DEFINE_PRIVATE(AIO)
-  AC_BASE_ADDLIB(-lrt)) dnl TAG: FIXME
+AC_BASE_YES(base_cv_api_aio, AC_BASE_DEFINE_PRIVATE(AIO))
 base_cv_component_aio=$base_cv_api_aio
 
 fi dnl end of unix
@@ -1238,6 +1232,7 @@ AC_BASE_CHECK(
   ),
   base_cv_api_pthread)
 AC_BASE_YES(base_cv_api_pthread, AC_BASE_DEFINE_PRIVATE(PTHREAD))
+base_cv_component_pthread=$base_cv_api_pthread
 
 AC_BASE_CHECK_CFUNCTION_PRIVATE(pthread_yield)
 

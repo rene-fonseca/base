@@ -9,12 +9,13 @@
 #include "base/Object.h"
 #include "base/OutOfRange.h"
 #include "base/mem/Buffer.h"
-#include "base/mem/ReferenceCountedObjectPointer.h"
 #include "base/mem/ReferenceCountedObject.h"
+#include "base/mem/ReferenceCountedObjectPointer.h"
+#include "FormatOutputStream.h"
 #include <limits.h>
 
 /**
-  This structure binds together a string literal and its size. Use the macro MESSAGE to generate an object of this class for a given string literal. Do not call the constructor manually.
+  This structure binds together a string literal and its size. Use the macro MESSAGE to generate an object of this class for a given string literal (e.g. MESSAGE("Hello World")). Do not call the constructor manually.
 */
 struct StringLiteral {
   /** The number of bytes occupied by the message including a terminator. */
@@ -31,7 +32,7 @@ struct StringLiteral {
 #define MESSAGE(msg) StringLiteral(sizeof(msg), msg)
 
 /**
-  This structure binds together a wide string literal and its size. Use the macro WIDEMESSAGE to generate an object of this class for a given wide string literal. Do not call the constructor manually.
+  This structure binds together a wide string literal and its size. Use the macro WIDEMESSAGE to generate an object of this class for a given wide string literal (e.g. WIDEMESSAGE("Hello World")). Do not call the constructor manually.
 */
 struct WideStringLiteral {
   /** The number of bytes occupied by the message including a terminator. */
@@ -95,10 +96,6 @@ protected:
   inline const char* getReadOnlyBuffer() const throw() {return internal->getBytes();};
   /** Returns the length of a NULL-terminated string (-1 if not terminated). */
   int getLengthOfString(const char* str) const throw();
-  /** Fills this string with characters from buffer. Does NOT validate request. */
-  String& fill(const char* src, unsigned int start, unsigned int count) throw();
-  /** Fills this string with characters from buffer and terminates stirng. Does NOT validate request. */
-  String& fillAndTerminate(const char* src, unsigned int start, unsigned int count) throw();
   /** Sets the length of the string. Also terminates the string properly. */
   void setLength(unsigned int length) throw(MemoryException);
 public:
@@ -174,7 +171,7 @@ public:
   char getChar(unsigned int index) throw(OutOfRange);
 
   /**
-    Sets the character at the specified index of this string. Throws 'OutOfRange' if index exceeds the length of the string.
+    Sets the character at the specified index of this string. If the new character is the string terminator ('\0') then the string is cut off from the specified index. Throws 'OutOfRange' if index exceeds the length of the string.
 
     @param index The index of the character to set.
     @param value The new character value.
@@ -460,16 +457,33 @@ public:
     Destroys the string.
   */
   ~String() throw();
+
+// *******************************************************************************************
+//   FRIEND SECTION
+// *******************************************************************************************
+
+  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
 };
 
 /**
-  String concatenation operator.
+  Returns a new string that is the concatenation of the two specified strings.
 */
 String operator+(const String& left, const String& right) throw(MemoryException);
 
 /**
-  String reduction operator. Removes suffix from string if and only if it ends with the suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas ("pre"-"suf") results in "pre").
+  String reduction. Removes suffix from string if and only if it ends with the suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas ("pre"-"suf") results in "pre").
 */
 String operator-(const String& left, const String& right) throw(MemoryException);
+
+/**
+  Write string as formatted string to stream.
+*/
+FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
+
+
+template<class TYPE>
+String toString(TYPE value) throw(Exception) {
+  return StringOutputStream() << value;
+}
 
 #endif

@@ -8,5 +8,5 @@
 EndOfFile::EndOfFile() {
 }
 
-EndOfFile::EndOfFile(const string& str) : IOException(str) {
+EndOfFile::EndOfFile(const char* str) : IOException(str) {
 }

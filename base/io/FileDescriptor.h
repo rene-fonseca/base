@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_IO_FILE_DESCRIPTOR_H
-#define _DK_SDU_MIP_BASE_IO_FILE_DESCRIPTOR_H
+#ifndef _DK_SDU_MIP__BASE_IO__FILE_DESCRIPTOR_H
+#define _DK_SDU_MIP__BASE_IO__FILE_DESCRIPTOR_H
 
 #include "base/Object.h"
 #include "IOException.h"

@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_OVERFLOW_H
-#define _DK_SDU_MIP_BASE_OVERFLOW_H
+#ifndef _DK_SDU_MIP__BASE__OVERFLOW_H
+#define _DK_SDU_MIP__BASE__OVERFLOW_H
 
 #include "Exception.h"
 
@@ -28,12 +28,7 @@ public:
 
     @param message The message.
   */
-  Overflow(const string& message);
-
-  /**
-    Destroys exception object.
-  */
-  ~Overflow();
+  Overflow(const char* message);
 };
 
 #endif

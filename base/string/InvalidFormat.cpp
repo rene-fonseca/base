@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "OutOfBounds.h"
+#include "InvalidFormat.h"
 
-OutOfBounds::OutOfBounds() {
+InvalidFormat::InvalidFormat() {
 }
 
-OutOfBounds::OutOfBounds(const char* str) : Exception(str) {
+InvalidFormat::InvalidFormat(const char* str) : Exception(str) {
 }

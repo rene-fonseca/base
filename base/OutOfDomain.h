@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_OUT_OF_DOMAIN_H
-#define _DK_SDU_MIP_BASE_OUT_OF_DOMAIN_H
+#ifndef _DK_SDU_MIP__BASE__OUT_OF_DOMAIN_H
+#define _DK_SDU_MIP__BASE__OUT_OF_DOMAIN_H
 
 #include "Exception.h"
 
@@ -28,12 +28,7 @@ public:
 
     @param message The message.
   */
-  OutOfDomain(const string& message);
-
-  /**
-    Destroys exception object.
-  */
-  ~OutOfDomain();
+  OutOfDomain(const char* message);
 };
 
 #endif

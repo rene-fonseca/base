@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_IO_INPUT_STREAM_H
-#define _DK_SDU_MIP_BASE_IO_INPUT_STREAM_H
+#ifndef _DK_SDU_MIP__BASE_IO__INPUT_STREAM_H
+#define _DK_SDU_MIP__BASE_IO__INPUT_STREAM_H
 
 #include "IOException.h"
 

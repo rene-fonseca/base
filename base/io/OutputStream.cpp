@@ -11,8 +11,8 @@ void OutputStream::close() throw(IOException) {
 void OutputStream::flush() throw(IOException) {
 }
 
-void OutputStream::write(char* buffer, unsigned int size) throw(IOException) {
-  char* head = buffer;
+void OutputStream::write(const char* buffer, unsigned int size) throw(IOException) {
+  const char* head = buffer;
   while (size--) {
     write(*head);
     ++head;

@@ -3,11 +3,14 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_ITERATOR_H
-#define _DK_SDU_MIP_BASE_ITERATOR_H
+#ifndef _DK_SDU_MIP__BASE__ITERATOR_H
+#define _DK_SDU_MIP__BASE__ITERATOR_H
 
 #include "OutOfBounds.h"
 
+/**
+  Defines the types of a writeable iterator.
+*/
 template<class TYPE>
 class IteratorTraits {
 public:
@@ -17,6 +20,9 @@ public:
   typedef TYPE& Reference;
 };
 
+/**
+  Defines the types of a read-only iterator.
+*/
 template<class TYPE>
 class ReadOnlyIteratorTraits {
 public:
@@ -32,7 +38,6 @@ public:
   @author René Møller Fonseca
   @version 1.0
 */
-
 template<class TYPE, class IT = IteratorTraits<TYPE> >
 class Iterator {
 public:

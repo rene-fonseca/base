@@ -8,5 +8,5 @@
 FileNotFound::FileNotFound() {
 }
 
-FileNotFound::FileNotFound(const string& str) : IOException(str) {
+FileNotFound::FileNotFound(const char* str) : IOException(str) {
 }

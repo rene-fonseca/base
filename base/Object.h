@@ -3,17 +3,12 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_OBJECT_H
-#define _DK_SDU_MIP_BASE_OBJECT_H
+#ifndef _DK_SDU_MIP__BASE__OBJECT_H
+#define _DK_SDU_MIP__BASE__OBJECT_H
 
+#include "config.h"
 #include "Copyable.h"
 #include "Comparable.h"
-
-#include <string>
-#include <iostream>
-
-using std::string;
-using std::ostream;
 
 /**
   The base class of all non-abstract classes. Objects are not copyable as default.
@@ -26,20 +21,20 @@ class Object {
 private:
 
   /* Disable the default copy constructor. */
-//  Object(const Object& object);
+  Object(const Object& object);
   /* Disable the default assignment operator. */
-//  Object& operator=(const Object& object);
+  Object& operator=(const Object& object);
 public:
 
   /**
     Initializes object.
   */
-  Object();
+  inline Object() throw() {};
 
   /**
     Destroys the object. Ensure envocation of correct destructor when using polymophism.
   */
-  virtual ~Object() = 0;
+  virtual ~Object() throw() = 0;
 };
 
 
@@ -58,16 +53,5 @@ public:
   @param p The object to be released.
 */
 //void operator delete(void* p);
-
-
-
-/*
-  This routine writes a string representation of the object to a stream.
-
-  @param stream The stream the object should be written to.
-  @param object The object to be written to the stream.
-  @return The specified stream.
-*/
-#define TOSTRING(TYPE) ostream& operator<<(ostream& stream, const TYPE& object) {return object.toString(stream);}
 
 #endif

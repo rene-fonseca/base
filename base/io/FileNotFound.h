@@ -28,7 +28,7 @@
 
       @param message The message.
     */
-    FileNotFound(const string& message);
+    FileNotFound(const char* message);
   };
 
 #endif

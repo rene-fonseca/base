@@ -8,8 +8,5 @@
 Overflow::Overflow() {
 }
 
-Overflow::Overflow(const string& str) : Exception(str) {
-}
-
-Overflow::~Overflow() {
+Overflow::Overflow(const char* str) : Exception(str) {
 }

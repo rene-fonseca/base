@@ -3,11 +3,12 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_IO_FILTER_INPUT_STREAM_H
-#define _DK_SDU_MIP_BASE_IO_FILTER_INPUT_STREAM_H
+#ifndef _DK_SDU_MIP__BASE_IO__FILTER_INPUT_STREAM_H
+#define _DK_SDU_MIP__BASE_IO__FILTER_INPUT_STREAM_H
 
 #include "base/Object.h"
 #include "InputStream.h"
+#include "BindException.h"
 
 /**
   A FilterInputStream redirects requests to an ordinary InputStream possibly transforming data and providing additional functionality in the process. A FilterInputStream is itself an InputStream. MT-Safe implementation if used with MT-safe input stream.
@@ -28,7 +29,7 @@ public:
 
     @param in Input stream to be filtered.
   */
-  explicit FilterInputStream(InputStream* in);
+  explicit FilterInputStream(InputStream* in) throw(BindException);
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.

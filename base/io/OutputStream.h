@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_IO_OUTPUT_STREAM_H
-#define _DK_SDU_MIP_BASE_IO_OUTPUT_STREAM_H
+#ifndef _DK_SDU_MIP__BASE_IO__OUTPUT_STREAM_H
+#define _DK_SDU_MIP__BASE_IO__OUTPUT_STREAM_H
 
 #include "IOException.h"
 
@@ -41,7 +41,7 @@ public:
     @param buffer The buffer containing the bytes to be written.
     @param size The number of bytes to be written.
   */
-  virtual void write(char* buffer, unsigned int size) throw(IOException);
+  virtual void write(const char* buffer, unsigned int size) throw(IOException);
 };
 
 #endif

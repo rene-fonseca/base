@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_IO_END_OF_FILE_H
-#define _DK_SDU_MIP_BASE_IO_END_OF_FILE_H
+#ifndef _DK_SDU_MIP__BASE_IO__END_OF_FILE_H
+#define _DK_SDU_MIP__BASE_IO__END_OF_FILE_H
 
 #include "IOException.h"
 
@@ -28,7 +28,7 @@ public:
 
     @param message The message.
   */
-  EndOfFile(const string& message);
+  EndOfFile(const char* message);
 };
 
 #endif

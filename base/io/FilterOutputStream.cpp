@@ -5,7 +5,7 @@
 
 #include "FilterOutputStream.h"
 
-FilterOutputStream::FilterOutputStream(OutputStream* out) {
+FilterOutputStream::FilterOutputStream(OutputStream* out) throw(BindException) {
   this->out = out;
 }
 
@@ -21,7 +21,7 @@ void FilterOutputStream::write(char value) throw(IOException) {
   out->write(value);
 }
 
-void FilterOutputStream::write(char* buffer, unsigned int size) throw(IOException) {
+void FilterOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {
   out->write(buffer, size);
 }
 

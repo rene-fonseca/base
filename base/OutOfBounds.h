@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_OUT_OF_BOUNDS_H
-#define _DK_SDU_MIP_BASE_OUT_OF_BOUNDS_H
+#ifndef _DK_SDU_MIP__BASE__OUT_OF_BOUNDS_H
+#define _DK_SDU_MIP__BASE__OUT_OF_BOUNDS_H
 
 #include "Exception.h"
 
@@ -28,12 +28,7 @@ public:
 
     @param message The message.
   */
-  OutOfBounds(const string& message);
-
-  /**
-    Destroys exception object.
-  */
-  ~OutOfBounds();
+  OutOfBounds(const char* message);
 };
 
 #endif

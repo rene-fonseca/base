@@ -3,32 +3,32 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__OUT_OF_RANGE_H
-#define _DK_SDU_MIP__BASE__OUT_OF_RANGE_H
+#ifndef _DK_SDU_MIP__BASE__INVALID_FORMAT_H
+#define _DK_SDU_MIP__BASE__INVALID_FORMAT_H
 
 #include "Exception.h"
 
 /**
-  Exception used to specify that an index is out of range.
+  Invalid format exception is thrown when a string does not comply with a given format.
 
   @author René Møller Fonseca
   @version 1.0
 */
 
-class OutOfRange : public Exception {
+class InvalidFormat : public Exception {
 public:
 
   /**
     Initializes the exception object with no message.
   */
-  OutOfRange();
+  InvalidFormat();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  OutOfRange(const char* message);
+  InvalidFormat(const char* message);
 };
 
 #endif

@@ -5,6 +5,7 @@
 
 #include "String.h"
 #include <string.h>
+#include <ctype.h>
 
 #define NOTFOUND -1
 #define CAPACITY(desired) ((desired+GRANULARITY-1)/GRANULARITY*GRANULARITY)
@@ -26,22 +27,11 @@ void String::setLength(unsigned int length) throw(MemoryException) {
     len = length;
     unsigned int requiredCapacity = CAPACITY(len + sizeof(TERMINATOR));
     if ((requiredCapacity > getCapacity())) { // do we have to expand capacity
-      internal->setSize(requiredCapacity); // ok lets expand that buffer
+      internal->setSize(requiredCapacity); // ok lets expand the buffer
     }
+    // need something to reduce the buffer - must not conflict with ensuredCapacity
     buffer[len] = TERMINATOR; // terminate string
   }
-}
-
-String& String::fill(const char* src, unsigned int start, unsigned int count) throw() {
-  memcpy(getMutableBuffer() + start, src, count);
-  return *this;
-}
-
-String& String::fillAndTerminate(const char* src, unsigned int start, unsigned int count) throw() {
-  char* dest = &getMutableBuffer()[start];
-  memcpy(dest, src, count);
-  dest[count] = TERMINATOR;
-  return *this;
 }
 
 String::String(const StringLiteral& str) throw(MemoryException) {
@@ -121,11 +111,14 @@ char String::getChar(unsigned int index) throw(OutOfRange) {
 }
 
 void String::setChar(unsigned int index, char value) throw(OutOfRange) {
-// problem if value = '\0'
   if (index >= length()) {
     throw OutOfRange();
   }
-  getMutableBuffer()[index] = value;
+  if (value != TERMINATOR) {
+    getMutableBuffer()[index] = value;
+  } else {
+    setLength(index);
+  }
 }
 
 char String::operator[](unsigned int index) const throw(OutOfRange) {
@@ -222,7 +215,10 @@ String String::substring(unsigned int start, unsigned int end) const throw(Memor
     }
     // 0 <= start <= end < length()
     unsigned int lengthOfSubstring = end - start + 1;
-    return String(lengthOfSubstring).fillAndTerminate(&getReadOnlyBuffer()[start], 0, lengthOfSubstring);
+    String s(lengthOfSubstring);
+    memcpy(s.getMutableBuffer(), getReadOnlyBuffer() + start, lengthOfSubstring); // buffers do not overlap
+    s.getMutableBuffer()[lengthOfSubstring] = TERMINATOR;
+    return s;
   } else {
     return String(); // return empty string
   }
@@ -281,8 +277,7 @@ int String::compareTo(const String& str) const throw() {
 }
 
 int String::compareToIgnoreCase(const String& str) const throw() {
-  return strcasecmp(getReadOnlyBuffer(), str.getReadOnlyBuffer());
-/*
+//  return strcasecmp(getReadOnlyBuffer(), str.getReadOnlyBuffer());
   const char* p = getReadOnlyBuffer();
   const char* q = str.getReadOnlyBuffer();
   while (*p && *q) { // continue until end of any string has been reached
@@ -295,7 +290,6 @@ int String::compareToIgnoreCase(const String& str) const throw() {
   }
   // possible cases: only end of p (less than), only end of q (greater than), end of both (equal)
   return (tolower(*p) - tolower(*q));
-*/
 }
 
 bool String::startsWith(const String& prefix) const throw() {
@@ -473,4 +467,9 @@ String operator-(const String& left, const String& right) throw(MemoryException)
   } else {
     return String(left); // return copy of left
   }
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException) {
+  stream.addCharacterField(value.getReadOnlyBuffer(), value.length());
+  return stream;
 }

@@ -5,7 +5,7 @@
 
 #include "FilterInputStream.h"
 
-FilterInputStream::FilterInputStream(InputStream* in) {
+FilterInputStream::FilterInputStream(InputStream* in) throw(BindException) {
   this->in = in;
 }
 

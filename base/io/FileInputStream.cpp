@@ -15,10 +15,12 @@ FileInputStream::FileInputStream(const char* path) throw(FileNotFound) {
 }
 
 unsigned int FileInputStream::available() {
+  // NOT IMPLEMENTED
+  return 0;
 }
 
 void FileInputStream::close() throw(IOException) {
-  // ???
+  // NOT IMPLEMENTED
 }
 
 int FileInputStream::read() throw(IOException) {

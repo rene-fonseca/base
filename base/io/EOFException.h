@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_IO_EOF_EXCEPTION_H
-#define _DK_SDU_MIP_BASE_IO_EOF_EXCEPTION_H
+#ifndef _DK_SDU_MIP__BASE_IO__EOF_EXCEPTION_H
+#define _DK_SDU_MIP__BASE_IO__EOF_EXCEPTION_H
 
 #include "base/Exception.h"
 
@@ -28,12 +28,7 @@ public:
 
     @param message The message.
   */
-  EOFException(const string& message);
-
-  /**
-    Destroys exception object.
-  */
-  ~EOFException();
+  EOFException(const char* message);
 };
 
 #endif

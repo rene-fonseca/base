@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_IO_PRIMITIVE_INPUT_STREAM_H
-#define _DK_SDU_MIP_BASE_IO_PRIMITIVE_INPUT_STREAM_H
+#ifndef _DK_SDU_MIP__BASE_IO__PRIMITIVE_INPUT_STREAM_H
+#define _DK_SDU_MIP__BASE_IO__PRIMITIVE_INPUT_STREAM_H
 
 #include "FilterInputStream.h"
 
@@ -23,7 +23,7 @@ public:
 
     @param in Input stream to be filtered.
   */
-  explicit PrimitiveInputStream(InputStream* in);
+  explicit PrimitiveInputStream(InputStream* in) throw(BindException);
 
   /**
     Reads a boolean (8 bits) from the stream.

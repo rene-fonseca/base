@@ -28,7 +28,7 @@ void BufferedOutputStream::write(char value) throw(IOException) {
   buffer[count++] = value;
 }
 
-void BufferedOutputStream::write(char* buffer, unsigned int size) throw(IOException) {
+void BufferedOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {
   unsigned int bytesToCopy;
   if (size > this->size - count) { // do we have enough space left in the buffer
     bytesToCopy = size % this->size;

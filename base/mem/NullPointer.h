@@ -28,7 +28,7 @@ public:
 
     @param message The message.
   */
-  NullPointer(const string& message);
+  NullPointer(const char* message);
 };
 
 #endif

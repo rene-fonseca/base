@@ -3,13 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_EXCEPTION_H
-#define _DK_SDU_MIP_BASE_EXCEPTION_H
+#ifndef _DK_SDU_MIP__BASE__EXCEPTION_H
+#define _DK_SDU_MIP__BASE__EXCEPTION_H
 
 #include "Object.h"
-#include <string>
-
-using std::string;
 
 /**
   This class fundamental exception.
@@ -24,7 +21,7 @@ private:
   /**
     Message associated with the exception.
   */
-  string message;
+  const char* message;
 public:
 
   /**
@@ -37,7 +34,7 @@ public:
 
     @param message The message.
   */
-  Exception(const string& message);
+  Exception(const char* message);
 
   /**
     Copy constructor.
@@ -51,12 +48,7 @@ public:
 
     @return The message associated with the exception.
   */
-  const string& getMessage() const;
-
-  /**
-    Writes a string representation of the object to a stream.
-  */
-  ostream& toString(ostream& stream) const;
+  const char* getMessage() const;
 
   /**
     Destroys exception object.

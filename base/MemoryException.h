@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_MEMORY_EXCEPTION_H
-#define _DK_SDU_MIP_BASE_MEMORY_EXCEPTION_H
+#ifndef _DK_SDU_MIP__BASE__MEMORY_EXCEPTION_H
+#define _DK_SDU_MIP__BASE__MEMORY_EXCEPTION_H
 
 #include "ResourceException.h"
 
@@ -28,12 +28,7 @@ public:
 
     @param message The message.
   */
-  MemoryException(const string& message);
-
-  /**
-    Destroys exception object.
-  */
-  ~MemoryException();
+  MemoryException(const char* message);
 };
 
 #endif

@@ -3,10 +3,9 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "OutOfBounds.h"
+#include "FormatInputStream.h"
 
-OutOfBounds::OutOfBounds() {
-}
-
-OutOfBounds::OutOfBounds(const char* str) : Exception(str) {
+FormatInputStream::FormatInputStream(InputStream* in) throw(BindException) :
+  BufferedInputStream(in) {
+  throw BindException();
 }

@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_UNDERFLOW_H
-#define _DK_SDU_MIP_BASE_UNDERFLOW_H
+#ifndef _DK_SDU_MIP__BASE__UNDERFLOW_H
+#define _DK_SDU_MIP__BASE__UNDERFLOW_H
 
 #include "Exception.h"
 
@@ -28,12 +28,7 @@ public:
 
     @param message The message.
   */
-  Underflow(const string& message);
-
-  /**
-    Destroys exception object.
-  */
-  ~Underflow();
+  Underflow(const char* message);
 };
 
 #endif

@@ -8,8 +8,5 @@
 IOException::IOException() {
 }
 
-IOException::IOException(const string& str) : Exception(str) {
-}
-
-IOException::~IOException() {
+IOException::IOException(const char* str) : Exception(str) {
 }

@@ -8,8 +8,5 @@
 OutOfDomain::OutOfDomain() {
 }
 
-OutOfDomain::OutOfDomain(const string& str) : Exception(str) {
-}
-
-OutOfDomain::~OutOfDomain() {
+OutOfDomain::OutOfDomain(const char* str) : Exception(str) {
 }

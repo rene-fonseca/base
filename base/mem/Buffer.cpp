@@ -5,6 +5,7 @@
 
 #include "Buffer.h"
 #include <string.h>
+#include <stdlib.h>
 
 Buffer::Buffer() throw() {
   managed = true;

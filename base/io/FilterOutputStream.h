@@ -3,11 +3,12 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_IO_FILTER_OUTPUT_STREAM_H
-#define _DK_SDU_MIP_BASE_IO_FILTER_OUTPUT_STREAM_H
+#ifndef _DK_SDU_MIP__BASE_IO__FILTER_OUTPUT_STREAM_H
+#define _DK_SDU_MIP__BASE_IO__FILTER_OUTPUT_STREAM_H
 
 #include "base/Object.h"
 #include "OutputStream.h"
+#include "BindException.h"
 
 /**
   A FilterOutputStream redirects requests to an ordinary OutputStream possibly transforming data and providing additional functionality in the process. A FilterOutputStream is itself an OutputStream.
@@ -28,7 +29,7 @@ public:
 
     @param out Output stream to be filtered.
   */
-  explicit FilterOutputStream(OutputStream* out);
+  explicit FilterOutputStream(OutputStream* out) throw(BindException);
 
   /**
     Closes the input stream and releases any system resources associated with the stream.
@@ -53,7 +54,7 @@ public:
     @param buffer The buffer containing the bytes to be written.
     @param size The number of bytes to be written.
   */
-  void write(char* buffer, unsigned int size) throw(IOException);
+  void write(const char* buffer, unsigned int size) throw(IOException);
 
   /**
     Destroys the filtered output stream.

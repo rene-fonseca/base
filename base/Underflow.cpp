@@ -8,8 +8,5 @@
 Underflow::Underflow() {
 }
 
-Underflow::Underflow(const string& str) : Exception(str) {
-}
-
-Underflow::~Underflow() {
+Underflow::Underflow(const char* str) : Exception(str) {
 }

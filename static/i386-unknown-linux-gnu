@@ -18,7 +18,7 @@ double=IEEE_754_DOUBLE_PRECISION
 long_double=IEEE_EXTENDED_DOUBLE_PRECISION_96
 
 # os
-os=LINUX
+os=GNULINUX
 
 # _GNU_SOURCE - specifies that the UNIX 98 functionality and GNU extensions are utilized
 # _LARGEFILE64_SOURCE - enables LFS prototypes

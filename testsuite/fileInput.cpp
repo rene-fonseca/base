@@ -42,7 +42,7 @@ public:
   
   void calculateMD5Checksum(const String& str) {
     MD5Sum checksum;
-    checksum.push(pointer_cast<const byte*>(str.getElements()), str.getLength());
+    checksum.push(Cast::pointer<const byte*>(str.getElements()), str.getLength());
     checksum.pushEnd();
 
     fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
@@ -53,7 +53,7 @@ public:
 
   void calculateSHA1Checksum(const String& str) {
     SHA1 checksum;
-    checksum.push(pointer_cast<const byte*>(str.getElements()), str.getLength());
+    checksum.push(Cast::pointer<const byte*>(str.getElements()), str.getLength());
     checksum.pushEnd();
 
     fout << "Total number of bytes: " << checksum.getTotalSize() << EOL

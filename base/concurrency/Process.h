@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Process manipulation class.
 
-  @short Process
+  @short Process.
   @ingroup concurrency
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
@@ -60,7 +60,8 @@ public:
     inline ProcessException() throw() {
     }
     
-    inline ProcessException(const char* message) throw() : Exception(message) {
+    inline ProcessException(const char* message) throw()
+      : Exception(message) {
     }
     
     inline ProcessException(Type type) throw() : Exception(type) {

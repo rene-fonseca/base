@@ -29,7 +29,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class OrbException : public RMIException {
 public:
-
+  
+  enum Causes {
+    INVALID_PROTOCOL, /**< Invalid protocol. */
+    UNABLE_TO_ESTABLISH_CONNECTION, /**< Unable to establish connection. */
+    INVALID_ENCODING /**< Violation of encoding scheme. */
+  };
+  
   /**
     Initializes the exception object with no message.
   */

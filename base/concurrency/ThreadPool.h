@@ -37,6 +37,7 @@ public:
   Pool of threads used to run 'm' jobs using 'n' threads. The implementation is
   MT-safe.
 
+  @short Thread pool maintainer
   @ingroup concurrency
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

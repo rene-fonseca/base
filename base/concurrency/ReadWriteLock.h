@@ -27,6 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   mutex for those that do not. Please note that the lock/unlock mechanism is
   considered a non-modifying property of a class.
 
+  @short Read-write synchronization object
   @ingroup concurrency
   @see MutualExclusion Lock
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -43,7 +44,10 @@ public:
   /**
     Exception thrown directly by the ReadWriteLock class.
 
-    @ingroup exceptions
+    @short Read-write synchronization object exception
+    @ingroup concurrency exceptions
+    @author Rene Moeller Fonseca
+    @version 1.0
   */
   class ReadWriteLockException : public Exception {
   public:
@@ -60,8 +64,19 @@ public:
     */
     ReadWriteLockException(const char* message) throw() {}
 
+    /**
+      Initializes the exception object without an associated message.
+      
+      @param type The identity of the type.
+    */
     ReadWriteLockException(Type type) throw() : Exception(type) {}
 
+    /**
+      Initializes the exception object.
+    
+      @param message An NULL-terminated string (ASCII).
+      @param type The identity of the type.
+    */
     ReadWriteLockException(const char* message, Type type) throw() : Exception(message, type) {}
   };
 

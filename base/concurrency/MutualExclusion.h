@@ -27,6 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   and monitors. Please note that the lock/unlock mechanism is considered a
   non-modifying property of a class.
 
+  @short Mutual exclusion synchronization object
   @ingroup concurrency
   @see Lock
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -40,8 +41,44 @@ protected:
   void* mutex;
 public:
 
-  /** Exception thrown directly by the MutualExclusion class. */
+  /**
+    Exception thrown directly by the MutualExclusion class.
+    
+    @short Mutual exclusion exception
+    @ingroup concurrency exceptions
+    @see MutualExclusion
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    @version 1.0
+  */
   class MutualExclusionException : public Exception {
+  public:
+    
+    /**
+      Initializes the exception object with no message.
+    */
+    MutualExclusionException() throw() {}
+
+    /**
+      Initializes the exception object.
+      
+      @param message The message.
+    */
+    MutualExclusionException(const char* message) throw() {}
+
+    /**
+      Initializes the exception object without an associated message.
+      
+      @param type The identity of the type.
+    */
+    MutualExclusionException(Type type) throw() : Exception(type) {}
+  
+    /**
+      Initializes the exception object.
+    
+      @param message An NULL-terminated string (ASCII).
+      @param type The identity of the type.
+    */
+    MutualExclusionException(const char* message, Type type) throw() : Exception(message, type) {}
   };
 
   /**

@@ -32,8 +32,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Semaphore. Synchronization object.
-
+  Semaphore synchronization object. Semaphores are useful when resources need to
+  be synchronized between multiple threads.
+  
+  @short Semaphore synchronization object
   @ingroup concurrency
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
@@ -65,8 +67,44 @@ private:
 #endif
 public:
 
-  /** Exception thrown directly by the Semaphore class. */
+  /**
+    Exception thrown directly by the Semaphore class on improper use.
+    
+    @short Semaphore exception
+    @ingroup concurrency exceptions
+    @see Semaphore
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    @version 1.0
+  */
   class SemaphoreException : public Exception {
+  public:
+    
+    /**
+      Initializes the exception object with no message.
+    */
+    SemaphoreException() throw() {}
+
+    /**
+      Initializes the exception object.
+      
+      @param message The message.
+    */
+    SemaphoreException(const char* message) throw() {}
+
+    /**
+      Initializes the exception object without an associated message.
+      
+      @param type The identity of the type.
+    */
+    SemaphoreException(Type type) throw() : Exception(type) {}
+  
+    /**
+      Initializes the exception object.
+    
+      @param message An NULL-terminated string (ASCII).
+      @param type The identity of the type.
+    */
+    SemaphoreException(const char* message, Type type) throw() : Exception(message, type) {}
   };
 
   /**

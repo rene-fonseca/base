@@ -94,28 +94,53 @@ public:
     CANCEL, /**< Thread was cancelled. */
     INTERNAL /**< Thread was exited due to internal exception - please forgive me. */
   };
-
+  
   /** Specifies the size of the thread local storage. */
   static const unsigned int THREAD_LOCAL_STORAGE = 4096;
-
+  
   /**
     Group of exceptions thrown directly by the Thread class.
-
-    @ingroup exceptions concurrency
+    
+    @short Thread exception
+    @ingroup concurrency exceptions
+    @autthor Rene Moeller Fonseca
+    @version 1.0
   */
   class ThreadException : public Exception {
   public:
-
+    
+    /**
+      Initializes the exception object with no message.
+    */
     ThreadException() throw() {}
+    
+    /**
+      Initializes the exception object.
+      
+      @param message The message.
+    */
     ThreadException(const char* message) throw() : Exception(message) {}
+    
+    /**
+      Initializes the exception object without an associated message.
+      
+      @param type The identity of the type.
+    */
     ThreadException(Type type) throw() : Exception(type) {}
+    
+    /**
+      Initializes the exception object.
+    
+      @param message An NULL-terminated string (ASCII).
+      @param type The identity of the type.
+    */
     ThreadException(const char* message, Type type) throw() : Exception(message, type) {}
   };
 
   /**
     Thrown if thread tries to manage itself when disallowed.
 
-    @ingroup exceptions concurrency
+    @ingroup concurrency exceptions
   */
   class Self : public ThreadException {
   public:

@@ -48,7 +48,10 @@ public:
   /**
     Exception thrown directly by the ThreadKey class.
 
-    @ingroup exceptions
+    @short Thread key exception
+    @ingroup concurrency exceptions
+    @author Rene Moeller Fonseca
+    @version 1.0
   */
   class ThreadKeyException : public Exception {
   public:
@@ -87,6 +90,7 @@ public:
 /**
   This class allows global and static variables to hold thread-specific data.
 
+  @short Thread local variable
   @ingroup concurrency
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2

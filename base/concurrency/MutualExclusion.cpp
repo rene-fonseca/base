@@ -29,15 +29,15 @@ MutualExclusion::MutualExclusion() throw(ResourceException) {
 #else // pthread
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
-    throw ResourceException();
+    throw ResourceException(this);
   }
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    throw ResourceException();
+    throw ResourceException(this);
   }
   if (pthread_mutex_init((pthread_mutex_t*)mutex, &attributes) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    throw ResourceException();
+    throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 #endif
@@ -53,7 +53,7 @@ void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
   } else if (result == EDEADLK) {
     return;
   } else {
-    throw MutualExclusionException();
+    throw MutualExclusionException(this);
   }
 #endif
 }
@@ -70,7 +70,7 @@ bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
   } else if (result == EBUSY) {
     return false;
   } else {
-    throw MutualExclusionException();
+    throw MutualExclusionException(this);
   }
 #endif
 }
@@ -80,7 +80,7 @@ void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
   ::LeaveCriticalSection((CRITICAL_SECTION*)mutex);
 #else // pthread
   if (pthread_mutex_unlock((pthread_mutex_t*)mutex)) {
-    throw MutualExclusionException();
+    throw MutualExclusionException(this);
   }
 #endif
 }
@@ -91,7 +91,7 @@ MutualExclusion::~MutualExclusion() throw(MutualExclusionException) {
   delete[] (CRITICAL_SECTION*)mutex;
 #else // pthread
   if (pthread_mutex_destroy((pthread_mutex_t*)mutex)) {
-    throw MutualExclusionException();
+    throw MutualExclusionException(this);
   }
   delete[] (pthread_mutex_t*)mutex;
 #endif

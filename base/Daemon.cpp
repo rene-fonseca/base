@@ -17,9 +17,11 @@
 #include <base/SystemLogger.h>
 #include <base/Application.h>
 #include <base/concurrency/Thread.h>
+#include <base/Trace.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
+  #undef ERROR // protect against the evil programmers
 #else // unix
   #include <sys/types.h>
   #include <unistd.h>
@@ -31,81 +33,132 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class DaemonImpl {
 public:
+  
+  static bool dispatched; // specifies whether the service entry function has been called
+  static SERVICE_STATUS serviceStatus; // the current status of the service
+  static SERVICE_STATUS_HANDLE serviceStatusHandle; // handle to the service status
+  static Thread* daemonThread; // the daemon context
+  static Thread* parentThread; // the daemon context
+  static Runnable* runnable; // the active object
 
-  static const DWORD SERVICE_CONTROL_USERDEFINED_HANGUP = 128;
+  static bool run() throw() {
+    try {
+      ASSERT(Thread::getThread() == 0); // make sure this is a new context - ThreadKey is initialized to NULL
+      DaemonImpl::daemonThread = new Thread(DaemonImpl::parentThread);
+      Thread::ThreadLocal threadLocal(DaemonImpl::daemonThread);
+      DaemonImpl::runnable->run();
+      DaemonImpl::daemonThread->setTerminationState(Thread::TERMINATED); // do not access thread state here after
+    } catch (...) {
+      DaemonImpl::daemonThread->setTerminationState(Thread::EXCEPTION); // do not access thread state here after
+      return false;
+    }
+    return true;
+  }
+  
+}; // end of DaemonImpl
 
-  /* The current status of the service. */
-  static SERVICE_STATUS serviceStatus;
-  /* Handle to the service status. */
-  static SERVICE_STATUS_HANDLE serviceStatusHandle;
-  /* The daemon context. */
-  static Thread* context;
-  /* The active object. */
-  static Runnable* runnable;
+bool DaemonImpl::dispatched = false; // specifies whether the service entry function has been called
+SERVICE_STATUS DaemonImpl::serviceStatus; // the current status of the service
+SERVICE_STATUS_HANDLE DaemonImpl::serviceStatusHandle; // handle to the service status
+Thread* DaemonImpl::daemonThread = 0; // the daemon context
+Thread* DaemonImpl::parentThread = 0; // the daemon context
+Runnable* DaemonImpl::runnable = 0; // the active object
+
+namespace win32 {
+  
+  const DWORD SERVICE_CONTROL_USERDEFINED_HANGUP = 128;
 
   /* Sets the current status of the service and reports it to the Service Control Manager. */
-  static bool reportStatusToControlManager(DWORD currentState, DWORD exitCode, DWORD waitHint) throw() {
-    static DWORD checkPoint = 1;
+  bool reportStatusToControlManager(DWORD currentState, DWORD exitCode, DWORD waitHint) throw() {
+    static DWORD checkPoint = 1; // TAG: do we need to reset the checkpoint at some time
     bool result = true;
-
+    
     if (currentState == SERVICE_START_PENDING) {
-      serviceStatus.dwControlsAccepted = 0;
+      DaemonImpl::serviceStatus.dwControlsAccepted = 0;
     } else {
-      serviceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP;
+       // TAG: SERVICE_ACCEPT_PAUSE_CONTINUE
+      DaemonImpl::serviceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN;
     }
 
-    serviceStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
-    serviceStatus.dwServiceSpecificExitCode = 0;
-    serviceStatus.dwCurrentState = currentState;
-    serviceStatus.dwWin32ExitCode = exitCode;
-    serviceStatus.dwWaitHint = waitHint;
+    DaemonImpl::serviceStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
+    DaemonImpl::serviceStatus.dwServiceSpecificExitCode = 0;
+    DaemonImpl::serviceStatus.dwCurrentState = currentState;
+    DaemonImpl::serviceStatus.dwWin32ExitCode = exitCode;
+    DaemonImpl::serviceStatus.dwWaitHint = waitHint;
 
     if ((currentState == SERVICE_RUNNING) || (currentState == SERVICE_STOPPED)) {
-      serviceStatus.dwCheckPoint = 0;
+      DaemonImpl::serviceStatus.dwCheckPoint = 0;
     } else {
-      serviceStatus.dwCheckPoint = checkPoint++;
+      DaemonImpl::serviceStatus.dwCheckPoint = checkPoint++;
     }
 
     // report the status of the service to the service control manager.
-    if (!(result = SetServiceStatus(serviceStatusHandle, &serviceStatus))) {
+    if (!(result = ::SetServiceStatus(DaemonImpl::serviceStatusHandle, &DaemonImpl::serviceStatus))) {
       SystemLogger::write(SystemLogger::ERROR, "Unable to report status of service to the service control manager");
     }
     return result;
   }
 
   /* This function is called by the SCM whenever ControlService() is called on this service. */
-  static void WINAPI serviceControlHandler(DWORD controlCode) throw() {
-    // this function is invoked in the context of the thread that called StartServiceCtrlDispatcher?
+  void WINAPI serviceControlHandler(DWORD controlCode) {
+    // this function invoked in the context of the thread that called StartServiceCtrlDispatcher
     switch (controlCode) {
+    case SERVICE_CONTROL_SHUTDOWN: // stop the service
     case SERVICE_CONTROL_STOP: // stop the service
       reportStatusToControlManager(SERVICE_STOP_PENDING, NO_ERROR, 5000);
-      Application::application->terminate();
-      context->terminate(); // send termination signal to daemon thread
-      reportStatusToControlManager(SERVICE_STOPPED, NO_ERROR, 0);
+      try {
+        Application::getApplication()->terminate();
+        Trace::message("Waiting for daemon thread to terminate");
+        DaemonImpl::daemonThread->join();
+        reportStatusToControlManager(SERVICE_STOPPED, NO_ERROR, 0);
+        Trace::message("Destroying daemon thread");
+        delete DaemonImpl::daemonThread;
+        Trace::message("Daemon thread has been destroyed");
+        reportStatusToControlManager(SERVICE_STOPPED, NO_ERROR, 0);
+      } catch (...) {
+        reportStatusToControlManager(SERVICE_STOPPED, ERROR_EXCEPTION_IN_SERVICE, 0);
+      }
       break;
-    case SERVICE_CONTROL_SHUTDOWN: // stop the service
-      reportStatusToControlManager(SERVICE_STOP_PENDING, NO_ERROR, 5000);
-      Application::application->terminate();
-      context->terminate(); // send termination signal to deamon thread
-      reportStatusToControlManager(SERVICE_STOPPED, NO_ERROR, 0);
-      break;
-    case SERVICE_CONTROL_INTERROGATE: // report status to control manager
     case SERVICE_CONTROL_PAUSE:
     case SERVICE_CONTROL_CONTINUE:
+      break;
     case SERVICE_CONTROL_USERDEFINED_HANGUP:
-      Application::application->hangup();
+      try {
+        Application::getApplication()->hangup();
+      } catch (...) {
+        reportStatusToControlManager(SERVICE_RUNNING, ERROR_EXCEPTION_IN_SERVICE, 0);
+      }
+      break;
+    case SERVICE_CONTROL_INTERROGATE: // report status to control manager
     default: // ignore control code
-      reportStatusToControlManager(serviceStatus.dwCurrentState, NO_ERROR, 0);
+      reportStatusToControlManager(DaemonImpl::serviceStatus.dwCurrentState, NO_ERROR, 0);
       break;
     }
   }
 
   /* Initialize service. */
-  static void WINAPI serviceEntry(DWORD argc, LPTSTR* argv) throw() {
-    ASSERT(Thread::getThread() == 0); // make sure this is a new context
+  void WINAPI serviceEntry(DWORD numberOfArguments, LPSTR* argumentVector) {
+    DaemonImpl::dispatched = true;
     // register the service control handler
-    serviceStatusHandle = RegisterServiceCtrlHandler(Application::getApplication()->getFormalName().getElements(), (LPHANDLER_FUNCTION)serviceControlHandler);
-    if (!serviceStatusHandle) {
+    DaemonImpl::serviceStatusHandle = ::RegisterServiceCtrlHandler(Application::getApplication()->getFormalName().getElements(), serviceControlHandler);
+
+    //Array<String> arguments;
+    //for (unsigned int i = 1; i < numberOfArguments; ++i) { // ignore first arg which is name of service
+    //  arguments.append(arguments[i]);
+    //}
+    //Application::getApplication()->arguments = arguments;
+/*
+  if (environment) {
+    for (; *environment != 0; ++environment) {
+      String temp(*environment);
+      int index = temp.indexOf('=');
+      if (index != -1) { // ignore the environment string if it doesn't contain
+        this->environment[temp.substring(0, index - 1)] = temp.substring(index +
+      }
+    }
+  }
+*/
+    if (!DaemonImpl::serviceStatusHandle) {
       return;
     }
 
@@ -116,17 +169,15 @@ public:
       return;
     }
 
-    context = new Thread(runnable);
-    context->start();
     reportStatusToControlManager(SERVICE_RUNNING, NO_ERROR, 0);
+    if (DaemonImpl::run()) {
+      reportStatusToControlManager(SERVICE_STOPPED, NO_ERROR, 0);
+    } else {
+      reportStatusToControlManager(SERVICE_STOPPED, ERROR_EXCEPTION_IN_SERVICE, 0);
+    }
   }
 
-}; // end of DaemonImpl
-
-SERVICE_STATUS DaemonImpl::serviceStatus;
-SERVICE_STATUS_HANDLE DaemonImpl::serviceStatusHandle;
-Thread* DaemonImpl::context = 0;
-Runnable* DaemonImpl::runnable = 0;
+};
 
 Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) {
   static unsigned int singleton = 0;
@@ -135,64 +186,98 @@ Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) 
   assert(runnable, OutOfDomain());
   assert(Application::getApplication(), Exception("Application has not been institiated"));
   DaemonImpl::runnable = runnable;
+  DaemonImpl::parentThread = Thread::getThread();
+
+  // TAG: need to detect whether the application is started as a service or a normal application
+  // TAG: check whether a console is attached
 
   SERVICE_TABLE_ENTRY dispatchTable[] = {
-    {"", (LPSERVICE_MAIN_FUNCTION)DaemonImpl::serviceEntry}, // name is ignored 'cause using SERVICE_WIN32_OWN_PROCESS
-    {NULL, NULL}
+    {"", &win32::serviceEntry}, // name is ignored 'cause using SERVICE_WIN32_OWN_PROCESS
+    {0, 0} // termination entry
   };
-
-  if (!StartServiceCtrlDispatcher(dispatchTable)) {
-    SystemLogger::write(SystemLogger::ERROR, "Unable to connect to service control manager.");
-    //throw ResourceException("Unable to daemonize process");
-    DaemonImpl::runnable->run();
-  }
-  if (DaemonImpl::context) {
-    SystemLogger::write(SystemLogger::INFORMATION, "Waiting for daemon context to complete.");
-    DaemonImpl::context->join();
-    //delete DaemonImpl::context; // release daemon thread
+  
+  if (!::StartServiceCtrlDispatcher(dispatchTable)) {
+    if (DaemonImpl::dispatched) {
+      SystemLogger::write(SystemLogger::ERROR, "Unable to connect to service control manager.");
+    } else {
+      runnable->run(); // run as console application
+    }
   }
 }
+/*
+void Daemon::start(const Array<String>& arguments) throw(DaemonException) {
+  SC_HANDLE manager = ::OpenSCManager(0, 0, 0);
+  assert(manager, DaemonException());
+  SC_HANDLE service = ::OpenService(manager, application->getFormalName(), SERVICE_START);
+  assert(service, DaemonException());
+  const char* argumentBuffer[arguments.getSize()];
+  for (unsigned int i = arguments.getSize(); i > 0;) {
+    --i;
+    argumentBuffer[i] = arguments[i];
+  }
+  BOOL result = ::StartService(service, arguments.getSize(), &argumentBuffer);
+  ::CloseServiceHandle(service);
+  ::CloseServiceHandle(manager);
+}
 
+void Daemon::stop() throw(DaemonException) {
+  SC_HANDLE manager = ::OpenSCManager(0, 0, 0);
+  assert(manager, DaemonException());
+  SC_HANDLE service = ::OpenService(manager, 0, SERVICE_STOP);
+  if (service) {
+    SERVICE_STATUS status;
+    BOOL result = ::ControlService(service, SERVICE_CONTROL_STOP, &status);
+    ::CloseServiceHandle(service);
+  }
+  ::CloseServiceHandle(manager);
+}
+
+void Daemon::uninstall() throw(DaemonException) {
+  SC_HANDLE manager = ::OpenSCManager(0, 0, 0);
+  assert(manager, DaemonException());
+  SC_HANDLE service = ::OpenService(manager, 0, SERVICE_DELETE);
+  assert(service, DaemonException());
+  ::DeleteService(service);
+  ::CloseServiceHandle(service);
+  ::CloseServiceHandle(manager);
+}
+*/
 /* Installs service. */
 void Daemon::install() {
   TCHAR path[512];
-  if (GetModuleFileName(NULL, path, 512) == 0) {
-    ferr << "Unable to install service as " << Application::getApplication()->getFormalName() << ENDL;
+  if (::GetModuleFileName(0, path, 512) == 0) {
+    ferr << MESSAGE("Unable to install service as ") << Application::getApplication()->getFormalName() << ENDL;
     return;
   }
 
-  SC_HANDLE manager = OpenSCManager(
-    NULL, // local machine
-    NULL, // default database
-    SC_MANAGER_ALL_ACCESS // access required
-  );
+  SC_HANDLE manager = ::OpenSCManager(0, 0, SC_MANAGER_ALL_ACCESS);
 
   if (manager) {
-    SC_HANDLE service = CreateService(
+    SC_HANDLE service = ::CreateService(
       manager,
       Application::getApplication()->getFormalName().getElements(), // name of service
       Application::getApplication()->getFormalName().getElements(), // name to display
       SERVICE_ALL_ACCESS, // desired access
       SERVICE_WIN32_OWN_PROCESS, // service type
       SERVICE_DEMAND_START, // start type
-      SERVICE_ERROR_NORMAL, // error control type
+      SERVICE_ERROR_IGNORE, // error control type
       path, // service's binary
-      NULL, // no load ordering group
-      NULL, // no tag identifier
+      0, // no load ordering group
+      0, // no tag identifier
       TEXT(""), // dependencies
-      NULL, // LocalSystem account
-      NULL // no password
+      0, // LocalSystem account
+      0 // no password
     );
 
     if (service) {
-      fout << "Service has been installed as " << Application::getApplication()->getFormalName() << ENDL;
-      CloseServiceHandle(service);
+      fout << MESSAGE("Service has been installed as ") << Application::getApplication()->getFormalName() << ENDL;
+      ::CloseServiceHandle(service);
     } else {
-      ferr << "Failed to install service" << ENDL;
+      ferr << MESSAGE("Failed to install service") << ENDL;
     }
-    CloseServiceHandle(manager);
+    ::CloseServiceHandle(manager);
   } else {
-    ferr << "Unable to open service control manager" << ENDL;
+    ferr << MESSAGE("Unable to open service control manager") << ENDL;
   }
 }
 

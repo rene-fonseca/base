@@ -10,19 +10,30 @@
 #include "base/collection/Enumeration.h"
 #include "base/MemoryException.h"
 #include "ReferenceCountedObject.h"
+#include "base/string/FormatOutputStream.h"
 #include <string.h>
 
-/** Copy elements from array to other array. The arrays may not overlap. */
+/**
+  Copies elements from array to other array. The arrays may not overlap.
+*/
 template<class TYPE>
 inline void copyArray(TYPE* dest, const TYPE* src, unsigned int count) throw() {
   ::memcpy(dest, src, count * sizeof(TYPE));
 }
 
-/** Copy elements from array to array. The arrays are allowed to overlap. */
+/**
+  Copies elements from array to array. The arrays are allowed to overlap.
+*/
 template<class TYPE>
 inline void moveArray(TYPE* dest, const TYPE* src, unsigned int count) throw() {
   ::memmove(dest, src, count * sizeof(TYPE));
 };
+
+/**
+  Writes a string representation of an array to a format stream.
+*/
+template<class TYPE>
+FormatOutputStream& toFormatStream(FormatOutputStream& stream, const TYPE* value, unsigned int size);
 
 
 

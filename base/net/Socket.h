@@ -7,9 +7,9 @@
 #define _DK_SDU_MIP__BASE_NET__SOCKET_H
 
 #include "base/concurrency/Synchronize.h"
-//#include "base/io/FileDescriptor.h"
-#include "base/io/InputStream.h"
-#include "base/io/OutputStream.h"
+#include "base/io/FileDescriptor.h"
+#include "base/io/FileDescriptorInputStream.h"
+#include "base/io/FileDescriptorOutputStream.h"
 #include "NetworkException.h"
 #include "InetAddress.h"
 #include "base/string/FormatOutputStream.h"
@@ -21,7 +21,7 @@
   @version 1.0
 */
 
-class Socket : public FileDescriptor, public Synchronizeable {
+class Socket : public FileDescriptor, public Synchronizeable<> {
 private:
 
   /** Specifies the remote address to which the socket is connected. */

@@ -5,7 +5,7 @@
 
 #include "FormatInputStream.h"
 
-FormatInputStream::FormatInputStream(InputStream* in) throw(BindException) :
+FormatInputStream::FormatInputStream(InputStream& in) throw(BindException) :
   BufferedInputStream(in) {
   throw BindException();
 }

@@ -6,9 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE_IO__FILE_OUTPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__FILE_OUTPUT_STREAM_H
 
-#include "OutputStream.h"
+#include "FileDescriptorOutputStream.h"
 #include "FileNotFound.h"
-#include "FileDescriptor.h"
 #include "BindException.h"
 #include "base/string/String.h"
 
@@ -19,7 +18,7 @@
   @version 1.0
 */
 
-class FileOutputStream : public OutputStream, protected FileDescriptor {
+class FileOutputStream : public FileDescriptorOutputStream {
 public:
 
   /** The flags. */
@@ -30,7 +29,7 @@ public:
 private:
 
   /** The path of the file. */
-  String path;
+  String<> path;
 public:
 
   /**
@@ -40,37 +39,22 @@ public:
     @param flags The flags used to open the file (CREATE, TRUNCATE, APPEND, NONBLOCK, and SYNC).
     @param permissions Specifies the permissions to be used if the file is created.
   */
-  FileOutputStream(const String& path, unsigned int flags, unsigned int permissions = 0x640) throw(FileNotFound);
+  FileOutputStream(const String<>& path, unsigned int flags, unsigned int permissions = 0x640) throw(FileNotFound);
 
   /**
-    Initializes the file input stream with file descriptor as source of stream.
-
-    @param handle The file descriptor.
+    Returns the path of the file.
   */
-  FileOutputStream(int handle) throw(BindException);
+  const String<>& getPath() const throw();
 
   /**
-    Closes the output stream and releases any system resources associated with the stream.
+    Writes a string representation of a FileOutputStream object to a stream.
   */
-  void close() throw(IOException);
-
-  /**
-    Forces any buffered bytes to be written out.
-  */
-  void flush() throw(IOException);
-
-  /**
-    Writes bytes in buffer to stream.
-
-    @param buffer The buffer containing the bytes to be written.
-    @param size The number of bytes to be written.
-  */
-  unsigned int write(const char* buffer, unsigned int size) throw(IOException);
-
-  /**
-    Destroys the file output stream.
-  */
-  ~FileOutputStream();
+  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const FileOutputStream& value);
 };
+
+/**
+  Writes a string representation of a FileOutputStream object to a stream.
+*/
+FormatOutputStream& operator<<(FormatOutputStream& stream, const FileOutputStream& value);
 
 #endif

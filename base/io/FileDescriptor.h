@@ -18,14 +18,6 @@
 */
 
 class FileDescriptor : public Stream {
-public:
-
-  /** Handle to the standard input stream. */
-  static FileDescriptor in;
-  /** Handle to the standard output stream. */
-  static FileDescriptor out;
-  /** Handle to the standard error stream. */
-  static FileDescriptor err;
 protected:
 
   /** Reference counted handle to file descriptor. */
@@ -38,8 +30,12 @@ protected:
     Descriptor() throw();
     Descriptor(int handle) throw();
     void close() throw(IOException);
-    int getHandle() {return handle;};
-    void setHandle(int handle) {this->handle = handle;};
+    int getFlags() const throw(IOException);
+    void setFlags(int flags) throw(IOException);
+    inline int getHandle() const throw() {return handle;}
+    inline void setHandle(int handle) throw() {this->handle = handle;}
+    void setNonBlocking(bool value) throw(IOException);
+    ~Descriptor() throw(IOException);
   };
 
   /** Reference counted handle to file descriptor. */
@@ -76,17 +72,12 @@ public:
   /**
     Copy constructor.
   */
-  FileDescriptor(FileDescriptor& copy) throw();
+  FileDescriptor(const FileDescriptor& copy) throw();
 
   /**
     Assignment operator.
   */
   FileDescriptor& operator=(FileDescriptor& eq) throw();
-
-  /**
-    Assignment operator.
-  */
-  FileDescriptor& operator=(int handle) throw();
 
   /**
     Closes the file descriptor.
@@ -99,15 +90,21 @@ public:
   void setNonBlocking(bool value) throw(IOException);
 
   /**
-    Destroys the file descriptor. Does not close or flush the file descriptor.
+    Writes a string representation of a FileDescriptor object to a format stream.
   */
-  ~FileDescriptor();
-
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor& value);
+public:
+
+  /** Handle to the standard input stream. */
+  static FileDescriptor bin;
+  /** Handle to the standard output stream. */
+  static FileDescriptor bout;
+  /** Handle to the standard error stream. */
+  static FileDescriptor berr;
 };
 
 /**
-  Writes a string representation of a file descriptor to a format stream.
+  Writes a string representation of a FileDescriptor object to a format stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor& value);
 

@@ -42,3 +42,21 @@ template<class TYPE>
 Array<TYPE>::~Array() throw() {
   ::free(elements);
 }
+
+template<class TYPE>
+FormatOutputStream& toFormatStream(FormatOutputStream& stream, const TYPE* value, unsigned int size) {
+  stream << '[';
+
+  if (size > 0) {
+    unsigned int count = size - 1;
+    while (count) {
+      stream << *value << ',';
+      ++value;
+      --count;
+    }
+    stream << *value;
+  }
+
+  stream << ']';
+  return stream;
+}

@@ -6,7 +6,7 @@
 #include "FileInputStream.h"
 #include <fcntl.h>
 
-FileInputStream::FileInputStream(const String& p, unsigned int flags) throw(FileNotFound) :
+FileInputStream::FileInputStream(const String<>& p, unsigned int flags) throw(FileNotFound) :
   path(p) {
   unsigned int temp = 0;
   if (flags & NONBLOCK) {
@@ -19,10 +19,14 @@ FileInputStream::FileInputStream(const String& p, unsigned int flags) throw(File
   setHandle(handle);
 }
 
-FileInputStream::~FileInputStream() {
+const String<>& FileInputStream::getPath() const throw() {
+  return path;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileInputStream& value) {
-//  return stream << "{fd=" << value.fd << "}";
+  return stream << "class/FileInputStream{"
+                << "path=" << value.getPath() << ";"
+                << "fd=" << value.getHandle()
+                << "}";
   return stream;
 }

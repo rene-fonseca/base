@@ -57,7 +57,7 @@ struct WideStringLiteral {
   @version 1.0
 */
 
-template<class LOCK>
+template<class LOCK = DefaultLock>
 class String : public virtual Object, protected virtual Synchronizeable<LOCK> {
 public:
 
@@ -97,17 +97,41 @@ private:
   unsigned int len;
 protected:
 
-  /** Returns a modifiable buffer. Forces copy of internal buffer if shared by multiple strings. */
-  inline char* getMutableBuffer() throw(MemoryException) {internal.ensureSingleReference(); return internal->getBytes();};
-  /** Returns a read-only buffer. */
-  inline const char* getReadOnlyBuffer() const throw() {return internal->getBytes();};
-  /** Returns the length of a NULL-terminated string (-1 if not terminated). */
+  /**
+    Returns a modifiable buffer. Forces copy of internal buffer if shared by multiple strings.
+  */
+  inline char* getMutableBuffer() throw(MemoryException) {
+    if (internal.isMultiReferenced()) { // do we have the elements for our self
+      internal = new StringBuffer(*internal); // make copy of the elements
+    }
+    return internal->getBytes();
+  }
+
+  /**
+    Returns a read-only buffer.
+  */
+  inline const char* getReadOnlyBuffer() const throw() {
+    return internal->getBytes();
+  }
+
+  /**
+    Returns the length of a NULL-terminated string (-1 if not terminated).
+  */
   int getLengthOfString(const char* str) const throw();
-  /** Sets the length of the string. Also terminates the string properly. */
+
+  /**
+    Sets the length of the string. Also terminates the string properly.
+  */
   void setLength(unsigned int length) throw(MemoryException);
-  /** Used by constructors to create StringBuffer. */
+
+  /**
+    Used by constructors to create StringBuffer.
+  */
   void createString(const char* buffer, unsigned int length, unsigned int capacity) throw(MemoryException);
-  /** Compare two null-terminated strings. */
+
+  /**
+    Compare two null-terminated strings.
+  */
   static int compareToIgnoreCase(const char* l, const char* r) throw();
 public:
 

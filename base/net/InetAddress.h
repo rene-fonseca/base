@@ -32,7 +32,7 @@ public:
   /**
     Returns the name of the local host.
   */
-  static String getLocalHost();
+  static String<> getLocalHost();
 
   /**
     Adds the IP addresses associated with the specified host name into the specified collection.
@@ -60,7 +60,7 @@ public:
 
     @param addr The internet address (e.g. '172.30.33.14' or '::ffff:172.30.33.14').
   */
-  InetAddress(const String& addr) throw(InvalidFormat);
+  InetAddress(const String<>& addr) throw(InvalidFormat);
 
   /**
     Copy constructor.
@@ -80,7 +80,7 @@ public:
   /**
     Returns the host name associated with this IP address. If the host's name cannot be located in the name service, the numeric form of the host's address is returned instead of its name.
   */
-  String getHostName() const throw(HostNotFound);
+  String<> getHostName() const throw(HostNotFound);
 
   /**
     Equality operator.
@@ -133,7 +133,7 @@ public:
   /**
     Writes a string representation of the address to a stream.
   */
-  FormatOutputStream& toStream(FormatOutputStream& stream) const;
+  FormatOutputStream& toFormatStream(FormatOutputStream& stream) const;
 
   /**
     Destroys the address.
@@ -141,8 +141,9 @@ public:
   ~InetAddress() throw();
 };
 
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) {
-  return value.toStream(stream);
-}
+/**
+  Writes a string representation of the InetAddress object to a format stream.
+*/
+FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value);
 
 #endif

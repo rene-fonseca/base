@@ -12,10 +12,10 @@
 #include <unistd.h> // defines gethostname
 #include <string.h>
 
-String InetAddress::getLocalHost() {
+String<> InetAddress::getLocalHost() {
   char name[NI_MAXHOST]; // MAXHOSTNAMELEN was not define in netdb.h
   gethostname(name, sizeof(name));
-  return String(name);
+  return String<>(name);
 }
 /*
 void InetAddress::getAddressesByName(const String& name, Collection<InetAddress>& collection) throw(HostNotFound) {
@@ -38,7 +38,7 @@ InetAddress::InetAddress(const char* addr, Family family) throw() {
   setAddress(addr, family);
 }
 
-InetAddress::InetAddress(const String& addr) throw(InvalidFormat) {
+InetAddress::InetAddress(const String<>& addr) throw(InvalidFormat) {
   struct in_addr temp;
   if (inet_pton(AF_INET, addr.getBytes(), &temp) > 0) { // try IPv4 format
     // make IPv4-mapped IPv6 address (network byte order)
@@ -68,7 +68,7 @@ const char* InetAddress::getAddress() const throw() {
   return (char*)&address;
 }
 
-String InetAddress::getHostName() const throw(HostNotFound) {
+String<> InetAddress::getHostName() const throw(HostNotFound) {
   // is the flags argument appropriate
 /*  int errorCode;
   struct hostent* hp;
@@ -78,7 +78,7 @@ String InetAddress::getHostName() const throw(HostNotFound) {
   String str(hp->h_name);
   freehostent(hp);
   return str;*/
-  return String("NOT IMPLEMENTED");
+  return String<>("NOT IMPLEMENTED");
 }
 
 bool InetAddress::operator==(const InetAddress& eq) throw() {
@@ -128,7 +128,7 @@ void InetAddress::setAddress(const char* addr, Family family) throw() {
   }
 }
 
-FormatOutputStream& InetAddress::toStream(FormatOutputStream& stream) const {
+FormatOutputStream& InetAddress::toFormatStream(FormatOutputStream& stream) const {
   char buffer[INET6_ADDRSTRLEN]; // longest string is ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255
   if (isV4Mapped()) {
     inet_ntop(AF_INET, &((uint32_t*)(&address))[3], (char*)&buffer, sizeof(buffer)); // MT-level is safe
@@ -139,4 +139,9 @@ FormatOutputStream& InetAddress::toStream(FormatOutputStream& stream) const {
 }
 
 InetAddress::~InetAddress() throw() {
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) {
+  value.toFormatStream(stream);
+  return stream;
 }

@@ -103,7 +103,9 @@ void String<LOCK>::ensureCapacity(unsigned int capacity) throw(MemoryException) 
   unsigned int minimum = CAPACITY(length() + sizeof(TERMINATOR));
   capacity = CAPACITY(capacity);
   if ((capacity > getCapacity()) && (capacity > minimum)) {
-    internal.ensureSingleReference(); // we are about to modify the buffer
+    if (internal.isMultiReferenced()) { // do we have the elements for our self
+      internal = new StringBuffer(*internal); // make copy of the elements
+    }
     internal->setSize(capacity);
   }
 }
@@ -112,7 +114,9 @@ template<class LOCK>
 void String<LOCK>::optimizeCapacity() throw(MemoryException) {
   unsigned int minimum = CAPACITY(length() + sizeof(TERMINATOR));
   if (getCapacity() > minimum) { // can we reduce the capacity
-    internal.ensureSingleReference(); // we are about to modify the buffer
+    if (internal.isMultiReferenced()) { // do we have the elements for our self
+      internal = new StringBuffer(*internal); // make copy of the elements
+    }
     internal->setSize(minimum);
   }
 }

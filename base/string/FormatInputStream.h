@@ -24,7 +24,7 @@ public:
 
     @param name The input stream.
   */
-  FormatInputStream(InputStream* in) throw(BindException);
+  FormatInputStream(InputStream& in) throw(BindException);
 };
 
 #endif

@@ -80,6 +80,10 @@ unsigned int UnsignedInteger::parse(const String& string, unsigned int accept) t
   unsigned int highLimit = MAXIMUM/base;
   unsigned int lowLimit = MAXIMUM%base;
   unsigned int temp = 0;
+  assert( // make sure we have at least one digit
+    ASCIITraits::isHexDigit(*i),
+    InvalidFormat("Not an integer", Type::getType<UnsignedInteger>())
+  );
   while (i < end) {
     char ch = *i;
     if (!ASCIITraits::isHexDigit(ch)) {

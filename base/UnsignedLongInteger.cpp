@@ -16,13 +16,17 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-unsigned long long UnsignedLongInteger::parse(const String& str, unsigned int accept) throw(InvalidFormat) {
+unsigned long long UnsignedLongInteger::parse(const String& string, unsigned int accept) throw(InvalidFormat) {
   unsigned int base = 10; // default integer base
-  String::ReadIterator i = str.getBeginReadIterator();
-  const String::ReadIterator end = str.getEndReadIterator();
+  String::ReadIterator i = string.getBeginReadIterator();
+  const String::ReadIterator end = string.getEndReadIterator();
 
-  assert(i < end, InvalidFormat("Not an integer", Type::getType<UnsignedLongInteger>())); // do not accept empty strings
-
+  while ((i < end) && (*i == ' ')) {
+    ++i; // eat space
+  }
+  
+  assert(i < end, InvalidFormat("String is empty", Type::getType<UnsignedLongInteger>())); // do not accept empty strings
+  
   switch (accept) {
   case BIN:
     base = 2;
@@ -69,24 +73,39 @@ unsigned long long UnsignedLongInteger::parse(const String& str, unsigned int ac
       ((base == 8) && (accept & OCT)) ||
       ((base == 10) && (accept & DEC)) ||
       ((base == 16) && (accept & HEX)),
-      InvalidFormat("Not an integer", Type::getType<UnsignedLongInteger>())
+      InvalidFormat("Invalid base", Type::getType<UnsignedLongInteger>())
     );
   }
 
   unsigned long long highLimit = MAXIMUM/base;
   unsigned long long lowLimit = MAXIMUM%base;
   unsigned long long temp = 0;
+  assert( // make sure we have at least one digit
+    ASCIITraits::isHexDigit(*i),
+    InvalidFormat("No digits", Type::getType<UnsignedLongInteger>())
+  );
   while (i < end) {
-    char ch = *i++;
+    char ch = *i;
+    if (!ASCIITraits::isHexDigit(ch)) {
+      break;
+    }
     unsigned char digitValue = ASCIITraits::digitToValue(ch); // unspecified for non-digit
     assert(
       ASCIITraits::isHexDigit(ch) &&
       (digitValue < base) &&
       ((temp < highLimit) || ((temp == highLimit) && (digitValue <= lowLimit))),
-      InvalidFormat("Not an integer", Type::getType<UnsignedLongInteger>())
+      InvalidFormat("Out of range", Type::getType<UnsignedLongInteger>())
     );
     temp = temp * base + digitValue;
+    ++i;
   }
+  
+  while ((i < end) && (*i == ' ')) { // rest must be spaces
+    ++i;
+  }
+  
+  assert(i == end, InvalidFormat("Not a digit", Type::getType<UnsignedLongInteger>()));
+  
   return temp;
 }
 

@@ -16,16 +16,17 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-long long LongInteger::parse(const String& str, bool withoutSign) throw(InvalidFormat) {
-  String::ReadIterator i = str.getBeginReadIterator();
-  const String::ReadIterator end = str.getEndReadIterator();
-  
+long long LongInteger::parse(const String& string, bool withoutSign) throw(InvalidFormat) {
+  unsigned int base = 10; // default integer base
+  String::ReadIterator i = string.getBeginReadIterator();
+  const String::ReadIterator end = string.getEndReadIterator();
+
   while ((i < end) && (*i == ' ')) {
     ++i; // eat space
   }
   
-  assert(i < end, InvalidFormat(Type::getType<LongInteger>()));
-
+  assert(i < end, InvalidFormat("Not an integer", Type::getType<LongInteger>())); // do not accept empty strings
+  
   long long value;
   if (withoutSign) {
     unsigned long long temp = 0;

@@ -133,25 +133,7 @@ public:
       ok = false;
     }
     return ok;
-  }
-  
-  /**
-    Returns true if the positions are equal.
-
-    @param position The position to be compared.
-  */
-  inline bool operator==(const Position& position) const throw() {
-    return (x == position.x) && (y == position.y);
-  }
-  
-  /**
-    Returns true if the positions are different.
-
-    @param position The position to be compared.
-  */
-  inline bool operator!=(const Position& position) const throw() {
-    return (x != position.x) || (y != position.y);
-  }
+  }  
   
   /**
     Returns the X coordinate.
@@ -182,21 +164,109 @@ public:
   }
 
   /**
+    Negates this vector.
+  */
+  inline Position& negate() throw() {
+    x = -x;
+    y = -y;
+    return *this;
+  }
+
+  /**
+    Adds the specified position to this position.
+  */
+  inline Position& add(const Position& value) throw() {
+    x += value.x;
+    y += value.y;
+    return *this;
+  }
+
+  /**
+    Subtracts the specified position from this position.
+  */
+  inline Position& subtract(const Position& value) throw() {
+    x -= value.x;
+    y -= value.y;
+    return *this;
+  }
+
+  /**
+    Returns true if the positions are equal.
+
+    @param position The position to be compared.
+  */
+  inline bool operator==(const Position& position) const throw() {
+    return (x == position.x) && (y == position.y);
+  }
+  
+  /**
+    Returns true if the positions are different.
+
+    @param position The position to be compared.
+  */
+  inline bool operator!=(const Position& position) const throw() {
+    return (x != position.x) || (y != position.y);
+  }
+
+  /**
+    Adds the specified position from this position.
+
+    @param value The value to be added.
+  */
+  inline Position& operator+=(const Position& value) throw() {
+    return add(value);
+  }
+
+  /**
+    Subtracts the specified position from this position.
+
+    @param value The value to be subtracted.
+  */
+  inline Position& operator-=(const Position& value) throw() {
+    return subtract(value);
+  }
+  
+  /**
     Subtracts the position from this position.
   */
-  Position& operator-(const Position& position) throw() {
-    x -= position.getX();
-    y -= position.getY();
+  inline Position& operator-(const Position& position) throw() {
+    x -= position.x;
+    y -= position.y;
     return *this;
   }
   
   /**
     Adds the position from this position.
   */
-  Position& operator+(const Position& position) throw() {
-    x += position.getX();
-    y += position.getY();
+  inline Position& operator+(const Position& position) throw() {
+    x += position.x;
+    y += position.y;
     return *this;
+  }
+
+  /**
+    Returns the dimension of the rectangle from this position (upper left) to
+    the specified lower right corner.
+    
+    @param position The lower right corner.
+  */
+  inline Dimension getDimension(const Position& position) throw() {
+    const Position temp(position.x - x, position.y - y);
+    return Dimension(maximum(temp.x, 0), maximum(temp.y, 0));
+  }
+  
+  /**
+    Returns the dimension of the rectangle defined by the 2 positions. 
+
+    @param upperLeft The upper left or lower right corner.
+    @param lowerRight The upper left or lower right corner.
+  */
+  static inline Dimension getDimension(const Position& upperLeft, const Position& lowerRight) throw() {
+    const Position position(upperLeft.x - lowerRight.x, upperLeft.y - lowerRight.y);
+    return Dimension(
+      maximum(position.x, -position.x),
+      maximum(position.y, -position.y)
+    );
   }
 };
 

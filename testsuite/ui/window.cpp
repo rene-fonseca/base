@@ -14,6 +14,7 @@
 #include <base/Application.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/ui/Window.h>
+#include <base/ui/PopUpWindow.h>
 #include <base/ui/Label.h>
 #include <base/ui/Split.h>
 #include <base/ui/Button.h>
@@ -55,6 +56,44 @@ public:
   
   class MyWindow : public Window {
   private:
+
+    class MyPopUpWindow : public PopUpWindow {
+    public:
+
+      MyPopUpWindow(
+        const Position& position,
+        const Dimension& dimension,
+        unsigned int flags = 0) throw(UserInterfaceException)
+        : PopUpWindow(position, dimension, flags) {
+        setBrush(Color(Color::BEIGE));
+        setPen(Pen(Color(0, 0, 0 /*Color::BLACK*/)));
+      }
+      
+      void onDisplay() throw() {
+        rectangle(Position(0, 0), getDimension());
+      }
+
+      void onMouseButton(
+        const Position& position,
+        Mouse::Button button,
+        Mouse::Event event,
+        unsigned int state) throw() {
+        return;
+        
+        if (event == Mouse::PRESSED) {
+          if (button == Mouse::LEFT) {
+            setCapture(true);
+          }
+        }
+        if (event == Mouse::RELEASED) {
+          if (button == Mouse::LEFT) {
+            setCapture(false);
+          }
+        }
+      }
+    };
+    
+    MyPopUpWindow popUpWindow;
     
     Label label;
     Split split;
@@ -90,6 +129,7 @@ public:
       const Dimension& dimension,
       unsigned int flags) throw(UserInterfaceException)
       : Window(position, dimension, flags),
+        popUpWindow(Position(0, 0), Dimension(100, 200), 0),
         label(*this),
         split(*this),
         button(*this),
@@ -242,12 +282,16 @@ public:
       }
       
       fout << position << ENDL;
-
+      popUpWindow.hide();
+      
       if (event == Mouse::PRESSED) {
         if (button == Mouse::LEFT) {
           setCapture(true);
         }
         if (button == Mouse::RIGHT) {
+          popUpWindow.setPosition(toGlobalPosition(position));
+          popUpWindow.show();
+          
           unsigned int cursor = static_cast<unsigned int>(getCursor());
           if (cursor == WAITING) {
             cursor = 0;

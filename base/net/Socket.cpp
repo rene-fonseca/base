@@ -34,7 +34,6 @@
 #  include <netinet/tcp.h> // options
 #  include <net/if.h>
 // #  include <sys/ioctl.h>
-// #  include <sys/sockio.h>
 #  include <unistd.h>
 #  include <fcntl.h>
 #  include <errno.h>
@@ -55,7 +54,7 @@
 #endif // flavor
 
 // do we need to repair bad header file
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) && defined(bind)
+#if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) && defined(bind))
 #  define _DK_SDU_MIP__BASE__SOCKET_BIND __xnet_bind
 #  define _DK_SDU_MIP__BASE__SOCKET_CONNECT __xnet_connect
 #  define _DK_SDU_MIP__BASE__SOCKET_RECVMSG __xnet_recvmsg
@@ -95,7 +94,8 @@
   }
 #endif
 
-#if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || !defined(_DK_SDU_MIP__BASE__SOCKLEN_T))
+#if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
+     !defined(_DK_SDU_MIP__BASE__SOCKLEN_T))
   typedef int socklen;
 #else
   typedef socklen_t socklen;
@@ -106,59 +106,101 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class SocketAddress { // Internet end point
 private:
 
+  union {
+    struct sockaddr sa;
+    struct sockaddr_in ipv4;
 #if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
-  struct sockaddr_in6 sa;
-#else
-  struct sockaddr_in sa;
+    struct sockaddr_in6 ipv6;
 #endif
+  };
 public:
 
   inline SocketAddress() throw() {
   }
 
   /** Initializes socket address. */
-  SocketAddress(const InetAddress& addr, unsigned short port) throw(NetworkException) {
+  SocketAddress(
+    const InetAddress& address,
+    unsigned short port,
+    Socket::Domain domain) throw(NetworkException) {
     clear(sa);
 #  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+    if (domain == Socket::IPV6) {
 #    if (defined(SIN6_LEN))
-    sa.sin6_len = sizeof(sa);
+      ipv6.sin6_len = sizeof(ipv6);
 #    endif // SIN6_LEN
-    sa.sin6_family = AF_INET6;
-    sa.sin6_port = ByteOrder::toBigEndian<unsigned short>(port);
-    if (addr.getFamily() == InetAddress::IP_VERSION_4) {
-      InetAddress temp(addr);
-      temp.convertToIPv6();
-      copy<uint8>(Cast::getAddress(sa.sin6_addr), temp.getAddress(), sizeof(struct in6_addr));
-    } else {
-      copy<uint8>(Cast::getAddress(sa.sin6_addr), addr.getAddress(), sizeof(struct in6_addr));
+      ipv6.sin6_family = AF_INET6;
+      ipv6.sin6_port = ByteOrder::toBigEndian<unsigned short>(port);
+      if (address.getFamily() == InetAddress::IP_VERSION_4) {
+        InetAddress temp(address);
+        temp.convertToIPv6();
+        copy<uint8>(
+          Cast::getAddress(ipv6.sin6_addr),
+          temp.getAddress(),
+          sizeof(ipv6.sin6_addr)
+        );
+      } else {
+        copy<uint8>(
+          Cast::getAddress(ipv6.sin6_addr),
+          address.getAddress(),
+          sizeof(ipv6.sin6_addr)
+        );
+      }
+    } else { // IPv4 domain
+      ipv4.sin_family = AF_INET;
+      ipv4.sin_port = ByteOrder::toBigEndian<unsigned short>(port);
+      InetAddress temp(address);
+      assert(
+        temp.convertToIPv4(),
+        NetworkException(
+          "Address not supported",
+          Type::getType<Socket>()
+        )
+      );
+      copy<uint8>(
+        Cast::getAddress(ipv4.sin_addr),
+        address.getIPv4Address(),
+        sizeof(ipv4.sin_addr)
+      );
     }
 #  else // only IPv4 support
+    InetAddress temp(address);
+    temp.convertToIPv4();
     assert(
-      (addr.getFamily() == InetAddress::IP_VERSION_4) || addr.isIPv4Mapped() || addr.isUnspecified(),
-      NetworkException("Address not supported")
+      temp.convertToIPv4(),
+      NetworkException(
+        "Address not supported",
+        Type::getType<Socket>()
+      )
     );
-    sa.sin_family = AF_INET;
-    sa.sin_port = ByteOrder::toBigEndian<unsigned short>(port);
-    copy<uint8>(Cast::getAddress(sa.sin_addr), addr.getIPv4Address(), sizeof(struct in_addr));
+    ipv4.sin_family = AF_INET;
+    ipv4.sin_port = ByteOrder::toBigEndian<unsigned short>(port);
+    copy<uint8>(
+      Cast::getAddress(ipv4.sin_addr),
+      address.getIPv4Address(),
+      sizeof(struct in_addr)
+    );
 #  endif // _DK_SDU_MIP__BASE__INET_IPV6
   }
 
   /** Returns pointer to socket address. */
   inline struct sockaddr* getValue() throw() {
-    return Cast::pointer<struct sockaddr*>(&sa);
+    return &sa;
   }
-
+  
   /** Returns pointer to socket address. */
   inline const struct sockaddr* getValue() const throw() {
-    return Cast::pointer<const struct sockaddr*>(&sa);
+    return &sa;
   }
-
+  
   /** Returns the size of the socket address structure. */
-  inline unsigned int getSize() const throw() {return sizeof(sa);}
-
+  inline unsigned int getSize() const throw() {
+    return sizeof(sa); // TAG: is this allowed
+  }
+  
   inline Socket::Domain getDomain() const throw() {
 #  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
-    return (Cast::pointer<const struct sockaddr*>(&sa)->sa_family == AF_INET6) ? Socket::IPV6 : Socket::IPV4;
+    return (sa.sa_family == AF_INET6) ? Socket::IPV6 : Socket::IPV4;
 #else
     return Socket::IPV4;
 #endif
@@ -166,59 +208,38 @@ public:
   
   /** Returns the address. */
   inline InetAddress getAddress() const throw() {
-#  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
-    switch (sa.sin6_family) {
+    switch (sa.sa_family) {
     case AF_INET:
       return InetAddress(
-        Cast::getAddress(Cast::pointer<const struct sockaddr_in*>(&sa)->sin_addr),
+        Cast::getAddress(ipv4.sin_addr),
         InetAddress::IP_VERSION_4
       );
+#  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
     case AF_INET6:
       return InetAddress(
-        Cast::getAddress(Cast::pointer<const struct sockaddr_in6*>(&sa)->sin6_addr),
+        Cast::getAddress(ipv6.sin6_addr),
         InetAddress::IP_VERSION_6
       );
-    default:
-      return InetAddress(); // TAG: or should I throw an exception or just ignore
+#endif
+    default: // not possible
+      return InetAddress(); // TAG: or should we raise an exception
     }
-#  else
-    if (sa.sin_family == AF_INET) {
-      return InetAddress(
-        Cast::getAddress(Cast::pointer<const struct sockaddr_in*>(&sa)->sin_addr),
-        InetAddress::IP_VERSION_4
-      );
-    } else {
-      return InetAddress(); // TAG: or should I throw an exception or just ignore
-    }
-#  endif
   }
-
+  
   /** Returns the port. */
   inline unsigned short getPort() const throw() {
-#  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
-    switch (sa.sin6_family) {
+    switch (sa.sa_family) {
     case AF_INET:
-      return ByteOrder::fromBigEndian<unsigned short>(
-        Cast::pointer<const struct sockaddr_in*>(&sa)->sin_port
-      );
+      return ByteOrder::fromBigEndian<unsigned short>(ipv4.sin_port);
+#  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
     case AF_INET6:
-      return ByteOrder::fromBigEndian<unsigned short>(
-        Cast::pointer<const struct sockaddr_in6*>(&sa)->sin6_port
-      );
-    default:
-      return 0; // TAG: or should I throw an exception
-    }
-#  else
-    if (sa.sin_family == AF_INET) {
-      return ByteOrder::fromBigEndian<unsigned short>(
-        Cast::pointer<const struct sockaddr_in*>(&sa)->sin_port
-      );
-    } else {
-      return 0; // TAG: or should I throw an exception
-    }
+      return ByteOrder::fromBigEndian<unsigned short>(ipv6.sin6_port);
 #  endif
+    default: // not possible
+      return 0; // TAG: or should we raise an exception
+    }
   }
-
+  
   /** Sets the socket name from the specified socket. */
   inline void setSocket(int handle) throw() {
     socklen length = getSize();
@@ -227,10 +248,10 @@ public:
 };
 
 namespace internal {
-
+  
   class SocketImpl {
   public:
-
+    
     static inline int getNativeError() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
       return ::WSAGetLastError();
@@ -239,12 +260,7 @@ namespace internal {
 #endif // flavor
     }
     
-    static unsigned int getCause() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-      DWORD error = ::WSAGetLastError();
-#else // unix
-      int error = errno;
-#endif // flavor
+    static unsigned int getCause(unsigned int error) throw() {
       switch (error) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
       case WSAEISCONN:
@@ -347,6 +363,18 @@ namespace internal {
         return PrimitiveTraits<unsigned int>::MAXIMUM;
       }
     }
+
+    static inline void raiseNetwork(const char* message) throw(NetworkException) {
+      unsigned int error = getNativeError();
+      NetworkException e(message, Type::getType<Socket>());
+      unsigned int cause = getCause(error);
+      if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
+        e.setCause(cause);
+      } else {
+        e.setError(error);
+      }
+      throw e;
+    }
     
     static inline void getOption(
       int handle,
@@ -355,19 +383,8 @@ namespace internal {
       void* buffer,
       unsigned int* length) throw(NetworkException) {
       socklen temp = *length;
-      if (::getsockopt(handle, level, option, static_cast<char*>(buffer), &temp) != 0) {
-        unsigned int cause = getCause();
-        if (cause) {
-          throw bindCause(
-            NetworkException("Unable to get IP option", Type::getType<Socket>()),
-            cause
-          );
-        } else {
-          throw bindError(
-            NetworkException("Unable to get IP option", Type::getType<Socket>()),
-            getNativeError()
-          );
-        }
+      if (::getsockopt(handle, level, option, static_cast<char*>(buffer), &temp)) {
+        raiseNetwork("Unable to get IP option");
       }
       *length = temp;
     }
@@ -378,19 +395,8 @@ namespace internal {
       int option,
       const void* buffer,
       unsigned int length) throw(NetworkException) {
-      if (::setsockopt(handle, level, option, static_cast<const char*>(buffer), length) != 0) {
-        unsigned int cause = getCause();
-        if (cause) {
-          throw bindCause(
-            NetworkException("Unable to set IP option", Type::getType<Socket>()),
-            cause
-          );
-        } else {
-          throw bindError(
-            NetworkException("Unable to set IP option", Type::getType<Socket>()),
-            getNativeError()
-          );
-        }
+      if (::setsockopt(handle, level, option, static_cast<const char*>(buffer), length)) {
+        raiseNetwork("Unable to set IP option");
       }
     }
     
@@ -416,13 +422,19 @@ Socket::SocketImpl::~SocketImpl() throw(IOException) {
   if (isValid()) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     if (::closesocket((int)getHandle())) {
-      throw IOException("Unable to close socket", this);
-    }
 #else // unix
     if (::close((int)getHandle())) {
-      throw IOException("Unable to close socket", this);
-    }
 #endif // flavor
+      IOException e("Unable to close socket", this);
+      unsigned int error = internal::SocketImpl::getNativeError();
+      unsigned int cause = internal::SocketImpl::getCause(error);
+      if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
+        e.setCause(cause);
+      } else {
+        e.setError(error);
+      }
+      throw e;
+    }
   }
 }
 
@@ -435,7 +447,7 @@ bool Socket::accept(Socket& socket) throw(NetworkException) {
   // TAG: should return socket (invalid if non available)
   
   if (this->socket->isValid()) {
-    throw NetworkException("Attempt to overwrite socket", this);
+    internal::SocketImpl::raiseNetwork("Attempt to overwrite socket");
   }
 
   SocketAddress sa;
@@ -448,7 +460,7 @@ bool Socket::accept(Socket& socket) throw(NetworkException) {
     case WSAEWOULDBLOCK:
       return false;
     default:
-      throw NetworkException("Unable to accept connection", this);
+      internal::SocketImpl::raiseNetwork("Unable to accept connection");
     }
   }
 #else // unix
@@ -457,7 +469,7 @@ bool Socket::accept(Socket& socket) throw(NetworkException) {
     case EAGAIN: // EWOULDBLOCK
       return false;
     default:
-      throw NetworkException("Unable to accept connection", this);
+      internal::SocketImpl::raiseNetwork("Unable to accept connection");
     }
   }
 #endif // flavor
@@ -467,27 +479,27 @@ bool Socket::accept(Socket& socket) throw(NetworkException) {
   return true;
 }
 
-void Socket::bind(const InetAddress& addr, unsigned short port) throw(NetworkException) {
-  SocketAddress sa(addr, port);
+void Socket::bind(const InetAddress& address, unsigned short port) throw(NetworkException) {
+  SocketAddress sa(address, port, socket->getDomain());
   if (::bind((int)socket->getHandle(), sa.getValue(), sa.getSize())) {
-    throw NetworkException("Unable to assign name to socket", this);
+    internal::SocketImpl::raiseNetwork("Unable to assign name to socket");
   }
-//  if ((addr.isUnspecified()) || (port == 0)) { // do we need to determine assigned name
-//    sa.setSocket((int)socket->getHandle());
-//    socket->setLocalAddress(sa.getAddress());
-//    socket->setLocalPort(sa.getPort());
-//  } else {
-    socket->setLocalAddress(addr);
+  if (address.isUnspecified() || (port == 0)) {
+    sa.setSocket((int)socket->getHandle());
+    socket->setLocalAddress(sa.getAddress());
+    socket->setLocalPort(sa.getPort());
+  } else {
+    socket->setLocalAddress(address);
     socket->setLocalPort(port);
-//  }
+  }
 }
 
 void Socket::close() throw(NetworkException) {
   socket = SocketImpl::invalid;
 }
 
-void Socket::connect(const InetAddress& addr, unsigned short port) throw(NetworkException) {
-  SocketAddress sa(addr, port);
+void Socket::connect(const InetAddress& address, unsigned short port) throw(NetworkException) {
+  SocketAddress sa(address, port, socket->getDomain());
   if (::connect((int)socket->getHandle(), sa.getValue(), sa.getSize())) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     switch (::WSAGetLastError()) {
@@ -496,7 +508,7 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(Network
     case WSAETIMEDOUT:
       throw TimedOut(this);
     default:
-      throw NetworkException("Unable to connect to socket", this);
+      internal::SocketImpl::raiseNetwork("Unable to connect to socket");
     }
 #else // unix
     switch (errno) {
@@ -505,14 +517,14 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(Network
     case ETIMEDOUT:
       throw TimedOut(this);
     default:
-      throw NetworkException("Unable to connect to socket", this);
+      internal::SocketImpl::raiseNetwork("Unable to connect to socket");
     }
 #endif // flavor
   }
 //  sa.setSocket((int)socket->getHandle());
 //  socket->setLocalAddress(sa.getAddress());
 //  socket->setLocalPort(sa.getPort());
-  socket->setRemoteAddress(addr);
+  socket->setRemoteAddress(address);
   socket->setRemotePort(port);
 }
 
@@ -560,7 +572,7 @@ void Socket::listen(unsigned int backlog) throw(NetworkException) {
   // silently reduce the backlog argument
   backlog = minimum<unsigned int>(backlog, PrimitiveTraits<int>::MAXIMUM);
   if (::listen((int)socket->getHandle(), backlog)) { // may also silently limit backlog
-    throw NetworkException("Unable to set queue limit for incomming connections", this);
+    internal::SocketImpl::raiseNetwork("Unable to set queue limit for incomming connections");
   }
 }
 
@@ -590,14 +602,11 @@ unsigned short Socket::getLocalPort() const throw() {
 void Socket::shutdownInputStream() throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (::shutdown((int)socket->getHandle(), SD_RECEIVE)) { // disallow further receives
-    throw bindCause(
-      NetworkException("Unable to shutdown socket for reading", this),
-      internal::SocketImpl::getCause()
-    );
+    internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading");
   }
 #else // unix
   if (::shutdown((int)socket->getHandle(), 0)) { // disallow further receives
-    throw NetworkException("Unable to shutdown socket for reading", this);
+    internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading");
   }
 #endif // flavor
 }
@@ -605,11 +614,11 @@ void Socket::shutdownInputStream() throw(NetworkException) {
 void Socket::shutdownOutputStream() throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (::shutdown((int)socket->getHandle(), SD_SEND)) { // disallow further sends
-    throw NetworkException("Unable to shutdown socket for writing", this);
+    internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing");
   }
 #else // unix
   if (::shutdown((int)socket->getHandle(), 1)) { // disallow further sends
-    throw NetworkException("Unable to shutdown socket for writing", this);
+    internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing");
   }
 #endif // flavor
 }
@@ -1210,7 +1219,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
       ifc.ifc_len = Thread::getLocalStorage()->getSize();
       ifc.ifc_buf = Thread::getLocalStorage()->getElements();
       if (ioctl((int)socket->getHandle(), SIOCGIFCONF, &ifc)) {
-        throw NetworkException("Unable to resolve interface", this);
+        internal::SocketImpl::raiseNetwork("Unable to resolve interface");
       }
       const struct ifreq* current = ifc.ifc_req;
       int offset = 0;
@@ -1454,25 +1463,25 @@ void Socket::setNonBlocking(bool value) throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int buffer = value; // set to zero to disable nonblocking
   if (ioctlsocket((int)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
-    throw NetworkException("Unable to set blocking mode", this);
+    internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
   }
 #else // unix
   int flags;
   if ((flags = fcntl((int)socket->getHandle(), F_GETFL)) == -1) {
-    throw NetworkException("Unable to get flags for socket", this);
+    internal::SocketImpl::raiseNetwork("Unable to get flags for socket");
   }
   if (value) {
     if ((flags & O_NONBLOCK) == 0) { // do we need to set flag
       flags |= O_NONBLOCK;
       if (fcntl((int)socket->getHandle(), F_SETFL, flags) != 0) {
-        throw NetworkException("Unable to set flags of socket", this);
+        internal::SocketImpl::raiseNetwork("Unable to set flags of socket");
       }
     }
   } else {
     if ((flags & O_NONBLOCK) != 0) { // do we need to clear flag
       flags &= ~O_NONBLOCK;
       if (fcntl((int)socket->getHandle(), F_SETFL, flags) != 0) {
-        throw NetworkException("Unable to set flags of socket", this);
+        internal::SocketImpl::raiseNetwork("Unable to set flags of socket");
       }
     }
   }
@@ -1484,12 +1493,12 @@ bool Socket::getAsynchronous() throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 //   unsigned int buffer = value; // set to zero to disable nonblocking
 //   if (ioctlsocket((int)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
-//     throw NetworkException("Unable to set blocking mode", this);
+//     internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
 //   }
 #else // unix
   int flags;
   if ((flags = fcntl((int)socket->getHandle(), F_GETFL)) == -1) {
-    throw NetworkException("Unable to get flags for socket", this);
+    internal::SocketImpl::raiseNetwork("Unable to get flags for socket");
   }
   return flags & FASYNC;
 #endif // flavor
@@ -1499,25 +1508,25 @@ void Socket::setAsynchronous(bool value) throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 //   unsigned int buffer = value; // set to zero to disable nonblocking
 //   if (ioctlsocket((int)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
-//     throw NetworkException("Unable to set blocking mode", this);
+//     internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
 //   }
 #else // unix
   int flags;
   if ((flags = fcntl((int)socket->getHandle(), F_GETFL)) == -1) {
-    throw NetworkException("Unable to get flags for socket", this);
+    internal::SocketImpl::raiseNetwork("Unable to get flags for socket");
   }
   if (value) {
     if ((flags & FASYNC) == 0) { // do we need to set flag
       flags |= FASYNC;
       if (fcntl((int)socket->getHandle(), F_SETFL, flags) != 0) {
-        throw NetworkException("Unable to set flags of socket", this);
+        internal::SocketImpl::raiseNetwork("Unable to set flags of socket");
       }
     }
   } else {
     if ((flags & FASYNC) != 0) { // do we need to clear flag
       flags &= ~FASYNC;
       if (fcntl((int)socket->getHandle(), F_SETFL, flags) != 0) {
-        throw NetworkException("Unable to set flags of socket", this);
+        internal::SocketImpl::raiseNetwork("Unable to set flags of socket");
       }
     }
   }
@@ -1529,14 +1538,14 @@ unsigned int Socket::available() const throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int result;
   if (ioctlsocket((int)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
-    throw NetworkException("Unable to determine the amount of data pending in the input buffer", this);
+    internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer");
   }
   return result;
 #else // unix
   // this implementation is not very portable?
   int result;
   if (ioctl((int)socket->getHandle(), FIONREAD, &result)) {
-    throw NetworkException("Unable to determine the amount of data pending in the incomming queue", this);
+    internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the incomming queue");
   }
   return result;
 #endif // flavor
@@ -1547,14 +1556,14 @@ unsigned int Socket::pending() const throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int result = 0;
 //   if (ioctlsocket((int)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
-//     throw NetworkException("Unable to determine the amount of data pending in the input buffer", this);
+//     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer");
 //   }
   return result;
 #else // unix
   // this implementation is not very portable?
   int result;
   if (ioctl((int)socket->getHandle(), TIOCOUTQ, &result)) {
-    throw NetworkException("Unable to determine the amount of data pending in the outgoing queue", this);
+    internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the outgoing queue");
   }
   return result;
 #endif // flavor
@@ -1581,10 +1590,7 @@ unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocki
       case WSAEWOULDBLOCK: // no data available (only in nonblocking mode)
         return bytesRead; // try later
       default:
-        throw bindCause(
-          NetworkException("Unable to read from socket", this),
-          internal::SocketImpl::getCause()
-        );
+        internal::SocketImpl::raiseNetwork("Unable to read from socket");
       }
     }
 #else // unix
@@ -1601,10 +1607,7 @@ unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocki
       case EAGAIN: // no data available (only in nonblocking mode)
         return bytesRead; // try later
       default:
-        throw bindCause(
-          NetworkException("Unable to read from socket", this),
-          internal::SocketImpl::getCause()
-        );
+        internal::SocketImpl::raiseNetwork("Unable to read from socket");
       }
     }
 #endif // flavor
@@ -1643,10 +1646,7 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
       case WSAESHUTDOWN:
         throw BrokenStream(this);
       default:
-        throw bindCause(
-          NetworkException("Unable to write to socket", this),
-          internal::SocketImpl::getCause()
-        );
+        internal::SocketImpl::raiseNetwork("Unable to write to socket");
       }
     }
 #else // unix
@@ -1665,10 +1665,7 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
       case EPIPE:
         throw BrokenStream(this);
       default:
-        throw bindCause(
-          NetworkException("Unable to write to socket", this),
-          internal::SocketImpl::getCause()
-        );
+        internal::SocketImpl::raiseNetwork("Unable to write to socket");
       }
     }
 #endif // flavor
@@ -1687,10 +1684,7 @@ unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& a
   SocketAddress sa;
   socklen sl = sa.getSize();
   if ((result = ::recvfrom((int)socket->getHandle(),  buffer, size, 0, sa.getValue(), &sl)) == -1) {
-    throw bindCause(
-      NetworkException("Unable to receive from", this),
-      internal::SocketImpl::getCause()
-    );
+    internal::SocketImpl::raiseNetwork("Unable to receive from");
   }
   address = sa.getAddress();
   port = sa.getPort();
@@ -1699,12 +1693,9 @@ unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& a
 
 unsigned int Socket::sendTo(const char* buffer, unsigned int size, const InetAddress& address, unsigned short port) throw(NetworkException) {
   int result = 0;
-  const SocketAddress sa(address, port);
+  const SocketAddress sa(address, port, socket->getDomain());
   if ((result = ::sendto((int)socket->getHandle(), buffer, size, 0, sa.getValue(), sa.getSize())) == -1) {
-    throw bindCause(
-      NetworkException("Unable to send to", this),
-      internal::SocketImpl::getCause()
-    );
+    internal::SocketImpl::raiseNetwork("Unable to send to");
   }
   return result;
 }
@@ -1752,7 +1743,7 @@ void Socket::wait() const throw(NetworkException) {
   
   int result = ::select((int)socket->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == SOCKET_ERROR) {
-    throw NetworkException("Unable to wait for input", this);
+    internal::SocketImpl::raiseNetwork("Unable to wait for input");
   }
 #else // unix
   fd_set rfds;
@@ -1761,7 +1752,7 @@ void Socket::wait() const throw(NetworkException) {
   
   int result = ::select((int)socket->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
-    throw NetworkException("Unable to wait for input", this);
+    internal::SocketImpl::raiseNetwork("Unable to wait for input");
   }
 #endif // flavor
 }
@@ -1778,7 +1769,7 @@ bool Socket::wait(unsigned int microseconds) const throw(NetworkException) {
   
   int result = ::select((int)socket->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == SOCKET_ERROR) {
-    throw NetworkException("Unable to wait for input", this);
+    internal::SocketImpl::raiseNetwork("Unable to wait for input");
   }
   return result != 0; // return true if data available
 #else // unix
@@ -1792,7 +1783,7 @@ bool Socket::wait(unsigned int microseconds) const throw(NetworkException) {
 
   int result = ::select((int)socket->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
-    throw NetworkException("Unable to wait for input", this);
+    internal::SocketImpl::raiseNetwork("Unable to wait for input");
   }
   return result != 0; // return true if data available
 #endif // flavor

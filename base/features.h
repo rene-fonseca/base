@@ -24,19 +24,23 @@
 #define _DK_SDU_MIP__BASE__VERSION "0.9.1"
 #define _DK_SDU_MIP__BASE__RELEASE "1.0 prerelease 1"
 
-// TAG: temporary fix until all symbols have been replaced
-#define _DK_SDU_MIP__BASE__FLAVOUR _DK_SDU_MIP__BASE__FLAVOR
-
 #define _DK_SDU_MIP__BASE__REQUIRE(major, minor, micro) \
   ((major <= _DK_SDU_MIP__BASE__MAJOR_VERSION) && \
   (minor <= _DK_SDU_MIP__BASE__MINOR_VERSION) && \
   (micro <= _DK_SDU_MIP__BASE__MICRO_VERSION))
 
-#if !defined(_DK_SDU_MIP__BASE__CPP_RESTRICT)
-  #define restrict
+// TAG: temporary fix until all symbols have been replaced
+#define _DK_SDU_MIP__BASE__FLAVOUR _DK_SDU_MIP__BASE__FLAVOR
+
+#if !defined(_DK_SDU_MIP__BASE__CPP_RESTRICT) && !defined(restrict)
+  #if (__GNUC__ == 2) || (__GNUC__ == 3)
+    #define restrict __restrict
+  #else
+    #define restrict
+  #endif
 #endif
 
-#if !defined(_DK_SDU_MIP__BASE__CPP_INLINE)
+#if !defined(_DK_SDU_MIP__BASE__CPP_INLINE) && !defined(inline)
   #define inline
 #endif
 
@@ -73,20 +77,8 @@ namespace base {
   #define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 #endif
 
-// #if !defined(TRACE) && !defined(TRACE_MEMBER)
-// #if defined(_DK_SDU_MIP__BASE__TRACE)
-//   #include <base/Trace.h>
-
-//   #define TRACE(text) {Trace::message(text);}
-//   #define TRACE_MEMBER() {Trace::member(this, __PRETTY_FUNCTION__);}
-// #else
-//   #define TRACE(text)
-//   #define TRACE_MEMBER()
-// #endif
-// #endif
-
-#if !defined(ASSERT) && !defined(ASSERTION) // allow macros to be overridden
-#if defined(_DK_SDU_MIP__BASE__DEBUG)
+// allow macros to be overridden
+#if defined(DEBUG) && !defined(ASSERT) && !defined(ASSERTION)
   #include <base/Trace.h>
   #define _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE) #VALUE
   #define _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(VALUE) _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE)
@@ -95,7 +87,6 @@ namespace base {
 #else
   #define ASSERT(expression)
   #define ASSERTION(expression)
-#endif
 #endif
 
 #endif

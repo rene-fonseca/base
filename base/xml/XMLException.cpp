@@ -11,7 +11,6 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/xml/XMLException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

@@ -16,6 +16,7 @@
 #include <base/concurrency/ThreadKey.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/concurrency/Synchronize.h>
+#include <base/mem/Allocator.h>
 
 #if defined(__win32__)
   #include <windows.h>
@@ -93,13 +94,8 @@ typedef enum {
     };
   private:
 
-#if defined(__win32__)
     /** Redirects a thread to a specified runnable object. */
-    static DWORD WINAPI execute(Thread* thread) throw();
-#else
-    /** Redirects a thread to a specified runnable object. */
-    static void* execute(Thread* thread) throw();
-#endif
+    static void* entry(Thread* thread) throw();
   private:
 
     /** The parent thread of the thread. */
@@ -110,14 +106,14 @@ typedef enum {
     volatile bool terminated;
     /** Termination status. */
     ThreadTermination termination;
-    /** Event used to start thread. */
-    Event event;
 #if defined(__win32__)
     /** Handle to the thread. */
     HANDLE threadHandle;
     /** Identifier for the thread. */
     DWORD threadID;
-#else
+#else // pthread
+    /** Event used to start thread. */
+    Event event;
     /** Identifier for the thread. */
     pthread_t threadID;
 #endif
@@ -144,7 +140,7 @@ typedef enum {
     /**
       Returns the thread object associated with the executing thread.
     */
-    static char* getLocalStorage() throw();
+    static Allocator<char>* getLocalStorage() throw();
 
     /**
       Makes the executing thread sleep for at least the specified time.
@@ -213,12 +209,12 @@ typedef enum {
       Returns the thread that created this thread. Returns NULL for the main
       thread.
     */
-    inline Thread* getParent() const throw() {return parent;};
+    inline Thread* getParent() const throw() {return parent;}
 
     /**
       Returns the termination state.
     */
-    ThreadTermination getTerminationState() const throw() {return termination;};
+    inline ThreadTermination getTerminationState() const throw() {return termination;}
 
     /**
       Returns true if the thread is alive and kicking.
@@ -278,6 +274,11 @@ typedef enum {
       Writes a string representation of a thread object to a format stream.
     */
     friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value);
+
+    /**
+      Internal class responsible for initializing the main thread object.
+    */
+    friend class MainThread;
   };
 
 /**

@@ -3,69 +3,129 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <config.h>
+
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/MutualExclusion.h>
 
 #if defined(__win32__)
-  #include <stdlib.h>
-#else
+  #include <windows.h>
+  #include <stdio.h>
+#else // pthread
   #include <pthread.h>
   #include <signal.h>
   #include <time.h>
   #include <sys/time.h>
   #include <unistd.h>
-  #include <stdlib.h>
 #endif
 
-// Pointer to thread object of executing thread
-ThreadKey<Thread> executingThread;
-// Pointer to thread local storage
-ThreadKey<char> threadLocalStorage;
-// The main thread object.
-//Thread mainThread;
+/**
+  The class is used to make a Thread object for the current context.
+*/
+class MainThread {
+private:
 
-#if defined(__win32__)
-DWORD WINAPI Thread::execute(Thread* thread) throw() {
-#else
-void* Thread::execute(Thread* thread) throw() {
-#endif
+  Thread thread;
+public:
+
+  /**
+    Initialize thread object for the current context.
+  */
+  inline MainThread() throw() : thread() {}
+
+  inline Thread* getThread() throw() {
+    return &thread;
+  }
+};
+
+// Setup main thread object
+MainThread mainThread; // used this variable through 'threadLocal'
+
+/**
+  This class is used to initialize and destroy the thread local resources.
+*/
+class ThreadLocal {
+private:
+
+  /** Thread object */
+  static ThreadKey<Thread> thread;
+  /** Thread local storage */
+  static ThreadKey<Allocator<char> > storage;
+public:
+
+  ThreadLocal(Thread* thread) {
+    this->thread.setKey(thread);
+    // storage.setKey(new Allocator<char>(THREAD_LOCAL_STORAGE)); 
+  }
+
+  static inline Thread* getThread() throw() {
+    return thread.getKey();
+  }
+
+  static inline Allocator<char>* getStorage() throw() {
+    return storage.getKey();
+  }
+
+  ~ThreadLocal() {
+    // free thread local storage
+    //    delete getStorage();
+  }
+};
+
+/** Thread object */
+ThreadKey<Thread> ThreadLocal::thread;
+/** Thread local storage */
+ThreadKey<Allocator<char> > ThreadLocal::storage;
+
+// Setup thread local variables for the main thread
+ThreadLocal threadLocal(mainThread.getThread());
+
+
+
+void* Thread::entry(Thread* thread) throw() {
   try {
-    executingThread.setKey(thread);
-    threadLocalStorage.setKey((char*)malloc(THREAD_LOCAL_STORAGE));
+    ThreadLocal local(thread);
+#if !defined(__win32__)
     thread->event.wait(); // wait until signaled
-
+#endif
     try {
       thread->getRunnable()->run();
       thread->termination = NORMAL;
+      /*
       Thread* parent = thread->getParent();
       if (parent) {
-        parent->onChildTermination(thread);
+        parent->onChildTermination(thread); // signal parent
       }
+      */
     } catch(...) {
       thread->termination = EXCEPTION; // uncaugth exception
     }
-
-    free(getLocalStorage());
   } catch(...) {
     thread->termination = INTERNAL; // hopefully we will never end up here
   }
+
+  while (true) {
+   fout << "ENDING THREAD: " << (unsigned int)thread << EOL << FLUSH;
+   Thread::sleep(1);
+  }
+
   return 0;
 }
 
 void Thread::exit() throw() {
 #if defined(__win32__)
   ExitThread(0); // will properly create resource leaks
-#else
+#else // pthread
   pthread_exit(0); // will properly create resource leaks
 #endif
 }
 
 Thread* Thread::getThread() throw() {
-  return executingThread.getKey();
+  return ThreadLocal::getThread();
 }
 
-char* Thread::getLocalStorage() throw() {
-  return threadLocalStorage.getKey();
+Allocator<char>* Thread::getLocalStorage() throw() {
+  return ThreadLocal::getStorage();
 }
 
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
@@ -74,7 +134,7 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
   }
 #if defined(__win32__)
   Sleep(nanoseconds/1000);
-#else
+#else // __unix__
   struct timespec interval;
   interval.tv_sec = nanoseconds / 1000000000;
   interval.tv_nsec = nanoseconds % 1000000000;
@@ -90,7 +150,7 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
   }
 #if defined(__win32__)
   Sleep(microseconds/1000);
-#else
+#else // __unix__
   struct timespec interval;
   interval.tv_sec = microseconds / 1000000;
   interval.tv_nsec = (microseconds % 1000000) * 1000;
@@ -106,7 +166,7 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
   }
 #if defined(__win32__)
   Sleep(milliseconds);
-#else
+#else // __unix__
   struct timespec interval;
   interval.tv_sec = milliseconds / 1000;
   interval.tv_nsec = (milliseconds % 1000) * 1000000;
@@ -122,7 +182,7 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
   }
 #if defined(__win32__)
   Sleep(seconds * 1000);
-#else
+#else // __unix__
   struct timespec interval;
   interval.tv_sec = seconds;
   interval.tv_nsec = 0;
@@ -134,10 +194,10 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
 
 void Thread::yield() throw() {
 #if defined(__win32__)
-  Sleep(0);
+  SwitchToThread(); // no errors
 #elif defined(HAVE_PTHREAD_YIELD)
   pthread_yield(); // ignore errors
-#else
+#else // __unix__
   sched_yield(); // ignore errors
 #endif
 }
@@ -152,40 +212,70 @@ void Thread::onChildTermination(Thread* thread) {
 
 
 
-Thread::Thread() throw() {
-  this->runnable = NULL;
+Thread::Thread() throw() :
+  runnable(0), parent(0), terminated(false), termination(ALIVE) {
 #if defined(__win32__)
   threadHandle = GetCurrentThread();
   threadID = GetCurrentThreadId();
-#else
+#else // pthread
   threadID = pthread_self();
 #endif
-  terminated = false;
-  termination = ALIVE;
-  parent = NULL;
-  executingThread.setKey(this);
-  threadLocalStorage.setKey((char*)malloc(THREAD_LOCAL_STORAGE));
 }
 
-Thread::Thread(Runnable* runnable) throw(ResourceException) {
-  this->runnable = runnable;
-  threadID = 0;
-  terminated = false;
-  termination = ALIVE;
+Thread::Thread(Runnable* runnable) throw(ResourceException) :
+  runnable(runnable), threadID(0), terminated(false), termination(ALIVE) {
   parent = getThread(); // must never be NULL
-
 #if defined(__win32__)
-  if (threadHandle = CreateThread(NULL, 0, execute, this, 0, &threadID)) {
-    throw ResourceException(__func__);
+  // we need to grant SYNCHRONIZE access so we can join the thread object
+/*
+  EXPLICIT_ACCESS ea;
+
+  BuildExplicitAccessWithName(&ea, "CURRENT_USER", SYNCHRONIZE, GRANT_ACCESS, NO_INHERITANCE);
+
+  PACL newACL;
+  if (SetEntriesInAcl(1, &ea, NULL, &newACL) != ERROR_SUCCESS) {
+    throw ResourceException("Unable to create thread");
   }
-#else
+
+  PSECURITY_DESCRIPTOR sd = (PSECURITY_DESCRIPTOR)LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH);
+  if (!sd) {
+    LocalFree(newACL);
+    throw ResourceException("Unable to create thread");
+  }
+  if (!InitializeSecurityDescriptor(sd, SECURITY_DESCRIPTOR_REVISION)) {
+    LocalFree(sd);
+    LocalFree(newACL);
+    throw ResourceException("Unable to create thread");
+  }
+
+  if (!SetSecurityDescriptorDacl(sd, true, newACL, false)) {
+    LocalFree(sd);
+    LocalFree(newACL);
+    throw ResourceException("Unable to create thread");
+  }
+
+  SECURITY_ATTRIBUTES sa;
+  fill<char>((char*)&sa, sizeof(SECURITY_ATTRIBUTES), 0);
+  sa.nLength = sizeof(SECURITY_ATTRIBUTES); 
+  sa.lpSecurityDescriptor = sd;
+  sa.bInheritHandle = false;
+*/
+  if ((threadHandle = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)entry, this, CREATE_SUSPENDED, &threadID)) == NULL) {
+    //    LocalFree(sd);
+    //    LocalFree(newACL);
+    throw ResourceException("Unable to create thread");
+  }
+
+  //  LocalFree(sd);
+  //  LocalFree(newACL);
+#else // pthread
   pthread_attr_t attributes;
   pthread_attr_init(&attributes);
   pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_JOINABLE);
   pthread_attr_setinheritsched(&attributes, PTHREAD_INHERIT_SCHED);
-  if (pthread_create(&threadID, &attributes, (void*(*)(void*))&execute, (void*) this)) {
+  if (pthread_create(&threadID, &attributes, (void*(*)(void*))&entry, (void*) this)) {
     pthread_attr_destroy(&attributes);
-    throw ResourceException();
+    throw ResourceException("Unable to create thread");
   }
   pthread_attr_destroy(&attributes);
 #endif
@@ -231,7 +321,7 @@ bool Thread::isParent() const throw() {
 bool Thread::isSelf() const throw() {
 #if defined(__win32__)
   return GetCurrentThreadId() == threadID;
-#else
+#else // pthread
   return pthread_self() == threadID;
 #endif
 }
@@ -242,15 +332,19 @@ void Thread::join() const throw(ThreadException) {
   }
 #if defined(__win32__)
   WaitForSingleObject(threadHandle, INFINITE);
-#else
+#else // pthread
   if (pthread_join(threadID, NULL)) {
-    throw ThreadException(__func__);
+    throw ThreadException("Unable to join thread");
   }
 #endif
 }
 
 void Thread::start() throw() {
+#if defined(__win32__)
+  ResumeThread((HANDLE)threadHandle);
+#else // pthread
   event.signal();
+#endif
 }
 
 void Thread::terminate() throw() {
@@ -263,15 +357,17 @@ void Thread::terminate() throw() {
 }
 
 Thread::~Thread() throw(ThreadException) {
-  if (isAlive()) {
-    throw ThreadException(__func__);
-  }
-
+  // do not close handle for main thread
+  if (getParent() != 0) {
+    if (isAlive()) {
+      throw ThreadException();
+    }
 #if defined(__win32__)
-  if (!CloseHandle(threadHandle)) {
-    ThreadException(__func__);
-  }
+    if (!CloseHandle(threadHandle)) {
+      ThreadException("Unable to release thread");
+    }
 #endif
+  }
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value) {

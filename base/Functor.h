@@ -16,9 +16,32 @@
 
 #include <base/Base.h>
 #include <base/Primitives.h>
-#include <string.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+namespace isoc {
+  typedef unsigned int size_t;
+
+#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCPY)
+  extern "C" void* memcpy(void* restrict, const void* restrict, size_t);
+#endif
+
+#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCMP)
+  extern "C" int memcmp(const void*, const void*, size_t);
+#endif
+
+#if defined(_DK_SDU_MIP__BASE__HAVE_MEMMOVE)
+  extern "C" void* memmove(void*, const void*, size_t);
+#endif
+
+#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCHR)
+  extern "C" void* memchr(const void*, int, size_t);
+#endif
+
+#if defined(_DK_SDU_MIP__BASE__HAVE_MEMSET)
+  extern "C" void* memset(void*, int, size_t);
+#endif
+}; // end of namespace isoc
 
 /**
   Specifies whether or not the type is relocateable (i.e. objects may be moved
@@ -51,7 +74,7 @@ template<class TYPE>
 inline bool equal(const TYPE* left, const TYPE* right, unsigned int count) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCMP)
   if (primitives::Arithmetic<TYPE>::IS_ARITHMETIC) {
-    return memcmp(left, right, count * sizeof(TYPE)) == 0;
+    return isoc::memcmp(left, right, count * sizeof(TYPE)) == 0;
   } else {
 #endif
     const TYPE* end = left + count;
@@ -108,7 +131,7 @@ inline int compare(const TYPE* left, const TYPE* right, unsigned int count) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCMP)
 template<>
 inline int compare<char>(const char* left, const char* right, unsigned int count) {
-  return memcmp(left, right, count);
+  return isoc::memcmp(left, right, count);
 }
 #endif
 
@@ -185,7 +208,7 @@ inline const TYPE* find(const TYPE* element, unsigned int count, TYPE value) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCHR)
 template<>
 inline const char* find(const char* element, unsigned int count, char value) throw() {
-  return pointer_cast<const char*>(memchr(element, value, count));
+  return pointer_cast<const char*>(isoc::memchr(element, value, count));
 }
 #endif
 
@@ -242,7 +265,7 @@ inline void transform(TYPE* element, unsigned int count, const UNOPR& function) 
 
 /** The sequences are expected not to overlap. */
 template<class TYPE, class UNOPR>
-inline void transformByUnary(/*restrict*/ TYPE* result, /*restrict*/ const TYPE* left, unsigned int count, const UNOPR& function) throw() {
+inline void transformByUnary(TYPE* restrict result, const TYPE* restrict left, unsigned int count, const UNOPR& function) throw() {
   while (count) {
     *result = function(*left);
     ++result;
@@ -253,7 +276,7 @@ inline void transformByUnary(/*restrict*/ TYPE* result, /*restrict*/ const TYPE*
 
 /** The sequences are expected not to overlap. */
 template<class TYPE, class BINOPR>
-inline void transformByBinary(/*restrict*/ TYPE* left, /*restrict*/ const TYPE* right, unsigned int count, const BINOPR& function) throw() {
+inline void transformByBinary(TYPE* restrict left, const TYPE* restrict right, unsigned int count, const BINOPR& function) throw() {
   while (count) {
     *left = function(*left, *right);
     ++left;
@@ -264,7 +287,7 @@ inline void transformByBinary(/*restrict*/ TYPE* left, /*restrict*/ const TYPE* 
 
 /** The sequences are expected not to overlap. */
 template<class TYPE, class BINOPR>
-inline void transformByBinary(/*restrict*/ TYPE* result, /*restrict*/ const TYPE* left, /*restrict*/ const TYPE* right, unsigned int count, const BINOPR& function) throw() {
+inline void transformByBinary(TYPE* restrict result, const TYPE* restrict left, const TYPE* restrict right, unsigned int count, const BINOPR& function) throw() {
   while (count) {
     *result = function(*left, *right);
     ++result;
@@ -284,10 +307,10 @@ inline void transformByBinary(/*restrict*/ TYPE* result, /*restrict*/ const TYPE
   @see move
 */
 template<class TYPE>
-inline void copy(/*restrict*/ TYPE* dest, /*restrict*/ const TYPE* src, unsigned int count) throw() {
+inline void copy(TYPE* restrict dest, const TYPE* restrict src, unsigned int count) throw() {
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCPY)
-    memcpy(dest, src, count * sizeof(TYPE));
+    isoc::memcpy(dest, src, count * sizeof(TYPE));
 #else
     // TAG: should I align the first long word
     unsigned long long bytesToCopy = count * sizeof(TYPE);
@@ -327,7 +350,7 @@ template<class TYPE>
 inline void move(TYPE* dest, const TYPE* src, unsigned int count) throw() {
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMMOVE)
-    memmove(dest, src, count * sizeof(TYPE));
+    isoc::memmove(dest, src, count * sizeof(TYPE));
 #else
     // TAG: should I align the first long word
     unsigned long long bytesToMove = count * sizeof(TYPE);
@@ -359,7 +382,7 @@ inline void move(TYPE* dest, const TYPE* src, unsigned int count) throw() {
 
 /** Swaps the elements of of two sequences. The sequences are expected not to overlap. */
 template<class TYPE>
-inline void swap(/*restrict*/ TYPE* left, /*restrict*/ TYPE* right, unsigned int count) throw() {
+inline void swap(TYPE* restrict left, TYPE* restrict right, unsigned int count) throw() {
   const TYPE* end = left + count;
   while (left < end) {
     swapper(*left, *right);
@@ -381,7 +404,7 @@ inline void fill(TYPE* dest, unsigned int count, TYPE value) throw() {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMSET)
 template<>
 inline void fill<char>(char* dest, unsigned int count, char value) throw() {
-  memset(dest, value, count);
+  isoc::memset(dest, value, count);
 }
 #endif
 

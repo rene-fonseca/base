@@ -27,15 +27,18 @@ class Group;
   @short User
   @ingroup security
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.1
 */
 
 class User : public Object {
 private:
-
-  /** The identifier of the user. */
-  unsigned long long id;
+  
+  /** Opaque identifier of the user. */
+  void* id;
 public:
+  
+  /** The valid of an invalid identifier. */
+  static const void* const INVALID = static_cast<char*>(0) - 1;
 
   /**
     This exception is raised by the User class to indicate a non-existent user.
@@ -76,61 +79,104 @@ public:
     */
     inline UserException(const char* message, Type type) throw() : Exception(message, type) {}
   };
-
+  
   /**
     Returns the user associated with the current process.
   */
-  static User getCurrentUser() throw();
-
+  static User getCurrentUser() throw(UserException);
+  
   /**
-    Initializes user with id 0.
+    Initializes user as invalid.
   */
-  inline User() throw() : id(0) {}
-
+  inline User() throw() : id(static_cast<char*>(0) - 1) {}
+  
   /**
-    Initializes user by id. Raises 
+    Initializes user by id. Raises OutOfDomain if the specified id is not
+    supported by the platform.
   */
-  User(unsigned long long id) throw(OutOfDomain);
-
+  User(const void* id) throw(OutOfDomain);
+  
   /**
     Initializes user from other user.
   */
   User(const User& copy) throw();
-
+  
+  /**
+    Assignment of user by user.
+  */
+  User& operator=(const User& eq) throw();
+  
   /**
     Initializes user by name.
   */
   User(const String& name) throw(UserException);
-
+  
+  /**
+    Returns true if the users are identical. The method returns true if both
+    users are invalid.
+  */
+  bool operator==(const User& eq) throw();
+  
+  /**
+    Returns false if the users are not identical. The method returns false if
+    both users are invalid.
+  */
+  inline bool operator!=(const User& eq) throw() {
+    return !(*this == eq);
+  }
+  
+  /**
+    Returns true if the user is initialized. This does not mean that the user
+    exists.
+  */
+  inline bool isValid() const throw() {
+    return id != INVALID;
+  }
+  
   /**
     Returns the id of the user.
   */
-  inline unsigned long long getId() const throw() {
+  inline const void* getId() const throw() {
     return id;
   }
-
+  
   /**
     Returns the short name of the account.
   */
   String getName() const throw(UserException);
-
+  
   /**
     Returns the full name of the account.
   */
   String getFullName() const throw(UserException);
-
+  
   /**
     Returns the path of the home folder.
   */
   String getHomeFolder() const throw(UserException);
-
+  
+  /**
+    Returns true if the user is an administrator/root.
+  */
+  bool isAdmin() const throw(UserException);
+  
   /**
     Returns true if the user is a member of the specified group.
 
     @return false if the group doesn't exist.
   */
   bool isMemberOf(const Group& group) throw(UserException);
+  
+  /**
+    Destroys the user object.
+  */
+  ~User() throw();
 };
+
+/**
+  Writes the user id to the format output stream.
+*/
+FormatOutputStream& operator<<(FormatOutputStream& stream, const User& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

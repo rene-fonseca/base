@@ -33,9 +33,12 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class Group : public Object {
 private:
 
-  /** The identifier of the group. */
-  unsigned long long id;
+  /** Opaque identifier of the group. */
+  void* id;
 public:
+
+  /** The valid of an invalid identifier. */
+  static const void* const INVALID = static_cast<char*>(0) - 1;
 
   /**
     This exception is raised by the Group class.
@@ -43,7 +46,7 @@ public:
     @short Group exception
     @ingroup exceptions
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
+    @version 1.1
   */
 
   class GroupException : public Exception {
@@ -76,40 +79,67 @@ public:
     */
     inline GroupException(const char* message, Type type) throw() : Exception(message, type) {}
   };
-
+  
   /**
-    Initializes group with id 0.
+    Initializes group as invalid.
   */
-  inline Group() throw() : id(0) {}
-
+  inline Group() throw() : id(static_cast<char*>(0) - 1) {}
+  
   /**
     Initializes the group by id.
 
     @param id The identifier of the group.
   */
-  Group(unsigned long long) throw(OutOfDomain);
-
+  Group(const void* id) throw(OutOfDomain);
+  
+  /**
+    Initializes group from other group.
+  */
+  Group(const Group& copy) throw();
+  
+  /**
+    Assignment of group by group.
+  */
+  Group& operator=(const Group& eq) throw();
+  
   /**
     Initializes the group by name.
 
     @param name The name of the group.
   */
   Group(const String& name) throw(GroupException);
+  
+  /**
+    Returns true if the groups are identical. The method returns true if both
+    users are invalid.
+  */
+  bool operator==(const Group& eq) throw();
+  
+  /**
+    Returns false if the groups are not identical. The method returns false if
+    both groups are invalid.
+  */
+  inline bool operator!=(const Group& eq) throw() {
+    return !(*this == eq);
+  }
 
   /**
     Initializes group as the primary group of the specified user.
   */
   Group(const User& user) throw(GroupException);
-
+  
   /**
-    Initializaes group from other group.
+    Returns true if the group is initialized. This does not mean that the group
+    exists.
   */
-  Group(const Group& copy) throw();
+  inline bool isInitialized() const throw() {
+    return id != INVALID;
+  }
 
   /**
     Returns the id of the group.
   */
-  inline unsigned long long getId() const throw() {
+  inline const void* getId() const throw() {
     return id;
   }
   
@@ -117,12 +147,22 @@ public:
     Returns the name of the group.
   */
   String getName() const throw(GroupException);
-
+  
   /**
     Returns the members of the group.
   */
   Array<String> getMembers() const throw(GroupException);
+
+  /**
+    Destroys the group object.
+  */
+  ~Group() throw();
 };
+
+/**
+  Writes the group id to the format output stream.
+*/
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Group& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -1,3 +1,7 @@
+# architecture
+arch=X86
+arch_minor=386
+
 # primitive type
 unsigned_char=no
 
@@ -18,6 +22,12 @@ word_order=LITTLE_ENDIAN
 float=IEEE_754_SINGLE_PRECISION
 double=IEEE_754_DOUBLE_PRECISION
 long_double=IEEE_EXTENDED_DOUBLE_PRECISION_96
+
+# os
+os=CYGWIN
+
+# features
+features=_XOPEN_SOURCE:600
 
 # functions
 functions="memchr memcmp memcpy memmove memset nanosleep pselect readdir_r mbrtowc mbsrtowcs"

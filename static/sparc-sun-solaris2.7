@@ -1,3 +1,7 @@
+# architecture
+arch=SPARC
+arch_minor=UNSPECIFIED
+
 # primitive type
 unsigned_char=no
 
@@ -17,7 +21,10 @@ word_order=BIG_ENDIAN
 # floating-point representation
 float=IEEE_754_SINGLE_PRECISION
 double=IEEE_754_DOUBLE_PRECISION
-long_double=IEEE_QUADRUPLE
+long_double=IEEE_QUADRUPLE_PRECISION
+
+# os
+os=SOLARIS
 
 # functions
 functions="memchr memcmp memcpy memmove memset nanosleep readdir_r mbsrtowcs"
@@ -26,4 +33,4 @@ functions="memchr memcmp memcpy memmove memset nanosleep readdir_r mbsrtowcs"
 apis="aio lfs pthread pthread_semaphore pthread_rwlock regexp wide"
 
 # libraries
-lib_pthread="pthread rt"
+libraries="socket:socket socket:nsl -:rt pthread:pthread dl -:m -:c"

@@ -1,5 +1,9 @@
 flavor=win32
 
+# architecture
+arch=X86
+arch_minor=386
+
 # primitive type
 unsigned_char=no
 
@@ -21,8 +25,14 @@ float=IEEE_754_SINGLE_PRECISION
 double=IEEE_754_DOUBLE_PRECISION
 long_double=IEEE_EXTENDED_DOUBLE_PRECISION_96
 
+# os
+os=WINNT4
+
 # functions
 functions="memchr memcmp memcpy memmove memset mbrtowc mbsrtowcs"
 
 # apis
 apis="lfs wide"
+
+# libraries
+libraries="sound:winmm socket:ws2_32 psapi netapi32 kernel32"

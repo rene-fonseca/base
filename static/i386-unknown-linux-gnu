@@ -1,4 +1,8 @@
 # architecture
+arch=X86
+arch_minor=386
+
+# architecture
 unsigned_char=no
 char_size=1
 short_size=2
@@ -13,6 +17,10 @@ float=IEEE_754_SINGLE_PRECISION
 double=IEEE_754_DOUBLE_PRECISION
 long_double=IEEE_EXTENDED_DOUBLE_PRECISION_96
 
+# os
+os=LINUX
+features="_GNU_SOURCE=1 lfs:_LARGEFILE64_SOURCE=1"
+
 # functions
 function_memchr=yes
 functions="memchr memcmp memcpy memmove memset nanosleep pselect readdir_r mbrtowc mbsrtowcs pthread_yield"
@@ -21,7 +29,4 @@ functions="memchr memcmp memcpy memmove memset nanosleep pselect readdir_r mbrto
 api_aio=no
 apis="inet_ipv6 lfs pthread pthread_semaphore pthread_rwlock regexp wide"
 
-lib_inet_ipv6="socket"
-lib_pthread="pthread"
-lib_rt="rt"
-lib_c="c"
+libraries="-:rt pthread:pthread dl -:m -:c"

@@ -70,9 +70,11 @@ void FileDescriptor::Descriptor::setNonBlocking(bool value) throw(IOException) {
 }
 
 FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
+  Trace::message(__PRETTY_FUNCTION__);
   if (handle != OperatingSystem::INVALID_HANDLE) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-    if (!CloseHandle((HANDLE)handle)) {
+    if (!::CloseHandle((HANDLE)handle)) {
+      Trace::message(__PRETTY_FUNCTION__);
       throw IOException("Unable to close file descriptor");
     }
 #else // unix
@@ -85,7 +87,9 @@ FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
 
 
 
-FileDescriptor::FileDescriptor() throw() : fd(new Descriptor()) {
+FileDescriptor::Descriptor FileDescriptor::invalid;
+
+FileDescriptor::FileDescriptor() throw() : fd(&invalid) {
 }
 
 FileDescriptor::FileDescriptor(OperatingSystem::Handle handle) throw() : fd(new Descriptor(handle)) {
@@ -95,14 +99,12 @@ FileDescriptor::FileDescriptor(const FileDescriptor& copy) throw() : fd(copy.fd)
 }
 
 FileDescriptor& FileDescriptor::operator=(const FileDescriptor& eq) throw() {
-  if (&eq != this) { // protect against self assignment
-    fd = eq.fd;
-  }
+  fd = eq.fd; // no need to protect against self assignment
   return *this;
 }
 
 void FileDescriptor::close() throw(IOException) {
-  fd = new Descriptor();
+  fd = &invalid;
 }
 
 int FileDescriptor::getFlags() const throw(IOException) {
@@ -133,6 +135,7 @@ void FileDescriptor::setNonBlocking(bool value) throw(IOException) {
 
 FileDescriptor::~FileDescriptor() throw(IOException) {
   TRACE_MEMBER();
+  Trace::message(__PRETTY_FUNCTION__);
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor& value) {
@@ -143,7 +146,17 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor&
 
 FileDescriptor FileDescriptor::getStandardInput() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return FileDescriptor(GetStdHandle(STD_INPUT_HANDLE));
+  OperatingSystem::Handle handle = ::GetStdHandle(STD_INPUT_HANDLE); // should never fail
+
+  DWORD dontCare;
+  if (::GetNumberOfConsoleMouseButtons(&dontCare) == 0) { // services start without a console
+    handle = OperatingSystem::INVALID_HANDLE; // prevent use of fin, fout, and ferr
+  } else if (!::GetHandleInformation(handle, &dontCare)) {
+    handle = OperatingSystem::INVALID_HANDLE;
+  } else if (::GetFileType(handle) == FILE_TYPE_UNKNOWN) {
+    handle = OperatingSystem::INVALID_HANDLE;
+  }
+  return FileDescriptor(handle);
 #else // unix
   return FileDescriptor(0);
 #endif // flavour
@@ -151,7 +164,17 @@ FileDescriptor FileDescriptor::getStandardInput() throw() {
 
 FileDescriptor FileDescriptor::getStandardOutput() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return FileDescriptor(GetStdHandle(STD_OUTPUT_HANDLE));
+  OperatingSystem::Handle handle = ::GetStdHandle(STD_OUTPUT_HANDLE); // should never fail
+  
+  DWORD dontCare;
+  if (::GetNumberOfConsoleMouseButtons(&dontCare) == 0) { // services start without a console
+    handle = OperatingSystem::INVALID_HANDLE; // prevent use of fin, fout, and ferr
+  } else if (!::GetHandleInformation(handle, &dontCare)) {
+    handle = OperatingSystem::INVALID_HANDLE;
+  } else if (::GetFileType(handle) == FILE_TYPE_UNKNOWN) {
+    handle = OperatingSystem::INVALID_HANDLE;
+  }
+  return FileDescriptor(handle);
 #else // unix
   return FileDescriptor(1);
 #endif // flavour
@@ -159,7 +182,26 @@ FileDescriptor FileDescriptor::getStandardOutput() throw() {
 
 FileDescriptor FileDescriptor::getStandardError() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return FileDescriptor(GetStdHandle(STD_ERROR_HANDLE));
+  OperatingSystem::Handle handle = ::GetStdHandle(STD_ERROR_HANDLE); // should never fail
+
+/*
+  bool isServiceContext = false;
+  HANDLE consoleOutput = ::CreateFile("CONOUT$", 0, 0, 0, OPEN_EXISTING, 0, 0);
+  if (consoleOutput != OperatingSystem::INVALID_HANDLE) {
+    isServiceContext = true;
+    ::CloseHandle(consoleOutput);
+  }
+*/
+  
+  DWORD dontCare;
+  if (::GetNumberOfConsoleMouseButtons(&dontCare) == 0) { // services start without a console
+    handle = OperatingSystem::INVALID_HANDLE; // prevent use of fin, fout, and ferr
+  } else if (!::GetHandleInformation(handle, &dontCare)) {
+    handle = OperatingSystem::INVALID_HANDLE;
+  } else if (::GetFileType(handle) == FILE_TYPE_UNKNOWN) {
+    handle = OperatingSystem::INVALID_HANDLE;
+  }
+  return FileDescriptor(handle);
 #else // unix
   return FileDescriptor(2);
 #endif // flavour

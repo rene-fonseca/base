@@ -34,7 +34,7 @@ class SoundOutputStream : public Object {
 private:
 
   /** Handle to the sound output device. */
-  //OperatingSystem::Handle handle;
+  OperatingSystem::Handle handle;
   /** Event. */
   Event event;
 

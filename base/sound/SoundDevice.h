@@ -58,7 +58,7 @@ public:
   /**
     Initializes the sound device.
   */
-  SoundDevice(unsigned int force) throw();
+  SoundDevice() throw();
 
   /**
     Returns true if the device is readable.

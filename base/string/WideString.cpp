@@ -77,10 +77,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
     return 0; // not found
   }
 
-#if !defined(_DK_SDU_MIP__BASE__CPP_RESTRICT)
-  #define restrict
-#endif
-
   // WARNING: not-compliant with standard which requires returning a non-const
   inline const wchar_t* wcsstr(const wchar_t* restrict ws1, const wchar_t* restrict ws2) throw() {
     if (*ws2) {

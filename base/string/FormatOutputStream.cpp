@@ -147,6 +147,9 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
   case LOCALE:
     context.flags &= ~Symbols::POSIX;
     break;
+  case DEPENDENT:
+    context.justification = Symbols::DEPENDENT;
+    break;
   case LEFT:
     context.justification = Symbols::LEFT;
     break;
@@ -222,13 +225,27 @@ FormatOutputStream& FormatOutputStream::setContext(const Context& context) throw
 
 void FormatOutputStream::addCharacterField(const char* buffer, unsigned int size) throw(IOException) {
   ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
-  if (context.justification == Symbols::LEFT) { // left justification
+
+  Symbols::Justification justification;
+  switch (context.justification) {
+  case Symbols::RIGHT:
+    justification = Symbols::RIGHT;
+    break;
+  case Symbols::LEFT:
+    justification = Symbols::LEFT;
+    break;
+  case Symbols::RADIX: // no radix - use default
+  case Symbols::DEPENDENT:
+    justification = Symbols::LEFT; // TAG: is this locale specific
+  }
+
+  if (justification == Symbols::LEFT) {
     write(buffer, size); // write characters
   }
   if (size < context.width) { // write blanks if required
     unfoldValue(' ', context.width - size);
   }
-  if (context.justification != Symbols::LEFT) { // right justification (could also be Symbols::RADIX)
+  if (context.justification == Symbols::RIGHT) {
     write(buffer, size); // write characters
   }
   context = defaultContext;
@@ -259,9 +276,22 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
     }
   }
 
+  Symbols::Justification justification;
+  switch (context.justification) {
+  case Symbols::LEFT:
+    justification = Symbols::LEFT;
+    break;
+  case Symbols::RIGHT:
+    justification = Symbols::RIGHT;
+    break;
+  case Symbols::RADIX: // no radix - use default
+  case Symbols::DEPENDENT:
+    justification = Symbols::RIGHT; // TAG: is this locale specific
+  }
+
   unsigned int pads = (requiredWidth >= context.width) ? 0 : (context.width - requiredWidth);
 
-  if (context.justification != Symbols::LEFT) { // right justify if RADIX or RIGHT
+  if (justification == Symbols::RIGHT) {
     if ((pads > 0) && ((context.flags & Symbols::ZEROPAD) == 0)) { // write blanks if required
       unfoldValue(' ', pads);
     }
@@ -312,7 +342,7 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
   }
 
   write(buffer, size); // write late buffer
-  if (context.justification == Symbols::LEFT) {
+  if (justification == Symbols::LEFT) {
     unfoldValue(' ', pads);
   }
   context = defaultContext;
@@ -840,9 +870,6 @@ public:
 
   static inline void setBit(unsigned int* value, unsigned int size, unsigned int bit) throw() {
     ASSERT(bit < (size * sizeof(unsigned int) * 8));
-    if (!(bit < (size * sizeof(unsigned int) * 8))) {
-      ferr << "setBit: value=" << Sequence(value, size) << " size=" << size << " bit=" << bit << ENDL;
-    }
     fill(value, size, 0U);
     value[bit/(sizeof(unsigned int) * 8)] = 1U << (bit % (sizeof(unsigned int) * 8));
   }
@@ -1491,7 +1518,13 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
       write(buffer, length); // write characters
     } else {
       unsigned int invertedLength = context.width - length;
-      switch (context.justification) {
+
+      Symbols::Justification justification = context.justification;
+      if (context.justification == Symbols::DEPENDENT) {
+        justification = Symbols::RIGHT; // TAG: is this locale specific
+      }
+
+      switch (justification) {
       case Symbols::LEFT:
         write(buffer, length); // write characters
         unfoldValue(' ', invertedLength);

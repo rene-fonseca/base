@@ -93,8 +93,9 @@ enum Action {
   LOWER, /**< Selects lower case letters (both integers and real numbers). */
   POSIX, /**< Override current locale and use POSIX formatting. */
   LOCALE, /**< Use current locale during formatting. */
+  DEPENDENT, /**< Selects default justification of the field type. This is the default. */
   LEFT, /**< Selects left justification within field. */
-  RIGHT, /**< Selects right justification within field. This is the default. */
+  RIGHT, /**< Selects right justification within field. */
   UNIXEOL, /**< Selects line-feed (LF) as EOL. This is the default for all platforms. */
   WINDOWSEOL, /**< Selects carriage-return followed by line-feed (LF) as EOL. */
   MACEOL, /**< Selects line-feed (LF) followed by carriage-return (CR) as EOL. */

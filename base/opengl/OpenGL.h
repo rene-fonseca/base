@@ -19,14 +19,8 @@
 #include <base/mathematics/Matrix4x4.h>
 #include <base/NotSupported.h>
 
-// TAG: put in gcc specific header
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define CALL_PASCAL __attribute__((stdcall))
-#  define CALL_CPP __attribute__((cdecl))
-#endif
-
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define CALL_OPENGL CALL_PASCAL
+#  define CALL_OPENGL _DK_SDU_MIP__BASE__CALL_PASCAL
 #else
 #  define CALL_OPENGL
 #endif

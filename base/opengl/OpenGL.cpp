@@ -18,6 +18,10 @@
 #include <base/mathematics/Math.h>
 #include <base/mathematics/Vector3D.h>
 
+// TAG: functions imported with glXGetProcAddressARB are context independent (GLX 1.3) (may be static)
+// TAG: this means that we can use dynamic linker class
+// TAG: on win32: functions are context-dependent (must be non-static)
+
 // TAG: put in static description
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  define _DK_SDU_MIP__BASE__OPENGL_LIBRARY "OPENGL32.DLL"
@@ -26,21 +30,27 @@
 #endif // flavor
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define CALL_OPENGL CALL_PASCAL
+#  define CALL_OPENGL _DK_SDU_MIP__BASE__CALL_PASCAL
 #else
 #  define CALL_OPENGL
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-// TAG: fixme - put in namespace/class
-void CALL_OPENGL missing() throw(NotSupported) {
-  // must always raise exception
-  throw NotSupported(Type::getType<OpenGL>());
+// TAG: how should we cast to functions and methods
+template<class RESULT>
+inline RESULT method_cast(void* value) throw() {
+  // sizeof(RESULT) == sizeof(void*)
+  // static_cast<bool>(static_cast<RESULT>(0))
+  union {
+    void* value;
+    RESULT method;
+  } _DK_SDU_MIP__BASE__PACKED temp;
+  temp.method = 0;
+  temp.value = value;
+  return temp.method;
 }
 
-// TAG: move to features header?
-#define STRINGIFY(value) #value
 #define GL(name) {STRINGIFY(gl##name), (OpenGL::FunctionPointer)&OpenGL::gl##name}
 
 namespace opengl {
@@ -48,9 +58,14 @@ namespace opengl {
   // TAG: pthread_once functionality is better
   SpinLock spinLock;
   DynamicLinker* dynamicLinker = 0;
-
+  
   typedef OpenGL::Function (CALL_OPENGL *GetFunction)(const char* name);
   GetFunction getFunction = 0;  
+
+  void CALL_OPENGL missing() throw(OpenGLException) {
+    // must always raise exception (to work with any calling convention/argument list)
+    throw OpenGLException("Function not supported", Type::getType<OpenGL>());
+  }
   
   OpenGL::Descriptor OPEN_GL_1_1[] = {
     GL(Accum),
@@ -577,21 +592,19 @@ OpenGL::Function OpenGL::getFunction(const String& name) throw() {
   return opengl::getFunction(name.getElements());
 }
 
-// void CALL_OPENGL OpenGL::missing() throw(NotSupported) {
-//   // must always raise exception
-//   throw NotSupported(Type::getType<OpenGL>());
-// }
-
 void OpenGL::loadFunctions(Descriptor* descriptor, unsigned int size) throw() {
   const Descriptor* end = descriptor + size;
   while (descriptor < end) {
     ASSERT(descriptor->name && !descriptor->function);
-    this->*(descriptor->function) = getFunction(descriptor->name);
+    if (opengl::getFunction) {
+      this->*(descriptor->function) = opengl::getFunction(descriptor->name);
+    }
     if (this->*(descriptor->function) == 0) {
       this->*(descriptor->function) =
         (OpenGL::Function)opengl::dynamicLinker->getUncertainSymbol(descriptor->name);
       if (this->*(descriptor->function) == 0) {
-        this->*(descriptor->function) = (OpenGL::Function)&missing;
+    fout << "gl function: " << descriptor->name << " NOT AVAILABLE" << ENDL;
+        this->*(descriptor->function) = (OpenGL::Function)&opengl::missing;
       }
     }
     ++descriptor;
@@ -602,9 +615,11 @@ void OpenGL::fixMissing(Descriptor* descriptor, unsigned int size) throw() {
   const Descriptor* end = descriptor + size;
   while (descriptor < end) {
     ASSERT(descriptor->name && !descriptor->function);
-    this->*(descriptor->function) = getFunction(descriptor->name);
+    if (opengl::getFunction) {
+      this->*(descriptor->function) = opengl::getFunction(descriptor->name);
+    }
     if (this->*(descriptor->function) == 0) {
-      this->*(descriptor->function) = (OpenGL::Function)&missing;
+      this->*(descriptor->function) = (OpenGL::Function)&opengl::missing;
     }
     ++descriptor;
   }
@@ -618,18 +633,31 @@ OpenGL::OpenGL(unsigned int latest) throw(OpenGLException) {
   opengl::dynamicLinker = new DynamicLinker(MESSAGE(_DK_SDU_MIP__BASE__OPENGL_LIBRARY));
   assert(opengl::dynamicLinker, OpenGLException("Unable to load OpenGL module", this));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  opengl::getFunction = (opengl::GetFunction)opengl::dynamicLinker->getUncertainSymbol(MESSAGE("wglGetProcAddress")); // TAG: fix cast
+  opengl::getFunction =
+    method_cast<opengl::GetFunction>(
+      opengl::dynamicLinker->getUncertainSymbol(MESSAGE("wglGetProcAddress"))
+    );
+  if (!opengl::getFunction) {
+    latest = 0x010100;
+  }
 #else // unix (glx)
-  opengl::getFunction = (opengl::GetFunction)opengl::dynamicLinker->getUncertainSymbol(MESSAGE("glXGetProcAddressARB")); // TAG: fix cast  
+  // glXGetProcAddressARB is only available from GLX 1.3
+  opengl::getFunction =
+    method_cast<opengl::GetFunction>(
+      opengl::dynamicLinker->getUncertainSymbol(MESSAGE("glXGetProcAddressARB"))
+    );
+  // we do not limit spec 'cause glXGetProcAddressARB would return context independent functions
 #endif // flavor
-  // TAG: use getFunction for glGetString?
-  GetString glGetString = (GetString)opengl::dynamicLinker->getUncertainSymbol(MESSAGE("glGetString")); // TAG: fix cast
-  assert(opengl::getFunction, OpenGLException(this));
+  GetString glGetString =
+    method_cast<GetString>(
+      opengl::dynamicLinker->getUncertainSymbol(MESSAGE("glGetString"))
+    );
   assert(glGetString, OpenGLException(this));
   
   const GLubyte* version = glGetString(OpenGL::VERSION); // loaded above
   
   String temp(Cast::pointer<const char*>(version));
+  fout << temp << ENDL;
   int index = temp.indexOf(' ');
   if (index >= 0) {
     temp.removeFrom(index); // remove implementation specific

@@ -508,7 +508,7 @@ if test $base_explicit_inet_ipv6 = auto; then
     ),
     base_cv_inet_ipv6,
     base_cv_inet_ipv6_libs)
-  base_explicit_ipv6=$base_cv_inet_ipv6
+  base_explicit_inet_ipv6=$base_cv_inet_ipv6
 fi
 AC_BASE_YES(
   base_explicit_inet_ipv6,

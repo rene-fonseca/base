@@ -52,13 +52,13 @@ extern "C" {
 #endif
 
 /**
-  Returns true if the type is void.
+  Returns true if the type is void. Do NOT add specializations for this function.
 */
 template<typename TYPE> inline bool isVoid() {return false;}
 template<> inline bool isVoid<void>() {return true;}
 
 /**
-  Returns true if the type is an integer type.
+  Returns true if the type is an integer type. Do NOT add specializations for this function.
 */
 template<typename TYPE> inline bool isInteger() {return false;}
 template<> inline bool isInteger<bool>() {return true;}
@@ -74,7 +74,7 @@ template<> inline bool isInteger<long long>() {return true;}
 template<> inline bool isInteger<unsigned long long>() {return true;}
 
 /**
-  Returns true if the type is a float, double, or long double.
+  Returns true if the type is a float, double, or long double. Do NOT add specializations for this function.
 */
 template<typename TYPE> inline bool isFloating() {return false;}
 template<> inline bool isFloating<float>() {return true;}
@@ -82,14 +82,24 @@ template<> inline bool isFloating<double>() {return true;}
 template<> inline bool isFloating<long double>() {return true;}
 
 /**
-  Returns true if the type is an arithmetic (integer or floating) type.
+  Returns true if the type is an arithmetic (integer or floating) type. Do NOT add specializations for this function.
 */
 template<typename TYPE> inline bool isArithmetic() {return isInteger<TYPE>() || isFloating<TYPE>();}
 
 /**
-  Returns true if the type is a primitive (built-in) type.
+  Returns true if the type is a primitive (built-in) type. Do NOT add specializations for this function.
+  @see isRelocateable
 */
 template<typename TYPE> inline bool isPrimitive() {return isVoid<TYPE>() || isArithmetic<TYPE>();}
+
+/**
+  Returns true if objects of the specified type are relocateable (i.e. objects
+  may be moved directly from one memory location to another). If this function
+  returns false the objects have to be copy constructed (new location) and then
+  destoyed (old location). Adding specializations for your own types will
+  increase performance for large arrays.
+*/
+template<typename TYPE> inline bool isRelocateable() {return isPrimitive<TYPE>();}
 
 
 
@@ -407,52 +417,52 @@ inline void fill<char>(char* dest, unsigned int count, char value) throw() {
 template<class ARGUMENT, class RESULT>
 class UnaryOperation {
 public:
-  typedef ARGUMENT ArgumentType;
-  typedef RESULT ResultType;
+  typedef ARGUMENT Argument;
+  typedef RESULT Result;
 };
 
 /** Base class of binary operations. */
 template<class FIRST, class SECOND, class RESULT>
 class BinaryOperation {
 public:
-  typedef FIRST FirstType;
-  typedef SECOND SecondType;
-  typedef RESULT ResultType;
+  typedef FIRST FirstArgument;
+  typedef SECOND SecondArgument;
+  typedef RESULT Result;
 };
 
 
 
 /** Binds a value to the first argument of a binary operation. */
 template<class BINOPR>
-class Binder2First : UnaryOperation<typename BINOPR::SecondType, typename BINOPR::ResultType> {
+class Binder2First : UnaryOperation<typename BINOPR::SecondArgument, typename BINOPR::Result> {
 protected:
   const BINOPR& operation;
-  typename BINOPR::FirstType first;
+  typename BINOPR::FirstArgument first;
 public:
-  inline Binder2First(const BINOPR& opr, typename BINOPR::FirstType fst) throw() : operation(opr), first(fst) {};
-  inline ResultType operator()(const typename BINOPR::SecondType& second) const throw() {return operation(first, second);};
+  inline Binder2First(const BINOPR& opr, typename BINOPR::FirstArgument fst) throw() : operation(opr), first(fst) {};
+  inline Result operator()(const typename BINOPR::SecondArgument& second) const throw() {return operation(first, second);};
 };
 
 /** Returns an unary operation from a binary operation using a value as the first argument. */
 template<class BINOPR>
-inline Binder2First<BINOPR> bind2First(const BINOPR& operation, const typename BINOPR::FirstType& value) {
+inline Binder2First<BINOPR> bind2First(const BINOPR& operation, const typename BINOPR::FirstArgument& value) {
   return Binder2First<BINOPR>(operation, value);
 }
 
 /** Binds a value to the second argument of a binary operation. */
 template<class BINOPR>
-class Binder2Second : UnaryOperation<typename BINOPR::FirstType, typename BINOPR::ResultType> {
+class Binder2Second : UnaryOperation<typename BINOPR::FirstArgument, typename BINOPR::Result> {
 protected:
   const BINOPR& operation;
-  typename BINOPR::SecondType second;
+  typename BINOPR::SecondArgument second;
 public:
-  inline Binder2Second(const BINOPR& opr, typename BINOPR::SecondType sec) throw() : operation(opr), second(sec) {};
-  inline ResultType operator()(const typename BINOPR::FirstType& first) const throw() {return operation(first, second);};
+  inline Binder2Second(const BINOPR& opr, typename BINOPR::SecondArgument sec) throw() : operation(opr), second(sec) {};
+  inline Result operator()(const typename BINOPR::FirstArgument& first) const throw() {return operation(first, second);};
 };
 
 /** Returns an unary operation from a binary operation using a value as the second argument. */
 template<class BINOPR>
-inline Binder2Second<BINOPR> bind2Second(const BINOPR& operation, const typename BINOPR::SecondType& value) {
+inline Binder2Second<BINOPR> bind2Second(const BINOPR& operation, const typename BINOPR::SecondArgument& value) {
   return Binder2Second<BINOPR>(operation, value);
 }
 

@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/xml/DOMImplementation.h>
+#include <base/xml/XMLReader.h>
 
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
 //#  include <libxml/xmlmemory.h>
@@ -23,6 +24,19 @@
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+class DOMImplementationImpl : public XMLReader::ErrorHandler,
+                              public XMLReader::ContentHandler {
+private:
+
+  // Document document;
+  /** The root of the tree. */
+  Node root;
+  /** The current node. */
+  Node current;
+public:
+  
+};
 
 bool DOMImplementation::hasFeature(
   const String& name, const String& version) throw() {
@@ -35,43 +49,38 @@ bool DOMImplementation::hasFeature(
   return false;
 }
 
-DocumentType DOMImplementation::createDocumentType(
-  const String& qualifiedName,
-  const String& publicId,
+Document DOMImplementation::createDocument(
+  const String& version) throw(DOMException) {
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+  xmlDoc* doc = xmlNewDoc(
+    Cast::pointer<const xmlChar*>(version.getElements())
+  );
+  assert(doc, DOMException(this));
+  return doc;
+#else
+  throw DOMException(this);
+#endif
+}
+
+Document DOMImplementation::createFromURI(
   const String& systemId) throw(DOMException) {
-  return DocumentType(0); // TAG: fixme
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+  xmlDoc* doc = xmlParseFile(systemId.getElements());
+  assert(doc, DOMException(this));
+  return doc;
+#else
+  throw DOMException(this);
+#endif
 }
 
 Document DOMImplementation::createDocument(
   const String& namespaceURI,
   const String& qualifiedName,
   const DocumentType& doctype) throw(DOMException) {
-  return Document(); // TAG: fixme
+  return 0; // TAG: fixme
 }
-// Document::Document(const String& filename) throw(DOMException) {
-// #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-//   xmlDoc* temp = xmlParseFile(filename.getElements());
-//   assert(temp, DOMException(this));
-//   document = new DocumentImpl(temp);
-// #else
-//   throw DOMException(this);
-// #endif
-// }
 
-// void DOMImplementation::createDocumentFromURI(
-//   Document document, const String& filename, bool indent) throw(DOMException) {
-// #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-//   xmlDoc* doc = (xmlDoc*)document.document->getContext();
-//   // int bytesWritten = xmlSaveFile(filename.getElements(), doc);
-// 	int bytesWritten =
-//     xmlSaveFormatFile(filename.getElements(), doc, indent ? 1 : 0);
-//   assert(bytesWritten >= 0, DOMException(this));
-// #else
-//   throw DOMException(this);
-// #endif
-// }
-
-Document DOMImplementation::createDocument(
+Document DOMImplementation::createDocumentFromString(
   const String& value, Mode mode, unsigned int flags) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlSubstituteEntitiesDefault(
@@ -102,9 +111,7 @@ Document DOMImplementation::createDocument(
 		break;
 	}
   assert(result, DOMException(this));
-  Document document;
-  document.document = new Document::DocumentImpl(result);
-  return document;
+  return result;
 #else
   throw DOMException(this);
 #endif
@@ -113,7 +120,7 @@ Document DOMImplementation::createDocument(
 void DOMImplementation::saveDocument(
   Document document, const String& filename, bool indent) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document.document->getContext();
+  xmlDoc* doc = (xmlDoc*)document.getContext();
 	int bytesWritten =
     xmlSaveFormatFile(filename.getElements(), doc, indent ? 1 : 0);
   assert(bytesWritten >= 0, DOMException(this));
@@ -128,7 +135,7 @@ void DOMImplementation::saveDocument(
   const String& encoding,
   bool indent) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document.document->getContext();
+  xmlDoc* doc = (xmlDoc*)document.getContext();
 	int bytesWritten = xmlSaveFormatFileEnc(
     filename.getElements(),
     doc,
@@ -145,7 +152,7 @@ String DOMImplementation::saveDocumentToMemory(
   Document document, bool spaces) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   // TAG: fixme - xmlIndentTreeOutput = 1 or xmlKeepBlanksDefault(0)
-  xmlDoc* doc = (xmlDoc*)document.document->getContext();
+  xmlDoc* doc = (xmlDoc*)document.getContext();
 	int size = 0;
   xmlChar* buffer;
 	xmlDocDumpFormatMemory(doc, &buffer, &size, spaces ? 1 : 0);
@@ -162,7 +169,7 @@ String DOMImplementation::saveDocumentToMemory(
   Document document, const String& encoding, bool spaces) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   // TAG: fixme - xmlIndentTreeOutput = 1 or xmlKeepBlanksDefault(0)
-  xmlDoc* doc = (xmlDoc*)document.document->getContext();
+  xmlDoc* doc = (xmlDoc*)document.getContext();
 	int size = 0;
   xmlChar* buffer;
 	xmlDocDumpFormatMemoryEnc(

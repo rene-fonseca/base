@@ -64,12 +64,16 @@ public:
   bool hasFeature(const String& name, const String& version) throw();
 
   /**
-    Creates a document type.
+    Creates an empty document.
   */
-  DocumentType createDocumentType(
-    const String& qualifiedName,
-    const String& publicId,
-    const String& systemId) throw(DOMException);
+  Document createDocument(const String& version) throw(DOMException);
+
+  /**
+    Creates a document from a URI.
+
+    @param systemId The URI.
+  */
+  Document createFromURI(const String& systemId) throw(DOMException);
   
   /**
     Creates a document.
@@ -79,10 +83,14 @@ public:
     const String& qualifiedName,
     const DocumentType& doctype) throw(DOMException);
 
-  Document createDocument(
+  /**
+    Creates the document from a string.
+  */
+  Document createDocumentFromString(
     const String& value,
     Mode mode = VALIDATING,
-    unsigned int flags = DETECT_IDS|COMPLETE_ATTRIBUTE_LISTS) throw(DOMException);
+    unsigned int flags = DETECT_IDS|COMPLETE_ATTRIBUTE_LISTS)
+    throw(DOMException);
   
   /**
     Saves the document to the specified file.
@@ -116,8 +124,8 @@ public:
     Saves the document to a string.
 
     @param document The document.
-    @param spaces Specifies whether or not formatting spaces should be added. The
-    default is false.
+    @param spaces Specifies whether or not formatting spaces should be added.
+    The default is false.
   */
   String saveDocumentToMemory(
     Document document, bool spaces = false) throw(DOMException);
@@ -127,8 +135,8 @@ public:
 
     @param document The document.
     @param encoding The encoding.
-    @param spaces Specifies whether or not formatting spaces should be added. The
-    default is false.
+    @param spaces Specifies whether or not formatting spaces should be added.
+    The default is false.
   */
   String saveDocumentToMemory(
     Document document,

@@ -1090,7 +1090,7 @@ void convertFloatingPoint(unsigned int precision, unsigned int* mantissa, unsign
   unsigned int shift = maximum<int>(-(base2Exponent - precision), 0);
   unsigned int valueShift = maximum<int>(base2Exponent - precision, 0);
 
-  unsigned int integerSize = (maximum<int>(maximum<int>(base2Exponent, -base2Exponent), precision)+31)/32 + 1 + 1; // number of words in large integers
+  unsigned int integerSize = (maximum<int>(maximum<int>(base2Exponent, -base2Exponent), precision)+31)/32 + 1 + 50; // number of words in large integers
   // TAG: fix calc of integerSize (use worst case) depends on *(B)^?
 
   unsigned int S[integerSize];

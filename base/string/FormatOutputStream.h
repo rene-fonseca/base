@@ -317,6 +317,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
 FormatOutputStream& operator<<(FormatOutputStream& stream, float value) throw(IOException);
 FormatOutputStream& operator<<(FormatOutputStream& stream, double value) throw(IOException);
 FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) throw(IOException);
+FormatOutputStream& operator<<(FormatOutputStream& stream, void* value) throw(IOException);
 
 
 

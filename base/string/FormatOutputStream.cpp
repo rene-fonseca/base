@@ -1225,6 +1225,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) th
   return stream;
 }
 
+FormatOutputStream& operator<<(FormatOutputStream& stream, void* value) throw(IOException) {
+  return stream << HEX << PREFIX << ZEROPAD << reinterpret_cast<unsigned long>(value);
+}
+
 void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsigned int* mantissa, unsigned int mantissaSize, int base2Exponent, unsigned int valueFlags) throw(IOException) {
   char buffer[128]; // TAG: use maximum limit
   char* output = buffer;

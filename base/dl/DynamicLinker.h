@@ -39,7 +39,7 @@ public:
 
   typedef void (*Function)();
 
-  /** Function descriptor. */
+  /* Function descriptor. */
   struct StaticFunctionDescriptor {
     /** The symbol. */
     const char* symbol;
@@ -54,7 +54,8 @@ public:
   };
 
   template<class TYPE>
-  static inline TYPE getGlobalSymbol(const String& symbol) throw(LinkerException) {
+  static inline TYPE getGlobalSymbol(
+    const String& symbol) throw(LinkerException) {
     return (TYPE)getGlobalSymbolImpl(symbol);
   }
 
@@ -67,7 +68,8 @@ public:
     @param module The path of the module to open.
     @param options The linking options. Default is LAZY.
   */
-  DynamicLinker(const String& module, unsigned int options = LAZY) throw(LinkerException);
+  DynamicLinker(
+    const String& module, unsigned int options = LAZY) throw(LinkerException);
 
   /**
     Returns the address of the specified symbol.

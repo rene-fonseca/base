@@ -58,11 +58,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   typedef unsigned long long uint64;
 #endif
 
+/** 128 bit signed integer. */
 struct int128 {
   uint64 a;
   uint64 b;
 };
 
+/** 128 bit unsigned integer. */
 struct uint128 {
   uint64 a;
   uint64 b;
@@ -75,7 +77,11 @@ typedef uint16 ucs2;
 /** UCS-4 encoded character (ISO/IEC 10646). */
 typedef uint32 ucs4;
 
-/** A void type. */
+/**
+  A void type.
+  
+  @short A void type.
+*/
 struct nothing {
 };
 
@@ -112,7 +118,7 @@ typedef MemorySize ULargestInt; // TAG: could be different
   MESSAGE to generate an object of this class for a given string literal (e.g.
   MESSAGE("Hello World")). Do not call the constructor directly.
 
-  @short String literal
+  @short String literal.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
@@ -224,7 +230,8 @@ inline const TYPE* getNullPointerOf() throw() {
 */
 template<class STRUCT, class FIELD>
 inline unsigned int getFieldOffset(const FIELD STRUCT::* field) throw() {
-  return reinterpret_cast<const char*>(&(static_cast<const STRUCT*>(0)->*field)) - static_cast<const char*>(0);
+  return reinterpret_cast<const char*>(&(static_cast<const STRUCT*>(0)->*field))
+    - static_cast<const char*>(0);
 }
 
 /**
@@ -359,23 +366,27 @@ inline TYPE& getAligned(char* buffer) throw() {
     alignment = 4 * sizeof(long);
   }
   return reinterpret_cast<TYPE*>(
-    (((buffer - static_cast<char*>(0)) + alignment - 1) & ~(alignment - 1)) + static_cast<char*>(0)
+    (((buffer - static_cast<char*>(0)) + alignment - 1) & ~(alignment - 1)) +
+    static_cast<char*>(0)
   );
 }
 
 /**
-  This namespace is a wrapper for information concerning the primitive (built-in) types.
+  This namespace is a wrapper for information concerning the primitive
+  (built-in) types.
   
-  @short Primitive type information
+  @short Primitive type information.
 */
 namespace primitives {
 
   /**
     Specifies whether or not the type is void.
+
+    @short Void information.
   */
   template<class TYPE> class Void {
   public:
-
+    
     enum {IS_VOID = false /**< True if type is void. */};
   };
   
@@ -386,8 +397,9 @@ namespace primitives {
   };
 
   /**
-    Specifies whether or not the type is a cardinal type (this includes the 'bool' primitive).
-
+    Specifies whether or not the type is a cardinal type (this includes the
+    'bool' primitive).
+    
     Example:
     
     <pre>
@@ -400,6 +412,8 @@ namespace primitives {
       }
     }
     </pre>
+
+    @short Cardinal information.
   */
   template<class TYPE> class Cardinal {
   public:
@@ -484,7 +498,6 @@ namespace primitives {
 
     enum {IS_CARDINAL = true};
   };
-  // TAG: what about signed types
   
   /**
     Specifies whether or not the type is a floating point type.
@@ -503,6 +516,8 @@ namespace primitives {
       }
     }
     </pre>
+
+    @short Floating point information.
   */
   template<class TYPE> class FloatingPoint {
   public:
@@ -529,14 +544,18 @@ namespace primitives {
   };
 
   /**
-    Specifies whether or not the given type is an arithmetic (i.e. cardinal or floating) type.
+    Specifies whether or not the given type is an arithmetic (i.e. cardinal or
+    floating) type.
+    
+    @short Arithmetic information.
   */
   template<class TYPE>
   class Arithmetic {
   public:
     enum {
       /** True if the type is an arithmetic type. */
-      IS_ARITHMETIC = Cardinal<TYPE>::IS_CARDINAL || FloatingPoint<TYPE>::IS_FLOATING_POINT
+      IS_ARITHMETIC = Cardinal<TYPE>::IS_CARDINAL ||
+        FloatingPoint<TYPE>::IS_FLOATING_POINT
     };
   };
 
@@ -725,12 +744,9 @@ public:
 
 template<>
 class PrimitiveTraits<float> {
-public:
+public:  
   
-  typedef float Signed;
-  typedef float Unsigned;
-  
-  static const float MAXIMUM = 0; // TAG: get maximum from proper representation
+  static const float MAXIMUM = 0;
   static const float MINIMUM = -MAXIMUM;
 };
 
@@ -738,10 +754,7 @@ template<>
 class PrimitiveTraits<double> {
 public:
   
-  typedef double Signed;
-  typedef double Unsigned;
-  
-  static const double MAXIMUM = 0; // TAG: get maximum from proper representation
+  static const double MAXIMUM = 0;
   static const double MINIMUM = -MAXIMUM;
 };
 
@@ -749,10 +762,7 @@ template<>
 class PrimitiveTraits<long double> {
 public:
   
-  typedef long double Signed;
-  typedef long double Unsigned;
-  
-  static const long double MAXIMUM = 0; // TAG: get maximum from proper representation
+  static const long double MAXIMUM = 0;
   static const long double MINIMUM = -MAXIMUM;
 };
 

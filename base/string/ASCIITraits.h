@@ -274,6 +274,8 @@ public:
   /**
     Unary function object which returns the corresponding lower case of the
     specified character.
+
+    @short Lower case conversion function object.
   */
   class ToLowerCase {
   public:
@@ -286,6 +288,8 @@ public:
   /**
     Unary function object which returns the corresponding upper case of the
     specified character.
+    
+    @short Upper case conversion function object.
   */
   class ToUpperCase {
   public:

@@ -38,7 +38,7 @@ public:
   /** Value which specifies an invalid process id. */
   static const unsigned long INVALID = PrimitiveTraits<unsigned long>::MAXIMUM;
 
-  /** Structure holding the user and system times. */
+  /* Structure holding the user and system times. */
   struct Times {
     /** The user mode time in nanoseconds. */
     uint64 user;

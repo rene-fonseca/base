@@ -88,15 +88,16 @@ public:
   Returns true if two sequences are pairwise equal (non-modifying operation).
 */
 template<class TYPE>
-inline bool equal(const TYPE* left, const TYPE* right, unsigned int count) {
+inline bool equal(
+  const TYPE* left, const TYPE* right, unsigned int count) throw() {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCMP)
   if (primitives::Arithmetic<TYPE>::IS_ARITHMETIC) {
     return isoc::memcmp(left, right, count * sizeof(TYPE)) == 0;
   } else {
 #endif
-    const TYPE* end = left + count;
-    while (left < end) {
-      if (*left != *right) {
+    const TYPE* const end = left + count;
+    while (left != end) {
+      if (!(*left == *right)) {
         return false;
       }
       ++left;
@@ -109,34 +110,39 @@ inline bool equal(const TYPE* left, const TYPE* right, unsigned int count) {
 }
 
 /**
-  Returns the index of the first mismatch between two sequences (non-modifying operation).
+  Returns the index of the first mismatch between two sequences (non-modifying
+  operation).
 
-  @return count if no mismatch was found.
+  @param left The left sequence.
+  @param right The right sequence.
+  
+  @return size if no mismatch was found.
 */
 template<class TYPE>
-inline unsigned int mismatch(const TYPE* left, const TYPE* right, unsigned int count) {
-  unsigned int c = count;
-  while (c) {
-    if (*left != *right) {
-      return count - c;
-    }
+inline unsigned int mismatch(
+  const TYPE* left, const TYPE* right, unsigned int size) throw() {
+  unsigned int temp = size;
+  while (temp && (*left == *right)) {
     ++left;
     ++right;
-    --c;
+    --temp;
   }
-  return count;
+  return size - temp;
 }
 
 /**
   Compare the two sequences (non-modifying operation).
+  
+  @param left The left sequence.
+  @param right The right sequence.
 */
 template<class TYPE>
-inline int compare(const TYPE* left, const TYPE* right, unsigned int count) {
-  // I'm not using memcmp here 'cause this will give problems for big-endian architectures
-  const TYPE* end = left + count;
-  while (left < end) {
-    int temp;
-    if ((temp = compare(*left, *right)) != 0) {
+inline int compare(
+  const TYPE* left, const TYPE* right, unsigned int size) throw() {
+  const TYPE* const end = left + size;
+  while (left != end) {
+    int temp = compare(*left, *right);
+    if (temp != 0) {
       return temp;
     }
     ++left;
@@ -147,21 +153,24 @@ inline int compare(const TYPE* left, const TYPE* right, unsigned int count) {
 
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCMP)
 template<>
-inline int compare<char>(const char* left, const char* right, unsigned int count) {
+inline int compare<char>(
+  const char* left, const char* right, unsigned int count) throw() {
   return isoc::memcmp(left, right, count);
 }
 
 template<>
-inline int compare<uint8>(const uint8* left, const uint8* right, unsigned int count) {
+inline int compare<uint8>(
+  const uint8* left, const uint8* right, unsigned int count) throw() {
   return isoc::memcmp(left, right, count);
 }
 #endif
 
 /**
-  Returns the number of matches of a predicate in a sequence (non-modifying operation).
+  Returns the number of matches of a predicate in a sequence (non-modifying
+  operation).
 */
 template<class TYPE, class UNOPR>
-inline unsigned int count(const TYPE* left, unsigned int c, UNOPR& predicate) {
+inline unsigned int count(const TYPE* left, unsigned int c, UNOPR& predicate) /*throw(...)*/ {
   unsigned int result = 0;
   while (c) {
     if (predicte(*left)) {
@@ -174,22 +183,26 @@ inline unsigned int count(const TYPE* left, unsigned int c, UNOPR& predicate) {
 }
 
 /**
-  Invocates the specified unary operation for each element (non-modifying operation).
+  Invocates the specified unary operation for each element (non-modifying
+  operation).
 */
 template<class TYPE, class UNOPR>
-inline void forEach(const TYPE* element, unsigned int count, UNOPR& function) {
-  const TYPE* end = element + count;
+inline void forEach(
+  const TYPE* element, unsigned int count, UNOPR& function) /*throw(...)*/ {
+  const TYPE* const end = element + count;
   --element;
-  while (++element < end) {
+  while (++element != end) {
     function(*element);
   }
 }
 
 /**
-  Invocates the specified binary operation for each pair of elements (non-modifying operation).
+  Invocates the specified binary operation for each pair of elements
+  (non-modifying operation).
 */
 template<class TYPE, class BINOPR>
-inline void forEach(const TYPE* left, const TYPE* right, unsigned int count, BINOPR& function) {
+inline void forEach(
+  const TYPE* left, const TYPE* right, unsigned int count, BINOPR& function) /*throw(...)*/ {
   while (count) {
     function(*left, *right);
     ++left;
@@ -199,10 +212,12 @@ inline void forEach(const TYPE* left, const TYPE* right, unsigned int count, BIN
 }
 
 /**
-  Invocates the specified binary operation for each element where the element is used as both operands (non-modifying operation).
+  Invocates the specified binary operation for each element where the element is
+  used as both operands (non-modifying operation).
 */
 template<class TYPE, class BINOPR>
-inline void forEachDoBinary(const TYPE* left, unsigned int count, BINOPR& function) {
+inline void forEachDoBinary(
+  const TYPE* left, unsigned int count, BINOPR& function) /*throw(...)*/ {
   while (count) {
     function(*left, *left);
     ++left;
@@ -216,9 +231,9 @@ inline void forEachDoBinary(const TYPE* left, unsigned int count, BINOPR& functi
   @return A pointer to the value if it is present in the sequence otherwise 0.
 */
 template<class TYPE>
-inline const TYPE* find(const TYPE* element, unsigned int count, TYPE value) {
-  const TYPE* end = element + count;
-  while (element < end) {
+inline const TYPE* find(const TYPE* element, unsigned int count, TYPE value) /*throw(...)*/ {
+  const TYPE* const end = element + count;
+  while (element != end) {
     if (*element == value) { // do we have a match
       return element;
     }
@@ -240,7 +255,7 @@ inline const char* find(const char* element, unsigned int count, char value) thr
   @return Pointer to the value if found else 0.
 */
 template<class TYPE, class UNOPR>
-inline const TYPE* findPredicate(const TYPE* left, unsigned int count, const UNOPR& predicate) {
+inline const TYPE* findPredicate(const TYPE* left, unsigned int count, const UNOPR& predicate) /*throw(...)*/ {
   while (count) {
     if (predicate(*left)) { // do we have a match
       return left;
@@ -252,15 +267,16 @@ inline const TYPE* findPredicate(const TYPE* left, unsigned int count, const UNO
 }
 
 /**
-  Returns the index of the first occurance of a value in a sequence (non-modifying operation).
+  Returns the index of the first occurance of a value in a sequence
+  (non-modifying operation).
 
   @return -1 is not found.
 */
 template<class TYPE>
-inline int indexOf(const TYPE* element, unsigned int count, TYPE value) {
+inline int indexOf(const TYPE* element, unsigned int count, TYPE value) /*throw(...)*/ {
   const TYPE* current = element;
-  const TYPE* end = element + count;
-  while (current < end) {
+  const TYPE* const end = element + count;
+  while (current != end) {
     if (*current == value) { // do we have a match
       return current - element;
     }
@@ -277,9 +293,9 @@ inline int indexOf(const TYPE* element, unsigned int count, TYPE value) {
 
 /** Apply an operation to every element in the sequence. */
 template<class TYPE, class UNOPR>
-inline void transform(TYPE* element, unsigned int count, const UNOPR& function) throw() {
-  const TYPE* end = element + count;
-  while (element < end) {
+inline void transform(TYPE* element, unsigned int count, const UNOPR& function) throw() /*throw(...)*/ {
+  const TYPE* const end = element + count;
+  while (element != end) {
     *element = function(*element);
     ++element;
   }
@@ -339,23 +355,23 @@ inline void copy(TYPE* restrict dest, const TYPE* restrict src, unsigned int cou
     long* d = Cast::pointer<long*>(dest);
     const long* s = Cast::pointer<const long*>(src);
     {
-      const TYPE* end = d + bytesToCopy/sizeof(long);
-      while (d < end) {
+      const TYPE* const end = d + bytesToCopy/sizeof(long);
+      while (d != end) {
         *d++ = *s++;
       }
     }
     {
       long* dc = Cast::pointer<char*>(d);
       const long* sc = Cast::pointer<char*>(s);
-      const TYPE* end = dc + bytesToCopy % sizeof(long);
-      while (dc < end) {
+      const TYPE* const end = dc + bytesToCopy % sizeof(long);
+      while (dc != end) {
         *dc++ = *sc++;
       }
     }
 #endif
   } else {
-    const TYPE* end = dest + count;
-    while (dest < end) {
+    const TYPE* const end = dest + count;
+    while (dest != end) {
       *dest++ = *src++;
     }
   }
@@ -381,8 +397,8 @@ inline void move(TYPE* dest, const TYPE* src, unsigned int count) throw() {
 #endif
   } else {
     if (dest < src) {
-      const TYPE* end = dest + count;
-      while (dest < end) {
+      const TYPE* const end = dest + count;
+      while (dest != end) {
         *dest++ = *src++;
       }
     } else {
@@ -399,8 +415,8 @@ inline void move(TYPE* dest, const TYPE* src, unsigned int count) throw() {
 /** Swaps the elements of of two sequences. The sequences are expected not to overlap. */
 template<class TYPE>
 inline void swap(TYPE* restrict left, TYPE* restrict right, unsigned int count) throw() {
-  const TYPE* end = left + count;
-  while (left < end) {
+  const TYPE* const end = left + count;
+  while (left != end) {
     swapper(*left++, *right++);
   }
 }
@@ -408,8 +424,8 @@ inline void swap(TYPE* restrict left, TYPE* restrict right, unsigned int count) 
 /** Sets every element in the sequence to a specified value. */
 template<class TYPE>
 inline void fill(TYPE* dest, unsigned int count, TYPE value) throw() {
-  const TYPE* end = dest + count;
-  while (dest < end) {
+  const TYPE* const end = dest + count;
+  while (dest != end) {
     *dest++ = value;
   }
 }
@@ -493,9 +509,13 @@ public:
   }
 };
 
-/** Returns an unary operation from a binary operation using a value as the first argument. */
+/**
+  Returns an unary operation from a binary operation using a value as the first
+  argument.
+*/
 template<class BINOPR>
-inline Binder2First<BINOPR> bind2First(const BINOPR& operation, const typename BINOPR::FirstArgument& value) {
+inline Binder2First<BINOPR> bind2First(
+  const BINOPR& operation, const typename BINOPR::FirstArgument& value) {
   return Binder2First<BINOPR>(operation, value);
 }
 
@@ -512,7 +532,8 @@ protected:
   SecondArgument second;
 public:
 
-  inline Binder2Second(const BINOPR& _operation, SecondArgument _second) throw() : operation(_operation), second(_second) {
+  inline Binder2Second(const BINOPR& _operation, SecondArgument _second) throw()
+    : operation(_operation), second(_second) {
   }
 
   inline Result operator()(const FirstArgument& first) const throw() {
@@ -520,15 +541,21 @@ public:
   }
 };
 
-/** Returns an unary operation from a binary operation using a value as the second argument. */
+/**
+  Returns an unary operation from a binary operation using a value as the second
+  argument.
+*/
 template<class BINOPR>
-inline Binder2Second<BINOPR> bind2Second(const BINOPR& operation, const typename BINOPR::SecondArgument& value) {
+inline Binder2Second<BINOPR> bind2Second(
+  const BINOPR& operation, const typename BINOPR::SecondArgument& value) throw() {
   return Binder2Second<BINOPR>(operation, value);
 }
 
 
 
-/** Arithmetic addition. */
+/**
+  @short Addition function object.
+*/
 template<class TYPE>
 class Add : BinaryOperation<TYPE, TYPE, TYPE> {
 public:
@@ -538,7 +565,9 @@ public:
   }
 };
 
-/** Arithmetic subtraction. */
+/**
+  @short Subtraction function object.
+*/
 template<class TYPE>
 class Subtract : BinaryOperation<TYPE, TYPE, TYPE> {
 public:
@@ -548,7 +577,9 @@ public:
   }
 };
 
-/** Arithmetic multiplication. */
+/**
+  @short Arithmetic multiplication function object.
+*/
 template<class TYPE>
 class Multiply : BinaryOperation<TYPE, TYPE, TYPE> {
 public:
@@ -558,7 +589,9 @@ public:
   }
 };
 
-/** Arithmetic division. */
+/**
+  @short Arithmetic division function object.
+*/
 template<class TYPE>
 class Divide : BinaryOperation<TYPE, TYPE, TYPE> {
 public:
@@ -568,7 +601,9 @@ public:
   }
 };
 
-/** Arithmetic negation. */
+/**
+  @short Arithmetic negation function object.
+*/
 template<class TYPE>
 class Negate : UnaryOperation<TYPE, TYPE> {
 public:
@@ -578,7 +613,9 @@ public:
   }
 };
 
-/** Returns the absolute value of the specified argument. */
+/**
+  @short Absolute value function object.
+*/
 template<class TYPE>
 class Absolute : UnaryOperation<TYPE, TYPE> {
 public:
@@ -590,7 +627,9 @@ public:
 
 
 
-/** Equality operator. */
+/**
+  @short Equality function object.
+*/
 template<class TYPE>
 class Equal : public BinaryOperation<TYPE, TYPE, bool> {
 public:
@@ -600,17 +639,21 @@ public:
   }
 };
 
-/** Inequality operator. */
+/**
+  @short Inequality function object.
+*/
 template<class TYPE>
 class NotEqual : public BinaryOperation<TYPE, TYPE, bool> {
 public:
   
   inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
-    return left != right;
+    return !(left == right);
   }
 };
 
-/** Greater than operator. */
+/**
+  @short Greater than function object.
+*/
 template<class TYPE>
 class Greater : public BinaryOperation<TYPE, TYPE, bool> {
 public:
@@ -620,7 +663,9 @@ public:
   }
 };
 
-/** Less than operator. */
+/**
+  @short Less than function object.
+*/
 template<class TYPE>
 class Less : public BinaryOperation<TYPE, TYPE, bool> {
 public:
@@ -630,7 +675,9 @@ public:
   }
 };
 
-/** Greater than or equal operator. */
+/**
+  @short Greater than or equal function object.
+*/
 template<class TYPE>
 class GreaterOrEqual : public BinaryOperation<TYPE, TYPE, bool> {
 public:
@@ -640,7 +687,9 @@ public:
   }
 };
 
-/** Less than or equal operator. */
+/**
+  @short Less than or equal function object.
+*/
 template<class TYPE>
 class LessOrEqual : public BinaryOperation<TYPE, TYPE, bool> {
 public:
@@ -650,7 +699,9 @@ public:
   }
 };
 
-/** Logical and. */
+/**
+  @short Logical and function object.
+*/
 template<class TYPE>
 class LogicalAnd : public BinaryOperation<TYPE, TYPE, bool> {
 public:
@@ -660,7 +711,9 @@ public:
   }
 };
 
-/** Logical or. */
+/**
+  @short Logical or function object.
+*/
 template<class TYPE>
 class LogicalOr : public BinaryOperation<TYPE, TYPE, bool> {
 public:
@@ -670,7 +723,9 @@ public:
   }
 };
 
-/** Logical not. */
+/**
+  @short Logical not function object.
+*/
 template<class TYPE>
 class LogicalNot : public UnaryOperation<TYPE, bool> {
 public:
@@ -682,7 +737,9 @@ public:
 
 
 
-/** Bitwise and. */
+/**
+  @short Bitwise and function object.
+*/
 template<class TYPE>
 class BitwiseAnd : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
@@ -692,7 +749,9 @@ public:
   }
 };
 
-/** Bitwise or. */
+/**
+  @short Bitwise or function object.
+*/
 template<class TYPE>
 class BitwiseOr : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
@@ -702,7 +761,9 @@ public:
   }
 };
 
-/** Bitwise exclusive or. */
+/**
+  @short Bitwise exclusive or function object.
+*/
 template<class TYPE>
 class BitwiseExclusiveOr : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
@@ -714,7 +775,8 @@ public:
 
 
 
-/** Returns the value unchanged. */
+/**
+  @short Returns the value unchanged. */
 template<class TYPE>
 class Same : public UnaryOperation<TYPE, TYPE> {
 public:
@@ -724,7 +786,11 @@ public:
   }
 };
 
-/** Sums elements in a sequence. */
+/**
+  This function object calculate the sum of a sequence of objects.
+  
+  @short Summation function object.
+*/
 template<class TYPE, class RESULT = TYPE>
 class Sum : public UnaryOperation<TYPE, RESULT> {
 protected:
@@ -744,7 +810,12 @@ public:
   }
 };
 
-/** Sums the square of elements in a sequence. */
+/**
+  This function object calculates the sums of the square of objects of a
+  sequence.
+
+  @short Square summation function object.
+*/
 template<class TYPE, class RESULT = TYPE>
 class SquareSum : public UnaryOperation<TYPE, RESULT> {
 protected:
@@ -764,7 +835,11 @@ public:
   }
 };
 
-/** Sums the product of elements in two sequences. */
+/**
+  This function object calculates the dot product of two sequences.
+  
+  @short Dot product function object.
+*/
 template<class TYPE, class RESULT = TYPE>
 class DotProduct : public BinaryOperation<TYPE, TYPE, RESULT> {
 protected:
@@ -784,7 +859,12 @@ public:
   }
 };
 
-/** The minimum value in a sequence. */
+/**
+  This function object finds the minimum value of a sequence. The objects should
+  be of an arithmetic type.
+  
+  @short Minimum value function object.
+*/
 template<class TYPE>
 class Minimum : public UnaryOperation<TYPE, TYPE> {
 protected:
@@ -792,8 +872,7 @@ protected:
   TYPE result;
 public:
 
-  inline Minimum(const TYPE& value = 0) throw()
-    : result(value) {
+  inline Minimum(const TYPE& value) throw() : result(value) {
   }
   
   inline void operator()(const TYPE& value) throw() {
@@ -807,7 +886,12 @@ public:
   }
 };
 
-/** The maximum value in a sequence. */
+/**
+  This function object finds the minimum value of a sequence. The objects should
+  be of an arithmetic type.
+  
+  @short Maximum value function object.
+*/
 template<class TYPE>
 class Maximum : public UnaryOperation<TYPE, TYPE> {
 protected:
@@ -815,7 +899,8 @@ protected:
   TYPE result;
 public:
   
-  inline Maximum(const TYPE& value = 0) throw() : result(value) {
+  inline Maximum(const TYPE& value) throw()
+    : result(value) {
   }
   
   inline void operator()(const TYPE& value) throw() {
@@ -834,6 +919,7 @@ public:
 /**
   Class responsible for invocating member functions that takes no arguments.
 
+  @short Member invocation function object.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -870,7 +956,7 @@ public:
   /**
     Invocate member function.
   */
-  inline RESULT operator()(TYPE* object) const {
+  inline RESULT operator()(TYPE* object) const /*throw(...)*/ {
     return (object->*member)();
   }
 };
@@ -883,7 +969,7 @@ public:
   @param member The member function to be invocated.
 */
 template<class TYPE, class RESULT>
-inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) {
+inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) /*throw(...)*/ {
   return InvokeMember<TYPE, RESULT>(member);
 }
 
@@ -943,6 +1029,7 @@ inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) {
     }
   </pre>
 
+  @short Outfix invocation.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -957,20 +1044,20 @@ public:
     PREFIX prefix;
     SUFFIX suffix;
 
-    Invoke(const Invoke& copy); // disable default copy constructor
-    Invoke& operator=(const Invoke& eq); // disable default assignment
+    Invoke(const Invoke& copy) throw();
+    Invoke& operator=(const Invoke& eq) throw();
   public:
     
     inline Invoke(TYPE* _object, PREFIX _prefix, SUFFIX _suffix)
       : object(_object), prefix(_prefix), suffix(_suffix) {
     }
 
-    inline TYPE* operator->() {
+    inline TYPE* operator->() /*throw(...)*/ {
       prefix();
       return object;
     }
 
-    inline ~Invoke() {
+    inline ~Invoke() /*throw(...)*/ {
       suffix();
     }
   };
@@ -982,14 +1069,14 @@ public:
   /**
     Initialize object with specified prefix and suffix.
   */
-  inline InvokeOutfix(TYPE* object, PREFIX prefix, SUFFIX suffix)
+  inline InvokeOutfix(TYPE* object, PREFIX prefix, SUFFIX suffix) throw()
     : invoke(object, prefix, suffix) {
   }
 
   /**
     Dereference.
   */
-  inline Invoke operator->() {
+  inline Invoke operator->() throw() {
     return invoke;
   }
 };
@@ -998,12 +1085,14 @@ public:
   Returns an InvokeOutfix object.
 */
 template<class TYPE, class PREFIX, class SUFFIX>
-inline InvokeOutfix<TYPE, PREFIX, SUFFIX> invokeOutfix(TYPE& object, PREFIX prefix, SUFFIX suffix) {
+inline InvokeOutfix<TYPE, PREFIX, SUFFIX> invokeOutfix(
+  TYPE& object, PREFIX prefix, SUFFIX suffix) /*throw(...)*/ {
   return InvokeOutfix<TYPE, PREFIX, SUFFIX>(&object, prefix, suffix);
 }
 
 template<class TYPE, class PREFIX, class SUFFIX>
-inline InvokeOutfix<TYPE, PREFIX, SUFFIX> invokeOutfix(TYPE* object, PREFIX prefix, SUFFIX suffix) {
+inline InvokeOutfix<TYPE, PREFIX, SUFFIX> invokeOutfix(
+  TYPE* object, PREFIX prefix, SUFFIX suffix) /*throw(...)*/ {
   return InvokeOutfix<TYPE, PREFIX, SUFFIX>(object, prefix, suffix);
 }
 

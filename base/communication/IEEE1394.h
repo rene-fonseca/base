@@ -250,7 +250,7 @@ public:
     PORT_CONNECTED_TO_CHILD
   };
   
-  /** Isochronous data packet header. */
+  /* Isochronous data packet header. */
   struct IsochronousPacketHeader {
     unsigned int length : 16; /**< The length of the packet. */
     unsigned int tag : 2; /**< Isochronous data format tag. */
@@ -284,7 +284,7 @@ protected:
     return (value >> offset) & ((1 << size) - 1);
   }
   
-  /** This structure describes a node of the IEEE 1394 bus. */
+  /* This structure describes a node of the IEEE 1394 bus. */
   struct NodeDescriptor {
     /** Specifies that the node is present. */
     bool present;

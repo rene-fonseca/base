@@ -28,6 +28,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   This is a singleton object for the context of this application. User-defined
   exit codes should start from EXIT_CODE_USER.
 
+  @example testsuite/Application.cpp
+  
   Example:
   <pre>
   class MyApplication : public Application {
@@ -135,7 +137,8 @@ public:
     @param name The formal name.
     @param numberOfArguments The "argc" argument of the entry function main.
     @param arguments The "argv" argument of the entry function main.
-    @param environment The "env" argument of the entry function main. This argument is not required.
+    @param environment The "env" argument of the entry function main. This
+    argument is not required.
   */
   Application(const String& name, int numberOfArguments, const char* arguments[], const char* environment[] = 0) throw(SingletonException, OutOfDomain);
 

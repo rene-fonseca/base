@@ -24,7 +24,8 @@ class AsynchronousReadContext;
 
 /**
   Asynchronous reading operation returned by an asynchronous IO stream.
-
+  
+  @short Asynchronous read operation.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -35,28 +36,33 @@ private:
   Reference<AsynchronousReadContext> context;
 public:
 
+  /**
+    Initializes the handle as invalid.
+  */
+  inline AsynchronousReadOperation() throw() {
+  }
+  
+  /**
+    Initializes the handle to the read operation.
+  */
   inline AsynchronousReadOperation(AsynchronousReadContext* _context) throw()
     : context(_context) {
   }
+  
+  /**
+    Initialization of object from other object.
+  */
+  inline AsynchronousReadOperation(
+    const AsynchronousReadOperation& copy) throw() {
+    context = copy.context;
+  }
 
   /**
-    Initializes invalid object.
+    Assignment of object by object.
   */
-  inline AsynchronousReadOperation() throw() : context(0) {
-  }
-
-  /*
-    Initialization by copying from other object.
-  */
-  inline AsynchronousReadOperation(const AsynchronousReadOperation& copy) throw() {
-    this->context = copy.context;
-  }
-
-  /*
-    Assignment operator.
-  */
-  inline AsynchronousReadOperation& operator=(const AsynchronousReadOperation& eq) throw() {
-    this->context = eq.context;
+  inline AsynchronousReadOperation& operator=(
+    const AsynchronousReadOperation& eq) throw() {
+    context = eq.context;
     return *this;
   }
 

@@ -20,6 +20,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Defines the types of a modifying (has write access to the elements) iterator.
+
+  @short Describes the types of a modifying iterator.
 */
 template<class VALUE>
 class IteratorTraits {
@@ -33,7 +35,10 @@ public:
 };
 
 /**
-  Defines the types of a non-modifying iterator (may only read the values of the elements).
+  Defines the types of a non-modifying iterator (may only read the values of the
+  elements).
+
+  @short Describes the type of a non-modifying iterator.
 */
 template<class VALUE>
 class ReadIteratorTraits {
@@ -47,8 +52,9 @@ public:
 };
 
 /**
-  Iterator interface.
-
+  The base class of all iterators.
+  
+  @short Iterator interface.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -56,7 +62,9 @@ template<class TRAITS>
 class Iterator {
 private:
 
-  /** Used to ensure that the specified traits template argument is an iterator. */
+  /**
+    Used to ensure that the specified traits template argument is an iterator.
+  */
   typedef typename TRAITS::SelfIteratorTraits ValidTraits;
 public:
 

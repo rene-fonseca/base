@@ -2147,7 +2147,7 @@ public:
   };
 
   /**
-    Isochronous channel listener.
+    @short Isochronous channel listener.
   */
   class IsochronousChannelListener {
   public:
@@ -2164,7 +2164,7 @@ public:
   };
 
   /**
-    Function Control Protocol (FCP) listener.
+    @short Function Control Protocol (FCP) listener.
   */
   class FunctionControlProtocolListener {
   public:

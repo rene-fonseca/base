@@ -56,7 +56,7 @@ private:
   FormatOutputStream& stream;
 public:
 
-  /** Simple escape sequence. */
+  /* Simple escape sequence. */
   class Escape {
   private:
     
@@ -66,28 +66,31 @@ public:
     inline Escape(StringLiteral _literal) throw() : literal(_literal) {
     }
     
-    inline FormatOutputStream& operator()(FormatOutputStream& stream) {
+    inline FormatOutputStream& operator()(
+      FormatOutputStream& stream) throw(IOException) {
       return stream << literal;
     }
   };
 
-  /** Set attributes support class. */
+  /* Set attributes support class. */
   class SetAttributes {
   private:
 
     const unsigned int attributes;
   public:
 
-    inline SetAttributes(unsigned int _attributes) throw() : attributes(_attributes) {
+    inline SetAttributes(unsigned int _attributes) throw()
+      : attributes(_attributes) {
     }
     
-    inline FormatOutputStream& operator()(FormatOutputStream& stream) {
+    inline FormatOutputStream& operator()(
+      FormatOutputStream& stream) throw(IOException) {
       ANSIEscapeSequence(stream).setAttributes(attributes);
       return stream;
     }
   };
 
-  /** Set color support class. */
+  /* Set color support class. */
   class SetColor {
   private:
 
@@ -96,16 +99,18 @@ public:
     const Color color;
   public:
 
-    inline SetColor(Method _method, Color _color) throw() : method(_method), color(_color) {
+    inline SetColor(Method _method, Color _color) throw()
+      : method(_method), color(_color) {
     }
 
-    inline FormatOutputStream& operator()(FormatOutputStream& stream) {
+    inline FormatOutputStream& operator()(
+      FormatOutputStream& stream) throw(IOException) {
       (ANSIEscapeSequence(stream).*method)(color);
       return stream;
     }
   };
 
-  /** Set cursor position support class. */
+  /* Set cursor position support class. */
   class SetCursor {
   private:
 
@@ -113,16 +118,18 @@ public:
     const unsigned int column;
   public:
 
-    inline SetCursor(unsigned int _line, unsigned int _column) throw() : line(_line), column(_column) {
+    inline SetCursor(unsigned int _line, unsigned int _column) throw()
+      : line(_line), column(_column) {
     }
     
-    inline FormatOutputStream& operator()(FormatOutputStream& stream) {
+    inline FormatOutputStream& operator()(
+      FormatOutputStream& stream) throw(IOException) {
       ANSIEscapeSequence(stream).setCursor(line, column);
       return stream;
     }    
   };
 
-  /** Cursor movement support class. */
+  /* Cursor movement support class. */
   class MoveCursor {
   private:
 
@@ -131,10 +138,12 @@ public:
     const unsigned int count;
   public:
 
-    inline MoveCursor(Method _method, unsigned int _count) throw() : method(_method), count(_count) {
+    inline MoveCursor(Method _method, unsigned int _count) throw()
+      : method(_method), count(_count) {
     }
 
-    inline FormatOutputStream& operator()(FormatOutputStream& stream) {
+    inline FormatOutputStream& operator()(
+      FormatOutputStream& stream) throw(IOException) {
       (ANSIEscapeSequence(stream).*method)(count);
       return stream;
     }
@@ -143,7 +152,8 @@ public:
   /**
     Initializes the ANSI escape sequence object.
   */
-  inline ANSIEscapeSequence(FormatOutputStream& _stream) throw() : stream(_stream) {
+  inline ANSIEscapeSequence(FormatOutputStream& _stream) throw()
+    : stream(_stream) {
   }
 
   /**
@@ -193,7 +203,8 @@ inline ANSIEscapeSequence::Escape home() throw() {
 }
 
 /** Set the cursor position. */
-inline ANSIEscapeSequence::SetCursor setCursor(unsigned int line, unsigned int column) throw() {
+inline ANSIEscapeSequence::SetCursor setCursor(
+  unsigned int line, unsigned int column) throw() {
   return ANSIEscapeSequence::SetCursor(line, column);
 }
 
@@ -207,12 +218,16 @@ inline ANSIEscapeSequence::MoveCursor down(unsigned int count = 1) throw() {
   return ANSIEscapeSequence::MoveCursor(&ANSIEscapeSequence::down, count);
 }
 
-/** Moves the cursor forward by the specified number of columns. The default is 1. */
+/**
+  Moves the cursor forward by the specified number of columns. The default is 1.
+*/
 inline ANSIEscapeSequence::MoveCursor forward(unsigned int count = 1) throw() {
   return ANSIEscapeSequence::MoveCursor(&ANSIEscapeSequence::forward, count);
 }
 
-/** Moves the cursor backward by the specified number of columns. The default is 1. */
+/**
+  Moves the cursor backward by the specified number of columns. The default is 1.
+*/
 inline ANSIEscapeSequence::MoveCursor backward(unsigned int count = 1) throw() {
   return ANSIEscapeSequence::MoveCursor(&ANSIEscapeSequence::backward, count);
 }
@@ -278,37 +293,48 @@ inline ANSIEscapeSequence::Escape conceal() throw() {
 }
 
 /** Sets the text attributes. */
-inline ANSIEscapeSequence::SetAttributes setAttributes(unsigned int attributes) throw() {
+inline ANSIEscapeSequence::SetAttributes setAttributes(
+  unsigned int attributes) throw() {
   return ANSIEscapeSequence::SetAttributes(attributes);
 }
 
 /** Sets the foreground color. */
-inline ANSIEscapeSequence::SetColor setForeground(ANSIEscapeSequence::Color color) throw() {
+inline ANSIEscapeSequence::SetColor setForeground(
+  ANSIEscapeSequence::Color color) throw() {
   return ANSIEscapeSequence::SetColor(&ANSIEscapeSequence::setForeground, color);
 }
 
 /** Sets the background color. */
-inline ANSIEscapeSequence::SetColor setBackground(ANSIEscapeSequence::Color color) throw() {
+inline ANSIEscapeSequence::SetColor setBackground(
+  ANSIEscapeSequence::Color color) throw() {
   return ANSIEscapeSequence::SetColor(&ANSIEscapeSequence::setBackground, color);
 }
 
 /** Writes the escape sequence to the format output stream. */
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, ANSIEscapeSequence::Escape escape) {
+inline FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  ANSIEscapeSequence::Escape escape) throw(IOException) {
   return escape(stream);
 }
 
 /** Writes the cursor movement escape sequence to the format output stream. */
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, ANSIEscapeSequence::MoveCursor moveCursor) {
+inline FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  ANSIEscapeSequence::MoveCursor moveCursor) throw(IOException) {
   return moveCursor(stream);
 }
 
 /** Writes the attribute escape sequence to the format output stream. */
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, ANSIEscapeSequence::SetAttributes setAttributes) {
+inline FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  ANSIEscapeSequence::SetAttributes setAttributes) throw(IOException) {
   return setAttributes(stream);
 }
 
 /** Writes the color escape sequence to the format output stream. */
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, ANSIEscapeSequence::SetColor setColor) {
+inline FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  ANSIEscapeSequence::SetColor setColor) throw(IOException) {
   return setColor(stream);
 }
 

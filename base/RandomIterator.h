@@ -11,16 +11,15 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__RANDOMITERATOR_H
-#define _DK_SDU_MIP__BASE__RANDOMITERATOR_H
+#ifndef _DK_SDU_MIP__BASE__RANDOM_ITERATOR_H
+#define _DK_SDU_MIP__BASE__RANDOM_ITERATOR_H
 
 #include <base/BidirectionalIterator.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Random iterator interface.
-
+  @short Random iterator interface.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -34,7 +34,7 @@ namespace internal {
 
 void* DebugDynamicMemory::allocate(unsigned int size) throw() {
   unsigned long long newSize = sizeof(Descriptor) + sizeof(unsigned int) * ((size+sizeof(unsigned int)-1)/sizeof(unsigned int) + PREFIX_WORDS + SUFFIX_WORDS);
-  if (newSize > UnsignedInt::MAXIMUM) {
+  if (newSize > PrimitiveTraits<unsigned int>::MAXIMUM) {
     return 0;
   }
 

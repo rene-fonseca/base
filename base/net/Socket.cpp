@@ -325,7 +325,7 @@ void Socket::create(bool stream) throw(IOException) {
 
 void Socket::listen(unsigned int backlog) throw(IOException) {
   SharedSynchronize<LOCK> sharedSynchronize(*this);
-  backlog = minimum<int>(backlog, Int::MAXIMUM); // silently reduce the backlog argument
+  backlog = minimum<int>(backlog, PrimitiveTraits<int>::MAXIMUM); // silently reduce the backlog argument
   if (::listen((int)getHandle(), backlog)) { // may also silently limit backlog
     throw NetworkException("Unable to set queue limit for incomming connections", this);
   }
@@ -533,7 +533,7 @@ unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocki
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-    int result = ::recv((int)socket->getHandle(), buffer, minimum<int>(bytesToRead, Int::MAXIMUM), 0);
+    int result = ::recv((int)socket->getHandle(), buffer, minimum<int>(bytesToRead, PrimitiveTraits<int>::MAXIMUM), 0);
     if (result < 0) { // has an error occured
       switch (::WSAGetLastError()) {
       case WSAEINTR: // interrupted by signal before any data was read
@@ -576,7 +576,7 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-    int result = ::send((int)socket->getHandle(), buffer, minimum<int>(bytesToWrite, Int::MAXIMUM), 0);
+    int result = ::send((int)socket->getHandle(), buffer, minimum<int>(bytesToWrite, PrimitiveTraits<int>::MAXIMUM), 0);
     if (result < 0) { // has an error occured
       switch (::WSAGetLastError()) {
       case WSAEINTR: // interrupted by signal before any data was written

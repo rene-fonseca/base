@@ -60,7 +60,7 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException) {
   switch (::GetFileType(fd->getHandle())) {
   case FILE_TYPE_PIPE:
     if (!::PeekNamedPipe((HANDLE)fd->getHandle(), 0, 0, 0, &bytesAvailable, 0)) {
-      throw IOException();
+      throw IOException(this);
     }
     break;
   case FILE_TYPE_DISK:
@@ -71,29 +71,29 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException) {
       position.QuadPart = 0;
       position.LowPart = ::SetFilePointer((HANDLE)fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
       if ((position.LowPart == INVALID_SET_FILE_POINTER) && (::GetLastError() != NO_ERROR)) {
-        throw IOException();
+        throw IOException(this);
       }
-      bytesAvailable = minimum<long long>(size - position.QuadPart, UnsignedInt::MAXIMUM);
+      bytesAvailable = minimum<long long>(size - position.QuadPart, PrimitiveTraits<unsigned int>::MAXIMUM);
     }
     break;
   case FILE_TYPE_CHAR:
     bytesAvailable = 1; // TAG: fixme
     break;
   default:
-    throw IOException();
+    throw IOException(this);
   }
   return bytesAvailable;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     if (::fstat64(fd->getHandle(), &status) != 0) {
-      throw IOException("Unable to get available bytes");
+      throw IOException("Unable to get available bytes", this);
     }
     return status.st_size;
   #else
     struct stat status;
     if (::fstat(fd->getHandle(), &status) != 0) {
-      throw IOException("Unable to get available bytes");
+      throw IOException("Unable to get available bytes", this);
     }
     return status.st_size;
   #endif
@@ -112,7 +112,7 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int bytesToR
       if (::GetLastError() == ERROR_BROKEN_PIPE) {
         result = 0;
       } else {
-        throw IOException("Unable to read from object");
+        throw IOException("Unable to read from object", this);
       }
     }
 #else // unix
@@ -124,7 +124,7 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int bytesToR
       case EAGAIN: // no data available (only in non-blocking mode)
 //        return bytesRead; // try later
       default:
-        throw IOException("Unable to read from object");
+        throw IOException("Unable to read from object", this);
       }
     }
 #endif // flavour
@@ -178,7 +178,7 @@ void FileDescriptorInputStream::wait() const throw(IOException) {
 
   int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
-    throw IOException("Unable to wait for input");
+    throw IOException("Unable to wait for input", this);
   }
 #endif // flavour
 }
@@ -198,7 +198,7 @@ bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOExcepti
 
   int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
-    throw IOException("Unable to wait for input");
+    throw IOException("Unable to wait for input", this);
   }
   return result; // return true if data available
 #endif // flavour

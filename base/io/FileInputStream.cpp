@@ -26,7 +26,7 @@ unsigned int FileInputStream::available() const throw(FileException) {
   if (position >= size) {
     return 0;
   }
-  return minimum<long long>(size - position, UnsignedInt::MAXIMUM);
+  return minimum<long long>(size - position, PrimitiveTraits<unsigned int>::MAXIMUM);
 }
 
 void FileInputStream::close() throw(FileException) {

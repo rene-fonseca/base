@@ -22,6 +22,7 @@
 #include <base/Primitives.h>
 #include <base/OperatingSystem.h>
 
+// TAG: fix alien header
 #if defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   #include <semaphore.h>
   #include <limits.h>
@@ -45,12 +46,12 @@ class Semaphore : public virtual Object {
 public:
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  static const unsigned int MAXIMUM = Int::MAXIMUM;
+  static const unsigned int MAXIMUM = PrimitiveTraits<int>::MAXIMUM;
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   static const unsigned int MAXIMUM = _POSIX_SEM_VALUE_MAX;
 #else
-  static const unsigned int MAXIMUM = Int::MAXIMUM;
-#endif
+  static const unsigned int MAXIMUM = PrimitiveTraits<int>::MAXIMUM;
+#endif // flavour
 private:
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)

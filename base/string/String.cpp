@@ -35,10 +35,7 @@ String::String(const StringLiteral& string) throw(StringException, MemoryExcepti
 }
 
 String::String(const char* string) throw(StringException, MemoryException) : elements(0) {
-  assert(string, StringException(this)); // make sure string is proper
-  const Character* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
-  assert(terminator, StringException(this)); // maximum length exceeded
-  int numberOfCharacters = terminator - string;
+  int numberOfCharacters = getLengthOfMustBeTerminated(string);
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
   copy(elements->getElements(), string, numberOfCharacters); // no overlap
 }
@@ -61,10 +58,7 @@ String& String::operator=(const StringLiteral& string) throw(StringException, Me
 }
 
 String& String::operator=(const char* string) throw(StringException, MemoryException) {
-  assert(string, StringException(this)); // make sure string is valid // TAG: raise NULLPointer
-  const Character* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
-  assert(terminator, StringException(this)); // maximum length exceeded
-  int numberOfCharacters = terminator - string;
+  int numberOfCharacters = getLengthOfMustBeTerminated(string);
   elements = new ReferenceCountedCapacityAllocator<char>(numberOfCharacters + 1, GRANULARITY);
   copy(elements->getElements(), string, numberOfCharacters); // no overlap
   return *this;

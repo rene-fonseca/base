@@ -626,6 +626,35 @@ public:
   static String getMultibyteString(const wchar* string) throw(NullPointer, MultibyteException, WideStringException);
 
   /**
+    Returns the length of the NULL-terminated string.
+
+    @param string The NULL-terminated string.
+    @param maximum The maximum length of the string. The default is MAXIMUM_LENGTH.
+  */
+  static inline unsigned int getLengthOfMustBeTerminated(const wchar* string, unsigned int maximum = MAXIMUM_LENGTH) throw(StringException) {
+    assert(string, StringException(Type::getType<String>()));
+    const wchar* terminator = find<wchar>(string, maximum, 0);
+    assert(terminator, StringException(Type::getType<String>()));
+    return terminator - string;
+  }
+
+  /**
+    Returns the length of the NULL-terminated string.
+
+    @param string The NULL-terminated string.
+    @param maximum The maximum length of the string. The default is MAXIMUM_LENGTH.
+
+    @return maximum if terminator is not found. 0 if string is invalid (i.e. 0).
+  */
+  static inline unsigned int getLengthOfTerminated(const wchar* string, unsigned int maximum = MAXIMUM_LENGTH) throw() {
+    if (!string) {
+      return 0;
+    }
+    const wchar* terminator = find<wchar>(string, maximum, 0);
+    return terminator ? (terminator - string) : maximum;
+  }
+  
+  /**
     Initializes an empty string.
   */
   WideString() throw();

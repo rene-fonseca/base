@@ -37,28 +37,28 @@ class FormatOutputStream;
 
   @short String literal
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.1
+  @version 1.2
 */
 
 class StringLiteral {
 private:
 
   /** The number of characters occupied by the message without the terminator. */
-  const unsigned int length;
-  /** NULL-terminated message. */
-  const char* message;
+  unsigned int length;
+  /** NULL-terminated literal. */
+  const char* literal;
 public:
 
-  /** Initializes message. Automatically invocated by the macro MESSAGE. */
-  inline StringLiteral(unsigned int _length, const char* _message) throw() : length(_length), message(_message) {}
-  /** Cast to the usual message type. */
-  inline operator const char*() const throw() {return message;}
+  /** Initializes the literal. Automatically invocated by the macro MESSAGE. */
+  inline StringLiteral(unsigned int _length, const char* _literal) throw() : length(_length), literal(_literal) {}
+  /** Cast to the usual literal type. */
+  inline operator const char*() const throw() {return literal;}
   /** Returns the length of the string literal. */
   inline unsigned int getLength() const throw() {return length;}
 };
 
 /** This macro returns a StringLiteral object from a string literal (e.g. MESSAGE("Hello, World")). */
-#define MESSAGE(msg) StringLiteral(sizeof(msg) - 1, msg) // TAG: replace with symbol LITERAL
+#define MESSAGE(literal) StringLiteral(sizeof(literal) - 1, literal)
 
 
 
@@ -128,6 +128,8 @@ public:
 */
 
 class String : public virtual Object {
+  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
+  friend unsigned int hash<String>(const String& value) throw();
 public:
 
   typedef CharTraits Traits;
@@ -199,17 +201,12 @@ protected:
   inline const Character* getBuffer() const throw() {
     return elements->getElements();
   }
-
-  /**
-    Returns the length of a native NULL-terminated string (-1 if not terminated).
-  */
-  int getLengthOfString(const char* string) const throw();
-
+  
   /**
     Sets the length of the string.
   */
   inline void setLength(unsigned int length) throw(StringException, MemoryException) {
-    assert(length <= MAXIMUM_LENGTH, StringException());
+    assert(length <= MAXIMUM_LENGTH, StringException(Type::getType<String>()));
     elements.copyOnWrite(); // we are about to modify the buffer
     elements->setSize(length + 1);
   }
@@ -220,6 +217,35 @@ protected:
   static int compareToIgnoreCase(const char* left, const char* right) throw();
 public:
 
+  /**
+    Returns the length of the NULL-terminated string.
+
+    @param string The NULL-terminated string.
+    @param maximum The maximum length of the string. The default is MAXIMUM_LENGTH.
+  */
+  static inline unsigned int getLengthOfMustBeTerminated(const char* string, unsigned int maximum = MAXIMUM_LENGTH) throw(StringException) {
+    assert(string, StringException(Type::getType<String>()));
+    const char* terminator = find(string, maximum, Traits::TERMINATOR);
+    assert(terminator, StringException(Type::getType<String>()));
+    return terminator - string;
+  }
+
+  /**
+    Returns the length of the NULL-terminated string.
+
+    @param string The NULL-terminated string.
+    @param maximum The maximum length of the string. The default is MAXIMUM_LENGTH.
+
+    @return maximum if terminator is not found. 0 if string is invalid (i.e. 0).
+  */
+  static inline unsigned int getLengthOfTerminated(const char* string, unsigned int maximum = MAXIMUM_LENGTH) throw() {
+    if (!string) {
+      return 0;
+    }
+    const char* terminator = find(string, maximum, Traits::TERMINATOR);
+    return terminator ? (terminator - string) : maximum;
+  }
+  
   /**
     Initializes an empty string.
   */
@@ -870,25 +896,14 @@ public:
   inline const Character* getBytes() const throw() {
     return elements->getElements();
   }
-
-// *******************************************************************************************
-//   FRIEND SECTION
-// *******************************************************************************************
-
-  /**
-    Writes string to format stream.
-  */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
-
-  /**
-    Returns the hash of the string.
-  */
-  friend unsigned int hash<String>(const String& value) throw();
 };
 
 template<>
-int compare<String>(const String& a, const String& b) throw();
+int compare<String>(const String& left, const String& right) throw();
 
+/**
+  Returns the hash of the string.
+*/
 template<>
 unsigned int hash<String>(const String& value) throw();
 

@@ -14,8 +14,8 @@
 #ifndef _DK_SDU_MIP__BASE_OPENGL__OPEN_GL_CONTEXT_H
 #define _DK_SDU_MIP__BASE_OPENGL__OPEN_GL_CONTEXT_H
 
-#include <base/opengl/OpenGLContextImpl.h>
 #include <base/ui/WindowImpl.h>
+#include <base/opengl/OpenGLContextImpl.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -35,7 +35,7 @@ private:
   /**
     Initializes the OpenGL context.
   */
-  nothing initialize() throw(UserInterfaceException);
+  nothing initialize() throw(OpenGLException, UserInterfaceException);
   
   /**
     Releases the rendering context.
@@ -45,28 +45,6 @@ public:
 
   /** OpenGL implementation. */
   OpenGL openGL;
-
-  /** OpenGL support flags. */
-  enum Flag {
-    COLOR_INDEX = 1, /**< Color index. */
-    DOUBLE_BUFFERED = COLOR_INDEX << 1, /**< Request double buffered. */
-    ACCUMULATOR = DOUBLE_BUFFERED << 1, /**< Accumulator. */
-    ALPHA = ACCUMULATOR << 1, /**< Request alpha/transparency support. */
-    DEPTH = ALPHA << 1, /**< Depth buffer support. */
-    STENCIL = DEPTH << 1, /**< Stencil buffer support. */
-    AUX = STENCIL << 1, /**< Auxiliary buffer support. */
-    MULTI_SAMPLE = AUX << 1, /**< Multi sample support. */
-    STEREO = MULTI_SAMPLE << 1, /**< Stereo support. */
-    LUMINANCE = STEREO << 1, /**< Luminance support. */
-    RGB = LUMINANCE << 1,
-    RGB15 = RGB << 1,
-    RGB16 = RGB15 << 1,
-    RGB24 = RGB16 << 1,
-    RGBA32 = RGB24 << 1,
-    OVERLAY = RGBA32 << 1,
-    UNDERLAY = OVERLAY << 1,
-    DIRECT = UNDERLAY << 1 /**< Direct rendering support. */
-  };
   
   /**
     Initializes a new OpenGL context.

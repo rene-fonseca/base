@@ -181,7 +181,7 @@ bool InetAddress::operator==(const InetAddress& eq) throw() {
 
 bool InetAddress::isUnspecified() const throw() {
 #if defined(HAVE_IPV6)
-  return IN6_IS_ADDR_UNSPECIFIED(&address);
+  return IN6_IS_ADDR_UNSPECIFIED((struct in6_addr*)&address);
 #else
   return (uint32_t)address.buffer == htonl(0x00000000);
 #endif // HAVE_IPV6

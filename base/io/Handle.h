@@ -37,9 +37,9 @@ private:
   OperatingSystem::Handle handle;
 
   /* Disable the default copy constructor. */
-  Handle(const Handle& copy);
+  Handle(const Handle& copy) throw();
   /* Disable the default assignment operator. */
-  Handle& operator=(const Handle& eq);
+  Handle& operator=(const Handle& eq) throw();
 public:
 
   /**

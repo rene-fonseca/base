@@ -378,7 +378,11 @@ void Process::terminate(bool force) throw(ProcessException) {
 Process::Times Process::getTimes() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   Process::Times result;
-  ::GetProcessTimes(::GetCurrentProcess(), 0, 0, (FILETIME*)&result.system, (FILETIME*)&result.user);
+  FILETIME system;
+  FILETIME user;
+  ::GetProcessTimes(::GetCurrentProcess(), 0, 0, &system, &user);
+  result.user = *(unsigned long long*)&user * 100ULL;
+  result.system = *(unsigned long long*)&system * 100ULL;
   return result;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__HAVE_GETRUSAGE)
@@ -446,7 +450,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Process::Layout
 #elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) && (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86))
   // text, data, bss begin at 0x08048000 for IA-32
   // last address is 0xbfffffff for IA-32
-      
+  
   stream << MESSAGE("  begin of text segment: ") << 0x08048000 << EOL
          << MESSAGE("  end of data segment: ") << sbrk(0) << EOL
          << MESSAGE("  end of stack segment: ") << 0xbfffffff << EOL;

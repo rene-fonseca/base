@@ -38,9 +38,9 @@ public:
 
   /** Structure holding the user and system times. */
   struct Times {
-    /** The user mode time. */
+    /** The user mode time in nanoseconds. */
     unsigned long long user;
-    /** The system mode time. */
+    /** The system mode time in nanoseconds. */
     unsigned long long system;
   };
 

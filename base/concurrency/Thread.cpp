@@ -14,12 +14,6 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/String.h>
 
-// TAG: exception handling - we need something like static void Exception::initialize() to allow for
-// TAG: need symbol _DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT
-#if (__GNUC__ == 3)
-  #define _DK_SDU_MIP__BASE__EXCEPTION_V3MV
-#endif
-
 #if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
   #include <base/platforms/compiler/v3mv/exception.h> // includes private features
 #endif
@@ -519,13 +513,26 @@ int Thread::getPriority() throw(ThreadException) {
 Thread::Times Thread::getTimes() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   Thread::Times result;
-  ::GetThreadTimes(::GetCurrentThread(), 0, 0, (FILETIME*)&result.system, (FILETIME*)&result.user);
+  FILETIME system;
+  FILETIME user;
+  ::GetThreadTimes(::GetCurrentThread(), 0, 0, &system, &user);
+  result.user = *(unsigned long long*)&user * 100ULL;
+  result.system = *(unsigned long long*)&system * 100ULL;
   return result;
 #else // unix
-  Thread::Times result;
-  result.user = 0;
-  result.system = 0;
-  return result;
+  #if defined(_POSIX_THREAD_CPUTIME)
+    Thread::Times result;
+    struct timespec ts;
+    ::clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts);
+    result.user = ts.tv_sec * 1000000000ULL + ts.tv_nsec;
+    result.system = 0;
+    return result;
+  #else
+    Thread::Times result; // TAG: use current time - time at thread start
+    result.user = 0;
+    result.system = 0;
+    return result;
+  #endif
 #endif // flavor
 }
 

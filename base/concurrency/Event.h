@@ -17,16 +17,16 @@
 #include <base/Object.h>
 #include <base/OutOfDomain.h>
 #include <base/Overflow.h>
-#include <base/concurrency/LockException.h>
 #include <base/ResourceException.h>
 #include <base/OperatingSystem.h>
+#include <base/concurrency/EventException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   This class provides support for threads to wait for signals.
 
-  @short Event signaling mechanism
+  @short Event signaling mechanism.
   @ingroup concurrency
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
@@ -38,51 +38,6 @@ private:
   /** Internal data. */
   void* context;
 public:
-  
-  /**
-    Exception raised by the Event class.
-    
-    @short Event exception.
-    @ingroup concurrency exceptions
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
-  */
-  class EventException : public LockException {
-  public:
-    
-    /**
-      Initializes the exception object with no message.
-    */
-    inline EventException() throw() {
-    }
-    
-    /**
-      Initializes the exception object.
-      
-      @param message The message.
-    */
-    inline EventException(const char* message) throw()
-      : LockException(message) {
-    }
-    
-    /**
-      Initializes the exception object without an associated message.
-      
-      @param type The identity of the type.
-    */
-    inline EventException(Type type) throw() : LockException(type) {
-    }
-    
-    /**
-      Initializes the exception object.
-      
-      @param message An NULL-terminated string (ASCII).
-      @param type The identity of the type.
-    */
-    inline EventException(const char* message, Type type) throw()
-      : LockException(message, type) {
-    }
-  };
 
   /**
     Initializes the event in the non-signaled state.

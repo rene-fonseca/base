@@ -15,8 +15,7 @@
 #define _DK_SDU_MIP__BASE_CONCURRENCY__SEMAPHORE_H
 
 #include <base/Object.h>
-#include <base/Exception.h>
-#include <base/concurrency/LockException.h>
+#include <base/concurrency/SemaphoreException.h>
 #include <base/OutOfDomain.h>
 #include <base/Overflow.h>
 #include <base/Primitives.h>
@@ -40,53 +39,7 @@ private:
   /** Internal semaphore state. */
   void* semaphore;
 public:
-
-  /**
-    Exception raised directly by the Semaphore class on improper use.
-    
-    @short Semaphore exception
-    @ingroup concurrency exceptions
-    @see Semaphore
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.1
-  */
-  class SemaphoreException : public LockException {
-  public:
-    
-    /**
-      Initializes the exception object with no message.
-    */
-    inline SemaphoreException() throw() {
-    }
-
-    /**
-      Initializes the exception object.
-      
-      @param message The message.
-    */
-    inline SemaphoreException(const char* message) throw()
-      : LockException(message) {
-    }
-
-    /**
-      Initializes the exception object without an associated message.
-      
-      @param type The identity of the type.
-    */
-    inline SemaphoreException(Type type) throw() : LockException(type) {
-    }
   
-    /**
-      Initializes the exception object.
-    
-      @param message An NULL-terminated string (ASCII).
-      @param type The identity of the type.
-    */
-    inline SemaphoreException(const char* message, Type type) throw()
-      : LockException(message, type) {
-    }
-  };
-
   /**
     Returns the maximum value the semaphore may have. The maximum value is
     guaranteed to be greater than or equal to 32767 and less then or equal to

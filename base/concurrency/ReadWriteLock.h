@@ -14,10 +14,9 @@
 #ifndef _DK_SDU_MIP__BASE_CONCURRENCY__READ_WRITE_LOCK_H
 #define _DK_SDU_MIP__BASE_CONCURRENCY__READ_WRITE_LOCK_H
 
-#include <base/Exception.h>
-#include <base/Object.h>
 #include <base/ResourceException.h>
 #include <base/concurrency/Lock.h>
+#include <base/concurrency/ReadWriteLockException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -34,59 +33,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.4
 */
 
-class ReadWriteLock : public virtual Lock {
+class ReadWriteLock : public Lock {
 protected:
 
   /** Internal representation of object. */
   void* representation;
 public:
-
-  /**
-    Exception raised directly by the ReadWriteLock class.
-
-    @short Read-write synchronization object exception
-    @ingroup concurrency exceptions
-    @author Rene Moeller Fonseca
-    @version 1.0
-  */
-  class ReadWriteLockException : public LockException {
-  public:
-
-    /**
-      Initializes the exception object with no message.
-    */
-    inline ReadWriteLockException() throw() {
-    }
-
-    /**
-      Initializes the exception object.
-
-      @param message The message.
-    */
-    inline ReadWriteLockException(const char* message) throw()
-      : LockException(message) {
-    }
-
-    /**
-      Initializes the exception object without an associated message.
-      
-      @param type The identity of the type.
-    */
-    inline ReadWriteLockException(Type type) throw()
-      : LockException(type) {
-    }
-
-    /**
-      Initializes the exception object.
-    
-      @param message An NULL-terminated string (ASCII).
-      @param type The identity of the type.
-    */
-    inline ReadWriteLockException(const char* message, Type type) throw()
-      : LockException(message, type) {
-    }
-  };
-
+  
   /**
     Initializes a read-write lock in the unlocked state. Raises
     ResourceException if unable to initialize the object.

@@ -14,10 +14,9 @@
 #ifndef _DK_SDU_MIP__BASE_CONCURRENCY__MUTUAL_EXCLUSION_H
 #define _DK_SDU_MIP__BASE_CONCURRENCY__MUTUAL_EXCLUSION_H
 
-#include <base/Object.h>
-#include <base/Exception.h>
 #include <base/ResourceException.h>
 #include <base/concurrency/Lock.h>
+#include <base/concurrency/MutualExclusionException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -34,60 +33,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class MutualExclusion : public virtual Lock {
+class MutualExclusion : public Lock {
 protected:
 
   /** Internal representation of mutex. */
   void* mutex;
 public:
-
-  /**
-    Exception raised directly by the MutualExclusion class.
-    
-    @short Mutual exclusion exception
-    @ingroup concurrency exceptions
-    @see MutualExclusion
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
-  */
-  class MutualExclusionException : public LockException {
-  public:
-    
-    /**
-      Initializes the exception object with no message.
-    */
-    inline MutualExclusionException() throw() {
-    }
-
-    /**
-      Initializes the exception object.
-      
-      @param message The message.
-    */
-    inline MutualExclusionException(const char* message) throw()
-      : LockException(message) {
-    }
-
-    /**
-      Initializes the exception object without an associated message.
-      
-      @param type The identity of the type.
-    */
-    inline MutualExclusionException(Type type) throw()
-      : LockException(type) {
-    }
   
-    /**
-      Initializes the exception object.
-    
-      @param message An NULL-terminated string (ASCII).
-      @param type The identity of the type.
-    */
-    inline MutualExclusionException(const char* message, Type type) throw()
-      : LockException(message, type) {
-    }
-  };
-
   /**
     Initializes a mutual exclusion object in the unlocked state. Raises
     ResourceException if unable to initialize the object.

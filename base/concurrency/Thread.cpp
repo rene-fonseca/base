@@ -66,10 +66,10 @@ void* Thread::entry(Thread* thread) throw() {
       assert(parent, ThreadException(Type::getType<Thread>()));
       parent->onChildTermination(thread); // signal parent
       // TAG: problem if parent is destroyed before child
-    } catch(...) {
+    } catch (...) {
       thread->state = EXCEPTION; // uncaugth exception
     }
-  } catch(...) {
+  } catch (...) {
     thread->state = INTERNAL; // hopefully we will never end up here
   }
   // TAG: set kernel and user time

@@ -128,7 +128,7 @@ namespace internal {
     StringOutputStream stream;
     try {
       throw;
-    } catch(Exception& e) {
+    } catch (Exception& e) {
       stream << MESSAGE("Internal error: exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
       if (e.getType().isInitialized()) {
         stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
@@ -148,7 +148,7 @@ namespace internal {
         stream << MESSAGE(" cause ") << HEX << setWidth(10) << ZEROPAD << cause;
       }
       stream << MESSAGE(" in violation with exception specification during application initialization or cleanup.") << FLUSH;
-    } catch(...) {
+    } catch (...) {
       stream << MESSAGE("Internal error: unsupported exception was raised in violation with exception specification during application initialization or cleanup.") << FLUSH;
     }
     Trace::message(stream.getString().getElements());

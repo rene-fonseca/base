@@ -39,7 +39,7 @@ public:
     if (exceptionType.isInitialized()) {
       try {
         throw;
-      } catch(Exception& e) {
+      } catch (Exception& e) {
         stream << MESSAGE("Internal error: uncaught exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
         if (e.getType().isInitialized()) {
           stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
@@ -59,7 +59,7 @@ public:
           stream << MESSAGE(" cause ") << HEX << setWidth(10) << ZEROPAD << cause;
         }
         stream << '.' << FLUSH;
-      } catch(...) {
+      } catch (...) {
         stream << MESSAGE("Internal error: uncaught and unsupported exception '") << TypeInfo::getTypename(exceptionType) << MESSAGE("' was raised.") << FLUSH;
       }
     } else {
@@ -79,7 +79,7 @@ public:
     if (exceptionType.isInitialized()) {
       try {
         throw;
-      } catch(Exception& e) {
+      } catch (Exception& e) {
         stream << MESSAGE("Internal error: exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
         if (e.getType().isInitialized()) {
           stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
@@ -99,7 +99,7 @@ public:
           stream << MESSAGE(" cause ") << HEX << setWidth(10) << ZEROPAD << cause;
         }
         stream << MESSAGE(" in violation with exception specification.") << FLUSH;
-      } catch(...) {
+      } catch (...) {
         stream << MESSAGE("Internal error: unsupported exception '") << TypeInfo::getTypename(exceptionType) << MESSAGE("' was raised in violation with exception specification.") << FLUSH;
       }
     } else {

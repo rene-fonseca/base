@@ -18,7 +18,8 @@
   This header file defines the global symbols that are used to configure the
   framework.
 
-  The following symbols must be defined by <base/platforms/platform.h>:
+  The following symbols must be defined by the private and public configuration
+  header.
 
     // Specifies the flavor
     _DK_SDU_MIP__BASE__FLAVOR

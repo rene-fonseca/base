@@ -220,10 +220,10 @@ ProcessPreinitialization::~ProcessPreinitialization() throw() {
 ProcessPreinitialization::ProcessPreinitialization() throw() {
   // pthread_t is an arithmetic type according to The Single UNIX Specification, Version 2
   if (!((sizeof(Thread::Identifier) >= sizeof(pthread_t)) && // Thread (pthread support)
-        (sizeof(int) >= sizeof(time_t)) && // Date
+        (sizeof(long) >= sizeof(time_t)) && // Date
         (sizeof(unsigned long) >= sizeof(pid_t)))) { // Process
     Trace::message("Type mismatch detected."); // no stream initialized at this point
-    exit(Application::EXIT_CODE_INITIALIZATION);
+    exit(Application::EXIT_CODE_INITIALIZATION); // TAG: segfaults for sparcv9
   }
 }
 

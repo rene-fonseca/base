@@ -69,7 +69,7 @@ const int Date::DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR[Date::MONTHS_PER_YEAR + 1] 
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 inline Date FileTimeToDate(const FILETIME& time) throw() {
-  return Date((*(unsigned long long*)(&time) - 116444736000000000ULL)/10000000);
+  return Date((*(uint64*)(&time) - 116444736000000000ULL)/10000000);
 }
 #endif
 
@@ -78,13 +78,13 @@ int Date::normalize(DateTime& dateTime, bool redundancy) throw() {
   
   int month = dateTime.month;
   carrier = month/MONTHS_PER_YEAR;
-  dateTime.month = month%MONTHS_PER_YEAR;
+  dateTime.month = month % MONTHS_PER_YEAR;
   if (month < 0) {
     --carrier; // borrow
     dateTime.month += MONTHS_PER_YEAR;
   }
 
-  long long year = dateTime.year + carrier;
+  int64 year = dateTime.year + carrier;
 
   carrier = dateTime.millisecond/1000;
   dateTime.millisecond %= 1000;
@@ -93,7 +93,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) throw() {
     dateTime.millisecond += 1000;
   }
 
-  long long second = static_cast<long long>(dateTime.second) + carrier;
+  int64 second = static_cast<int64>(dateTime.second) + carrier;
   carrier = second/SECONDS_PER_MINUTE;
   dateTime.second = second%SECONDS_PER_MINUTE;
   if (second < 0) {
@@ -101,7 +101,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) throw() {
     dateTime.second += SECONDS_PER_MINUTE;
   }
   
-  long long minute = static_cast<long long>(dateTime.minute) + carrier;
+  int64 minute = static_cast<int64>(dateTime.minute) + carrier;
   carrier = minute/MINUTES_PER_HOUR;
   dateTime.minute = minute%MINUTES_PER_HOUR;
   if (minute < 0) {
@@ -109,7 +109,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) throw() {
     dateTime.minute += MINUTES_PER_HOUR;
   }
   
-  long long hour = static_cast<long long>(dateTime.hour) + carrier;
+  int64 hour = static_cast<int64>(dateTime.hour) + carrier;
   carrier = hour/HOURS_PER_DAY;
   dateTime.hour = hour%HOURS_PER_DAY;
   if (hour < 0) {
@@ -117,7 +117,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) throw() {
     dateTime.hour += HOURS_PER_DAY;
   }
 
-  long long day = static_cast<long long>(dateTime.day) + carrier;
+  int64 day = static_cast<int64>(dateTime.day) + carrier;
   int daysInMonth = isLeapYear(year) ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month];
   if (day >= daysInMonth) { // traverse forward in time
     year += day/DAYS_PER_400_YEARS;
@@ -199,7 +199,10 @@ int Date::normalize(DateTime& dateTime, bool redundancy) throw() {
 }
 
 int Date::getDaysOfMonth(int month, int year) throw(OutOfDomain) {
-  assert((month >= 0) && (month < MONTHS_PER_YEAR), OutOfDomain(Type::getType<Date>()));
+  assert(
+    (month >= 0) && (month < MONTHS_PER_YEAR),
+    OutOfDomain(Type::getType<Date>())
+  );
   return isLeapYear(year) ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month];
 }
 
@@ -277,7 +280,8 @@ int Date::getBias() throw() {
 #endif // flavor
 }
 
-Date Date::getTime(int second, int minute, int hour, bool local) throw(DateException) {
+Date Date::getTime(
+  int second, int minute, int hour, bool local) throw(DateException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME buffer;
   SYSTEMTIME time = {0, 0, 0, 0, hour, minute, second, 0};
@@ -295,10 +299,11 @@ Date Date::getTime(int second, int minute, int hour, bool local) throw(DateExcep
   return FileTimeToDate(buffer);
 #else // unix
   struct tm temp = {second, minute, hour, 0, 0, 0, 0, 0, 0};
-  int result;
-  if ((result = mktime(&temp)) == -1) { // TAG: fixme
+  time_t time = mktime(&temp);
+  if (time == ((time_t)-1)) {
     throw DateException("Unable to represent date", Type::getType<Date>());
   }
+  int64 result = time;
   if (!local) {
     result -= internal::getTimezone(); // convert to UTC
   }
@@ -306,7 +311,8 @@ Date Date::getTime(int second, int minute, int hour, bool local) throw(DateExcep
 #endif
 }
 
-Date Date::getDate(int day, int month, int year, bool local) throw(DateException) {
+Date Date::getDate(
+  int day, int month, int year, bool local) throw(DateException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME buffer;
   SYSTEMTIME time = {year, month, 0, day, 0, 0, 0, 0};
@@ -324,10 +330,11 @@ Date Date::getDate(int day, int month, int year, bool local) throw(DateException
   return FileTimeToDate(buffer);
 #else // unix
   struct tm temp = {0, 0, 0, day, month, year, 0, 0, 0};
-  int result;
-  if ((result = mktime(&temp)) == -1) { // TAG: fixme
+  time_t time = mktime(&temp);
+  if (time == ((time_t)-1)) {
     throw DateException("Unable to represent date", Type::getType<Date>());
   }
+  int64 result = time;
   if (!local) {
     result -= internal::getTimezone(); // convert to UTC
   }
@@ -335,28 +342,45 @@ Date Date::getDate(int day, int month, int year, bool local) throw(DateException
 #endif
 }
 
-Date Date::getDate(int second, int minute, int hour, int day, int month, int year, bool local) throw(DateException) {
+Date Date::getDate(
+  int second,
+  int minute,
+  int hour,
+  int day,
+  int month,
+  int year,
+  bool local) throw(DateException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME buffer;
   SYSTEMTIME time = {year, month, 0, day, hour, minute, second, 0};
 #if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__WXP)
   if (local) {
-    assert(::TzSpecificLocalTimeToSystemTime(0, &time, &time) != 0, DateException(Type::getType<Date>()));
+    assert(
+      ::TzSpecificLocalTimeToSystemTime(0, &time, &time) != 0,
+      DateException(Type::getType<Date>())
+    );
   }
 #endif
-  assert(::SystemTimeToFileTime(&time, &buffer), DateException(Type::getType<Date>()));
+  assert(
+    ::SystemTimeToFileTime(&time, &buffer),
+    DateException(Type::getType<Date>())
+  );
 #if (_DK_SDU_MIP__BASE__OS < _DK_SDU_MIP__BASE__WXP)
   if (local) {
-    assert(::LocalFileTimeToFileTime(&buffer, &buffer) != 0, DateException(Type::getType<Date>()));
+    assert(
+      ::LocalFileTimeToFileTime(&buffer, &buffer) != 0,
+      DateException(Type::getType<Date>())
+    );
   }
 #endif
   return FileTimeToDate(buffer);
 #else // unix
   struct tm temp = {second, minute, hour, day, month, year, 0, 0, 0};
-  int result;
-  if ((result = mktime(&temp)) == -1) {
+  time_t time = mktime(&temp);
+  if (time == ((time_t)-1)) {
     throw DateException("Unable to represent date", Type::getType<Date>());
   }
+  int64 result = time;
   if (!local) {
     result -= internal::getTimezone(); // convert to UTC
   }
@@ -367,8 +391,9 @@ Date Date::getDate(int second, int minute, int hour, int day, int month, int yea
 Date::Date(const DateTime& dateTime) throw() {
   DateTime dt = dateTime;
   normalize(dt, false);
-  int seconds = dt.second + SECONDS_PER_MINUTE * dt.minute + SECONDS_PER_HOUR * dt.hour;
-  long long days = dt.day +
+  int seconds = dt.second + SECONDS_PER_MINUTE * dt.minute +
+    SECONDS_PER_HOUR * dt.hour;
+  int64 days = dt.day +
     (isLeapYear(dt.year) ?
      DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR[dt.month] :
      DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR[dt.month]);
@@ -381,8 +406,8 @@ Date::Date(const DateTime& dateTime) throw() {
     } else if (lastYear >= 1972) {
       leapYears += (lastYear - 1972)/4 + 1;
     }
-    days += DAYS_PER_NONLEAP_YEAR * static_cast<long long>(dt.year - EPOCH_YEAR) +
-      (DAYS_PER_LEAP_YEAR-DAYS_PER_NONLEAP_YEAR) * static_cast<long long>(leapYears);
+    days += DAYS_PER_NONLEAP_YEAR * static_cast<int64>(dt.year - EPOCH_YEAR) +
+      (DAYS_PER_LEAP_YEAR-DAYS_PER_NONLEAP_YEAR) * static_cast<int64>(leapYears);
   } else { // negative seconds contribution
     int leapYears = 0;
     int lastYear = dt.year; // include current year!
@@ -391,8 +416,8 @@ Date::Date(const DateTime& dateTime) throw() {
     } else if (lastYear <= 1968) {
       leapYears += (1968 - lastYear)/4 + 1;
     }
-    days -= DAYS_PER_NONLEAP_YEAR * static_cast<long long>(EPOCH_YEAR - dt.year) +
-      (DAYS_PER_LEAP_YEAR-DAYS_PER_NONLEAP_YEAR) * static_cast<long long>(leapYears);
+    days -= DAYS_PER_NONLEAP_YEAR * static_cast<int64>(EPOCH_YEAR - dt.year) +
+      (DAYS_PER_LEAP_YEAR-DAYS_PER_NONLEAP_YEAR) * static_cast<int64>(leapYears);
   }
   
   date = seconds + days * SECONDS_PER_DAY;
@@ -405,7 +430,7 @@ Date::Date(const DateTime& dateTime) throw() {
 int Date::getSecond() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert((::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time) != 0) &&
          (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
          DateException(this));
@@ -420,7 +445,7 @@ int Date::getSecond() const throw() {
 int Date::getMinute() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert((::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time) != 0) &&
          (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
          DateException(this));
@@ -435,7 +460,7 @@ int Date::getMinute() const throw() {
 int Date::getHour() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert((::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time) != 0) &&
          (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
          DateException(this));
@@ -450,7 +475,7 @@ int Date::getHour() const throw() {
 int Date::getDay() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert((::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time) != 0) &&
          (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
          DateException(this));
@@ -465,7 +490,7 @@ int Date::getDay() const throw() {
 int Date::getDayOfWeek() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert((::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time) != 0) &&
          (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
          DateException(this));
@@ -481,7 +506,7 @@ int Date::getDayOfYear() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   throw NotImplemented(this);
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert((::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time) != 0) &&
          (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
          DateException(this));
@@ -496,7 +521,7 @@ int Date::getDayOfYear() const throw() {
 int Date::getMonth() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert((::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time) != 0) &&
          (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
          DateException(this));
@@ -511,7 +536,7 @@ int Date::getMonth() const throw() {
 int Date::getYear() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert((::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time) != 0) &&
          (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
          DateException(this));
@@ -526,7 +551,7 @@ int Date::getYear() const throw() {
 int Date::getUTCSecond() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert(::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time), DateException(this));
   return time.wSecond;
 #else // unix
@@ -539,7 +564,7 @@ int Date::getUTCSecond() const throw() {
 int Date::getUTCMinute() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert(::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time), DateException(this));
   return time.wMinute;
 #else // unix
@@ -552,7 +577,7 @@ int Date::getUTCMinute() const throw() {
 int Date::getUTCHour() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert(::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time), DateException(this));
   return time.wHour;
 #else // unix
@@ -565,7 +590,7 @@ int Date::getUTCHour() const throw() {
 int Date::getUTCDay() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert(::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time), DateException(this));
   return time.wDay;
 #else // unix
@@ -578,7 +603,7 @@ int Date::getUTCDay() const throw() {
 int Date::getUTCDayOfWeek() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert(::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time), DateException(this));
   return time.wDayOfWeek;
 #else // unix
@@ -605,7 +630,7 @@ int Date::getUTCDayOfYear() const throw() {
 int Date::getUTCMonth() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert(::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time), DateException(this));
   return time.wMonth;
 #else // unix
@@ -618,7 +643,7 @@ int Date::getUTCMonth() const throw() {
 int Date::getUTCYear() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   assert(::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time), DateException(this));
   return time.wYear;
 #else // unix
@@ -706,7 +731,7 @@ void Date::split(DateTime& result, bool local) const throw() {
 
   // TAG: need Daylight Saving Time (DST) support + local time support
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  unsigned long long fileTime = date * 10000000ULL + 116444736000000000ULL;
+  uint64 fileTime = date * 10000000ULL + 116444736000000000ULL;
   // TAG: convert to local time when required
   SYSTEMTIME time;
   assert(::FileTimeToSystemTime(reinterpret_cast<FILETIME*>(&fileTime), &time), DateException(this));
@@ -1017,7 +1042,9 @@ WideString Date::format(const WideString& format, bool local) const throw(Invali
 #endif
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Date& date) throw(InvalidFormat, IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  const Date& date) throw(InvalidFormat, IOException) {
   stream.addDateField(date);
   return stream;
 }

@@ -39,30 +39,50 @@ private:
     Seconds elapsed since epoch (i.e. 00:00:00 on January 1, 1970, Coordinated
     Universal Time (UTC)).
   */
-  int date; // TAG: need 64bit accuracy - long long
+  int64 date;
 public:
 
   enum Constants {
-    SUNDAY = 0, /**< Index of Sunday. */
-    MONDAY = 1, /**< Index of Monday. */
-    TUESDAY = 2, /**< Index of Tuesday. */
-    WEDNESDAY = 3, /**< Index of Wednesday. */
-    THURSDAY = 4, /**< Index of Thursday. */
-    FRIDAY = 5, /**< Index of Friday. */
-    SATURDAY = 6, /**< Index of Saturday. */
-    EPOCH_YEAR = 1970, /**< The year of the epoch. */
-    EPOCH_WEEKDAY = THURSDAY, /**< The weekday of the first epoch day . */
-    DAYS_PER_NONLEAP_YEAR = 365, /**< The number of days per non-leap year. */
-    DAYS_PER_LEAP_YEAR = DAYS_PER_NONLEAP_YEAR + 1, /**< The number of days per leap year. */
-    DAYS_PER_400_YEARS = (300+4-1)*365 + (100-4+1)*366, /**< The number of days per 400 years. */
-    DAYS_PER_WEEK = 7, /**< The number of days per week. */
-    MONTHS_PER_YEAR = 12, /**< The number of months per year. */
-    HOURS_PER_DAY = 24, /**< The number of hours per day. */
-    MINUTES_PER_HOUR = 60, /**< The number of minutes per hour. */
-    MINUTES_PER_DAY = MINUTES_PER_HOUR * HOURS_PER_DAY, /**< The number of minutes per day. */
-    SECONDS_PER_MINUTE = 60, /**< The number of seconds per minute. */
-    SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR, /**< The number of seconds per hour. */
-    SECONDS_PER_DAY = SECONDS_PER_HOUR * HOURS_PER_DAY /**< The number of seconds per day. */
+    /** Index of Sunday. */
+    SUNDAY = 0,
+    /** Index of Monday. */
+    MONDAY = 1,
+    /** Index of Tuesday. */
+    TUESDAY = 2,
+    /** Index of Wednesday. */
+    WEDNESDAY = 3,
+    /** Index of Thursday. */
+    THURSDAY = 4,
+    /** Index of Friday. */
+    FRIDAY = 5,
+    /** Index of Saturday. */
+    SATURDAY = 6,
+    /** The year of the epoch. */
+    EPOCH_YEAR = 1970,
+    /** The weekday of the first epoch day. */
+    EPOCH_WEEKDAY = THURSDAY,
+    /** The number of days per non-leap year. */
+    DAYS_PER_NONLEAP_YEAR = 365,
+    /** The number of days per leap year. */
+    DAYS_PER_LEAP_YEAR = DAYS_PER_NONLEAP_YEAR + 1,
+    /** The number of days per 400 years. */
+    DAYS_PER_400_YEARS = (300+4-1)*365 + (100-4+1)*366,
+    /** The number of days per week. */
+    DAYS_PER_WEEK = 7,
+    /** The number of months per year. */
+    MONTHS_PER_YEAR = 12,
+    /** The number of hours per day. */
+    HOURS_PER_DAY = 24,
+    /** The number of minutes per hour. */
+    MINUTES_PER_HOUR = 60,
+    /** The number of minutes per day. */
+    MINUTES_PER_DAY = MINUTES_PER_HOUR * HOURS_PER_DAY,
+    /** The number of seconds per minute. */
+    SECONDS_PER_MINUTE = 60,
+    /** The number of seconds per hour. */
+    SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR,
+    /** The number of seconds per day. */
+    SECONDS_PER_DAY = SECONDS_PER_HOUR * HOURS_PER_DAY
   };
   
   /** The days per month for non-leap years. */
@@ -161,7 +181,8 @@ public:
     @param local Specifies that the time is given in local time. The default is
     UTC time.
   */
-  static Date getTime(int second, int minute, int hour, bool local = false) throw(DateException);
+  static Date getTime(
+    int second, int minute, int hour, bool local = false) throw(DateException);
   
   /**
     Returns date object for the specified date. Invalid values will be
@@ -173,7 +194,8 @@ public:
     @param local Specifies that the time is given in local time. The default is
     UTC time.
   */
-  static Date getDate(int day, int month, int year, bool local = false) throw(DateException);
+  static Date getDate(
+    int day, int month, int year, bool local = false) throw(DateException);
 
   /**
     Returns date object for the specified date and time. Invalid values will be
@@ -188,7 +210,14 @@ public:
     @param local Specifies that the time is given in local time. The default is
     UTC time.
   */
-  static Date getDate(int second, int minute, int hour, int day, int month, int year, bool local = false) throw(DateException);
+  static Date getDate(
+    int second,
+    int minute,
+    int hour,
+    int day,
+    int month,
+    int year,
+    bool local = false) throw(DateException);
   
   /**
     Returns the date corresponding to the specified Julian day.
@@ -207,8 +236,9 @@ public:
     @param date The number of seconds elapsed since 00:00:00 on January 1,
     1970, Coordinated Universal Time (UTC).
   */
-  Date(int date) throw();
-
+  inline Date::Date(int64 _date) throw() : date(_date) {
+  }
+  
   /**
     Initializes object from date/time structure.
   */
@@ -232,14 +262,14 @@ public:
     Returns the seconds elapsed since 00:00:00 on January 1, 1970, Coordinated
     Universal Time (UTC).
   */
-  inline int getValue() const throw() {
+  inline int64 getValue() const throw() {
     return date;
   }
 
   /**
     Adds a bias (in seconds) to the date.
   */
-  inline void addBias(int bias) throw() {
+  inline void addBias(int64 bias) throw() {
     date += bias;
   }
   
@@ -344,7 +374,9 @@ public:
     @param local When true, specifies that the time should be presented in
     local time otherwise UTC is assumed. The Default is true (local).
   */
-  String format(const String& format, bool local = true) const throw(InvalidFormat, MemoryException);
+  String format(
+    const String& format,
+    bool local = true) const throw(InvalidFormat, MemoryException);
   
   /**
     Returns the date/time as a string.
@@ -353,19 +385,21 @@ public:
     @param local When true, specifies that the time should be presented in
     local time otherwise UTC is assumed. The Default is true (local).
   */
-  WideString format(const WideString& format, bool local = true) const throw(InvalidFormat, MemoryException);
+  WideString format(
+    const WideString& format,
+    bool local = true) const throw(InvalidFormat, MemoryException);
 };
 
-inline Date::Date(int _date) throw() : date(_date) {
-}
-
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Date& date) throw(InvalidFormat, IOException);
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  const Date& date) throw(InvalidFormat, IOException);
 
 template<>
 class Uninitializeable<Date> {
 public:
 
-  static const bool IS_UNINITIALIZEABLE = Uninitializeable<int>::IS_UNINITIALIZEABLE; // TAG: fixme - long long
+  static const bool IS_UNINITIALIZEABLE =
+    Uninitializeable<int64>::IS_UNINITIALIZEABLE;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

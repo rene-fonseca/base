@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__ARRAY_H
 #define _DK_SDU_MIP__BASE_COLLECTION__ARRAY_H
 
-#include <base/mem/ReferenceCountedAllocator.h>
+#include <base/mem/ReferenceCountedCapacityAllocator.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/collection/Collection.h>
 #include <base/collection/Enumeration.h>
@@ -31,6 +31,9 @@ template<class TYPE>
 class Array : public Collection {
 public:
 
+  /** The type of the values. */
+  typedef TYPE Value;
+
   class Enumeration;
   friend class Enumeration;
   class ReadOnlyEnumeration;
@@ -39,7 +42,7 @@ public:
   /**
     Enumeration of all the elements of an array.
   */
-  class Enumeration : public AllocatorEnumeration<TYPE, TYPE&, TYPE*> {
+  class Enumeration : public AllocatorEnumeration<Value, Value&, Value*> {
   public:
 
     /**
@@ -48,13 +51,13 @@ public:
       @param array The array being enumerated.
     */
     Enumeration(Array& array) throw() :
-      AllocatorEnumeration<TYPE, TYPE&, TYPE*>(array.getElements(), array.getElements() + array.getSize()) {}
+      AllocatorEnumeration<Value, Value&, Value*>(array.getElements(), array.getElements() + array.getSize()) {}
   };
 
   /**
     Non-modifying enumeration of all the elements of an array.
   */
-  class ReadOnlyEnumeration : public AllocatorEnumeration<TYPE, const TYPE&, const TYPE*> {
+  class ReadOnlyEnumeration : public AllocatorEnumeration<Value, const Value&, const Value*> {
   public:
 
     /**
@@ -63,30 +66,26 @@ public:
       @param array The array being enumerated.
     */
     ReadOnlyEnumeration(const Array& array) throw() :
-      AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(array.getElements(), array.getElements() + array.getSize()) {}
+      AllocatorEnumeration<Value, const Value&, const Value*>(array.getElements(), array.getElements() + array.getSize()) {}
+  };
+
+  // Used by implement operator[]() for mutable arrays.
+  class Index {
+  private:
+    Array& array;
+    unsigned int index;
+  public:
+    inline Index(Array& a, unsigned int i) : array(a), index(i) {}
+    inline Value operator=(Value value) throw(OutOfRange) {array.setValue(index, value); return value;}
+    inline operator Value() throw(OutOfRange) {return array.getValue(index);}
   };
 private:
 
   /** The elements of the array. */
-  ReferenceCountedObjectPointer<ReferenceCountedAllocator<TYPE> > elements;
+  ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<Value> > elements;
   /** The number of elements in the array. */
   unsigned int size;
 protected:
-
-  /**
-    Returns the elements of the array for modifying access.
-  */
-  inline TYPE* getElements() throw(MemoryException) {
-    elements.copyOnWrite();
-    return elements->getElements();
-  }
-
-  /**
-    Returns the elements of the array for non-modifying access.
-  */
-  inline const TYPE* getElements() const throw() {
-    return elements->getElements();
-  }
 
   /**
     Sets the size of the array.
@@ -97,16 +96,50 @@ protected:
       if (elements.isValid()) {
         elements->setSize(size);
       } else {
-        elements = new ReferenceCountedAllocator<TYPE>(size);
+        elements = new ReferenceCountedCapacityAllocator<Value>(size);
       }
     }
   }
 public:
 
   /**
+    Returns the elements of the array for modifying access.
+  */
+  inline Value* getElements() throw(MemoryException) {
+    elements.copyOnWrite();
+    return elements->getElements();
+  }
+
+  /**
+    Returns the elements of the array for non-modifying access.
+  */
+  inline const Value* getElements() const throw() {
+    return elements->getElements();
+  }
+
+  /**
     Initializes an empty array.
   */
-  Array() throw() : elements(new ReferenceCountedAllocator<TYPE>()), size(0) {}
+  Array() throw() : elements(new ReferenceCountedCapacityAllocator<Value>()), size(0) {}
+
+  /**
+    Initializes an empty array with the specified granularity.
+
+    @param granularity The desired granularity.
+  */
+  explicit Array(unsigned int granularity) throw() : elements(new ReferenceCountedCapacityAllocator<Value>(granularity)), size(0) {}
+
+  /**
+    Initializes array with the specified number of elements.
+
+    @param size The initial number of elements in the array.
+    @param value The value used to initialize the elements.
+    @param granularity The desired granularity. Default is ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY.
+  */
+  Array(unsigned int size, Value value, unsigned int granularity = ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY) throw() :
+    elements(new ReferenceCountedCapacityAllocator<Value>(size, granularity)), size(size) {
+    fill(getElements(), size, value);
+  }
 
   /**
     Initializes array from other array.
@@ -139,10 +172,10 @@ public:
 
     @param value The value to be appended.
   */
-  void append(const TYPE& value) throw(MemoryException) {
+  void append(const Value& value) throw(MemoryException) {
     unsigned int size = getSize();
     setSize(size + 1);
-    TYPE* elements = getElements(); // size must be set before
+    Value* elements = getElements(); // size must be set before
     elements[size] = value;
   }
 
@@ -151,9 +184,9 @@ public:
 
     @param value The value to be prepended.
   */
-  void prepend(const TYPE& value) throw(MemoryException) {
+  void prepend(const Value& value) throw(MemoryException) {
     setSize(getSize() + 1);
-    TYPE* elements = getElements(); // size must be set before
+    Value* elements = getElements(); // size must be set before
     move(elements + 1, elements, getSize());
     elements[0] = value;
   }
@@ -165,12 +198,12 @@ public:
     @param index Specifies the insert position.
     @param value The value to be inserted.
   */
-  void insert(unsigned int index, const TYPE& value) throw(OutOfRange, MemoryException) {
+  void insert(unsigned int index, const Value& value) throw(OutOfRange, MemoryException) {
     if (index > getSize()) {
       throw OutOfRange();
     }
     setSize(getSize() + 1);
-    TYPE* elements = getElements(); // size must be set before
+    Value* elements = getElements(); // size must be set before
     move(elements + index + 1, elements + index, getSize() - index);
     elements[index] = value;
   }
@@ -184,7 +217,7 @@ public:
     if (index >= getSize()) {
       throw OutOfRange();
     }
-    TYPE* elements = getElements(); // size must be set after
+    Value* elements = getElements(); // size must be set after
     move(elements + index, elements + index + 1, getSize() - index - 1);
     setSize(getSize() - 1);
   }
@@ -193,8 +226,43 @@ public:
     Removes all the elements from this array.
   */
   void removeAll() throw() {
-    elements = new ReferenceCountedAllocator<TYPE>(); // no need to copy
+    elements = new ReferenceCountedCapacityAllocator<Value>(); // no need to copy
     size = 0;
+  }
+
+  /**
+    Returns the element at the specified index. Throws 'OutOfRange' if the index is invalid.
+
+    @param index The index of the element.
+  */
+  Value getValue(unsigned int index) const throw(OutOfRange) {
+    if (index >= getSize()) {
+      throw OutOfRange();
+    }
+    return getElements()[index];
+  }
+
+  /**
+    Sets the element at the specified index. Throws 'OutOfRange' if the index is invalid.
+
+    @param index The index of the element.
+    @param value The desired value.
+  */
+  void setValue(unsigned int index, const Value& value) throw(OutOfRange) {
+    if (index >= getSize()) {
+      throw OutOfRange();
+    }
+    getElements()[index] = value;
+  }
+
+  /**
+    Sets the element at the specified index. Throws 'OutOfRange' if the index is invalid.
+
+    @param index The index of the element.
+    @param value The desired value.
+  */
+  inline Index operator[](unsigned int index) throw(OutOfRange) {
+    return Index(*this, index);
   }
 };
 

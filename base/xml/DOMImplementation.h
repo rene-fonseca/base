@@ -33,6 +33,18 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class DOMImplementation : public Object {
 public:
 
+  enum Flag {
+    SUBSTITUTE_ENTITIES = 1,
+    DETECT_IDS = 2,
+    COMPLETE_ATTRIBUTE_LISTS = 4
+  };
+  
+  enum Mode {
+    PARSING,
+    VALIDATING,
+    RECOVERING
+  };
+  
   /**
     Initializes DOM implementation.
   */
@@ -66,6 +78,62 @@ public:
     const String& namespaceURI,
     const String& qualifiedName,
     const DocumentType& doctype) throw(DOMException);
+
+  Document createDocument(
+    const String& value,
+    Mode mode = VALIDATING,
+    unsigned int flags = DETECT_IDS|COMPLETE_ATTRIBUTE_LISTS) throw(DOMException);
+  
+  /**
+    Saves the document to the specified file.
+
+    @param filename The path of the file.
+    @param document The document.
+    @param indent Specifies whether or not the document should be indented. The
+    default is false.
+  */
+  void saveDocument(
+    Document document,
+    const String& filename,
+    bool indent = false) throw(DOMException);
+  
+  /**
+    Saves the document to the specified file.
+
+    @param filename The path of the file.
+    @param document The document.
+    @param encoding The encoding.
+    @param indent Specifies whether or not the document should be indented. The
+    default is false.
+  */
+  void saveDocument(
+    Document document,
+    const String& filename,
+    const String& encoding,
+    bool indent) throw(DOMException);
+
+  /**
+    Saves the document to a string.
+
+    @param document The document.
+    @param spaces Specifies whether or not formatting spaces should be added. The
+    default is false.
+  */
+  String saveDocumentToMemory(
+    Document document, bool spaces = false) throw(DOMException);
+
+  /**
+    Saves the document to a string.
+
+    @param document The document.
+    @param encoding The encoding.
+    @param spaces Specifies whether or not formatting spaces should be added. The
+    default is false.
+  */
+  String saveDocumentToMemory(
+    Document document,
+    const String& encoding,
+    bool spaces = false) throw(DOMException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

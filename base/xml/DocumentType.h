@@ -40,10 +40,16 @@ class DocumentType : public Node {
   friend class DOMImplementation;
 protected:
 
+  /**
+    Initializes the document type node.
+  */
   inline DocumentType(void* context) throw() : Node(context) {
   }
 public:
 
+  /**
+    Initializes the document type node from a node.
+  */
   inline DocumentType(Node node) throw(CastException) : Node(node) {
     assert(node.getType() == DOCUMENT_TYPE_NODE, CastException(this));
   }
@@ -56,12 +62,12 @@ public:
   /**
     Returns the entities.
   */
-  //NamedNodeMap getEntities() const throw();
+  NamedNodeMap getEntities() const throw();
   
   /**
     Returns the notations.
   */
-  //NamedNodeMap getNotations() const throw();
+  NamedNodeMap getNotations() const throw();
   
   /**
     Returns the public identifier.

@@ -48,7 +48,7 @@ Document::Document() throw(DOMException) {
 
 void Document::create(const String& version) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDocPtr doc = xmlNewDoc(
+  xmlDoc* doc = xmlNewDoc(
     Cast::pointer<const xmlChar*>(version.getElements())
   );
   assert(doc, DOMException(this));
@@ -60,7 +60,9 @@ void Document::create(const String& version) throw(DOMException) {
 
 DocumentType Document::getDocumentType() throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  return 0; // TAG: fixme
+  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlDtd* documentType = doc->intSubset;
+  return documentType;
 #else
   throw DOMException(this);
 #endif
@@ -72,9 +74,9 @@ DOMImplementation Document::getImplementation() throw() {
 
 Element Document::getDocumentElement() throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDocPtr doc = (xmlDocPtr)document->getContext();
-  xmlNodePtr node = xmlDocGetRootElement(doc);
-  return node; // TAG: check
+  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlNode* node = xmlDocGetRootElement(doc);
+  return node;
 #else
   throw DOMException(this);
 #endif
@@ -82,10 +84,11 @@ Element Document::getDocumentElement() throw() {
 
 Attribute Document::createAttribute(const String& name) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlAttrPtr node = xmlNewProp(
-    0, // TAG: check
+  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlAttr* node = xmlNewDocProp(
+    doc,
     Cast::pointer<const xmlChar*>(name.getElements()),
-    0 // TAG: check
+    0
   );
   assert(node, DOMException(this));
   return node;
@@ -97,9 +100,9 @@ Attribute Document::createAttribute(const String& name) throw(DOMException) {
 Attribute Document::createAttribute(
   const String& name, const String& value) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDocPtr doc = (xmlDocPtr)document->getContext();
+  xmlDoc* doc = (xmlDoc*)document->getContext();
   assert(doc, DOMException(this));
-  xmlAttrPtr node = xmlNewDocProp(
+  xmlAttr* node = xmlNewDocProp(
     doc,
     Cast::pointer<const xmlChar*>(name.getElements()),
     Cast::pointer<const xmlChar*>(value.getElements())
@@ -113,7 +116,16 @@ Attribute Document::createAttributeNS(
   const String& namespaceURI,
   const String& qualifiedName) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  throw DOMException(this);
+  //  TAG: fixme
+//   xmlDoc* doc = (xmlDoc*)document->getContext();
+//   xmlAttr* node = xmlNewDocProp(
+//     doc,
+//     Cast::pointer<const xmlChar*>(name.getElements()),
+//     0
+//   );
+//   assert(node, DOMException(this));
+  //  return node;
+  return 0;
 #else
   throw DOMException(this);
 #endif
@@ -121,9 +133,12 @@ Attribute Document::createAttributeNS(
 
 Element Document::createElement(const String& name) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = xmlNewNode(
+  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlNode* node = xmlNewDocNode(
+    doc,
     0, // namespace
-    Cast::pointer<const xmlChar*>(name.getElements())
+    Cast::pointer<const xmlChar*>(name.getElements()),
+    0 // content
   );
   assert(node, DOMException(this));
   return node;
@@ -136,13 +151,13 @@ Element Document::createElementNS(
   const String& namespaceURI,
   const String& qualifiedName) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDocPtr doc = (xmlDocPtr)document->getContext();
-  xmlNsPtr ns = xmlSearchNsByHref(
+  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlNs* ns = xmlSearchNsByHref(
     doc,
     0,
     (const xmlChar*)namespaceURI.getElements()
   ); // TAG: check
-  xmlNodePtr node = xmlNewNode(
+  xmlNode* node = xmlNewNode(
     ns,
     Cast::pointer<const xmlChar*>(qualifiedName.getElements())
   );
@@ -155,8 +170,8 @@ Element Document::createElementNS(
 
 DocumentFragment Document::createDocumentFragment() throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDocPtr doc = (xmlDocPtr)document->getContext();
-  xmlNodePtr node = xmlNewDocFragment(doc);
+  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlNode* node = xmlNewDocFragment(doc);
   assert(node, DOMException(this));
   return node;
 #else
@@ -166,7 +181,9 @@ DocumentFragment Document::createDocumentFragment() throw(DOMException) {
 
 Text Document::createText(const String& data) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = xmlNewText(
+  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlNode* node = xmlNewDocText(
+    doc,
     Cast::pointer<const xmlChar*>(data.getElements())
   );
   assert(node, DOMException(this));
@@ -178,10 +195,12 @@ Text Document::createText(const String& data) throw(DOMException) {
 
 Comment Document::createComment(const String& data) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = xmlNewComment(
+  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlNode* node = xmlNewComment(
     Cast::pointer<const xmlChar*>(data.getElements())
   );
   assert(node, DOMException(this));
+  node->doc = doc;
   return node;
 #else
   throw DOMException(this);
@@ -191,14 +210,15 @@ Comment Document::createComment(const String& data) throw(DOMException) {
 CDATASection Document::createCDATASection(
   const String& data) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDocPtr doc = (xmlDocPtr)document->getContext();
+  xmlDoc* doc = (xmlDoc*)document->getContext();
   assert(doc, DOMException(this));
-  xmlNodePtr node = xmlNewCDataBlock(
+  xmlNode* node = xmlNewCDataBlock(
     doc,
     Cast::pointer<const xmlChar*>(data.getElements()),
-    data.getLength() // TAG: check
+    data.getLength()
   );
   assert(node, DOMException(this));
+  node->doc = doc;
   return node;
 #else
   throw DOMException(this);
@@ -209,22 +229,24 @@ ProcessingInstruction Document::createProcessingInstruction(
   const String& target,
   const String& data) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = xmlNewPI(
+  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlNode* node = xmlNewPI(
     Cast::pointer<const xmlChar*>(target.getElements()),
     Cast::pointer<const xmlChar*>(data.getElements())
   );
   assert(node, DOMException(this));
+  node->doc = doc;
   return node;
 #else
   throw DOMException(this);
 #endif
 }
-  
+
 EntityReference Document::createEntityReference(
   const String& name) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDocPtr doc = (xmlDocPtr)document->getContext();
-  xmlNodePtr node = xmlNewReference(
+  xmlDoc* doc = (xmlDoc*)document->getContext();
+  xmlNode* node = xmlNewReference(
     doc,
     Cast::pointer<const xmlChar*>(name.getElements())
   );
@@ -237,7 +259,7 @@ EntityReference Document::createEntityReference(
 
 Element Document::getElementById(const String& elementId) throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDocPtr doc = (xmlDocPtr)document->getContext();
+  xmlDoc* doc = (xmlDoc*)document->getContext();
   assert(doc, DOMException(this));
   void* node = xmlHashLookup(
     (xmlHashTable*)doc->ids,
@@ -249,42 +271,49 @@ Element Document::getElementById(const String& elementId) throw() {
 #endif
 }
 
-Node Document::createNode(const String& name) throw(DOMException) {
+Node Document::importNode(Node importedNode, bool deep) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDocPtr doc = (xmlDocPtr)document->getContext();
+  xmlDoc* doc = (xmlDoc*)document->getContext();
   assert(doc, DOMException(this));
-  xmlNodePtr context =
-    xmlNewDocNode(
-      doc,
-      0, // namespace
-      Cast::pointer<const xmlChar*>(name.getElements()),
-      0 // content
-    );
-  return Node(context);
-#endif
-}
+  xmlNode* node = (xmlNode*)importedNode.context;
 
-Node Document::createNode(
-  const String& name, const String& content) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDocPtr doc = (xmlDocPtr)document->getContext();
-  assert(doc, DOMException(this));
-  xmlNodePtr context =
-    xmlNewDocNode(
-      doc,
-      0, // namespace
-      Cast::pointer<const xmlChar*>(name.getElements()),
-      Cast::pointer<const xmlChar*>(content.getElements())
-    );
-  return Node(context);
+  switch (node->type) {
+	case XML_ELEMENT_NODE:
+	case XML_TEXT_NODE:
+	case XML_CDATA_SECTION_NODE:
+	case XML_ENTITY_REF_NODE:
+	case XML_PI_NODE:
+	case XML_COMMENT_NODE:
+	case XML_DOCUMENT_FRAG_NODE:
+    {
+      xmlNode* result = xmlCopyNode(node, deep);
+      xmlSetTreeDoc(result, doc);
+      return result;
+    }
+  case XML_ATTRIBUTE_NODE:
+    {
+      if (doc->doc != doc) { // at root
+        throw bindCause(DOMException(this), DOMException::NOT_SUPPORTED);
+      }
+      xmlNode* result = (xmlNode*)xmlCopyProp((xmlNode*)doc, (xmlAttr*)node);
+      result->parent = 0;
+      return result;
+    }
+  default:
+		throw bindCause(DOMException(this), DOMException::NOT_SUPPORTED);
+  }
+#else
+  throw DOMException(this);
 #endif
 }
 
 Document::Document(const String& filename) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDocPtr temp = xmlParseFile(filename.getElements());
+  xmlDoc* temp = xmlParseFile(filename.getElements());
   assert(temp, DOMException(this));
   document = new DocumentImpl(temp);
+#else
+  throw DOMException(this);
 #endif
 }
 
@@ -294,6 +323,8 @@ void Document::doXIncludeProcess() throw() {
     Cast::pointer<xmlDocPtr>(document->getContext())
   );
   assert(code >= 0, Exception(this));
+#else
+  throw DOMException(this);
 #endif
 }
 
@@ -303,8 +334,9 @@ void Document::save(const String& filename) throw(IOException) {
     filename.getElements(),
     Cast::pointer<xmlDocPtr>(document->getContext())
   );
-  fout << __func__ << " " << bytesWritten << ENDL;
   assert(bytesWritten >= 0, Exception(this));
+#else
+  throw DOMException(this);
 #endif
 }
 

@@ -136,7 +136,6 @@ public:
     return *this;
   }
 
-
   /**
     Adds the node to the end of the list of children of this node.
   */
@@ -146,7 +145,7 @@ public:
     A NamedNodeMap containing the attributes of this node (if it is an Element)
     or an invalid NamedNodeMap otherwise.
   */
-  NamedNodeMap getAttributes() throw();
+  //NamedNodeMap getAttributes() throw();
 
   /**
     Returns a NodeList that contains all children of this node.

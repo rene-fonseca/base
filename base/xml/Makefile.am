@@ -27,6 +27,7 @@ libxml_la_SOURCES = \
   Element.cpp \
   Entity.cpp \
   EntityReference.cpp \
+  NamedNodeMap.cpp \
   Node.cpp \
   Notation.cpp \
   ProcessingInstruction.cpp \

@@ -20,15 +20,18 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+class Node;
+class DocumentType;
+
 class ShadowNode {
   friend class Node;
 private:
 
   void* context;
-public:
-
-  ShadowNode(void* _context) throw() : context(_context) {
+  
+  inline ShadowNode(void* _context) throw() : context(_context) {
   }
+public:
 };
 
 /**
@@ -41,7 +44,31 @@ public:
 */
 
 class NamedNodeMap : public Object {
+  friend class DocumentType;
+private:
+  
+  void* context;
+  
+  /**
+    Initializes the node map.
+  */
+  inline NamedNodeMap(void* _context) throw() : context(_context) {
+  }
 public:
+  
+  /**
+    Initializes node map from node map.
+  */
+  inline NamedNodeMap(const NamedNodeMap& copy) throw() : context(copy.context) {
+  }
+  
+  /**
+    Assignment of node map by node map.
+  */
+  inline NamedNodeMap& operator=(const NamedNodeMap& eq) throw() {
+    context = eq.context;
+    return *this;
+  }
   
   ShadowNode getNamedItem(const String& name) throw(DOMException);
   

@@ -38,7 +38,7 @@ String Attribute::getName() const throw() {
     return (const char*)attribute->name;
   }
 #else
-  return String();
+  throw DOMException(this);
 #endif
 }
 
@@ -50,7 +50,7 @@ String Attribute::getValue() const throw() {
   xmlFree(content);
   return result;
 #else
-  return String();
+  throw DOMException(this);
 #endif
 }
 
@@ -88,7 +88,7 @@ bool Attribute::isSpecified() const throw() {
   xmlAttr* attribute = (xmlAttr*)getContext();
   return true; // TAG: fixme
 #else
-  return false;
+  throw DOMException(this);
 #endif
 }
 
@@ -97,7 +97,7 @@ Node::ShadowElement Attribute::getOwnerElement() throw() {
   xmlAttr* attribute = (xmlAttr*)getContext();
   return Node::ShadowElement(attribute->parent);
 #else
-  return Node::ShadowElement(0);
+  throw DOMException(this);
 #endif
 }
 

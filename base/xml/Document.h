@@ -33,6 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class Stylesheet;
 class Transformer;
+class DOMImplementation;
 
 /**
   DOM document.
@@ -46,6 +47,7 @@ class Transformer;
 class Document : public Object {
   friend class Stylesheet;
   friend class Transformer;
+  friend class DOMImplementation;
 private:
 
   class DocumentImpl : public ReferenceCountedObject {
@@ -101,8 +103,7 @@ public:
   void create(const String& version) throw(DOMException);
 
   /**
-    The Document Type Declaration (see DocumentType) associated with this
-    document.
+    The Document Type Declaration associated with this document.
   */
   DocumentType getDocumentType() throw();
   
@@ -181,21 +182,17 @@ public:
   Element getElementById(const String& elementId) throw();
   
   /**
-    Creates a new node.
-  */
-  Node createNode(const String& name) throw(DOMException);
-  
-  /**
-    Creates a new node.
-  */
-  Node createNode(
-    const String& name, const String& content) throw(DOMException);
-
-  /**
     Creates a new attribute.
   */
   Attribute createAttribute(
     const String& name, const String& value) throw(DOMException);
+
+  /**
+    Imports a node from another document to this document. The returned node has
+    no parent. The source node is not altered or removed from the original
+    document; this method creates a new copy of the source node.
+  */
+  Node importNode(Node importedNode, bool deep) throw(DOMException);
   
   /**
     Initializes the document from a file.

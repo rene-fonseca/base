@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -56,7 +56,7 @@ public:
     case CTRL_CLOSE_EVENT: // console is closing
     case CTRL_BREAK_EVENT: // Ctrl+Break
     case CTRL_C_EVENT: // Ctrl+C
-      SystemLogger::write(SystemLogger::INFORMATION, "TERMINATE SIGNAL");
+      SystemLogger::write(SystemLogger::INFORMATION, "Terminate signal");
       if (Application::application) {
         Application::application->terminate();
         return TRUE;
@@ -69,18 +69,40 @@ public:
 
   static void signalHandler(int signal) throw() {
     switch (signal) {
-    case SIGHUP: // reload
+    case SIGHUP: // hangup
+      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Hangup signal"));
       if (Application::application) {
         Application::application->hangup();
       }
       break;
+    case SIGQUIT: // quit signal from keyboard
+      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Quit signal"));
+      if (Application::application) {
+        Application::application->terminate();
+      }
+      break;
+    case SIGINT: // interrrupt from keyboard
+      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Interrupt signal"));
+      if (Application::application) {
+        Application::application->terminate();
+      }
+      break;
+    case SIGABRT: // abort
+      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Abort signal"));
+      break;
     case SIGTERM: // terminate
-      SystemLogger::write(SystemLogger::INFORMATION, "TERMINATE SIGNAL");
+      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Terminate signal"));
       if (Application::application) {
         Application::application->terminate();
       }
       break;
     case SIGCHLD: // child state changed
+      break;
+    case SIGPWR: // power fail or restart
+      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Power signal"));
+      if (Application::application) {
+        Application::application->terminate();
+      }
       break;
     }
   }
@@ -105,13 +127,23 @@ void Application::initialize() throw() {
   }
 #else // Unix
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
-    assert(bsd_signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR, Exception("Unable to install signal handler"));
-    assert(bsd_signal(SIGTERM, ApplicationImpl::signalHandler) != SIG_ERR, Exception("Unable to install signal handler"));
-    assert(bsd_signal(SIGCHLD, ApplicationImpl::signalHandler) != SIG_ERR, Exception("Unable to install signal handler"));
+    if (!((bsd_signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (bsd_signal(SIGTERM, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (bsd_signal(SIGCHLD, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (bsd_signal(SIGQUIT, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (bsd_signal(SIGINT, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (bsd_signal(SIGABRT, ApplicationImpl::signalHandler) != SIG_ERR))) {
+      throw Exception("Unable to install signal handler");
+    }
   #else
-    assert(signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR, Exception("Unable to install signal handler"));
-    assert(signal(SIGTERM, ApplicationImpl::signalHandler) != SIG_ERR, Exception("Unable to install signal handler"));
-    assert(signal(SIGCHLD, ApplicationImpl::signalHandler) != SIG_ERR, Exception("Unable to install signal handler"));
+    if (!((signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (signal(SIGTERM, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (signal(SIGCHLD, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (signal(SIGQUIT, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (signal(SIGINT, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (signal(SIGABRT, ApplicationImpl::signalHandler) != SIG_ERR))) {
+      throw Exception("Unable to install signal handler");
+    }
   #endif
 #endif
 
@@ -160,7 +192,6 @@ int Application::exceptionHandler() const throw() {
 }
 
 void Application::hangup() throw() {
-  SystemLogger::write(SystemLogger::INFORMATION, "HANGUP SIGNAL");
   lock.exclusiveLock();
   hangingup = true;
   lock.releaseLock();
@@ -184,16 +215,4 @@ void Application::onTermination() throw() {
   exit(Application::EXIT_CODE_NORMAL);
 }
 
-/*
-int run() throw() {
-  try {
-    runnable->run();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::EXIT_CODE_NORMAL;
-}
-*/
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -511,34 +511,38 @@ bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
   ::FindClose(handle);
   return true;
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-      struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-      int result = stat64(path.getElements(), (struct stat64*)&status);
-    #else
-      struct stat64 status;
-      int result = stat64(path.getElements(), &status);
-    #endif // GNU Linux
-    switch (result) {
-    case 0:
-      return true;
+#  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#    if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+  int result = stat64(path.getElements(), (struct stat64*)&status);
+#    else
+  struct stat64 status;
+  int result = stat64(path.getElements(), &status);
+#    endif // GNU Linux
+  if (result == 0) {
+    return true;
+  } else {
+    switch (errno) {
     case ENOENT:
       return false;
     default:
       throw FileSystemException("Unable to examine if entry exists", Type::getType<FileSystem>());
     }
-  #else
-    struct stat status;
-    int result = stat(path.getElements(), &status);
-    switch (result) {
-    case 0:
-      return true;      
+  }
+#  else
+  struct stat status;
+  int result = stat(path.getElements(), &status);
+  if (result == 0) {
+    return true;
+  } else {
+    switch (errno) {
     case ENOENT:
       return false;
     default:
       throw FileSystemException("Unable to examine if entry exists", Type::getType<FileSystem>());
     }
-  #endif
+  }
+#  endif
 #endif // flavor
 }
 
@@ -553,40 +557,38 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
   return ((result & FILE_ATTRIBUTE_DIRECTORY) == 0) && ((result & FILE_ATTRIBUTE_DEVICE) == 0);
   // we ignore FILE_ATTRIBUTE_REPARSE_POINT
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-      struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-      int result = stat64(path.getElements(), (struct stat64*)&status);
-    #else
-      struct stat64 status;
-      int result = stat64(path.getElements(), &status);
-    #endif // GNU Linux
-    switch (result) {
-    case 0:
-      if (S_ISREG(status.st_mode)) {
-        return true;
-      }
-      throw FileSystemException("Not a regular file", Type::getType<FileSystem>());
+#  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#    if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+  int result = stat64(path.getElements(), (struct stat64*)&status);
+#    else
+  struct stat64 status;
+  int result = stat64(path.getElements(), &status);
+#    endif // GNU Linux
+  if (result == 0) {
+    return S_ISREG(status.st_mode);
+  } else {
+    switch (errno) {
     case ENOENT:
       return false;
     default:
       throw FileSystemException("Unable to examine if file exists", Type::getType<FileSystem>());
     }
-  #else
-    struct stat status;
-    int result = stat(path.getElements(), &status);
-    switch (result) {
-    case 0:
-      if (S_ISREG(status.st_mode)) {
-        return true;
-      }
-      throw FileSystemException("Not a regular file", Type::getType<FileSystem>());
+  }
+#  else
+  struct stat status;
+  int result = stat(path.getElements(), &status);
+  if (result == 0) {
+    return S_ISREG(status.st_mode);
+  } else {
+    switch (errno) {
     case ENOENT:
       return false;
     default:
       throw FileSystemException("Unable to examine if file exists", Type::getType<FileSystem>());
     }
-  #endif
+  }
+#  endif
 #endif // flavor
 }
 
@@ -600,40 +602,38 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
   // TAG: could check if (GetLastError() == ERROR_FILE_NOT_FOUND)
   return ((result & FILE_ATTRIBUTE_DIRECTORY) != 0); // we ignore FILE_ATTRIBUTE_REPARSE_POINT
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-      struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-      int result = stat64(path.getElements(), (struct stat64*)&status);
-    #else
-      struct stat64 status;
-      int result = stat64(path.getElements(), &status);
-    #endif // GNU Linux
-    switch (result) {
-    case 0:
-      if (S_ISDIR(status.st_mode)) {
-        return true;
-      }
-      throw FileSystemException("Not a folder", Type::getType<FileSystem>());
+#  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#    if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+  int result = stat64(path.getElements(), (struct stat64*)&status);
+#    else
+  struct stat64 status;
+  int result = stat64(path.getElements(), &status);
+#    endif // GNU Linux
+  if (result == 0) {
+    return S_ISDIR(status.st_mode);
+  } else {
+    switch (errno) {
     case ENOENT:
       return false;
     default:
       throw FileSystemException("Unable to examine if folder exists", Type::getType<FileSystem>());
     }
-  #else
-    struct stat status;
-    int result = stat(path.getElements(), &status);
-    switch (result) {
-    case 0:
-      if (S_ISDIR(status.st_mode)) {
-        return true;
-      }
-      throw FileSystemException("Not a folder", Type::getType<FileSystem>());
+  }
+#  else
+  struct stat status;
+  int result = stat(path.getElements(), &status);
+  if (result == 0) {
+    return S_ISDIR(status.st_mode);
+  } else {
+    switch (errno) {
     case ENOENT:
       return false;
     default:
       throw FileSystemException("Unable to examine if folder exists", Type::getType<FileSystem>());
     }
-  #endif
+  }
+#  endif
 #endif // flavor
 }
 
@@ -846,13 +846,15 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
 #else
   struct stat status;
   int result = ::lstat(path.getElements(), &status);
-  switch (result) {
-  case 0:
+  if (result == 0) {
     return S_ISLNK(status.st_mode);
-  case ENOENT:
-    return false;
-  default:
-    throw FileSystemException(Type::getType<FileSystem>());
+  } else {
+    switch (errno) {
+    case ENOENT:
+      return false;
+    default:
+      throw FileSystemException(Type::getType<FileSystem>());
+    }
   }
 #endif
 }

@@ -85,14 +85,16 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline FTPException() {}
+  inline FTPException() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline FTPException(const char* message) : IOException(message) {}
+  inline FTPException(const char* message) : IOException(message) {
+  }
 };
 
 
@@ -776,7 +778,8 @@ private:
   FileTransferProtocolClient& client;
 public:
 
-  MyThread(FileTransferProtocolClient& c) : client(c) {}
+  MyThread(FileTransferProtocolClient& _client) : client(_client) {
+  }
 
   void run() throw(FTPException) {
     while (true) {

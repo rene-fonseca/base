@@ -22,10 +22,13 @@ using namespace base;
 class Hello {
 public:
 
-  int myFunction(long long) {return 0;}
+  int myFunction(long long) {
+    return 0;
+  }
 };
 
-class World {};
+class World {
+};
 
 class foo {
 public:
@@ -34,7 +37,8 @@ template<class A, class B>
 class bar {
 public:
 
-void test() {}
+void test() {
+}
 
 template<class TYPE>
 static void myFunction(foo, bar, Hello, World, World, Hello, void*) {

@@ -205,9 +205,13 @@ public:
     this->value = line.substring(value - begin, endValue - begin);
   }
 
-  String getName() const throw() {return name;}
+  String getName() const throw() {
+    return name;
+  }
 
-  String getValue() const throw() {return value;}
+  String getValue() const throw() {
+    return value;
+  }
 };
 
 class PushInterface {

@@ -30,7 +30,8 @@ private:
   int state;
 public:
 
-  Base() throw() : state(0) {}
+  Base() throw() : state(0) {
+  }
 };
 
 class Child : public Base {
@@ -39,7 +40,8 @@ private:
   int childState;
 public:
 
-  Child() throw() : childState(0) {}
+  Child() throw() : childState(0) {
+  }
 };
 
 class OtherChild : public Child {
@@ -48,7 +50,8 @@ private:
   int otherState;
 public:
 
-  OtherChild() throw() : otherState(0) {}
+  OtherChild() throw() : otherState(0) {
+  }
 };
 
 

@@ -35,6 +35,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   fout << MESSAGE("message digest: ") << checksum.getValue() << ENDL;
   </pre>
 
+  @ingroup security
   @short MD5 message-digest.
   @see SHA1
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>

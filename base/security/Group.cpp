@@ -71,7 +71,7 @@ Group& Group::operator=(const Group& eq) throw() {
   return *this;
 }
 
-bool Group::operator==(const Group& eq) throw() {
+bool Group::operator==(const Group& eq) const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!isValid() || (!eq.isValid())) {
     return !isValid() && !eq.isValid();

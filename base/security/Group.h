@@ -128,13 +128,13 @@ public:
     Returns true if the groups are identical. The method returns true if both
     users are invalid.
   */
-  bool operator==(const Group& eq) throw();
+  bool operator==(const Group& eq) const throw();
   
   /**
     Returns false if the groups are not identical. The method returns false if
     both groups are invalid.
   */
-  inline bool operator!=(const Group& eq) throw() {
+  inline bool operator!=(const Group& eq) const throw() {
     return !(*this == eq);
   }
 

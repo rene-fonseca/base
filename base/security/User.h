@@ -131,13 +131,13 @@ public:
     Returns true if the users are identical. The method returns true if both
     users are invalid.
   */
-  bool operator==(const User& eq) throw();
+  bool operator==(const User& eq) const throw();
   
   /**
     Returns false if the users are not identical. The method returns false if
     both users are invalid.
   */
-  inline bool operator!=(const User& eq) throw() {
+  inline bool operator!=(const User& eq) const throw() {
     return !(*this == eq);
   }
   

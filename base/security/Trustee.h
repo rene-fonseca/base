@@ -54,7 +54,8 @@ private:
 public:
   
   /**
-    This exception is raised by the Trustee class to indicate a non-existent trustee.
+    This exception is raised by the Trustee class to indicate a non-existent
+    trustee.
 
     @short Trustee exception
     @ingroup exceptions security
@@ -138,13 +139,13 @@ public:
     Returns true if the trustees are identical. The method returns true if both
     trustees are invalid.
   */
-  bool operator==(const Trustee& eq) throw();
+  bool operator==(const Trustee& eq) const throw();
   
   /**
-    Returns false if the trustees are not identical. The method returns false if
-    both trustees are invalid.
+    Returns false if the trustees are not identical. The method returns false
+    if both trustees are invalid.
   */
-  inline bool operator!=(const Trustee& eq) throw() {
+  inline bool operator!=(const Trustee& eq) const throw() {
     return !(*this == eq);
   }
   

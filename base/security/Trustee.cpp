@@ -104,7 +104,7 @@ Trustee& Trustee::operator=(const Trustee& eq) throw() {
   return *this;
 }
 
-bool Trustee::operator==(const Trustee& eq) throw() {
+bool Trustee::operator==(const Trustee& eq) const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!((id.isValid()) && (eq.id.isValid()))) {
     return !id.isValid() && !eq.id.isValid();

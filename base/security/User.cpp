@@ -94,7 +94,7 @@ User& User::operator=(const User& eq) throw() {
   return *this;
 }
 
-bool User::operator==(const User& eq) throw() {
+bool User::operator==(const User& eq) const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!isValid() || (!eq.isValid())) {
     return !isValid() && !eq.isValid();

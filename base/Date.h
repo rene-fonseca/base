@@ -14,7 +14,6 @@
 #ifndef _DK_SDU_MIP__BASE__DATE_H
 #define _DK_SDU_MIP__BASE__DATE_H
 
-#include <base/Object.h>
 #include <base/DateException.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/String.h>
@@ -30,11 +29,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class Date : public Object {
+class Date {
 private:
 
   /** Seconds elapsed since 00:00:00 on January 1, 1970, Coordinated Universal Time (UTC). */
-  int date;
+  int date; // TAG: need more accuracy
 public:
 
   /**
@@ -202,7 +201,11 @@ public:
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Date& value);
 
 template<>
-inline bool isRelocateable<Date>() throw() {return isRelocateable<Object>() && isRelocateable<int>();}
+class Relocateable<Date> {
+public:
+
+  static const bool IS_RELOCATEABLE = Relocateable<int>::IS_RELOCATEABLE;
+};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

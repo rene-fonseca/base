@@ -14,7 +14,6 @@
 #ifndef _DK_SDU_MIP__BASE__DIMENSION_H
 #define _DK_SDU_MIP__BASE__DIMENSION_H
 
-#include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -23,10 +22,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Dimension represented by width and height.
 
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.01
+  @version 1.2
 */
 
-class Dimension : public virtual Object {
+class Dimension {
 protected:
 
   /** The width. */
@@ -126,7 +125,7 @@ public:
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value);
 };
 
-inline Dimension::Dimension(unsigned int w, unsigned int h) throw() : width(w), height(h) {}
+inline Dimension::Dimension(unsigned int _width, unsigned int _height) throw() : width(_width), height(_height) {}
 
 /**
   Writes a string representation of a Dimension object to a format stream.
@@ -134,7 +133,11 @@ inline Dimension::Dimension(unsigned int w, unsigned int h) throw() : width(w), 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value);
 
 template<>
-inline bool isRelocateable<Dimension>() throw() {return isRelocateable<Object>();}
+class Relocateable<Dimension> {
+public:
+
+  static const bool IS_RELOCATEABLE = Relocateable<unsigned int>::IS_RELOCATEABLE;
+};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

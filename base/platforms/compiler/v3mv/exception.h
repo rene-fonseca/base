@@ -74,5 +74,5 @@ namespace abi {
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #else
-  #error Multiple inclusion of base/platforms/compiler/v3mv/exception.h
+#  error Multiple inclusion of base/platforms/compiler/v3mv/exception.h
 #endif

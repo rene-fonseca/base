@@ -25,6 +25,7 @@
   #include <sys/time.h>
   #include <unistd.h>
   #include <errno.h>
+  #include <time.h> // get nanosleep prototype
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -167,7 +168,7 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
   assert(nanoseconds < 1000000000, OutOfDomain());
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   Sleep(nanoseconds/1000);
-#else // __unix__
+#elseif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // __unix__
   struct timespec interval;
   interval.tv_sec = nanoseconds / 1000000000;
   interval.tv_nsec = nanoseconds % 1000000000;
@@ -176,6 +177,8 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
       break;
     }
   }
+#else
+  #warning Thread::nanosleep not implemented
 #endif
 }
 
@@ -183,7 +186,7 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
   assert(microseconds < 1000000000, OutOfDomain());
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   Sleep(microseconds/1000);
-#else // __unix__
+#elseif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // __unix__
   struct timespec interval;
   interval.tv_sec = microseconds / 1000000;
   interval.tv_nsec = (microseconds % 1000000) * 1000;
@@ -192,6 +195,8 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
       break;
     }
   }
+#else
+  #warning Thread::microsleep not implemented
 #endif
 }
 
@@ -199,7 +204,7 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
   assert(milliseconds < 1000000000, OutOfDomain());
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   Sleep(milliseconds);
-#else // __unix__
+#elseif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // __unix__
   struct timespec interval;
   interval.tv_sec = milliseconds / 1000;
   interval.tv_nsec = (milliseconds % 1000) * 1000000;
@@ -208,6 +213,8 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
       break;
     }
   }
+#else
+  #warning Thread::millisleep not implemented
 #endif
 }
 
@@ -215,7 +222,7 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
   assert(seconds < 1000000, OutOfDomain());
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   Sleep(seconds * 1000);
-#else // __unix__
+#elseif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // __unix__
   struct timespec interval;
   interval.tv_sec = seconds;
   interval.tv_nsec = 0;
@@ -224,6 +231,8 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
       break;
     }
   }
+#else
+  #warning Thread::sleep not implemented
 #endif
 }
 

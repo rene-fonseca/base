@@ -27,7 +27,7 @@ using namespace base;
 class MyDaemon : public Runnable {
 public:
 
-  void run() {
+  void run() {    
     //fout << "Testing implementation of the Daemon..." << ENDL;
     SystemLogger::write(SystemLogger::INFORMATION, "Daemon is running...");
     StringOutputStream stream;

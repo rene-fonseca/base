@@ -32,46 +32,6 @@ template<class TYPE> class Array;
 class FormatOutputStream;
 
 /**
-  This class binds together a string literal and its length. Use the macro
-  MESSAGE to generate an object of this class for a given string literal (e.g.
-  MESSAGE("Hello World")). Do not call the constructor directly.
-
-  @short String literal
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.2
-*/
-
-class StringLiteral {
-private:
-
-  /** The number of characters occupied by the message without the terminator. */
-  unsigned int length;
-  /** NULL-terminated literal. */
-  const char* literal;
-public:
-
-  /** Initializes the literal. Automatically invocated by the macro MESSAGE. */
-  inline StringLiteral(unsigned int _length, const char* _literal) throw()
-    : length(_length), literal(_literal) {
-  }
-  
-  /** Cast to the usual literal type. */
-  inline operator const char*() const throw() {
-    return literal;
-  }
-  
-  /** Returns the length of the string literal. */
-  inline unsigned int getLength() const throw() {
-    return length;
-  }
-};
-
-/** This macro returns a StringLiteral object from a string literal (e.g. MESSAGE("Hello, World")). */
-#define MESSAGE(literal) StringLiteral(sizeof(literal) - 1, literal)
-
-
-
-/**
   Default character manipulators.
 
   @short ASCII character characteristics

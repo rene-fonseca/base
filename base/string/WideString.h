@@ -30,48 +30,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class FormatOutputStream;
 
 /**
-  This class binds together a wide string literal and its length. Use the macro
-  WIDEMESSAGE to construct an object of this class for a given wide string
-  literal (e.g. WIDEMESSAGE("Hello World")). Do not call the constructor
-  manually.
-  
-  @short Wide string literal
-  @ingroup string
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.1
-*/
-class WideStringLiteral {
-private:
-  
-  /** The number of characters occupied by the message without the terminator. */
-  const unsigned int length;
-  /** NULL-terminated message. */
-  const wchar* message;
-public:
-  
-  /** Initializes message. Automatically invocated by the macro WIDEMESSAGE. */
-  inline WideStringLiteral(unsigned int _length, const wchar* _message) throw()
-    : length(_length), message(_message) {
-  }
-  
-  /** Cast to the usual message type. */
-  inline operator const wchar*() const throw() {
-    return message;
-  }
-  
-  /** Returns the length of the string. */
-  inline unsigned int getLength() const throw() {
-    return length;
-  }
-};
-
-/** This macro constructs a WideStringLiteral object from the given string literal. */
-#define WIDEMESSAGE(message) \
-  WideStringLiteral(sizeof(L ## message)/sizeof(wchar) - 1, L ## message)
-
-
-
-/**
   Default wide-character properties and manipulators.
 
   @short Wide-character description.

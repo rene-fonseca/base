@@ -35,7 +35,7 @@ String::String(const StringLiteral& str) throw(StringException, MemoryException)
 }
 
 String::String(const char* string) throw(StringException, MemoryException) : elements(0) {
-  assert(string, StringException()); // make sure string is proper (not empty)
+  assert(string, StringException()); // make sure string is proper
   const Character* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
   assert(terminator, StringException()); // maximum length exceeded
   int numberOfCharacters = terminator - string;
@@ -45,7 +45,7 @@ String::String(const char* string) throw(StringException, MemoryException) : ele
 
 String::String(const char* string, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException) : elements(0) {
   assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
-  assert(string, StringException()); // make sure string is proper (not empty)
+  assert(string, StringException()); // make sure string is proper
   const Character* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
   int numberOfCharacters = terminator ? (terminator - string) : maximum;
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);

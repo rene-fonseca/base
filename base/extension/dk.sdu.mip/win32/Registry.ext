@@ -1,0 +1,8 @@
+NAME: Registry
+AUTHOR: Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+DOMAIN: dk.sdu.mip
+COMPONENT: Base Framework
+DESCRIPTION: Provides support for the Registry on Windows platforms
+LANGUAGE: C++
+FLAVOR: win32
+ATTENTION: _DK_SDU_MIP__BASE__EXTENSION__REGISTRY

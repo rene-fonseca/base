@@ -16,9 +16,9 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // Unix
+#else // unix
   #include <stdlib.h>
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -26,9 +26,9 @@ void* HeapImpl::allocate(unsigned int size) throw(MemoryException) {
   void* result;
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   result = static_cast<void*>(HeapAlloc(GetProcessHeap(), 0, size));
-#else // Unix
+#else // unix
   result = malloc(size);
-#endif
+#endif // flavour
   if ((!result) && (size != 0)) { // was memory allocated
     throw MemoryException("Unable to allocate heap");
   }
@@ -51,9 +51,9 @@ void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException) {
   } else {
     result = static_cast<void*>(HeapAlloc(GetProcessHeap(), 0, size));
   }
-#else // Unix
+#else // unix
   result = realloc(heap, size);
-#endif
+#endif // flavour
   if ((!result) && (size != 0)) { // was memory allocated
     throw MemoryException("Unable to resize heap");
   }
@@ -74,9 +74,9 @@ void* HeapImpl::tryResize(void* heap, unsigned int size) throw(MemoryException) 
   } else {
     return 0;
   }
-#else // Unix
+#else // unix
   return 0;
-#endif
+#endif // flavour
 }
 
 void HeapImpl::release(void* heap) throw(MemoryException) {
@@ -84,9 +84,9 @@ void HeapImpl::release(void* heap) throw(MemoryException) {
   if (!HeapFree(GetProcessHeap(), 0, heap)) {
     throw MemoryException("Unable to release heap");
   }
-#else // Unix
+#else // unix
   free(heap);
-#endif
+#endif // flavour
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

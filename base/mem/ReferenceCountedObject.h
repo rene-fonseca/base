@@ -47,9 +47,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class ReferenceCountedObject {
-
-friend class ReferenceCountedObjectPointerImpl;
-
+  friend class ReferenceCountedObjectPointerImpl;
 private:
 
   /** The current number of references to the object. */

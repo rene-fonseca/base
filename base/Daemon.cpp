@@ -20,7 +20,7 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // Unix
+#else // unix
   #include <sys/types.h>
   #include <unistd.h>
 #endif
@@ -196,7 +196,7 @@ void Daemon::install() {
   }
 }
 
-#else // __unix__
+#else // unix
 
 Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) {
   static unsigned int singleton = 0;

@@ -34,8 +34,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class FormatInputStream : public FilterInputStream {
 public:
 
-  /** Specifies the maximum length of a line. */
-  static const unsigned int MAXIMUM_LINE_SIZE = 1024;
+  /** Specifies the default line granularity. */
+  static const unsigned int LINE_GRANULARITY = 1024;
   /** Specifies the window size. */
   static const unsigned int WINDOW_SIZE = 4096;
 protected:
@@ -49,7 +49,9 @@ protected:
   Iterator head;
   /** The current read position. */
   ReadIterator tail;
-
+  /** Preallocated line. */
+  String line;
+  
   /**
     Fills the internal buffer with bytes from the input stream. Removes any characters already in the buffer.
   */
@@ -58,10 +60,7 @@ protected:
   /**
     Fills the internal buffer with bytes from the input stream without removing any characters already in the buffer.
   */
-  bool appendFromSource() throw(InvalidFormat, IOException);
-
-  /** Santas little helper. */
-  void appendToString(String& result, ReadIterator end) throw(InvalidFormat);
+  bool appendFromSource() throw(IOException);
 public:
 
   /**
@@ -70,6 +69,13 @@ public:
     @param in The input stream.
   */
   FormatInputStream(InputStream& in) throw(BindException);
+
+  /**
+    Returns the number of bytes that can be read or skipped over without blocking.
+
+    @return Available number of bytes in stream.
+  */
+  unsigned int available() const throw(IOException);
 
   /**
     Reads one character from the stream.
@@ -100,11 +106,6 @@ public:
     @return The actual number of bytes read from the stream.
   */
   unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
-
-  /**
-    Destroy format input stream.
-  */
-  ~FormatInputStream() throw(IOException);
 };
 
 /**

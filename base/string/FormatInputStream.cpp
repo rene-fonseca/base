@@ -20,101 +20,117 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 FileDescriptorInputStream standardInputStream(FileDescriptor::getStandardInput());
 FormatInputStream fin(standardInputStream);
 
-FormatInputStream::FormatInputStream(InputStream& in) throw(BindException) :
-  FilterInputStream(in),
-  buffer(WINDOW_SIZE),
-  head(buffer.getBeginIterator()),
-  tail(head) {
+FormatInputStream::FormatInputStream(InputStream& in) throw(BindException)
+  : FilterInputStream(in),
+    buffer(WINDOW_SIZE),
+    head(buffer.getBeginIterator()),
+    tail(head) {
+}
+
+unsigned int FormatInputStream::available() const throw(IOException) {
+  return FilterInputStream::available() + (head - tail);
 }
 
 bool FormatInputStream::overwriteFromSource() throw(IOException) {
-  FilterInputStream::wait(); // blocking wait for more input
+  FilterInputStream::wait(); // blocking wait for more input (or eof)
   unsigned int available = FilterInputStream::available();
-  if (available == 0) { // TAG: what about eof
+  if (available == 0) {
     return false;
   }
-  unsigned int size = minimum<unsigned int>(WINDOW_SIZE, available);
+  unsigned int bytesToRead = minimum<unsigned int>(WINDOW_SIZE, available);
   head = buffer.getBeginIterator();
   tail = head;
-  FilterInputStream::read(head.getValue(), size); // will not block
-  head += size;
+  unsigned int bytesRead = FilterInputStream::read(head.getValue(), bytesToRead); // will not block
+  ASSERT(bytesRead == bytesToRead);
+  head += bytesRead;
   return true;
 }
 
-bool FormatInputStream::appendFromSource() throw(InvalidFormat, IOException) {
-  FilterInputStream::wait(); // blocking wait for more input
+bool FormatInputStream::appendFromSource() throw(IOException) {
+  FilterInputStream::wait(); // blocking wait for more input (or eof)
   unsigned int available = FilterInputStream::available();
-  if (available == 0) { // TAG: what about eof
+  if (available == 0) {
     return false;
   }
   unsigned int size = minimum<unsigned int>(buffer.getEndReadIterator() - head, available);
-  assert(size > 0, InvalidFormat("Window size exceeded"));
-  FilterInputStream::read(head.getValue(), size); // will not block
+  unsigned int bytesRead = FilterInputStream::read(head.getValue(), size); // will not block
+  ASSERT(bytesRead == size);
   head += size;
   return true;
 }
 
-void FormatInputStream::appendToString(String& result, ReadIterator end) throw(InvalidFormat) {
-  assert(result.getLength() + (end - tail) <= MAXIMUM_LINE_SIZE, InvalidFormat("Maximum length of line exceeded"));
-  for (; tail < end; ++tail) { // TAG: need alternative
-    result += *tail;
-  }
-}
-
 String FormatInputStream::getWord() throw(IOException) {
-  // TAG: slow implementation - better approach is iterators
   String result;
-  char ch;
-  do { // skip spaces
-    if (tail == head) {
-      assert(overwriteFromSource(), EndOfFile());
+  while (true) { // skip prefix spaces
+    for (; (tail < head) && (String::Traits::isSpace(*tail)); ++tail) {
     }
-    ch = *tail++;
-  } while (String::Traits::isSpace(ch));
-  while (!String::Traits::isSpace(ch)) {
-    result += ch;
-    if (tail == head) {
-      if (overwriteFromSource()) {
-        break;
-      }
+    if (tail < head) { // end of spaces
+      break;
     }
-    ch = *tail++;
+    if (!overwriteFromSource()) {
+      return result; // eof reached (empty word)
+    }
   }
-  return result;
-}
-
-String FormatInputStream::getLine() throw(IOException) {
-  // TAG: better approach is iterators
-  String result;
-  while (true) { // find new line (i.e. any of the substrings "\n", "\r", "\n\r", or "\r\n")
-    ReadIterator i = tail;
-    for (; i < head; ++i) {
-      char ch = *i;
-      if (ch == '\n') {
-        appendToString(result, i);
-        ++tail;
-        if ((tail == head) && !overwriteFromSource()) {
-          return result; // eof reached
-        }
-        if (*tail == '\r') {
-          ++tail;
-        }
-        return result;
-      } else if (ch == '\r') {
-        appendToString(result, i);
-        ++tail;
-        if ((tail == head) && !overwriteFromSource()) {
-          return result; // eof reached
-        }
-        if (*tail == '\n') {
-          ++tail;
-        }
-        return result;
-      }
+  
+  while (true) {
+    const ReadIterator beginning = tail; // beginning of substring
+    for (; (tail < head) && (!String::Traits::isSpace(*tail)); ++tail) {
     }
-    appendToString(result, i);
+    unsigned int length = tail - beginning;
+    unsigned int offset = result.getLength();
+    result.forceToLength(result.getLength() + length); // extend string
+    copy<String::Character>((result.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
+    
+    if (tail < head) { // end of word
+      break;
+    }
     if (!overwriteFromSource()) {
       return result; // eof reached
+    }
+  }
+}
+
+// TAG: need limit arg: unsigned int maximumLength
+String FormatInputStream::getLine() throw(IOException) {
+  line.forceToLength(0);
+  while (true) { // find new line (i.e. any of the substrings "\n", "\r", "\n\r", or "\r\n")
+    const ReadIterator beginning = tail; // beginning of substring
+    for (; tail < head; ++tail) {
+      char ch = *tail;
+      if (ch == '\n') {
+        unsigned int length = tail - beginning;
+        unsigned int offset = line.getLength();
+        line.forceToLength(line.getLength() + length); // extend string
+        copy<String::Character>((line.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
+        ++tail; // skip '\n'
+        if ((tail == head) && !overwriteFromSource()) {
+          return line; // eof reached
+        }
+        if (*tail == '\r') {
+          ++tail; // skip '\r'
+        }
+        return line;
+      } else if (ch == '\r') {
+        unsigned int length = tail - beginning;
+        unsigned int offset = line.getLength();
+        line.forceToLength(line.getLength() + length); // extend string
+        copy<String::Character>((line.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
+        ++tail; // skip '\r'
+        if ((tail == head) && !overwriteFromSource()) {
+          return line; // eof reached
+        }
+        if (*tail == '\n') {
+          ++tail; // skip '\n'
+        }
+        return line;
+      }
+    }
+    unsigned int length = tail - beginning;
+    unsigned int offset = line.getLength();
+    line.forceToLength(line.getLength() + length); // extend string
+    copy<String::Character>((line.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
+    if (!overwriteFromSource()) {
+      return line; // eof reached
     }
   }
 }
@@ -136,10 +152,6 @@ unsigned int FormatInputStream::read(char* buffer, unsigned int size, bool nonbl
     }
   }
   return bytesRead;
-}
-
-FormatInputStream::~FormatInputStream() throw(IOException) {
-  TRACE_MEMBER();
 }
 
 

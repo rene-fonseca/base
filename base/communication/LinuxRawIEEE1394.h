@@ -142,40 +142,6 @@ public:
   unsigned int getFIFOSize() const throw(IEEE1394Exception);
 
   /**
-    Returns the present nodes on the bus.
-  */
-  uint64 getPresentNodes() const throw(IEEE1394Exception);
-  
-  /**
-    Returns the nodes which have the link layer activated.
-  */
-  uint64 getLinkOnNodes() const throw(IEEE1394Exception);
-
-  /**
-    Returns the contender nodes.
-  */
-  uint64 getContenders() const throw(IEEE1394Exception);
-  
-  /**
-    Returns the maximum speed of a node.
-    
-    @param node The node id the the node.
-  */
-  unsigned int getSpeedOfNode(unsigned short node) const throw(IEEE1394Exception);
-  
-  /**
-    Returns the maximum speed for communication with node.
-    
-    @param node The node id the the node.
-  */
-  unsigned int getMaximumSpeedToNode(unsigned short node) const throw(IEEE1394Exception);
-  
-  /**
-    Returns the maximum broadcast speed.
-  */
-  unsigned int getBroadcastSpeed() const throw(IEEE1394Exception);
-  
-  /**
     Read data from device.
 
     @param node The node id of source node.
@@ -236,7 +202,7 @@ public:
   void readIsochronous(char* buffer, unsigned int size, unsigned int channel) throw(OutOfDomain, IEEE1394Exception);
 
   // TAG: FIXME
-  void writeIsochronous(const char* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, unsigned int speed) throw(OutOfDomain, IEEE1394Exception);
+  void writeIsochronous(const char* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed) throw(OutOfDomain, IEEE1394Exception);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

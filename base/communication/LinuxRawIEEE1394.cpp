@@ -338,33 +338,6 @@ unsigned int LinuxRawIEEE1394::getFIFOSize() const throw(IEEE1394Exception) {
   return 1024;
 }
 
-uint64 LinuxRawIEEE1394::getPresentNodes() const throw(IEEE1394Exception) {
-  return (1ULL << numberOfNodes) - 1; // this works because numberOfNodes < 64
-}
-  
-uint64 LinuxRawIEEE1394::getLinkOnNodes() const throw(IEEE1394Exception) {
-  return 0;
-}
-
-uint64 LinuxRawIEEE1394::getContenders() const throw(IEEE1394Exception) {
-  return 0;
-}
-  
-unsigned int LinuxRawIEEE1394::getSpeedOfNode(unsigned short node) const throw(IEEE1394Exception) {
-  // look up in speed map for old std
-  return 100;
-}
-  
-unsigned int LinuxRawIEEE1394::getMaximumSpeedToNode(unsigned short node) const throw(IEEE1394Exception) {
-  // look up in speed map for old std
-  return 100;
-}
-  
-unsigned int LinuxRawIEEE1394::getBroadcastSpeed() const throw(IEEE1394Exception) {
-  // look up in speed map for old std
-  return 100;
-}
-
 void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
   // TAG: need timeout support
   // TAG: must be MT-safe
@@ -374,8 +347,8 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
     throw IEEE1394Exception("Unable to wait for event", this);
   }
 
-//   LinuxRawIEEE1394Impl::dumpRequest(request);
-    
+// LinuxRawIEEE1394Impl::dumpRequest(request);
+  
   switch (request.type) {
   case LinuxRawIEEE1394::EVENT_BUS_RESET:
     switch (protocol) {
@@ -397,11 +370,13 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
     {
       const IEEE1394Impl::Quadlet* quadlet =
         Cast::pointer<const IEEE1394Impl::Quadlet*>(Cast::getPointer(request.receiveBuffer));
-      unsigned int channel = (*quadlet >> 8) & 0x3f;
       fout << "EVENT: Received isochronous packet" << EOL
-           << "  channel: " << channel << EOL
-           << "  buffer: " << request.receiveBuffer << EOL
-           << "  packet size: " << "??? look in packet" << EOL
+           << "  size: " << (*quadlet >> 16) << EOL
+           << "  tag: " << HEX << setWidth(10) << ZEROPAD << ((*quadlet >> 14) & 0x03) << EOL
+           << "  channel: " << HEX << setWidth(10) << ZEROPAD << ((*quadlet >> 8) & 0x3f) << EOL
+           << "  tcode: " << HEX << setWidth(10) << ZEROPAD << ((*quadlet >> 4) & 0x0f) << EOL
+           << "  sy: " << HEX << setWidth(10) << ZEROPAD << (*quadlet & 0x0f) << EOL
+           << "  buffer: " << HEX << setWidth(10) << ZEROPAD << request.receiveBuffer << EOL
            << "  size: " << request.size << ENDL;
     }
     break;
@@ -597,6 +572,8 @@ void LinuxRawIEEE1394::lock(unsigned short node, uint64 address, unsigned int si
 }
  
 IEEE1394Common::IsochronousReadChannel LinuxRawIEEE1394::getReadChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) {
+  char buffer[8192];
+  readIsochronous(buffer, sizeof(buffer), 0);
   throw IEEE1394Exception("getReadChannel is not impl", this);
 }
 
@@ -609,8 +586,10 @@ LinuxRawIEEE1394::~LinuxRawIEEE1394() throw(IEEE1394Exception) {
 }
 
 void LinuxRawIEEE1394::readIsochronous(char* buffer, unsigned int size, unsigned int channel) throw(OutOfDomain, IEEE1394Exception) {
+  assert(channel <= 63, OutOfDomain(this));
+
   LinuxRawIEEE1394Impl::RequestContext requestContext;
-  requestContext.type = LinuxRawIEEE1394::REQUEST_ASYNC_READ;
+  requestContext.type = LinuxRawIEEE1394::REQUEST_ISO_LISTEN;
   requestContext.dequeued = false;
   
   LinuxRawIEEE1394Impl::Request request;
@@ -626,22 +605,25 @@ void LinuxRawIEEE1394::readIsochronous(char* buffer, unsigned int size, unsigned
     IEEE1394Exception("Unable to request read", this)
   );
   
+  ::read(handle, &request, sizeof(request));
+  dumpRequest(request);
+  
   while (!requestContext.dequeued) { // wait for completion
     dequeueResponse();
   }
   status = requestContext.status;
+  
+  // stop listening
 }
 
-void LinuxRawIEEE1394::writeIsochronous(const char* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
+// void LinuxRawIEEE1394::wait() throw(IEEE1394Exception) {
+//   while (!requestContext.dequeued) { // wait for completion
+//     dequeueResponse();
+//   }
+// }
 
-  switch (speed) { // TAG: use IEEE1394Common::Speed type?
-  case 100:
-  case 200:
-  case 400:
-    break;
-  default:
-    throw OutOfDomain(this);
-  }
+void LinuxRawIEEE1394::writeIsochronous(const char* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed) throw(OutOfDomain, IEEE1394Exception) {
+  assert((channel <= 63) && (speed <= IEEE1394Impl::S400), OutOfDomain(this));
   
   LinuxRawIEEE1394Impl::RequestContext requestContext;
   requestContext.type = LinuxRawIEEE1394::REQUEST_ISO_SEND;
@@ -653,7 +635,7 @@ void LinuxRawIEEE1394::writeIsochronous(const char* buffer, unsigned int size, u
   request.generation = generation;
   request.misc = (tag << 16) | sy;
   request.tag = Cast::getOffset(&requestContext);
-  request.address = (static_cast<uint64>(channel) << 48) | speed;
+  request.address = (static_cast<uint64>(channel) << 48) | static_cast<unsigned int>(speed);
   request.size = size;
   request.sendBuffer = Cast::getOffset(buffer);
   assert(

@@ -19,7 +19,6 @@
 #include <base/Functor.h>
 #include <base/NotImplemented.h>
 #include <base/security/User.h>
-#include <stdio.h>
 
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
 #  define _LARGEFILE64_SOURCE 1
@@ -34,6 +33,10 @@
 #  include <windows.h>
 #  include <aclapi.h>
 #  include <winioctl.h>
+#  ifdef SYNCHRONIZE
+#    undef SYNCHRONIZE
+     enum {SYNCHRONIZE = 0x100000};
+#  endif
 #else // unix
 #  include <sys/types.h>
 #  include <sys/stat.h>
@@ -328,6 +331,7 @@ unsigned int File::getMode() const throw(FileException) {
 }
 
 AccessControlList File::getACL() const throw(FileException) {
+  AccessControlList result;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SECURITY_DESCRIPTOR* securityDescriptor;
   PACL acl;
@@ -338,86 +342,149 @@ AccessControlList File::getACL() const throw(FileException) {
 
   SECURITY_DESCRIPTOR_CONTROL control;
   DWORD revision;
-	if (::GetSecurityDescriptorControl(securityDescriptor, &control, &revision)) {
-		throw FileException("Unable to get security descriptor control", this);
+	if (::GetSecurityDescriptorControl(securityDescriptor, &control, &revision) == 0) {
+    ::LocalFree(securityDescriptor);
+		throw FileException("Unable to get ACL", this);
 	}
-  DWORD length = ::GetSecurityDescriptorLength(securityDescriptor);
+  DWORD size = ::GetSecurityDescriptorLength(securityDescriptor); // TAG: remove when done
+  
+//   ferr << "Security descriptor:" << EOL
+//        << "  size: " << size << EOL
+//        << "  revision: " << revision << EOL
+//        << "  control: " << HEX << (WORD)control << EOL;
 
-  fout << "SD:" << EOL
-       << "  length: " << length << EOL
-       << "  revision: " << revision << EOL
-       << "  control: " << HEX << (unsigned int)control << EOL;
-  
-//   ::GetSecurityDescriptorOwner();
-//   ::GetSecurityDescriptorGroup();
-  
-  BOOL hasDACL;
-//  PACL acl;
-//  BOOL defaulted;
-// 	if (::GetSecurityDescriptorDacl(securityDescriptor, &hasDACL, &acl, &defaulted) == 0) {
-//     throw FileException("Unable to get DACL", this);
-// 	}
-  
-  ACL_SIZE_INFORMATION information;
-  if (::GetAclInformation(acl, &information, sizeof(information), AclSizeInformation) == 0) {
-    throw FileException("Unable to get ACL information", this);
-	}
-  
-  fout << "ACL:" << EOL
-       << "  #entries: " << information.AceCount << EOL
-       << "  bytes used: " << information.AclBytesInUse << EOL
-       << "  bytes free: " << information.AclBytesFree << EOL;
-  
-	for (unsigned int i = 0; i < information.AceCount; ++i) {
-    ACE_HEADER* ace;
-    ::GetAce(acl, i, (void**)&ace);
-    
-    PSID trustee;
-    switch (ace->AceType) {
-    case ACCESS_ALLOWED_ACE_TYPE:
-      trustee = &((ACCESS_ALLOWED_ACE*)ace)->SidStart;
-      break;
-    case ACCESS_DENIED_ACE_TYPE:
-      trustee = &((ACCESS_DENIED_ACE*)ace)->SidStart;
-      break;
-    default:
-      Trace::message("default");
-    }
-    
-    fout << "ACE:" << EOL
-         << "  entry: " << i << EOL
-         << "  type: " << HEX << ace->AceType << EOL
-         << "  trustee: " << User(trustee).getName() << EOL;
-  }
-  
-//   ULONG numberOfEntries;
+//   ULONG numberOfEntries; // TAG: what is explicit entries
 //   PEXPLICIT_ACCESS entries;
-//   bool error = ::GetExplicitEntriesFromAcl(acl, &numberOfEntries, &entries) != ERROR_SUCCESS;
-//   if (error) {
+//   if (::GetExplicitEntriesFromAcl(acl, &numberOfEntries, &entries) != ERROR_SUCCESS) {
 //     ::LocalFree(securityDescriptor);
 //     throw FileException("Unable to get ACL", this);
 //   }
+
+//   ferr << "Explicit entries:" << EOL
+//        << "  #entries: " << numberOfEntries << EOL;
   
 //   PEXPLICIT_ACCESS entry = entries;
-//   for (int i = 0; i < numberOfEntries; ++i) {
-//     ferr << "permissions: " << HEX << entry->grfAccessPermissions << EOL
-//          << "access mode: " << entry->grfAccessMode << EOL
-//          << "inherit: " << HEX << entry->grfInheritance << EOL
-//          << "form: " << entry->Trustee.TrusteeForm << EOL
-//          << "type: " << entry->Trustee.TrusteeType << ENDL;
+//   for (unsigned int i = 0; i < numberOfEntries; ++i) {
+//     ferr << "  index: " << i << EOL
+//          << "  permissions: " << HEX << entry->grfAccessPermissions << EOL
+//          << "  access mode: " << entry->grfAccessMode << EOL
+//          << "  inherit: " << HEX << entry->grfInheritance << EOL
+//          << "  form: " << entry->Trustee.TrusteeForm << EOL
+//          << "  type: " << entry->Trustee.TrusteeType << EOL;
 //     ++entry;
 //   }
-//   ::LocalFree(entry);
+//   ::LocalFree(entries);
+
+  ACL_SIZE_INFORMATION information;
+  if (::GetAclInformation(acl, &information, sizeof(information), AclSizeInformation) == 0) {
+      ::LocalFree(securityDescriptor);
+      throw FileException("Unable to get ACL", this);
+  }
+
+//   ferr << "ACL:" << EOL
+//        << "  #entries: " << information.AceCount << EOL
+//        << "  bytes used: " << information.AclBytesInUse << EOL
+//        << "  bytes free: " << information.AclBytesFree << EOL;
+  
+  for (unsigned int i = 0; i < information.AceCount; ++i) {
+    ACE_HEADER* ace;
+    ::GetAce(acl, i, &ace);
+    
+    AccessControlEntry::AccessMask accessMask = 0;
+    
+    PSID sid;
+    ACCESS_MASK mask;
+    bool denied = false;
+    switch (ace->AceType) {
+    case ACCESS_ALLOWED_ACE_TYPE:
+      mask = ((ACCESS_ALLOWED_ACE*)ace)->Mask;
+      sid = &((ACCESS_ALLOWED_ACE*)ace)->SidStart;
+      break;
+    case ACCESS_ALLOWED_OBJECT_ACE_TYPE:
+      mask = ((ACCESS_ALLOWED_OBJECT_ACE*)ace)->Mask;
+      sid = &((ACCESS_ALLOWED_OBJECT_ACE*)ace)->SidStart;
+      break;
+    case ACCESS_DENIED_ACE_TYPE:
+      mask = ((ACCESS_DENIED_ACE*)ace)->Mask;
+      sid = &((ACCESS_DENIED_ACE*)ace)->SidStart;
+      denied = true;
+      break;
+    case ACCESS_DENIED_OBJECT_ACE_TYPE:
+      mask = ((ACCESS_DENIED_OBJECT_ACE*)ace)->Mask;
+      sid = &((ACCESS_DENIED_OBJECT_ACE*)ace)->SidStart;
+      denied = true;
+      break;
+    }
+    
+    if (mask & FILE_EXECUTE) {
+      accessMask |= AccessControlEntry::EXECUTE;
+    }
+
+    if (mask & FILE_READ_DATA) {
+      accessMask |= AccessControlEntry::READ_DATA;
+    }
+    if (mask & FILE_READ_ATTRIBUTES) {
+      accessMask |= AccessControlEntry::READ_ATTRIBUTES;
+    }
+    if (mask & FILE_READ_EA) {
+      accessMask |= AccessControlEntry::READ_EXTENDED_ATTRIBUTES;
+    }
+    if (mask & READ_CONTROL) {
+      accessMask |= AccessControlEntry::READ_PERMISSIONS;
+    }
+
+    if (mask & FILE_WRITE_DATA) {
+      accessMask |= AccessControlEntry::WRITE_DATA;
+    }
+    if (mask & FILE_APPEND_DATA) {
+      accessMask |= AccessControlEntry::APPEND_DATA;
+    }
+    if (mask & FILE_WRITE_ATTRIBUTES) {
+      accessMask |= AccessControlEntry::CHANGE_ATTRIBUTES;
+    }
+    if (mask & FILE_WRITE_EA) {
+      accessMask |= AccessControlEntry::CHANGE_EXTENDED_ATTRIBUTES;
+    }
+    if (mask & WRITE_DAC) {
+      accessMask |= AccessControlEntry::CHANGE_PERMISSIONS;
+    }
+    if (mask & WRITE_OWNER) {
+      accessMask |= AccessControlEntry::CHANGE_OWNER;
+    }
+    if (mask & DELETE) {
+      accessMask |= AccessControlEntry::REMOVE;
+    }
+    if (mask & FILE_DELETE_CHILD) {
+      accessMask |= AccessControlEntry::REMOVE_COMPONENT;
+    }
+    if (mask & SYNCHRONIZE) {
+      accessMask |= AccessControlEntry::SYNCHRONIZE;
+    }
+    
+    AccessControlEntry::Permissions permissions;
+    if (denied) {
+      permissions.allowed = 0;
+      permissions.denied = accessMask;
+    } else {
+      permissions.allowed = accessMask;
+      permissions.denied = 0;
+    }
+    
+//     ferr << "ACE: " << i << EOL
+//          << "  type: " << ace->AceType << EOL
+//          << "  flags: " << ace->AceFlags << EOL
+//          << "  size: " << ace->AceSize << EOL
+//          << "  access: " << setWidth(8) << ZEROPAD << HEX << mask << EOL
+//          << "  id: " << Trustee(Trustee::UNSPECIFIED, (const void*)sid) << EOL;
+    
+    result.add(AccessControlEntry(Trustee(Trustee::UNSPECIFIED, (const void*)sid), permissions));
+  }
   ::LocalFree(securityDescriptor);
-#if 0 // disabled
-#endif // disabled
-  throw NotImplemented(this);
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   aclent_t entries[MAX_ACL_ENTRIES];
   int numberOfEntries = ::facl(fd->getHandle(), GETACL, MAX_ACL_ENTRIES, entries);
   assert(numberOfEntries >= 0, FileException("Unable to get ACL", this));
   
-  AccessControlList result;
   for (int i = 0; i < numberOfEntries; ++i) {
     const unsigned int mode = ((entries[i].a_perm & S_IRGRP) ? AccessControlEntry::READ : 0) |
       ((entries[i].a_perm & S_IWGRP) ? AccessControlEntry::WRITE : 0) |
@@ -437,7 +504,6 @@ AccessControlList File::getACL() const throw(FileException) {
       result.add(AccessControlEntry(Trustee(Trustee::EVERYONE, 0), ((mode & S_IROTH) ? AccessControlEntry::READ : 0) | ((mode & S_IWOTH) ? AccessControlEntry::WRITE : 0) | ((mode & S_IXOTH) ? AccessControlEntry::EXECUTE : 0)));
     }
   }
-  return result;
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX)
   throw NotImplemented(this);
 #else // unix
@@ -448,8 +514,7 @@ AccessControlList File::getACL() const throw(FileException) {
     struct stat status;
     assert(::fstat(fd->getHandle(), &status) == 0, FileException(this));
   #endif
-  
-  AccessControlList result;
+    
 //   const unsigned int ownerMode = ((status.st_mode & S_IRUSR) ? AccessControlEntry::READ : 0) |
 //     ((status.st_mode & S_IWUSR) ? AccessControlEntry::WRITE : 0) |
 //     ((status.st_mode & S_IXUSR) ? AccessControlEntry::EXECUTE : 0);
@@ -468,20 +533,128 @@ AccessControlList File::getACL() const throw(FileException) {
 //   if (otherMode != 0) {
 //     result.add(AccessControlEntry(Trustee::EVERYONE, AccessControlEntry::ALLOW, otherMode));
 //   }
-  return result;
 #endif // flavor
+  return result;
 }
 
 Trustee File::getOwner() const throw(FileException) {
-  throw NotImplemented(this);
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  throw NotImplemented(this); // TAG: fixme
+#else // unix
+  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+    struct packedStat64 { // temporary fix for unaligned st_size
+      __dev_t st_dev;
+      unsigned int __pad1;
+      __ino_t __st_ino;
+      __mode_t st_mode;
+      __nlink_t st_nlink;
+      __uid_t st_uid;
+      __gid_t st_gid;
+      __dev_t st_rdev;
+      unsigned int __pad2;
+      __off64_t st_size;
+      __blksize_t st_blksize;
+      __blkcnt64_t st_blocks;
+      __time_t st_atime;
+      unsigned long int __unused1;
+      __time_t st_mtime;
+      unsigned long int __unused2;
+      __time_t st_ctime;
+      unsigned long int __unused3;
+      __ino64_t st_ino;
+    } __attribute__ ((packed));
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+  #else
+    struct stat64 status;
+  #endif // GNU Linux
+    if (::stat64(path.getElements(), (struct stat64*)&status) || (!S_ISREG(status.st_mode))) {
+      throw FileSystemException("Not a file", this);
+    }
+  #else
+    struct stat status;
+    if (::stat(path.getElements(), &status) || (!S_ISREG(status.st_mode))) {
+      throw FileSystemException("Not a file", this);
+    }
+  #endif
+  return = Trustee(Trustee::USER, (const void*)(MemoryDiff)status.st_uid);
+#endif // flavor
+}
+
+void File::changeOwner(const String& path, const Trustee& owner, const Trustee& group, bool followLink) throw(FileException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  throw NotImplemented(Type::getType<File>()); // TAG: fixme
+
+  //Privilege::askFor(Privilege::CHANGE_OWNER|Privilege::RESTORE|Privilege::BACKUP|Privilege::CHANGE_NOTIFY);
+
+// if (!::InitializeSecurityDescriptor(psdFileSDrel, SECURITY_DESCRIPTOR_REVISION)) {
+// }
+// if (!::SetSecurityDescriptorOwner(psdFileSDrel, psidOwner, FALSE)) {
+// }
+// if (!::IsValidSecurityDescriptor(psdFileSDrel)) {
+// }
+// if (!::SetFileSecurity(path.getElements(), (SECURITY_INFORMATION)(OWNER_SECURITY_INFORMATION), psdFileSDrel)) {
+// }
+
+
+#else // unix
+  assert((owner.getType() == Trustee::USER) && (group.getType() == Trustee::GROUP), FileException(Type::getType<File>()));
+  
+  uid_t uid = owner.getIntegralId();
+  gid_t gid = group.getIntegralId();
+  
+  int error;
+  if (followLink) {
+    error = ::chown(path.getElements(), uid, gid);
+  } else {
+    error = ::lchown(path.getElements(), uid, gid);
+  }
+  assert(error == 0, FileException("Unable to change owner", Type::getType<File>()))
+#endif // flavor
 }
 
 Trustee File::getGroup() const throw(FileException) {
-  throw NotImplemented(this);
-}
-
-void File::setOwner(const Trustee& owner) throw(FileException) {
-  throw NotImplemented(this);
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  throw NotImplemented(this); // TAG: fixme
+#else // unix
+  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+    struct packedStat64 { // temporary fix for unaligned st_size
+      __dev_t st_dev;
+      unsigned int __pad1;
+      __ino_t __st_ino;
+      __mode_t st_mode;
+      __nlink_t st_nlink;
+      __uid_t st_uid;
+      __gid_t st_gid;
+      __dev_t st_rdev;
+      unsigned int __pad2;
+      __off64_t st_size;
+      __blksize_t st_blksize;
+      __blkcnt64_t st_blocks;
+      __time_t st_atime;
+      unsigned long int __unused1;
+      __time_t st_mtime;
+      unsigned long int __unused2;
+      __time_t st_ctime;
+      unsigned long int __unused3;
+      __ino64_t st_ino;
+    } __attribute__ ((packed));
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+  #else
+    struct stat64 status;
+  #endif // GNU Linux
+    if (::stat64(path.getElements(), (struct stat64*)&status) || (!S_ISREG(status.st_mode))) {
+      throw FileSystemException("Not a file", this);
+    }
+  #else
+    struct stat status;
+    if (::stat(path.getElements(), &status) || (!S_ISREG(status.st_mode))) {
+      throw FileSystemException("Not a file", this);
+    }
+  #endif
+  return = Trustee(Trustee::GROUP, (const void*)(MemoryDiff)status.st_gid);
+#endif // flavor
 }
 
 long long File::getSize() const throw(FileException) {

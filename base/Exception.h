@@ -34,7 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short The general exception class
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0.4
+  @version 1.2
 */
 
 class Exception {
@@ -46,8 +46,10 @@ private:
   Type type;
   /** The associated cause (0 by default). */
   unsigned int cause;
+  /** The associated system error code. */
+  unsigned int error;
 public:
-
+  
   /**
     Returns true if the stack is currently being unwinded due to a raised exception.
     
@@ -98,7 +100,7 @@ public:
     @param type The identity of the type.
   */
   Exception(const char* message, Type type) throw();
-
+  
   /**
     Copy constructor.
 
@@ -121,31 +123,49 @@ public:
   }
   
   /**
+    Returns the associated native error code. 0 if no error.
+  */
+  inline unsigned int getError() const throw() {
+    return error;
+  }
+  
+  /**
+    Sets the native error code. 0 indicates no error.
+  */
+  inline void setError(unsigned int code) throw() {
+    this->error = error;
+  }
+  
+  /**
     Returns the message associated with the exception.
 
     @return The message associated with the exception.
   */
-  const char* getMessage() const throw();
-
+  inline const char* getMessage() const throw() {
+    return message;
+  }
+  
   /**
     Associates the exception with the specified message.
   */
   inline void setMessage(const char* message) throw() {
     this->message = message;
   }
-
+  
   /**
     Returns the identity of the type which raised the exception.
   */
-  Type getType() const throw();
-
+  inline Type getType() const throw() {
+    return type;
+  }
+  
   /**
     Sets the identity of the type which raised the exception.
   */
   inline void setType(const Type& type) throw() {
     this->type = type;
   }
-
+  
   /**
     Destroys exception object.
   */
@@ -158,6 +178,15 @@ public:
 template<class EXCEPTION>
 inline EXCEPTION bindCause(EXCEPTION e, unsigned int cause) throw() {
   e.setCause(cause);
+  return e;
+}
+
+/**
+  Associates the exception with the given native error code.
+*/
+template<class EXCEPTION>
+inline EXCEPTION bindError(EXCEPTION e, unsigned int error) throw() {
+  e.setError(error);
   return e;
 }
 

@@ -23,7 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Operating system.
   
-  @short Operating system
+  @short Operating system.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
@@ -45,6 +45,47 @@ public:
   static const Handle INVALID_HANDLE = -1;
 #endif
 
+  /** Common error codes. */
+  enum ErrorCode {
+    OK, /**< No error. */
+    ACCESS_DENIED, /**< Access denied. */ // TAG: why not PERMISSION_DENIED
+    BROKEN_STREAM, /**< Broken stream. */
+    BUSY, /**< Busy. */
+    CANCELED, /**< Operation was canceled. */
+    DEAD_LOCK, /**< Dead lock detected. */
+    END_OF_FILE, /**< End of file. */
+    ENTRY_NOT_FOUND, /**< The path does not specify an existing entry within the filesystem. */
+    FILE_EXISTS, /**< File (or any entry) already exists. */
+    FILE_NOT_FOUND, /**< The path does not specify an existing file. */
+    FILE_TOO_LARGE, /**< File size limit exceeded. */
+    FOLDER_EXISTS, /**< Path specifies an existing folder. */
+    FOLDER_NOT_EMPTY, /**< Folder not empty. */
+    INTERRUPTED, /**< Interrupted by signal. */
+    INVALID_ADDRESS, /**< Invalid address used in argument. */
+    INVALID_ARGUMENT, /**< Invalid argument. */
+    INVALID_IOCTL_REQUEST, /**< Invalid I/O control request. */
+    INVALID_PATH, /**< Invalid filesystem path. */
+    IO_ERROR, /**< I/O error. */
+    LOCK_VIOLATION, /**< Object already locked by other process. */
+    NO_SUCH_DEVICE, /**< Device does not exist. */
+    NOT_A_FOLDER, /**< Not a folder. */
+    NOT_A_HANDLE, /**< Invalid handle to system object. */
+    NOT_PERMITTED, /**< Operation was not permitted. */
+    NOT_SUPPORTED, /**< Operation is not supported. */
+    OPERATION_IN_PROGRESS, /**< Operation already in progress. */
+    OUT_OF_MEMORY, /**< Out of memory. */
+    OUT_OF_SPACE, /**< Out of space on device. */
+    PERMISSION_DENIED, /**< Permission denied. */
+    REQUEST_REFUSED, /**< Request was refused. */
+    RETRY, /**< Resource is currently unavailable. Try again later. */
+    SHARING_VIOLATION, /**< Object in-use by other process. */
+    STACK_OVERFLOW, /**< Stack overflow. */
+    TIME_OUT, /**< Operation timed out. */
+    TOO_MANY_LINKS, /**< Too many levels of symbolic links. */
+    TOO_MANY_OPEN_FILES, /**< Too many open files (or other objects). */
+    UNSPECIFIED_ERROR /**< Unspecified error (used if non of the above errors match the error). */
+  };
+  
   /** Operating system variables. */
   enum Variable {
     MAX_NUM_OF_ASYNC_IO_OPRS_PER_LIST,
@@ -92,6 +133,16 @@ public:
     HARD_LIMIT, /**< Hard limit. */
     SOFT_LIMIT /**< Soft limit. */
   };
+
+  /**
+    Returns a string representation of the specified error code.
+  */
+  static StringLiteral getErrorMessage(unsigned int error) throw();
+  
+  /**
+    Returns the error code for the specified native error code.
+  */
+  static unsigned int getErrorCode(unsigned int error) throw();
   
   /**
     Returns the value of the specified system variable.

@@ -439,4 +439,194 @@ void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType
 #endif // flavor
 }
 
+StringLiteral OperatingSystem::getErrorMessage(unsigned int error) throw() {
+  static const StringLiteral ERROR_MESSAGES[OperatingSystem::UNSPECIFIED_ERROR + 1] = {
+    MESSAGE("Ok"),
+    MESSAGE("Access denied"),
+    MESSAGE("Broken stream"),
+    MESSAGE("Busy"),
+    MESSAGE("Operation canceled"),
+    MESSAGE("Dead lock"),
+    MESSAGE("End of file"),
+    MESSAGE("Path does not specify an existing entry within the filesystem"),
+    MESSAGE("Filesystem entry already exists"),
+    MESSAGE("File does not exist"),
+    MESSAGE("File size limit exceeded"),
+    MESSAGE("Path specifies an existing folder"),
+    MESSAGE("Folder not empty"),
+    MESSAGE("Operation interrupted by signal"),
+    MESSAGE("Invalid address"),
+    MESSAGE("Invalid argument"),
+    MESSAGE("Invalid I/O control request"),
+    MESSAGE("Invalid filesystem path"),
+    MESSAGE("I/O error"),
+    MESSAGE("Object locked by other process"),
+    MESSAGE("Device does not exist"),
+    MESSAGE("Not a folder"),
+    MESSAGE("Invalid handle"),
+    MESSAGE("Operation not permitted"),
+    MESSAGE("Operation not supported"),
+    MESSAGE("Operation already in progress"),
+    MESSAGE("Out of memory"),
+    MESSAGE("Out of space on device"),
+    MESSAGE("Permission denied"),
+    MESSAGE("Request refused"),
+    MESSAGE("Resource is currently unavailable"),
+    MESSAGE("Sharing violation"),
+    MESSAGE("Stack overflow"),
+    MESSAGE("Time out"),
+    MESSAGE("Too many levels of symbolic links"),
+    MESSAGE("Too many open files"),
+    MESSAGE("Unspecified error")
+  };
+  if (error > OperatingSystem::UNSPECIFIED_ERROR) {
+    error = OperatingSystem::UNSPECIFIED_ERROR;
+  }
+  return ERROR_MESSAGES[error];
+}
+
+unsigned int OperatingSystem::getErrorCode(unsigned int error) throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  switch (error) {
+  case ERROR_SUCCESS:
+    return OperatingSystem::OK;
+  case ERROR_FILE_NOT_FOUND:
+    return OperatingSystem::FILE_NOT_FOUND;
+  case ERROR_PATH_NOT_FOUND:
+    return OperatingSystem::ENTRY_NOT_FOUND;
+  case ERROR_TOO_MANY_OPEN_FILES:
+    return OperatingSystem::TOO_MANY_OPEN_FILES;
+  case ERROR_ACCESS_DENIED:
+    return OperatingSystem::PERMISSION_DENIED;
+  case ERROR_INVALID_HANDLE:
+    return OperatingSystem::NOT_A_HANDLE;
+  case ERROR_NOT_ENOUGH_MEMORY:
+    return OperatingSystem::OUT_OF_MEMORY;
+  case ERROR_OUTOFMEMORY:
+    return OperatingSystem::OUT_OF_MEMORY;
+  case ERROR_SHARING_VIOLATION:
+    return OperatingSystem::SHARING_VIOLATION;
+  case ERROR_LOCK_VIOLATION:
+    return OperatingSystem::LOCK_VIOLATION;
+  case ERROR_HANDLE_EOF:
+    return OperatingSystem::END_OF_FILE;
+  case ERROR_HANDLE_DISK_FULL:
+    return OperatingSystem::OUT_OF_SPACE;
+  case ERROR_NOT_SUPPORTED:
+    return OperatingSystem::NOT_SUPPORTED;
+  case ERROR_FILE_EXISTS:
+    return OperatingSystem::FILE_EXISTS;
+  case ERROR_INVALID_PARAMETER:
+    return OperatingSystem::INVALID_ARGUMENT;
+  case ERROR_BROKEN_PIPE:
+    return OperatingSystem::BROKEN_STREAM;
+  case ERROR_INVALID_CATEGORY:
+    return OperatingSystem::INVALID_IOCTL_REQUEST;
+  case WAIT_TIMEOUT:
+    return OperatingSystem::TIME_OUT;
+  case ERROR_INVALID_ADDRESS:
+    return OperatingSystem::INVALID_ADDRESS;
+  case ERROR_EA_ACCESS_DENIED:
+    return OperatingSystem::ACCESS_DENIED;
+  case ERROR_OPERATION_ABORTED:
+    return OperatingSystem::CANCELED;
+  case ERROR_NOACCESS:
+    return OperatingSystem::ACCESS_DENIED;
+  case ERROR_STACK_OVERFLOW:
+    return OperatingSystem::STACK_OVERFLOW;
+  case WSAEINTR:
+    return OperatingSystem::INTERRUPTED;
+  case WSAEBADF:
+    return OperatingSystem::NOT_A_HANDLE;
+  case WSAEFAULT:
+    return OperatingSystem::INVALID_ADDRESS;
+  case WSAEINVAL:
+    return OperatingSystem::INVALID_ARGUMENT;
+  case WSAEMFILE:
+    return OperatingSystem::TOO_MANY_OPEN_FILES;
+  case WSAEWOULDBLOCK:
+    return OperatingSystem::RETRY;
+  case WSAEINPROGRESS:
+    return OperatingSystem::OPERATION_IN_PROGRESS;
+  case WSAEALREADY:
+    return OperatingSystem::OPERATION_IN_PROGRESS;
+  case WSAENOTSOCK:
+    return OperatingSystem::NOT_A_HANDLE;
+  case WSAETIMEDOUT:
+    return OperatingSystem::TIME_OUT;
+  case WSAECONNREFUSED:
+    return OperatingSystem::REQUEST_REFUSED;
+  default:
+    return OperatingSystem::UNSPECIFIED_ERROR;
+  }
+#else // unix
+  switch (error) {
+  case 0:
+    return OperatingSystem::OK;
+  case EACCES:
+    return OperatingSystem::PERMISSION_DENIED;
+  case EAGAIN:
+    return OperatingSystem::RETRY;
+  case EBADF:
+    return OperatingSystem::NOT_A_HANDLE;
+  case EBUSY:
+    return OperatingSystem::BUSY;
+  case ECANCELED:
+    return OperatingSystem::CANCELED;
+  case ECONNREFUSED:
+    return OperatingSystem::REQUEST_REFUSED;
+  case EDEADLK:
+    return OperatingSystem::DEAD_LOCK;
+  case EEXIST:
+    return OperatingSystem::FILE_EXISTS;
+  case EFAULT:
+    return OperatingSystem::INVALID_ADDRESS;
+  case EFBIG:
+    return OperatingSystem::FILE_TOO_LARGE;
+  case EINPROGRESS:
+    return OperatingSystem::OPERATION_IN_PROGRESS;
+  case EINTR:
+    return OperatingSystem::INTERRUPTED;
+  case EINVAL:
+    return OperatingSystem::INVALID_ARGUMENT;
+  case EIO:
+    return OperatingSystem::IO_ERROR;
+  case EISDIR:
+    return OperatingSystem::FOLDER_EXISTS;
+  case ELOOP:
+    return OperatingSystem::TOO_MANY_LINKS;
+  case EMFILE:
+    return OperatingSystem::TOO_MANY_OPEN_FILES;
+  case EMLINK:
+    return OperatingSystem::TOO_MANY_LINKS;
+  case ENAMETOOLONG:
+    return OperatingSystem::INVALID_PATH;
+  case ENFILE:
+    return OperatingSystem::TOO_MANY_OPEN_FILES;
+  case ENODEV:
+    return OperatingSystem::NO_SUCH_DEVICE;
+  case ENOENT:
+    return OperatingSystem::FILE_NOT_FOUND;
+  case ENOMEM:
+    return OperatingSystem::OUT_OF_MEMORY;
+  case ENOSPC:
+    return OperatingSystem::OUT_OF_SPACE;
+  case ENOTDIR:
+    return OperatingSystem::NOT_A_FOLDER;
+  case ENOTEMPTY:
+    return OperatingSystem::FOLDER_NOT_EMPTY;
+  case ENOTSUP:
+    return OperatingSystem::NOT_SUPPORTED;
+  case ENOTTY:
+    return OperatingSystem::INVALID_IOCTL_REQUEST;
+  case EPERM:
+    return OperatingSystem::NOT_PERMITTED;
+  case EPIPE:
+    return OperatingSystem::BROKEN_STREAM;
+  default:
+    return OperatingSystem::UNSPECIFIED_ERROR;
+  }
+#endif
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -22,12 +22,12 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 bool Exception::isUnwinding() throw() {
 #if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
-  #if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT)
+#  if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT)
     const abi::__cxa_eh_globals* abi::__cxa_get_globals();
-  #else
+#  else
     // TAG: exception handling does not have to be "fast"
-    const abi::__cxa_eh_globals* globals = abi::__cxa_get_globals_fast(); // __cxa_get_globals is called in Thread.cpp
-  #endif
+    const abi::__cxa_eh_globals* globals = abi::__cxa_get_globals_fast(); // __cxa_get_globals is invoked in Thread.cpp
+#  endif
   const abi::__cxa_exception* caughtException = globals->caughtExceptions;
   return caughtException != 0;
 #else
@@ -37,12 +37,12 @@ bool Exception::isUnwinding() throw() {
 
 Type Exception::getExceptionType() throw() {
 #if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
-  #if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT)
+#  if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT)
     const abi::__cxa_eh_globals* abi::__cxa_get_globals();
-  #else
+#  else
     // TAG: exception handling does not have to be "fast"
     const abi::__cxa_eh_globals* globals = abi::__cxa_get_globals_fast(); // __cxa_get_globals is called in Thread.cpp
-  #endif
+#  endif
   const abi::__cxa_exception* caughtException = globals->caughtExceptions;
   if (caughtException) {
     return Type(caughtException->exceptionType);
@@ -55,30 +55,36 @@ Type Exception::getExceptionType() throw() {
 }
 
 Exception::Exception() throw()
-  : message(0), cause(PrimitiveTraits<unsigned int>::MAXIMUM) {
+  : message(0),
+    cause(PrimitiveTraits<unsigned int>::MAXIMUM),
+    error(0) {
 }
 
 Exception::Exception(const char* _message) throw()
-  : message(_message), cause(PrimitiveTraits<unsigned int>::MAXIMUM) {
+  : message(_message),
+    cause(PrimitiveTraits<unsigned int>::MAXIMUM),
+    error(0) {
 }
 
 Exception::Exception(Type _type) throw()
-  : message(0), type(_type), cause(PrimitiveTraits<unsigned int>::MAXIMUM) {
+  : message(0),
+    type(_type),
+    cause(PrimitiveTraits<unsigned int>::MAXIMUM),
+    error(0) {
 }
 
 Exception::Exception(const char* _message, Type _type) throw()
-  : message(_message), type(_type), cause(PrimitiveTraits<unsigned int>::MAXIMUM) {
+  : message(_message),
+    type(_type),
+    cause(PrimitiveTraits<unsigned int>::MAXIMUM),
+    error(0) {
 }
 
-Exception::Exception(const Exception& copy) throw() : message(copy.message), type(copy.type), cause(copy.cause) {
-}
-
-const char* Exception::getMessage() const throw() {
-  return message;
-}
-
-Type Exception::getType() const throw() {
-  return type;
+Exception::Exception(const Exception& copy) throw()
+  : message(copy.message),
+    type(copy.type),
+    cause(copy.cause),
+    error(copy.error) {
 }
 
 Exception::~Exception() throw() {

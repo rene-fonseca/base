@@ -75,7 +75,9 @@ String demangleTypename(const char* mangled) throw() {
   }
   String result(demangled);
   free(demangled);
-  return result - suffix; // remove function name
+  ASSERT(result.endsWith(suffix));
+  result.setAt(result.getLength() - 3, 0); // remove function name
+  return result;
 }
 
 #elif defined(_DK_SDU_MIP__BASE__DEMANGLE_SUNWSPRO)

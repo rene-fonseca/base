@@ -27,7 +27,6 @@ class MyDaemon : public Runnable {
 public:
 
   void run() {    
-    //fout << "Testing implementation of the Daemon..." << ENDL;
     SystemLogger::write(SystemLogger::INFORMATION, "Daemon is running...");
     StringOutputStream stream;
     stream << Thread::getThread() << FLUSH;
@@ -51,7 +50,6 @@ public:
   }
   
   void main() throw() {
-    //fout << "Testing implementation of the Daemon..." << ENDL;
     if (getArguments().getSize() > 0) {
     } else {
       SystemLogger::write(SystemLogger::INFORMATION, "Attempting to start daemon...");

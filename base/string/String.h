@@ -6,13 +6,12 @@
 #ifndef _DK_SDU_MIP__BASE_STRING__STRING_H
 #define _DK_SDU_MIP__BASE_STRING__STRING_H
 
-#include "base/Object.h"
-#include "base/concurrency/Synchronize.h"
-#include "base/OutOfRange.h"
-#include "base/mem/Buffer.h"
-#include "base/mem/ReferenceCountedObject.h"
-#include "base/mem/ReferenceCountedObjectPointer.h"
-#include "FormatOutputStream.h"
+#include <base/Object.h>
+#include <base/concurrency/Synchronize.h>
+#include <base/OutOfRange.h>
+#include <base/mem/Array.h>
+#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/string/FormatOutputStream.h>
 #include <limits.h>
 
 /**
@@ -24,9 +23,9 @@ struct StringLiteral {
   /** NULL-terminated message. */
   const char* message;
   /** Initializes message. Automatically invocated by the macro MESSAGE. */
-  inline StringLiteral(unsigned int s, const char* m) : size(s), message(m) {};
+  inline StringLiteral(unsigned int s, const char* m) : size(s), message(m) {}
   /** Cast to the usual message type. */
-  inline operator const char*() const {return message;};
+  inline operator const char*() const {return message;}
 };
 
 /** This macro generates a StringLiteral object from a string literal. */
@@ -41,9 +40,9 @@ struct WideStringLiteral {
   /** NULL-terminated message. */
   const wchar_t* message;
   /** Initializes message. Automatically invocated by the macro WIDEMESSAGE. */
-  inline WideStringLiteral(unsigned int s, const wchar_t* m) : size(s), message(m) {};
+  inline WideStringLiteral(unsigned int s, const wchar_t* m) : size(s), message(m) {}
   /** Cast to the usual message type. */
-  inline operator const wchar_t*() const {return message;};
+  inline operator const wchar_t*() const {return message;}
 };
 
 /** This macro generates a WideStringLiteral object from a string literal. */
@@ -73,27 +72,26 @@ public:
   static const unsigned int MAXIMUM_LENGTH = ((INT_MAX - sizeof(TERMINATOR))/GRANULARITY)*GRANULARITY;
 private:
 
-  // Type of internal buffer.
-  class StringBuffer : public Buffer, public ReferenceCountedObject {
-  public:
-    StringBuffer(unsigned int capacity) throw(MemoryException) : Buffer(capacity) {};
-    StringBuffer(const StringBuffer& copy) throw(MemoryException); // does this call inherited copy constructors
-  };
-
   // Used by implement operator[]() for mutable strings.
   class Character {
   private:
     String& str;
     unsigned int index;
   public:
-    inline Character(String& s, unsigned int i) : str(s), index(i) {};
+    inline Character(String& s, unsigned int i) : str(s), index(i) {}
     inline char operator=(char ch) throw(OutOfRange) {str.setChar(index, ch); return ch;} // write char (e.g. char ch = str[0] = 'a')
-    inline operator char() throw(OutOfRange) {return str.getChar(index);}; // read char (e.g. char a = str[0])
+    inline operator char() throw(OutOfRange) {return str.getChar(index);} // read char (e.g. char a = str[0])
   };
 
-  /** Buffer holding the NULL-terminated string. */
-  ReferenceCountedObjectPointer<StringBuffer> internal;
-  /** Length of the string. */
+  /**
+    Reference counted buffer holding NULL-terminated string. Guarantied to
+    be non-empty when string has been initialized.
+  */
+  ReferenceCountedObjectPointer<Array<char> > elements;
+
+  /**
+    Length of the string.
+  */
   unsigned int len;
 protected:
 
@@ -101,21 +99,21 @@ protected:
     Returns a modifiable buffer. Forces copy of internal buffer if shared by multiple strings.
   */
   inline char* getMutableBuffer() throw(MemoryException) {
-    if (internal.isMultiReferenced()) { // do we have the elements for our self
-      internal = new StringBuffer(*internal); // make copy of the elements
+    if (elements.isMultiReferenced()) { // do we have the elements for our self
+      elements = new Array<char>(*elements); // make copy of the elements
     }
-    return internal->getBytes();
+    return elements->getElements();
   }
 
   /**
-    Returns a read-only buffer.
+    Returns a non-modifiable buffer.
   */
   inline const char* getReadOnlyBuffer() const throw() {
-    return internal->getBytes();
+    return elements->getElements();
   }
 
   /**
-    Returns the length of a NULL-terminated string (-1 if not terminated).
+    Returns the length of a native NULL-terminated string (-1 if not terminated).
   */
   int getLengthOfString(const char* str) const throw();
 
@@ -125,7 +123,7 @@ protected:
   void setLength(unsigned int length) throw(MemoryException);
 
   /**
-    Used by constructors to create StringBuffer.
+    Used by constructors to create the buffer.
   */
   void createString(const char* buffer, unsigned int length, unsigned int capacity) throw(MemoryException);
 
@@ -167,7 +165,7 @@ public:
   /**
     Copy constructor.
   */
-  inline String(const String& copy) throw() : internal(copy.internal), len(copy.len) {};
+  inline String(const String& copy) throw() : elements(copy.elements), len(copy.len) {}
 
   /**
     Assignment of string.
@@ -177,17 +175,17 @@ public:
   /**
     Returns the number of characters in the string.
   */
-  inline unsigned int length() const throw() {return len;};
+  inline unsigned int length() const throw() {return len;}
 
   /**
     Returns true if the string contains no characters.
   */
-  inline bool isEmpty() const throw() {return length() == 0;};
+  inline bool isEmpty() const throw() {return length() == 0;}
 
   /**
     Returns the capacity of the string.
   */
-  inline unsigned int getCapacity() const throw() {return internal->getSize();};
+  inline unsigned int getCapacity() const throw() {return elements->getSize();}
 
   /**
     Ensures that the capacity of the buffer is at least equal to the specified minimum.
@@ -206,12 +204,16 @@ public:
 // *******************************************************************************************
 
   /**
-    Returns the character at the specified index in this string. Throws 'OutOfRange' if index exceeds the length of the string.
+    Returns the character at the specified index in this string. Throws
+    'OutOfRange' if index exceeds the length of the string.
   */
   char getChar(unsigned int index) throw(OutOfRange);
 
   /**
-    Sets the character at the specified index of this string. If the new character is the string terminator ('\0') then the string is cut off from the specified index. Throws 'OutOfRange' if index exceeds the length of the string.
+    Sets the character at the specified index of this string. If the new
+    character is the string terminator ('\0') then the string is cut off from
+    the specified index. Throws 'OutOfRange' if index exceeds the length of
+    the string.
 
     @param index The index of the character to set.
     @param value The new character value.
@@ -219,12 +221,14 @@ public:
   void setChar(unsigned int index, char value) throw(OutOfRange);
 
   /**
-    Returns the reference to character at the specified index. Throws 'OutOfRange' if index exceeds the length of the string.
+    Returns the reference to character at the specified index. Throws
+    'OutOfRange' if index exceeds the length of the string.
   */
   Character operator[](unsigned int index) throw(OutOfRange);
 
   /**
-    Returns the character at the specified index. Throws 'OutOfRange' if index exceeds the length of the string.
+    Returns the character at the specified index. Throws 'OutOfRange' if index
+    exceeds the length of the string.
   */
   char operator[](unsigned int index) const throw(OutOfRange);
 
@@ -245,47 +249,49 @@ public:
 
     @param index Specifies the character to be removed.
   */
-  inline String& removeCharacter(unsigned int index) throw(MemoryException) {return remove(index, index);};
+  inline String& removeCharacter(unsigned int index) throw(MemoryException) {return remove(index, index);}
 
   /**
     Appends the character to this string.
 
     @param ch The character to be appended.
   */
-  inline String& append(char ch) throw(MemoryException) {return insert(length(), ch);};
+  inline String& append(char ch) throw(MemoryException) {return insert(length(), ch);}
 
   /**
     Appends the string to this string.
 
     @param str The string to be appended.
   */
-  inline String& append(const String& str) throw(MemoryException) {return insert(length(), str);};
+  inline String& append(const String& str) throw(MemoryException) {return insert(length(), str);}
 
   /**
     Appends the NULL-terminated string to this string.
 
     @param str The string to be appended.
   */
-  inline String& append(const char* str) throw(MemoryException) {return insert(length(), str);};
+  inline String& append(const char* str) throw(MemoryException) {return insert(length(), str);}
 
   /**
     Prepends the character to this string.
 
     @param ch The character to be prepended.
   */
-  inline String& prepend(char ch) throw(MemoryException) {return insert(0, ch);};
+  inline String& prepend(char ch) throw(MemoryException) {return insert(0, ch);}
 
   /**
     Prepends the string to this string.
 
     @param str The string to be prepended.
   */
-  inline String& prepend(const String& str) throw(MemoryException) {return insert(0, str);};
+  inline String& prepend(const String& str) throw(MemoryException) {return insert(0, str);}
 
   /**
     Inserts the character into this string.
 
-    @param index Specifies the position to insert the character. If the index exceeds the end of this string the character is inserted at the end.
+    @param index Specifies the position to insert the character. If the index
+    exceeds the end of this string the character is inserted at the end.
+
     @param ch The character to be inserted.
   */
   String& insert(unsigned int index, char ch) throw(MemoryException);
@@ -293,7 +299,9 @@ public:
   /**
     Inserts the string into this string.
 
-    @param index Specifies the position to insert the string. If the index exceeds the end of this string the string is inserted at the end.
+    @param index Specifies the position to insert the string. If the index
+    exceeds the end of this string the string is inserted at the end.
+
     @param str The string to be inserted.
   */
   String& insert(unsigned int index, const String& str) throw(MemoryException);
@@ -301,13 +309,16 @@ public:
   /**
     Inserts NULL-terminated string into this string.
 
-    @param index Specifies the position to insert the string. If the index exceeds the end of this string the string is inserted at the end.
+    @param index Specifies the position to insert the string. If the index
+    exceeds the end of this string the string is inserted at the end.
+
     @param str The NULL-terminated string to be inserted.
   */
   String& insert(unsigned int index, const char* str) throw(MemoryException);
 
   /**
-    Replaces the characters in a substring of this string with the characters in the specified string.
+    Replaces the characters in a substring of this string with the characters
+    in the specified string.
 
     @param start The start of the substring.
     @param end The end of the substring.
@@ -316,7 +327,8 @@ public:
   String& replace(unsigned int start, unsigned int end, const String& str) throw(MemoryException);
 
   /**
-    Replaces all occurances of the specified substring with another string in this string. Only does one pass of this string.
+    Replaces all occurances of the specified substring with another string in
+    this string. Only does one pass of this string.
 
     @param fromStr The substring to be replaced.
     @param toStr The new string.
@@ -325,7 +337,9 @@ public:
   unsigned int replaceAll(const String& fromStr, const String& toStr) throw(MemoryException);
 
   /**
-    Returns a new string that contains a subsequence of characters currently contained in this string. If 'end' is less than 'start' an empty string is returned.
+    Returns a new string that contains a subsequence of characters currently
+    contained in this string. If 'end' is less than 'start' an empty string is
+    returned.
 
     @param start Specifies the start of the substring.
     @param end Specifies the end of the substring.
@@ -333,18 +347,20 @@ public:
   String substring(unsigned int start, unsigned int end) const throw(MemoryException);
 
   /**
-    Returns a new string that contains a subsequence of characters currently contained in this string. The substring begins at the specified index and extends to the end of the string.
+    Returns a new string that contains a subsequence of characters currently
+    contained in this string. The substring begins at the specified index and
+    extends to the end of the string.
 
     @param start Specifies the start of the substring.
   */
-  inline String substring(unsigned int start) const throw(MemoryException) {return substring(start, length());};
+  inline String substring(unsigned int start) const throw(MemoryException) {return substring(start, length());}
 
   /**
     Appends the string to this string.
 
     @param suffix The string to be appended.
   */
-  inline String& operator+=(const String& suffix) throw(MemoryException) {return append(suffix);};
+  inline String& operator+=(const String& suffix) throw(MemoryException) {return append(suffix);}
 
   /**
     String reduction operator. Removes suffix from this string if and only if

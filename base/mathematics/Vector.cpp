@@ -3,8 +3,9 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Vector.h"
-#include "base/Functor.h"
+#include <config.h>
+#include <base/mathematics/Vector.h>
+#include <base/Functor.h>
 #include <math.h>
 
 template Vector<float>;
@@ -25,7 +26,7 @@ Vector<TYPE>::Vector(const TYPE elements[], unsigned int size) throw(OutOfDomain
     throw OutOfDomain();
   }
   setSize(size);
-  copyArray<TYPE>(getElements(), elements, getSize());
+  copy<TYPE>(getElements(), elements, getSize());
 }
 
 template<class TYPE>

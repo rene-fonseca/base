@@ -3,4 +3,4 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Synchronizeable.h"
+#include <base/concurrency/Synchronizeable.h>

@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_THREAD__SYNCHRONIZE_H
-#define _DK_SDU_MIP__BASE_THREAD__SYNCHRONIZE_H
+#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__SYNCHRONIZE_H
+#define _DK_SDU_MIP__BASE_CONCURRENCY__SYNCHRONIZE_H
 
-#include "Synchronizeable.h"
+#include <base/concurrency/Synchronizeable.h>
 
 /**
   Selects exclusive synchronization of this scope of this synchronizeable
@@ -96,8 +96,8 @@ private:
   /** The synchronize able object to be synchronized. */
   const Synchronizeable<LOCK>& obj;
 
-  Synchronize(const Synchronize& copy); // prohibit copy constructor
-  Synchronize& operator=(const Synchronize& eq); // prohibit assignment
+  inline Synchronize(const Synchronize& copy) {} // prohibit copy constructor
+  inline Synchronize& operator=(const Synchronize& eq) {} // prohibit assignment
 public:
 
   /**
@@ -141,8 +141,9 @@ public:
 template<>
 class Synchronize<Unsafe> {
 private:
-  Synchronize(const Synchronize& copy); // prohibit copy constructor
-  Synchronize& operator=(const Synchronize& eq); // prohibit assignment
+
+  inline Synchronize(const Synchronize& copy) {} // prohibit copy constructor
+  inline Synchronize& operator=(const Synchronize& eq) {} // prohibit assignment
 public:
 
   /**
@@ -151,17 +152,17 @@ public:
     @param obj The synchronize able object to be synchronized.
     @param exclusive Specifies if the lock should be exclusive (write-lock) or shared (read-lock). Default is exclusive.
   */
-  inline explicit Synchronize(const Synchronizeable<Unsafe>& o, bool exclusive = true) throw() {};
+  inline explicit Synchronize(const Synchronizeable<Unsafe>& o, bool exclusive = true) throw() {}
 
   /**
     Forces the lock to be released.
   */
-  inline void release() throw() {};
+  inline void release() throw() {}
 
   /**
     Releases the lock if not already released and destroys the synchronization object.
   */
-  inline ~Synchronize() throw() {};
+  inline ~Synchronize() throw() {}
 };
 
 #endif

@@ -3,11 +3,11 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_THREAD__RUNNABLE_H
-#define _DK_SDU_MIP__BASE_THREAD__RUNNABLE_H
+#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__RUNNABLE_H
+#define _DK_SDU_MIP__BASE_CONCURRENCY__RUNNABLE_H
 
-#include "base/Object.h"
-#include "Thread.h"
+#include <base/Object.h>
+#include <base/concurrency/Thread.h>
 
 class Thread;
 

@@ -21,6 +21,6 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(pthread_yield memcmp)
+AC_CHECK_FUNCS(pthread_yield memchr memcmp memmove)
 
 AC_OUTPUT(Makefile ellert/Makefile ellert/docs/Makefile ellert/docs/en/Makefile ellert/base/Makefile ellert/vehicle/Makefile ellert/base/concurrency/Makefile ellert/base/mathematics/Makefile ellert/io/Makefile ellert/base/io/Makefile ellert/base/string/Makefile ellert/base/mem/Makefile ellert/base/net/Makefile ellert/control/Makefile ellert/base/collection/Makefile )

@@ -104,8 +104,3 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorI
                 << "handle=" << value.fd->getHandle()
                 << "}";
 }
-
-int main() {
-  FileDescriptorInputStream a(0);
-  return 0;
-}

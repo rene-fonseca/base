@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_THREAD__SYNCHRONIZEABLE_H
-#define _DK_SDU_MIP__BASE_THREAD__SYNCHRONIZEABLE_H
+#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__SYNCHRONIZEABLE_H
+#define _DK_SDU_MIP__BASE_CONCURRENCY__SYNCHRONIZEABLE_H
 
-#include "ReadWriteLock.h"
+#include <base/concurrency/ReadWriteLock.h>
 
 /**
   This class is used to specify that a synchronize able class should not be
@@ -44,39 +44,41 @@ typedef ReadWriteLock DefaultLock;
 
 template<class LOCK = DefaultLock>
 class Synchronizeable : private virtual LOCK {
+private:
+
+  /**
+    Copy constructor. Does not copy the internal locking object but creates a new locking object.
+  */
+  inline Synchronizeable(const Synchronizeable& copy) : LOCK() {}
+
+  /**
+    Assignment operator. Does not modify the internal locking object.
+  */
+  inline Synchronizeable& operator=(const Synchronizeable& eq) {return *this;}
 public:
 
   /**
     Initializes a synchronize able object.
   */
-  inline Synchronizeable() : LOCK() {};
+  inline Synchronizeable() : LOCK() {}
 
-  /**
-    Copy constructor. Does not copy the internal locking object but creates a new locking object.
-  */
-  inline Synchronizeable(const Synchronizeable& copy) : LOCK() {};
-
-  /**
-    Assignment operator. Does not modify the internal locking object.
-  */
-  inline Synchronizeable& operator=(const Synchronizeable& eq) {return *this;};
 //protected:
 public:
 
   /**
     Acquires an exclusive lock on this object.
   */
-  void exclusiveLock() const throw();
+  inline void exclusiveLock() const throw() {LOCK::exclusiveLock();}
 
   /**
     Acquires a shared lock on this object.
   */
-  void sharedLock() const throw();
+  inline void sharedLock() const throw() {LOCK::sharedLock();}
 
   /**
     Releases the lock on this object.
   */
-  void releaseLock() const throw();
+  inline void releaseLock() const throw() {LOCK::releaseLock();}
 };
 
 
@@ -95,17 +97,17 @@ protected:
   /**
     Acquires an exclusive lock on this object.
   */
-  inline void exclusiveLock() const throw() {};
+  inline void exclusiveLock() const throw() {}
 
   /**
     Acquires a shared lock on this object.
   */
-  inline void sharedLock() const throw() {};
+  inline void sharedLock() const throw() {}
 
   /**
     Releases the lock on this object.
   */
-  inline void releaseLock() const throw() {};
+  inline void releaseLock() const throw() {}
 };
 
 #endif

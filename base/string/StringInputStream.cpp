@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "StringInputStream.h"
-#include "base/mem/Array.h"
+#include <base/string/StringInputStream.h>
+#include <base/Functor.h>
 
 StringInputStream::StringInputStream(String<>& s) throw(BindException) : str(s) {
   index = 0;
@@ -41,7 +41,7 @@ unsigned int StringInputStream::read(char* buffer, unsigned int size) throw(IOEx
   if (size >= str.length() - index) {
     size = str.length() - index;
   }
-  copyArray(buffer, str.getBytes(), size);
+  copy<char>(buffer, str.getBytes(), size);
   return size;
 }
 

@@ -17,25 +17,19 @@
 /**
   Copies elements from array to other array. The arrays may not overlap.
 */
-template<class TYPE>
+/*template<class TYPE>
 inline void copyArray(TYPE* dest, const TYPE* src, unsigned int count) throw() {
   ::memcpy(dest, src, count * sizeof(TYPE));
 }
-
+*/
 /**
   Copies elements from array to array. The arrays are allowed to overlap.
 */
-template<class TYPE>
+/*template<class TYPE>
 inline void moveArray(TYPE* dest, const TYPE* src, unsigned int count) throw() {
   ::memmove(dest, src, count * sizeof(TYPE));
 };
-
-/**
-  Writes a string representation of an array to a format stream.
 */
-template<class TYPE>
-FormatOutputStream& toFormatStream(FormatOutputStream& stream, const TYPE* value, unsigned int size);
-
 
 
 template<class TYPE> class ArrayEnumeration;

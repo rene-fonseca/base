@@ -188,9 +188,9 @@ type=HEADER
 [Config for BinMakefileAm]
 path_to_bin_program=ellert
 ldflags=
-addcxxflags=-DDEBUG_VEHICLE -DDEBUG_IO -I/home/fonseca/src/ellert/ellert -I/usr/include
+addcxxflags=-DDEBUG_VEHICLE -DDEBUG_IO -I/home/fonseca/src/ellert -I/home/fonseca/src/ellert/ellert
 ldadd=-lpthread
-cxxflags=-O2 -g3 -Wall
+cxxflags=-O0 -g3 -Wall
 bin_program=ellert
 [ellert/base/io/FileOutputStream.cpp]
 install_location=

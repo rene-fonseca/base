@@ -6,9 +6,9 @@
 #ifndef _DK_SDU_MIP__BASE_STRING__STRING_INPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_STRING__STRING_INPUT_STREAM_H
 
-#include "base/io/InputStream.h"
-#include "base/io/EndOfFile.h"
-#include "String.h"
+#include <base/io/InputStream.h>
+#include <base/io/EndOfFile.h>
+#include <base/string/String.h>
 
 /**
   A string input stream is a input stream which receives its data from a string.

@@ -6,12 +6,12 @@
 #ifndef _DK_SDU_MIP__BASE_MATH__VECTOR_H
 #define _DK_SDU_MIP__BASE_MATH__VECTOR_H
 
-#include "base/Object.h"
-#include "base/OutOfDomain.h"
-#include "base/OutOfRange.h"
-#include "base/string/FormatOutputStream.h"
-#include "base/mem/ReferenceCountedObjectPointer.h"
-#include "base/mem/Array.h"
+#include <base/Object.h>
+#include <base/OutOfDomain.h>
+#include <base/OutOfRange.h>
+#include <base/string/FormatOutputStream.h>
+#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Array.h>
 
 /**
   Vector implementation.

@@ -4,7 +4,10 @@
  ***************************************************************************/
 
 #include <base/net/InetInterface.h>
-#include <net/if.h>
+
+#if defined(HAVE_IPV6)
+  #include <net/if.h>
+#endif
 
 List<InetInterface>& getInetInterfaces() throw(NetworkException) {
 #if defined(HAVE_IPV6)

@@ -3,10 +3,11 @@
     email                : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "String.h"
+#include <config.h>
+#include <base/string/String.h>
+#include <base/Functor.h>
 #include <string.h>
 #include <ctype.h>
-#include "base/Functor.h"
 
 template String<DefaultLock>;
 template String<Unsafe>;
@@ -21,13 +22,20 @@ template<class TYPE> inline void swap(TYPE& a, TYPE& b) {
   b = temp;
 };
 
-#ifndef HAVE_MEMCHR
+#if !defined(HAVE_MEMCHR)
 inline const char* memchr(const char* src, int value, unsigned int count) {
   return find<char>(src, count, bind2Second(Equal<char>(), value));
 }
 #endif
 
-#ifndef HAVE_MEMMOVE
+#if !defined(HAVE_MEMCPY)
+inline char* memcpy(char* dest, const char* src, unsigned int count) {
+  copy<char>(dest, src, count);
+  return dest;
+}
+#endif
+
+#if !defined(HAVE_MEMMOVE)
 inline char* memmove(char* dest, const char* src, unsigned int count) {
   // problem if overlapping
   copy<char>(dest, src, count);
@@ -41,7 +49,7 @@ inline char* memmove(char* dest, const char* src, unsigned int count) {
 template<class LOCK>
 int String<LOCK>::getLengthOfString(const char* str) const throw() {
   const char* terminator = (const char*)memchr(str, TERMINATOR, MAXIMUM_LENGTH); // find terminator
-  if (terminator == NULL) {
+  if (!terminator) { // was the terminator found
     return -1; // string is not terminated or is too long
   }
   return terminator - str;
@@ -57,7 +65,7 @@ void String<LOCK>::setLength(unsigned int length) throw(MemoryException) {
     len = length;
     unsigned int requiredCapacity = CAPACITY(len + sizeof(TERMINATOR));
     if ((requiredCapacity > getCapacity())) { // do we have to expand capacity
-      internal->setSize(requiredCapacity); // ok lets expand the buffer
+      this->elements->setSize(requiredCapacity); // ok lets expand the buffer
     }
     // need something to reduce the buffer - must not conflict with ensuredCapacity
     buffer[len] = TERMINATOR; // terminate string
@@ -68,15 +76,15 @@ template<class LOCK>
 void String<LOCK>::createString(const char* buffer, unsigned int length, unsigned int capacity) throw(MemoryException) {
   capacity = max(capacity, length + sizeof(TERMINATOR));
   capacity = max(capacity, DEFAULT_CAPACITY);
-  internal = new StringBuffer(CAPACITY(capacity));
+  this->elements = new Array<char>(capacity); // no granularity
   len = length;
-  memcpy(internal->getBytes(), buffer, len);
-  internal->getBytes()[len] = TERMINATOR; // terminate
+  memcpy(this->elements->getElements(), buffer, len);
+  this->elements->getElements()[len] = TERMINATOR; // terminate
 }
 
 template<class LOCK>
 String<LOCK>::String(unsigned int capacity) throw(MemoryException) {
-  createString(NULL, 0, capacity);
+  createString(0, 0, capacity);
 }
 
 template<class LOCK>
@@ -90,34 +98,34 @@ String<LOCK>::String(const StringLiteral& str) throw(MemoryException) {
 
 template<class LOCK>
 String<LOCK>::String(const char* str) throw(MemoryException) {
-  if (str != NULL) {
+  if (str) { // is string proper (not empty)
     int length = getLengthOfString(str);
     if (length < 0) { // maximum length exceeded
       throw MemoryException();
     }
     createString(str, length, DEFAULT_CAPACITY);
   } else {
-    createString(NULL, 0, DEFAULT_CAPACITY);
+    createString(0, 0, DEFAULT_CAPACITY);
   }
 }
 
 template<class LOCK>
 String<LOCK>::String(const char* str, unsigned int maximum) throw(MemoryException) {
-  if (str != NULL) {
+  if (str) { // is string proper
     int length = getLengthOfString(str);
     if (length < 0) { // maximum length exceeded
       throw MemoryException();
     }
     createString(str, min((unsigned int)length, maximum), DEFAULT_CAPACITY);
   } else {
-    createString(NULL, 0, DEFAULT_CAPACITY);
+    createString(0, 0, DEFAULT_CAPACITY);
   }
 }
 
 template<class LOCK>
 String<LOCK>& String<LOCK>::operator=(const String& eq) throw() {
   if (&eq != this) { // protect against self assignment
-    internal = eq.internal;
+    this->elements = eq.elements;
     len = eq.len;
   }
   return *this;
@@ -128,10 +136,10 @@ void String<LOCK>::ensureCapacity(unsigned int capacity) throw(MemoryException) 
   unsigned int minimum = CAPACITY(length() + sizeof(TERMINATOR));
   capacity = CAPACITY(capacity);
   if ((capacity > getCapacity()) && (capacity > minimum)) {
-    if (internal.isMultiReferenced()) { // do we have the elements for our self
-      internal = new StringBuffer(*internal); // make copy of the elements
+    if (this->elements.isMultiReferenced()) { // do we have the elements for our self
+      this->elements = new Array<char>(*this->elements); // make copy of the elements
     }
-    internal->setSize(capacity);
+    this->elements->setSize(capacity);
   }
 }
 
@@ -139,10 +147,10 @@ template<class LOCK>
 void String<LOCK>::optimizeCapacity() throw(MemoryException) {
   unsigned int minimum = CAPACITY(length() + sizeof(TERMINATOR));
   if (getCapacity() > minimum) { // can we reduce the capacity
-    if (internal.isMultiReferenced()) { // do we have the elements for our self
-      internal = new StringBuffer(*internal); // make copy of the elements
+    if (this->elements.isMultiReferenced()) { // do we have the elements for our self
+      this->elements = new Array<char>(*this->elements); // make copy of the elements
     }
-    internal->setSize(minimum);
+    this->elements->setSize(minimum);
   }
 }
 

@@ -3,8 +3,9 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Matrix.h"
-#include "base/Functor.h"
+#include <config.h>
+#include <base/mathematics/Matrix.h>
+#include <base/Functor.h>
 #include <math.h>
 
 template Matrix<float>;
@@ -50,7 +51,7 @@ Matrix<TYPE>::Matrix(const TYPE elements[], const Dimension& dimension) throw(Ou
     throw OutOfDomain();
   }
   setSize(dimension.getHeight(), dimension.getWidth());
-  copyArray<TYPE>(getMutableElements(), elements, getSize());
+  copy<TYPE>(getMutableElements(), elements, getSize());
 }
 
 template<class TYPE>

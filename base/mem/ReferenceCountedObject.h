@@ -6,9 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_H
 #define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_H
 
-#include "base/Object.h"
-
-//template<class TYPE> class ReferenceCountedObjectPointer;
+//#include <base/Object.h>
 
 /**
   A reference counted object is used to count the number of references from
@@ -38,10 +36,9 @@
   @version 1.01
 */
 
-  class ReferenceCountedObject : public Object {
+  class ReferenceCountedObject {
 
   friend class ReferenceCountedObjectFriend;
-//  friend ReferenceCountedObjectPointer<const ReferenceCountedObject>;
 
   private:
 
@@ -60,7 +57,7 @@
       copy constructor but makes sense since a new object cannot have any
       references.
     */
-    inline ReferenceCountedObject(const ReferenceCountedObject& copy) throw() : references(0) {};
+    inline ReferenceCountedObject(const ReferenceCountedObject& copy) throw() : references(0) {}
 
     /**
       Assignment of reference counted object does not change this object. This
@@ -68,12 +65,14 @@
       the assignment doesn't influence the number of ReferenceCountedObjectPointer
       objects that point to this object.
     */
-    inline ReferenceCountedObject& operator=(const ReferenceCountedObject& copy) throw() {return *this;};
+    inline ReferenceCountedObject& operator=(const ReferenceCountedObject& copy) throw() {
+      return *this;
+    }
 
     /**
       Destroys the reference counted object.
     */
-    inline ~ReferenceCountedObject() throw() {};
+//    inline ~ReferenceCountedObject() throw() {}
   };
 
 #endif

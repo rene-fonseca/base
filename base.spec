@@ -11,32 +11,49 @@
 #    For the licensing terms refer to the file 'LICENSE'.
 # ***************************************************************************
 
-Summary: A framework for developing platform independent applications in C++.
+# Problems:
+#   The library will use the demangling scheme associated with the compiler
+#   used to build the package.
+#
+# TODO:
+#   devel package required runtime package
+#   need link /usr/lib/libbase.so.0 -> /usr/lib/libbase.so (what about static libraries)
+
 Name: base-framework
 Version: 0.9.1
 Release: 1
 License: GPL
-Group: Development/Libraries
 Source: http://www.mip.sdu.dk/~fonseca/base/src/%{name}-%{version}.tar.gz
 Url: http://www.mip.sdu.dk/~fonseca/base
 Vendor: Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 Packager: Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 Distribution: The Base Framework
-
-%description
-A framework for developing platform independent applications in C++.
-
 Prefix: /usr
 BuildRoot: %{_builddir}/%{name}-%{version}-%{release}-root
 
 
 
-#%package examples
-#Summary: Sample applications using the Base framework.
-#Group: Development/Libraries
-#%description examples
-#This package contains sample applications which illustrate the use of the Base
-#framework.
+Summary: Runtime support provided by the Base framework
+Group: System Environment/Libraries
+%description
+This particular package provides the runtime support needed by applications
+which are rely on the Base framework. If you want to develop you own
+applications using this framework you need the dedicated development package
+which should accompany this package.
+
+
+
+%package devel
+Summary: Development support the Base framework
+Group: Development/Libraries
+Requires: %{name} = %{version}
+%description devel
+This package provides the files required for developing applications using the
+Base framework. The framework provides a common base, hence the name, for
+developing platform independent applications using the C++ programming language
+with strict conventions applied. The framework has been designed and implemented
+to remove many of the concerns normally imposed on the developer(s) by "legacy"
+software.
 
 
 
@@ -61,26 +78,35 @@ fi
 
 
 %install
-make DESTDIR=${RPM_BUILD_ROOT} install-strip
+make DESTDIR=%{buildroot} install-strip
 
-cd ${RPM_BUILD_ROOT}
-find . -type d | sed '1,2d;s,^\.,\%attr(-\,root\,root) \%dir ,' > ${RPM_BUILD_DIR}/%{name}.file.list
-find . -type f | sed 's,^\.,\%attr(-\,root\,root) ,' >> ${RPM_BUILD_DIR}/%{name}.file.list
-find . -type l | sed 's,^\.,\%attr(-\,root\,root) ,' >> ${RPM_BUILD_DIR}/%{name}.file.list
 
-#make -C testsuite DESTDIR=${RPM_BUILD_ROOT} install-strip
 
-#find %{prefix}/bin -type f | sed 's,^\.,\%attr(-\,root\,root) ,' > ${RPM_BUILD_DIR}/%{name}.examples.file.list
+# the main package
+%files
+%attr(-,root,root) /usr/lib/libbase.so
+
+
+
+# development package
+%files devel
+# package all header files
+%attr(-,root,root) /usr/include
+# package all static libraries
+%attr(-,root,root) /usr/lib/libbase.a
+%attr(-,root,root) /usr/lib/libbase.la
 
 
 
 %clean
-rm -rf ../%{name}.file.list
-rm -rf ${RPM_BUILD_DIR}/%{name}
-[ -n "${RPM_BUILD_ROOT}" -a "${RPM_BUILD_ROOT}" != "/" ] && rm -rf ${RPM_BUILD_ROOT}
+# clean up root (may be overwritten by rpm configuration file!)
+[ -n "%{buildroot}" -a "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+
+# clean up source tree
+rm -rf %{_builddir}/%{name}
 
 
 
-%files -f ../%{name}.file.list
-
-#%files examples -f ../%{name}.examples.file.list
+%changelog
+* Sat Apr 20 2002 Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+- created a subpackage for development specific files

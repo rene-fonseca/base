@@ -26,7 +26,12 @@
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <base/platforms/win32/AsyncReadFileContext.h> // platform specific
   #include <base/platforms/win32/AsyncWriteFileContext.h> // platform specific
+  #if !defined(_WIN32_WINNT)
+    #define _WIN32_WINNT 0x0400
+  #endif
   #include <windows.h>
+  #include <aclapi.h>
+  #include <winioctl.h>
 #else // unix
   #include <sys/types.h>
   #include <sys/stat.h>
@@ -83,23 +88,85 @@ File::File(const String& path, Access access, unsigned int options) throw(Access
     creationFlags = (options & EXCLUSIVE) ? CREATE_NEW : CREATE_ALWAYS;
     break;
   }
-
+  
+  bool error = false;
   OperatingSystem::Handle handle = ::CreateFile( // TAG: check out FILE_FLAG_POSIX_SEMANTICS
-    path.getElements(),
-    (access == READ) ? GENERIC_READ : ((access == WRITE) ? GENERIC_WRITE : (GENERIC_READ | GENERIC_WRITE)),
-    (options & EXCLUSIVE) ? 0 : (FILE_SHARE_READ | FILE_SHARE_WRITE),
-    0,
-    creationFlags,
-    FILE_ATTRIBUTE_NORMAL | ((options & ASYNCHRONOUS) ? FILE_FLAG_OVERLAPPED : 0),
-    0
+    path.getElements(), // file name
+    (access == READ) ? GENERIC_READ : ((access == WRITE) ? GENERIC_WRITE : (GENERIC_READ | GENERIC_WRITE)), // access mode
+    (options & EXCLUSIVE) ? 0 : (FILE_SHARE_READ | FILE_SHARE_WRITE), // share mode
+    0, // security descriptor
+    creationFlags, // how to create
+    FILE_ATTRIBUTE_NORMAL | ((options & ASYNCHRONOUS) ? FILE_FLAG_OVERLAPPED : 0), // file attributes
+    0 // handle to template file
   );
+  const DWORD originalError = GetLastError();
+  unsigned int linkLevel = 0;
+  const unsigned int maximumLinkLevel = 16;
+  while ((handle == OperatingSystem::INVALID_HANDLE) && (++linkLevel <= maximumLinkLevel)) {    
+    OperatingSystem::Handle link = ::CreateFile(path.getElements(), // file name
+                                                0 | READ_CONTROL, // access mode
+                                                FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
+                                                0, // security descriptor
+                                                OPEN_EXISTING, // how to create
+                                                FILE_FLAG_OPEN_REPARSE_POINT, // file attributes
+                                                0 // handle to template file
+    );
+    if (link == OperatingSystem::INVALID_HANDLE) {
+      break;
+    }
+    
+    // TAG: fix buffer size (protect against buffer overflow)
+    char* buffer[17000]; // need alternative - first attempt to get length first failed
+    REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)&buffer;
+    DWORD bytesWritten;
+    error |= ::DeviceIoControl(link, FSCTL_GET_REPARSE_POINT, // handle and ctrl
+                               0, 0, // input
+                               reparseHeader, sizeof(buffer), // output
+                               &bytesWritten, 0) == 0;
+    ::CloseHandle(link);
+    if (error) {
+      break;
+    }
+    
+    wchar_t* substPath;
+    unsigned int substLength;
+    switch (reparseHeader->ReparseTag) {
+    case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
+      substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer + reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset;
+      ASSERT(reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength % 2 == 0);
+      substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2;
+      break;
+    case IO_REPARSE_TAG_MOUNT_POINT:
+      substPath = reparseHeader->MountPointReparseBuffer.PathBuffer + reparseHeader->MountPointReparseBuffer.SubstituteNameOffset;
+      ASSERT(reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0);
+      substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2; // keep prefix "\??\"
+      break;
+    default:
+      throw FileNotFound("Unsupported link", this);
+    }
+    substPath[1] = '\\'; // convert '\??\' to '\\?\'
+    substPath[substLength] = 0; // add terminator
+    
+    handle = ::CreateFileW( // TAG: check out FILE_FLAG_POSIX_SEMANTICS
+      substPath, // file name
+      (access == READ) ? GENERIC_READ : ((access == WRITE) ? GENERIC_WRITE : (GENERIC_READ | GENERIC_WRITE)), // access mode
+      (options & EXCLUSIVE) ? 0 : (FILE_SHARE_READ | FILE_SHARE_WRITE), // share mode
+      0, // security descriptor
+      creationFlags, // how to create
+      FILE_ATTRIBUTE_NORMAL | ((options & ASYNCHRONOUS) ? FILE_FLAG_OVERLAPPED : 0), // file attributes
+      0 // handle to template file
+    );
+  }
   if (handle == OperatingSystem::INVALID_HANDLE) {
-    if (::GetLastError() == ERROR_ACCESS_DENIED) {
+    if (linkLevel > maximumLinkLevel) {
+      throw FileNotFound("Too many levels of symbolic links", this);
+    } else if (originalError == ERROR_ACCESS_DENIED) {
       throw AccessDenied(this);
     } else {
       throw FileNotFound("Unable to open file", this);
     }
   }
+  
   fd = new FileHandle(handle);
 #else // unix
   // TAG: exclusive file locking problem for NFS

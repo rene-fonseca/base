@@ -14,7 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_RMI__ORB_EXCEPTION_H
 #define _DK_SDU_MIP__BASE_RMI__ORB_EXCEPTION_H
 
-#include <base/Exception.h>
+#include <base/rmi/RMIException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class OrbException : public Exception {
+class OrbException : public RMIException {
 public:
 
   /**

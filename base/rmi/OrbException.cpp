@@ -15,17 +15,18 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-OrbException::OrbException() throw() : Exception() {
+OrbException::OrbException() throw() : RMIException() {
 }
 
-OrbException::OrbException(const char* message) throw() : Exception(message) {
+OrbException::OrbException(const char* message) throw()
+  : RMIException(message) {
 }
 
-OrbException::OrbException(Type type) throw() : Exception(type) {
+OrbException::OrbException(Type type) throw() : RMIException(type) {
 }
 
 OrbException::OrbException(const char* message, Type type) throw()
-  : Exception(message, type) {
+  : RMIException(message, type) {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

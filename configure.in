@@ -9,13 +9,21 @@ AC_CANONICAL_HOST()
 dnl The following variables have been set: $host, $host_cpu, $host_vendor, and $host_os
 
 case "$host_os" in
-cygwin) AC_DEFINE(__win32__, 1, Specifies that the WIN32 API is available)
+cygwin)
+  AC_DEFINE(__win32__, 1, Specifies that the WIN32 API is available)
 ;;
-linux-gnu) AC_DEFINE(_GNU_SOURCE, 1, Specifies that the UNIX 98 functionality and GNU extensions are utilized)
+linux-gnu)
+  AC_DEFINE(_GNU_SOURCE, 1, Specifies that the UNIX 98 functionality and GNU extensions are utilized)
 ;;
-irix*) AC_DEFINE(_SGI_SOURCE, 1, Specifies that the UNIX 98 functionality and SGI extensions are utilized)
+irix*)
+  AC_DEFINE(_SGI_SOURCE, 1, Specifies that the UNIX 98 functionality and SGI extensions are utilized)
 ;;
-*) AC_DEFINE(_XOPEN_SOURCE, 500, Specifies that the UNIX 98 functionality is utilized)
+solaris*)
+  AC_DEFINE(_XOPEN_SOURCE, 500, Specifies that the UNIX 98 functionality is utilized)
+  AC_DEFINE(__EXTENSIONS__, 1, Specifies that the Solaris extensions are utilized)
+;;
+*)
+  AC_DEFINE(_XOPEN_SOURCE, 500, Specifies that the UNIX 98 functionality is utilized)
 ;;
 esac
 

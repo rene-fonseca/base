@@ -14,6 +14,8 @@
 #ifndef _DK_SDU_MIP__BASE__NOT_COPYABLE_H
 #define _DK_SDU_MIP__BASE__NOT_COPYABLE_H
 
+#include <base/features.h>
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**

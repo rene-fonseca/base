@@ -1,6 +1,7 @@
 ####### kdevelop will overwrite this part!!! (begin)##########
 ####### kdevelop will overwrite this part!!! (end)############
 DEFS =
+DEFAULT_INCLUDES =
 
 SUBDIRS = concurrency filesystem mathematics io iterator string mem net dl collection xml security
 

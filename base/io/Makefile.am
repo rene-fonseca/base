@@ -1,6 +1,7 @@
 ####### kdevelop will overwrite this part!!! (begin)##########
 ####### kdevelop will overwrite this part!!! (end)############
 DEFS =
+DEFAULT_INCLUDES =
 
 noinst_LTLIBRARIES = libio.la
 

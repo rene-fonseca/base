@@ -237,29 +237,6 @@ inline uint32 getLowWordOf64(uint64 value) throw() {
 }
 
 /**
-  Returns the address of the specified object as a byte pointer.
-*/
-template<class TYPE>
-inline byte* getByteAddress(TYPE& value) throw() {
-  return reinterpret_cast<byte*>(&value);
-}
-
-template<class TYPE>
-inline const byte* getByteAddress(const TYPE& value) throw() {
-  return reinterpret_cast<const byte*>(&value);
-}
-
-template<class TYPE>
-inline char* getCharAddress(TYPE& value) throw() {
-  return reinterpret_cast<char*>(&value);
-}
-
-template<class TYPE>
-inline const char* getCharAddress(const TYPE& value) throw() {
-  return reinterpret_cast<const char*>(&value);
-}
-
-/**
   Returns true if the primitive variable is aligned properly.
 */
 template<class TYPE>

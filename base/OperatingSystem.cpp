@@ -12,12 +12,6 @@
  ***************************************************************************/
 
 #include <base/OperatingSystem.h>
-#include <base/SystemLogger.h>
-
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-  #undef ERROR // protect against the evil programmers
-#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

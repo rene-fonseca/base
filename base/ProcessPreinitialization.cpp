@@ -20,7 +20,7 @@
 #include <base/concurrency/Thread.h>
 #include <stdlib.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else
   #include <time.h> // time_t
@@ -33,7 +33,7 @@ namespace internal {
   
   namespace specific {
     
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     
     // handle to the global process heap
     OperatingSystem::Handle processHeap;
@@ -70,7 +70,7 @@ namespace internal {
   }; // end of namespace - specific
 }; // end of namespace - internal
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 
 ProcessPreinitialization::ProcessPreinitialization() throw() {
   // OS version compatibility check
@@ -78,7 +78,18 @@ ProcessPreinitialization::ProcessPreinitialization() throw() {
   versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
   ::GetVersionEx(&versionInfo); // never fails
   // only Windows NT 4.0 or later
+  // TAG: check w2k and
+#if !defined(_DK_SDU_MIP__BASE__WINXP)
+  #define _DK_SDU_MIP__BASE__WINXP (_DK_SDU_MIP__BASE__W2K + 1)
+  #warning _DK_SDU_MIP__BASE__WINXP is not defined
+#endif
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINXP)
+  bool compatible = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) && (versionInfo.dwMajorVersion >= 5) && (versionInfo.dwMinorVersion >= 1);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K)
+  bool compatible = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) && (versionInfo.dwMajorVersion >= 5);
+#else
   bool compatible = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) && (versionInfo.dwMajorVersion >= 4);
+#endif
   if (!compatible) {
     Trace::message("Operating system is not supported.");
     ::MessageBox(0, "Operating system is not supported.", 0, MB_OK);
@@ -88,10 +99,12 @@ ProcessPreinitialization::ProcessPreinitialization() throw() {
   // check types
   if (!((sizeof(OperatingSystem::Handle) == sizeof(HANDLE)) && // OperatingSystem
         (sizeof(OperatingSystem::Handle) == sizeof(SOCKET)) && // Socket
-        (sizeof(long long) == sizeof(FILETIME)) && // Date
+        (sizeof(long long) == sizeof(FILETIME)) && // Date, File
+        (sizeof(long long) == sizeof(LARGE_INTEGER)) && // Timer
         (sizeof(unsigned long) == sizeof(DWORD)) &&
-        (sizeof(Thread::Identifier) >= sizeof(DWORD)))) {
-    Trace::message("Type mismatch.");
+        (sizeof(unsigned long) >= sizeof(DWORD)) && // Process
+        (sizeof(Thread::Identifier) >= sizeof(DWORD)))) { // Thread
+    Trace::message("Type mismatch detected.");
     exit(Application::EXIT_CODE_INITIALIZATION);
   }
   
@@ -130,9 +143,9 @@ ProcessPreinitialization::~ProcessPreinitialization() throw() {
 ProcessPreinitialization::ProcessPreinitialization() throw() {
   // pthread_t is an arithmetic type according to The Single UNIX Specification, Version 2
   if (!((sizeof(Thread::Identifier) >= sizeof(pthread_t)) && // Thread (pthread support)
-        (sizeof(int) == sizeof(time_t)) && // Date
-        (sizeof(unsigned int) == sizeof(pid_t)))) { // Process
-    Trace::message("Type mismatch.");
+        (sizeof(int) >= sizeof(time_t)) && // Date
+        (sizeof(unsigned long) >= sizeof(pid_t)))) { // Process
+    Trace::message("Type mismatch detected."); // no stream initialized at this point
     exit(Application::EXIT_CODE_INITIALIZATION);
   }
 }

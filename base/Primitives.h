@@ -18,13 +18,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-// Primitive constraints
-// TAG: check char
-// TAG: check short
-// TAG: check int
-// TAG: check long
-// TAG: check long long
-
 #if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
   /** 8 bit unsigned integer (a.k.a. octet). */
   typedef unsigned char byte;
@@ -356,9 +349,9 @@ public:
   typedef int Signed;
   typedef unsigned int Unsigned;
   
-#if (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
+#if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
   static const int MAXIMUM = 2147483647;
-#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 8)
+#elif (_DK_SDU_MIP__BASE__INT_SIZE == 8)
   static const int MAXIMUM = 9223372036854775807;
 #endif
   static const int MINIMUM = -MAXIMUM - 1L;
@@ -371,9 +364,9 @@ public:
   typedef int Signed;
   typedef unsigned int Unsigned;
   
-#if (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
+#if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
   static const unsigned int MAXIMUM = 4294967295U;
-#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 8)
+#elif (_DK_SDU_MIP__BASE__INT_SIZE == 8)
   static const unsigned int MAXIMUM = 18446744073709551615U;
 #endif
   static const unsigned int MINIMUM = 0;

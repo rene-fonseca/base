@@ -25,11 +25,12 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-MessageDialog::MessageDialog() throw() : category(MessageDialog::INFORMATION), answer(MessageDialog::CANCEL) {
+MessageDialog::MessageDialog() throw()
+  : category(MessageDialog::INFORMATION), answer(MessageDialog::CANCEL) {
 }
 
 MessageDialog::MessageDialog(const String& _title, const String& _message, Category _category) throw()
-  : title(_title), message(_message), category(_category), answer(MessageDialog::CANCEL) {
+  :  category(_category), title(_title), message(_message), answer(MessageDialog::CANCEL) {
 }
 
 bool MessageDialog::execute() throw(UserInterfaceException) {

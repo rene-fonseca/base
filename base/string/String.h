@@ -1013,9 +1013,6 @@ public:
 template<>
 int compare<String>(const String& left, const String& right) throw();
 
-/**
-  Returns the hash of the string.
-*/
 template<>
 class Hash<String> {
 public:

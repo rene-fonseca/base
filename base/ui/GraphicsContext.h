@@ -160,19 +160,21 @@ public:
     */
     Brush(unsigned int color) throw(UserInterfaceException);
   };
-
+  
+  /** Font flag. */
   enum FontFlags {
     ITALIC = 1, /**< Italic. */
     UNDERLINE = 2, /**< Underline. */
     STRIKE_OUT = 4 /**< Strike out. */
   };
-
+  
+  /** Font weight. */
   enum FontWeight {
-    THIN,
-    LIGHT,
-    NORMAL,
-    BOLD,
-    HEAVY
+    THIN, /** Thin. */
+    LIGHT, /** Light. */
+    NORMAL, /** Normal. */
+    BOLD, /** Bold. */
+    HEAVY /** Heavy. */
   };
   
   /**

@@ -236,6 +236,12 @@ public:
     Sets the path.
   */
   virtual void setPath(const String& value) throw(UrlException, MemoryException);
+
+  /**
+    Destroys the url.
+  */
+  inline virtual ~Url() throw() {
+  }
 };
 
 /**

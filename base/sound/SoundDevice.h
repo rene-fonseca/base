@@ -54,7 +54,7 @@ private:
   /** The current access to the device.*/
   unsigned int access;
   /** Synchronization object. */
-  ReadWriteLock lock;
+  ReadWriteLock guard;
   
   /**
     Acquires the desired access to the device.

@@ -84,14 +84,20 @@ public:
   typedef typename TRAITS::Pointer Pointer;
 
   /**
-    Returns true if the enumeration has more elements.
+    Returns true if the enumerator has more elements.
   */
   virtual bool hasNext() const throw() = 0;
 
   /**
-    Returns the next element of the enumeration.
+    Returns the next element of the enumerator.
   */
   virtual Pointer next() throw(EndOfEnumeration) = 0;
+
+  /**
+    Destroys the enumerator.
+  */
+  virtual ~Enumerator() throw() {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

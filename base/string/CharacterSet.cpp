@@ -81,6 +81,8 @@ CharacterSet CharacterSet::load(const String& path) throw(FileException, Invalid
     }
     
     // ignore any other data
+    
+    return characterSet;
   } catch (IOException& e) {
     throw FileException(Type::getType<CharacterSet>());
   }

@@ -673,22 +673,12 @@ int compare<String>(const String& left, const String& right) throw() {
 unsigned long Hash<String>::operator()(const String& value) throw() {
   const String::Character* src = value.getBytes();
   const String::Character* end = src + value.getLength();
-  unsigned long result = 0;
+  unsigned long result = 5381;
   while (src < end) {
-    result = 31 * result + static_cast<unsigned char>(*src++);
+    result = /*33*/ 31 /*65599*/ * result + static_cast<unsigned char>(*src++);
   }
   return result;
 }
-
-// unsigned long Hash<String>::operator(const String& value) throw() {
-//   unsigned long result = 5381;
-//   const char* src = buffer;
-//   const char* end = buffer + size;  
-//   while (src < end) {
-//     result = 33 * result + static_cast<unsigned char>(*src++); // not a prime
-//   }
-//   return result;
-// }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException) {
   stream.addCharacterField(value.getBytes(), value.getLength());

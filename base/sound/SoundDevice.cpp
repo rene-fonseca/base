@@ -78,28 +78,28 @@ void SoundDevice::reacquireAccess(unsigned int access) throw(NotSupported) {
 }
 
 void SoundDevice::acquireReadAccess() throw(IOException) {
-  ExclusiveSynchronize<ReadWriteLock> exclusiveSynchronize(lock);
+  ExclusiveSynchronize<ReadWriteLock> _guard(guard);
   if (!isReadable()) {
     reacquireAccess(access | READ);
   }
 }
 
 void SoundDevice::relinquishReadAccess() throw(IOException) {
-  ExclusiveSynchronize<ReadWriteLock> exclusiveSynchronize(lock);
+  ExclusiveSynchronize<ReadWriteLock> _guard(guard);
   if (isReadable()) {
     reacquireAccess(access & ~READ);
   }
 }
 
 void SoundDevice::acquireWriteAccess() throw(IOException) {
-  ExclusiveSynchronize<ReadWriteLock> exclusiveSynchronize(lock);
+  ExclusiveSynchronize<ReadWriteLock> _guard(guard);
   if (!isWriteable()) {
     reacquireAccess(access | WRITE);
   }
 }
 
 void SoundDevice::relinquishWriteAccess() throw(IOException) {
-  ExclusiveSynchronize<ReadWriteLock> exclusiveSynchronize(lock);
+  ExclusiveSynchronize<ReadWriteLock> _guard(guard);
   if (isWriteable()) {
     reacquireAccess(access & ~WRITE);
   }

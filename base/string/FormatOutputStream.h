@@ -104,6 +104,9 @@ enum Action {
 class FormatOutputStream : public BufferedOutputStream, public Synchronizeable<SpinLock> {
 public:
 
+  /** The type of the guard. */
+  typedef SpinLock Guard;
+  
   class Symbols {
   public:
     enum Base {BINARY, OCTAL, DECIMAL, HEXADECIMAL};
@@ -327,8 +330,6 @@ public:
   static const unsigned int MAXIMUM_PRECISION = 64;
   /** Specifies the maximum number of characters for real numbers. */
   static const unsigned int MAXIMUM_SIZE = 256;
-  
-  typedef SpinLock LOCK;
   
   /**
     Initializes the format output stream.

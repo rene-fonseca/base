@@ -1093,7 +1093,7 @@ public:
 
     @return 0 if value is 0.
   */
-  static inline unsigned int ilog2(unsigned int value) throw() {
+  static inline unsigned int iLog2(unsigned int value) throw() {
     unsigned int result = sizeof(unsigned int) * 8;
     for (unsigned int i = sizeof(unsigned int) * 8/2; i > 0; i >>= 1) {
       if ((value >> (sizeof(unsigned int) * 8 - i)) == 0) {
@@ -1110,7 +1110,7 @@ public:
     
     @return 0 if value is 0.
   */
-  static inline unsigned int ilog2(unsigned long value) throw() {
+  static inline unsigned int iLog2(unsigned long value) throw() {
     unsigned int result = sizeof(unsigned long) * 8;
     for (unsigned int i = sizeof(unsigned long) * 8/2; i > 0; i >>= 1) {
       if ((value >> (sizeof(unsigned long) * 8 - i)) == 0) {
@@ -1127,7 +1127,7 @@ public:
     @return 0 if power of 2 exceeds limit.
   */
   static inline unsigned int getPowerOf2(unsigned int value) throw() {
-    unsigned int result = 1 << ilog2(value);
+    unsigned int result = 1 << iLog2(value);
     return (result >= value) ? result : (result << 1);
   }
 
@@ -1137,7 +1137,7 @@ public:
     @return 0 if power of 2 exceeds limit.
   */
   static inline unsigned long getPowerOf2(unsigned long value) throw() {
-    unsigned long result = 1 << ilog2(value);
+    unsigned long result = 1 << iLog2(value);
     return (result >= value) ? result : (result << 1);
   }
 

@@ -176,7 +176,7 @@ public:
     }
   public:
     
-    inline Reference& operator=(Value value) throw(MemoryException) {
+    inline Reference& operator=(const Value& value) throw(MemoryException) {
       map.add(key, value);
       return *this;
     }
@@ -254,7 +254,8 @@ public:
     @param key The key of the value.
   */
   Value getValue(const Key& key) const throw(InvalidKey) {
-    const typename OrderedBinaryTree<Association<Key, Value> >::Node* node = elements.find(Association<Key, Value>(key));
+    const typename OrderedBinaryTree<Association<Key, Value> >::Node* node =
+      elements.find(Association<Key, Value>(key));
     if (!node) {
       throw InvalidKey();
     }

@@ -48,33 +48,33 @@ FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) thr
 }
 
 FormatOutputStream& FormatOutputStream::setRadixPosition(unsigned int position) throw() {
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<Guard>(*this);
   context.justification = Symbols::RADIX;
   context.radixPosition = position;
   return *this;
 }
 
 FormatOutputStream& FormatOutputStream::setJustification(Symbols::Justification justification) throw() {
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<Guard>(*this);
   context.justification = justification;
   return *this;
 }
 
 FormatOutputStream& FormatOutputStream::setWidth(unsigned int width) throw() {
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<Guard>(*this);
   context.width = minimum(width, MAXIMUM_WIDTH);
   return *this;
 }
 
 FormatOutputStream& FormatOutputStream::setPrecision(unsigned int precision) throw() {
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<Guard>(*this);
   context.flags &= ~Symbols::NECESSARY;
   context.precision = minimum(precision, MAXIMUM_PRECISION);
   return *this;
 }
 
 FormatOutputStream& FormatOutputStream::setDateFormat(const String& format) throw() {
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<Guard>(*this);
   context.majorDateFormat = Symbols::EXPLICIT_DATE_FORMAT;
   // namedDateFormat is ignored (but unchanged)
   context.dateFormat = format;
@@ -87,7 +87,7 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
   static const char* LFCR_STR = "\n\r";
   static const char* CRLF_STR = "\r\n";
 
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<Guard>(*this);
   switch (action) {
   case BIN:
     context.integerBase = Symbols::BINARY;
@@ -277,7 +277,7 @@ FormatOutputStream& FormatOutputStream::setContext(const Context& context) throw
 
 void FormatOutputStream::indent(unsigned int size) throw(IOException) {
   static const char INDENT[] = "                                                                                ";
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<Guard>(*this);
   if (size <= sizeof(INDENT)) {
     write(INDENT, size); // write characters
   } else {
@@ -287,7 +287,7 @@ void FormatOutputStream::indent(unsigned int size) throw(IOException) {
 }
 
 void FormatOutputStream::addCharacterField(const char* buffer, unsigned int size) throw(IOException) {
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<Guard>(*this);
 
   Symbols::Justification justification;
   switch (context.justification) {
@@ -316,7 +316,7 @@ void FormatOutputStream::addCharacterField(const char* buffer, unsigned int size
 }
 
 void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, bool isSigned) throw(IOException) {
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<Guard>(*this);
   unsigned int requiredWidth = size;
 
   if (isSigned && ((context.integerBase != Symbols::BINARY) && (context.integerBase != Symbols::HEXADECIMAL))) {
@@ -415,7 +415,7 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
 }
 
 void FormatOutputStream::addDateField(const Date& date) throw(IOException) {
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<Guard>(*this);
   const bool localTime = ((context.flags & Symbols::LOCAL_TIME) != 0);
   const bool posix = ((context.flags & Symbols::POSIX) != 0);
 //  const Locale* locale = posix ? &Locale::POSIX : &locale; // FIXME
@@ -1700,7 +1700,7 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
   }
 
   {
-    ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+    ExclusiveSynchronize<Guard>(*this);
     unsigned int length = (output - buffer);
     if (static_cast<unsigned int>(context.width) <= length) {
       write(buffer, length); // write characters

@@ -14,7 +14,6 @@
 #include <base/platforms/features.h>
 #include <base/xml/Document.h>
 #include <base/Cast.h>
-#include <base/string/FormatOutputStream.h> // TAG: remove when done
 
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
 #  include <libxml/xmlmemory.h>
@@ -25,14 +24,6 @@
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
-// Document::DocumentImpl::~DocumentImpl() throw() {
-// #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-//   if (context) {
-//     xmlFreeDoc((xmlDocPtr)context);
-//   }
-// #endif
-// }
 
 Document::Document() throw(DOMException) {
 }

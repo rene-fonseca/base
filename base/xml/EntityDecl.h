@@ -14,7 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_XML__ENTITY_DECL_H
 #define _DK_SDU_MIP__BASE_XML__ENTITY_DECL_H
 
-#include <base/xml/Node.h>
+#include <base/xml/Declaration.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -27,18 +27,18 @@ class Document;
   @version 1.0
 */
 
-class EntityDecl : public Node {
+class EntityDecl : public Declaration {
   friend class Document;
 protected:
   
   /**
     Initializes entity declaration.
   */
-  inline EntityDecl(void* context) throw() : Node(context) {
+  inline EntityDecl(void* context) throw() : Declaration(context) {
   }
 public:
   
-  inline EntityDecl(Node node) throw(CastException) : Node(node) {
+  inline EntityDecl(Node node) throw(CastException) : Declaration(node) {
     assert(
       node.isInvalid() || (node.getType() == ENTITY_DECL_NODE),
       CastException(this)

@@ -23,28 +23,31 @@ using namespace base;
 
 class FileSystemApplication : public Application {
 private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 1;
   
   unsigned int currentYear;
   String thisYearFormat;
   String otherYearFormat;
 public:
 
-  FileSystemApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() :
-    Application(MESSAGE("filesystem"), numberOfArguments, arguments, environment) {
+  FileSystemApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+    : Application(MESSAGE("filesystem"), numberOfArguments, arguments, environment) {
     currentYear = Date::getNow().getYear();
     thisYearFormat = MESSAGE("%b %#d %H:%M");
     otherYearFormat = MESSAGE("%b %#d  %Y");
   }
 
-  String getTime(const Date& date) const throw() {
+  inline String getTime(const Date& date) const throw() {
     return date.format((date.getYear() == currentYear) ? thisYearFormat : otherYearFormat, false);
   }
   
   void main() throw() {
-    fout << Application::getFormalName() << MESSAGE(" version 1.1") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
-         << MESSAGE("Testing file system classes")
-         << EOL
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
+         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
 
     try {
@@ -67,7 +70,7 @@ public:
       break;
     default:
       fout << MESSAGE("filesystem [path]") << ENDL;
-      setExitCode(Application::EXIT_CODE_ERROR);
+      setExitCode(EXIT_CODE_ERROR);
       return;
     }
     
@@ -111,7 +114,7 @@ public:
         }
         
         {
-	  if (type & FileSystem::REGULAR) {
+          if (type & FileSystem::REGULAR) {
             FileInfo info(entry);
             unsigned int mode = info.getMode();
             char flags[10];
@@ -228,7 +231,7 @@ public:
                  << setWidth(8) << ' ' << ' '
                  << setWidth(12) << ' ' << ' '
                  << entry
-		 << EOL;
+                 << EOL;
           }
         }
       } catch (Exception& e) {
@@ -239,14 +242,4 @@ public:
   
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  FileSystemApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(FileSystemApplication);

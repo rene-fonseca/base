@@ -43,6 +43,10 @@ public:
 };
 
 class DaemonApplication : public Application {
+private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
 public:
 
   DaemonApplication(int argc, const char* argv[], const char* env[])
@@ -59,14 +63,4 @@ public:
   }
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  DaemonApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(DaemonApplication);

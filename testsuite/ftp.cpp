@@ -72,7 +72,7 @@ const StringLiteral CMD_NOOP = MESSAGE("NOOP"); // no operation
 
 
 /**
-  This exception is thrown by the FTP class.
+  This exception is raised by the FTP class.
 
   @short FTP exception.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -326,11 +326,11 @@ public:
     return true;
   }
 
-  FileTransferProtocolClient(InetEndPoint ep, Verbosity v = DEBUG_EXTENDED) throw() :
-    endPoint(ep),
-    verbosity(v),
-    retryDelay(DEFAULT_RETRY_DELAY),
-    retryAttempts(DEFAULT_RETRY_ATTEMPTS) {
+  FileTransferProtocolClient(InetEndPoint ep, Verbosity v = DEBUG_EXTENDED) throw()
+    : endPoint(ep),
+      verbosity(v),
+      retryDelay(DEFAULT_RETRY_DELAY),
+      retryAttempts(DEFAULT_RETRY_ATTEMPTS) {
   }
 
   unsigned int getRetryDelay() const throw() {
@@ -801,22 +801,22 @@ void ftpclient(const String& resource, const String& file) {
     url.setPort("21");
   }
 
-  fout << "Individual parts of the specified url:" << EOL
-       << "  scheme: " << url.getScheme() << EOL
-       << "  user: " << url.getUser() << EOL
-       << "  password: " << url.getPassword() << EOL
-       << "  host: " << url.getHost() << EOL
-       << "  port: " << url.getPort() << EOL
-       << "  path: " << url.getPath() << ENDL;
+  fout << MESSAGE("Individual parts of the specified url:") << EOL
+       << MESSAGE("  scheme: ") << url.getScheme() << EOL
+       << MESSAGE("  user: ") << url.getUser() << EOL
+       << MESSAGE("  password: ") << url.getPassword() << EOL
+       << MESSAGE("  host: ") << url.getHost() << EOL
+       << MESSAGE("  port: ") << url.getPort() << EOL
+       << MESSAGE("  path: ") << url.getPath() << ENDL;
 
   if (url.getScheme() != "ftp") {
-    fout << "Invalid url" << ENDL;
+    fout << MESSAGE("Invalid url") << ENDL;
     return;
   }
 
   InetAddress address; // the address of the remote host
   {
-    fout << "Server addresses:" << ENDL;
+    fout << MESSAGE("Server addresses:") << ENDL;
     List<InetAddress> addresses = InetAddress::getAddressesByName(url.getHost());
     List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
     unsigned int index = 0;
@@ -824,9 +824,9 @@ void ftpclient(const String& resource, const String& file) {
       const InetAddress* temp = enu.next();
       if (index == 0) { // use the first address
         address = *temp;
-        fout << "  address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
+        fout << MESSAGE("  address ") << index++ << MESSAGE(": ") << *temp << MESSAGE(" (USING THIS)") << ENDL;
       } else {
-        fout << "  address " << index++ << ": " << *temp << ENDL;
+        fout << MESSAGE("  address ") << index++ << MESSAGE(": ") << *temp << ENDL;
       }
     }
   }
@@ -857,37 +857,52 @@ void ftpclient(const String& resource, const String& file) {
   client.logout();
 }
 
-int main(int argc, const char* argv[], const char* env[]) {
-  Application app("ftp", argc, argv, env);
+class FTPApplication : public Application {
+private:
 
-  Array<String> arguments = Application::getApplication()->getArguments();
-
-  String url = "ftp.sunsite.auc.dk"; // default url
-  String file = "welcome.msg"; // default file
-
-  switch (arguments.getSize()) {
-  case 0:
-    // use defaults
-    break;
-  case 1:
-    url = arguments[0]; // the address
-    break;
-  case 2:
-    url = arguments[0]; // the address
-    file = arguments[1]; // the service
-    break;
-  default:
-    fout << MESSAGE("Usage: ") << Application::getApplication()->getName() << MESSAGE(" [url] [output]") << ENDL;
-    return Application::EXIT_CODE_NORMAL; // stop
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
+public:
+  
+  FTPApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+    : Application(MESSAGE("ftp"), numberOfArguments, arguments, environment) {
   }
 
-  try {
-    fout << MESSAGE("Testing File Transfer Protocol (FTP) class...") << ENDL;
-    ftpclient(url, file);
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
+  void main() throw() {
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
+         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << ENDL;
+    
+    Array<String> arguments = getArguments();
+    
+    String url = MESSAGE("ftp.sunsite.auc.dk"); // default url
+    String file = MESSAGE("welcome.msg"); // default file
+    
+    switch (arguments.getSize()) {
+    case 0:
+      // use defaults
+      break;
+    case 1:
+      url = arguments[0]; // the address
+      break;
+    case 2:
+      url = arguments[0]; // the address
+      file = arguments[1]; // the service
+      break;
+    default:
+      fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [url] [output]") << ENDL;
+      return;
+    }
+    
+    try {
+      fout << MESSAGE("Testing File Transfer Protocol (FTP) class...") << ENDL;
+      ftpclient(url, file);
+    } catch (Exception& e) {
+      setExitCode(EXIT_CODE_ERROR);
+    }
   }
-  return Application::getApplication()->getExitCode();
-}
+};
+
+STUB(FTPApplication);

@@ -20,15 +20,23 @@
 using namespace base;
 
 class ArrayApplication : public Application {
+private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ArrayApplication(int numberOfArguments, const char* arguments[], const char* environment[])
+  ArrayApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
     : Application(MESSAGE("Array"), numberOfArguments, arguments, environment) {
   }
   
   void main() throw() {
-    fout << "Testing implementation of the Array class" << ENDL;
-
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
+         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << ENDL;
+    
     fout << "Initializing array" << ENDL;
 
     Array<int> ai;
@@ -81,14 +89,4 @@ public:
   }
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  ArrayApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(ArrayApplication);

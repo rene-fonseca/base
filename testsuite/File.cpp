@@ -76,7 +76,7 @@ public:
       while (!eof && !stop) {
         try {
           file.read(buffer.getElements(), buffer.getSize(), offset, this);
-        } catch(IOException& e) {
+        } catch (IOException& e) {
           fout << MESSAGE("Unable to read from file.") << ENDL;
           file.asyncCancel();
           Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
@@ -91,7 +91,7 @@ public:
         }
         fout << MESSAGE("Read operation completed with: counter=") << counter << ENDL;
       }
-    } catch(IOException& e) {
+    } catch (IOException& e) {
       ferr << MESSAGE("Unable to open file.") << ENDL;
       Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
       return;
@@ -108,14 +108,14 @@ public:
     File destFile;
     try {
       sourceFile = File(sourcePath, File::READ, File::ASYNCHRONOUS);
-    } catch(IOException& e) {
+    } catch (IOException& e) {
       ferr << MESSAGE("Unable to open source file.") << ENDL;
       Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
       return;
     }
     try {
       destFile = File(destPath, File::WRITE, File::CREATE | File::EXCLUSIVE | File::ASYNCHRONOUS);
-    } catch(IOException& e) {
+    } catch (IOException& e) {
       ferr << MESSAGE("Unable to create destination file (make sure it does not exist).") << ENDL;
       Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
       return;
@@ -128,7 +128,7 @@ public:
       AsynchronousWriteOperation writeOperation;
       try {
         readOperation = sourceFile.read(buffer.getElements(), buffer.getSize(), offset, this);
-      } catch(IOException& e) {
+      } catch (IOException& e) {
         ferr << MESSAGE("Unable to read from file.") << ENDL;
         stop = true;
         Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
@@ -142,7 +142,7 @@ public:
       fout << MESSAGE("Read operation completed with: counter=") << counter << ENDL;
       try {
         writeOperation = destFile.write(buffer.getElements(), bytesRead, offset, this);
-      } catch(IOException& e) {
+      } catch (IOException& e) {
         ferr << MESSAGE("Unable to write to file.") << ENDL;
         stop = true;
         Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
@@ -176,17 +176,17 @@ public:
   }
   
   void main() throw() {
-    fout << Application::getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << MESSAGE("The Base Framework (Test Suite)") << EOL
          << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
          << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
     
-    Array<String> arguments = Application::getApplication()->getArguments();
+    Array<String> arguments = getArguments();
     
     switch (arguments.getSize()) {
     case 0: // use default
-      Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
+      setExitCode(Application::EXIT_CODE_ERROR);
       ferr << MESSAGE("Usage: [file] or [source file] [output file]") << ENDL;
       return;
     case 1:
@@ -203,20 +203,10 @@ public:
       }
       break;
     default:
-      Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
+      setExitCode(Application::EXIT_CODE_ERROR);
       return;
     }
   }
 };
 
-int main(int argc, const char* argv[], const char *env[]) {
-  FileApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch (Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch (...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(FileApplication);

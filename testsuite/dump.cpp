@@ -18,13 +18,14 @@
 using namespace base;
 
 class DumpApplication : public Application {
-public:
+private:
 
   static const unsigned int MAJOR_VERSION = 1;
   static const unsigned int MINOR_VERSION = 0;
+public:
   
-  DumpApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() :
-    Application(MESSAGE("dump"), numberOfArguments, arguments, environment) {
+  DumpApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+    : Application(MESSAGE("dump"), numberOfArguments, arguments, environment) {
   }
 
   void main() throw() {
@@ -88,14 +89,4 @@ public:
 
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  DumpApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(DumpApplication);

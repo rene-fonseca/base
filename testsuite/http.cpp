@@ -94,7 +94,7 @@ namespace httpCommands {
 using namespace httpCommands;
 
 /**
-  This exception is thrown by the HTTP class.
+  This exception is raised by the HTTP class.
 
   @short HTTP exception.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -287,7 +287,7 @@ private:
   long long totalSize;
 public:
 
-  PushToFile(File f) throw() : file(f) {
+  PushToFile(File _file) throw() : file(_file) {
     bytesWritten = 0;
   }
 
@@ -521,7 +521,7 @@ protected:
         try {
           contentLength = UnsignedInteger(header.getValue());
           hasContentLength = true;
-        } catch(InvalidFormat& e) {
+        } catch (InvalidFormat& e) {
           throw HTTPException("Invalid value for Content-Length field");
         }
       } else if (header.getName() == "Content-Type") {
@@ -763,15 +763,24 @@ public:
 };
 
 class HTTPApplication : public Application {
+private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
 public:
   
   HTTPApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() 
     : Application(MESSAGE("http"), numberOfArguments, arguments, environment) {
   }
   
-  static void main() throw() {
-    fout << MESSAGE("Testing Hypertext Transfer Protocol (HTTP) class...") << ENDL;
-    Array<String> arguments = Application::getApplication()->getArguments();
+  void main() throw() {
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
+         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << ENDL;
+    
+    Array<String> arguments = getArguments();
 
     String url = MESSAGE("www.mip.sdu.dk/~fonseca/index.html"); // default url
     String file; // default file
@@ -788,22 +797,12 @@ public:
       file = arguments[1]; // the service
       break;
     default:
-      fout << "usage: " << Application::getApplication()->getName() << " [url] [output]" << ENDL;
-      Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
+      fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [url] [output]") << ENDL;
+      setExitCode(Application::EXIT_CODE_ERROR);
       return;
     }
     HTTPClient client(url, file);
   }
 };
 
-int main(int argc, const char* argv[], const char *env[]) {
-  HTTPApplication app(argc, argv, env);
-  try {
-    HTTPApplication::main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(HTTPApplication);

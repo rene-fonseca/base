@@ -19,14 +19,23 @@
 using namespace base;
 
 class SetApplication : public Application {
+private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
 public:
 
-  SetApplication(int argc, const char* argv[], const char* env[]) : Application(MESSAGE("Set"), argc, argv, env) {
+  SetApplication(int argc, const char* argv[], const char* env[]) throw()
+    : Application(MESSAGE("Set"), argc, argv, env) {
   }
   
   void main() throw() {
-    fout << "Testing Set" << ENDL;
-
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
+         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << ENDL;
+    
     fout << "Initializing set" << ENDL;
     Set<int> si;
     fout << "si: " << si << EOL;
@@ -59,14 +68,4 @@ public:
   }
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  SetApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(SetApplication);

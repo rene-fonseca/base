@@ -20,10 +20,11 @@
 using namespace base;
 
 class TimeApplication : public Application {
-public:
+private:
 
   static const unsigned int MAJOR_VERSION = 1;
   static const unsigned int MINOR_VERSION = 0;
+public:
   
   TimeApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
     : Application(MESSAGE("time"), numberOfArguments, arguments, environment) {
@@ -43,7 +44,7 @@ public:
   }
   
   void main() throw() {
-    fout << Application::getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << MESSAGE("The Base Framework (Test Suite)") << EOL
          << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
          << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
@@ -94,14 +95,4 @@ public:
   
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  TimeApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch (Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch (...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(TimeApplication);

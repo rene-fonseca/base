@@ -23,10 +23,14 @@
 using namespace base;
 
 class ServerApplication : public Application {
+private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ServerApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() :
-    Application(MESSAGE("server"), numberOfArguments, arguments, environment) {
+  ServerApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+    : Application(MESSAGE("server"), numberOfArguments, arguments, environment) {
   }
 
   void server(String a, String servicename) {
@@ -68,14 +72,14 @@ public:
         throw OutOfRange("Port is out of range");
       }
       port = integer;
-    } catch(InvalidFormat& e) {
+    } catch (InvalidFormat& e) {
       try {
         InetService service(servicename);
         port = service.getPort();
         fout << MESSAGE("Service: name=") << service.getName()
              << MESSAGE("  port=") << service.getPort()
              << MESSAGE("  protocol=") << service.getProtocol() << ENDL;
-      } catch(ServiceNotFound& e) {
+      } catch (ServiceNotFound& e) {
         fout << MESSAGE("Error: ") << e.getMessage() << ENDL;
         return;
       }
@@ -149,8 +153,13 @@ public:
   }
 
   void main() throw() {
-    fout << MESSAGE("Testing ServerSocket...") << ENDL;
-    Array<String> arguments = Application::getApplication()->getArguments();
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
+         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << ENDL;
+
+    Array<String> arguments = getArguments();
 
     String address; // default address
     String service = "1234"; // default service
@@ -174,14 +183,4 @@ public:
   }
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  ServerApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(ServerApplication);

@@ -22,6 +22,10 @@
 using namespace base;
 
 class HuffmanApplication : public Application {
+private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
 public:
 
   enum Command {
@@ -82,7 +86,7 @@ public:
 
   void simple(const String& destination) throw(IOException) {
     StringOutputStream stream;
-    stream << Application::getFormalName() << MESSAGE(" version 1.0") << EOL
+    stream << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
            << MESSAGE("The Base Framework (Test Suite)") << EOL
            << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
            << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
@@ -94,7 +98,7 @@ public:
   }
   
   void main() throw() {
-    fout << Application::getFormalName() << MESSAGE(" version 1.0") << EOL
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << MESSAGE("The Base Framework (Test Suite)") << EOL
          << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
          << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
@@ -168,14 +172,4 @@ public:
   
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  HuffmanApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(HuffmanApplication);

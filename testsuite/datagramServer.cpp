@@ -22,10 +22,14 @@
 using namespace base;
 
 class DatagramServerApplication : public Application {
+private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
 public:
 
-  DatagramServerApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() :
-          Application(MESSAGE("datagramServer"), numberOfArguments, arguments, environment) {
+  DatagramServerApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+    : Application(MESSAGE("datagramServer"), numberOfArguments, arguments, environment) {
   }
 
   void server(const String& servicename) throw() {
@@ -40,14 +44,14 @@ public:
         throw OutOfRange("Port is out of range");
       }
       port = integer;
-    } catch(InvalidFormat& e) {
+    } catch (InvalidFormat& e) {
       try {
         InetService service(servicename);
         port = service.getPort();
         fout << "Service: name=" << service.getName()
              << "  port=" << service.getPort()
              << "  protocol=" << service.getProtocol() << ENDL;
-      } catch(ServiceNotFound& e) {
+      } catch (ServiceNotFound& e) {
         fout << "Warning: " << e.getMessage() << ENDL;
         fout << "Service: port=" << port << ENDL;
       }
@@ -93,8 +97,12 @@ public:
   }
 
   void main() throw() {
-    fout << MESSAGE("Testing datagram socket server...") << ENDL;
-
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
+         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << ENDL;
+    
     String service = "1234"; // default service
 
     const Array<String> arguments = getArguments();  
@@ -113,14 +121,4 @@ public:
   }
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  DatagramServerApplication application(argc, argv, env);
-  try {
-    application.main();    
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(DatagramServerApplication);

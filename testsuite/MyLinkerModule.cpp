@@ -17,8 +17,8 @@
 
 using namespace base;
 
-MyLinkerModule::MyLinkerModule(const String& identity, const String& name, const String& version) throw() :
-  LinkerModule(identity, name, version) {
+MyLinkerModule::MyLinkerModule(const String& identity, const String& name, const String& version) throw()
+  : LinkerModule(identity, name, version) {
   fout << MESSAGE("Initializing MyLinkerModule...") << ENDL;
 }
 

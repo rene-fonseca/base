@@ -36,14 +36,22 @@ public:
 };
 
 class StringApplication : public Application {
+private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
 public:
 
   StringApplication(int argc, const char* argv[], const char* env[]) : Application(MESSAGE("String"), argc, argv, env) {
   }
   
   void main() throw() {
-    fout << MESSAGE("Testing String implementation...") << EOL << ENDL;
-
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
+         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << ENDL;
+    
     Allocator<char> a(1234);
     fout << MESSAGE("Size of Allocator<char> (a): ") << a.getSize() << ENDL;
     Allocator<char>::ReadEnumerator enua = a.getReadEnumerator();
@@ -121,18 +129,8 @@ public:
     char* temp2 = string.getElements();
     fout << MESSAGE("Testing direct read and write access (This is a string): ") << temp2 << ENDL;
 
-    fout << MESSAGE("Test: ") << Application::getApplication()->getFormalName().getElements() << ENDL;
+    fout << MESSAGE("Test: ") << getFormalName().getElements() << ENDL;
   }
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  StringApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(StringApplication);

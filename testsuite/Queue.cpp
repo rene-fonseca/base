@@ -19,13 +19,22 @@
 using namespace base;
 
 class QueueApplication : public Application {
+private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
 public:
 
-  QueueApplication(int argc, const char* argv[], const char* env[]) : Application(MESSAGE("Queue"), argc, argv, env) {
+  QueueApplication(int argc, const char* argv[], const char* env[]) throw()
+    : Application(MESSAGE("Queue"), argc, argv, env) {
   }
   
   void main() throw() {
-    fout << "Testing implementation of the Queue class" << ENDL;
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
+         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << ENDL;
 
     fout << "Initializing queue" << ENDL;
 
@@ -48,7 +57,7 @@ public:
       fout << "pop(): " << qi.pop() << ENDL;
       fout << "pop(): " << qi.pop() << ENDL;
       fout << "pop(): " << qi.pop() << ENDL;
-    } catch(Exception& e) {
+    } catch (Exception& e) {
       ferr << TypeInfo::getTypename(e) << ": " << e.getMessage() << ENDL;
     }
     fout << "InvalidNode exception is expected" << ENDL;
@@ -58,14 +67,4 @@ public:
   }
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  QueueApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(QueueApplication);

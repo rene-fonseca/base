@@ -65,10 +65,14 @@ int test(MyFunctionType, MyFunctionType, MyFunctionType* const) {
 
 
 class ExceptionApplication : public Application {
+private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ExceptionApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() :
-    Application(MESSAGE("Exception"), numberOfArguments, arguments, environment) {
+  ExceptionApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+    : Application(MESSAGE("Exception"), numberOfArguments, arguments, environment) {
   }
 
   void myInnerFunction() throw(OutOfRange) {
@@ -83,7 +87,7 @@ public:
     } else {
       try {
         myInnerFunction();
-      } catch(const Exception& e) {
+      } catch (const Exception& e) {
         fout << MESSAGE("Handled exception") << ENDL;
       }
     }
@@ -144,23 +148,16 @@ public:
     fout << "Demangling of Map<String, long long>: " << TypeInfo::getTypename<Map<String, long long> >() << ENDL;
   }
 
-  int main() throw() {
-    fout << MESSAGE("Testing exception handling...") << EOL << ENDL;
-    testDemangling();    
+  void main() throw() {
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
+         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << ENDL;
+
+    testDemangling();
     myOuterFunction();
   }
 };
 
-
-int main(int argc, const char* argv[], const char* env[]) {
-  ExceptionApplication application(argc, argv, env);
-  
-  try {
-    application.main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(ExceptionApplication);

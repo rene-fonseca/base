@@ -40,7 +40,9 @@ public:
     IntercomServlet* intercomServlet;
   public:
 
-    Recorder(IntercomServlet* object) throw() : intercomServlet(object) {}
+    Recorder(IntercomServlet* object) throw()
+      : intercomServlet(object) {
+    }
 
     void run() throw() {
       intercomServlet->record();
@@ -53,7 +55,9 @@ public:
     IntercomServlet* intercomServlet;
   public:
 
-    Player(IntercomServlet* object) throw() : intercomServlet(object) {}
+    Player(IntercomServlet* object) throw()
+      : intercomServlet(object) {
+    }
   
     void run() throw() {
       intercomServlet->play();
@@ -66,7 +70,9 @@ public:
     IntercomServlet* intercomServlet;
   public:
 
-    Reader(IntercomServlet* object) throw() : intercomServlet(object) {}
+    Reader(IntercomServlet* object) throw()
+      : intercomServlet(object) {
+    }
 
     void run() throw() {
       intercomServlet->read();
@@ -79,7 +85,9 @@ public:
     IntercomServlet* intercomServlet;
   public:
 
-    Writer(IntercomServlet* object) throw() : intercomServlet(object) {}
+    Writer(IntercomServlet* object) throw()
+      : intercomServlet(object) {
+    }
 
     void run() throw() {
       intercomServlet->write();
@@ -108,11 +116,11 @@ private:
   StreamSocket streamSocket;
 public:
 
-  IntercomServlet(unsigned int channels, unsigned int sampleRate, bool loopback, bool isServer, const InetEndPoint& endPoint) throw() :
-    recorder(this),
-    player(this),
-    reader(this),
-    writer(this) {
+  IntercomServlet(unsigned int channels, unsigned int sampleRate, bool loopback, bool isServer, const InetEndPoint& endPoint) throw()
+    : recorder(this),
+      player(this),
+      reader(this),
+      writer(this) {
     this->channels = channels;
     this->sampleRate = sampleRate;
     this->isServer = isServer;
@@ -191,7 +199,7 @@ public:
         guard.releaseLock();
         try {
           streamSocket.write(pointer_cast<const char*>(buffer->getElements()), buffer->getByteSize());
-        } catch(IOException& e) {
+        } catch (IOException& e) {
           fout << MESSAGE("IOException: ") << e.getMessage() << ENDL;
           Application::getApplication()->terminate();
           break;
@@ -221,11 +229,11 @@ public:
         guard.releaseLock();
         try {
           unsigned int bytesRead = streamSocket.read(pointer_cast<char*>(buffer->getElements()), buffer->getByteSize());
-        } catch(EndOfFile& e) {
+        } catch (EndOfFile& e) {
           fout << MESSAGE("Connection terminated by remote host") << ENDL;
           Application::getApplication()->terminate();
           break;
-        } catch(IOException& e) {
+        } catch (IOException& e) {
           fout << MESSAGE("IO error: ") << e.getMessage() << ENDL;
           Application::getApplication()->terminate();
           break;
@@ -358,6 +366,9 @@ public:
 class IntercomApplication : public Application {
 private:
 
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
+
   bool loopback;
   bool isServer;
   String host;
@@ -372,8 +383,8 @@ public:
   static const unsigned int DEFAULT_CHANNELS = 1;
   static const unsigned int DEFAULT_SAMPLE_RATE = 44100;
   
-  IntercomApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() :
-    Application(MESSAGE("intercom"), numberOfArguments, arguments, environment) {
+  IntercomApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+    : Application(MESSAGE("intercom"), numberOfArguments, arguments, environment) {
     loopback = false;
     isServer = true;
     port = DEFAULT_PORT;
@@ -388,7 +399,7 @@ public:
     bool stereoSpecified = false;
     bool rateSpecified = false;
     
-    Array<String>::ReadEnumerator enu = Application::getApplication()->getArguments().getReadEnumerator();
+    Array<String>::ReadEnumerator enu = getArguments().getReadEnumerator();
 
     // connect to host:port or server using port
     
@@ -435,12 +446,13 @@ public:
     // override default application termination
   }
 
-  void main() throw(OutOfDomain) {
-    fout << Application::getFormalName() << MESSAGE(" version 1.0") << EOL
+  void main() throw() {
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
          << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
          << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
-
+    
     handleArguments();
 
     //ASSERT(SoundInputDevice::getNumberOfDevices() > 0);
@@ -473,14 +485,4 @@ public:
   
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  IntercomApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(IntercomApplication);

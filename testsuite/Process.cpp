@@ -19,6 +19,10 @@
 using namespace base;
 
 class ProcessApplication : public Application {
+private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
 public:
 
   ProcessApplication(int numberOfArguments, const char* arguments[], const char* environment[])
@@ -26,7 +30,11 @@ public:
   }
   
   void main() throw() {
-    fout << MESSAGE("Testing implementation of the Process class") << ENDL;
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
+         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << ENDL;
     
     fout << MESSAGE("Is administrator: ") << User::getCurrentUser().isAdmin() << ENDL;
     fout << MESSAGE("Current user: ") << User::getCurrentUser().getName() << ENDL;
@@ -36,7 +44,7 @@ public:
     fout << MESSAGE("Name of process: ");
     try {
       fout << Process::getProcess().getName();
-    } catch(NotSupported&) {
+    } catch (NotSupported&) {
       fout << MESSAGE("unknown");
     }
     fout << ENDL;
@@ -52,20 +60,13 @@ public:
     fout << MESSAGE("Priority of process: ") << Process::getProcess().getPriority() << ENDL;
     fout << MESSAGE("Priority of parent process: ") << Process::getParentProcess().getPriority() << ENDL;
 
+    fout << MESSAGE("Number of configured processors: ") << Process::getNumberOfConfiguredProcessors() << ENDL;
+    fout << MESSAGE("Number of online processors: ") << Process::getNumberOfOnlineProcessors() << ENDL;
+    
     // wait
     // terminate
     // Process::execute(self img);
   }
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  ProcessApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(ProcessApplication);

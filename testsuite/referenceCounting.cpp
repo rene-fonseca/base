@@ -54,6 +54,10 @@ public:
 
 
 class ReferenceCountingApplication : public Application {
+private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
 public:
 
   ReferenceCountingApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
@@ -61,8 +65,12 @@ public:
   }
 
   void main() throw() {
-    fout << "Testing reference counting..." << ENDL;
-
+    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
+         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << ENDL;
+    
     fout << "Initializing reference counted object pointers" << ENDL;
     ReferenceCountedObjectPointer<Base> base; // ok
     ReferenceCountedObjectPointer<Child> child; // ok
@@ -147,14 +155,4 @@ initialization - should not compile
   }
 };
 
-int main(int argc, const char* argv[], const char* env[]) {
-  ReferenceCountingApplication application(argc, argv, env);
-  try {
-    application.main();
-  } catch(Exception& e) {
-    return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
-    return Application::getApplication()->exceptionHandler();
-  }
-  return Application::getApplication()->getExitCode();
-}
+STUB(ReferenceCountingApplication);

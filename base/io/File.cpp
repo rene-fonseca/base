@@ -86,7 +86,7 @@ struct packedStat64 { // temporary fix for unaligned st_size
   __time_t st_ctime;
   unsigned long int __unused3;
   __ino64_t st_ino;
-} __attribute__ ((packed));
+} _DK_SDU_MIP__BASE__PACKED;
 #endif // GNU Linux
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -271,12 +271,125 @@ bool File::isClosed() const throw() {
 
 unsigned int File::getMode() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  throw NotImplemented(this); // TAG: FIXME
-  #warning File::getMode() not implemented
+  SECURITY_DESCRIPTOR* securityDescriptor;
+  PSID ownerSID;
+  PSID groupSID;
+  PACL acl;
+  bool error = ::GetSecurityInfo(fd->getHandle(),
+                                 SE_FILE_OBJECT,
+                                 OWNER_SECURITY_INFORMATION|GROUP_SECURITY_INFORMATION|DACL_SECURITY_INFORMATION,
+                                 &ownerSID, &groupSID, &acl, 0,
+                                 &securityDescriptor) != ERROR_SUCCESS;
+  assert(!error, FileException("Not a file", this));
+  
+  const DWORD ownerSize = ::GetLengthSid((PSID)ownerSID);
+  const DWORD groupSize = ::GetLengthSid((PSID)groupSID);
+  
+  static const char EVERYONE_SID[1 + 1 + 6 + 4] = {
+    1, // revision
+    1, // number of sub authorities
+    0, 0, 0, 0, 0, 1, // SECURITY_WORLD_SID_AUTHORITY
+    0, 0, 0, 0 // SECURITY_WORLD_RID
+  };
+  const DWORD everyoneSize = sizeof(EVERYONE_SID);
+  
+  ACCESS_MASK ownerAccessMask;
+  ACCESS_MASK groupAccessMask;
+  ACCESS_MASK everyoneAccessMask;
+  
+  TRUSTEE trustee;
+  trustee.pMultipleTrustee = 0;
+  trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
+  trustee.TrusteeForm = TRUSTEE_IS_SID;
+  trustee.TrusteeType = TRUSTEE_IS_UNKNOWN;
+  trustee.ptstrName = (char*)ownerSID;
+  ::GetEffectiveRightsFromAcl(acl, &trustee, &ownerAccessMask); // ERROR_SUCCESS expected
+  trustee.ptstrName = (char*)groupSID;
+  ::GetEffectiveRightsFromAcl(acl, &trustee, &groupAccessMask); // ERROR_SUCCESS expected
+  trustee.ptstrName = (char*)&EVERYONE_SID;
+  ::GetEffectiveRightsFromAcl(acl, &trustee, &everyoneAccessMask); // ERROR_SUCCESS expected
+  
+  ACL_SIZE_INFORMATION aclInfo;
+  if (::GetAclInformation(acl, &aclInfo, sizeof(aclInfo), AclSizeInformation) == 0) {
+    ::LocalFree(securityDescriptor);
+    throw FileException("Unable to get ACL", this);
+  }
+  
+  // avoid GetEffectiveRightsFromAcl: get groups of owner and implement required functionality
+  bool explicitOwner = false;
+  bool explicitGroup = false;
+  bool explicitEveryone = false;
+  
+  for (unsigned int i = 0; i < aclInfo.AceCount; ++i) {
+    ACE_HEADER* ace;
+    ::GetAce(acl, i, &ace);
+    PSID sid;
+    ACCESS_MASK mask;
+    switch (ace->AceType) {
+    case ACCESS_ALLOWED_ACE_TYPE:
+      mask = ((ACCESS_ALLOWED_ACE*)ace)->Mask;
+      sid = &((ACCESS_ALLOWED_ACE*)ace)->SidStart;
+      break;
+    case ACCESS_ALLOWED_OBJECT_ACE_TYPE:
+      mask = ((ACCESS_ALLOWED_OBJECT_ACE*)ace)->Mask;
+      sid = &((ACCESS_ALLOWED_OBJECT_ACE*)ace)->SidStart;
+      break;
+    default:
+      continue;
+    }
+    
+    const DWORD sidSize = ::GetLengthSid(sid);
+    
+    if ((sidSize == ownerSize) && (compare((const char*)sid, (const char*)ownerSID, sidSize) == 0)) {
+      explicitOwner = true;
+      ownerAccessMask &= mask; // leave explicit/inherited permissions
+    } else if ((sidSize == groupSize) && (compare((const char*)sid, (const char*)groupSID, sidSize) == 0)) {
+      explicitGroup = true;
+      groupAccessMask &= mask; // leave explicit/inherited permissions
+    } else if ((sidSize == everyoneSize) && (compare((const char*)sid, (const char*)EVERYONE_SID, sidSize) == 0)) {
+      explicitEveryone = true;
+      everyoneAccessMask &= mask; // leave explicit/inherited permissions
+    }
+  }
+  ::LocalFree(securityDescriptor);
 
-  // effective permissions for owner
-  // effective permissions for primary group
-  // effective permissions for everyone
+  unsigned int mode = 0;
+  if (explicitOwner) {
+    if (ownerAccessMask & (FILE_READ_DATA|FILE_READ_ATTRIBUTES|FILE_READ_EA|READ_CONTROL)) { // READ_CONTROL should not be required
+      mode |= File::RUSR;
+    }
+    if (ownerAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|DELETE|WRITE_OWNER)) {
+      mode |= File::WUSR;
+    }
+    if (ownerAccessMask & FILE_EXECUTE) {
+      mode |= File::XUSR;
+    }
+  }
+
+  if (explicitGroup) {
+    if (groupAccessMask & (FILE_READ_DATA|FILE_READ_ATTRIBUTES|FILE_READ_EA|READ_CONTROL)) { // READ_CONTROL should not be required
+      mode |= File::RGRP;
+    }
+    if (groupAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|DELETE|WRITE_OWNER)) {
+      mode |= File::WGRP;
+    }
+    if (groupAccessMask & FILE_EXECUTE) {
+      mode |= File::XGRP;
+    }
+  }
+
+  if (explicitEveryone) {
+    if (everyoneAccessMask & (FILE_READ_DATA|FILE_READ_ATTRIBUTES|FILE_READ_EA|READ_CONTROL)) { // READ_CONTROL should not be required
+      mode |= File::ROTH;
+    }
+    if (everyoneAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|DELETE|WRITE_OWNER)) {
+      mode |= File::WOTH;
+    }
+    if (everyoneAccessMask & FILE_EXECUTE) {
+      mode |= File::XOTH;
+    }
+  }
+  return mode;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
@@ -559,7 +672,16 @@ AccessControlList File::getACL() const throw(FileException) {
 
 Trustee File::getOwner() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  throw NotImplemented(this); // TAG: fixme
+  SECURITY_DESCRIPTOR* securityDescriptor;
+  PSID ownerSID;
+  assert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT,
+                           OWNER_SECURITY_INFORMATION, &ownerSID, 0, 0, 0,
+                           &securityDescriptor) == ERROR_SUCCESS,
+         FileException(this)
+  );
+  Trustee owner(Trustee::UNSPECIFIED, (const void*)ownerSID);
+  ::LocalFree(securityDescriptor);
+  return owner;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
@@ -583,7 +705,7 @@ Trustee File::getOwner() const throw(FileException) {
       __time_t st_ctime;
       unsigned long int __unused3;
       __ino64_t st_ino;
-    } __attribute__ ((packed));
+    } _DK_SDU_MIP__BASE__PACKED;
     struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
   #else
     struct stat64 status;
@@ -635,7 +757,16 @@ void File::changeOwner(const String& path, const Trustee& owner, const Trustee& 
 
 Trustee File::getGroup() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  throw NotImplemented(this); // TAG: fixme
+  SECURITY_DESCRIPTOR* securityDescriptor;
+  PSID groupSID;
+  assert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT,
+                           GROUP_SECURITY_INFORMATION, 0, &groupSID, 0, 0,
+                           &securityDescriptor) == ERROR_SUCCESS,
+         FileException(this)
+  );
+  Trustee group(Trustee::UNSPECIFIED, (const void*)groupSID);
+  ::LocalFree(securityDescriptor);
+  return group;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
@@ -659,7 +790,7 @@ Trustee File::getGroup() const throw(FileException) {
       __time_t st_ctime;
       unsigned long int __unused3;
       __ino64_t st_ino;
-    } __attribute__ ((packed));
+    } _DK_SDU_MIP__BASE__PACKED;
     struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
   #else
     struct stat64 status;

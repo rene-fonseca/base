@@ -5,7 +5,7 @@
 
 #include <base/collection/Queue.h>
 #include <base/string/FormatOutputStream.h>
-#include <typeinfo>
+#include <base/Type.h>
 
 using namespace base;
 
@@ -34,7 +34,7 @@ int main() {
     fout << "pop(): " << qi.pop() << ENDL;
     fout << "pop(): " << qi.pop() << ENDL;
   } catch(Exception& e) {
-    ferr << typeid(e).name() << ": " << e.getMessage() << ENDL;
+    ferr << getTypename(e) << ": " << e.getMessage() << ENDL;
   }
   fout << "InvalidNode exception is expected" << ENDL;
 

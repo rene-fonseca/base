@@ -11,7 +11,7 @@
 #include <base/net/InetService.h>
 #include <base/net/InetEndPoint.h>
 #include <base/concurrency/Thread.h>
-#include <typeinfo>
+#include <base/Type.h>
 
 using namespace base;
 
@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
   try {
     client(host, service);
   } catch(Exception& e) {
-    ferr << typeid(e).name() << ": "<< e.getMessage() << ENDL;
+    ferr << getTypename(e) << ": "<< e.getMessage() << ENDL;
     return 1;
   } catch(...) {
     ferr << "Unknown exception" << ENDL;

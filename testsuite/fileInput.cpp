@@ -6,7 +6,7 @@
 #include <base/io/FileInputStream.h>
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
-#include <typeinfo>
+#include <base/Type.h>
 
 using namespace base;
 
@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
   try {
     readFile(filename);
   } catch(Exception& e) {
-    ferr << typeid(e).name() << ": " << e.getMessage() << ENDL;
+    ferr << getTypename(e) << ": " << e.getMessage() << ENDL;
     return 1;
   } catch(...) {
     ferr << "Unknown exception" << ENDL;

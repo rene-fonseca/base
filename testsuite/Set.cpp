@@ -36,7 +36,7 @@ int main() {
   fout << "Checking whether 0 is in set: " << si.isKey(0) << ENDL;
 
   fout << "Size: " << si.getSize() << ENDL;
-  fout << "Removeing all elements from the set" << ENDL;
+  fout << "Removing all elements from the set" << ENDL;
   si.removeAll();
   fout << "Size: " << si.getSize() << ENDL;
 

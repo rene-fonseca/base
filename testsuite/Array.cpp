@@ -6,6 +6,7 @@
 #include <base/collection/Array.h>
 #include <base/collection/Functor.h>
 #include <base/Functor.h>
+#include <base/Type.h>
 
 using namespace base;
 
@@ -36,6 +37,13 @@ int main() {
   fout << "Inserting 23 at index 9" << ENDL;
   ai.insert(9, 23);
   fout << "ai: " << ai << ENDL;
+
+  fout << "Invalid insert (expecting OutOfRange)" << ENDL;
+  try {
+    ai.insert(11, 123);
+  } catch (Exception& e) {
+    fout << "  Catched exception: " << getTypename(e) << ENDL;
+  }
 
   fout << "Removing element at index 2" << ENDL;
   ai.remove(2);

@@ -35,7 +35,7 @@ void* Thread::execute(Thread* thread) throw() {
     thread->event.wait(); // wait until signaled
  
     try {
-      thread->runnable->run();
+      thread->getRunnable()->run();
       thread->termination = NORMAL;
       Thread* parent = thread->getParent();
       if (parent) {
@@ -45,7 +45,7 @@ void* Thread::execute(Thread* thread) throw() {
       thread->termination = EXCEPTION; // uncaugth exception
     }
 
-    free(getLocalStorage());
+//    free(getLocalStorage());
   } catch(...) {
     thread->termination = INTERNAL; // hopefully we will never end up here
   }
@@ -61,11 +61,11 @@ void Thread::exit() throw() {
 }
 
 Thread* Thread::getThread() throw() {
-  return (Thread*)executingThread.getKey();
+  return executingThread.getKey();
 }
 
 char* Thread::getLocalStorage() throw() {
-  return (char*)threadLocalStorage.getKey();
+  return threadLocalStorage.getKey();
 }
 
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
@@ -167,8 +167,8 @@ Thread::Thread() throw() {
   threadLocalStorage.setKey((char*)malloc(THREAD_LOCAL_STORAGE));
 }
 
-Thread::Thread(Runnable& runnable) throw(ResourceException) {
-  this->runnable = &runnable;
+Thread::Thread(Runnable* runnable) throw(ResourceException) {
+  this->runnable = runnable;
   threadID = 0;
   terminated = false;
   termination = ALIVE;

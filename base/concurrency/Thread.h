@@ -121,6 +121,12 @@ typedef enum {
     /** Identifier for the thread. */
     pthread_t threadID;
 #endif
+  protected:
+
+    /**
+      Returns the active object.
+    */
+    inline Runnable* getRunnable() throw() {return runnable;}
   public:
 
     /**
@@ -201,7 +207,7 @@ typedef enum {
 
       @param runnable The desired object to be run when the thread is started.
     */
-    Thread(Runnable& runnable) throw(ResourceException);
+    Thread(Runnable* runnable) throw(ResourceException);
 
     /**
       Returns the thread that created this thread. Returns NULL for the main

@@ -19,10 +19,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Functions used for explicit conversion between big endian and little endian
-  byte orders.
+  This namespace contains functions used for explicit conversion between the
+  supported byte orders for primitives. The supported byte orders are big
+  endian and little endian.
 
-  @short Byte order manipulation
+  @short Byte order manipulation functions
   @author René Møller Fonseca
 */
 // TAG: need long and long long methods
@@ -75,6 +76,17 @@ namespace ByteOrder {
 #endif
 
 }; // end of namespace ByteOrder
+
+
+
+/**
+  This class provides types for storing primitives in little endian byte order
+  independently of the native byte order of the platform.
+
+  @short Little endian storing types.
+  @author René Møller Fonseca
+  @version 1.0
+*/
 
 class LittleEndian {
 public:
@@ -161,6 +173,15 @@ typedef unsigned int UnsignedInt;
 }; // end of class LittleEndian
 
 
+
+/**
+  This class provides types for storing primitives in big endian byte order
+  independently of the native byte order of the platform.
+
+  @short Big endian storing types.
+  @author René Møller Fonseca
+  @version 1.0
+*/
 
 class BigEndian {
 public:

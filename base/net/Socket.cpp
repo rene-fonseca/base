@@ -31,12 +31,12 @@
 
 // do we need to repair bad header file
 #if defined(__solaris__)
-  #define _DK_SDU_MIP__BASE__SOCKET_BIND bind
-  #define _DK_SDU_MIP__BASE__SOCKET_CONNECT connect
-  #define _DK_SDU_MIP__BASE__SOCKET_RECVMSG recvmsg
-  #define _DK_SDU_MIP__BASE__SOCKET_SENDMSG sendmsg
-  #define _DK_SDU_MIP__BASE__SOCKET_SENDTO sendto
-  #define _DK_SDU_MIP__BASE__SOCKET_SOCKET socket
+  #define _DK_SDU_MIP__BASE__SOCKET_BIND __xnet_bind
+  #define _DK_SDU_MIP__BASE__SOCKET_CONNECT __xnet_connect
+  #define _DK_SDU_MIP__BASE__SOCKET_RECVMSG __xnet_recvmsg
+  #define _DK_SDU_MIP__BASE__SOCKET_SENDMSG __xnet_sendmsg
+  #define _DK_SDU_MIP__BASE__SOCKET_SENDTO __xnet_sendto
+  #define _DK_SDU_MIP__BASE__SOCKET_SOCKET __xnet_socket
 
   #undef bind
   #undef connect

@@ -49,7 +49,7 @@
 #  include <sys/mman.h>
 
 #  if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) || \
-       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX))
+       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65))
 #    include <sys/acl.h> // solaris and irix
 enum {
   _COM_SUN__ACL_USER = USER,
@@ -637,7 +637,7 @@ AccessControlList File::getACL() const throw(FileException) {
       result.add(AccessControlEntry(Trustee(Trustee::EVERYONE, 0), ((mode & S_IROTH) ? AccessControlEntry::READ : 0) | ((mode & S_IWOTH) ? AccessControlEntry::WRITE : 0) | ((mode & S_IXOTH) ? AccessControlEntry::EXECUTE : 0)));
     }
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX)
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
   throw NotImplemented(this);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)

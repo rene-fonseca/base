@@ -18,8 +18,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  A region of a file.
+  Description of a file region represented by an offset (64 bit) and a size (32 bit).
 
+  @short A region of a file.
   @author René Møller Fonseca
   @version 1.0
 */
@@ -33,15 +34,26 @@ private:
   unsigned int size;
 public:
 
-  FileRegion(long long o, unsigned int s) throw() : offset(o), size(s) {}
+  /**
+    Initializes the file region.
 
-  FileRegion(const FileRegion& copy) throw() : offset(copy.offset), size(copy.size) {}
+    @param offset The offset (from the beginning of the file) of the region.
+    @param size The size (in bytes) of the region.
+  */
+  FileRegion(long long offset, unsigned int size) throw();
 
-  FileRegion& operator=(const FileRegion& eq) throw() {
-    if (&eq != this) {
-      offset = eq.offset;
-      size = eq.size;
-    }
+  /**
+    Initializes region from other region.
+  */
+  inline FileRegion(const FileRegion& copy) throw() : offset(copy.offset), size(copy.size) {}
+
+  /**
+    Assignment of region by region.
+  */
+  inline FileRegion& operator=(const FileRegion& eq) throw() {
+    // no need to protect against self-assignment
+    offset = eq.offset;
+    size = eq.size;
     return *this;
   }
 
@@ -73,6 +85,8 @@ public:
     return (difference >= 0) && ((difference + region.size - size) <= 0);
   }
 };
+
+inline FileRegion::FileRegion(long long o, unsigned int s) throw() : offset(o), size(s) {}
 
 class MappedFile;
 
@@ -257,8 +271,7 @@ public:
 
 
 /**
-  Locked file region.
-
+  @short Locked file region.
   @author René Møller Fonseca
   @version 1.0
 */
@@ -272,117 +285,33 @@ private:
   FileRegion region;
 public:
 
-  inline LockableRegion(const File& f, const FileRegion& r, bool exclusive = true) throw(FileException) : file(f), region(r) {
-    file.lock(region, exclusive);
-  }
+  /**
+    Initializes the file region lock.
 
+    @param file The file.
+    @param region The file region to be locked.
+    @param exclusive Specifies that the region should be locked exclusively (if false the region is locked shared). This argument is true by default.
+  */
+  LockableRegion(const File& file, const FileRegion& region, bool exclusive) throw(FileException);
+
+  /**
+    Returns the locked file region.
+  */
   inline FileRegion getRegion() const throw() {return region;}
 
-  inline ~LockableRegion() throw(FileException) {
-    file.unlock(region);
-  }
+  /**
+    Lock the specified file region (the old region is unlocked first).
+
+    @param region The new file region to be locked.
+    @param exclusive Specifies that the region should be locked exclusively (if false the region is locked shared). This argument is true by default.
+  */
+  void lock(const FileRegion& region, bool exclusive = true) throw(FileException);
+
+  /**
+    Destroys the file region lock (unlocks the region).
+  */
+  ~LockableRegion() throw(FileException);
 };
-
-
-
-///**
-//  This class is used to map a specified file region into the address space of the process.
-//
-//  @short File region mapper.
-//  @author René Møller Fonseca
-//  @version 1.0
-//*/
-//
-//class MappedFile : public Object {
-//private:
-//
-//  class MappedFileImpl : public ReferenceCountedObject {
-//  private:
-//
-//    File file; // ensure that the file is not closed before map has been closed - may not be required
-//    FileRegion region;
-//    bool writeable;
-//    void* bytes;
-//  public:
-//
-//    MappedFileImpl(const File& file, const FileRegion& region, bool writeable) throw(FileException);
-//
-//    inline void* getBytes() const throw() {return bytes;}
-//
-//    inline File& getFile() throw() {return file;}
-//
-//    inline const FileRegion& getRegion() const throw() {return region;}
-//
-//    inline bool isWriteable() throw() {return writeable;}
-//
-//    void flush() const throw(FileException);
-//
-//    ~MappedFileImpl() throw(FileException);
-//  };
-//
-//  /** The internal mapping representation. */
-//  ReferenceCountedObjectPointer<MappedFileImpl> map;
-//protected:
-//
-//  /**
-//    Returns the handle of the specified file.
-//  */
-//  inline static int getHandle(File& file) {return file.fd->getHandle();}
-//public:
-//
-//  /**
-//    Returns the required granularity of the file region offset.
-//  */
-//  static unsigned int getGranularity() throw();
-//
-//  /**
-//  */
-//  MappedFile() throw();
-//
-//  /**
-//    Initializes a file mapping.
-//
-//    @param file The file to be mapped into memory.
-//    @param region The file region to be mapped. The offset of the region must honour the granularity returned by getGranularity.
-//    @param writeable Specifies that write access is required. Default is false.
-//  */
-//  MappedFile(const File& file, const FileRegion& region, bool writeable = false) throw(FileException);
-//
-//  /**
-//    Initializes mapping from other mapping.
-//  */
-//  inline MappedFile(const MappedFile& copy) throw() : map(copy.map) {}
-//
-//  /**
-//    Assignment of mapping by mapping.
-//  */
-//  MappedFile& operator=(const MappedFile& eq) throw();
-//
-//  /**
-//    Returns the mapped bytes. Do not use the mapping outside the requested
-//    mapping range.
-//  */
-//  inline byte* getBytes() const throw() {return static_cast<byte*>(map->getBytes());}
-//
-//  /**
-//    Returns the mapped file region.
-//  */
-//  inline const FileRegion& getRegion() const throw() {return map->getRegion();}
-//
-//  /**
-//    Flushes the mapping.
-//  */
-//  inline void flush() const throw(FileException) {map->flush();}
-//
-//  /**
-//    Maps the specified file region.
-//
-//    @region The file region to be mapped.
-//  */
-//  inline void remap(const FileRegion& region) throw(FileException) {
-//    map = new MappedFileImpl(map->getFile(), region, map->isWriteable());
-//  }
-//};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -9,7 +9,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 BufferedOutputStream::BufferedOutputStream(OutputStream& out, unsigned int size) throw(BindException, MemoryException) :
-  FilterOutputStream(out), buffer(maximum(size, MINIMUM_BUFFER_SIZE)), readHead(0), writeHead(0) {
+  FilterOutputStream(out), buffer(maximum(size, MINIMUM_BUFFER_SIZE)), writeHead(0), readHead(0) {
 }
 
 void BufferedOutputStream::flush() throw(IOException) {

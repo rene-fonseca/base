@@ -770,4 +770,20 @@ unsigned int File::write(const char* buffer, unsigned int size, bool nonblocking
   return bytesWritten;
 }
 
+
+
+LockableRegion::LockableRegion(const File& f, const FileRegion& r, bool exclusive) throw(FileException) : file(f), region(r) {
+  file.lock(region, exclusive);
+}
+
+void LockableRegion::lock(const FileRegion& region, bool exclusive) throw(FileException) {
+  file.unlock(this->region);
+  this->region = region;
+  file.lock(this->region, exclusive);
+}
+
+LockableRegion::~LockableRegion() throw(FileException) {
+  file.unlock(region);
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

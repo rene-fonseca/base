@@ -19,7 +19,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Exception thrown when the end of an enumeration is exceeded.
+  Exception raised when the end of an enumeration is exceeded.
 
   @short End of enumeration exception  
   @ingroup collections exceptions

@@ -9,9 +9,9 @@
 #include <base/string/FormatOutputStream.h>
 
 /**
-  Association of value with other value. The particular property of an
-  association is that the key is the only significant when comparing
-  associations.
+  Association of value with other value. An association has the properties of
+  its key (i.e. the key is the only significant when comparing associations
+  with each other).
 
   @see Map
   @author René Møller Fonseca

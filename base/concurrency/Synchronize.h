@@ -96,8 +96,8 @@ private:
   /** The synchronize able object to be synchronized. */
   const Synchronizeable<LOCK>& obj;
 
-  inline Synchronize(const Synchronize& copy) {} // prohibit copy constructor
-  inline Synchronize& operator=(const Synchronize& eq) {return *this;} // prohibit assignment
+  Synchronize(const Synchronize& copy); // prohibit copy construction
+  Synchronize& operator=(const Synchronize& eq); // prohibit assignment
 public:
 
   /**
@@ -142,8 +142,8 @@ template<>
 class Synchronize<Unsafe> {
 private:
 
-  inline Synchronize(const Synchronize& copy) {} // prohibit copy constructor
-  inline Synchronize& operator=(const Synchronize& eq) {return *this;} // prohibit assignment
+  Synchronize(const Synchronize& copy); // prohibit copy construction
+  Synchronize& operator=(const Synchronize& eq); // prohibit assignment
 public:
 
   /**

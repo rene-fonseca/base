@@ -4,11 +4,3 @@
  ***************************************************************************/
 
 #include <base/concurrency/SpinLock.h>
-/*
-int main() {
-  SpinLock lock;
-  lock.tryExclusiveLock();
-  lock.exclusiveLock();
-  lock.releaseLock();
-}
-*/

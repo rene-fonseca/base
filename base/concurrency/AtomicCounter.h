@@ -28,46 +28,72 @@ private:
 public:
 
   /**
+    Initializes counter with zero.
+  */
+	inline AtomicCounter() throw() : value(0) {
+    this->value = value;
+	}
+
+  /**
     Initializes the counter.
 
-    @param value The initial value. The default is 0.
+    @param value The initial value.
   */
-	AtomicCounter(TYPE value = 0) throw();
+	inline AtomicCounter(TYPE value) throw() : value(value) {}
 
   /**
     Returns the value of the counter.
   */
-  TYPE operator()() const throw();
+  inline TYPE operator()() const throw() {
+    SynchronizeShared();
+    return value;
+  }
 
   /**
     Increments the counter.
   */
-  TYPE operator++() throw();
+  inline TYPE operator++() throw() {
+    SynchronizeExclusively();
+    ++value;
+    return value;
+  }
 
   /**
     Decrements the counter.
   */
-  TYPE operator--() throw();
+  inline TYPE operator--() throw() {
+    SynchronizeExclusively();
+    --value;
+    return value;
+  }
 
   /**
     Increment counter by value.
   */
-  TYPE operator+=(TYPE value) throw();
+  inline TYPE operator+=(TYPE value) throw() {
+    SynchronizeExclusively();
+    this->value += value;
+    return value;
+  }
 
   /**
     Decrement counter by value.
   */
-  TYPE operator-=(TYPE value) throw();
+  inline TYPE operator-=(TYPE value) throw() {
+    SynchronizeExclusively();
+    this->value -= value;
+    return value;
+  }
 
   /**
     Assign value to counter.
   */
-  TYPE operator=(TYPE value) throw();
+  inline TYPE operator=(TYPE value) throw() {
+    SynchronizeExclusively();
+    this->value = value;
+    return value;
+  }
 
-  /**
-    Destroys the counter.
-  */
-	~AtomicCounter() throw();
 };
 
 #endif

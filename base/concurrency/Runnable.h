@@ -20,7 +20,7 @@ class Thread;
   @version 1.0
 */
 
-class Runnable : public Object {
+class Runnable : public virtual Object {
 protected:
 
   /** Specifies that the active object should be terminated. */

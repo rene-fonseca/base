@@ -15,7 +15,7 @@
   @version 1.0
 */
 
-class LongInteger : public Object {
+class LongInteger : public virtual Object {
 public:
 
   /** True if the integer type is signed. */

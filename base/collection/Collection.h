@@ -9,7 +9,7 @@
 #include <base/Object.h>
 
 /**
-  Collection is the common interface implemented containers.
+  Collection is the common interface implemented by containers.
 
   @author René Møller Fonseca
   @version 1.1

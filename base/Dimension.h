@@ -16,7 +16,7 @@
   @version 1.0
 */
 
-class Dimension : public Object {
+class Dimension : public virtual Object {
 protected:
 
   /** The width. */

@@ -25,7 +25,7 @@
   @version 1.01
 */
 
-class Event : public Object {
+class Event : public virtual Object {
 private:
 
 #if defined(__win32__)

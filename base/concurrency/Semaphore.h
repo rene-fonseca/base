@@ -29,7 +29,7 @@
   @version 1.1
 */
 
-class Semaphore : public Object {
+class Semaphore : public virtual Object {
 public:
 
 #if defined(__win32__)

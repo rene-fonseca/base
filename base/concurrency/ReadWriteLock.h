@@ -29,7 +29,7 @@
   @version 1.1
 */
 
-class ReadWriteLock : public Object, public virtual Lock {
+class ReadWriteLock : public virtual Object, public virtual Lock {
 protected:
 
   /** Internal mutex representation. */

@@ -29,7 +29,7 @@
   @version 1.1
 */
 
-class MutualExclusion : public Object, public virtual Lock {
+class MutualExclusion : public virtual Object, public virtual Lock {
 protected:
 
 #if defined(__win32__)

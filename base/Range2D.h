@@ -17,7 +17,7 @@
   @version 1.0
 */
 
-class Range2D : public Object {
+class Range2D : public virtual Object {
 protected:
 
   /** The minimum value. */

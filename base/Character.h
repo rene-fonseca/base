@@ -15,7 +15,7 @@
   @version 1.0
 */
 
-class Character : public Object {
+class Character : public virtual Object {
 protected:
 
   /** The value. */

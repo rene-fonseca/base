@@ -16,7 +16,7 @@
   @version 1.0
 */
 
-class FileDescriptorInputStream : public virtual InputStream, public virtual FileDescriptor {
+class FileDescriptorInputStream : public virtual InputStream, public FileDescriptor {
 private:
 
   /** Specifies that the end of the stream has been reached. */

@@ -19,9 +19,9 @@ class Object {
 private:
 
   /* Disable the default copy constructor. */
-  inline Object(const Object& copy) {}
+  Object(const Object& copy);
   /* Disable the default assignment operator. */
-  inline Object& operator=(const Object& eq) {return *this;}
+  Object& operator=(const Object& eq);
 public:
 
   /**

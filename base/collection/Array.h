@@ -110,7 +110,7 @@ public:
     Assignment of array to array.
   */
   Array& operator=(const Array& eq) throw(MemoryException) {
-    if (&eq != this) {
+    if (&eq != this) { // protect against self assignment
       elements = eq.elements;
       size = eq.size;
     }
@@ -129,6 +129,8 @@ public:
 
   /**
     Appends the value to this array.
+
+    @param value The value to be appended.
   */
   void append(const TYPE& value) throw(MemoryException) {
     unsigned int size = getSize();
@@ -139,6 +141,8 @@ public:
 
   /**
     Prepends the value to this array.
+
+    @param value The value to be prepended.
   */
   void prepend(const TYPE& value) throw(MemoryException) {
     setSize(getSize() + 1);
@@ -165,7 +169,7 @@ public:
   }
 
   /**
-    Remove the element specified by the index.
+    Remove the element specified by the index. Throws 'OutOfRange' if the index is invalid.
 
     @param index The index of the element to be removed.
   */
@@ -185,13 +189,6 @@ public:
     elements = new ReferenceCountedAllocator<TYPE>(); // no need to copy
     size = 0;
   }
-
-  // Friend section
-
-  /**
-    Writes a string representation of an array to a format stream.
-  */
-  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Array<TYPE>& value);
 };
 
 

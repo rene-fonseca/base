@@ -34,9 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class CharacterSet : public Object {
 private:
-
-  /** The character representation. */
-  typedef WideString::ucs4 ucs4;
+  
   /** Container type for the character set. */
   typedef ReferenceCountedAllocator<ucs4> CharacterSetImpl;
   

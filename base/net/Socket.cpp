@@ -5,6 +5,7 @@
 
 #include <base/net/Socket.h>
 #include <base/Functor.h>
+#include <base/io/EndOfFile.h>
 
 #if defined(__win32__)
   #include <winsock2.h>
@@ -16,7 +17,9 @@
   #include <unistd.h>
   #include <fcntl.h>
   #include <errno.h>
-//  #include <string.h>
+  #include <sys/time.h> // defines timeval on Linux systems
+  #include <stropts.h> // defines FLUSH macros
+  #include <sys/ioctl.h> // defines FIONREAD
 #endif
 
 #if !defined(HAVE_TYPE_SOCKLEN_T)
@@ -105,7 +108,10 @@ void setSocketOption(int handle, int option, const void* buffer, socklen_t len) 
 
 
 
-Socket::SocketImpl::SocketImpl() throw() :  handle(-1), remotePort(0), localPort(0) {
+Socket::SocketImpl::SocketImpl() throw() :  handle(-1), remotePort(0), localPort(0), end(false) {
+}
+
+Socket::SocketImpl::SocketImpl(int handle) throw() :  handle(handle), remotePort(0), localPort(0), end(false) {
 }
 
 Socket::SocketImpl::~SocketImpl() throw(IOException) {
@@ -131,7 +137,6 @@ bool Socket::accept(Socket& socket) throw(IOException) {
   SynchronizeExclusively();
 
   if (this->socket->isCreated()) {
-    SynchronizeRelease();
     throw NetworkException("Attempt to overwrite socket");
   }
 
@@ -144,27 +149,27 @@ bool Socket::accept(Socket& socket) throw(IOException) {
   socklen_t sl = sizeof(sa);
 
   int handle = ::accept(socket.getHandle(), (struct sockaddr*)&sa, &sl);
-  if (handle == -1) {
 #if defined(__win32__)
+  if (handle == -1) {
     switch (WSAGetLastError()) {
     case WSAEWOULDBLOCK:
       return false;
     default:
-      SynchronizeRelease();
       throw NetworkException("Unable to accept connection");
     }
+  }
 #else // __unix__
+  if (handle == -1) {
     switch (errno) {
     case EAGAIN: // EWOULDBLOCK
       return false;
     default:
-      SynchronizeRelease();
       throw NetworkException("Unable to accept connection");
     }
-#endif
   }
+#endif
 
-  setHandle(handle);
+  this->socket = new SocketImpl(handle);
 #if defined(HAVE_INET_IPV6)
   this->socket->getRemoteAddress()->setAddress((char*)&(sa.sin6_addr), InetAddress::IPv6);
   this->socket->setRemotePort(ntohs(sa.sin6_port));
@@ -179,7 +184,6 @@ void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOExceptio
   SynchronizeExclusively();
   SocketAddress sa(addr, port);
   if (::bind(getHandle(), sa.getValue(), sa.getSize())) {
-    SynchronizeRelease();
     throw NetworkException("Unable to associate name with socket");
   }
   *socket->getLocalAddress() = addr;
@@ -188,20 +192,7 @@ void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOExceptio
 
 void Socket::close() throw(IOException) {
   SynchronizeExclusively();
-#if defined(__win32__)
-  if (::closesocket(getHandle())) {
-    SynchronizeRelease();
-    throw NetworkException("Unable to close socket");
-  }
-#else // __unix__
-  if (::close(getHandle())) {
-    SynchronizeRelease();
-    throw NetworkException("Unable to close socket");
-  }
-#endif
-  socket->setHandle(-1); // invalidate socket handle
-  socket->setRemotePort(0); // make unconnected
-  socket->setLocalPort(0); // make unbound
+  socket = new SocketImpl(); // invalidate socket
 }
 
 void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOException) {
@@ -210,7 +201,6 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
   SocketAddress sa(addr, port);
 
   if (::connect(getHandle(), sa.getValue(), sa.getSize())) {
-    SynchronizeRelease();
 #if defined(__win32__)
     switch (WSAGetLastError()) {
     case WSAECONNREFUSED:
@@ -240,20 +230,18 @@ void Socket::create(bool stream) throw(IOException) {
   int handle;
 #if defined(HAVE_INET_IPV6)
   if (socket->isCreated() || ((handle = ::socket(PF_INET6, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == -1)) {
-    SynchronizeRelease();
     throw NetworkException("Unable to create socket");
   }
 #else
   if (socket->isCreated() || ((handle = ::socket(PF_INET, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == -1)) {
-    SynchronizeRelease();
     throw NetworkException("Unable to create socket");
   }
 #endif
-  setHandle(handle);
+  socket = new SocketImpl(handle);
 }
 
 void Socket::listen(unsigned int backlog) throw(IOException) {
-  // synchronization not required
+  SynchronizeShared();
   if (backlog > INT_MAX) { // does backlog fit in 'int' type
     backlog = INT_MAX; // silently reduce the backlog argument
   }
@@ -277,26 +265,25 @@ const InetAddress& Socket::getLocalAddress() const throw() {
 }
 
 unsigned short Socket::getLocalPort() const throw() {
+  SynchronizeShared();
   return socket->getLocalPort();
 }
 
 void Socket::shutdownInputStream() throw(IOException) {
-  SynchronizeExclusively();
+  SynchronizeShared();
 #if defined(__win32__)
   if (::shutdown(getHandle(), SD_RECEIVE)) { // disallow further receives
-    SynchronizeRelease();
     throw IOException("Unable to shutdown socket for reading");
   }
 #else // __unix__
   if (::shutdown(getHandle(), 0)) { // disallow further receives
-    SynchronizeRelease();
     throw IOException("Unable to shutdown socket for reading");
   }
 #endif
 }
 
 void Socket::shutdownOutputStream() throw(IOException) {
-  // synchronization not required
+  SynchronizeShared();
 #if defined(__win32__)
   if (::shutdown(getHandle(), SD_SEND)) { // disallow further sends
     throw IOException("Unable to shutdown socket for writing");
@@ -309,6 +296,7 @@ void Socket::shutdownOutputStream() throw(IOException) {
 }
 
 bool Socket::getBooleanOption(int option) const throw(IOException) {
+  SynchronizeShared();
   int buffer;
   socklen_t len = sizeof(buffer);
   getSocketOption(getHandle(), option, &buffer, &len);
@@ -316,6 +304,7 @@ bool Socket::getBooleanOption(int option) const throw(IOException) {
 }
 
 void Socket::setBooleanOption(int option, bool value) throw(IOException) {
+  SynchronizeShared();
   int buffer = value;
   setSocketOption(getHandle(), option, &buffer, sizeof(buffer));
 }
@@ -345,6 +334,7 @@ void Socket::setBroadcast(bool value) throw(IOException) {
 }
 
 int Socket::getLinger() const throw(IOException) {
+  SynchronizeShared();
   struct linger buffer;
   socklen_t len = sizeof(buffer);
   getSocketOption(getHandle(), SO_LINGER, &buffer, &len);
@@ -363,6 +353,7 @@ void Socket::setLinger(int seconds) throw(IOException) {
 }
 
 int Socket::getReceiveBufferSize() const throw(IOException) {
+  SynchronizeShared();
   int buffer;
   socklen_t len = sizeof(buffer);
   getSocketOption(getHandle(), SO_RCVBUF, &buffer, &len);
@@ -370,11 +361,13 @@ int Socket::getReceiveBufferSize() const throw(IOException) {
 }
 
 void Socket::setReceiveBufferSize(int size) throw(IOException) {
+  SynchronizeShared();
   int buffer = size;
   setSocketOption(getHandle(), SO_RCVBUF, &buffer, sizeof(buffer));
 }
 
 int Socket::getSendBufferSize() const throw(IOException) {
+  SynchronizeShared();
   int buffer;
   socklen_t len = sizeof(buffer);
   getSocketOption(getHandle(), SO_SNDBUF, &buffer, &len);
@@ -382,11 +375,13 @@ int Socket::getSendBufferSize() const throw(IOException) {
 }
 
 void Socket::setSendBufferSize(int size) throw(IOException) {
+  SynchronizeShared();
   int buffer = size;
   setSocketOption(getHandle(), SO_SNDBUF, &buffer, sizeof(buffer));
 }
 
 void Socket::setNonBlocking(bool value) throw(IOException) {
+  SynchronizeShared();
 #if defined(__win32__)
   unsigned int buffer = value; // set to zero to disable nonblocking
   if (ioctlsocket(getHandle(), FIONBIO, (u_long*)&buffer)) {
@@ -416,6 +411,7 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
 }
 
 unsigned int Socket::available() const throw(IOException) {
+  SynchronizeShared();
 #if defined(__win32__)
   unsigned int result;
   if (ioctlsocket(getHandle(), FIONREAD, (u_long*)&result)) {
@@ -423,123 +419,114 @@ unsigned int Socket::available() const throw(IOException) {
   }
   return result;
 #else // __unix__
-  struct stat status;
-  if (fstat(getHandle(), &status) != 0) {
-    throw IOException("Unable to get status of socket");
+  // this implementation is not very portable?
+  int result;
+  if (ioctl(getHandle(), FIONREAD, &result)) {
+    throw IOException("Unable to determine the amount of data pending in the input buffer");
   }
-  return status.st_size;
+  return result;
 #endif
 }
 
+bool Socket::atEnd() const throw() {
+  SynchronizeShared();
+  return socket->atEnd();
+}
+
 void Socket::flush() throw(IOException) {
+  SynchronizeShared();
 #if defined(__win32__)
   if (!FlushFileBuffers((void*)getHandle())) {
     throw IOException("Unable to flush socket");
   }
 #else // __unix__
   // How do you flush the output stream of a socket?
+  // How about waiting with select
+//  int command = FLUSHW;
+//  if (ioctl(getHandle(), I_FLUSH, &command)) {
+//    throw IOException("Unable to flush socket");
+//  }
 #endif
 }
 
 unsigned int Socket::read(char* buffer, unsigned int size) throw(IOException) {
-  unsigned int totalBytesRead = 0;
+  SynchronizeShared();
+  if (socket->atEnd()) {
+    throw EndOfFile();
+  }
 #if defined(__win32__)
-  while (totalBytesRead < size) {
-    int result = ::recv(getHandle(), &buffer[totalBytesRead], (size - totalBytesRead) % INT_MAX, 0);
-
-    if (result == 0) {
-      return totalBytesRead; // early return
-    } else if (result < 0) {
-      switch (WSAGetLastError()) {
-      case WSAEINTR:
-        break;
-      case WSAEWOULDBLOCK:
-        return totalBytesRead;
-      default:
-        throw IOException("Unable to read from socket");
-      }
-    } else {
-      totalBytesRead += result;
+  int result = ::recv(getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, 0);
+  if (result == 0) {
+    socket->onEnd(); // remember end of file
+    return 0; // early return
+  } else if (result < 0) { // has an error occured
+    switch (WSAGetLastError()) {
+    case WSAEINTR: // interrupted by signal before any data was read
+      return 0; // try later
+    case WSAEWOULDBLOCK: // no data available (only in non-blocking mode)
+      return 0; // try later
+    default:
+      throw IOException("Unable to read from socket");
     }
   }
+  return result;
 #else // __unix__
-  while (totalBytesRead < size) {
-    int result = ::read(getHandle(), &buffer[totalBytesRead], (size - totalBytesRead) % SSIZE_MAX);
-
-    if (result == 0) { // has end of file been reached
-//      if (eof) {
-//        throw EndOfFile();
-//      }
-//      eof = true; // remember end of file
-      return totalBytesRead; // early return
-    } else if (result < 0) { // has an error occured
-      switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
-      case EINTR: // interrupted by signal before any data was read
-        // try again
-        break;
-      case EAGAIN: // no data available (only in non-blocking mode)
-        return totalBytesRead; // early return
-      default:
-        throw IOException("Unable to read from socket");
-      }
-    } else {
-      totalBytesRead += result;
+  int result = ::recv(socket->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX, 0);
+  if (result == 0) { // has end of file been reached
+    socket->onEnd(); // remember end of file
+    return 0; // return
+  } else if (result < 0) { // has an error occured
+    switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
+    case EINTR: // interrupted by signal before any data was read
+      return 0; // try later
+    case EAGAIN: // no data available (only in non-blocking mode)
+      return 0; // try later
+    default:
+      throw IOException("Unable to read from socket");
     }
   }
+  return result;
 #endif
-  return totalBytesRead;
 }
 
 unsigned int Socket::write(const char* buffer, unsigned int size) throw(IOException) {
-  unsigned int totalBytesWritten = 0;
-
 #if defined(__win32__)
-  while (totalBytesWritten < size) {
-    int result = ::send(getHandle(), &buffer[totalBytesWritten], (size - totalBytesWritten) % INT_MAX, 0);
-    if (result == 0) {
-      // do not know if it is possible to end up here
-      return totalBytesWritten;
-    } else if (result == -1) { // has an error occured
-      switch (WSAGetLastError()) {
-      case WSAEINTR:
-        break;
-      case WSAEWOULDBLOCK:
-        return totalBytesWritten;
-      default:
-        throw IOException("Unable to write to socket");
-      }
-    } else {
-      totalBytesWritten += result;
+  int result = ::send(getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, 0);
+  if (result == 0) {
+    // do not know if it is possible to end up here
+    return 0;
+  } else if (result == -1) { // has an error occured
+    switch (WSAGetLastError()) {
+    case WSAEINTR: // interrupted by signal before any data was written
+      return 0; // try later
+    case WSAEWOULDBLOCK: // no data could be written without blocking (only in non-blocking mode)
+      return 0; // try later
+    default:
+      throw IOException("Unable to write to socket");
     }
   }
+  return result;
 #else // __unix__
-  while (totalBytesWritten < size) {
-    int result = ::send(getHandle(), &buffer[totalBytesWritten], (size - totalBytesWritten) % SSIZE_MAX, 0);
-    if (result == 0) {
-      // do not know if it is possible to end up here
-      return totalBytesWritten;
-    } else if (result == -1) { // has an error occured
-      switch (errno) {
-      case EINTR: // interrupted by signal before any data was written
-        // try again
-        break;
-      case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
-        return totalBytesWritten; // early return
-        break;
-      default:
-        throw IOException("Unable to write to socket");
-      }
-    } else {
-      totalBytesWritten += result;
+  int result = ::send(socket->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX, 0);
+  if (result == 0) { // has end of file been reached
+    // do not know if it is possible to end up here
+    return 0;
+  } else if (result < 0) { // has an error occured
+    switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
+    case EINTR: // interrupted by signal before any data was read
+      return 0; // try later
+    case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
+      return 0; // try later
+    default:
+      throw IOException("Unable to write to socket");
     }
   }
+  return result;
 #endif
-
-  return totalBytesWritten;
 }
 
 unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(IOException) {
-  unsigned int result = 0;
+  int result = 0;
 
 #if defined(HAVE_INET_IPV6)
   struct sockaddr_in6 sa;
@@ -565,12 +552,42 @@ unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& a
 }
 
 unsigned int Socket::sendTo(const char* buffer, unsigned int size, InetAddress& address, unsigned short port) throw(IOException) {
-  unsigned int result = 0;
+  SynchronizeShared();
+  int result = 0;
   const SocketAddress sa(address, port);
   if ((result = ::sendto(getHandle(), buffer, size, 0, sa.getValue(), sa.getSize())) == -1) {
     throw IOException("Unable to send to");
   }
   return result;
+}
+
+void Socket::wait() const throw(IOException) {
+  SynchronizeShared();
+  fd_set rfds;
+  FD_ZERO(&rfds);
+  FD_SET(getHandle(), &rfds);
+
+  int result = ::select(getHandle() + 1, &rfds, NULL, NULL, NULL);
+  if (result == -1) {
+    throw IOException("Unable to wait for input");
+  }
+}
+
+bool Socket::wait(unsigned int timeout) const throw(IOException) {
+  SynchronizeShared();
+  fd_set rfds;
+  FD_ZERO(&rfds);
+  FD_SET(getHandle(), &rfds);
+
+  struct timeval tv;
+  tv.tv_sec = timeout/1000000;
+  tv.tv_usec = timeout % 1000000;
+
+  int result = ::select(getHandle() + 1, &rfds, NULL, NULL, &tv);
+  if (result == -1) {
+    throw IOException("Unable to wait for input");
+  }
+  return result; // return true if data available
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) {

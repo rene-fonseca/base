@@ -33,6 +33,8 @@ private:
   class SocketImpl : public virtual ReferenceCountedObject {
   private:
 
+    /** Handle to the socket. */
+    int handle;
     /** Specifies the remote address to which the socket is connected. */
     InetAddress remoteAddress;
     /** Specifies the remote port (in host byte order) to which the socket is connected (unconnected if 0). */
@@ -41,16 +43,16 @@ private:
     InetAddress localAddress;
     /** Specifies the local port (in host byte order) to which the socket is bound (unbound if 0). */
     unsigned short localPort;
-    /** Handle to the socket. */
-    int handle;
+    /** Specifies whether the end of the stream has been reached. */
+    bool end;
   public:
 
     /** Initializes invalid socket. */
     SocketImpl() throw();
+    /** Initializes the socket with the specified handle. */
+    SocketImpl(int handle) throw();
     /** Returns the socket handle. */
     inline int getHandle() const throw() {return handle;}
-    /** Sets the socket handle. */
-    inline void setHandle(int handle) throw() {this->handle = handle;}
     /** Returns the local address. */
     inline InetAddress* getLocalAddress() throw() {return &localAddress;}
     /** Returns the local port. */
@@ -69,10 +71,13 @@ private:
     inline bool isConnected() const throw() {return getRemotePort() != 0;}
     /** Returns true if socket is bound. */
     inline bool isBound() const throw() {return getLocalPort() != 0;}
+    /** Returns true if the end has been reached. */
+    inline bool atEnd() const throw() {return end;}
+    /** Specifies that the end has been reached. */
+    inline void onEnd() throw() {end = true;}
     /** Releases the resources use by the socket. */
     ~SocketImpl() throw(IOException);
   };
-
 protected:
 
   /** The internal socket representation. */
@@ -80,8 +85,6 @@ protected:
 
   /** Returns the handle. */
   inline int getHandle() const throw() {return socket->getHandle();}
-  /** Set the handle. */
-  inline void setHandle(int handle) throw() {socket->setHandle(handle);}
   /** Get boolean socket option. */
   bool getBooleanOption(int option) const throw(IOException);
   /** Set boolean socket option. */
@@ -263,6 +266,11 @@ public:
   unsigned int available() const throw(IOException);
 
   /**
+    Returns true if the end has been reached.
+  */
+  bool atEnd() const throw();
+
+  /**
     Forces any buffered bytes to be written out.
   */
   void flush() throw(IOException); 
@@ -308,6 +316,19 @@ public:
     @return The number of bytes received.
   */
   unsigned int receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(IOException);
+
+  /**
+    Blocking wait for input to become available.
+  */
+  void wait() const throw(IOException);
+
+  /**
+    Blocking wait for input to become available.
+
+    @param timeout The timeout periode in microseconds.
+    @return True, if data is available. False, if the timeout periode expired.
+  */
+  bool wait(unsigned int timeout) const throw(IOException);
 
   /**
     Writes a string representation of a Socket object to a format stream.

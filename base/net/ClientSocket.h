@@ -193,9 +193,32 @@ public:
   */
   inline unsigned int write(const char* buffer, unsigned int size) throw(IOException) {return Socket::write(buffer, size);}
 
-  inline bool atEnd() const throw(IOException) {return false;}
+  /**
+    Blocking wait for input to become available.
+  */
+  inline void wait() const throw(IOException) {Socket::wait();}
+
+  /**
+    Waits for input to become available.
+
+    @param timeout The timeout periode in microseconds.
+    @return True, if data is available. False, if the timeout periode expired.
+  */
+  inline bool wait(unsigned int timeout) const throw(IOException) {return Socket::wait(timeout);}
+
+  /**
+    Return true if the end of the stream has been reached.
+  */
+  inline bool atEnd() const throw(IOException) {return Socket::atEnd();}
+
+  /**
+  */
   inline unsigned int skip(unsigned int count) throw(IOException) {return 0;}
-  inline void flush() throw(IOException) {}
+
+  /**
+    Forces any buffered bytes to be written out.
+  */
+  inline void flush() throw(IOException) {Socket::flush();}
 };
 
 #endif

@@ -69,7 +69,7 @@ void Range2D::setMaximum(double maximum) throw() {
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value) {
-  return stream << "(" << value.minimum << "," << value.maximum << ")";
+  return stream << '(' << value.minimum << ',' << value.maximum << ')';
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

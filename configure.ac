@@ -1086,9 +1086,9 @@ AC_SUBST(BASE_MODULES)
 
 
 
-dnl Store the symbols (possibly overwrites dummy header)
+dnl Store the symbols
 ac_base_header=base/configuration.h
-echo "updating configuration..."
+echo "updating configuration header..."
 mkdir -p base
 mv ${ac_base_config} ${ac_base_header}
 

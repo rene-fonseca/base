@@ -163,6 +163,10 @@ public:
         if (description.isProper()) {
           fout << MESSAGE("  description: ") << description << EOL;
         }
+        String keywords = ieee1394.getKeywords(node);
+        if (keywords.isProper()) {
+          fout << MESSAGE("  keywords: ") << keywords << EOL;
+        }
         
         if (!ieee1394.getLocalIdentifier(id).isInvalid()) {
           fout << MESSAGE("  guid: ") << ieee1394.getLocalIdentifier(id) << EOL;
@@ -337,6 +341,30 @@ public:
 
   void resetBus(const EUI64& guid) throw() {
   }
+
+  unsigned short getNodeId(const String& string) const throw(InvalidFormat) {
+    unsigned int busId = IEEE1394::LOCAL_BUS;
+    unsigned int physicalId;
+    int index = string.indexOf(':');
+    if (index >= 0) { // format "bus:physical"
+      String bus = string.substring(0, index);
+      physicalId = UnsignedInteger::parse(
+        string.substring(index + 1),
+        UnsignedLongInteger::ANY
+      );
+      if (bus != "local") {
+        busId = UnsignedInteger::parse(
+          string.substring(0, index),
+          UnsignedLongInteger::ANY
+        );
+        assert(busId <= IEEE1394::LOCAL_BUS, InvalidFormat("Invalid bus id", this));
+      }
+    } else { // physical
+      physicalId = UnsignedInteger::parse(string, UnsignedLongInteger::ANY);
+    }
+    assert(physicalId <= IEEE1394::BROADCAST, InvalidFormat("Invalid physical id", this));
+    return IEEE1394::makeNodeId(physicalId, busId);
+  }
   
   void main() throw() {
     fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
@@ -454,10 +482,7 @@ public:
             guid = arguments[2];
             break;
           case 4:
-            nodeId = UnsignedInteger::parse(
-              arguments[3],
-              UnsignedLongInteger::PREFIX | UnsignedLongInteger::HEX
-            );
+            nodeId = getNodeId(arguments[3]);
             break;
           default:
             command = COMMAND_ERROR;

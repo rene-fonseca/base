@@ -19,7 +19,7 @@
 #include <base/string/String.h>
 #include <base/string/InvalidFormat.h>
 #include <base/string/StringOutputStream.h>
-#include <limits.h>
+#include <base/Type.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -36,9 +36,9 @@ public:
   /** True if the integer type is signed. */
   static const bool SIGNED = true;
   /** Specifies the minimum value. */
-  static const int MINIMUM = INT_MIN;
+  static const int MINIMUM = Int::MINIMUM;
   /** Specifies the maximum value. */
-  static const int MAXIMUM = INT_MAX;
+  static const int MAXIMUM = Int::MAXIMUM;
 protected:
 
   /** The value. */

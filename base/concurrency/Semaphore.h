@@ -19,12 +19,13 @@
 #include <base/ResourceException.h>
 #include <base/OutOfDomain.h>
 #include <base/Overflow.h>
-#include <limits.h>
+#include <base/Type.h>
 
 #if defined(__win32__)
   #include <windows.h>
 #elif _DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE
   #include <semaphore.h>
+  #include <limits.h>
 #else
   #include <pthread.h>
 #endif
@@ -42,11 +43,11 @@ class Semaphore : public virtual Object {
 public:
 
 #if defined(__win32__)
-  static const unsigned int MAXIMUM = INT_MAX;
+  static const unsigned int MAXIMUM = Int::MAXIMUM;
 #elif _DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE
   static const unsigned int MAXIMUM = _POSIX_SEM_VALUE_MAX;
 #else
-  static const unsigned int MAXIMUM = INT_MAX;
+  static const unsigned int MAXIMUM = Int::MAXIMUM;
 #endif
 private:
 

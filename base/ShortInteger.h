@@ -15,7 +15,7 @@
 #define _DK_SDU_MIP__BASE__SHORT_INTEGER_H
 
 #include <base/Object.h>
-#include <limits.h>
+#include <base/Type.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -32,9 +32,9 @@ public:
   /** True if the integer type is signed. */
   static const bool SIGNED = true;
   /** Specifies the maximum value. */
-  static const short int MAXIMUM = SHRT_MAX;
+  static const short int MAXIMUM = Short::MAXIMUM;
   /** Specifies the minimum value. */
-  static const short int MINIMUM = SHRT_MIN;
+  static const short int MINIMUM = Short::MINIMUM;
 protected:
 
   /** The value. */
@@ -51,7 +51,7 @@ public:
 
     @param value The desired value.
   */
-  inline ShortInteger(short int value) throw() : value(value) {}
+  ShortInteger(short int value) throw();
 
   /**
     Copy constructor. Initializes a new ShortInteger from other ShortInteger object.
@@ -89,6 +89,8 @@ public:
     return value;
   }
 };
+
+inline ShortInteger::ShortInteger(short int v) throw() : value(v) {}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -103,6 +103,18 @@ files=ellert/main.cpp,ellert/Ellert.cpp,ellert/Ellert.h
 sub_dirs=docs,base,vehicle,io,control,test,
 type=prog_main
 
+[ellert/base/Application.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ellert/base/Application.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [ellert/base/Base.h]
 dist=true
 install=false
@@ -260,7 +272,7 @@ install_location=
 type=HEADER
 
 [ellert/base/Makefile.am]
-files=ellert/base/Dimension.cpp,ellert/base/Dimension.h,ellert/base/Exception.cpp,ellert/base/Exception.h,ellert/base/Object.cpp,ellert/base/Object.h,ellert/base/Range2D.cpp,ellert/base/Range2D.h,ellert/base/Underflow.cpp,ellert/base/Underflow.h,ellert/base/Overflow.cpp,ellert/base/Overflow.h,ellert/base/Construct.cpp,ellert/base/Construct.h,ellert/base/Destruct.cpp,ellert/base/Destruct.h,ellert/base/DeviceException.cpp,ellert/base/DeviceException.h,ellert/base/MemoryException.cpp,ellert/base/OutOfRange.cpp,ellert/base/OutOfBounds.cpp,ellert/base/OutOfDomain.cpp,ellert/base/OutOfBounds.h,ellert/base/MemoryException.h,ellert/base/ResourceException.h,ellert/base/ResourceException.cpp,ellert/base/OutOfDomain.h,ellert/base/OutOfRange.h,ellert/base/Iterator.h,ellert/base/ForwardIterator.h,ellert/base/RandomIterator.h,ellert/base/Integer.h,ellert/base/Integer.cpp,ellert/base/Character.cpp,ellert/base/Character.h,ellert/base/ShortInteger.h,ellert/base/ShortInteger.cpp,ellert/base/LongInteger.h,ellert/base/LongInteger.cpp,ellert/base/Functor.h,ellert/base/Base.h,ellert/base/Trace.cpp,ellert/base/Trace.h,ellert/base/Date.cpp,ellert/base/Date.h,ellert/base/DateException.cpp,ellert/base/DateException.h,ellert/base/Listener.cpp,ellert/base/Listener.h,ellert/base/Timer.cpp,ellert/base/Timer.h,ellert/base/Type.h,ellert/base/Type.cpp
+files=ellert/base/Dimension.cpp,ellert/base/Dimension.h,ellert/base/Exception.cpp,ellert/base/Exception.h,ellert/base/Object.cpp,ellert/base/Object.h,ellert/base/Range2D.cpp,ellert/base/Range2D.h,ellert/base/Underflow.cpp,ellert/base/Underflow.h,ellert/base/Overflow.cpp,ellert/base/Overflow.h,ellert/base/Construct.cpp,ellert/base/Construct.h,ellert/base/Destruct.cpp,ellert/base/Destruct.h,ellert/base/DeviceException.cpp,ellert/base/DeviceException.h,ellert/base/MemoryException.cpp,ellert/base/OutOfRange.cpp,ellert/base/OutOfBounds.cpp,ellert/base/OutOfDomain.cpp,ellert/base/OutOfBounds.h,ellert/base/MemoryException.h,ellert/base/ResourceException.h,ellert/base/ResourceException.cpp,ellert/base/OutOfDomain.h,ellert/base/OutOfRange.h,ellert/base/Iterator.h,ellert/base/ForwardIterator.h,ellert/base/RandomIterator.h,ellert/base/Integer.h,ellert/base/Integer.cpp,ellert/base/Character.cpp,ellert/base/Character.h,ellert/base/ShortInteger.h,ellert/base/ShortInteger.cpp,ellert/base/LongInteger.h,ellert/base/LongInteger.cpp,ellert/base/Functor.h,ellert/base/Base.h,ellert/base/Trace.cpp,ellert/base/Trace.h,ellert/base/Date.cpp,ellert/base/Date.h,ellert/base/DateException.cpp,ellert/base/DateException.h,ellert/base/Listener.cpp,ellert/base/Listener.h,ellert/base/Timer.cpp,ellert/base/Timer.h,ellert/base/Type.h,ellert/base/Type.cpp,ellert/base/Application.cpp,ellert/base/Application.h,ellert/base/SingletonException.cpp,ellert/base/SingletonException.h,ellert/base/SystemLogger.cpp,ellert/base/SystemLogger.h
 sub_dirs=concurrency,mathematics,io,string,mem,net,collection,filesystem,iterator,xml
 type=static_library
 
@@ -373,6 +385,30 @@ install_location=
 type=SOURCE
 
 [ellert/base/ShortInteger.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[ellert/base/SingletonException.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ellert/base/SingletonException.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[ellert/base/SystemLogger.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ellert/base/SystemLogger.h]
 dist=true
 install=false
 install_location=

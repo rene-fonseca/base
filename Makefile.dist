@@ -34,3 +34,9 @@ final: all
 
 lendum: all
 	CXX=gcc CXXFLAGS="-O0 -g3" LDFLAGS="-lm" ./configure --prefix=/usr/local/base --enable-debug --enable-trace --enable-demangle=iberty --enable-regexp=pcre --enable-xml=gnomexml
+
+falster: all
+	CXXFLAGS="-O0 -g3" ./configure --prefix=/tmp/fonsece/base --enable-debug --enable-trace --enable-demangle=iberty --enable-regexp=posix
+
+hoptrup: all
+	CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --enable-debug --enable-trace --enable-regexp=no

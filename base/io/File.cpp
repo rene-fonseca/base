@@ -568,16 +568,16 @@ Trustee File::getOwner() const throw(FileException) {
   #else
     struct stat64 status;
   #endif // GNU Linux
-    if (::stat64(path.getElements(), (struct stat64*)&status) || (!S_ISREG(status.st_mode))) {
-      throw FileSystemException("Not a file", this);
+    if (::fstat64(fd->getHandle(), (struct stat64*)&status) || (!S_ISREG(status.st_mode))) {
+      throw FileException("Not a file", this);
     }
   #else
     struct stat status;
-    if (::stat(path.getElements(), &status) || (!S_ISREG(status.st_mode))) {
-      throw FileSystemException("Not a file", this);
+    if (::fstat(fd->getHandle(), &status) || (!S_ISREG(status.st_mode))) {
+      throw FileException("Not a file", this);
     }
   #endif
-  return = Trustee(Trustee::USER, (const void*)(MemoryDiff)status.st_uid);
+  return Trustee(Trustee::USER, (const void*)(MemoryDiff)status.st_uid);
 #endif // flavor
 }
 
@@ -609,7 +609,7 @@ void File::changeOwner(const String& path, const Trustee& owner, const Trustee& 
   } else {
     error = ::lchown(path.getElements(), uid, gid);
   }
-  assert(error == 0, FileException("Unable to change owner", Type::getType<File>()))
+  assert(error == 0, FileException("Unable to change owner", Type::getType<File>()));
 #endif // flavor
 }
 
@@ -644,16 +644,16 @@ Trustee File::getGroup() const throw(FileException) {
   #else
     struct stat64 status;
   #endif // GNU Linux
-    if (::stat64(path.getElements(), (struct stat64*)&status) || (!S_ISREG(status.st_mode))) {
-      throw FileSystemException("Not a file", this);
+    if (::fstat64(fd->getHandle(), (struct stat64*)&status) || (!S_ISREG(status.st_mode))) {
+      throw FileException("Not a file", this);
     }
   #else
     struct stat status;
-    if (::stat(path.getElements(), &status) || (!S_ISREG(status.st_mode))) {
-      throw FileSystemException("Not a file", this);
+    if (::fstat(fd->getHandle(), &status) || (!S_ISREG(status.st_mode))) {
+      throw FileException("Not a file", this);
     }
   #endif
-  return = Trustee(Trustee::GROUP, (const void*)(MemoryDiff)status.st_gid);
+  return Trustee(Trustee::GROUP, (const void*)(MemoryDiff)status.st_gid);
 #endif // flavor
 }
 

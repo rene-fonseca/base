@@ -21,13 +21,15 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 #if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
   /** 8 bit unsigned integer (a.k.a. octet). */
   typedef unsigned char byte;
+  /** 8 bit signed integer. */
+  typedef signed char int8;
   /** 8 bit unsigned integer (a.k.a. octet). */
   typedef unsigned char uint8;
-#else
-  #error char primitive is not 8 bits
 #endif
 
 #if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
+  /** 16 bit signed integer. */
+  typedef short int16;
   /** 16 bit unsigned integer. */
   typedef unsigned short uint16;
 #endif
@@ -44,7 +46,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   typedef unsigned long uint32;
 #elif (_DK_SDI_MIP__BASE__LONG_LONG_SIZE == 4)
   /** 32 bit signed integer. */
-  typedef long long uint32;
+  typedef long long int32;
   /** 32 bit unsigned integer. */
   typedef unsigned long long uint32;
 #endif
@@ -57,7 +59,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 #endif
 
 /** A wide character. */
-typedef wchar_t wchar; // TAG: this will change to unsigned int in the future
+typedef wchar_t wchar; // TAG: this will change to uint32 in the future
 
 
 
@@ -81,23 +83,33 @@ typedef wchar_t wchar; // TAG: this will change to unsigned int in the future
 
 
 /**
-  Returns an unsigned int from 2 short int's.
+  Returns an unsigned 16 bit integer from 2 bytes.
   
   @param lowWord The low bits.
   @param highWord The high bits.
 */
-inline unsigned int merge(unsigned short lowWord, unsigned short highWord) throw() {
-  return (static_cast<unsigned int>(highWord) << (sizeof(lowWord) * 8)) | lowWord;
+inline uint16 merge(uint8 lowWord, uint8 highWord) throw() {
+  return (static_cast<uint16>(highWord) << (sizeof(lowWord) * 8)) | lowWord;
 }
 
 /**
-  Returns an unsigned long long from 2 unsigned int's.
+  Returns an unsigned 32 bit integer from 2 16 bit integers.
   
   @param lowWord The low bits.
   @param highWord The high bits.
 */
-inline unsigned long long merge(unsigned int lowWord, unsigned int highWord) throw() {
-  return (static_cast<unsigned long long>(highWord) << (sizeof(lowWord) * 8)) | lowWord;
+inline uint32 merge(uint16 lowWord, uint16 highWord) throw() {
+  return (static_cast<uint32>(highWord) << (sizeof(lowWord) * 8)) | lowWord;
+}
+
+/**
+  Returns an unsigned 64 bit integer from 2 32 bit integers.
+  
+  @param lowWord The low bits.
+  @param highWord The high bits.
+*/
+inline uint64 merge(uint32 lowWord, uint32 highWord) throw() {
+  return (static_cast<uint64>(highWord) << (sizeof(lowWord) * 8)) | lowWord;
 }
 
 
@@ -305,13 +317,7 @@ class PrimitiveTraits<TYPE*> {
 public:
   
   /** The type of pointer differences. */
-#if (_DK_SDU_MIP__BASE__POINTER_SIZE == _DK_SDU_MIP__BASE__LONG_SIZE)
-  typedef long Distance;
-#elif (_DK_SDU_MIP__BASE__POINTER_SIZE == _DK_SDU_MIP__BASE__LONG_LONG_SIZE)
-  typedef long long Distance;
-#else
-  #error Pointer not compatible with long or long long primitives
-#endif
+  typedef MemoryDiff Distance;
 };
 
 template<>

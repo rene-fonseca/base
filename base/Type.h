@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   This class is used to identify any type within the application.
 
-  @short Type identity.
+  @short Type identity
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -32,22 +32,18 @@ private:
 
   const std::type_info* type;
 
-  class Unintialized {
-  };
+  class Unintialized {};
 
-  inline Type(std::type_info* _type) throw() : type(_type) {
-  }
+  inline Type(const std::type_info* _type) throw() : type(_type) {}
   
   template<class TYPE>
   class GetType {
   public:
 
-    inline Type operator()() const throw() {
-      return Type(&typeid(TYPE));
-    }
+    typedef TYPE PureType;
     
     inline Type operator()(const TYPE& object) const throw() {
-      return Type(&typeid(TYPE));
+      return Type(&typeid(object));
     }
   };
   
@@ -55,14 +51,10 @@ private:
   class GetType<TYPE*> { // prevent pointer types
   public:
 
-    inline Type operator()() const throw() {
-      // TAG: it is better to raise OutOfDomain and even better to generate compilation error
-      return GetType<TYPE>(); // recursive
-    }
+    typedef typename GetType<TYPE>::Type PureType; // throw away pointer and resolve recursively
 
-    inline Type operator()(const TYPE* object) const throw() {
-      // TAG: it is better to raise OutOfDomain and even better to generate compilation error
-      return GetType<TYPE>(*object); // recursive
+    inline Type operator()(const TYPE& object) const throw() {
+      return GetType<TYPE>()(*object);
     }
   };
 public:
@@ -72,7 +64,7 @@ public:
   */
   template<class TYPE>
   static inline Type getType() throw() {
-    return GetType<TYPE>();
+    return Type(&typeid(GetType<TYPE>::PureType));
   }
 
   /**
@@ -80,23 +72,21 @@ public:
   */
   template<class TYPE>
   static inline Type getType(const TYPE& object) throw() {
-    return GetType<TYPE>(object);
+    return GetType<TYPE>()(object);
   }
 
   /**
-    Initializes type object in uninitialized state.
+    Initializes type object in an uninitialized state.
   */
-  inline Type() throw() : type(&typeid(Unintialized)) {
-  }
+  inline Type() throw() : type(&typeid(Unintialized)) {}
 
   /**
     Initialized type object from other type object.
   */
-  inline Type(const Type& copy) throw() : type(copy.type) {
-  }
+  inline Type(const Type& copy) throw() : type(copy.type) {}
 
   /**
-    Assignment of type object from type object.
+    Assignment of type object from other type object.
   */
   inline Type& operator=(const Type& eq) throw() {
     type = eq.type;
@@ -104,7 +94,7 @@ public:
   }
 
   /**
-    Returns true if the type object has been initialized.
+    Returns true if the type object hasn't been initialized.
   */
   inline bool isUninitialized() const throw() {
     return *type == typeid(Unintialized);
@@ -114,24 +104,24 @@ public:
     Returns true if the types are identical.
   */
   bool operator==(const Type& eq) const throw() {
-    return *type == *eq.type; // some implementations allow pointers to be compared (but NOT all)
+    return *type == *eq.type;
   }
 
   /**
     Returns true if the types are different.
   */
   bool operator!=(const Type& eq) const throw() {
-    return *type != *eq.type; // some implementations allow pointers to be compared (but NOT all)
+    return *type != *eq.type;
   }
 
   /**
     Returns a compiler specific string identifying the type uniquely. The return
     value is unspecified for uninitialized type objects.
 
-    @see getTypename
+    @see TypeInfo
   */
   const char* getLocalName() const throw() {
-    return type->name();
+    return type->name(); // multibyte character string
   }
 };
 

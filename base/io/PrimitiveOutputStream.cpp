@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <config.h>
 #include "PrimitiveOutputStream.h"
-#include <endian.h>
 
 PrimitiveOutputStream::PrimitiveOutputStream(OutputStream& out) throw(BindException) :
   FilterOutputStream(out) {
@@ -19,37 +19,33 @@ void PrimitiveOutputStream::writeChar(char value) throw(IOException) {
 }
 
 void PrimitiveOutputStream::writeShortInteger(short value) throw(IOException) {
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   write((char*)&value, sizeof(value));
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[2]; // 16 bits
   buffer[1] = p[0]; // most significant
   buffer[0] = p[1]; // least significant
   write((char*)&buffer, sizeof(buffer));
-#else
-  #err Byte order not supported
 #endif
 }
 
 void PrimitiveOutputStream::writeUnsignedShortInteger(unsigned short value) throw(IOException) {
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   write((char*)&value, sizeof(value));
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[2]; // 16 bits
   buffer[1] = p[0]; // most significant
   buffer[0] = p[1]; // least significant
   write((char*)&buffer, sizeof(buffer));
-#else
-  #err Byte order not supported
 #endif
 }
 
 void PrimitiveOutputStream::writeInteger(int value) throw(IOException) {
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   write((char*)&value, sizeof(value));
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[4]; // 32 bits
   buffer[3] = p[0]; // most significant
@@ -57,15 +53,13 @@ void PrimitiveOutputStream::writeInteger(int value) throw(IOException) {
   buffer[1] = p[2]; // second least significant
   buffer[0] = p[3]; // least significant
   write((char*)&buffer, sizeof(buffer));
-#else
-  #err Byte order not supported
 #endif
 }
 
 void PrimitiveOutputStream::writeUnsignedInteger(unsigned int value) throw(IOException) {
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   write((char*)&value, sizeof(value));
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[4]; // 32 bits
   buffer[3] = p[0]; // most significant
@@ -73,15 +67,13 @@ void PrimitiveOutputStream::writeUnsignedInteger(unsigned int value) throw(IOExc
   buffer[1] = p[2]; // second least significant
   buffer[0] = p[3]; // least significant
   write((char*)&buffer, sizeof(buffer));
-#else
-  #err Byte order not supported
 #endif
 }
 
 void PrimitiveOutputStream::writeLongInteger(long long value) throw(IOException) {
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   write((char*)&value, sizeof(value));
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[8]; // 64 bits
   buffer[7] = p[0];
@@ -93,15 +85,13 @@ void PrimitiveOutputStream::writeLongInteger(long long value) throw(IOException)
   buffer[1] = p[6];
   buffer[0] = p[7];
   write((char*)&buffer, sizeof(buffer));
-#else
-  #err Byte order not supported
 #endif
 }
 
 void PrimitiveOutputStream::writeUnsignedLongInteger(unsigned long long value) throw(IOException) {
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   write((char*)&value, sizeof(value));
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[8]; // 64 bits
   buffer[7] = p[0];
@@ -113,15 +103,13 @@ void PrimitiveOutputStream::writeUnsignedLongInteger(unsigned long long value) t
   buffer[1] = p[6];
   buffer[0] = p[7];
   write((char*)&buffer, sizeof(buffer));
-#else
-  #err Byte order not supported
 #endif
 }
 
 void PrimitiveOutputStream::writeFloat(float value) throw(IOException) {
-#if __FLOAT_WORD_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   write((char*)&value, sizeof(value));
-#elif __FLOAT_WORD_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[4]; // 32 bits
   buffer[3] = p[0];
@@ -129,15 +117,13 @@ void PrimitiveOutputStream::writeFloat(float value) throw(IOException) {
   buffer[1] = p[2];
   buffer[0] = p[3];
   write((char*)&buffer, sizeof(buffer));
-#else
-  #err Byte order not supported
 #endif
 }
 
 void PrimitiveOutputStream::writeDouble(double value) throw(IOException) {
-#if __FLOAT_WORD_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   write((char*)&value, sizeof(value));
-#elif __FLOAT_WORD_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[8]; // 64 bits
   buffer[7] = p[0];
@@ -149,15 +135,13 @@ void PrimitiveOutputStream::writeDouble(double value) throw(IOException) {
   buffer[1] = p[6];
   buffer[0] = p[7];
   write((char*)&buffer, sizeof(buffer));
-#else
-  #err Byte order not supported
 #endif
 }
 
 void PrimitiveOutputStream::writeLongDouble(long double value) throw(IOException) {
-#if __FLOAT_WORD_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   write((char*)&value, sizeof(value));
-#elif __FLOAT_WORD_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[10]; // 80 bits
   buffer[9] = p[0];
@@ -171,7 +155,5 @@ void PrimitiveOutputStream::writeLongDouble(long double value) throw(IOException
   buffer[1] = p[8];
   buffer[0] = p[9];
   write((char*)&buffer, sizeof(buffer));
-#else
-  #err Byte order not supported
 #endif
 }

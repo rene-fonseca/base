@@ -121,14 +121,14 @@ public:
             flags[4] = (mode & FileInfo::RGRP) ? 'r' : '-';
             flags[5] = (mode & FileInfo::WGRP) ? 'w' : '-';
             if (mode & FileInfo::SET_GID) {
-              flags[6] = (mode & FileInfo::XGRP) ? 'S' : 's';
+              flags[6] = (mode & FileInfo::XGRP) ? 's' : 'S';
             } else {
               flags[6] = (mode & FileInfo::XGRP) ? 'x' : '-';
             }
             flags[7] = (mode & FileInfo::ROTH) ? 'r' : '-';
             flags[8] = (mode & FileInfo::WOTH) ? 'w' : '-';
             if (mode & FileInfo::RESTRICT) {
-              flags[9] = (mode & FileInfo::XOTH) ? 's' : 'S';
+              flags[9] = (mode & FileInfo::XOTH) ? 't' : 'T';
             } else {
               flags[9] = (mode & FileInfo::XOTH) ? 'x' : '-';
             }
@@ -181,21 +181,21 @@ public:
             flags[1] = (mode & FolderInfo::RUSR) ? 'r' : '-';
             flags[2] = (mode & FolderInfo::WUSR) ? 'w' : '-';
             if (mode & FolderInfo::SET_UID) {
-              flags[3] = (mode & FolderInfo::XUSR) ? 'S' : 's';
+              flags[3] = (mode & FolderInfo::XUSR) ? 's' : 'S';
             } else {
               flags[3] = (mode & FolderInfo::XUSR) ? 'x' : '-';
             }
             flags[4] = (mode & FolderInfo::RGRP) ? 'r' : '-';
             flags[5] = (mode & FolderInfo::WGRP) ? 'w' : '-';
             if (mode & FolderInfo::SET_GID) {
-              flags[6] = (mode & FolderInfo::XGRP) ? 'S' : 's';
+              flags[6] = (mode & FolderInfo::XGRP) ? 's' : 'S';
             } else {
               flags[6] = (mode & FolderInfo::XGRP) ? 'x' : '-';
             }
             flags[7] = (mode & FolderInfo::ROTH) ? 'r' : '-';
             flags[8] = (mode & FolderInfo::WOTH) ? 'w' : '-';
             if (mode & FolderInfo::RESTRICT) {
-              flags[9] = (mode & FolderInfo::XOTH) ? 'S' : 's';
+              flags[9] = (mode & FolderInfo::XOTH) ? 't' : 'T';
             } else {
               flags[9] = (mode & FolderInfo::XOTH) ? 'x' : '-';
             }

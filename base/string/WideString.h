@@ -41,7 +41,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class WideStringLiteral {
 private:
 
-  /** The number of bytes occupied by the message including a terminator. */
+  /** The number of bytes occupied by the message without the terminator. */
   const unsigned int length;
   /** NULL-terminated message. */
   const wchar_t* message;
@@ -175,7 +175,7 @@ private:
   /**
     Compare the null-terminated strings ignoring the case.
   */
-  int compareToIgnoreCase(const Character* left, const Character* right) throw();
+  int compareToIgnoreCase(const Character* left, const Character* right) const throw();
 protected:
 
   /**
@@ -263,7 +263,12 @@ public:
   /**
     Returns true if the string contains no characters.
   */
-  inline bool isEmpty() const throw() {return elements->isEmpty();}
+  inline bool isEmpty() const throw() {return elements->getSize() == 1;}
+
+  /**
+    Returns true if the string contains characters.
+  */
+  inline bool isProper() const throw() {return elements->getSize() > 1;}
 
   /**
     Returns the capacity of the string.
@@ -307,21 +312,21 @@ public:
     Returns the end of the string as a modifying iterator.
   */
   inline Iterator getEndIterator() throw() {
-    return elements->getEndIterator();
+    return elements->getEndIterator() - 1;
   }
 
   /**
     Returns the first element of the string as a non-modifying iterator.
   */
   inline ReadIterator getBeginReadIterator() const throw() {
-//    return elements->getBeginReadIterator();
+    return elements->getBeginReadIterator();
   }
 
   /**
     Returns the end of the string as a non-modifying iterator.
   */
   inline ReadIterator getEndReadIterator() const throw() {
-//    return elements->getEndReadIterator();
+    return elements->getEndReadIterator() - 1;
   }
 
   /**
@@ -533,7 +538,7 @@ public:
 
     @return The specified buffer.
   */
-  Character* substring(Character* buffer, unsigned int start, unsigned int end) const throw();
+  //Character* substring(Character* buffer, unsigned int start, unsigned int end) const throw();
 
 // *******************************************************************************************
 //   UNARY SECTION

@@ -242,12 +242,13 @@ unsigned int WideString::replaceAll(const WideString& fromStr, const WideString&
 }
 
 WideString WideString::substring(unsigned int start, unsigned int end) const throw(MemoryException) {
-  if ((start <= end) && (start < getLength())) {
-    if (end >= getLength()) {
-      end = getLength() - 1; // index of last char in this string
+  int length = getLength();
+  if ((start < end) && (start < length)) {
+    if (end > length) {
+      end = length; // force to end of string
     }
-    // 0 <= start <= end < getLength()
-    unsigned int lengthOfSubstring = end - start + 1;
+    // 0 <= start < end <= getLength()
+    unsigned int lengthOfSubstring = end - start;
     WideString result(lengthOfSubstring);
     result.setLength(lengthOfSubstring);
     copy(result.getBuffer(), getBuffer() + start, lengthOfSubstring); // buffers do not overlap
@@ -278,22 +279,22 @@ WideString& WideString::reverse() throw() {
   return *this;
 }
 
-WideString::Character* WideString::substring(Character* buffer, unsigned int start, unsigned int end) const throw() {
-  if (buffer) {
-    if ((start <= end) && (start < getLength())) {
-      if (end >= getLength()) {
-        end = getLength() - 1; // index of last char in this string
-      }
-      // 0 <= start <= end < getLength()
-      unsigned int lengthOfSubstring = end - start + 1;
-      copy(buffer, getBuffer() + start, lengthOfSubstring); // buffers do not overlap
-      buffer[lengthOfSubstring] = Traits::TERMINATOR;
-    } else {
-      *buffer = Traits::TERMINATOR;
-    }
-  }
-  return buffer;
-}
+//WideString::Character* WideString::substring(Character* buffer, unsigned int start, unsigned int end) const throw() {
+//  if (buffer) {
+//    if ((start <= end) && (start < getLength())) {
+//      if (end >= getLength()) {
+//        end = getLength() - 1; // index of last char in this string
+//      }
+//      // 0 <= start <= end < getLength()
+//      unsigned int lengthOfSubstring = end - start + 1;
+//      copy(buffer, getBuffer() + start, lengthOfSubstring); // buffers do not overlap
+//      buffer[lengthOfSubstring] = Traits::TERMINATOR;
+//    } else {
+//      *buffer = Traits::TERMINATOR;
+//    }
+//  }
+//  return buffer;
+//}
 
 WideString& WideString::toLowerCase() throw() {
   Character* p = getBuffer();
@@ -322,7 +323,7 @@ int WideString::compareTo(const Character* str) const throw(WideStringException)
   return wcscmp(getElements(), str);
 }
 
-int WideString::compareToIgnoreCase(const Character* left, const Character* right) throw() {
+int WideString::compareToIgnoreCase(const Character* left, const Character* right) const throw() {
   while (*left && *right) { // continue until end of any string has been reached
     if (*left != *right) { // not equal
       int result = Traits::toLower(*left) - Traits::toLower(*right);

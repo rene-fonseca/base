@@ -769,7 +769,7 @@ public:
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2; i > 0; --i) {
-      remainder =  (remainder << 2) | (value >> (sizeof(unsigned int)*8 - 2));
+      remainder =  (remainder << 2) | (value >> (sizeof(unsigned int) * 8 - 2));
       value <<= 2;
       accumulator <<= 1;
       unsigned int e = accumulator << 1;
@@ -789,7 +789,7 @@ public:
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2 + 8; i > 0; --i) {
-      remainder =  (remainder << 2) | (value >> (sizeof(unsigned int)*8 - 2));
+      remainder =  (remainder << 2) | (value >> (sizeof(unsigned int) * 8 - 2));
       value <<= 2;
       accumulator <<= 1;
       unsigned int e = accumulator << 1;
@@ -809,7 +809,7 @@ public:
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2 + 16; i > 0; --i) {
-      remainder =  (remainder << 2) | (value >> (sizeof(unsigned int)*8 - 2));
+      remainder =  (remainder << 2) | (value >> (sizeof(unsigned int) * 8 - 2));
       value <<= 2;
       accumulator <<= 1;
       unsigned int e = accumulator << 1;
@@ -828,7 +828,7 @@ public:
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2 + 8; i > 0; --i) {
-      remainder =  (remainder << 2) | (value >> (sizeof(unsigned int)*8 - 2));
+      remainder =  (remainder << 2) | (value >> (sizeof(unsigned int) * 8 - 2));
       value <<= 2;
       accumulator <<= 1;
       unsigned int e = accumulator << 1;
@@ -837,7 +837,7 @@ public:
         ++accumulator;
       }
     }
-    remainder = (remainder << 2) | (value >> (sizeof(unsigned int)*8 - 2));
+    remainder = (remainder << 2) | (value >> (sizeof(unsigned int) * 8 - 2));
     if (remainder > (accumulator << 2)) {
       ++accumulator; // round up
     }
@@ -848,22 +848,18 @@ public:
     Returns true if the specified integer is a power of 2.
   */
   static inline bool isPowerOf2(unsigned char value) throw() {
-    const unsigned int IS_POWER_OF_2 = 0x022c; // shifted by left by 1
-    if (value & 0xf0 == 0) {
-      return IS_POWER_OF_2 & (1U << value);
-    } else if (value & 0x0f == 0) {
-      return IS_POWER_OF_2 & (1U << (value >> 4));
-    } else {
-      return false;
-    }
+    // powers of 2 for 4 bit nibble: 1, 2, 4, and 8 => 0b0000000100010110 => 0x0116
+    const unsigned int IS_POWER_OF_2 = 0x0116;
+    return (((value & 0xf0) == 0) && (IS_POWER_OF_2 & (1 << value))) ||
+      (((value & 0x0f) == 0) && (IS_POWER_OF_2 & (1 << (value >> 4))));
   }
-
+  
   /**
     Returns true if the specified integer is a power of 2.
   */
   static inline bool isPowerOf2(unsigned int value) throw() {
     if (value != 0) {
-      while (value & 0xff == 0) {
+      while ((value & 0xff) == 0) {
         value >>= 8;
       }
       if (value <= 0xff) {
@@ -878,7 +874,7 @@ public:
   */
   static inline bool isPowerOf2(unsigned long long value) throw() {
     if (value != 0) {
-      while (value & 0xff == 0) {
+      while ((value & 0xff) == 0) {
         value >>= 8;
       }
       if (value <= 0xff) {

@@ -16,12 +16,49 @@
 
 #include <base/Object.h>
 #include <base/string/String.h>
+#include <base/string/InvalidFormat.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Internet url. This class is used to break down a url into its components.
+  This exception is thrown by the Url class on violations of the RFC 1738
+  standard.
 
+  @short URL exception.
+  @author René Møller Fonseca
+  @version 1.0
+*/
+
+class UrlException : public InvalidFormat {
+public:
+
+  /**
+    Initializes the exception object with no message.
+  */
+  inline UrlException() {}
+
+  /**
+    Initializes the exception object.
+
+    @param message The message.
+  */
+  inline UrlException(const char* message) : InvalidFormat(message) {}
+};
+
+
+
+/**
+  Implementation of Uniform Resource Locator as specified by RFC 1738. Compact
+  string representation for a resource available via the Internet. This class
+  is used to break down a url into its components. The parts of the url are
+  stored internally in decoded format.
+
+  <pre>
+  Url url("http://www.mip.sdu.dk")
+  Url url("ftp://ftp.gnu.org")
+  </pre>
+
+  @short Uniform Resource Locator (URL)
   @author René Møller Fonseca
   @version 1.0
 */
@@ -30,7 +67,7 @@ class Url : public Object {
 private:
 
   /** The protocol. */
-  String protocol;
+  String scheme;
   /** The user. */
   String user;
   /** The password. */
@@ -44,9 +81,34 @@ private:
 protected:
 
   /**
+    Validates the specified scheme and returns a slightly converted scheme to be used.
+  */
+  static String validateScheme(const String& value) throw(UrlException, MemoryException);
+
+  /**
+    Validates the specified user and returns it.
+  */
+  static String validateUser(const String& str) throw(UrlException);
+
+  /**
+    Validates the specified password and returns it.
+  */
+  static String validatePassword(const String& str) throw(UrlException);
+
+  /**
+    Returns true if the string is a valid host specification.
+  */
+  static bool isHost(String::ReadIterator i, const String::ReadIterator& end) throw();
+
+  /**
+    Returns true if the string is a valid port.
+  */
+  static bool isPort(String::ReadIterator i, const String::ReadIterator& end) throw();
+
+  /**
     Parses the string as a url.
   */
-  void parse(const String& url) throw();
+  void parse(const String& url) throw(UrlException, MemoryException);
 public:
 
   /**
@@ -59,7 +121,7 @@ public:
 
     @param url The string representation of the url.
   */
-  Url(const String& url) throw(MemoryException);
+  Url(const String& url) throw(UrlException, MemoryException);
 
   /**
     Initializes url from separate string representations of relative and base url.
@@ -67,7 +129,7 @@ public:
     @param relative The relative url.
     @param base The base url.
   */
-  Url(const String& relative, const String& base) throw(MemoryException);
+  Url(const String& relative, const String& base) throw(UrlException, MemoryException);
 
   /**
     Initializes url from other url.
@@ -85,9 +147,9 @@ public:
   bool isRelative() const throw();
 
   /**
-    Returns the protocol.
+    Returns the scheme (a.k.a. protocol).
   */
-  String getProtocol() const throw();
+  String getScheme() const throw();
 
   /**
     Returns the user.
@@ -112,7 +174,7 @@ public:
   /**
     Returns the path.
   */
-  String getPath() const throw();
+  virtual String getPath() const throw(MemoryException);
 
   /**
     Returns the url.
@@ -120,34 +182,38 @@ public:
   String getUrl() const throw(MemoryException);
 
   /**
-    Sets the protocol.
+    Sets the scheme (a.k.a. protocol). The scheme is composed of letters
+    ('a'-'z'), digits ('0'-'9'), and the characters plus ('+'), period ('.'),
+    and hyphen ('-'). Upper case letters are also allowed but are converted
+    into lower case. The exception URLException is thrown if the set of allowed
+    characters is violated.
   */
-  void setProtocol(const String& value) throw();
+  virtual void setScheme(const String& value) throw(UrlException, MemoryException);
 
   /**
     Sets the user.
   */
-  void setUser(const String& value) throw();
+  void setUser(const String& value) throw(UrlException, MemoryException);
 
   /**
     Sets the password.
   */
-  void setPassword(const String& value) throw();
+  void setPassword(const String& value) throw(UrlException, MemoryException);
 
   /**
     Sets the host.
   */
-  void setHost(const String& value) throw();
+  void setHost(const String& value) throw(UrlException);
 
   /**
     Sets the port.
   */
-  void setPort(const String& value) throw();
+  void setPort(const String& value) throw(UrlException);
 
   /**
     Sets the path.
   */
-  void setPath(const String& value) throw();
+  virtual void setPath(const String& value) throw(UrlException, MemoryException);
 };
 
 /**

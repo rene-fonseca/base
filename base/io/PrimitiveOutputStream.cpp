@@ -13,7 +13,7 @@
 
 #include <base/io/PrimitiveOutputStream.h>
 #include <base/ByteOrder.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -30,47 +30,47 @@ void PrimitiveOutputStream::writeChar(char value) throw(IOException) {
 }
 
 void PrimitiveOutputStream::writeShortInteger(short value) throw(IOException) {
-  short temp = ByteOrder::toBigEndian<unsigned short>(value);
+  BigEndian::SignedShort temp = value;
   write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeUnsignedShortInteger(unsigned short value) throw(IOException) {
-  unsigned short temp = ByteOrder::toBigEndian<unsigned short>(value);
+  BigEndian::UnsignedShort temp = value;
   write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeInteger(int value) throw(IOException) {
-  unsigned short temp = ByteOrder::toBigEndian<unsigned int>(value);
+  BigEndian::SignedInt temp = value;
   write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeUnsignedInteger(unsigned int value) throw(IOException) {
-  unsigned int temp = ByteOrder::toBigEndian(value);
+  BigEndian::UnsignedInt temp = value;
   write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeLongInteger(long long value) throw(IOException) {
-  unsigned long long temp = ByteOrder::toBigEndian<unsigned long long>(value);
+  BigEndian::SignedLongLong temp = value;
   write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeUnsignedLongInteger(unsigned long long value) throw(IOException) {
-  unsigned short temp = ByteOrder::toBigEndian(value);
+  BigEndian::UnsignedLongLong temp = value;
   write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeFloat(float value) throw(IOException) {
-  float temp; // convert to IEEE_FloatPrecision (big endian)
+  float temp; // TAG: convert to IEEE_FloatPrecision (big endian)
   write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeDouble(double value) throw(IOException) {
-  double temp; // convert to IEEE_DoublePrecision (big endian)
+  double temp; // TAG: convert to IEEE_DoublePrecision (big endian)
   write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeLongDouble(long double value) throw(IOException) {
-  long double temp; // convert to IEEE_QuadruplePrecision (big endian)
+  long double temp; // TAG: convert to IEEE_QuadruplePrecision (big endian)
   write(getCharAddress(temp), sizeof(temp));
 }
 

@@ -30,22 +30,34 @@ public:
     : Application("debug", numberOfArguments, arguments, environment) {
   }
 
-  void level3() throw() {
+  void level3(unsigned int value) throw() {
     volatile long double floating = 1.0;
     if (floating > 100.0) {
       return;
     }
+    
+    volatile double zero = 0.0;
+    double doubleResult = 1.0/zero;
+    
     unsigned int* invalid = 0;
     unsigned int temp = *invalid; // read
     *invalid = 0; // write
   }
   
-  void level2() throw() {
-    level3();
+  void level2(unsigned int value)  {
+    if (value) {
+      level2(--value);
+    } else {
+      level3(3);
+    }
   }
   
-  void level1() throw() {
-    level2();
+  void level1(unsigned int value) throw() {
+    if (value) {
+      level1(--value);
+    } else {
+      level2(3);
+    }
   }
   
   void main() throw() {
@@ -55,8 +67,9 @@ public:
          << "http://www.mip.sdu.dk/~fonseca/base" << EOL
          << "Copyright (C) 2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
-    
-    level1();
+
+    volatile unsigned int value = 3;
+    level1(value);
   }
 
   ~DebugApplication() throw() {

@@ -24,15 +24,16 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   This class provides support for dynamic memory allocation/deallocation with
   debug support. This class should not be used in final application releases.
 
+  @see DynamicMemory
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
 class DebugDynamicMemory {
-  friend void* operator new(unsigned int) throw(MemoryException);
-  friend void operator delete(void*) throw(MemoryException);
-  friend void* operator new[](unsigned int) throw(MemoryException);
-  friend void operator delete[](void*) throw(MemoryException);
+//   friend void* operator new(unsigned int) throw(MemoryException);
+//   friend void operator delete(void*) throw(MemoryException);
+//   friend void* operator new[](unsigned int) throw(MemoryException);
+//   friend void operator delete[](void*) throw(MemoryException);
   friend class DebugDynamicMemoryImpl;
 private:
 
@@ -78,57 +79,55 @@ public:
   static bool release(void* memory) throw(MemoryCorruption);
 };
 
-#if 0
-/**
-  Allocates a block of dynamic memory.
+// /**
+//   Allocates a block of dynamic memory.
   
-  @return 0 if the requested size is 0.
-*/
-inline void* operator new(unsigned int size) throw(MemoryException) {
-  if (size == 0) {
-    return 0;
-  }
-  void* result = DebugDynamicMemory::allocate(size);
-  if (result == 0) {
-    throw MemoryException();
-  }
-  return result;
-}
+//   @return 0 if the requested size is 0.
+// */
+// inline void* operator new(unsigned int size) throw(MemoryException) {
+//   if (size == 0) {
+//     return 0;
+//   }
+//   void* result = DebugDynamicMemory::allocate(size);
+//   if (result == 0) {
+//     throw MemoryException();
+//   }
+//   return result;
+// }
 
-/**
-  Releases a dynamic memory block previously allocated by new.
-*/
-inline void operator delete(void* memory) throw(MemoryException) {
-  if (!DebugDynamicMemory::release(memory)) {
-    throw MemoryException(); // TAG: is this allowed
-  }
-}
+// /**
+//   Releases a dynamic memory block previously allocated by new.
+// */
+// inline void operator delete(void* memory) throw(MemoryException) {
+//   if (!DebugDynamicMemory::release(memory)) {
+//     throw MemoryException(); // TAG: is this allowed
+//   }
+// }
 
-/**
-  Allocates a block of dynamic memory for an array.
+// /**
+//   Allocates a block of dynamic memory for an array.
 
-  @return 0 if the requested size is 0.
-*/
-inline void* operator new[](unsigned int size) throw(MemoryException) {
-  if (size == 0) {
-    return 0;
-  }
-  void* result = DebugDynamicMemory::allocate(size);
-  if (result == 0) {
-    throw MemoryException();
-  }
-  return result;
-}
+//   @return 0 if the requested size is 0.
+// */
+// inline void* operator new[](unsigned int size) throw(MemoryException) {
+//   if (size == 0) {
+//     return 0;
+//   }
+//   void* result = DebugDynamicMemory::allocate(size);
+//   if (result == 0) {
+//     throw MemoryException();
+//   }
+//   return result;
+// }
 
-/**
-  Releases dynamic memory previously allocated by new[].
-*/
-inline void operator delete[](void* memory) throw(MemoryException) {
-  if (!DebugDynamicMemory::release(memory)) {
-    throw MemoryException(); // TAG: is this allowed
-  }
-}
-#endif
+// /**
+//   Releases dynamic memory previously allocated by new[].
+// */
+// inline void operator delete[](void* memory) throw(MemoryException) {
+//   if (!DebugDynamicMemory::release(memory)) {
+//     throw MemoryException(); // TAG: is this allowed
+//   }
+// }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

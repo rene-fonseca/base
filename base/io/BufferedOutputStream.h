@@ -55,7 +55,7 @@ public:
   unsigned int write(const char* buffer, unsigned int size) throw(IOException);
 
   /**
-    Destroys the buffered output stream.
+    Flushes the buffer and releases any resources used by the output stream.
   */
   ~BufferedOutputStream();
 };

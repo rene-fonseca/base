@@ -20,7 +20,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Exception thrown on file object exceptions.
-  
+
+  @short File system exception
   @ingroup exceptions filesystem
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -28,18 +29,33 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class FileSystemException : public Exception {
 public:
-
+  
   /**
     Initializes the exception object with no message.
   */
   FileSystemException() throw() {}
-
+  
   /**
     Initializes the exception object.
 
     @param message The message.
   */
   FileSystemException(const char* message) throw() : Exception(message) {}
+  
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
+  FileSystemException(Type type) throw() {}
+  
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  FileSystemException(const char* message, Type type) throw() {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

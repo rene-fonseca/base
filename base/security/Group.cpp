@@ -41,7 +41,7 @@ Group::Group(const void* _id) throw(OutOfDomain) {
   copy<char>((char*)id, (const char*)_id, size);
 #else // unix
   assert((unsigned long)id <= PrimitiveTraits<gid_t>::MAXIMUM, OutOfDomain("Invalid group id", this));
-  id = (void*)_id; // we only cast away const 'cause we do not dereference it
+  id = (void*)(ptrditt_t)_id; // we only cast away const 'cause we do not dereference it
 #endif // flavor
 }
 
@@ -101,13 +101,13 @@ Group::Group(const String& name) throw(GroupException) {
     struct group* entry;
     int result = ::getgrnam_r(name.getElements(), &grp, buffer->getElements(), buffer->getSize(), &entry);
     assert(result == 0, GroupException(this));
-    id = (void*)entry->gr_gid;
+    id = (void*)(ptrditt_t)entry->gr_gid;
   #else
     #warning Using non-reentrant getgrnam (CYGWIN)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     struct group* entry = ::getgrnam(name.getElements());
     assert(entry != 0, GroupException(this));
-    id = (void*)entry->gr_gid;
+    id = (void*)(ptrditt_t)entry->gr_gid;
   #endif
 #endif // flavor
 }
@@ -121,7 +121,7 @@ Group::Group(const User& user) throw(GroupException) {
   struct passwd* entry;
   int result = ::getpwuid_r((gid_t)id, &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result == 0, GroupException(this));
-  id = (void*)entry->pw_gid;
+  id = (void*)(ptrditt_t)entry->pw_gid;
 #endif // flavor
 }
 

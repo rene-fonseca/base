@@ -1146,70 +1146,41 @@ WideString::WideString(const char* string) throw(MultibyteException, MemoryExcep
       UTF8ToUCS4(Cast::pointer<ucs4*>(elements->getElements()), Cast::pointer<const uint8*>(string), multibyteLength);
     }
   }
-
-  
-//   int numberOfCharacters = 0;
-//   if (string) { // is string proper (not empty)
-// #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-//   numberOfCharacters = ::MultiByteToWideChar(CP_UTF8, 0, string, -1, 0, 0); // includes terminator
-//   assert(numberOfCharacters > 0, MultibyteException(this));
-//   --numberOfCharacters;
-//   assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
-//   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
-//   ::MultiByteToWideChar(CP_UTF8, 0, string, -1, elements->getElements(), numberOfCharacters + 1); // includes terminator
-// #else // unix
-// #if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
-//     mbstate_t state;
-//     clear(state); // initial state
-//     const char* current = string;
-//     size_t result = mbsrtowcs(0, &current, 0, &state);
-// #else
-//     size_t result = mbstowcs(0, string, 0);
-// #endif
-//     assert(result != size_t(-1), MultibyteException(this));
-//     assert(result <= MAXIMUM_LENGTH, MemoryException(this)); // maximum length exceeded
-//     numberOfCharacters = result;
-//   }
-//   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
-//   if (numberOfCharacters) {
-// #if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
-//     mbstate_t state;
-//     clear(state); // initial state
-//     const char* current = string;
-//     size_t result = mbsrtowcs(elements->getElements(), &current, numberOfCharacters, &state);
-// #else
-//     size_t result = mbstowcs(elements->getElements(), string, numberOfCharacters);
-// #endif
-// #endif // flavor
-//   }
 }
 
 WideString::WideString(const char* string, unsigned int maximum) throw(OutOfDomain, MultibyteException, MemoryException) : elements(0) {
+  ASSERT((sizeof(wchar_t) == sizeof(ucs2)) || (sizeof(wchar_t) == sizeof(ucs4)));
+
+  const char* terminator = find<char>(string, MAXIMUM_LENGTH, 0); // find terminator
+  assert(terminator, WideStringException(Type::getType<WideString>())); // maximum length exceeded
+  const unsigned int multibyteLength = terminator - string;
+
+  if (sizeof(wchar) == sizeof(ucs2)) {
+    int numberOfCharacters = UTF8ToUCS2(0, Cast::pointer<const uint8*>(string), multibyteLength);
+    assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
+    elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
+    if (numberOfCharacters) {
+      UTF8ToUCS2(Cast::pointer<ucs2*>(elements->getElements()), Cast::pointer<const uint8*>(string), multibyteLength);
+    }
+  } else {
+    int numberOfCharacters = UTF8ToUCS4(0, Cast::pointer<const uint8*>(string), multibyteLength);
+    assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
+    elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
+    if (numberOfCharacters) {
+      UTF8ToUCS4(Cast::pointer<ucs4*>(elements->getElements()), Cast::pointer<const uint8*>(string), multibyteLength);
+    }
+  }
+  
   assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
   int numberOfCharacters = 0;
   if (string) { // is string proper
-#if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
-    mbstate_t state;
-    clear(state); // initial state
-    const char* current = string;
-    size_t result = mbsrtowcs(0, &current, maximum, &state);
-#else
-    size_t result = mbstowcs(0, string, maximum);
-#endif
     assert(result != size_t(-1), MultibyteException(this));
     assert(result <= MAXIMUM_LENGTH, MemoryException(this)); // maximum length exceeded
     numberOfCharacters = minimum(static_cast<unsigned int>(result), maximum);
   }
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
   if (numberOfCharacters) {
-#if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
-    mbstate_t state;
-    clear(state); // initial state
-    const char* current = string;
-    size_t result = mbsrtowcs(elements->getElements(), &current, numberOfCharacters, &state);
-#else
     size_t result = mbstowcs(elements->getElements(), string, numberOfCharacters);
-#endif
   }
 }
 

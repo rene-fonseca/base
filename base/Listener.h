@@ -49,7 +49,7 @@ private:
   /** The type of the listener. */
   typedef LISTENER Listener;
   /** The type of the member function. */
-  typedef void (Listener::*Member)(const Sender*);
+  typedef void (Listener::*Member)(const Sender*) /*throw(...)*/;
   /** The sender. */
   const Sender* sender;
   /** The end-point of the signal. */
@@ -79,7 +79,7 @@ public:
   /**
     Sends the signal.
   */
-  inline void operator()(Listener* listener) const {
+  inline void operator()(Listener* listener) const /*throw(...)*/ {
     (listener->*member)(sender);
   }
 };
@@ -90,7 +90,8 @@ public:
   Returns a Signal object for the specified sender and member function.
 */
 template<class SENDER, class LISTENER>
-inline Signal<SENDER, LISTENER> signal(const SENDER* sender, void (LISTENER::*member)(const SENDER*)) {
+inline Signal<SENDER, LISTENER> signal(
+  const SENDER* sender, void (LISTENER::*member)(const SENDER*)) {
   return Signal<SENDER, LISTENER>(sender, member);
 }
 

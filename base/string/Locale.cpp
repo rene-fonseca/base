@@ -57,7 +57,9 @@ class CollectionFormatSet2 {
 private:
 public:
   FormatSet(C)
-  operator const CollectionFormatSet& throw() {return set;}
+  operator const CollectionFormatSet& throw() {
+    return set;
+  }
 };
 
 CollectionFormatSet defaultFormatSet {

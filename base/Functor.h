@@ -642,7 +642,7 @@ template<class TYPE>
 class Absolute : UnaryOperation<TYPE, TYPE> {
 public:
   
-  inline TYPE operator()(const TYPE& left) const {
+  inline TYPE operator()(const TYPE& left) const throw() {
     return absolute(left);
   }
 };
@@ -1030,16 +1030,21 @@ inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) /*throw
   class MyClass {
   public:
   
-    MyClass();
-    int myMethod(int);
+    MyClass() throw() {
+    }
+    
+    int myMethod(int value) throw() {
+    }
   };
   
   class MyLock {
   public:
   
     MyLock();
-    void lock();
-    void unlock();
+    
+    void lock() throw(LockException);
+    
+    void unlock() throw(LockException);
   };
   
   class MyPrefix {
@@ -1048,10 +1053,10 @@ inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) /*throw
     MyLock lock;
   public:
   
-    MySuffix(MyLock _lock) : lock(_lock) {
+    MySuffix(MyLock _lock) throw() : lock(_lock) {
     }
     
-    inline operator()() {
+    inline operator()() throw(LockException) {
       lock->lock();
     }
   };
@@ -1062,15 +1067,15 @@ inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) /*throw
     MyLock lock;
   public:
   
-    MySuffix(MyLock _lock) : lock(_lock) {
+    MySuffix(MyLock _lock) throw() : lock(_lock) {
     }
     
-    inline void operator()() {
+    inline void operator()() throw(LockException) {
       lock->unlock();
     }
   };
   
-  void myFunction() {
+  void myFunction() throw() {
     MyLock myLock;
     InvokeOutfix outfix(object, MyPrefix(myLock), MySuffix(myLock));
     int result = outfix->myMethod(1234);

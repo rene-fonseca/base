@@ -49,7 +49,7 @@ public:
     PRINTABLE = SP|GRAPH, /**< Printable characters. */
   };
 
-  /** Character descriptor. */
+  /* Character descriptor. */
   struct CharacterDescriptor {
     /** Character flags. */
     unsigned short flags;
@@ -301,6 +301,8 @@ public:
 
   /**
     Binary function object which compares the specified characters.
+
+    @short Comparison of characters function object.
   */
   class Compare {
   public:
@@ -312,6 +314,8 @@ public:
 
   /**
     Binary function object which compares the specified characters.
+    
+    @short Case-less comparison of characters function object.
   */
   class CompareCaseless {
   public:

@@ -95,7 +95,7 @@ inline void swapper(TYPE& a, TYPE& b) throw() {
 /**
   Returns the absolute value of the specified argument.
 */
-template<class TYPE> inline TYPE absolute(const TYPE& value) {
+template<class TYPE> inline TYPE absolute(const TYPE& value) throw() {
   return (value >= TYPE(0)) ? value : -value;
 }
 

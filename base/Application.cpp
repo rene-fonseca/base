@@ -33,7 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class ApplicationImpl {
 public:
 
-  static void terminationExceptionHandler() {
+  static void terminationExceptionHandler() throw() {
     StringOutputStream stream;
     const Type exceptionType = Exception::getExceptionType();
     if (exceptionType.isInitialized()) {
@@ -82,7 +82,7 @@ public:
     exit(Application::EXIT_CODE_INTERNAL_ERROR); // TAG: is abort() better
   }
   
-  static void unexpectedExceptionHandler() {
+  static void unexpectedExceptionHandler() throw() {
     StringOutputStream stream;
     const Type exceptionType = Exception::getExceptionType();
     if (exceptionType.isInitialized()) {
@@ -204,7 +204,7 @@ public:
     return FALSE;
   }
 
-  static LRESULT CALLBACK messageHandler(HWND window, UINT message, WPARAM primaryParameter, LPARAM secondaryParameter) {
+  static LRESULT CALLBACK messageHandler(HWND window, UINT message, WPARAM primaryParameter, LPARAM secondaryParameter) throw() {
     // TAG: we should destroy window in destructor
     StringOutputStream stream;
     //stream << MESSAGE("messageHandler: message=") << message << MESSAGE(" primary=") << primaryParameter << MESSAGE(" second=") << secondaryParameter << FLUSH;

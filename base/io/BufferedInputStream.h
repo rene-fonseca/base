@@ -7,6 +7,7 @@
 #define _DK_SDU_MIP__BASE_IO__BUFFERED_INPUT_STREAM_H
 
 #include <base/io/FilterInputStream.h>
+#include <base/mem/Allocator.h>
 
 /**
   A FilterInputStream that adds buffer functionality to an InputStream for added performance. MT-unsafe implementation.
@@ -25,13 +26,30 @@ public:
 protected:
 
   /** The internal buffer used to store data temporarily. */
-  char* buffer;
-  /** The size of the buffer. */
-  unsigned int size;
+  Allocator<char> buffer;
   /** The current number of bytes in the buffer. */
   unsigned int count;
   /** The current position in the buffer. */
   unsigned int position;
+
+  /**
+    Returns the buffer.
+  */
+  inline char* getBuffer() throw() {
+    return buffer.getElements();
+  }
+
+  /**
+    Returns the size of the buffer.
+  */
+  inline unsigned int getSize() const throw() {
+    return buffer.getSize();
+  }
+
+  /**
+    Returns true if the internal buffer is empty.
+  */
+  inline bool isEmpty() const throw() {return position >= count;}
 public:
 
   /**
@@ -40,7 +58,7 @@ public:
     @param in The input stream.
     @param size The size of the buffer. Default is given by DEFAULT_BUFFER_SIZE. The size cannot...
   */
-  BufferedInputStream(InputStream& in, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException);
+  BufferedInputStream(InputStream& in, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException, MemoryException);
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.
@@ -67,9 +85,22 @@ public:
   unsigned int skip(unsigned int count) throw(IOException);
 
   /**
-    Destroys the buffered input stream.
+    Blocking wait for input to become available.
   */
-  ~BufferedInputStream();
+  void wait() const throw(IOException);
+
+  /**
+    Blocking wait for input to become available.
+
+    @param timeout The timeout periode in microseconds.
+    @return True, if data is available. False, if the timeout periode expired.
+  */
+  bool wait(unsigned int timeout) const throw(IOException);
+
+  /**
+    Returns buffer.
+  */
+//  const char* peek(unsigned int count) throw(IOException);
 };
 
 #endif

@@ -7,13 +7,8 @@
 #include <base/Base.h>
 #include <string.h>
 
-BufferedInputStream::BufferedInputStream(InputStream& in, unsigned int size) throw(BindException) :
-  FilterInputStream(in) {
-  this->size = maximum(size, MINIMUM_BUFFER_SIZE);
-  buffer = new char[this->size];
-  if (!buffer) {
-    throw BindException();
-  }
+BufferedInputStream::BufferedInputStream(InputStream& in, unsigned int size) throw(BindException, MemoryException) :
+  FilterInputStream(in), buffer(maximum(size, MINIMUM_BUFFER_SIZE)) {
   count = 0;
   position = 0;
 }
@@ -24,15 +19,15 @@ unsigned int BufferedInputStream::available() const throw(IOException) {
 
 unsigned int BufferedInputStream::read(char* buffer, unsigned int size) throw(IOException) {
 
-  if (this->position >= this->count) { // is the internal buffer empty
-    this->count = FilterInputStream::read(this->buffer, this->size); // checked for zero later
+  if (isEmpty()) {
+    this->count = FilterInputStream::read(getBuffer(), getSize()); // checked for zero later
     this->position = 0;
   }
 
   unsigned int bytesInBuffer = this->count - this->position;
 
   if (size <= bytesInBuffer) { // does the internal buffer hold the requested bytes
-    memcpy(buffer, this->buffer + this->count, size); // copy from internal to external buffer
+    memcpy(buffer, getBuffer() + this->position, size); // copy from internal to external buffer
     this->position += size;
     return size; // everything was read
   }
@@ -45,7 +40,7 @@ unsigned int BufferedInputStream::read(char* buffer, unsigned int size) throw(IO
       break; // prevent infinite loop - we have tried to fill the buffer prior to this
     }
 
-    memcpy(buffer + position, this->buffer + this->position, bytes); // from internal to external
+    memcpy(buffer + position, getBuffer() + this->position, bytes); // from internal to external
     position += bytes;
     this->position += bytes;
 
@@ -53,8 +48,8 @@ unsigned int BufferedInputStream::read(char* buffer, unsigned int size) throw(IO
       break;
     }
 
-    if (this->position >= this->count) { // is the internal buffer empty
-      this->count = FilterInputStream::read(this->buffer, this->size);
+    if (isEmpty()) {
+      this->count = FilterInputStream::read(getBuffer(), getSize());
       this->position = 0;
     }
   }
@@ -62,7 +57,7 @@ unsigned int BufferedInputStream::read(char* buffer, unsigned int size) throw(IO
 }
 
 unsigned int BufferedInputStream::skip(unsigned int count) throw(IOException) {
-  if (position >= this->count) { // is buffer empty
+  if (isEmpty()) {
     return FilterInputStream::skip(count);
   } else {
     unsigned int bytes = this->count - position;
@@ -78,6 +73,16 @@ unsigned int BufferedInputStream::skip(unsigned int count) throw(IOException) {
   }
 }
 
-BufferedInputStream::~BufferedInputStream() {
-  delete[] buffer;
+void BufferedInputStream::wait() const throw(IOException) {
+  if (isEmpty()) {
+    FilterInputStream::wait();
+  }
+}
+
+bool BufferedInputStream::wait(unsigned int timeout) const throw(IOException) {
+  if (isEmpty()) {
+    return FilterInputStream::wait(timeout);
+  } else {
+    return true; // data is available in buffer
+  }
 }

@@ -410,6 +410,7 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
 #endif
 }
 
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 bool enablePrivileges() throw() {
   HANDLE token;
 	char buffer[sizeof(TOKEN_PRIVILEGES) * 2];
@@ -437,8 +438,6 @@ bool enablePrivileges() throw() {
   }
   return true;
 }
-
-#define offsetof(t,m) ((size_t) &(((t *) 0)->m))
 
 void createHardLinkForWINNT4(const String& target, const String& destination) throw() {
   if (true) { // TAG: fixme
@@ -492,6 +491,7 @@ void createHardLinkForWINNT4(const String& target, const String& destination) th
 	::CloseHandle(handle);
   assert(success, FileSystemException("Unable to create hard link", Type::getType<FileSystem>()));
 }
+#endif // flavor
 
 // #if defined(DEBUG)
 //   #define DMESSAGE(literal) MESSAGE(literal)
@@ -517,7 +517,7 @@ void FileSystem::makeHardLink(const String& target, const String& path) throw(No
          FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
 #endif // w2k or later
 #else // unix
-  assert(::link(target, path) == 0, FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
+  assert(::link(target.getElements(), path.getElements()) == 0, FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
 #endif // flavor
 }
 

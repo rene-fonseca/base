@@ -20,7 +20,6 @@
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
 #include <base/io/IOException.h>
-//#include <base/string/FormatOutputStream.h>
 #include <base/string/StringException.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Primitives.h>
@@ -839,10 +838,18 @@ public:
     Writes string to format stream.
   */
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
+
+  /**
+    Returns the hash of the string.
+  */
+  friend unsigned int hash<String>(const String& value) throw();
 };
 
 template<>
 int compare<String>(const String& a, const String& b) throw();
+
+template<>
+unsigned int hash<String>(const String& value) throw();
 
 /**
   Writes string to format stream.

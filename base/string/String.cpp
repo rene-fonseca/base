@@ -555,6 +555,17 @@ int compare<String>(const String& a, const String& b) throw() {
   return strcmp(a.getElements(), b.getElements());
 }
 
+template<>
+unsigned int hash<String>(const String& value) throw() {
+  const String::Character* src = value.getBuffer();
+  const String::Character* end = src + value.getLength();
+  unsigned int result = 0;
+  while (src < end) {
+    result = 31 * result + *src++;
+  }
+  return result;
+}
+
 FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException) {
   stream.addCharacterField(value.getBuffer(), value.getLength());
   return stream;

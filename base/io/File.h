@@ -93,6 +93,16 @@ public:
     RWXO = ROTH|WOTH|XOTH, /**< Read, write, and execute permissions for other users. */
     PERMISSION_MASK = RWXU|RWXG|RWXO /**< Any access. */
   };
+
+  /** File system variables. */
+  enum Variable {
+    MIN_FILE_SIZE_BITS, /**< Specifies the minimum number of bits required to represent the maximum supported file size. */
+    MAX_NUM_OF_LINKS, /**< Specifies the maximum number of links to a file. */
+    MAX_LEN_OF_NAME, /**< Specifies the maximum length of a file name. */
+    MAX_LEN_OF_PATH, /**< Specifies the maximum length of a path. */
+    MAX_SIZE_OF_PIPE_BUFFER, /**< Specifies the maximum number bytes that is guaranteed to be atomic when writing to a pipe. */
+    MAX_SIZE_OF_SYMLINK /**< Specifies the maximum number of bytes in a symbolic link. */
+  };
   
   class FileHandle : public Handle {
     friend class Initialization;
@@ -259,6 +269,13 @@ public:
 
 
   /**
+    Returns the value of the specified file system variable.
+  */
+  unsigned long getVariable(Variable variable) throw(FileException, NotSupported);
+  
+
+
+  /**
     If another process has acquired an exclusive lock on part of the file
     region to be read, the read request will block until the lock has been
     released.
@@ -280,9 +297,6 @@ public:
     exceeding the end of the file.
   */
   unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(FileException);
-
-
-  
 protected:
   
   OperatingSystem::Handle getHandle() const throw() {

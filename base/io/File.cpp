@@ -1204,6 +1204,35 @@ Date File::getLastChange() throw(FileException) {
 #endif
 }
 
+unsigned long File::getVariable(Variable variable) throw(FileException, NotSupported) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  throw NotSupported(this);
+#else // unix
+  static int FILE_SYSTEM_VARIABLES[MAX_SIZE_OF_SYMLINK + 1] = {
+    _PC_FILESIZEBITS, // MIN_FILE_SIZE_BITS
+    _PC_LINK_MAX, // MAX_NUM_OF_LINKS
+    _PC_NAME_MAX, // MAX_LEN_OF_NAME
+    _PC_PATH_MAX, // MAX_LEN_OF_PATH
+    _PC_PIPE_BUF, // MAX_SIZE_OF_PIPE_BUFFER
+    _PC_SYMLINK_MAX // MAX_SIZE_OF_SYMLINK
+  };
+  
+  int fileSystemVariable = FILE_SYSTEM_VARIABLES[variable];
+  if (fileSystemVariable != -1) {
+    errno = 0;
+    long result = ::fpathconf(fd->getHandle(), fileSystemVariable);
+    if (!((result == -1) && (errno != 0))) {
+      return result;
+    }
+  }
+  if ((errno == EBADF) || (errno == EINVAL)) {
+    throw FileException("Unable to get variable", this);
+  }
+  // TAG: add POSIX values here?
+  throw NotSupported(this);
+#endif // flavor
+}
+
 unsigned int File::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(FileException) {
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {

@@ -15,48 +15,54 @@
 #define _DK_SDU_MIP__BASE__TYPE_INFO_H
 
 #include <base/string/String.h>
+#include <base/string/InvalidFormat.h>
 #include <base/Type.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-// /**
-//   Returns the id that uniquely identifies the specified type.
-// */
-// template<class TYPE>
-// inline const char* getTypeId() throw() {
-//   return typeid(TYPE).name();
-// }
-
-// /**
-//   Returns the id that uniquely identifies the type of the specified object.
-// */
-// template<class TYPE>
-// inline const char* getTypeId(const TYPE& object) throw() {
-//   return typeid(object).name();
-// }
-
 /**
-  Demangles the specified string as returned by type_info::name(). You should
-  not call this function directly. Instead use the getTypename<TYPE>() and
-  getTypename<TYPE>(const TYPE&) functions.
-*/
-String demangleTypename(const char* mangled) throw();
+  This class provides type name demangling support.
 
-/**
-  Returns the demangled type name for the specified type.
+  @short Type name
+  @auther Rene Moeller Fonseca
+  @version 1.0
 */
-template<class TYPE>
-inline String getTypename() throw() {
-  return demangleTypename(typeid(TYPE).name());
-}
 
-/**
-  Returns the demangled type name for the specified object.
-*/
-template<class TYPE>
-inline String getTypename(const TYPE& object) throw() {
-  return demangleTypename(typeid(object).name());
-}
+class TypeInfo {
+public:
+
+  /**
+    Demangles the specified NULL-terminated string. Normally, you shouldn't use
+    this function directly. Instead you should use the getTypename<TYPE>() and
+    getTypename<TYPE>(const TYPE&) functions. If the specified mangled string
+    isn't a valid mangled name the result is unspecified.
+     
+    @param mangled The mangled name (compiler specific).
+    
+    @see getTypename
+  */
+  static String demangleName(const char* mangled) throw(InvalidFormat);
+
+  /**
+    Returns the demangled type name of the specified type. The result is the
+    string representation of the fully qualified name of the type (e.g.
+    "base::String").
+  */
+  template<class TYPE>
+  static inline String getTypename() throw() {
+    return demangleName(Type::getType<TYPE>().getLocalName());
+  }
+  
+  /**
+    Returns the demangled type name of the type of the specified object. The
+    result is the string representation of the fully qualified name of the type
+    (e.g. "base::String").
+  */
+  template<class TYPE>
+  static inline String getTypename(const TYPE& object) throw() {
+    return demangleName(Type::getType(object).getLocalName());
+  }
+};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -16,6 +16,7 @@
 
 #include <base/io/FilterOutputStream.h>
 #include <base/mem/Allocator.h>
+#include <base/Primitives.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

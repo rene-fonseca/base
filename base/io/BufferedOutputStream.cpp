@@ -35,9 +35,10 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size, 
   while (true) {
     // copy from external to internal buffer - no overlap
     unsigned int bytesToCopy = minimum(size - bytesWritten, this->buffer.getSize() - writeHead);
-    copy(this->buffer.getElements() + writeHead, buffer + bytesWritten, bytesToCopy);
+    copy<char>(this->buffer.getElements() + writeHead, buffer, bytesToCopy);
     bytesWritten += bytesToCopy;
     writeHead += bytesToCopy;
+    buffer += bytesToCopy;
 
     if (bytesWritten >= size) { // have we written all the bytes we were asked to write
       break;
@@ -59,7 +60,7 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size, 
 void BufferedOutputStream::unfoldValue(char value, unsigned int size) throw(IOException) {
   while (true) {
     unsigned int bytesAvailable = minimum(size, this->buffer.getSize() - writeHead);
-    fill(this->buffer.getElements() + writeHead, bytesAvailable, value);
+    fill<char>(this->buffer.getElements() + writeHead, bytesAvailable, value);
     size -= bytesAvailable;
     writeHead += bytesAvailable;
 
@@ -74,7 +75,6 @@ void BufferedOutputStream::unfoldValue(char value, unsigned int size) throw(IOEx
 }
 
 BufferedOutputStream::~BufferedOutputStream() throw(IOException) {
-  TRACE_MEMBER();
   flush();
 }
 

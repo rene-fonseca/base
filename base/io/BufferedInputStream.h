@@ -17,6 +17,7 @@
 #include <base/io/FilterInputStream.h>
 #include <base/mem/Allocator.h>
 #include <base/OutOfDomain.h>
+#include <base/Primitives.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -56,7 +57,7 @@ public:
     Returns the unread bytes of the internal buffer as sequence. The size of
     the sequence is returned by getNumberOfBytes() or peek().
   */
-  inline const char* getElements() const throw() {return getElements() + position;}
+  inline const char* getElements() const throw() {return buffer.getElements() + position;}
 
   /**
     Returns the number of bytes currently available in the internal buffer.

@@ -34,9 +34,10 @@ unsigned int BufferedInputStream::read(char* buffer, unsigned int size, bool non
   while (true) {
     // copy from internal to external buffer - no overlap
     unsigned int bytesToCopy = minimum(size - bytesRead, count - position);
-    copy(buffer + bytesRead, this->buffer.getElements() + this->position, bytesToCopy);
+    copy<char>(buffer, this->buffer.getElements() + this->position, bytesToCopy);
     bytesRead += bytesToCopy;
     position += bytesToCopy;
+    buffer += bytesToCopy;
 
     if (bytesRead >= size) { // have we read all the bytes we were asked to read
       break;

@@ -1,20 +1,51 @@
-dnl Copyright 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-dnl Process this file with autoconf to produce a configure script.
+dnl ***************************************************************************
+dnl    The Base Framework
+dnl    A framework for developing platform independent applications
+dnl
+dnl    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+dnl
+dnl    This framework is distributed in the hope that it will be useful,
+dnl    but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+dnl
+dnl    For the licensing terms refer to the file 'LICENSE'.
+dnl ***************************************************************************
+
+dnl Process this file with autoconf to produce a configure script
 
 AC_INIT(Makefile.am)
+AC_CONFIG_SRCDIR(base/features.h)
+
+dnl TAG: protect against absolute path in srcdir
 
 ac_base_build_date=`date -u +"%D %T UTC"`
 ac_base_build_user=`whoami`
 ac_base_build_host=`uname -n`
 
-AC_PREREQ(2.50)
+AC_PREREQ(2.52)
+AC_COPYRIGHT([Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>])
+AC_REVISION($Revision$)
 AC_CANONICAL_SYSTEM()
 dnl perform program name transformation
 AC_ARG_PROGRAM()
 
-AM_INIT_AUTOMAKE(base-framework, 1.0.0)
+AM_INIT_AUTOMAKE(base-framework, 0.9.1)
+
+dnl Arguments
+ac_base_arguments=${ac_configure_args}
+
+dnl Extract general arguments
+dnl TAG: may remove too many arguments
+ac_base_general_arguments=`echo " ${ac_base_arguments}" | \
+  sed -e "s/ --\(enable\|disable\)\(-[[a-z]]\+\)\+\(=[[^ =]]*\)\?//g" \
+      -e "s/ [[a-zA-Z]][[a-zA-Z_-]]*='[[^ ']]*'//g" \
+      -e "s/ [[a-zA-Z]][[a-zA-Z_-]]*=[[^ ']]*//g" \
+      -e "s/ '[[^'=]]\+=[[^']]*'//g"`
+BASE_MODULE_ARGUMENTS=${ac_base_general_arguments}
 
 dnl AC_CHECK_COMPILERS()
+dnl AC_EXEEXT() dnl TAG: required before 2.50
+AC_PROG_MAKE_SET()
 AC_PROG_CXX()
 dnl AC_CHECK_PROGS(CXX, ${CCC} c++ g++ gcc CC cxx cc++ cl, gcc)
 dnl AC_ENABLE_SHARED(yes)
@@ -169,6 +200,9 @@ i[[3456]]86-pc-linux*)
   ac_base_platform="i386-pc-gnu-linux.h"
   AC_BASE_ADDLIB(-ldl)
 ;;
+ia64-pc-linux*)
+  ac_base_platform="ia64-pc-gnu-linux.h"
+;;
 mips-sgi-irix6.5)
   dnl minor architecture?
   ac_base_platform="mips-sgi-irix65.h"
@@ -213,6 +247,15 @@ AC_ARG_ENABLE(
       disabled by default.],
   AC_BASE_CHECK_ARG(base_explicit_debug, yes no, The debug flag must be either 'yes' or 'no'.))
 AC_BASE_YES(base_explicit_debug, AC_BASE_DEFINE(DEBUG))
+
+base_explicit_memory=no
+AC_ARG_ENABLE(
+  memory,[
+  --enable-memory=[yes|no]
+      This feature enables additional runtime checks for dynamic memory
+      allocation and deallocation. The feature is disabled by default.],
+  AC_BASE_CHECK_ARG(base_explicit_memory, yes no, The debug flag must be either 'yes' or 'no'.))
+AC_BASE_YES(base_explicit_memory, AC_BASE_DEFINE(MEMORY))
 
 base_explicit_trace=no
 AC_ARG_ENABLE(
@@ -320,6 +363,15 @@ AC_ARG_ENABLE(
       Gnome XML Library. The default is no.],
   AC_BASE_CHECK_ARG(base_explicit_xml, xmlsoft no, Invalid argument used with the xml flag.))
 
+base_explicit_testsuite=no
+AC_ARG_ENABLE(
+  testsuite,[
+  --enable-testsuite=[auto|yes|no]
+      This option specifies whether or not the framework test suite should be
+      configured automatically. By default the test suite will be configured
+      if it is available.],
+  AC_BASE_CHECK_ARG(base_explicit_testsuite, auto yes no, The test suite option must be either 'auto', 'yes', or 'no'.))
+
 AC_ARG_ENABLE(
   ,[
   Please report any errors to <fonseca@mip.sdu.dk>.])
@@ -367,8 +419,8 @@ test "[$]$1" != yes && $2=
 
 
 base_src_temp="test_source"
-base_obj_temp="test_object.o"
-base_app_temp="test_app${ac_exeext}"
+base_obj_temp="test_object${ac_cv_objext}"
+base_app_temp="test_app${ac_cv_exeext}"
 base_cleanup="rm -f ${base_src_temp} ${base_obj_temp} ${base_app_temp}"
 base_run="./${base_app_temp}"
 
@@ -598,6 +650,15 @@ AC_BASE_CHECK(
   base_cv_pointer_size)
 AC_BASE_DEFINE(POINTER_SIZE, ${base_cv_pointer_size})
 
+dnl AC_BASE_CHECK(
+dnl   size of wchar_t,
+dnl   AC_BASE_CACHE(
+dnl     base_cv_wchar_t_size,
+dnl     AC_BASE_TRY_CXX_RUNSTATUS(base_cv_wchar_t_size, wchar_t_size.cpp)dnl
+dnl   ),
+dnl   base_cv_wchar_t_size)
+dnl AC_BASE_DEFINE(WCHAR_T_SIZE, ${base_cv_wchar_t_size})
+
 
 
 dnl AC_BASE_VALUE2BYTEORDER(var result symbol, var to receive result message of check, value)
@@ -699,58 +760,67 @@ AC_BASE_DEFINE(LONG_DOUBLE, ${base_cv_long_double})
 dnl Check for language features.
 
 AC_BASE_CHECK(
-  whether bool is supported by the compiler,
+  whether bool primitive is supported by the compiler,
   AC_BASE_CACHE(
-    base_cv_bool,
-    AC_BASE_TRY_CXX_COMPILE(base_cv_bool, bool.cpp)dnl
+    base_cv_cpp_bool,
+    AC_BASE_TRY_CXX_COMPILE(base_cv_cpp_bool, bool.cpp)dnl
   ),
-  base_cv_bool)
-AC_BASE_YES(base_cv_bool, AC_BASE_DEFINE(CPP_BOOL))
+  base_cv_cpp_bool)
+AC_BASE_YES(base_cv_cpp_bool, AC_BASE_DEFINE(CPP_BOOL))
 
 AC_BASE_CHECK(
   whether const qualifier is supported by the compiler,
   AC_BASE_CACHE(
-    base_cv_const,
-    AC_BASE_TRY_CXX_COMPILE(base_cv_const, const.cpp)dnl
+    base_cv_cpp_const,
+    AC_BASE_TRY_CXX_COMPILE(base_cv_cpp_const, const.cpp)dnl
   ),
-  base_cv_const)
-AC_BASE_YES(base_cv_const, AC_BASE_DEFINE(CPP_CONST))
+  base_cv_cpp_const)
+AC_BASE_YES(base_cv_cpp_const, AC_BASE_DEFINE(CPP_CONST))
 
 AC_BASE_CHECK(
   whether restrict qualifier is supported by the compiler,
   AC_BASE_CACHE(
-    base_cv_restrict,
-    AC_BASE_TRY_CXX_COMPILE(base_cv_restrict, restrict.cpp)dnl
+    base_cv_cpp_restrict,
+    AC_BASE_TRY_CXX_COMPILE(base_cv_cpp_restrict, restrict.cpp)dnl
   ),
-  base_cv_restrict)
-AC_BASE_YES(base_cv_restrict, AC_BASE_DEFINE(CPP_RESTRICT))
+  base_cv_cpp_restrict)
+AC_BASE_YES(base_cv_cpp_restrict, AC_BASE_DEFINE(CPP_RESTRICT))
 
 AC_BASE_CHECK(
-  whether inline is supported by the compiler,
+  whether inline specifier is supported by the compiler,
   AC_BASE_CACHE(
-    base_cv_inline,
-    AC_BASE_TRY_CXX_COMPILE(base_cv_inline, inline.cpp)dnl
+    base_cv_cpp_inline,
+    AC_BASE_TRY_CXX_COMPILE(base_cv_cpp_inline, inline.cpp)dnl
   ),
-  base_cv_inline)
-AC_BASE_YES(base_cv_inline, AC_BASE_DEFINE(CPP_INLINE))
+  base_cv_cpp_inline)
+AC_BASE_YES(base_cv_cpp_inline, AC_BASE_DEFINE(CPP_INLINE))
 
 AC_BASE_CHECK(
   whether static const with init is supported inside class def,
   AC_BASE_CACHE(
-    base_cv_static_const,
-    AC_BASE_TRY_CXX_COMPILE(base_cv_static_const, static_const.cpp)dnl
+    base_cv_cpp_static_const,
+    AC_BASE_TRY_CXX_COMPILE(base_cv_cpp_static_const, static_const.cpp)dnl
   ),
-  base_cv_static_const)
-AC_BASE_YES(base_cv_static_const, AC_BASE_DEFINE(CPP_STATIC_CONST))
+  base_cv_cpp_static_const)
+AC_BASE_YES(base_cv_cpp_static_const, AC_BASE_DEFINE(CPP_STATIC_CONST))
 
 AC_BASE_CHECK(
   whether anonymous struct is supported by the compiler,
   AC_BASE_CACHE(
-    base_cv_anonymous_struct,
-    AC_BASE_TRY_CXX_COMPILE(base_cv_anonymous_struct, anonymous_struct.cpp)dnl
+    base_cv_cpp_anonymous_struct,
+    AC_BASE_TRY_CXX_COMPILE(base_cv_cpp_anonymous_struct, anonymous_struct.cpp)dnl
   ),
-  base_cv_anonymous_struct)
-AC_BASE_YES(base_cv_anonymous_struct, AC_BASE_DEFINE(CPP_ANONYMOUS))
+  base_cv_cpp_anonymous_struct)
+AC_BASE_YES(base_cv_cpp_anonymous_struct, AC_BASE_DEFINE(CPP_ANONYMOUS))
+
+AC_BASE_CHECK(
+  whether compiler supports exception specifications,
+  AC_BASE_CACHE(
+    base_cv_cpp_specification,
+    AC_BASE_TRY_CXX_COMPILE(base_cv_cpp_specification, specification.cpp)dnl
+  ),
+  base_cv_cpp_specification)
+AC_BASE_YES(base_cv_cpp_specification, AC_BASE_DEFINE(CPP_SPECIFICATION))
 
 
 
@@ -796,7 +866,7 @@ unix)
     AC_BASE_ADDLIB(${base_cv_inet_ipv6_libs}))
 ;;
 win32)
-  BASE_ADDITIONAL_LIBADD="${BASE_ADDITIONAL_LIBADD}${BASE_ADDITIONAL_LIBADD:+ }"'-lws2_32'
+  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-lws2_32'
 ;;
 esac
 
@@ -807,7 +877,7 @@ case "${ac_base_flavour}" in
 unix)
 ;;
 win32)
-  BASE_ADDITIONAL_LIBADD="${BASE_ADDITIONAL_LIBADD}${BASE_ADDITIONAL_LIBADD:+ }"'-lwinmm'
+  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-lwinmm'
 ;;
 esac
 
@@ -952,8 +1022,8 @@ dnl Add VERSION resource to the dynamic library on Windows platforms (i.e. cygwi
 case "${ac_cv_target}" in
 *-*-cygwin|*-*-mingw32)
   dnl The -Wl option is used to circumvent libtool
-  BASE_ADDITIONAL_LIBADD="${BASE_ADDITIONAL_LIBADD}${BASE_ADDITIONAL_LIBADD:+ }"'-Wl,winrcver.o'
-  BASE_ADDITIONAL_DEPENDENCIES="${BASE_ADDITIONAL_DEPENDENCIES}${BASE_ADDITIONAL_DEPENDENCIES:+ }"'winrcver.o'
+  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-Wl,winrcver.o'
+  BASE_DEPENDENCIES="${BASE_DEPENDENCIES}${BASE_DEPENDENCIES:+ }"'winrcver.o'
   ;;
 esac
 
@@ -970,25 +1040,81 @@ AC_BASE_DEFINE(TARGET_SYSTEM, [\"]${ac_cv_target}[\"])
 dnl Tell the compiler where it should look for the generated and static framework headers
 if (test -f base/features.h) then
   dnl We are building directly in the source tree
-  CPPFLAGS='-I${top_srcdir}'"${CPPFLAGS:+ }${CPPFLAGS}"
+  BASE_INCLUDES='-I${top_srcdir}'"${BASE_INCLUDES:+ }${BASE_INCLUDES}"
 else
   dnl We are building in a separate directory tree
   dnl Tell the compiler where it should look for the generated and static framework headers
-  CPPFLAGS='-I${top_builddir} -I${top_srcdir}'"${CPPFLAGS:+ }${CPPFLAGS}"
+  BASE_INCLUDES='-I${top_builddir} -I${top_srcdir}'"${BASE_INCLUDES:+ }${BASE_INCLUDES}"
 fi
 
-AC_SUBST(BASE_LIBS)
-AC_SUBST(BASE_ADDITIONAL_LIBADD)
-AC_SUBST(BASE_ADDITIONAL_LDFLAGS)
-AC_SUBST(BASE_ADDITIONAL_DEPENDENCIES)
+
 
 dnl Remove temporary files
 ${base_cleanup}
 
-dnl Store the symbols
+
+
+dnl Configure test suite
+ac_base_testsuite=no
+if test "${base_explicit_testsuite}" = auto; then
+  if (test -d ${srcdir}/testsuite); then
+    ac_base_testsuite=yes
+  else
+    ac_base_testsuite=no
+  fi
+elif test "${base_explicit_testsuite}" = yes; then
+  if (test -d ${srcdir}/testsuite); then
+    ac_base_testsuite=yes
+  else
+    AC_MSG_ERROR("The test suite is not available.")
+  fi
+fi
+
+if test ${ac_base_testsuite} = yes; then
+  BASE_MODULES="${BASE_MODULES}${BASE_MODULES:+ }testsuite"
+fi
+
+
+
+AC_SUBST(BASE_MODULE_ARGUMENTS)
+AC_SUBST(BASE_INCLUDES)
+AC_SUBST(BASE_LIBS)
+AC_SUBST(BASE_LIBADD)
+AC_SUBST(BASE_LDFLAGS)
+AC_SUBST(BASE_DEPENDENCIES)
+AC_SUBST(BASE_MODULES)
+
+
+
+dnl Store the symbols (possibly overwrites dummy header)
 ac_base_header=base/configuration.h
 echo "updating configuration..."
 mkdir -p base
 mv ${ac_base_config} ${ac_base_header}
 
-AC_OUTPUT(Makefile config/Makefile base/Makefile base/docs/Makefile base/docs/en/Makefile base/Makefile base/platforms/Makefile base/communication/Makefile base/concurrency/Makefile base/mathematics/Makefile base/io/Makefile base/io/async/Makefile base/string/Makefile base/mem/Makefile base/net/Makefile base/collection/Makefile base/filesystem/Makefile base/iterator/Makefile base/dl/Makefile base/xml/Makefile base/security/Makefile base/sound/Makefile)
+
+
+dnl Generate make files
+AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(config/Makefile)
+AC_CONFIG_FILES(base/Makefile)
+AC_CONFIG_FILES(base/docs/Makefile)
+AC_CONFIG_FILES(base/docs/en/Makefile)
+AC_CONFIG_FILES(base/platforms/Makefile)
+AC_CONFIG_FILES(base/collection/Makefile)
+AC_CONFIG_FILES(base/communication/Makefile)
+AC_CONFIG_FILES(base/concurrency/Makefile)
+AC_CONFIG_FILES(base/filesystem/Makefile)
+AC_CONFIG_FILES(base/iterator/Makefile)
+AC_CONFIG_FILES(base/dl/Makefile)
+AC_CONFIG_FILES(base/io/Makefile)
+AC_CONFIG_FILES(base/io/async/Makefile)
+AC_CONFIG_FILES(base/mathematics/Makefile)
+AC_CONFIG_FILES(base/mem/Makefile)
+AC_CONFIG_FILES(base/net/Makefile)
+AC_CONFIG_FILES(base/security/Makefile)
+AC_CONFIG_FILES(base/sound/Makefile)
+AC_CONFIG_FILES(base/string/Makefile)
+AC_CONFIG_FILES(base/xml/Makefile)
+
+AC_OUTPUT()

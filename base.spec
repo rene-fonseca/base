@@ -26,6 +26,9 @@ Distribution: The Base Framework
 %description
 A framework for developing platform independent applications in C++.
 
+Prefix: /usr
+BuildRoot: %{_builddir}/%{name}-%{version}-%{release}-root
+
 
 
 #%package examples
@@ -37,17 +40,12 @@ A framework for developing platform independent applications in C++.
 
 
 
-Prefix: /usr
-BuildRoot: %{_builddir}/%{name}-%{version}-%{release}-root
-
-
-
 %prep
 %setup
 mv base/test testsuite
 CFLAGS="${RPM_OPT_FLAGS}" CXXFLAGS="${RPM_OPT_FLAGS}" ./configure \
   --target=%{_target} \
-  --prefix=%{prefix} \
+  --prefix=%{_prefix} \
   --enable-regexp=pcre \
   --enable-xml=xmlsoft
 

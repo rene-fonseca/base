@@ -14,7 +14,7 @@
 DEFS =
 AUTOMAKE_OPTIONS = 1.4 foreign nostdinc dist-tarZ dist-bzip2 dist-zip
 
-SUBDIRS = config base
+SUBDIRS = config base # testsuite
 
 dist-hook:
 # generate doxygen documentation
@@ -57,4 +57,4 @@ module-testsuite-build: module-testsuite-configure
 testsuite: module-testsuite-build
 .phony: testsuite
 
-EXTRA_DIST = base.kdevprj AUTHORS COPYING ChangeLog INSTALL README TODO base.lsm base.spec
+EXTRA_DIST = base.kdevprj AUTHORS COPYING ChangeLog INSTALL README TODO base.lsm common.am base.spec

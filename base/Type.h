@@ -15,274 +15,143 @@
 #define _DK_SDU_MIP__BASE__TYPE_H
 
 #include <base/features.h>
-#include <typeinfo>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class String;
+#if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
+  class Char {
+  public:
+#if defined(_DK_SDU_MIP__BASE__UNSIGNED_CHAR)
+    static const char MAXIMUM = 255;
+    static const char MINIMUM = 0;
+#else // signed
+    static const char MAXIMUM = 127;
+    static const char MINIMUM = -128;
+#endif
+  };
 
-namespace Char {
-  const char MAXIMUM = 127;
-  const char MINIMUM = -128;
-};
-
-namespace UnsignedChar {
-  const unsigned char MAXIMUM = 255;
-  const unsigned char MINIMUM = 0;
-};
-
-namespace Short {
-  const short int MAXIMUM = 32767;
-  const short int MINIMUM = -32768;
-};
-
-namespace UnsignedShort {
-  const unsigned short int MAXIMUM = 65535;
-  const unsigned short int MINIMUM = 0;
-};
-
-namespace Int {
-  const int MAXIMUM = 2147483647;
-  const int MINIMUM = -MAXIMUM - 1;
-};
-
-namespace UnsignedInt {
-  const unsigned int MAXIMUM = 4294967295U;
-  const unsigned int MINIMUM = 0;
-};
-
-namespace Long {
-  const long MAXIMUM = 2147483647L;
-  const long MINIMUM = -MAXIMUM - 1L;
-};
-
-namespace UnsignedLong {
-  const unsigned long MAXIMUM = 4294967295U;
-  const unsigned long MINIMUM = 0;
-};
-
-namespace LongLong {
-  const long long MAXIMUM = 9223372036854775807LL;
-  const long long MINIMUM = -MAXIMUM - 1LL;
-};
-
-namespace UnsignedLongLong {
-  const unsigned long long MAXIMUM = 18446744073709551615ULL;
-  const unsigned long long MINIMUM = 0;
-};
-
-/** 8 bit unsigned integer. */
-typedef unsigned char byte;
-
-namespace LittleEndian {
-
-#if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
-
-/** 16 bit signed integer represented in little endian byte order. */
-struct SignedShort {
-  char lowByte;
-  char highByte;
-
-  inline short operator=(short eq) throw() {
-    lowByte = eq & 0xff;
-    highByte = eq >> 8;
-    return eq;
-  }
-
-  inline operator short() const throw() {return highByte << 8 + lowByte;}
-} __attribute__ ((packed));
-
-/** 16 bit unsigned integer represented in little endian byte order. */
-struct UnsignedShort {
-  char lowByte;
-  char highByte;
-
-  inline unsigned short operator=(unsigned short eq) throw() {
-    lowByte = eq & 0xff;
-    highByte = eq >> 8;
-    return eq;
-  }
-
-  inline operator unsigned short() const throw() {return highByte << 8 + lowByte;}
-} __attribute__ ((packed));
-
-/** 32 bit signed integer represented in little endian byte order. */
-struct SignedInt {
-  char a;
-  char b;
-  char c;
-  char d;
-
-  inline int operator=(int eq) throw() {
-    a = eq & 0xff;
-    b = (eq >> 8) & 0xff;
-    c = (eq >> 16) & 0xff;
-    d = eq >> 24;
-    return eq;
-  }
-
-  inline operator int() const throw() {return ((d << 8 + c) << 8 + b) << 8 + a;}
-} __attribute__ ((packed));
-
-/** 32 bit unsigned integer represented in little endian byte order. */
-struct UnsignedInt {
-  char a;
-  char b;
-  char c;
-  char d;
-
-  inline unsigned int operator=(unsigned int eq) throw() {
-    a = eq & 0xff;
-    b = (eq >> 8) & 0xff;
-    c = (eq >> 16) & 0xff;
-    d = eq >> 24;
-    return eq;
-  }
-
-  inline operator unsigned int() const throw() {return ((d << 8 + c) << 8 + b) << 8 + a;}
-} __attribute__ ((packed));
-
-#else
-
-/** 16 bit signed integer represented in little endian byte order. */
-typedef short SignedShort;
-/** 16 bit unsigned integer represented in little endian byte order. */
-typedef unsigned short UnsignedShort;
-/** 32 bit signed integer represented in little endian byte order. */
-typedef int SignedInt;
-/** 32 bit unsigned integer represented in little endian byte order. */
-typedef unsigned int UnsignedInt;
-
+  class UnsignedChar {
+  public:
+    static const unsigned char MAXIMUM = 255;
+    static const unsigned char MINIMUM = 0;
+  };
 #endif
 
-}; // end of namespace
+#if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
+  class Short {
+  public:
+    static const short int MAXIMUM = 32767;
+    static const short int MINIMUM = -32768;
+  };
 
+  class UnsignedShort {
+  public:
+    static const unsigned short int MAXIMUM = 65535;
+    static const unsigned short int MINIMUM = 0;
+  };
+#elif (_DK_SDU_MIP__BASE__SHORT_SIZE = 4)
+  class Short {
+  public:
+    static const short int MAXIMUM = 2147483647;
+    static const short int MINIMUM = -MAXIMUM - 1;
+  };
 
-
-namespace BigEndian {
-
-#if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
-
-/** 16 bit signed integer represented in big endian byte order. */
-typedef short SignedShort;
-/** 16 bit unsigned integer represented in big endian byte order. */
-typedef unsigned short UnsignedShort;
-/** 32 bit signed integer represented in big endian byte order. */
-typedef int SignedInt;
-/** 32 bit unsigned integer represented in big endian byte order. */
-typedef unsigned int UnsignedInt;
-
-#else
-
-/** 16 bit signed integer represented in big endian byte order. */
-struct SignedShort {
-  char highByte;
-  char lowByte;
-
-  inline short operator=(short eq) throw() {
-    highByte = eq >> 8;
-    lowByte = eq & 0xff;
-    return eq;
-  }
-
-  inline operator short() const throw() {return highByte << 8 + lowByte;}
-} __attribute__ ((packed));
-
-/** 16 bit unsigned integer represented in big endian byte order. */
-struct UnsignedShort {
-  char highByte;
-  char lowByte;
-
-  inline unsigned short operator=(unsigned short eq) throw() {
-    highByte = eq >> 8;
-    lowByte = eq & 0xff;
-    return eq;
-  }
-
-  inline operator unsigned short() const throw() {return highByte << 8 + lowByte;}
-} __attribute__ ((packed));
-
-/** 32 bit signed integer represented in big endian byte order. */
-struct SignedInt {
-  char d;
-  char c;
-  char b;
-  char a;
-
-  inline int operator=(int eq) throw() {
-    d = eq >> 24;
-    c = (eq >> 16) & 0xff;
-    b = (eq >> 8) & 0xff;
-    a = eq & 0xff;
-    return eq;
-  }
-
-  inline operator int() const throw() {return ((d << 8 + c) << 8 + b) << 8 + a;}
-} __attribute__ ((packed));
-
-/** 32 bit unsigned integer represented in big endian byte order. */
-struct UnsignedInt {
-  char d;
-  char c;
-  char b;
-  char a;
-
-  inline unsigned int operator=(unsigned int eq) throw() {
-    d = eq >> 24;
-    c = (eq >> 16) & 0xff;
-    b = (eq >> 8) & 0xff;
-    a = eq & 0xff;
-    return eq;
-  }
-
-  inline operator unsigned int() const throw() {return ((d << 8 + c) << 8 + b) << 8 + a;}
-} __attribute__ ((packed));
-
+  class UnsignedShort {
+  public:
+    static const unsigned short int MAXIMUM = 4294967295U;
+    static const unsigned short int MINIMUM = 0;
+  };
 #endif
 
-}; // end of namespace
+#if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
+  class Int {
+  public:
+    static const int MAXIMUM = 2147483647;
+    static const int MINIMUM = -MAXIMUM - 1;
+  };
 
-/**
-  Returns the id that uniquely identifies the specified type.
-*/
-template<class TYPE>
-inline const char* getTypeId() throw() {
-  return typeid(TYPE).name();
-}
+  class UnsignedInt {
+  public:
+    static const unsigned int MAXIMUM = 4294967295U;
+    static const unsigned int MINIMUM = 0;
+  };
+#elif (_DK_SDU_MIP__BASE__INT_SIZE == 8)
+  class Int {
+  public:
+    static const int MAXIMUM = 9223372036854775807;
+    static const int MINIMUM = -MAXIMUM - 1;
+  };
 
-/**
-  Returns the id that uniquely identifies the type of the specified object.
-*/
-template<class TYPE>
-inline const char* getTypeId(const TYPE& object) throw() {
-  return typeid(object).name();
-}
+  class UnsignedInt {
+  public:
+    static const unsigned int MAXIMUM = 18446744073709551615U;
+    static const unsigned int MINIMUM = 0;
+  };
+#endif
 
-/**
-  Demangles the specified string as returned by typeinfo::name(). You should
-  not call this function directly. Use the getTypename<TYPE>() and
-  getTypename<TYPE>(const TYPE&) functions.
-*/
-String demangleTypename(const char* mangled) throw();
+#if (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
+  class Long {
+  public:
+    static const long MAXIMUM = 2147483647L;
+    static const long MINIMUM = -MAXIMUM - 1L;
+  };
 
-/**
-  Returns the demangled type name for the specified type.
-*/
-template<class TYPE>
-inline String getTypename() throw() {
-  return demangleTypename(typeid(TYPE).name());
-}
+  class UnsignedLong {
+  public:
+    static const unsigned long MAXIMUM = 4294967295UL;
+    static const unsigned long MINIMUM = 0;
+  };
+#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 8)
+  class Long {
+  public:
+    static const long MAXIMUM = 9223372036854775807;
+    static const long MINIMUM = -MAXIMUM - 1L;
+  };
 
-/**
-  Returns the demangled type name for the specified object.
-*/
-template<class TYPE>
-inline String getTypename(const TYPE& object) throw() {
-  return demangleTypename(typeid(object).name());
-}
+  class UnsignedLong {
+  public:
+    static const unsigned long MAXIMUM = 18446744073709551615UL;
+    static const unsigned long MINIMUM = 0;
+  };
+#endif
+
+#if (_DK_SDU_MIP__BASE__LONG_LONG_SIZE == 8)
+  class LongLong {
+  public:
+    static const long long MAXIMUM = 9223372036854775807LL;
+    static const long long MINIMUM = -MAXIMUM - 1LL;
+  };
+
+  class UnsignedLongLong {
+  public:
+    static const unsigned long long MAXIMUM = 18446744073709551615ULL;
+    static const unsigned long long MINIMUM = 0;
+  };
+#endif
+
+
+
+#if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
+  /** 8 bit unsigned integer (a.k.a. octet). */
+  typedef unsigned char byte;
+#endif
+
+#if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
+  /** 16 bit unsigned integer. */
+  typedef unsigned short ushort16;
+#endif
+
+#if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
+  /** 32 bit unsigned integer. */
+  typedef unsigned int uint32;
+#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
+  /** 32 bit unsigned integer. */
+  typedef unsigned long uint32;
+#elif (_DK_SDI_MIP__BASE__LONG_LONG_SIZE == 4)
+  /** 32 bit unsigned integer. */
+  typedef unsigned long long uint32;
+#endif
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#include <base/string/String.h>
 
 #endif

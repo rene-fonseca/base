@@ -38,48 +38,44 @@ public:
 
   /** The permissions. */
   enum Permission {
-    READ = 1, /**< Read permission. */
-    WRITE = 2, /**< Write permission. */
-    EXECUTE = 4, /**< Execute permission. */
+    NO = 0, /**< Trustee does not have any access. */
+    READ = 1 << 0, /**< Read permission. */
+    WRITE = 1 << 1, /**< Write permission. */
+    EXECUTE = 1 << 2, /**< Execute permission. */
     
-    TRAVERSE_FOLDER,
+    TRAVERSE_FOLDER = 1 << 3,
     EXECUTE_FILE = TRAVERSE_FOLDER,
-    LIST_FOLDER,
+    LIST_FOLDER = 1 << 4,
     READ_DATA = LIST_FOLDER,
-    READ_ATTRIBUTES,
-    READ_EXTENDED_ATTRIBUTES,
+    READ_ATTRIBUTES = 1 << 5,
+    READ_EXTENDED_ATTRIBUTES = 1 << 6,
     
-    CREATE_FILES,
+    CREATE_FILES = 1 << 7,
     WRITE_DATA = CREATE_FILES,
-    CREATE_FOLDERS,
+    CREATE_FOLDERS = 1 << 8,
     APPEND_DATA = CREATE_FOLDERS,
-    WRITE_ATTRIBUTES,
-    WRITE_EXTENDED_ATTRIBUTES,
+    WRITE_ATTRIBUTES = 1 << 9,
+    WRITE_EXTENDED_ATTRIBUTES = 1 << 10,
     
-    DELETE_SUBFOLDERS_AND_FILES,
-    DELETE,
-    READ_PERMISSIONS,
-    CHANGE_PERMISSIONS,
-    TAKE_OWNERSHIP,
+    DELETE_SUBFOLDERS_AND_FILES = 1 << 11,
+    DELETE = 1 << 12,
+    READ_PERMISSIONS = 1 << 13,
+    CHANGE_PERMISSIONS = 1 << 14,
+    TAKE_OWNERSHIP = 1 << 15,
     
-    READ_AND_EXECUTE = 0, // TAG: FIXME: +TRAVERSE_FOLDER EXECUTE_FILE, +LIST_FOLDER/READ_DATA, +READ_ATTRIBUTES, +READ_EXTENDED_ATTRIBUTES, +READ_PERMISSIONS
-    MODIFY = 0, // TAG: FIXME: -DELETE_SUBFOLDERS_AND_FILES, -CHANGE_PERMISSIONS, -TAKE_OWNERSHIP
-    FULL_ACCESS = 0xffffff, /**< Trustee has full access. TAG: FIXME */
-    NONE = 0 /**< Trustee does not have any access. */
+    READ_AND_EXECUTE = READ|EXECUTE, // TAG: FIXME: +TRAVERSE_FOLDER EXECUTE_FILE, +LIST_FOLDER/READ_DATA, +READ_ATTRIBUTES, +READ_EXTENDED_ATTRIBUTES, +READ_PERMISSIONS
+    MODIFY = READ|WRITE, // TAG: FIXME: -DELETE_SUBFOLDERS_AND_FILES, -CHANGE_PERMISSIONS, -TAKE_OWNERSHIP
+    FULL = READ|WRITE|EXECUTE, /**< Trustee has full access. */
   };
-
-//   /** Permissions filter type. */
-//   enum AllowOrDeny {
-//     ALLOW = 1, /**< Specifies that the permissions are granted to the trustee. */
-//     DENY = 0 /**< Specifies that the permissions are denied for the particular trustee. */
-//   };
-
+  
   /** The access mask. */
   typedef uint64 AccessMask;
   
   /** Access masks. */
   struct Permissions {
+    /** The allowed permissions. */
     uint64 allowed;
+    /** The denied permissions. */
     uint64 denied;
   };
 private:
@@ -94,7 +90,7 @@ public:
     Initializes ACE as EVERYONE with all permissions denied.
   */
   AccessControlEntry() throw();
-
+  
   /**
     Initializes ACE with specified trustee and no allowed access (and no denied access).
   */
@@ -154,21 +150,21 @@ public:
     @param allowed The permissions to allow.
   */
   void grant(AccessMask allowed) throw();
-
+  
   /**
     Marks the specified permissions as denied.
 
     @param denied The permissions to deny.
   */
   void deny(AccessMask denied) throw();
-
+  
   /**
     Combines the specified permissions with the ACE.
     
     @param permissions The permissions to merge with.
   */
   void combine(const Permissions& permissions) throw();
- 
+  
   /**
     Returns the trustee.
   */

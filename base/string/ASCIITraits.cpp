@@ -73,14 +73,14 @@ const ASCIITraits::CharacterDescriptor ASCIITraits::lookup[256] = {
   {ASCII | PUNCTUATION, '.', '.'}, // period
   {ASCII | PUNCTUATION, '/', '/'}, // slash
 
-  {ASCII | DIGIT | LOWERHEX | UPPERHEX, '0', '0', 0}, // 0x30
-  {ASCII | DIGIT | LOWERHEX | UPPERHEX, '1', '1', 1},
-  {ASCII | DIGIT | LOWERHEX | UPPERHEX, '2', '2', 2},
-  {ASCII | DIGIT | LOWERHEX | UPPERHEX, '3', '3', 3},
-  {ASCII | DIGIT | LOWERHEX | UPPERHEX, '4', '4', 4},
-  {ASCII | DIGIT | LOWERHEX | UPPERHEX, '5', '5', 5},
-  {ASCII | DIGIT | LOWERHEX | UPPERHEX, '6', '6', 6},
-  {ASCII | DIGIT | LOWERHEX | UPPERHEX, '7', '7', 7},
+  {ASCII | DIGIT | OCTAL | LOWERHEX | UPPERHEX, '0', '0', 0}, // 0x30
+  {ASCII | DIGIT | OCTAL | LOWERHEX | UPPERHEX, '1', '1', 1},
+  {ASCII | DIGIT | OCTAL | LOWERHEX | UPPERHEX, '2', '2', 2},
+  {ASCII | DIGIT | OCTAL | LOWERHEX | UPPERHEX, '3', '3', 3},
+  {ASCII | DIGIT | OCTAL | LOWERHEX | UPPERHEX, '4', '4', 4},
+  {ASCII | DIGIT | OCTAL | LOWERHEX | UPPERHEX, '5', '5', 5},
+  {ASCII | DIGIT | OCTAL | LOWERHEX | UPPERHEX, '6', '6', 6},
+  {ASCII | DIGIT | OCTAL | LOWERHEX | UPPERHEX, '7', '7', 7},
 
   {ASCII | DIGIT | LOWERHEX | UPPERHEX, '8', '8', 8}, // 0x38
   {ASCII | DIGIT | LOWERHEX | UPPERHEX, '9', '9', 9},

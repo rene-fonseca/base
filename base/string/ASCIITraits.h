@@ -35,14 +35,15 @@ private:
     ALPHA = LOWER|UPPER,
     DIGIT = 4, // any of the characters "0123456789"
     ALPHANUM = ALPHA|DIGIT,
-    LOWERHEX = 8, // a DIGIT or any of the characters "abcdef"
-    UPPERHEX = 16, // a DIGIT or any of the characters "ABCDEF"
+    OCTAL = 8, // any of the characters "01234567"
+    LOWERHEX = 16, // a DIGIT or any of the characters "abcdef"
+    UPPERHEX = 32, // a DIGIT or any of the characters "ABCDEF"
     HEX = LOWERHEX|UPPERHEX,
-    CONTROL = 32, // the characters from 0x00 to 0x1f and 0x7f
-    SPACE = 64, // tab, newline, vertical-tab, form-feed, carriage-return, and space
-    ASCII = 128, // the octets from 0x00 to 0x7f
-    SP = 256, // space ' '
-    PUNCTUATION = 512, // punctuation characters
+    CONTROL = 64, // the characters from 0x00 to 0x1f and 0x7f
+    SPACE = 128, // tab, newline, vertical-tab, form-feed, carriage-return, and space
+    ASCII = 256, // the octets from 0x00 to 0x7f
+    SP = 512, // space ' '
+    PUNCTUATION = 1024, // punctuation characters
     GRAPH = ALPHANUM|PUNCTUATION, // visible characters
     PRINTABLE = SP|GRAPH, // printable characters
   };
@@ -107,6 +108,8 @@ public:
   static inline bool isUpper(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & UPPER;}
   /** Returns true if the character is a digit. */
   static inline bool isDigit(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & DIGIT;}
+  /** Returns true if the character is an octal digit. */
+  static inline bool isOctal(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & OCTAL;}
   /** Returns true if the character is a lower hex digit (any of the characters "0123456789abcdef"). */
   static inline bool isLowerHex(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & LOWERHEX;}
   /** Returns true if the character is an upper hex digit (any of the characters "0123456789ABCDEF"). */
@@ -128,8 +131,9 @@ public:
 
   /**
     Returns the value of the specified character. The character must be a digit
-    approved by isDigit(), isLowerHex(), isUpperHex(), or isHexDigit(). If the
-    character is not a digit an unspecified value is returned.
+    approved by isDigit(), isOctal(), isLowerHex(), isUpperHex(), or
+    isHexDigit(). If the character is not a digit an unspecified value is
+    returned.
   */
   static inline unsigned char digitToValue(char value) throw() {return lookup[static_cast<unsigned char>(value)].value;}
 
@@ -137,19 +141,19 @@ public:
     Returns the character representation of the specified value. An unspecified
     value is returned if the argument falls outside the range [0..15].
   */
-  static inline char valueToDigit(unsigned int value) throw() {return LOWER_DIGITS[value] & 0x0f;}
+  static inline char valueToDigit(unsigned int value) throw() {return LOWER_DIGITS[value & 0x0f];}
 
   /**
     Returns the character representation of the specified value. An unspecified
     value is returned if the argument falls outside the range [0..15].
   */
-  static inline char valueToLowerDigit(unsigned int value) throw() {return LOWER_DIGITS[value] & 0x0f;}
+  static inline char valueToLowerDigit(unsigned int value) throw() {return LOWER_DIGITS[value & 0x0f];}
 
   /**
     Returns the character representation of the specified value. An unspecified
     value is returned if the argument falls outside the range [0..15].
   */
-  static inline char valueToUpperDigit(unsigned int value) throw() {return UPPER_DIGITS[value] & 0x0f;}
+  static inline char valueToUpperDigit(unsigned int value) throw() {return UPPER_DIGITS[value & 0x0f];}
 
   /** Returns the lower case representation of the character. */
   static inline char toLower(char value) throw() {return lookup[static_cast<unsigned char>(value)].lower;}

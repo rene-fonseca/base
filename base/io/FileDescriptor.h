@@ -17,7 +17,7 @@
 #include <base/io/Stream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
-#include <base/OperatingSystem.h>
+#include <base/io/Handle.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -33,74 +33,36 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class FileDescriptor : public virtual Object, public virtual Stream {
 public:
 
+  /** Returns the standard input file descriptor. */
   static FileDescriptor getStandardInput() throw();
+  /** Returns the standard output file descriptor. */
   static FileDescriptor getStandardOutput() throw();
+  /** Returns the standard error file descriptor. */
   static FileDescriptor getStandardError() throw();
-protected:
 
   /**
     Reference counted handle to file descriptor.
 
+    @short File descriptor
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
-  class Descriptor : public ReferenceCountedObject {
+  class Descriptor : public Handle {
+    friend class Initialization;
+    friend class FileDescriptor;
   private:
 
-    /** Handle to file descriptor. */
-    OperatingSystem::Handle handle;
-  public:
-
-    /**
-      Initializes invalid descriptor.
-    */
-    inline Descriptor() throw() : handle(OperatingSystem::INVALID_HANDLE) {}
-
-    /**
-      Initializes descriptor.
-
-      @param handle The handle.
-    */
-    inline explicit Descriptor(OperatingSystem::Handle h) throw() : handle(h) {}
-
-    /**
-      Initializes descriptor from other descriptor.
-    */
-    inline Descriptor(const Descriptor& copy) throw() : handle(copy.handle) {}
-
-    /**
-      Returns the flags of the descriptor.
-    */
-    int getFlags() const throw(IOException);
-
-    /**
-      Sets the flags of the descriptor.
-    */
-    void setFlags(int flags) throw(IOException);
-
-    /**
-      Returns the handle.
-    */
-    inline OperatingSystem::Handle getHandle() const throw() {return handle;}
-
-    /**
-      Sets the non blocking flags.
-
-      @param value The desired state.
-    */
-    void setNonBlocking(bool value) throw(IOException);
-
-    /**
-      Destroys the descriptor.
-    */
+    /** Invalid handle. */
+    static Handle* invalid;
+    /** Initializes descriptor. */
+    inline explicit Descriptor(OperatingSystem::Handle handle) throw() : Handle(handle) {}
+    /** Releases the resources taken up by the descriptor. */
     ~Descriptor() throw(IOException);
   };
+protected:
 
-  /** Invalid descriptor. */
-  static Descriptor invalid;
-  
   /** Reference counted handle to file descriptor. */
-  ReferenceCountedObjectPointer<Descriptor> fd;
+  ReferenceCountedObjectPointer<Handle> fd;
 public:
 
   /**
@@ -159,11 +121,6 @@ public:
     Sets the non-blocking flag of the file descriptor.
   */
   void setNonBlocking(bool value) throw(IOException);
-
-  /**
-    Destroy file descriptor.
-  */
-  ~FileDescriptor() throw(IOException);
 
   /**
     Writes a string representation of a FileDescriptor object to a format stream.

@@ -30,52 +30,15 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-int FileDescriptor::Descriptor::getFlags() const throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return 0;
-#else // unix
-  int result;
-  if ((result = ::fcntl(handle, F_GETFL)) < 0) {
-    throw IOException("Unable to get flags of file descriptor");
-  }
-  return result;
-#endif // flavour
-}
-
-void FileDescriptor::Descriptor::setFlags(int flags) throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#else // unix
-  if (::fcntl(handle, F_SETFL, flags) != 0) {
-    throw IOException("Unable to set flags of file descriptor");
-  }
-#endif // flavour
-}
-
-void FileDescriptor::Descriptor::setNonBlocking(bool value) throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#else // unix
-  int flags = getFlags();
-  if (value) {
-    if (flags & O_NONBLOCK == 0) { // do we need to set flag
-      setFlags(flags | O_NONBLOCK);
-    }
-  } else {
-    if (flags & O_NONBLOCK != 0) { // do we need to clear flag
-      setFlags(flags & ~O_NONBLOCK);
-    }
-  }
-#endif // flavour
-}
-
 FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
-  if (handle != OperatingSystem::INVALID_HANDLE) {
+  if (isValid()) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-    if (!::CloseHandle((HANDLE)handle)) {
-      throw IOException("Unable to close file descriptor");
+    if (!::CloseHandle(getHandle())) {
+      throw IOException("Unable to close file descriptor", this);
     }
 #else // unix
-    if (::close(handle) != 0) {
-      throw IOException("Unable to close file descriptor");
+    if (::close(getHandle()) != 0) {
+      throw IOException("Unable to close file descriptor", this);
     }
 #endif // flavour
   }
@@ -83,7 +46,7 @@ FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
 
 
 
-FileDescriptor::FileDescriptor() throw() : fd(&invalid) {
+FileDescriptor::FileDescriptor() throw() : fd(FileDescriptor::Descriptor::invalid) {
 }
 
 FileDescriptor::FileDescriptor(OperatingSystem::Handle handle) throw() : fd(new Descriptor(handle)) {
@@ -98,15 +61,28 @@ FileDescriptor& FileDescriptor::operator=(const FileDescriptor& eq) throw() {
 }
 
 void FileDescriptor::close() throw(IOException) {
-  fd = &invalid;
+  fd = Descriptor::invalid;
 }
 
 int FileDescriptor::getFlags() const throw(IOException) {
-  return fd->getFlags();
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  return 0;
+#else // unix
+  int result;
+  if ((result = ::fcntl(fd->getHandle(), F_GETFL)) < 0) {
+    throw IOException("Unable to get flags of file descriptor", this);
+  }
+  return result;
+#endif // flavour
 }
 
 void FileDescriptor::setFlags(int flags) throw(IOException) {
-  fd->setFlags(flags);
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#else // unix
+  if (::fcntl(fd->getHandle(), F_SETFL, flags) != 0) {
+    throw IOException("Unable to set flags of file descriptor", this);
+  }
+#endif // flavour
 }
 
 OperatingSystem::Handle FileDescriptor::getHandle() const throw() {
@@ -114,7 +90,7 @@ OperatingSystem::Handle FileDescriptor::getHandle() const throw() {
 }
 
 bool FileDescriptor::isValid() const throw() {
-  return fd->getHandle() != OperatingSystem::INVALID_HANDLE;
+  return fd->isValid();
 }
 
 void FileDescriptor::setHandle(OperatingSystem::Handle handle) throw() {
@@ -124,10 +100,19 @@ void FileDescriptor::setHandle(OperatingSystem::Handle handle) throw() {
 }
 
 void FileDescriptor::setNonBlocking(bool value) throw(IOException) {
-  fd->setNonBlocking(value);
-}
-
-FileDescriptor::~FileDescriptor() throw(IOException) {
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#else // unix
+  int flags = getFlags();
+  if (value) {
+    if (flags & O_NONBLOCK == 0) { // do we need to set flag
+      setFlags(flags | O_NONBLOCK);
+    }
+  } else {
+    if (flags & O_NONBLOCK != 0) { // do we need to clear flag
+      setFlags(flags & ~O_NONBLOCK);
+    }
+  }
+#endif // flavour
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor& value) {

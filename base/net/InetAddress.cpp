@@ -57,8 +57,9 @@ String<> InetAddress::getLocalHost() throw(NetworkException) {
 #if defined(__win32__)
   // I use thread local storage 'cause I don't know what the maximum length is
   // the microsoft example code that I have seen assumes that the name cannot exceed 200 chars
-  char* name = Thread::getLocalStorage()->getElements();
-  if (gethostname(name, Thread::getLocalStorage()->getSize())) {
+  Allocator<char>* buffer = Thread::getLocalStorage();
+  char* name = buffer->getElements();
+  if (gethostname(name, buffer->getSize())) {
     throw NetworkException("Unable to get local host name");
   }
 #else // __unix__
@@ -208,14 +209,14 @@ String<> InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error;
-    if (!(hp = gethostbyaddr_r(&address, sizeof(address), AF_INET, &result, buffer, sizeof(buffer), &error))) {
+    if (!(hp = gethostbyaddr_r((const char*)&address, sizeof(address), AF_INET, &result, buffer, sizeof(buffer), &error))) {
       throw HostNotFound("Unable to resolve IP address");
     }
   #elif defined(__linux__)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error;
-    if (gethostbyaddr_r(&address, sizeof(address), AF_INET, &result, buffer, sizeof(buffer), &hp, &error)) {
+    if (gethostbyaddr_r((const char*)&address, sizeof(address), AF_INET, &result, buffer, sizeof(buffer), &hp, &error)) {
       throw HostNotFound("Unable to resolve IP address");
     }
   #else

@@ -431,7 +431,9 @@ public:
   inline KillImpl(Process _process) throw() : process(_process), state(WAITING) {
   }
 
-  inline Process getProcess() const throw() {return process;}
+  inline Process getProcess() const throw() {
+    return process;
+  }
   
   inline void onFailure() throw() {
     state = FAILED;

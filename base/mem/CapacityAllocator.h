@@ -99,7 +99,8 @@ public:
   /**
     Assignment of allocator by allocator.
   */
-  inline CapacityAllocator& operator=(const CapacityAllocator& eq) throw(MemoryException) {
+  inline CapacityAllocator& operator=(
+    const CapacityAllocator& eq) throw(MemoryException) {
     if (&eq != this) { // protect against self assignment
       capacity = eq.capacity;
       granularity = eq.granularity;

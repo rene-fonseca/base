@@ -45,7 +45,7 @@ protected:
   unsigned int granularity;
 private:
 
-  Buffer& operator=(const Buffer& eq); // disable assignment
+  Buffer& operator=(const Buffer& eq) throw();
 public:
 
   /**
@@ -53,10 +53,13 @@ public:
     MemoryException if unable to allocate the required memory.
 
     @param size Specifies the initial size of the buffer. Default is 0.
-    @param granularity Specifies the granularity of the size. Default is given by DEFAULT_GRANULARITY.
+    @param granularity Specifies the granularity of the size. Default is given by
+    DEFAULT_GRANULARITY.
   */
-  explicit Buffer(unsigned int size = 0, unsigned int granularity = DEFAULT_GRANULARITY) throw(MemoryException);
-
+  explicit Buffer(
+    unsigned int size = 0,
+    unsigned int granularity = DEFAULT_GRANULARITY) throw(MemoryException);
+  
   /**
     Copy constructor. Raises MemoryException if unable to allocate the required
     memory.
@@ -85,11 +88,11 @@ public:
   }
 
   /**
-    Sets the size of the buffer. The original bytes of the buffer are not changed.
-    If the buffer is expanded the bytes are not initialized. Raises
+    Sets the size of the buffer. The original bytes of the buffer are not
+    changed. If the buffer is expanded the bytes are not initialized. Raises
     MemoryException if unable to adjust the size of the buffer or the buffer is
     externally managed.
-
+    
     @param size The desired size.
   */
   void setSize(unsigned int size) throw(MemoryException);

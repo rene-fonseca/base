@@ -96,7 +96,8 @@ public:
   /**
     Initializes binary tree from other binary tree.
   */
-  OrderedBinaryTree(const OrderedBinaryTree& copy) throw() : BinaryTree<TYPE>(copy) {
+  OrderedBinaryTree(const OrderedBinaryTree& copy) throw()
+    : BinaryTree<TYPE>(copy) {
   }
 
   /**

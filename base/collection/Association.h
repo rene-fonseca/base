@@ -39,7 +39,7 @@ private:
   VALUE value;
 
   /* Disable the default assignment operator. */
-  Association& operator=(const Association& eq);
+  Association& operator=(const Association& eq) throw();
 public:
 
   /**

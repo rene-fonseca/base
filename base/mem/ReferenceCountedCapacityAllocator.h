@@ -40,7 +40,8 @@ private:
   /**
     Default assignment is prohibited.
   */
-  ReferenceCountedCapacityAllocator& operator=(const ReferenceCountedCapacityAllocator& eq);
+  ReferenceCountedCapacityAllocator& operator=(
+    const ReferenceCountedCapacityAllocator& eq) throw();
 public:
 
   /**
@@ -55,10 +56,11 @@ public:
 
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline explicit ReferenceCountedCapacityAllocator(unsigned int granularity) throw(OutOfRange)
+  inline explicit ReferenceCountedCapacityAllocator(
+    unsigned int granularity) throw(OutOfRange)
     : CapacityAllocator<TYPE>(granularity) {
   }
-
+  
   /**
     Initializes an allocator of the specified size without initializing the
     elements. Raises MemoryException if unable to allocate enough memory to
@@ -68,7 +70,9 @@ public:
     @param size Specifies the initial size of the allocator.
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline ReferenceCountedCapacityAllocator(unsigned int size, unsigned int granularity) throw(OutOfRange, MemoryException)
+  inline ReferenceCountedCapacityAllocator(
+    unsigned int size,
+    unsigned int granularity) throw(OutOfRange, MemoryException)
     : CapacityAllocator<TYPE>(size, granularity) {
   }
 

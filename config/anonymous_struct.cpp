@@ -26,7 +26,6 @@ public:
       };
     } c;
   }
-
 };
 
 int main() {

@@ -20,7 +20,6 @@ public:
 
   inline void myMethod() {
   }
-
 };
 
 int main() {

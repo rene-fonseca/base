@@ -34,23 +34,20 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short The general exception class
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0.3
+  @version 1.0.4
 */
 
 class Exception {
 private:
 
-  /**
-    The message associated with the exception (ASCII format). This may not be available.
-  */
+  /** The message associated with the exception (ASCII format). This may not be available. */
   const char* message;
-  
-  /**
-    The identity of the type which raised the exception (may not be available).
-  */
+  /** The identity of the type which raised the exception (may not be available). */
   const Type type;
+  /** The associated cause (0 by default). */
+  unsigned int cause;
 public:
-  
+
   /**
     Returns true if the stack is currently being unwinded due to a raised exception.
     
@@ -120,6 +117,28 @@ public:
     Returns the identity of the type which raised the exception.
   */
   Type getType() const throw();
+
+  /**
+    Returns the associated cause. 0 indicates an unspecified cause.
+  */
+  inline unsigned int getCause() const throw() {
+    return cause;
+  }
+
+  /**
+    Sets the cause. 0 indicates an unspecified cause.
+  */
+  inline void setCause(unsigned int cause) throw() {
+    this->cause = cause;
+  }
+  
+  /**
+    Associates the exception with the given cause.
+  */
+  inline Exception& bindCause(unsigned int cause) throw() {
+    setCause(cause);
+    return *this;
+  }
   
   /**
     Destroys exception object.

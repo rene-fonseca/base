@@ -21,24 +21,23 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 CharacterSet CharacterSet::load(const String& path) throw(FileException, InvalidFormat) {
   try {
-    // binary format
-    
     File file(path, File::READ, 0);
     FileRegion region(0, minimum<uint64>(file.getSize(), 4096 * 4));
     MappedFile mappedFile(file, region);
     const uint8* data = mappedFile.getBytes();
 
     // check format (EUI-64)
-    // OID <ff> <ff> <ff> // company
+    // <ff> <ff> <ff> // company
     // <12> <34> <56> <67> <89> // format
-      
+    data += 8; // skip id
+    
     // check version
     uint8 majorVersion = *data++;
     uint8 minorVersion = *data++;
     uint8 microVersion = *data++;
     uint8 reserved = *data++;
     assert(
-      (majorVersion == 1) && (minorVersion >= 0) && (microVersion >= 0) && (reserved >= 0),
+      (majorVersion == 1) /* && (minorVersion >= 0) && (microVersion >= 0) && (reserved >= 0) */,
       InvalidFormat(Type::getType<CharacterSet>())
     );
     
@@ -73,11 +72,14 @@ CharacterSet CharacterSet::load(const String& path) throw(FileException, Invalid
     }
     
     // check if UCS-4 values are valid
-//      const ucs4* src = characterSet;
-    for (unsigned int i = 0; i < 256; ++i) {
-//        assert(isUCS4(*src++), Exception(Type::getType<CharacterSet>()));
+    {
+      const ucs4* src = characterSet.characterSet->getElements();
+      for (unsigned int i = 0; i < 256; ++i) {
+        // duplicates are allowed
+        assert(WideString::isUCS4(*src++), InvalidFormat(Type::getType<CharacterSet>()));
+      }
     }
-
+    
     // ignore any other data
   } catch (IOException& e) {
     throw FileException(Type::getType<CharacterSet>());
@@ -103,10 +105,57 @@ CharacterSet CharacterSet::load(const Array<String>& searchPaths, const String& 
     throw FileException(Type::getType<CharacterSet>());
   }
 }
-  
+
 CharacterSet::CharacterSet() throw(MemoryException)
   : characterSet(new CharacterSetImpl(256)) {
   fill<ucs4>(characterSet->getElements(), characterSet->getSize(), 0);
+}
+
+void CharacterSet::save(const String& path, Architecture::ByteOrder byteOrder) const throw(FileException) {
+  try {
+    File file(path, File::WRITE, File::CREATE|File::TRUNCATE|File::EXCLUSIVE);
+    
+    // check format (EUI-64)
+    uint8 buffer[8 + 4 + sizeof(ucs4) + 256 * sizeof(ucs4)]; // id + version + bom + chars
+    uint8* header = buffer;
+    
+    // id
+    *header++ = 0xff; // TAG: not reserved
+    *header++ = 0xff;
+    *header++ = 0xff;
+    *header++ = 0x12; // TAG: not allocated
+    *header++ = 0x34;
+    *header++ = 0x56;
+    *header++ = 0x78;
+    *header++ = 0x90;
+    
+    // check version
+    *header++ = 1; // majorVersion
+    *header++ = 0; // minorVersion
+    *header++ = 0; // microVersion
+    *header++ = 0; // reserved
+    
+    const ucs4* src = characterSet->getElements();
+    
+    if (byteOrder == Architecture::LE) {
+      // load data lot (little endian)
+      LittleEndian<uint32>* dest = Cast::pointer<LittleEndian<uint32>*>(header);
+      *dest++ = WideString::BOM;
+      for (unsigned int i = 0; i < 256; ++i) {
+        *dest++ = *src++;
+      }
+    } else if (byteOrder == Architecture::BE) {
+      // load data lot (big endian)
+      BigEndian<uint32>* dest = Cast::pointer<BigEndian<uint32>*>(header);
+      *dest++ = WideString::BOM;
+      for (unsigned int i = 0; i < 256; ++i) {
+        *dest++ = *src++;
+      }
+    }
+    file.write(Cast::pointer<const char*>(buffer), sizeof(buffer));
+  } catch (IOException& e) {
+    throw FileException(Type::getType<CharacterSet>());
+  }
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

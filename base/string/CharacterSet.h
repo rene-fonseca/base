@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE_STRING__CHARACTER_SET_H
 
 #include <base/Object.h>
+#include <base/Architecture.h>
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/string/String.h>
 #include <base/string/WideString.h>
@@ -96,6 +97,24 @@ public:
   inline ucs4 getCharacter(uint8 value) const throw() {
     return characterSet->getElements()[value];
   }
+
+  /**
+    Sets the Unicode value of the specified character in the character set.
+    
+    @param value The 8 bit character within the character set.
+    @param code The Unicode value.
+  */
+  inline void setCharacter(uint8 value, ucs4 code) throw() {
+    characterSet->getElements()[value] = value;
+  }
+  
+  /**
+    Saves the character set to the specified file.
+    
+    @param path The file path.
+    @param byteOrder The desired byte order. Default is Architecture::NATIVE.
+  */
+  void save(const String& path, Architecture::ByteOrder byteOrder = Architecture::NATIVE) const throw(FileException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

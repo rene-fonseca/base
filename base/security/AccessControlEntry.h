@@ -39,31 +39,50 @@ public:
 
   /** The fundamental permissions. */
   enum ExplicitPermission {
-    EXECUTE = 1, /**< Execute permission. */
+    /** Execute permission. */
+    EXECUTE = 1,
 
-    READ_DATA = EXECUTE << 1, /**< Read content permission. */
-    READ_ATTRIBUTES = READ_DATA << 1, /**< Read basic attributes permission. */
-    READ_EXTENDED_ATTRIBUTES = READ_ATTRIBUTES << 1, /**< Read extended attributes permission. */
-    READ_PERMISSIONS = READ_EXTENDED_ATTRIBUTES << 1, /**< Permissions to read permissions. */
+    /** Read content permission. */
+    READ_DATA = EXECUTE << 1,
+    /** Read basic attributes permission. */
+    READ_ATTRIBUTES = READ_DATA << 1,
+    /** Read extended attributes permission. */
+    READ_EXTENDED_ATTRIBUTES = READ_ATTRIBUTES << 1,
+    /** Permissions to read permissions. */
+    READ_PERMISSIONS = READ_EXTENDED_ATTRIBUTES << 1,
     
-    WRITE_DATA = READ_PERMISSIONS << 1, /**< Permission to change content of object. */
-    ADD_CONTENT = WRITE_DATA << 1, /**< Permission to add content to object. */
-    CHANGE_ATTRIBUTES = ADD_CONTENT << 1, /**< Permissions to change basic attributes. */
-    CHANGE_EXTENDED_ATTRIBUTES = CHANGE_ATTRIBUTES << 1, /**< Permission to change extended attributes. */
-    CHANGE_PERMISSIONS = CHANGE_EXTENDED_ATTRIBUTES << 1, /**< Permission to change permissions of object. */
-    CHANGE_OWNER = CHANGE_PERMISSIONS << 1, /**< Permission to change owner of object. */
+    /** Permission to change content of object. */
+    WRITE_DATA = READ_PERMISSIONS << 1,
+    /** Permission to add content to object. */
+    ADD_CONTENT = WRITE_DATA << 1,
+    /** Permissions to change basic attributes. */
+    CHANGE_ATTRIBUTES = ADD_CONTENT << 1,
+    /** Permission to change extended attributes. */
+    CHANGE_EXTENDED_ATTRIBUTES = CHANGE_ATTRIBUTES << 1,
+    /** Permission to change permissions of object. */
+    CHANGE_PERMISSIONS = CHANGE_EXTENDED_ATTRIBUTES << 1,
+    /** Permission to change the owner of an object. */
+    CHANGE_OWNER = CHANGE_PERMISSIONS << 1,
     
-    REMOVE = CHANGE_OWNER << 1, /**< Permission to change the owner of the object. */
-    REMOVE_COMPONENT = REMOVE << 1, /**< Permission to remove subcomponent. */
+    /** Permission to remove the object. */
+    REMOVE = CHANGE_OWNER << 1,
+    /** Permission to remove subcomponents. */
+    REMOVE_COMPONENT = REMOVE << 1,
     
-    SYNCHRONIZE = REMOVE_COMPONENT << 1, /**< Synchronization permission. */
+    /** Synchronization permission. */
+    SYNCHRONIZE = REMOVE_COMPONENT << 1,
     
-    APPEND_DATA = ADD_CONTENT, /**< Permission to append data to file. */
+    /** Permission to append data to file. */
+    APPEND_DATA = ADD_CONTENT,
     
-    TRAVERSE_FOLDER = EXECUTE, /**< Permission to traverse folder. */
-    LIST_FOLDER = READ_DATA, /**< Permission to read content of folder. */
-    ADD_FILE = WRITE_DATA, /**< Permission to add file in folder. */
-    CREATE_FOLDERS = APPEND_DATA, /**< Permission to add subfolder. */
+    /** Permission to traverse folder. */
+    TRAVERSE_FOLDER = EXECUTE,
+    /** Permission to read content of folder. */
+    LIST_FOLDER = READ_DATA,
+    /** Permission to add file in folder. */
+    ADD_FILE = WRITE_DATA,
+    /** Permission to add subfolder. */
+    CREATE_FOLDERS = APPEND_DATA,
   };
   
   /** Composite permissions. */
@@ -123,8 +142,8 @@ public:
   AccessControlEntry(const Trustee& trustee, AccessMask allowed) throw();
   
   /**
-    Initializes access control entry (ACE) with the specified allowed and denied
-    permissions.
+    Initializes access control entry (ACE) with the specified allowed and
+    denied permissions.
 
     @param trustee The trustee.
     @param permissions The allowed/denied permissions (e.g. READ, WRITE, ...).
@@ -200,7 +219,8 @@ public:
   Writes an Access Control Entry (ACE) to a format output stream.
 */
 FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const AccessControlEntry& ace) throw(IOException);
+  FormatOutputStream& stream,
+  const AccessControlEntry& ace) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

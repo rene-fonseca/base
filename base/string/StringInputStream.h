@@ -17,12 +17,14 @@
 #include <base/io/InputStream.h>
 #include <base/io/EndOfFile.h>
 #include <base/string/String.h>
+#include <base/io/BindException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   A string input stream is a input stream which receives its data from a string.
 
+  @short Input stream with string source.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -31,7 +33,7 @@ class StringInputStream : public InputStream, protected String {
 protected:
 
   /** String providing the data stream. */
-  String& str;
+  String& string;
   /** The current position. */
   unsigned int index;
   /** Specifies that the end has been reached. */
@@ -43,33 +45,33 @@ public:
   /**
     Initializes the string input stream.
 
-    @param s The string providing the data stream.
+    @param string The string providing the data stream.
   */
-  StringInputStream(String& s) throw(BindException);
-
+  StringInputStream(String& string) throw(BindException);
+  
   /**
     Returns the number of bytes that can be read or skipped over without blocking.
 
     @return Available number of bytes in stream.
   */
   unsigned int available() throw(IOException);
-
+  
   /**
     Closes the input stream and releases any system resources associated with the stream.
   */
   void close() throw(IOException);
-
+  
   /**
     Fills the buffer with bytes from the stream. Blocks if asked to read more bytes than available.
-
+    
     @param buffer The buffer.
     @param size The size of the buffer.
   */
   unsigned int read(char* buffer, unsigned int size) throw(IOException);
-
+  
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than available.
-
+    
     @param count The number of bytes to skip.
   */
   unsigned int skip(unsigned int count) throw(IOException);

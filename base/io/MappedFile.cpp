@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/io/MappedFile.h>
 #include <base/Base.h>
 #include <base/Functor.h>
@@ -58,25 +59,31 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
 #else // unix
   void* address;
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    address = mmap64(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, getHandle(file), region.getOffset());
+    address = ::mmap64(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, getHandle(file), region.getOffset());
   #else
     assert((region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM), FileException("Unable to map file region", this));
-    address = mmap(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, getHandle(file), region.getOffset());
+    address = ::mmap(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, getHandle(file), region.getOffset());
   #endif
   assert(address != (void*)-1, FileException("Unable to map file region", this));
 #endif // flavor
   bytes = address;
 }
 
-void MappedFile::MappedFileImpl::flush() const throw(FileException) {
+void MappedFile::MappedFileImpl::synchronize() throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!::FlushViewOfFile(bytes, 0)) {
     throw FileException("Unable to flush", this);
   }
 #else // unix
-  if (msync(bytes, region.getSize(), MS_SYNC)) {
-    throw FileException("Unable to flush", this);
-  }
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+    if (::msync((caddr_t)bytes, region.getSize(), MS_SYNC)) {
+      throw FileException("Unable to flush", this);
+    }
+  #else
+    if (::msync(bytes, region.getSize(), MS_SYNC)) {
+      throw FileException("Unable to flush", this);
+    }
+  #endif
 #endif // flavor
 }
 
@@ -86,9 +93,15 @@ MappedFile::MappedFileImpl::~MappedFileImpl() throw(FileException) {
     throw FileException("Unable to unmap file", this);
   }
 #else // unix
-  if (munmap(bytes, region.getSize())) {
-    throw FileException("Unable to unmap file", this);
-  }
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+    if (::munmap((caddr_t)bytes, region.getSize())) {
+      throw FileException("Unable to unmap file", this);
+    }
+  #else
+    if (::munmap(bytes, region.getSize())) {
+      throw FileException("Unable to unmap file", this);
+    }
+  #endif
 #endif // flavor
 }
 
@@ -98,8 +111,12 @@ unsigned int MappedFile::getGranularity() throw() {
   ::GetSystemInfo(&info);
   return info.dwAllocationGranularity;
 #else // unix
-  ASSERT(sysconf(_SC_PAGE_SIZE) <= PrimitiveTraits<unsigned int>::MAXIMUM); // this should never happen
-  return sysconf(_SC_PAGE_SIZE);
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+    return 4096 * 2; // TAG: fixme
+  #else
+    ASSERT(::sysconf(_SC_PAGE_SIZE) <= PrimitiveTraits<unsigned int>::MAXIMUM); // this will never happen
+    return ::sysconf(_SC_PAGE_SIZE);
+  #endif
 #endif // flavor
 }
 

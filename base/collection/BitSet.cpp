@@ -26,34 +26,39 @@ void BitSet::zeroExtend(unsigned int size) throw(MemoryException) {
       unsigned int oldCount = getNumberOfElements(this->size);
       if (oldCount < count) {
         this->elements->setSize(count);
-        fill<unsigned long>(getElements() + oldCount, count - oldCount, 0); // does not overwrite bits in use
+        // does not overwrite bits in use
+        fill<unsigned long>(getElements() + oldCount, count - oldCount, 0);
       }
     }
     this->size = size;
   }
 }
 
-BitSet::BitSet() throw() : elements(new ReferenceCountedCapacityAllocator<unsigned long>()), size(0) {
+BitSet::BitSet() throw()
+  : elements(new ReferenceCountedCapacityAllocator<unsigned long>()), size(0) {
 }
 
-BitSet::BitSet(unsigned int s, bool value) throw() :
-  elements(new ReferenceCountedCapacityAllocator<unsigned long>(getNumberOfElements(size))),
-  size(s) {
-  fill<unsigned long>(getElements(), getNumberOfElements(size), value ? ~0UL : 0);
+BitSet::BitSet(unsigned int _size, bool value) throw()
+  : elements(
+      new ReferenceCountedCapacityAllocator<unsigned long>(
+        getNumberOfElements(_size),
+        ReferenceCountedCapacityAllocator<unsigned long>::DEFAULT_GRANULARITY
+      )
+    ),
+    size(_size) {
+  fill<unsigned long>(getElements(), getNumberOfElements(size), value ? ~0UL : 0UL);
   reinitialize();
 }
 
 BitSet& BitSet::operator=(const BitSet& eq) throw() {
-  if (&eq != this) { // protect against self assignment
-    elements = eq.elements;
-    size = eq.size;
-  }
+  elements = eq.elements;
+  size = eq.size;
   return *this;
 }
 
 bool BitSet::getAt(unsigned int index) const throw(OutOfRange) {
   assert(index < size, OutOfRange(this));
-  return (getElements()[getElementIndex(index)]) & getBitMask(index);
+  return getElements()[getElementIndex(index)] & getBitMask(index);
 }
 
 void BitSet::setAt(unsigned int index, bool value) throw(OutOfRange) {
@@ -66,7 +71,7 @@ void BitSet::setAt(unsigned int index, bool value) throw(OutOfRange) {
 }
 
 BitSet& BitSet::set() throw() {
-  fill<unsigned long>(getElements(), getNumberOfElements(size), ~(unsigned long)0);
+  fill<unsigned long>(getElements(), getNumberOfElements(size), ~0UL);
   reinitialize();
   return *this;
 }
@@ -93,7 +98,7 @@ BitSet& BitSet::flip() throw() {
   transform<unsigned long>( // TAG: check this
     getElements(),
     getNumberOfElements(size),
-    bind2Second(BitwiseExclusiveOr<unsigned long>(), ~(unsigned long)0)
+    bind2Second(BitwiseExclusiveOr<unsigned long>(), ~0UL)
   );
   reinitialize();
   return *this;
@@ -138,62 +143,62 @@ BitSet& BitSet::operator^=(const BitSet& value) throw() {
   return *this;
 }
 
-BitSet& BitSet::operator<<=(unsigned int count) throw() {
-  if (count == 0) {
+BitSet& BitSet::operator<<=(unsigned int shift) throw() {
+  if (shift == 0) {
     return *this;
   }
-
-  unsigned int oldSize = size;
-  setSize(size + count); // possible copy on write
-
-  unsigned long* writeHead = getElements() + getElementIndex(count);
-  const unsigned long* readHead = getElements(); // must be called after possible copy on write
-  unsigned int mostSignificant = count % (sizeof(unsigned long) * 8);
-  unsigned int leastSignificant = sizeof(unsigned long) * 8 - mostSignificant;
-
-  if (mostSignificant == 0) { // can we do a fast move without binary shifts
-    move<unsigned long>(writeHead, readHead, getNumberOfElements(oldSize));
-  } else {
-    const unsigned long* end = readHead + getNumberOfElements(oldSize);
-    unsigned long previous = 0;
-    while (readHead <= end) {
-      unsigned long temp = *readHead;
-      *writeHead = (previous >> leastSignificant) | (temp << mostSignificant);
-      previous = temp;
-      ++writeHead;
-      ++readHead;
+  
+  const unsigned int bitShift = shift % (sizeof(unsigned long) * 8);
+  const unsigned int wordShift = shift/(sizeof(unsigned long) * 8);
+  const unsigned int wordSize = getNumberOfElements(size);
+  unsigned long* begin = getElements();
+  
+  // start from last non-zero value + wordSize (but do not exceed end)
+  unsigned long* dest = begin + wordSize - 1;
+  const unsigned long* src = dest - wordShift;
+  
+  if (bitShift == 0) {
+    while (src >= begin) {
+      *dest-- = *src--;
     }
+  } else {
+    unsigned int invBitShift = (sizeof(unsigned long) * 8) - bitShift;
+    while (src > begin) {
+      *dest = (*src << bitShift) | (*--src >> invBitShift);
+      --dest;
+    }
+    *dest = *src << bitShift; // final (shift in zeros)
   }
-
-  fill<unsigned long>(getElements(), getElementIndex(count), 0); // reinitialize beginning
+  fill<unsigned long>(begin, wordShift, 0UL); // mask beginning of value
   return *this;
 }
 
-BitSet& BitSet::operator>>=(unsigned int count) throw() {
-  if (count == 0) {
+BitSet& BitSet::operator>>=(unsigned int shift) throw() {
+  if (shift == 0) {
     return *this;
   }
-
-  unsigned long* writeHead = getElements(); // possible copy on write
-  const unsigned long* readHead = writeHead + getElementIndex(count) + 1;
-  unsigned int leastSignificant = count % (sizeof(unsigned long) * 8);
-  unsigned int mostSignificant = sizeof(unsigned long) * 8 - leastSignificant;
-
-  if (leastSignificant == 0) { // can we do a fast move without binary shifts
-    move<unsigned long>(writeHead, readHead, getNumberOfElements(size));
+  
+  const unsigned int bitShift = shift % (sizeof(unsigned long) * 8);
+  const unsigned int wordShift = shift/(sizeof(unsigned long) * 8);
+  
+  unsigned long* dest = getElements(); // possible copy on write
+  const unsigned long* src = dest + wordShift; // getElementIndex(shift);
+  const unsigned int wordSize = getNumberOfElements(size);
+  
+  if (bitShift == 0) { // can we do a fast move without binary shifts
+    move<unsigned long>(dest, src, wordSize - wordShift);
+    dest += wordSize - wordShift;
   } else {
-    const unsigned long* end = writeHead + getNumberOfElements(size);
-    unsigned long previous = *readHead++;
-    while (readHead <= end) { // TAG: possible segmentation fault problem
-      unsigned long temp = *readHead;
-      *writeHead = (previous >> leastSignificant) | (temp << mostSignificant);
-      previous = temp;
-      ++writeHead;
-      ++readHead;
+    unsigned int nextBitShift = (sizeof(unsigned long) * 8) - bitShift; // 0 < nextBitShift < (sizeof(unsigned long) * 8)
+    for (const unsigned long* end = dest + (wordSize - wordShift - 1); dest != end; ++dest) {
+      unsigned int temp = *src >> bitShift;
+      ++src;
+      temp |= *src << nextBitShift;
+      *dest = temp;
     }
+    *dest++ = *src >> bitShift;
   }
-
-  setSize(size - count);
+  fill<unsigned long>(dest, wordShift, 0UL); // setSize(size - shift);
   return *this;
 }
 
@@ -204,11 +209,12 @@ void BitSet::removeAll() throw() {
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value) throw(IOException) {
   StringOutputStream buffer;
-
+  
   const unsigned long* current = value.getElements() + value.getSize();
   unsigned long count = value.getSize();
-  unsigned long mask = 1UL << (value.getSize() % (sizeof(unsigned long) * 8)); // most significant first
-
+  // most significant first
+  unsigned long mask = 1UL << (value.getSize() % (sizeof(unsigned long) * 8));
+  
   while (count) {
     unsigned long value = *current;
     --current;
@@ -219,7 +225,6 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value) 
     }
     mask = 1UL << (sizeof(unsigned long) * 8 - 1); // most significant first
   }
-
   return stream << buffer.getString();
 }
 

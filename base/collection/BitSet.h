@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   An ordered sequence of boolean values (bits). The is offen used to represent a
-  set of flags.
+  set of flags. This class does not take up as much memory as Array<bool>.
   
   @short Set of bits
   @ingroup collections
@@ -38,6 +38,340 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class BitSet : public Collection {
 public:
 
+  class BitSetEnumerator;
+  class BitSetReadEnumerator;
+  
+  /*
+    Reference to a bit.
+  */
+  class BitReference {
+    friend class BitSetEnumerator;
+  private:
+    
+    /** The word containing the bit. */
+    unsigned long* word;
+    /** The bit within the word. */
+    unsigned long mask;
+    
+    inline BitReference(unsigned long* _word, unsigned long _mask) throw()
+      : word(_word), mask(_mask) {
+    }
+  public:
+    
+    inline BitReference(const BitReference& copy) throw()
+      : word(copy.word), mask(copy.mask) {
+    }
+    
+    /**
+      Assignment of bit.
+    */
+    inline BitReference& operator=(const BitReference& eq) throw() {
+      word = eq.word;
+      mask = eq.mask;
+      return *this;
+    }
+    
+    /**
+      Assignment of bit.
+    */
+    inline BitReference& operator=(bool value) throw() {
+      if (value) {
+        *word |= mask;
+      } else {
+        *word &= ~mask;
+      }
+      return *this;
+    }
+
+    /**
+      Logic and operator.
+    */
+    inline BitReference& operator&=(bool value) throw() {
+      if (!value) {
+        *word &= ~mask;
+      }
+      return *this;
+    }
+    
+    /**
+      Logic or operator.
+    */
+    inline BitReference& operator|=(bool value) throw() {
+      if (value) {
+        *word |= mask;
+      }
+      return *this;
+    }
+    
+    /**
+      Logic xor operator.
+    */
+    inline BitReference& operator^=(bool value) throw() {
+      if (value) {
+        *word ^= mask; // flip
+      }
+      return *this;
+    }
+    
+    /**
+      Returns the value of the referenced bit.
+    */
+    inline operator bool() const throw() {
+      return *word & mask;
+    }
+  };
+
+  /*
+    Reference to a bit.
+  */
+  class BitReadReference {
+    friend class BitSetReadEnumerator;
+  private:
+    
+    /** The word containing the bit. */
+    const unsigned long* word;
+    /** The bit within the word. */
+    unsigned long mask;
+    
+    inline BitReadReference(const unsigned long* _word, unsigned long _mask) throw()
+      : word(_word), mask(_mask) {
+    }
+  public:
+    
+    inline BitReadReference(const BitReadReference& copy) throw()
+      : word(copy.word), mask(copy.mask) {
+    }
+    
+    /**
+      Assignment of bit.
+    */
+    inline BitReadReference& operator=(const BitReadReference& eq) throw() {
+      word = eq.word;
+      mask = eq.mask;
+      return *this;
+    }
+    
+    /**
+      Returns the value of the referenced bit.
+    */
+    inline operator bool() const throw() {
+      return *word & mask;
+    }
+  };
+
+  /*
+    Pointer to a bit.
+  */
+  class BitPointer {
+    friend class BitSetEnumerator;
+  private:
+    
+    /** The bit. */
+    BitReference bit;
+    
+    inline BitPointer(const BitReference& _bit) throw() : bit(_bit) {
+    }
+  public:
+    
+    /**
+      Returns the reference to the bit.
+    */
+    inline BitReference operator*() const throw() {
+      return bit;
+    }
+  };
+  
+  /*
+    Pointer to a bit.
+  */
+  class BitReadPointer {
+    friend class BitSetReadEnumerator;
+  private:
+    
+    /** The bit. */
+    BitReadReference bit;
+    
+    inline BitReadPointer(const BitReadReference& _bit) throw() : bit(_bit) {
+    }
+  public:
+    
+    /**
+      Returns the reference to the bit.
+    */
+    inline BitReadReference operator*() const throw() {
+      return bit;
+    }
+  };
+  
+  class EnumeratorTraits {
+  protected:
+    
+    typedef EnumeratorTraits SelfEnumeratorTraits;
+  public:
+    
+    typedef bool Value;
+    typedef const BitReference Reference;
+    typedef const BitPointer Pointer;
+    typedef unsigned int Distance;
+  };
+
+  /**
+    Enumerator of elements of a bit set.
+    
+    @short Non-modifying enumerator of elements of a bit set.
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    @version 1.0
+  */
+  class BitSetEnumerator : public Enumerator<EnumeratorTraits> {
+    friend class BitSet;
+  protected:
+    
+    typedef Enumerator<EnumeratorTraits>::Value Value;
+    typedef Enumerator<EnumeratorTraits>::Pointer Pointer;
+    
+    /** The current position in the enumeration. */
+    unsigned long* word;
+    /** The number of bits left. */
+    unsigned int count;
+    
+    /**
+      Initializes an enumeration of all the elements of a bit set.
+      
+      @param word Specifies the beginning of the enumeration.
+      @param count The number of bits in the set.
+    */
+    explicit inline BitSetEnumerator(unsigned long* _word, unsigned int _count) throw()
+      : word(_word), count(_count) {
+    }
+  public:
+    
+    /**
+      Initializes enumeration from other enumeration.
+    */
+    inline BitSetEnumerator(const BitSetEnumerator& copy) throw()
+      : word(copy.word), count(copy.count) {
+    }
+    
+    /**
+      Returns true if the enumeration still contains elements.
+    */
+    inline bool hasNext() const throw() {
+      return count != 0;
+    }
+    
+    /**
+      Returns the next element and advances the position of this enumeration.
+    */
+    inline Pointer next() throw(EndOfEnumeration) {
+      assert(count != 0, EndOfEnumeration());
+      if (count % (sizeof(unsigned long) * 8) == 0) {
+        --word;
+      }
+      --count;
+      return BitPointer(BitReference(word, 1UL << (count % (sizeof(unsigned long) * 8))));
+    }
+    
+    /**
+      Returns true if the enumerations are pointing to the same position.
+    */
+    inline bool operator==(const BitSetEnumerator& eq) const throw() {
+      return (word == eq.word) && (count == eq.count);
+    }
+    
+    /**
+      Returns true if the enumerations aren't pointing to the same position.
+    */
+    inline bool operator!=(const BitSetEnumerator& eq) const throw() {
+      return (word != eq.word) || (count != eq.count);
+    }
+  };
+  
+  class ReadEnumeratorTraits {
+  protected:
+    
+    typedef ReadEnumeratorTraits SelfEnumeratorTraits;
+  public:
+    
+    typedef bool Value;
+    typedef BitReadReference Reference;
+    typedef BitReadPointer Pointer;
+    typedef unsigned int Distance;
+  };
+  
+  /**
+    Enumerator of elements of a bit set.
+    
+    @short Non-modifying enumerator of elements of a bit set.
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    @version 1.0
+  */
+  class BitSetReadEnumerator : public Enumerator<ReadEnumeratorTraits> {
+    friend class BitSet;
+  protected:
+    
+    typedef Enumerator<ReadEnumeratorTraits>::Value Value;
+    typedef Enumerator<ReadEnumeratorTraits>::Pointer Pointer;
+    
+    /** The current position in the enumeration. */
+    const unsigned long* word;
+    /** The number of bits left. */
+    unsigned int count;
+    
+    /**
+      Initializes an enumeration of all the elements of a bit set.
+      
+      @param word Specifies the beginning of the enumeration.
+      @param count The number of bits in the set.
+    */
+    explicit inline BitSetReadEnumerator(const unsigned long* _word, unsigned int _count) throw()
+      : word(_word), count(_count) {
+    }
+  public:
+    
+    /**
+      Initializes enumeration from other enumeration.
+    */
+    inline BitSetReadEnumerator(const BitSetReadEnumerator& copy) throw()
+      : word(copy.word), count(copy.count) {
+    }
+    
+    /**
+      Returns true if the enumeration still contains elements.
+    */
+    inline bool hasNext() const throw() {
+      return count != 0;
+    }
+    
+    /**
+      Returns the next element and advances the position of this enumeration.
+    */
+    inline Pointer next() throw(EndOfEnumeration) {
+      assert(count != 0, EndOfEnumeration());
+      if (count % (sizeof(unsigned long) * 8) == 0) {
+        --word;
+      }
+      --count;
+      return BitReadPointer(BitReadReference(word, 1UL << (count % (sizeof(unsigned long) * 8))));
+    }
+    
+    /**
+      Returns true if the enumerations are pointing to the same position.
+    */
+    inline bool operator==(const BitSetReadEnumerator& eq) const throw() {
+      return (word == eq.word) && (count == eq.count);
+    }
+    
+    /**
+      Returns true if the enumerations aren't pointing to the same position.
+    */
+    inline bool operator!=(const BitSetReadEnumerator& eq) const throw() {
+      return (word != eq.word) || (count != eq.count);
+    }
+  };
+
+  typedef BitSetEnumerator Enumerator;
+  typedef BitSetReadEnumerator ReadEnumerator;
+  
   /**
     Reference to a single bit within a BitSet.
   */
@@ -47,9 +381,11 @@ public:
     
     BitSet& bitset; // use reference to avoid 'copy on write'
     unsigned int index;
+    
     Reference(const Reference& copy); // prohibit default copy initialization
+    
     Reference& operator=(const Reference& eq); // prohibit default assignment
-
+    
     inline Reference(BitSet& _bitset, unsigned int _index)
       : bitset(_bitset),
         index(_index) {
@@ -72,28 +408,28 @@ private:
   /** The number of bits in the bit set. */
   unsigned int size;
 protected:
-
+  
   /**
     Returns the number of required elements to hold the specified number of bits.
   */
   static inline unsigned int getNumberOfElements(unsigned int size) throw() {
     return (size + sizeof(unsigned long) * 8 - 1)/(sizeof(unsigned long) * 8);
   }
-
+  
   /**
     Returns the index of the internal element holding the bit at the specified index.
   */
   static inline unsigned int getElementIndex(unsigned int index) throw() {
     return index/(sizeof(unsigned long) * 8);
   }
-
+  
   /**
     Returns the bit mask for the specified index.
   */
   static inline unsigned long getBitMask(unsigned int index) throw() {
-    return ((unsigned long)1) << (index % (sizeof(unsigned long) * 8));
+    return 1UL << (index % (sizeof(unsigned long) * 8));
   }
-
+  
   /**
     Returns the elements of the internal array for modifying access.
   */
@@ -101,19 +437,19 @@ protected:
     elements.copyOnWrite();
     return elements->getElements();
   }
-
+  
   /**
     Returns the elements of the internal array for non-modifying access.
   */
   inline const unsigned long* getElements() const throw() {
     return elements->getElements();
   }
-
+  
   /**
     Zero-extends the bit set to the specified size.
   */
   void zeroExtend(unsigned int size) throw(MemoryException);
-
+  
   /**
     Resets any unused bits.
   */
@@ -123,7 +459,7 @@ protected:
       getElements()[getNumberOfElements(size) - 1] &= mask; // reset unused bits
     }
   }
-
+  
   /**
     Sets the number of bits in the bit set.
   */
@@ -137,7 +473,7 @@ public:
     Initializes an empty bit set.
   */
   BitSet() throw();
-
+  
   /**
     Initializes array with the specified number of elements.
 
@@ -145,7 +481,7 @@ public:
     @param value The initial state of the bits.
   */
   BitSet(unsigned int size, bool value) throw();
-
+  
   /**
     Initializes bit set from other bit set.
   */
@@ -292,6 +628,28 @@ public:
     return getAt(index);
   }
 
+  /**
+    Returns a modifying enumerator of the bit set. The elements are
+    enumerated from most significant to the least significant.
+  */
+  inline Enumerator getEnumerator() const throw() {
+    return Enumerator(
+      elements->getElements() + size/(sizeof(unsigned long) * 8),
+      size
+    );
+  }
+  
+  /**
+    Returns a non-modifying enumerator of the bit set. The elements are
+    enumerated from most significant to the least significant.
+  */
+  inline ReadEnumerator getReadEnumerator() const throw() {
+    return ReadEnumerator(
+      elements->getElements() + size/(sizeof(unsigned long) * 8),
+      size
+    );
+  }
+  
   /**
     Removes all the bits.
   */

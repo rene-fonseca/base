@@ -78,7 +78,7 @@ Pipe::PipeHandle::~PipeHandle() throw(PipeException) {
     }
   }
 #else // unix
-  if (fd->isValid()) {
+  if (isValid()) {
     if (::close(getHandle())) {
       throw PipeException("Unable to close pipe");
     }

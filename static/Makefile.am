@@ -20,5 +20,6 @@ EXTRA_DIST = \
   sparc-sun-solaris2.7 \
   sparc-sun-solaris2.8 \
   sparc-sun-solaris2.9 \
+  sparcv9-sun-solaris2 \
   sparcv9-sun-solaris2.8 \
   sparcv9-sun-solaris2.9

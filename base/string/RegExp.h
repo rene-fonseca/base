@@ -209,7 +209,7 @@ public:
     @param start The start index. The default is 0.
     @return The substring matched by the entire pattern.
   */
-  Substring match(const String& value, unsigned int start = 0) throw(RegExpException, OutOfRange);
+  Substring match(const String& value, unsigned int start = 0) const throw(RegExpException, OutOfRange);
 
   /**
     Matches the specified string with the regular expression. Throws OutOfRange
@@ -220,7 +220,7 @@ public:
     @param start The start index. The default is 0.
     @return The substring matched by the entire pattern.
   */
-  Substring match(const String& value, Array<Substring>& arguments, unsigned int start = 0) throw(RegExpException, OutOfRange);
+  Substring match(const String& value, Array<Substring>& arguments, unsigned int start = 0) const throw(RegExpException, OutOfRange);
 
   /**
     Destroys the regular expression.

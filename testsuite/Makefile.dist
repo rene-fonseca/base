@@ -28,9 +28,6 @@ final: all
 lendum-gcc-2.96: all
 	CC="gcc" CFLAGS="-pipe -x c" CXX="gcc" CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" ./configure --target=i386-pc-linux --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
 
-lendum-gcc-3.0.3: all
-	CC="/usr/local/gcc-3.0.3/bin/gcc" CFLAGS="-pipe -x c" CXX="/usr/local/gcc-3.0.3/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" LDFLAGS="-x none" ./configure --target=i386-pc-linux --prefix=/usr/local/base --with-base-include=.. --with-base-lib=../base
-
 lendum-gcc-3.0.4: all
 	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" LDFLAGS="-x none" ./configure --target=i386-pc-linux --prefix=/usr/local/base --with-base-include=.. --with-base-lib=../base
 
@@ -51,7 +48,6 @@ fyn-gcc-3.0.4-release: all
 
 klampenborg-gcc-2.95:
 	CC="/usr/bin/gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="/usr/bin/gcc" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O0 -g3" LDFLAGS="-x none" ./configure --target=i386-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
-#LDFLAGS="-Wl,--enable-auto-import"
 
 klampenborg-gcc-3.0.4:
 	CC="gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="g++" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O0 -g3" LDFLAGS="-x none" ./configure --target=i386-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..

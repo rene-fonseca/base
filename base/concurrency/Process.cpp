@@ -70,6 +70,9 @@ Process::ProcessHandle::~ProcessHandle() throw() {
 #endif // flavor
 }
 
+Process::Process() throw() : id(Process::INVALID), handle(ProcessHandle::invalid) {
+}
+
 Process::Process(const Process& copy) throw() : id(copy.id), handle(copy.handle) {
 }
 
@@ -78,7 +81,7 @@ Process Process::getProcess() throw() {
   return Process(::GetCurrentProcessId());
 #else // unix
   return Process(::getpid());
-#endif
+#endif // flavor
 }
 
 Process Process::getParentProcess() throw() {
@@ -109,7 +112,7 @@ Process Process::getParentProcess() throw() {
   #endif
 #else // unix
   return Process(::getppid());
-#endif
+#endif // flavor
 }
 
 Process Process::fork() throw(NotSupported, ProcessException) {
@@ -121,7 +124,7 @@ Process Process::fork() throw(NotSupported, ProcessException) {
     throw ProcessException("Unable to fork process", Type::getType<Process>());
   }
   return Process(result);
-#endif
+#endif // flavor
 }
 
 #if !defined(BELOW_NORMAL_PRIORITY_CLASS) // should have been in winbase.h
@@ -165,7 +168,7 @@ int Process::getPriority() throw(ProcessException) {
     }
     return priority;
   #endif
-#endif
+#endif // flavor
 }
 
 void Process::setPriority(int priority) throw(ProcessException) {
@@ -195,7 +198,7 @@ void Process::setPriority(int priority) throw(ProcessException) {
       ProcessException("Unable to set priority", Type::getType<Process>());
     }
   #endif
-#endif
+#endif // flavor
 }
 
 #if 0
@@ -251,7 +254,7 @@ Process Process::execute(const String& command) throw(ProcessException) {
   Process result(processInformation.dwProcessId);
   result.handle = new ProcessHandle(processInformation.hProcess); // keep lock on process
   return result;
-#else
+#else // unix
   // TAG: use spawn if available
   
   pid_t pid;
@@ -265,6 +268,7 @@ Process Process::execute(const String& command) throw(ProcessException) {
     // setup arguments list
     // first argument must be the module path
     char* argv[1];
+    argv[1] = 0;
     ::execve(command.getElements(), argv, environ);
     // we only get here if exec failed
     ::exit(Application::EXIT_CODE_INITIALIZATION); // child must never return from this method

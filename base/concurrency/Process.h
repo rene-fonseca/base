@@ -160,6 +160,11 @@ private:
 public:
 
   /**
+    Initializes process as invalid.
+  */
+  Process() throw();
+  
+  /**
     Initializes a process.
 
     @param id The id of the process.

@@ -214,6 +214,11 @@ public:
   static unsigned int getType(const String& path) throw(FileSystemException);
 
   /**
+    Returns the size of the specified file.
+  */
+  static uint64 getSize(const String& path) throw(FileSystemException);
+  
+  /**
     Returns true if the entry exists.
   */
   static bool entryExists(const String& path) throw(FileSystemException);

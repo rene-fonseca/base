@@ -326,7 +326,8 @@ String FileSystem::toUrl(const String& path) throw(FileSystemException) {
 String FileSystem::getCurrentFolder() throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   Allocator<char>* buffer = Thread::getLocalStorage();
-  if (::GetCurrentDirectory(buffer->getSize(), buffer->getElements())) {
+  DWORD length = ::GetCurrentDirectory(buffer->getSize(), buffer->getElements());
+  if (length == 0) {
     throw FileSystemException("Unable to get current folder", Type::getType<FileSystem>());
   }
   return String(buffer->getElements());
@@ -343,7 +344,7 @@ String FileSystem::getCurrentFolder() throw(FileSystemException) {
 void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!::SetCurrentDirectory(path.getElements())) {
-    throw FileSystemException("Unable to set current folder", Type::getType<FileSystem>());
+   throw FileSystemException("Unable to set current folder", Type::getType<FileSystem>());
   }
 #else // unix
   if (::chdir(path.getElements())) {
@@ -356,7 +357,6 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: follow link
   unsigned int flags = 0;
-  // TAG: FILE_FLAG_POSIX_SEMANTICS
   HANDLE file = ::CreateFile(
     path.getElements(), // file name
     FILE_READ_ATTRIBUTES | FILE_READ_EA /*| READ_CONTROL*/, // access mode
@@ -367,14 +367,12 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
     0
   ); // handle to template file
   if (file == INVALID_HANDLE_VALUE) {
-    switch (::GetLastError()) {
-    case ERROR_ACCESS_DENIED:
-    case ERROR_SHARING_VIOLATION: // possible with page file
-    case ERROR_LOCK_VIOLATION: // TAG: is this ok
-      break;
-    default:
-      throw FileSystemException(Type::getType<FileSystem>());
-    }
+//     switch (::GetLastError()) {
+//     case ERROR_ACCESS_DENIED:
+//     case ERROR_SHARING_VIOLATION: // possible with page file
+//     case ERROR_LOCK_VIOLATION: // TAG: is this ok
+//       throw FileSystemException(Type::getType<FileSystem>());
+//     }
     
     WIN32_FIND_DATA information;
     HANDLE find = ::FindFirstFileExA(
@@ -439,7 +437,6 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
     break;
   }
   ::CloseHandle(file);
-  
   return flags;
 #else // unix
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
@@ -494,6 +491,34 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
     }
   #endif // S_TYPEISSHM
   return flags;
+#endif // flavor
+}
+
+uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  WIN32_FIND_DATA information;
+  HANDLE handle = ::FindFirstFile(path.getElements(), &information);
+  assert(
+    handle != INVALID_HANDLE_VALUE,
+    FileSystemException("Unable to get size of file", Type::getType<FileSystem>())
+  );
+  ::FindClose(handle);
+  return static_cast<uint64>(information.nFileSizeHigh) | information.nFileSizeLow;
+#else // unix
+#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+    int result = stat64(path.getElements(), (struct stat64*)&status);
+  #else
+    struct stat64 status;
+    int result = stat64(path.getElements(), &status);
+  #endif // GNU Linux
+#else
+  struct stat status;
+  int result = stat(path.getElements(), &status);
+#endif
+  assert(result == 0, FileSystemException("Unable to get size of file", Type::getType<FileSystem>()));
+  return status.st_size;
 #endif // flavor
 }
 
@@ -652,12 +677,73 @@ void FileSystem::removeFile(const String& path) throw(FileSystemException) {
 
 void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (!::RemoveDirectory(path.getElements())) {
-    throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+  DWORD attributes = ::GetFileAttributes(path.getElements());
+  if ((attributes != INVALID_FILE_ATTRIBUTES) && (attributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
+    HANDLE link = ::CreateFile(
+      path.getElements(),
+      FILE_ALL_ACCESS,
+      0,
+      0,
+      OPEN_EXISTING,
+      FILE_FLAG_BACKUP_SEMANTICS|FILE_FLAG_OPEN_REPARSE_POINT,
+      0
+    );
+    if (link == INVALID_HANDLE_VALUE) {
+      throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+    }
+    uint8 buffer[REPARSE_GUID_DATA_BUFFER_HEADER_SIZE + 256]; // TAG: doc missing for min. size
+    REPARSE_GUID_DATA_BUFFER* reparseHeader = (REPARSE_GUID_DATA_BUFFER*)buffer;
+    DWORD bytesWritten;
+    if (::DeviceIoControl(
+          link,
+          FSCTL_GET_REPARSE_POINT,
+          0,
+          0, // input
+          reparseHeader,
+          sizeof(buffer), // output
+          &bytesWritten,
+          0
+        ) == 0) {
+      if (::GetLastError() != ERROR_MORE_DATA) {
+        ::CloseHandle(link);
+        throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+      }
+    }
+    if (reparseHeader->ReparseTag == IO_REPARSE_TAG_MOUNT_POINT) {
+      reparseHeader->ReparseDataLength = 0;
+      reparseHeader->Reserved = 0;
+      if (::DeviceIoControl(
+            link,
+            FSCTL_DELETE_REPARSE_POINT,
+            reparseHeader,
+            REPARSE_GUID_DATA_BUFFER_HEADER_SIZE, // input
+            0,
+            0, // output
+            &bytesWritten,
+            0
+          ) == 0) {
+        fout << "12345: " << ::GetLastError() << ENDL;
+        ::CloseHandle(link);
+        throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+      }
+      ::CloseHandle(link);
+      if (!::RemoveDirectory(path.getElements())) {
+        throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+      }
+      // } else if (reparseHeader->ReparseTag == 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK) {
+      // TAG: need support for symbolic link to folder
+    } else {
+      ::CloseHandle(link);
+      throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+    }
+  } else {
+    if (!::RemoveDirectory(path.getElements())) {
+      throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+    }
   }
 #else // unix
   if (rmdir(path.getElements())) {
-    throw FileSystemException("Unable to remove file", Type::getType<FileSystem>());
+    throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
   }
 #endif // flavor
 }
@@ -751,8 +837,8 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
     }
     
     // TAG: test if partial support works - ERROR_MORE_DATA
-    char* buffer[17000]; // TAG: fixme
-    REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)&buffer;
+    uint8 buffer[17000]; // TAG: fixme
+    REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)buffer;
     DWORD bytesWritten;
     bool error = ::DeviceIoControl(
       link,
@@ -893,8 +979,8 @@ public:
     }
     while (link != INVALID_HANDLE_VALUE) {
       // TAG: fix buffer size
-      char* buffer[17000]; // need alternative - first attempt to get length first failed
-      REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)&buffer;
+      uint8 buffer[17000]; // need alternative - first attempt to get length first failed
+      REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)buffer;
       DWORD bytesWritten;
       bool error = ::DeviceIoControl(
         link,
@@ -1112,7 +1198,8 @@ void FileSystem::makeLink(const String& target, const String& path) throw(NotSup
       nativePath.getLength() <= MAX_PATH,
       FileSystemException(Type::getType<FileSystem>())
     ); // watch out for buffer overflow
-    directoryCreated = ::CreateDirectory(path.getElements(), 0) != 0; // we do not care whether or not it already exists
+    // we do not care whether or not it already exists
+    directoryCreated = ::CreateDirectory(path.getElements(), 0) != 0;
     assert(directoryCreated, FileSystemException(Type::getType<FileSystem>()));
     link = ::CreateFile(
       path.getElements(),
@@ -1125,7 +1212,10 @@ void FileSystem::makeLink(const String& target, const String& path) throw(NotSup
     );
   } else {
     assert(!nativePath.endsWith(MESSAGE("\\")), FileSystemException(Type::getType<FileSystem>()));
-    assert(nativePath.getLength() <= MAX_PATH, FileSystemException(Type::getType<FileSystem>())); // watch out for buffer overflow
+    assert(
+      nativePath.getLength() <= MAX_PATH,
+      FileSystemException(Type::getType<FileSystem>())
+    ); // watch out for buffer overflow
     link = ::CreateFile(
       path.getElements(),
       GENERIC_WRITE,
@@ -1216,8 +1306,8 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
   }
   while (link != INVALID_HANDLE_VALUE) {
     // TAG: fix buffer size
-    char* buffer[17000]; // need alternative - first attempt to get length first failed
-    REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)&buffer;
+    uint8 buffer[17000]; // need alternative - first attempt to get length first failed
+    REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)buffer;
     DWORD bytesWritten;
     bool error = ::DeviceIoControl(
       link,
@@ -1338,7 +1428,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
     }
     
     char buffer[4096 * 2]; // maximum link size
-    const ShortcutHeader* header = (const ShortcutHeader*)&buffer;
+    const ShortcutHeader* header = (const ShortcutHeader*)buffer;
     
     DWORD linkLength;
     bool error = ::ReadFile(link, buffer, sizeof(buffer), &linkLength, 0) == 0;

@@ -410,6 +410,56 @@ public:
     }
     return accumulator;
   }
+
+  /**
+    Returns the specified integer if it's a power of 2 and otherwise returns 0.
+  */
+  inline unsigned char isPowerOf2(unsigned char value) throw() {
+    static const bool IS_POWER[16] = {
+      0, 1, 2, 0, 4, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0
+    };
+    if (value & 0x0f == 0) {
+      return IS_POWER[value >> 4];
+    } else if (value & 0xf0 == 0) {
+      return IS_POWER[value];
+    } else {
+      return 0;
+    }
+  }
+
+  /**
+    Returns the specified integer if it's a power of 2 and otherwise returns 0.
+  */
+  static inline unsigned int isPowerOf2(unsigned int value) throw() {
+    if (value != 0) {
+      unsigned int shift = 0;
+      while (value & 0xff == 0) {
+        value >>= 8;
+        shift += 8;
+      }
+      if (value <= 0xff) {
+        return static_cast<unsigned int>(isPowerOf2(value)) << shift;
+      }
+    }
+    return 0;
+  }
+
+  /**
+    Returns the specified integer if it's a power of 2 and otherwise returns 0.
+  */
+  static inline unsigned long long isPowerOf2(unsigned long long value) throw() {
+    if (value != 0) {
+      unsigned int shift = 0;
+      while (value & 0xff == 0) {
+        value >>= 8;
+        shift += 8;
+      }
+      if (value <= 0xff) {
+        return static_cast<unsigned long long>(isPowerOf2(value)) << shift;
+      }
+    }
+    return 0;
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -74,7 +74,8 @@ public:
     Initializes iterator from other iterator.
   */
   template<class POLY>
-  inline SequenceIterator& operator=(const SequenceIterator<POLY>& eq) throw() {
+  inline SequenceIterator& operator=(
+    const SequenceIterator<POLY>& eq) throw() {
     element = eq.getValue();
     return *this;
   }
@@ -150,13 +151,22 @@ public:
     return element < eq.element;
   }
 
+  inline bool operator<=(const SequenceIterator& eq) const throw() {
+    return element <= eq.element;
+  }
+  
   /**
-    Returns true if this iterator is greater than or equal to the specified iterator.
+    Returns true if this iterator is greater than or equal to the specified
+    iterator.
   */
   inline bool operator>=(const SequenceIterator& eq) const throw() {
     return element >= eq.element;
   }
 
+  inline bool operator>(const SequenceIterator& eq) const throw() {
+    return element > eq.element;
+  }
+  
   /**
     Access the element.
   */
@@ -187,18 +197,22 @@ public:
 };
 
 template<class LTRAITS, class RTRAITS>
-inline MemoryDiff operator-(const SequenceIterator<LTRAITS>& left, const SequenceIterator<RTRAITS>& right) throw() {
+inline MemoryDiff operator-(
+  const SequenceIterator<LTRAITS>& left,
+  const SequenceIterator<RTRAITS>& right) throw() {
   return left.getValue() - right.getValue();
 }
 
 template<class TYPE>
-inline SequenceIterator<TYPE> operator-(const SequenceIterator<TYPE>& left, int right) throw() {
+inline SequenceIterator<TYPE> operator-(
+  const SequenceIterator<TYPE>& left, int right) throw() {
   SequenceIterator<TYPE> temp(left);
   return temp -= right;
 }
 
 template<class TYPE>
-inline SequenceIterator<TYPE> operator+(const SequenceIterator<TYPE>& left, int right) throw() {
+inline SequenceIterator<TYPE> operator+(
+  const SequenceIterator<TYPE>& left, int right) throw() {
   SequenceIterator<TYPE> temp(left);
   return temp += right;
 }

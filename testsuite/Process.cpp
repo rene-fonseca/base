@@ -28,6 +28,27 @@ public:
   ProcessApplication(int numberOfArguments, const char* arguments[], const char* environment[])
     : Application(MESSAGE("Process"), numberOfArguments, arguments, environment) {
   }
+
+  void dumpLimit(const StringLiteral& literal, OperatingSystem::Resource resource) throw() {
+    int64 softLimit = OperatingSystem::getResourceLimit(resource, OperatingSystem::SOFT_LIMIT);
+    int64 hardLimit = OperatingSystem::getResourceLimit(resource, OperatingSystem::HARD_LIMIT);
+    
+    fout << indent(2) << literal << MESSAGE(" (soft): ");
+    if (softLimit == -1) {
+      fout << MESSAGE("INFINITE");
+    } else {
+      fout << softLimit;
+    }
+    fout << ENDL;
+    
+    fout << indent(2) << literal << MESSAGE(" (hard): ");
+    if (hardLimit == -1) {
+      fout << MESSAGE("INFINITE");
+    } else {
+      fout << hardLimit;
+    }
+    fout << ENDL;
+  }
   
   void main() throw() {
     fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
@@ -62,7 +83,17 @@ public:
 
     fout << MESSAGE("Number of configured processors: ") << Process::getNumberOfConfiguredProcessors() << ENDL;
     fout << MESSAGE("Number of online processors: ") << Process::getNumberOfOnlineProcessors() << ENDL;
+    fout << ENDL;
     
+    fout << MESSAGE("Resource limits: ") << ENDL;
+    dumpLimit(MESSAGE("Core file size"), OperatingSystem::RESOURCE_CORE);
+    dumpLimit(MESSAGE("CPU time"), OperatingSystem::RESOURCE_CPU);
+    dumpLimit(MESSAGE("Data segment size"), OperatingSystem::RESOURCE_DATA);
+    dumpLimit(MESSAGE("File size"), OperatingSystem::RESOURCE_FILE_SIZE);
+    dumpLimit(MESSAGE("Number of open files"), OperatingSystem::RESOURCE_OPEN_FILES);
+    dumpLimit(MESSAGE("Stack size"), OperatingSystem::RESOURCE_STACK);
+    dumpLimit(MESSAGE("Address space"), OperatingSystem::RESOURCE_ADDRESS_SPACE);
+
     // wait
     // terminate
     // Process::execute(self img);

@@ -37,25 +37,25 @@ protected:
   /** Specifies that the active object should be terminated. */
   bool terminated;
 public:
- 
+  
   /**
     Initializes runnable object.
   */
   inline Runnable() throw() : terminated(false) {
   }
-
+  
   /**
     Entry point for the thread.
   */
-  virtual void run() = 0;
-
+  virtual void run() /*throw(...)*/ = 0;
+  
   /**
     Returns true if the active object should be terminated.
   */
   inline bool isTerminated() throw() {
     return terminated;
   }
-
+  
   /**
     Invocated when a child thread is completed. Watch out for MT-safety.
 
@@ -63,19 +63,19 @@ public:
   */
   virtual void onChild(Thread* child) throw() {
   }
-
+  
   /**
     Invocated when the thread is asked to terminate. Watch out for MT-safety.
   */
   virtual void onTermination() throw() {
     terminated = true;
   }
-
+  
   /**
     Destroys the runnable object.
   */
-//   virtual ~Runnable() throw() {
-//   }
+  virtual ~Runnable() /*throw(...)*/ {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

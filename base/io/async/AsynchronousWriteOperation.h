@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -50,14 +50,16 @@ public:
   /*
     Initialization by copying from other object.
   */
-  inline AsynchronousWriteOperation(const AsynchronousWriteOperation& copy) throw() {
+  inline AsynchronousWriteOperation(
+    const AsynchronousWriteOperation& copy) throw() {
     this->context = copy.context;
   }
   
   /*
     Assignment operator.
   */
-  inline AsynchronousWriteOperation& operator=(const AsynchronousWriteOperation& eq) throw() {
+  inline AsynchronousWriteOperation& operator=(
+    const AsynchronousWriteOperation& eq) throw() {
     this->context = eq.context;
     return *this;
   }

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -94,9 +94,10 @@ Architecture::Major Architecture::getArchitecture() throw() {
   return RS;
 #elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64)
   return X86_64;
+#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__S390)
+  return S390;
 #else
 #  error Unsupported architecture
-#  warning Unsupported architecture
 #endif
 }
   

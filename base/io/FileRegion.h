@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,7 +20,8 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Description of a file region represented by an offset (64 bit) and a size (32 bit).
+  Description of a file region represented by an offset (64 bit) and a size
+  (32 bit).
 
   @short A region of a file.
   @ingroup io
@@ -31,7 +32,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class FileRegion : public Object {
 private:
 
-  /** Specifies the maximum permit able byte offset of any part of the file region. */
+  /**
+    Specifies the maximum permit able byte offset of any part of the file
+    region.
+  */
   static const long long LIMIT = PrimitiveTraits<long long>::MAXIMUM;
   
   /** The offset of the region from the beginning of the file. */
@@ -110,7 +114,8 @@ public:
   }
 };
 
-inline FileRegion::FileRegion(long long _offset, unsigned int _size) throw(OutOfDomain)
+inline FileRegion::FileRegion(
+  long long _offset, unsigned int _size) throw(OutOfDomain)
   : offset(_offset), size(_size) {
   assert(offset < LIMIT - size, OutOfDomain(this));
 }

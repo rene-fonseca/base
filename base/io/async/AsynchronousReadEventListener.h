@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,7 +28,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class AsynchronousReadEventListener {
 public:
   
-  virtual void asynchronousCompletion(const AsynchronousReadCompletion& completion) throw() = 0;
+  virtual void asynchronousCompletion(
+    const AsynchronousReadCompletion& completion) throw() = 0;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

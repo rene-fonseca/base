@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -63,7 +63,8 @@ public:
     POWER_PC, /**< Power PC. */
     RS, /**< RS. */
     SPARC, /**< Sparc. */
-    X86_64 /**< X86 64 bit. */
+    X86_64, /**< X86 64 bit. */
+    S390 /**< S390. */
   };
   
   /** The minor architecture. */

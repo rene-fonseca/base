@@ -24,6 +24,7 @@
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <windows.h>
 #else
+#  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
 #  include <time.h> // time_t
 #  include <pthread.h> // pthread_t
 #endif
@@ -89,16 +90,16 @@ public:
       
       // make sure size of errorMessage is ok
       static const Literal EXCEPTION_DESCRIPTIONS[] = {
-        MESSAGE("access violation"),
-        MESSAGE("invalid page"),
-        MESSAGE("guard page"),
-        MESSAGE("misalignment"),
-        MESSAGE("stack overflow"),
-        MESSAGE("division by zero"),
-        MESSAGE("floating-point exception"),
-        MESSAGE("illegal instruction"),
-        MESSAGE("invalid handle"),
-        MESSAGE("")
+        Literal("access violation"),
+        Literal("invalid page"),
+        Literal("guard page"),
+        Literal("misalignment"),
+        Literal("stack overflow"),
+        Literal("division by zero"),
+        Literal("floating-point exception"),
+        Literal("illegal instruction"),
+        Literal("invalid handle"),
+        Literal("")
       };
 
       unsigned int description;

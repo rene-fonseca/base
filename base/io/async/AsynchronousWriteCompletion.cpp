@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +15,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-AsynchronousWriteCompletion::AsynchronousWriteCompletion(const AsynchronousWriteCompletion& copy) throw() 
+AsynchronousWriteCompletion::AsynchronousWriteCompletion(
+  const AsynchronousWriteCompletion& copy) throw() 
   : buffer(copy.buffer),
     bytesToWrite(copy.bytesToWrite),
     offset(copy.offset),
@@ -23,7 +24,8 @@ AsynchronousWriteCompletion::AsynchronousWriteCompletion(const AsynchronousWrite
     flags(copy.flags) {
 }
 
-AsynchronousWriteCompletion& AsynchronousWriteCompletion::operator=(const AsynchronousWriteCompletion& eq) throw() {
+AsynchronousWriteCompletion& AsynchronousWriteCompletion::operator=(
+  const AsynchronousWriteCompletion& eq) throw() {
   // no need to protect against self-assignment
   buffer = eq.buffer;
   bytesToWrite = eq.bytesToWrite;

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +15,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FilterOutputStream::FilterOutputStream(OutputStream& o) throw(BindException) : out(o) {
+FilterOutputStream::FilterOutputStream(
+  OutputStream& o) throw(BindException) : out(o) {
 }
 
 void FilterOutputStream::close() throw(IOException) {
@@ -26,7 +27,8 @@ void FilterOutputStream::flush() throw(IOException) {
   out.flush();
 }
 
-unsigned int FilterOutputStream::write(const char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
+unsigned int FilterOutputStream::write(
+  const char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
   return out.write(buffer, size, nonblocking);
 }
 

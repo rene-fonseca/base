@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +15,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-AsynchronousReadCompletion::AsynchronousReadCompletion(const AsynchronousReadCompletion& copy) throw() 
+AsynchronousReadCompletion::AsynchronousReadCompletion(
+  const AsynchronousReadCompletion& copy) throw() 
   : buffer(copy.buffer),
     bytesToRead(copy.bytesToRead),
     offset(copy.offset),
@@ -23,7 +24,8 @@ AsynchronousReadCompletion::AsynchronousReadCompletion(const AsynchronousReadCom
     flags(copy.flags) {
 }
 
-AsynchronousReadCompletion& AsynchronousReadCompletion::operator=(const AsynchronousReadCompletion& eq) throw() {
+AsynchronousReadCompletion& AsynchronousReadCompletion::operator=(
+  const AsynchronousReadCompletion& eq) throw() {
   // no need to protect against self-assignment
   buffer = eq.buffer;
   bytesToRead = eq.bytesToRead;

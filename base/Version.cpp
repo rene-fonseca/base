@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,7 +19,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 const char Version::banner[] =
 "The Base Framework release "_DK_SDU_MIP__BASE__RELEASE"\n"
 "A framework for developing platform independent applications\n"
-"Copyright (C) 2000, 2001, 2002 by Rene Moeller Fonseca\n\n"
+"Copyright (C) 2000-2003 by Rene Moeller Fonseca\n\n"
 "This framework is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"

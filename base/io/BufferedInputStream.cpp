@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,18 +17,22 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-BufferedInputStream::BufferedInputStream(InputStream& in, unsigned int size) throw(BindException, MemoryException) :
-  FilterInputStream(in),
-  buffer(maximum(size, MINIMUM_BUFFER_SIZE)),
-  count(0),
-  position(0) {
+BufferedInputStream::BufferedInputStream(
+  InputStream& in, unsigned int size) throw(BindException, MemoryException)
+  : FilterInputStream(in),
+    buffer(maximum(size, MINIMUM_BUFFER_SIZE)),
+    count(0),
+    position(0) {
 }
 
 unsigned int BufferedInputStream::available() const throw(IOException) {
   return (count - position) + FilterInputStream::available();
 }
 
-unsigned int BufferedInputStream::read(char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
+unsigned int BufferedInputStream::read(
+  char* buffer,
+  unsigned int size,
+  bool nonblocking) throw(IOException) {
   unsigned int bytesRead = 0; // number of bytes that have been copied into external buffer
   while (true) {
     // copy from internal to external buffer - no overlap

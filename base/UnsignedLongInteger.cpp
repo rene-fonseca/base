@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-unsigned long long UnsignedLongInteger::parse(const String& string, unsigned int accept) throw(InvalidFormat) {
+unsigned long long UnsignedLongInteger::parse(
+  const String& string, unsigned int accept) throw(InvalidFormat) {
   unsigned int base = 10; // default integer base
   String::ReadIterator i = string.getBeginReadIterator();
   const String::ReadIterator end = string.getEndReadIterator();
@@ -26,7 +27,10 @@ unsigned long long UnsignedLongInteger::parse(const String& string, unsigned int
   }
 
   // do not accept empty strings
-  assert(i < end, InvalidFormat("String is empty", Type::getType<UnsignedLongInteger>()));
+  assert(
+    i < end,
+    InvalidFormat("String is empty", Type::getType<UnsignedLongInteger>())
+  );
   
   switch (accept) {
   case BIN:

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -107,7 +107,7 @@ public:
     @param version The XML version. The default is "1.0".
   */
   Document createDocument(
-    const String& version = MESSAGE("1.0")) throw(DOMException);
+    const String& version = "1.0") throw(DOMException);
   
   /**
     Creates a DOM Document object of the specified type.
@@ -117,7 +117,7 @@ public:
   */
   Document createDocument(
     DocumentType doctype,
-    const String& version = MESSAGE("1.0")) throw(DOMException);
+    const String& version = "1.0") throw(DOMException);
 
   /**
     Creates a DOM Document object of the specified type with its document
@@ -132,7 +132,7 @@ public:
     const String& namespaceURI,
     const String& qualifiedName,
     DocumentType doctype,
-    const String& version = MESSAGE("1.0")) throw(DOMException);
+    const String& version = "1.0") throw(DOMException);
   
   /**
     Creates a document from a URI.

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,8 +16,9 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FileInputStream::FileInputStream(const String& path, bool exclusive) throw(FileNotFound) :
-  file(path, File::READ, exclusive ? File::EXCLUSIVE : 0), end(false) {
+FileInputStream::FileInputStream(
+  const String& path, bool exclusive) throw(FileNotFound)
+  : file(path, File::READ, exclusive ? File::EXCLUSIVE : 0), end(false) {
 }
 
 unsigned int FileInputStream::available() const throw(FileException) {
@@ -26,7 +27,10 @@ unsigned int FileInputStream::available() const throw(FileException) {
   if (position >= size) {
     return 0;
   }
-  return minimum<long long>(size - position, PrimitiveTraits<unsigned int>::MAXIMUM);
+  return minimum<long long>(
+    size - position,
+    PrimitiveTraits<unsigned int>::MAXIMUM
+  );
 }
 
 void FileInputStream::close() throw(FileException) {

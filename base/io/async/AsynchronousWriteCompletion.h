@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,7 +19,8 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This class describes the completion status of an asynchronous write operation.
+  This class describes the completion status of an asynchronous write
+  operation.
 
   @short Asynchronous write operation completion
   @see AsynchronousWriteEventListener

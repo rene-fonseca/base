@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,21 +15,26 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-BufferedOutputStream::BufferedOutputStream(OutputStream& out, unsigned int size) throw(BindException, MemoryException) :
-  FilterOutputStream(out),
-  buffer(maximum(size, MINIMUM_BUFFER_SIZE)),
-  writeHead(0),
-  readHead(0) {
+BufferedOutputStream::BufferedOutputStream(
+  OutputStream& out, unsigned int size) throw(BindException, MemoryException)
+  : FilterOutputStream(out),
+    buffer(maximum(size, MINIMUM_BUFFER_SIZE)),
+    writeHead(0),
+    readHead(0) {
 }
 
 void BufferedOutputStream::flush() throw(IOException) {
-  FilterOutputStream::write(buffer.getElements() + readHead, writeHead - readHead);
+  FilterOutputStream::write(
+    buffer.getElements() + readHead,
+    writeHead - readHead
+  );
   readHead = 0;
   writeHead = 0;
   FilterOutputStream::flush();
 }
 
-unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
+unsigned int BufferedOutputStream::write(
+  const char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
   unsigned int bytesWritten = 0; // number of bytes that have been written
   while (true) {
     // copy from external to internal buffer - no overlap
@@ -43,7 +48,11 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size, 
       break;
     }
 
-    unsigned int result = FilterOutputStream::write(this->buffer.getElements() + readHead, writeHead - readHead, nonblocking);
+    unsigned int result = FilterOutputStream::write(
+      this->buffer.getElements() + readHead,
+      writeHead - readHead,
+      nonblocking
+    );
     readHead += result;
     if (readHead == writeHead) {
       readHead = 0;
@@ -56,9 +65,12 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size, 
   return bytesWritten;
 }
 
-void BufferedOutputStream::unfoldValue(char value, unsigned int size) throw(IOException) {
+void BufferedOutputStream::unfoldValue(
+  char value,
+  unsigned int size) throw(IOException) {
   while (true) {
-    unsigned int bytesAvailable = minimum(size, this->buffer.getSize() - writeHead);
+    unsigned int bytesAvailable =
+      minimum(size, this->buffer.getSize() - writeHead);
     fill<char>(this->buffer.getElements() + writeHead, bytesAvailable, value);
     size -= bytesAvailable;
     writeHead += bytesAvailable;
@@ -67,7 +79,10 @@ void BufferedOutputStream::unfoldValue(char value, unsigned int size) throw(IOEx
       break;
     }
 
-    FilterOutputStream::write(this->buffer.getElements() + readHead, writeHead - readHead);
+    FilterOutputStream::write(
+      this->buffer.getElements() + readHead,
+      writeHead - readHead
+    );
     readHead = 0;
     writeHead = 0;
   }

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,9 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-long long LongInteger::parse(const String& string, bool withoutSign) throw(InvalidFormat) {
+long long LongInteger::parse(
+  const String& string,
+  bool withoutSign) throw(InvalidFormat) {
   String::ReadIterator i = string.getBeginReadIterator();
   const String::ReadIterator end = string.getEndReadIterator();
 
@@ -24,7 +26,10 @@ long long LongInteger::parse(const String& string, bool withoutSign) throw(Inval
     ++i; // eat space
   }
   
-  assert(i < end, InvalidFormat("Not an integer", Type::getType<LongInteger>())); // do not accept empty strings
+  assert(
+    i < end,
+    InvalidFormat("Not an integer", Type::getType<LongInteger>())
+  ); // do not accept empty strings
   
   long long value;
   if (withoutSign) {

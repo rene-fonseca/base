@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-short ShortInteger::parse(const String& str, bool withoutSign) throw(InvalidFormat) {
+short ShortInteger::parse(
+  const String& str, bool withoutSign) throw(InvalidFormat) {
   String::ReadIterator i = str.getBeginReadIterator();
   const String::ReadIterator end = str.getEndReadIterator();
   

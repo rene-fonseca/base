@@ -42,11 +42,6 @@ public:
   explicit FilterInputStream(InputStream& in) throw(BindException);
 
   /**
-    Returns true if the end of the stream has been reached.
-  */
-  bool atEnd() const throw(IOException);
-
-  /**
     Returns the number of bytes that can be read or skipped over without blocking.
 
     @return Available number of bytes in stream.

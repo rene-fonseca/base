@@ -1,3 +1,16 @@
+/***************************************************************************
+    The Base Framework
+    A framework for developing platform independent applications
+
+    Copyright (C) 2001 by René Møller Fonseca <fonseca@mip.sdu.dk>
+
+    This framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    For the licensing terms refer to the file 'LICENSE'.
+ ***************************************************************************/
+
 #define _DK_SDU_MIP__BASE__FLAVOUR _DK_SDU_MIP__BASE__UNIX
 #define _DK_SDU_MIP__BASE__OS _DK_SDU_MIP__BASE__SOLARIS
 #define _DK_SDU_MIP__BASE__ARCH _DK_SDU_MIP__BASE__SPARC
@@ -18,3 +31,7 @@
 
 // Specifies that the UNIX 98 functionality is utilized
 #define _XOPEN_SOURCE 500
+
+#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #define _LARGEFILE64_SOURCE 1
+#endif

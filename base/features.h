@@ -25,4 +25,12 @@
   #define TRACE_MEMBER()
 #endif
 
+#if defined(_DK_SDU_MIP__BASE__DEBUG)
+  #define _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE) #VALUE
+  #define _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(VALUE) _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE)
+  #define ASSERT(expression) {assert(expression, Exception("Assertion failure at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__)));}
+#else
+  #define ASSERT(expression)
+#endif
+
 #endif

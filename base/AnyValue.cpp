@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -70,14 +70,15 @@ AnyValue::AnyValue(long long value) throw()
 }
 
 AnyValue::AnyValue(unsigned long long value) throw()
-  : representation(UNSIGNED_LONG_LONG_INTEGER), unsignedLongLongInteger(value) {
+  : representation(UNSIGNED_LONG_LONG_INTEGER),
+    unsignedLongLongInteger(value) {
 }
 
 AnyValue::AnyValue(const String& value) throw()
   : representation(STRING), string(value) {
 }
 
-AnyValue::AnyValue(const StringLiteral& value) throw()
+AnyValue::AnyValue(const Literal& value) throw()
   : representation(STRING), string(value) {
 }
 
@@ -85,7 +86,7 @@ AnyValue::AnyValue(const WideString& value) throw()
   : representation(WIDE_STRING), wideString(value) {
 }
 
-AnyValue::AnyValue(const WideStringLiteral& value) throw()
+AnyValue::AnyValue(const WideLiteral& value) throw()
   : representation(WIDE_STRING), wideString(value) {
 }
 

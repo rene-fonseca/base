@@ -41,7 +41,7 @@ namespace windowImpl {
   typedef void (CALL_UI *UIFunction)();
   
   struct FunctionDescriptor {
-    const StringLiteral symbol;
+    const Literal symbol;
     UIFunction* function;
   };
 
@@ -2434,7 +2434,7 @@ unsigned int WindowImpl::getMouseButtonIndex(Mouse::Button button) throw() {
   }
 }
 
-StringLiteral WindowImpl::getMouseButtonName(Mouse::Button button) throw() {
+Literal WindowImpl::getMouseButtonName(Mouse::Button button) throw() {
   // keep out to date with WindowImpl::Mouse::Button
   switch (button) {
   case Mouse::MIDDLE:

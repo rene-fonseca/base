@@ -23,6 +23,7 @@
 #include <base/Primitives.h>
 #include <base/OutOfDomain.h>
 #include <base/OutOfRange.h>
+#include <base/Literal.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -315,14 +316,14 @@ public:
     
     static unsigned int counter; // TAG: need atomic access
     unsigned int count;
-    StringLiteral location;
+    Literal location;
   public:
     
-    inline Debug(const StringLiteral& _location) throw()
+    inline Debug(const Literal& _location) throw()
       : count(counter++), location(_location) {
     }
     
-    inline const StringLiteral& getLocation() const throw() {
+    inline const Literal& getLocation() const throw() {
       return location;
     }
     
@@ -533,7 +534,7 @@ public:
     addCharacterField(literal, SIZE - 1);
     return *this;
   }
-
+  
   FormatOutputStream& operator<<(bool value) throw(IOException);
   
   inline FormatOutputStream& operator<<(char value) throw(IOException) {
@@ -576,8 +577,8 @@ public:
     Writes a string literal to a format output stream.
   */
   inline FormatOutputStream& operator<<(
-    const StringLiteral& value) throw(IOException) {
-    addCharacterField(value, value.getLength());
+    const Literal& literal) throw(IOException) {
+    addCharacterField(literal.getValue(), literal.getLength());
     return *this;
   }
   
@@ -642,7 +643,7 @@ private:
 
   const TYPE* value;
   const unsigned int size;
-  const StringLiteral separator;
+  const Literal separator;
 public:
 
   /**
@@ -662,7 +663,10 @@ public:
     @param size The number of elements in the sequence.
     @param separator The separator to be written between elements.
   */
-  Sequence(const TYPE* _value, unsigned int _size, const StringLiteral& _separator) throw()
+  Sequence(
+    const TYPE* _value,
+    unsigned int _size,
+    const Literal& _separator) throw()
     : value(_value), size(_size), separator(_separator) {
   }
   
@@ -677,7 +681,7 @@ public:
   }
 
   /** Returns the separator to be used between elements. */
-  inline const StringLiteral& getSeparator() const throw() {
+  inline const Literal& getSeparator() const throw() {
     return separator;
   }
 };
@@ -691,7 +695,7 @@ FormatOutputStream& operator<<(
   FormatOutputStream::PushContext push(stream);
   const TYPE* src = value.getValue();
   const TYPE* end = src + value.getSize();
-  const StringLiteral& separator = value.getSeparator();
+  const Literal& separator = value.getSeparator();
   if (separator.getLength() > 0) {
     --end;
     while (src < end) {

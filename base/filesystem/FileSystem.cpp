@@ -291,9 +291,9 @@ String FileSystem::findFile(const Array<String>& searchPaths, const String& rela
 
 String FileSystem::toUrl(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  static const StringLiteral PREFIX = MESSAGE("file:///");
+  static const Literal PREFIX = MESSAGE("file:///");
 #else // unix
-  static const StringLiteral PREFIX = MESSAGE("file://");
+  static const Literal PREFIX = MESSAGE("file://");
 #endif // flavor
   if (isAbsolutePath(path)) {
     throw FileSystemException(Type::getType<FileSystem>());
@@ -1783,7 +1783,7 @@ String FileSystem::getFolder(Folder folder) throw() {
     }
   }
 #else // unix
-  static const StringLiteral FOLDERS[] = {
+  static const Literal FOLDERS[] = {
     MESSAGE("/"),
     MESSAGE("/dev"),
     MESSAGE("/tmp")

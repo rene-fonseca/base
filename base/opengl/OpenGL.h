@@ -480,7 +480,7 @@ public:
   
   struct Descriptor {
     /** Name of extension. */
-    const char* name;
+    Literal name;
     /** Storage. */
     FunctionPointer function;
   };
@@ -492,7 +492,7 @@ private:
   /**
     Returns the extension function.
   */
-  Function getFunction(const StringLiteral& name) throw();
+  Function getFunction(const Literal& name) throw();
   
   /**
     Returns the extension function.

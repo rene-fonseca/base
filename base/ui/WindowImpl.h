@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -298,7 +298,7 @@ public:
   /**
     Returns the name of the specified mouse button.
   */
-  static StringLiteral getMouseButtonName(Mouse::Button button) throw();
+  static Literal getMouseButtonName(Mouse::Button button) throw();
   
   /**
     Initializes a new window with position (0, 0) and dimension (0, 0).
@@ -308,7 +308,10 @@ public:
   /**
     Initializes a new window.
   */
-  WindowImpl(const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException);
+  WindowImpl(
+    const Position& position,
+    const Dimension& dimension,
+    unsigned int flags) throw(UserInterfaceException);
 
   /**
     Returns the position of the binding point relative to this window.

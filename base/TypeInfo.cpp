@@ -97,7 +97,7 @@ public:
   }
 
 
-  inline void dump(const StringLiteral& literal) throw(InvalidFormat) {
+  inline void dump(const Literal& literal) throw(InvalidFormat) {
     demangled.append(literal);
   }
 

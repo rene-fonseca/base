@@ -95,13 +95,13 @@ DynamicLinker::DynamicLinker(
 }
 
 void* DynamicLinker::getSymbol(
-  const StringLiteral& symbol) const throw(LinkerException) {
+  const Literal& symbol) const throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol));
+  void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getValue()));
   assert(result != 0, LinkerException("Unable to resolve symbol", this));
   return result;
 #else // unix
-  void* result = ::dlsym(handle, symbol);
+  void* result = ::dlsym(handle, symbol.getValue());
   assert(dlerror() == 0, LinkerException("Unable to resolve symbol", this));
   return result;
 #endif // flavor
@@ -121,11 +121,11 @@ void* DynamicLinker::getSymbol(
 }
 
 void* DynamicLinker::getUncertainSymbol(
-  const StringLiteral& symbol) const throw() {
+  const Literal& symbol) const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return (void*)(::GetProcAddress((HMODULE)handle, symbol));
+  return (void*)(::GetProcAddress((HMODULE)handle, symbol.getValue()));
 #else // unix
-  return ::dlsym(handle, symbol);
+  return ::dlsym(handle, symbol.getValue());
 #endif // flavor
 }
 

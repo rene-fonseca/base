@@ -88,7 +88,7 @@ public:
       };
       
       // make sure size of errorMessage is ok
-      static const StringLiteral EXCEPTION_DESCRIPTIONS[] = {
+      static const Literal EXCEPTION_DESCRIPTIONS[] = {
         MESSAGE("access violation"),
         MESSAGE("invalid page"),
         MESSAGE("guard page"),
@@ -154,11 +154,11 @@ public:
       }
       dest += sizeof(DWORD) * 2;
 
-      const StringLiteral desc = EXCEPTION_DESCRIPTIONS[description];
+      const Literal desc = EXCEPTION_DESCRIPTIONS[description];
       if (desc.getLength()) {
         *dest++ = ' ';
         *dest++ = '(';
-        copy<char>(dest, desc, desc.getLength());
+        copy<char>(dest, desc.getValue(), desc.getLength());
         dest += desc.getLength();
         *dest++ = ')';
       }

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,10 +30,14 @@ public:
 
   static inline Encode defaultEncoding(char ch) throw() {
     switch (ch) {
-    case 0x00: case 0x01: case 0x02: case 0x03: case 0x04: case 0x05: case 0x06: case 0x07:
-    case 0x08: case 0x09: case 0x0a: case 0x0b: case 0x0c: case 0x0d: case 0x0e: case 0x0f:
-    case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: case 0x16: case 0x17:
-    case 0x18: case 0x19: case 0x1a: case 0x1b: case 0x1c: case 0x1d: case 0x1e: case 0x1f:
+    case 0x00: case 0x01: case 0x02: case 0x03:
+    case 0x04: case 0x05: case 0x06: case 0x07:
+    case 0x08: case 0x09: case 0x0a: case 0x0b:
+    case 0x0c: case 0x0d: case 0x0e: case 0x0f:
+    case 0x10: case 0x11: case 0x12: case 0x13:
+    case 0x14: case 0x15: case 0x16: case 0x17:
+    case 0x18: case 0x19: case 0x1a: case 0x1b:
+    case 0x1c: case 0x1d: case 0x1e: case 0x1f:
     case ' ':
     case '\\':
     case 0x7f:
@@ -65,7 +69,11 @@ public:
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
-  static inline String encode(const String& str, Encoding encoding = defaultEncoding) throw(Url::UrlException, MemoryException) {
+  static inline String encode(
+    const String& str,
+    Encoding encoding = defaultEncoding)
+    throw(Url::UrlException, MemoryException) {
+    
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
@@ -85,7 +93,10 @@ public:
     return temp;
   }
 
-  static String decode(const String& str, Encoding encoding, bool strict) throw(Url::UrlException, MemoryException) {
+  static String decode(
+    const String& str,
+    Encoding encoding,
+    bool strict) throw(Url::UrlException, MemoryException) {
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
@@ -124,7 +135,10 @@ Url::Url(const String& url, bool strict) throw(UrlException, MemoryException) {
   parse(url, strict);
 }
 
-Url::Url(const String& baseUrl, const String& relativeUrl, bool strict) throw(UrlException, MemoryException) {
+Url::Url(
+  const String& baseUrl,
+  const String& relativeUrl,
+  bool strict) throw(UrlException, MemoryException) {
   Url url(relativeUrl);
   if (url.isRelative()) {
     parse(baseUrl + relativeUrl, strict);
@@ -153,10 +167,11 @@ Url& Url::operator=(const Url& eq) throw() {
 }
 
 bool Url::isRelative() const throw() {
-  return !path.getLength() || path.startsWith("/");
+  return !path.getLength() || path.startsWith(Literal("/"));
 }
 
-String Url::validateScheme(const String& value) throw(UrlException, MemoryException) {
+String Url::validateScheme(
+  const String& value) throw(UrlException, MemoryException) {
   String temp(value.getLength());
   String::ReadIterator end = value.getEndReadIterator();
 
@@ -199,7 +214,8 @@ String Url::validatePassword(const String& str) throw(UrlException) {
   return str;
 }
 
-bool Url::isHost(String::ReadIterator i, const String::ReadIterator& end) throw() {
+bool Url::isHost(
+  String::ReadIterator i, const String::ReadIterator& end) throw() {
   if (i >= end) {
     return false;
   }

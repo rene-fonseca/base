@@ -446,8 +446,9 @@ void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType
 #endif // flavor
 }
 
-StringLiteral OperatingSystem::getErrorMessage(unsigned int error) throw() {
-  static const StringLiteral ERROR_MESSAGES[OperatingSystem::UNSPECIFIED_ERROR + 1] = {
+Literal OperatingSystem::getErrorMessage(unsigned int error) throw() {
+  static const Literal
+    ERROR_MESSAGES[OperatingSystem::UNSPECIFIED_ERROR + 1] = {
     MESSAGE("Ok"),
     MESSAGE("Access denied"),
     MESSAGE("Broken stream"),

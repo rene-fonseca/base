@@ -15,11 +15,12 @@
 #define _DK_SDU_MIP__BASE__LITERAL_H
 
 #include <base/Primitives.h>
-#include <base/string/FormatOutputStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  This class binds together a native string literal and its length.
+  
   @short A string literal.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -40,6 +41,7 @@ public:
   template<MemorySize SIZE>
   inline Literal(const char (&value)[SIZE]) throw()
     : literal(value), length(SIZE - 1) {
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
   }
   
   /**
@@ -56,12 +58,6 @@ public:
     return length;
   }
 };
-
-inline FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Literal& literal) throw(IOException) {
-  stream.addCharacterField(literal.getValue(), literal.getLength());
-  return stream;
-}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

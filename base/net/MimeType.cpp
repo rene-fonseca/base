@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,15 +19,16 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class MimeTypeImpl {
 public:
 
-  static const StringLiteral APPLICATION;
-  static const StringLiteral AUDIO;
-  static const StringLiteral IMAGE;
-  static const StringLiteral MESSAGE;
-  static const StringLiteral MULTIPART;
-  static const StringLiteral TEXT;
-  static const StringLiteral VIDEO;
+  static const Literal APPLICATION;
+  static const Literal AUDIO;
+  static const Literal IMAGE;
+  static const Literal MESSAGE;
+  static const Literal MULTIPART;
+  static const Literal TEXT;
+  static const Literal VIDEO;
 
-  static inline MimeType::MediaType getWellKnownMediaType(const String& type) throw() {
+  static inline MimeType::MediaType getWellKnownMediaType(
+    const String& type) throw() {
     if (type.compareToIgnoreCase("application")) { // not very optimal
       return MimeType::APPLICATION;
     } else if (type.compareToIgnoreCase("audio")) {
@@ -48,13 +49,13 @@ public:
   }
 };
 
-const StringLiteral MimeTypeImpl::APPLICATION = MESSAGE("application");
-const StringLiteral MimeTypeImpl::AUDIO = MESSAGE("audio");
-const StringLiteral MimeTypeImpl::IMAGE = MESSAGE("image");
-const StringLiteral MimeTypeImpl::MESSAGE = MESSAGE("message");
-const StringLiteral MimeTypeImpl::MULTIPART = MESSAGE("multipart");
-const StringLiteral MimeTypeImpl::TEXT = MESSAGE("text");
-const StringLiteral MimeTypeImpl::VIDEO = MESSAGE("video");
+const Literal MimeTypeImpl::APPLICATION = MESSAGE("application");
+const Literal MimeTypeImpl::AUDIO = MESSAGE("audio");
+const Literal MimeTypeImpl::IMAGE = MESSAGE("image");
+const Literal MimeTypeImpl::MESSAGE = MESSAGE("message");
+const Literal MimeTypeImpl::MULTIPART = MESSAGE("multipart");
+const Literal MimeTypeImpl::TEXT = MESSAGE("text");
+const Literal MimeTypeImpl::VIDEO = MESSAGE("video");
 
 MimeType::MimeType() throw(MemoryException) {
   type = MimeTypeImpl::APPLICATION;

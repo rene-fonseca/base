@@ -51,7 +51,8 @@ inline RESULT method_cast(void* value) throw() {
   return temp.method;
 }
 
-#define GL(name) {STRINGIFY(gl##name), (OpenGL::FunctionPointer)&OpenGL::gl##name}
+#define GL(name) \
+  {Literal(STRINGIFY(gl##name)), (OpenGL::FunctionPointer)&OpenGL::gl##name}
 
 namespace opengl {
 
@@ -584,8 +585,8 @@ namespace opengl {
 
 }; // end of opengl namespace
 
-OpenGL::Function OpenGL::getFunction(const StringLiteral& name) throw() {
-  return opengl::getFunction(name);
+OpenGL::Function OpenGL::getFunction(const Literal& name) throw() {
+  return opengl::getFunction(name.getValue());
 }
 
 OpenGL::Function OpenGL::getFunction(const String& name) throw() {
@@ -597,12 +598,14 @@ void OpenGL::loadFunctions(Descriptor* descriptor, unsigned int size) throw() {
   while (descriptor < end) {
     ASSERT(descriptor->name && !descriptor->function);
     if (opengl::getFunction) {
-      this->*(descriptor->function) = opengl::getFunction(descriptor->name);
+      this->*(descriptor->function) = opengl::getFunction(
+        descriptor->name.getValue()
+      );
     }
     if (this->*(descriptor->function) == 0) {
       this->*(descriptor->function) =
         (OpenGL::Function)opengl::dynamicLinker->getUncertainSymbol(
-          NativeString(descriptor->name)
+          descriptor->name
         );
       if (this->*(descriptor->function) == 0) {
         this->*(descriptor->function) = (OpenGL::Function)&opengl::missing;
@@ -617,7 +620,9 @@ void OpenGL::fixMissing(Descriptor* descriptor, unsigned int size) throw() {
   while (descriptor < end) {
     ASSERT(descriptor->name && !descriptor->function);
     if (opengl::getFunction) {
-      this->*(descriptor->function) = opengl::getFunction(descriptor->name);
+      this->*(descriptor->function) = opengl::getFunction(
+        descriptor->name.getValue()
+      );
     }
     if (this->*(descriptor->function) == 0) {
       this->*(descriptor->function) = (OpenGL::Function)&opengl::missing;
@@ -631,8 +636,13 @@ OpenGL::OpenGL(unsigned int latest) throw(OpenGLException) {
   opengl::spinLock.exclusiveLock();
   specification = 0x000000;
   // library is never released
-  opengl::dynamicLinker = new DynamicLinker(MESSAGE(_DK_SDU_MIP__BASE__OPENGL_LIBRARY));
-  assert(opengl::dynamicLinker, OpenGLException("Unable to load OpenGL module", this));
+  opengl::dynamicLinker = new DynamicLinker(
+    Literal(_DK_SDU_MIP__BASE__OPENGL_LIBRARY)
+  );
+  assert(
+    opengl::dynamicLinker,
+    OpenGLException("Unable to load OpenGL module", this)
+  );
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   opengl::getFunction =
     method_cast<opengl::GetFunction>(
@@ -668,14 +678,23 @@ OpenGL::OpenGL(unsigned int latest) throw(OpenGLException) {
   unsigned int start = 0;
   index = temp.indexOf('.', start);
   if (index >= 0) {
-    major = UnsignedInteger::parse(temp.substring(start, index), UnsignedInteger::DEC);
+    major = UnsignedInteger::parse(
+      temp.substring(start, index),
+      UnsignedInteger::DEC
+    );
     start = index + 1;
     index = temp.indexOf('.', start);
     if (index >= 0) {
-      minor = UnsignedInteger::parse(temp.substring(start, index), UnsignedInteger::DEC);
+      minor = UnsignedInteger::parse(
+        temp.substring(start, index),
+        UnsignedInteger::DEC
+      );
       start = index + 1;
       if (start < temp.getLength()) {
-        release = UnsignedInteger::parse(temp.substring(start), UnsignedInteger::DEC);
+        release = UnsignedInteger::parse(
+          temp.substring(start),
+          UnsignedInteger::DEC
+        );
       }
     }
   }
@@ -710,7 +729,10 @@ OpenGL::OpenGL(unsigned int latest) throw(OpenGLException) {
 }
 
 bool OpenGL::isSupported(const String& name) throw(OpenGLException) {
-  assert(name.isProper() && (name.indexOf(' ') < 0), OpenGLException(Type::getType<OpenGL>()));
+  assert(
+    name.isProper() && (name.indexOf(' ') < 0),
+    OpenGLException(Type::getType<OpenGL>())
+  );
   const GLubyte* extensions = glGetString(OpenGL::EXTENSIONS);
   String temp(Cast::pointer<const char*>(extensions));
   unsigned int start = 0;
@@ -727,7 +749,11 @@ bool OpenGL::isSupported(const String& name) throw(OpenGLException) {
   }
 }
 
-void OpenGL::lookAt(const Vector3D<double>& eye, const Vector3D<double>& center, const Vector3D<double>& up) throw() {
+void OpenGL::lookAt(
+  const Vector3D<double>& eye,
+  const Vector3D<double>& center,
+  const Vector3D<double>& up) throw() {
+  
   Vector3D<double> sight = eye - center;
   sight /= sight.getModulus();
   Vector3D<double> x(cross(up, sight));
@@ -757,11 +783,18 @@ void OpenGL::lookAt(const Vector3D<double>& eye, const Vector3D<double>& center,
   matrix[3][3] = 1;
   
   glMultMatrixd(Cast::pointer<const GLdouble*>(&matrix));
-  glTranslated(-eye.getX(), -eye.getY(), -eye.getZ()); // map eye point to origin
+  glTranslated(-eye.getX(), -eye.getY(), -eye.getZ()); // map eye point to orig
 }
 
 #if 0
-void OpenGL::frustum(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble nearDistance, GLdouble farDistance) throw() {
+void OpenGL::frustum(
+  GLdouble left,
+  GLdouble right,
+  GLdouble bottom,
+  GLdouble top,
+  GLdouble nearDistance,
+  GLdouble farDistance) throw() {
+  
   // see OpenGL specification
   GLdouble matrix[4][4]; // column-major order
   matrix[0][0] = (2 * nearDistance)/(right - left);
@@ -1046,7 +1079,8 @@ void OpenGL::sphere(double radius, unsigned int slices, unsigned int stacks) thr
 
 // TAG: need Dimension3D
 // TAG: rename to cube?
-void OpenGL::box(double width, double length, double height, unsigned int flags) throw() {
+void OpenGL::box(
+  double width, double length, double height, unsigned int flags) throw() {
   // OpenGL::Flag POINTS
   // OpenGL::Flag LINES
   // OpenGL::Flag POLYGONS  

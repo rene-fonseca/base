@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,6 +20,8 @@
 #include <base/string/String.h>
 #include <base/string/WideString.h>
 #include <base/string/InvalidFormat.h>
+#include <base/Literal.h>
+#include <base/WideLiteral.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -32,7 +34,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class AnyValue : public Object {
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value) throw(IOException);
+  friend FormatOutputStream& operator<<(
+    FormatOutputStream& stream, const AnyValue& value) throw(IOException);
 public:
 
   /** The supported types. */
@@ -192,7 +195,7 @@ public:
   /**
     Initializes value as string.
   */
-  AnyValue(const StringLiteral& value) throw();
+  AnyValue(const Literal& value) throw();
   
   /**
     Initializes value as wide string.
@@ -202,7 +205,7 @@ public:
   /**
     Initializes value as wide string.
   */
-  AnyValue(const WideStringLiteral& value) throw();
+  AnyValue(const WideLiteral& value) throw();
   
   /**
     Sets the value as a type.
@@ -418,7 +421,8 @@ public:
 /**
   Writes any-value object to format output stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value) throw(IOException);
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const AnyValue& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -17,6 +17,7 @@
 #include <base/Object.h>
 #include <base/NotSupported.h>
 #include <base/OutOfRange.h>
+#include <base/Literal.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -143,7 +144,7 @@ public:
   /**
     Returns a string representation of the specified error code.
   */
-  static StringLiteral getErrorMessage(unsigned int error) throw();
+  static Literal getErrorMessage(unsigned int error) throw();
   
   /**
     Returns the error code for the specified native error code.

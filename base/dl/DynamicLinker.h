@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -86,7 +86,7 @@ public:
     @param symbol The symbol to be resolved.
     @return The address of the symbol.
   */
-  void* getSymbol(const StringLiteral& symbol) const throw(LinkerException);
+  void* getSymbol(const Literal& symbol) const throw(LinkerException);
   
   /**
     Returns the address of the specified symbol.
@@ -102,11 +102,12 @@ public:
     @param symbol The symbol to be resolved.
     @return The address of the symbol (0 is not available).
   */
-  void* getUncertainSymbol(const StringLiteral& symbol) const throw();
+  void* getUncertainSymbol(const Literal& symbol) const throw();
 
   /** Flags for use with import method. */
   enum Flags {
-    CONTINUE = 1 /**< Continue to import symbols when symbol is not available. */
+    /** Continue to import symbols when symbol is not available. */
+    CONTINUE = 1
   };
   
   /**

@@ -19,6 +19,8 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  This class binds together a native string literal and its length.
+  
   @short A wide literal string.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -37,7 +39,7 @@ public:
     Initializes the literal.
   */
   template<MemorySize SIZE>
-  inline WideLiteral(const char (&value)[SIZE]) throw()
+  inline WideLiteral(const wchar (&value)[SIZE]) throw()
     : literal(value), length(SIZE - 1) {
   }
   

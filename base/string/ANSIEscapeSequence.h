@@ -60,10 +60,10 @@ public:
   class Escape {
   private:
     
-    StringLiteral literal;
+    Literal literal;
   public:
     
-    inline Escape(StringLiteral _literal) throw() : literal(_literal) {
+    inline Escape(Literal _literal) throw() : literal(_literal) {
     }
     
     inline FormatOutputStream& operator()(

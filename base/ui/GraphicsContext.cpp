@@ -33,8 +33,14 @@ GraphicsContext::GraphicsContextObjectHandle::~GraphicsContextObjectHandle() thr
 #endif // flavor
 }
 
-// GraphicsContext::GraphicsContext() throw(UserInterfaceException) {
-// }
+GraphicsContext::Pen::Pen(Color color) throw(UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  HPEN pen = ::CreatePen(PS_SOLID, 1, color.getValue());
+  assert(pen, UserInterfaceException(this));
+  setHandle(pen);
+#else // unix
+#endif // flavor
+}
 
 GraphicsContext::Pen::Pen(PenStyle style, Color color, unsigned int width) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -118,7 +124,7 @@ GraphicsContext::Font::Font(const String& name) throw(UserInterfaceException) {
 void GraphicsContext::setPen(Pen pen) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   this->pen = pen; // put lock on pen
-  HGDIOBJ handle = ::SelectObject(
+  /*HGDIOBJ handle =*/ ::SelectObject(
     (HDC)graphicsContextHandle,
     (HGDIOBJ)pen.getHandle()
   );
@@ -129,7 +135,7 @@ void GraphicsContext::setPen(Pen pen) throw(UserInterfaceException) {
 void GraphicsContext::setBrush(Brush brush) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   this->brush = brush; // put lock on brush
-  HGDIOBJ handle = ::SelectObject(
+  /*HGDIOBJ handle =*/ ::SelectObject(
     (HDC)graphicsContextHandle,
     (HGDIOBJ)brush.getHandle()
   );
@@ -139,7 +145,7 @@ void GraphicsContext::setBrush(Brush brush) throw(UserInterfaceException) {
 
 void GraphicsContext::setFont(Font font) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  HGDIOBJ handle = ::SelectObject(
+  /*HGDIOBJ handle =*/ ::SelectObject(
     (HDC)graphicsContextHandle,
     (HGDIOBJ)font.getHandle()
   );
@@ -205,17 +211,15 @@ void GraphicsContext::setTextAlignment(unsigned int alignment) throw(UserInterfa
 void GraphicsContext::clear() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   RECT rect;
-  //::GetClientRect((HWND)drawableHandle, &rect);
   rect.left = 0;
   rect.top = 0;
   rect.right = dimension.getWidth(); // do not subtract 1
   rect.bottom = dimension.getHeight(); // do not subtract 1
-  // backgroud brush?
   assert(
     ::FillRect(
       (HDC)graphicsContextHandle,
       &rect,
-      (HBRUSH)::GetStockObject(WHITE_BRUSH) // TAG: fixme
+      (HBRUSH)brush.getHandle()
     ),
     UserInterfaceException(this)
   );
@@ -255,14 +259,17 @@ void GraphicsContext::clear(const Position& position, const Dimension& dimension
 #endif // flavor
 }
 
-void GraphicsContext::point(const Position& position, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::setPixel(const Position& position, Color color, unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-//   ::MoveToEx(
-//     (HDC)graphicsContextHandle,
-//     a.getX(),
-//     a.getY(),
-//     0
-//   );
+  assert(
+    ::SetPixel(
+      (HDC)graphicsContextHandle,
+      position.getX(),
+      position.getY(),
+      color.getValue()
+    ) != (COLORREF)(-1),
+    UserInterfaceException(this)
+  );
 #else // unix
   ::XDrawPoint(
     (Display*)displayHandle,
@@ -274,9 +281,38 @@ void GraphicsContext::point(const Position& position, unsigned int flags) throw(
 #endif // flavor
 }
 
-// void GraphicsContext::points(const Array<Position>& position, unsigned int flags) throw(UserInterfaceException) {
-// #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-// #else // unix
+Color GraphicsContext::getPixel(const Position& position) throw(UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  COLORREF result = ::GetPixel(
+    (HDC)graphicsContextHandle,
+    position.getX(),
+    position.getY()
+  );
+  assert(result != CLR_INVALID, UserInterfaceException(this));
+  return Color((unsigned int)result);
+#else // unix
+  // TAG: fixme
+#endif // flavor
+}
+
+void GraphicsContext::setPixels(const Array<Position>& positions, Color color, unsigned int flags) throw(UserInterfaceException) {
+// ::XInitImage, ::XCreateImage, XGetPixel, XPutPixel, XSubImage, XAddPixel, ::XDestroyImage
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  Array<Position>::ReadIterator i = positions.getBeginIterator();
+  const Array<Position>::ReadIterator end = positions.getEndIterator();
+  while (i != end) {
+    assert(
+      ::SetPixel(
+        (HDC)graphicsContextHandle,
+        i->getX(),
+        i->getY(),
+        color.getValue()
+      ) != (COLORREF)(-1),
+      UserInterfaceException(this)
+    );
+  }
+#else // unix
+  // TAG: fixme
 //   XPoint* points = 0;
 //   ::XDrawPoints(
 //     (Display*)displayHandle,
@@ -286,8 +322,8 @@ void GraphicsContext::point(const Position& position, unsigned int flags) throw(
 //     numberOfPoints,
 //     CoordModeOrigin // mode
 //   );
-// #endif // flavor  
-// }
+#endif // flavor
+}
 
 void GraphicsContext::line(const Position& a, const Position& b, unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -643,8 +679,26 @@ void GraphicsContext::text(const Position& position, const Dimension& dimension,
 
 void GraphicsContext::putBitmap(
   const Position& position,
-  const Dimension& dimension, Bitmap bitmap) throw(UserInterfaceException) {
+  const Dimension& dimension,
+  const Bitmap& bitmap) throw(UserInterfaceException) {
+  // TAG: COPY, AND, OR, XOR, INVERT
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  if (bitmap.handle.isValid()) {
+    assert(
+      ::BitBlt(
+        (HDC)graphicsContextHandle,
+        position.getX(),
+        position.getY(),
+        dimension.getWidth(),
+        dimension.getHeight(),
+        (HDC)bitmap.handle->getHandle(),
+        0, // x
+        0, // y
+        SRCCOPY
+      ),
+      UserInterfaceException(this)
+    );
+  }
 #else // unix
 //   ::XPutImage(
 //     (Display*)displayHandle,
@@ -665,7 +719,24 @@ Bitmap GraphicsContext::getBitmap(
   const Position& position,
   const Dimension& dimension) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return Bitmap();
+  HDC deviceContext = ::CreateCompatibleDC((HDC)graphicsContextHandle);
+  assert(deviceContext, UserInterfaceException(this));
+  HBITMAP bitmap = ::CreateCompatibleBitmap((HDC)deviceContext, dimension.getWidth(), dimension.getHeight());
+  if (!bitmap) {
+    ::DeleteDC((HDC)deviceContext);
+    throw UserInterfaceException(this);
+  }
+  HGDIOBJ previous = ::SelectObject((HDC)deviceContext, (HGDIOBJ)bitmap);
+  if (!previous) {
+    ::DeleteObject(bitmap);
+    ::DeleteDC(deviceContext);
+    throw UserInterfaceException(this);    
+  } else {
+    ::DeleteObject(previous); // TAG: is this required
+  }
+  Bitmap result;
+  result.handle = new Bitmap::Handle(deviceContext);
+  return result;
 #else // unix
 //   XImage* nativeBitmap = ::XGetImage(
 //     (Display*)displayHandle,

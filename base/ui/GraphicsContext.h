@@ -17,6 +17,7 @@
 #include <base/ui/Bitmap.h>
 #include <base/ui/Color.h>
 #include <base/ui/WindowImpl.h>
+#include <base/collection/Array.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -107,9 +108,26 @@ public:
     }
   public:
 
+    /**
+      Initializes invalid pen.
+    */
     inline Pen() throw() : GraphicsContextObject(0) {
     }
-    
+
+    /**
+      Initializes pen as solid and with 1 in width.
+
+      @param color The desired color.
+    */
+    Pen(Color color) throw(UserInterfaceException);
+
+    /**
+      Initializes pen with the specified style, color, and width.
+
+      @param style The desired style.
+      @param color The desired color.
+      @param width The desired width.
+    */
     Pen(PenStyle style, Color color, unsigned int width = 1) throw(UserInterfaceException);
   };
 
@@ -126,11 +144,20 @@ public:
 
     inline Brush() throw() : GraphicsContextObject(0) {
     }
-    
+
+    /**
+      Initializes brush with system color.
+    */
     Brush(SystemColor color) throw(UserInterfaceException);
-    
+
+    /**
+      Initializes brush from color.
+    */
     Brush(Color color) throw(UserInterfaceException);
 
+    /**
+      Initializes brush from color.
+    */
     Brush(unsigned int color) throw(UserInterfaceException);
   };
 
@@ -290,14 +317,34 @@ public:
   
   /**
     Draws a point.
+
+    @param position The position of the point.
+    @param color The desired color.
+    @param flags The flags.
   */
-  void point(const Position& position, unsigned int flags = 0) throw(UserInterfaceException);
+  void setPixel(const Position& position, Color color, unsigned int flags = 0) throw(UserInterfaceException);
+
+  /**
+    Returns the color of the pixel at the specified position.
+
+    @param position The position of the pixel.
+  */
+  Color getPixel(const Position& position) throw(UserInterfaceException);
+  
+  /**
+    Draws a point.
+    
+    @param positions The positions of the points.
+    @param color The desired color.
+    @param flags The flags.
+  */
+  void setPixels(const Array<Position>& positions, Color color, unsigned int flags = 0) throw(UserInterfaceException);
   
   /**
     Draws a line.
   */
   void line(const Position& a, const Position& b, unsigned int flags = 0) throw(UserInterfaceException);
-
+  
   /**
     Draws an arc.
   */
@@ -366,7 +413,7 @@ public:
   void putBitmap(
     const Position& position,
     const Dimension& dimension,
-    Bitmap bitmap) throw(UserInterfaceException);
+    const Bitmap& bitmap) throw(UserInterfaceException);
 
   /**
     Extracts the specified region as a bitmap.

@@ -34,7 +34,7 @@ String FileSystem::getPath(const String& base, const String& relative) throw() {
 String FileSystem::getCurrentFolder() throw(FileSystemException) {
 #if defined(__win32__)
   Allocator<char>* buffer = Thread::getLocalStorage();
-  if (GetCurrentDirectory(buffer->getSize(), buffer->getElements()) {
+  if (GetCurrentDirectory(buffer->getSize(), buffer->getElements())) {
     throw FileSystemException("Unable to get current folder");
   }
   return String(buffer->getElements());
@@ -50,7 +50,7 @@ String FileSystem::getCurrentFolder() throw(FileSystemException) {
 
 void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException) {
 #if defined(__win32__)
-  if (!SetCurrentDirectory(path) {
+  if (!SetCurrentDirectory(path)) {
     throw FileSystemException("Unable to set current folder");
   }
 #else // __unix__
@@ -161,7 +161,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
 
 void FileSystem::makeFolder(const String& path) throw(FileSystemException) {
 #if defined(__win32__)
-  if (!CreateDirectory(path, NULL) { // use default security descriptor
+  if (!CreateDirectory(path, NULL)) { // use default security descriptor
     throw FileSystemException("Unable to make folder");
   }
 #else // __unix__

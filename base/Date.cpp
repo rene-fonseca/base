@@ -5,9 +5,15 @@
 
 #include <base/features.h>
 #include <base/Date.h>
-#include <sys/time.h>
-#include <time.h>
-#include <unistd.h>
+
+#if defined(__win32__)
+  #include <windows.h>
+  #include <time.h>
+#else // __unix__
+  #include <sys/time.h>
+  #include <time.h>
+  #include <unistd.h>
+#endif
 
 /**
   Requirements:
@@ -16,61 +22,76 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if defined(__win32__)
+inline Date FileTimeToDate(const FILETIME& time) {
+  ASSERT(sizeof(FILETIME) == sizeof(long long));
+  return Date((*(long long*)(&time) - 116444736000000000LL)/10000000); // TAG: 0x0000001c1a021060LL
+}
+#endif
+
 Date Date::getNow() throw(DateException) {
+#if defined(__win32__)
+  FILETIME buffer;
+  GetSystemTimeAsFileTime(&buffer);
+  return FileTimeToDate(buffer);
+#else // __unix__
   return Date(::time(NULL));
-//  struct timeval tv;
-//  if (gettimeofday(&tv, 0)) {
-//    throw DateException("Unable to get local time");
-//  }
-//  return Date(tv.tv_sec);
+#endif
 }
 
-Date Date::getTime(int seconds, int minutes, int hours) throw(DateException) {
-  struct tm temp;
-  fill<char>((char*)&temp, 0, sizeof(temp));
-  temp.tm_sec = seconds;
-  temp.tm_min = minutes;
-  temp.tm_hour = hours;
+Date Date::getTime(int second, int minute, int hour) throw(DateException) {
+#if defined(__win32__)
+  FILETIME buffer;
+  SYSTEMTIME time = {0, 0, 0, 0, hour, minute, second, 0};
+  SystemTimeToFileTime(&time, &buffer);
+  return FileTimeToDate(buffer);
+#else // __unix__
+  struct tm temp = {seconds, minute, hour, 0, 0, 0, 0, 0, 0};
   int result;
   if ((result = mktime(&temp)) == -1) {
     throw DateException("Unable to represent date");
   }
   return Date(result);
+#endif
 }
 
 Date Date::getDate(int day, int month, int year) throw(DateException) {
-  struct tm temp;
-  fill<char>((char*)&temp, 0, sizeof(temp));
-  temp.tm_mday = day;
-  temp.tm_mon = month;
-  temp.tm_year = year;
-  int result;
-  if ((result = mktime(&temp)) == -1) {
-    throw DateException("Unable to represent date");
-  }
-  return Date(result);
-}
-
-Date Date::getDate(int seconds, int minutes, int hours, int day, int month, int year) throw(DateException) {
-  struct tm temp;
-  fill<char>((char*)&temp, 0, sizeof(temp));
-  temp.tm_sec = seconds;
-  temp.tm_min = minutes;
-  temp.tm_hour = hours;
-  temp.tm_mday = day;
-  temp.tm_mon = month;
-  temp.tm_year = year;
-  int result;
-  if ((result = mktime(&temp)) == -1) {
-    throw DateException("Unable to represent date");
-  }
-  return Date(result);
-}
-
-int Date::getSeconds() const throw() {
 #if defined(__win32__)
-  struct tm* result = localtime(&(time_t)date);
-  return result->tm_sec;
+  FILETIME buffer;
+  SYSTEMTIME time = {year, month, 0, day, 0, 0, 0, 0};
+  SystemTimeToFileTime(&time, &buffer);
+  return FileTimeToDate(buffer);
+#else // __unix__
+  struct tm temp = {0, 0, 0, day, month, year, 0, 0, 0};
+  int result;
+  if ((result = mktime(&temp)) == -1) {
+    throw DateException("Unable to represent date");
+  }
+  return Date(result);
+#endif
+}
+
+Date Date::getDate(int second, int minute, int hour, int day, int month, int year) throw(DateException) {
+#if defined(__win32__)
+  FILETIME buffer;
+  SYSTEMTIME time = {year, month, 0, day, hour, minute, second, 0};
+  SystemTimeToFileTime(&time, &buffer);
+  return FileTimeToDate(buffer);
+#else // __unix__
+  struct tm temp = {second, minute, hour, day, month, year, 0, 0, 0};
+  int result;
+  if ((result = mktime(&temp)) == -1) {
+    throw DateException("Unable to represent date");
+  }
+  return Date(result);
+#endif
+}
+
+int Date::getSecond() const throw() {
+#if defined(__win32__)
+  SYSTEMTIME time;
+  GetLocalTime(&time);
+  return time.wSecond;
 #else // __unix__
   struct tm result;
   localtime_r(&(time_t)date, &result);
@@ -78,10 +99,11 @@ int Date::getSeconds() const throw() {
 #endif
 }
 
-int Date::getMinutes() const throw() {
+int Date::getMinute() const throw() {
 #if defined(__win32__)
-  struct tm* result = localtime(&(time_t)date);
-  return result->tm_min;
+  SYSTEMTIME time;
+  GetLocalTime(&time);
+  return time.wMinute;
 #else // __unix__
   struct tm result;
   localtime_r(&(time_t)date, &result);
@@ -89,10 +111,11 @@ int Date::getMinutes() const throw() {
 #endif
 }
 
-int Date::getHours() const throw() {
+int Date::getHour() const throw() {
 #if defined(__win32__)
-  struct tm* result = localtime(&(time_t)date);
-  return result->tm_hour;
+  SYSTEMTIME time;
+  GetLocalTime(&time);
+  return time.wHour;
 #else // __unix__
   struct tm result;
   localtime_r(&(time_t)date, &result);
@@ -102,8 +125,9 @@ int Date::getHours() const throw() {
 
 int Date::getDay() const throw() {
 #if defined(__win32__)
-  struct tm* result = localtime(&(time_t)date);
-  return result->tm_mday;
+  SYSTEMTIME time;
+  GetLocalTime(&time);
+  return time.wDay;
 #else // __unix__
   struct tm result;
   localtime_r(&(time_t)date, &result);
@@ -113,8 +137,9 @@ int Date::getDay() const throw() {
 
 int Date::getDayOfWeek() const throw() {
 #if defined(__win32__)
-  struct tm* result = localtime(&(time_t)date);
-  return result->tm_wday;
+  SYSTEMTIME time;
+  GetLocalTime(&time);
+  return time.wDayOfWeek;
 #else // __unix__
   struct tm result;
   localtime_r(&(time_t)date, &result);
@@ -124,8 +149,10 @@ int Date::getDayOfWeek() const throw() {
 
 int Date::getDayOfYear() const throw() {
 #if defined(__win32__)
-  struct tm* result = localtime(&(time_t)date);
-  return result->tm_yday;
+  // TAG: not implemented
+  SYSTEMTIME time;
+  GetLocalTime(&time);
+  //  return time.wYear;
 #else // __unix__
   struct tm result;
   localtime_r(&(time_t)date, &result);
@@ -135,8 +162,9 @@ int Date::getDayOfYear() const throw() {
 
 int Date::getMonth() const throw() {
 #if defined(__win32__)
-  struct tm* result = localtime(&(time_t)date);
-  return result->tm_mon;
+  SYSTEMTIME time;
+  GetLocalTime(&time);
+  return time.wMonth;
 #else // __unix__
   struct tm result;
   localtime_r(&(time_t)date, &result);
@@ -146,8 +174,9 @@ int Date::getMonth() const throw() {
 
 int Date::getYear() const throw() {
 #if defined(__win32__)
-  struct tm* result = localtime(&(time_t)date);
-  return result->tm_year;
+  SYSTEMTIME time;
+  GetLocalTime(&time);
+  return time.wYear;
 #else // __unix__
   struct tm result;
   localtime_r(&(time_t)date, &result);
@@ -155,10 +184,11 @@ int Date::getYear() const throw() {
 #endif
 }
 
-int Date::getUTCSeconds() const throw() {
+int Date::getUTCSecond() const throw() {
 #if defined(__win32__)
-  struct tm* result = gmtime(&(time_t)date);
-  return result->tm_sec;
+  SYSTEMTIME time;
+  GetSystemTime(&time);
+  return time.wSecond;
 #else // __unix__
   struct tm result;
   gmtime_r(&(time_t)date, &result); // MT-safe
@@ -166,10 +196,11 @@ int Date::getUTCSeconds() const throw() {
 #endif
 }
 
-int Date::getUTCMinutes() const throw() {
+int Date::getUTCMinute() const throw() {
 #if defined(__win32__)
-  struct tm* result = gmtime(&(time_t)date);
-  return result.tm_min;
+  SYSTEMTIME time;
+  GetSystemTime(&time);
+  return time.wMinute;
 #else // __unix__
   struct tm result;
   gmtime_r(&(time_t)date, &result); // MT-safe
@@ -177,10 +208,11 @@ int Date::getUTCMinutes() const throw() {
 #endif
 }
 
-int Date::getUTCHours() const throw() {
+int Date::getUTCHour() const throw() {
 #if defined(__win32__)
-  struct tm* result = gmtime(&(time_t)date);
-  return result->tm_hour;
+  SYSTEMTIME time;
+  GetSystemTime(&time);
+  return time.wHour;
 #else // __unix__
   struct tm result;
   gmtime_r(&(time_t)date, &result); // MT-safe
@@ -190,8 +222,9 @@ int Date::getUTCHours() const throw() {
 
 int Date::getUTCDay() const throw() {
 #if defined(__win32__)
-  struct tm* result = gmtime(&(time_t)date);
-  return result->tm_mday;
+  SYSTEMTIME time;
+  GetSystemTime(&time);
+  return time.wDay;
 #else // __unix__
   struct tm result;
   gmtime_r(&(time_t)date, &result); // MT-safe
@@ -201,8 +234,9 @@ int Date::getUTCDay() const throw() {
 
 int Date::getUTCDayOfWeek() const throw() {
 #if defined(__win32__)
-  struct tm* result = gmtime(&(time_t)date);
-  return result->tm_wday;
+  SYSTEMTIME time;
+  GetSystemTime(&time);
+  return time.wDayOfWeek;
 #else // __unix__
   struct tm result;
   gmtime_r(&(time_t)date, &result); // MT-safe
@@ -212,8 +246,10 @@ int Date::getUTCDayOfWeek() const throw() {
 
 int Date::getUTCDayOfYear() const throw() {
 #if defined(__win32__)
-  struct tm* result = gmtime(&(time_t)date);
-  return result->tm_yday;
+  // TAG: not implemented
+  //  SYSTEMTIME time;
+  //  GetSystemTime(&time);
+  //  return time.wYear;
 #else // __unix__
   struct tm result;
   gmtime_r(&(time_t)date, &result); // MT-safe
@@ -223,8 +259,9 @@ int Date::getUTCDayOfYear() const throw() {
 
 int Date::getUTCMonth() const throw() {
 #if defined(__win32__)
-  struct tm* result = gmtime(&(time_t)date);
-  return result->tm_mon;
+  SYSTEMTIME time;
+  GetSystemTime(&time);
+  return time.wMonth;
 #else // __unix__
   struct tm result;
   gmtime_r(&(time_t)date, &result); // MT-safe
@@ -234,8 +271,9 @@ int Date::getUTCMonth() const throw() {
 
 int Date::getUTCYear() const throw() {
 #if defined(__win32__)
-  struct tm* result = gmtime(&(time_t)date);
-  return result->tm_year;
+  SYSTEMTIME time;
+  GetSystemTime(&time);
+  return time.wYear;
 #else // __unix__
   struct tm result;
   gmtime_r(&(time_t)date, &result); // MT-safe

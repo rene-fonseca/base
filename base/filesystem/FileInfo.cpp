@@ -21,7 +21,7 @@ FileInfo::FileInfo(const String& path) throw(FileSystemException) : path(path) {
 //  static const SYSTEMTIME systemTimeOffset = {1970, 1, 0, 0, 0, 0, 0, 0}; // TAG: day starts with 0 or 1
 //  FILETIME fileTimeOffset;
 //  SystemTimeToFileTime(&systemTimeOffset, &fileTimeOffset);
-  static const long long fileTimeOffset = 0x0000001c1a021060; // TAG: validate this
+  static const long long fileTimeOffset = 0x0000001c1a021060LL; // TAG: validate this
 
   WIN32_FIND_DATA buffer;
   HANDLE handle = FindFirstFile(path, &buffer);
@@ -34,9 +34,9 @@ FileInfo::FileInfo(const String& path) throw(FileSystemException) : path(path) {
   temp.HighPart = buffer.nFileSizeHigh;
   size = temp.QuadPart;
 
-  access = (long long)(buffer.st_atime) - fileTimeOffset; // TAG: overflow problem
-  modification = (long long)(buffer.st_mtime) - fileTimeOffset; // TAG: overflow problem
-  change = (long long)(buffer.st_ctime) - fileTimeOffset; // TAG: overflow problem
+  access = *(long long*)(&buffer.ftLastAccessTime) - fileTimeOffset; // TAG: overflow problem
+  modification = *(long long*)(&buffer.ftLastWriteTime) - fileTimeOffset; // TAG: overflow problem
+  change = *(long long*)(&buffer.ftCreationTime) - fileTimeOffset; // TAG: overflow problem
   FindClose(handle);
 #else // __unix__
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)

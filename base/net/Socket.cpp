@@ -494,7 +494,7 @@ unsigned int Socket::read(char* buffer, unsigned int size, bool nonblocking) thr
   unsigned int bytesRead = 0;
   while (bytesRead < size) {
 #if defined(__win32__)
-    int result = ::recv(fd->getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, 0);
+    int result = ::recv(socket->getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, 0);
     if (result < 0) { // has an error occured
       switch (WSAGetLastError()) {
       case WSAEINTR: // interrupted by signal before any data was read
@@ -534,7 +534,7 @@ unsigned int Socket::write(const char* buffer, unsigned int size, bool nonblocki
   unsigned int bytesWritten = 0;
   while (bytesWritten < size) {
 #if defined(__win32__)
-    int result = ::send(getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, 0);
+    int result = ::send(socket->getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, 0);
     if (result < 0) { // has an error occured
       switch (WSAGetLastError()) {
       case WSAEINTR: // interrupted by signal before any data was written

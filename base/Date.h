@@ -39,7 +39,7 @@ public:
     @param minute The minute.
     @param hour The hour.
   */
-  static Date getTime(int seconds, int minutes, int hours) throw(DateException);
+  static Date getTime(int second, int minute, int hour) throw(DateException);
 
   /**
     Returns date object for the specified date. Invalid values will be
@@ -92,19 +92,19 @@ public:
   inline int getValue() const throw() {return date;}
 
   /**
-    Returns the seconds in local time.
+    Returns the second in local time.
   */
-  int getSeconds() const throw();
+  int getSecond() const throw();
 
   /**
-    Returns the minutes in local time.
+    Returns the minute in local time.
   */
-  int getMinutes() const throw();
+  int getMinute() const throw();
 
   /**
-    Returns the hours in local time.
+    Returns the hour in local time.
   */
-  int getHours() const throw();
+  int getHour() const throw();
 
   /**
     Returns the day of the month in local time.
@@ -132,19 +132,19 @@ public:
   int getYear() const throw();
 
   /**
-    Returns the seconds in UTC.
+    Returns the second in UTC.
   */
-  int getUTCSeconds() const throw();
+  int getUTCSecond() const throw();
 
   /**
-    Returns the minutes in UTC.
+    Returns the minute in UTC.
   */
-  int getUTCMinutes() const throw();
+  int getUTCMinute() const throw();
 
   /**
-    Returns the hours in UTC.
+    Returns the hour in UTC.
   */
-  int getUTCHours() const throw();
+  int getUTCHour() const throw();
 
   /**
     Returns the day of the month in UTC.

@@ -23,8 +23,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Implementation of the 32 bit Cyclic Redundancy Check (CRC-32) algorithm as
   described by ISO 3309 (also see RFC 1952).
   
-  @ingroup security
   @short CRC-32.
+  @ingroup security
   @see MD5Sum SHA1
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

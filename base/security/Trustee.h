@@ -20,7 +20,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  A trustee (user or group).
+  A trustee (e.g. user or group).
   
   @short Trustee
   @ingroup security

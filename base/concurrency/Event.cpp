@@ -10,7 +10,7 @@
   #include <sys/time.h>
   #include <unistd.h>
   #include <errno.h>
-#endif // __win32__
+#endif
 
 Event::Event() throw(ResourceException) {
 #ifdef __win32__
@@ -20,15 +20,24 @@ Event::Event() throw(ResourceException) {
 #else
   signaled = false;
 
-  pthread_mutexattr_t attributes = PTHREAD_MUTEX_ERRORCHECK;
-  if (pthread_mutex_init(&mutex, &attributes)) {
-    throw ResourceException("Unable to initialize Event");
+  pthread_mutexattr_t attributes;
+  if (pthread_mutexattr_init(&attributes)) {
+    throw ResourceException();
   }
+  if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK)) {
+    pthread_mutexattr_destroy(&attributes); // should never fail
+    throw ResourceException();
+  }
+  if (pthread_mutex_init(&mutex, &attributes)) {
+    pthread_mutexattr_destroy(&attributes); // should never fail
+    throw ResourceException();
+  }
+  pthread_mutexattr_destroy(&attributes); // should never fail
 
   if (pthread_cond_init(&condition, NULL)) {
-    throw ResourceException("Unable to initialize event");
+    throw ResourceException();
   }
-#endif // __win32__
+#endif
 }
 
 bool Event::isSignaled() const throw(EventException) {
@@ -44,7 +53,7 @@ bool Event::isSignaled() const throw(EventException) {
     throw EventException(__func__);
   }
   return result;
-#endif // __win32__
+#endif
 }
 
 void Event::reset() throw(EventException) {
@@ -60,7 +69,7 @@ void Event::reset() throw(EventException) {
   if (pthread_mutex_unlock(&mutex)) {
     throw EventException("Unable to reset event");
   }
-#endif // __win32__
+#endif
 }
 
 void Event::signal() throw(EventException) {
@@ -79,7 +88,7 @@ void Event::signal() throw(EventException) {
   if (pthread_cond_broadcast(&condition)) { // unblock all blocked threads
     throw EventException("Unable to signal event");
   }
-#endif // __win32__
+#endif
 }
 
 void Event::wait() const throw(EventException) {
@@ -99,7 +108,7 @@ void Event::wait() const throw(EventException) {
   if (pthread_mutex_unlock(&mutex)) {
     throw EventException("Unable to wait for event");
   }
-#endif // __win32__
+#endif
 }
 
 bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventException) {
@@ -142,7 +151,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
   }
 
   return result;
-#endif // __win32__
+#endif
 }
 
 Event::~Event() throw(EventException) {
@@ -155,5 +164,5 @@ Event::~Event() throw(EventException) {
     throw EventException("Unable to destroy event");
   }
   pthread_mutex_destroy(&mutex); // lets just hope that this doesn't fail
-#endif // __win32__
+#endif
 }

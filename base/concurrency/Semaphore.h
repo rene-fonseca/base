@@ -15,9 +15,11 @@
 #include <limits.h>
 
 #ifdef __win32__
-  #include <Windows.h>
+  #include <windows.h>
 #elif HAVE_PTHREAD_SEMAPHORE
   #include <semaphore.h>
+#else
+  #include <pthread.h>
 #endif
 
 /**
@@ -31,11 +33,11 @@ class Semaphore : public Object {
 public:
 
 #ifdef __win32__
-  static const unsigned int MAXIMUM = UINT_MAX;
+  static const unsigned int MAXIMUM = INT_MAX;
 #elif HAVE_PTHREAD_SEMAPHORE
   static const unsigned int MAXIMUM = SEM_VALUE_MAX;
 #else
-  static const unsigned int MAXIMUM = UINT_MAX;
+  static const unsigned int MAXIMUM = INT_MAX;
 #endif
 private:
 
@@ -48,13 +50,13 @@ private:
   volatile int value;
   /** Condition. */
   pthread_cond_t condition;
+  /** Mutex. */
+  mutable pthread_mutex_t mutex;
 #endif
 public:
 
   /** Exception thrown directly by the Semaphore class. */
   class SemaphoreException : public Exception {
-  public:
-    SemaphoreException(const char* message) throw() : Exception(message) {}
   };
 
   /**

@@ -15,22 +15,31 @@ Semaphore::Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceExceptio
   }
 #ifdef __win32__
   if (!(semaphore = CreateSemaphore(NULL, value, MAXIMUM, NULL))) {
-    throw ResourceException(__func__);
+    throw ResourceException();
   }
 #elif HAVE_PTHREAD_SEMAPHORE
-  if (sem_init(&semaphore, 0, value) != 0) {
-    throw ResourceException(__func__);
+  if (sem_init(&semaphore, 0, value)) {
+    throw ResourceException();
   }
 #else
   this->value = value;
 
-  pthread_mutexattr_t attributes = PTHREAD_MUTEX_ERRORCHECK;
-  if (pthread_mutex_init(&mutex, &attributes)) {
-    throw ResourceException(__func__);
+  pthread_mutexattr_t attributes;
+  if (pthread_mutexattr_init(&attributes)) {
+    throw ResourceException();
   }
+  if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK)) {
+    pthread_mutexattr_destroy(&attributes); // should never fail
+    throw ResourceException();
+  }
+  if (pthread_mutex_init(&mutex, &attributes)) {
+    pthread_mutexattr_destroy(&attributes); // should never fail
+    throw ResourceException();
+  }
+  pthread_mutexattr_destroy(&attributes); // should never fail
 
   if (pthread_cond_init(&condition, NULL)) {
-    throw ResourceException(__func__);
+    throw ResourceException();
   }
 #endif
 }
@@ -40,17 +49,17 @@ unsigned int Semaphore::getValue() const throw(SemaphoreException) {
 #ifdef HAVE_PTHREAD_SEMAPHORE
   unsigned int value;
   if (sem_getvalue(&semaphore, &value)) { // value is not negative
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
   return value;
 #else
   unsigned int result;
   if (pthread_mutex_lock(&mutex)) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
   result = value;
   if (pthread_mutex_unlock(&mutex)) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
   return result;
 #endif
@@ -60,7 +69,7 @@ unsigned int Semaphore::getValue() const throw(SemaphoreException) {
 void Semaphore::post() throw(Overflow, SemaphoreException) {
 #ifdef __win32__
   if (!ReleaseSemaphore(semaphore, 1, NULL)) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
 #elif HAVE_PTHREAD_SEMAPHORE
   if (sem_post(&semaphore) == ERANGE) { // otherwise sem_post returns successfully
@@ -68,17 +77,17 @@ void Semaphore::post() throw(Overflow, SemaphoreException) {
   }
 #else
   if (pthread_mutex_lock(&mutex)) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
-  if (value == MAXIMUM) {
+  if ((unsigned int)value == MAXIMUM) {
     if (pthread_mutex_unlock(&mutex)) {
-      throw SemaphoreException(__func__);
+      throw SemaphoreException();
     }
     throw Overflow();
   }
   value++;
   if (pthread_mutex_unlock(&mutex)) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
   pthread_cond_signal(&condition); // we only need to signal one thread
 #endif
@@ -87,22 +96,22 @@ void Semaphore::post() throw(Overflow, SemaphoreException) {
 void Semaphore::wait() throw(SemaphoreException) {
 #ifdef __win32__
   if (WaitForSingleObject(semaphore, INFINITE) != WAIT_OBJECT_0) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
 #elif HAVE_PTHREAD_SEMAPHORE
   if (sem_wait(&semaphore)) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
 #else
   if (pthread_mutex_lock(&mutex)) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
   while (value == 0) { // wait for resource to become available
     pthread_cond_wait(&condition, &mutex);
   }
   value--;
   if (pthread_mutex_unlock(&mutex)) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
 #endif
 }
@@ -115,13 +124,13 @@ bool Semaphore::tryWait() throw(SemaphoreException) {
 #else
   bool result;
   if (pthread_mutex_lock(&mutex)) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
   if (result = value > 0) {
     value--;
   }
   if (pthread_mutex_unlock(&mutex)) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
   return result;
 #endif
@@ -130,15 +139,15 @@ bool Semaphore::tryWait() throw(SemaphoreException) {
 Semaphore::~Semaphore() throw(SemaphoreException) {
 #ifdef __win32__
   if (!CloseHandle(semaphore)) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
 #elif HAVE_PTHREAD_SEMAPHORE
   if (sem_destroy(&semaphore) != 0) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
 #else
   if (pthread_cond_destroy(&condition)) {
-    throw SemaphoreException(__func__);
+    throw SemaphoreException();
   }
   pthread_mutex_destroy(&mutex); // lets just hope that this doesn't fail
 #endif

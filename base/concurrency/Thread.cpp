@@ -175,7 +175,7 @@ Thread::Thread(Runnable& runnable) throw(ResourceException) {
   pthread_attr_setinheritsched(&attributes, PTHREAD_INHERIT_SCHED);
   if (pthread_create(&threadID, &attributes, (void*(*)(void*))&execute, (void*) this)) {
     pthread_attr_destroy(&attributes);
-    throw Construct();
+    throw ResourceException();
   }
   pthread_attr_destroy(&attributes);
 #endif

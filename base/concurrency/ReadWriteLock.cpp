@@ -40,7 +40,7 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     throw ResourceException();
   }
-  if (pthread_mutex_init(&mutex, &attributes) != 0) {
+  if (pthread_mutex_init(&lock, &attributes) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     throw ResourceException();
   }
@@ -60,7 +60,7 @@ void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
     throw ReadWriteLockException();
   }
 #else
-  int result = pthread_mutex_lock(&mutex);
+  int result = pthread_mutex_lock(&lock);
   if (result == 0) {
     return;
   } else if (result == EDEADLK) {
@@ -113,7 +113,7 @@ void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
     throw ReadWriteLockException();
   }
 #else
-  int result = pthread_mutex_lock(&mutex);
+  int result = pthread_mutex_lock(&lock);
   if (result == 0) {
     return;
   } else if (result == EDEADLK) {

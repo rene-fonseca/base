@@ -13,7 +13,9 @@
 #include "base/ResourceException.h"
 
 #ifdef __win32__
-  #include <Windows.h>
+  #include <windows.h>
+#else
+  #include <pthread.h>
 #endif // __win32__
 
 /**
@@ -33,10 +35,10 @@ private:
   /** Indicates that the event has been signaled. */
   bool signaled;
   /** Conditional. */
-  pthread_cond_t condition;
+  mutable pthread_cond_t condition;
   /** Internal mutex representation. */
   mutable pthread_mutex_t mutex;
-#endif // __win32__
+#endif
 public:
 
   /**

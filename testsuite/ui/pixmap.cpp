@@ -15,7 +15,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/ui/Pixmap.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class PixmapApplication : public Application {
 private:

@@ -23,7 +23,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class InetApplication : public Application {
 private:

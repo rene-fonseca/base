@@ -14,7 +14,7 @@
 #include <base/Application.h>
 #include <base/collection/Map.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class MapApplication : public Application {
 private:

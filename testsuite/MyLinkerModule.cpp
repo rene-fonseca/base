@@ -15,7 +15,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/concurrency/Thread.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 MyLinkerModule::MyLinkerModule(const String& identity, const String& name, const String& version) throw()
   : LinkerModule(identity, name, version) {

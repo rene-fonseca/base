@@ -18,7 +18,7 @@
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/Application.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 /*
   When debugging this program the states of the objects should be visible.

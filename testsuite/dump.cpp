@@ -15,7 +15,7 @@
 #include <base/io/FileReader.h>
 #include <base/mem/MemoryDump.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class DumpApplication : public Application {
 private:

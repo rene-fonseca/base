@@ -15,7 +15,7 @@
 #include <base/net/InetAddress.h>
 #include <base/string/FormatOutputStream.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class HostApplication : public Application {
 private:

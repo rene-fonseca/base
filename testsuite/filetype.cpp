@@ -20,7 +20,7 @@
 #include <base/string/StringOutputStream.h>
 #include <base/io/FileReader.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class FileTypeApplication : public Application {
 private:

@@ -19,7 +19,7 @@
 #include <base/string/String.h>
 #include <base/collection/Functor.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 /** Invert case of character. */
 class InvertCase : public UnaryOperation<char, char> {

@@ -23,7 +23,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/io/EndOfFile.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 Queue<StreamSocket*> jobs;
 Semaphore semaphore;

@@ -19,7 +19,7 @@
 #include <base/mathematics/Math.h>
 #include <base/mathematics/Random.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class EvaluateApplication : public Application {
 private:

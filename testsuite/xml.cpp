@@ -18,7 +18,7 @@
 #include <base/collection/Stack.h>
 #include <base/collection/Array.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class XMLApplication : public Application {
 private:

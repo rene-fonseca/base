@@ -16,7 +16,7 @@
 #include <base/TypeInfo.h>
 #include <base/security/User.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class ProcessApplication : public Application {
 private:

@@ -16,7 +16,7 @@
 #include <base/dl/LinkerManager.h>
 #include "MyLinkerModule.h"
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class DynamicLinkerApplication : public Application {
 private:

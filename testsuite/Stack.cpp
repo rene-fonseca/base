@@ -14,7 +14,7 @@
 #include <base/Application.h>
 #include <base/collection/Stack.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class StackApplication : public Application {
 private:

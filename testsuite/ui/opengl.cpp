@@ -17,7 +17,7 @@
 #include <base/Version.h>
 #include <base/ui/MessageDialog.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 /** Verbosity levels. */
 class Verbosity {

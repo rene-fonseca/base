@@ -27,7 +27,7 @@
 #include <base/mathematics/Constants.h>
 #include <base/mathematics/Math.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Pair<float, float>& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);

@@ -22,7 +22,7 @@
 #include <base/ui/Picture.h>
 #include <base/opengl/OpenGLWidget.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class WindowApplication : public Application {
 private:

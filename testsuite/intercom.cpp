@@ -29,7 +29,7 @@
 #include <base/sound/SoundOutputStream.h>
 #include <base/io/EndOfFile.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class IntercomServlet : public virtual Object {
 public:

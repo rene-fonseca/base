@@ -16,7 +16,7 @@
 #include <base/filesystem/FileSystem.h>
 #include <base/filesystem/FolderInfo.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class RemoveApplication : public Application {
 private:

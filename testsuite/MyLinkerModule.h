@@ -14,7 +14,7 @@
 #include <base/dl/LinkerModule.h>
 #include <base/string/FormatOutputStream.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class MyLinkerModule : public LinkerModule {
 public:

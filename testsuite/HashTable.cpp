@@ -14,7 +14,7 @@
 #include <base/Application.h>
 #include <base/collection/HashTable.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class HashTableApplication : public Application {
 private:

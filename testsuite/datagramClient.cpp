@@ -21,7 +21,7 @@
 #include <base/net/InetService.h>
 #include <base/concurrency/Thread.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class DatagramClientApplication : public Application {
 private:

@@ -17,7 +17,7 @@
 #include <base/Functor.h>
 #include <base/TypeInfo.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class BitSetApplication : public Application {
 private:

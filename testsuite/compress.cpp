@@ -24,7 +24,7 @@
 #include <base/UnsignedInteger.h>
 #include <base/mem/OwnershipPointer.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class CompressApplication : public Application {
 private:

@@ -20,7 +20,7 @@
 #include <base/Integer.h>
 #include <base/TypeInfo.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class ServerApplication : public Application {
 private:

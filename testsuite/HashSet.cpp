@@ -16,7 +16,7 @@
 #include <base/collection/Functor.h>
 #include <base/Functor.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class HashSetApplication : public Application {
 private:

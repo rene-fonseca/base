@@ -16,7 +16,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/TypeInfo.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class QueueApplication : public Application {
 private:

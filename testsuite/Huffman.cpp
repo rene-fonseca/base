@@ -19,7 +19,7 @@
 #include <base/mathematics/Random.h>
 #include <base/Cast.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class HuffmanApplication : public Application {
 private:

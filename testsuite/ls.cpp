@@ -21,7 +21,7 @@
 #include <base/collection/HashTable.h>
 #include <base/string/ANSIEscapeSequence.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class ListApplication : public Application {
 private:

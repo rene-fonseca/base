@@ -17,7 +17,7 @@
 #include <base/concurrency/Process.h>
 #include <base/Timer.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class TimeApplication : public Application {
 private:

@@ -22,7 +22,7 @@
 #include <base/UnsignedLongInteger.h>
 #include <base/mem/MemoryDump.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class IEEE1394Application : public Application,
                             public IEEE1394::IsochronousChannelListener,

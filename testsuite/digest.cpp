@@ -25,7 +25,7 @@
 #include <base/security/SHA384.h>
 #include <base/security/SHA512.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class DigestApplication : public Application {
 private:

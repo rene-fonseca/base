@@ -15,7 +15,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/Version.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 class VersionApplication : public Application {
 private:

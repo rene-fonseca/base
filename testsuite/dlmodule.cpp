@@ -16,7 +16,7 @@
 #include <base/string/FormatOutputStream.h> // debug only
 #include <base/mem/DynamicMemory.h>
 
-using namespace base;
+using namespace dk::sdu::mip::base;
 
 void moduleEntry() throw() {
   Trace::message("Module entry function");

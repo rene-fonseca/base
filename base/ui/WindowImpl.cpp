@@ -1700,7 +1700,7 @@ void WindowImpl::invalidate() throw(UserInterfaceException) {
 
 void WindowImpl::update() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  // TAG: time this implementation and select faster choice
+  // TAG: time this implementation and select faster choice (send WM_PAINT directly)
   assert(
     ::UpdateWindow((HWND)drawableHandle),
     UserInterfaceException(this)
@@ -2461,6 +2461,7 @@ bool WindowImpl::isResponding(unsigned int milliseconds) throw(UserInterfaceExce
     0,
     (XEvent*)&event
   );
+  return false; // TAG: fixme
 #endif // flavor
 }
 

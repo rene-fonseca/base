@@ -356,6 +356,7 @@ Color GraphicsContext::getPixel(const Position& position) throw(UserInterfaceExc
   return Color((unsigned int)result);
 #else // unix
   // TAG: fixme
+  return Color();
 #endif // flavor
 }
 

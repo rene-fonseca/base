@@ -55,6 +55,7 @@ unsigned int Menu::getNumberOfItems() const throw(MenuException) {
   HMENU menu = (HMENU)handle->getHandle();
   int result = ::GetMenuItemCount(menu);
   assert(result >= 0, MenuException(this));
+  return result;
 #else // unix
   // TAG: fixme
   return 0;

@@ -14,16 +14,17 @@
 #include "MyLinkerModule.h"
 #include <base/dl/LinkerManager.h>
 #include <base/string/FormatOutputStream.h> // debug only
+#include <base/mem/DynamicMemory.h>
 
 using namespace base;
 
 void moduleEntry() throw() {
-  fout << "Module entry function" << ENDL; // TAG: remove from final
+  Trace::message("Module entry function");
   LinkerManager::getManager()->registrate(new MyLinkerModule("mip.sdu.dk/~fonseca/base/MyLinkerModule", "MyLinkerModule", "0.1"));
 }
 
 void moduleCleanUp() throw() {
-  fout << "Module clean-up function" << ENDL; // TAG: remove from final
+  Trace::message("Module clean-up function");
   delete LinkerManager::getManager()->deregistrate();
 }
 

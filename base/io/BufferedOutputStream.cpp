@@ -17,11 +17,14 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 BufferedOutputStream::BufferedOutputStream(OutputStream& out, unsigned int size) throw(BindException, MemoryException) :
-  FilterOutputStream(out), buffer(maximum(size, MINIMUM_BUFFER_SIZE)), writeHead(0), readHead(0) {
+  FilterOutputStream(out),
+  buffer(maximum(size, MINIMUM_BUFFER_SIZE)),
+  writeHead(0),
+  readHead(0) {
 }
 
 void BufferedOutputStream::flush() throw(IOException) {
-  FilterOutputStream::write(getBuffer() + readHead, writeHead - readHead);
+  FilterOutputStream::write(buffer.getElements() + readHead, writeHead - readHead);
   readHead = 0;
   writeHead = 0;
   FilterOutputStream::flush();
@@ -31,8 +34,8 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size, 
   unsigned int bytesWritten = 0; // number of bytes that have been written
   while (true) {
     // copy from external to internal buffer - no overlap
-    unsigned int bytesToCopy = minimum(size - bytesWritten, getSize() - writeHead);
-    copy(getBuffer() + writeHead, buffer + bytesWritten, bytesToCopy);
+    unsigned int bytesToCopy = minimum(size - bytesWritten, this->buffer.getSize() - writeHead);
+    copy(this->buffer.getElements() + writeHead, buffer + bytesWritten, bytesToCopy);
     bytesWritten += bytesToCopy;
     writeHead += bytesToCopy;
 
@@ -40,7 +43,7 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size, 
       break;
     }
 
-    unsigned int result = FilterOutputStream::write(getBuffer() + readHead, writeHead - readHead, nonblocking);
+    unsigned int result = FilterOutputStream::write(this->buffer.getElements() + readHead, writeHead - readHead, nonblocking);
     readHead += result;
     if (readHead == writeHead) {
       readHead = 0;

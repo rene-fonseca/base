@@ -41,20 +41,6 @@ protected:
   unsigned int writeHead;
   /** The read head. */
   unsigned int readHead;
-
-  /**
-    Returns the buffer.
-  */
-  inline char* getBuffer() throw() {
-    return buffer.getElements();
-  }
-
-  /**
-    Returns the size of the buffer.
-  */
-  inline unsigned int getSize() const throw() {
-    return buffer.getSize();
-  }
 public:
 
   /**

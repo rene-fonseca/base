@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/net/InetService.h>
+#include <base/ByteOrder.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <winsock.h>
@@ -38,24 +39,24 @@ unsigned short InetService::getByName(const String& name, const String& protocol
   #warning Using MT-unsafe getservbyname
   sp = getservbyname(name.getElements(), protocol.getElements());
 #endif
-  return sp ? ntohs(sp->s_port) : 0;
+  return sp ? ByteOrder::fromBigEndian<unsigned short>(sp->s_port) : 0;
 }
 
 String InetService::getByPort(unsigned short port, const String& protocol) throw() {
   struct servent* sp;
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  sp = getservbyport(htons(port), protocol.getElements()); // MT-safe
+  sp = getservbyport(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements()); // MT-safe
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
-  sp = getservbyport_r(htons(port), protocol.getElements(), &result, buffer, sizeof(buffer));
+  sp = getservbyport_r(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements(), &result, buffer, sizeof(buffer));
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
-  getservbyport_r(htons(port), protocol.getElements(), &result, buffer, sizeof(buffer), &sp);
+  getservbyport_r(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements(), &result, buffer, sizeof(buffer), &sp);
 #else
   #warning Using MT-unsafe getservbyport
-  sp = getservbyport(htons(port), protocol.getElements());
+  sp = getservbyport(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements());
 #endif
   return sp ? String(sp->s_name) : String();
 }

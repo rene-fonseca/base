@@ -88,7 +88,7 @@ public:
     PROCESS = 8,
     /** Add the host name. */
     HOST = 16,
-    /** Add internal counter (an increment). */
+    /** Add internal counter (and increment the counter). */
     COUNTER = 32,
     /** Add the current time. */
     TIME = 64,

@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MATH__VECTOR_H
-#define _DK_SDU_MIP__BASE_MATH__VECTOR_H
+#ifndef _DK_SDU_MIP__BASE_MATHEMATICS__VECTOR_H
+#define _DK_SDU_MIP__BASE_MATHEMATICS__VECTOR_H
 
 #include <base/Object.h>
 #include <base/OutOfDomain.h>
@@ -49,7 +49,7 @@ public:
     unsigned int index;
     Reference(const Reference& copy); // prohibit default copy initialization
     Reference& operator=(const Reference& eq); // prohibit default assignment
-    Reference(Vector& v, unsigned int i) throw() : vector(v), index(i) {}
+    Reference(Vector& _vector, unsigned int _index) throw() : vector(_vector), index(_index) {}
   public:
     inline Reference& operator=(const TYPE& value) throw(OutOfRange) {vector.setAt(index, value); return *this;}
     inline operator TYPE() const throw(OutOfRange) {return vector.getAt(index);}
@@ -300,7 +300,7 @@ public:
   TYPE dotdot() const throw();
 
   /**
-    Returns the norm of this vector.
+    Returns the L2-norm of the vector.
   */
   TYPE norm() const throw();
 

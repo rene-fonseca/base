@@ -11,15 +11,16 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MATH__CONSTANTS_H
-#define _DK_SDU_MIP__BASE_MATH__CONSTANTS_H
+#ifndef _DK_SDU_MIP__BASE_MATHEMATICS__CONSTANTS_H
+#define _DK_SDU_MIP__BASE_MATHEMATICS__CONSTANTS_H
 
 #include <base/features.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This namespace holds some offen used mathematical constants.
+  This namespace holds some offen used mathematical constants. Please note that
+  the accuracy provided here may not be supported by the particular platform.
 
   @short Commonly used mathematical constants
 */

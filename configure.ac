@@ -109,6 +109,7 @@ base_cv_component_socket=no
 base_cv_component_inet_ipv6=no
 base_cv_component_sound=no
 
+base_cv_components=
 
 
 dnl configuration
@@ -238,7 +239,7 @@ AC_DEFUN(AC_BASE_ADDLIB, [dnl
 BASE_LIBS="[$]BASE_LIBS $1"
 ac_base_system_libs=
 for ac_base_lib in [$]ac_base_system_lib_order; do
-  for ac_base_lib in ["][$]BASE_LIBS["]; do
+  for ac_base_lib in [$]BASE_LIBS; do
     if test "[$]ac_base_lib" = "[$]ac_base_system_lib"; then
       AC_BASE_APPEND(ac_base_system_libs, [$]ac_base_system_lib)dnl
       break
@@ -311,8 +312,9 @@ ac_base_static_loaded=no
 if test x$ac_base_static = xyes && test -f $srcdir/static/$ac_base_target; then
   echo loading static target configuration...
   rm -f static.tmp
-  (cd $srcdir/static; ./static.sh ./$ac_base_target) > static.tmp 2>&1
-  if $? != 0; then
+  if (cd $srcdir/static; ./static.sh ./$ac_base_target) > static.tmp 2>&1; then
+    :
+  else
     AC_MSG_ERROR(Unable to import static target configuration)
   fi
   . ./static.tmp
@@ -523,8 +525,8 @@ no)
 ;;
 *.h)
   base_cv_component_ieee1394=yes
-  ac_base_temp=${base_explicit_ieee1394/%.h/}
-  AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL, ${ac_base_temp/*\//})
+  ac_base_temp=`echo ${base_explicit_ieee1394%.h} | sed "s/^.*\///"`
+  AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL, ${ac_base_temp})
   AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL_HEADER, [\"]${base_explicit_ieee1394}[\"])
 ;;
 [[A-Z]]*)
@@ -536,6 +538,10 @@ no)
   AC_MSG_ERROR(Invalid value for IEEE 1394 implementation (@<:@A-Z@:>@@<:@A-Za-z0-9_@:>@* or relative path of header).)
 ;;
 esac
+
+if test x${base_cv_component_ieee1394} = xyes; then
+  base_cv_components="${base_cv_components}${base_cv_components:+ }ieee1394"
+fi
 
 base_explicit_testsuite=no
 AC_ARG_ENABLE(
@@ -805,8 +811,8 @@ if test "x$ac_base_cxx_name" = "x"; then
 fi
 
 # make generic version
-if test x$ac_base_cxx_version = x; then
-  if test x$ac_base_cxx_micro = x; then
+if test -z "$ac_base_cxx_version"; then
+  if test -z "$ac_base_cxx_micro"; then
     ac_base_cxx_version="$ac_base_cxx_major.$ac_base_cxx_minor"
   else
     ac_base_cxx_version="$ac_base_cxx_major.$ac_base_cxx_minor.$ac_base_cxx_micro"
@@ -1081,7 +1087,7 @@ AC_DEFUN(AC_BASE_BYTEORDER2MSG, [dnl
   fi
 ])
 
-if test x$base_cv_byte_order != x; then
+if test -n "$base_cv_byte_order"; then
   AC_BASE_BYTEORDER2MSG(base_cv_byte_order_msg, base_cv_byte_order)
 fi
 AC_BASE_COMPARE(
@@ -1098,7 +1104,7 @@ AC_BASE_COMPARE(
   base_cv_byte_order=${base_explicit_byte_order})
 AC_BASE_DEFINE(BYTE_ORDER, ${base_symbol_prefix}${base_cv_byte_order})
 
-if test x$base_cv_word_order != x; then
+if test -n "$base_cv_word_order"; then
   AC_BASE_BYTEORDER2MSG(base_cv_word_order_msg, base_cv_word_order)
 fi
 AC_BASE_COMPARE(
@@ -1206,6 +1212,7 @@ dnl checks for library functions.
 
 dnl network support
 base_cv_component_socket=yes
+base_cv_components="${base_cv_components}${base_cv_components:+ }socket"
 
 case $base_cv_flavor in
 UNIX)
@@ -1229,6 +1236,7 @@ AC_BASE_YES(base_cv_api_inet_ipv6, AC_BASE_DEFINE_PRIVATE(INET_IPV6))
 
 # sound support
 base_cv_component_sound=yes
+base_cv_components="${base_cv_components}${base_cv_components:+ }sound"
 
 
 
@@ -1247,6 +1255,9 @@ else
 fi
 AC_BASE_YES(base_cv_api_lfs, AC_BASE_DEFINE_PRIVATE(LARGE_FILE_SYSTEM))
 base_cv_component_lfs=$base_cv_api_lfs
+if test x${base_cv_component_lfs} = xyes; then
+  base_cv_components="${base_cv_components}${base_cv_components:+ }lfs"
+fi
 
 
 
@@ -1263,6 +1274,9 @@ else
 fi
 AC_BASE_YES(base_cv_api_aio, AC_BASE_DEFINE_PRIVATE(AIO))
 base_cv_component_aio=$base_cv_api_aio
+if test x${base_cv_component_aio} = xyes; then
+  base_cv_components="${base_cv_components}${base_cv_components:+ }aio"
+fi
 
 fi dnl end of unix
 
@@ -1280,6 +1294,9 @@ AC_BASE_CHECK(
   base_cv_api_pthread)
 AC_BASE_YES(base_cv_api_pthread, AC_BASE_DEFINE_PRIVATE(PTHREAD))
 base_cv_component_pthread=$base_cv_api_pthread
+if test x${base_cv_component_pthread} = xyes; then
+  base_cv_components="${base_cv_components}${base_cv_components:+ }pthread"
+fi
 
 AC_BASE_CHECK_CFUNCTION_PRIVATE(pthread_yield)
 
@@ -1383,21 +1400,16 @@ else
 fi
 
 
-# TAG: replace ac_base_temp=base_cv_component_$component
-# TAG: replace short param names
 
 # add required libraries for enabled components
-for ac_base_entry in "$base_cv_libraries"; do
+for ac_base_entry in ${base_cv_libraries-""}; do
   ac_base_library=
   case $ac_base_entry in
   *:*)
-    ac_base_component=${ac_base_entry/:*}
-    if test x$ac_base_component = "x-"; then
-      continue;
-    fi
-    for ac_base_temp in "$base_cv_components"; do
+    ac_base_component=`echo ${ac_base_entry} | sed "s/:.*//"`
+    for ac_base_temp in ${base_cv_components-""}; do
       if test x$ac_base_temp = x$ac_base_component; then
-        ac_base_library=${ac_base_entry/*:}
+        ac_base_library=`echo ${ac_base_entry} | sed "s/.*://"`
         break;
       fi
     done
@@ -1406,7 +1418,7 @@ for ac_base_entry in "$base_cv_libraries"; do
     ac_base_library=$ac_base_entry
   ;;
   esac
-  if test x$ac_base_library != x; then
+  if test -n "$ac_base_library"; then
     AC_BASE_ADDLIB("-l$ac_base_library")
   fi
 done
@@ -1414,14 +1426,14 @@ done
 # TAG: make sure the same lib is given only once (use the last one)
 
 # add libc feature enabling defines
-for ac_base_entry in "$base_cv_features"; do
+for ac_base_entry in ${base_cv_features-""}; do
   ac_base_feature=
   case $ac_base_entry in
   *:*)
-    ac_base_component=${ac_base_entry/:*}
-    for ac_base_temp in "$base_cv_components"; do
+    ac_base_component=`echo ${ac_base_entry} | sed "s/:.*//"`
+    for ac_base_temp in ${base_cv_components-""}; do
       if test x$ac_base_temp = x$ac_base_component; then
-        ac_base_feature=${ac_base_entry/*:}
+        ac_base_feature=`echo ${ac_base_entry} | sed "s/.*://"`
         break;
       fi
     done
@@ -1430,10 +1442,16 @@ for ac_base_entry in "$base_cv_features"; do
     ac_base_feature=$ac_base_entry
   ;;
   esac
-  if test x$ac_base_feature != x; then
+  if test -n "$ac_base_feature"; then
     case $ac_base_feature in
-    *=*) AC_BASE_DEFINE_FEATURE(${ac_base_feature/=*}, ${ac_base_feature/*=});;
-    *) AC_BASE_DEFINE_FEATURE(${ac_base_feature});;
+    *=*)
+      ac_base_symbol=`echo ${ac_base_feature} | sed "s/=.*//"`
+      ac_base_value=`echo ${ac_base_feature} | sed "s/.*=//"`
+      AC_BASE_DEFINE_FEATURE(${ac_base_symbol}, ${ac_base_value})
+    ;;
+    *)
+      AC_BASE_DEFINE_FEATURE(${ac_base_feature})
+    ;;
     esac
   fi
 done

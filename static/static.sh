@@ -2,7 +2,7 @@
 
 debug=yes
 
-if test x$1 = x; then
+if test -z "$1"; then
   echo Platform description missing 1>&2
   exit 1
 fi
@@ -104,40 +104,44 @@ echo base_cv_features=\""$features"\"
 default_available_functions=
 default_inavailable_functions="mbrtowc mbsrtowcs memchr memcmp memcpy memmove memset nanosleep pselect pthread_yield readdir_r yield"
 
-for function in $default_available_functions; do
-  export base_cv_function_$function=yes
-done
+if test -n "$default_available_functions"; then
+  for function in $default_available_functions; do
+    export base_cv_function_$function=yes
+  done
+fi
 
-for function in $default_inavailable_functions; do
-  export base_cv_function_$function=no
-done
+if test -n "$default_inavailable_functions"; then
+  for function in $default_inavailable_functions; do
+    export base_cv_function_$function=no
+  done
+fi
 
-case ${function_mbrtowc+S}${function_mbrtowc}${function_mbrtowc-U} in
+case ${function_mbrtowc+S}${function_mbrtowc-U} in
 Syes|Sno) base_cv_function_mbrtowc=$function_mbrtowc;; U);; *) exit 1;; esac
-case ${function_mbsrtowcs+S}${function_mbsrtowcs}${function_mbsrtowcs-U} in
+case ${function_mbsrtowcs+S}${function_mbsrtowcs-U} in
 Syes|Sno) base_cv_function_mbsrtowcs=$function_mbsrtowcs;; U);; *) exit 1;; esac
-case ${function_memchr+S}${function_memchr}${function_memchr-U} in
+case ${function_memchr+S}${function_memchr-U} in
 Syes|Sno) base_cv_function_memchr=$function_memchr;; U);; *) exit 1;; esac
-case ${function_memcmp+S}${function_memcmp}${function_memcmp-U} in
+case ${function_memcmp+S}${function_memcmp-U} in
 Syes|Sno) base_cv_function_memcmp=$function_memcmp;; U);; *) exit 1;; esac
-case ${function_memcpy+S}${function_memcpy}${function_memcpy-U} in
+case ${function_memcpy+S}${function_memcpy-U} in
 Syes|Sno) base_cv_function_memcpy=$function_memcpy;; U);; *) exit 1;; esac
-case ${function_memmove+S}${function_memmove}${function_memmove-U} in
+case ${function_memmove+S}${function_memmove-U} in
 Syes|Sno) base_cv_function_memmove=$function_memmove;; U);; *) exit 1;; esac
-case ${function_memset+S}${function_memset}${function_memset-U} in
+case ${function_memset+S}${function_memset-U} in
 Syes|Sno) base_cv_function_memset=$function_memset;; U);; *) exit 1;; esac
-case ${function_nanosleep+S}${function_nanosleep}${function_nanosleep-U} in
+case ${function_nanosleep+S}${function_nanosleep-U} in
 Syes|Sno) base_cv_function_nanosleep=$function_nanosleep;; U);; *) exit 1;; esac
-case ${function_pselect+S}${function_pselect}${function_pselect-U} in
+case ${function_pselect+S}${function_pselect-U} in
 Syes|Sno) base_cv_function_pselect=$function_pselect;; U);; *) exit 1;; esac
-case ${function_pthread_yield+S}${function_pthread_yield}${function_pthread_yield-U} in
+case ${function_pthread_yield+S}${function_pthread_yield-U} in
 Syes|Sno) base_cv_function_pthread_yield=$function_pthread_yield;; U);; *) exit 1;; esac
-case ${function_readdir_r+S}${function_readdir_r}${function_readdir_r-U} in
+case ${function_readdir_r+S}${function_readdir_r-U} in
 Syes|Sno) base_cv_function_readdir_r=$function_readdir_r;; U);; *) exit 1;; esac
-case ${function_yield+S}${function_yield}${function_yield-U} in
+case ${function_yield+S}${function_yield-U} in
 Syes|Sno) base_cv_function_yield=$function_yield;; U);; *) exit 1;; esac
 
-for function in $functions; do
+for function in ${functions-""}; do
   case $function in
   [A-Za-z0-9_]*)
     export base_cv_function_$function=yes
@@ -178,24 +182,24 @@ for api in $default_inavailable_apis; do
   export base_cv_api_$api=no
 done
 
-case ${api_aio+S}${api_aio}${api_aio-U} in
+case ${api_aio+S}${api_aio-U} in
 Syes|Sno) base_cv_api_aio=$api_aio;; U);; *) exit 1;; esac
-case ${api_inet_ipv6+S}${api_inet_ipv6}${api_inet_ipv6-U} in
+case ${api_inet_ipv6+S}${api_inet_ipv6-U} in
 Syes|Sno) base_cv_api_inet_ipv6=$api_inet_ipv6;; U);; *) exit 1;; esac
-case ${api_lfs+S}${api_lfs}${api_lfs-U} in
+case ${api_lfs+S}${api_lfs-U} in
 Syes|Sno) base_cv_api_lfs=$api_lfs;; U);; *) exit 1;; esac
-case ${api_pthread+S}${api_pthread}${api_pthread-U} in
+case ${api_pthread+S}${api_pthread-U} in
 Syes|Sno) base_cv_api_pthread=$api_pthread;; U);; *) exit 1;; esac
-case ${api_pthread_rwlock+S}${api_pthread_rwlock}${api_pthread_rwlock-U} in
+case ${api_pthread_rwlock+S}${api_pthread_rwlock-U} in
 Syes|Sno) base_cv_api_pthread_rwlock=$api_pthread_rwlock;; U);; *) exit 1;; esac
-case ${api_pthread_semaphore+S}${api_pthread_semaphore}${api_pthread_semaphore-U} in
+case ${api_pthread_semaphore+S}${api_pthread_semaphore-U} in
 Syes|Sno) base_cv_api_pthread_semaphore=$api_pthread_semaphore;; U);; *) exit 1;; esac
-case ${api_regexp+S}${api_regexp}${api_regexp-U} in
+case ${api_regexp+S}${api_regexp-U} in
 Syes|Sno) base_cv_api_regexp=$api_regexp;; U);; *) exit 1;; esac
-case ${api_wide+S}${api_wide}${api_wide-U} in
+case ${api_wide+S}${api_wide-U} in
 Syes|Sno) base_cv_api_wide=$api_wide;; U);; *) exit 1;; esac
 
-for api in $apis; do
+for api in ${apis-""}; do
   case $api in
   [A-Za-z0-9_]*)
     export base_cv_api_$api=yes

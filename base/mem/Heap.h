@@ -48,7 +48,7 @@ protected:
   static void* resize(void* heap, unsigned int size) throw(MemoryException);
 
   /**
-    Tries to resizes the specified memory block without movement. Raises
+    Tries to resize the specified memory block without movement. Raises
     MemoryException on allocation failure.
 
     @param heap The memory block.

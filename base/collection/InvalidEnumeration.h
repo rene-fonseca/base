@@ -33,21 +33,23 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  InvalidEnumeration() throw();
+  inline InvalidEnumeration() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  InvalidEnumeration(const char* message) throw();
+  inline InvalidEnumeration(const char* message) throw() : Exception(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline InvalidEnumeration(Type type) throw() {
+  inline InvalidEnumeration(Type type) throw() : Exception(type) {
   }
   
   /**
@@ -56,7 +58,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline InvalidEnumeration(const char* message, Type type) throw() {
+  inline InvalidEnumeration(const char* message, Type type) throw()
+    : Exception(message, type) {
   }
 };
 

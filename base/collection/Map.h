@@ -160,23 +160,23 @@ public:
 //    }
 //  };
 
-  /**
+  /*
     Reference to an element within a map.
   */
-  class Reference {
+  class Element {
     friend class Map;
   private:
     
     Map& map;
     const Key key;
-    Reference(const Reference& copy); // prohibit default copy initialization
-    Reference& operator=(const Reference& eq); // prohibit default assignment
-
-    inline Reference(Map& _map, const Key& _key) : map(_map), key(_key) {
+    Element(const Element& copy) throw();
+    Element& operator=(const Element& eq) throw();
+    
+    inline Element(Map& _map, const Key& _key) : map(_map), key(_key) {
     }
   public:
     
-    inline Reference& operator=(const Value& value) throw(MemoryException) {
+    inline Element& operator=(const Value& value) throw(MemoryException) {
       map.add(key, value);
       return *this;
     }
@@ -301,8 +301,8 @@ public:
     Returns the value associated with the specified key when used as 'rvalue'.
     When used as 'lvalue' the key is associated with the specified value.
   */
-  inline Reference operator[](const Key& key) throw(InvalidKey, MemoryException) {
-    return Reference(*this, key);
+  inline Element operator[](const Key& key) throw(InvalidKey, MemoryException) {
+    return Element(*this, key);
   }
 
   /**

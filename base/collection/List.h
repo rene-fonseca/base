@@ -19,8 +19,7 @@
 #include <base/collection/InvalidEnumeration.h>
 #include <base/collection/InvalidNode.h>
 #include <base/MemoryException.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
-#include <base/mem/ReferenceCountedObject.h>
+#include <base/mem/Reference.h>
 #include <base/string/FormatOutputStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -280,7 +279,8 @@ public:
 /**
   Linked list data structure.
 
-  You can enumerate the elements of a list like this (myMember is a member function of MyClass):
+  You can enumerate the elements of a list like this (myMember is a member
+  function of MyClass):
   <pre>
     List<MyClass> myList;
     List<MyClass>::Enumeration enu(myList);
@@ -289,7 +289,7 @@ public:
     }
   </pre>
 
-  @short List
+  @short List.
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -306,43 +306,6 @@ public:
 
   typedef ListEnumerator<EnumeratorTraits<TYPE> > Enumerator;
   typedef ListReadEnumerator<ReadEnumeratorTraits<TYPE> > ReadEnumerator;
-
-//  class Enumeration;
-//  friend class Enumeration;
-//  class ReadOnlyEnumeration;
-//  friend class ReadOnlyEnumeration;
-//
-//  /**
-//    Enumeration of all the elements of an array.
-//  */
-//  class Enumeration : public ListEnumeration<Value, Value&, Value*> {
-//  public:
-//
-//    /**
-//      Initializes an enumeration of all the elements of the specified list.
-//
-//      @param list The list being enumerated.
-//    */
-//    Enumeration(List& list) throw()
-//      : ListEnumeration<Value, Value&, Value*>(list.getFirst()) {
-//    }
-//  };
-//
-//  /**
-//    Non-modifying enumeration of all the elements of an array.
-//  */
-//  class ReadOnlyEnumeration : public ListReadOnlyEnumeration<Value, const Value&, const Value*> {
-//  public:
-//
-//    /**
-//      Initializes a non-modifying enumeration of all the elements of the specified list.
-//
-//      @param list The list being enumerated.
-//    */
-//    ReadOnlyEnumeration(const List& list) throw()
-//      : ListReadOnlyEnumeration<Value, const Value&, const Value*>(list.getFirst()) {
-//    }
-//  };
 protected:
 
   /**
@@ -400,9 +363,9 @@ protected:
     /**
       Initializes an empty list.
     */
-    ListImpl() throw() : first(0), last(0), size(0) {
+    inline ListImpl() throw() : first(0), last(0), size(0) {
     }
-
+    
     /**
       Initializes list from other list.
     */
@@ -531,7 +494,7 @@ protected:
   /**
     The elements of the list.
   */
-  ReferenceCountedObjectPointer<ListImpl> elements;
+  Reference<ListImpl> elements;
 
   /**
     Returns the first node of the list.
@@ -567,13 +530,13 @@ public:
   /**
     Initializes an empty list.
   */
-  List() throw() : elements(new ListImpl()) {
+  List() throw(MemoryException) : elements(new ListImpl()) {
   }
 
   /**
     Initializes list from other list.
   */
-  inline List(const List& copy) throw(MemoryException)
+  inline List(const List& copy) throw()
     : elements(copy.elements) {
   }
   
@@ -681,7 +644,7 @@ public:
   /**
     Removes this first node of this list.
   */
-  void removeFirst() throw(InvalidNode) {
+  void removeFirst() throw(InvalidNode, MemoryException) {
     elements.copyOnWrite();
     elements->removeFirst();
   }
@@ -689,7 +652,7 @@ public:
   /**
     Removes the last node of this list.
   */
-  void removeLast() throw(InvalidNode) {
+  void removeLast() throw(InvalidNode, MemoryException) {
     elements.copyOnWrite();
     elements->removeLast();
   }
@@ -697,10 +660,10 @@ public:
   /**
     Removes all the elements from this list.
   */
-  void removeAll() throw() {
+  void removeAll() throw(MemoryException) {
     elements = new ListImpl(); // copyOnWrite is not required
   }
-
+  
   /**
     Removes the node specified by the enumeration from this list.
 

@@ -15,7 +15,7 @@
 #define _DK_SDU_MIP__BASE_COLLECTION__BIT_SET_H
 
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/collection/Collection.h>
 #include <base/collection/Enumeration.h>
 #include <base/collection/InvalidEnumeration.h>
@@ -351,7 +351,9 @@ public:
         --word;
       }
       --count;
-      return BitReadPointer(BitReadReference(word, 1UL << (count % (sizeof(unsigned long) * 8))));
+      return BitReadPointer(
+        BitReadReference(word, 1UL << (count % (sizeof(unsigned long) * 8)))
+      );
     }
     
     /**
@@ -372,27 +374,26 @@ public:
   typedef BitSetEnumerator Enumerator;
   typedef BitSetReadEnumerator ReadEnumerator;
   
-  /**
+  /*
     Reference to a single bit within a BitSet.
   */
-  class Reference {
+  class Element {
     friend class BitSet;
   private:
     
     BitSet& bitset; // use reference to avoid 'copy on write'
     unsigned int index;
     
-    Reference(const Reference& copy); // prohibit default copy initialization
+    Element(const Element& copy) throw();
+    Element& operator=(const Element& eq) throw();
     
-    Reference& operator=(const Reference& eq); // prohibit default assignment
-    
-    inline Reference(BitSet& _bitset, unsigned int _index)
+    inline Element(BitSet& _bitset, unsigned int _index)
       : bitset(_bitset),
         index(_index) {
     }
   public:
     
-    inline Reference& operator=(bool value) throw(OutOfRange) {
+    inline Element& operator=(bool value) throw(OutOfRange) {
       bitset.setAt(index, value);
       return *this;
     }
@@ -404,7 +405,7 @@ public:
 private:
 
   /** The elements of the bit set. */
-  ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<unsigned long> > elements;
+  Reference<ReferenceCountedCapacityAllocator<unsigned long> > elements;
   /** The number of bits in the bit set. */
   unsigned int size;
 protected:
@@ -472,7 +473,7 @@ public:
   /**
     Initializes an empty bit set.
   */
-  BitSet() throw();
+  BitSet() throw(MemoryException);
   
   /**
     Initializes array with the specified number of elements.
@@ -480,19 +481,23 @@ public:
     @param size The initial number of bits.
     @param value The initial state of the bits.
   */
-  BitSet(unsigned int size, bool value) throw();
+  BitSet(unsigned int size, bool value) throw(MemoryException);
   
   /**
     Initializes bit set from other bit set.
   */
-  BitSet(const BitSet& copy) throw(MemoryException)
+  inline BitSet(const BitSet& copy) throw()
     : elements(copy.elements), size(copy.size) {
   }
 
   /**
     Assignment of bit set to bit set.
   */
-  BitSet& operator=(const BitSet& eq) throw();
+  inline BitSet& operator=(const BitSet& eq) throw() {
+    elements = eq.elements;
+    size = eq.size;
+    return *this;
+  }
 
   /**
     Returns the number of bit in the bit set.
@@ -614,8 +619,8 @@ public:
 
     @param index The index of the element.
   */
-  inline Reference operator[](unsigned int index) throw(OutOfRange) {
-    return Reference(*this, index);
+  inline Element operator[](unsigned int index) throw(OutOfRange) {
+    return Element(*this, index);
   }
 
   /**
@@ -632,7 +637,7 @@ public:
     Returns a modifying enumerator of the bit set. The elements are
     enumerated from most significant to the least significant.
   */
-  inline Enumerator getEnumerator() const throw() {
+  inline Enumerator getEnumerator() throw() {
     return Enumerator(
       elements->getElements() + size/(sizeof(unsigned long) * 8),
       size

@@ -34,11 +34,11 @@ void BitSet::zeroExtend(unsigned int size) throw(MemoryException) {
   }
 }
 
-BitSet::BitSet() throw()
+BitSet::BitSet() throw(MemoryException)
   : elements(new ReferenceCountedCapacityAllocator<unsigned long>()), size(0) {
 }
 
-BitSet::BitSet(unsigned int _size, bool value) throw()
+BitSet::BitSet(unsigned int _size, bool value) throw(MemoryException)
   : elements(
       new ReferenceCountedCapacityAllocator<unsigned long>(
         getNumberOfElements(_size),
@@ -46,14 +46,12 @@ BitSet::BitSet(unsigned int _size, bool value) throw()
       )
     ),
     size(_size) {
-  fill<unsigned long>(getElements(), getNumberOfElements(size), value ? ~0UL : 0UL);
+  fill<unsigned long>(
+    getElements(),
+    getNumberOfElements(size),
+    value ? ~0UL : 0UL
+  );
   reinitialize();
-}
-
-BitSet& BitSet::operator=(const BitSet& eq) throw() {
-  elements = eq.elements;
-  size = eq.size;
-  return *this;
 }
 
 bool BitSet::getAt(unsigned int index) const throw(OutOfRange) {

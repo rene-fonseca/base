@@ -29,13 +29,13 @@ protected:
 public:
 
   typedef VALUE Value;
-  typedef VALUE& Reference;
   typedef VALUE* Pointer;
   typedef unsigned int Distance;
 };
 
 /**
-  Defines the types of a non-modifying enumerator (may only read the values of the elements).
+  Defines the types of a non-modifying enumerator (may only read the values of
+  the elements).
 
   @short Enumeration interface for non-modifying access
   @ingroup collections
@@ -50,7 +50,6 @@ protected:
 public:
 
   typedef VALUE Value;
-  typedef const VALUE& Reference;
   typedef const VALUE* Pointer;
   typedef unsigned int Distance;
 };
@@ -70,7 +69,9 @@ template<class TRAITS>
 class Enumerator {
 private:
 
-  /** Used to ensure that the specified traits template argument is an enumerator. */
+  /**
+    Used to ensure that the specified traits template argument is an enumerator.
+  */
   typedef typename TRAITS::SelfEnumeratorTraits ValidTraits;
 public:
 
@@ -78,8 +79,6 @@ public:
   typedef typename TRAITS::Value Value;
   /** The type of the difference between elements. */
   typedef typename TRAITS::Distance Distance;
-  /** The type of a reference to an element . */
-  typedef typename TRAITS::Reference Reference;
   /** The type of a pointer to an element. */
   typedef typename TRAITS::Pointer Pointer;
 
@@ -96,7 +95,7 @@ public:
   /**
     Destroys the enumerator.
   */
-  virtual ~Enumerator() throw() {
+  virtual inline ~Enumerator() throw() {
   }
 };
 

@@ -19,8 +19,7 @@
 #include <base/collection/InvalidKey.h>
 #include <base/MemoryException.h>
 #include <base/mathematics/Math.h>
-#include <base/mem/ReferenceCountedObject.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/string/FormatOutputStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -55,16 +54,16 @@ public:
   /*
     Reference to an element within a hash table.
   */
-  class Reference {
+  class Element {
     friend class HashTable;
   private:
     
     HashTable& hashTable;
     const Key key;
-    Reference(const Reference& copy); // prohibit default copy initialization
-    Reference& operator=(const Reference& eq); // prohibit default assignment
+    Element(const Element& copy) throw();
+    Element& operator=(const Element& eq) throw();
 
-    inline Reference(HashTable& _hashTable, const Key& _key)
+    inline Element(HashTable& _hashTable, const Key& _key) throw()
       : hashTable(_hashTable),
         key(_key) {
     }
@@ -73,7 +72,7 @@ public:
     /**
       Sets the value of the element.
     */
-    inline Reference& operator=(Value value) throw(MemoryException) {
+    inline Element& operator=(Value value) throw(MemoryException) {
       hashTable.add(key, value);
       return *this;
     }
@@ -99,7 +98,6 @@ public:
     Association<Key, Value> value;
     /** The next node in the single linked list. */
     Node* next;
-    // TAG: could have been bidirectional
   public:
     
     /**
@@ -424,26 +422,26 @@ public:
     inline bool isKey(const Key& key) throw() {
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
-      Node* grandparent = 0;
+      
       Node* parent = 0;
       Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || (*child->getKey() != key))) {
-        grandparent = parent;
+      if (child) {
+        if ((child->getHash() == hash) && (*child->getKey() == key)) {
+          return true; // this case should be fairly likely
+        }
         parent = child;
         child = child->getNext();
-      }
-      if (child) {
-        if (grandparent) {
-          grandparent->setNext(child);
-          parent->setNext(child->getNext());
-          child->setNext(parent);
-        } else if (parent) {
-          // parent is the first node
-          parent->setNext(child->getNext());
-          child->setNext(*bucket);
-          *bucket = child;
-        } else {
-          // child is the first node
+        while (child &&
+               ((child->getHash() != hash) || (*child->getKey() != key))) {
+          parent = child;
+          child = child->getNext();
+        }
+        if (child) {
+          Node* temp = child->getNext();
+          Node* first = *bucket;
+          child->setNext(first); // cyclic loop to first
+          *bucket = child; // move to first - still cyclic loop
+          parent->setNext(temp); // detach child
         }
       }
       return child;
@@ -455,8 +453,9 @@ public:
     inline bool isKey(const Key& key) const throw() {
       const unsigned long hash = getHash(key);
       const Node* const* bucket = getBuckets() + (hash & mask);
-      Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || (*child->getKey() != key))) {
+      const Node* child = *bucket;
+      while (child &&
+             ((child->getHash() != hash) || (*child->getKey() != key))) {
         child = child->getNext();
       }
       return child;
@@ -500,8 +499,9 @@ public:
     inline const Value& getValue(const Key& key) const throw(InvalidKey) {
       const unsigned long hash = getHash(key);
       const Node* const* bucket = getBuckets() + (hash & mask);
-      Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || (*child->getKey() != key))) {
+      const Node* child = *bucket;
+      while (child &&
+             ((child->getHash() != hash) || (*child->getKey() != key))) {
         child = child->getNext();
       }
       assert(child, InvalidKey(this));
@@ -534,6 +534,28 @@ public:
       }
       if (size > capacity) { // TAG: find simple rules that works
         grow();
+      }
+    }
+
+    void dump() throw() {
+      Node** bucket = getBuckets();
+      const Node* const* endBucket = bucket + capacity;
+      unsigned int index = 0;
+      fout << "Capacity: " << capacity << ENDL;
+      while (bucket != endBucket) {
+        Node* srcNode = *bucket;
+        fout << index << ':' << ' ';
+        if (srcNode) {
+          while (srcNode) {
+            fout << srcNode->getHash() << ' ';
+            srcNode = srcNode->getNext();
+          }
+        } else {
+          fout << "EMPTY";
+        }
+        fout << ENDL;
+        ++index;
+        ++bucket;
       }
     }
     
@@ -600,7 +622,7 @@ public:
     typedef typename Enumerator<TRAITS>::Value Value;
     
     /** The hash set implementation. */
-    ReferenceCountedObjectPointer<HashTableImpl> impl;
+    Reference<HashTableImpl> impl;
     /** The current bucket. */
     Node** bucket;
     /** The current position of the enumeration. */
@@ -615,7 +637,7 @@ public:
       @param hashTable The hash table.
     */
     inline HashTableEnumerator(
-      ReferenceCountedObjectPointer<HashTableImpl> _impl) throw()
+      Reference<HashTableImpl> _impl) throw()
       : impl(_impl),
         bucket(impl->getBuckets()),
         node(*bucket),
@@ -666,7 +688,7 @@ public:
     typedef typename Enumerator<TRAITS>::Value Value;
     
     /** The hash set implementation. */
-    ReferenceCountedObjectPointer<HashTableImpl> impl;
+    Reference<HashTableImpl> impl;
     /** The current bucket. */
     Node** bucket;
     /** The current position of the enumeration. */
@@ -681,7 +703,7 @@ public:
       @param hashTable The hash table.
     */
     inline HashTableValueEnumerator(
-      ReferenceCountedObjectPointer<HashTableImpl> _impl) throw()
+      Reference<HashTableImpl> _impl) throw()
       : impl(_impl),
         bucket(impl->getBuckets()),
         node(*bucket),
@@ -727,7 +749,7 @@ public:
   
   
   /** Hash table implementation. */
-  ReferenceCountedObjectPointer<HashTableImpl> impl;
+  Reference<HashTableImpl> impl;
 
   /**
     Copies the hash set if referenced by multiple automation pointers.
@@ -764,6 +786,10 @@ public:
   inline HashTable& operator=(const HashTable& eq) throw() {
     impl = eq.impl;
     return *this;
+  }
+
+  void dump() throw() {
+    impl->dump();
   }
   
   /**
@@ -853,8 +879,8 @@ public:
     Returns the value associated with the specified key when used as 'rvalue'.
     When used as 'lvalue' the key is associated with the specified value.
   */
-  inline Reference operator[](const Key& key) throw(InvalidKey, MemoryException) {
-    return Reference(*this, key);
+  inline Element operator[](const Key& key) throw(InvalidKey, MemoryException) {
+    return Element(*this, key);
   }
   
   /**

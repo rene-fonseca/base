@@ -18,8 +18,7 @@
 #include <base/collection/SingleLinkedNode.h>
 #include <base/collection/InvalidNode.h>
 #include <base/MemoryException.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
-#include <base/mem/ReferenceCountedObject.h>
+#include <base/mem/Reference.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 #include <base/concurrency/SharedSynchronize.h>
 
@@ -29,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Queue implemented using a unidirectional linked list. The first value pushed
   onto the queue is also the first to be pop'ed.
 
-  @short Queue
+  @short Queue.
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -47,9 +46,10 @@ public:
   typedef SingleLinkedNode<Value> Node;
 protected:
 
-  /**
+  /*
     Internal queue implementation.
-
+    
+    @short Queue implementation.
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
@@ -108,13 +108,13 @@ protected:
       last = node;
       ++size;
     }
-
+    
     /**
       Removes the value at the front of the queue.
     */
     Value pop() throw(InvalidNode) {
       if (!size) {
-        throw InvalidNode("Queue is empty");
+        throw InvalidNode("Queue is empty", this);
       }
       Node* temp = first;
       first = first->getNext();
@@ -142,7 +142,7 @@ protected:
   /**
     The elements of the queue.
   */
-  ReferenceCountedObjectPointer<QueueImpl > elements;
+  Reference<QueueImpl > elements;
 public:
 
   /**
@@ -154,7 +154,7 @@ public:
   /**
     Initializes queue from other queue.
   */
-  Queue(const Queue& copy) throw(MemoryException) : elements(copy.elements) {
+  inline Queue(const Queue& copy) throw() : elements(copy.elements) {
   }
 
   /**
@@ -183,7 +183,7 @@ public:
     elements.copyOnWrite();
     elements->push(value);
   }
-
+  
   /**
     Removes the element at the front of the queue. Raises InvalidNode if the
     queue is empty.

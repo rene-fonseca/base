@@ -19,7 +19,7 @@
 #include <base/collection/Enumeration.h>
 #include <base/MemoryException.h>
 #include <base/mathematics/Math.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/string/FormatOutputStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -356,28 +356,28 @@ public:
       Returns true if the specified value is in the hash set.
     */
     inline bool hasValue(const Value& value) throw() {
-      const unsigned long hash = getHash(value);
+      const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
-      Node* grandparent = 0;
+      
       Node* parent = 0;
       Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || (child->getValue() != value))) {
-        grandparent = parent;
+      if (child) {
+        if ((child->getHash() == hash) && (*child->getKey() == key)) {
+          return true; // this case should be fairly likely
+        }
         parent = child;
         child = child->getNext();
-      }
-      if (child) {
-        if (grandparent) {
-          grandparent->setNext(child);
-          parent->setNext(child->getNext());
-          child->setNext(parent);
-        } else if (parent) {
-          // parent is the first node
-          parent->setNext(child->getNext());
-          child->setNext(*bucket);
-          *bucket = child;
-        } else {
-          // child is the first node
+        while (child &&
+               ((child->getHash() != hash) || (*child->getKey() != key))) {
+          parent = child;
+          child = child->getNext();
+        }
+        if (child) {
+          Node* temp = child->getNext();
+          Node* first = *bucket;
+          child->setNext(first); // cyclic loop to first
+          *bucket = child; // move to first - still cyclic loop
+          parent->setNext(temp); // detach child
         }
       }
       return child;
@@ -389,8 +389,9 @@ public:
     inline bool hasValue(const Value& value) const throw() {
       const unsigned long hash = getHash(value);
       const Node* const* bucket = getBuckets() + (hash & mask);
-      Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || child->getValue() != value)) {
+      const Node* child = *bucket;
+      while (child &&
+             ((child->getHash() != hash) || child->getValue() != value)) {
         child = child->getNext();
       }
       return child;
@@ -490,7 +491,7 @@ public:
     typedef typename Enumerator<TRAITS>::Value Value;
     
     /** The hash set implementation. */
-    ReferenceCountedObjectPointer<HashSetImpl> impl;
+    Reference<HashSetImpl> impl;
     /** The current bucket. */
     Node** bucket;
     /** The current position of the enumeration. */
@@ -504,7 +505,7 @@ public:
       
       @param hashSet The hash set.
     */
-    inline HashSetEnumerator(ReferenceCountedObjectPointer<HashSetImpl> _impl) throw()
+    inline HashSetEnumerator(Reference<HashSetImpl> _impl) throw()
       : impl(_impl),
         bucket(impl->getBuckets()),
         node(*bucket),
@@ -548,7 +549,7 @@ public:
   
   
   /** Hash set implementation. */
-  ReferenceCountedObjectPointer<HashSetImpl> impl;
+  Reference<HashSetImpl> impl;
 
   /**
     Copies the hash set if referenced by multiple automation pointers.

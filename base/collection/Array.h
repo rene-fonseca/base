@@ -14,12 +14,12 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__ARRAY_H
 #define _DK_SDU_MIP__BASE_COLLECTION__ARRAY_H
 
-#include <base/mem/ReferenceCountedCapacityAllocator.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/collection/Collection.h>
 #include <base/collection/Enumeration.h>
 #include <base/collection/InvalidEnumeration.h>
 #include <base/collection/InvalidNode.h>
+#include <base/mem/ReferenceCountedCapacityAllocator.h>
+#include <base/mem/Reference.h>
 #include <base/OutOfRange.h>
 #include <base/MemoryException.h>
 #include <base/string/FormatOutputStream.h>
@@ -28,10 +28,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Array. Ordered sequence of elements with random access to the individual
-  elements.
-
-  @short Array
+  The Array collection is a container for an ordered sequence of elements which
+  provides random access to the individual elements. Elements must have a default
+  constructor.
+  
+  @short Array.
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -48,67 +49,36 @@ public:
   typedef typename CapacityAllocator<TYPE>::ReadIterator ReadIterator;
   typedef typename CapacityAllocator<TYPE>::Enumerator Enumerator;
   typedef typename CapacityAllocator<TYPE>::ReadEnumerator ReadEnumerator;
-
-//  class Enumeration;
-//  friend class Enumeration;
-//  class ReadOnlyEnumeration;
-//  friend class ReadOnlyEnumeration;
-
-//  /**
-//    Enumeration of all the elements of an array.
-//  */
-//  class Enumeration : public AllocatorEnumeration<Value, Value&, Value*> {
-//  public:
-//
-//    /**
-//      Initializes an enumeration of all the elements of the specified array.
-//
-//      @param array The array being enumerated.
-//    */
-//    Enumeration(Array& array) throw()
-//      : AllocatorEnumeration<Value, Value&, Value*>(array.getElements(), array.getElements() + array.getSize()) {
-//    }
-//  };
-//
-//  /**
-//    Non-modifying enumeration of all the elements of an array.
-//  */
-//  class ReadOnlyEnumeration : public AllocatorEnumeration<Value, const Value&, const Value*> {
-//  public:
-//
-//    /**
-//      Initializes a non-modifying enumeration of all the elements of the specified array.
-//
-//      @param array The array being enumerated.
-//    */
-//    ReadOnlyEnumeration(const Array& array) throw()
-//      : AllocatorEnumeration<Value, const Value&, const Value*>(array.getElements(), array.getElements() + array.getSize()) {
-//     }
-//  };
-
-  /**
+  
+  /*
     Reference to an element within an array.
   */
-  class Reference {
+  class Element {
     friend class Array;
   private:
     
     Array& array;
     unsigned int index;
 
-    Reference(const Reference& copy); // prohibit default copy initialization
-    Reference& operator=(const Reference& eq); // prohibit default assignment
+    Element(const Element& copy) throw();
+    Element& operator=(const Element& eq) throw();
     
-    inline Reference(Array& _array, unsigned int _index)
+    inline Element(Array& _array, unsigned int _index) throw()
       : array(_array), index(_index) {
     }
   public:
-    
-    inline Reference& operator=(Value value) throw(OutOfRange) {
+
+    /**
+      Sets the value.
+    */
+    inline Element& operator=(Value value) throw(OutOfRange) {
       array.setAt(index, value);
       return *this;
     }
-    
+
+    /**
+      Returns the value.
+    */
     inline operator Value() const throw(OutOfRange) {
       return array.getAt(index);
     }
@@ -116,7 +86,7 @@ public:
 private:
 
   /** The elements of the array. */
-  ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<Value> > elements;
+  Reference<ReferenceCountedCapacityAllocator<Value> > elements;
   /** The number of elements in the array. */
   unsigned int size;
 protected:
@@ -173,17 +143,22 @@ public:
 
     @param size The initial number of elements in the array.
     @param value The value used to initialize the elements.
-    @param granularity The desired granularity. Default is ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY.
+    @param granularity The desired granularity. Default is
+    ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY.
   */
-  Array(unsigned int size, Value value, unsigned int granularity = ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY) throw() :
-    elements(new ReferenceCountedCapacityAllocator<Value>(size, granularity)), size(size) {
+  Array(
+    unsigned int _size,
+    Value value,
+    unsigned int granularity = ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY) throw(MemoryException)
+    : elements(new ReferenceCountedCapacityAllocator<Value>(size, granularity)),
+      size(_size) {
     fill(getElements(), size, value);
   }
 
   /**
     Initializes array from other array.
   */
-  Array(const Array& copy) throw(MemoryException)
+  inline Array(const Array& copy) throw()
     : elements(copy.elements),
       size(copy.size) {
   }
@@ -191,11 +166,9 @@ public:
   /**
     Assignment of array to array.
   */
-  Array& operator=(const Array& eq) throw(MemoryException) {
-    if (&eq != this) { // protect against self assignment
-      elements = eq.elements;
-      size = eq.size;
-    }
+  inline Array& operator=(const Array& eq) throw() {
+    elements = eq.elements;
+    size = eq.size;
     return *this;
   }
 
@@ -230,15 +203,15 @@ public:
   /**
     Returns the first element of the allocator as a non-modifying array.
   */
-  inline ReadIterator getBeginIterator() const throw() {
-    return elements->getBeginIterator();
+  inline ReadIterator getBeginReadIterator() const throw() {
+    return elements->getBeginReadIterator();
   }
 
   /**
     Returns the end of the allocator as a non-modifying array.
   */
-  inline ReadIterator getEndIterator() const throw() {
-    return elements->getEndIterator();
+  inline ReadIterator getEndReadIterator() const throw() {
+    return elements->getEndReadIterator();
   }
 
   /**
@@ -344,8 +317,8 @@ public:
 
     @param index The index of the element.
   */
-  inline Reference operator[](unsigned int index) throw(OutOfRange) {
-    return Reference(*this, index);
+  inline Element operator[](unsigned int index) throw(OutOfRange) {
+    return Element(*this, index);
   }
 
   /**

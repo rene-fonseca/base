@@ -17,8 +17,7 @@
 #include <base/collection/Collection.h>
 #include <base/OutOfRange.h>
 #include <base/MemoryException.h>
-#include <base/mem/ReferenceCountedObject.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -314,7 +313,7 @@ protected:
   };
   
   /** The elements of the stack. */
-  ReferenceCountedObjectPointer<StackImpl> elements;
+  Reference<StackImpl> elements;
   
   /**
     Makes a new copy of the internal representation of the elements if shared

@@ -19,9 +19,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Exception raised when the end of an enumeration is exceeded.
-
-  @short End of enumeration exception  
+  This exception is raised on attemts to read beyond the end of an enumeration.
+  Correct use of enumerations will never generate this exception.
+  
+  @short End of enumeration exception.
   @ingroup collections exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -33,21 +34,23 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  EndOfEnumeration();
+  inline EndOfEnumeration() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  EndOfEnumeration(const char* message);
+  inline EndOfEnumeration(const char* message) throw() : Exception(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline EndOfEnumeration(Type type) throw() {
+  inline EndOfEnumeration(Type type) throw() : Exception(type) {
   }
   
   /**
@@ -56,7 +59,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline EndOfEnumeration(const char* message, Type type) throw() {
+  inline EndOfEnumeration(const char* message, Type type) throw()
+    : Exception(message, type) {
   }
 };
 

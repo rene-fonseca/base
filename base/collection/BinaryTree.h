@@ -18,8 +18,7 @@
 #include <base/collection/BinaryNode.h>
 #include <base/collection/InvalidNode.h>
 #include <base/collection/Enumeration.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
-#include <base/mem/ReferenceCountedObject.h>
+#include <base/mem/Reference.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -527,6 +526,13 @@ public:
     inline Node* getRoot() throw() {
       return root;
     }
+    
+    /**
+      Returns the root node of the binary tree.
+    */
+    inline const Node* getRoot() const throw() {
+      return root;
+    }
 
     /**
       Sets the root of the binary tree.
@@ -632,7 +638,7 @@ protected:
   /**
     The elements of the binary tree.
   */
-  ReferenceCountedObjectPointer<BinaryTreeImpl> elements;
+  Reference<BinaryTreeImpl> elements;
 public:
 
   /**
@@ -644,13 +650,13 @@ public:
   /**
     Initializes binary tree from other binary tree.
   */
-  BinaryTree(const BinaryTree& copy) throw() : elements(copy.elements) {
+  inline BinaryTree(const BinaryTree& copy) throw() : elements(copy.elements) {
   }
 
   /**
     Assignment of binary tree to binary tree.
   */
-  BinaryTree& operator=(const BinaryTree& eq) throw() {
+  inline BinaryTree& operator=(const BinaryTree& eq) throw() {
     elements = eq.elements;
     return *this;
   }
@@ -673,7 +679,7 @@ public:
   /**
     Returns the root node of the binary tree for non-modifying access.
   */
-  const Node* getRoot() const throw() {
+  inline const Node* getRoot() const throw() {
     return elements->getRoot();
   }
 

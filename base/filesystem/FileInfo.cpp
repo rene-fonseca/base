@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -72,17 +72,24 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
     ::CloseHandle(link);
     assert(!error, FileSystemException(this));
     
-    wchar_t* substPath;
+    wchar* substPath;
     unsigned int substLength;
     switch (reparseHeader->ReparseTag) {
     case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
-      substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer + reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset;
-      ASSERT(reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength % 2 == 0);
-      substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2;
+      substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer +
+        reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset;
+      ASSERT(
+        reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength % 2 == 0
+      );
+      substLength =
+        reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2;
       break;
     case IO_REPARSE_TAG_MOUNT_POINT:
-      substPath = reparseHeader->MountPointReparseBuffer.PathBuffer + reparseHeader->MountPointReparseBuffer.SubstituteNameOffset;
-      ASSERT(reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0);
+      substPath = reparseHeader->MountPointReparseBuffer.PathBuffer +
+        reparseHeader->MountPointReparseBuffer.SubstituteNameOffset;
+      ASSERT(
+        reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0
+      );
       substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2; // keep prefix "\??\"
       break;
     default:
@@ -116,14 +123,17 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   PSID ownerSID;
   PSID groupSID;
   PACL acl;
-  error |= ::GetSecurityInfo(file,
-                             SE_FILE_OBJECT,
-                             OWNER_SECURITY_INFORMATION|GROUP_SECURITY_INFORMATION|DACL_SECURITY_INFORMATION,
-                             &ownerSID,
-                             &groupSID,
-                             &acl,
-                             0,
-                             &securityDescriptor) != ERROR_SUCCESS;
+  error |= ::GetSecurityInfo(
+    file,
+    SE_FILE_OBJECT,
+    OWNER_SECURITY_INFORMATION|GROUP_SECURITY_INFORMATION|DACL_SECURITY_INFORMATION,
+    &ownerSID,
+    &groupSID,
+    &acl,
+    0,
+    &securityDescriptor
+  ) != ERROR_SUCCESS;
+  
   ::CloseHandle(file);
   assert(!error, FileSystemException("Not a file", this));
   
@@ -240,10 +250,10 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   temp.LowPart = information.nFileSizeLow;
   temp.HighPart = information.nFileSizeHigh;
   size = temp.QuadPart;
-  const long long fileTimeOffset = 116444736000000000ULL;
-  access = (Cast::impersonate<int64>(information.ftLastAccessTime) - fileTimeOffset)/10000000;
-  modification = (Cast::impersonate<int64>(information.ftLastWriteTime) - fileTimeOffset)/10000000;
-  change = (Cast::impersonate<int64>(information.ftCreationTime) - fileTimeOffset)/10000000;
+  const long long fileTimeOffset = 116444736000000000LL;
+  access = (Cast::impersonate<int64>(information.ftLastAccessTime) - fileTimeOffset)/10;
+  modification = (Cast::impersonate<int64>(information.ftLastWriteTime) - fileTimeOffset)/10;
+  change = (Cast::impersonate<int64>(information.ftCreationTime) - fileTimeOffset)/10;
   links = information.nNumberOfLinks;
   
 #else // unix
@@ -342,27 +352,11 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   size = status.st_size;
   owner = User(status.st_uid);
   group = Group(status.st_gid);
-  access = status.st_atime;
-  modification = status.st_mtime;
-  change = status.st_ctime;
+  access = status.st_atime * 1000000LL;
+  modification = status.st_mtime * 1000000LL;
+  change = status.st_ctime * 1000000LL;
   links = status.st_nlink;
 #endif // flavor
-}
-
-long long FileInfo::getSize() const throw() {
-  return size;
-}
-
-Date FileInfo::getLastModification() const throw() {
-  return modification;
-}
-
-Date FileInfo::getLastAccess() const throw() {
-  return access;
-}
-
-Date FileInfo::getLastChange() const throw() {
-  return change;
 }
 
 String FileInfo::getPath() const throw() {

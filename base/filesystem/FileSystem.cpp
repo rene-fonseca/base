@@ -55,9 +55,9 @@ bool FileSystem::optimizePath(const String& name) throw() {
   String::ReadIterator i = path.getBeginReadIterator();
   String::ReadIterator end = path.getEndReadIterator();
   
-  while (i < end) {
+  while (i != end) {
     // read until separator and dump
-    while ((i < end) && (*i != '/')) {
+    while ((i != end) && (*i != '/')) {
       ++i;
     }
     
@@ -1103,7 +1103,7 @@ public:
     stream.dwStreamId = BACKUP_LINK;
     stream.dwStreamAttributes = 0;
     stream.dwStreamNameSize = 0;
-    stream.Size.QuadPart = (wideFullPath.getLength() + 1) * sizeof(wchar_t); // including terminator
+    stream.Size.QuadPart = (wideFullPath.getLength() + 1) * sizeof(wchar); // including terminator
     
     bool success = false;
     DWORD bytesWritten;
@@ -1348,7 +1348,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
       {
         ASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0) &&
           (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 > 4));
-        wchar_t* substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer +
+        wchar* substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer +
           reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset + 4;
         // skip prefix "\??\"
         unsigned int substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2 - 4;
@@ -1359,7 +1359,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
       {
         ASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0) &&
                (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 > 4));
-        wchar_t* substPath = reparseHeader->MountPointReparseBuffer.PathBuffer +
+        wchar* substPath = reparseHeader->MountPointReparseBuffer.PathBuffer +
           reparseHeader->MountPointReparseBuffer.SubstituteNameOffset + 4;
         // skip prefix "\??\"
         unsigned int substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 - 4;
@@ -1494,13 +1494,13 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
         if (offset + fileLocationInfo->volumeOffset + volume->labelOffset >= linkLength) {
           break;
         }
-//         ferr << MESSAGE("local volume: ") << volume->size << EOL
-//              << MESSAGE("local volume: ") << volume->type << EOL
-//              << MESSAGE("local volume: ") << volume->serialNumber << EOL
-//              << MESSAGE("local volume: ") << volume->labelOffset << EOL
-//              << MESSAGE("local volume: ") << buffer[offset + volume->labelOffset] << EOL
-//              << MESSAGE("base path: ") << String(buffer + offset + fileLocationInfo->pathOffset) << EOL
-//              << MESSAGE("remaining path: ") << String(buffer + offset + fileLocationInfo->remainingPathOffset) << EOL
+//         ferr << "local volume: " << volume->size << EOL
+//              << "local volume: " << volume->type << EOL
+//              << "local volume: " << volume->serialNumber << EOL
+//              << "local volume: " << volume->labelOffset << EOL
+//              << "local volume: " << buffer[offset + volume->labelOffset] << EOL
+//              << "base path: " << String(buffer + offset + fileLocationInfo->pathOffset) << EOL
+//              << "remaining path: " << String(buffer + offset + fileLocationInfo->remainingPathOffset) << EOL
 //              << ENDL;
 
         if (!((offset + fileLocationInfo->pathOffset < linkLength) &&
@@ -1525,9 +1525,9 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
           break;
         }
         
-//         ferr << MESSAGE("network volume: ") << volume->size << EOL
-//              << MESSAGE("network volume: ") << volume->shareOffset << EOL
-//              << MESSAGE("network volume: ") << String(buffer + offset + fileLocationInfo->networkVolumeOffset + volume->shareOffset) << EOL
+//         ferr << "network volume: " << volume->size << EOL
+//              << "network volume: " << volume->shareOffset << EOL
+//              << "network volume: " << String(buffer + offset + fileLocationInfo->networkVolumeOffset + volume->shareOffset) << EOL
 //              << ENDL;
         
         // TAG: check if path looks valid (e.g. \\xxxx\xxxx...????)
@@ -1664,7 +1664,7 @@ String FileSystem::getTempFileName(unsigned int options) throw() {
       stream << '-';
     }
     first = false;
-    stream << HEX << ZEROPAD << Date();
+    stream << HEX << ZEROPAD << Date::getNow().getValue();
   }
   if (options & RANDOM) {
     if (!first) {
@@ -1675,7 +1675,7 @@ String FileSystem::getTempFileName(unsigned int options) throw() {
     stream << HEX << ZEROPAD << random;
   }
   if (options & SUFFIX) {
-    stream << MESSAGE(".tmp");
+    stream << ".tmp";
   }
   stream << FLUSH;
   return stream.getString();
@@ -1812,9 +1812,19 @@ FileSystem::Quota FileSystem::getQuota(
   struct dqblk temp;
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
   // TAG: casting away const (temporary fix)
-  int res = ::quotactl(Q_GETQUOTA, (char*)path.getElements(), id, Cast::pointer<caddr_t>(&temp));
+  int res = ::quotactl(
+    Q_GETQUOTA,
+    (char*)path.getElements(),
+    id,
+    Cast::pointer<caddr_t>(&temp)
+  );
 #else
-  int res = ::quotactl(Q_GETQUOTA, path.getElements(), id, Cast::pointer<caddr_t>(&temp));
+  int res = ::quotactl(
+    Q_GETQUOTA,
+    path.getElements(),
+    id,
+    Cast::pointer<caddr_t>(&temp)
+  );
 #endif
   if (res == -1) {
     if (errno == EINVAL) {

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -238,11 +238,11 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
     }
   }
 
-  static const long long fileTimeOffset = 116444736000000000ULL;
+  static const long long fileTimeOffset = 116444736000000000LL;
   path -= MESSAGE("\\");
-  access = (Cast::impersonate<int64>(information.ftLastAccessTime) - fileTimeOffset)/10000000;
-  modification = (Cast::impersonate<int64>(information.ftLastWriteTime) - fileTimeOffset)/10000000;
-  change = (Cast::impersonate<int64>(information.ftCreationTime) - fileTimeOffset)/10000000;
+  access = (Cast::impersonate<int64>(information.ftLastAccessTime) - fileTimeOffset)/10;
+  modification = (Cast::impersonate<int64>(information.ftLastWriteTime) - fileTimeOffset)/10;
+  change = (Cast::impersonate<int64>(information.ftCreationTime) - fileTimeOffset)/10;
   links = information.nNumberOfLinks;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
@@ -338,9 +338,9 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
 #endif
   owner = User(status.st_uid);
   group = Group(status.st_gid);
-  access = status.st_atime;
-  modification = status.st_mtime;
-  change = status.st_ctime;
+  access = status.st_atime * 1000000LL;
+  modification = status.st_mtime * 1000000LL;
+  change = status.st_ctime * 1000000LL;
   links = status.st_nlink;
 #endif // flavor
 }
@@ -466,18 +466,6 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   #endif
 #endif // flavor
   return result;
-}
-
-Date FolderInfo::getLastModification() const throw() {
-  return modification;
-}
-
-Date FolderInfo::getLastAccess() const throw() {
-  return access;
-}
-
-Date FolderInfo::getLastChange() const throw() {
-  return change;
 }
 
 String FolderInfo::getPath() const throw() {

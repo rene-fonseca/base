@@ -43,3 +43,6 @@ section_HEADERS = ANSIEscapeSequence.h \
                   StringOutputStream.h \
                   WideStringException.h \
                   WideString.h
+
+EXTRA_DIST = unicode/UnicodeFolding.cpp \
+             unicode/UnicodeLookup.cpp

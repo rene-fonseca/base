@@ -11,13 +11,11 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-//#include <base/platforms/features.h>
 #include <base/string/WideString.h>
 #include <base/Functor.h>
 #include <base/Architecture.h>
-
-#include <base/string/lookup.cpp> // TAG: choose better name and directory
-#include <base/string/folding.cpp> // TAG: ditto
+#include <base/string/unicode/UnicodeLookup.cpp>
+#include <base/string/unicode/UnicodeFolding.cpp>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -28,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 // TAG: need input support for something like: "asdfd\u015fsdjfhd", "&#xXXXXX", and "&#DDDDD"
 // TAG: need support for width calculation. NBWSP=>0???
 
-// TAG: GCC 3.2 bus: fails to compile
+// TAG: GCC 3.2 bug: fails to compile
 // const WideTraits::CharacterDescriptor WideTraits::characters[0]; // when 0 elements
 // getArraySize(characters);
 

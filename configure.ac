@@ -61,6 +61,40 @@ AC_PROG_LIBTOOL()
 dnl constants and default values
 base_symbol_prefix=_DK_SDU_MIP__BASE__
 base_cv_flavor=UNIX
+base_cv_os=UNSPECIFIED
+base_cv_os_minor=0x000000
+base_cv_arch=UNSPECIFIED
+base_cv_arch_minor=UNSPECIFIED
+
+case $target_os in
+aix) base_cv_os=AIX;;
+beos) base_cv_os=BEOS;;
+cygwin) base_cv_os=CYGWIN;;
+linux*) base_cv_os=GNULINUX;;
+mingw32) base_cv_os=MINGW32;;
+solaris2) base_cv_os=SOLARIS;;
+solaris2.7) base_cv_os=SOLARIS base_cv_os_minor=0x020700;;
+solaris2.8) base_cv_os=SOLARIS base_cv_os_minor=0x020800;;
+solaris2.9) base_cv_os=SOLARIS base_cv_os_minor=0x020900;;
+irix) base_cv_os=IRIX;;
+irix62) base_cv_os=IRIX65 base_cv_os_minor=0x060200;;
+irix63) base_cv_os=IRIX65 base_cv_os_minor=0x060300;;
+irix64) base_cv_os=IRIX65 base_cv_os_minor=0x060400;;
+irix65) base_cv_os=IRIX65 base_cv_os_minor=0x060500;;
+esac
+
+case $target_cpu in
+alpha*) base_cv_arch=ALPHA;;
+i386) base_cv_arch=X86 base_cv_arch_minor=386;;
+i486) base_cv_arch=X86 base_cv_arch_minor=486;;
+i586) base_cv_arch=X86 base_cv_arch_minor=586;;
+i686) base_cv_arch=X86 base_cv_arch_minor=686;;
+x86_64) base_cv_arch=X86_64;;
+mips*) base_cv_arch=MIPS;;
+powerpc*) base_cv_arch=PPC;;
+sparcv9) base_cv_arch=SPARC base_cv_arch_minor=SPARC_V9;;
+sparc*) base_cv_arch=SPARC;;
+esac
 
 dnl specifies the generic order of libraries for the Unix flavor (some libraries may not be present)
 dnl TAG: FIXME
@@ -204,7 +238,7 @@ AC_DEFUN(AC_BASE_ADDLIB, [dnl
 BASE_LIBS="[$]BASE_LIBS $1"
 ac_base_system_libs=
 for ac_base_lib in [$]ac_base_system_lib_order; do
-  for ac_base_lib in [$]BASE_LIBS; do
+  for ac_base_lib in ["][$]BASE_LIBS["]; do
     if test "[$]ac_base_lib" = "[$]ac_base_system_lib"; then
       AC_BASE_APPEND(ac_base_system_libs, [$]ac_base_system_lib)dnl
       break
@@ -255,7 +289,12 @@ i486-*-linux*) ac_base_target=i486-unknown-linux-gnu;;
 i586-*-linux*) ac_base_target=i586-unknown-linux-gnu;;
 i686-*-linux*) ac_base_target=i686-unknown-linux-gnu;;
 ia64-*-linux*) ac_base_target=ia64-unknown-linux-gnu;;
+mips-sgi-irix) ac_base_target=mips-sgi-irix;;
+mips-sgi-irix6.2) ac_base_target=mips-sgi-irix62;;
+mips-sgi-irix6.3) ac_base_target=mips-sgi-irix63;;
+mips-sgi-irix6.4) ac_base_target=mips-sgi-irix64;;
 mips-sgi-irix6.5) ac_base_target=mips-sgi-irix65;;
+sparc*-sun-solaris2) ac_base_target=sparc-sun-solaris2;;
 sparc*-sun-solaris2.7) ac_base_target=sparc-sun-solaris2.7;;
 sparc*-sun-solaris2.8) ac_base_target=sparc-sun-solaris2.8;;
 sparc*-sun-solaris2.9) ac_base_target=sparc-sun-solaris2.9;;
@@ -264,15 +303,6 @@ i386-*-mingw32) ac_base_target=i386-unknown-mingw32;;
 i486-*-mingw32) ac_base_target=i486-unknown-mingw32;;
 i586-*-mingw32) ac_base_target=i586-unknown-mingw32;;
 i686-*-mingw32) ac_base_target=i686-unknown-mingw32;;
-*)
-  if test -f $srcdir/static/$ac_base_target; then : ; else
-#    search for static config (do not use - only suggest reconfiguration)
-#    case $ac_base_target in *-pc-*) ac_base_target="*-unknown-*";; esac
-#    case $ac_base_target in *-*-linux*) ac_base_target="$ac_base_target-linux-gnu";; esac
-#    case $ac_base_target in *-*-solaris*) ac_base_target="$ac_base_target-linux-gnu";; esac
-    AC_MSG_WARN(This target platform is not directly supported by the framework. Please refer to the section describing how to manually configure the framework.)
-  fi
-;;
 esac
 
 
@@ -477,7 +507,7 @@ AC_ARG_ENABLE(
       without a name). Disabling the IEEE 1394 implementation forces the dummy
       implementation to be utilized allowing IEEE 1394 applications to link with
       the library.],
-  AC_BASE_CHECK_ARG(base_explicit_ieee1394))
+  base_explicit_ieee1394=[$]enableval)
 
 case $base_explicit_ieee1394 in
 yes)
@@ -1560,6 +1590,7 @@ fi
 dnl generate make files
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(config/Makefile)
+AC_CONFIG_FILES(static/Makefile)
 
 AC_CONFIG_FILES(base/Makefile)
 AC_CONFIG_FILES(base/docs/Makefile)

@@ -148,6 +148,14 @@ WideString::WideString(const Character* string, unsigned int maximum) throw(OutO
 WideString::WideString(const char* string) throw(MultibyteException, MemoryException) : elements(0) {
   int numberOfCharacters = 0;
   if (string) { // is string proper (not empty)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  numberOfCharacters = ::MultiByteToWideChar(CP_UTF8, 0, string, -1, 0, 0); // includes terminator
+  assert(numberOfCharacters > 0, MultiByteException(this));
+  --numberOfCharacters;
+  assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
+  elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
+  ::MultiByteToWideChar(CP_UTF8, 0, string, -1, elements->getElements(), numberOfCharacters + 1); // includes terminator
+#else // unix
 #if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
     mbstate_t state;
     clear(state); // initial state
@@ -170,6 +178,7 @@ WideString::WideString(const char* string) throw(MultibyteException, MemoryExcep
 #else
     size_t result = mbstowcs(elements->getElements(), string, numberOfCharacters);
 #endif
+#endif // flavor
   }
 }
 
@@ -569,10 +578,17 @@ int compare<WideString>(const WideString& left, const WideString& right) throw()
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value) throw(MultibyteException, IOException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  Allocator<char> buffer(MB_LEN_MAX * value.getLength()); // no terminator // TAG: what is the max. char length
+  int result = ::WideCharToMultiByte(CP_UTF8, 0, value.getElements(), value.getLength(), buffer.getElements(), buffer.getSize(), 0, 0);
+  ASSERT(result > 0); // no errors expected
+  stream.addCharacterField(buffer.getElements(), result);
+#else // unix
   Allocator<char> buffer(MB_LEN_MAX * value.getLength() + 1); // remember terminator - greedy implementation
   size_t result = wcstombs(buffer.getElements(), value.getElements(), buffer.getSize());
   assert(result != size_t(-1), MultibyteException());
   stream.addCharacterField(buffer.getElements(), result);
+#endif // flavor
   return stream;
 }
 

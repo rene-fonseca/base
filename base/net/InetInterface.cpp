@@ -14,9 +14,13 @@
 #include <base/platforms/features.h>
 #include <base/net/InetInterface.h>
 #include <base/concurrency/Thread.h>
+#include <base/string/StringOutputStream.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <winsock2.h>
+#  include <ws2tcpip.h>
+#  include <nb30.h>
+#  undef interface
 #elif 0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)
 #  include <sys/types.h>
 #  include <sys/socket.h>
@@ -39,6 +43,11 @@ namespace internal {
   
   class InetInterface {
   public:
+
+    struct ASTAT {
+      ADAPTER_STATUS status;
+      NAME_BUFFER nameBuffer[NCBNAMSZ];
+    };
     
     static inline InetAddress getAddress(const struct sockaddr& address) throw() {
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
@@ -92,7 +101,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
     if_freenameindex(ni); // MT-safe
     throw;
   }
-#elif 0 && (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned;
   if (::WSAIoctl(
@@ -102,35 +111,29 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
         0,
         Thread::getLocalStorage()->getElements(),
         Thread::getLocalStorage()->getSize(),
-        bytesReturned,
-        0
-        0
-      )) {
-    close(handle);
+        &bytesReturned,
+        0,
+        0)) {
+    closesocket(handle);
     throw NetworkException(
       "Unable to get interfaces",
       Type::getType<InetInterface>()
     );
   }
-  close(handle);
-  const INTERFACE_INFO* interface =
+  closesocket(handle);
+  const INTERFACE_INFO* current =
     Cast::pointer<const INTERFACE_INFO*>(
       Thread::getLocalStorage()->getElements()
     );
-  const unsigned int numberOfInterfaces = bytesReturned/sizeof(interfaces[0]);
+  const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
   for (unsigned int index = 0; index < numberOfInterfaces; ++index) {
-    if (sa.sin_family != AF_INET) {
+    if (Cast::pointer<struct sockaddr*>(&current->iiAddress)->sa_family != AF_INET) { // TAG: AF_INET6
       continue;
     }
-    InetInterface i;
-    
     StringOutputStream stream;
-    stream << InetAddress(
-      getAddress(Cast::pointer<const struct sockaddr_in*>(&sa)->sin_addr),
-      InetAddress::IP_VERSION_4
-    ) << FLUSH;
-    interfaces.append(InetInterface(index, stream.getString()));
-    ++interface;
+    stream << index << FLUSH;
+    interfaces.add(stream.getString(), index);
+    ++current;
   }
 #elif 1 || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
@@ -173,8 +176,8 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
 }
 
 List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
-#if 0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)
   List<InetInterface> interfaces;
+#if 0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct if_nameindex* ni;
   if ((ni = if_nameindex()) == 0) { // MT-safe
     throw NetworkException(
@@ -182,13 +185,13 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
       Type::getType<InetInterface>()
     );
   }
+  // TAG: fixme
   InetInterface interface;
   interface.index = ni->if_index;
   interface.name = ni->if_name;
   interfaces.append(interface);
   if_freenameindex(ni); // MT-safe
-  return interfaces;
-#elif 0 && (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned;
   if (::WSAIoctl(
@@ -198,40 +201,49 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
         0,
         Thread::getLocalStorage()->getElements(),
         Thread::getLocalStorage()->getSize(),
-        bytesReturned,
-        0
-        0
-      )) {
-    close(handle);
+        &bytesReturned,
+        0,
+        0)) {
+    closesocket(handle);
     throw NetworkException(
       "Unable to get interfaces",
       Type::getType<InetInterface>()
     );
   }
-  close(handle);
-  const INTERFACE_INFO* interface =
+  closesocket(handle);
+  const INTERFACE_INFO* current =
     Cast::pointer<const INTERFACE_INFO*>(
       Thread::getLocalStorage()->getElements()
     );
-  const unsigned int numberOfInterfaces = bytesReturned/sizeof(interfaces[0]);
-  List<InetInterface> interfaces;
+  const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
   for (unsigned int index = 0; index < numberOfInterfaces; ++index) {
-    if (sa.sin_family != AF_INET) {
+    if (Cast::pointer<struct sockaddr*>(&current->iiAddress)->sa_family != AF_INET) { // TAG: AF_INET6
       continue;
     }
-    InetInterface i;
+    InetInterface interface;
+    
+    unsigned int flags = 0;
+    flags |= (current->iiFlags & IFF_UP) ? InetInterface::UP : 0;
+    flags |= (current->iiFlags & IFF_LOOPBACK) ? InetInterface::LOOPBACK : 0;
+    flags |= (current->iiFlags & IFF_POINTTOPOINT) ? InetInterface::POINT_TO_POINT : 0;
+    flags |= (current->iiFlags & IFF_BROADCAST) ? InetInterface::BROADCAST : 0;
+    flags |= (current->iiFlags & IFF_MULTICAST) ? InetInterface::MULTICAST : 0;
+    interface.flags = flags;
+    
+    interface.address =
+      internal::InetInterface::getAddress(*Cast::pointer<struct sockaddr*>(&current->iiAddress));
+    interface.netmask =
+      internal::InetInterface::getAddress(*Cast::pointer<struct sockaddr*>(&current->iiNetmask));
+    interface.broadcast =
+      internal::InetInterface::getAddress(*Cast::pointer<struct sockaddr*>(&current->iiBroadcastAddress));
     
     StringOutputStream stream;
-    stream << InetAddress(
-      getAddress(Cast::pointer<const struct sockaddr_in*>(&sa)->sin_addr),
-      InetAddress::IP_VERSION_4
-    ) << FLUSH;
-    interfaces.append(InetInterface(index, stream.getString()));
-    ++interface;
+    stream << internal::InetInterface::getAddress(*Cast::pointer<struct sockaddr*>(&current->iiAddress))
+           << FLUSH;
+    interfaces.append(interface);
+    ++current;
   }
-  return interfaces;
 #elif 1 || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-  List<InetInterface> interfaces;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces;
 // #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
@@ -327,11 +339,10 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
     throw;
   }
   close(handle);
-  return interfaces;
 #else
 #  warning InetInterface::getInterfaces() not supported
-  return List<InetInterface>();
 #endif
+  return interfaces;
 }
 
 unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkException) {
@@ -339,6 +350,9 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
   unsigned int index = if_nametoindex(name.getElements());
   assert(index > 0, NetworkException("Unable to resolve interface", Type::getType<InetInterface>()));
   return index;
+#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  // TAG: fixme
+  throw NetworkException(Type::getType<InetInterface>());
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces;
@@ -390,6 +404,39 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
 }
 
 unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(NetworkException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  int handle = socket(PF_INET, SOCK_STREAM, 0);
+  DWORD bytesReturned;
+  if (::WSAIoctl(
+        handle,
+        SIO_GET_INTERFACE_LIST,
+        0,
+        0,
+        Thread::getLocalStorage()->getElements(),
+        Thread::getLocalStorage()->getSize(),
+        &bytesReturned,
+        0,
+        0)) {
+    closesocket(handle);
+    throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+  }
+  closesocket(handle);
+  const INTERFACE_INFO* current =
+    Cast::pointer<const INTERFACE_INFO*>(
+      Thread::getLocalStorage()->getElements()
+    );
+  const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
+  for (unsigned int index = 0; index < numberOfInterfaces; ++index) {
+    if (
+      internal::InetInterface::getAddress(
+        *Cast::pointer<struct sockaddr*>(&current[index].iiAddress)
+      ) == address
+    ) {
+      return index;
+    }
+  }
+  throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+#else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces;
 // #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
@@ -438,6 +485,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
     "Unable to resolve interface",
     Type::getType<InetInterface>()
   );
+#endif
 }
 
 String InetInterface::getName(unsigned int index) throw(NetworkException) {
@@ -445,12 +493,41 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
   char name[IFNAMSIZ];
   assert(
     if_indextoname(index, name) != 0,
-    NetworkException(
-      "Unable to resolve interface",
-      Type::getType<InetInterface>()
-    )
+    NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
   );
   return String(name, IFNAMSIZ);
+#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  int handle = socket(PF_INET, SOCK_STREAM, 0);
+  DWORD bytesReturned;
+  if (::WSAIoctl(
+        handle,
+        SIO_GET_INTERFACE_LIST,
+        0,
+        0,
+        Thread::getLocalStorage()->getElements(),
+        Thread::getLocalStorage()->getSize(),
+        &bytesReturned,
+        0,
+        0)) {
+    closesocket(handle);
+    throw NetworkException(
+      "Unable to resolve interface",
+      Type::getType<InetInterface>()
+    );
+  }
+  closesocket(handle);
+  const INTERFACE_INFO* current =
+    Cast::pointer<const INTERFACE_INFO*>(
+      Thread::getLocalStorage()->getElements()
+    );
+  const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
+  assert(
+    index < numberOfInterfaces,
+    NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
+  );
+  StringOutputStream stream;
+  stream << index << FLUSH;
+  return stream.getString();
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces;
@@ -498,8 +575,8 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
 }
 
 InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException) {
-  struct ifreq req;
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
+  struct ifreq req;
   assert(
     if_indextoname(index, req.ifr_name) != 0,
     NetworkException(
@@ -517,7 +594,38 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
   }
   close(handle);
   return internal::InetInterface::getAddress(req.ifr_addr);
+#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  int handle = socket(PF_INET, SOCK_STREAM, 0);
+  DWORD bytesReturned;
+  if (::WSAIoctl(
+        handle,
+        SIO_GET_INTERFACE_LIST,
+        0,
+        0,
+        Thread::getLocalStorage()->getElements(),
+        Thread::getLocalStorage()->getSize(),
+        &bytesReturned,
+        0,
+        0)) {
+    closesocket(handle);
+    throw NetworkException(
+      "Unable to resolve interface",
+      Type::getType<InetInterface>()
+    );
+  }
+  closesocket(handle);
+  const INTERFACE_INFO* current =
+    Cast::pointer<const INTERFACE_INFO*>(
+      Thread::getLocalStorage()->getElements()
+    );
+  const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
+  assert(
+    index < numberOfInterfaces,
+    NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
+  );
+  return internal::InetInterface::getAddress(*Cast::pointer<struct sockaddr*>(&current[index].iiAddress));
 #else
+  struct ifreq req;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces;
 // #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
@@ -572,6 +680,79 @@ InetInterface::InetInterface() throw()
 
 InetInterface::InetInterface(const String& name) throw(NetworkException)
   : index(0), flags(0), metric(0) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  int handle = socket(PF_INET, SOCK_STREAM, 0);
+  DWORD bytesReturned;
+  if (::WSAIoctl(
+        handle,
+        SIO_GET_INTERFACE_LIST,
+        0,
+        0,
+        Thread::getLocalStorage()->getElements(),
+        Thread::getLocalStorage()->getSize(),
+        &bytesReturned,
+        0,
+        0)) {
+    closesocket(handle);
+    throw NetworkException(
+      "Unable to get interfaces",
+      Type::getType<InetInterface>()
+    );
+  }
+  closesocket(handle);
+  const INTERFACE_INFO* current =
+    Cast::pointer<const INTERFACE_INFO*>(
+      Thread::getLocalStorage()->getElements()
+    );
+  const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
+  for (unsigned int index = 0; index < numberOfInterfaces; ++index) {
+    if (Cast::pointer<struct sockaddr*>(&current->iiAddress)->sa_family != AF_INET) { // TAG: AF_INET6
+      continue;
+    }
+
+    StringOutputStream stream;
+    stream << index << FLUSH;
+
+    if (stream.getString() == name) {
+      continue;
+    }
+    
+    unsigned int flags = 0;
+    flags |= (current->iiFlags & IFF_UP) ? InetInterface::UP : 0;
+    flags |= (current->iiFlags & IFF_LOOPBACK) ? InetInterface::LOOPBACK : 0;
+    flags |= (current->iiFlags & IFF_POINTTOPOINT) ? InetInterface::POINT_TO_POINT : 0;
+    flags |= (current->iiFlags & IFF_BROADCAST) ? InetInterface::BROADCAST : 0;
+    flags |= (current->iiFlags & IFF_MULTICAST) ? InetInterface::MULTICAST : 0;
+    this->flags = flags;
+    
+    address =
+      internal::InetInterface::getAddress(*Cast::pointer<struct sockaddr*>(&current->iiAddress));
+    netmask =
+      internal::InetInterface::getAddress(*Cast::pointer<struct sockaddr*>(&current->iiNetmask));
+    broadcast =
+      internal::InetInterface::getAddress(*Cast::pointer<struct sockaddr*>(&current->iiBroadcastAddress));
+    
+    NCB ncb;
+    clear(ncb);
+    ncb.ncb_command = NCBRESET;
+    ncb.ncb_lana_num = 0;
+    ::Netbios(&ncb);
+    clear(ncb);
+    ncb.ncb_command = NCBASTAT;
+    ncb.ncb_lana_num = 0;
+    
+    copy<char>((char*)ncb.ncb_callname, "*               ", NCBNAMSZ);
+    internal::InetInterface::ASTAT adapter;
+    ncb.ncb_buffer = Cast::getAddress(adapter);
+    ncb.ncb_length = sizeof(adapter);
+    
+    if (::Netbios(&ncb) == 0) {
+      ethernet.setMAC48(Cast::getAddress(adapter.status.adapter_address[0]));
+    }
+    
+    ++current;
+  }
+#else
   assert(name.getLength() <= IFNAMSIZ, NetworkException(this));
   struct ifreq req;
   copy(req.ifr_name, name.getElements(), name.getLength()); // TAG how to init this
@@ -623,6 +804,7 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
   }
 #endif
   close(handle);
+#endif
 }
 
 InetInterface::InetInterface(const InetInterface& copy) throw()

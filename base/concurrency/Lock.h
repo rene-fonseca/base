@@ -14,7 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_CONCURRENCY__LOCK_H
 #define _DK_SDU_MIP__BASE_CONCURRENCY__LOCK_H
 
-#include <base/features.h>
+#include <base/concurrency/LockException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -29,25 +29,37 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class Lock {
+private:
+
+  /* Disable the default copy constructor. */
+  Lock(const Lock& copy) throw();
+  /* Disable the default assignment operator. */
+  Lock& operator=(const Lock& eq) throw();
 public:
 
   /**
+    Initializes lock.
+  */
+  inline Lock() throw() {
+  }
+  
+  /**
     Acquires an exclusive lock.
   */
-  virtual void exclusiveLock() const = 0;
+  virtual void exclusiveLock() const throw(LockException) = 0;
 
   /**
     Tries to acquire an exclusive lock.
 
     @return True on success.
   */
-  virtual bool tryExclusiveLock() const = 0;
+  virtual bool tryExclusiveLock() const throw(LockException) = 0;
 
   /**
     Acquires a shared lock. For some lock implementations this will acquire an
     exclusive lock.
   */
-  virtual void sharedLock() const = 0;
+  virtual void sharedLock() const throw(LockException) = 0;
 
   /**
     Tries to acquire a shared lock. For some lock implementations this will
@@ -55,12 +67,17 @@ public:
 
     @return True on success.
   */
-  virtual bool trySharedLock() const = 0;
+  virtual bool trySharedLock() const throw(LockException) = 0; // TAG: use exclusive
 
   /**
     Releases the lock.
   */
-  virtual void releaseLock() const = 0;
+  virtual void releaseLock() const throw(LockException) = 0; // TAG: use exclusive
+
+  /**
+    Destroy lock.
+  */
+  virtual ~Lock() throw(LockException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

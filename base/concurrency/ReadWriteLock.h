@@ -31,10 +31,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @ingroup concurrency
   @see MutualExclusion Lock
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.2
+  @version 1.4
 */
 
-class ReadWriteLock : public virtual Object, public virtual Lock {
+class ReadWriteLock : public virtual Lock {
 protected:
 
   /** Internal representation of object. */
@@ -49,27 +49,32 @@ public:
     @author Rene Moeller Fonseca
     @version 1.0
   */
-  class ReadWriteLockException : public Exception {
+  class ReadWriteLockException : public LockException {
   public:
 
     /**
       Initializes the exception object with no message.
     */
-    ReadWriteLockException() throw() {}
+    inline ReadWriteLockException() throw() {
+    }
 
     /**
       Initializes the exception object.
 
       @param message The message.
     */
-    ReadWriteLockException(const char* message) throw() {}
+    inline ReadWriteLockException(const char* message) throw()
+      : LockException(message) {
+    }
 
     /**
       Initializes the exception object without an associated message.
       
       @param type The identity of the type.
     */
-    ReadWriteLockException(Type type) throw() : Exception(type) {}
+    inline ReadWriteLockException(Type type) throw()
+      : LockException(type) {
+    }
 
     /**
       Initializes the exception object.
@@ -77,7 +82,9 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    ReadWriteLockException(const char* message, Type type) throw() : Exception(message, type) {}
+    inline ReadWriteLockException(const char* message, Type type) throw()
+      : LockException(message, type) {
+    }
   };
 
   /**

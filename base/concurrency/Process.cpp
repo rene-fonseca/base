@@ -18,19 +18,19 @@
 #include <base/Cast.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-  #include <psapi.h>
+#  include <windows.h>
+#  include <psapi.h>
 #else // unix
-  #include <sys/types.h>
-  #include <sys/wait.h>
-  #include <sys/time.h>
-  #include <sys/resource.h> // getpriority, getrusage
-  #include <unistd.h>
-  #include <signal.h>
-  #include <errno.h>
-  #include <stdlib.h>
+#  include <sys/types.h>
+#  include <sys/wait.h>
+#  include <sys/time.h>
+#  include <sys/resource.h> // getpriority, getrusage
+#  include <unistd.h>
+#  include <signal.h>
+#  include <errno.h>
+#  include <stdlib.h>
 
-  #define _DK_SDU_MIP__BASE__HAVE_GETRUSAGE
+#  define _DK_SDU_MIP__BASE__HAVE_GETRUSAGE
 #endif
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
@@ -56,7 +56,7 @@ namespace ntapi {
     unsigned long inheritedFromUniqueProcessId; // TAG: is the type correct
   };
 
-  typedef NTSTATUS (__stdcall *PNtQueryInformationProcess)(HANDLE, unsigned int /*PROCESSINFOCLASS*/, void*, unsigned long, unsigned long*);
+  typedef NTSTATUS (_DK_SDU_MIP__BASE__CALL_PASCAL *PNtQueryInformationProcess)(HANDLE, unsigned int /*PROCESSINFOCLASS*/, void*, unsigned long, unsigned long*);
 };
 #endif
 
@@ -378,7 +378,7 @@ int Process::wait(unsigned int microseconds) throw() {
   }
   DWORD exitCode;
   ::GetExitCodeProcess(handle->getHandle(), &exitCode);
-  return (exitCode != Application::EXIT_CODE_INVALID) ? exitCode : Application::EXIT_CODE_CONFLICT;
+  return (exitCode != static_cast<unsigned int>(Application::EXIT_CODE_INVALID)) ? exitCode : Application::EXIT_CODE_CONFLICT;
 #else // unix
 #  warning Process::wait(unsigned int microseconds) not implemented
   return Application::EXIT_CODE_INVALID;
@@ -444,7 +444,7 @@ public:
     KillImpl* kill = (KillImpl*)(parameter);
     
     DWORD processId;
-    DWORD threadId = ::GetWindowThreadProcessId(window, &processId);
+    /*DWORD threadId =*/ ::GetWindowThreadProcessId(window, &processId);
     
     if (processId == kill->getProcess().getId()) {
       static const char messageHandlerIdentity[] = "mip.sdu.dk/~fonseca/base?message handler";
@@ -481,7 +481,7 @@ public:
   }
   
   inline bool signal() throw() {
-    BOOL ignore = ::EnumWindows(windowHandler, (LPARAM)this);
+    /*BOOL ignore =*/ ::EnumWindows(windowHandler, (LPARAM)this);
     return state == SUCCEEDED;
   }
 };
@@ -593,7 +593,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Process::Layout
   );
 
   LDT_ENTRY ldt;
-  BOOL xxx = ::GetThreadSelectorEntry(::GetCurrentThread(), ss, &ldt);
+  /* BOOL xxx =*/ ::GetThreadSelectorEntry(::GetCurrentThread(), ss, &ldt);
   current = ldt.BaseLow | (ldt.HighWord.Bytes.BaseMid << 16) | (ldt.HighWord.Bytes.BaseHi << 24);
 
   //::GetThreadContext(::GetCurrentThread(), &context);

@@ -34,7 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class MutualExclusion : public virtual Object, public virtual Lock {
+class MutualExclusion : public virtual Lock {
 protected:
 
   /** Internal representation of mutex. */
@@ -50,27 +50,32 @@ public:
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
-  class MutualExclusionException : public Exception {
+  class MutualExclusionException : public LockException {
   public:
     
     /**
       Initializes the exception object with no message.
     */
-    MutualExclusionException() throw() {}
+    inline MutualExclusionException() throw() {
+    }
 
     /**
       Initializes the exception object.
       
       @param message The message.
     */
-    MutualExclusionException(const char* message) throw() {}
+    inline MutualExclusionException(const char* message) throw()
+      : LockException(message) {
+    }
 
     /**
       Initializes the exception object without an associated message.
       
       @param type The identity of the type.
     */
-    MutualExclusionException(Type type) throw() : Exception(type) {}
+    inline MutualExclusionException(Type type) throw()
+      : LockException(type) {
+    }
   
     /**
       Initializes the exception object.
@@ -78,7 +83,9 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    MutualExclusionException(const char* message, Type type) throw() : Exception(message, type) {}
+    inline MutualExclusionException(const char* message, Type type) throw()
+      : LockException(message, type) {
+    }
   };
 
   /**

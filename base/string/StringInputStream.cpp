@@ -16,7 +16,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-StringInputStream::StringInputStream(String& _string) throw(BindException) : string(_string) {
+StringInputStream::StringInputStream(String& _string) throw(BindException)
+  : string(_string) {
   index = 0;
   eof = false;
   closed = false;
@@ -59,6 +60,9 @@ unsigned int StringInputStream::skip(unsigned int count) throw(IOException) {
   }
   index += count;
   return count;
+}
+
+StringInputStream::~StringInputStream() throw(IOException) {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

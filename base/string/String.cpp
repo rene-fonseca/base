@@ -233,9 +233,9 @@ String& String::append(const char* string, unsigned int maximum) throw(OutOfDoma
 }
 
 String& String::replace(unsigned int start, unsigned int end, const String& string) throw(StringException, MemoryException) {
-  int length = getLength();
-  int strlength = string.getLength();
-  int lengthAfterRemove = length;
+  unsigned int length = getLength();
+  unsigned int strlength = string.getLength();
+  unsigned int lengthAfterRemove = length;
   bool moveEnd = false;
   if ((start < end) && (start < length)) { // protect against some cases
     if (end >= length) {
@@ -245,7 +245,7 @@ String& String::replace(unsigned int start, unsigned int end, const String& stri
       moveEnd = true;
     }
   }
-  int finalLength = lengthAfterRemove + strlength;
+  unsigned int finalLength = lengthAfterRemove + strlength;
 
   if (length < finalLength) { // is resulting string longer
     setLength(finalLength);

@@ -80,6 +80,7 @@ public:
   */
   inline CharacterSet& operator=(const CharacterSet& eq) throw() {
     characterSet = eq.characterSet;
+    return *this;
   }
   
   /**

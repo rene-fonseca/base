@@ -150,6 +150,9 @@ unsigned int FormatInputStream::read(char* buffer, unsigned int size, bool nonbl
   return bytesRead;
 }
 
+FormatInputStream::~FormatInputStream() throw(IOException) {
+}
+
 
 
 FormatInputStream& operator>>(FormatInputStream& stream, char& value) throw(IOException) {

@@ -14,8 +14,8 @@
 #include <base/platforms/features.h>
 #include <base/concurrency/Semaphore.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  include <windows.h>
 
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || \
     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K) || \
@@ -40,7 +40,7 @@ namespace ntapi {
     unsigned int maximum;
   };
 
-  typedef NTSTATUS (__stdcall *PNtQuerySemaphore)(HANDLE, unsigned int /*INFOCLASS*/, SemaphoreInformation*, unsigned long, unsigned long*);
+  typedef NTSTATUS (_DK_SDU_MIP__BASE__CALL_PASCAL *PNtQuerySemaphore)(HANDLE, unsigned int /*INFOCLASS*/, SemaphoreInformation*, unsigned long, unsigned long*);
 
   template<class API>
   inline API getAddress(const char* identifier) throw() {
@@ -54,7 +54,7 @@ namespace ntapi {
   #if defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
     #include <semaphore.h>
     #include <limits.h>
-  #elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
+  #elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
     #include <pthread.h>
   #endif
 #endif // flavor
@@ -64,7 +64,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class SemaphoreImpl {
 public:
   
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   typedef OperatingSystem::Handle Semaphore;
 
   enum {MAXIMUM = PrimitiveTraits<int>::MAXIMUM};
@@ -96,7 +96,7 @@ unsigned int Semaphore::getMaximum() throw() {
 
 Semaphore::Semaphore(unsigned int value) throw(OutOfDomain, ResourceException) {
   assert(value <= SemaphoreImpl::MAXIMUM, OutOfDomain(this));
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!(semaphore = (SemaphoreImpl::Semaphore)::CreateSemaphore(0, value, SemaphoreImpl::MAXIMUM, 0))) {
     throw ResourceException(this);
   }
@@ -143,7 +143,7 @@ Semaphore::Semaphore(unsigned int value) throw(OutOfDomain, ResourceException) {
 }
 
 int Semaphore::getValue() const throw(SemaphoreException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || \
       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K) || \
       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WXP)
@@ -191,7 +191,7 @@ int Semaphore::getValue() const throw(SemaphoreException) {
 }
 
 void Semaphore::post() throw(Overflow, SemaphoreException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!::ReleaseSemaphore((HANDLE)semaphore, 1, 0)) {
     throw SemaphoreException(this);
   }
@@ -220,7 +220,7 @@ void Semaphore::post() throw(Overflow, SemaphoreException) {
 }
 
 void Semaphore::wait() const throw(SemaphoreException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (::WaitForSingleObject((HANDLE)semaphore, INFINITE) != WAIT_OBJECT_0) {
     throw SemaphoreException(this);
   }
@@ -245,7 +245,7 @@ void Semaphore::wait() const throw(SemaphoreException) {
 }
 
 bool Semaphore::tryWait() const throw(SemaphoreException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return ::WaitForSingleObject((HANDLE)semaphore, 0) == WAIT_OBJECT_0;
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   sem_t* sem = (sizeof(sem_t) <= sizeof(void*)) ? (sem_t*)&semaphore : (sem_t*)semaphore;
@@ -267,7 +267,7 @@ bool Semaphore::tryWait() const throw(SemaphoreException) {
 }
 
 Semaphore::~Semaphore() throw(SemaphoreException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!::CloseHandle((HANDLE)semaphore)) {
     throw SemaphoreException(this);
   }

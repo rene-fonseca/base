@@ -15,16 +15,16 @@
 #include <base/concurrency/ReadWriteLock.h>
 #include <base/concurrency/SpinLock.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  include <windows.h>
 #else // unix
-  #include <pthread.h>
-  #include <errno.h>
+#  include <pthread.h>
+#  include <errno.h>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 
 class ReadWriteLockImpl {
 private:
@@ -130,7 +130,7 @@ public:
 #endif // flavor
 
 ReadWriteLock::ReadWriteLock() throw(ResourceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   representation = new ReadWriteLockImpl();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   representation = new pthread_rwlock_t[1]; // TAG: needs automatic deletion on exception
@@ -177,7 +177,7 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException) {
 }
 
 void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   static_cast<ReadWriteLockImpl*>(representation)->exclusiveLock();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_wrlock(static_cast<pthread_rwlock_t*>(representation))) {
@@ -196,7 +196,7 @@ void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
 }
 
 bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return static_cast<ReadWriteLockImpl*>(representation)->tryExclusiveLock();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   int result = pthread_rwlock_trywrlock(static_cast<pthread_rwlock_t*>(representation));
@@ -220,7 +220,7 @@ bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
 }
 
 void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   static_cast<ReadWriteLockImpl*>(representation)->sharedLock();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_rdlock(static_cast<pthread_rwlock_t*>(representation))) {
@@ -239,7 +239,7 @@ void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
 }
 
 bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return static_cast<ReadWriteLockImpl*>(representation)->trySharedLock();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   int result = pthread_rwlock_tryrdlock(static_cast<pthread_rwlock_t*>(representation));
@@ -264,7 +264,7 @@ bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
 
 void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
   // must be invoked by a thread which has already has a acquired an exclusive or shared lock!
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   static_cast<ReadWriteLockImpl*>(representation)->releaseLock();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_unlock(static_cast<pthread_rwlock_t*>(representation))) {
@@ -278,7 +278,7 @@ void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
 }
 
 ReadWriteLock::~ReadWriteLock() throw(ReadWriteLockException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   delete static_cast<ReadWriteLockImpl*>(representation);
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_destroy(static_cast<pthread_rwlock_t*>(representation))) {

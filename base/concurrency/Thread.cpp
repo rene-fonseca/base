@@ -16,24 +16,24 @@
 #include <base/Cast.h>
 
 #if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
-  #include <base/platforms/compiler/v3mv/exception.h> // includes private features
+#  include <base/platforms/compiler/v3mv/exception.h> // includes private features
 #endif
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 //  #defined _WIN32_WINNT 0x0400
-  #include <windows.h>
+#  include <windows.h>
 #else // pthread
-  #include <pthread.h>
-  #include <signal.h>
-  #include <time.h>
-  #include <sys/time.h>
-  #include <unistd.h>
-  #include <errno.h>
-  #if defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP)
-    #include <time.h> // get nanosleep prototype
-  #else // fall back on pselect and finally select
-    #include <sys/select.h>
-  #endif
+#  include <pthread.h>
+#  include <signal.h>
+#  include <time.h>
+#  include <sys/time.h>
+#  include <unistd.h>
+#  include <errno.h>
+#  if defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP)
+#    include <time.h> // get nanosleep prototype
+#  else // fall back on pselect and finally select
+#    include <sys/select.h>
+#  endif
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -103,7 +103,7 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
   if (timer) {
     long long timeout = -(nanoseconds+99)/100; // "-" selects relative mode
     ::SetWaitableTimer(timer, (const LARGE_INTEGER*)&timeout, 0, 0, 0, FALSE);
-    DWORD result = ::WaitForSingleObjectEx(timer, INFINITE, TRUE);
+    ::WaitForSingleObjectEx(timer, INFINITE, TRUE);
     // either WAIT_OBJECT_0 or WAIT_IO_COMPLETION
     ::CloseHandle(timer);
   } else {
@@ -399,11 +399,11 @@ int Thread::getNamedPriority(Priority priority) throw() {
 }
 
 #if !defined(BELOW_NORMAL_PRIORITY_CLASS) // should have been in winbase.h
-  #define BELOW_NORMAL_PRIORITY_CLASS ((DWORD)0x00004000)
+#  define BELOW_NORMAL_PRIORITY_CLASS ((DWORD)0x00004000)
 #endif
 
 #if !defined(ABOVE_NORMAL_PRIORITY_CLASS) // should have been in winbase.h
-  #define ABOVE_NORMAL_PRIORITY_CLASS ((DWORD)0x00008000)
+#  define ABOVE_NORMAL_PRIORITY_CLASS ((DWORD)0x00008000)
 #endif
 
 int Thread::getPriority() throw(ThreadException) {
@@ -450,18 +450,6 @@ int Thread::getPriority() throw(ThreadException) {
       basePriority = 6 + priority;
     }
     break;
-  case NORMAL_PRIORITY_CLASS:
-    switch (priority) {
-    case THREAD_PRIORITY_IDLE:
-      basePriority = 1;
-      break;
-    case THREAD_PRIORITY_TIME_CRITICAL:
-      basePriority = 15;
-      break;
-    default:
-      basePriority = 7 + priority;
-    }
-    break;
   case ABOVE_NORMAL_PRIORITY_CLASS: // w2k or later
     switch (priority) {
     case THREAD_PRIORITY_IDLE:
@@ -498,6 +486,18 @@ int Thread::getPriority() throw(ThreadException) {
       basePriority = 24 + priority; // [17; 31]
     }
     break;
+  case NORMAL_PRIORITY_CLASS:
+  default:
+    switch (priority) {
+    case THREAD_PRIORITY_IDLE:
+      basePriority = 1;
+      break;
+    case THREAD_PRIORITY_TIME_CRITICAL:
+      basePriority = 15;
+      break;
+    default:
+      basePriority = 7 + priority;
+    }
   }
   
   if (priorityClass == REALTIME_PRIORITY_CLASS) {

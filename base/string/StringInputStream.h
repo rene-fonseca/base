@@ -75,6 +75,11 @@ public:
     @param count The number of bytes to skip.
   */
   unsigned int skip(unsigned int count) throw(IOException);
+
+  /**
+    Destroys the string input stream.
+  */
+  ~StringInputStream() throw(IOException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

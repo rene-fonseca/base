@@ -106,6 +106,11 @@ public:
     @return The actual number of bytes read from the stream.
   */
   unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
+
+  /**
+    Destroys the format input stream.
+  */
+  ~FormatInputStream() throw(IOException);
 };
 
 /**

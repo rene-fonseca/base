@@ -1219,7 +1219,7 @@ WideString::WideString(const wchar* string) throw(WideStringException, MemoryExc
   }
   const wchar* terminator = find<wchar>(string, MAXIMUM_LENGTH, 0); // find terminator
   assert(terminator, WideStringException(this)); // maximum length exceeded
-  int numberOfCharacters = terminator - string;
+  unsigned int numberOfCharacters = terminator - string;
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
   
   if (sizeof(wchar) == sizeof(ucs2)) {
@@ -1234,7 +1234,7 @@ WideString::WideString(const wchar* string, unsigned int maximum) throw(OutOfDom
   assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
   assert(string, WideStringException(this)); // make sure string is proper (not empty)
   const wchar* terminator = find<wchar>(string, maximum, 0); // find terminator
-  int numberOfCharacters = terminator ? (terminator - string) : maximum;
+  unsigned int numberOfCharacters = terminator ? (terminator - string) : maximum;
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
   
   if (sizeof(wchar) == sizeof(ucs2)) {
@@ -1248,7 +1248,8 @@ WideString::WideString(const String& string) throw(MultibyteException, MemoryExc
   ASSERT((sizeof(wchar) == sizeof(ucs2)) || (sizeof(wchar) == sizeof(ucs4)));
   unsigned int multibyteLength = string.getLength();
   if (sizeof(wchar) == sizeof(ucs2)) {
-    int numberOfCharacters = UTF8ToUCS2(0, Cast::pointer<const uint8*>(string.getElements()), multibyteLength);
+    unsigned int numberOfCharacters =
+      UTF8ToUCS2(0, Cast::pointer<const uint8*>(string.getElements()), multibyteLength);
     assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
     elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
     if (numberOfCharacters) {
@@ -1259,7 +1260,8 @@ WideString::WideString(const String& string) throw(MultibyteException, MemoryExc
       );
     }
   } else {
-    int numberOfCharacters = UTF8ToUCS4(0, Cast::pointer<const uint8*>(string.getElements()), multibyteLength);
+    unsigned int numberOfCharacters =
+      UTF8ToUCS4(0, Cast::pointer<const uint8*>(string.getElements()), multibyteLength);
     assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
     elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
     if (numberOfCharacters) {
@@ -1285,14 +1287,16 @@ WideString::WideString(const char* string) throw(MultibyteException, MemoryExcep
   const unsigned int multibyteLength = terminator - string;
 
   if (sizeof(wchar) == sizeof(ucs2)) {
-    int numberOfCharacters = UTF8ToUCS2(0, Cast::pointer<const uint8*>(string), multibyteLength);
+    unsigned int numberOfCharacters =
+      UTF8ToUCS2(0, Cast::pointer<const uint8*>(string), multibyteLength);
     assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
     elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
     if (numberOfCharacters) {
       UTF8ToUCS2(Cast::pointer<ucs2*>(elements->getElements()), Cast::pointer<const uint8*>(string), multibyteLength);
     }
   } else {
-    int numberOfCharacters = UTF8ToUCS4(0, Cast::pointer<const uint8*>(string), multibyteLength);
+    unsigned int numberOfCharacters =
+      UTF8ToUCS4(0, Cast::pointer<const uint8*>(string), multibyteLength);
     assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
     elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
     if (numberOfCharacters) {
@@ -1314,14 +1318,14 @@ WideString::WideString(const char* string, unsigned int maximum) throw(OutOfDoma
   const unsigned int multibyteLength = (terminator) ? (terminator - string) : maximum;
   
   if (sizeof(wchar) == sizeof(ucs2)) {
-    int numberOfCharacters = UTF8ToUCS2(0, Cast::pointer<const uint8*>(string), multibyteLength);
+    unsigned int numberOfCharacters = UTF8ToUCS2(0, Cast::pointer<const uint8*>(string), multibyteLength);
     assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
     elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
     if (numberOfCharacters) {
       UTF8ToUCS2(Cast::pointer<ucs2*>(elements->getElements()), Cast::pointer<const uint8*>(string), multibyteLength);
     }
   } else {
-    int numberOfCharacters = UTF8ToUCS4(0, Cast::pointer<const uint8*>(string), multibyteLength);
+    unsigned int numberOfCharacters = UTF8ToUCS4(0, Cast::pointer<const uint8*>(string), multibyteLength);
     assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
     elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
     if (numberOfCharacters) {
@@ -1389,7 +1393,7 @@ void WideString::setAt(unsigned int index, Character value) throw(OutOfRange) {
 }
 
 WideString& WideString::remove(unsigned int start, unsigned int end) throw(MemoryException) {
-  int length = getLength();
+  unsigned int length = getLength();
   if ((start < end) && (start < length)) { // protect against some cases
     if (end >= length) {
       elements.copyOnWrite(); // we are about to modify the buffer
@@ -1413,7 +1417,7 @@ WideString& WideString::removeFrom(unsigned int start) throw(MemoryException) {
 }
 
 WideString& WideString::insert(unsigned int index, Character ch) throw(WideStringException, MemoryException) {
-  int length = getLength();
+  unsigned int length = getLength();
   setLength(length + 1);
   Character* buffer = elements->getElements();
   if (index >= length) {
@@ -1427,8 +1431,8 @@ WideString& WideString::insert(unsigned int index, Character ch) throw(WideStrin
 }
 
 WideString& WideString::insert(unsigned int index, const WideString& str) throw(WideStringException, MemoryException) {
-  int length = getLength();
-  int strlength = str.getLength();
+  unsigned int length = getLength();
+  unsigned int strlength = str.getLength();
   setLength(length + strlength); // TAG: also protects against self insertion - but can this be circumvented
   Character* buffer = elements->getElements();
   if (index >= length) {
@@ -1443,7 +1447,7 @@ WideString& WideString::insert(unsigned int index, const WideString& str) throw(
 }
 
 WideString& WideString::insert(unsigned int index, const WideStringLiteral& string) throw(WideStringException, MemoryException) {
-  int length = getLength();
+  unsigned int length = getLength();
   setLength(length + string.getLength());
   Character* buffer = elements->getElements();
   if (index >= length) {
@@ -1546,7 +1550,7 @@ unsigned int WideString::replaceAll(const WideString& fromStr, const WideString&
 }
 
 WideString WideString::substring(unsigned int start, unsigned int end) const throw(MemoryException) {
-  int length = getLength();
+  unsigned int length = getLength();
   if ((start < end) && (start < length)) {
     if (end > length) {
       end = length; // force to end of string
@@ -1692,13 +1696,13 @@ int WideString::compareToIgnoreCase(const WideString& string) const throw() {
 // int WideString::compareToIgnoreCase(const WideStringLiteral& string) const throw();
 
 bool WideString::startsWith(const WideString& prefix) const throw() {
-  int prefixLength = prefix.getLength();
+  unsigned int prefixLength = prefix.getLength();
   return (prefixLength > 0) && (prefixLength <= getLength()) &&
     (compare(getBuffer(), prefix.getBuffer(), prefixLength) == 0);
 }
 
 bool WideString::startsWith(const WideStringLiteral& prefix) const throw() {
-  int prefixLength = prefix.getLength();
+  unsigned int prefixLength = prefix.getLength();
   // TAG: fix UCS2/UCS4 support
   return false;
 //   return (prefixLength > 0) && (prefixLength <= getLength()) &&
@@ -1713,7 +1717,7 @@ bool WideString::endsWith(const WideString& suffix) const throw() {
 }
 
 bool WideString::endsWith(const WideStringLiteral& suffix) const throw() {
-  int length = getLength();
+  unsigned int length = getLength();
   int suffixLength = suffix.getLength();
   // TAG: fix UCS2/UCS4 support
   return false;

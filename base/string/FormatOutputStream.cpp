@@ -268,9 +268,11 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
 }
 
 FormatOutputStream& FormatOutputStream::getContext(Context& context) throw() {
+  return *this;
 }
 
 FormatOutputStream& FormatOutputStream::setContext(const Context& context) throw() {
+  return *this;
 }
 
 void FormatOutputStream::indent(unsigned int size) throw(IOException) {
@@ -297,13 +299,14 @@ void FormatOutputStream::addCharacterField(const char* buffer, unsigned int size
     break;
   case Symbols::RADIX: // no radix - use default
   case Symbols::DEPENDENT:
+  default:
     justification = Symbols::LEFT; // TAG: is this locale specific
   }
 
   if (justification == Symbols::LEFT) {
     write(buffer, size); // write characters
   }
-  if (size < context.width) { // write blanks if required
+  if (size < static_cast<unsigned int>(context.width)) { // write blanks if required
     unfoldValue(' ', context.width - size);
   }
   if (context.justification == Symbols::RIGHT) {
@@ -347,10 +350,12 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
     break;
   case Symbols::RADIX: // no radix - use default
   case Symbols::DEPENDENT:
+  default:
     justification = Symbols::RIGHT; // TAG: is this locale specific
   }
 
-  unsigned int pads = (requiredWidth >= context.width) ? 0 : (context.width - requiredWidth);
+  unsigned int pads =
+    (requiredWidth >= static_cast<unsigned int>(context.width)) ? 0 : (context.width - requiredWidth);
 
   if (justification == Symbols::RIGHT) {
     if ((pads > 0) && ((context.flags & Symbols::ZEROPAD) == 0)) { // write blanks if required
@@ -498,6 +503,7 @@ void FormatOutputStream::addDateField(const Date& date) throw(IOException) {
     break;
   case Symbols::RADIX: // no radix - use default
   case Symbols::DEPENDENT:
+  default:
     justification = Symbols::LEFT; // TAG: is this locale specific
   }
 
@@ -1271,7 +1277,7 @@ void convertFloatingPoint(unsigned int significant, unsigned int precision, CutM
   LargeInteger::assign(R, mantissa, mantissaSize);
 
   const bool unequalGap = ((nonZero - mantissa) == mantissaSize) &&
-    (mantissa[mantissaSize - 1] == (1 << ((significant - 1) % (sizeof(unsigned int) * 8))));
+    (mantissa[mantissaSize - 1] == (1U << ((significant - 1) % (sizeof(unsigned int) * 8))));
   if (unequalGap) { // f == 1 << (p-1) // TAG: does this work for denormalized values
     LargeInteger::setBit(S, integerSize, shiftS + 2); // S = 2*S_paper
     LargeInteger::leftShift(R, integerSize, shiftR + 2); // R = 2*R_paper
@@ -1393,7 +1399,7 @@ void convertFloatingPoint(unsigned int significant, unsigned int precision, CutM
     }
 
     LargeInteger::divide(temp, R, R, S, integerSize); // U = R/S and R=R%S
-    if (numberOfDigits < cutPlace) {
+    if (static_cast<int>(numberOfDigits) < cutPlace) {
       buffer[numberOfDigits++] = temp[0]; // assert: U < B
     }
 
@@ -1405,7 +1411,7 @@ void convertFloatingPoint(unsigned int significant, unsigned int precision, CutM
     } else {
       high = LargeInteger::lessThan(S, temp, integerSize); // 2*R > 2*S - M+ <=> 2*R + M+ > 2*S
     }
-    if (numberOfDigits >= cutPlace) {
+    if (static_cast<int>(numberOfDigits) >= cutPlace) {
       break;
     }
   }
@@ -1619,7 +1625,7 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
             *output++ = (digit < endDigit) ? ASCIITraits::valueToDigit(*digit++) : ASCIITraits::valueToDigit(0);
             if (i == 0) {
               break; // do not write last grouping separator (that is the radix position)
-	    }
+            }
             if (((flags & Symbols::GROUPING) != 0) && (i % 3 == 0)) {
               for (const char* p = groupingStr; *p != 0; ++p, ++output) {
                 *output = *p;
@@ -1631,12 +1637,13 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
         *output++ = ASCIITraits::valueToDigit(0);
       }
 
-      unsigned int digitsAfterRadix = (numberOfDigits > digitsBeforeRadix) ? numberOfDigits - digitsBeforeRadix : 0;
+      unsigned int digitsAfterRadix =
+        (numberOfDigits > digitsBeforeRadix) ? (numberOfDigits - digitsBeforeRadix) : 0;
       unsigned int totalDigitsAfterRadix = digitsAfterRadix + denormalizingZeros;
       int trailingZeros = 0;
 
       if ((flags & Symbols::NECESSARY) == 0) {
-        if (totalDigitsAfterRadix < context.precision) {
+        if (totalDigitsAfterRadix < static_cast<unsigned int>(context.precision)) {
           trailingZeros += context.precision - totalDigitsAfterRadix;
           totalDigitsAfterRadix += trailingZeros;
         }
@@ -1695,7 +1702,7 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
   {
     ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
     unsigned int length = (output - buffer);
-    if (context.width <= length) {
+    if (static_cast<unsigned int>(context.width) <= length) {
       write(buffer, length); // write characters
     } else {
       unsigned int invertedLength = context.width - length;
@@ -1710,6 +1717,7 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
         write(buffer, length); // write characters
         unfoldValue(' ', invertedLength);
         break;
+      case Symbols::DEPENDENT:
       case Symbols::RIGHT:
         unfoldValue(' ', invertedLength);
         write(buffer, length); // write characters
@@ -1718,8 +1726,9 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
         ASSERT(radix);
         unsigned int beforeRadix = radix - buffer; // character before radix (excluding)
         unsigned int prefixLength = 0; // left justify by default
-        if (context.radixPosition >= beforeRadix) {
-          prefixLength = minimum(context.radixPosition - beforeRadix, invertedLength); // right justify if radix position is too big
+        if (static_cast<unsigned int>(context.radixPosition) >= beforeRadix) {
+          // right justify if radix position is too big
+          prefixLength = minimum(context.radixPosition - beforeRadix, invertedLength);
           unfoldValue(' ', prefixLength);
         }
         write(buffer, length); // write characters

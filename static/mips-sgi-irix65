@@ -40,4 +40,4 @@ functions="memchr memcmp memcpy memmove memset nanosleep readdir_r"
 apis="lfs pthread pthread_semaphore pthread_rwlock regexp wide"
 
 # libraries
-libraries="socket:socket -:rt pthread:pthread dl -:m -:c"
+libraries="socket:socket rt pthread:pthread dl -:m -:c"

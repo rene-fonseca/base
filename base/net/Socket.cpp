@@ -197,21 +197,18 @@ void setSocketOption(int handle, int option, const void* buffer, socklen_t len) 
 
 
 
-Socket::SocketImpl::SocketImpl() throw() : handle(OperatingSystem::INVALID_HANDLE), remotePort(0), localPort(0), end(false) {
-}
-
-Socket::SocketImpl::SocketImpl(OperatingSystem::Handle _handle) throw() : handle(_handle), remotePort(0), localPort(0), end(false) {
+Socket::SocketImpl::SocketImpl(OperatingSystem::Handle _handle) throw() : Handle(_handle), remotePort(0), localPort(0), end(false) {
 }
 
 Socket::SocketImpl::~SocketImpl() throw(IOException) {
-  if (handle != OperatingSystem::INVALID_HANDLE) {
+  if (isValid()) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     if (::closesocket((int)getHandle())) {
-      throw NetworkException("Unable to close socket");
+      throw NetworkException("Unable to close socket", this);
     }
 #else // unix
     if (::close((int)getHandle())) {
-      throw NetworkException("Unable to close socket");
+      throw NetworkException("Unable to close socket", this);
     }
 #endif // flavour
   }
@@ -219,7 +216,7 @@ Socket::SocketImpl::~SocketImpl() throw(IOException) {
 
 
 
-Socket::Socket() throw() : socket(new SocketImpl()) { // TAG: fixme
+Socket::Socket() throw() : socket(SocketImpl::invalid) {
 }
 
 bool Socket::accept(Socket& socket) throw(IOException) {
@@ -275,7 +272,7 @@ void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOExceptio
 
 void Socket::close() throw(IOException) {
   SynchronizeExclusively();
-  socket = new SocketImpl(); // invalidate socket
+  socket = SocketImpl::invalid;
 }
 
 void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOException) {

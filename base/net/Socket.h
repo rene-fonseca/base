@@ -33,6 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   This class implements a socket. A socket is an endpoint for communication
   between two hosts on a network. MT-level is safe.
 
+  @short Socket
   @see StreamSocket ServerSocket
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
@@ -40,14 +41,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class Socket : public virtual Object, public virtual AsynchronousInputStream, public virtual AsynchronousOutputStream, public Synchronizeable<Unsafe> {
 private:
+  friend class Initialization;
 
   typedef Unsafe LOCK;
 
-  class SocketImpl : public virtual ReferenceCountedObject {
+  class SocketImpl : public Handle {
   private:
 
-    /** Handle to the socket. */
-    OperatingSystem::Handle handle;
     /** Specifies the remote address to which the socket is connected. */
     InetAddress remoteAddress;
     /** Specifies the remote port (in host byte order) to which the socket is connected (unconnected if 0). */
@@ -60,12 +60,10 @@ private:
     bool end;
   public:
 
-    /** Initializes invalid socket. */
-    SocketImpl() throw();
+    /** Invalid socket. */
+    static SocketImpl* invalid;
     /** Initializes the socket with the specified handle. */
     SocketImpl(OperatingSystem::Handle handle) throw();
-    /** Returns the socket handle. */
-    inline OperatingSystem::Handle getHandle() const throw() {return handle;}
     /** Returns the local address. */
     inline const InetAddress& getLocalAddress() const throw() {return localAddress;}
     /** Sets the local address. */

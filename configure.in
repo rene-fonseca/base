@@ -385,6 +385,22 @@ dnl Checks for header files.
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 
+AC_BASE_CHECK(
+  checking whether inline is supported by the compiler,
+  AC_BASE_CACHE(
+    base_cv_inline,
+    AC_BASE_TRY_CXX_COMPILE(base_cv_inline, config/inline.c, )
+  ),
+  base_cv_inline)
+
+AC_BASE_CHECK(
+  checking whether anonymous struct is supported by the compiler,
+  AC_BASE_CACHE(
+    base_cv_anonymous_struct,
+    AC_BASE_TRY_CXX_COMPILE(base_cv_anonymous_struct, config/anonymous_struct.c, )
+  ),
+  base_cv_anonymous_struct)
+
 if test $base_explicit_big_endian = auto; then
   AC_BASE_CHECK(
     checking whether byte order of architecture is big endian,
@@ -493,6 +509,13 @@ AC_CHECK_FUNCS(memchr memcmp memmove)
 
 
 CPPFLAGS="${CPPFLAGS}${CPPFLAGS:+ }"'-I${top_srcdir} -I${top_srcdir}/ellert'
+
+
+
+dnl Generate late errors
+if test "$base_cv_inline" != yes; then
+  AC_MSG_ERROR(The compiler does not support the inline keyword)
+fi
 
 
 

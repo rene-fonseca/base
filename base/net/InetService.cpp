@@ -8,19 +8,39 @@
 #include <netinet/in.h>
 
 unsigned short InetService::getByName(const String<>& name, const String<>& protocol) throw() {
-  // declaration of getservbyname_r varies from platform to platform
-  struct servent* result;
+#ifdef __linux__
+  struct servent result;
+  struct servent* pResult;
   char buffer[1024]; // how big should this buffer be
-  getservbyname_r((const char*)name, (const char*)protocol, result, buffer, sizeof(buffer), &result);
-  return (result != NULL) ? ntohs(result->s_port) : 0;
+  getservbyname_r((const char*)name, (const char*)protocol, &result, buffer, sizeof(buffer), &pResult);
+  return pResult ? ntohs(result.s_port) : 0;
+#elif __solaris__
+  struct servent result;
+  struct servent* pResult;
+  char buffer[1024]; // how big should this buffer be
+  pResult = getservbyname_r((const char*)name, (const char*)protocol, &result, buffer, sizeof(buffer));
+  return pResult ? ntohs(result.s_port) : 0;
+#else
+  #err "Operating system not supported"
+#endif
 }
 
 String<> InetService::getByPort(unsigned short port, const String<>& protocol) throw() {
-  // declaration of getservbyport_r varies from platform to platform
-  struct servent* result;
+#ifdef __linux__
+  struct servent result;
+  struct servent* pResult;
   char buffer[1024]; // how big should this buffer be
-  getservbyport_r(htons(port), (const char*)protocol, result, buffer, sizeof(buffer), &result);
-  return (result != NULL) ? String<>(result->s_name) : String<>();
+  getservbyport_r(htons(port), (const char*)protocol, &result, buffer, sizeof(buffer), &pResult);
+  return pResult ? String<>(result.s_name) : String<>();
+#elif __solaris__
+  struct servent result;
+  struct servent* pResult;
+  char buffer[1024]; // how big should this buffer be
+  pResult = getservbyport_r(htons(port), (const char*)protocol, &result, buffer, sizeof(buffer));
+  return pResult ? String<>(result.s_name) : String<>();
+#else
+  #err "Operating system not supported"
+#endif
 }
 
 InetService::InetService(const String<>& name, const String<>& protocol) throw(ServiceNotFound) {

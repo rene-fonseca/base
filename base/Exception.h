@@ -41,7 +41,7 @@ public:
 
     @param exception The exception object to be copied.
   */
-  Exception(const Exception& exception);
+  Exception(const Exception& copy);
 
   /**
     Returns the message associated with the exception.

@@ -4,7 +4,7 @@
  ***************************************************************************/
 
 #include "ReferenceCountedObjectPointer.h"
-
+/*
 class AAA : public ReferenceCountedObject {
 public:
   char references;
@@ -114,3 +114,4 @@ int main() {
 
   return 0;
 }
+*/

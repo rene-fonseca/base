@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "evaluate.h"
+#include "ExpressionParser.h"
 #include <stdlib.h>
 #include <errno.h>
 
@@ -40,6 +40,7 @@ namespace eval {
 
   EvaluationNode makeNodeFromOperation(Operation opr) {
     EvaluationNode result;
+    // must not be parenthesis
     if (opr.isBuiltin()) {
       result.type = BUILTIN;
       result.builtin = opr.getId();
@@ -51,14 +52,21 @@ namespace eval {
     return result;
   }
 
+  // built-in unary operator
   class UnaryOperator : public Operation {
   public:
-    UnaryOperator(unsigned int i, unsigned int p, Glue g, bool po) throw() : Operation(i, 1, p, g, true, po) {}
+    UnaryOperator(unsigned int i, unsigned int p, Glue g, bool po) throw() : Operation(i, 1, p, g, true, po, false) {}
   };
 
+  // built-in binary operator
   class BinaryOperator : public Operation {
   public:
-    BinaryOperator(unsigned int i, unsigned int p, Glue g, bool po) throw() : Operation(i, 2, p, g, true, po) {}
+    BinaryOperator(unsigned int i, unsigned int p, Glue g, bool po) throw() : Operation(i, 2, p, g, true, po, false) {}
+  };
+
+  class Function : public Operation {
+  public:
+    Function(unsigned int i, unsigned int a) throw() : Operation(i, a, 100, RIGHT, false, false, true) {}
   };
 
   // built-in operations
@@ -110,6 +118,7 @@ ExpressionProvider::~ExpressionProvider() {
 
 
 ExpressionParser::ExpressionParser(const String<>& e, ExpressionProvider& p) throw() : expression(e), provider(p) {
+  length = expression.length();
 }
 
 void ExpressionParser::pop() throw(ExpressionException) {
@@ -139,127 +148,133 @@ void ExpressionParser::push(Operation opr) throw(ExpressionException) {
 }
 
 void ExpressionParser::readIdentifier() throw(ExpressionException) {
+  unsigned int begin = index;
 
-  unsigned int i = index;
-
-  while (i <= last) {
+  while (index < length) {
     char ch = expression[index];
     if (!(((ch >= 'a') && (ch <= 'z')) || ((ch >= '0') && (ch <= '9')))) {
       break;
     }
-    ++i;
+    ++index;
   }
-  if (i == index) { // has something been read
-    throw ExpressionException(index, "Not an identifier");
+  if (index == begin) { // has something been read
+    throw ExpressionException(begin, "Not an identifier");
   }
 
-  char identifier[index - i + 1];
-  for (unsigned int j = 0; j < index - i; ++j) {
-    identifier[j] = expression[i + j];
-  }
-  identifier[index - i + 1] = '\0';
+  char identifier[index - begin + 1];
+  expression.substring(identifier, begin, index - 1);
 
   try {
     Node node = provider.getNode(identifier);
+    switch (node.type) {
+    case VARIABLE:
+      nodes.add(node);
+      ++operands;
+      unary = false;
+      break;
+    case CONSTANT:
+      nodes.add(node);
+      ++operands;
+      unary = false;
+      break;
+    case FUNCTION:
+      push(Function(node.function, node.arguments));
+      break;
+    default:
+      // internal knowledge - not returned by ExpressionProvider
+      throw ExpressionException(index, "Identifier registered as unsupported type");
+    }
   } catch(InvalidKey e) {
+    throw ExpressionException(begin, "Identifier not recognized");
 //    if (autoRegisterAsVariable) {
 //      unknowns[name] = makeVariable(id???);
 //      node = identifiers[name];
 //    } else {
-      throw ExpressionException(index, "Identifier not recognized");
 //    }
   }
-
-  index = i; // char after identifier
 }
 
 void ExpressionParser::readValue() throw(ExpressionException) {
-
-  unsigned int i = index;
+  unsigned int begin = index;
   bool digits = false;
 
   // read sign if present
-  if (i <= last) {
-    if (expression[i] == '+') {
-      ++i;
-    } else if (expression[i] == '-') {
-      ++i;
+  if (index < length) {
+    if (expression[index] == '+') {
+      ++index;
+    } else if (expression[index] == '-') {
+      ++index;
     }
   }
 
   // read digits if present before possible dot
-  if ((i <= last) && ((expression[i] >= '0') || (expression[i] <= '9'))) {
+  if ((index < length) && ((expression[index] >= '0') || (expression[index] <= '9'))) {
     digits = true;
-    while ((i <= last) && ((expression[i] >= '0') || (expression[i] <= '9'))) {
-      ++i;
+    while ((index < length) && ((expression[index] >= '0') || (expression[index] <= '9'))) {
+      ++index;
     }
   }
 
   // read dot if present
-  if ((i <= last) && (expression[i] == '.')) {
-    ++i;
+  if ((index < length) && (expression[index] == '.')) {
+    ++index;
 
     // read digits if present after dot
-    if ((i <= last) && ((expression[i] >= '0') || (expression[i] <= '9'))) {
+    if ((index < length) && ((expression[index] >= '0') || (expression[index] <= '9'))) {
       digits = true;
-      while ((i <= last) && ((expression[i] >= '0') || (expression[i] <= '9'))) {
-        ++i;
+      while ((index < length) && ((expression[index] >= '0') || (expression[index] <= '9'))) {
+        ++index;
       }
     }
   }
 
   if (!digits) {
-    throw ExpressionException(index, "Not a number");
+    throw ExpressionException(begin, "Not a number");
   }
 
   // read exponent if present
-  if ((i <= last) && (expression[i] == 'e')) {
+  if ((index < length) && (expression[index] == 'e')) {
 
     // read sign of exponent if present
-    if (i <= last) {
-      if (expression[i] == '+') {
-        ++i;
-      } else if (expression[i] == '-') {
-        ++i;
+    if (index < length) {
+      if (expression[index] == '+') {
+        ++index;
+      } else if (expression[index] == '-') {
+        ++index;
       }
     }
 
     // read exponent value
-    if ((i <= last) && ((expression[i] >= '0') || (expression[i] <= '9'))) {
-      while ((i <= last) && ((expression[i] >= '0') || (expression[i] <= '9'))) {
-        ++i;
+    if ((index < length) && ((expression[index] >= '0') || (expression[index] <= '9'))) {
+      while ((index < length) && ((expression[index] >= '0') || (expression[index] <= '9'))) {
+        ++index;
       }
     } else {
-      throw ExpressionException(index, "Not a number");
+      throw ExpressionException(begin, "Not a number");
     }
   }
 
-  char buffer[i - index + 1]; // i is index of character after number chars
-  for (unsigned int j = 0; j < i - index; ++j) {
-    buffer[j] = expression[index + j];
-  }
-  buffer[i - index] = '\0';
+  char buffer[index - begin + 1]; // i is index of character after number chars
+  expression.substring(buffer, begin, index - 1);
   char* end;
-  double value = strtod((char*)&buffer, &end); // not the best solution - but it works for now
-  if ((end != &buffer[i - index]) || (errno == ERANGE)) {
-    throw ExpressionException(index, "Not a number");
+  double value = strtod(buffer, &end); // not the best solution - but it works for now
+  if ((end != &buffer[index - begin]) || (errno == ERANGE)) {
+    throw ExpressionException(begin, "Not a number");
   }
 
   nodes.add(makeValueNode(value));
   ++operands;
   unary = false;
-  index = i; // char after value
 }
 
 void ExpressionParser::parse() throw(ExpressionException) {
   unsigned int index = 0;
-  unsigned int last = expression.length() - 1;
   unsigned int operands = 0;
   bool unary = true;
   stack.removeAll();
   nodes.removeAll();
 
-  while (index <= last) { // until all chars have been read
+  while (index < length) { // until all chars have been read
     switch (expression[index]) {
     case ' ':
       ++index;
@@ -316,18 +331,23 @@ void ExpressionParser::parse() throw(ExpressionException) {
       if (unary) {
         throw ExpressionException(index, "Operand expected before closing parenthesis");
       } else {
-        while (!stack.isEmpty() && (stack.peek().isPopable())) {
+
+        while (!stack.isEmpty() && stack.peek().isPopable()) {
           pop();
         }
 
-        if (!stack.isEmpty() && (!stack.peek().isPopable())) {
-          Operation opr = stack.pop(); // get object
+        if (!stack.isEmpty() && !stack.peek().isPopable()) {
+          Operation opr = stack.pop(); // get object - function or parenthesis
 
-          if (operands < opr.getArguments()) {
-            throw ExpressionException(index, "Operand(s) missing from subexpression");
+          if (opr.isFunction()) {
+            if (operands < opr.getArguments()) {
+              throw ExpressionException(index, "Operand(s) missing from subexpression");
+            }
+            operands = operands - opr.getArguments() + 1;
+            nodes.add(makeNodeFromOperation(opr));
+          } else { // must be opening parenthesis
+            // nothing should be added to the nodes list
           }
-          operands = operands - opr.getArguments() + 1;
-          nodes.add(makeNodeFromOperation(opr));
         } else {
           throw ExpressionException(index, "Closing parenthesis has no matching opening parenthesis");
         }
@@ -343,13 +363,17 @@ void ExpressionParser::parse() throw(ExpressionException) {
           pop();
         }
 
-        if (!stack.isEmpty() && (!stack.peek().isPopable())) {
-          Operation opr = stack.peek(); // get object - do not remove from stack
-          // does not handle parenthesis'
-          if (opr.getArguments() == 0) {
-            throw ExpressionException(index, "Function does not take any arguments");
-          } else if (opr.getArguments() == 1) {
-            throw ExpressionException(index, "Function only takes one argument");
+        if (!stack.isEmpty() && !stack.peek().isPopable()) {
+          Operation opr = stack.peek(); // get function? - do not remove from stack
+
+          if (opr.isFunction()) {
+            if (opr.getArguments() == 0) {
+              throw ExpressionException(index, "Function does not take any arguments");
+            } else if (opr.getArguments() == 1) {
+              throw ExpressionException(index, "Function only takes one argument");
+            }
+          } else {
+            throw ExpressionException(index, "Opening parenthesis does not take argument list");
           }
         } else {
           throw ExpressionException(index, "Argument separator used outside function argument list");
@@ -376,6 +400,7 @@ void ExpressionParser::parse() throw(ExpressionException) {
       } else {
         throw ExpressionException(index, "Invalid symbol");
       }
+    }
   }
 
   while (!stack.isEmpty() && stack.peek().isPopable()) {
@@ -387,7 +412,8 @@ void ExpressionParser::parse() throw(ExpressionException) {
   }
 }
 
-//ExpressionParser::getNodes() const throw() {
+//List<>::ListEnumeration ExpressionParser::getNodes() const throw() {
+// return List<>::getEnumeration();
 //}
 
 ExpressionParser::~ExpressionParser() {

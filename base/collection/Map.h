@@ -152,4 +152,60 @@ public:
   ~Map() throw();
 };
 
+
+
+
+template<class KEY, class VALUE> class Map<KEY*, VALUE>;
+template<class VALUE> class Map<void*, VALUE>;
+
+
+/*
+template<>
+class Stack<void*> : public Collection {
+protected:
+
+  typedef void* TYPE;
+
+  class StackNode {
+  protected:
+    StackNode* next;
+    TYPE value;
+  public:
+    inline StackNode(StackNode* n, const TYPE& v) : next(n), value(v) {}
+    inline StackNode* getNext() const throw() {return next;}
+    inline TYPE* getValue() throw() {return &value;}
+  };
+
+  StackNode* top;
+  unsigned int size;
+public:
+
+  Stack() throw();
+  Stack(const Stack& copy) throw(MemoryException);
+  void* peek(unsigned int index = 0) const throw(OutOfRange);
+  void push(void* value) throw(MemoryException);
+  void* pop() throw(OutOfRange);
+  void pop(unsigned int count) throw(OutOfRange);
+  void removeAll() throw();
+  ~Stack() throw();
+};
+*/
+
+template<class KEY, class VALUE>
+class Map<KEY*, VALUE> : private Map<void*, VALUE> {
+public:
+  typedef Map<void*, VALUE> Base;
+
+  inline Map() throw() : Base() {}
+  inline Map(const Map& copy) throw(MemoryException) : Base(copy) {}
+  inline MapEnumeration getEnumeration() throw() {return Base::getEnumeration();}
+  inline bool isKey(const KEY& key) const throw() {return Base::isKey(key);}
+  inline VALUE getValue(const KEY& key) const throw(InvalidKey) {return Base::getValue(key);}
+  inline void add(const KEY& key, const VALUE& value) throw(MemoryException) {Base::add(key, value);}
+  inline void remove(const KEY& key) throw(InvalidKey) {Base::remove(key);}
+  inline void removeAll() throw() {Base::removeAll();}
+  inline Index operator[](const KEY& key) throw(InvalidKey, MemoryException) {return Index(*this, key);}
+  inline ~Map() throw() {};
+};
+
 #endif

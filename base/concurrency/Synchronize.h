@@ -56,7 +56,7 @@
 
   <pre>
   template<class LOCK = DefaultLock>
-  class MyClass : public Synchronized<LOCK> {
+  class MyClass : public Synchronizeable<LOCK> {
     // stuffing goes here :-)
   };
   </pre>
@@ -67,7 +67,7 @@
   this:
 
   <pre>
-  class MyClass : public Synchronized<DefaultLock> {
+  class MyClass : public Synchronizeable<DefaultLock> {
   public:
     typedef DefaultLock LOCK;
 

@@ -48,13 +48,15 @@ namespace eval {
     Glue glue;
     bool builtin;
     bool popable;
+    bool function;
   public:
-    Operation(unsigned int i, unsigned int a, unsigned int p, Glue g, bool b, bool po) throw() : id(i), arguments(a), precedence(p), glue(g), builtin(b), popable(po) {}
+    Operation(unsigned int i, unsigned int a, unsigned int p, Glue g, bool b, bool po, bool f) throw() : id(i), arguments(a), precedence(p), glue(g), builtin(b), popable(po), function(f) {}
     unsigned int getArguments() const throw() {return arguments;}
     unsigned int getPrecedence() const throw() {return precedence;}
     Glue getGlue() const throw() {return glue;}
     bool isBuiltin() const throw() {return builtin;}
     bool isPopable() const throw() {return popable;}
+    bool isFunction() const throw() {return function;}
     unsigned int getId() const throw() {return id;}
   };
 
@@ -117,6 +119,7 @@ public:
 /**
   Expression provider responsible for mapping identifiers into constants, variables, and functions.
 
+  @see ExpressionParser
   @author René Møller Fonseca
   @version 1.0
 */
@@ -124,7 +127,7 @@ public:
 class ExpressionProvider : public Object {
 protected:
 
-  /** Collection holding the registrated identifiers. */
+  /** Collection holding the registered identifiers. */
   Map<const char*, eval::EvaluationNode> identifiers;
 public:
 
@@ -136,30 +139,33 @@ public:
   /**
     Registers an identifier as a constant.
 
-    @param name The identifier.
-    @param id The desired id.
+    @param name The identifier to be registered.
+    @param id The desired id of the constant.
   */
   void registerConstant(const char* name, unsigned int id) throw(AmbiguousRegistration);
 
   /**
     Registers an identifier as a variable.
 
-    @param name The identifier.
-    @param id The desired id.
+    @param name The identifier to be registered.
+    @param id The desired id of the variable.
   */
   void registerVariable(const char* name, unsigned int id) throw(AmbiguousRegistration);
 
   /**
     Registers an identifier as a function.
 
-    @param name The identifier.
-    @param id The desired id of the.
-    @param arguments The number of arguments.
+    @param name The identifier to be registered.
+    @param id The desired id of the function.
+    @param arguments The number of arguments taken by the function.
   */
   void registerFunction(const char* name, unsigned int id, unsigned int arguments) throw(AmbiguousRegistration);
 
   /**
     Returns the evaluation node associated with the specified identifier.
+    Throws 'InvalidKey' if the identifier has not been registered.
+
+    @param name The identifier to be looked up.
   */
   eval::EvaluationNode getNode(const char* name) const throw(InvalidKey);
 
@@ -197,8 +203,8 @@ protected:
   bool unary;
   /** The current position in the representation. */
   unsigned int index;
-  /** The last character in the expression. */
-  unsigned int last;
+  /** The length of the expression. */
+  unsigned int length;
 
   /**
     Pops one operation from the stack.
@@ -223,25 +229,26 @@ public:
 
   /**
     Initializes an expression parser.
+
+    @param expression The string representation of the expression to be parsed (e.g. "4+5*x/7").
+    @param provider The expression provider.
   */
   ExpressionParser(const String<>& expression, ExpressionProvider& provider) throw();
 
   /**
     Parses the specified arithmetic expression representation.
-
-    @param expression The string representation of the expression to be parsed (e.g. "4+5*x/7").
   */
   void parse() throw(ExpressionException);
 
   /**
     Returns the result of the parser.
   */
-// Nodes getNodes const throw(); - enumeration???
+//  Nodes getNodes const throw();
 
   /**
     Destroys the expression parser.
   */
-//  ~ExpressionParser();
+  ~ExpressionParser();
 };
 
 #endif

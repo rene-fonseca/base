@@ -9,6 +9,7 @@
 #include "base/Object.h"
 #include "base/string/InvalidFormat.h"
 #include "base/string/String.h"
+#include "base/collection/List.h"
 #include "HostNotFound.h"
 
 /**
@@ -26,7 +27,7 @@ public:
 private:
 
   /** Internal structure holding the IP address in network byte order. */
-  char address[16]; // enough for IPv6 addresses
+  struct {char buffer[16];} address; // enough for IPv6 addresses
 public:
 
   /**
@@ -35,12 +36,11 @@ public:
   static String<> getLocalHost();
 
   /**
-    Adds the IP addresses associated with the specified host name into the specified collection.
+    Returns the IP addresses associated with the specified host name.
 
     @param name The name of the host (e.g. 'www.mip.sdu.dk').
-    @param collection The collection to receive the addesses.
   */
-//  static void getAddressesByName(const String& name, Collection<InetAddress>& collection) throw(HostNotFound);
+  static List<InetAddress> getAddressesByName(const String<>& name) throw(HostNotFound);
 
   /**
     Initializes the address as unspecified address.
@@ -78,9 +78,12 @@ public:
   const char* getAddress() const throw();
 
   /**
-    Returns the host name associated with this IP address. If the host's name cannot be located in the name service, the numeric form of the host's address is returned instead of its name.
+    Returns the domain/host name associated with this IP address. Throws
+    'HostNotFound' if the host cannot be resolved.
+
+    @param fullyQualified Specifies that the fully-qualified domain name should be returned for local hosts. Default is false.
   */
-  String<> getHostName() const throw(HostNotFound);
+  String<> getHostName(bool fullyQualified = false) const throw(HostNotFound);
 
   /**
     Equality operator.
@@ -134,11 +137,6 @@ public:
     Writes a string representation of the address to a stream.
   */
   FormatOutputStream& toFormatStream(FormatOutputStream& stream) const;
-
-  /**
-    Destroys the address.
-  */
-  ~InetAddress() throw();
 };
 
 /**

@@ -6,8 +6,6 @@
 #ifndef _DK_SDU_MIP__BASE__RESOURCE_EXCEPTION_H
 #define _DK_SDU_MIP__BASE__RESOURCE_EXCEPTION_H
 
-class ResourceException;
-
 #include "Exception.h"
 
 /**

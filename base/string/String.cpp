@@ -281,6 +281,24 @@ String<LOCK>& String<LOCK>::reverse() throw() {
 }
 
 template<class LOCK>
+char* String<LOCK>::substring(char* buffer, unsigned int start, unsigned int end) const throw() {
+  if (buffer) {
+    if ((start <= end) && (start < length())) {
+      if (end >= length()) {
+        end = length() - 1; // index of last char in this string
+      }
+      // 0 <= start <= end < length()
+      unsigned int lengthOfSubstring = end - start + 1;
+      memcpy(buffer, getReadOnlyBuffer() + start, lengthOfSubstring); // buffers do not overlap
+      buffer[lengthOfSubstring] = TERMINATOR;
+    } else {
+      *buffer = TERMINATOR;
+    }
+  }
+  return buffer;
+}
+
+template<class LOCK>
 String<LOCK>& String<LOCK>::toLowerCase() throw() {
   char* p = getMutableBuffer();
   while (*p != TERMINATOR) {

@@ -347,11 +347,26 @@ public:
   inline String& operator+=(const String& suffix) throw(MemoryException) {return append(suffix);};
 
   /**
-    String reduction operator. Removes suffix from this string if and only if it ends with the suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas ("pre"-"suf") results in "pre").
+    String reduction operator. Removes suffix from this string if and only if
+    it ends with the suffix (e.g. ("presuf"-"suf") results in a new string
+    "pre" whereas ("pre"-"suf") results in "pre").
 
     @param suffix The suffix to be removed.
   */
   String& operator-=(const String& suffix) throw(MemoryException);
+
+  /**
+    Returns a NULL terminated string that contains a subsequence of characters
+    currently contained in this string. If 'end' is less than 'start' an empty
+    string is returned. Does nothing if buffer is NULL.
+
+    @param buffer The buffer to receive the NULL terminated string.
+    @param start Specifies the start of the substring.
+    @param end Specifies the end of the substring.
+
+    @return The specified buffer.
+  */
+  char* substring(char* buffer, unsigned int start, unsigned int end) const throw();
 
 // *******************************************************************************************
 //   UNARY SECTION

@@ -31,16 +31,19 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class MappedFile;
+class SharedMemory;
 
 /**
   File.
 
+  @short File.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
 class File : public Object, public AsynchronousIOStream {
   friend class MappedFile;
+  friend class SharedMemory;
 public:
 
   /** File access. */
@@ -64,6 +67,23 @@ public:
     EXCLUSIVE = 4, /**< Specifies that the file should be opened in exclusive mode. */
     ASYNCHRONOUS = 8, /**< Specifies that the file should be opened for asynchronous IO (disables the synchronous IO interface). */
     APPEND = 16 /**< Specifies that data should be appended to the file. */
+  };
+
+  /** Permissions. */
+  enum Permissions {
+    RUSR = 0x400, /**< Read permission for the owner of the file. */
+    WUSR = 0x200, /**< Write permission for the owner of the file. */
+    XUSR = 0x100, /**< Execute permission for the owner of the file. */
+    RWXU = RUSR|WUSR|XUSR, /**< Read, write, and execute permissions for the owner of the file. */
+    RGRP = 0x40, /**< Read permission for the group associated with the file. */
+    WGRP = 0x20, /**< Write permission for the group associated with the file. */
+    XGRP = 0x10, /**< Execute permission for the group associated with the file. */
+    RWXG = RGRP|WGRP|XGRP, /**< Read, write, and execute permissions for the group associated with the file. */
+    ROTH = 0x4, /**< Read permission for other users. */
+    WOTH = 0x2, /**< Write permission for other users. */
+    XOTH = 0x1, /**< Execute permission for other users. */
+    RWXO = ROTH|WOTH|XOTH, /**< Read, write, and execute permissions for other users. */
+    ANY = RWXU|RWXG|RWXO /**< Any access. */
   };
 
   class FileHandle : public Handle {
@@ -120,6 +140,31 @@ public:
     Returns true if the file object has been closed (or need has been opened).
   */
   bool isClosed() const throw();
+
+  /**
+    Returns the ACL of the file.
+  */
+  AccessControlList getACL() const throw(FileException);
+
+  /**
+    Returns the owner of the file.
+  */
+  Trustee getOwner() const throw(FileException);
+  
+  /**
+    Returns the group of the file.
+  */
+  Trustee getGroup() const throw(FileException);
+
+  /**
+    Sets the owner of the file.
+  */
+  void setOwner(const Trustee& owner) throw(FileException);
+  
+  /**
+    Returns the permissions of the file.
+  */
+  unsigned int getMode() const throw(FileException);
   
   /**
     Return Access Control List (ACL).

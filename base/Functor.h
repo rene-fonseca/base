@@ -48,10 +48,10 @@ namespace isoc {
   directly from one memory location to another without corrupting the object
   state). The relocateable property of an object is only intended to be used
   when really required due to performance considerations. If this function
-  returns false objects have to be copy constructed at the new location and then
-  destoyed at the old location. This function is primarily used by allocators to
-  avoid these operations on their elements. Be very careful when adding your own
-  specializations.
+  returns false objects have to be copy constructed at the new location and
+  then destoyed at the old location. This function is primarily used by
+  allocators to avoid these operations on their elements. Be very careful when
+  adding your own specializations.
 
   @short Relocateable template class.
   @ingroup memory
@@ -212,8 +212,8 @@ inline void forEach(
 }
 
 /**
-  Invocates the specified binary operation for each element where the element is
-  used as both operands (non-modifying operation).
+  Invocates the specified binary operation for each element where the element
+  is used as both operands (non-modifying operation).
 */
 template<class TYPE, class BINOPR>
 inline void forEachDoBinary(
@@ -293,7 +293,7 @@ inline int indexOf(const TYPE* element, unsigned int count, TYPE value) /*throw(
 
 /** Apply an operation to every element in the sequence. */
 template<class TYPE, class UNOPR>
-inline void transform(TYPE* element, unsigned int count, const UNOPR& function) throw() /*throw(...)*/ {
+inline void transform(TYPE* element, unsigned int count, const UNOPR& function) /*throw(...)*/ {
   const TYPE* const end = element + count;
   while (element != end) {
     *element = function(*element);
@@ -314,7 +314,7 @@ inline void transformByUnary(TYPE* restrict result, const TYPE* restrict left, u
 
 /** The sequences are expected not to overlap. */
 template<class TYPE, class BINOPR>
-inline void transformByBinary(TYPE* restrict left, const TYPE* restrict right, unsigned int count, const BINOPR& function) throw() {
+inline void transformByBinary(TYPE* restrict left, const TYPE* restrict right, unsigned int count, const BINOPR& function) /*throw(...)*/ {
   while (count) {
     *left = function(*left, *right);
     ++left;
@@ -325,7 +325,7 @@ inline void transformByBinary(TYPE* restrict left, const TYPE* restrict right, u
 
 /** The sequences are expected not to overlap. */
 template<class TYPE, class BINOPR>
-inline void transformByBinary(TYPE* restrict result, const TYPE* restrict left, const TYPE* restrict right, unsigned int count, const BINOPR& function) throw() {
+inline void transformByBinary(TYPE* restrict result, const TYPE* restrict left, const TYPE* restrict right, unsigned int count, const BINOPR& function) /*throw(...)*/ {
   while (count) {
     *result = function(*left, *right);
     ++result;
@@ -336,16 +336,17 @@ inline void transformByBinary(TYPE* restrict result, const TYPE* restrict left, 
 }
 
 /**
-  Copies element by element from one sequence to another sequence. This function
-  expects the sequences to be non-overlapping. Relocateable objects are copied
-  by copying their memory images directly (i.e. the copy constructor is
-  circumvented). The size of the memory block must not exceed (2^(bits in
-  unsigned int) - 1) bytes. The sequences should be aligned prior to invocation.
-
+  Copies element by element from one sequence to another sequence. This
+  function expects the sequences to be non-overlapping. Relocateable objects
+  are copied by copying their memory images directly (i.e. the copy constructor
+  is circumvented). The size of the memory block must not exceed (2^(bits in
+  unsigned int) - 1) bytes. The sequences should be aligned prior to
+  invocation.
+  
   @see move
 */
 template<class TYPE>
-inline void copy(TYPE* restrict dest, const TYPE* restrict src, unsigned int count) throw() {
+inline void copy(TYPE* restrict dest, const TYPE* restrict src, unsigned int count) /*throw(...)*/ {
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCPY)
     isoc::memcpy(dest, src, count * sizeof(TYPE));
@@ -377,9 +378,12 @@ inline void copy(TYPE* restrict dest, const TYPE* restrict src, unsigned int cou
   }
 }
 
-/** Moves element by element from one sequence to another sequence (use this if the sequences may overlap). */
+/**
+  Moves element by element from one sequence to another sequence (use this if
+  the sequences may overlap).
+*/
 template<class TYPE>
-inline void move(TYPE* dest, const TYPE* src, unsigned int count) throw() {
+inline void move(TYPE* dest, const TYPE* src, unsigned int count) /*throw(...)*/ {
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
     uint64 bytesToMove = static_cast<uint64>(count) * sizeof(TYPE);
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMMOVE)
@@ -392,7 +396,7 @@ inline void move(TYPE* dest, const TYPE* src, unsigned int count) throw() {
     move<uint8>(
       Cast::pointer<uint8*>(d + bytesToMove/sizeof(long)),
       Cast::pointer<const uint8*>(s + bytesToMove/sizeof(long)),
-      bytesToMove%sizeof(long)
+      bytesToMove % sizeof(long)
     );
 #endif
   } else {
@@ -412,9 +416,12 @@ inline void move(TYPE* dest, const TYPE* src, unsigned int count) throw() {
   }
 }
 
-/** Swaps the elements of of two sequences. The sequences are expected not to overlap. */
+/**
+  Swaps the elements of of two sequences. The sequences are expected not to
+  overlap.
+*/
 template<class TYPE>
-inline void swap(TYPE* restrict left, TYPE* restrict right, unsigned int count) throw() {
+inline void swap(TYPE* restrict left, TYPE* restrict right, unsigned int count) /*throw(...)*/ {
   const TYPE* const end = left + count;
   while (left != end) {
     swapper(*left++, *right++);
@@ -423,7 +430,7 @@ inline void swap(TYPE* restrict left, TYPE* restrict right, unsigned int count) 
 
 /** Sets every element in the sequence to a specified value. */
 template<class TYPE>
-inline void fill(TYPE* dest, unsigned int count, TYPE value) throw() {
+inline void fill(TYPE* dest, unsigned int count, TYPE value) /*throw(...)*/ {
   const TYPE* const end = dest + count;
   while (dest != end) {
     *dest++ = value;
@@ -444,7 +451,10 @@ inline void fill<uint8>(uint8* dest, unsigned int count, uint8 value) throw() {
 
 
 
-/** Initializes an object to zero. This function should only be used for types with small memory footprints. */
+/**
+  Initializes an object to zero. This function should only be used for types
+  with small memory footprints.
+*/
 template<class TYPE>
 inline void clear(TYPE& value) throw() {
   long* p = Cast::pointer<long*>(&value);
@@ -468,7 +478,9 @@ inline void clear(TYPE& value) throw() {
 
 
 
-/** @short Base class of unary operations. */
+/**
+  @short Base class of unary operations.
+*/
 template<class ARGUMENT, class RESULT>
 class UnaryOperation {
 public:
@@ -476,7 +488,9 @@ public:
   typedef RESULT Result;
 };
 
-/** @short Base class of binary operations. */
+/**
+  @short Base class of binary operations.
+*/
 template<class FIRST, class SECOND, class RESULT>
 class BinaryOperation {
 public:
@@ -894,8 +908,8 @@ public:
 };
 
 /**
-  This function object finds the minimum value of a sequence. The objects should
-  be of an arithmetic type.
+  This function object finds the minimum value of a sequence. The objects
+  should be of an arithmetic type.
   
   @short Minimum value function object.
 */
@@ -921,8 +935,8 @@ public:
 };
 
 /**
-  This function object finds the minimum value of a sequence. The objects should
-  be of an arithmetic type.
+  This function object finds the minimum value of a sequence. The objects
+  should be of an arithmetic type.
   
   @short Maximum value function object.
 */

@@ -15,6 +15,9 @@
 #define _DK_SDU_MIP__BASE_COMMUNICATION__SERIAL_PORT_H
 
 #include <base/communication/CommunicationsPort.h>
+#include <base/io/Handle.h>
+#include <base/io/async/AsynchronousInputStream.h>
+#include <base/io/async/AsynchronousOutputStream.h>
 #include <base/OperatingSystem.h>
 #include <base/NotSupported.h>
 #include <base/string/String.h>
@@ -33,10 +36,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SerialPort : public CommunicationsPort {
+class SerialPort : public CommunicationsPort, public virtual AsynchronousInputStream, public virtual AsynchronousOutputStream {
 private:
 
-  OperatingSystem::Handle handle;
+  ReferenceCountedObjectPointer<Handle> handle;
   const String name;
 public:
 
@@ -52,22 +55,22 @@ public:
 
   /** The defined stop bits. */
 //  enum StopBits {
-//    ONE_STOPBIT, /*< 1 stop bit. */
-//    ONE_HALF_STOPBITS, /** 1.5 stop bits. */
-//    TWO_STOPBITS, /*< 2 stop bits. */
-//    UNSPECIFIED_STOPBITS /*< Unspecified number of stop bits. */
+//    ONE_STOPBIT, /**< 1 stop bit. */
+//    ONE_HALF_STOPBITS, /**< 1.5 stop bits. */
+//    TWO_STOPBITS, /**< 2 stop bits. */
+//    UNSPECIFIED_STOPBITS /**< Unspecified number of stop bits. */
 //  };
 
   enum Event {
-    BREAK, /*< Break event. */
-    CD, /*< Carrier Detect (CD) event. */
-    CTS, /*< Clear To Send (CTS) event. */
-    DSR, /*< Data Set Ready (DSR) event. */
-    ERROR, /*< Error event. */
-    RING, /*< Ring Indicator (RI) event. */
-    RLSD, /*< . */
-    INPUT_AVAILABLE, /*< Input data is available event. */
-    OUTPUT_EMPTY /*< Output buffer is empty event. */
+    BREAK, /**< Break event. */
+    CD, /**< Carrier Detect (CD) event. */
+    CTS, /**< Clear To Send (CTS) event. */
+    DSR, /**< Data Set Ready (DSR) event. */
+    //    ERROR, /**< Error event. */
+    RING, /**< Ring Indicator (RI) event. */
+    RLSD, /**< . */
+    INPUT_AVAILABLE, /**< Input data is available event. */
+    OUTPUT_EMPTY /**< Output buffer is empty event. */
   };
 
   /**
@@ -108,12 +111,12 @@ public:
   unsigned int getFlowControlMode() const throw(CommunicationsException);
 
   /**
-    Get the currently configured parity setting.
+    Returns the currently configured parity setting.
   */
   unsigned int getParity() const throw(CommunicationsException);
 
   /**
-    Returns the currently defined stop bits.
+    Returns the currently configured stop bits.
   */
   unsigned int getStopBits() const throw(CommunicationsException);
 
@@ -122,6 +125,11 @@ public:
   */
   void setParameters(unsigned int baudRate, unsigned int dataBits, unsigned int parity, unsigned int stopBits) throw(NotSupported, CommunicationsException);
 
+  /**
+    Sets the flow control mode.
+  */
+  void setFlowControlMode(unsigned int flowMode) throw(CommunicationsException);
+  
   /**
     Returns the state of the CD (Carrier Detect) bit in the UART, if supported by the underlying implementation.
   */
@@ -223,7 +231,17 @@ public:
     Returns the output buffer size.
   */
   unsigned int getOutputBufferSize() const throw(CommunicationsException);
+  
+  unsigned int read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(IOException);
+  
+  unsigned int write(const char* buffer, unsigned int bytesToWrite, bool nonblocking) throw(IOException);
 
+  void asyncCancel() throw(AsynchronousException);
+  
+  AsynchronousReadOperation read(char* buffer, unsigned int bytesToRead, AsynchronousReadEventListener* listener) throw(AsynchronousException);
+
+  AsynchronousWriteOperation write(const char* buffer, unsigned int bytesToWrite, AsynchronousWriteEventListener* listener) throw(AsynchronousException);
+  
   /**
     Destroys the serial port object.
   */

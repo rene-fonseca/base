@@ -11,9 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/Application.h>
-#include <base/Type.h>
 #include <base/TypeInfo.h>
 #include <base/SystemLogger.h>
 #include <base/concurrency/Thread.h>
@@ -21,6 +19,7 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
+  #undef ERROR // protect against the evil programmers
 #else // unix
   #include <sys/signal.h> // defines SIG_ERR on IRIX65
   #include <signal.h>
@@ -28,16 +27,44 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+class ApplicationInitialization {
+public:
+
+  static void terminationExceptionHandler() throw() {
+    // TAG: need some way to extract the raised exception object
+    Trace::message("Exception was raised during application initialization or cleanup");
+    //SystemLogger::write(SystemLogger::ERROR, MESSAGE("Application failed to initialize or cleanup  properly."));
+    exit(Application::EXIT_CODE_INITIALIZATION);
+  }
+
+  static void unexpectedExceptionHandler() throw() {
+    Trace::message("Exception was raised during application initialization or cleanup");
+    //SystemLogger::write(SystemLogger::ERROR, MESSAGE("Application failed to initialize or cleanup properly."));
+    exit(Application::EXIT_CODE_INITIALIZATION);
+  }
+  
+  ApplicationInitialization() throw() {
+    // install exception handlers
+    std::set_terminate(ApplicationInitialization::terminationExceptionHandler);
+    std::set_unexpected(ApplicationInitialization::unexpectedExceptionHandler);
+  }
+};
+
+ApplicationInitialization applicationInitialization;
+
+Application* Application::application = 0; // initialize application as uninitialized
+
 class ApplicationImpl {
 public:
 
   static void terminationExceptionHandler() {
+    Trace::message("Termination due to exception");
     ferr << MESSAGE("Internal error: Exception handling abandoned") << ENDL;
     exit(Application::EXIT_CODE_ERROR); // TAG: is abort() better
   }
 
   static void unexpectedExceptionHandler() {
-//    ferr << MESSAGE("Internal error: Violation of exception specification") << ENDL;
+    Trace::message("Termination due to unexpected exception");
     try {
       throw;
     } catch(Exception& e) {
@@ -128,8 +155,6 @@ public:
 
 
 
-Application* Application::application = 0; // initialize application as uninitialized
-
 void Application::initialize() throw() {
   static unsigned int singleton = 0;
   assert(singleton == 0, SingletonException("Application has been instantiated"));
@@ -137,7 +162,7 @@ void Application::initialize() throw() {
 
   // install signal handler
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)ApplicationImpl::signalHandler, TRUE)) {
+  if (!::SetConsoleCtrlHandler((PHANDLER_ROUTINE)ApplicationImpl::signalHandler, TRUE)) {
     throw Exception("Unable to install signal handler");
   }
 #else // unix

@@ -56,9 +56,33 @@ FileDescriptorInputStream& FileDescriptorInputStream::operator=(const FileDescri
 
 unsigned int FileDescriptorInputStream::available() const throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  // use GetFileSizeEx instead
-  DWORD highWord;
-  return GetFileSize((HANDLE)fd->getHandle(), &highWord);
+  DWORD bytesAvailable;
+  switch (::GetFileType(fd->getHandle())) {
+  case FILE_TYPE_PIPE:
+    if (!::PeekNamedPipe((HANDLE)fd->getHandle(), 0, 0, 0, &bytesAvailable, 0)) {
+      throw IOException();
+    }
+    break;
+  case FILE_TYPE_DISK:
+    {
+      DWORD highWord;
+      long long size = ::GetFileSize((HANDLE)fd->getHandle(), &highWord);
+      LARGE_INTEGER position;
+      position.QuadPart = 0;
+      position.LowPart = ::SetFilePointer((HANDLE)fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
+      if ((position.LowPart == INVALID_SET_FILE_POINTER) && (::GetLastError() != NO_ERROR)) {
+        throw IOException();
+      }
+      bytesAvailable = minimum<long long>(size - position.QuadPart, UnsignedInt::MAXIMUM);
+    }
+    break;
+  case FILE_TYPE_CHAR:
+    bytesAvailable = 1; // TAG: fixme
+    break;
+  default:
+    throw IOException();
+  }
+  return bytesAvailable;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
@@ -76,7 +100,7 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException) {
 #endif // flavour
 }
 
-unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int bytesToRead, bool nonblocking = false) throw(IOException) {
+unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(IOException) {
   // TAG: currently always blocks
   assert(!end, EndOfFile());
   unsigned int bytesRead = 0;
@@ -145,12 +169,14 @@ void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
 
 void FileDescriptorInputStream::wait() const throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  DWORD result = ::WaitForSingleObject(fd->getHandle(), INFINITE);
+  ASSERT(result == WAIT_OBJECT_0);
 #else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET(fd->getHandle(), &rfds);
 
-  int result = ::select(fd->getHandle() + 1, &rfds, NULL, NULL, NULL);
+  int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
     throw IOException("Unable to wait for input");
   }
@@ -159,6 +185,8 @@ void FileDescriptorInputStream::wait() const throw(IOException) {
 
 bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  DWORD result = ::WaitForSingleObject(fd->getHandle(), timeout);
+  ASSERT(result == WAIT_OBJECT_0);
 #else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
@@ -168,7 +196,7 @@ bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOExcepti
   tv.tv_sec = timeout/1000000;
   tv.tv_usec = timeout % 1000000;
 
-  int result = ::select(fd->getHandle() + 1, &rfds, NULL, NULL, &tv);
+  int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
     throw IOException("Unable to wait for input");
   }

@@ -53,14 +53,14 @@ FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDesc
 
 void FileDescriptorOutputStream::flush() throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  // Handle to a console output cannot be flushed 'cause it isn't buffered, aarrgh
-  if (!isValid()) {
-    throw IOException("Unable to flush file descriptor");
-  }
-  ::FlushFileBuffers((HANDLE)fd->getHandle()); // yes ignore any error
+  // TAG: handle may or may not be flushable
+  // handle to a console output cannot be flushed 'cause it isn't buffered, aarrgh
+//  if (!isValid()) {
+//    throw IOException("Unable to flush file descriptor");
+//  }
+//  ::FlushFileBuffers((HANDLE)fd->getHandle()); // yes ignore any error
 #else // unix
-  // TAG: this is a bug
-  ::fsync(fd->getHandle());
+//  ::fsync(fd->getHandle()); // TAG: this is a bug
 //  if (ioctl(fd->getHandle(), I_FLUSH, FLUSHRW) != 0) {
 //    throw IOException("Unable to flush stream");
 //  }
@@ -99,6 +99,7 @@ unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int 
 
 FileDescriptorOutputStream::~FileDescriptorOutputStream() {
   TRACE_MEMBER();
+  Trace::message(__PRETTY_FUNCTION__);  
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

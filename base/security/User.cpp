@@ -45,6 +45,17 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 User User::getCurrentUser() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+//    DWORD result = ::GetSecurityInfo(::GetCurrentProcess(), ...);
+//    HANDLE token;
+//    ::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token);
+//    DWORD returnLength;
+//    TOKEN_USER user;
+//    BOOL result = ::GetTokenInformation(token,
+//  				      TokenUser,
+//  				      &user,
+//  				      sizeof(user),
+//  				      &returnLength);
+//    ::LookupAccountSid(0, user.User.Sid, );
   return User(PrimitiveTraits<unsigned long long>::MAXIMUM);
 #else // unix
   uid_t uid = ::getuid();
@@ -78,6 +89,7 @@ User::User(const String& name) throw(UserException) {
 
 String User::getName() const throw(UserException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+
 #else // unix
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;

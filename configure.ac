@@ -786,8 +786,7 @@ unix)
     AC_BASE_ADDLIB($base_cv_inet_ipv6_libs))
 ;;
 win32)
-  dnl The -Wl option is used to circumvent libtool
-  BASE_ADDITIONAL_LIBADD="${BASE_ADDITIONAL_LIBADD}${BASE_ADDITIONAL_LIBADD:+ }"'-Wl,-lws2_32'
+  BASE_ADDITIONAL_LIBADD="${BASE_ADDITIONAL_LIBADD}${BASE_ADDITIONAL_LIBADD:+ }"'-lws2_32'
 ;;
 esac
 

@@ -93,7 +93,15 @@ public:
   /**
     Initializes binary tree from other binary tree.
   */
-  OrderedBinaryTree(const OrderedBinaryTree& copy) throw() {}
+  OrderedBinaryTree(const OrderedBinaryTree& copy) throw() : BinaryTree<TYPE>(copy) {
+  }
+
+  /**
+    Assignment of ordered binary tree to ordered binary tree.
+  */
+  OrderedBinaryTree& operator=(const OrderedBinaryTree& eq) throw() {
+    return BinaryTree<TYPE>::operator=(eq);
+  }
 
   /**
     Returns a modifying enumerator of the ordered binary tree.

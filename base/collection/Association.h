@@ -14,7 +14,6 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__ASSOCIATION_H
 #define _DK_SDU_MIP__BASE_COLLECTION__ASSOCIATION_H
 
-#include <base/features.h>
 #include <base/string/FormatOutputStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

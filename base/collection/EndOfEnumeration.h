@@ -14,7 +14,6 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__END_OF_ENUMERATION_H
 #define _DK_SDU_MIP__BASE_COLLECTION__END_OF_ENUMERATION_H
 
-#include <base/features.h>
 #include <base/Exception.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

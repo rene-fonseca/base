@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerException) {
 #if defined(__win32__)
-  void* result = GetProcAddress(GetModuleHandle(), symbol.getElements()); // TAG: possible resource leak? - should I handle possible error
+  void* result = GetProcAddress(GetModuleHandle(0), symbol.getElements()); // TAG: possible resource leak? - should I handle possible error
   assert(result != 0, LinkerException("Unable to resolve symbol")); // (GetLastError() != ERROR_SUCCESS)
   return result;
 #else // __unix__
@@ -57,7 +57,7 @@ DynamicLinker::DynamicLinker(const String& module, unsigned int options) throw(L
 
 void* DynamicLinker::getSymbol(const StringLiteral& symbol) const throw(LinkerException) {
 #if defined(__win32__)
-  void* result = GetProcAddress(handle, symbol.getElements());
+  void* result = GetProcAddress((HMODULE)handle, symbol);
   assert(result != 0, LinkerException("Unable to resolve symbol")); // (GetLastError() != ERROR_SUCCESS)
   return result;
 #else // __unix__
@@ -69,7 +69,7 @@ void* DynamicLinker::getSymbol(const StringLiteral& symbol) const throw(LinkerEx
 
 void* DynamicLinker::getSymbol(const String& symbol) const throw(LinkerException) {
 #if defined(__win32__)
-  void* result = GetProcAddress(handle, symbol.getElements());
+  void* result = GetProcAddress((HMODULE)handle, symbol.getElements());
   assert(result != 0, LinkerException("Unable to resolve symbol")); // (GetLastError() != ERROR_SUCCESS)
   return result;
 #else // __unix__
@@ -81,7 +81,7 @@ void* DynamicLinker::getSymbol(const String& symbol) const throw(LinkerException
 
 DynamicLinker::~DynamicLinker() throw(LinkerException) {
 #if defined(__win32__)
-  assert(FreeLibrary(handle), LinkerException("Unable to close module"));
+  assert(FreeLibrary((HMODULE)handle), LinkerException("Unable to close module"));
 #else // __unix__
   assert(dlclose(handle) == 0, LinkerException("Unable to close module"));
 #endif

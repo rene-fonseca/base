@@ -86,7 +86,7 @@ public:
   static List<InetAddress> getAddressesByName(const String& name) throw(HostNotFound);
 
   /**
-    Returns the first IP address find for the specified host name.
+    Returns the first IP address found for the specified host name.
 
     @param name The name of the host (e.g. 'www.mip.sdu.dk').
   */

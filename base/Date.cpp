@@ -12,13 +12,16 @@
  ***************************************************************************/
 
 #include <base/platforms/features.h>
+
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+#undef __STRICT_ANSI__ // need tzset
+#endif
+
 #include <base/Date.h>
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
 #include <base/string/Locale.h>
 #include <base/NotImplemented.h>
-
-#define _DK_SDU_MIP__BASE__WXP 6 // TAG: FIXME
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
@@ -30,6 +33,26 @@
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+namespace internal {
+  extern "C" long _timezone;
+
+  inline long getTimezone() throw() {
+    return _timezone;
+  }
+};
+#else
+namespace internal {
+  extern "C" long timezone;
+  
+  inline long getTimezone() throw() {
+    return timezone;
+  }
+};
+#endif
+#endif // flavor
 
 const int Date::DAYS_PER_MONTH_NONLEAP_YEAR[Date::MONTHS_PER_YEAR] = {
   31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
@@ -250,7 +273,7 @@ int Date::getBias() throw() {
   return information.Bias * 60; // TAG: what about the other bias'
 #else // unix
   tzset(); // update variables
-  return timezone;
+  return internal::getTimezone();
 #endif // flavor
 }
 
@@ -277,7 +300,7 @@ Date Date::getTime(int second, int minute, int hour, bool local) throw(DateExcep
     throw DateException("Unable to represent date", Type::getType<Date>());
   }
   if (!local) {
-    result -= timezone; // convert to UTC
+    result -= internal::getTimezone(); // convert to UTC
   }
   return Date(result);
 #endif
@@ -306,7 +329,7 @@ Date Date::getDate(int day, int month, int year, bool local) throw(DateException
     throw DateException("Unable to represent date", Type::getType<Date>());
   }
   if (!local) {
-    result -= timezone; // convert to UTC
+    result -= internal::getTimezone(); // convert to UTC
   }
   return Date(result);
 #endif
@@ -335,7 +358,7 @@ Date Date::getDate(int second, int minute, int hour, int day, int month, int yea
     throw DateException("Unable to represent date", Type::getType<Date>());
   }
   if (!local) {
-    result -= timezone; // convert to UTC
+    result -= internal::getTimezone(); // convert to UTC
   }
   return Date(result);
 #endif

@@ -46,7 +46,17 @@ public:
   };
 
   /** Type of address. */
-  enum Type {IPV4 = 1, IPV6 = 2, UNSPECIFIED = 4, LOOPBACK = 8, MULTICAST = 16, LINK_LOCAL = 32, SITE_LOCAL = 64, IPV4_MAPPED = 128, IPV4_COMPATIBLE = 256};
+  enum AddressType {
+    IPV4 = 1, /**< Address is an IPv4 address. */
+    IPV6 = 2, /**< Address is an IPv6 address. */
+    UNSPECIFIED = 4, /**< Address is the unspecified addresss (i.e. ::0). */
+    LOOPBACK = 8, /**< Address is the loopback address. */
+    MULTICAST = 16, /**< Address is a multicast address. */
+    LINK_LOCAL = 32, /**< Address is a link local address. */
+    SITE_LOCAL = 64, /**< Address is a site local address. */
+    IPV4_MAPPED = 128, /**< Address is an IPv4 mapped address. */
+    IPV4_COMPATIBLE = 256 /**< Address is compatible with IPv4. */
+  };
 private:
 
   /** The family of the address. */

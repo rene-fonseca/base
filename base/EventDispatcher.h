@@ -21,13 +21,14 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Class responsible for sending a given signal to multiple listeners.
-
+  
+  @short Event dispatcher.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
 template<class SENDER, class LISTENER>
-class EventDispatcher : public virtual Object {
+class EventDispatcher : public Object {
 public:
 
   /** The type of the sender. */
@@ -51,7 +52,7 @@ public:
     : signal(_signal) {
   }
 
-  /*
+  /**
     Registers the specified listener.
 
     @param listener The listener to be deregistered.

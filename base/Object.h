@@ -19,8 +19,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  The base class of all non-abstract classes. Objects are not copyable by default.
-
+  The base class of all non-abstract classes. Objects are not copyable by
+  default.
+  
   @short Object.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -30,9 +31,9 @@ class Object {
 private:
 
   /* Disable the default copy constructor. */
-  Object(const Object& copy);
+  Object(const Object& copy) throw();
   /* Disable the default assignment operator. */
-  Object& operator=(const Object& eq);
+  Object& operator=(const Object& eq) throw();
 public:
 
   /**

@@ -102,9 +102,7 @@ public:
       Literal("Sa")
     };
 
-    const int firstDayOfWeekOfLocale = Date::SUNDAY; // TAG: locale specific
-    const int lastDayOfWeekOfLocale =
-      (firstDayOfWeekOfLocale + Date::DAYS_PER_WEEK - 1)%Date::DAYS_PER_WEEK;
+    const int firstDayOfWeekOfLocale = Date::MONDAY; // TAG: locale specific
     
     {
       StringOutputStream stream;
@@ -112,7 +110,7 @@ public:
              << decomposed.year << FLUSH;
       String header = stream.getString();
       int headerIndent =
-        (FIELD_WIDTH * Date::DAYS_PER_WEEK - header.getLength())/2;
+        (6 + FIELD_WIDTH * Date::DAYS_PER_WEEK - header.getLength())/2;
       fout << indent(maximum(0, headerIndent)) << header << ENDL;
       int dayOfWeek = firstDayOfWeekOfLocale;
       fout << LEFT << setWidth(6) << "week";
@@ -142,10 +140,11 @@ public:
     const unsigned int daysOfMonth =
       Date::getDaysOfMonth(decomposed.month, decomposed.year);
 
-    // TAG: 4 to 6 weeks per month
-    for (int day = 0; day < daysOfMonth; ++day) {
+    // TAG: 3 to 6 weeks per month
+    for (int day = 0; day < daysOfMonth;) {
       fout << RIGHT << setWidth(FIELD_WIDTH) << (day + 1);
       dayOfWeek = getSucceedingDayOfWeek(dayOfWeek);
+      ++day;
       if (dayOfWeek == firstDayOfWeekOfLocale) {
         fout << EOL;
         fout << LEFT << setWidth(6)

@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE__CAST_H
 
 #include <base/Primitives.h>
+#include <base/Base.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

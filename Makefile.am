@@ -38,7 +38,7 @@ module-testsuite-configure:
 	      export CXXCPP="$${MODULE_CXXCPP}"; \
 	      export CPPFLAGS="-I.. -I../${srcdir}$${MODULE_CPPFLAGS:+ }$${MODULE_CPPFLAGS}"; \
 	      export LDFLAGS="-L../base$${MODULE_LDFLAGS:+ }$${MODULE_LDFLAGS}"; \
-	      ../${srcdir}/testsuite/configure @BASE_MODULE_ARGUMENTS@); then \
+	      ../${srcdir}/testsuite/configure @MODULE_ARGUMENTS_BASE@); then \
 	    echo "Test suite has been configured"; \
 	  else \
 	    echo "Test suite configuration failed"; \

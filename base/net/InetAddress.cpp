@@ -275,7 +275,7 @@ FormatOutputStream& InetAddress::toFormatStream(FormatOutputStream& stream) cons
   return stream << buffer;
 #else
   // longest possible string is "255.255.255.255"
-  return stream << inet_ntoa(&address); // MT-level is safe but uses static buffer
+  return stream << inet_ntoa(*(struct in_addr*)&address); // MT-level is safe but uses static buffer
 #endif // HAVE_INET_IPV6
 }
 

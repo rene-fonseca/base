@@ -17,11 +17,11 @@
   #include <string.h>
 #endif
 
-//#ifndef socklen_t
-//  #define socklen_t int
-//#endif
+#if !defined(socklen_t)
+  #define socklen_t int
+#endif
 
-#ifndef INVALID_SOCKET
+#if !defined(INVALID_SOCKET)
   #define INVALID_SOCKET -1
 #endif
 

@@ -26,6 +26,7 @@ libui_la_SOURCES = Bitmap.cpp \
                    MessageDialog.cpp \
                    Picture.cpp \
                    Pixmap.cpp \
+                   PopUpWindow.cpp \
                    Position.cpp \
                    ProgressBar.cpp \
                    SaveFileDialog.cpp \
@@ -48,6 +49,7 @@ section_HEADERS = Bitmap.h \
                   MessageDialog.h \
                   Picture.h \
                   Pixmap.h \
+                  PopUpWindow.h \
                   Position.h \
                   ProgressBar.h \
                   SaveFileDialog.h \

@@ -11,20 +11,20 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/rmi/RMIException.h>
+#include <base/rmi/OrbException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-RMIException::RMIException() throw() : Exception() {
+OrbException::OrbException() throw() : Exception() {
 }
 
-RMIException::RMIException(const char* message) throw() : Exception(message) {
+OrbException::OrbException(const char* message) throw() : Exception(message) {
 }
 
-RMIException::RMIException(Type type) throw() : Exception(type) {
+OrbException::OrbException(Type type) throw() : Exception(type) {
 }
 
-RMIException::RMIException(const char* message, Type type) throw()
+OrbException::OrbException(const char* message, Type type) throw()
   : Exception(message, type) {
 }
 

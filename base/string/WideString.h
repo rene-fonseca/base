@@ -31,7 +31,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if !defined(_DK_SDU_MIP_BASE_WIDE)
+#if !defined(_DK_SDU_MIP__BASE__WIDE)
   typedef int wint_t;
   inline int iswalnum(wint_t) throw() {return 0;}
   inline int iswalpha(wint_t) throw() {return 0;}

@@ -16,5 +16,6 @@
 */
 
 #if (!defined(__BORLANDC__) || !defined(__cplusplus))
+die // force compiler to return with error
 #  error Not Borland C++ Compiler
 #endif

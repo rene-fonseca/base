@@ -16,5 +16,6 @@
 */
 
 #if (!defined(__GNUC__) || !defined(__GNUC_MINOR__) || !defined(__cplusplus))
+die // force compiler to return with error
 #  error Not GNU C++ Compiler
 #endif

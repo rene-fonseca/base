@@ -16,5 +16,6 @@
 */
 
 #if (!defined(_MSC_VER) || !defined(__cplusplus))
+die // force compiler to return with error
 #  error Microsoft Visual C++ Compiler
 #endif

@@ -16,5 +16,6 @@
 */
 
 #if (!(defined(__INTEL_COMPILER) || defined(__ICC) || defined(__ECC)) || !defined(__cplusplus))
+die // force compiler to return with error
 #  error Not Intel C++ Compiler
 #endif

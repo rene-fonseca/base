@@ -16,5 +16,6 @@
 */
 
 #if (!defined(__sgi) || !defined(__COMPILER_VERSION) || !defined(__cplusplus))
+die // force compiler to return with error
 #  error Not SGI MIPSpro C++ Compiler
 #endif

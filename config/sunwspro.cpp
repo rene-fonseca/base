@@ -16,5 +16,6 @@
 */
 
 #if (!defined(__SUNPRO_CC) || !defined(__cplusplus))
+die // force compiler to return with error
 #  error Not Sun ONE Studio C++ Compiler
 #endif

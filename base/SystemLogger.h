@@ -17,11 +17,6 @@
 #include <base/Object.h>
 #include <base/string/String.h>
 
-// protect against the evil programmers
-#undef INFORMATION
-#undef WARNING
-#undef ERROR
-
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
@@ -34,11 +29,11 @@ class SystemLogger : public Object {
 public:
 
   /** Specifies the type of the message. */
-  typedef enum {
+  enum MessageType {
     INFORMATION = 0, /**< Informational message. */
     WARNING = 1, /**< Warning message. */
     ERROR = 2 /**< Error message. */
-  } MessageType;
+  };
 
   /**
     Sends the specified message to the system logger.

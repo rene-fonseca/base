@@ -23,7 +23,7 @@ void FileReader::requestRegion(const FileRegion& region) throw(IOException) {
   current = begin + (region.getOffset() - mapping.getRegion().getOffset());
 }
 
-FileReader::FileReader(File& file, long long position, unsigned int windowSize = DEFAULT_WINDOW_SIZE) throw(IOException) :
+FileReader::FileReader(File& file, long long position, unsigned int windowSize) throw(IOException) :
   fileSize(file.getSize()),
   granularity(MappedFile::getGranularity()),
   preferredWindowSize(windowSize),

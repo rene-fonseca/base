@@ -68,7 +68,8 @@ LDFLAGS=-L/usr/X11R6/lib \
   --target=%{_target} \
   --prefix=%{_prefix} \
   --enable-regexp=pcre \
-  --enable-xml=xmlsoft
+  --enable-xml=xmlsoft \
+  --enable-xslt=xmlsoft
 
 
 

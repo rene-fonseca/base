@@ -1,6 +1,14 @@
 /***************************************************************************
-    copyright   : (C) 2001 by René Møller Fonseca
-    email       : fonseca@mip.sdu.dk
+    The Base Framework
+    A framework for developing platform independent applications
+
+    Copyright (C) 2001 by René Møller Fonseca <fonseca@mip.sdu.dk>
+
+    This framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
 #ifndef _DK_SDU_MIP__BASE_IO__FILE_READER_H
@@ -17,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @author René Møller Fonseca
   @version 1.0
 */
-class FastFileReader : public Object {
+class FileReader : public Object {
 public:
 
   /** Iterator used to traverse the elements within the current file mapping window. */
@@ -72,7 +80,7 @@ public:
     @param position The initial position.
     @param windowSize The preferred size of the mapping window. The actual window size used may be less or greater.
   */
-  FastFileReader(File& file, long long position, unsigned int windowSize = DEFAULT_WINDOW_SIZE) throw(IOException);
+  FileReader(File& file, long long position, unsigned int windowSize = DEFAULT_WINDOW_SIZE) throw(IOException);
 
   /**
     Returns the current position indexed from the beginning of the file.

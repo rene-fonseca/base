@@ -1,6 +1,14 @@
 /***************************************************************************
-    copyright   : (C) 2001 by René Møller Fonseca
-    email       : fonseca@mip.sdu.dk
+    The Base Framework
+    A framework for developing platform independent applications
+
+    Copyright (C) 2001 by René Møller Fonseca <fonseca@mip.sdu.dk>
+
+    This framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
 #include <base/io/FileReader.h>
@@ -8,14 +16,14 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-void FastFileReader::requestRegion(const FileRegion& region) throw(IOException) {
+void FileReader::requestRegion(const FileRegion& region) throw(IOException) {
   mapping.remap(fixRegion(region));
   begin = mapping.getBytes();
   end = begin + mapping.getRegion().getSize();
   current = begin + (region.getOffset() - mapping.getRegion().getOffset());
 }
 
-FastFileReader::FastFileReader(File& file, long long position, unsigned int windowSize = DEFAULT_WINDOW_SIZE) throw(IOException) :
+FileReader::FileReader(File& file, long long position, unsigned int windowSize = DEFAULT_WINDOW_SIZE) throw(IOException) :
   fileSize(file.getSize()),
   granularity(MappedFile::getGranularity()),
   preferredWindowSize(windowSize),
@@ -26,7 +34,7 @@ FastFileReader::FastFileReader(File& file, long long position, unsigned int wind
   current = begin + (position - mapping.getRegion().getOffset());
 }
 
-void FastFileReader::read(byte* buffer, unsigned int size) throw(IOException) {
+void FileReader::read(byte* buffer, unsigned int size) throw(IOException) {
   peek(size);
   copy(buffer, current, size);
   skip(size);

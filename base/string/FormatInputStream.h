@@ -20,17 +20,36 @@ class FormatInputStream : public BufferedInputStream {
 public:
 
   /**
-    Initializes the string input stream.
+    Initializes the format input stream.
 
-    @param name The input stream.
+    @param in The input stream.
+    @param size The size of the buffer. Default is given by DEFAULT_BUFFER_SIZE.
   */
-  FormatInputStream(InputStream& in) throw(BindException);
+  FormatInputStream(InputStream& in, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException);
+
+  /**
+    Read a character from the stream.
+  */
+  char getCharacter() throw(IOException);
 };
 
 /**
   Format input stream linked to the standard input stream. This variable
   corresponds to 'cin' from the Standard Template Library.
 */
-//extern FormatInputStream fin;
+extern FormatInputStream fin;
+
+FormatInputStream& operator>>(FormatInputStream& stream, bool& value);
+FormatInputStream& operator>>(FormatInputStream& stream, char& value);
+FormatInputStream& operator>>(FormatInputStream& stream, char*& value);
+//FormatInputStream& operator>>(FormatInputStream& stream, short int value);
+//FormatInputStream& operator>>(FormatInputStream& stream, unsigned short int value);
+//FormatInputStream& operator>>(FormatInputStream& stream, int value);
+//FormatInputStream& operator>>(FormatInputStream& stream, unsigned int value);
+//FormatInputStream& operator>>(FormatInputStream& stream, long long int value);
+//FormatInputStream& operator>>(FormatInputStream& stream, unsigned long long int value);
+//FormatInputStream& operator>>(FormatInputStream& stream, float value);
+//FormatInputStream& operator>>(FormatInputStream& stream, double value);
+//FormatInputStream& operator>>(FormatInputStream& stream, long double value);
 
 #endif

@@ -11,29 +11,30 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__LOCK_EXCEPTION_H
-#define _DK_SDU_MIP__BASE_CONCURRENCY__LOCK_EXCEPTION_H
+#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__SEMAPHORE_EXCEPTION_H
+#define _DK_SDU_MIP__BASE_CONCURRENCY__SEMAPHORE_EXCEPTION_H
 
-#include <base/Exception.h>
+#include <base/concurrency/LockException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Base class of synchronization object exceptions.
+  Exception raised by Semaphore synchronization objects.
   
-  @short Lock exception.
+  @short Semaphore exception.
   @ingroup concurrency exception
+  @see Semaphore
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
-class LockException : public Exception {
+class SemaphoreException : public LockException {
 public:
 
   /**
     Initializes the exception object with no message.
   */
-  inline LockException() throw() {
+  inline SemaphoreException() throw() {
   }
 
   /**
@@ -41,7 +42,8 @@ public:
 
     @param message The message.
   */
-  inline LockException(const char* message) throw() : Exception(message) {
+  inline SemaphoreException(const char* message) throw()
+    : LockException(message) {
   }
 
   /**
@@ -49,7 +51,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline LockException(Type type) throw() : Exception(type) {
+  inline SemaphoreException(Type type) throw() : LockException(type) {
   }
   
   /**
@@ -58,8 +60,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline LockException(const char* message, Type type) throw()
-    : Exception(message, type) {
+  inline SemaphoreException(const char* message, Type type) throw()
+    : LockException(message, type) {
   }
 };
 

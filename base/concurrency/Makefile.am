@@ -20,17 +20,22 @@ libconcurrency_la_SOURCES = \
   Barrier.cpp \
   ConcurrencyException.cpp \
   Event.cpp \
+  EventException.cpp \
   ExclusiveSynchronize.cpp \
   Lock.cpp \
   LockException.cpp \
   MutualExclusion.cpp \
+  MutualExclusionException.cpp \
   NISpinLock.cpp \
   Once.cpp \
   Process.cpp \
   ReadWriteLock.cpp \
+  ReadWriteLockException.cpp \
   ReadWriteSpinLock.cpp \
+  RecursiveMutualExclusion.cpp \
   RecursiveSpinLock.cpp \
   Semaphore.cpp \
+  SemaphoreException.cpp \
   SharedSynchronize.cpp \
   SingleExclusiveSynchronize.cpp \
   SpinLock.cpp \
@@ -46,18 +51,23 @@ section_HEADERS = \
   Barrier.h \
   ConcurrencyException.h \
   Event.h \
+  EventException.h \
   ExclusiveSynchronize.h \
   Lock.h \
   LockException.h \
   MutualExclusion.h \
+  MutualExclusionException.h \
   NISpinLock.h \
   Once.h \
   Process.h \
   ReadWriteLock.h \
+  ReadWriteLockException.h \
   ReadWriteSpinLock.h \
+  RecursiveMutualExclusion.h \
   RecursiveSpinLock.h \
   Runnable.h \
   Semaphore.h \
+  SemaphoreException.h \
   SharedSynchronize.h \
   SingleExclusiveSynchronize.h \
   SpinLock.h \

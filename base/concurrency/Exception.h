@@ -11,45 +11,47 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__LOCK_EXCEPTION_H
-#define _DK_SDU_MIP__BASE_CONCURRENCY__LOCK_EXCEPTION_H
+#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__BARRIER_EXCEPTION_H
+#define _DK_SDU_MIP__BASE_CONCURRENCY__BARRIER_EXCEPTION_H
 
-#include <base/Exception.h>
+#include <base/concurrency/LockException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Base class of synchronization object exceptions.
+  Exception raised by the Barrier class.
   
-  @short Lock exception.
-  @ingroup concurrency exception
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @short Barrier synchronization object exception.
+  @ingroup concurrency exceptions
+  @see Barrier
+  @author Rene Moeller Fonseca
   @version 1.0
 */
-
-class LockException : public Exception {
+class BarrierException : public LockException {
 public:
-
+  
   /**
     Initializes the exception object with no message.
   */
-  inline LockException() throw() {
+  inline BarrierException() throw() {
   }
-
+  
   /**
     Initializes the exception object.
-
+    
     @param message The message.
   */
-  inline LockException(const char* message) throw() : Exception(message) {
+  inline BarrierException(const char* message) throw()
+    : LockException(message) {
   }
-
+  
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline LockException(Type type) throw() : Exception(type) {
+  inline BarrierException(Type type) throw()
+    : LockException(type) {
   }
   
   /**
@@ -58,8 +60,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline LockException(const char* message, Type type) throw()
-    : Exception(message, type) {
+  inline BarrierException(const char* message, Type type) throw()
+    : LockException(message, type) {
   }
 };
 

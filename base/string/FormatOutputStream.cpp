@@ -853,20 +853,20 @@ public:
   static inline void leftShift(unsigned int* value, unsigned int size, unsigned int shift) throw() {
     unsigned int bitShift = shift % (sizeof(unsigned int) * 8);
     unsigned int wordShift = shift/(sizeof(unsigned int) * 8);
-    const unsigned int* src = value;
-    unsigned int* dest = value + wordShift;
-    const unsigned int* end = value + size;
+
+    // start from last non-zero value + wordSize (but do not exceed end)
+    unsigned int* dest = value + size - 1;
+    const unsigned int* src = dest - wordShift;
 
     if (bitShift != 0) {
-      unsigned int previousBitShift = (sizeof(unsigned int) * 8) - bitShift;
-      unsigned int previousValue = 0;
-      for (; dest < end; ++src, ++dest) {
-        unsigned int temp = *src;
-        *dest = (temp << bitShift) | previousValue;
-        previousValue = temp >> previousBitShift;
+      unsigned int invBitShift = (sizeof(unsigned int) * 8) - bitShift;
+      while (src > value) {
+        *dest = (*src << bitShift) | (*--src >> invBitShift);
+        --dest;
       }
+      *dest = *src << bitShift; // final (shift in zeros)
     } else {
-      for (; dest < end; ++src, ++dest) {
+      for (; src >= value; --src, --dest) {
         *dest = *src;
       }
     }
@@ -1109,12 +1109,12 @@ void convertFloatingPoint(unsigned int significant, unsigned int precision, CutM
     return;
   }
 
-  unsigned int shiftS = maximum<int>(-(base2Exponent - significant), 0); // max(0, -(e-p))
-  unsigned int shiftR = maximum<int>(base2Exponent - significant, 0); // max(e-p, 0)
+  const unsigned int shiftS = maximum<int>(-(base2Exponent - significant), 0); // max(0, -(e-p))
+  const unsigned int shiftR = maximum<int>(base2Exponent - significant, 0); // max(e-p, 0)
 
   // TAG: in debug mode use worst case size
   // number of words in large integers
-  unsigned int integerSize = (maximum<int>(base2Exponent, -base2Exponent, significant) /* value bits */
+  unsigned int integerSize = (maximum<int>(maximum<int>(shiftS, shiftR), maximum<int>(base2Exponent, significant)) /* value bits */
                                         + 2 /* additional shifts */
                                         + 4 /* multiplication with 10, addition with 10, sum of integers */
                                         + sizeof(unsigned int)*8 - 1 /* round up */
@@ -1132,15 +1132,17 @@ void convertFloatingPoint(unsigned int significant, unsigned int precision, CutM
   LargeInteger::assign(R, mantissa, mantissaSize);
 
   const bool unequalGap = ((nonZero - mantissa) == mantissaSize) &&
-                                       (mantissa[mantissaSize - 1] == (1 << ((significant - 1) % (sizeof(unsigned int) * 8))));
+    (mantissa[mantissaSize - 1] == (1 << ((significant - 1) % (sizeof(unsigned int) * 8))));
   if (unequalGap) { // f == 1 << (p-1) // TAG: does this work for denormalized values
     LargeInteger::setBit(S, integerSize, shiftS + 2); // S = 2*S_paper
     LargeInteger::leftShift(R, integerSize, shiftR + 2); // R = 2*R_paper
   } else {
     LargeInteger::setBit(S, integerSize, shiftS + 1); // S = 2*S_paper
+  LargeInteger::assign(temp, R, integerSize);
     LargeInteger::leftShift(R, integerSize, shiftR + 1); // R = 2*R_paper
   }
   LargeInteger::setBit(Mminus, integerSize, shiftR); // Mminus = M-
+
 
   LargeInteger::assign(temp, S, integerSize);
   LargeInteger::add(temp, integerSize, 10 - 1);
@@ -1181,7 +1183,7 @@ void convertFloatingPoint(unsigned int significant, unsigned int precision, CutM
     }
 
     switch (cutMode) {
-    case CUT_MODE_NOGARBAGE:
+    case CUT_MODE_NOGARBAGE: // TAG: works with SCIENTIFIC and ENGINEERING but not FIXED
       cutPlace = (significant + 1)/3; // N = 2 + floor[significant/log2(10)] => N < 3 + significant/3
       break;
     case CUT_MODE_RELATIVE:
@@ -1204,6 +1206,7 @@ void convertFloatingPoint(unsigned int significant, unsigned int precision, CutM
           }
           break;
         }
+
         LargeInteger::assign(temp, S, integerSize); // y = S
         int alpha = -cutPlace;
         if (alpha > 0) {
@@ -1390,7 +1393,14 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
         }
         break;
       case Symbols::FIXED:
-        if (exponent <= static_cast<int>(maximum<int>(precision, numberOfDigits))) { // TAG: need number of significant digits (base 10)
+        if ((flags & Symbols::NECESSARY) != 0) { // NOGARBAGE - precision is not valid
+          if ((exponent >= -3) && (exponent < 10)) {
+            adjustedExponent = 0;
+            showExponent = false;
+          } else {
+            adjustedExponent = exponent - 1;
+          }
+        } else if (exponent <= maximum<int>(precision, numberOfDigits)) { // TAG: need number of significant digits (base 10)
           adjustedExponent = 0;
           showExponent = false;
         } else {
@@ -1405,9 +1415,6 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
         }
         break;
       }
-
-//      if ((flags & Symbols::NECESSARY) == 0) { // should we use precision
-//      }
 
       const byte* digit = digitBuffer;
       const byte* endDigit = digit + numberOfDigits;

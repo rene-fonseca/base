@@ -23,7 +23,7 @@
   #define _LARGEFILE64_SOURCE 1
 #endif
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <base/platforms/win32/AsyncReadFileContext.h> // platform specific
   #include <base/platforms/win32/AsyncWriteFileContext.h> // platform specific
   #include <windows.h>
@@ -43,9 +43,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   inline Date FileTimeToDate(const FILETIME& time) {
-    ASSERT(sizeof(FILETIME) == sizeof(long long));
     return Date((*pointer_cast<const long long*>(&time) - 116444736000000000LL)/10000000); // TAG: 0x0000001c1a021060LL
   }
 #endif // flavor
@@ -53,7 +52,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 File::FileHandle::~FileHandle() throw(FileException) {
   // TAG: throw exception if region of file is still locked
   if (isValid()) { // dont try to close if handle is invalidated
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     if (!::CloseHandle(getHandle())) {
       throw FileException("Unable to close file", this);
     }
@@ -68,7 +67,7 @@ File::FileHandle::~FileHandle() throw(FileException) {
 File::File() throw() : fd(File::FileHandle::invalid) {}
 
 File::File(const String& path, Access access, unsigned int options) throw(AccessDenied, FileNotFound) : fd(File::FileHandle::invalid) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   DWORD creationFlags;
   switch (options & (CREATE | TRUNCATE)) {
   case 0:
@@ -161,7 +160,7 @@ bool File::isClosed() const throw() {
 }
 
 long long File::getSize() const throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ULARGE_INTEGER size;
   size.LowPart = ::GetFileSize(fd->getHandle(), &size.HighPart);
   if ((size.LowPart == INVALID_FILE_SIZE) && (::GetLastError() != NO_ERROR )) {
@@ -196,7 +195,7 @@ long long File::getSize() const throw(FileException) {
 }
 
 long long File::getPosition() const throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER position;
   position.QuadPart = 0;
   position.LowPart = ::SetFilePointer(fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
@@ -217,7 +216,7 @@ long long File::getPosition() const throw(FileException) {
 }
 
 void File::setPosition(long long position, Whence whence) throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   static DWORD relativeTo[] = {FILE_BEGIN, FILE_CURRENT, FILE_END};
   LARGE_INTEGER temp;
   temp.QuadPart = position;
@@ -241,7 +240,7 @@ void File::setPosition(long long position, Whence whence) throw(FileException) {
 
 void File::truncate(long long size) throw(FileException) {
   long long oldSize = File::getSize();
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   setPosition(size);
   if (!::SetEndOfFile(fd->getHandle())) {
     throw FileException("Unable to truncate", this);
@@ -273,7 +272,7 @@ void File::truncate(long long size) throw(FileException) {
 }
 
 void File::flush() throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!::FlushFileBuffers(fd->getHandle())) {
     throw FileException("Unable to flush", this);
   }
@@ -285,7 +284,7 @@ void File::flush() throw(FileException) {
 }
 
 void File::lock(const FileRegion& region, bool exclusive = true) throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region", this));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
@@ -354,7 +353,7 @@ void File::lock(const FileRegion& region, bool exclusive = true) throw(FileExcep
 }
 
 bool File::tryLock(const FileRegion& region, bool exclusive = true) throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region", this));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
@@ -421,7 +420,7 @@ bool File::tryLock(const FileRegion& region, bool exclusive = true) throw(FileEx
 }
 
 void File::unlock(const FileRegion& region) throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region", this));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
@@ -485,7 +484,7 @@ void File::unlock(const FileRegion& region) throw(FileException) {
 }
 
 Date File::getLastModification() throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME time;
   if (::GetFileTime(fd->getHandle(), 0, 0, &time)) {
     throw FileException("Unable to get file time", this);
@@ -509,7 +508,7 @@ Date File::getLastModification() throw(FileException) {
 }
 
 Date File::getLastAccess() throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME time;
   if (::GetFileTime(fd->getHandle(), 0, &time, 0)) {
     throw FileException("Unable to get file time", this);
@@ -533,7 +532,7 @@ Date File::getLastAccess() throw(FileException) {
 }
 
 Date File::getLastChange() throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME time;
   if (::GetFileTime(fd->getHandle(), &time, 0, 0)) {
     throw FileException("Unable to get file time", this);
@@ -559,7 +558,7 @@ Date File::getLastChange() throw(FileException) {
 unsigned int File::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(FileException) {
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
     BOOL success = ::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, 0);
     if (!success) { // has error occured
@@ -630,7 +629,7 @@ unsigned int File::read(char* buffer, unsigned int bytesToRead, bool nonblocking
 unsigned int File::write(const char* buffer, unsigned int bytesToWrite, bool nonblocking) throw(FileException) {
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
     BOOL success = ::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0);
     if (!success) {
@@ -700,21 +699,21 @@ unsigned int File::write(const char* buffer, unsigned int bytesToWrite, bool non
 }
 
 void File::asyncCancel() throw(AsynchronousException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::CancelIo(getHandle());
 #else // unix
 #endif // flavor
 }
 
 AsynchronousReadOperation File::read(char* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(AsynchronousException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncReadFileContext(getHandle(), buffer, bytesToRead, offset, listener);
 #endif // flavor
 }
 
 AsynchronousWriteOperation File::write(const char* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncWriteFileContext(getHandle(), buffer, bytesToWrite, offset, listener);
 #endif // flavor

@@ -28,8 +28,7 @@ Timer::Timer() throw() : stopTime(0) {
 }
 
 void Timer::start() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::QueryPerformanceCounter(pointer_cast<LARGE_INTEGER*>(&startTime));
 #else // unix
   struct timeval temp;
@@ -39,8 +38,7 @@ void Timer::start() throw() {
 }
 
 void Timer::stop() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::QueryPerformanceCounter(pointer_cast<LARGE_INTEGER*>(&stopTime));
 #else // unix
   struct timeval temp;
@@ -50,7 +48,7 @@ void Timer::stop() throw() {
 }
 
 long long Timer::getStartTime() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   ::QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>(startTime * 1000000./frequency.QuadPart);
@@ -60,7 +58,7 @@ long long Timer::getStartTime() const throw() {
 }
 
 long long Timer::getStopTime() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   ::QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>(stopTime * 1000000./frequency.QuadPart);
@@ -70,7 +68,7 @@ long long Timer::getStopTime() const throw() {
 }
 
 long long Timer::getMicroseconds() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   ::QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>((stopTime - startTime) * 1000000./frequency.QuadPart);
@@ -80,7 +78,7 @@ long long Timer::getMicroseconds() const throw() {
 }
 
 long long Timer::getLiveMicroseconds() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER now;
   ::QueryPerformanceCounter(&now);
   LARGE_INTEGER frequency; // ticks per second

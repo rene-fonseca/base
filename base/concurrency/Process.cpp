@@ -118,7 +118,7 @@ unsigned long Process::getNumberOfProcessers() throw() {
   ::GetSystemInfo(&systemInfo);
   return systemInfo.dwNumberOfProcessors;
 #else // unix
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX)
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
   unsigned long result = sysconf(_SC_NPROC_ONLN);  
 #else
   unsigned long result = sysconf(_SC_NPROCESSORS_ONLN);

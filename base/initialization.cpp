@@ -190,7 +190,8 @@ private:
   Socket::SocketImpl invalidSocket;
 public:
 
-  Initialization() throw() : invalidSocket(OperatingSystem::INVALID_HANDLE) {
+  Initialization() throw()
+    : invalidSocket(OperatingSystem::INVALID_HANDLE, Socket::IPV4, Socket::STREAM) {
     Random::randomize(); // randomize global random number generator
 
     // having a global invalid handle safes us from allocating/deallocating many handles

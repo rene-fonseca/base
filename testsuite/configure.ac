@@ -56,8 +56,8 @@ AC_ARG_WITH(base-lib,
 if test "x${ac_base_include}" != "x"; then
   CPPFLAGS="${CPPFLAGS}${CPPFLAGS:+ }-I${ac_base_include}"
 fi
-if test "x$ac_base_lib" != "x"; then
-  LIBS="${LIBS}${LIBS:+ }${ac_base_lib}/libbase.la"
+if test "x${ac_base_lib}" != "x"; then
+  LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-L${ac_base_lib}"
 fi
 
 AC_CONFIG_FILES(Makefile)

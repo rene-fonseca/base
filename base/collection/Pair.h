@@ -21,6 +21,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Binder of two values.
 
+  @short Value pair binder
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -52,7 +53,7 @@ public:
     @param first The first value.
     @param second The second value.
   */
-  inline Pair(const First& first, const Second& second) : first(first), second(second) {}
+  inline Pair(const First& first, const Second& second);
 
   /**
     Initializes a pair from other pair.
@@ -73,12 +74,12 @@ public:
   /**
     Returns the first value.
   */
-  inline const First& getFirst() const {return &first;}
+  inline const First& getFirst() const {return first;}
 
   /**
     Returns the second value.
   */
-  inline const Second& getSecond() const {return &second;}
+  inline const Second& getSecond() const {return second;}
 
   /**
     Sets the first value.
@@ -95,7 +96,7 @@ public:
   */
   inline int compareTo(const Pair& eq) const {
     int result = compareTo(first, eq.first);
-    return result != 0 ? result : compareTo(second, eq.second);
+    return (result != 0) ? result : compareTo(second, eq.second);
   }
 
   /**
@@ -113,6 +114,10 @@ public:
   */
   friend int compare<>(const Pair& left, const Pair& right);
 };
+
+template<class FIRST, class SECOND>
+inline Pair<FIRST, SECOND>::Pair(const First& _first, const Second& _second) : first(_first), second(_second) {
+}
 
 template<class FIRST, class SECOND>
 inline int compare(const Pair<FIRST, SECOND>& left, const Pair<FIRST, SECOND>& right) {

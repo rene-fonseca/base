@@ -11,17 +11,16 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__SHARED_SYNCHRONIZE_H
-#define _DK_SDU_MIP__BASE_CONCURRENCY__SHARED_SYNCHRONIZE_H
+#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__EXCLUSIVE_SYNCHRONIZE_H
+#define _DK_SDU_MIP__BASE_CONCURRENCY__EXCLUSIVE_SYNCHRONIZE_H
 
 #include <base/concurrency/Synchronizeable.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This class is used to synchronize executing contexts (shared) with a guard
-  object of your choice. Some guard classes may implement the shared locks
-  using exclusive locks.
+  This class is used to synchronize executing contexts exclusively with a
+  guard object of your choice.
 
   <pre>
   class MyResource : public Object {
@@ -50,21 +49,21 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   };
   </pre>
 
-  @short Shared synchronization
-  @see ExclusiveSynchronize
+  @short Exclusive synchronization.
+  @see SharedSynchronize
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
 template<class GUARD>
-class SharedSynchronize {
+class ExclusiveSynchronize {
 private:
 
   /** The synchronize able object to be synchronized. */
   const GUARD& guard;
 
-  SharedSynchronize(const SharedSynchronize& copy); // prohibit copy construction
-  SharedSynchronize& operator=(const SharedSynchronize& eq); // prohibit assignment
+  ExclusiveSynchronize(const ExclusiveSynchronize& copy); // prohibit copy construction
+  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& eq); // prohibit assignment
 public:
 
   /**
@@ -72,25 +71,25 @@ public:
 
     @param obj The synchronize able object to be synchronized.
   */
-  explicit SharedSynchronize(const GUARD& guard) throw();
+  explicit ExclusiveSynchronize(const GUARD& guard) throw();
 
   /**
     Releases the lock if not already released and destroys the synchronization object.
   */
-  inline ~SharedSynchronize() throw() {
+  inline ~ExclusiveSynchronize() throw() {
     guard.releaseLock();
   }
 };
 
 template<class GUARD>
-inline SharedSynchronize<GUARD>::SharedSynchronize(const GUARD& g) throw() : guard(g) {
-  guard.sharedLock();
+inline ExclusiveSynchronize<GUARD>::ExclusiveSynchronize(const GUARD& g) throw() : guard(g) {
+  guard.exclusiveLock();
 }
 
 
 
 /**
-  Optimized version of SharedSynchronize intended for single threaded
+  Optimized version of ExclusiveSynchronize intended for single threaded
   applications.
 
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -98,11 +97,11 @@ inline SharedSynchronize<GUARD>::SharedSynchronize(const GUARD& g) throw() : gua
 */
 
 template<>
-class SharedSynchronize<Unsafe> {
+class ExclusiveSynchronize<Unsafe> {
 private:
 
-  SharedSynchronize(const SharedSynchronize& copy); // prohibit copy construction
-  SharedSynchronize& operator=(const SharedSynchronize& eq); // prohibit assignment
+  ExclusiveSynchronize(const ExclusiveSynchronize& copy); // prohibit copy construction
+  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& eq); // prohibit assignment
 public:
 
   /**
@@ -110,12 +109,12 @@ public:
 
     @param obj The synchronize able object to be synchronized.
   */
-  inline explicit SharedSynchronize(const Unsafe& guard) throw() {}
+  inline explicit ExclusiveSynchronize(const Unsafe& guard) throw() {}
 
   /**
     Releases the lock if not already released and destroys the synchronization object.
   */
-  inline ~SharedSynchronize() throw() {}
+  inline ~ExclusiveSynchronize() throw() {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -39,19 +39,19 @@ public:
 
   template<class TYPE>
   static FloatingPointRepresentation getRepresentation() throw() {
-    if (typeid(TYPE) == typeid(IEEE_754_SinglePrecision)) {
+    if (typeid(TYPE) == typeid(FloatingPoint::IEEE754SinglePrecision)) {
       return IEEE_754_SINGLE_PRECISION;
     } else
-    if (typeid(TYPE) == typeid(IEEE_754_DoublePrecision)) {
+    if (typeid(TYPE) == typeid(FloatingPoint::IEEE754DoublePrecision)) {
       return IEEE_754_DOUBLE_PRECISION;
     } else
-    if (typeid(TYPE) == typeid(IEEE_ExtendedDoublePrecision96)) {
+    if (typeid(TYPE) == typeid(FloatingPoint::IEEEExtendedDoublePrecision96)) {
       return IEEE_EXTENDED_DOUBLE_PRECISION_96;
     } else
-    if (typeid(TYPE) == typeid(IEEE_ExtendedDoublePrecision128)) {
+    if (typeid(TYPE) == typeid(FloatingPoint::IEEEExtendedDoublePrecision128)) {
       return IEEE_EXTENDED_DOUBLE_PRECISION_128;
     } else
-    if (typeid(TYPE) == typeid(IEEE_QuadruplePrecision)) {
+    if (typeid(TYPE) == typeid(FloatingPoint::IEEEQuadruplePrecision)) {
       return IEEE_QUADRUPLE_PRECISION;
     } else {
       return UNSPECIFIED;
@@ -78,17 +78,27 @@ public:
          << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
 
-    fout << MESSAGE("Representation of 'float': ") << getRepresentationAsString<FloatRepresentation>() << EOL
-         << MESSAGE("Representation of 'double': ") << getRepresentationAsString<DoubleRepresentation>() << EOL
-         << MESSAGE("Representation of 'long double': ") << getRepresentationAsString<LongDoubleRepresentation>() << ENDL;
-
-    fout << setWidth(22) << SCIENTIFIC << 1.0096670247046187e-1 << " " << FLUSH << setWidth(10) << setPrecision(3) << SCIENTIFIC << 1.0096670247046187e-1 << ENDL;
-    fout << setWidth(22) << SCIENTIFIC << 0.0949123123123 << " " << FLUSH << setWidth(10) << setPrecision(3) << SCIENTIFIC << 0.0949123123123 << ENDL;
-    fout << setWidth(22) << SCIENTIFIC << 0.0952523123123 << " " << FLUSH << setWidth(10) << setPrecision(3) << SCIENTIFIC << 0.0952523123123 << ENDL;
-    fout << setWidth(22) << SCIENTIFIC << 0.08950523123123 << " " << FLUSH << setWidth(10) << setPrecision(3) << SCIENTIFIC << 0.08950523123123 << ENDL;
-    fout << setWidth(22) << SCIENTIFIC << 0.09850623123123 << " " << FLUSH << setWidth(10) << setPrecision(3) << SCIENTIFIC << 0.09850923123123 << ENDL;
-    fout << setWidth(22) << SCIENTIFIC << 0.09940623123123 << " " << FLUSH << setWidth(10) << setPrecision(3) << SCIENTIFIC << 0.09940923123123 << ENDL;
-    fout << setWidth(22) << SCIENTIFIC << 0.09950623123123 << " " << FLUSH << setWidth(10) << setPrecision(3) << SCIENTIFIC << 0.09950923123123 << ENDL;
+    fout << MESSAGE("Representation of 'float': ")
+         << getRepresentationAsString<FloatingPoint::FloatRepresentation>() << EOL
+         << MESSAGE("Representation of 'double': ")
+         << getRepresentationAsString<FloatingPoint::DoubleRepresentation>() << EOL
+         << MESSAGE("Representation of 'long double': ")
+         << getRepresentationAsString<FloatingPoint::LongDoubleRepresentation>() << ENDL;
+    
+    fout << setWidth(22) << SCIENTIFIC << 1.0096670247046187e-1 << ' ' << FLUSH
+         << setWidth(10) << setPrecision(3) << SCIENTIFIC << 1.0096670247046187e-1 << ENDL;
+    fout << setWidth(22) << SCIENTIFIC << 0.0949123123123 << ' ' << FLUSH
+         << setWidth(10) << setPrecision(3) << SCIENTIFIC << 0.0949123123123 << ENDL;
+    fout << setWidth(22) << SCIENTIFIC << 0.0952523123123 << ' ' << FLUSH
+         << setWidth(10) << setPrecision(3) << SCIENTIFIC << 0.0952523123123 << ENDL;
+    fout << setWidth(22) << SCIENTIFIC << 0.08950523123123 << ' ' << FLUSH
+         << setWidth(10) << setPrecision(3) << SCIENTIFIC << 0.08950523123123 << ENDL;
+    fout << setWidth(22) << SCIENTIFIC << 0.09850623123123 << ' ' << FLUSH
+         << setWidth(10) << setPrecision(3) << SCIENTIFIC << 0.09850923123123 << ENDL;
+    fout << setWidth(22) << SCIENTIFIC << 0.09940623123123 << ' ' << FLUSH
+         << setWidth(10) << setPrecision(3) << SCIENTIFIC << 0.09940923123123 << ENDL;
+    fout << setWidth(22) << SCIENTIFIC << 0.09950623123123 << ' ' << FLUSH
+         << setWidth(10) << setPrecision(3) << SCIENTIFIC << 0.09950923123123 << ENDL;
     
     for (unsigned int i = 0; i < 100; ++i) {
       fout << setWidth(2) << i

@@ -571,8 +571,10 @@ unsigned int OperatingSystem::getErrorCode(unsigned int error) throw() {
     return OperatingSystem::NOT_A_HANDLE;
   case EBUSY:
     return OperatingSystem::BUSY;
+#if (defined(ECANCELED)) // TAG: fix cygwin
   case ECANCELED:
     return OperatingSystem::CANCELED;
+#endif
   case ECONNREFUSED:
     return OperatingSystem::REQUEST_REFUSED;
   case EDEADLK:

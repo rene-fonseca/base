@@ -17,10 +17,10 @@
 
   @see ReferenceCountedObjectPointer
   @author René Møller Fonseca
-  @version 1.02
+  @version 1.03
 */
 
-class ReferenceCountedObjectFriend {
+class ReferenceCountedObjectPointerImpl {
 private:
 
   /** Type of pointer to reference counted object. */
@@ -30,12 +30,17 @@ private:
 public:
 
   /**
+    Initializes an automation pointer as invalid (null).
+  */
+  inline ReferenceCountedObjectPointerImpl() throw() {}
+
+  /**
     Initializes automation pointer with the specified pointer value.
     Implicit initialization is allowed.
 
-    @param value The desired value. Default is NULL.
+    @param value The desired pointer value.
   */
-  inline ReferenceCountedObjectFriend(Pointer value = 0) : ptr(value) {
+  inline ReferenceCountedObjectPointerImpl(Pointer value) : ptr(value) {
     if (ptr) {
       ++ptr->references; // add reference
     }
@@ -44,7 +49,7 @@ public:
   /**
     Initialization of automation pointer from other automation pointer.
   */
-  inline ReferenceCountedObjectFriend(const ReferenceCountedObjectFriend& copy) : ptr(copy.ptr) {
+  inline ReferenceCountedObjectPointerImpl(const ReferenceCountedObjectPointerImpl& copy) : ptr(copy.ptr) {
     if (ptr) {
       ++ptr->references; // add reference
     }
@@ -72,21 +77,24 @@ public:
 
   /**
     Returns true if the reference counted object is referenced by more than
-    one pointer. If the pointer value is NULL, false is returned.
+    one automation pointer.
+
+    @return False if the pointer is invalid (i.e. not pointing to an object).
   */
   inline bool isMultiReferenced() const throw() {
     return (ptr) && (ptr->references > 1); // false if NULL pointer
   }
 
   /**
-    Returns true if the pointer value is NULL.
+    Returns true if the automation pointer is valid (i.e. it is pointing to an
+    object).
   */
-  inline bool isNULL() const throw() {return !ptr;}
+  inline bool isValid() const throw() {return ptr != 0;}
 
   /**
     Destroys this automation pointer.
   */
-  inline ~ReferenceCountedObjectFriend() {
+  inline ~ReferenceCountedObjectPointerImpl() {
     if (ptr) { // skip if NULL pointer
       if (--ptr->references == 0) { // remove reference
         delete ptr; // could throw exception if object is destroyed unsuccessfully
@@ -107,38 +115,50 @@ public:
   @short Automation pointer that counts the number of references to an object.
   @see ReferenceCountedObject
   @author René Møller Fonseca
-  @version 1.03
+  @version 1.04
 */
 
 template<class TYPE>
-class ReferenceCountedObjectPointer : private ReferenceCountedObjectFriend {
+class ReferenceCountedObjectPointer : private ReferenceCountedObjectPointerImpl {
 public:
 
   /** The type of the reference counted object. */
   typedef TYPE Value;
-  /** The type of reference to the reference counted object. */
+  /** The type of the reference to the reference counted object. */
   typedef TYPE& Reference;
-  /** The type of pointer to the reference counted objcet. */
+  /** The type of the pointer to the reference counted object. */
   typedef TYPE* Pointer;
 
   /**
-    Initializes automation pointer with the specified pointer value. Object
-    may be implicitly initialized.
-
-    @param value The desired value. Default is NULL.
+    Initializes an automation pointer as invalid (null).
   */
-  inline ReferenceCountedObjectPointer(Pointer value = 0) : ReferenceCountedObjectFriend(value) {}
+  inline ReferenceCountedObjectPointer() throw() {}
+
+  /**
+    Initializes an automation pointer with the specified pointer value. The
+    automation pointer may be implicitly initialized.
+
+    <pre>
+    ReferenceCountedObjectPointer<MyClass> rcop = new MyClass();
+    </pre>
+
+    @param value The desired pointer value.
+  */
+  inline ReferenceCountedObjectPointer(Pointer value) throw() :
+    ReferenceCountedObjectPointerImpl(value) {}
 
   /**
     Initialization of automation pointer from other automation pointer.
   */
-  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer& copy) : ReferenceCountedObjectFriend(copy) {}
+  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer& copy) :
+    ReferenceCountedObjectPointerImpl(copy) {}
 
   /**
-    Initialization of automation pointer from other automation pointer using compile time polymorphism.
+    Initialization of automation pointer from other automation pointer using
+    compile time polymorphism.
   */
   template<class POLY>
-  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer<POLY>& copy) : ReferenceCountedObjectFriend(down_cast<Pointer>(copy.getValue())) {}
+  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer<POLY>& copy) : ReferenceCountedObjectPointerImpl(down_cast<Pointer>(copy.getValue())) {}
 
   /**
     Assignment of automation pointer to this automation pointer.
@@ -151,7 +171,8 @@ public:
   }
 
   /**
-    Assignment of automation pointer to this automation pointer using compile time polymorphism.
+    Assignment of automation pointer to this automation pointer using compile
+    time polymorphism.
   */
   template<class POLY>
   inline ReferenceCountedObjectPointer& operator=(const ReferenceCountedObjectPointer<POLY>& eq) {
@@ -163,23 +184,30 @@ public:
   }
 
   /**
-    Returns the pointer value of this automation pointer.
+    Returns the pointer value of this automation pointer. Be careful when
+    utilizing this member function. Its completely up to you to ensure that
+    the reference counting rules aren't violated.
   */
   inline Pointer getValue() const throw() {
-    return static_cast<Pointer>(const_cast<ReferenceCountedObject*>(ReferenceCountedObjectFriend::getValue()));
+    return static_cast<Pointer>(const_cast<ReferenceCountedObject*>(
+      ReferenceCountedObjectPointerImpl::getValue()));
   }
 
   /**
     Returns true if the reference counted object is referenced by more than
-    one pointer. False, is returned if the pointer value is NULL.
+    one automation pointer.
+
+    @return False if the pointer is invalid (i.e. not pointing to an object).
   */
   inline bool isMultiReferenced() const throw() {
-    return ReferenceCountedObjectFriend::isMultiReferenced();
+    return ReferenceCountedObjectPointerImpl::isMultiReferenced();
   }
 
   /**
     Makes a new copy of the reference counted object if referenced by more than
-    one pointer.
+    one automation pointer. This member function is invocated by some classes
+    before a object is modified. The reference counted object must implement
+    the default copy constructor for this to work.
   */
   inline void copyOnWrite() throw() {
     if (isMultiReferenced()) { // do we have the object for our self
@@ -188,10 +216,11 @@ public:
   }
 
   /**
-    Returns true if the pointer value is NULL.
+    Returns true if the automation pointer is valid (i.e. it is pointing to an
+    object).
   */
-  inline bool isNULL() const throw() {
-    return ReferenceCountedObjectFriend::isNULL();
+  inline bool isValid() const throw() {
+    return ReferenceCountedObjectPointerImpl::isValid();
   }
 
   /**

@@ -276,7 +276,9 @@ FormatOutputStream& InetAddress::toFormatStream(FormatOutputStream& stream) cons
   #if (INET6_ADDRSTRLEN > THREAD_LOCAL_STORAGE)
     #error The requested amount of local storage is not available.
   #endif
-  char* buffer = Thread::getLocalStorage();
+  char qwerty[1234];
+  char* buffer = (char*)&qwerty;
+//  char* buffer = Thread::getLocalStorage();
   if (isV4Mapped()) {
     inet_ntop(AF_INET, &((uint32_t*)(&address))[3], buffer, THREAD_LOCAL_STORAGE); // MT-level is safe
   } else {

@@ -33,7 +33,7 @@ void* Thread::execute(Thread* thread) throw() {
     executingThread.setKey(thread);
     threadLocalStorage.setKey((char*)malloc(THREAD_LOCAL_STORAGE));
     thread->event.wait(); // wait until signaled
- 
+
     try {
       thread->getRunnable()->run();
       thread->termination = NORMAL;
@@ -45,7 +45,7 @@ void* Thread::execute(Thread* thread) throw() {
       thread->termination = EXCEPTION; // uncaugth exception
     }
 
-//    free(getLocalStorage());
+    free(getLocalStorage());
   } catch(...) {
     thread->termination = INTERNAL; // hopefully we will never end up here
   }
@@ -275,9 +275,9 @@ Thread::~Thread() throw(ThreadException) {
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value) {
-  stream << "Thread{"
+  stream << "class/Thread{"
          << "alive=" << value.isAlive()
-         << ",terminated=" << value.isTerminated()
+         << "; terminated=" << value.isTerminated()
          << "}";
   return stream;
 }

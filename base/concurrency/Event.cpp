@@ -82,10 +82,10 @@ void Event::signal() throw(EventException) {
     throw EventException("Unable to signal event");
   }
   signaled = true;
-  if (pthread_cond_broadcast(&condition)) { // unblock all blocked threads
+  if (pthread_mutex_unlock(&mutex)) {
     throw EventException("Unable to signal event");
   }
-  if (pthread_mutex_unlock(&mutex)) {
+  if (pthread_cond_broadcast(&condition)) { // unblock all blocked threads
     throw EventException("Unable to signal event");
   }
 #endif

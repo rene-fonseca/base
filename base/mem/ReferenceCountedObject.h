@@ -6,8 +6,6 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_H
 #define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_H
 
-//#include <base/Object.h>
-
 /**
   A reference counted object is used to count the number of references from
   ReferenceCountedObjectPointer objects to itself. You should always use the
@@ -38,7 +36,7 @@
 
   class ReferenceCountedObject {
 
-  friend class ReferenceCountedObjectFriend;
+  friend class ReferenceCountedObjectPointerImpl;
 
   private:
 

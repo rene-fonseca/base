@@ -113,7 +113,7 @@ protected:
   inline void setSize(unsigned int rows, unsigned int columns) throw(MemoryException) {
     this->rows = rows;
     this->columns = columns;
-    if ((elements.isNULL()) || (elements.isMultiReferenced())) { // do we have the elements for our self
+    if ((!elements.isValid()) || (elements.isMultiReferenced())) { // do we have the elements for our self
       elements = new ReferenceCountedAllocator<TYPE>(rows * columns);
     } else {
       elements->setSize(rows * columns);

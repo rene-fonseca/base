@@ -39,14 +39,13 @@ AllocatorImpl& AllocatorImpl::operator=(const AllocatorImpl& eq) throw(MemoryExc
 }
 
 void AllocatorImpl::setSize(unsigned int size) throw(MemoryException) {
-  if (size != this->size) { // do we really have to
-    this->size = size;
-    void* result = realloc(allocated, size);
-    if ((!result) && (size != 0)) { // was memory allocated
-      throw MemoryException();
-    }
-    allocated = result;
+  // Allocator::setSize() checks if we really have to set the size
+  this->size = size;
+  void* result = realloc(allocated, size);
+  if ((!result) && (size != 0)) { // was memory allocated
+    throw MemoryException();
   }
+  allocated = result;
 }
 
 AllocatorImpl::~AllocatorImpl() throw() {

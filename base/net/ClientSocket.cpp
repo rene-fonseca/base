@@ -11,11 +11,12 @@ ClientSocket::ClientSocket() throw(IOException) :
 
 ClientSocket::ClientSocket(const InetAddress& addr, unsigned short port) throw(IOException) :
   Socket() {
+  create(true);
+  connect(addr, port);
 }
 
 ClientSocket::ClientSocket(const InetAddress& addr, unsigned short port, InetAddress& localAddr, unsigned short localPort) throw(IOException) :
   Socket() {
-}
-
-ClientSocket::~ClientSocket() {
+  create(true);
+  connect(addr, port);
 }

@@ -24,6 +24,7 @@ List<InetInterface> InetInterface::getInetInterfaces() throw(NetworkException) {
   return interfaces;
 #else
   #warning getInetInterfaces not implemented
+  return List<InetInterface>();
 #endif
 }
 
@@ -37,6 +38,6 @@ unsigned int InetInterface::getIndex() const throw() {
   return index;
 }
 
-const String<>& InetInterface::getName() const throw() {
+const String<> InetInterface::getName() const throw() {
   return name;
 }

@@ -194,6 +194,28 @@ inline void copy(TYPE* dest, const TYPE* src, unsigned int count) throw() {
   }
 }
 
+/** Moves element by element from one sequence to another sequence. */
+template<class TYPE>
+inline void move(TYPE* dest, const TYPE* src, unsigned int count) throw() {
+  if (dest < src) {
+    const TYPE* last = dest + count;
+    while (dest < last) {
+      *dest = *src;
+      ++dest;
+      ++src;
+    }
+  } else {
+    const TYPE* first = dest;
+    dest += count;
+    src += count;
+    while (dest > first) {
+      --dest;
+      --src;
+      *dest = *src;
+    }
+  }
+}
+
 /** Swaps the elements of of two sequences. */
 template<class TYPE>
 inline void swap(TYPE* left, TYPE* right, unsigned int count) throw() {

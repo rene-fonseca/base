@@ -24,7 +24,7 @@ private:
   /** Specifies the index of the network interface. */
   const unsigned int index;
   /** Specifies the name of the network interface. */
-  const String<>& name;
+  const String<> name;
 public:
 
   /**
@@ -53,7 +53,7 @@ public:
   /**
     Returns the name of the network interface.
   */
-  const String<>& getName() const throw();
+  const String<> getName() const throw();
 };
 
 #endif

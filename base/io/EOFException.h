@@ -19,8 +19,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Thrown on attempt to read stream beyond end of stream.
-
+  This exception is raised on attempts to read beyond the end of streams.
+  
+  @short End of file exception
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

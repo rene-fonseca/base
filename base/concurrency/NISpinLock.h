@@ -14,7 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_CONCURRENCY__NI_SPIN_LOCK_H
 #define _DK_SDU_MIP__BASE_CONCURRENCY__NI_SPIN_LOCK_H
 
-#include <base/features.h>
+#include <base/concurrency/Lock.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class NISpinLock {
+class NISpinLock : public Lock {
 private:
   
   /** Lock. */

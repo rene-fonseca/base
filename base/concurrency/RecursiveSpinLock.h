@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class RecursiveSpinLock {
+class RecursiveSpinLock : public Lock {
 private:
 
   typedef SpinLock Guard;

@@ -15,7 +15,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-Integer::Integer(String str) throw(InvalidFormat) {
+int Integer::parse(const String& str) throw(InvalidFormat) {
   unsigned int length = str.getLength();
   bool sign = false;
   unsigned int index = 0;
@@ -40,7 +40,7 @@ Integer::Integer(String str) throw(InvalidFormat) {
     }
   }
 
-  value = sign ? -temp : temp;
+  return sign ? -temp : temp;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

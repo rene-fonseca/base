@@ -20,7 +20,7 @@
 #include <base/collection/List.h>
 #include <base/net/HostNotFound.h>
 #include <base/net/NetworkException.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

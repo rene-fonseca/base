@@ -272,14 +272,12 @@ bool Process::isAlive() const throw(ProcessException) {
   
   int status;
   pid_t result = ::waitpid(id, &status, WNOHANG);
-  if (result >= 0) {
-    throw ProcessException("Unable to query process", this);
-  }
+  assert(result >= 0, ProcessException("Unable to query process", this));
 
   /**
     GCC 3.0.4 bug
     
-    For some reason this exception cannot be catched
+    For some reason this exception cannot be caught
     
     assert(result >= 0, ProcessException("Unable to query process", this));
   */
@@ -308,7 +306,7 @@ bool Process::isAlive() const throw(ProcessException) {
 #endif // flavor
 }
 
-String Process::getName() const throw(ProcessException) {
+String Process::getName() const throw(NotSupported, ProcessException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HANDLE process = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, id);
   assert(process, ProcessException(this));

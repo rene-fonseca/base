@@ -149,7 +149,7 @@ public:
   /**
     Destroy file descriptor.
   */
-  ~FileDescriptor();
+  ~FileDescriptor() throw(IOException);
 
   /**
     Writes a string representation of a FileDescriptor object to a format stream.

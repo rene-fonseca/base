@@ -45,7 +45,7 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size, 
   return bytesWritten;
 }
 
-BufferedOutputStream::~BufferedOutputStream() {
+BufferedOutputStream::~BufferedOutputStream() throw(IOException) {
   TRACE_MEMBER();
   flush();
 }

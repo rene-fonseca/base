@@ -123,7 +123,7 @@ void FileDescriptor::setNonBlocking(bool value) throw(IOException) {
   fd->setNonBlocking(value);
 }
 
-FileDescriptor::~FileDescriptor() {
+FileDescriptor::~FileDescriptor() throw(IOException) {
   TRACE_MEMBER();
 }
 

@@ -168,7 +168,7 @@ void FormatOutputStream::addDoubleField(const char* early, unsigned int earlySiz
   prepareForField();
 }
 
-FormatOutputStream::~FormatOutputStream() {
+FormatOutputStream::~FormatOutputStream() throw(IOException) {
   TRACE_MEMBER();
 }
 

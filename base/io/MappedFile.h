@@ -46,7 +46,7 @@ private:
     ~MappedFileImpl() throw(FileException);
   };
 
-  friend MappedFileImpl;
+  friend class MappedFileImpl;
 
   /** The internal mapping representation. */
   ReferenceCountedObjectPointer<MappedFileImpl> map;

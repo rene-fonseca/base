@@ -37,7 +37,7 @@ public:
   /**
     Destroy format input stream.
   */
-  ~FormatInputStream();
+  ~FormatInputStream() throw(IOException);
 };
 
 /**

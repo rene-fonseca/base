@@ -523,62 +523,62 @@ public:
   /**
     Equality operator.
   */
-  inline bool operator==(const String& str) const throw() {return compareTo(str) == 0;};
+  inline bool operator==(const String& str) const throw() {return compareTo(str) == 0;}
 
   /**
     Inequality operator.
   */
-  inline bool operator!=(const String& str) const throw() {return compareTo(str) != 0;};
+  inline bool operator!=(const String& str) const throw() {return compareTo(str) != 0;}
 
   /**
     Less than operator.
   */
-  inline bool operator<(const String& str) const throw() {return compareTo(str) < 0;};
+  inline bool operator<(const String& str) const throw() {return compareTo(str) < 0;}
 
   /**
     Less than or equal operator.
   */
-  inline bool operator<=(const String& str) const throw() {return compareTo(str) <= 0;};
+  inline bool operator<=(const String& str) const throw() {return compareTo(str) <= 0;}
 
   /**
     Greater than or equal operator.
   */
-  inline bool operator>=(const String& str) const throw() {return compareTo(str) >= 0;};
+  inline bool operator>=(const String& str) const throw() {return compareTo(str) >= 0;}
 
   /**
     Greater than operator.
   */
-  inline bool operator>(const String& str) const throw() {return compareTo(str) > 0;};
+  inline bool operator>(const String& str) const throw() {return compareTo(str) > 0;}
 
   /**
     Equality operator.
   */
-  inline bool operator==(const char* str) const throw() {return compareTo(str) == 0;};
+  inline bool operator==(const char* str) const throw() {return compareTo(str) == 0;}
 
   /**
     Inequality operator.
   */
-  inline bool operator!=(const char* str) const throw() {return compareTo(str) != 0;};
+  inline bool operator!=(const char* str) const throw() {return compareTo(str) != 0;}
 
   /**
     Less than operator.
   */
-  inline bool operator<(const char* str) const throw() {return compareTo(str) < 0;};
+  inline bool operator<(const char* str) const throw() {return compareTo(str) < 0;}
 
   /**
     Less than or equal operator.
   */
-  inline bool operator<=(const char* str) const throw() {return compareTo(str) <= 0;};
+  inline bool operator<=(const char* str) const throw() {return compareTo(str) <= 0;}
 
   /**
     Greater than or equal operator.
   */
-  inline bool operator>=(const char* str) const throw() {return compareTo(str) >= 0;};
+  inline bool operator>=(const char* str) const throw() {return compareTo(str) >= 0;}
 
   /**
     Greater than operator.
   */
-  inline bool operator>(const char* str) const throw() {return compareTo(str) > 0;};
+  inline bool operator>(const char* str) const throw() {return compareTo(str) > 0;}
 
 // *******************************************************************************************
 //   FIND SECTION
@@ -610,7 +610,7 @@ public:
     @return Index of the last match if any otherwise -1.
   */
   int lastIndexOf(char ch, unsigned int start) const throw();
-  inline int lastIndexOf(char ch) const throw() {return lastIndexOf(ch, getLength());};
+  inline int lastIndexOf(char ch) const throw() {return lastIndexOf(ch, getLength());}
 
   /**
     Returns the index of the last substring that matches the specified string before the start position.
@@ -620,7 +620,7 @@ public:
     @return Index of the last match if any otherwise -1. Also returns -1 if substring is empty.
   */
   int lastIndexOf(const String& str, unsigned int start) const throw();
-  inline int lastIndexOf(const String& str) const throw() {return lastIndexOf(str, getLength());};
+  inline int lastIndexOf(const String& str) const throw() {return lastIndexOf(str, getLength());}
 
   /**
     Returns the number of occurances of the specified character in this string.
@@ -647,12 +647,12 @@ public:
   /**
     Returns null-terminated string.
   */
-  inline const char* getBytes() const {return getReadOnlyBuffer();};
+  inline const char* getElements() const {return getReadOnlyBuffer();}
 
   /**
     Cast string to null-terminated string.
   */
-  operator const char*() const {return getReadOnlyBuffer();};
+  //operator const char*() const {return getReadOnlyBuffer();}
 
 // *******************************************************************************************
 //   FRIEND SECTION

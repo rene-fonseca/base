@@ -43,7 +43,7 @@ unsigned int StringInputStream::read(char* buffer, unsigned int size) throw(IOEx
   if (size >= str.getLength() - index) {
     size = str.getLength() - index;
   }
-  copy<char>(buffer, str.getBytes(), size);
+  copy<char>(buffer, str.getElements(), size);
   return size;
 }
 

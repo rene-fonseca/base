@@ -22,7 +22,7 @@ char FormatInputStream::getCharacter() throw(IOException) {
   return buffer;
 }
 
-FormatInputStream::~FormatInputStream() {
+FormatInputStream::~FormatInputStream() throw(IOException) {
   TRACE_MEMBER();
 }
 

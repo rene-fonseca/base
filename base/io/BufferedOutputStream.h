@@ -75,7 +75,7 @@ public:
   /**
     Flushes the buffer and releases any resources used by the output stream.
   */
-  ~BufferedOutputStream();
+  ~BufferedOutputStream() throw(IOException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

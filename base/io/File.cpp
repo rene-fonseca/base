@@ -179,7 +179,7 @@ File::File(const String& path, Access access, unsigned int options) throw(FileNo
 
   HANDLE handle;
   handle = CreateFile(
-    path,
+    path.getElements(),
     (access == READ) ? GENERIC_READ : ((access == WRITE) ? GENERIC_WRITE : (GENERIC_READ | GENERIC_WRITE)),
     (options & EXCLUSIVE) ? 0 : (FILE_SHARE_READ | FILE_SHARE_WRITE),
     NULL,
@@ -222,7 +222,7 @@ File::File(const String& path, Access access, unsigned int options) throw(FileNo
   }
 
   int handle;
-  if ((handle = ::open(path, flags, S_IRUSR | S_IWUSR | S_IRGRP)) == -1) {
+  if ((handle = ::open(path.getElements(), flags, S_IRUSR | S_IWUSR | S_IRGRP)) == -1) {
     throw FileNotFound("Unable to open file");
   }
   fd = new FileImpl(handle);

@@ -77,7 +77,7 @@ bool BufferedInputStream::wait(unsigned int timeout) const throw(IOException) {
   }
 }
 
-BufferedInputStream::~BufferedInputStream() {
+BufferedInputStream::~BufferedInputStream() throw(IOException) {
   TRACE_MEMBER();
 }
 

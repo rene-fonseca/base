@@ -484,7 +484,7 @@ unsigned int String::count(const String& str, unsigned int start) const throw() 
 
 template<>
 int compare<String>(const String& a, const String& b) throw() {
-  return strcmp(a.getBytes(), b.getBytes());
+  return strcmp(a.getElements(), b.getElements());
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException) {

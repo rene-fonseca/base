@@ -22,7 +22,7 @@ void RegExp::compile() throw(MemoryException) {
       options |= REG_ICASE;
     }
     regex_t preq;
-    int result = regcomp(&preq, pattern.getBytes(), options);
+    int result = regcomp(&preq, pattern.getElements(), options);
     if (result) { // succesful
       compiled = malloc(sizeof(regex_t));
       assert(compiled, MemoryException());
@@ -34,7 +34,7 @@ void RegExp::compile() throw(MemoryException) {
     if (!caseSensitive) {
       options |= PCRE_CASELESS;
     }
-    compiled = pcre_compile(pattern.getBytes(), options, 0, &errorOffset, 0);
+    compiled = pcre_compile(pattern.getElements(), options, 0, &errorOffset, 0);
   #else // no regexp support
   #endif
 }
@@ -69,7 +69,7 @@ RegExp::Substring RegExp::match(const String& value, unsigned int start) throw(R
   assert(start < value.getLength(), OutOfRange());
   #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
     regmatch_t pmatch[1];
-    int code = regexec(static_cast<regex_t*>(compiled), value.getBytes(), 1, pmatch, 0);
+    int code = regexec(static_cast<regex_t*>(compiled), value.getElements(), 1, pmatch, 0);
     if (!code) { // successful
       return Substring(pmatch[0].rm_so, pmatch[0].rm_eo);
     } else if (code == REG_NOMATCH) {
@@ -79,7 +79,7 @@ RegExp::Substring RegExp::match(const String& value, unsigned int start) throw(R
     }
   #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
     int offsets[3]; // yes 3 is correct - pcre_exec uses offsets[2] for temp. storage
-    int code = pcre_exec(compiled, 0, value.getBytes(), value.getLength(), start, 0, offsets, 3);
+    int code = pcre_exec(compiled, 0, value.getElements(), value.getLength(), start, 0, offsets, 3);
     if (code < 0) { // error
       if (code == PCRE_ERROR_NOMATCH) {
         return Substring();
@@ -100,7 +100,7 @@ RegExp::Substring RegExp::match(const String& value, Array<Substring>& result, u
   assert(start < value.getLength(), OutOfRange());
   #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
     regmatch_t pmatch[result.getSize()];
-    int code = regexec(static_cast<regex_t*>(compiled), value.getBytes(), result.getSize(), pmatch, 0);
+    int code = regexec(static_cast<regex_t*>(compiled), value.getElements(), result.getSize(), pmatch, 0);
     if (!code) { // successful
       for (int i = 1; i < result.getSize(); ++i) {
         result[i] = Substring(pmatch[i].rm_so, pmatch[i].rm_eo);
@@ -114,7 +114,7 @@ RegExp::Substring RegExp::match(const String& value, Array<Substring>& result, u
   #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
     unsigned int size = result.getSize() * 3;
     int offsets[size];
-    int code = pcre_exec(compiled, 0, value.getBytes(), value.getLength(), start, 0, offsets, size);
+    int code = pcre_exec(compiled, 0, value.getElements(), value.getLength(), start, 0, offsets, size);
     if (code < 0) { // handle any error
       if (code == PCRE_ERROR_NOMATCH) {
         return Substring();

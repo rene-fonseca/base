@@ -108,7 +108,7 @@ public:
   /**
     Destroy buffered input stream.
   */
-  ~BufferedInputStream();
+  ~BufferedInputStream() throw(IOException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

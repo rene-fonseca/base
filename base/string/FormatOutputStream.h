@@ -156,7 +156,7 @@ public:
   /**
     Destroy format output stream.
   */
-  ~FormatOutputStream();
+  ~FormatOutputStream() throw(IOException);
 };
 
 /**

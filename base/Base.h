@@ -141,6 +141,20 @@ template<class TYPE>
 class Backend {
 };
 
+/** Destroys a complete object. */
+template<class TYPE>
+inline void deleteComplete(const volatile TYPE* value) /*throw()*/ {
+  sizeof(TYPE);
+  delete value;
+}
+
+/** Destroys a complete array. */
+template<class TYPE>
+inline void deleteCompleteArray(const volatile TYPE* value) /*throw(...)*/ {
+  sizeof(TYPE);
+  delete[] value;
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

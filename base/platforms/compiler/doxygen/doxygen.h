@@ -16,8 +16,21 @@
 
 #define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE nl::stack::doxygen
 
+#define _DK_SDU_MIP__BASE__ALIGNED(alignment)
+#define _DK_SDU_MIP__BASE__DEPRECATED
+#define _DK_SDU_MIP__BASE__NORETURN
+#define _DK_SDU_MIP__BASE__PACKED
+#define _DK_SDU_MIP__BASE__SECTION(name)
+#define _DK_SDU_MIP__BASE__UNUSED
+#define _DK_SDU_MIP__BASE__WEAK
+#define _DK_SDU_MIP__BASE__FORCE_INLINE
+
 #define _DK_SDU_MIP__BASE__COMPILER_INLINE inline
 #define _DK_SDU_MIP__BASE__COMPILER_RESTRICT restrict
+
+// explicit calling conventions
+#define _DK_SDU_MIP__BASE__CALL_PASCAL
+#define _DK_SDU_MIP__BASE__CALL_CPP
 
 #define _DK_SDU_MIP__BASE__NAMESPACE
 #define _DK_SDU_MIP__BASE__CHAR_SIZE 1

@@ -7,20 +7,21 @@
 #include <base/concurrency/Thread.h>
 #include <unistd.h>
 
-extern int THREADSTATE;
-
 class MyThread : public Runnable {
 private:
 
-  int state;
+  char value;
+  unsigned int count;
 public:
 
-  MyThread() throw() : state(0) {}
-
-  int getState() const throw() {return state;}
+  MyThread(char v, unsigned int c) throw() : value(v), count(c) {}
 
   void run() {
     fout << "Written by MyThread object\n";
+
+    while (count--) {
+      fout << value;
+    }
   }
 
 };
@@ -28,12 +29,19 @@ public:
 void test() {
   fout << "Testing Thread...\n";
 
-  MyThread myThread;
-  Thread myContext(&myThread);
-  fout << "Starting myThread\n";
-  myContext.start();
-  fout << "Waiting for myThread to complete\n";
-  myContext.join();
+  MyThread myThreadA('A', 409600);
+  MyThread myThreadB('B', 409600);
+
+  Thread myContextA(&myThreadA);
+  Thread myContextB(&myThreadB);
+
+  fout << "Starting threads\n";
+  myContextA.start();
+  myContextB.start();
+
+  fout << "Waiting for threads to complete\n";
+  myContextA.join();
+  myContextB.join();
 }
 
 int main() {
@@ -45,5 +53,6 @@ int main() {
     ferr << "Unknown exception\n";
   }
 
+  fout << "Completed\n";
   return 0;
 }

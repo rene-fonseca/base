@@ -3,52 +3,54 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/Object.h>
 #include <base/collection/List.h>
-#include <iostream>
-
-using namespace std;
 
 int main() {
+  fout << "Testing List implementation\n";
 
-  cout << "Initializing list\n";
+  fout << "Initializing list\n";
   List<int> li;
 
-  cout << "Appending elements to list\n";
-  li.append(int(4));
-  li.append(int(5));
-  li.append(int(6));
-  li.append(int(7));
+  fout << "Appending elements to list (4, 5, 6, and 7)\n";
+  li.append(4);
+  li.append(5);
+  li.append(6);
+  li.append(7);
+  fout << "li: " << li << EOL;
 
-  cout << "Prepending elements to list\n";
-  li.prepend(int(3));
-  li.prepend(int(2));
-  li.prepend(int(1));
-  li.prepend(int(0));
+  fout << "Prepending elements to list (3, 2, 1, and 0)\n";
+  li.prepend(3);
+  li.prepend(2);
+  li.prepend(1);
+  li.prepend(0);
+  fout << "li: " << li << EOL;
 
-  cout << "Adding elements to list\n";
-  li.add(int(8));
-  li.add(int(9));
-  li.add(int(10));
-  li.add(int(11));
+  fout << "Adding elements to list (8, 9, 10, and 11)\n";
+  li.add(8);
+  li.add(9);
+  li.add(10);
+  li.add(11);
+  fout << "li: " << li << EOL;
 
-  cout << "Size of list: " << li.getSize() << "\n";
+  fout << "Size of list: " << li.getSize() << "\n";
 
-  cout << "Modifying enumerating elements of list\n";
+  fout << "Modifying enumerating elements of list (multiplying by 2)\n";
   List<int>::Enumeration enu(li);
-  unsigned int position = 0;
   while (enu.hasNext()) {
-    int* value = enu.next();
-    cout << "position " << position++ << ": " << *value << "\n";
-    *value *= 2;
+    *enu.next() *= 2;
   }
 
-  cout << "Non-modifying enumerating elements of list\n";
+  fout << "Non-modifying enumerating elements of list (calculating sum)\n";
   List<int>::ReadOnlyEnumeration roenu(li);
-  unsigned int roposition = 0;
+  int sum = 0;
   while (roenu.hasNext()) {
-    cout << "position " << roposition++ << ": " << *roenu.next() << "\n";
+    sum += *roenu.next();
   }
+
+  fout << "Size: " << li.getSize() << "\n";
+  fout << "Removing all the elements\n";
+  li.removeAll();
+  fout << "Size: " << li.getSize() << "\n";
 
   return 0;
 }

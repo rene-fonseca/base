@@ -3,18 +3,16 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/Object.h>
 #include <base/collection/Set.h>
-#include <iostream>
-
-using namespace std;
 
 int main() {
+  fout << "Testing Set\n";
 
-  cout << "Initializing set\n";
+  fout << "Initializing set\n";
   Set<int> si;
+  fout << "si: " << si << EOL;
 
-  cout << "Adding elements to set\n";
+  fout << "Adding elements to set (4, 7, 2, 3, 8, 6, 1, and 5)\n";
   si.add(4);
   si.add(7);
   si.add(2);
@@ -23,18 +21,23 @@ int main() {
   si.add(6);
   si.add(1);
   si.add(5);
+  fout << "si: " << si << EOL;
 
-  cout << "Size of set: " << si.getSize() << "\n";
-
-  cout << "Non-modifying enumerating elements of set\n";
+  fout << "Non-modifying enumerating elements of set (calculating sum)\n";
   Set<int>::ReadOnlyEnumeration enu(si);
-  unsigned int position = 0;
+  int sum = 0;
   while (enu.hasNext()) {
-    cout << "position " << position++ << ": " << *enu.next()->getValue() << "\n";
+    sum += *enu.next()->getValue();
   }
+  fout << "sum: " << sum << EOL;
 
-  cout << "Checking whether 4 is in set: " << si.isKey(4) << "\n";
-  cout << "Checking whether 0 is in set: " << si.isKey(0) << "\n";
+  fout << "Checking whether 4 is in set: " << si.isKey(4) << "\n";
+  fout << "Checking whether 0 is in set: " << si.isKey(0) << "\n";
+
+  fout << "Size: " << si.getSize() << "\n";
+  fout << "Removeing all elements from the set\n";
+  si.removeAll();
+  fout << "Size: " << si.getSize() << "\n";
 
   return 0;
 }

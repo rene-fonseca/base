@@ -27,6 +27,10 @@
 #    define _SC_NPROCESSORS_ONLN _SC_NPROC_ONLN
 #  endif
 
+#  if (!defined(_SC_IOV_MAX))
+#    define _SC_IOV_MAX -1
+#  endif
+
 #  if (!defined(_SC_HOST_NAME_MAX))
 #    define _SC_HOST_NAME_MAX -1
 #  endif
@@ -43,9 +47,104 @@
 #    define _SC_AUDIT -1
 #  endif
 
-#if (!defined(_POSIX_HOST_NAME_MAX))
-#  define _POSIX_HOST_NAME_MAX 255
-#endif
+#undef _POSIX_AIO_LISTIO_MAX
+#define _POSIX_AIO_LISTIO_MAX 2
+#undef _POSIX_AIO_MAX
+#define _POSIX_AIO_MAX 1
+#undef _POSIX_ARG_MAX
+#define _POSIX_ARG_MAX 4096
+#undef _POSIX_CHILD_MAX
+#define _POSIX_CHILD_MAX 6
+#undef _POSIX_DELAYTIMER_MAX
+#define _POSIX_DELAYTIMER_MAX 32
+#undef _POSIX_HOST_NAME_MAX
+#define _POSIX_HOST_NAME_MAX 255
+#undef _POSIX_LINK_MAX
+#define _POSIX_LINK_MAX 8
+#undef _POSIX_LOGIN_NAME_MAX
+#define _POSIX_LOGIN_NAME_MAX 9
+#undef _POSIX_MAX_CANON
+#define _POSIX_MAX_CANON 255
+#undef _POSIX_MAX_INPUT
+#define _POSIX_MAX_INPUT 255
+#undef _POSIX_MQ_OPEN_MAX
+#define _POSIX_MQ_OPEN_MAX 8
+#undef _POSIX_MQ_PRIO_MAX
+#define _POSIX_MQ_PRIO_MAX 32
+#undef _POSIX_NAME_MAX
+#define _POSIX_NAME_MAX 14
+#undef _POSIX_NGROUPS_MAX
+#define _POSIX_NGROUPS_MAX 8
+#undef _POSIX_OPEN_MAX
+#define _POSIX_OPEN_MAX 20
+#undef _POSIX_PATH_MAX
+#define _POSIX_PATH_MAX 256
+#undef _POSIX_PIPE_BUF
+#define _POSIX_PIPE_BUF 512
+#undef _POSIX_RE_DUP_MAX
+#define _POSIX_RE_DUP_MAX 255
+#undef _POSIX_RTSIG_MAX
+#define _POSIX_RTSIG_MAX 8
+#undef _POSIX_SEM_NSEMS_MAX
+#define _POSIX_SEM_NSEMS_MAX 256
+#undef _POSIX_SEM_VALUE_MAX
+#define _POSIX_SEM_VALUE_MAX 32767
+#undef _POSIX_SIGQUEUE_MAX
+#define _POSIX_SIGQUEUE_MAX 32
+#undef _POSIX_SSIZE_MAX
+#define _POSIX_SSIZE_MAX 32767
+#undef _POSIX_STREAM_MAX
+#define _POSIX_STREAM_MAX 8
+#undef _POSIX_SS_REPL_MAX
+#define _POSIX_SS_REPL_MAX 4
+#undef _POSIX_SYMLINK_MAX
+#define _POSIX_SYMLINK_MAX 255
+#undef _POSIX_SYMLOOP_MAX
+#define _POSIX_SYMLOOP_MAX 8
+#undef _POSIX_THREAD_DESTRUCTOR_ITERATIONS
+#define _POSIX_THREAD_DESTRUCTOR_ITERATIONS 4
+#undef _POSIX_THREAD_KEYS_MAX
+#define _POSIX_THREAD_KEYS_MAX 128
+#undef _POSIX_THREAD_THREADS_MAX
+#define _POSIX_THREAD_THREADS_MAX 64
+#undef _POSIX_TIMER_MAX
+#define _POSIX_TIMER_MAX 32
+#undef _POSIX_TRACE_EVENT_NAME_MAX
+#define _POSIX_TRACE_EVENT_NAME_MAX 30
+#undef _POSIX_TRACE_NAME_MAX
+#define _POSIX_TRACE_NAME_MAX 8
+#undef _POSIX_TRACE_SYS_MAX
+#define _POSIX_TRACE_SYS_MAX 8
+#undef _POSIX_TRACE_USER_EVENT_MAX
+#define _POSIX_TRACE_USER_EVENT_MAX 32
+#undef _POSIX_TTY_NAME_MAX
+#define _POSIX_TTY_NAME_MAX 9
+#undef _POSIX_TZNAME_MAX
+#define _POSIX_TZNAME_MAX 6
+#undef _POSIX2_BC_BASE_MAX
+#define _POSIX2_BC_BASE_MAX 99
+#undef _POSIX2_BC_DIM_MAX
+#define _POSIX2_BC_DIM_MAX 2048
+#undef _POSIX2_BC_SCALE_MAX
+#define _POSIX2_BC_SCALE_MAX 99
+#undef _POSIX2_BC_STRING_MAX
+#define _POSIX2_BC_STRING_MAX 1000
+#undef _POSIX2_CHARCLASS_NAME_MAX
+#define _POSIX2_CHARCLASS_NAME_MAX 14
+#undef _POSIX2_COLL_WEIGHTS_MAX
+#define _POSIX2_COLL_WEIGHTS_MAX 2
+#undef _POSIX2_EXPR_NEST_MAX
+#define _POSIX2_EXPR_NEST_MAX 32
+#undef _POSIX2_LINE_MAX
+#define _POSIX2_LINE_MAX 2048
+#undef _POSIX2_RE_DUP_MAX
+#define _POSIX2_RE_DUP_MAX 255
+#undef _XOPEN_IOV_MAX
+#define _XOPEN_IOV_MAX 16
+#undef _XOPEN_NAME_MAX
+#define _XOPEN_NAME_MAX 255
+#undef _XOPEN_PATH_MAX
+#define _XOPEN_PATH_MAX 1024
 
 #endif // flavor
 
@@ -125,8 +224,6 @@ long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
       }
       return result;
     }
-  case MAX_LEN_OF_PASSWORD:
-    return MAX_PASSWD_LEN; // lmaccess
   case SUPPORTS_ACCESSS_CONTROL_LISTS:
     return 1;
   case SUPPORTS_AUDIT:
@@ -150,7 +247,7 @@ long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
     _SC_LOGIN_NAME_MAX, // MAX_LEN_OF_LOGIN_NAME
     _SC_MQ_OPEN_MAX, // MAX_NUM_OF_OPEN_MESSAGE_QUEUES
     _SC_OPEN_MAX, // MAX_NUM_OF_OPEN_FILES
-    _SC_PAGE_SIZE, // PAGE_SIZE
+    _SC_PAGESIZE, // PAGE_SIZE
     _SC_THREAD_KEYS_MAX, // MAX_NUM_OF_THREAD_KEYS
     _SC_THREAD_STACK_MIN, // MIN_SIZE_OF_THREAD_STACK
     _SC_THREAD_THREADS_MAX, // MAX_NUM_OF_THREADS
@@ -164,7 +261,6 @@ long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
     _SC_JOB_CONTROL, // SUPPORTS_JOB_CONTROL
     _SC_NPROCESSORS_CONF, // NUM_OF_CONFIGURED_PROCESSORS
     _SC_NPROCESSORS_ONLN, // NUM_OF_ONLINE_PROCESSORS
-    _SC_PASS_MAX, // MAX_LEN_OF_PASSWORD
     _SC_ACL, // SUPPORTS_ACCESSS_CONTROL_LISTS
     _SC_AUDIT, // SUPPORTS_AUDIT
     _SC_ASYNCHRONOUS_IO, // SUPPORTS_ASYNC_IO
@@ -227,8 +323,6 @@ long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
   case NUM_OF_CONFIGURED_PROCESSORS:
     break;
   case NUM_OF_ONLINE_PROCESSORS:
-    break;
-  case MAX_LEN_OF_PASSWORD:
     break;
   case SUPPORTS_ACCESSS_CONTROL_LISTS:
     return 0; // TAG: what about this

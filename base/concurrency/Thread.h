@@ -60,6 +60,7 @@ class Runnable;
   }
   </pre>
 
+  @short Thread
   @ingroup concurrency
   @see Runnable
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -284,6 +285,14 @@ public:
   */
   inline State getState() const throw() {return state;}
 
+  /**
+  */
+  //Date getKernelLevelTime() const throw();
+  
+  /**
+  */
+  //Date getUserLevelTime() const throw();
+  
   /**
     Returns true if the thread is alive and kicking.
   */

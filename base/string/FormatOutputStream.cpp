@@ -14,9 +14,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/io/FileDescriptorOutputStream.h>
 #include <base/concurrency/Thread.h>
-#include <base/Trace.h>
 #include <base/FloatingPoint.h>
-#include <stdio.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -351,7 +349,6 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
 }
 
 FormatOutputStream::~FormatOutputStream() throw(IOException) {
-  TRACE_MEMBER();
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, bool value) throw(IOException) {
@@ -1225,7 +1222,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) th
   return stream;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, void* value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const void* value) throw(IOException) {
   return stream << HEX << PREFIX << ZEROPAD << reinterpret_cast<unsigned long>(value);
 }
 

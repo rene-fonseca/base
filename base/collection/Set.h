@@ -43,6 +43,9 @@ public:
   class SetEnumerator : public Enumerator<TRAITS> {
   private:
 
+    typedef typename Enumerator<TRAITS>::Pointer Pointer;
+    typedef typename Enumerator<TRAITS>::Value Value;
+    
     ENU enu;
   public:
 
@@ -58,9 +61,9 @@ public:
   };
 
   /** Modifying enumerator. */
-  typedef SetEnumerator<EnumeratorTraits<KEY>, OrderedBinaryTree<KEY>::Enumerator> Enumerator;
+  typedef SetEnumerator<EnumeratorTraits<KEY>, typename OrderedBinaryTree<KEY>::Enumerator> Enumerator;
   /** Non-modifying enumerator. */
-  typedef SetEnumerator<ReadEnumeratorTraits<KEY>, OrderedBinaryTree<KEY>::ReadEnumerator> ReadEnumerator;
+  typedef SetEnumerator<ReadEnumeratorTraits<KEY>, typename OrderedBinaryTree<KEY>::ReadEnumerator> ReadEnumerator;
 
 //  /** Non-modifying enumerator. */
 //  class ReadEnumerator : public Enumerator<ReadEnumeratorTraits<KEY> > {
@@ -222,7 +225,7 @@ public:
 
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Set<TYPE>& value) {
-  Set<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
+  typename Set<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {
     stream << *enu.next();

@@ -94,7 +94,7 @@ unsigned int Semaphore::getMaximum() throw() {
   return SemaphoreImpl::MAXIMUM;
 }
 
-Semaphore::Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceException) {
+Semaphore::Semaphore(unsigned int value) throw(OutOfDomain, ResourceException) {
   assert(value <= SemaphoreImpl::MAXIMUM, OutOfDomain(this));
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!(semaphore = (SemaphoreImpl::Semaphore)::CreateSemaphore(0, value, SemaphoreImpl::MAXIMUM, 0))) {

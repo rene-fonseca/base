@@ -206,7 +206,7 @@ public:
     Node* node = BinaryTree<Value>::getRoot();
 
     if (!node) {
-      elements = new BinaryTree<Value>::BinaryTreeImpl(new Node(0, 0, 0, value)); // attach root node
+      elements = new typename BinaryTree<Value>::BinaryTreeImpl(new Node(0, 0, 0, value)); // attach root node
       return 0;
     }
 

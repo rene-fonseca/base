@@ -33,6 +33,8 @@ template<class TRAITS>
 class AllocatorEnumerator : public Enumerator<TRAITS> {
 private:
 
+  typedef typename Enumerator<TRAITS>::Pointer Pointer;
+  
   /** The current position in the enumeration. */
   Pointer current;
   /** The end of the enumeration. */

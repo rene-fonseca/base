@@ -33,21 +33,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  InvalidEnumeration();
+  InvalidEnumeration() throw();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  InvalidEnumeration(const char* message);
+  InvalidEnumeration(const char* message) throw();
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  InvalidEnumeration(Type type) throw() {}
+  inline InvalidEnumeration(Type type) throw() {}
   
   /**
     Initializes the exception object.
@@ -55,7 +55,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  InvalidEnumeration(const char* message, Type type) throw() {}
+  inline InvalidEnumeration(const char* message, Type type) throw() {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

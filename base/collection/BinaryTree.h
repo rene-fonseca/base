@@ -35,6 +35,9 @@ template<class TRAITS>
 class PrefixOrderEnumerator : public Enumerator<TRAITS> {
 private:
 
+  typedef typename Enumerator<TRAITS>::Pointer Pointer;
+  typedef typename Enumerator<TRAITS>::Value Value;
+  
   /** The root of the binary tree. */
   Pointer root;
   /** The current position of the enumeration. */
@@ -99,6 +102,9 @@ public:
 template<class TRAITS>
 class InfixOrderEnumerator : public Enumerator<TRAITS> {
 private:
+
+  typedef typename Enumerator<TRAITS>::Pointer Pointer;
+  typedef typename Enumerator<TRAITS>::Value Value;
 
   /** The states of the infix order traversal state machine */
   enum Traverse {TRAVERSE_SUBTREE, RETURN_LEFT, RETURN_RIGHT};
@@ -226,6 +232,9 @@ public:
 template<class TRAITS>
 class PostfixOrderEnumerator : public Enumerator<TRAITS> {
 private:
+
+  typedef typename Enumerator<TRAITS>::Pointer Pointer;
+  typedef typename Enumerator<TRAITS>::Value Value;
 
   /** The root of the binary tree. */
   Pointer root;

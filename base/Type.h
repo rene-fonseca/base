@@ -68,7 +68,7 @@ public:
   */
   template<class TYPE>
   static inline Type getType() throw() {
-    return Type(&typeid(GetType<TYPE>::BaseType));
+    return Type(&typeid(typename GetType<TYPE>::BaseType));
   }
 
   /**

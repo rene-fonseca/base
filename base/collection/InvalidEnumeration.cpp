@@ -15,10 +15,10 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-InvalidEnumeration::InvalidEnumeration() {
+InvalidEnumeration::InvalidEnumeration() throw() {
 }
 
-InvalidEnumeration::InvalidEnumeration(const char* message) : Exception(message) {
+InvalidEnumeration::InvalidEnumeration(const char* message) throw() : Exception(message) {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -448,11 +448,22 @@ public:
 template<class BINOPR>
 class Binder2First : UnaryOperation<typename BINOPR::SecondArgument, typename BINOPR::Result> {
 protected:
+
+  typedef typename BINOPR::FirstArgument FirstArgument;
+  typedef typename BINOPR::SecondArgument SecondArgument;
+  typedef typename BINOPR::Result Result;
+  
   const BINOPR& operation;
-  typename BINOPR::FirstArgument first;
+  FirstArgument first;
 public:
-  inline Binder2First(const BINOPR& opr, typename BINOPR::FirstArgument fst) throw() : operation(opr), first(fst) {};
-  inline Result operator()(const typename BINOPR::SecondArgument& second) const throw() {return operation(first, second);};
+  
+  inline Binder2First(const BINOPR& _operation, FirstArgument _first) throw()
+    : operation(_operation), first(_first) {
+  }
+  
+  inline Result operator()(const SecondArgument& second) const throw() {
+    return operation(first, second);
+  }
 };
 
 /** Returns an unary operation from a binary operation using a value as the first argument. */
@@ -465,11 +476,21 @@ inline Binder2First<BINOPR> bind2First(const BINOPR& operation, const typename B
 template<class BINOPR>
 class Binder2Second : UnaryOperation<typename BINOPR::FirstArgument, typename BINOPR::Result> {
 protected:
+  
+  typedef typename BINOPR::FirstArgument FirstArgument;
+  typedef typename BINOPR::SecondArgument SecondArgument;
+  typedef typename BINOPR::Result Result;
+  
   const BINOPR& operation;
-  typename BINOPR::SecondArgument second;
+  SecondArgument second;
 public:
-  inline Binder2Second(const BINOPR& opr, typename BINOPR::SecondArgument sec) throw() : operation(opr), second(sec) {};
-  inline Result operator()(const typename BINOPR::FirstArgument& first) const throw() {return operation(first, second);};
+
+  inline Binder2Second(const BINOPR& _operation, SecondArgument _second) throw() : operation(_operation), second(_second) {
+  }
+
+  inline Result operator()(const FirstArgument& first) const throw() {
+    return operation(first, second);
+  }
 };
 
 /** Returns an unary operation from a binary operation using a value as the second argument. */

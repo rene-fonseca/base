@@ -30,6 +30,10 @@ template<class TRAITS>
 class SequenceIterator : public Iterator<TRAITS> {
 protected:
 
+  typedef typename Iterator<TRAITS>::Pointer Pointer;
+  typedef typename Iterator<TRAITS>::Reference Reference;
+  typedef typename Iterator<TRAITS>::Distance Distance;
+
   /** The position of the iterator. */
   Pointer element;
 public:

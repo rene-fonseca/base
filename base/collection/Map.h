@@ -72,10 +72,11 @@ public:
   class ReadEnumerator : public Enumerator<ReadEnumeratorTraits<Node> > {
   private:
 
-    OrderedBinaryTree<Node>::ReadEnumerator enu;
+    typedef typename Enumerator<ReadEnumeratorTraits<Node> >::Pointer Pointer;
+    typename OrderedBinaryTree<Node>::ReadEnumerator enu;
   public:
 
-    inline ReadEnumerator(OrderedBinaryTree<Node>::ReadEnumerator e) : enu(e) {}
+    inline ReadEnumerator(typename OrderedBinaryTree<Node>::ReadEnumerator e) : enu(e) {}
 
     inline bool hasNext() const throw() {
       return enu.hasNext();
@@ -95,10 +96,11 @@ public:
   class ValueEnumerator : public Enumerator<EnumeratorTraits<Value> > {
   private:
 
-    OrderedBinaryTree<Node>::Enumerator enu;
+    typedef typename ValueEnumerator::Pointer Pointer;
+    typename OrderedBinaryTree<Node>::Enumerator enu;
   public:
 
-    inline ValueEnumerator(OrderedBinaryTree<Node>::Enumerator e) : enu(e) {}
+    inline ValueEnumerator(typename OrderedBinaryTree<Node>::Enumerator e) : enu(e) {}
 
     inline bool hasNext() const throw() {
       return enu.hasNext();
@@ -162,7 +164,7 @@ public:
     const Key key;
     Reference(const Reference& copy); // prohibit default copy initialization
     Reference& operator=(const Reference& eq); // prohibit default assignment
-    inline Reference(Map& m, const Key& k) : map(m), key(k) {}
+    inline Reference(Map& _map, const Key& _key) : map(_map), key(_key) {}
   public:
     inline Reference& operator=(Value value) throw(MemoryException) {map.add(key, value); return *this;}
     inline operator Value() const throw(InvalidKey) {return map.getValue(key);}
@@ -228,7 +230,7 @@ public:
     @param key The key of the value.
   */
   Value getValue(const Key& key) const throw(InvalidKey) {
-    const OrderedBinaryTree<Association<Key, Value> >::Node* node = elements.find(Association<Key, Value>(key));
+    const typename OrderedBinaryTree<Association<Key, Value> >::Node* node = elements.find(Association<Key, Value>(key));
     if (!node) {
       throw InvalidKey();
     }
@@ -288,7 +290,7 @@ public:
 
 template<class KEY, class VALUE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>& value) {
-  Map<KEY, VALUE>::ReadEnumerator enu = value.getReadEnumerator();
+  typename Map<KEY, VALUE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {
     stream << *enu.next();

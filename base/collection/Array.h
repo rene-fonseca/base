@@ -335,7 +335,7 @@ public:
 */
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Array<TYPE>& value) {
-  Array<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
+  typename Array<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {
     stream << *enu.next();

@@ -116,7 +116,7 @@ public:
 /**
   Enumeration of elements in a list.
   
-  @short List enumerator
+  @short Enumerator of list with modification access.
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -126,6 +126,9 @@ template<class TRAITS>
 class ListEnumerator : public Enumerator<TRAITS> {
 protected:
 
+  typedef typename Enumerator<TRAITS>::Value Value;
+  typedef typename Enumerator<TRAITS>::Pointer Pointer;
+  
   /** The current position in the enumeration. */
   ListNode<Value>* current;
 public:
@@ -177,6 +180,7 @@ public:
 /**
   Enumeration of elements in a list.
 
+  @short Non-modifying enumerator of list.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -184,6 +188,9 @@ public:
 template<class TRAITS>
 class ListReadEnumerator : public Enumerator<TRAITS> {
 protected:
+
+  typedef typename Enumerator<TRAITS>::Value Value;
+  typedef typename Enumerator<TRAITS>::Pointer Pointer;
 
   /** The current position in the enumeration. */
   const ListNode<Value>* current;
@@ -659,7 +666,7 @@ public:
 */
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const List<TYPE>& value) {
-  List<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
+  typename List<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {
     stream << *enu.next();

@@ -977,20 +977,8 @@ void WindowImpl::setIconTitle(const String& iconTitle) throw(UserInterfaceExcept
 
 void WindowImpl::setPosition(const Position& position) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-//   RECT rect;
-//   ::GetWindowRect((HWND)drawableHandle, &rect);
-//   assert(
-//     ::MoveWindow(
-//       (HWND)drawableHandle,
-//       position.getX(),
-//       position.getY(),
-//       rect.right - rect.left + 1,
-//       rect.bottom - rect.top + 1,
-//       true // repaint
-//     ),
-//     UserInterfaceException(this)
-//   );
   if (position != this->position) {
+    // TAG: take into account difference between upper left corner of window and client area
     assert(
       ::MoveWindow(
         (HWND)drawableHandle,
@@ -1031,19 +1019,6 @@ void WindowImpl::setDimension(const Dimension& dimension) throw(UserInterfaceExc
       UserInterfaceException(this)
     );
   }
-//   RECT rect;
-//   ::GetWindowRect((HWND)drawableHandle, &rect);
-//   assert(
-//     ::MoveWindow(
-//       (HWND)drawableHandle,
-//       rect.left,
-//       rect.top,
-//       dimension.getWidth(),
-//       dimension.getHeight(),
-//       true // repaint
-//     ),
-//     UserInterfaceException(this)
-//   );
 #else // unix
   XWindowChanges changes;
   changes.width = dimension.getWidth();
@@ -1195,7 +1170,7 @@ void WindowImpl::setCursor(Cursor cursor) throw(UserInterfaceException) {
 // TAG: display, screen, or other window?
 Position WindowImpl::toGlobalPosition(const Position& position) const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return position; // TAG: fixme
+  return this->position + position;
 #else // unix
   int x;
   int y;

@@ -14,37 +14,41 @@
 #ifndef _DK_SDU_MIP__BASE_PLATFORMS_COMPILER__COMPILER_H
 #define _DK_SDU_MIP__BASE_PLATFORMS_COMPILER__COMPILER_H
 
+#if (!defined(_DK_SDU_MIP__BASE__COMPILER) && defined(_DK_SDU_MIP__BASE__DEFAULT_COMPILER))
+#  define _DK_SDU_MIP__BASE__COMPILER _DK_SDU_MIP__BASE__DEFAULT_COMPILER
+#endif
+
 #if !defined(_DK_SDU_MIP__BASE__COMPILER) || \
     (_DK_SDU_MIP__BASE__COMPILER == _DK_SDU_MIP__BASE__COMPILER_GCC)
-  #include <base/platforms/compiler/gcc/gcc.h>
+#  include <base/platforms/compiler/gcc/gcc.h>
 #elif (_DK_SDU_MIP__BASE__COMPILER == _DK_SDU_MIP__BASE__COMPILER_SUNWSPRO)
-  #include <base/platforms/compiler/sunwspro/sunwspro.h>
+#  include <base/platforms/compiler/sunwspro/sunwspro.h>
 #elif (_DK_SDU_MIP__BASE__COMPILER == _DK_SDU_MIP__BASE__COMPILER_MIPSPRO)
-  #include <base/platforms/compiler/mipspro/mipspro.h>
+#  include <base/platforms/compiler/mipspro/mipspro.h>
 #elif (_DK_SDU_MIP__BASE__COMPILER == _DK_SDU_MIP__BASE__COMPILER_INTEL)
-  #include <base/platforms/compiler/intel/intel.h>
+#  include <base/platforms/compiler/intel/intel.h>
 #elif (_DK_SDU_MIP__BASE__COMPILER == _DK_SDU_MIP__BASE__COMPILER_BORLAND)
-  #include <base/platforms/compiler/borland/borland.h>
+#  include <base/platforms/compiler/borland/borland.h>
 #elif (_DK_SDU_MIP__BASE__COMPILER == _DK_SDU_MIP__BASE__COMPILER_MSC)
-  #include <base/platforms/compiler/msc/msc.h>
+#  include <base/platforms/compiler/msc/msc.h>
 #elif (_DK_SDU_MIP__BASE__COMPILER == _DK_SDU_MIP__BASE__COMPILER_DOXYGEN)
-  #include <base/platforms/compiler/doxygen/doxygen.h>
+#  include <base/platforms/compiler/doxygen/doxygen.h>
 #endif
 
 #if !defined(_DK_SDU_MIP__BASE__CPP_INLINE) && !defined(inline)
-  #if defined(_DK_SDU_MIP__BASE__COMPILER_INLINE)
-    #define inline _DK_SDU_MIP__BASE__COMPILER_INLINE
-  #else
-    #define inline // remove inline
-  #endif
+#  if defined(_DK_SDU_MIP__BASE__COMPILER_INLINE)
+#    define inline _DK_SDU_MIP__BASE__COMPILER_INLINE
+#  else
+#    define inline // remove inline
+#  endif
 #endif // inline
 
 #if !defined(_DK_SDU_MIP__BASE__CPP_RESTRICT) && !defined(restrict)
-  #if defined(_DK_SDU_MIP__BASE__COMPILER_RESTRICT)
-    #define restrict _DK_SDU_MIP__BASE__COMPILER_RESTRICT
-  #else
-    #define restrict // remove restrict
-  #endif
+#  if defined(_DK_SDU_MIP__BASE__COMPILER_RESTRICT)
+#    define restrict _DK_SDU_MIP__BASE__COMPILER_RESTRICT
+#  else
+#    define restrict // remove restrict
+#  endif
 #endif // restrict
 
 #endif

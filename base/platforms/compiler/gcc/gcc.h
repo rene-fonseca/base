@@ -16,7 +16,6 @@
 
 namespace base {
 
-#define _DK_SDU_MIP__BASE__COMPILER _DK_SDU_MIP__BASE__GCC
 #define _DK_SDU_MIP__BASE__COMPILER_VERSION __GNUC__
 #define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE compiler::org::gnu
 

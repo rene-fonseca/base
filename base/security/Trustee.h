@@ -146,6 +146,13 @@ public:
     Raises TrusteeException if group could not be enumerated.
   */
   bool isMemberOf(const Trustee& trustee) const throw(TrusteeException);
+
+  /**
+    Returns the integral id.
+  */
+  inline unsigned long getIntegralId() const throw() {
+    return integralId;
+  }
   
   /**
     Returns the short name of the trustee.

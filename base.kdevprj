@@ -545,6 +545,11 @@ install_location=
 dist=true
 install=false
 type=HEADER
+[ellert/base/io/BindException.cpp]
+install_location=
+dist=true
+install=false
+type=SOURCE
 [ellert/base/collection/Enumeration.cpp]
 install_location=
 dist=true
@@ -779,6 +784,11 @@ dist=true
 install=false
 type=HEADER
 [ellert/base/collection/EndOfEnumeration.h]
+install_location=
+dist=true
+install=false
+type=HEADER
+[ellert/base/io/BindException.h]
 install_location=
 dist=true
 install=false
@@ -1243,7 +1253,7 @@ dist=true
 install=false
 type=SOURCE
 [ellert/base/io/Makefile.am]
-files=ellert/base/io/BufferedInputStream.h,ellert/base/io/BufferedInputStream.cpp,ellert/base/io/BufferedOutputStream.cpp,ellert/base/io/Externalizable.h,ellert/base/io/FilterOutputStream.cpp,ellert/base/io/FilterInputStream.h,ellert/base/io/FileDescriptor.h,ellert/base/io/FileDescriptor.cpp,ellert/base/io/FileOutputStream.h,ellert/base/io/FileOutputStream.cpp,ellert/base/io/FileInputStream.h,ellert/base/io/FileInputStream.cpp,ellert/base/io/BufferedOutputStream.h,ellert/base/io/PrimitiveInputStream.cpp,ellert/base/io/PrimitiveOutputStream.cpp,ellert/base/io/PrimitiveInputStream.h,ellert/base/io/PrimitiveOutputStream.h,ellert/base/io/FilterInputStream.cpp,ellert/base/io/OutputStream.cpp,ellert/base/io/OutputStream.h,ellert/base/io/InputStream.h,ellert/base/io/InputStream.cpp,ellert/base/io/FilterOutputStream.h,ellert/base/io/EOFException.cpp,ellert/base/io/EOFException.h,ellert/base/io/EndOfFile.cpp,ellert/base/io/EndOfFile.h,ellert/base/io/IOException.h,ellert/base/io/IOException.cpp,ellert/base/io/FileNotFound.h,ellert/base/io/FileNotFound.cpp,ellert/base/io/Stream.h,ellert/base/io/Stream.cpp,ellert/base/io/FileDescriptorInputStream.h,ellert/base/io/FileDescriptorOutputStream.h,ellert/base/io/FileDescriptorOutputStream.cpp,ellert/base/io/FileDescriptorInputStream.cpp,
+files=ellert/base/io/BufferedInputStream.h,ellert/base/io/BufferedInputStream.cpp,ellert/base/io/BufferedOutputStream.cpp,ellert/base/io/Externalizable.h,ellert/base/io/FilterOutputStream.cpp,ellert/base/io/FilterInputStream.h,ellert/base/io/FileDescriptor.h,ellert/base/io/FileDescriptor.cpp,ellert/base/io/FileOutputStream.h,ellert/base/io/FileOutputStream.cpp,ellert/base/io/FileInputStream.h,ellert/base/io/FileInputStream.cpp,ellert/base/io/BufferedOutputStream.h,ellert/base/io/PrimitiveInputStream.cpp,ellert/base/io/PrimitiveOutputStream.cpp,ellert/base/io/PrimitiveInputStream.h,ellert/base/io/PrimitiveOutputStream.h,ellert/base/io/FilterInputStream.cpp,ellert/base/io/OutputStream.cpp,ellert/base/io/OutputStream.h,ellert/base/io/InputStream.h,ellert/base/io/InputStream.cpp,ellert/base/io/FilterOutputStream.h,ellert/base/io/EOFException.cpp,ellert/base/io/EOFException.h,ellert/base/io/EndOfFile.cpp,ellert/base/io/EndOfFile.h,ellert/base/io/IOException.h,ellert/base/io/IOException.cpp,ellert/base/io/FileNotFound.h,ellert/base/io/FileNotFound.cpp,ellert/base/io/Stream.h,ellert/base/io/Stream.cpp,ellert/base/io/FileDescriptorInputStream.h,ellert/base/io/FileDescriptorOutputStream.h,ellert/base/io/FileDescriptorOutputStream.cpp,ellert/base/io/FileDescriptorInputStream.cpp,ellert/base/io/BindException.h,ellert/base/io/BindException.cpp,
 sub_dirs=
 type=static_library
 [ellert/vehicle/Headlight.cpp]

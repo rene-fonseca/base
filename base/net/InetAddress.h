@@ -29,8 +29,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   and IPv6 addresses). IPv6 addresses can be represented on platforms without
   builtin IPv6 support. However, using an IPv6 address on platforms without
   direct support requires implicit conversion to an IPv4 address. If such a
-  conversion isn't possible a NetworkException is raised.
-
+  conversion isn't possible a NetworkException is raised. See RFC 2373.
+  
   @short Internet Protocol address.
   @ingroup net
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -63,6 +63,31 @@ public:
     CLASS_D = 4096, /** IPv4 class D. */
     CLASS_E = 8192 /** IPv4 class E (experimantal). */
   };
+
+  /** Multicast flags. */
+  enum MulticastFlags {
+    MULTICAST_TRANSIENT = 1 /**< The address is multicast transient. */
+  };
+  
+  /** Multicast scope. */
+  enum MulticastScope {
+    RESERVED_0,
+    NODE_LOCAL_SCOPE = 1, /**< Node-local scope. */
+    LINK_LOCAL_SCOPE = 2, /**< Link-local scope. */
+    RESERVED_3,
+    RESERVED_4,
+    SITE_LOCAL_SCOPE = 5, /**< Site-local scope. */
+    RESERVED_6,
+    RESERVED_7,
+    ORGANIZATION_LOCAL_SCOPE = 8, /**< Organization-local scope. */
+    RESERVED_9,
+    RESERVED_10,
+    RESERVED_11,
+    RESERVED_12,
+    RESERVED_13,
+    GLOBAL_SCOPE, /**< Global scope. */
+    RESERVED_15
+  };
 private:
 
   /** The family of the address. */
@@ -74,7 +99,9 @@ private:
     uint8 octets[16];
   } _DK_SDU_MIP__BASE__PACKED address;
   
-  /** Parses the specified string as an Internet address (both IPv4 and IPv6). */
+  /**
+    Parses the specified string as an Internet address (both IPv4 and IPv6).
+  */
   bool parse(const String& address) throw();
 public:
 
@@ -111,7 +138,8 @@ public:
   InetAddress(const uint8* address, Family family) throw();
 
   /**
-    Initializes the address from the specified string. Implicit initialization is allowed.
+    Initializes the address from the specified string. Implicit initialization
+    is allowed.
 
     @param address The internet address (e.g. '172.30.33.14' or '::ffff:172.30.33.14').
   */
@@ -201,6 +229,25 @@ public:
   */
   bool isMulticast() const throw();
 
+  /**
+    Returns the flags for a multicast address.
+  */
+  inline unsigned int getMulticastFlags() const throw() {
+    unsigned int flags = 0;
+    if (address.octets[0] == 0xff) {
+      flags |= (address.octets[1] & 0x10) ? MULTICAST_TRANSIENT : 0;
+    }
+    return flags;
+  }
+
+  /**
+    Returns the scope of a multicast address. This is only valid if the address
+    is a multicast address.
+  */
+  inline unsigned int getMulticastScope() const throw() {
+    return address.octets[1] & 0x0f;
+  }
+  
   /**
     Returns true if this address is link local.
   */

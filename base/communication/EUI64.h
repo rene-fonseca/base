@@ -22,15 +22,16 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  A 64 bit globally unique identifier (GUID) composed of a 24 bit company id and
-  an 48 bit extension identifier. See
-  http://standards.ieee.org/regauth/oui/tutorials/EUI64.html.
+  A 64 bit globally unique identifier (GUID) composed of a 24 bit company id
+  and an 48 bit extension identifier. See
+  http://standards.ieee.org/regauth/oui/tutorials/EUI64.html and RFC 2373.
   
   @ingroup communications
   @short IEEE EUI-64 identifier.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
+
 class EUI64 {
 private:
   
@@ -45,7 +46,7 @@ protected:
     return ((value & 0x0f) << 4) | ((value & 0xf0) >> 4);
   }
 public:
-
+  
   /**
     Initializes identifier as ff:ff:ff-00:00:00:00:00.
   */
@@ -110,14 +111,42 @@ public:
     Returns true if the id is an encapsulated EUI-48 identifier.
   */
   inline bool isEUI48() const throw() {
-    return (id[3] == 0xff) && (id[4] == 0xfe);
+    return (id[3] == 0xff) && (id[4] == 0xfe); // TAG: conflict with RFC 2373
   }
   
   /**
     Returns true if the id is an encapsulated MAC-48 identifier.
   */
   inline bool isMAC48() const throw() {
-    return (id[3] == 0xff) && (id[4] == 0xff);
+    return (id[3] == 0xff) && (id[4] == 0xff); // TAG: conflict with RFC 2373
+  }
+
+  /**
+    Returns true if the individual/group bit is set.
+  */
+  inline bool isIndividual() const throw() {
+    return (id[0] & 0x01) == 0;
+  }
+  
+  /**
+    Returns true if the universal/local bit is set.
+  */
+  inline bool isGlobal() const throw() {
+    return (id[0] & 0x02) == 0;
+  }
+
+  /**
+    Resets the universal/local bit.
+  */
+  inline void makeGlobal() throw() {
+    id[0] &= ~0x02;
+  }
+  
+  /**
+    Sets the universal/local bit.
+  */
+  inline void makeLocal() throw() {
+    id[0] |= 0x02;
   }
   
   /**

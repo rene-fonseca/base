@@ -39,8 +39,8 @@ CollectionFormatSet defaultFormatSet {
 };
 */
 
-/** Actions used to modify a format output stream. */
-typedef enum {BIN, OCT, DEC, HEX, ZEROPAD, NOZEROPAD, PREFIX, NOPREFIX, EOL, FLUSH, AUTOFLUSH, NOAUTOFLUSH} Action;
+/** Actions used to modify a format output stream. Use BIN, OCT, DEC, and HEX to select an appropriate integer base. Use ZEROPAD and NOZEROPAD to enable/disable zero padding. Use PREFIX and NOPREFIX to enable/disable prefixes for numbers. EOL writes a new line to the stream. FLUSH forces the internal buffers to be flushed. Use ENDL to both write a new line and flush the internal buffers. */
+typedef enum {BIN, OCT, DEC, HEX, ZEROPAD, NOZEROPAD, PREFIX, NOPREFIX, EOL, FLUSH, ENDL} Action;
 
 /**
   Format output stream.
@@ -55,9 +55,6 @@ public:
   /** Digits of all bases. */
   static const char DIGITS[]; // = "0123456789abcdef";
 protected:
-
-  /** Specifies that the stream should be flushed automatically after each field. Enabled by default. */
-  bool autoFlush;
 
   unsigned int defaultWidth;
   unsigned int defaultBase;

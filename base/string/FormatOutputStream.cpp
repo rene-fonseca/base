@@ -20,7 +20,6 @@ const char FormatOutputStream::DIGITS[] = "0123456789abcdef";
 FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) throw(BindException) :
   BufferedOutputStream(out, size) {
 
-  autoFlush = true;
   defaultBase = DEC;
   defaultWidth = 0;
   defaultFlags = PREFIX;
@@ -57,19 +56,17 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
     {
       char ch = '\n';
       write(&ch, sizeof(ch)); // may throw IOException
-      if (autoFlush) {
-        flush();
-      }
     }
     break;
   case FLUSH:
     flush(); // may throw IOException
     break;
-  case AUTOFLUSH:
-    autoFlush = true;
-    break;
-  case NOAUTOFLUSH:
-    autoFlush = false;
+  case ENDL:
+    {
+      char ch = '\n';
+      write(&ch, sizeof(ch)); // may throw IOException
+    }
+    flush(); // may throw IOException
     break;
   }
   return *this;
@@ -79,9 +76,6 @@ void FormatOutputStream::prepareForField() {
   flags = defaultFlags;
   width = defaultWidth;
   base = defaultBase;
-  if (autoFlush) {
-    flush();
-  }
 }
 
 void FormatOutputStream::addCharacterField(const char* buf, unsigned int size) throw(IOException) {

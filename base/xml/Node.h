@@ -27,6 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class Document;
+class NodeImpl;
 
 /**
   DOM node.
@@ -39,11 +40,12 @@ class Document;
 
 class Node : public AutomationObject {
   friend class Document;
+  friend class NodeImpl;
 public:
   
   /** Leaf node types. */
   enum NodeType {
-    ELEMENT_NODE = 1,
+    ELEMENT_NODE,
     ATTRIBUTE_NODE,
     TEXT_NODE,
     CDATA_SECTION_NODE,
@@ -55,6 +57,12 @@ public:
     DOCUMENT_TYPE_NODE,
     DOCUMENT_FRAGMENT_NODE,
     NOTATION_NODE
+  };
+
+  /*
+    Unspecified internal context.
+  */
+  struct Context {
   };
   
   class ShadowDocument : public AutomationObject {
@@ -106,6 +114,8 @@ private:
 
   /** Context. */
   void* context;
+  /** Specifies if access is confined to read-only access. */
+  bool readonly; // TAG: fixme
 protected:
   
   /**
@@ -115,12 +125,25 @@ protected:
   }
 
   /**
-    Returns the context.
+    Returns the context for modifying access.
   */
-  inline void* getContext() const throw() {
+  inline void* getContext() throw() {
+    return context;
+  }
+  
+  /**
+    Returns the context for non-modifiable access.
+  */
+  inline const void* getContext() const throw() {
     return context;
   }
 public:
+  
+  /**
+    Initializes XML node as invalid.
+  */
+  inline Node() throw() : context(0) {
+  }
   
   /**
     Initializes XML node from other XML node.
@@ -139,13 +162,7 @@ public:
   /**
     Adds the node to the end of the list of children of this node.
   */
-  Node appendChild(Node child) throw(DOMException);
-
-  /**
-    A NamedNodeMap containing the attributes of this node (if it is an Element)
-    or an invalid NamedNodeMap otherwise.
-  */
-  //NamedNodeMap getAttributes() throw();
+  Node& appendChild(Node child) throw(DOMException);
 
   /**
     Returns a NodeList that contains all children of this node.
@@ -155,17 +172,7 @@ public:
   /**
     Returns a duplicate of this node.
   */
-  Node cloneNode(bool deep) throw(DOMException);
-  
-  /**
-    Returns the first child node.
-  */
-  Node getFirstChild() throw();
-  
-  /**
-    Returns the last child node.
-  */
-  Node getLastChild() throw();
+  Node cloneNode(bool deep) throw(DOMException);  
   
   /**
     Returns the local part of the qualified name of this node.
@@ -175,12 +182,7 @@ public:
   /**
     The namespace URI of this node, or an improper string if it is unspecified.
   */
-  String getNamespaceURI() const throw();
-  
-  /**
-    Returns the node immediately succeeding this node.
-  */
-  Node getNextSibling() throw();
+  String getNamespaceURI() const throw();  
   
   /**
     Returns the name of the node.
@@ -203,20 +205,35 @@ public:
   ShadowDocument getOwnerDocument() throw();
 
   /**
-    Returns the parent node.
-  */
-  Node getParent() throw();
-
-  /**
     The namespace prefix of this node, or an improper string if it is
     unspecified.
   */
   String getPrefix() const throw(DOMException);
+
+  /**
+    Returns the parent node.
+  */
+  Node getParent() const throw();
   
   /**
     Returns the node immediately preceding this node.
   */
-  Node getPreviousSibling() throw();
+  Node getPreviousSibling() const throw();
+
+  /**
+    Returns the node immediately succeeding this node.
+  */
+  Node getNextSibling() const throw();
+
+  /**
+    Returns the first child node.
+  */
+  Node getFirstChild() const throw();
+  
+  /**
+    Returns the last child node.
+  */
+  Node getLastChild() const throw();
   
   /**
     Returns whether this node (if it is an element) has any attributes.
@@ -282,6 +299,37 @@ public:
   */
   inline bool isInvalid() const throw() {
     return !context;
+  }
+
+  /**
+    Returns true if the node is unlinked.
+  */
+  bool isUnlinked() const throw();
+  
+  /**
+    Returns true if the nodes refer to the the same node.
+  */
+  inline bool isSame(const Node& node) const throw() {
+    return context == node.context;
+  }
+  
+  /**
+    Returns true if the nodes refer to the the same node.
+  */
+  inline bool operator==(const Node& node) const throw() {
+    return context == node.context;
+  }
+  
+  /**
+    Returns true if the specified node has the same owner as this node.
+  */
+  bool hasSameOwner(const Node& node) const throw();
+
+  /**
+    Returns true if the node is valid.
+  */
+  inline operator bool() const throw() {
+    return context;
   }
 };
 

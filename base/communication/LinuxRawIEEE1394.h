@@ -57,6 +57,14 @@ private:
   /** Specifies the maximum number of adapters. */
   static const unsigned int MAXIMUM_NUMBER_OF_ADAPTERS = 256;  
   
+  struct IsochronousContext {
+    Allocator<uint8> buffer;
+    IsochronousChannelListener* listener;
+    bool completed;
+    bool busy;
+    Status status;
+  };
+  
   /** Device handle. */
   OperatingSystem::Handle handle;
   /** The protocol (API). */
@@ -69,9 +77,12 @@ private:
   unsigned int localId;
   /** Request identification. */
   uint32 generation;
-
-  /** Dequeues one response from the driver. */
-  void dequeueResponse() throw(IEEE1394Exception);
+  /** FCP listener. */
+  FunctionControlProtocolListener* fcpListener;
+  /** FCP transaction buffer. */
+  uint8 fcpBuffer[512];
+  /** Isochronous channel descriptors. */
+  IsochronousContext isochronousChannels[IEEE1394Impl::ISOCHRONOUS_CHANNELS];
 public:
 
   void resetBus() throw(IEEE1394Exception);
@@ -127,11 +138,6 @@ public:
   unsigned int getNumberOfNodes() const throw();
 
   /**
-    Returns the IEEE 1394 standard of the adapter.
-  */
-  Standard getCompliance() const throw(IEEE1394Exception);
-
-  /**
     Returns the current error status.
   */
   unsigned int getStatus() const throw(IEEE1394Exception);
@@ -144,7 +150,7 @@ public:
   /**
     Read data from device.
 
-    @param node The node id of source node.
+    @param node The node id of the source node.
     @param address The base address of the memory region to read from.
     @param buffer The data buffer.
     @param size The number of bytes to read (must be an integral number of quadlets).
@@ -154,7 +160,7 @@ public:
   /**
     Write data to device.
 
-    @param node The node id of destination node.
+    @param node The node id of the destination node.
     @param address The base address of the memory region to write to.
     @param buffer The data buffer.
     @param size The number of bytes to write (must be an integral number of quadlets).
@@ -164,7 +170,7 @@ public:
   /**
     Read data from device. This method is only used for debugging and development.
 
-    @param node The node id of source node.
+    @param node The node id of the source node.
     @param address The base address of the memory region to read from (must be a quadlet boundary).
     @param buffer The data buffer.
     @param size The number of quadlets to read (not bytes!).
@@ -174,8 +180,18 @@ public:
   */
   unsigned int read(unsigned short node, uint64 address, uint32* buffer, unsigned int size, uint32 value) throw(IEEE1394Exception);
 
-  // TAG: fixme
-  void lock(unsigned short node, uint64 address, unsigned int size) throw(IEEE1394Exception);
+  /**
+    This methods provides atomic write access to quadlet.
+    
+    @param node The node id of the node.
+    @param address The address of the quadlet (must be a quadlet boundary).
+    @param instruction The atomic instruction.
+    @param argument The argument to the instruction (ignored by FETCH_ADD and LITTLE_FETCH_ADD).
+    @param data The data value use by the instruction.
+    
+    @return The result.
+  */
+  uint32 lock(unsigned short node, uint64 address, LockInstruction instruction, uint32 argument, uint32 data) throw(IEEE1394Exception);
 
   /**
     Returns an isochronous read channel.
@@ -198,11 +214,29 @@ public:
   */
   ~LinuxRawIEEE1394() throw(IEEE1394Exception);
 
-  // TAG: FIXME
-  void readIsochronous(char* buffer, unsigned int size, unsigned int channel) throw(OutOfDomain, IEEE1394Exception);
+  /**
+    Wait for an event or until the timeout period expires.
+    
+    @param milliseconds The timeout period.
+    
+    @return True if event is ready to be dequeued.
+  */
+  bool wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception);
+  
+  /**
+    Dequeues one response from the driver.
+  */
+  void dequeueResponse() throw(IEEE1394Exception);
 
-  // TAG: FIXME
-  void writeIsochronous(const char* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed) throw(OutOfDomain, IEEE1394Exception);
+  void dequeue() throw(IEEE1394Exception);
+
+  void registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception);
+  
+  void unregisterFCPListener() throw(IEEE1394Exception);
+
+  void readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception);
+
+  void writeIsochronous(const uint8* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed) throw(OutOfDomain, IEEE1394Exception);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -159,6 +159,29 @@ AC_ARG_ENABLE(
   fi
 )
 
+base_explicit_large_file_system=auto
+AC_ARG_ENABLE(
+  large-file-system,[
+  --enable-large-file-system=[auto|yes|no]
+      Specifies that the Large File System should be utilized. This feature is
+      auto-detected by default. The auto-detection will fail if the compiler
+      is a cross compiler.],
+  if test $enableval = auto; then
+    base_explicit_large_file_system=auto
+  elif test "$enableval" = no; then
+    base_explicit_large_file_system=no
+  elif test "$enableval" = yes; then
+    base_explicit_large_file_system=yes
+  else
+    AC_MSG_ERROR(The Large File System flag must be either 'auto', 'yes', or 'no'.)
+  fi
+)
+
+AC_ARG_ENABLE(
+  ,[
+  Please report any errors to fonseca@mip.sdu.dk.]
+)
+
 
 
 dnl Setup variables
@@ -534,6 +557,24 @@ AC_BASE_YES(
   AC_DEFINE(_DK_SDU_MIP__BASE__INET_IPV6, 1, Specifies that the interface extensions for IP version 6 are present)
 )
 AC_BASE_ADDLIB($base_cv_inet_ipv6_libs)
+
+
+
+if test $base_explicit_large_file_system = auto; then
+  AC_BASE_CHECK(
+    checking whether Large File System is supported by the operating system,
+    AC_BASE_CACHE(
+      base_cv_large_file_system,
+      AC_BASE_TRY_CXX_LINK(base_cv_large_file_system, config/largefile.c, , AC_MSG_ERROR(Autodetection of Large File System does not work with cross compiler.))
+    ),
+    base_cv_large_file_system)
+  base_explicit_large_file_system=$base_cv_large_file_system
+fi
+AC_BASE_YES(
+  base_explicit_large_file_system,
+  AC_DEFINE(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM, 1, Specifies that the Large File System should be utilized)
+  AC_DEFINE(_LARGEFILE64_SOURCE, 1, Requests availability of the Large File System)
+)
 
 
 

@@ -225,7 +225,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Set<TYPE>& valu
   while (enu.hasNext()) {
     stream << *enu.next();
     if (enu.hasNext()) {
-      stream << ";";
+      stream << ';';
     }
   }
   stream << '}';

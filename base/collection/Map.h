@@ -282,7 +282,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>
   while (enu.hasNext()) {
     stream << *enu.next();
     if (enu.hasNext()) {
-      stream << ";";
+      stream << ';';
     }
   }
   stream << '}';

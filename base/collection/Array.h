@@ -334,14 +334,14 @@ public:
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Array<TYPE>& value) {
   Array<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
-  stream << "{";
+  stream << '{';
   while (enu.hasNext()) {
     stream << *enu.next();
     if (enu.hasNext()) {
-      stream << ";";
+      stream << ';';
     }
   }
-  stream << "}";
+  stream << '}';
   return stream;
 }
 

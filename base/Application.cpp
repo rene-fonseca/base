@@ -21,11 +21,11 @@
 #include <stdlib.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-  #undef ERROR // protect against the evil programmers
+#  include <windows.h>
+#  undef ERROR // protect against the evil programmers
 #else // unix
-  #include <sys/signal.h> // defines SIG_ERR on IRIX65
-  #include <signal.h>
+#  include <sys/signal.h> // defines SIG_ERR on IRIX65
+#  include <signal.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -197,8 +197,8 @@ public:
   
 #else // unix
 
-  static void signalHandler(int signal) throw() {
-    switch (signal) {
+  static void signalHandler(int signal) /*throw(...)*/ {
+    switch (signal) {      
     case SIGHUP: // hangup
       if (Thread::getThread()->isMainThread()) {
         SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Hangup signal."));
@@ -223,10 +223,21 @@ public:
         }
       }
       break;
+    case SIGSEGV:
+      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Segmentation fault."));
+      throw MemoryException("Invalid memory access");
+    case SIGILL:
+      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Invalid instruction."));
+      throw Exception("Invalid instruction");
+    case SIGFPE:
+      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Floating point exception."));
+      throw Exception("Floating point exception");
     case SIGABRT: // abort
       if (Thread::getThread()->isMainThread()) {
         SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Abort signal."));
       }
+      break;
+    case SIGPIPE: // broken pipe
       break;
     case SIGTERM: // terminate
       if (Thread::getThread()->isMainThread()) {
@@ -297,26 +308,35 @@ void Application::initialize() throw() {
   );
   
 #else // unix
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
+#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
     if (!((bsd_signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (bsd_signal(SIGPIPE, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (bsd_signal(SIGTERM, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (bsd_signal(SIGCHLD, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (bsd_signal(SIGQUIT, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (bsd_signal(SIGINT, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (bsd_signal(SIGSEGV, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (bsd_signal(SIGILL, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (bsd_signal(SIGFPE, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (bsd_signal(SIGABRT, ApplicationImpl::signalHandler) != SIG_ERR))) {
       throw UnexpectedFailure("Unable to install signal handler", this);
     }
-  #else
-    /* use sigaction */
+#  else
+    // TAG: need handler for segfault...
+    // TAG: new applications should use sigaction
     if (!((signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (signal(SIGPIPE, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (signal(SIGTERM, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (signal(SIGCHLD, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (signal(SIGQUIT, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (signal(SIGINT, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (signal(SIGSEGV, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (signal(SIGILL, ApplicationImpl::signalHandler) != SIG_ERR) &&
+          (signal(SIGFPE, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (signal(SIGABRT, ApplicationImpl::signalHandler) != SIG_ERR))) {
       throw UnexpectedFailure("Unable to install signal handler", this);
     }
-  #endif
+#  endif
 #endif
 
   // install exception handlers

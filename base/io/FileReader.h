@@ -31,7 +31,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class FileReader : public Object {
 public:
 
-  /** Iterator used to traverse the elements within the current file mapping window. */
+  /**
+    Iterator used to traverse the elements within the current file mapping
+    window.
+  */
   typedef SequenceIterator<ReadIteratorTraits<uint8> > ReadIterator;
   /** The default preferred window size. */
   static const unsigned int DEFAULT_WINDOW_SIZE = 0x10000;
@@ -84,7 +87,10 @@ public:
     @param windowSize The preferred size of the mapping window. The actual
     window size used may be less or greater.
   */
-  FileReader(File& file, long long position, unsigned int windowSize = DEFAULT_WINDOW_SIZE) throw(IOException);
+  FileReader(
+    File& file,
+    long long position,
+    unsigned int windowSize = DEFAULT_WINDOW_SIZE) throw(IOException);
   
   /**
     Returns the bytes of the entire window.
@@ -117,7 +123,9 @@ public:
   */
   inline ReadIterator peek(unsigned int size) throw(IOException) {
     if (current + size > end) { // make sure all bytes are in the current window
-      requestRegion(FileRegion(mapping.getRegion().getOffset() + (current - begin), size));
+      requestRegion(
+        FileRegion(mapping.getRegion().getOffset() + (current - begin), size)
+      );
     }
     return ReadIterator(current);
   }
@@ -152,7 +160,11 @@ public:
     current += size;
     if (current > end) {
       requestRegion(
-        FileRegion(mapping.getRegion().getOffset() + mapping.getRegion().getSize() + (current - end), 0)
+        FileRegion(
+          mapping.getRegion().getOffset() + mapping.getRegion().getSize() +
+            (current - end),
+          0
+        )
       );
     }
   }

@@ -23,12 +23,13 @@ void FileReader::requestRegion(const FileRegion& region) throw(IOException) {
   current = begin + (region.getOffset() - mapping.getRegion().getOffset());
 }
 
-FileReader::FileReader(File& file, long long position, unsigned int windowSize) throw(IOException) :
-  fileSize(file.getSize()),
-  granularity(MappedFile::getGranularity()),
-  preferredWindowSize(windowSize),
-  mapping(file, fixRegion(FileRegion(position, 0))) {
-
+FileReader::FileReader(
+  File& file, long long position, unsigned int windowSize) throw(IOException)
+  : fileSize(file.getSize()),
+    granularity(MappedFile::getGranularity()),
+    preferredWindowSize(windowSize),
+    mapping(file, fixRegion(FileRegion(position, 0))) {
+  
   begin = mapping.getBytes();
   end = begin + mapping.getRegion().getSize();
   current = begin + (position - mapping.getRegion().getOffset());

@@ -35,7 +35,7 @@ nobase_section_HEADERS = arch/architecture.h arch/sse/sse.h arch/sse2/sse2.h arc
 
 nobase_section_HEADERS += compiler/compiler.h compiler/doxygen/doxygen.h compiler/gcc/gcc.h compiler/msc/msc.h compiler/v3mv/exception.h
 
-nobase_section_HEADERS += os/os.h os/cygwin/cygwin.h os/solaris/solaris.h
+nobase_section_HEADERS += os/os.h os/cygwin/cygwin.h os/solaris/solaris.h os/winnt4/winnt4.h
 
 # temporary fix
 EXTRA_DIST = $(nobase_section_HEADERS)

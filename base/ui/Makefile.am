@@ -15,21 +15,33 @@ include $(top_srcdir)/common.am
 
 noinst_LTLIBRARIES = libui.la
 
-libui_la_SOURCES = Dialog.cpp \
+libui_la_SOURCES = Button.cpp \
+                   Dialog.cpp \
                    OpenFileDialog.cpp \
+                   Label.cpp \
                    Menu.cpp \
                    MessageDialog.cpp \
                    Position.cpp \
                    SaveFileDialog.cpp \
                    SelectFolderDialog.cpp \
-                   UserInterfaceException.cpp
+                   Split.cpp \
+                   UserInterfaceException.cpp \
+                   Widget.cpp \
+                   Window.cpp \
+                   WindowImpl.cpp
 
 sectiondir = $(includedir)/base/ui
-section_HEADERS = Dialog.h \
+section_HEADERS = Button.h \
+                  Dialog.h \
                   OpenFileDialog.h \
+                  Label.h \
                   Menu.h \
                   MessageDialog.h \
                   Position.h \
                   SaveFileDialog.h \
                   SelectFolderDialog.h \
-                  UserInterfaceException.h
+                  Split.h \
+                  UserInterfaceException.h \
+                  Widget.h \
+                  Window.h \
+                  WindowImpl.h

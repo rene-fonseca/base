@@ -269,15 +269,41 @@ bool Process::isAlive() const throw(ProcessException) {
     throw ProcessException(this); 
   }
 #else // unix
+  
   int status;
   pid_t result = ::waitpid(id, &status, WNOHANG);
+  if (result >= 0) {
+    throw ProcessException("Unable to query process", this);
+  }
+
+  /**
+    GCC 3.0.4 bug
+    
+    For some reason this exception cannot be catched
+    
+    assert(result >= 0, ProcessException("Unable to query process", this));
+  */
   if (result == (pid_t)id) {
     return false;
   } else if (result == 0) {
     return true;
-  } else {
-    throw ProcessException("Unable to query process", this);
   }
+
+  /*
+    GCC 3.0.4 bug here which results in "Abort" when the exception is raised below.
+    
+    Linux/RedHat 7.2
+    
+    gcc -I../.. -pipe -x c++ -ansi -O3 -g3 -march=i686 -malign-double -fomit-frame-pointer -funroll-loops -fno-delete-null-pointer-checks -fno-math-errno -fexpensive-optimizations -c Process.cpp -MT Process.lo -MD -MP -MF .deps/Process.TPlo -o Process.o
+    
+    if (result == (pid_t)id) {
+      return false;
+    } else if (result == 0) {
+      return true;
+    }
+    throw ProcessException("Unable to query process", this); // Aborts here
+  */
+
   // TAG: need to protect against EINTR
 #endif // flavor
 }
@@ -292,7 +318,7 @@ String Process::getName() const throw(ProcessException) {
   ::CloseHandle(process);
   return String(buffer, length - 1);
 #else // unix
-  throw NotImplemented(this);
+  throw NotSupported(this);
 #endif
 }
 

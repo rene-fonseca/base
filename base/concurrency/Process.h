@@ -27,16 +27,22 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Process
   @ingroup concurrency
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.2
 */
 
 class Process : public Object {
 public:
 
+  /** Value which specifies an invalid process id. */
+  static const unsigned int INVALID = PrimitiveTraits<unsigned int>::MAXIMUM;
+  
   /**
     Exception raised by the Process class.
 
+    @short Exception raised by Process.
     @ingroup exceptions concurrency
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    @version 1.1
   */
   class ProcessException : public Exception {
   public:
@@ -54,6 +60,8 @@ public:
   
   /**
     Returns parent process.
+
+    @return Invalid process if not supported.
   */
   static Process getParentProcess() throw();
   
@@ -108,6 +116,13 @@ public:
   */
   unsigned int getId() throw();
 
+  /**
+    Returns true if the process id is invalid.
+  */
+  inline bool isValid() const throw() {
+    return id != INVALID;
+  }
+  
   /**
     Returns true if the process is alive.
   */

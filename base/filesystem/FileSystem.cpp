@@ -26,16 +26,25 @@
 #include <base/ByteOrder.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #define _WIN32_WINNT 0x500
-  #include <windows.h>
-  #include <winioctl.h>
+#  define _WIN32_WINNT 0x500
+#  include <windows.h>
+#  include <winioctl.h>
 #else // unix
-  #include <sys/types.h>
-  #include <sys/stat.h> // lstat
-  #include <fcntl.h>
-  #include <unistd.h> // readlink, symlink
-  #include <limits.h> // defines PATH_MAX
-  #include <errno.h>
+#  include <sys/types.h>
+#  include <sys/stat.h> // lstat
+#  include <fcntl.h>
+#  include <unistd.h> // readlink, symlink
+#  include <limits.h> // defines PATH_MAX
+#  include <errno.h>
+
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  include <sys/quota.h>
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#  include <sys/fs/ufs_quota.h>
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
+#  include <sys/quota.h>
+#endif
+
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -760,7 +769,7 @@ void FileSystem::makeLink(const String& target, const String& path) throw(NotSup
 #endif // flavor
 }
 
-// TAG: need option allow no transparent link/strict transparency
+// TAG: need option disallow transparent link/strict transparency
 String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (cachedSupportsLinks == -1) {
@@ -1138,6 +1147,145 @@ File FileSystem::getTempFile(unsigned int options) throw(IOException) {
     }
   }
 */
+}
+
+unsigned long FileSystem::getVariable(const String& path, Variable variable) throw(NotSupported) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  throw NotSupported(Type::getType<FileSystem>());
+#else // unix
+  static int FILE_SYSTEM_VARIABLES[MAX_SIZE_OF_SYMLINK + 1] = {
+    _PC_FILESIZEBITS, // MIN_FILE_SIZE_BITS
+    _PC_LINK_MAX, // MAX_NUM_OF_LINKS
+    _PC_NAME_MAX, // MAX_LEN_OF_NAME
+    _PC_PATH_MAX, // MAX_LEN_OF_PATH
+    _PC_PIPE_BUF, // MAX_SIZE_OF_PIPE_BUFFER
+    _PC_SYMLINK_MAX // MAX_SIZE_OF_SYMLINK
+  };
+  
+  int fileSystemVariable = FILE_SYSTEM_VARIABLES[variable];
+  if (fileSystemVariable != -1) {
+    errno = 0;
+    long result = ::pathconf(path.getElements(), fileSystemVariable);
+    if (!((result == -1) && (errno != 0))) {
+      return result;
+    }
+  }
+
+  // TAG: add POSIX values here?
+  throw NotSupported(Type::getType<FileSystem>());
+#endif // flavor
+}
+
+/*
+  TAG: other folders:
+
+  System configuration: "C:\windows\system32\?" or "/etc"
+  System libraries: "C:\windows\system32" or "/lib"
+  All users: GetAllUsersProfileDirectory(...) or ?
+  Personal persistent data: "GetUserProfileDirectory()\Application Data" or %HOME%/etc
+  ?: ? or "/net"
+  ?: ? or "/opt"
+  ?: ? or "/proc"
+  Homes: GetProfilesDirectory(...) or "/home"
+  ?: ? or "/var/tmp"
+
+  Files:
+    "/dev/null"
+    "/dev/zero"
+    "/dev/tty"
+*/
+
+String FileSystem::getFolder(Folder folder) throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  switch (folder) {
+  case ROOT:
+    {
+      char buffer[3]; // large enough for "C:\0"
+      ::GetWindowsDirectory(buffer, sizeof(buffer));
+      return String(buffer);
+    }
+  case DEVICES:
+    return MESSAGE("\\\\.");
+  case TEMP:
+    {
+      char buffer[MAX_PATH + 1];
+      ::GetWindowsDirectory(buffer, sizeof(buffer));
+      return String(buffer) + MESSAGE("\\temp");
+    }
+  }
+#else // unix
+  static const StringLiteral FOLDERS[] = {
+    MESSAGE("/"),
+    MESSAGE("/dev"),
+    MESSAGE("/tmp")
+  };
+  return String(FOLDERS[folder]);
+#endif // flavor
+}
+
+FileSystem::Quota FileSystem::getQuota(const String& path, Trustee trustee) throw(FileSystemException) {
+  Quota result;
+#if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || \
+     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65))
+  int id;
+  switch (trustee.getType()) {
+  case Trustee::USER:
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  case Trustee::GROUP:
+#endif
+    id = trustee.getIntegralId();
+    break;
+  default:
+    throw FileSystemException(Type::getType<FileSystem>());
+  }
+  
+  struct dqblk temp;
+  int res = ::quotactl(Q_GETQUOTA, path.getElements(), id, Cast::pointer<caddr_t>(&temp));
+  if (res == -1) {
+    if (errno == EINVAL) {
+      result.hardLimit = 0;
+      result.softLimit = 0;
+      result.currentUsage = 0;
+      return result;
+    }
+    throw FileSystemException(Type::getType<FileSystem>());
+  }
+  result.hardLimit = temp.dqb_ihardlimit;
+  result.softLimit = temp.dqb_isoftlimit;
+  result.currentUsage = temp.dqb_curinodes;
+  return result;
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+  struct dqblk temp;
+  struct quotcl operation;
+  operation.op = Q_GETQUOTA;
+  operation.addr = &temp;
+
+  switch (trustee.getType()) {
+  case Trustee::USER:
+    operation.uid = trustee.getIntegralId();
+    break;
+  default:
+    throw FileSystemException(Type::getType<FileSystem>());
+  }
+
+  int fd = ::open(path.getElements(), O_RDONLY, 0);
+  if (fd != -1) {
+    if (::ioctl(fd, Q_QUOTACTL, &operation) == 0) {
+      ::close(fd);
+      result.hardLimit = temp.dqb_bhardlimit;
+      result.softLimit = temp.dqb_bsoftlimit;
+      result.currentUsage = temp.dqb_curblocks;
+      return result;
+    }
+    ::close(fd);
+  }
+  throw FileSystemException(Type::getType<FileSystem>());
+#else
+  result.hardLimit = 0;
+  result.softLimit = 0;
+  result.currentUsage = 0;
+  return result;
+#endif
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

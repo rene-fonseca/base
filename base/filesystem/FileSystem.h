@@ -19,6 +19,7 @@
 #include <base/filesystem/FileSystemException.h>
 #include <base/NotSupported.h>
 #include <base/io/File.h>
+#include <base/security/Trustee.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -128,6 +129,16 @@ public:
     NAME, /**< The name of the entry excluding the extension and dot. */
     DOTEXTENSION, /**< The extension (including the dot). */
     EXTENSION /**< The extension (excluding the dot). */
+  };
+  
+  /** Quota. */
+  struct Quota {
+    /** Hard limit. */
+    uint64 softLimit;
+    /** Soft limit. */
+    uint64 hardLimit;
+    /** Current usage. */
+    uint64 currentUsage;
   };
   
   /**
@@ -255,8 +266,51 @@ public:
     @param options The file options. The default is SECURE.
   */
   static File getTempFile(unsigned int options = SECURE) throw(IOException);
+
+  /** File system variables. */
+  enum Variable {
+    MIN_FILE_SIZE_BITS, /**< Specifies the minimum number of bits required to represent the maximum supported file size. */
+    MAX_NUM_OF_LINKS, /**< Specifies the maximum number of links to a file. */
+    MAX_LEN_OF_NAME, /**< Specifies the maximum length of a file name. */
+    MAX_LEN_OF_PATH, /**< Specifies the maximum length of a path. */
+    MAX_SIZE_OF_PIPE_BUFFER, /**< Specifies the maximum number bytes that is guaranteed to be atomic when writing to a pipe. */
+    MAX_SIZE_OF_SYMLINK /**< Specifies the maximum number of bytes in a symbolic link. */
+  };
   
-  // static unsigned long getVariable(const String& path, Variable variable) throw();
+  /**
+    Returns the value of the specified file system variable.
+  */
+  static unsigned long getVariable(const String& path, Variable variable) throw(NotSupported);
+
+  /** System folders. */
+  enum Folder {
+    /**
+      The root folder.
+    */
+    ROOT,
+    /**
+      The folder intended for devices.
+    */
+    DEVICES,
+    /**
+      Folder intended for temporary files of applications. The files are not
+      guaranteed to be preserved between application invocations.
+    */
+    TEMP   
+  };
+
+  /**
+    Returns the path to the specified folder.
+  */
+  static String getFolder(Folder folder) throw();
+  
+  /**
+    Returns the quota.
+
+    @param path The path to the device.
+    @param trustee The truestee.
+  */
+  static Quota getQuota(const String& path, Trustee trustee) throw(FileSystemException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

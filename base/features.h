@@ -100,8 +100,10 @@ namespace base {
   #define _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE) #VALUE
   #define _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(VALUE) _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE)
   #define ASSERT(expression) {if (!(expression)) {ferr << "Assertion failure of (" #expression ") at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__) << ENDL;}}
+  #define ASSERTION(expression) namespace {Assertion<Exception> assertion(expression, Exception("Assertion failure of (" #expression ") at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__)));}
 #else
   #define ASSERT(expression)
+  #define ASSERTION(expression)
 #endif
 
 #endif

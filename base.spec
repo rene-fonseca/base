@@ -38,14 +38,14 @@ Group: System Environment/Libraries
 Requires: libstdc++, pcre, libxml2, glibc
 %description
 This particular package provides the runtime support needed by applications
-which are rely on the Base framework. If you want to develop you own
+which are rely on the Base framework. If you want to develop your own
 applications using this framework you need the dedicated development package
 which should accompany this package.
 
 
 
 %package devel
-Summary: Development support the Base framework
+Summary: Development support for the Base framework
 Group: Development/Libraries
 Requires: %{name} = %{version}, libstdc++-devel, pcre-devel, libxml2-devel, glibc-devel
 

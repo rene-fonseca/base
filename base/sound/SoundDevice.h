@@ -31,15 +31,18 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class SoundDevice : public virtual Object, public virtual ReadWriteLock {
-private:
-
   friend class SoundInputStream;
   friend class SoundOutputStream;
+private:
 
   /** The sound device handle. */
   static SoundDevice soundDevice;
 
-  enum Access {READ = 1, WRITE = 2};
+  /** Access flags. */
+  enum Access {
+    READ = 1, /**< Read access to device. */
+    WRITE = 2 /**< Write access to device. */
+  };
 
   /** Handle to the sound device. */
   FileDescriptor deviceDescriptor;
@@ -55,7 +58,7 @@ public:
   /**
     Initializes the sound device.
   */
-  SoundDevice() throw();
+  SoundDevice(unsigned int force) throw();
 
   /**
     Returns true if the device is readable.

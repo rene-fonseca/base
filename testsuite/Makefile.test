@@ -1,4 +1,4 @@
-TESTS = Array Exception fileInput io List Queue Map referenceCounting Set String
+TESTS = Array Exception fileInput io List Queue Map referenceCounting Set String Version
 TEST_BIN_PATH = .
 TEST_RESULTS_PATH = test_results
 TEST_RESULTS = $(addprefix $(TEST_RESULTS_PATH)/, $(addsuffix .stdout, $(TESTS)))

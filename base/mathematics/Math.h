@@ -887,6 +887,8 @@ public:
   /**
     Returns the base-2 logarithm of the specified integer. The result is rounded
     down.
+
+    @return 0 if value is 0.
   */
   static inline unsigned int ilog2(unsigned int value) throw() {
     unsigned int result = sizeof(unsigned int) * 8;
@@ -896,22 +898,44 @@ public:
         value <<= i;
       }
     }
-    return result;
+    return result ? result - 1 : result;
   }
   
   /**
     Returns the base-2 logarithm of the specified integer. The result is rounded
     down.
+    
+    @return 0 if value is 0.
   */
   static inline unsigned int ilog2(unsigned long value) throw() {
-    unsigned long result = sizeof(unsigned long) * 8;
+    unsigned int result = sizeof(unsigned long) * 8;
     for (unsigned int i = sizeof(unsigned long) * 8/2; i > 0; i >>= 1) {
       if ((value >> (sizeof(unsigned long) * 8 - i)) == 0) {
         result -= i;
         value <<= i;
       }
     }
-    return result;
+    return result ? result - 1 : result;
+  }
+
+  /**
+    Returns the power of 2 greater than or equal to the specified value.
+    
+    @return 0 if power of 2 exceeds limit.
+  */
+  static inline unsigned int getPowerOf2(unsigned int value) throw() {
+    unsigned int result = 1 << ilog2(value);
+    return (result >= value) ? result : (result << 1);
+  }
+
+  /**
+    Returns the power of 2 greater than or equal to the specified value.
+
+    @return 0 if power of 2 exceeds limit.
+  */
+  static inline unsigned long getPowerOf2(unsigned long value) throw() {
+    unsigned long result = 1 << ilog2(value);
+    return (result >= value) ? result : (result << 1);
   }
 
   /**

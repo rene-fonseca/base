@@ -20,8 +20,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  File reader utilizing the MappedFile class.
-
+  File reader utilizing the file mapping support.
+  
+  @short Optimal file reader.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

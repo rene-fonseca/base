@@ -409,6 +409,116 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value) {
   return stream;
 }
 
+FormatOutputStream& operator<<(FormatOutputStream& stream, long value) {
+  char buffer[sizeof(long) * 8];
+  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+
+  switch (stream.getBase()) {
+  case BIN:
+    {
+      unsigned long temp = (unsigned long)value; // no sign
+      do {
+        *dest = FormatOutputStream::DIGITS[temp & 0x00000001]; // get digit
+        temp >>= 1; // bits per digit
+        --dest;
+      } while(temp > 0);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case OCT:
+    {
+      unsigned long temp = (unsigned long)value; // no sign
+      do {
+        *dest = FormatOutputStream::DIGITS[temp & 0x00000007]; // get digit
+        temp >>= 3; // bits per digit
+        --dest;
+      } while(temp > 0);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case DEC:
+    {
+      unsigned long temp = (value >= 0) ? value : -value;
+      do {
+        *dest = FormatOutputStream::DIGITS[temp % 10]; // get digit
+        temp = temp/10;
+        --dest;
+      } while(temp > 0);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case HEX:
+    {
+      unsigned long temp = (unsigned long)value; // no sign
+      do {
+        *dest = FormatOutputStream::DIGITS[temp & 0x0000000f]; // get bits of digit
+        temp >>= 4; // bits per digit
+        --dest;
+      } while(temp > 0);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  default:
+    return stream; // do not do anything if base is unknown
+  }
+
+  stream.addIntegerField(dest, sizeof(buffer) - (dest - buffer), value < 0);
+  return stream;
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long value) {
+  char buffer[sizeof(unsigned long) * 8];
+  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+
+  switch (stream.getBase()) {
+  case BIN:
+    {
+      do {
+        *dest = FormatOutputStream::DIGITS[value & 0x00000001]; // get digit
+        value >>= 1; // bits per digit
+        --dest;
+      } while(value > 0);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case OCT:
+    {
+      do {
+        *dest = FormatOutputStream::DIGITS[value & 0x00000007]; // get digit
+        value >>= 3; // bits per digit
+        --dest;
+      } while(value > 0);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case DEC:
+    {
+      do {
+        *dest = FormatOutputStream::DIGITS[value % 10]; // get digit
+        value /= 10;
+        --dest;
+      } while(value > 0);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case HEX:
+    {
+      do {
+        *dest = FormatOutputStream::DIGITS[value & 0x0000000f]; // get bits of digit
+        value >>= 4; // bits per digit
+        --dest;
+      } while(value > 0);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  default:
+    return stream; // do not do anything if base is unknown
+  }
+
+  stream.addIntegerField(dest, sizeof(buffer) - (dest - buffer), false);
+  return stream;
+}
+
 FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) {
   char buffer[sizeof(long long int) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position

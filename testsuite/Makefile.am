@@ -2,7 +2,7 @@
 #    The Base Framework (Test Suite)
 #    A framework for developing platform independent applications
 #
-#    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+#    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 #
 #    This framework is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,6 +20,8 @@ LIBS=-lbase
 
 bin_PROGRAMS = Array
 bin_PROGRAMS += BitSet
+bin_PROGRAMS += Date
+bin_PROGRAMS += debug
 bin_PROGRAMS += Exception
 bin_PROGRAMS += File
 bin_PROGRAMS += HashSet
@@ -72,11 +74,14 @@ bin_PROGRAMS += dom
 bin_PROGRAMS += sax
 bin_PROGRAMS += validate
 bin_PROGRAMS += xsltprocessor
+bin_PROGRAMS += cipher
 
 #lib_LTLIBRARIES = dlmodule.la
 
 Array_SOURCES = Array.cpp
 BitSet_SOURCES = BitSet.cpp
+Date_SOURCES = Date.cpp
+debug_SOURCES = debug.cpp
 Exception_SOURCES = Exception.cpp
 File_SOURCES = File.cpp
 HashSet_SOURCES = HashSet.cpp
@@ -129,6 +134,7 @@ dom_SOURCES = dom.cpp
 sax_SOURCES = sax.cpp
 validate_SOURCES = validate.cpp
 xsltprocessor_SOURCES = xsltprocessor.cpp
+cipher_SOURCES = cipher.cpp
 
 #dlmodule_la_SOURCES = dlmodule.cpp MyLinkerModule.cpp
 #dlmodule_la_LDFLAGS = -avoid-version -module -no-undefined -version-info 0:1:0

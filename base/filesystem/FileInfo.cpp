@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
+#include <base/platforms/features.h>
 #include <base/filesystem/FileInfo.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
@@ -34,7 +34,7 @@ FileInfo::FileInfo(const String& path) throw(FileSystemException) : path(path) {
   WIN32_FIND_DATA buffer;
   HANDLE handle = FindFirstFile(path.getElements(), &buffer);
   if ((handle == INVALID_HANDLE_VALUE) || (buffer.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-    throw FileSystemException("Not a file");
+    throw FileSystemException("Not a file", this);
   }
 
   ULARGE_INTEGER temp;
@@ -50,12 +50,12 @@ FileInfo::FileInfo(const String& path) throw(FileSystemException) : path(path) {
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 buffer;
     if (stat64(path.getElements(), &buffer) || (!S_ISREG(buffer.st_mode))) {
-      throw FileSystemException("Not a file");
+      throw FileSystemException("Not a file", this);
     }
   #else
     struct stat buffer;
     if (stat(path.getElements(), &buffer) || (!S_ISREG(buffer.st_mode))) {
-      throw FileSystemException("Not a file");
+      throw FileSystemException("Not a file", this);
     }
   #endif
   size = buffer.st_size;

@@ -22,7 +22,7 @@ LinkerModule::LinkerModule(const String& i, const String& n, const String& v) th
   name(n),
   version(v) {
   static unsigned int singleton = 0;
-  assert(singleton == 0, SingletonException("LinkerModule has been instantiated"));
+  assert(singleton == 0, SingletonException("LinkerModule has been instantiated", this));
   ++singleton;
   linkerModule = this;
 }

@@ -16,7 +16,7 @@
 #include <base/Exception.h>
 #include <base/SystemLogger.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else
   #include <sys/utsname.h>
@@ -25,7 +25,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 String SystemInformation::getVendor() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return MESSAGE("Microsoft");
 #else
   struct utsname name;
@@ -40,7 +40,7 @@ String SystemInformation::getVendor() throw() {
 }
 
 String SystemInformation::getSystem() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   OSVERSIONINFO versionInfo;
   versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
   ::GetVersionEx(&versionInfo); // never fails
@@ -61,7 +61,7 @@ String SystemInformation::getSystem() throw() {
 }
 
 String SystemInformation::getRelease() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return MESSAGE("Unspecified");
 #else
   struct utsname name;
@@ -71,7 +71,7 @@ String SystemInformation::getRelease() throw() {
 }
 
 String SystemInformation::getVersion() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return MESSAGE("Unspecified");
 #else
   struct utsname name;
@@ -81,7 +81,7 @@ String SystemInformation::getVersion() throw() {
 }
 
 String SystemInformation::getMachine() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return MESSAGE("Unspecified");
 #else
   struct utsname name;

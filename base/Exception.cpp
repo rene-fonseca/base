@@ -18,14 +18,24 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 Exception::Exception() throw() : message(0) {
 }
 
-Exception::Exception(const char* m) throw() : message(m) {
+Exception::Exception(const char* _message) throw() : message(_message) {
 }
 
-Exception::Exception(const Exception& copy) throw() : message(copy.message) {
+Exception::Exception(Type _type) throw() : message(0), type(_type) {
+}
+
+Exception::Exception(const char* _message, Type _type) throw() : message(_message), type(_type) {
+}
+
+Exception::Exception(const Exception& copy) throw() : message(copy.message), type(copy.type) {
 }
 
 const char* Exception::getMessage() const throw() {
   return message;
+}
+
+Type Exception::getType() const throw() {
+  return type;
 }
 
 Exception::~Exception() throw() {

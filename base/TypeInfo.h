@@ -14,31 +14,30 @@
 #ifndef _DK_SDU_MIP__BASE__TYPE_INFO_H
 #define _DK_SDU_MIP__BASE__TYPE_INFO_H
 
-#include <base/features.h>
 #include <base/string/String.h>
-#include <typeinfo>
+#include <base/Type.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-/**
-  Returns the id that uniquely identifies the specified type.
-*/
-template<class TYPE>
-inline const char* getTypeId() throw() {
-  return typeid(TYPE).name();
-}
+// /**
+//   Returns the id that uniquely identifies the specified type.
+// */
+// template<class TYPE>
+// inline const char* getTypeId() throw() {
+//   return typeid(TYPE).name();
+// }
+
+// /**
+//   Returns the id that uniquely identifies the type of the specified object.
+// */
+// template<class TYPE>
+// inline const char* getTypeId(const TYPE& object) throw() {
+//   return typeid(object).name();
+// }
 
 /**
-  Returns the id that uniquely identifies the type of the specified object.
-*/
-template<class TYPE>
-inline const char* getTypeId(const TYPE& object) throw() {
-  return typeid(object).name();
-}
-
-/**
-  Demangles the specified string as returned by typeinfo::name(). You should
-  not call this function directly. Use the getTypename<TYPE>() and
+  Demangles the specified string as returned by type_info::name(). You should
+  not call this function directly. Instead use the getTypename<TYPE>() and
   getTypename<TYPE>(const TYPE&) functions.
 */
 String demangleTypename(const char* mangled) throw();

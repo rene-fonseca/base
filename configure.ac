@@ -246,17 +246,26 @@ AC_ARG_ENABLE(
 
 ac_base_target=$ac_cv_target
 case $ac_base_target in
-i[[3456]]86-*-cygwin) ac_base_target=i386-unknown-cygwin;;
-i[[3456]]86-*-linux*) ac_base_target=i386-unknown-linux-gnu;;
+i386-*-cygwin) ac_base_target=i386-unknown-cygwin;;
+i486-*-cygwin) ac_base_target=i486-unknown-cygwin;;
+i586-*-cygwin) ac_base_target=i586-unknown-cygwin;;
+i686-*-cygwin) ac_base_target=i686-unknown-cygwin;;
+i386-*-linux*) ac_base_target=i386-unknown-linux-gnu;;
+i486-*-linux*) ac_base_target=i486-unknown-linux-gnu;;
+i586-*-linux*) ac_base_target=i586-unknown-linux-gnu;;
+i686-*-linux*) ac_base_target=i686-unknown-linux-gnu;;
 ia64-*-linux*) ac_base_target=ia64-unknown-linux-gnu;;
 mips-sgi-irix6.5) ac_base_target=mips-sgi-irix65;;
 sparc*-sun-solaris2.7) ac_base_target=sparc-sun-solaris2.7;;
 sparc*-sun-solaris2.8) ac_base_target=sparc-sun-solaris2.8;;
 sparc*-sun-solaris2.9) ac_base_target=sparc-sun-solaris2.9;;
 sparc*-sun-solaris2.8-64bit) ac_base_target=sparc-sun-solaris2.8-64bit;;
-i[[3456]]86-*-mingw32) ac_base_target=i386-unknown-mingw32;;
+i386-*-mingw32) ac_base_target=i386-unknown-mingw32;;
+i486-*-mingw32) ac_base_target=i486-unknown-mingw32;;
+i586-*-mingw32) ac_base_target=i586-unknown-mingw32;;
+i686-*-mingw32) ac_base_target=i686-unknown-mingw32;;
 *)
-  if test -f ${top_srcdir:-.}/static/$ac_base_target; then : ; else
+  if test -f $srcdir/static/$ac_base_target; then : ; else
 #    search for static config (do not use - only suggest reconfiguration)
 #    case $ac_base_target in *-pc-*) ac_base_target="*-unknown-*";; esac
 #    case $ac_base_target in *-*-linux*) ac_base_target="$ac_base_target-linux-gnu";; esac
@@ -269,10 +278,10 @@ esac
 
 
 ac_base_static_loaded=no
-if test x$ac_base_static = xyes && test -f ${top_srcdir:-.}/static/$ac_base_target; then
+if test x$ac_base_static = xyes && test -f $srcdir/static/$ac_base_target; then
   echo loading static target configuration...
   rm -f static.tmp
-  ${top_srcdir:-.}/static/static.sh ${top_srcdir:-.}/static/$ac_base_target > static.tmp 2>&1
+  (cd $srcdir/static; ./static.sh $ac_base_target) > static.tmp 2>&1
   . static.tmp
   ac_base_static_loaded=yes
 fi
@@ -295,6 +304,11 @@ AC_BASE_DEFINE(OS, $base_symbol_prefix$base_cv_os)
 AC_BASE_DEFINE(OS_MINOR, $base_cv_os_minor)
 AC_BASE_DEFINE(ARCH, $base_symbol_prefix$base_cv_arch)
 AC_BASE_DEFINE(ARCH_MINOR, $base_symbol_prefix$base_cv_arch_minor)
+
+
+
+AC_MSG_CHECKING(flavor of target)
+AC_MSG_RESULT($base_cv_flavor)
 
 
 

@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE_MATHEMATICS__VECTOR3D_H
 
 #include <base/string/FormatOutputStream.h>
+#include <base/mathematics/Math.h>
 #include <base/mathematics/Vector2D.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -79,21 +80,21 @@ public:
     Returns the modulus of the vector.
   */
   inline TYPE getModulus() const throw() {
-    return sqrt(getSqrModulus());
+    return Math::sqrt(getSqrModulus());
   }
 
   /**
     Returns the angle of this vector in the X-Y plane.
   */
   inline TYPE getXYAngle() const throw() {
-    return atan2(y, x);
+    return Math::atan2(y, x);
   }
 
   /**
     Returns the angle between this vector and the X-Y plane.
   */
   inline TYPE getZAngle() const throw() {
-    return atan2(z, getModulus());
+    return Math::atan2(z, getModulus());
   }
 
   /**
@@ -259,8 +260,8 @@ public:
   */
   TYPE getAngle(const Vector3D& value) const throw() {
     // TAG: use return acos(temp);
-    TYPE temp = dot(value)/sqrt(getSqrModulus() * value.getSqrModulus());
-    return atan2(sqrt(1 - temp * temp), temp);
+    TYPE temp = dot(value)/Math::sqrt(getSqrModulus() * value.getSqrModulus());
+    return Math::atan2(Math::sqrt(1 - temp * temp), temp);
   }
 
   /**

@@ -15,9 +15,95 @@
 #define _DK_SDU_MIP__BASE_MATHEMATICS__COMPLEX_H
 
 #include <base/string/FormatOutputStream.h>
-#include <math.h> // TAG: not nice; but what can I do
+#include <base/mathematics/Math.h>
+
+#define _DK_SDU_MIP__BASE__COMPLEX_ISOC
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+namespace isoc {
+
+  extern "C" float crealf(_Complex float);
+  extern "C" double creal(_Complex double);
+  extern "C" long double creall(_Complex long double);
+
+  extern "C" float cimagf(_Complex float);
+  extern "C" double cimag(_Complex double);
+  extern "C" long double cimagl(_Complex long double);
+
+
+  extern "C" _Complex float cabsf(_Complex float);
+  extern "C" _Complex double cabs(_Complex double);
+  extern "C" _Complex long double cabsl(_Complex long double);
+
+  extern "C" _Complex float csqrtf(_Complex float);
+  extern "C" _Complex double csqrt(_Complex double);
+  extern "C" _Complex long double csqrtl(_Complex long double);
+
+  extern "C" _Complex float cexpf(_Complex float);
+  extern "C" _Complex double cexp(_Complex double);
+  extern "C" _Complex long double cexpl(_Complex long double);
+
+  extern "C" _Complex float clogf(_Complex float);
+  extern "C" _Complex double clog(_Complex double);
+  extern "C" _Complex long double clogl(_Complex long double);
+
+  extern "C" _Complex float cpowf(_Complex float, _Complex float);
+  extern "C" _Complex double cpow(_Complex double, _Complex double);
+  extern "C" _Complex long double cpowl(_Complex long double, _Complex long double);
+
+
+  extern "C" _Complex float csinf(_Complex float);
+  extern "C" _Complex double csin(_Complex double);
+  extern "C" _Complex long double csinl(_Complex long double);
+
+  extern "C" _Complex float ccosf(_Complex float);
+  extern "C" _Complex double ccos(_Complex double);
+  extern "C" _Complex long double ccosl(_Complex long double);
+
+  extern "C" _Complex float casinf(_Complex float);
+  extern "C" _Complex double casin(_Complex double);
+  extern "C" _Complex long double casinl(_Complex long double);
+
+  extern "C" _Complex float cacosf(_Complex float);
+  extern "C" _Complex double cacos(_Complex double);
+  extern "C" _Complex long double cacosl(_Complex long double);
+
+  extern "C" _Complex float ctanf(_Complex float);
+  extern "C" _Complex double ctan(_Complex double);
+  extern "C" _Complex long double ctanl(_Complex long double);
+
+  extern "C" _Complex float catanf(_Complex float);
+  extern "C" _Complex double catan(_Complex double);
+  extern "C" _Complex long double catanl(_Complex long double);
+
+
+  extern "C" _Complex float csinhf(_Complex float);
+  extern "C" _Complex double csinh(_Complex double);
+  extern "C" _Complex long double csinhl(_Complex long double);
+
+  extern "C" _Complex float ccoshf(_Complex float);
+  extern "C" _Complex double ccosh(_Complex double);
+  extern "C" _Complex long double ccoshl(_Complex long double);
+
+  extern "C" _Complex float casinhf(_Complex float);
+  extern "C" _Complex double casinh(_Complex double);
+  extern "C" _Complex long double casinhl(_Complex long double);
+
+  extern "C" _Complex float cacoshf(_Complex float);
+  extern "C" _Complex double cacosh(_Complex double);
+  extern "C" _Complex long double cacoshl(_Complex long double);
+
+  extern "C" _Complex float ctanhf(_Complex float);
+  extern "C" _Complex double ctanh(_Complex double);
+  extern "C" _Complex long double ctanhl(_Complex long double);
+
+  extern "C" _Complex float catanhf(_Complex float);
+  extern "C" _Complex double catanh(_Complex double);
+  extern "C" _Complex long double catanhl(_Complex long double);
+};
+#endif
 
 /**
   Complex number represented by real and imaginary parts.
@@ -31,12 +117,23 @@ class Complex {
 public:
 
   typedef long double Type;
+
+  /** The imaginary unit. */
+  static const Complex I;
 private:
 
   /** The real part of the complex number. */
   long double real;
   /** The imaginary part the complex number. */
   long double imaginary;
+
+  inline _Complex long double getNative() const throw() {
+    return real + imaginary * 1i;
+  }
+
+  static inline Complex getComplex(_Complex long double value) throw() {
+    return Complex(isoc::creall(value), isoc::cimagl(value));
+  }
 public:
 
   /**
@@ -83,6 +180,73 @@ public:
     return *this;
   }
 
+  inline Complex sqrt() const throw() {
+    return getComplex(isoc::csqrtl(getNative()));
+  }
+
+  inline Complex exp() const throw() {
+    return getComplex(isoc::cexpl(getNative()));
+  }
+
+  inline Complex log() const throw() {
+    return getComplex(isoc::clogl(getNative()));
+  }
+
+  inline Complex pow(const Complex& value) const throw() {
+    return getComplex(isoc::cpowl(getNative(), value.getNative()));
+  }
+
+
+  inline Complex sin() const throw() {
+    return getComplex(isoc::csinl(getNative()));
+  }
+
+  inline Complex asin() const throw() {
+    return getComplex(isoc::casinl(getNative()));
+  }
+
+  inline Complex cos() const throw() {
+    return getComplex(isoc::ccosl(getNative()));
+  }
+
+  inline Complex acos() const throw() {
+    return getComplex(isoc::cacosl(getNative()));
+  }
+
+  inline Complex tan() const throw() {
+    return getComplex(isoc::ctanl(getNative()));
+  }
+
+  inline Complex atan() const throw() {
+    return getComplex(isoc::catanl(getNative()));
+  }
+
+
+  inline Complex sinh() const throw() {
+    return getComplex(isoc::csinhl(getNative()));
+  }
+
+  inline Complex asinh() const throw() {
+    return getComplex(isoc::casinhl(getNative()));
+  }
+
+  inline Complex cosh() const throw() {
+    return getComplex(isoc::ccoshl(getNative()));
+  }
+
+  inline Complex acosh() const throw() {
+    return getComplex(isoc::cacoshl(getNative()));
+  }
+
+  inline Complex tanh() const throw() {
+    return getComplex(isoc::ctanhl(getNative()));
+  }
+
+  inline Complex atanh() const throw() {
+    return getComplex(isoc::catanhl(getNative()));
+  }
+
+
   /**
     Returns the real part of the complex number.
   */
@@ -114,14 +278,14 @@ public:
     Returns the modulus of the complex number.
   */
   inline long double getModulus() const throw() {
-    return sqrt(getSqrModulus());
+    return Math::sqrt(getSqrModulus());
   }
 
   /**
     Returns the angle of the complex number.
   */
   inline long double getAngle() const throw() {
-    return atan2(imaginary, real);
+    return Math::atan2(imaginary, real);
   }
 
   /**
@@ -216,7 +380,7 @@ public:
   */
   inline Complex& divide(const Complex& value) throw() {
     long double scale = value.getSqrModulus(); // TAG: possible division by zero
-    //assert(scale != 0, DivisionByZero());
+    //assert(scale != 0, DivisionByZero(this));
     scale = 1/scale;
     long double temp = (real * value.real - imaginary * -value.imaginary) * scale;
     imaginary = (real * -value.imaginary + imaginary * value.real) * scale;

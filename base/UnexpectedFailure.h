@@ -39,6 +39,10 @@ public:
     @param message The message.
   */
   UnexpectedFailure(const char* message) throw();
+
+  UnexpectedFailure(Type type) throw() : Exception(type) {}
+  
+  UnexpectedFailure(const char* message, Type type) throw() : Exception(message, type) {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

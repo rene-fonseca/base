@@ -40,6 +40,10 @@ public:
     @param message The message.
   */
   NotSupported(const char* message) throw();
+
+  NotSupported(Type type) throw() : Exception(type) {}
+  
+  NotSupported(const char* message, Type type) throw() : Exception(message, type) {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

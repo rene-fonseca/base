@@ -21,4 +21,7 @@ OutOfDomain::OutOfDomain() throw() {
 OutOfDomain::OutOfDomain(const char* message) throw() : Exception(message) {
 }
 
+OutOfDomain::OutOfDomain(const char* message, Type type) throw() : Exception(message, type) {
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

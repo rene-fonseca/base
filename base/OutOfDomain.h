@@ -39,6 +39,16 @@ public:
     @param message The message.
   */
   OutOfDomain(const char* message) throw();
+  
+  OutOfDomain(Type type) throw() : Exception(type) {}
+
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  OutOfDomain(const char* message, Type type) throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -42,6 +42,10 @@ public:
     @param message The message.
   */
   DateException(const char* message) throw();
+
+  DateException(Type type) throw() : Exception(type) {}
+  
+  DateException(const char* message, Type type) throw() : Exception(message, type) {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

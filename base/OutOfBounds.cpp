@@ -21,4 +21,7 @@ OutOfBounds::OutOfBounds() throw() {
 OutOfBounds::OutOfBounds(const char* message) throw() : Exception(message) {
 }
 
+OutOfBounds::OutOfBounds(const char* message, Type type) throw() : Exception(message, type) {
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

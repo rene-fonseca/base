@@ -71,7 +71,16 @@ public:
   Exception(Type type) throw();
   
   /**
-    Initializes the exception object without an associated message.
+    Initializes the exception object.
+
+    <pre>
+    void myMethod() throw(Exception) {
+      if (!condition) {
+        throw Exception("my short message", this);
+      }
+      ...
+    }
+    </pre>
     
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.

@@ -40,6 +40,10 @@ public:
     @param message The message.
   */
   NotImplemented(const char* message) throw();
+
+  NotImplemented(Type type) throw() : Exception(type) {}
+  
+  NotImplemented(const char* message, Type type) throw() : Exception(message, type) {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

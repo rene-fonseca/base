@@ -41,6 +41,10 @@ public:
     @param message The message.
   */
   DeviceException(const char* message) throw();
+
+  DeviceException(Type type) throw() : ResourceException(type) {}
+  
+  DeviceException(const char* message, Type type) throw() : ResourceException(message, type) {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

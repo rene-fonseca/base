@@ -42,6 +42,10 @@ public:
     @param message The message.
   */
   SingletonException(const char* message) throw();
+
+  SingletonException(Type type) throw() : Exception(type) {}
+  
+  SingletonException(const char* message, Type type) throw() : Exception(message, type) {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

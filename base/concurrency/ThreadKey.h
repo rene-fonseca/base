@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_THREAD__THREAD_KEY_H
-#define _DK_SDU_MIP__BASE_THREAD__THREAD_KEY_H
+#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__THREAD_KEY_H
+#define _DK_SDU_MIP__BASE_CONCURRENCY__THREAD_KEY_H
 
 #include <base/Object.h>
 #include <base/Exception.h>

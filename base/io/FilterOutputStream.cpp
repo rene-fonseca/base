@@ -18,11 +18,8 @@ void FilterOutputStream::flush() throw(IOException) {
   out.flush();
 }
 
-unsigned int FilterOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {
-  return out.write(buffer, size);
-}
-
-FilterOutputStream::~FilterOutputStream() {
+unsigned int FilterOutputStream::write(const char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
+  return out.write(buffer, size, nonblocking);
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

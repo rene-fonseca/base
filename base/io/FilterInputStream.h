@@ -50,13 +50,18 @@ public:
   void close() throw(IOException);
 
   /**
-    Fills the specified buffer with bytes from the stream. Blocks if asked to read more bytes than available.
+    Fills the specified buffer with bytes from the stream. In blocking mode the
+    method does not return until all bytes have been read. In non-blocking mode
+    the total bytes read may be any number below or equal to the requested
+    number of bytes. Attempting to read beyond the end of a stream in blocking
+    mode results in an EndOfFile exception.
 
     @param buffer The buffer to receive the bytes.
     @param size The size of the buffer.
+    @param nonblocking Specifies that the method may not block. The default is false.
     @return The actual number of bytes read from the stream.
   */
-  unsigned int read(char* buffer, unsigned int size) throw(IOException);
+  unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
 
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than available.

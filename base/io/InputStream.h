@@ -26,23 +26,33 @@ public:
   virtual bool atEnd() const throw(IOException) = 0;
 
   /**
-    Returns the number of bytes that can be read or skipped over without blocking.
+    Returns the number of bytes that can be read or skipped over without
+    blocking under normal circumstances. The number of returned bytes may be
+    less than the true number of bytes available. Attempting to read the number
+    of bytes returned by the function may block the calling thread if some
+    process has acquired a lock on the object (e.g. file locking).
 
     @return Available number of bytes in stream.
   */
   virtual unsigned int available() const throw(IOException) = 0;
 
   /**
-    Fills the specified buffer with bytes from the stream. Blocks if asked to read more bytes than available.
+    Fills the specified buffer with bytes from the stream. In blocking mode the
+    method does not return until all bytes have been read. In non-blocking mode
+    the total bytes read may be any number below or equal to the requested
+    number of bytes. Attempting to read beyond the end of a stream in blocking
+    mode results in an EndOfFile exception.
 
     @param buffer The buffer to receive the bytes.
     @param size The size of the buffer.
+    @param nonblocking Specifies that the method may not block.
     @return The actual number of bytes read from the stream.
   */
-  virtual unsigned int read(char* buffer, unsigned int size) throw(IOException) = 0;
+  virtual unsigned int read(char* buffer, unsigned int size, bool nonblocking) throw(IOException) = 0;
 
   /**
-    Skips a specified number of bytes. Blocks if asked to skip more bytes than available.
+    Skips a specified number of bytes. Blocks if asked to skip more bytes than
+    available.
 
     @param count The number of bytes to skip.
     @return The actual number of bytes skipped.

@@ -26,13 +26,17 @@ public:
   virtual void flush() throw(IOException) = 0;
 
   /**
-    Writes bytes in the specified buffer to the stream.
+    Writes the specified number of bytes in the buffer to the stream. In
+    blocking mode the method does not return until all bytes have been written.
+    In non-blocking mode the total number of bytes written may be any number
+    below or equal to the requested number of bytes.
 
     @param buffer The buffer containing the bytes to be written.
     @param size The number of bytes to be written.
-    @return The actual number of bytes written.
+    @param nonblocking Specifies that the method may not block.
+    @return The actual number of bytes written to the stream.
   */
-  virtual unsigned int write(const char* buffer, unsigned int size) throw(IOException) = 0;
+  virtual unsigned int write(const char* buffer, unsigned int size, bool nonblocking) throw(IOException) = 0;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

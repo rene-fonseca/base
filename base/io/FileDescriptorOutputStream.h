@@ -57,23 +57,13 @@ public:
     @param size The number of bytes to be written.
     @return The actual number of bytes written.
   */
-  unsigned int write(const char* buffer, unsigned int size) throw(IOException);
+  unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
 
   /**
     Release file descriptor.
   */
   ~FileDescriptorOutputStream();
-
-  /**
-    Writes a string representation of a FileDescriptorOutputStream object to a format stream.
-  */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorOutputStream& value);
 };
-
-/**
-  Writes a string representation of a FileDescriptorOutputStream object to a format stream.
-*/
-FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorOutputStream& value);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -49,51 +49,45 @@ void FileDescriptorOutputStream::flush() throw(IOException) {
   if (!isValid()) {
     throw IOException("Unable to flush file descriptor");
   }
-  FlushFileBuffers((void*)fd->getHandle()); // yes ignore any error
+  ::FlushFileBuffers((HANDLE)fd->getHandle()); // yes ignore any error
 #else // __unix__
-  fsync(fd->getHandle());
+  ::fsync(fd->getHandle());
 //  if (ioctl(fd->getHandle(), I_FLUSH, FLUSHRW) != 0) {
 //    throw IOException("Unable to flush stream");
 //  }
 #endif
 }
 
-unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {
+unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
+  // TAG: currently always blocks
+  unsigned int bytesWritten = 0;
+  while (bytesWritten < size) {
 #if defined(__win32__)
-  DWORD bytesWritten;
-  BOOL success = WriteFile((HANDLE)fd->getHandle(), buffer, size, &bytesWritten, 0);
-  if (success) {
-    return bytesWritten;
-  } else {
-    throw IOException("Unable to write to file descriptor");
-  }
-#else // __unix__
-  int result = ::write(fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
-  if (result == 0) {
-    // do not know if it is possible to end up here
-    return 0;
-  } else if (result == -1) { // has an error occured
-    switch (errno) {
-    case EINTR: // interrupted by signal before any data was written
-      return 0; // try later
-    case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
-      return 0; // try later
-    default:
-      throw IOException("Unable to write to file descriptor");
+    DWORD result;
+    BOOL success = ::WriteFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
+    if (!success) {
+      throw IOException("Unable to write to object");
     }
-  }
-  return result;
+#else // __unix__
+    int result = ::write(fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
+    if (result < 0) { // has an error occured
+      switch (errno) {
+      case EINTR: // interrupted by signal before any data was written
+        continue; // try again
+      case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
+//      return 0; // try later
+      default:
+        throw IOException("Unable to write to object");
+      }
+    }
 #endif
+    bytesWritten += result;
+  }
+  return bytesWritten;
 }
 
 FileDescriptorOutputStream::~FileDescriptorOutputStream() {
   TRACE_MEMBER();
-}
-
-FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorOutputStream& value) {
-  return stream << "class/FileDescriptorOutputStream{"
-                << "handle=" << value.fd->getHandle()
-                << "}";
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

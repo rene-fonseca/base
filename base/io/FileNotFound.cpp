@@ -10,7 +10,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 FileNotFound::FileNotFound() {
 }
 
-FileNotFound::FileNotFound(const char* message) : IOException(message) {
+FileNotFound::FileNotFound(const char* message) : FileException(message) {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

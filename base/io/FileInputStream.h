@@ -6,10 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE_IO__FILE_INPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__FILE_INPUT_STREAM_H
 
-#include <base/io/FileDescriptorInputStream.h>
-#include <base/io/FileNotFound.h>
-#include <base/io/BindException.h>
-#include <base/string/String.h>
+#include <base/io/InputStream.h>
+#include <base/io/File.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -20,60 +18,55 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class FileInputStream : public FileDescriptorInputStream {
-public:
-
-  /** The flags. */
-  enum {NONBLOCK = 0x08};
+class FileInputStream : public InputStream {
 protected:
 
-  /** The path of the file. */
-  String path;
+  /** The file providing the stream. */
+  File file;
+  /** Specifies that the end of the file has been reached. */
+  bool end;
 public:
 
   /**
     Initializes the file input stream.
 
     @param path The path of the file.
-    @param flags The desired flags.
+    @param exclusive Specifies that the file should be opened in exclusive mode.
   */
-  FileInputStream(const String& name, unsigned int flags) throw(FileNotFound);
+  FileInputStream(const String& name, bool exclusive = true) throw(FileNotFound);
+
+  inline bool atEnd() const throw(FileException) {return end;}
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.
 
     @return Available number of bytes in stream.
   */
-  unsigned int available() const throw(IOException);
+  unsigned int available() const throw(FileException);
+
+  void close() throw(FileException);
+
+  unsigned int skip(unsigned int count) throw(FileException);
+
+  inline unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(FileException) {
+    return file.read(buffer, size, nonblocking);
+  }
 
   /**
-    Returns the path of the file.
+    Blocking wait for input to become available. This method does nothing for a
+    file.
   */
-  const String& getPath() const throw();
+  void wait() const throw(FileException);
 
   /**
-    Blocking wait for input to become available.
-  */
-  void wait() const throw(IOException);
-
-  /**
-    Blocking wait for input to become available.
+    Blocking wait for input to become available. This method does nothing for a
+    file.
 
     @param timeout The timeout periode in microseconds.
-    @return True, if data is available. False, if the timeout periode expired.
+    @return Always returns true.
   */
-  bool wait(unsigned int timeout) const throw(IOException);
-
-  /**
-    Writes a string representation of a FileInputStream object to a stream.
-  */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const FileInputStream& value);
+  bool wait(unsigned int timeout) const throw(FileException);
 };
-
-/**
-  Writes a string representation of a FileInputStream object to a stream.
-*/
-FormatOutputStream& operator<<(FormatOutputStream& stream, const FileInputStream& value);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

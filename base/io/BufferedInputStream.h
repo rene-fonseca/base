@@ -74,9 +74,10 @@ public:
 
     @param buffer The buffer to receive the bytes.
     @param size The size of the buffer.
+    @param nonblocking Specifies that the method may not block. Default is false.
     @return The actual number of bytes read from the stream.
   */
-  unsigned int read(char* buffer, unsigned int size) throw(IOException);
+  unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
 
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than available.

@@ -22,7 +22,7 @@ class FileDescriptorInputStream : public virtual InputStream, public FileDescrip
 private:
 
   /** Specifies that the end of the stream has been reached. */
-  bool eof;
+  bool end;
 public:
 
   /**
@@ -50,7 +50,7 @@ public:
   /**
     Returns true if the end of the file descriptor has been reached.
   */
-  inline bool atEnd() const throw(IOException) {return eof;}
+  inline bool atEnd() const throw(IOException) {return end;}
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.
@@ -66,7 +66,7 @@ public:
     @param size The size of the buffer.
     @return The actual number of bytes read.
   */
-  unsigned int read(char* buffer, unsigned int size) throw(IOException);
+  unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
 
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than available.
@@ -97,17 +97,7 @@ public:
     Release file descriptor.
   */
   ~FileDescriptorInputStream();
-
-  /**
-    Writes a string representation of a FileDescriptorInputStream object to a format stream.
-  */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorInputStream& value);
 };
-
-/**
-  Writes a string representation of a FileDescriptorInputStream object to a format stream.
-*/
-FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorInputStream& value);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -43,18 +43,17 @@ public:
   void flush() throw(IOException);
 
   /**
-    Writes bytes in the specified buffer to the stream.
+    Writes the specified number of bytes in the buffer to the stream. In
+    blocking mode the method does not return until all bytes have been written.
+    In non-blocking mode the total number of bytes written may be any number
+    below or equal to the requested number of bytes.
 
     @param buffer The buffer containing the bytes to be written.
     @param size The number of bytes to be written.
-    @return The actual number of bytes written.
+    @param nonblocking Specifies that the method may not block. Default is false.
+    @return The actual number of bytes written to the stream.
   */
-  unsigned int write(const char* buffer, unsigned int size) throw(IOException);
-
-  /**
-    Destroys the filtered output stream.
-  */
-  ~FilterOutputStream();
+  unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -7,11 +7,11 @@
 #define _DK_SDU_MIP__BASE_IO__PIPE_H
 
 #include <base/Object.h>
-#include <base/concurrency/Synchronize.h>
 #include <base/io/TimedOut.h>
 #include <base/io/FileDescriptor.h>
 #include <base/io/InputStream.h>
 #include <base/io/OutputStream.h>
+#include <base/io/PipeException.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/collection/Pair.h>
 
@@ -24,10 +24,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class Pipe : public virtual Object, public virtual InputStream, public virtual OutputStream, public virtual Synchronizeable<Unsafe> {
+class Pipe : public virtual Object, public virtual InputStream, public virtual OutputStream {
 public:
-
-  typedef Unsafe LOCK;
 
   class PipeImpl : public virtual ReferenceCountedObject {
   private:
@@ -43,18 +41,20 @@ public:
     /** Returns the handle. */
     inline int getHandle() const throw() {return handle;}
     /** Releases the resources use by the pipe. */
-    ~PipeImpl() throw(IOException);
+    ~PipeImpl() throw(PipeException);
   };
 protected:
 
   /** The internal pipe representation. */
-  ReferenceCountedObjectPointer<PipeImpl> pipe;
+  ReferenceCountedObjectPointer<PipeImpl> fd;
+  /** Specifies that the end has been reached. */
+  bool end;
 public:
 
   /**
     Creates a new pair of pipes.
   */
-  static Pair<Pipe, Pipe> make() throw(IOException);
+  static Pair<Pipe, Pipe> make() throw(PipeException);
 
   /**
     Initializes an invalidated pipe object.
@@ -64,14 +64,14 @@ public:
   /**
     Initialization of socket from other socket.
   */
-  inline Pipe(const Pipe& copy) throw() : pipe(copy.pipe) {}
+  inline Pipe(const Pipe& copy) throw() : fd(copy.fd) {}
 
   /**
     Assignment of socket to socket.
   */
   inline Pipe& operator=(const Pipe& eq) throw() {
     if (&eq != this) { // protect against self assignment
-      pipe = eq.pipe;
+      fd = eq.fd;
     }
     return *this;
   }
@@ -79,7 +79,7 @@ public:
   /**
     Closes this pipe.
   */
-  void close() throw(IOException);
+  void close() throw(PipeException);
 
   /**
     Returns the size of the internal buffer of the pipe. The data may be
@@ -92,7 +92,7 @@ public:
   /**
     Returns true if the end of the stream has been reached.
   */
-  bool atEnd() const throw(IOException);
+  bool atEnd() const throw(PipeException);
 
   /**
     Returns the number of bytes that can be read or skipped over without
@@ -100,41 +100,27 @@ public:
 
     @return Available number of bytes in stream.
   */
-  unsigned int available() const throw(IOException);
+  unsigned int available() const throw(PipeException);
 
   /**
-    Skips a specified number of bytes. Blocks if asked to skip more bytes than available.
+    Skips a specified number of bytes. Blocks if asked to skip more bytes than
+    currently available.
   */
-  unsigned int skip(unsigned int count) throw(IOException);
+  unsigned int skip(unsigned int count) throw(PipeException);
 
   /**
     Forces any buffered bytes to be written out.
   */
-  void flush() throw(IOException); 
+  void flush() throw(PipeException);
 
-  /**
-    Fills the buffer with bytes from the pipe input stream. Blocks if asked
-    to read more bytes than available.
+  unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(PipeException);
 
-    @param buffer The buffer.
-    @param size The size of the buffer.
-    @return The actual number of bytes read.
-  */
-  unsigned int read(char* buffer, unsigned int size) throw(IOException);
-
-  /**
-    Writes bytes in buffer to stream.
-
-    @param buffer The buffer containing the bytes to be written.
-    @param size The number of bytes to be written.
-    @return The actual number of bytes written.
-  */
-  unsigned int write(const char* buffer, unsigned int size) throw(IOException);
+  unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(PipeException);
 
   /**
     Blocking wait for input to become available.
   */
-  void wait() const throw(IOException);
+  void wait() const throw(PipeException);
 
   /**
     Blocking wait for input to become available.
@@ -142,7 +128,12 @@ public:
     @param timeout The timeout periode in microseconds.
     @return True, if data is available. False, if the timeout periode expired.
   */
-  bool wait(unsigned int timeout) const throw(IOException);
+  bool wait(unsigned int timeout) const throw(PipeException);
+
+  /**
+    Destroys the pipe.
+  */
+  ~Pipe() throw(IOException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

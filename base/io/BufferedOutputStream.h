@@ -29,8 +29,10 @@ protected:
 
   /** The buffer. */
   Allocator<char> buffer;
-  /** The number of bytes in the buffer. */
-  unsigned int count;
+  /** The write head. */
+  unsigned int writeHead;
+  /** The read head. */
+  unsigned int readHead;
 
   /**
     Returns the buffer.
@@ -65,9 +67,10 @@ public:
 
     @param buffer The buffer containing the bytes to be written.
     @param size The number of bytes to be written.
-    @return The actual number of bytes written.
+    @param nonblocking Specifies that the method may not block.
+    @return The actual number of bytes written. Always the requested number of bytes in blocking mode unless an error occured.
   */
-  unsigned int write(const char* buffer, unsigned int size) throw(IOException);
+  unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
 
   /**
     Flushes the buffer and releases any resources used by the output stream.

@@ -27,21 +27,21 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 FileDescriptorInputStream::FileDescriptorInputStream() throw() :
-  FileDescriptor(), eof(false) {
+  FileDescriptor(), end(false) {
 }
 
 FileDescriptorInputStream::FileDescriptorInputStream(const FileDescriptor& fd) throw() :
-  FileDescriptor(fd), eof(false) {
+  FileDescriptor(fd), end(false) {
 }
 
 FileDescriptorInputStream::FileDescriptorInputStream(const FileDescriptorInputStream& copy) throw() :
-  FileDescriptor(copy), eof(copy.eof) {
+  FileDescriptor(copy), end(copy.end) {
 }
 
 FileDescriptorInputStream& FileDescriptorInputStream::operator=(const FileDescriptorInputStream& eq) throw() {
   if (&eq != this) { // protect against self assignment
     fd = eq.fd;
-    eof = eq.eof;
+    end = eq.end;
   }
   return *this;
 }
@@ -50,60 +50,71 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException) {
 #if defined(__win32__)
   // use GetFileSizeEx instead
   DWORD highWord;
-  return GetFileSize((void*)getHandle(), &highWord);
+  return GetFileSize((HANDLE)fd->getHandle(), &highWord);
 #else // __unix__
-  // pipes: returns current bytes in buffer
-  // files: returns the total size in bytes
-  struct stat status;
-  if (::fstat(getHandle(), &status) != 0) {
-    throw IOException("Unable to get status of file descriptor");
-  }
-  return status.st_size;
+  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+    struct stat64 status;
+    if (::fstat64(fd->getHandle(), &status) != 0) {
+      throw IOException("Unable to get available bytes");
+    }
+    return status.st_size;
+  #else
+    struct stat status;
+    if (::fstat(fd->getHandle(), &status) != 0) {
+      throw IOException("Unable to get available bytes");
+    }
+    return status.st_size;
+  #endif
 #endif
 }
 
-unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int size) throw(IOException) {
-  if (eof) {
-    throw EndOfFile();
-  }
+unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException) {
+  // TAG: currently always blocks
+  assert(!end, EndOfFile());
+  unsigned int bytesRead = 0;
+  while (bytesRead < size) {
 #if defined(__win32__)
-  DWORD bytesRead;
-  BOOL success = ReadFile((void*)fd->getHandle(), buffer, size, &bytesRead, NULL);
-  if (success) {
-    if (bytesRead == 0) { // has end of file been reached
-      eof = true; // remember end of file
-      return 0;
+    DWORD result;
+    BOOL success = ::ReadFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
+    if (!success) { // has error occured
+      if (::GetLastError() == ERROR_BROKEN_PIPE)) {
+        result = 0;
+      } else {
+        throw IOException("Unable to read from object");
+      }
     }
-    return bytesRead;
-  } else { // error occured
-    throw IOException("Unable to read from file descriptor");
-  }
 #else // __unix__
-  int result = ::read(getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
-  if (result == 0) { // has end of file been reached
-    eof = true; // remember end of file
-    return 0; // return
-  } else if (result < 0) { // has an error occured
-    switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
-    case EINTR: // interrupted by signal before any data was read
-      return 0; // try later
-    case EAGAIN: // no data available (only in non-blocking mode)
-      return 0; // try later
-    default:
-      throw IOException("Unable to read from pipe");
+    int result = ::read(fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
+    if (result < 0) { // has an error occured
+      switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
+      case EINTR: // interrupted by signal before any data was read
+        continue; // try again
+      case EAGAIN: // no data available (only in non-blocking mode)
+//        return bytesRead; // try later
+      default:
+        throw IOException("Unable to read from object");
+      }
     }
-  }
-  return result;
 #endif
+    if (result == 0) { // has end been reached
+      end = true;
+      if (bytesRead < size) {
+        throw EndOfFile(); // attempt to read beyond end of stream
+      }
+    }
+    bytesRead += result;
+  }
+  return bytesRead;
 }
 
 unsigned int FileDescriptorInputStream::skip(unsigned int count) throw(IOException) {
-  unsigned int temp = count;
   Allocator<char>* buffer = Thread::getLocalStorage();
-  while (temp) {
-    temp -= read(buffer->getElements(), buffer->getSize() <? temp);
+  unsigned int bytesSkipped = 0;
+  while (bytesSkipped < count) {
+    unsigned int bytesToRead = minimum(count - bytesSkipped, buffer->getSize());
+    bytesSkipped += read(buffer->getElements(), bytesToRead);
   }
-  return count - temp;
+  return bytesSkipped;
 }
 
 void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
@@ -157,13 +168,6 @@ bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOExcepti
 
 FileDescriptorInputStream::~FileDescriptorInputStream() {
   TRACE_MEMBER();
-}
-
-FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorInputStream& value) {
-  return stream << "class/FileDescriptorInputStream{"
-                << "eof=" << value.eof << ";"
-                << "handle=" << value.fd->getHandle()
-                << "}";
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

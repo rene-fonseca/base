@@ -1,0 +1,84 @@
+/***************************************************************************
+    copyright   : (C) 2001 by René Møller Fonseca
+    email       : fonseca@mip.sdu.dk
+ ***************************************************************************/
+
+#include <base/features.h>
+#include <base/mem/Heap.h>
+
+#if defined(__win32__)
+  #include <windows.h>
+#else // __unix__
+  #include <stdlib.h>
+#endif
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+void* HeapImpl::allocate(unsigned int size) throw(MemoryException) {
+  void* result;
+#if defined(__win32__)
+  result = (void*)HeapAlloc(GetProcessHeap(), 0, size);
+#else // __unix__
+  result = malloc(size);
+#endif
+  if ((!result) && (size != 0)) { // was memory allocated
+    throw MemoryException("Unable to allocate heap");
+  }
+  return result;
+}
+
+void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException) {
+  void* result;
+#if defined(__win32__)
+  // is serialization enabled for the heap object returned by GetProcessHeap
+  if (heap) {
+    if (size) {
+      result = (void*)HeapReAlloc(GetProcessHeap(), 0, heap, size);
+    } else {
+      if (!HeapFree(GetProcessHeap(), 0, heap)) {
+        throw MemoryException("Unable to resize heap");
+      }
+      result = 0;
+    }
+  } else {
+    result = (void*)HeapAlloc(GetProcessHeap(), 0, size);
+  }
+#else // __unix__
+  result = realloc(heap, size);
+#endif
+  if ((!result) && (size != 0)) { // was memory allocated
+    throw MemoryException("Unable to resize heap");
+  }
+  return result;
+}
+
+void* HeapImpl::tryResize(void* heap, unsigned int size) throw(MemoryException) {
+#if defined(__win32__)
+  if (heap) {
+    if (size) {
+      return (void*)HeapReAlloc(GetProcessHeap(), HEAP_REALLOC_IN_PLACE_ONLY, heap, size);
+    } else {
+      if (!HeapFree(GetProcessHeap(), 0, heap)) {
+        throw MemoryException("Unable to resize heap");
+      }
+      return 0;
+    }
+  } else {
+    return 0;
+  }
+#else // __unix__
+  return 0;
+#endif
+}
+
+void HeapImpl::release(void* heap) throw(MemoryException) {
+#if defined(__win32__)
+  if (!HeapFree(GetProcessHeap(), 0, heap)) {
+    throw MemoryException("Unable to release heap");
+  }
+#else // __unix__
+  free(heap);
+#endif
+}
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

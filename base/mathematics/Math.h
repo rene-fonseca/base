@@ -967,7 +967,7 @@ public:
   /**
     Returns the square root of the specified integer. The result is round down.
   */
-  static inline unsigned int isqrt(unsigned int value) throw() {
+  static inline unsigned int iSqrt(unsigned int value) throw() {
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2; i > 0; --i) {
@@ -987,7 +987,7 @@ public:
     Returns the square root of the specified integer with 8 bit precision. The
     result is round down.
   */
-  static inline unsigned int isqrt8(unsigned int value) throw() {
+  static inline unsigned int iSqrt8(unsigned int value) throw() {
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2 + 8; i > 0; --i) {
@@ -1007,7 +1007,7 @@ public:
     Returns the square root of the specified integer with 16 bit precision. The
     result is round down.
   */
-  static inline unsigned int isqrt16(unsigned int value) throw() {
+  static inline unsigned int iSqrt16(unsigned int value) throw() {
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2 + 16; i > 0; --i) {
@@ -1027,7 +1027,7 @@ public:
     Returns the square root of the specified integer with 8 bit precision. The
     result is rounded to the nearest 256th of an integer.
   */
-  static inline unsigned int isqrt8Round(unsigned int value) throw() {
+  static inline unsigned int iSqrt8Round(unsigned int value) throw() {
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2 + 8; i > 0; --i) {

@@ -16,12 +16,14 @@
 
 #include <base/OutOfDomain.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/string/InvalidFormat.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   A 64 bit globally unique identifier (GUID) composed of a 24 bit company id and
-  an 48 bit extension identifier.
+  an 48 bit extension identifier. See
+  http://standards.ieee.org/regauth/oui/tutorials/EUI64.html.
   
   @ingroup communications
   @short IEEE EUI-64 identifier.
@@ -42,16 +44,21 @@ protected:
     return ((value & 0x0f) << 4) | ((value & 0xf0) >> 4);
   }
 public:
-  
+
   /**
-    Initializes identifier as 00:00:00-00:00:00:00:00.
+    Initializes identifier as ff:ff:ff-00:00:00:00:00.
   */
   EUI64() throw();
   
   /**
-    Initializes identifier.
+    Initializes identifier from array.
   */
   EUI64(const unsigned char value[8]) throw();
+
+  /**
+    Initializes identifier from string.
+  */
+  EUI64(const String& value) throw(InvalidFormat);
   
   /**
     Initializes identifier from other identifier.
@@ -67,7 +74,7 @@ public:
     Returns true if the identifiers are identical.
   */
   bool operator==(const EUI64& eq) const throw();
-    
+  
   /**
     Returns true if the identifiers are different.
   */
@@ -94,7 +101,7 @@ public:
   void setExtensionId(uint64 extensionId) throw(OutOfDomain);
   
   /**
-    Returns true if the identifier is 00:00:00-00:00:00:00:00.
+    Returns true if the identifier is ff:ff:ff-00:00:00:00:00.
   */
   bool isInvalid() const throw();
   

@@ -17,11 +17,36 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 EUI64::EUI64() throw() {
-  clear(id);
+  id[0] = 0xff;
+  id[1] = 0xff;
+  id[2] = 0xff;
+  id[3] = 0x00;
+  id[4] = 0x00;
+  id[5] = 0x00;
+  id[6] = 0x00;
+  id[7] = 0x00;
 }
 
 EUI64::EUI64(const unsigned char value[8]) throw() {
   copy<unsigned char>(id, value, sizeof(id));
+}
+
+EUI64::EUI64(const String& value) throw(InvalidFormat) {
+  static const char SEPARATORS[8] = {'x', ':', ':', '-', ':', ':', ':', ':'}; // 'x' is not used
+  String::ReadIterator i = value.getBeginReadIterator();
+  const String::ReadIterator end = value.getEndReadIterator();
+  int index = 0;
+  while (i < end) {
+    char first = *i++;
+    assert(i < end, InvalidFormat(this));
+    char second = *i++;
+    assert(ASCIITraits::isDigit(first) && ASCIITraits::isDigit(second), InvalidFormat(this));
+    id[index++] = (ASCIITraits::digitToValue(first) << 4) | ASCIITraits::digitToValue(second);
+    if (index < getArraySize(id)) {
+      assert(*i++ == SEPARATORS[index], InvalidFormat(this));
+    }
+  }
+  assert(i == end, InvalidFormat(this));
 }
 
 EUI64::EUI64(const EUI64& _copy) throw() {
@@ -44,7 +69,8 @@ bool EUI64::operator!=(const EUI64& eq) const throw() {
 }
 
 bool EUI64::isInvalid() const throw() {
-  return (id[0] == 0) && (id[1] == 0) && (id[2] == 0) && (id[3] == 0) && (id[4] == 0) && (id[5] == 0) && (id[6] == 0) && (id[7] == 0);
+  return (id[0] == 0xff) && (id[1] == 0xff) && (id[2] == 0xff) &&
+    (id[3] == 0) && (id[4] == 0) && (id[5] == 0) && (id[6] == 0) && (id[7] == 0);
 }
 
 unsigned int EUI64::getCompanyId() const throw() {
@@ -72,7 +98,6 @@ void EUI64::setExtensionId(uint64 extensionId) throw(OutOfDomain) {
 }
 
 void EUI64::getEUI48(unsigned char (&eui48)[6]) const throw() {
-  // assert(isEUI48(), x(this));
   eui48[0] = id[0];
   eui48[1] = id[1];
   eui48[2] = id[2];
@@ -93,7 +118,6 @@ void EUI64::setEUI48(const unsigned char (&eui48)[6]) throw() {
 }
 
 void EUI64::getMAC48(unsigned char (&mac)[6]) const throw() {
-  // assert(isMAC48(), x(this));
   mac[0] = swapNibbles(id[0]);
   mac[1] = swapNibbles(id[1]);
   mac[2] = swapNibbles(id[2]);
@@ -101,7 +125,7 @@ void EUI64::getMAC48(unsigned char (&mac)[6]) const throw() {
   mac[4] = swapNibbles(id[6]);
   mac[5] = swapNibbles(id[7]);
 }
-  
+
 void EUI64::setMAC48(const unsigned char (&mac)[6]) throw() {
   id[0] = swapNibbles(mac[0]);
   id[1] = swapNibbles(mac[1]);

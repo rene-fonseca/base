@@ -38,7 +38,7 @@ public:
 
     @param value The pointer to be automated.
   */
-  explicit inline OwnershipPointer(Pointer value = NULL) throw() : ptr(value) {}
+  explicit inline OwnershipPointer(Pointer value = 0) throw() : ptr(value) {}
 
   /**
     Copy constructor. Transfers ownership from copy to this object (copy loses ownership).

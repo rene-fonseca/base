@@ -1,7 +1,7 @@
-/*! \mainpage Main Page
+/** \mainpage The Base Framework
 
 \section legal Legal Notice
-Copyright (C) 2000, 2001 by René Møller Fonseca
+Copyright &copy; 2000, 2001 by René Møller Fonseca
 
 Warning and Disclaimer: Every effort has been made to make this documentation
 as complete and accurate as possible, but no warranty or fitness is implied.
@@ -12,8 +12,8 @@ the use of any software that may accompany it.
 
 
 \section intro Introduction
-This is the API documentation of <The Base Framework>. A framework for
-developing platform independent applications in C++. The home of this project
-is http://www.mip.sdu.dk/~fonseca/base.
+This is the API documentation of <strong>The Base Framework</strong>. A
+framework for developing platform independent applications in C++. The home of
+this project is http://www.mip.sdu.dk/~fonseca/base .
 
 */

@@ -51,13 +51,16 @@
   #define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE }
 
 /**
-  This is the primary namespace of The Base Framework. All the symbols defined
-  by the framework are contained within this particular namespace. You should
-  not add your own symbols to this namespace. Ignoring this rule will put your
-  application at risk of clashing with a future release of this framework. You
-  should therefore consider this namespace reserved solely for this project just
-  like the 'std' namespace is allocated for the Standard Template Library (and
-  C++ language).
+  This is the root namespace of <strong>The Base Framework</strong>. All the
+  symbols defined by the framework are contained within this particular
+  namespace. You should not add your own symbols to this namespace. Ignoring
+  this rule will put your application at risk of clashing with a future release
+  of this framework. You should therefore consider this namespace reserved
+  solely for this project just like the 'std' namespace is allocated for the
+  <strong>Standard Template Library</strong> (and <strong>C++</strong>
+  language).
+
+  @short The root namespace of the framework
 */
 
 namespace base {

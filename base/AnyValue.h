@@ -34,7 +34,7 @@ typedef wchar_t wchar; // TAG: move to Primitives.h
 */
 
 class AnyValue : public Object {
-private:
+public:
 
   /** The supported types. */
   enum Representation {
@@ -53,11 +53,12 @@ private:
     STRING, /**< Sting. */
     WIDE_STRING /**< Wide string. */
   };
-  
+private:
+
   /** Specifies the representation of the value. */
   Representation representation;
   
-  /** Container for value. */
+  /** Container for primitives. */
   union {
     char character;
     wchar wideCharacter;
@@ -71,7 +72,9 @@ private:
     long long longLongInteger;
     unsigned long long unsignedLongLongInteger;
   };
+  /** Container for normal string. */
   String string;
+  /** Container for wide string. */
   WideString wideString;
 public:
   

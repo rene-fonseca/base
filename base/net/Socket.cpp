@@ -17,6 +17,7 @@
 #include <base/io/EndOfFile.h>
 #include <base/io/BrokenStream.h>
 #include <base/net/Socket.h>
+#include <base/concurrency/Thread.h>
 #include <base/NotImplemented.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -31,6 +32,9 @@
 #  include <sys/socket.h>
 #  include <netinet/in.h> // defines ntohs...
 #  include <netinet/tcp.h> // options
+#  include <net/if.h>
+// #  include <sys/ioctl.h>
+// #  include <sys/sockio.h>
 #  include <unistd.h>
 #  include <fcntl.h>
 #  include <errno.h>
@@ -1062,20 +1066,15 @@ void Socket::setUnicastHops(uint8 value) throw(NetworkException) {
 
 void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  InetAddress i = interface;
   InetAddress g = group;
-  assert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
+  assert(g.convertToIPv4(), NetworkException(this));
   struct ip_mreq mreq;
   copy<uint8>(
     Cast::getAddress(mreq.imr_multiaddr.s_addr),
     g.getIPv4Address(),
     sizeof(mreq.imr_multiaddr.s_addr)
   );
-  copy<uint8>(
-    Cast::getAddress(mreq.imr_interface.s_addr),
-    i.getIPv4Address(),
-    sizeof(mreq.imr_interface.s_addr)
-  );
+  clear(mreq.imr_interface.s_addr); // unspecified
   internal::SocketImpl::setOption(
     (int)socket->getHandle(),
     IPPROTO_IP,
@@ -1086,13 +1085,11 @@ void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
 #else // unix
 #  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
-    InetAddress g = group;
-    g.convertToIPv6();
     struct ipv6_mreq mreq;
     mreq.ipv6mr_interface = 0; // use default interface
     copy<uint8>(
       Cast::getAddress(mreq.ipv6mr_multiaddr),
-      g.getAddress(),
+      group.getAddress(), // if IPv4 we get error
       sizeof(mreq.ipv6mr_multiaddr)
     );
     internal::SocketImpl::setOption(
@@ -1111,11 +1108,7 @@ void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
       g.getIPv4Address(),
       sizeof(mreq.imr_multiaddr.s_addr)
     );
-    fill<uint8>( // unspecified
-      Cast::getAddress(mreq.imr_interface.s_addr),
-      0,
-      sizeof(mreq.imr_interface.s_addr)
-    );
+    clear(mreq.imr_interface.s_addr); // unspecified
     internal::SocketImpl::setOption(
       (int)socket->getHandle(),
       IPPROTO_IP,
@@ -1176,16 +1169,57 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
 #else // unix
 #  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
-    InetAddress i = interface;
-    InetAddress g = group;
-    i.convertToIPv6();
-    g.convertToIPv6();
     struct ipv6_mreq mreq;
-    // TAG: map interface address to interface index
-    mreq.ipv6mr_interface = 0; // use default interface
+    mreq.ipv6mr_interface = 0;
+    if (!interface.isUnspecified()) {
+      struct ifconf ifc;
+      ifc.ifc_len = Thread::getLocalStorage()->getSize();
+      ifc.ifc_buf = Thread::getLocalStorage()->getElements();
+      if (ioctl((int)socket->getHandle(), SIOCGIFCONF, &ifc)) {
+        throw NetworkException("Unable to resolve interface", this);
+      }
+      const struct ifreq* current = ifc.ifc_req;
+      int offset = 0;
+      while (offset < ifc.ifc_len) {
+        if (ioctl((int)socket->getHandle(), SIOCGIFADDR, current) != 0) {
+          continue;
+        }
+        bool isSynonymous = false;
+        if (current->ifr_addr.sa_family == AF_INET6) {
+          isSynonymous = interface.isSynonymous(
+            InetAddress(
+              Cast::getAddress(
+                Cast::pointer<const struct sockaddr_in6*>(&current->ifr_addr)->sin6_addr
+              ),
+              InetAddress::IP_VERSION_6
+            )
+          );
+        } else { // AF_INET
+          isSynonymous = interface.isSynonymous(
+            InetAddress(
+              Cast::getAddress(
+                Cast::pointer<const struct sockaddr_in*>(&current->ifr_addr)->sin_addr
+              ),
+              InetAddress::IP_VERSION_4
+            )
+          );
+        }
+        if (isSynonymous) {
+          // TAG: is name always null terminated
+          mreq.ipv6mr_interface = if_nametoindex(current->ifr_name);
+          break; // always exit loop
+        }
+        ++current;
+        offset += sizeof(*current);
+      }
+      assert(
+        mreq.ipv6mr_interface > 0,
+        NetworkException("Unable to resolve interface", this)
+      );
+    }
     copy<uint8>(
       Cast::getAddress(mreq.ipv6mr_multiaddr),
-      g.getAddress(),
+      group.getAddress(), // if IPv4 we get error
       sizeof(mreq.ipv6mr_multiaddr)
     );
     internal::SocketImpl::setOption(

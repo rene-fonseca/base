@@ -174,10 +174,15 @@ public:
   String getHostName(bool fullyQualified = false) const throw(HostNotFound);
 
   /**
-    Equality operator.
+    Returns true if the adresses are exactly equal.
   */
-  bool operator==(const InetAddress& eq) throw();
+  bool operator==(const InetAddress& eq) const throw();
 
+  /**
+    Returns true if the addresses are synonymous.
+  */
+  bool isSynonymous(const InetAddress& eq) const throw();
+  
   /**
     Returns true if this address is the unspecified address (i.e. '::' and
     '0.0.0.0' in the case of IPv6 and IPv4, respectively).

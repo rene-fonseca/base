@@ -23,10 +23,13 @@
 #  include <ws2tcpip.h>
 #  include <nb30.h>
 #  undef interface
-#elif 0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)
+#elif (defined(_DK_SDU_MIP__BASE__INET_IPV6))
 #  include <sys/types.h>
 #  include <sys/socket.h>
 #  include <net/if.h>
+#  include <sys/ioctl.h>
+#  include <sys/sockio.h>
+#  include <unistd.h>
 #else // unix
 #  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
 #    define BSD_COMP
@@ -54,15 +57,8 @@ namespace internal {
 #endif
     
     static inline InetAddress getAddress(const struct sockaddr& address) throw() {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
       switch (address.sa_family) {
-      case AF_INET:
-        return InetAddress(
-          Cast::getAddress(
-            Cast::pointer<const struct sockaddr_in*>(&address)->sin_addr
-          ),
-          InetAddress::IP_VERSION_4
-        );
+#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
       case AF_INET6:
         return InetAddress(
           Cast::getAddress(
@@ -70,28 +66,24 @@ namespace internal {
           ),
           InetAddress::IP_VERSION_6
         );
-      default:
-        return InetAddress();
-      }
-#else
-      if (address.sa_family == AF_INET) {
+#endif
+      case AF_INET:
         return InetAddress(
           Cast::getAddress(
             Cast::pointer<const struct sockaddr_in*>(&address)->sin_addr
           ),
           InetAddress::IP_VERSION_4
         );
-      } else {
+      default:
         return InetAddress();
       }
-#endif
     }
   };
 }; // end of namespace internal
 
 HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
   HashTable<String, unsigned int> interfaces;
-#if 0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)
+#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   struct if_nameindex* ni;
   if ((ni = if_nameindex()) == 0) { // MT-safe
     throw NetworkException(
@@ -193,7 +185,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
 
 List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
   List<InetInterface> interfaces;
-#if 0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)
+#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   struct if_nameindex* ni;
   if ((ni = if_nameindex()) == 0) { // MT-safe
     throw NetworkException(
@@ -261,7 +253,7 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
     interfaces.append(interface);
     ++current;
   }
-#elif 1 || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces;
 // #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
@@ -373,7 +365,10 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
 unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkException) {
 #if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   unsigned int index = if_nametoindex(name.getElements());
-  assert(index > 0, NetworkException("Unable to resolve interface", Type::getType<InetInterface>()));
+  assert(
+    index > 0,
+    NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
+  );
   return index;
 #elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: fixme
@@ -411,9 +406,9 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
       if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
         close(handle);
 #  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-        return req.ifr_ifindex;
+        return current->ifr_ifindex;
 #  else
-        return req.ifr_index;
+        return current->ifr_index;
 #  endif
       }
       break;
@@ -421,7 +416,9 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
     ++current;
     offset += sizeof(*current);
   }
+  close(handle);
 #else
+  close(handle);
   const struct ifreq* current = ifc.ifc_req;
   int offset = 0;
   int index = 1;
@@ -434,7 +431,6 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
     offset += sizeof(*current);
   }
 #endif
-  close(handle);
   throw NetworkException(
     "Unable to resolve interface",
     Type::getType<InetInterface>()

@@ -409,11 +409,48 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 #endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
-bool InetAddress::operator==(const InetAddress& eq) throw() {
+bool InetAddress::operator==(const InetAddress& eq) const throw() {
   return (address.words[0] == eq.address.words[0]) &&
     (address.words[1] == eq.address.words[1]) &&
     (address.words[2] == eq.address.words[2]) &&
     (address.words[3] == eq.address.words[3]);
+}
+
+bool InetAddress::isSynonymous(const InetAddress& eq) const throw() {
+  if (family == eq.family) {
+    return (address.words[3] == eq.address.words[3]) &&
+      (address.words[2] == eq.address.words[2]) &&
+      (address.words[1] == eq.address.words[1]) &&
+      (address.words[0] == eq.address.words[0]);
+  } else if (family == IP_VERSION_6) {
+    if ((address.words[3] == 0) && // is unspecified
+        (address.words[2] == 0) &&
+        (address.words[1] == 0) &&
+        (address.words[0] == 0)) {
+      return eq.address.words[3] == 0; // is unspecified IPv4 address
+    } else if ((address.words[0] == 0) && // is IPv4 mapped
+               (address.words[1] == 0) &&
+               (address.words[2] == ByteOrder::toBigEndian<uint32>(0xffffU)) &&
+               (address.words[3] != 0)) {
+      return address.words[3] == eq.address.words[3];
+    } else {
+      return false;
+    }
+  } else { // IP_VERSION_4
+    if ((eq.address.words[3] == 0) && // is unspecified
+        (eq.address.words[2] == 0) &&
+        (eq.address.words[1] == 0) &&
+        (eq.address.words[0] == 0)) {
+      return address.words[3] == 0; // is unspecified IPv4 address
+    } else if ((eq.address.words[0] == 0) && // is IPv4 mapped
+               (eq.address.words[1] == 0) &&
+               (eq.address.words[2] == ByteOrder::toBigEndian<uint32>(0xffffU)) &&
+               (eq.address.words[3] != 0)) {
+      return address.words[3] == eq.address.words[3];
+    } else {
+      return false;
+    }
+  }
 }
 
 bool InetAddress::isUnspecified() const throw() {

@@ -33,7 +33,7 @@ private:
 
   /** Specifies that the XML tree has been initialized. */
   bool initialized;
-  /** The root node the the XML tree. */
+  /** The root node of the XML tree. */
   XMLNode* root;
 
   void release() throw();

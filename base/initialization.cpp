@@ -38,18 +38,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class X {
-public:
-  
-  X() {
-    Trace::message(__PRETTY_FUNCTION__);
-  }
-
-  ~X() {
-    Trace::message(__PRETTY_FUNCTION__);
-  }
-};
-
 /*
   The order of initialization is very significant. fin, fout, and ferr are the
   only variables with are located directly within the base namespace. All other

@@ -38,7 +38,25 @@ public:
 
     @param message The message.
   */
+  
   EndOfFile(const char* message);
+  
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
+  EndOfFile(Type type) throw() : IOException(type) {
+  }
+  
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  EndOfFile(const char* message, Type type) throw() : IOException(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -47,6 +47,4 @@
 #endif
 #endif
 
-#else
-  #error Mulitiple inclusions of base/platforms/features header
 #endif

@@ -44,7 +44,6 @@ section_HEADERS = \
   ProtectedPointer.h \
   Reference.h \
   ReferenceCountedObjectWrapper.h \
-  ReferenceCountedObjectPointer.h \
   ReferenceCounter.h \
   ReferenceCountedObject.h \
   OwnershipPointer.h \

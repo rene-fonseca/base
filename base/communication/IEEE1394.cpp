@@ -13,6 +13,8 @@
 
 #include <base/communication/IEEE1394.h>
 #include <base/concurrency/Thread.h>
+#include <base/mathematics/Math.h>
+#include <base/string/StringOutputStream.h>
 
 // TAG: hops between nodes
 //   traverse topology and count hops
@@ -29,6 +31,25 @@
 //   function of max_ROM field (assume quadlet by default)
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+String IEEE1394::getAsString(unsigned short nodeId) throw() {
+  StringOutputStream stream;
+  unsigned int busId = getBusId(nodeId);
+  if (busId == IEEE1394::LOCAL_BUS) {
+    stream << MESSAGE("local");
+  } else {
+    stream << busId;
+  }
+  stream << ':';
+  unsigned int physicalId = IEEE1394Common::getPhysicalId(nodeId);
+  if (physicalId == IEEE1394::BROADCAST) {
+    stream << MESSAGE("broadcast");
+  } else {
+    stream << physicalId;
+  }
+  stream << FLUSH;
+  return stream.getString();
+}
 
 IEEE1394::IEEE1394() throw(IEEE1394Exception) {
   ieee1394impl = IEEE1394Impl::getDefault();
@@ -205,20 +226,24 @@ EUI64 IEEE1394::getLocalIdentifier(unsigned int physicalId) const throw(OutOfDom
 }
 
 IEEE1394::Standard IEEE1394::getCompliance(unsigned short node) throw(IEEE1394Exception) {
-  uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
-  if ((crc >> 24) == 1) {
-    return IEEE1394::STANDARD_IEEE_1394;
-  }
-  if ((crc >> 24) * sizeof(Quadlet) < sizeof(BusInfo)) {
-    return IEEE1394::STANDARD_IEEE_1394;
-  }
-  uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
-  if (name != 0x31333934) { // "1394"
-    return IEEE1394::STANDARD_IEEE_1394;
-  }
-  uint32 flags = getQuadlet(node, IEEE1394::BUS_INFO_FLAGS);
-  const unsigned int generation = getBits(flags, 4, 4);
-  if (generation == 0) {
+  try {
+    uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
+    if ((crc >> 24) == 1) {
+      return IEEE1394::STANDARD_IEEE_1394;
+    }
+    if ((crc >> 24) * sizeof(Quadlet) < sizeof(BusInfo)) {
+      return IEEE1394::STANDARD_IEEE_1394;
+    }
+    uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
+    if (name != 0x31333934) { // "1394"
+      return IEEE1394::STANDARD_IEEE_1394;
+    }
+    uint32 flags = getQuadlet(node, IEEE1394::BUS_INFO_FLAGS);
+    const unsigned int generation = getBits(flags, 4, 4);
+    if (generation == 0) {
+      return IEEE1394::STANDARD_IEEE_1394;
+    }
+  } catch (IEEE1394Exception& e) {
     return IEEE1394::STANDARD_IEEE_1394;
   }
   return IEEE1394::STANDARD_IEEE_1394A;
@@ -772,7 +797,7 @@ unsigned int IEEE1394::getAvailableBandwidth() throw(IEEE1394Exception) {
 uint64 IEEE1394::getAvailableIsochronousChannels() throw(IEEE1394Exception) {
   uint32 high = getQuadlet(makeNodeId(isochronousResourceManagerId), IEEE1394::CHANNELS_AVAILABLE_HI);
   uint32 low = getQuadlet(makeNodeId(isochronousResourceManagerId), IEEE1394::CHANNELS_AVAILABLE_LO);
-  return (static_cast<uint64>(high) << 32) | low;
+  return Math::getBitReversal((static_cast<uint64>(high) << 32) | low);
 }
 
 void IEEE1394::loadSpeedMap() throw(IEEE1394Exception) {

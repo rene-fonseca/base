@@ -20,7 +20,7 @@
 #include <base/concurrency/Synchronize.h>
 #include <base/concurrency/SpinLock.h>
 #include <base/string/ASCIITraits.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -196,6 +196,8 @@ public:
   */
   FormatOutputStream(OutputStream& out, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException);
 
+  FormatOutputStream(const FormatOutputStream& copy) throw();
+  
   /**
     Returns the default field width.
   */
@@ -317,7 +319,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
 FormatOutputStream& operator<<(FormatOutputStream& stream, float value) throw(IOException);
 FormatOutputStream& operator<<(FormatOutputStream& stream, double value) throw(IOException);
 FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) throw(IOException);
-FormatOutputStream& operator<<(FormatOutputStream& stream, void* value) throw(IOException);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const void* value) throw(IOException);
 
 
 

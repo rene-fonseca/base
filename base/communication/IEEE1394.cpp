@@ -446,16 +446,18 @@ String IEEE1394::getKeywords(unsigned short node) throw(IEEE1394Exception) {
 }
 
 void IEEE1394::checkResetGeneration() throw(IEEE1394Exception) {
-  // IEEE 1394 implementation should provide reset detection support
+  // TAG: IEEE 1394 implementation should provide reset detection support
   try {
-    EUI64 guid = getIdentifier(makeNodeId(busManagerId));
-    
-    if (guid == nodes[busManagerId].guid) {
-      // get generation from topology map
-      uint32 generation =
-        getQuadlet(makeNodeId(busManagerId), IEEE1394::TOPOLOGY_MAP + sizeof(Quadlet));
-      if (generation == resetGeneration) {
-        return;
+    if (!nodes[busManagerId].guid.isInvalid()) {
+      EUI64 guid = getIdentifier(makeNodeId(busManagerId));
+      
+      if (guid == nodes[busManagerId].guid) {
+        // get generation from topology map
+        uint32 generation =
+          getQuadlet(makeNodeId(busManagerId), IEEE1394::TOPOLOGY_MAP + sizeof(Quadlet));
+        if (generation == resetGeneration) {
+          return;
+        }
       }
     }
   } catch (IEEE1394Exception& e) {
@@ -568,7 +570,7 @@ void IEEE1394::reload() throw(IEEE1394Exception) {
     cycleMasterId = IEEE1394::BROADCAST;
     linkActiveNodes = 0;
     contenderNodes = 0;
-
+    
     for (unsigned id = 0; id < getArraySize(nodes); ++id) {
       nodes[id].present = false;
       nodes[id].link  = false;
@@ -581,11 +583,15 @@ void IEEE1394::reload() throw(IEEE1394Exception) {
         nodes[id].ports[port] = IEEE1394::PORT_NOT_CONNECTED;
       }
     }
+
+    // TAG: wait for no reset (time out)
     
     numberOfNodes = ieee1394impl->getNumberOfNodes();
     localId = ieee1394impl->getLocalId();
     assert((numberOfNodes > 0) && (attempts > 0), IEEE1394Exception("Unable to query local bus", this));
-
+    
+    // TAG: could check topology map of local node if present
+    
     // the irm is the candiate with the largest phy id (likely to be root)
     for (int id = numberOfNodes - 1; id >= 0; --id) {
       try {
@@ -632,24 +638,44 @@ void IEEE1394::reload() throw(IEEE1394Exception) {
     if (isochronousResourceManagerId == IEEE1394::BROADCAST) {
       break; // unmanaged bus
     }
-
-    busManagerId = IEEE1394Common::getPhysicalId(
+    
+    unsigned int id = IEEE1394Common::getPhysicalId(
       getQuadlet(makeNodeId(isochronousResourceManagerId), IEEE1394::BUS_MANAGER_ID)
     );
-    if (busManagerId != IEEE1394::BROADCAST) {
-      try {
-        loadTopologyMap();
-        loadSpeedMap(); // TAG: deprecated in later specification
-        
-        // get generation from topology map
-        uint32 generation = getQuadlet(makeNodeId(busManagerId), IEEE1394::TOPOLOGY_MAP + sizeof(Quadlet));
-        resetGeneration = generation;
-        break; // success
-      } catch (IEEE1394Exception& e) {
+    
+    ASSERT(id < IEEE1394::BROADCAST); // IRM present
+    
+    try {
+      const unsigned short node = makeNodeId(id);
+      uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
+      if ((crc >> 24) * sizeof(Quadlet) >= sizeof(BusInfo)) { // minimum size for general format
+        uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
+        if (name == 0x31333934) { // "1394"
+          uint32 flags = getQuadlet(node, IEEE1394::BUS_INFO_FLAGS);
+          if (((flags >> 28) & 9) == 9) { // bmc flag
+            busManagerId = id;
+          }
+        }
       }
+    } catch (IEEE1394Exception& e) {
+      break; // not a bus manager candidate
     }
     
-    Thread::millisleep(100);
+    try {
+      uint32 savedGeneration = getQuadlet(makeNodeId(busManagerId), IEEE1394::TOPOLOGY_MAP + sizeof(Quadlet));
+      loadTopologyMap();
+      loadSpeedMap(); // TAG: deprecated in later specification
+      
+      // get generation from topology map
+      uint32 generation = getQuadlet(makeNodeId(busManagerId), IEEE1394::TOPOLOGY_MAP + sizeof(Quadlet));
+      if (generation != savedGeneration) {
+        Thread::millisleep(100);
+      }
+      resetGeneration = generation;
+      break; // success
+    } catch (IEEE1394Exception& e) {
+      break;
+    }
   }
 }
 
@@ -802,7 +828,6 @@ uint64 IEEE1394::getAvailableIsochronousChannels() throw(IEEE1394Exception) {
 
 void IEEE1394::loadSpeedMap() throw(IEEE1394Exception) {
   const unsigned short node = makeNodeId(busManagerId);
-
   uint32 crc = getQuadlet(node, IEEE1394::SPEED_MAP);
   if ((crc >> 16) != ((64 * 62 + 62 + 3)/4 + 1)) {
     throw IEEE1394Exception("Invalid speed map", this);
@@ -813,9 +838,13 @@ void IEEE1394::loadSpeedMap() throw(IEEE1394Exception) {
   unsigned int numberOfSpeeds = 64 * numberOfNodes + numberOfNodes;
   uint64 address =
     IEEE1394::CSR_BASE_ADDRESS + IEEE1394::SPEED_MAP + 2 * sizeof(Quadlet);
-  for (unsigned int i = 0; i < numberOfSpeeds; ++i) {
-    read(node, address, Cast::getCharAddress(speeds[i]), sizeof(speeds[i]));
-    address += sizeof(speeds[i]);
+  try {
+    read(node, address, Cast::getCharAddress(speeds), (numberOfSpeeds + sizeof(Quadlet) - 1)/sizeof(Quadlet)*sizeof(Quadlet));
+  } catch (IEEE1394Exception& e) {
+    for (unsigned int i = 0; i < (numberOfSpeeds + sizeof(Quadlet) - 1)/sizeof(Quadlet); ++i) {
+      read(node, address, Cast::getCharAddress(speeds[i]), sizeof(speeds[i]));
+      address += sizeof(speeds[i]);
+    }
   }
   
   // get crc
@@ -823,7 +852,7 @@ void IEEE1394::loadSpeedMap() throw(IEEE1394Exception) {
   assert(quadlet == crc, IEEE1394Exception("Unable to load speed map", this));
   
   static const unsigned int SHIFTS[4] = {24, 16, 8, 0};
-  
+
   // copy to internal representation
   for (unsigned int i = 0; i < numberOfSpeeds; ++i) {
     IEEE1394::Speed speed;

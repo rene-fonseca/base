@@ -45,7 +45,10 @@ public:
     Initializes element from node.
   */
   inline Element(const Node& node) throw(CastException) : Node(node) {
-    assert(node.getType() == ELEMENT_NODE, CastException(this));
+    assert(
+      node.isInvalid() || (node.getType() == ELEMENT_NODE),
+      CastException(this)
+    );
   }
   
   /**
@@ -59,6 +62,11 @@ public:
     Returns the target.
   */
   String getTagName() const throw();
+  
+  /**
+    Returns the first attribute node of this element.
+  */
+  Attribute getFirstAttribute() throw();
   
   /**
     Retrieves an attribute value by name.
@@ -89,13 +97,7 @@ public:
   /**
     Removes the specified attribute node.
   */
-  Attribute removeAttributeNode(Attribute attribute) throw(DOMException);
-  
-  // NodeList getElementsByTagName(const String& name) throw();
-
-  // NodeList getElementsByTagNameNS(
-  //   const String& namespaceURI,
-  //   const String& localName) throw();
+  Attribute removeAttributeNode(Attribute attribute) throw(DOMException);  
   
   /**
     Retrieves an Attribute node by local name and namespace URI.
@@ -129,6 +131,11 @@ public:
     Adds a new attribute.
   */
   Attribute setAttributeNodeNS(Attribute attribute) throw(DOMException);
+
+  /**
+    Returns true if the element has any attributes.
+  */
+  bool hasAttributes() const throw();
   
   /**
     Returns true when an attribute with a given name is specified on this

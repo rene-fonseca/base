@@ -136,326 +136,558 @@ namespace isoc {
 class Math {
 public:
 
+  /**
+    Returns the absolute value.
+  */
   static float inline abs(float value) throw() {
     return isoc::fabsf(value);
   }
 
+  /**
+    Returns the absolute value.
+  */
   static double inline abs(double value) throw() {
     return isoc::fabs(value);
   }
 
+  /**
+    Returns the absolute value.
+  */
   static long double inline abs(long double value) throw() {
     return isoc::fabsl(value);
   }
 
+  /**
+    Rounds (towards +infinity) the value to the nearest integer.
+  */
   static float inline ceil(float value) throw() {
     return isoc::ceilf(value);
   }
 
+  /**
+    Rounds (towards +infinity) the value to the nearest integer.
+  */
   static double inline ceil(double value) throw() {
     return isoc::ceil(value);
   }
 
+  /**
+    Rounds (towards +infinity) the value to the nearest integer.
+  */
   static long double inline ceil(long double value) throw() {
     return isoc::ceill(value);
   }
 
+  /**
+    Rounds (towards -infinity) the value to the nearest integer.
+  */
   static float inline floor(float value) throw() {
     return isoc::floorf(value);
   }
 
+  /**
+    Rounds (towards -infinity) the value to the nearest integer.
+  */
   static double inline floor(double value) throw() {
     return isoc::floor(value);
   }
 
+  /**
+    Rounds (towards -infinity) the value to the nearest integer.
+  */
   static long double inline floor(long double value) throw() {
     return isoc::floorl(value);
   }
 
+  /**
+    Rounds the value to the nearest integer.
+  */
   static float inline round(float value) throw() {
     return isoc::roundf(value);
   }
 
+  /**
+    Rounds the value to the nearest integer.
+  */
   static double inline round(double value) throw() {
     return isoc::round(value);
   }
 
+  /**
+    Rounds the value to the nearest integer.
+  */
   static long double inline round(long double value) throw() {
     return isoc::roundl(value);
   }
 
+  /**
+    Rounds (towards zero) the value to the nearest integer.
+  */
   static float inline trunc(float value) throw() {
     return isoc::truncf(value);
   }
 
+  /**
+    Rounds (towards zero) the value to the nearest integer.
+  */
   static double inline trunc(double value) throw() {
     return isoc::trunc(value);
   }
 
+  /**
+    Rounds (towards zero) the value to the nearest integer.
+  */
   static long double inline trunc(long double value) throw() {
     return isoc::truncl(value);
   }
 
 
+
+  /**
+    Returns the square root of the value.
+  */
   static float inline sqrt(float value) throw() {
     return isoc::sqrtf(value);
   }
 
+  /**
+    Returns the square root of the value.
+  */
   static double inline sqrt(double value) throw() {
     return isoc::sqrt(value);
   }
 
+  /**
+    Returns the square root of the value.
+  */
   static long double inline sqrt(long double value) throw() {
     return isoc::sqrtl(value);
   }
 
+  /**
+    Returns the cube root of the value.
+  */
   static float inline cbrt(float value) throw() {
     return isoc::cbrtf(value);
   }
 
+  /**
+    Returns the cube root of the value.
+  */
   static double inline cbrt(double value) throw() {
     return isoc::cbrt(value);
   }
 
+  /**
+    Returns the cube root of the value.
+  */
   static long double inline cbrt(long double value) throw() {
     return isoc::cbrtl(value);
   }
 
+  /**
+    Returns the Euclidian distance - sqrt(x^2 + y^2).
+  */
   static float inline hypot(float x, float y) throw() {
     return isoc::hypotf(x, y);
   }
 
+  /**
+    Returns the Euclidian distance - sqrt(x^2 + y^2).
+  */
   static double inline hypot(double x, double y) throw() {
     return isoc::hypot(x, y);
   }
 
+  /**
+    Returns the Euclidian distance - sqrt(x^2 + y^2).
+  */
   static long double inline hypot(long double x, long double y) throw() {
     return isoc::hypotl(x, y);
   }
 
+  /**
+    Returns the exponential of the value.
+  */
   static float inline exp(float value) throw() {
     return isoc::expf(value);
   }
 
+  /**
+    Returns the exponential of the value.
+  */
   static double inline exp(double value) throw() {
     return isoc::exp(value);
   }
 
+  /**
+    Returns the exponential of the value.
+  */
   static long double inline exp(long double value) throw() {
     return isoc::expl(value);
   }
 
+  /**
+    Returns the natural logarithm of the value.
+  */
   static float inline log(float value) throw() {
     return isoc::logf(value);
   }
 
+  /**
+    Returns the natural logarithm of the value.
+  */
   static double inline log(double value) throw() {
     return isoc::log(value);
   }
 
+  /**
+    Returns the natural logarithm of the value.
+  */
   static long double inline log(long double value) throw() {
     return isoc::logl(value);
   }
 
+  /**
+    Returns the logarithm with base 2 of the value.
+  */
   static float inline log2(float value) throw() {
     return isoc::log2f(value);
   }
 
+  /**
+    Returns the logarithm with base 2 of the value.
+  */
   static double inline log2(double value) throw() {
     return isoc::log2(value);
   }
 
+  /**
+    Returns the logarithm with base 2 of the value.
+  */
   static long double inline log2(long double value) throw() {
     return isoc::log2l(value);
   }
 
+  /**
+    Returns the logarithm with base 10 of the value.
+  */
   static float inline log10(float value) throw() {
     return isoc::log10f(value);
   }
 
+  /**
+    Returns the logarithm with base 10 of the value.
+  */
   static double inline log10(double value) throw() {
     return isoc::log10(value);
   }
 
+  /**
+    Returns the logarithm with base 10 of the value.
+  */
   static long double inline log10(long double value) throw() {
     return isoc::log10l(value);
   }
 
+  /**
+    Returns the power a^b.
+  */
   static float inline pow(float a, float b) throw() {
     return isoc::powf(a, b);
   }
 
+  /**
+    Returns the power a^b.
+  */
   static double inline pow(double a, double b) throw() {
     return isoc::pow(a, b);
   }
 
+  /**
+    Returns the power a^b.
+  */
   static long double inline pow(long double a, long double b) throw() {
     return isoc::powl(a, b);
   }
 
 
+
+  /**
+    Returns the sine.
+  */
   static float inline sin(float value) throw() {
     return isoc::sinf(value);
   }
 
+  /**
+    Returns the sine.
+  */
   static double inline sin(double value) throw() {
     return isoc::sin(value);
   }
 
+  /**
+    Returns the sine.
+  */
   static long double inline sin(long double value) throw() {
     return isoc::sinl(value);
   }
 
+  /**
+    Returns the inverse sine.
+  */
   static float inline asin(float value) throw() {
     return isoc::asinf(value);
   }
 
+  /**
+    Returns the inverse sine.
+  */
   static double inline asin(double value) throw() {
     return isoc::asin(value);
   }
 
+  /**
+    Returns the inverse sine.
+  */
   static long double inline asin(long double value) throw() {
     return isoc::asinl(value);
   }
 
-
+  /**
+    Returns the cosine.
+  */
   static float inline cos(float value) throw() {
     return isoc::cosf(value);
   }
 
+  /**
+    Returns the cosine.
+  */
   static double inline cos(double value) throw() {
     return isoc::cos(value);
   }
 
+  /**
+    Returns the cosine.
+  */
   static long double inline cos(long double value) throw() {
     return isoc::cosl(value);
   }
 
+  /**
+    Returns the inverse cosine.
+  */
   static float inline acos(float value) throw() {
     return isoc::acosf(value);
   }
 
+  /**
+    Returns the inverse cosine.
+  */
   static double inline acos(double value) throw() {
     return isoc::acos(value);
   }
 
+  /**
+    Returns the inverse cosine.
+  */
   static long double inline acos(long double value) throw() {
     return isoc::acosl(value);
   }
 
-
+  /**
+    Returns the tangent.
+  */
   static float inline tan(float value) throw() {
     return isoc::tanf(value);
   }
 
+  /**
+    Returns the tangent.
+  */
   static double inline tan(double value) throw() {
     return isoc::tan(value);
   }
 
+  /**
+    Returns the tangent.
+  */
   static long double inline tan(long double value) throw() {
     return isoc::tanl(value);
   }
 
+  /**
+    Returns the inverse tangent.
+  */
   static float inline atan(float value) throw() {
     return isoc::atanf(value);
   }
 
+  /**
+    Returns the inverse tangent.
+  */
   static double inline atan(double value) throw() {
     return isoc::atan(value);
   }
 
+  /**
+    Returns the inverse tangent.
+  */
   static long double inline atan(long double value) throw() {
     return isoc::atanl(value);
   }
 
-
-
-  static float inline sinh(float value) throw() {
-    return isoc::sinhf(value);
-  }
-
-  static double inline sinh(double value) throw() {
-    return isoc::sinh(value);
-  }
-
-  static long double inline sinh(long double value) throw() {
-    return isoc::sinhl(value);
-  }
-
-  static float inline asinh(float value) throw() {
-    return isoc::asinhf(value);
-  }
-
-  static double inline asinh(double value) throw() {
-    return isoc::asinh(value);
-  }
-
-  static long double inline asinh(long double value) throw() {
-    return isoc::asinhl(value);
-  }
-
-
-  static float inline cosh(float value) throw() {
-    return isoc::coshf(value);
-  }
-
-  static double inline cosh(double value) throw() {
-    return isoc::cosh(value);
-  }
-
-  static long double inline cosh(long double value) throw() {
-    return isoc::coshl(value);
-  }
-
-  static float inline acosh(float value) throw() {
-    return isoc::acoshf(value);
-  }
-
-  static double inline acosh(double value) throw() {
-    return isoc::acosh(value);
-  }
-
-  static long double inline acosh(long double value) throw() {
-    return isoc::acoshl(value);
-  }
-
-
-  static float inline tanh(float value) throw() {
-    return isoc::tanhf(value);
-  }
-
-  static double inline tanh(double value) throw() {
-    return isoc::tanh(value);
-  }
-
-  static long double inline tanh(long double value) throw() {
-    return isoc::tanhl(value);
-  }
-
-  static float inline atanh(float value) throw() {
-    return isoc::atanhf(value);
-  }
-
-  static double inline atanh(double value) throw() {
-    return isoc::atanh(value);
-  }
-
-  static long double inline atanh(long double value) throw() {
-    return isoc::atanhl(value);
-  }
-
-
+  /**
+    Returns the arc tangent of y/x using the signs of both arguments to determine the proper quadrant.
+  */
   static float inline atan2(float y, float x) throw() {
     return isoc::atan2f(y, x);
   }
 
+  /**
+    Returns the arc tangent of y/x using the signs of both arguments to determine the proper quadrant.
+  */
   static double inline atan2(double y, double x) throw() {
     return isoc::atan2(y, x);
   }
 
+  /**
+    Returns the arc tangent of y/x using the signs of both arguments to determine the proper quadrant.
+  */
   static long double inline atan2(long double y, long double x) throw() {
     return isoc::atan2l(y, x);
   }
+
+
+
+  /**
+    Returns the hyperbolic sine.
+  */
+  static float inline sinh(float value) throw() {
+    return isoc::sinhf(value);
+  }
+
+  /**
+    Returns the hyperbolic sine.
+  */
+  static double inline sinh(double value) throw() {
+    return isoc::sinh(value);
+  }
+
+  /**
+    Returns the hyperbolic sine.
+  */
+  static long double inline sinh(long double value) throw() {
+    return isoc::sinhl(value);
+  }
+
+  /**
+    Returns the inverse hyperbolic sine.
+  */
+  static float inline asinh(float value) throw() {
+    return isoc::asinhf(value);
+  }
+
+  /**
+    Returns the inverse hyperbolic sine.
+  */
+  static double inline asinh(double value) throw() {
+    return isoc::asinh(value);
+  }
+
+  /**
+    Returns the inverse hyperbolic sine.
+  */
+  static long double inline asinh(long double value) throw() {
+    return isoc::asinhl(value);
+  }
+
+  /**
+    Returns the hyperbolic cosine.
+  */
+  static float inline cosh(float value) throw() {
+    return isoc::coshf(value);
+  }
+
+  /**
+    Returns the hyperbolic cosine.
+  */
+  static double inline cosh(double value) throw() {
+    return isoc::cosh(value);
+  }
+
+  /**
+    Returns the hyperbolic cosine.
+  */
+  static long double inline cosh(long double value) throw() {
+    return isoc::coshl(value);
+  }
+
+  /**
+    Returns the inverse hyperbolic cosine.
+  */
+  static float inline acosh(float value) throw() {
+    return isoc::acoshf(value);
+  }
+
+  /**
+    Returns the inverse hyperbolic cosine.
+  */
+  static double inline acosh(double value) throw() {
+    return isoc::acosh(value);
+  }
+
+  /**
+    Returns the inverse hyperbolic cosine.
+  */
+  static long double inline acosh(long double value) throw() {
+    return isoc::acoshl(value);
+  }
+
+  /**
+    Returns the hyperbolic tangent.
+  */
+  static float inline tanh(float value) throw() {
+    return isoc::tanhf(value);
+  }
+
+  /**
+    Returns the hyperbolic tangent.
+  */
+  static double inline tanh(double value) throw() {
+    return isoc::tanh(value);
+  }
+
+  /**
+    Returns the hyperbolic tangent.
+  */
+  static long double inline tanh(long double value) throw() {
+    return isoc::tanhl(value);
+  }
+
+  /**
+    Returns the inverse hyperbolic tangent.
+  */
+  static float inline atanh(float value) throw() {
+    return isoc::atanhf(value);
+  }
+
+  /**
+    Returns the inverse hyperbolic tangent.
+  */
+  static double inline atanh(double value) throw() {
+    return isoc::atanh(value);
+  }
+
+  /**
+    Returns the inverse hyperbolic tangent.
+  */
+  static long double inline atanh(long double value) throw() {
+    return isoc::atanhl(value);
+  }
+
 
 
   /**
@@ -541,53 +773,47 @@ public:
   }
 
   /**
-    Returns the specified integer if it's a power of 2 and otherwise returns 0.
+    Returns true if the specified integer is a power of 2.
   */
-  static inline unsigned char isPowerOf2(unsigned char value) throw() {
-    static const bool IS_POWER[16] = {
-      0, 1, 2, 0, 4, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0
-    };
-    if (value & 0x0f == 0) {
-      return IS_POWER[value >> 4];
-    } else if (value & 0xf0 == 0) {
-      return IS_POWER[value];
+  static inline bool isPowerOf2(unsigned char value) throw() {
+    const unsigned int IS_POWER_OF_2 = 0x022c; // shifted by left by 1
+    if (value & 0xf0 == 0) {
+      return IS_POWER_OF_2 & (1U << value);
+    } else if (value & 0x0f == 0) {
+      return IS_POWER_OF_2 & (1U << (value >> 4));
     } else {
-      return 0;
+      return false;
     }
   }
 
   /**
-    Returns the specified integer if it's a power of 2 and otherwise returns 0.
+    Returns true if the specified integer is a power of 2.
   */
-  static inline unsigned int isPowerOf2(unsigned int value) throw() {
+  static inline bool isPowerOf2(unsigned int value) throw() {
     if (value != 0) {
-      unsigned int shift = 0;
       while (value & 0xff == 0) {
         value >>= 8;
-        shift += 8;
       }
       if (value <= 0xff) {
-        return static_cast<unsigned int>(isPowerOf2(value)) << shift;
+        return isPowerOf2(static_cast<unsigned char>(value));
       }
     }
-    return 0;
+    return false;
   }
 
   /**
-    Returns the specified integer if it's a power of 2 and otherwise returns 0.
+    Returns true if the specified integer is a power of 2.
   */
-  static inline unsigned long long isPowerOf2(unsigned long long value) throw() {
+  static inline bool isPowerOf2(unsigned long long value) throw() {
     if (value != 0) {
-      unsigned int shift = 0;
       while (value & 0xff == 0) {
         value >>= 8;
-        shift += 8;
       }
       if (value <= 0xff) {
-        return static_cast<unsigned long long>(isPowerOf2(value)) << shift;
+        return isPowerOf2(static_cast<unsigned char>(value));
       }
     }
-    return 0;
+    return false;
   }
 };
 

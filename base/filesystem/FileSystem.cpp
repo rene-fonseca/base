@@ -36,6 +36,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+unsigned int FileSystem::counter = 0;
+
 String FileSystem::getPath(const String& base, const String& relative) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   String result(base.getLength() + sizeof("\\") + relative.getLength());

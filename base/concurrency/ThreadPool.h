@@ -53,9 +53,10 @@ public:
   class ThreadPoolException : public Exception {
   public:
 
-    ThreadPoolException() throw() {}
-
+    ThreadPoolException() throw() : Exception() {}
     ThreadPoolException(const char* message) throw() : Exception(message) {}
+    ThreadPoolException(Type type) throw() : Exception(type) {}
+    ThreadPoolException(const char* message, Type type) throw() : Exception(message, type) {}
   };
 private:
 

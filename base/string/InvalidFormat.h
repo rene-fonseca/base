@@ -21,6 +21,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Invalid format exception is thrown when a string does not comply with a given format.
 
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -31,14 +32,29 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  InvalidFormat();
+  InvalidFormat() throw();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  InvalidFormat(const char* message);
+  InvalidFormat(const char* message) throw();
+
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
+  InvalidFormat(Type type) throw() : Exception(type) {}
+  
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  InvalidFormat(const char* message, Type type) throw() : Exception(message, type) {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -184,6 +184,22 @@ typedef struct {
 }; // end of namespace
 
 /**
+  Returns the id that uniquely identifies the specified type.
+*/
+template<class TYPE>
+inline const char* getTypeId() throw() {
+  return typeid(TYPE).name();
+}
+
+/**
+  Returns the id that uniquely identifies the type of the specified object.
+*/
+template<class TYPE>
+inline const char* getTypeId(const TYPE& object) throw() {
+  return typeid(object).name();
+}
+
+/**
   Demangles the specified string as returned by typeinfo::name(). You should
   not call this function directly. Use the getTypename<TYPE>() and
   getTypename<TYPE>(const TYPE&) functions.

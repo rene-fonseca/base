@@ -2,7 +2,7 @@
 ####### kdevelop will overwrite this part!!! (end)############
 DEFS =
 
-bin_PROGRAMS = Array List Queue Set Map String io client server datagramClient datagramServer Thread referenceCounting fileInput mtServer filesystem xml
+bin_PROGRAMS = Array List Queue Set Map String io client server datagramClient datagramServer Thread referenceCounting fileInput mtServer filesystem xml daemon
 
 Array_SOURCES = Array.cpp
 Array_LDADD = ../base/libbase.la
@@ -55,4 +55,7 @@ filesystem_LDADD = ../base/libbase.la
 xml_SOURCES = xml.cpp
 xml_LDADD = ../base/libbase.la
 
-EXTRA_DIST = Array.cpp List.cpp Queue.cpp Set.cpp Map.cpp String.cpp io.cpp client.cpp server.cpp datagramClient.cpp datagramServer.cpp Thread.cpp referenceCounting.cpp fileInput.cpp mtServer.cpp filesystem.cpp xml.cpp
+daemon_SOURCES = daemon.cpp
+daemon_LDADD = ../base/libbase.la
+
+EXTRA_DIST = Array.cpp List.cpp Queue.cpp Set.cpp Map.cpp String.cpp io.cpp client.cpp server.cpp datagramClient.cpp datagramServer.cpp Thread.cpp referenceCounting.cpp fileInput.cpp mtServer.cpp filesystem.cpp xml.cpp daemon.cpp

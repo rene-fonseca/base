@@ -43,7 +43,7 @@ private:
   /** The message associated with the exception (ASCII format). This may not be available. */
   const char* message;
   /** The identity of the type which raised the exception (may not be available). */
-  const Type type;
+  Type type;
   /** The associated cause (0 by default). */
   unsigned int cause;
 public:
@@ -107,18 +107,6 @@ public:
   Exception(const Exception& copy) throw();
 
   /**
-    Returns the message associated with the exception.
-
-    @return The message associated with the exception.
-  */
-  const char* getMessage() const throw();
-
-  /**
-    Returns the identity of the type which raised the exception.
-  */
-  Type getType() const throw();
-
-  /**
     Returns the associated cause. 0 indicates an unspecified cause.
   */
   inline unsigned int getCause() const throw() {
@@ -133,18 +121,68 @@ public:
   }
   
   /**
-    Associates the exception with the given cause.
+    Returns the message associated with the exception.
+
+    @return The message associated with the exception.
   */
-  inline Exception& bindCause(unsigned int cause) throw() {
-    setCause(cause);
-    return *this;
+  const char* getMessage() const throw();
+
+  /**
+    Associates the exception with the specified message.
+  */
+  inline void setMessage(const char* message) throw() {
+    this->message = message;
   }
-  
+
+  /**
+    Returns the identity of the type which raised the exception.
+  */
+  Type getType() const throw();
+
+  /**
+    Sets the identity of the type which raised the exception.
+  */
+  inline void setType(const Type& type) throw() {
+    this->type = type;
+  }
+
   /**
     Destroys exception object.
   */
   virtual ~Exception() throw();
 };
+
+/**
+  Associates the exception with the given cause.
+*/
+template<class EXCEPTION>
+inline EXCEPTION bindCause(EXCEPTION e, unsigned int cause) throw() {
+  e.setCause(cause);
+  return e;
+}
+
+/**
+  Associates the exception with the given message.
+*/
+template<class EXCEPTION>
+inline EXCEPTION bindMessage(EXCEPTION e, const char* message) throw() {
+  e.setMessage(message);
+  return e;
+}
+
+/**
+  Associates the exception with the given type.
+*/
+template<class EXCEPTION>
+inline EXCEPTION bindType(EXCEPTION e, const Type& type) throw() {
+  e.setType(type);
+  return e;
+}
+
+template<class EXCEPTION>
+inline void raise(EXCEPTION e) throw(EXCEPTION) {
+  throw e;
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

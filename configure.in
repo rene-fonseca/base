@@ -304,7 +304,7 @@ ${base_cleanup}
 dnl AC_BASE_ADDLIB(library list)
 AC_DEFUN(AC_BASE_ADDLIB, [dnl
 for ac_temp in [$1]; do
-  LIBS="${LIBS}${LIBS:+\" \"}${ac_temp}"
+  LIBS="${LIBS}${LIBS:+ }${ac_temp}"
 done
 ])
 
@@ -412,7 +412,7 @@ AC_BASE_YES(
   base_cv_inet_ipv6,
   AC_DEFINE(HAVE_INET_IPV6, 1, Specifies that the interface extensions for IP version 6 are present)
 )
-AC_BASE_ADDLIB($base_cv_inet_libs)
+AC_BASE_ADDLIB($base_cv_inet_ipv6_libs)
 
 AC_BASE_CHECK(
   checking whether pthread_yield is provided by the POSIX thread library,

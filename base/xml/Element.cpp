@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 String Element::getTagName() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = (xmlNodePtr)getContext();
+  xmlNode* node = (xmlNode*)getContext();
   // TAG: if (ns &&)??? prefix then return prefix:name
   return (const char*)node->name;
 #else
@@ -30,9 +30,40 @@ String Element::getTagName() const throw() {
 #endif
 }
 
+bool Element::hasAttributes() const throw() {
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+  xmlNode* node = (xmlNode*)getContext();
+  return node->properties;
+#else
+  throw DOMException(this);
+#endif
+}
+
+Attribute Element::getFirstAttribute() throw() {
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+  xmlNode* node = (xmlNode*)getContext();
+  return node->properties;
+#else
+  return 0;
+#endif
+}
+
+bool Element::hasAttribute(const String& name) const throw() {
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+  xmlNode* node = (xmlNode*)getContext();
+  xmlAttr* attribute = xmlHasProp(
+    node,
+    (const xmlChar*)name.getElements()
+  );
+  return attribute != 0;
+#else
+  throw DOMException(this);
+#endif
+}
+
 String Element::getAttribute(const String& name) const throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = (xmlNodePtr)getContext();
+  xmlNode* node = (xmlNode*)getContext();
   char* value = (char*)xmlGetProp(node, (const xmlChar*)name.getElements());
   assert(value, DOMException(this));
   String result(value);
@@ -46,8 +77,8 @@ String Element::getAttribute(const String& name) const throw(DOMException) {
 void Element::setAttribute(
   const String& name, const String& value) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = (xmlNodePtr)getContext();
-  xmlAttrPtr attribute = xmlSetProp(
+  xmlNode* node = (xmlNode*)getContext();
+  xmlAttr* attribute = xmlSetProp(
     node,
     (const xmlChar*)name.getElements(),
     (const xmlChar*)value.getElements()
@@ -60,7 +91,7 @@ void Element::setAttribute(
 
 void Element::removeAttribute(const String& name) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = (xmlNodePtr)getContext();
+  xmlNode* node = (xmlNode*)getContext();
   int result = xmlUnsetProp(
     node,
     (const xmlChar*)name.getElements()
@@ -90,7 +121,7 @@ Attribute Element::getAttributeNodeNS(
   const String& localName) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   throw DOMException(this);
-//   xmlNodePtr node = (xmlNodePtr)getContext();
+//   xmlNode* node = (xmlNode*)getContext();
 //   char* value = (char*)xmlGetNsProp(
 //     node,
 //     (const xmlChar*)localName.getElements(),
@@ -108,7 +139,7 @@ Attribute Element::getAttributeNodeNS(
 String Element::getAttributeNS(
   const String& namespaceURI, const String& localName) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = (xmlNodePtr)getContext();
+  xmlNode* node = (xmlNode*)getContext();
   return (const char*)xmlGetNsProp(
     node,
     (const xmlChar*)localName.getElements(),
@@ -129,7 +160,7 @@ void Element::removeAttributeNS(
   const String& namespaceURI,
   const String& localName) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = (xmlNodePtr)getContext();
+  xmlNode* node = (xmlNode*)getContext();
   int result = xmlUnsetNsProp(
     node,
     0, // TAG: fixme
@@ -141,32 +172,16 @@ void Element::removeAttributeNS(
 #endif
 }
 
-Attribute Element::setAttributeNodeNS(Attribute attribute) throw(DOMException) {
+Attribute Element::setAttributeNodeNS(
+  Attribute attribute) throw(DOMException) {
   throw DOMException(this);
-}
-
-// NodeList Element::getElementsByTagNameNS(
-//   const String& namespaceURI,
-//   const String& localName) throw();
-
-bool Element::hasAttribute(const String& name) const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = (xmlNodePtr)getContext();
-  xmlAttrPtr attribute = xmlHasProp(
-    node,
-    (const xmlChar*)name.getElements()
-  );
-  return attribute != 0;
-#else
-  throw DOMException(this);
-#endif
 }
 
 bool Element::hasAttributeNS(
   const String& namespaceURI, const String& localName) const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = (xmlNodePtr)getContext();
-  xmlAttrPtr attribute = xmlHasNsProp(
+  xmlNode* node = (xmlNode*)getContext();
+  xmlAttr* attribute = xmlHasNsProp(
     node,
     (const xmlChar*)localName.getElements(),
     (const xmlChar*)namespaceURI.getElements()

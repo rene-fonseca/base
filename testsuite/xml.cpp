@@ -34,15 +34,15 @@ public:
   class Callback : public XMLParser::Callback {
   public:
 
-    void startDocument() {
+    void startDocument() throw() {
       fout << MESSAGE("XML - startDocument") << EOL;
     }
 
-    void endDocument() {
+    void endDocument() throw() {
       fout << MESSAGE("XML - endDocument") << EOL;
     }
 
-    void startElement(const String& name, const XMLPropertyHash& attributes) {
+    void startElement(const String& name, const XMLPropertyHash& attributes) throw() {
       fout << MESSAGE("XML - startElement: ") << name << MESSAGE(" - {");
       XMLPropertyHash::ReadEnumerator enu = attributes.getReadEnumerator();
       while (enu.hasNext()) {
@@ -55,27 +55,27 @@ public:
       fout << '}' << EOL;
     }
 
-    void endElement(const String& n) {
+    void endElement(const String& n) throw() {
       fout << MESSAGE("XML - endElement: ") << n << EOL;
     }
 
-    void characters(const String& s) {
+    void characters(const String& s) throw() {
       fout << MESSAGE("XML - characters: ") << s << EOL;
     }
 
-    void comment(const String& s) {
+    void comment(const String& s) throw() {
       fout << MESSAGE("XML - comment: ") << s << EOL;
     }
 
-    void warning(const String& s) {
+    void warning(const String& s) throw() {
       fout << MESSAGE("XML - warning: ") << s << EOL;
     }
 
-    void error(const String& s) {
+    void error(const String& s) throw() {
       fout << MESSAGE("XML - error: ") << s << EOL;
     }
 
-    void fatalError(const String& s) {
+    void fatalError(const String& s) throw() {
       fout << MESSAGE("XML - fatalError: ") << s << EOL;
     }
   };
@@ -93,7 +93,7 @@ public:
     StripCallback() throw() : ignore(false), chapter(1) {
     }
 
-    void startElement(const String& name, const XMLPropertyHash& attributes) {
+    void startElement(const String& name, const XMLPropertyHash& attributes) throw() {
 //    oldIgnores.push(ignore);
       a.append(ignore);
       ignore = false;
@@ -106,7 +106,7 @@ public:
       }
     }
 
-    void endElement(const String& name) {
+    void endElement(const String& name) throw() {
       if (!ignore) {
         fout << EOL;
       }
@@ -114,21 +114,21 @@ public:
       a.remove(a.getSize() - 1);
     }
 
-    void characters(const String& s) {
+    void characters(const String& s) throw() {
       if (!ignore) {
         fout << s;
       }
     }
 
-    void warning(const String& s) {
+    void warning(const String& s) throw() {
       ferr << MESSAGE("XML - warning: ") << s << EOL;
     }
 
-    void error(const String& s) {
+    void error(const String& s) throw() {
       ferr << MESSAGE("XML - error: ") << s << EOL;
     }
 
-    void fatalError(const String& s) {
+    void fatalError(const String& s) throw() {
       ferr << MESSAGE("XML - fatalError: ") << s << EOL;
     }
   };

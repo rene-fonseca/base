@@ -13,6 +13,7 @@
 
 #include <base/Application.h>
 #include <base/Integer.h>
+#include <base/net/InetEndPoint.h>
 #include <base/net/InetInterface.h>
 #include <base/net/InetService.h>
 #include <base/net/ServerSocket.h>

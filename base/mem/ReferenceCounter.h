@@ -44,18 +44,12 @@ template<class TYPE>
 class ReferenceCounter {
 public:
 
-  /** The type of the reference counted object. */
-  typedef TYPE Value;
-  /** The type of the reference to the reference counted object. */
-  typedef TYPE& Reference;
-  /** The type of the pointer to the reference counted object. */
-  typedef TYPE* Pointer;
   /** The type of the reference counter. */
-  typedef long Counter; // out of memory before counter overflow
+  typedef MemorySize Counter; // out of memory before counter overflow
 private:
 
   /** Pointer to shared reference counted object. */
-  Pointer ptr; // protect pointer value from the evil programmers
+  TYPE* value; // protect pointer value from the evil programmers
   /** Holds the total number of references. */
   Counter* references;
 public:
@@ -63,7 +57,7 @@ public:
   /**
     Initializes automation pointer as invalid (i.e. null).
   */
-  inline ReferenceCounter() throw() : ptr(0), references(new Counter(1)) {
+  inline ReferenceCounter() throw() : value(0), references(new Counter(1)) {
   }
 
   /**
@@ -76,15 +70,15 @@ public:
 
     @param value The desired pointer value.
   */
-  inline ReferenceCounter(Pointer value) throw()
-    : ptr(value), references(new Counter(1)) {
+  inline ReferenceCounter(TYPE* _value) throw()
+    : value(_value), references(new Counter(1)) {
   }
 
   /**
     Initialization of automation pointer from other automation pointer.
   */
   inline ReferenceCounter(const ReferenceCounter& copy) throw()
-    : ptr(copy.ptr), references(copy.references) {
+    : value(copy.value), references(copy.references) {
     ++*references;
   }
 
@@ -94,23 +88,23 @@ public:
   */
   template<class POLY>
   inline ReferenceCounter(const ReferenceCounter<POLY>& copy) throw()
-    : ptr(copy.ptr), references(copy.references) {
+    : value(copy.value), references(copy.references) {
     ++*references;
   }
 
   /**
     Assignment of normal pointer to this automation pointer.
   */
-  inline ReferenceCounter& operator=(Pointer eq) throw() {
+  inline ReferenceCounter& operator=(TYPE* eq) throw() {
     if (!--*references) { // remove reference and possible destroy object
-      if (ptr) { // skip if pointer is invalid
-        delete ptr; // could throw exception if RCO is destroyed unsuccessfully
+      if (value) { // skip if pointer is invalid
+        delete value; // could throw exception if RCO is destroyed unsuccessfully
       }
       ++*references; // one reference
     } else {
       references = new Counter(1); // one reference
     }
-    ptr = eq;
+    value = eq;
     return *this;
   }
 
@@ -120,12 +114,12 @@ public:
   inline ReferenceCounter& operator=(const ReferenceCounter& eq) /*throw(...)*/ {
     if (&eq != this) { // protect against self assignment
       if (!--*references) { // remove reference and possible destroy object
-        if (ptr) { // skip if pointer is invalid
-          delete ptr; // could throw exception if RCO is destroyed unsuccessfully
+        if (value) { // skip if pointer is invalid
+          delete value; // could throw exception if RCO is destroyed unsuccessfully
         }
         delete references;
       }
-      ptr = eq.ptr;
+      value = eq.value;
       references = eq.references;
       ++*references; // add reference
     }
@@ -140,12 +134,12 @@ public:
   inline ReferenceCounter& operator=(const ReferenceCounter<POLY>& eq) /*throw(...)*/ {
     ASSERT(&eq != this); // no need to protect against self assignment
     if (!--*references) { // remove reference and possible destroy object
-      if (ptr) { // skip if pointer is invalid
-        delete ptr; // could throw exception if RCO is destroyed unsuccessfully
+      if (value) { // skip if pointer is invalid
+        delete value; // could throw exception if RCO is destroyed unsuccessfully
       }
       delete references;
     }
-    ptr = eq.ptr;
+    value = eq.value;
     references = eq.references;
     ++*references; // add reference
     return *this;
@@ -156,23 +150,23 @@ public:
     utilizing this member function. Its completely up to you to ensure that
     the reference counting rules are not violated.
   */
-  inline Pointer getValue() const throw() {
-    return ptr;
+  inline TYPE* getValue() const throw() {
+    return value;
   }
 
   /**
     Sets the pointer value of this automation pointer.
   */
-  inline void setValue(Pointer value) /*throw(...)*/ {
+  inline void setValue(TYPE* _value) /*throw(...)*/ {
     if (!--*references) { // remove reference and possible destroy object
-      if (ptr) { // skip if pointer is invalid
-        delete ptr; // could throw exception if RCO is destroyed unsuccessfully
+      if (value) { // skip if pointer is invalid
+        delete value; // could throw exception if RCO is destroyed unsuccessfully
       }
       ++*references; // one reference
     } else {
       references = new Counter(1); // one reference
     }
-    ptr = value;
+    value = _value;
     return *this;
   }
 
@@ -183,7 +177,7 @@ public:
     @return False if the pointer is invalid (i.e. not pointing to an object).
   */
   inline bool isMultiReferenced() const throw() {
-    return (ptr) && (*references > 1); // false if the pointer is invalid
+    return value && (*references > 1); // false if the pointer is invalid
   }
 
   /**
@@ -195,32 +189,46 @@ public:
   inline void copyOnWrite() throw() {
     if (isMultiReferenced()) { // do we have the object for our self
       --*references; // remove one reference (no need to delete object since multi-referenced)
-      ptr = new Value(*ptr);
+      value = new TYPE(*value);
       references = new Counter(1); // one reference
     }
   }
 
   /**
+    Invalidates the reference.
+  */
+  inline void invalidate() /*throw(...)*/ {
+    if (value) { // skip if pointer is invalid
+      if (--*references) {
+        delete value;
+      }
+    }
+    value = 0;
+  }
+  
+  /**
     Returns true if the automation pointer is valid (i.e. it is pointing to an
     object).
   */
   inline bool isValid() const throw() {
-    return ptr != 0;
+    return value != 0;
+  }
+
+  /**
+    Returns the reference counted object.
+    
+    @deprecated
+  */
+  inline TYPE& operator*() const throw(NullPointer) {
+    assert(value, NullPointer(this));
+    return *value;
   }
 
   /**
     Returns the reference counted object.
   */
-  inline Reference operator*() const throw(NullPointer) {
-    assert(ptr, NullPointer(this));
-    return *ptr;
-  }
-
-  /**
-    Returns the reference counted object.
-  */
-  inline Pointer operator->() const throw() {
-    return ptr;
+  inline TYPE* operator->() const throw() {
+    return value;
   }
 
   /**
@@ -228,8 +236,8 @@ public:
   */
   inline ~ReferenceCounter() /*throw(...)*/ {
     if (!--*references) { // remove reference
-      if (ptr) { // skip if pointer is invalid
-        delete ptr; // could throw exception if RCO is destroyed unsuccessfully
+      if (value) { // skip if pointer is invalid
+        delete value; // could throw exception if RCO is destroyed unsuccessfully
       }
       delete references;
     }

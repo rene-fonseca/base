@@ -22,6 +22,22 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Automation pointer that allows transfer of ownership and automatic deletion
   of the object. Do not construct more than one automation pointer from the
   'normal' pointer.
+
+  @code
+  void MyOtherClass::myOtherMethod(MyResource resource) throw(MyException) {
+    // ...
+    assert(condition, MyException(this));
+    // ...
+  }
+  
+  void MyClass::myMethod() throw(MemoryException, MyException) {
+    OwnershipPointer<MyResource> resource = new MyResource();
+    MyOtherClass* myOtherObject = getOtherObject();
+    myOtherObject->myOtherMethod(resource);
+    MyResource* result = resource.relinquishOwnership();
+    // ...
+  }
+  @endcode
   
   @short Ownership automation pointer.
   @ingroup memory
@@ -31,22 +47,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 template<class TYPE>
 class OwnershipPointer {
-public:
-  
-  /** Object type. */
-  typedef TYPE Value;
-  /** Pointer to objcet type. */
-  typedef TYPE* Pointer;
-  /** Reference to object type. */
-  typedef TYPE& Reference;
 private:
 
   /** Pointer to object. */
-  Pointer object;
-  
-  OwnershipPointer(const OwnershipPointer& copy) throw();
-  
-  OwnershipPointer& operator=(const OwnershipPointer& eq) throw();
+  TYPE* object;
 public:
 
   /**
@@ -60,12 +64,12 @@ public:
     
     @param object The object pointer to be automated.
   */
-  inline OwnershipPointer(Pointer _object) throw() : object(_object) {
+  inline OwnershipPointer(TYPE* _object) throw() : object(_object) {
   }
   
   /**
-    Copy constructor. Transfers ownership from copy to this object. The original
-    owner loses the ownership.
+    Copy constructor. Transfers ownership from copy to this object. The
+    original owner loses the ownership.
   */
   inline OwnershipPointer(OwnershipPointer& copy) throw()
     : object(copy.relinquishOwnership()) {
@@ -88,7 +92,8 @@ public:
     Assignment operator.
   */
   template<class POLY>
-  inline OwnershipPointer& operator=(OwnershipPointer<POLY>& eq) /*throw(...)*/ {
+  inline OwnershipPointer& operator=(
+    OwnershipPointer<POLY>& eq) /*throw(...)*/ {
     if (eq.object != object) { // protect against self assignment
       if (object) {
         delete object;
@@ -101,7 +106,7 @@ public:
   /**
     Assignment operator.
   */
-  inline OwnershipPointer& operator=(Pointer object) /*throw(...)*/ {
+  inline OwnershipPointer& operator=(TYPE* object) /*throw(...)*/ {
     if (this->object) {
       delete this->object;
     }
@@ -115,8 +120,8 @@ public:
     
     @return Pointer to object.
   */
-  inline Pointer relinquishOwnership() throw() {
-    Pointer temp = object;
+  inline TYPE* relinquishOwnership() throw() {
+    TYPE* temp = object;
     object = 0;
     return temp;
   }
@@ -124,21 +129,21 @@ public:
   /**
     Returns the pointer to mutable object.
   */
-  inline Pointer getValue() throw() {
+  inline TYPE* getValue() throw() {
     return object;
   }
 
   /**
     Returns the pointer to constant object.
   */
-  inline const Pointer getValue() const throw() {
+  inline const TYPE* getValue() const throw() {
     return object;
   }
   
   /**
     Returns mutable object.
   */
-  inline Reference operator*() throw(NullPointer) {
+  inline TYPE& operator*() throw(NullPointer) {
     if (!object) {
       throw NullPointer(this);
     }
@@ -148,7 +153,7 @@ public:
   /**
     Returns constant object.
   */
-  inline const Reference operator*() const throw(NullPointer) {
+  inline const TYPE& operator*() const throw(NullPointer) {
     if (!object) {
       throw NullPointer(this);
     }
@@ -158,14 +163,14 @@ public:
   /**
     Returns object for modifying access.
   */
-  inline Pointer operator->() throw() {
+  inline TYPE* operator->() throw() {
     return object;
   }
   
   /**
     Returns object for non-modifying access.
   */
-  inline const Pointer operator->() const throw() {
+  inline const TYPE* operator->() const throw() {
     return object;
   }
   

@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE_MEM__LIFETIME_H
 
 #include <base/mem/NullPointer.h>
+#include <base/NotCopyable.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -29,23 +30,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class Lifetime {
-public:
-  
-  /** Object type. */
-  typedef TYPE Value;
-  /** Pointer to objcet type. */
-  typedef TYPE* Pointer;
-  /** Reference to object type. */
-  typedef TYPE& Reference;
+class Lifetime : public NotCopyable {
 private:
 
   /** Pointer to object. */
-  Pointer object;
-  
-  Lifetime(const Lifetime& copy) throw();
-  
-  Lifetime& operator=(const Lifetime& eq) throw();
+  TYPE* object;
 public:
   
   /**
@@ -53,35 +42,35 @@ public:
     
     @param object The object pointer to be automated.
   */
-  inline Lifetime(Pointer _object) throw(NullPointer) : object(_object) {
+  inline Lifetime(TYPE* _object) throw(NullPointer) : object(_object) {
     assert(object, NullPointer(this));
   }
   
   /**
     Returns mutable object.
   */
-  inline Reference operator*() throw() {
+  inline TYPE& operator*() throw() {
     return *object;
   }
   
   /**
     Returns constant object.
   */
-  inline const Reference operator*() const throw() {
+  inline const TYPE& operator*() const throw() {
     return *object;
   }
   
   /**
     Returns object for modifying access.
   */
-  inline Pointer operator->() throw() {
+  inline TYPE* operator->() throw() {
     return object;
   }
   
   /**
     Returns object for non-modifying access.
   */
-  inline const Pointer operator->() const throw() {
+  inline const TYPE* operator->() const throw() {
     return object;
   }
   

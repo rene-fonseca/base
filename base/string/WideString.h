@@ -31,23 +31,24 @@ class FormatOutputStream;
 
 /**
   This class binds together a wide string literal and its length. Use the macro
-  WIDEMESSAGE to generate an object of this class for a given wide string
+  WIDEMESSAGE to construct an object of this class for a given wide string
   literal (e.g. WIDEMESSAGE("Hello World")). Do not call the constructor
   manually.
-
+  
   @short Wide string literal
+  @ingroup string
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */
 class WideStringLiteral {
 private:
-
-  /** The number of bytes occupied by the message without the terminator. */
+  
+  /** The number of characters occupied by the message without the terminator. */
   const unsigned int length;
   /** NULL-terminated message. */
   const wchar* message;
 public:
-
+  
   /** Initializes message. Automatically invocated by the macro WIDEMESSAGE. */
   inline WideStringLiteral(unsigned int _length, const wchar* _message) throw()
     : length(_length), message(_message) {
@@ -64,8 +65,9 @@ public:
   }
 };
 
-/** This macro generates a WideStringLiteral object from a string literal. */
-#define WIDEMESSAGE(msg) WideStringLiteral(sizeof(L ## msg)/sizeof(wchar) - 1, L ## msg)
+/** This macro constructs a WideStringLiteral object from the given string literal. */
+#define WIDEMESSAGE(message) \
+  WideStringLiteral(sizeof(L ## message)/sizeof(wchar) - 1, L ## message)
 
 
 
@@ -73,6 +75,7 @@ public:
   Default wide-character properties and manipulators.
 
   @short Wide-character description.
+  @ingroup string
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -80,9 +83,9 @@ class WideTraits {
 public:
 
   /** The type of a single character. */
-  typedef uint32 Character;
+  typedef ucs4 Character;
   /** Specifies the terminator for NULL-terminated strings. */
-  static const uint32 TERMINATOR = 0;
+  static const ucs4 TERMINATOR = 0;
 private:
 
   struct Range {
@@ -235,6 +238,7 @@ public:
   </pre>
 
   @short Wide-character string.
+  @ingroup string
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -298,12 +302,7 @@ public:
     ASSUME_NATIVE_BYTE_ORDER = 8, /**< Specifies the the encoding is in native byte order. */
     ASSUME_BE = 16, /**< Specifies the the encoding is in big endian byte order (ignored if ASSUME_NATIVE_BYTE_ORDER is set). */
     ASSUME_LE = 32 /**< Specifies the the encoding is in little endian byte order (ignored if ASSUME_NATIVE_BYTE_ORDER or ASSUME_BE are set). */
-  };
-  
-  /** UCS-2 encoded character. */
-  typedef uint16 ucs2;
-  /** UCS-4 encoded character (ISO/IEC 10646). */
-  typedef uint32 ucs4;
+  };  
 private:
 
   /** The default wide string. This is used to avoid multiple allocations of empty string buffers. */
@@ -463,7 +462,7 @@ public:
     @return The number of bytes occupied by the UTF-8 encoded string.
   */
   static unsigned int UCS2ToUTF8(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags = 0) throw(WideStringException);
-
+  
   /**
     Low-level method which converts an UCS-4 encoded string to UTF-8. A
     null-terminator is NOT appended to the string. The destination buffer must
@@ -523,6 +522,35 @@ public:
     @return The number of characters in the UCS-4 encoded string.
   */
   static unsigned int UTF16ToUCS4(ucs4* dest, const uint8* src, unsigned int size, unsigned int flags = EAT_BOM|EXPECT_BOM) throw(MultibyteException);
+
+  /**
+    Low-level method which converts an UCS-2 encoded string to UCS-4 encoding.
+    The destination buffer must have room for enough characters (guaranteed to
+    not exceed size). The UCS-4 characters are restricted to values in the range
+    0x00000000-0x0010ffff.
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UCS-2 encoded string.
+    @param size The number of characters in the UCS-2 encoded string.
+    @param flags The encoding flags.
+    
+    @return The number of characters in the UCS-4 encoded string.
+  */
+  static unsigned int UCS2ToUCS4(ucs4* dest, const ucs2* src, unsigned int size, unsigned int flags = 0) throw(WideStringException);
+
+  /**
+    Low-level method which converts an UCS-4 encoded string to UCS-2 encoding.
+    The destination buffer must have room for enough characters (guaranteed to
+    not exceed size).
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UCS-4 encoded string.
+    @param size The number of characters in the UCS-4 encoded string.
+    @param flags The encoding flags.
+    
+    @return The number of characters in the UCS-2 encoded string.
+  */
+  static unsigned int UCS4ToUCS2(ucs2* dest, const ucs4* src, unsigned int size, unsigned int flags = 0) throw(WideStringException);
   
   /**
     Low-level method which converts an UCS-2 encoded string to UTF-16BE. A
@@ -537,7 +565,7 @@ public:
 
     @return The number of bytes occupied by the UTF-16BE encoded string.
   */
-  static unsigned int UCS2ToUTF16BE(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags) throw(WideStringException);
+  static unsigned int UCS2ToUTF16BE(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
     Low-level method which converts an UCS-2 encoded string to UTF-16LE. A
@@ -552,7 +580,7 @@ public:
 
     @return The number of bytes occupied by the UTF-16LE encoded string.
   */
-  static unsigned int UCS2ToUTF16LE(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags) throw(WideStringException);
+  static unsigned int UCS2ToUTF16LE(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
     Low-level method which converts an UCS-4 encoded string to UTF-16BE. A
@@ -567,7 +595,7 @@ public:
 
     @return The number of bytes occupied by the UTF-16BE encoded string.
   */
-  static unsigned int UCS4ToUTF16BE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags) throw(WideStringException);
+  static unsigned int UCS4ToUTF16BE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
     Low-level method which converts an UCS-4 encoded string to UTF-16LE. A
@@ -582,7 +610,7 @@ public:
 
     @return The number of bytes occupied by the UTF-16LE encoded string.
   */
-  static unsigned int UCS4ToUTF16LE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags) throw(WideStringException);
+  static unsigned int UCS4ToUTF16LE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
     Low-level method which converts an UCS-4 encoded string to UTF-32BE. A

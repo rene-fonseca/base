@@ -116,7 +116,8 @@ public:
 };
 
 /**
-  Writes a string representation of the InetEndPoint object to a format stream.
+  Writes a string representation of the InetEndPoint object to a format stream
+  (e.g. "127.0.0.1:1234" or "[::1]:1234").
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const InetEndPoint& value) throw(IOException);
 

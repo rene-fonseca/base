@@ -79,7 +79,16 @@ void InetEndPoint::setPort(unsigned short value) throw() {
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const InetEndPoint& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);
-  return stream << value.getAddress() << ':' << value.getPort();
+  const InetAddress::Family family = value.getAddress().getFamily();
+  if (family == InetAddress::IP_VERSION_6) {
+    stream << '[';
+  }
+  stream << value.getAddress();
+  if (family == InetAddress::IP_VERSION_6) {
+    stream << ']';
+  }
+  stream << ':' << value.getPort();
+  return stream;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

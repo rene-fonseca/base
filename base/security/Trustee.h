@@ -18,6 +18,7 @@
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/security/Group.h>
 #include <base/security/User.h>
+#include <base/collection/Hash.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -31,6 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class Trustee : public Object {
+  friend class Hash<Trustee>;
 public:
 
   /** The type of trustee. */
@@ -41,7 +43,7 @@ public:
     CLASS, /**< Trustee is a class. */
     EVERYONE /**< Everyone. */
   };
-private:  
+private:
   
   /** Cached type of trustee. */
   mutable TrusteeType type;
@@ -188,6 +190,13 @@ public:
   Writes the trustee id to the format output stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value) throw(IOException);
+
+template<>
+class Hash<Trustee> {
+public:
+  
+  unsigned long operator()(const Trustee& value) throw();
+};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

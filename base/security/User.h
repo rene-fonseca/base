@@ -18,6 +18,7 @@
 #include <base/string/String.h>
 #include <base/collection/Array.h>
 #include <base/mem/ReferenceCountedAllocator.h>
+#include <base/collection/Hash.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -33,6 +34,7 @@ class Group;
 */
 
 class User : public Object {
+  friend class Hash<User>;
   friend class Trustee;
 private:
   
@@ -202,6 +204,13 @@ public:
   Writes the user id to the format output stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const User& value) throw(IOException);
+
+template<>
+class Hash<User> {
+public:
+  
+  unsigned long operator()(const User& value) throw();
+};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

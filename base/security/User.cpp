@@ -304,4 +304,21 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const User& value) th
 #endif
 }
 
+unsigned long Hash<User>::operator()(const User& value) throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  if (!value.id.isValid()) {
+    return 0;
+  }
+  const uint8* src = value.id->getElements();
+  const uint8* end = src + value.id->getSize();
+  unsigned long result = 5381; // TAG: fixme
+  while (src < end) {
+    result = /*33*/ 31 /*65599*/ * result + static_cast<unsigned char>(*src++);
+  }
+  return result;
+#else // unix
+  return value.getIntegralId();
+#endif // flavor
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -18,6 +18,7 @@
 #include <base/string/String.h>
 #include <base/OutOfDomain.h>
 #include <base/collection/Array.h>
+#include <base/collection/Hash.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -31,6 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class Group : public Object {
+  friend class Hash<Group>;
   friend class Trustee;
 private:
 
@@ -178,6 +180,13 @@ public:
   Writes the group id to the format output stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Group& value) throw(IOException);
+
+template<>
+class Hash<Group> {
+public:
+  
+  unsigned long operator()(const Group& value) throw();
+};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

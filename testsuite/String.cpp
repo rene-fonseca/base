@@ -83,16 +83,17 @@ int main() {
 
   fout << "Initializing empty string str1" << ENDL;
   String<> str1;
-  fout << "Length of str1: " << str1.length() << ENDL;
+  fout << "Length of str1: " << str1.getLength() << ENDL;
   fout << "Value of str1: " << str1 << ENDL;
 
   fout << "Explicit initialization of string str2" << ENDL;
   String<> str2 = "Hello, World!";
-  fout << "Length of str2: " << str2.length() << ENDL;
+  fout << "Length of str2: " << str2.getLength() << ENDL;
   fout << "Value of str2: " << str2 << ENDL;
 
   fout << "Inverting case of characters" << ENDL;
-  transform(str2, InvertCase());
+  InvertCase ii;
+  transform(str2, ii);
   fout << "str2: " << str2 << ENDL;
 
   fout << "Concatenation: " << String<>("first") + String<>("SECOND") << ENDL;

@@ -9,6 +9,7 @@
 #include <base/collection/Set.h>
 #include <base/collection/Map.h>
 #include <base/Date.h>
+#include <base/net/Url.h>
 
 using namespace base;
 
@@ -45,7 +46,7 @@ void test() {
   }
   fout << "Map<int, int>: "<< mss << ENDL;
 
-  fout.flush();
+  fout << "Url: " << Url("http://fonseca:password@www.mip.sdu.dk:80/~fonseca/base/") << ENDL;
 }
 
 int main() {

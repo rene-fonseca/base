@@ -107,6 +107,7 @@ class SocketAddress { // Internet end point
 private:
 
   union {
+    // struct sockaddr_storage any; // large enough to hold any address
     struct sockaddr sa;
     struct sockaddr_in ipv4;
 #if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
@@ -195,7 +196,11 @@ public:
   
   /** Returns the size of the socket address structure. */
   inline unsigned int getSize() const throw() {
-    return sizeof(sa); // TAG: is this allowed
+#  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+    return (sa.sa_family == AF_INET6) ? sizeof(ipv6) : sizeof(ipv4);
+#else
+    return sizeof(ipv4);
+#endif
   }
   
   inline Socket::Domain getDomain() const throw() {
@@ -481,6 +486,7 @@ bool Socket::accept(Socket& socket) throw(NetworkException) {
 
 void Socket::bind(const InetAddress& address, unsigned short port) throw(NetworkException) {
   SocketAddress sa(address, port, socket->getDomain());
+  
   if (::bind((int)socket->getHandle(), sa.getValue(), sa.getSize())) {
     internal::SocketImpl::raiseNetwork("Unable to assign name to socket");
   }

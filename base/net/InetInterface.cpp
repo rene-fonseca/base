@@ -23,16 +23,10 @@
 #  include <ws2tcpip.h>
 #  include <nb30.h>
 #  undef interface
-#elif (defined(_DK_SDU_MIP__BASE__INET_IPV6))
-#  include <sys/types.h>
-#  include <sys/socket.h>
-#  include <net/if.h>
-#  include <sys/ioctl.h>
-#  include <sys/sockio.h>
-#  include <unistd.h>
 #else // unix
 #  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
 #    define BSD_COMP
+#    include <sys/sockio.h>
 #  endif
 #  include <sys/types.h>
 #  include <sys/socket.h>
@@ -343,7 +337,7 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
         );
       }
 #else
-      if (ioctl(handle, SIOCGENADDR, current) == 0) {
+      if (ioctl(handle, SIOCGENADDR, current) == 0) { // ignore error
         interface.ethernet.setMAC48(
           Cast::getAddress(current->ifr_enaddr)
         );

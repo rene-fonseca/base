@@ -71,7 +71,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
   
 #if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   struct addrinfo hint;
-  fill<char>(Cast::getCharAddress(hint), sizeof(hint), 0);
+  fill<uint8>(Cast::getAddress(hint), sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
 
   struct addrinfo* ai;
@@ -81,19 +81,18 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 
   struct addrinfo* i = ai;
   while (i) {
-    uint8* addr;
+    uint8* address;
     switch (i->ai_family) {
     case PF_INET:
-      addr = Cast::getAddress(Cast::pointer<struct sockaddr_in*>(i->ai_addr)->sin_addr);
-      result.append(InetAddress(addr, IP_VERSION_4));
+      address = Cast::getAddress(Cast::pointer<struct sockaddr_in*>(i->ai_addr)->sin_addr);
+      result.append(InetAddress(address, IP_VERSION_4));
       break;
     case PF_INET6:
-      addr = Cast::getAddress(Cast::pointer<struct sockaddr_in6*>(i->ai_addr)->sin6_addr);
-      result.append(InetAddress(addr, IP_VERSION_6));
+      address = Cast::getAddress(Cast::pointer<struct sockaddr_in6*>(i->ai_addr)->sin6_addr);
+      result.append(InetAddress(address, IP_VERSION_6));
       break;
-//    default:
-// just ignore the unsupported families
-//      throw NetworkException("Unsupported family", Type::getType<InetAddress>());
+    default:
+      break; // just ignore the unsupported families
     }
     i = i->ai_next; // go to the next info entry
   }
@@ -138,7 +137,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound) {
 #if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   struct addrinfo hint;
-  fill<char>(Cast::getCharAddress(hint), sizeof(hint), 0);
+  fill<uint8>(Cast::getAddress(hint), sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
 
   struct addrinfo* ai;
@@ -148,14 +147,14 @@ InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound
   
   struct addrinfo* i = ai;
   while (i) {
-    uint8* addr;
+    uint8* address;
     switch (i->ai_family) {
     case PF_INET:
-      addr = Cast::getAddress(Cast::pointer<struct sockaddr_in*>(i->ai_addr)->sin_addr);
-      return InetAddress(addr, IP_VERSION_4);
+      address = Cast::getAddress(Cast::pointer<struct sockaddr_in*>(i->ai_addr)->sin_addr);
+      return InetAddress(address, IP_VERSION_4);
     case PF_INET6:
-      addr = Cast::getAddress(Cast::pointer<struct sockaddr_in6*>(i->ai_addr)->sin6_addr);
-      return InetAddress(addr, IP_VERSION_6);
+      address = Cast::getAddress(Cast::pointer<struct sockaddr_in6*>(i->ai_addr)->sin6_addr);
+      return InetAddress(address, IP_VERSION_6);
     }
     i = i->ai_next; // go to the next info entry
   }
@@ -197,23 +196,23 @@ InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound
   throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
 }
 
-bool InetAddress::parse(const String& addr) throw() {
-  String::ReadIterator i = addr.getBeginReadIterator();
-  const String::ReadIterator end = addr.getEndReadIterator();
+bool InetAddress::parse(const String& address) throw() {
+  String::ReadIterator i = address.getBeginReadIterator();
+  const String::ReadIterator end = address.getEndReadIterator();
 
-  int colon = addr.indexOf(':');
+  int colon = address.indexOf(':');
   bool readIPv4 = true; // read IPv4 address from end of addr
 
   if (colon < 0) { // IPv4
     family = IP_VERSION_4;
-    address.words[0] = 0;
-    address.words[1] = 0;
-    address.words[2] = 0;
+    this->address.words[0] = 0;
+    this->address.words[1] = 0;
+    this->address.words[2] = 0;
   } else { // IPv6
     family = IP_VERSION_6;
-    int dot = addr.indexOf('.', colon + 1);
+    int dot = address.indexOf('.', colon + 1);
     readIPv4 = (dot >= 0);
-    const String::ReadIterator endIPv6 = (dot >= 0) ? (i + addr.lastIndexOf(':', dot) + 1) : end;
+    const String::ReadIterator endIPv6 = (dot >= 0) ? (i + address.lastIndexOf(':', dot) + 1) : end;
 
     unsigned int maxValues = readIPv4 ? 6 : 8; // maximum number of half-words to read
     int zeroIndex = -1; // index of zero-compression (invalidated)
@@ -240,7 +239,7 @@ bool InetAddress::parse(const String& addr) throw() {
           }
         }
       }
-      address.halfWords[writeHead++] = ByteOrder::toBigEndian<uint16>(value);
+      this->address.halfWords[writeHead++] = ByteOrder::toBigEndian<uint16>(value);
 
       if (i == endIPv6) {
         break;
@@ -259,8 +258,8 @@ bool InetAddress::parse(const String& addr) throw() {
       return false;
     }
     if (zeroIndex >= 0) { // is zero-compression present
-      move(&address.halfWords[zeroIndex + maxValues - writeHead], &address.halfWords[zeroIndex], writeHead - zeroIndex);
-      fill<uint16>(&address.halfWords[zeroIndex], maxValues - writeHead, 0);
+      move(&this->address.halfWords[zeroIndex + maxValues - writeHead], &this->address.halfWords[zeroIndex], writeHead - zeroIndex);
+      fill<uint16>(&this->address.halfWords[zeroIndex], maxValues - writeHead, 0);
     }
   }
 
@@ -277,7 +276,7 @@ bool InetAddress::parse(const String& addr) throw() {
       if (value > 255) {
         return false;
       }
-      address.octets[12 + relativeIndex++] = value;
+      this->address.octets[12 + relativeIndex++] = value;
       if (i == end) {
         break;
       }
@@ -293,24 +292,29 @@ bool InetAddress::parse(const String& addr) throw() {
   return i == end;
 }
 
-InetAddress::InetAddress() throw() : family(IP_VERSION_6) {
+InetAddress::InetAddress() throw() {
+#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+  family = IP_VERSION_6;
+#else
+  family = IP_VERSION_4;
+#endif
   address.words[0] = 0; // set to unspecified address
   address.words[1] = 0;
   address.words[2] = 0;
   address.words[3] = 0;
 }
 
-InetAddress::InetAddress(const uint8* addr, Family family) throw() {
-  setAddress(addr, family);
+InetAddress::InetAddress(const uint8* address, Family family) throw() {
+  setAddress(address, family);
 }
 
-InetAddress::InetAddress(const String& addr) throw(InvalidFormat) {
-  assert(parse(addr), InvalidFormat("Not an Internet address", this));
+InetAddress::InetAddress(const String& address) throw(InvalidFormat) {
+  assert(parse(address), InvalidFormat("Not an Internet address", this));
 }
 
-InetAddress::InetAddress(const String& addr, Family family) throw(InvalidFormat) {
+InetAddress::InetAddress(const String& address, Family family) throw(InvalidFormat) {
   assert(
-    parse(addr) && (this->family == family),
+    parse(address) && (this->family == family),
     InvalidFormat("Not an Internet address", this)
   );
 }
@@ -329,12 +333,16 @@ InetAddress& InetAddress::operator=(const InetAddress& eq) throw() {
 String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 #if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   struct sockaddr_in6 addr;
-  fill<char>(Cast::getCharAddress(addr), sizeof(addr), 0);
+  clear(addr);
 #if (defined(SIN6_LEN))
   addr.sin6_len = sizeof(addr);
 #endif
   addr.sin6_family = AF_INET6;
-  copy<char>(Cast::getCharAddress(addr.sin6_addr), Cast::getCharAddress(address), sizeof(address));
+  copy<uint8>(
+    Cast::getAddress(addr.sin6_addr),
+    Cast::getAddress(address),
+    sizeof(address)
+  );
   char hostname[NI_MAXHOST]; // includes space for terminator
 
   if (getnameinfo(
@@ -566,29 +574,29 @@ bool InetAddress::convertToIPv4() throw() {
     if (isIPv4Mapped()) {
       family = IP_VERSION_4;
       address.words[2] = 0;
-      return true;
+    } else if (isUnspecified()) {
+      family = IP_VERSION_4;
     } else {
-      return isUnspecified(); // cannot convert (unspecified is ok)
+      return false; // cannot convert
     }
-  } else {
-    return true; // already IPv4
   }
+  return true; // now IPv4 address
 }
 
-void InetAddress::setAddress(const uint8* addr, Family family) throw() {
+void InetAddress::setAddress(const uint8* address, Family family) throw() {
   this->family = family;
   switch (family) {
   case IP_VERSION_4:
-    address.words[0] = 0;
-    address.words[1] = 0;
-    address.words[2] = 0;
-    address.octets[12] = *addr++;
-    address.octets[13] = *addr++;
-    address.octets[14] = *addr++;
-    address.octets[15] = *addr++;
+    this->address.words[0] = 0;
+    this->address.words[1] = 0;
+    this->address.words[2] = 0;
+    this->address.octets[12] = *address++;
+    this->address.octets[13] = *address++;
+    this->address.octets[14] = *address++;
+    this->address.octets[15] = *address++;
     break;
   case IP_VERSION_6:
-    copy(address.octets, addr, 16);
+    copy(this->address.octets, address, 16);
     break;
   }
 }

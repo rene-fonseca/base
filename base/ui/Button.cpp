@@ -52,9 +52,9 @@ void Button::onResize(const Dimension& dimension) throw() {
 void Button::onMouseScope(bool scope) throw() {
   fout << MESSAGE("Button: Mouse scope: ") << scope << ENDL;
   if (scope) {
-    brush = Brush(makeColor(0x50, 0x80, 0xff));
+    brush = Brush(Color(0x50, 0x80, 0xff));
   } else {
-    brush = Brush(makeColor(0x30, 0x60, 0xe0));
+    brush = Brush(Color(0x30, 0x60, 0xe0));
   }
   //highlight = scope;
   onDisplay();
@@ -69,11 +69,11 @@ void Button::onMouseButton(const Position& position, Mouse::Button button, Mouse
   if (button == Mouse::LEFT) {
     if (event == Mouse::PRESSED) {
       pressed = true;
-      brush = Brush(makeColor(0x10, 0x40, 0xc0));
+      brush = Brush(Color(0x10, 0x40, 0xc0));
       setCapture(true);
     } else if (event == Mouse::RELEASED) {
       pressed = false;
-      brush = Brush(makeColor(0x30, 0x60, 0xe0));
+      brush = Brush(Color(0x30, 0x60, 0xe0));
       if ((position.getX() >= 0) && (position.getY() >= 0)) {
         // index getDimension
       }

@@ -320,7 +320,7 @@ int WideString::compareToIgnoreCase(const Character* left, const Character* righ
 int WideString::compareToIgnoreCase(const WideString& str) const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return _wcsicmp(getElements(), str.getElements());
-#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   return wcscasecmp(getElements(), str.getElements());
 #else // Unix
   return compareToIgnoreCase(getElements(), str.getElements());
@@ -331,7 +331,7 @@ int WideString::compareToIgnoreCase(const Character* str) const throw(WideString
   assert(str, WideStringException());
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return _wcsicmp(getElements(), str);
-#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   return wcscasecmp(getElements(), str);
 #else // Unix
   return compareToIgnoreCase(getElements(), str);

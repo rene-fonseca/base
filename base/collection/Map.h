@@ -39,8 +39,8 @@ private:
   unsigned int size;
 protected:
 
-  class Enumeration;
-  friend class Enumeration;
+//  class Enumeration;
+//  friend class Enumeration;
   class ReadOnlyEnumeration;
   friend class ReadOnlyEnumeration;
 
@@ -50,17 +50,17 @@ protected:
     @author René Møller Fonseca
     @version 1.0
   */
-  class Enumeration : public OrderedBinaryTree<Node>::Enumeration {
-  public:
-
-    /**
-      Initializes an enumeration of all the elements of the specified map.
-
-      @param map The map being enumerated.
-    */
-    inline Enumeration(Map& map) throw() :
-      OrderedBinaryTree<Node>::Enumeration(map.elements) {}
-  };
+//  class Enumeration : public OrderedBinaryTree<Node>::Enumeration {
+//  public:
+//
+//    /**
+//      Initializes an enumeration of all the elements of the specified map.
+//
+//      @param map The map being enumerated.
+//    */
+//    inline Enumeration(Map& map) throw() :
+//      OrderedBinaryTree<Node>::Enumeration(map.elements) {}
+//  };
 
   /**
     Non-modifying enumeration of all the elements of a map.
@@ -103,7 +103,7 @@ public:
   /**
     Initializes map from other map.
   */
-  Map(const Map& copy) throw(MemoryException) : elements(copy.elements) {}
+  Map(const Map& copy) throw(MemoryException) : elements(copy.elements), size(copy.size) {}
 
   /**
     Returns the number of associations in the map.
@@ -135,7 +135,7 @@ public:
     if (!node) {
       throw InvalidKey();
     }
-    return node->getValue()->getValue();
+    return *node->getValue()->getValue();
   }
 
   /**

@@ -12,6 +12,7 @@
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/mem/AllocatorEnumeration.h>
 #include <limits.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -72,6 +73,41 @@ public:
   static const unsigned int DEFAULT_CAPACITY = GRANULARITY;
   /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. Unresolved problem: size of int depends on architecture. */
   static const unsigned int MAXIMUM_LENGTH = ((INT_MAX - sizeof(TERMINATOR))/GRANULARITY)*GRANULARITY;
+
+  class Enumeration;
+  friend class Enumeration;
+  class ReadOnlyEnumeration;
+  friend class ReadOnlyEnumeration;
+
+  /**
+    Enumeration of all the elements of a string.
+  */
+  class Enumeration : public AllocatorEnumeration<char, char&, char*> {
+  public:
+
+    /**
+      Initializes an enumeration of all the elements of the specified string.
+
+      @param string The string being enumerated.
+    */
+    Enumeration(String& string) throw() :
+      AllocatorEnumeration<char, char&, char*>(string.getMutableBuffer(), string.getMutableBuffer() + string.length()) {}
+  };
+
+  /**
+    Non-modifying enumeration of all the elements of a string.
+  */
+  class ReadOnlyEnumeration : public AllocatorEnumeration<char, const char&, const char*> {
+  public:
+
+    /**
+      Initializes a non-modifying enumeration of all the elements of the specified string.
+
+      @param string The string being enumerated.
+    */
+    ReadOnlyEnumeration(const String& string) throw() :
+      AllocatorEnumeration<char, const char&, const char*>(string.getReadOnlyBuffer(), string.getReadOnlyBuffer() + string.length()) {}
+  };
 private:
 
   // Used by implement operator[]() for mutable strings.

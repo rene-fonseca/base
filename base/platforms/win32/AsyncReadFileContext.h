@@ -15,7 +15,7 @@
 #define _DK_SDU_MIP__BASE_PLATFORMS_WIN32__ASYNC_READ_FILE_CONTEXT_H
 
 #if !(_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #error inclusion of platform specific header file
+#  error inclusion of platform specific header file
 #endif
 
 #include <base/io/async/AsynchronousReadContext.h>
@@ -52,7 +52,12 @@ namespace win32 {
     }
   public:
     
-    AsyncReadFileContext(OperatingSystem::Handle handle, char* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(IOException);
+    AsyncReadFileContext(
+      OperatingSystem::Handle handle,
+      char* buffer,
+      unsigned int bytesToRead,
+      unsigned long long offset,
+      AsynchronousReadEventListener* listener) throw(IOException);
   public:
 
     AsynchronousReadCompletion getCompletion() const throw() {

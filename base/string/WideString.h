@@ -404,6 +404,7 @@ public:
     
     inline UnicodeCharacter& setStyle(Style style) throw() {
       this->style = style;
+      return *this;
     }
   };
   

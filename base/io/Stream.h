@@ -33,6 +33,11 @@ public:
     Closes the stream and releases any system resources associated with the stream.
   */
   virtual void close() throw(IOException) = 0;
+
+  /**
+    Destroy stream object.
+  */
+  virtual ~Stream() throw(IOException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

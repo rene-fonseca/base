@@ -1399,6 +1399,7 @@ void File::asyncCancel() throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::CancelIo(getHandle());
 #else // unix
+  // TAG: fixme
 #endif // flavor
 }
 
@@ -1406,6 +1407,8 @@ AsynchronousReadOperation File::read(char* buffer, unsigned int bytesToRead, uns
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncReadFileContext(getHandle(), buffer, bytesToRead, offset, listener);
+#else // unix
+  // TAG: fixme
 #endif // flavor
 }
 
@@ -1413,7 +1416,12 @@ AsynchronousWriteOperation File::write(const char* buffer, unsigned int bytesToW
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncWriteFileContext(getHandle(), buffer, bytesToWrite, offset, listener);
+#else // unix
+  // TAG: fixme
 #endif // flavor
+}
+
+File::~File() throw(FileException) {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

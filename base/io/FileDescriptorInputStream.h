@@ -102,9 +102,9 @@ public:
   bool wait(unsigned int timeout) const throw(IOException);
 
   /**
-    Release file descriptor.
+    Releases the file descriptor.
   */
-  ~FileDescriptorInputStream();
+  ~FileDescriptorInputStream() throw(IOException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

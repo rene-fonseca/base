@@ -55,6 +55,7 @@ public:
   */
   inline AsynchronousWriteOperation& operator=(const AsynchronousWriteOperation& eq) throw() {
     this->context = eq.context;
+    return *this;
   }
 
   /**

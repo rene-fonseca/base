@@ -86,6 +86,11 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
   // FIXME: remember to close before raising an exception
   assert(ihandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes", Type::getType<Pipe>()));
   assert(ohandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes", Type::getType<Pipe>()));
+  Pipe p;
+  Pipe q;
+  p.fd = new PipeHandle(ihandle);
+  q.fd = new PipeHandle(ohandle);
+  return makePair(p, q);
 #else // unix
   OperatingSystem::Handle handles[2];
   if (::pipe(handles)) {
@@ -96,7 +101,7 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
   p.fd = new PipeHandle(handles[0]);
   q.fd = new PipeHandle(handles[1]);
   return makePair(p, q);
-#endif
+#endif // flavor
 }
 
 
@@ -206,7 +211,7 @@ unsigned int Pipe::read(char* buffer, unsigned int bytesToRead, bool nonblocking
       DWORD error = ::GetLastError();
       if (error == ERROR_BROKEN_PIPE) { // eof
         result = 0;
-      } else if (error = ERROR_NO_DATA) { // no data available (only in non-blocking mode)
+      } else if (error == ERROR_NO_DATA) { // no data available (only in non-blocking mode)
         return bytesRead;
       } else {
         throw PipeException("Unable to read from pipe", this);

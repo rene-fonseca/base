@@ -123,15 +123,10 @@ public:
   void setNonBlocking(bool value) throw(IOException);
 
   /**
-    Writes a string representation of a FileDescriptor object to a format stream.
+    Destroys the file descriptor.
   */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor& value);
+  ~FileDescriptor() throw(IOException);
 };
-
-/**
-  Writes a string representation of a FileDescriptor object to a format stream.
-*/
-FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor& value);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

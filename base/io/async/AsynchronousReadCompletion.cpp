@@ -16,8 +16,8 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 AsynchronousReadCompletion::AsynchronousReadCompletion(const AsynchronousReadCompletion& copy) throw() 
-  : bytesToRead(copy.bytesToRead),
-    buffer(copy.buffer),
+  : buffer(copy.buffer),
+    bytesToRead(copy.bytesToRead),
     offset(copy.offset),
     bytesRead(copy.bytesRead),
     flags(copy.flags) {
@@ -25,8 +25,8 @@ AsynchronousReadCompletion::AsynchronousReadCompletion(const AsynchronousReadCom
 
 AsynchronousReadCompletion& AsynchronousReadCompletion::operator=(const AsynchronousReadCompletion& eq) throw() {
   // no need to protect against self-assignment
-  bytesToRead = eq.bytesToRead;
   buffer = eq.buffer;
+  bytesToRead = eq.bytesToRead;
   offset = eq.offset;
   bytesRead = eq.bytesRead;
   flags = eq.flags;

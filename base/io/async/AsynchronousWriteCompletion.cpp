@@ -18,6 +18,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 AsynchronousWriteCompletion::AsynchronousWriteCompletion(const AsynchronousWriteCompletion& copy) throw() 
   : buffer(copy.buffer),
     bytesToWrite(copy.bytesToWrite),
+    offset(copy.offset),
     bytesWritten(copy.bytesWritten),
     flags(copy.flags) {
 }
@@ -26,6 +27,7 @@ AsynchronousWriteCompletion& AsynchronousWriteCompletion::operator=(const Asynch
   // no need to protect against self-assignment
   buffer = eq.buffer;
   bytesToWrite = eq.bytesToWrite;
+  offset = eq.offset;
   bytesWritten = eq.bytesWritten;
   flags = eq.flags;
   return *this;

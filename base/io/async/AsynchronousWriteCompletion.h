@@ -52,7 +52,12 @@ public:
   /**
     Initialization of object.
   */
-  inline AsynchronousWriteCompletion(const char* _buffer, unsigned int _bytesToWrite, unsigned long long _offset, unsigned int _bytesWritten, unsigned int _flags) throw() 
+  inline AsynchronousWriteCompletion(
+    const char* _buffer,
+    unsigned int _bytesToWrite,
+    unsigned long long _offset,
+    unsigned int _bytesWritten,
+    unsigned int _flags) throw() 
     : buffer(_buffer),
       bytesToWrite(_bytesToWrite),
       offset(_offset),

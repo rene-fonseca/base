@@ -44,7 +44,11 @@ public:
     @param bytesToRead The number of bytes to be read.
     @param offset The offset.
   */
-  virtual AsynchronousReadOperation read(char* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(AsynchronousException) = 0;
+  virtual AsynchronousReadOperation read(
+    char* buffer,
+    unsigned int bytesToRead,
+    unsigned long long offset,
+    AsynchronousReadEventListener* listener) throw(AsynchronousException) = 0;
 
   /**
     Requests and asynchronous write operation.
@@ -53,7 +57,11 @@ public:
     @param bytesToWrite The number of bytes to be written.
     @param offset The offset.
   */
-  virtual AsynchronousWriteOperation write(const char* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(AsynchronousException) = 0;
+  virtual AsynchronousWriteOperation write(
+    const char* buffer,
+    unsigned int bytesToWrite,
+    unsigned long long offset,
+    AsynchronousWriteEventListener* listener) throw(AsynchronousException) = 0;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

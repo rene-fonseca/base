@@ -15,7 +15,7 @@
 #define _DK_SDU_MIP__BASE_PLATFORMS_WIN32__ASYNC_READ_STREAM_CONTEXT_H
 
 #if !(_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #error inclusion of platform specific header file
+#  error inclusion of platform specific header file
 #endif
 
 #include <base/io/async/AsynchronousReadContext.h>

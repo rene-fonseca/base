@@ -856,7 +856,7 @@ public:
     DWORD bytesWritten;
     void* context = 0;
     if (::BackupWrite(handle, (BYTE*)&stream, (char*)&stream.cStreamName-(char*)&stream, &bytesWritten, FALSE, FALSE, &context) != 0) {
-      if (bytesWritten == (char*)&stream.cStreamName-(char*)&stream) {
+      if (bytesWritten == static_cast<MemorySize>((char*)&stream.cStreamName-(char*)&stream)) {
         if (::BackupWrite(handle, (BYTE*)wideFullPath.getElements(), stream.Size.LowPart, &bytesWritten, FALSE, FALSE, &context) != 0) {
           if (bytesWritten == stream.Size.LowPart) {
             success = true;
@@ -1036,21 +1036,27 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
       break;
     }
     
-    wchar_t* substPath;
-    unsigned int substLength;
     switch (reparseHeader->ReparseTag) {
     case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
-      ASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0) &&
-             (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 > 4));
-      substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer + reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset + 4;
-      substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2 - 4; // skip prefix "\??\"
-      break;
+      {  
+        ASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0) &&
+          (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 > 4));
+        wchar_t* substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer +
+          reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset + 4;
+        unsigned int substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2 - 4; // skip prefix "\??\"
+        substPath[substLength] = 0; // add terminator
+        return WideString::getMultibyteString(substPath /*, substLength*/); // TAG: fixme
+      }
     case IO_REPARSE_TAG_MOUNT_POINT:
-      ASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0) &&
-             (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 > 4));
-      substPath = reparseHeader->MountPointReparseBuffer.PathBuffer + reparseHeader->MountPointReparseBuffer.SubstituteNameOffset + 4;
-      substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 - 4; // skip prefix "\??\"
-      break;
+      {
+        ASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0) &&
+               (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 > 4));
+        wchar_t* substPath = reparseHeader->MountPointReparseBuffer.PathBuffer +
+          reparseHeader->MountPointReparseBuffer.SubstituteNameOffset + 4;
+        unsigned int substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 - 4; // skip prefix "\??\"
+        substPath[substLength] = 0; // add terminator
+        return WideString::getMultibyteString(substPath /*, substLength*/); // TAG: fixme
+      }
     default:
       error = true;
     }
@@ -1058,9 +1064,6 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
     if (error) {
       break;
     }
-    
-    substPath[substLength] = 0; // add terminator
-    return WideString::getMultibyteString(substPath /*, substLength*/); // TAG: fixme
   }
   
   // TAG: need variable to disable/enable this symbolic link
@@ -1279,7 +1282,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
 String FileSystem::getTempFolder(TemporaryFolder folder) throw() {
   // TAG: need to expand variables (win32) (e.g. set TMP=%HOME%\temp)
   switch (folder) {
-  case USER_SPECIFIED:
+  case FileSystem::USER_SPECIFIED:
     {
       const Map<String, String> environment = Application::getApplication()->getEnvironment();
       if (environment.isKey(MESSAGE("TMP"))) {
@@ -1288,13 +1291,14 @@ String FileSystem::getTempFolder(TemporaryFolder folder) throw() {
         return environment[MESSAGE("TEMP")];
       }
     }
-  case MACHINE_NONPERSISTENT:
+  case FileSystem::MACHINE_NONPERSISTENT:
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     return MESSAGE("C:\\temp"); // TAG: fixme - use same drive as windows directory
 #else // unix
     return MESSAGE("/tmp");
 #endif // flavor
-  case MACHINE_PERSISTENT:
+  case FileSystem::MACHINE_PERSISTENT:
+  default:
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     return MESSAGE("C:\\temp"); // TAG: fixme - use same drive as windows directory
 #else // unix
@@ -1451,15 +1455,16 @@ unsigned long FileSystem::getVariable(const String& path, Variable variable) thr
 String FileSystem::getFolder(Folder folder) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   switch (folder) {
-  case ROOT:
+  case FileSystem::ROOT:
     {
       char buffer[3]; // large enough for "C:\0"
       ::GetWindowsDirectory(buffer, sizeof(buffer));
       return String(buffer);
     }
-  case DEVICES:
+  case FileSystem::DEVICES:
     return MESSAGE("\\\\.");
-  case TEMP:
+  case FileSystem::TEMP:
+  default:
     {
       char buffer[MAX_PATH + 1];
       ::GetWindowsDirectory(buffer, sizeof(buffer));

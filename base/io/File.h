@@ -37,6 +37,7 @@ class SharedMemory;
   File.
 
   @short File.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -318,7 +319,11 @@ public:
     @param offset The offset from the beginning of the file.
     @param listener The listener to be notified on completion.
   */
-  AsynchronousReadOperation read(char* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(AsynchronousException);
+  AsynchronousReadOperation read(
+    char* buffer,
+    unsigned int bytesToRead,
+    unsigned long long offset,
+    AsynchronousReadEventListener* listener) throw(AsynchronousException);
 
   /**
     Requests and asynchronous write operation. Asynchronous IO is only supported
@@ -329,7 +334,16 @@ public:
     @param offset The offset from the beginning of the file.
     @param listener The listener to be notified on completion.
   */
-  AsynchronousWriteOperation write(const char* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(AsynchronousException);
+  AsynchronousWriteOperation write(
+    const char* buffer,
+    unsigned int bytesToWrite,
+    unsigned long long offset,
+    AsynchronousWriteEventListener* listener) throw(AsynchronousException);
+
+  /**
+    Destroys the file handle.
+  */
+  ~File() throw(FileException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

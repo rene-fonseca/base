@@ -16,18 +16,18 @@
 #include <base/io/EndOfFile.h>
 #include <base/Trace.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  include <windows.h>
 #else // unix
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  #include <fcntl.h>
-  #include <unistd.h>
-  #include <errno.h>
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <fcntl.h>
+#  include <unistd.h>
+#  include <errno.h>
 
-  #ifndef SSIZE_MAX
-    #define SSIZE_MAX (1024*1024)
-  #endif
+#  ifndef SSIZE_MAX
+#    define SSIZE_MAX (1024*1024)
+#  endif
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -52,7 +52,7 @@ FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDesc
 }
 
 void FileDescriptorOutputStream::flush() throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: handle may or may not be flushable
   // handle to a console output cannot be flushed 'cause it isn't buffered, aarrgh
 //  if (!isValid()) {
@@ -71,7 +71,7 @@ unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int 
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
     BOOL success = ::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0);
     if (!success) {
@@ -97,8 +97,7 @@ unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int 
   return bytesWritten;
 }
 
-FileDescriptorOutputStream::~FileDescriptorOutputStream() {
-  TRACE_MEMBER();
+FileDescriptorOutputStream::~FileDescriptorOutputStream() throw(IOException) {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -15,7 +15,7 @@
 #define _DK_SDU_MIP__BASE_PLATFORMS_WIN32__ASYNC_WRITE_STREAM_CONTEXT_H
 
 #if !(_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #error inclusion of platform specific header file
+#  error inclusion of platform specific header file
 #endif
 
 #include <base/io/async/AsynchronousWriteContext.h>
@@ -46,11 +46,17 @@ namespace win32 {
     unsigned int flags;
     
     inline void notifyAsynchronousCompletionListener() throw() {
-      listener->asynchronousCompletion(AsynchronousWriteCompletion(buffer, bytesToWrite, 0, bytesWritten, flags));
+      listener->asynchronousCompletion(
+        AsynchronousWriteCompletion(buffer, bytesToWrite, 0, bytesWritten, flags)
+      );
     }
   public:
     
-    AsyncWriteStreamContext(OperatingSystem::Handle handle, const char* buffer, unsigned int bytesToWrite, AsynchronousWriteEventListener* listener) throw(IOException);
+    AsyncWriteStreamContext(
+      OperatingSystem::Handle handle,
+      const char* buffer,
+      unsigned int bytesToWrite,
+      AsynchronousWriteEventListener* listener) throw(IOException);
   public:
 
     AsynchronousWriteCompletion getCompletion() const throw() {

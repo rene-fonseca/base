@@ -23,6 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short Asynchronous read operation completion
   @see AsynchronousReadEventListener
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -53,7 +54,12 @@ public:
   /**
     Initialization of object.
   */
-  inline AsynchronousReadCompletion(char* _buffer, unsigned int _bytesToRead, unsigned long long _offset, unsigned int _bytesRead, unsigned int _flags) throw() 
+  inline AsynchronousReadCompletion(
+    char* _buffer,
+    unsigned int _bytesToRead,
+    unsigned long long _offset,
+    unsigned int _bytesRead,
+    unsigned int _flags) throw() 
     : buffer(_buffer),
       bytesToRead(_bytesToRead),
       offset(_offset),

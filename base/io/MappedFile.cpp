@@ -17,23 +17,23 @@
 #include <base/Functor.h>
 
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #define _LARGEFILE64_SOURCE 1
+#  define _LARGEFILE64_SOURCE 1
 #endif
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  include <windows.h>
 #else // unix
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  #include <sys/time.h>
-  #include <unistd.h>
-  #include <fcntl.h>
-  #include <errno.h>
-  #include <limits.h>
-  #include <string.h> // required by FD_SET on solaris
-  #include <sys/mman.h>
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <sys/time.h>
+#  include <unistd.h>
+#  include <fcntl.h>
+#  include <errno.h>
+#  include <limits.h>
+#  include <string.h> // required by FD_SET on solaris
+#  include <sys/mman.h>
 
-  #undef assert
+#  undef assert
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -41,7 +41,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& _region, bool _writeable) throw(FileException) :
   file(_file), region(_region), writeable(_writeable) {
   assert(region.getOffset() >= 0, FileException("Unable to map file region", this));
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HANDLE handle = ::CreateFileMapping((HANDLE)getHandle(file), 0, writeable ? PAGE_READWRITE : PAGE_READONLY, 0, 0, 0);
   assert(handle, FileException("Unable to map file region", this));
   LARGE_INTEGER offset;
@@ -70,7 +70,7 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
 }
 
 void MappedFile::MappedFileImpl::synchronize() throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!::FlushViewOfFile(bytes, 0)) {
     throw FileException("Unable to flush", this);
   }
@@ -88,7 +88,7 @@ void MappedFile::MappedFileImpl::synchronize() throw(FileException) {
 }
 
 MappedFile::MappedFileImpl::~MappedFileImpl() throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!::UnmapViewOfFile(bytes)) {
     throw FileException("Unable to unmap file", this);
   }
@@ -106,7 +106,7 @@ MappedFile::MappedFileImpl::~MappedFileImpl() throw(FileException) {
 }
 
 unsigned int MappedFile::getGranularity() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEM_INFO info;
   ::GetSystemInfo(&info);
   return info.dwAllocationGranularity;
@@ -124,7 +124,7 @@ unsigned int MappedFile::getGranularity() throw() {
 MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeable) throw(FileException) : map(0) {
   map = new MappedFileImpl(file, region, writeable);
 //  assert(r.getOffset() >= 0, FileException("Unable to map file", this));
-//#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+//#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 //  HANDLE handle = ::CreateFileMapping((HANDLE)f.fd->getHandle(), 0, writeable ? PAGE_READWRITE : PAGE_READONLY, 0, 0, 0);
 //  if (handle) {
 //    throw FileException("Unable to map file", this);

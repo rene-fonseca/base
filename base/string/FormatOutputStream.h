@@ -246,10 +246,10 @@ public:
   class PushContext : public Object {
   private:
 
-    /** Default context of format output stream. */
-    Context context;
     /** Format output stream. */
     FormatOutputStream& stream; // TAG: better if FormatOutputStream was a ReferenceCountedObject
+    /** Default context of format output stream. */
+    Context context;
   public:
 
     /**
@@ -278,8 +278,8 @@ public:
     StringLiteral location;
   public:
     
-    inline Debug(const StringLiteral& _location)
-      : location(_location), count(counter++) {
+    inline Debug(const StringLiteral& _location) throw()
+      : count(counter++), location(_location) {
     }
     
     inline const StringLiteral& getLocation() const throw() {

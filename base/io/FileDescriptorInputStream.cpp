@@ -17,20 +17,20 @@
 #include <base/concurrency/Thread.h>
 #include <base/Trace.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  include <windows.h>
 #else // unix
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  #include <sys/time.h>
-  #include <unistd.h>
-  #include <fcntl.h>
-  #include <errno.h>
-  #include <string.h> // required by FD_SET on solaris
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <sys/time.h>
+#  include <unistd.h>
+#  include <fcntl.h>
+#  include <errno.h>
+#  include <string.h> // required by FD_SET on solaris
 
-  #ifndef SSIZE_MAX
-    #define SSIZE_MAX (1024*1024)
-  #endif
+#  ifndef SSIZE_MAX
+#    define SSIZE_MAX (1024*1024)
+#  endif
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -81,7 +81,7 @@ FileDescriptorInputStream& FileDescriptorInputStream::operator=(const FileDescri
 }
 
 unsigned int FileDescriptorInputStream::available() const throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   DWORD bytesAvailable;
   switch (::GetFileType(fd->getHandle())) {
   case FILE_TYPE_PIPE:
@@ -132,7 +132,7 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int bytesToR
   assert(!end, EndOfFile(this));
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
     BOOL success = ::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, 0);
     if (!success) { // has error occured
@@ -179,7 +179,7 @@ unsigned int FileDescriptorInputStream::skip(unsigned int count) throw(IOExcepti
 }
 
 void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #else // unix
   int flags = getFlags();
   if (value) {
@@ -195,7 +195,7 @@ void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
 }
 
 void FileDescriptorInputStream::wait() const throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(fd->getHandle(), INFINITE);
   ASSERT(result == WAIT_OBJECT_0);
 #else // unix
@@ -211,9 +211,9 @@ void FileDescriptorInputStream::wait() const throw(IOException) {
 }
 
 bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  DWORD result = ::WaitForSingleObject(fd->getHandle(), timeout);
-  ASSERT(result == WAIT_OBJECT_0);
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  DWORD result = ::WaitForSingleObject(fd->getHandle(), minimum(timeout, 999999999U));
+  return result == WAIT_OBJECT_0;
 #else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
@@ -231,8 +231,7 @@ bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOExcepti
 #endif // flavor
 }
 
-FileDescriptorInputStream::~FileDescriptorInputStream() {
-  TRACE_MEMBER();
+FileDescriptorInputStream::~FileDescriptorInputStream() throw(IOException) {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -68,9 +68,9 @@ public:
   unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
 
   /**
-    Release file descriptor.
+    Releases the file descriptor.
   */
-  ~FileDescriptorOutputStream();
+  ~FileDescriptorOutputStream() throw(IOException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

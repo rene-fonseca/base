@@ -30,7 +30,8 @@ private:
   bool closed;
 public:
 
-  inline explicit StringOutputStreamWrapper() throw() : closed(false) {}
+  inline explicit StringOutputStreamWrapper() throw() : closed(false) {
+  }
 
   void close() throw(IOException);
 
@@ -38,11 +39,20 @@ public:
 
   unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
 
-  inline unsigned int getGranularity() const throw() {return string.getGranularity();}
+  inline unsigned int getGranularity() const throw() {
+    return string.getGranularity();
+  }
 
-  inline void setGranularity(unsigned int granularity) throw() {string.setGranularity(granularity);}
+  inline void setGranularity(unsigned int granularity) throw() {
+    string.setGranularity(granularity);
+  }
 
-  inline String getString() const throw() {return string;}
+  inline String getString() const throw() {
+    return string;
+  }
+  
+  inline ~StringOutputStreamWrapper() throw(IOException) {
+  }
 };
 
 
@@ -101,6 +111,12 @@ public:
     Returns the string associated with the stream.
   */
   String getString() const throw();
+
+  /**
+    Destroy stream object.
+  */
+  inline ~StringOutputStream() throw(IOException) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

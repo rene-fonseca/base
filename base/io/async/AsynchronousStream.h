@@ -19,7 +19,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  Asynchronous stream.
+  
   @short Asynchronous stream.
+  @ingroup io
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -35,9 +38,11 @@ public:
 
   /**
     Aborts any pending asynchronous operations (read as well as write) issued by
-    the calling thread.
+    the executing thread.
   */
   //virtual void asyncCancel() throw(AsynchronousException) = 0;
+
+  virtual ~AsynchronousStream() throw(IOException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

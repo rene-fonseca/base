@@ -55,19 +55,18 @@ protected:
   */
   inline Document(void* context) throw() : Node(context) {
   }
-public:
-  
-  /**
-    Creates a new document with the speicified version.
-    
-    @param version The version of XML (e.g. "1.0").
-  */
-  static Document createDocument(const String& version) throw(DOMException);
+public:  
   
   /**
     Initializes the document as invalid.
   */
   Document() throw(DOMException);
+  
+  /**
+    Initializes the document as invalid.
+  */
+  inline Document(ShadowDocument document) throw() : Node(document.getNode()) {
+  }
   
   /**
     The Document Type Declaration associated with this document.
@@ -78,6 +77,14 @@ public:
     The DOMImplementation object that handles this document.
   */
   DOMImplementation getImplementation() throw();
+
+  /**
+    Creates and sets a document type object for this document.
+  */
+  DocumentType createAndSetDocumentType(
+    const String& qualifiedName,
+    const String& publicId,
+    const String& systemId) throw(DOMException);
   
   /**
     This is a convenience attribute that allows direct access to the child node
@@ -95,15 +102,7 @@ public:
   */
   Attribute createAttributeNS(
     const String& namespaceURI,
-    const String& qualifiedName) throw(DOMException);
-  
-  /**
-    Creates an empty DocumentType node.
-  */
-  DocumentType createDocumentType(
-    const String& qualifiedName,
-    const String& publicId,
-    const String& systemId) throw(DOMException);
+    const String& qualifiedName) throw(DOMException);  
   
   /**
     Creates an element of the type specified.
@@ -170,9 +169,9 @@ public:
   Node importNode(Node importedNode, bool deep) throw(DOMException);  
   
   /**
-    XInclude process.
+    Do XInclude substitution.
   */
-  void doXIncludeProcess() throw(); // FIXME
+  void doXIncludeSubstitution() throw(DOMException);
   
   /**
     Save to document to the specified file.
@@ -187,6 +186,21 @@ public:
   // String getURI() const throw();
   
   // String getDocumentType() const throw();
+
+  /**
+    Returns true if the document is valid.
+  */
+  bool validate() const throw(DOMException);
+  
+  /**
+    Returns true if the tree is valid.
+  */
+  bool validate(Node node) const throw(DOMException);
+  
+  /**
+    Destroys the document.
+  */
+  void destroy() throw(DOMException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

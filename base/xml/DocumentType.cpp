@@ -56,7 +56,7 @@ String DocumentType::getPublicId() const throw() {
 #endif
 }
 
-String DocumentType::getPrivateId() const throw() {
+String DocumentType::getSystemId() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return (const char*)documentType->SystemID;

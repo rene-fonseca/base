@@ -22,8 +22,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 String ProcessingInstruction::getTarget() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = (xmlNodePtr)getContext();
-  return (const char*)node->name; // TAG: check
+  const xmlNode* node = (const xmlNode*)getContext();
+  return (const char*)node->name;
 #else
   throw DOMException(this);
 #endif
@@ -31,8 +31,8 @@ String ProcessingInstruction::getTarget() const throw() {
 
 String ProcessingInstruction::getData() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = (xmlNodePtr)getContext();
-  return (const char*)node->content; // TAG: check
+  const xmlNode* node = (const xmlNode*)getContext();
+  return (const char*)node->content;
 #else
   throw DOMException(this);
 #endif
@@ -40,9 +40,8 @@ String ProcessingInstruction::getData() const throw() {
 
 void ProcessingInstruction::setData(const String& value) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = (xmlNodePtr)getContext();
+  xmlNode* node = (xmlNode*)getContext();
   xmlNodeSetContent(node, (const xmlChar*)value.getElements());
-  // TAG: how to detect failure
 #else
   throw DOMException(this);
 #endif

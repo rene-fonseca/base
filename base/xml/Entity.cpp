@@ -34,7 +34,7 @@ String Entity::getPublicId() const throw() {
 #endif
 }
   
-String Entity::getPrivateId() const throw() {
+String Entity::getSystemId() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   xmlEntity* entity = (xmlEntity*)node->name;

@@ -11,18 +11,16 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_XML__XML_PARSER_H
-#define _DK_SDU_MIP__BASE_XML__XML_PARSER_H
+#ifndef _DK_SDU_MIP__BASE_XML__XML_READER_H
+#define _DK_SDU_MIP__BASE_XML__XML_READER_H
 
-#include <base/Object.h>
-#include <base/io/File.h>
+#include <base/Polymorphic.h>
 #include <base/xml/SAXNotRecognizedException.h>
 #include <base/xml/SAXNotSupportedException.h>
 #include <base/xml/SAXParseException.h>
 #include <base/xml/Attributes.h>
 #include <base/xml/AttributeDecl.h>
 #include <base/xml/ElementDecl.h>
-#include <base/collection/Map.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -33,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class XMLReader : public Object {
+class XMLReader : public Polymorphic {
   friend class XMLReaderImpl;
 public:
   
@@ -52,6 +50,48 @@ public:
   class DTDHandler {
   public:
 
+    /**
+      Receives notification of a comment.
+    */
+    virtual void comment(const String& data) throw();
+    
+    /**
+      Receive notification of a document type declaration.
+      
+      @param name The name of the attribute.
+      @param publicId The public identifier.
+      @param systemId The system identifier.
+    */
+    virtual void startDTD(
+      const String& name,
+      const String& publicId,
+      const String& systemId) throw();
+    
+    /**
+      Receive notification of end of document type declaration.
+    */
+    virtual void endDTD() throw();
+
+    /**
+      Receives notification of the start of an entity.
+    */
+    virtual void startEntity(const String& name) throw();
+
+    /**
+      Receives notification of the end of an entity.
+    */
+    virtual void endEntity(const String& name) throw();
+    
+    /**
+      Receives notification of the start of a CDATA section.
+    */
+    virtual void startCDATA() throw();
+    
+    /**
+      Receives notification of the end of a CDATA section.
+    */
+    virtual void endCDATA() throw();
+    
     /**
       Receive notification of an attribute declaration event.
       
@@ -81,32 +121,45 @@ public:
       const String& name,
       ElementDecl::ValueType type) throw();
     
-    // internalEntityDecl, externalEntityDecl
-    
     /**
-      Receive notification of an entity declaration event.
-    */
-    virtual void entityDecl(
-      const String& element,
-      const String& name) throw();
-    
-    /**
-      Receive notification of the beginning of an element declaration event.
+      Receive notification of an internal entity declaration event.
       
-      @param name The notation name.
-      @param type The type.
+      @param name The name of the entity.
+      @param text The text.
     */
-    virtual void startElementDecl(
-      const String& name) throw();
+    virtual void internalEntityDecl(
+      const String& name,
+      const String& text) throw();
     
     /**
-      Receive notification of the end of an element declaration event.
+      Receive notification of an external entity declaration event.
       
-      @param name The notation name.
-      @param type The type.
+      @param name The name of the entity.
+      @param publicId The entities public identifier.
+      @param systemId The entities system identifier.
     */
-    virtual void endElementDecl(
-      const String& name) throw();
+    virtual void externalEntityDecl(
+      const String& name,
+      const String& publicId,
+      const String& systemId) throw();
+    
+//     /**
+//       Receive notification of the beginning of an element declaration event.
+      
+//       @param name The notation name.
+//       @param type The type.
+//     */
+//     virtual void startElementDecl(
+//       const String& name) throw();
+    
+//     /**
+//       Receive notification of the end of an element declaration event.
+      
+//       @param name The notation name.
+//       @param type The type.
+//     */
+//     virtual void endElementDecl(
+//       const String& name) throw();
     
     /**
       Receive notification of a notation declaration event.
@@ -135,6 +188,19 @@ public:
       const String& notationName) throw();
   };
 
+  class InputSource {
+  private:
+
+    void* context;
+  public:
+    
+    inline InputSource() throw() {
+    }
+
+    inline InputSource(void* context) throw() {
+    }
+  };
+  
   /**
     @short Basic interface for resolving entities.
     @ingroup xml
@@ -147,7 +213,8 @@ public:
     /**
       Allows the application to resolve external entities.
     */
-    // virtual InputSource resolveEntity(const String& publicId, const String& systemId) throw(SAXException);
+    virtual InputSource resolveEntity(
+      const String& publicId, const String& systemId) throw(SAXException);
   };
 
   /**
@@ -213,14 +280,19 @@ public:
       Receives notification of the beginning of an element.
     */
     virtual void startElement(
-      const String& name,
+      const String& namespaceURI,
+      const String& localName,
+      const String& qName,
       const Attributes& attributes) throw();
     
     /**
       Receives notification of the end of an element.
     */
-    virtual void endElement(const String& name) throw();
-
+    virtual void endElement(
+      const String& namespaceURI,
+      const String& localName,
+      const String& qName) throw();
+    
     /**
       Receives notification of a processing instruction.
     */
@@ -273,152 +345,79 @@ public:
     */
     virtual void setDocumentLocator(Locator* locator) throw();
   };
-private:
-  
-  // TAG: need automation pointer for event handlers (weak handle)
-  // EventHandler<ErrorHandler> errorHandler;
-  /** The registered content handler. */
-  ContentHandler* contentHandler;
-  /** The registered DTD handler. */
-  DTDHandler* dtdHandler;
-  /** The registered entity resolver. */
-  EntityResolver* entityResolver;
-  /** The registered error handler. */
-  ErrorHandler* errorHandler;
-  /** Specifies whether or not to validate the document. */
-  bool validation;
-  /** Recovery flag. */
-  bool recovery;
-  /** Specifies whether or not the parsing should be terminated. */
-  bool terminated;
 public:
-  
-  /**
-    Initializes the XML reader.
-  */
-  XMLReader() throw();
   
   /**
     Returns the value of the specified feature.
   */
-  bool getFeature(const String& name) const
-    throw(SAXNotRecognizedException, SAXNotSupportedException);
+  virtual bool getFeature(const String& name) const
+    throw(SAXNotRecognizedException, SAXNotSupportedException) = 0;
   
   /**
     Sets the value of the specified feature.
   */
-  void setFeature(const String& name, bool value)
-    throw(SAXNotRecognizedException, SAXNotSupportedException);
+  virtual void setFeature(const String& name, bool value)
+    throw(SAXNotRecognizedException, SAXNotSupportedException) = 0;
   
   /**
     Returns the current content handler.
   */
-  inline ContentHandler* getContentHandler() const throw() {
-    return contentHandler;
-  }
+  virtual ContentHandler* getContentHandler() const throw() = 0;
   
   /**
     Returns the current DTD handler.
   */
-  inline DTDHandler* getDTDHandler() const throw() {
-    return dtdHandler;
-  }
+  virtual DTDHandler* getDTDHandler() const throw() = 0;
   
   /**
     Returns the current entity resolver.
   */
-  inline EntityResolver* getEntityResolver() const throw() {
-    return entityResolver;
-  }
+  virtual EntityResolver* getEntityResolver() const throw() = 0;
   
   /**
     Returns the current error handler.
   */
-  ErrorHandler* getErrorHandler() const throw() {
-    return errorHandler;
-  }
-  
-  /**
-    Parses the specified file.
-    
-    @param file The file to be parsed.
-    @param uri The uri used to resolve entities. Default is improper string.
-  */
-  void parse(
-    File file, const String& uri = String()) throw(IOException, SAXException);
-  
-  /**
-    Parses the specified buffer.
-    
-    @param buffer The buffer to be parsed.
-    @param size The size of the buffer.
-    @param uri The uri used to resolve entities. Default is improper string.
-  */
-  void parse(
-    const char* buffer,
-    unsigned int size,
-    const String& uri) throw(SAXException);  
-  
-  /**
-    Parses an XML document from a system identifier (URI).
-    
-    @param systemId The identifier of the document.
-  */
-  void parse(const String& systemId) throw(SAXException);
+  virtual ErrorHandler* getErrorHandler() const throw() = 0;
   
   /**
     Registers a content event handler.
   */
-  inline void setContentHandler(ContentHandler* handler) throw() {
-    contentHandler = handler;
-  }
+  virtual void setContentHandler(ContentHandler* handler) throw() = 0;
   
   /**
     Registers a DTD event handler.
   */
-  inline void setDTDHandler(DTDHandler* handler) throw() {
-    dtdHandler = handler;
-  }
+  virtual void setDTDHandler(DTDHandler* handler) throw() = 0;
   
   /**
     Registers an entity resolver.
   */
-  inline void setEntityResolver(EntityResolver* entityResolver) throw() {
-    entityResolver = entityResolver;
-  }
+  virtual void setEntityResolver(EntityResolver* entityResolver) throw() = 0;
   
   /**
     Registers an error event handler.
   */
-  inline void setErrorHandler(ErrorHandler* handler) throw() {
-    errorHandler = handler;
-  }
+  virtual void setErrorHandler(ErrorHandler* handler) throw() = 0;
 
   /**
     Returns the validation flag.
   */
-  inline bool getValidation() const throw() {
-    return validation;
-  }
+  virtual bool getValidation() const throw() = 0;
 
   /**
     Sets the validation flag.
   */
-  inline void setVatidation(bool value) throw() {
-    validation = value;
-  }
+  virtual void setVatidation(bool validate) throw() = 0;
+
+  /**
+    Returns true if the document is a standalone document.
+  */
+  virtual bool isStandalone() const throw() = 0;
   
   /**
     Terminates the parsing.
   */
-  inline void terminate() throw() {
-    terminated = true;
-  }
-  
-  /**
-    Destroys the XML parser.
-  */
-  ~XMLReader() throw();
+  virtual void terminate() throw() = 0;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

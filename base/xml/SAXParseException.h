@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE_XML__SAX_PARSE_EXCEPTION_H
 
 #include <base/xml/SAXException.h>
+#include <base/string/String.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

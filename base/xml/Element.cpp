@@ -23,8 +23,12 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 String Element::getTagName() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
-  // TAG: if (ns &&)??? prefix then return prefix:name
-  return (const char*)node->name;
+  if (node->ns && node->ns->prefix) {
+    return String((const char*)node->ns->prefix) + MESSAGE(":") +
+      (const char*)node->name;
+  } else {
+    return (const char*)node->name;
+  }
 #else
   throw DOMException(this);
 #endif

@@ -164,8 +164,33 @@ public:
 
   /**
     Adds the node to the end of the list of children of this node.
+
+    @return The node being appended.
   */
-  Node& appendChild(Node child) throw(DOMException);
+  Node appendChild(Node child) throw(DOMException);
+
+  /**
+    Inserts the node newChild before the existing child node refChild. If
+    refChild is invalid, insert newChild at the end of the list of children. If
+    newChild is a DocumentFragment object, all of its children are inserted, in
+    the same order, before refChild. If the newChild is already in the tree, it
+    is first removed.
+
+    @return The node being inserted.
+  */
+  Node insertBefore(Node newChild, Node refChild) throw(DOMException);
+
+  /**
+    Removes the child node indicated by child from the list of children, and
+    returns it.
+  */
+  Node removeChild(Node child) throw(DOMException);
+  
+  /**
+    Replaces the child node oldChild with newChild  in the list of children,
+    and returns the oldChild node.
+  */
+  Node replaceChild(Node newChild, Node oldChild) throw(DOMException);
   
   /**
     Returns a duplicate of this node.
@@ -209,6 +234,11 @@ public:
   String getPrefix() const throw(DOMException);
 
   /**
+    Sets the prefix.
+  */
+  void setPrefix(const String& prefix) throw(DOMException);
+  
+  /**
     Returns the parent node.
   */
   Node getParent() const throw();
@@ -242,12 +272,7 @@ public:
     Returns whether this node has any children.
   */
   bool hasChildNodes() const throw();
-
-  /**
-    Inserts the node newChild before the existing child reference node.
-  */
-  Node insertBefore(Node child, Node reference) throw(DOMException);
-
+  
   /**
     Tests whether the DOM implementation implements a specific feature and that
     feature is supported by this node.
@@ -262,28 +287,11 @@ public:
     nodes nor empty Text nodes.
   */
   void normalize() throw(DOMException);
-
-  /**
-    Removes the child node indicated by child from the list of children, and
-    returns it.
-  */
-  Node removeChild(Node child) throw(DOMException);
-
-  /**
-    Replaces the child node oldChild with newChild in the list of children, and
-    returns the oldChild node.
-  */
-  Node replaceChild(Node newChild, Node oldChild) throw(DOMException);
   
   /**
     Sets the value of the node.
   */
   void setValue(const String& value) throw(DOMException);
-
-  /**
-    Sets the prefix.
-  */
-  void setPrefix(const String& prefix) throw(DOMException);
   
   /**
     Returns true if the node has been initialized.
@@ -324,11 +332,21 @@ public:
   bool hasSameOwner(const Node& node) const throw();
 
   /**
+    Returns true if this node is an ancestor of the specified node.
+  */
+  bool isAncestor(const Node& node) const throw();
+  
+  /**
     Returns true if the node is valid.
   */
   inline operator bool() const throw() {
     return context;
   }
+
+  /**
+    Destroys the handle. The node is destroyed when detached.
+  */
+  ~Node() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

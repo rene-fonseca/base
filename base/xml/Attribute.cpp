@@ -23,17 +23,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 String Attribute::getName() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
-  if (attribute->ns) {
-    const char* prefix = (const char*)attribute->ns->prefix;
-    const char* name = (const char*)attribute->name;
-    unsigned int length = 1; // ':'
-    length += find<char>(prefix, String::MAXIMUM_LENGTH, 0) - prefix;
-    length += find<char>(name, String::MAXIMUM_LENGTH, 0) - name;
-    String result(length);
-    result.append(prefix);
-    result.append(MESSAGE(":"));
-    result.append(name);
-    return result;
+  if (attribute->ns && attribute->ns->prefix) {
+    return String((const char*)attribute->ns->prefix) + MESSAGE(":") +
+      (const char*)attribute->name;
   } else {
     return (const char*)attribute->name;
   }

@@ -36,7 +36,7 @@ class Document;
   @version 1.0
 */
 
-class Notation : public Node {
+class Notation : public Node { // TAG: should be Declaration
   friend class Document;
 protected:
   
@@ -57,9 +57,9 @@ public:
   String getPublicId() const throw();
   
   /**
-    Returns the private identifier.
+    Returns the system identifier.
   */
-  String getPrivateId() const throw();
+  String getSystemId() const throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -57,7 +57,7 @@ public:
     The system identifier associated with the entity, if specified. If the
     system identifier was not specified, this is an improper string.
   */
-  String getPrivateId() const throw();
+  String getSystemId() const throw();
   
   /**
     For unparsed entities, the name of the notation for the entity. For parsed

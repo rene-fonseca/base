@@ -17,6 +17,7 @@
 #include <base/Object.h>
 #include <base/xml/Document.h>
 #include <base/xml/DocumentType.h>
+#include <base/xml/DOMEvent.h>
 #include <base/string/String.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -34,15 +35,52 @@ class DOMImplementation : public Object {
 public:
 
   enum Flag {
-    SUBSTITUTE_ENTITIES = 1,
-    DETECT_IDS = 2,
-    COMPLETE_ATTRIBUTE_LISTS = 4
+    WARNINGS = 1,
+    PEDANTIC = 2,
+    SUBSTITUTE_ENTITIES = 4,
+    DETECT_IDS = 8,
+    COMPLETE_ATTRIBUTE_LISTS = 16
   };
   
   enum Mode {
-    PARSING,
-    VALIDATING,
-    RECOVERING
+    PARSING, /**< Parsing without validation. */
+    VALIDATING, /**< Parsing with validation. */
+    RECOVERING /**< Recovering mode. */
+  };
+
+  class Interface {
+  };
+
+  class EventListener : public Interface {
+  public:
+  };
+  
+  class DocumentEvent : public Interface {
+  public:
+
+    /**
+      Create a new event object of the specified type.
+    */
+    virtual DOMEvent createEvent(const String& type) throw(DOMException) = 0;
+  };
+
+  class EventException : public Exception {
+  public:
+  };
+  
+  class EventTarget : public Interface {
+  public:
+    
+    virtual void addEventListener(const String& type,
+                                  EventListener* listener,
+                                  bool useCapture) throw() = 0;
+    
+    virtual void removeEventListener(const String& type,
+                                     EventListener* listener,
+                                     bool useCapture) throw() = 0;
+    
+    virtual bool dispatchEvent(
+      const DOMEvent& event) throw(EventException) = 0;
   };
   
   /**
@@ -64,33 +102,71 @@ public:
   bool hasFeature(const String& name, const String& version) throw();
 
   /**
-    Creates an empty document.
+    Creates an enmpty DOM Document object.
+    
+    @param version The XML version. The default is "1.0".
   */
-  Document createDocument(const String& version) throw(DOMException);
-
-  /**
-    Creates a document from a URI.
-
-    @param systemId The URI.
-  */
-  Document createFromURI(const String& systemId) throw(DOMException);
+  Document createDocument(
+    const String& version = MESSAGE("1.0")) throw(DOMException);
   
   /**
-    Creates a document.
+    Creates a DOM Document object of the specified type.
+    
+    @param doctype The document type.
+    @param version The XML version. The default is "1.0".
+  */
+  Document createDocument(
+    DocumentType doctype,
+    const String& version = MESSAGE("1.0")) throw(DOMException);
+
+  /**
+    Creates a DOM Document object of the specified type with its document
+    element.
+    
+    @param namespaceURI The namespace. May be improper.
+    @param qualifiedName The qualified name of the document element.
+    @param doctype The document type.
+    @param version The XML version. The default is "1.0".
   */
   Document createDocument(
     const String& namespaceURI,
     const String& qualifiedName,
-    const DocumentType& doctype) throw(DOMException);
+    DocumentType doctype,
+    const String& version = MESSAGE("1.0")) throw(DOMException);
+  
+  /**
+    Creates a document from a URI.
+
+    @param systemId The URI.
+    @param mode The mode.
+    @param flags The flags.
+  */
+  Document createFromURI(
+    const String& systemId,
+    Mode mode = VALIDATING,
+    unsigned int flags = WARNINGS|PEDANTIC|DETECT_IDS|COMPLETE_ATTRIBUTE_LISTS)
+    throw(DOMException);  
 
   /**
     Creates the document from a string.
+
+    @param value The string.
+    @param mode The mode.
+    @param flags The flags.
   */
   Document createDocumentFromString(
     const String& value,
     Mode mode = VALIDATING,
-    unsigned int flags = DETECT_IDS|COMPLETE_ATTRIBUTE_LISTS)
+    unsigned int flags = WARNINGS|PEDANTIC|DETECT_IDS|COMPLETE_ATTRIBUTE_LISTS)
     throw(DOMException);
+
+  /**
+    Creates an empty DocumentType node.
+  */
+  DocumentType createDocumentType(
+    const String& qualifiedName,
+    const String& publicId,
+    const String& systemId) throw(DOMException);
   
   /**
     Saves the document to the specified file.

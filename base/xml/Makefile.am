@@ -38,6 +38,7 @@ libxml_la_SOURCES = \
   Stylesheet.cpp \
   Text.cpp \
   Transformer.cpp \
+  XMLDefaultReader.cpp \
   XMLReader.cpp
 
 sectiondir = $(includedir)/base/xml
@@ -71,5 +72,6 @@ section_HEADERS = \
   Text.h \
   Transformer.h \
   TransformerException.h \
+  XMLDefaultReader.h \
   XMLReader.h \
   XPathException.h

@@ -16,26 +16,46 @@
 #include <base/xml/XMLReader.h>
 
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-//#  include <libxml/xmlmemory.h>
-//#  include <libxml/xmlIO.h>
-//#  include <libxml/xinclude.h>
 #  include <libxml/tree.h>
-//#  include <libxml/hash.h>
+#  include <stdarg.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class DOMImplementationImpl : public XMLReader::ErrorHandler,
-                              public XMLReader::ContentHandler {
-private:
-
-  // Document document;
-  /** The root of the tree. */
-  Node root;
-  /** The current node. */
-  Node current;
+class DOMImplementationImpl {
 public:
   
+  static void error(void* context, const char* message, ...) throw() {    
+    va_list arg;
+    char buffer[4096]; // TAG: possible buffer overrun
+    va_start(arg, message);
+    vsprintf(buffer, message, arg);
+    va_end(arg);
+
+    // TAG: detect when the warning/error begins and ends
+    // and filter important information
+    
+//     if (compare(message, "error:" ...) == 0) {
+//     }
+//     if (compare(message, "warning:" ...) == 0) {
+//     }
+//     if (compare(message, "validaty error:", ...) == 0) {
+//     }
+//     if (compare(message, "%s:%d" ...) == 0) {
+//     }
+//     if (compare(message, "%s", sizeof("%s")) == 0) {
+//     }
+//     else throw UnexpectedFailure();
+    
+    // fout << "123: " << message << ENDL;
+    
+//     const char* end = find(buffer, sizeof(buffer), '\n');
+//     if (end) {
+//       buffer[end - buffer] = 0; // terminate
+//     }
+    
+    ((String*)context)->append(buffer);
+  }
 };
 
 bool DOMImplementation::hasFeature(
@@ -46,6 +66,12 @@ bool DOMImplementation::hasFeature(
   if (name.compareToIgnoreCase("Core") == 0) {
     return true;
   }
+  if (name.compareToIgnoreCase("XML") == 0) {
+    return true;
+  }
+//   if (name.compareToIgnoreCase("Events") == 0) {
+//     return true;
+//   }
   return false;
 }
 
@@ -62,11 +88,30 @@ Document DOMImplementation::createDocument(
 #endif
 }
 
-Document DOMImplementation::createFromURI(
-  const String& systemId) throw(DOMException) {
+Document DOMImplementation::createDocument(
+  DocumentType doctype,
+  const String& version) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = xmlParseFile(systemId.getElements());
+  assert(
+    Document(doctype.getOwnerDocument()).isInvalid(),
+    bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
+  );
+  xmlDoc* doc = xmlNewDoc(
+    Cast::pointer<const xmlChar*>(version.getElements())
+  );
   assert(doc, DOMException(this));
+  if (doctype.isValid()) {
+    String publicId = doctype.getPublicId();
+    String systemId = doctype.getSystemId();
+    xmlDtd* dtd = xmlCreateIntSubset(
+      doc,
+      Cast::pointer<const xmlChar*>(doctype.getName().getElements()),
+      publicId.isProper() ? (const xmlChar*)(publicId.getElements()) : 0,
+      systemId.isProper() ? (const xmlChar*)(systemId.getElements()) : 0
+    );
+    assert(dtd, DOMException(this));
+  }
+  
   return doc;
 #else
   throw DOMException(this);
@@ -76,22 +121,90 @@ Document DOMImplementation::createFromURI(
 Document DOMImplementation::createDocument(
   const String& namespaceURI,
   const String& qualifiedName,
-  const DocumentType& doctype) throw(DOMException) {
-  return 0; // TAG: fixme
+  DocumentType doctype,
+  const String& version) throw(DOMException) {
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+  assert(
+    Document(doctype.getOwnerDocument()).isInvalid(),
+    bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
+  );
+  xmlDoc* doc = xmlNewDoc(
+    Cast::pointer<const xmlChar*>(version.getElements())
+  );
+  assert(doc, DOMException(this));
+  if (doctype.isValid()) {
+    String publicId = doctype.getPublicId();
+    String systemId = doctype.getSystemId();
+    xmlDtd* dtd = xmlCreateIntSubset(
+      doc,
+      Cast::pointer<const xmlChar*>(doctype.getName().getElements()),
+      publicId.isProper() ? (const xmlChar*)(publicId.getElements()) : 0,
+      systemId.isProper() ? (const xmlChar*)(systemId.getElements()) : 0
+    );
+    assert(dtd, DOMException(this));
+  }
+  
+  Document document(doc);
+  if (namespaceURI.isProper()) {
+    document.appendChild(
+      document.createElementNS(namespaceURI, qualifiedName)
+    );
+  } else {
+    document.appendChild(document.createElement(qualifiedName));
+  }
+  return document;
+#else
+  throw DOMException(this);
+#endif
+}
+  
+Document DOMImplementation::createFromURI(
+  const String& systemId, Mode mode, unsigned int flags) throw(DOMException) {
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+  
+  xmlDoValidityCheckingDefaultValue =
+    (mode == DOMImplementation::VALIDATING) ? 1 : 0;
+  
+  xmlGetWarningsDefaultValue =
+    (flags & DOMImplementation::WARNINGS) ? 1 : 0;
+  
+  xmlSubstituteEntitiesDefault(
+    (flags & DOMImplementation::SUBSTITUTE_ENTITIES) ? 1 : 0
+  );
+  xmlLoadExtDtdDefaultValue = 0;
+	if (flags & DOMImplementation::DETECT_IDS) {
+    xmlLoadExtDtdDefaultValue |= XML_DETECT_IDS;
+  }
+	if (flags & DOMImplementation::COMPLETE_ATTRIBUTE_LISTS) {
+    xmlLoadExtDtdDefaultValue |= XML_COMPLETE_ATTRS;
+  }
+  xmlPedanticParserDefaultValue =
+    (flags & DOMImplementation::PEDANTIC) ? 1 : 0;
+  
+  String errorMessage;
+  // TAG: init global variable in DOMImplementation constructor or other place
+  xmlSetGenericErrorFunc(&errorMessage, DOMImplementationImpl::error);
+  xmlDoc* doc = xmlParseFile(systemId.getElements());
+  ferr << errorMessage << ENDL; // TAG: fixme
+  assert(doc, DOMException(this)); // TAG: use errorMessage
+  return doc;
+#else
+  throw DOMException(this);
+#endif
 }
 
 Document DOMImplementation::createDocumentFromString(
   const String& value, Mode mode, unsigned int flags) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlSubstituteEntitiesDefault(
-    (mode & DOMImplementation::SUBSTITUTE_ENTITIES) ? 1 : 0
+    (flags & DOMImplementation::SUBSTITUTE_ENTITIES) ? 1 : 0
   );
   
   xmlLoadExtDtdDefaultValue = 0;
-	if (mode & DOMImplementation::DETECT_IDS) {
+	if (flags & DOMImplementation::DETECT_IDS) {
     xmlLoadExtDtdDefaultValue |= XML_DETECT_IDS;
   }
-	if (mode & DOMImplementation::COMPLETE_ATTRIBUTE_LISTS) {
+	if (flags & DOMImplementation::COMPLETE_ATTRIBUTE_LISTS) {
     xmlLoadExtDtdDefaultValue |= XML_COMPLETE_ATTRS;
   }
   
@@ -112,6 +225,24 @@ Document DOMImplementation::createDocumentFromString(
 	}
   assert(result, DOMException(this));
   return result;
+#else
+  throw DOMException(this);
+#endif
+}
+
+DocumentType DOMImplementation::createDocumentType(
+  const String& qualifiedName,
+  const String& publicId,
+  const String& systemId) throw(DOMException) {
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+  xmlDtd* node = xmlCreateIntSubset(
+    0,
+    Cast::pointer<const xmlChar*>(qualifiedName.getElements()),
+    publicId.isProper() ? Cast::pointer<const xmlChar*>(publicId.getElements()) : 0,
+    systemId.isProper() ? Cast::pointer<const xmlChar*>(systemId.getElements()) : 0
+  );
+  assert(node, DOMException(this));
+  return node;
 #else
   throw DOMException(this);
 #endif

@@ -80,9 +80,9 @@ public:
   String getPublicId() const throw();
   
   /**
-    Returns the private identifier.
+    Returns the system identifier.
   */
-  String getPrivateId() const throw();
+  String getSystemId() const throw();
   
   /**
     Returns the internal subset.

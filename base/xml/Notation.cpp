@@ -22,18 +22,18 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 String Notation::getPublicId() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = (xmlNodePtr)getContext();
-  xmlNotationPtr notation = (xmlNotationPtr)node->name;
+  const xmlNode* node = (const xmlNode*)getContext();
+  const xmlNotation* notation = (const xmlNotation*)node->name;
   return (const char*)notation->PublicID;
 #else
   return String();
 #endif
 }
   
-String Notation::getPrivateId() const throw() {
+String Notation::getSystemId() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlNodePtr node = (xmlNodePtr)getContext();
-  xmlNotationPtr notation = (xmlNotationPtr)node->name;
+  const xmlNode* node = (const xmlNode*)getContext();
+  const xmlNotation* notation = (const xmlNotation*)node->name;
   return (const char*)notation->SystemID;
 #else
   return String();

@@ -7,6 +7,7 @@
 #define _DK_SDU_MIP__BASE_STRING__STRING_H
 
 #include "base/Object.h"
+#include "base/concurrency/Synchronize.h"
 #include "base/OutOfRange.h"
 #include "base/mem/Buffer.h"
 #include "base/mem/ReferenceCountedObject.h"
@@ -51,11 +52,13 @@ struct WideStringLiteral {
 /**
   String class. The first modifing operation on a string may force a duplication of the internal buffer. The implementation is currently NOT MT-safe.
 
+  @short String.
   @author René Møller Fonseca
   @version 1.0
 */
 
-class String : public Object {
+template<class LOCK>
+class String : public virtual Object, protected virtual Synchronizeable<LOCK> {
 public:
 
   /** Specifies the string terminator. */
@@ -543,28 +546,33 @@ public:
 //   FRIEND SECTION
 // *******************************************************************************************
 
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
+  /**
+    Writes this string to the format stream.
+  */
+  FormatOutputStream& operator<<(FormatOutputStream& stream) const;
+
+  /**
+    Writes string to format stream.
+  */
+//  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const String& value) throw(IOException);
 };
 
 /**
   Returns a new string that is the concatenation of the two specified strings.
 */
-String operator+(const String& left, const String& right) throw(MemoryException);
+template<class LOCK>
+String<LOCK> operator+(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException);
 
 /**
   String reduction. Removes suffix from string if and only if it ends with the suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas ("pre"-"suf") results in "pre").
 */
-String operator-(const String& left, const String& right) throw(MemoryException);
+template<class LOCK>
+String<LOCK> operator-(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException);
 
 /**
-  Write string as formatted string to stream.
+  Writes string to format stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
-
-
-template<class TYPE>
-String toString(TYPE value) throw(Exception) {
-  return StringOutputStream() << value;
-}
+template<class LOCK>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const String<LOCK>& value);
 
 #endif

@@ -3,14 +3,16 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_VECTOR2D_H
-#define _DK_SDU_MIP_BASE_VECTOR2D_H
+#ifndef _DK_SDU_MIP__BASE_MATH__VECTOR2D_H
+#define _DK_SDU_MIP__BASE_MATH__VECTOR2D_H
 
 #include "base/Object.h"
+#include "base/string/FormatOutputStream.h"
 
 /**
-  2D vector.
+  A two-dimensional vector represented by X and Y coordinates.
 
+  @short Two-dimensional vector.
   @author René Møller Fonseca
   @version 1.01
 */
@@ -26,19 +28,19 @@ protected:
 public:
 
   /**
-    Initialize object as origin.
+    Initializes vector as the origin (0,0).
   */
   Vector2D() throw();
 
   /**
-    Initialize object. The vector coordinates are copied from the specified vector.
+    Initializes vector by copying the coordinates from the specified vector.
 
     @param vector The desired vector.
   */
   Vector2D(const Vector2D& vector) throw();
 
   /**
-    Initialize object.
+    Initializes vector from the specified coordinates.
 
     @param x The desired X coordinate.
     @param y The desired Y coordinate.
@@ -95,13 +97,16 @@ public:
   void setY(const TYPE& y) throw();
 
   /**
-    Writes a string representation of the object to a stream.
+    Writes a string representation of a Vector2D object to a format stream. The format is "(x, y)".
   */
-  ostream& toString(ostream& stream) const;
+  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Vector2D& value);
 };
 
+/**
+  Writes a string representation of a Vector2D object to a format stream. The format is "(x, y)".
+*/
 template<class TYPE>
-ostream& operator<<(ostream& stream, const Vector2D<TYPE>& object) {return object.toString(stream);}
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector2D<TYPE>& value);
 
 /** 2D vector of float. */
 typedef Vector2D<float> Float2D;

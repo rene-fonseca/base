@@ -15,7 +15,6 @@
 
 #include "Thread.h"
 #include "MutualExclusion.h"
-#include "base/io/Streams.h"
 #include <pthread.h>
 #include <signal.h>
 #include <time.h>
@@ -290,17 +289,6 @@ void Thread::terminate() {
   }
 }
 
-void Thread::debug() const {
-  bout << "CLASS/Thread\n";
-  bout << "  this=" << this << "\n";
-  bout << "  minimumStackSize=" << getMinimumStackSize() << "\n";
-  bout << "  id=" << threadID << "\n";
-  bout << "  alive=" << isAlive() << "\n";
-  bout << "  terminated=" << isTerminated() << "\n";
-  bout << "  termination=" << getTerminationState() << "\n";
-//  cout << "  children=" << children << "\n";
-}
-
 Thread::~Thread() throw() {
 
 /*  semaphore -= children;
@@ -314,7 +302,7 @@ Thread::~Thread() throw() {
     }
   } catch(...) {
     // now what?
-    bout << "Exception in Thread::~Thread()\n";
+//    bout << "Exception in Thread::~Thread()\n";
   }
 
 /*  if (parent) { // if thread has parent
@@ -336,3 +324,13 @@ MainThread::MainThread() : Thread(NULL, other) {
   installSignalHandler(SIGUSR3, &suspendHandler, 0);
 }
 */
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value) {
+  stream << "Thread{"
+         << "minimumStackSize=" << value.getMinimumStackSize()
+         << ",id=" << (int)value.threadID
+         << ",alive=" << value.isAlive()
+         << ",terminated=" << value.isTerminated()
+         << ",termination=" << value.getTerminationState() << "}";
+  return stream;
+}

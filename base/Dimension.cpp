@@ -5,8 +5,6 @@
 
 #include "Dimension.h"
 
-using namespace ::std;
-
 Dimension::Dimension() throw() {
   width = 0;
   height = 0;
@@ -57,6 +55,6 @@ void Dimension::setHeight(unsigned int height) throw() {
   this->height = height;
 }
 
-ostream& Dimension::operator<<(ostream& stream) const {
-  return stream << '(' << width << ',' << height << ')';
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value) {
+  return stream << '(' << value.width << ',' << value.height << ')';
 }

@@ -5,24 +5,19 @@
 
 #include "FilterOutputStream.h"
 
-FilterOutputStream::FilterOutputStream(OutputStream* out) throw(BindException) {
-  this->out = out;
+FilterOutputStream::FilterOutputStream(OutputStream& o) throw(BindException) : out(o) {
 }
 
 void FilterOutputStream::close() throw(IOException) {
-  out->close();
+  out.close();
 }
 
 void FilterOutputStream::flush() throw(IOException) {
-  out->flush();
+  out.flush();
 }
 
-void FilterOutputStream::write(char value) throw(IOException) {
-  out->write(value);
-}
-
-void FilterOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {
-  out->write(buffer, size);
+unsigned int FilterOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {
+  return out.write(buffer, size);
 }
 
 FilterOutputStream::~FilterOutputStream() {

@@ -8,5 +8,5 @@
 EOFException::EOFException() {
 }
 
-EOFException::EOFException(const char* str) : Exception(str) {
+EOFException::EOFException(const char* message) : Exception(message) {
 }

@@ -6,12 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_NET__SOCKET_H
 #define _DK_SDU_MIP__BASE_NET__SOCKET_H
 
-#include "base/Object.h"
 #include "base/concurrency/Synchronize.h"
+//#include "base/io/FileDescriptor.h"
 #include "base/io/InputStream.h"
 #include "base/io/OutputStream.h"
-#include "base/io/FileDescriptor.h"
-#include "base/io/IOException.h"
 #include "NetworkException.h"
 #include "InetAddress.h"
 #include "base/string/FormatOutputStream.h"
@@ -23,16 +21,9 @@
   @version 1.0
 */
 
-//public FileDescriptor
-class Socket : virtual public Object, protected ThreadLock {
-public:
-
-  /** Specifies the socket options. */
-  typedef enum {KEEPALIVE} Options;
+class Socket : public FileDescriptor, public Synchronizeable {
 private:
 
-  /** Socket handle (-1 is invalid). */
-  int handle;
   /** Specifies the remote address to which the socket is connected. */
   InetAddress remoteAddress;
   /** Specifies the remote port (in host byte order) to which the socket is connected (unconnected if 0). */
@@ -42,18 +33,24 @@ private:
   /** Specifies the local port (in host byte order) to which the socket is bound (unbound if 0). */
   unsigned short localPort;
 
-  InputStream* inputStream;
-  OutputStream* outputStream;
+  FileDescriptorInputStream inputStream;
+  FileDescriptorOutputStream outputStream;
 protected:
 
-  /** Returns the socket handle (-1 if socket has not been created). */
-  inline int getHandle() const throw() {return handle;}; // read atomically
   /** Returns true if socket has been created. */
-  inline bool isCreated() const throw() {return handle != -1;}; // read atomically
+  inline bool isCreated() const throw() {return getHandle() != -1;}; // read atomically
   /** Returns true if socket is connected. */
   inline bool isConnected() const throw() {return remotePort != 0;}; // read atomically
   /** Returns true if socket is bound. */
   inline bool isBound() const throw() {return localPort != 0;}; // read atomically
+  /** Get socket option. */
+  void getOption(int option, void* buffer, socklen_t* len) const throw(IOException);
+  /** Set socket option. */
+  void setOption(int option, const void* buffer, socklen_t len) throw(IOException);
+  /** Get boolean socket option. */
+  bool getBooleanOption(int option) const throw(IOException);
+  /** Set boolean socket option. */
+  void setBooleanOption(int option, bool value) throw(IOException);
 public:
 
   /**
@@ -137,30 +134,95 @@ public:
   /**
     Returns the input stream of socket.
   */
-  InputStream* getInputStream();
-
-  void shutdownInputStream() throw(IOException);
+  InputStream getInputStream();
 
   /**
     Returns the output stream of socket.
   */
-  OutputStream* getOutputStream();
-
-  void shutdownOutputStream() throw(IOException);
+  OutputStream getOutputStream();
 
   /**
-    Writes string representation of socket to a stream.
+    Disables the input stream for this socket.
   */
-  FormatOutputStream& toStream(FormatOutputStream& stream) const;
+  void shutdownInputStream() throw(IOException);
+
+  /**
+    Disables the output stream for this socket.
+  */
+  void shutdownOutputStream() throw(IOException);
 
   /**
     Destroys the socket object.
   */
   ~Socket() throw(IOException);
+
+
+  /**
+    Returns true if 'bind' allows local addresses to be reused.
+  */
+  bool getReuseAddress() const throw(IOException);
+
+  /**
+    Sets the local address reuse flag of this socket.
+  */
+  void setReuseAddress(bool value) throw(IOException);
+
+  /**
+    Returns true if connection is kept alive.
+  */
+  bool getKeepAlive() const throw(IOException);
+
+  /**
+    Sets the keep alive flag of this socket.
+  */
+  void setKeepAlive(bool value) throw(IOException);
+
+  /**
+    Returns true if broadcast datagrams allowed on this socket.
+  */
+  bool getBroadcast() const throw(IOException);
+
+  /**
+    Sets the broadcast datagram flag of this socket.
+  */
+  void setBroadcast(bool value) throw(IOException);
+
+  /**
+    Gets the linger interval. Returns -1 if linger is disabled.
+  */
+  int getLinger() const throw(IOException);
+
+  /**
+    Sets the linger interval. Negative time disables the linger.
+  */
+  void setLinger(int seconds) throw(IOException);
+
+  /**
+    Gets the size of the receive buffer.
+  */
+  int getReceiveBufferSize() const throw(IOException);
+
+  /**
+    Sets the size of the receive buffer.
+  */
+  void setReceiveBufferSize(int size) const throw(IOException);
+
+  /**
+    Gets the size of the send buffer.
+  */
+  int getSendBufferSize() const throw(IOException);
+
+  /**
+    Sets the size of the send buffer.
+  */
+  void setSendBufferSize(int size) throw(IOException);
+
+  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value);
 };
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) const {
-  return value.toStream(stream);
-}
+/**
+  Writes a string representation of a socket to a stream.
+*/
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value);
 
 #endif

@@ -3,14 +3,16 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_VECTOR3D_H
-#define _DK_SDU_MIP_BASE_VECTOR3D_H
+#ifndef _DK_SDU_MIP__BASE_MATH__VECTOR3D_H
+#define _DK_SDU_MIP__BASE_MATH__VECTOR3D_H
 
 #include "base/Object.h"
+#include "base/string/FormatOutputStream.h"
 
 /**
-  3D vector.
+  A three-dimensional vector represented by X, Y, and Z coordinates.
 
+  @short Three-dimensional vector.
   @author Morten Baun Møller and René Møller Fonseca
   @version 1.01
 */
@@ -33,14 +35,14 @@ public:
   Vector3D() throw();
 
   /**
-    Initializes vector. The vector coordinates are copied from the specified vector.
+    Initializes vector by copying the coordinates from the specified vector.
 
     @param vector The desired vector.
   */
   Vector3D(const Vector3D& vector) throw();
 
   /**
-    Initializes vector.
+    Initializes vector from the specified coordinates.
 
     @param x The desired X coordinate.
     @param y The desired Y coordinate.
@@ -106,13 +108,16 @@ public:
   void setZ(const TYPE& z) throw();
 
   /**
-    Writes a string representation of the object to a stream.
+    Writes a string representation of a Vector3D object to a format stream. The format is "(x, y, z)".
   */
-  ostream& toString(ostream& stream) const;
+  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Vector3D& value);
 };
 
+/**
+  Writes a string representation of a Vector3D object to a format stream. The format is "(x, y, z)".
+*/
 template<class TYPE>
-ostream& operator<<(ostream& stream, const Vector3D<TYPE>& object) {return object.toString(stream);}
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector3D<TYPE>& value);
 
 /** 3D vector of float. */
 typedef Vector3D<float> Float3D;

@@ -6,42 +6,23 @@
 #include "FileInputStream.h"
 #include <fcntl.h>
 
-FileInputStream::FileInputStream(const char* path) throw(FileNotFound) {
-  int handle = open(path, 0);
+FileInputStream::FileInputStream(const String& p, unsigned int flags) throw(FileNotFound) :
+  path(p) {
+  unsigned int temp = 0;
+  if (flags & NONBLOCK) {
+    temp |= O_NONBLOCK;
+  }
+  int handle = ::open(path, temp | O_RDONLY);
   if (handle == -1) {
-    throw FileNotFound("Unable to open file.");
+    throw FileNotFound("Unable to open file for reading.");
   }
-  fd = new FileDescriptor(handle);
-}
-
-FileInputStream::FileInputStream(int handle) throw(BindException) {
-  fd = new FileDescriptor(handle);
-}
-
-unsigned int FileInputStream::available() {
-  // NOT IMPLEMENTED
-  return 0;
-}
-
-void FileInputStream::close() throw(IOException) {
-  // NOT IMPLEMENTED
-}
-
-int FileInputStream::read() throw(IOException) {
-  char buffer;
-  unsigned int count;
-  count = read(&buffer, sizeof(buffer));
-  if (count == 0) {
-    return -1;
-  }
-  return buffer;
-}
-
-unsigned int FileInputStream::read(char* buffer, unsigned int size) throw(IOException) {
-  return fd->read(buffer, size);
+  setHandle(handle);
 }
 
 FileInputStream::~FileInputStream() {
-//  close(fd->getHandle());
-  delete fd;
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const FileInputStream& value) {
+//  return stream << "{fd=" << value.fd << "}";
+  return stream;
 }

@@ -3,15 +3,14 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_DIMENSION_H
-#define _DK_SDU_MIP_BASE_DIMENSION_H
+#ifndef _DK_SDU_MIP__BASE__DIMENSION_H
+#define _DK_SDU_MIP__BASE__DIMENSION_H
 
 #include "Object.h"
+#include "base/string/FormatOutputStream.h"
 
 /**
   Dimension.
-
-  Problems: overflow possible in getSize()
 
   @author René Møller Fonseca
   @version 1.0
@@ -27,19 +26,19 @@ protected:
 public:
 
   /**
-    Initialize object. The width and height value are set to zero.
+    Initializes object with width and height set to zero.
   */
   Dimension() throw();
 
   /**
-    Initialize object. The dimension is copied from the specified dimension.
+    Initializes object with the dimension copied from the specified dimension.
 
     @param dimension The desired dimension.
   */
   Dimension(const Dimension& dimension) throw();
 
   /**
-    Initialize object.
+    Initializes object with the specified width and height.
 
     @param width The desired width.
     @param height The desired height.
@@ -98,9 +97,14 @@ public:
   void setHeight(unsigned int height) throw();
 
   /**
-    Writes a string representation of this object to stream.
+    Writes a string representation of a Dimension object to a format stream. The format is "(width, height)".
   */
-  ostream& operator<<(ostream& stream) const;
+  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value);
 };
+
+/**
+  Writes a string representation of a Dimension object to a format stream.
+*/
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value);
 
 #endif

@@ -242,3 +242,11 @@ template<class TYPE> TYPE Vector<TYPE>::norm() const throw() {
 template<class TYPE> Vector<TYPE>::~Vector() throw() {
   delete[] elements;
 }
+
+template<class TYPE>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value) {
+  stream << '(';
+  // dump elements here
+  stream << ')';
+  return stream;
+}

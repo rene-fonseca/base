@@ -6,7 +6,6 @@
 #ifndef _DK_SDU_MIP__BASE_IO__FILTER_OUTPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__FILTER_OUTPUT_STREAM_H
 
-#include "base/Object.h"
 #include "OutputStream.h"
 #include "BindException.h"
 
@@ -17,11 +16,11 @@
   @version 1.0
 */
 
-class FilterOutputStream : public Object, public OutputStream {
+class FilterOutputStream : public OutputStream {
 protected:
 
   /** Output stream to be filtered. */
-  OutputStream* out;
+  OutputStream& out;
 public:
 
   /**
@@ -29,10 +28,10 @@ public:
 
     @param out Output stream to be filtered.
   */
-  explicit FilterOutputStream(OutputStream* out) throw(BindException);
+  explicit FilterOutputStream(OutputStream& out) throw(BindException);
 
   /**
-    Closes the input stream and releases any system resources associated with the stream.
+    Closes the output stream and releases any system resources associated with the stream.
   */
   void close() throw(IOException);
 
@@ -42,19 +41,13 @@ public:
   void flush() throw(IOException);
 
   /**
-    Writes a single value to the stream.
-
-    @param value The value to be written.
-  */
-  void write(char value) throw(IOException);
-
-  /**
-    Writes bytes in buffer to stream.
+    Writes bytes in the specified buffer to the stream.
 
     @param buffer The buffer containing the bytes to be written.
     @param size The number of bytes to be written.
+    @return The actual number of bytes written.
   */
-  void write(const char* buffer, unsigned int size) throw(IOException);
+  unsigned int write(const char* buffer, unsigned int size) throw(IOException);
 
   /**
     Destroys the filtered output stream.

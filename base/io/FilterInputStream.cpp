@@ -5,28 +5,27 @@
 
 #include "FilterInputStream.h"
 
-FilterInputStream::FilterInputStream(InputStream* in) throw(BindException) {
-  this->in = in;
+FilterInputStream::FilterInputStream(InputStream& i) throw(BindException) : in(i) {
 }
 
-unsigned int FilterInputStream::available() {
-  return in->available();
+bool FilterInputStream::atEnd() const throw(IOException) {
+  return in.atEnd();
+}
+
+unsigned int FilterInputStream::available() const throw(IOException) {
+  return in.available();
 }
 
 void FilterInputStream::close() throw(IOException) {
-  in->close();
-}
-
-int FilterInputStream::read() throw(IOException) {
-  return in->read();
+  in.close();
 }
 
 unsigned int FilterInputStream::read(char* buffer, unsigned int size) throw(IOException) {
-  return in->read(buffer, size);
+  return in.read(buffer, size);
 }
 
-void FilterInputStream::skip(unsigned int count) throw(IOException) {
-  in->skip(count);
+unsigned int FilterInputStream::skip(unsigned int count) throw(IOException) {
+  return in.skip(count);
 }
 
 FilterInputStream::~FilterInputStream() {

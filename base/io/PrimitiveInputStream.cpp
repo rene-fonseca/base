@@ -7,7 +7,7 @@
 #include <endian.h>
 #include <float.h>
 
-PrimitiveInputStream::PrimitiveInputStream(InputStream* in) throw(BindException) :
+PrimitiveInputStream::PrimitiveInputStream(InputStream& in) throw(BindException) :
   FilterInputStream(in) {
 }
 

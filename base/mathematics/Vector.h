@@ -3,15 +3,16 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_VECTOR_H
-#define _DK_SDU_MIP_BASE_VECTOR_H
+#ifndef _DK_SDU_MIP__BASE_MATH__VECTOR_H
+#define _DK_SDU_MIP__BASE_MATH__VECTOR_H
 
 #include "base/Object.h"
-#include "base/Exception.h"
 #include "base/OutOfRange.h"
+#include "base/string/FormatOutputStream.h"
+#include "base/mem/ReferenceCountedObjectPointer.h"
 
 /**
-  Vector class.
+  Vector.
 
   @author René Møller Fonseca
   @version 1.0
@@ -22,6 +23,15 @@ public:
 
   typedef TYPE* Iterator;
   typedef const TYPE* ReadOnlyIterator;
+
+protected:
+
+  /** Type of element buffer for the Vector class. */
+  class VectorBuffer : public ReferenceCountedObject {
+  };
+
+  ReferenceCountedObjectPointer<VectorBuffer> internal;
+
 protected:
 
   /** The elements of the vector. */
@@ -185,7 +195,15 @@ public:
     Destroys the vector.
   */
   ~Vector() throw();
+
+  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Vector<TYPE>& value);
 };
+
+/**
+  Writes a string representation of a Vector to a format stream.
+*/
+template<class TYPE>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value);
 
 typedef Vector<float> VectorOfFloat;
 typedef Vector<double> VectorOfDouble;

@@ -469,11 +469,16 @@ template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::transpose() const throw() {
   return matrix;
 }
 
-template<class TYPE> void Matrix<TYPE>::toStream(ostream& stream) const {
-  TYPE* element = elements;
+template<class TYPE> Matrix<TYPE>::~Matrix() throw() {
+  delete[] elements;
+}
+
+template<class TYPE>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value) {
+//  TYPE* element = elements;
 
   stream << "[";
-  for (unsigned int row = 0; row < rows; row++) {
+/*  for (unsigned int row = 0; row < rows; row++) {
 
     stream << "[";
     for (unsigned int column = 0; column < columns; column++) {
@@ -484,10 +489,7 @@ template<class TYPE> void Matrix<TYPE>::toStream(ostream& stream) const {
     }
     stream << "]";
 
-  }
+  }*/
   stream << "]";
-}
-
-template<class TYPE> Matrix<TYPE>::~Matrix() throw() {
-  delete[] elements;
+  return stream;
 }

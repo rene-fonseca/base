@@ -7,6 +7,7 @@
 #define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_POINTER_H
 
 #include "NullPointer.h"
+#include "ReferenceCountedObject.h"
 
 /**
   Automation pointer to Reference Counted Object. This pointer automatically deletes a Reference Counted Object when the number of reference reaches zero. Do not construct more than one automation pointer from the 'normal' pointer.

@@ -7,13 +7,17 @@
 #include <string.h>
 #include <ctype.h>
 
+template String<DefaultLock>;
+template String<Unsafe>;
+
 #define NOTFOUND -1
 #define CAPACITY(desired) ((desired+GRANULARITY-1)/GRANULARITY*GRANULARITY)
 
 template<class TYPE> inline TYPE min(TYPE a, TYPE b) {return (a <= b) ? a : b;};
 template<class TYPE> inline TYPE max(TYPE a, TYPE b) {return (a >= b) ? a : b;};
 
-int String::getLengthOfString(const char* str) const throw() {
+template<class LOCK>
+int String<LOCK>::getLengthOfString(const char* str) const throw() {
   const char* terminator = (const char*)memchr(str, TERMINATOR, MAXIMUM_LENGTH); // find terminator
   if (terminator == NULL) {
     return -1; // string is not terminated or is too long
@@ -21,7 +25,8 @@ int String::getLengthOfString(const char* str) const throw() {
   return terminator - str;
 }
 
-void String::setLength(unsigned int length) throw(MemoryException) {
+template<class LOCK>
+void String<LOCK>::setLength(unsigned int length) throw(MemoryException) {
   if (length != len) {
     if (length > MAXIMUM_LENGTH) {
       throw MemoryException();
@@ -37,7 +42,8 @@ void String::setLength(unsigned int length) throw(MemoryException) {
   }
 }
 
-void String::createString(const char* buffer, unsigned int length, unsigned int capacity) throw(MemoryException) {
+template<class LOCK>
+void String<LOCK>::createString(const char* buffer, unsigned int length, unsigned int capacity) throw(MemoryException) {
   capacity = max(capacity, length + sizeof(TERMINATOR));
   capacity = max(capacity, DEFAULT_CAPACITY);
   internal = new StringBuffer(CAPACITY(capacity));
@@ -46,11 +52,13 @@ void String::createString(const char* buffer, unsigned int length, unsigned int 
   internal->getBytes()[len] = TERMINATOR; // terminate
 }
 
-String::String(unsigned int capacity) throw(MemoryException) {
+template<class LOCK>
+String<LOCK>::String(unsigned int capacity) throw(MemoryException) {
   createString(NULL, 0, capacity);
 }
 
-String::String(const StringLiteral& str) throw(MemoryException) {
+template<class LOCK>
+String<LOCK>::String(const StringLiteral& str) throw(MemoryException) {
   unsigned int length = str.size - sizeof(TERMINATOR);
   if (length > MAXIMUM_LENGTH) { // maximum length exceeded
     throw MemoryException();
@@ -58,7 +66,8 @@ String::String(const StringLiteral& str) throw(MemoryException) {
   createString(str.message, length, DEFAULT_CAPACITY);
 }
 
-String::String(const char* str) throw(MemoryException) {
+template<class LOCK>
+String<LOCK>::String(const char* str) throw(MemoryException) {
   if (str != NULL) {
     int length = getLengthOfString(str);
     if (length < 0) { // maximum length exceeded
@@ -70,7 +79,8 @@ String::String(const char* str) throw(MemoryException) {
   }
 }
 
-String::String(const char* str, unsigned int maximum) throw(MemoryException) {
+template<class LOCK>
+String<LOCK>::String(const char* str, unsigned int maximum) throw(MemoryException) {
   if (str != NULL) {
     int length = getLengthOfString(str);
     if (length < 0) { // maximum length exceeded
@@ -82,7 +92,8 @@ String::String(const char* str, unsigned int maximum) throw(MemoryException) {
   }
 }
 
-String& String::operator=(const String& eq) throw() {
+template<class LOCK>
+String<LOCK>& String<LOCK>::operator=(const String& eq) throw() {
   if (&eq != this) { // protect against self assignment
     internal = eq.internal;
     len = eq.len;
@@ -90,7 +101,8 @@ String& String::operator=(const String& eq) throw() {
   return *this;
 }
 
-void String::ensureCapacity(unsigned int capacity) throw(MemoryException) {
+template<class LOCK>
+void String<LOCK>::ensureCapacity(unsigned int capacity) throw(MemoryException) {
   unsigned int minimum = CAPACITY(length() + sizeof(TERMINATOR));
   capacity = CAPACITY(capacity);
   if ((capacity > getCapacity()) && (capacity > minimum)) {
@@ -99,7 +111,8 @@ void String::ensureCapacity(unsigned int capacity) throw(MemoryException) {
   }
 }
 
-void String::optimizeCapacity() throw(MemoryException) {
+template<class LOCK>
+void String<LOCK>::optimizeCapacity() throw(MemoryException) {
   unsigned int minimum = CAPACITY(length() + sizeof(TERMINATOR));
   if (getCapacity() > minimum) { // can we reduce the capacity
     internal.ensureSingleReference(); // we are about to modify the buffer
@@ -107,14 +120,16 @@ void String::optimizeCapacity() throw(MemoryException) {
   }
 }
 
-char String::getChar(unsigned int index) throw(OutOfRange) {
+template<class LOCK>
+char String<LOCK>::getChar(unsigned int index) throw(OutOfRange) {
   if (index >= length()) {
     throw OutOfRange();
   }
   return getReadOnlyBuffer()[index];
 }
 
-void String::setChar(unsigned int index, char value) throw(OutOfRange) {
+template<class LOCK>
+void String<LOCK>::setChar(unsigned int index, char value) throw(OutOfRange) {
   if (index >= length()) {
     throw OutOfRange();
   }
@@ -125,18 +140,21 @@ void String::setChar(unsigned int index, char value) throw(OutOfRange) {
   }
 }
 
-String::Character String::operator[](unsigned int index) throw(OutOfRange) {
+template<class LOCK>
+String<LOCK>::Character String<LOCK>::operator[](unsigned int index) throw(OutOfRange) {
   return Character(*this, index); // index is checked by getChar() and setChar()
 }
 
-char String::operator[](unsigned int index) const throw(OutOfRange) {
+template<class LOCK>
+char String<LOCK>::operator[](unsigned int index) const throw(OutOfRange) {
   if (index >= length()) {
     throw OutOfRange();
   }
   return getReadOnlyBuffer()[index];
 }
 
-String& String::remove(unsigned int start, unsigned int end) throw(MemoryException) {
+template<class LOCK>
+String<LOCK>& String<LOCK>::remove(unsigned int start, unsigned int end) throw(MemoryException) {
   if ((start <= end) && (start < length())) { // protect against some cases
     if (end >= length() - 1) {
       // remove section from end of string
@@ -151,7 +169,8 @@ String& String::remove(unsigned int start, unsigned int end) throw(MemoryExcepti
   return *this;
 }
 
-String& String::insert(unsigned int index, char ch) throw(MemoryException) {
+template<class LOCK>
+String<LOCK>& String<LOCK>::insert(unsigned int index, char ch) throw(MemoryException) {
   setLength(length() + 1);
   char* buffer = getMutableBuffer();
   if (index >= length()) {
@@ -165,7 +184,8 @@ String& String::insert(unsigned int index, char ch) throw(MemoryException) {
   return *this;
 }
 
-String& String::insert(unsigned int index, const String& str) throw(MemoryException) {
+template<class LOCK>
+String<LOCK>& String<LOCK>::insert(unsigned int index, const String& str) throw(MemoryException) {
 // problem if insert string into itself - memcpy.... -> memmove
   setLength(length() + str.length());
   char* buffer = getMutableBuffer();
@@ -180,7 +200,8 @@ String& String::insert(unsigned int index, const String& str) throw(MemoryExcept
   return *this;
 }
 
-String& String::insert(unsigned int index, const char* str) throw(MemoryException) {
+template<class LOCK>
+String<LOCK>& String<LOCK>::insert(unsigned int index, const char* str) throw(MemoryException) {
 /*
   setLength(length() + str.length());
   char* buffer = getMutableBuffer();
@@ -195,7 +216,8 @@ String& String::insert(unsigned int index, const char* str) throw(MemoryExceptio
   return *this;
 }
 
-String& String::replace(unsigned int start, unsigned int end, const String& str) throw(MemoryException) {
+template<class LOCK>
+String<LOCK>& String<LOCK>::replace(unsigned int start, unsigned int end, const String& str) throw(MemoryException) {
 // need better implementation
   if (start <= end) {
     ensureCapacity(length() - (end - start + 1) + str.length());
@@ -205,7 +227,8 @@ String& String::replace(unsigned int start, unsigned int end, const String& str)
   return *this;
 }
 
-unsigned int String::replaceAll(const String& fromStr, const String& toStr) throw(MemoryException) {
+template<class LOCK>
+unsigned int String<LOCK>::replaceAll(const String& fromStr, const String& toStr) throw(MemoryException) {
   unsigned int count = 0;
   unsigned int start = 0;
   int found;
@@ -216,7 +239,8 @@ unsigned int String::replaceAll(const String& fromStr, const String& toStr) thro
   return count;
 }
 
-String String::substring(unsigned int start, unsigned int end) const throw(MemoryException) {
+template<class LOCK>
+String<LOCK> String<LOCK>::substring(unsigned int start, unsigned int end) const throw(MemoryException) {
   if ((start <= end) && (start < length())) {
     if (end >= length()) {
       end = length() - 1; // index of last char in this string
@@ -232,14 +256,16 @@ String String::substring(unsigned int start, unsigned int end) const throw(Memor
   }
 }
 
-String& String::operator-=(const String& suffix) throw(MemoryException) {
+template<class LOCK>
+String<LOCK>& String<LOCK>::operator-=(const String& suffix) throw(MemoryException) {
   if (endsWith(suffix)) {
     setLength(suffix.length());
   }
   return *this;
 }
 
-String& String::reverse() throw() {
+template<class LOCK>
+String<LOCK>& String<LOCK>::reverse() throw() {
   char* p = getMutableBuffer();
   char* q = &p[length() - 1]; // last char - empty string => q < p
   char temp;
@@ -253,7 +279,8 @@ String& String::reverse() throw() {
   return *this;
 }
 
-String& String::toLowerCase() throw() {
+template<class LOCK>
+String<LOCK>& String<LOCK>::toLowerCase() throw() {
   char* p = getMutableBuffer();
   while (*p != TERMINATOR) {
     *p = tolower(*p);
@@ -262,7 +289,8 @@ String& String::toLowerCase() throw() {
   return *this;
 }
 
-String& String::toUpperCase() throw() {
+template<class LOCK>
+String<LOCK>& String<LOCK>::toUpperCase() throw() {
   char* p = getMutableBuffer();
   while (*p != TERMINATOR) {
     *p = toupper(*p);
@@ -271,7 +299,8 @@ String& String::toUpperCase() throw() {
   return *this;
 }
 
-int String::compareTo(const String& str) const throw() {
+template<class LOCK>
+int String<LOCK>::compareTo(const String& str) const throw() {
   if (length() == str.length()) {
     return memcmp(getReadOnlyBuffer(), str.getReadOnlyBuffer(), length());
   } else if (length() < str.length()) {
@@ -283,11 +312,13 @@ int String::compareTo(const String& str) const throw() {
   }
 }
 
-int String::compareTo(const char* str) const throw() {
+template<class LOCK>
+int String<LOCK>::compareTo(const char* str) const throw() {
   return strcmp(getReadOnlyBuffer(), str);
 }
 
-int String::compareToIgnoreCase(const char* l, const char* r) throw() {
+template<class LOCK>
+int String<LOCK>::compareToIgnoreCase(const char* l, const char* r) throw() {
   while (*l && *r) { // continue until end of any string has been reached
     int result = tolower(*l) - tolower(*r);
     if (result != 0) { // not equal
@@ -300,15 +331,18 @@ int String::compareToIgnoreCase(const char* l, const char* r) throw() {
   return (tolower(*l) - tolower(*r));
 }
 
-int String::compareToIgnoreCase(const String& str) const throw() {
+template<class LOCK>
+int String<LOCK>::compareToIgnoreCase(const String& str) const throw() {
   return compareToIgnoreCase(getReadOnlyBuffer(), str.getReadOnlyBuffer());
 }
 
-int String::compareToIgnoreCase(const char* str) const throw() {
+template<class LOCK>
+int String<LOCK>::compareToIgnoreCase(const char* str) const throw() {
   return compareToIgnoreCase(getReadOnlyBuffer(), str);
 }
 
-bool String::startsWith(const String& prefix) const throw() {
+template<class LOCK>
+bool String<LOCK>::startsWith(const String& prefix) const throw() {
   if ((prefix.isEmpty()) || (prefix.length() > length())) { // 0 < prefix.length() <= length()
     return false;
   }
@@ -316,7 +350,8 @@ bool String::startsWith(const String& prefix) const throw() {
 //  return strncmp(getReadOnlyBuffer(), prefix.getReadOnlyBuffer(), prefix.length());
 }
 
-bool String::endsWith(const String& suffix) const throw() {
+template<class LOCK>
+bool String<LOCK>::endsWith(const String& suffix) const throw() {
   if ((suffix.isEmpty()) || (suffix.length() > length())) { // 0 < suffix.length() <= length()
     return false;
   }
@@ -324,7 +359,8 @@ bool String::endsWith(const String& suffix) const throw() {
 //  return strncmp(&getReadOnlyBuffer()[length() - suffix.length()], suffix.getReadOnlyBuffer(), suffix.length());
 }
 
-int String::indexOf(char ch, unsigned int start) const throw() {
+template<class LOCK>
+int String<LOCK>::indexOf(char ch, unsigned int start) const throw() {
   if (start >= length()) {
     return NOTFOUND;
   }
@@ -340,7 +376,8 @@ int String::indexOf(char ch, unsigned int start) const throw() {
   }
 }
 
-int String::indexOf(const String& str, unsigned int start) const throw() {
+template<class LOCK>
+int String<LOCK>::indexOf(const String& str, unsigned int start) const throw() {
   if ((start >= length()) || (str.isEmpty()) || (str.length() > length())) {
     return NOTFOUND;
   }
@@ -385,7 +422,8 @@ int String::indexOf(const String& str, unsigned int start) const throw() {
   return NOTFOUND;
 }
 
-int String::lastIndexOf(char ch, unsigned int start) const throw() {
+template<class LOCK>
+int String<LOCK>::lastIndexOf(char ch, unsigned int start) const throw() {
   // examined cases: length() = 0, length() = 1, length() > 1
   const char* buffer = getReadOnlyBuffer();
   const char* p = &buffer[(start < length()) ? start : length() - 1]; // validate start
@@ -398,7 +436,8 @@ int String::lastIndexOf(char ch, unsigned int start) const throw() {
   return NOTFOUND;
 }
 
-int String::lastIndexOf(const String& str, unsigned int start) const throw() {
+template<class LOCK>
+int String<LOCK>::lastIndexOf(const String& str, unsigned int start) const throw() {
   if ((str.isEmpty()) || (str.length() > length())) { // eliminate some cases
     return NOTFOUND;
   }
@@ -446,7 +485,8 @@ int String::lastIndexOf(const String& str, unsigned int start) const throw() {
   return NOTFOUND;
 }
 
-unsigned int String::count(char ch, unsigned int start) const throw() {
+template<class LOCK>
+unsigned int String<LOCK>::count(char ch, unsigned int start) const throw() {
   int result;
   unsigned int count = 0;
   while ((result = indexOf(ch, start)) >= 0) { // until not found
@@ -456,7 +496,8 @@ unsigned int String::count(char ch, unsigned int start) const throw() {
   return count;
 }
 
-unsigned int String::count(const String& str, unsigned int start) const throw() {
+template<class LOCK>
+unsigned int String<LOCK>::count(const String& str, unsigned int start) const throw() {
   int result;
   unsigned int count = 0;
   while ((result = indexOf(str, start)) >= 0) { // until not found - works for empty str
@@ -466,26 +507,37 @@ unsigned int String::count(const String& str, unsigned int start) const throw() 
   return count;
 }
 
-String String::toString() const {
+template<class LOCK>
+String<LOCK> String<LOCK>::toString() const {
   return String(*this);
 }
 
-String::~String() throw() {
+template<class LOCK>
+String<LOCK>::~String() throw() {
 }
 
-String operator+(const String& left, const String& right) throw(MemoryException) {
-  return String(left.length() + right.length()).append(left).append(right);
+template<class LOCK>
+FormatOutputStream& String<LOCK>::operator<<(FormatOutputStream& stream) const {
+  SynchronizeShared();
+  stream.addCharacterField(getReadOnlyBuffer(), length());
+  return stream;
 }
 
-String operator-(const String& left, const String& right) throw(MemoryException) {
+template<class LOCK>
+String<LOCK> operator+(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException) {
+  return String<LOCK>(left.length() + right.length()).append(left).append(right);
+}
+
+template<class LOCK>
+String<LOCK> operator-(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException) {
   if (left.endsWith(right)) {
     return left.substring(0, left.length() - right.length()); // return copy of left without suffix
   } else {
-    return String(left); // return copy of left
+    return String<LOCK>(left); // return copy of left
   }
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException) {
-  stream.addCharacterField(value.getReadOnlyBuffer(), value.length());
-  return stream;
+template<class LOCK>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const String<LOCK>& value) {
+  return value.operator<<(stream);
 }

@@ -6,7 +6,7 @@
 #include "FormatOutputStream.h"
 #include <string.h>
 
-FormatOutputStream::FormatOutputStream(OutputStream* out, unsigned int size) throw(BindException) :
+FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) throw(BindException) :
   BufferedOutputStream(out, size) {
   throw BindException();
 
@@ -43,7 +43,10 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
     flags &= ~PREFIX;
     break;
   case EOL:
-    write('\n'); // may throw IOException
+    {
+      char ch = '\n';
+      write(&ch, sizeof(ch)); // may throw IOException
+    }
     break;
   case FLUSH:
     flush(); // may throw IOException
@@ -140,14 +143,7 @@ void FormatOutputStream::addDoubleField(const char* early, unsigned int earlySiz
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, char value) {
-  if (stream.getWidth() > 1) {
-    unsigned int count = stream.getWidth() - 1;
-    while (count) {
-      stream.write(' ');
-      --count;
-    }
-  }
-  stream.write(value);
+  stream.addCharacterField(&value, 1);
   return stream;
 }
 

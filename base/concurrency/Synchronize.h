@@ -9,42 +9,14 @@
 #include "Synchronizeable.h"
 
 /**
-  Selects exclusively synchronization of this scope of this synchronizable
-  class. The macro manages this by creating a temporary Synchronize object
-  called '_sync' on the stack. Please note that the variable '_sync' is
-  reserved for this purpose and should not be used elsewhere. If required, you
-  can release the lock explicitly by using SynchronizeRelease(). You should
-  only use the provided macros to access the variable '_sync'.
-
-  This macro is intended to be used within a template class that takes a
-  template argument LOCK and is a base class of Synchronizeable<LOCK>. Like
-  this example illustrates:
-
-  template<class LOCK = DefaultLock>
-  class MyClass : public Synchronized<LOCK> {
-    ...
-  };
-
-  If you for some reason want to use this macro within a class that does not
-  take a template argument 'LOCK', you must define 'LOCK' explicitly like
-  this:
-
-  class MyClass : public Synchronized<DefaultLock> {
-  public:
-    typedef DefaultLock LOCK;
-
-    void myMethod() const throw() {
-      SynchronizeExclusive();
-      do something here;
-    }
-  };
-
+  Selects exclusive synchronization of this scope of this synchronizeable
+  object (@ref Synchronize).
 */
 #define SynchronizeExclusively() Synchronize<LOCK> _sync(*this, true)
 
 /**
   Selects shared synchronization of this scope of this synchronizeable object.
-  See SynchronizeExclusively().
+  (@ref Synchronize).
 */
 #define SynchronizeShared() Synchronize<LOCK> _sync(*this, false)
 
@@ -61,7 +33,58 @@
   destroyed. If required, the lock can be explicitly released by calling the
   method release(). This is required before throwing an exception.
 
-  @see Synchronizeable SingleThreaded MultiThreaded
+  Three macros have been provided for easy use of this class:
+  SynchronizeExclusively(), SynchronizeShared(), and SynchronizeRelease().
+  These macros should be used like any normal function.
+
+  SynchronizeExclusively(): Selects exclusively synchronization of the current
+  scope within a synchronize able class (@ref Synchronizeable). The macro
+  manages this by creating a temporary Synchronize object called '_sync' on
+  the stack. Please note that the variable '_sync' is reserved for this
+  purpose and should not be used elsewhere to avoid misunderstandings. You
+  should only use the provided macros to access the variable '_sync'.
+
+  SynchronizeShared(): Works the same way as SynchronizeExclusively() but, as
+  the name suggests, acquires a shared lock.
+
+  SynchronizeRelease(): If required, you can release the lock explicitly by
+  using SynchronizeRelease().
+
+  The macros are intended to be used within a template class that takes a
+  template argument called LOCK and is a base class of Synchronizeable<LOCK>.
+  Like illustrated by this example:
+
+  <pre>
+  template<class LOCK = DefaultLock>
+  class MyClass : public Synchronized<LOCK> {
+    // stuffing goes here :-)
+  };
+  </pre>
+
+  However, if you for some reason want to use these macros within a class that
+  does not take a template argument LOCK, you must define LOCK explicitly and
+  identical to the template argument of the base class Synchronizeable. Like
+  this:
+
+  <pre>
+  class MyClass : public Synchronized<DefaultLock> {
+  public:
+    typedef DefaultLock LOCK;
+
+    void myFirstMethod() const throw() {
+      SynchronizeShared();
+      // do something as long as it doesn't modify the object
+    }
+
+    void mySecondMethod() throw() {
+      SynchronizeExclusive();
+      // do modification of object
+    }
+  };
+  </pre>
+
+  @short A stack based wrapper of a synchronize able class.
+  @see Synchronizeable
   @author René Møller Fonseca
   @version 1.0
 */

@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_IO__OUTPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__OUTPUT_STREAM_H
 
-#include "IOException.h"
+#include "Stream.h"
 
 /**
   Class representing an output stream of bytes.
@@ -15,33 +15,22 @@
   @version 1.0
 */
 
-class OutputStream {
+class OutputStream : public Stream {
 public:
-
-  /**
-    Closes the output stream and releases any system resources associated with the stream.
-  */
-  virtual void close() throw(IOException);
 
   /**
     Forces any buffered bytes to be written out.
   */
-  virtual void flush() throw(IOException);
+  virtual void flush() throw(IOException) = 0;
 
   /**
-    Writes a single value to the stream.
-
-    @param value The value to be written.
-  */
-  virtual void write(char value) throw(IOException) = 0;
-
-  /**
-    Writes bytes in buffer to stream.
+    Writes bytes in the specified buffer to the stream.
 
     @param buffer The buffer containing the bytes to be written.
     @param size The number of bytes to be written.
+    @return The actual number of bytes written.
   */
-  virtual void write(const char* buffer, unsigned int size) throw(IOException);
+  virtual unsigned int write(const char* buffer, unsigned int size) throw(IOException) = 0;
 };
 
 #endif

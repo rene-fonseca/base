@@ -23,7 +23,7 @@ public:
 
     @param in Input stream to be filtered.
   */
-  explicit PrimitiveInputStream(InputStream* in) throw(BindException);
+  explicit PrimitiveInputStream(InputStream& in) throw(BindException);
 
   /**
     Reads a boolean (8 bits) from the stream.

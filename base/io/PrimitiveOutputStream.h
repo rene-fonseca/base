@@ -23,7 +23,7 @@ public:
 
     @param out Output stream to be filtered.
   */
-  explicit PrimitiveOutputStream(OutputStream* out) throw(BindException);
+  explicit PrimitiveOutputStream(OutputStream& out) throw(BindException);
 
   /**
     Writes a boolean (8 bits) to the stream.
@@ -80,17 +80,5 @@ public:
   */
   void writeLongDouble(long double value) throw(IOException);
 };
-
-OutputStream& operator<<(OutputStream& stream, bool value) throw(IOException);
-OutputStream& operator<<(OutputStream& stream, char value) throw(IOException);
-OutputStream& operator<<(OutputStream& stream, short value) throw(IOException);
-OutputStream& operator<<(OutputStream& stream, unsigned short value) throw(IOException);
-OutputStream& operator<<(OutputStream& stream, int value) throw(IOException);
-OutputStream& operator<<(OutputStream& stream, unsigned int value) throw(IOException);
-OutputStream& operator<<(OutputStream& stream, long long value) throw(IOException);
-OutputStream& operator<<(OutputStream& stream, unsigned long long value) throw(IOException);
-OutputStream& operator<<(OutputStream& stream, float value) throw(IOException);
-OutputStream& operator<<(OutputStream& stream, double value) throw(IOException);
-OutputStream& operator<<(OutputStream& stream, long double value) throw(IOException);
 
 #endif

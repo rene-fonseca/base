@@ -26,52 +26,45 @@ protected:
 
   /** The internal buffer used to store data temporarily. */
   char* buffer;
-  /** The size fo the buffer. */
+  /** The size of the buffer. */
   unsigned int size;
   /** The current number of bytes in the buffer. */
   unsigned int count;
   /** The current position in the buffer. */
   unsigned int position;
-  /** Fills the buffer with bytes from the input stream. */
-  void fillBuffer() throw(IOException);
 public:
 
   /**
     Initializes the buffered input stream.
 
     @param in The input stream.
-    @param size The size of the buffer. Default is given by DEFAULT_BUFFER_SIZE. The size cannot
+    @param size The size of the buffer. Default is given by DEFAULT_BUFFER_SIZE. The size cannot...
   */
-  BufferedInputStream(InputStream* in, unsigned int size = DEFAULT_BUFFER_SIZE);
+  BufferedInputStream(InputStream& in, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException);
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.
 
     @return Available number of bytes in stream.
   */
-  unsigned int available();
+  unsigned int available() const throw(IOException);
 
   /**
-    Reads the next byte from the stream. Blocks if no bytes are available.
+    Fills the specified buffer with bytes from the stream. Blocks if asked to read more bytes than available.
 
-    @return The next byte from the stream.
-  */
-  int read() throw(IOException);
-
-  /**
-    Fills the buffer with bytes from the stream. Blocks if asked to read more bytes than available.
-
-    @param buffer The buffer to fill.
+    @param buffer The buffer to receive the bytes.
     @param size The size of the buffer.
+    @return The actual number of bytes read from the stream.
   */
-  unsigned int read(char* buffer, unsigned int count) throw(IOException);
+  unsigned int read(char* buffer, unsigned int size) throw(IOException);
 
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than available.
 
     @param count The number of bytes to skip.
+    @return The actual number of bytes skipped.
   */
-  void skip(unsigned int count) throw(IOException);
+  unsigned int skip(unsigned int count) throw(IOException);
 
   /**
     Destroys the buffered input stream.

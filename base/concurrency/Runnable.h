@@ -11,7 +11,12 @@
 class Thread;
 
 /**
-  This interface allows an object to be run (used in conjuction with a Thread object).
+  This interface is implemented by active objects. An active object can be run by a thread object.
+
+  @short Interface implemented by active objects.
+  @see Thread
+  @author René Møller Fonseca
+  @version 1.0
 */
 
 class Runnable {

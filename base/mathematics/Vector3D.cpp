@@ -66,6 +66,7 @@ template<class TYPE> void Vector3D<TYPE>::setZ(const TYPE& z) throw() {
   this->z = z;
 }
 
-template<class TYPE> ostream& Vector3D<TYPE>::toString(ostream& stream) const {
-  return stream << "(" << x << "," << y << "," << z << ")";
+template<class TYPE>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector3D<TYPE>& value) {
+  return stream << "[" << value.x << "," << value.y << "," << value.z << "]";
 }

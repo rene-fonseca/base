@@ -73,6 +73,11 @@ public:
   InetAddress& operator=(const InetAddress& eq) throw();
 
   /**
+    Returns the IP address in binary format in network byte order.
+  */
+  const char* getAddress() const throw();
+
+  /**
     Returns the host name associated with this IP address. If the host's name cannot be located in the name service, the numeric form of the host's address is returned instead of its name.
   */
   String getHostName() const throw(HostNotFound);
@@ -118,9 +123,12 @@ public:
   bool isV4Compatible() const throw();
 
   /**
-    Returns the IP address in binary format in network byte order.
+    Sets the address.
+
+    @param addr The internet address in network byte order.
+    @param family Specifies the family of the binary address (IPv4 or IPv6).
   */
-  const char* getBytes() const throw();
+  void setAddress(const char* addr, Family family) throw();
 
   /**
     Writes a string representation of the address to a stream.

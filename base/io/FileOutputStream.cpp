@@ -6,32 +6,32 @@
 #include "FileOutputStream.h"
 #include <fcntl.h>
 
-FileOutputStream::FileOutputStream(const char* name) throw(FileNotFound) {
-  int handle = open(name, 0);
+FileOutputStream::FileOutputStream(const String& p, unsigned int flags, unsigned int permissions) throw(FileNotFound) :
+  path(p) {
+
+  unsigned int temp = 0;
+  if (flags & CREATE) {
+    temp |= O_CREAT;
+  }
+  if (flags & TRUNCATE) {
+    temp |= O_TRUNC;
+  }
+  if (flags & APPEND) {
+    temp |= O_APPEND;
+  }
+  if (flags & NONBLOCK) {
+    temp |= O_NONBLOCK;
+  }
+  if (flags & SYNC) {
+    temp |= O_SYNC;
+  }
+
+  int handle = ::open(path, temp | O_WRONLY, permissions);
   if (handle == -1) {
     throw FileNotFound("Unable to open file.");
   }
-  fd = new FileDescriptor(handle);
-}
-
-FileOutputStream::FileOutputStream(int handle) throw(BindException) {
-  fd = new FileDescriptor(handle);
-}
-
-void FileOutputStream::close() throw(IOException) {
-  fd->close();
-}
-
-void FileOutputStream::flush() throw(IOException) {
-  fd->flush();
-}
-
-void FileOutputStream::write(char value) throw(IOException) {
-}
-
-void FileOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {
+  setHandle(handle);
 }
 
 FileOutputStream::~FileOutputStream() {
-  delete fd;
 }

@@ -35,18 +35,7 @@ InetAddress::InetAddress() throw() {
 }
 
 InetAddress::InetAddress(const char* addr, Family family) throw() {
-  switch (family) {
-  case IPv4:
-    // make IPv4-mapped IPv6 address (network byte order)
-    ((uint32_t*)(&address))[0] = 0x00000000;
-    ((uint32_t*)(&address))[1] = 0x00000000;
-    ((uint32_t*)(&address))[2] = htonl(0x0000ffff);
-    ((uint32_t*)(&address))[3] = ((uint32_t*)addr)[0];
-    break;
-  case IPv6:
-    memcpy(&address, addr, 16);
-    break;
-  }
+  setAddress(addr, family);
 }
 
 InetAddress::InetAddress(const String& addr) throw(InvalidFormat) {
@@ -73,6 +62,10 @@ InetAddress& InetAddress::operator=(const InetAddress& eq) throw() {
     memcpy(&address, &eq.address, sizeof(address));
   }
   return *this;
+}
+
+const char* InetAddress::getAddress() const throw() {
+  return (char*)&address;
 }
 
 String InetAddress::getHostName() const throw(HostNotFound) {
@@ -120,8 +113,19 @@ bool InetAddress::isV4Compatible() const throw() {
   return IN6_IS_ADDR_V4COMPAT(&address);
 }
 
-const char* InetAddress::getBytes() const throw() {
-  return (char*)&address;
+void InetAddress::setAddress(const char* addr, Family family) throw() {
+  switch (family) {
+  case IPv4:
+    // make IPv4-mapped IPv6 address (network byte order)
+    ((uint32_t*)(&address))[0] = 0x00000000;
+    ((uint32_t*)(&address))[1] = 0x00000000;
+    ((uint32_t*)(&address))[2] = htonl(0x0000ffff);
+    ((uint32_t*)(&address))[3] = ((uint32_t*)addr)[0];
+    break;
+  case IPv6:
+    memcpy(&address, addr, 16);
+    break;
+  }
 }
 
 FormatOutputStream& InetAddress::toStream(FormatOutputStream& stream) const {

@@ -13,6 +13,7 @@
 #include "MutualExclusion.h"
 #include "ThreadKey.h"
 #include <pthread.h>
+#include "base/string/FormatOutputStream.h"
 
 class Runnable;
 
@@ -250,14 +251,16 @@ typedef enum {
     void terminate();
 
     /**
-      Writes the object to standard out. This method is intended to be used for debugging purposes.
-    */
-    void debug() const;
-
-    /**
       Destroys the thread object. The thread is canceled if it is still alive.
     */
     ~Thread() throw();
+
+    friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value);
   };
+
+/**
+  Writes a string representation of a Thread object to a format stream.
+*/
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value);
 
 #endif

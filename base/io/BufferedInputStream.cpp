@@ -6,70 +6,77 @@
 #include "BufferedInputStream.h"
 #include <string.h>
 
-void BufferedInputStream::fillBuffer() throw(IOException) {
-  if (position >= count) {
-    count = FilterInputStream::read(buffer, size);
-    position = 0;
-  }
-}
+template<class TYPE> inline TYPE min(TYPE left, TYPE right) {return (left <= right) ? left : right;};
+template<class TYPE> inline TYPE max(TYPE left, TYPE right) {return (left >= right) ? left : right;};
 
-BufferedInputStream::BufferedInputStream(InputStream* in, unsigned int size) :
+BufferedInputStream::BufferedInputStream(InputStream& in, unsigned int size) throw(BindException) :
   FilterInputStream(in) {
-  this->size = size > MINIMUM_BUFFER_SIZE ? size : MINIMUM_BUFFER_SIZE;
+  this->size = max(size, MINIMUM_BUFFER_SIZE);
   buffer = new char[this->size];
+  if (buffer == NULL) {
+    throw BindException();
+  }
   count = 0;
   position = 0;
 }
 
-unsigned int BufferedInputStream::available() {
+unsigned int BufferedInputStream::available() const throw(IOException) {
   return (count - position) + FilterInputStream::available();
 }
 
-int BufferedInputStream::read() throw(IOException) {
-  if (position >= count) {
-    fillBuffer();
-  }
-  return buffer[position++];
-}
-
 unsigned int BufferedInputStream::read(char* buffer, unsigned int size) throw(IOException) {
-  unsigned int position = 0; // position in destination buffer
 
-  // need to prevent infinite loop!
+  if (this->position >= this->count) { // is the internal buffer empty
+    this->count = FilterInputStream::read(this->buffer, this->size); // checked for zero later
+    this->position = 0;
+  }
 
-  while (position < size) { // have we read all the bytes
-    if (this->position >= this->count) {
-      fillBuffer();
+  unsigned int bytesInBuffer = this->count - this->position;
+
+  if (size <= bytesInBuffer) { // does the internal buffer hold the requested bytes
+    memcpy(buffer, this->buffer + this->count, size); // copy from internal to external buffer
+    this->position += size;
+    return size; // everything was read
+  }
+
+  unsigned int position = 0; // position in external buffer
+  while (true) {
+    unsigned int bytes = min(size - position, this->count - this->position); // bytes to copy
+
+    if (bytes == 0) { // is internal buffer empty
+      break; // prevent infinite loop - we have tried to fill the buffer prior to this
     }
 
-    unsigned int bytes;
-    if (size - position > this->count - this->position) { // bytes to copy
-      bytes = this->count - this->position;
-    } else {
-      bytes = size - position;
-    }
-
-    memcpy(&buffer[position], &this->buffer[this->position], bytes);
+    memcpy(buffer + position, this->buffer + this->position, bytes); // from internal to external
     position += bytes;
     this->position += bytes;
+
+    if (position >= size) { // have we read all the bytes we were asked to read
+      break;
+    }
+
+    if (this->position >= this->count) { // is the internal buffer empty
+      this->count = FilterInputStream::read(this->buffer, this->size);
+      this->position = 0;
+    }
   }
-  return size;
+  return position; // number of bytes that have been copied into the external buffer
 }
 
-void BufferedInputStream::skip(unsigned int count) throw(IOException) {
-  // need to prevent infinite loop!
-  while (count > 0) {
-    if (this->position >= this->count) {
-      fillBuffer();
-    }
-    unsigned int bytes;
-    if (count > this->count - this->position) { // bytes to skip
-      bytes = this->count - this->position;
+unsigned int BufferedInputStream::skip(unsigned int count) throw(IOException) {
+  if (position >= this->count) { // is buffer empty
+    return FilterInputStream::skip(count);
+  } else {
+    unsigned int bytes = this->count - position;
+    if (count > bytes) {
+      // skip all bytes in buffer and more
+      this->count = 0; // empty buffer
+      return bytes + FilterInputStream::skip(bytes - count);
     } else {
-      bytes = count;
+      // skip bytes in buffer
+      position += count;
+      return count;
     }
-    this->position += bytes;
-    count -= bytes;
   }
 }
 

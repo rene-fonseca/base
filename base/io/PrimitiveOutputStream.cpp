@@ -6,7 +6,7 @@
 #include "PrimitiveOutputStream.h"
 #include <endian.h>
 
-PrimitiveOutputStream::PrimitiveOutputStream(OutputStream* out) throw(BindException) :
+PrimitiveOutputStream::PrimitiveOutputStream(OutputStream& out) throw(BindException) :
   FilterOutputStream(out) {
 }
 
@@ -174,67 +174,4 @@ void PrimitiveOutputStream::writeLongDouble(long double value) throw(IOException
 #else
   #err Byte order not supported
 #endif
-}
-
-OutputStream& operator<<(OutputStream& stream, bool value) throw(IOException) {
-  return stream;
-}
-
-OutputStream& operator<<(OutputStream& stream, char value) throw(IOException) {
-  return stream;
-}
-
-OutputStream& operator<<(OutputStream& stream, short value) throw(IOException) {
-  return stream;
-}
-
-OutputStream& operator<<(OutputStream& stream, unsigned short value) throw(IOException) {
-  return stream;
-}
-
-OutputStream& operator<<(OutputStream& stream, int value) throw(IOException) {
-  return stream;
-}
-
-OutputStream& operator<<(OutputStream& stream, unsigned int value) throw(IOException) {
-  return stream;
-}
-
-OutputStream& operator<<(OutputStream& stream, long long value) throw(IOException) {
-  return stream;
-}
-
-OutputStream& operator<<(OutputStream& stream, unsigned long long value) throw(IOException) {
-  return stream;
-}
-
-OutputStream& operator<<(OutputStream& stream, float value) throw(IOException) {
-  return stream;
-}
-
-OutputStream& operator<<(OutputStream& stream, double value) throw(IOException) {
-  return stream;
-}
-
-OutputStream& operator<<(OutputStream& stream, long double value) throw(IOException) {
-#if __FLOAT_WORD_ORDER == BIG_ENDIAN
-  write((char*)&value, sizeof(value));
-#elif __FLOAT_WORD_ORDER == LITTLE_ENDIAN
-  char* p = (char*)&value;
-  char buffer[10]; // 80 bits
-  buffer[9] = p[0];
-  buffer[8] = p[1];
-  buffer[7] = p[2];
-  buffer[6] = p[3];
-  buffer[5] = p[4];
-  buffer[4] = p[5];
-  buffer[3] = p[6];
-  buffer[2] = p[7];
-  buffer[1] = p[8];
-  buffer[0] = p[9];
-  stream.write((char*)&buffer, sizeof(buffer));
-#else
-  #err Byte order not supported
-#endif
-  return stream;
 }

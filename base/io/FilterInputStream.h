@@ -6,7 +6,6 @@
 #ifndef _DK_SDU_MIP__BASE_IO__FILTER_INPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__FILTER_INPUT_STREAM_H
 
-#include "base/Object.h"
 #include "InputStream.h"
 #include "BindException.h"
 
@@ -17,11 +16,11 @@
   @version 1.0
 */
 
-class FilterInputStream : public Object, public InputStream {
+class FilterInputStream : public InputStream {
 protected:
 
   /** Input stream to be filtered. */
-  InputStream* in;
+  InputStream& in;
 public:
 
   /**
@@ -29,14 +28,19 @@ public:
 
     @param in Input stream to be filtered.
   */
-  explicit FilterInputStream(InputStream* in) throw(BindException);
+  explicit FilterInputStream(InputStream& in) throw(BindException);
+
+  /**
+    Returns true if the end of the stream has been reached.
+  */
+  bool atEnd() const throw(IOException);
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.
 
     @return Available number of bytes in stream.
   */
-  unsigned int available();
+  unsigned int available() const throw(IOException);
 
   /**
     Closes the input stream and releases any system resources associated with the stream.
@@ -44,26 +48,21 @@ public:
   void close() throw(IOException);
 
   /**
-    Reads the next byte from the stream. Blocks if no bytes are available. Throws 'EndOfFile' if called when end of file has been reached.
+    Fills the specified buffer with bytes from the stream. Blocks if asked to read more bytes than available.
 
-    @return The next byte from the stream.
-  */
-  int read() throw(IOException);
-
-  /**
-    Fills the buffer with bytes from the stream. Blocks if asked to read more bytes than available. Throws 'EndOfFile' if called when end of file has been reached.
-
-    @param buffer The buffer.
+    @param buffer The buffer to receive the bytes.
     @param size The size of the buffer.
+    @return The actual number of bytes read from the stream.
   */
   unsigned int read(char* buffer, unsigned int size) throw(IOException);
 
   /**
-    Skips a specified number of bytes. Blocks if asked to skip more bytes than available. Throws 'EndOfFile' if called when end of file has been reached.
+    Skips a specified number of bytes. Blocks if asked to skip more bytes than available.
 
     @param count The number of bytes to skip.
+    @return The actual number of bytes skipped.
   */
-  void skip(unsigned int count) throw(IOException);
+  unsigned int skip(unsigned int count) throw(IOException);
 
   /**
     Destroys the filter input stream.

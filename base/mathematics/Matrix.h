@@ -3,21 +3,19 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_MATRIX_H
-#define _DK_SDU_MIP_BASE_MATRIX_H
+#ifndef _DK_SDU_MIP__BASE_MATH__MATRIX_H
+#define _DK_SDU_MIP__BASE_MATH__MATRIX_H
 
 #include "base/Object.h"
 #include "base/Dimension.h"
-#include "base/Exception.h"
 #include "base/OutOfBounds.h"
 #include "base/OutOfDomain.h"
 #include "base/RandomIterator.h"
 #include "base/mathematics/Vector.h"
 #include "base/iteration/SimpleRandomIterator.h"
 #include "base/iteration/EquidistantRandomIterator.h"
-#include <string>
-
-using std::string;
+#include "base/mem/ReferenceCountedObjectPointer.h"
+#include "base/string/FormatOutputStream.h"
 
 /**
   This class encapsulates matrix manipulations.
@@ -42,6 +40,18 @@ public:
   typedef ReadOnlyEquidistantRandomIterator<TYPE> ReadOnlyColumnByRowIterator;
 protected:
 
+  class MatrixBuffer : public ReferenceCountedObject {
+  public:
+/*    MatrixBuffer(unsigned int elementSize);
+    MatrixBuffer(unsigned int elementSize, unsigned int rows, unsigned int columns);
+    MatrixBuffer(const MatrixBuffer& copy);
+    void resize(unsigned int rows, unsigned int columns);
+    TYPE* getElements();*/
+  };
+
+  /** Reference counted buffer holding the elements of the matrix. */
+  ReferenceCountedObjectPointer<MatrixBuffer> internal;
+
   /** The elements of the matrix. */
   TYPE* elements;
   /** The number of rows in the matrix. */
@@ -51,7 +61,7 @@ protected:
   /** The number of elements in the matrix. */
   unsigned int size;
   /** The dimension of the matrix. */
-  Dimension dimension;
+  Dimension dimension; // not needed
 
   /** Used to reallocate memory for elements if the matrix changes its dimension. */
   void adjustDimension(unsigned int rows, unsigned int columns);
@@ -320,15 +330,18 @@ public:
   Matrix& transpose() const throw();
 
   /**
-    Writes a string representation of this object to a stream. This method is intended to be used for debugging purposes.
-  */
-  void toStream(ostream& stream) const;
-
-  /**
     Destroys the matrix.
   */
   ~Matrix() throw();
+
+  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Matrix& value);
 };
+
+/**
+  Writes a string representation of a Matrix object to a format stream.
+*/
+template<class TYPE>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value);
 
 typedef Matrix<float> MatrixOfFloat;
 typedef Matrix<double> MatrixOfDouble;

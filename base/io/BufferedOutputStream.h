@@ -30,8 +30,6 @@ protected:
   unsigned int size;
   /** The number of bytes in the buffer. */
   unsigned int count;
-  /** Flushes the buffer. */
-  void flushBuffer();
 public:
 
   /**
@@ -40,7 +38,7 @@ public:
     @param out The output stream.
     @param size The size of the buffer. Default is given by DEFAULT_BUFFER_SIZE.
   */
-  BufferedOutputStream(OutputStream* out, unsigned int size = DEFAULT_BUFFER_SIZE);
+  BufferedOutputStream(OutputStream& out, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException);
 
   /**
     Forces any buffered bytes to be written out.
@@ -48,19 +46,13 @@ public:
   void flush() throw(IOException);
 
   /**
-    Writes a single value to the stream.
-
-    @param value The value to be written.
-  */
-  void write(char value) throw(IOException);
-
-  /**
-    Writes bytes in buffer to stream.
+    Writes bytes in the specified buffer to stream.
 
     @param buffer The buffer containing the bytes to be written.
     @param size The number of bytes to be written.
+    @return The actual number of bytes written.
   */
-  void write(const char* buffer, unsigned int size) throw(IOException);
+  unsigned int write(const char* buffer, unsigned int size) throw(IOException);
 
   /**
     Destroys the buffered output stream.

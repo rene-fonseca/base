@@ -9,26 +9,35 @@
 #include "ReadWriteLock.h"
 
 /**
-  This class is used to specify that a template class should not be
+  This class is used to specify that a synchronize able class should not be
   synchronized. In other words the class will be unsafe to use in a multi-
-  threaded environment.
+  threaded environment. If you, however, know that an object is only going to
+  be accessed by one thread at a time you can use unsafe objects for better
+  performance. This class is the only non-lock class that can be used with the
+  classes Synchronizeable and Synchronize. Unsafe triggers a highly optimized
+  specialization in either case.
+
+  @short Select no synchronization.
+  @see Synchronizeable, Synchronize
 */
 class Unsafe {
 };
 
 /**
-  Defines the default lock class to use for synchronize able classes when no
-  locking class is specified.
-
-  template<class LOCK = DefaultLock> class MyClass...
+  Defines the default synchronization class (a class that implements the Lock
+  interface) to use for synchronize able classes when no synchronization class
+  is specified.
 */
 typedef ReadWriteLock DefaultLock;
 
 /**
-  Wrapper for a locking object. Ensures that only one synchronization object
-  is used by a synchronized object. The synchronization object is not
-  considered a part of the state of the synchronized object.
+  Wrapper for a synchronization object. Ensures that only one synchronization
+  object is used by a synchronized object. The synchronization object is not
+  considered a part of the state of the synchronized object. Valid
+  synchronization objects are those who implement the @ref Lock interface.
 
+  @short Wrapper for a synchronization object.
+  @see Synchronize Lock ReadWriteLock MutualExclusion Unsafe
   @author René Møller Fonseca
   @version 1.0
 */

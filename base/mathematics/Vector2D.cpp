@@ -58,6 +58,7 @@ template<class TYPE> void Vector2D<TYPE>::setY(const TYPE& y) throw() {
   this->y = y;
 }
 
-template<class TYPE> ostream& Vector2D<TYPE>::toString(ostream& stream) const {
-  return stream << "(" << x << "," << y << ")";
+template<class TYPE>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector2D<TYPE>& value) {
+  return stream << "[" << value.x << "," << value.y << "]";
 }

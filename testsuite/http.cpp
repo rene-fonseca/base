@@ -223,6 +223,18 @@ public:
   virtual unsigned int pull(char* buffer, unsigned int size) throw() = 0;
 };
 
+class PushToNothing {
+public:
+
+  bool pushBegin(long long totalSize) throw() {
+  }
+
+  void push(const char* buffer, unsigned int size) throw() {
+  }
+
+  void pushEnd() throw() {
+  }
+};
 
 class PushToStandardOutput : public virtual Object, public PushInterface {
 public:
@@ -289,10 +301,16 @@ public:
     unsigned int result = file.write(buffer, size);
     ASSERT(result == size);
     bytesWritten += size;
-    fout << "  bytes written=" << bytesWritten
-         << "  completed=" << base::FIXED << setWidth(7) << setPrecision(3) << static_cast<long double>(bytesWritten)/totalSize*100 << "%"
-         << "  time=" << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
-         << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3) << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds()) << "kbs\r" << FLUSH;
+    if (totalSize > 0) {
+      fout << "  bytes written=" << bytesWritten
+           << "  completed=" << base::FIXED << setWidth(7) << setPrecision(3) << static_cast<long double>(bytesWritten)/totalSize*100 << "%"
+           << "  time=" << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
+           << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3) << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds()) << "kbs\r" << FLUSH;
+    } else {
+      fout << "  bytes written=" << bytesWritten
+           << "  time=" << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
+           << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3) << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds()) << "kbs\r" << FLUSH;
+    }
   }
 
   void pushEnd() throw() {
@@ -469,29 +487,12 @@ protected:
     String statusLine;
     instream >> statusLine;
 
-      fout << MESSAGE("Status-Line length: ") << statusLine.getLength() << ENDL;
     if (verbosity >= DEBUG) {
       fout << MESSAGE("Status-Line: ") << statusLine << ENDL;
     }
     translateStatus(statusLine);
-/*
-  ength := 0
-  read chunk-size, chunk-extension (if any) and CRLF
-  while (chunk-size > 0) {
-  read chunk-data and CRLF
-  append chunk-data to entity-body
-  length := length + chunk-size
-  read chunk-size and CRLF
-  }
-  read entity-header
-  while (entity-header not empty) {
-  append entity-header to existing header fields
-  read entity-header
-  }
-  Content-Length := length
-  Remove "chunked" from Transfer-Encoding
-*/
 
+    bool chunkedTransferEncoding = false;
     bool hasContentLength = false;
     unsigned int contentLength;
     String contentType;
@@ -512,7 +513,11 @@ protected:
       MessageHeader header(line);
       fout << MESSAGE("name=") << header.getName() << Traits::SP << MESSAGE("value=") << header.getValue() << ENDL;
 
-      if (header.getName() == "Content-Length") {
+      if (header.getName() == "Transfer-Encoding") {
+        if (header.getValue().toLowerCase() == "chunked") {
+          chunkedTransferEncoding = true;
+        }
+      } else if (header.getName() == "Content-Length") {
         try {
           contentLength = UnsignedInteger(header.getValue());
           hasContentLength = true;
@@ -524,8 +529,60 @@ protected:
       }
     }
 
-    // message-body - See section 7.2 in RFC
-    if (hasContentLength) {
+    if (chunkedTransferEncoding) {
+      unsigned long long totalLength = 0;
+      String line;
+
+      while (true) { // read all chunks
+        instream >> line;
+
+        String::ReadIterator i = line.getBeginReadIterator();
+        const String::ReadIterator end = line.getEndReadIterator();
+        while ((i < end) && (*i == Traits::SP)) { // skip spaces
+          ++i;
+        }
+        assert((i < end) && ASCIITraits::isHexDigit(*i), InvalidResponse("Chunk size invalid"));
+        unsigned int chunkSize = 0;
+        while ((i < end) && ASCIITraits::isHexDigit(*i)) { // read chunk size
+          chunkSize = chunkSize * 16 + ASCIITraits::digitToValue(*i);
+          ++i;
+        }
+
+        // TAG: need to chunk extension
+        if (chunkSize == 0) { // stop if last chunk
+          break;
+        }
+
+        totalLength += chunkSize;
+        ASSERT(push);
+        if (push->pushBegin(0)) { // total size is unknown
+          long long bytesRead = 0;
+          while (bytesRead < chunkSize) {
+            unsigned int bytesToRead = minimum<long long>(buffer.getSize(), chunkSize - bytesRead);
+            unsigned int result = instream.read(buffer.getElements(), bytesToRead);
+            bytesRead += result;
+            push->push(buffer.getElements(), result);
+          }
+        }
+
+        instream >> line;
+        ASSERT(line.isEmpty());
+      }
+      push->pushEnd();
+
+      while (true) { // read trailer
+        String line;
+        instream >> line;
+
+        if (verbosity >= ALL) {
+          fout << ">> " << line << ENDL;
+        }
+
+        if (line.isEmpty()) {
+          break; // end of trailer
+        }
+      }
+    } else if (hasContentLength) { // message-body - See section 7.2 in RFC
       if (verbosity >= DEBUG) {
         fout << MESSAGE("Reading content: ") << contentLength << MESSAGE(" byte(s)") << ENDL;
       }
@@ -615,7 +672,8 @@ public:
     String request = makeRequest(OPTIONS, host, "*");
     FormatOutputStream outstream(controlConnection);
     outstream << request << FLUSH;
-    getResponse(0);
+    PushToStandardOutput push;
+    getResponse(&push);
   }
 
   void getResource(const String& resource, PushInterface* push) throw(HTTPException) {

@@ -16,8 +16,12 @@ include $(top_srcdir)/common.am
 noinst_LTLIBRARIES = libopengl.la
 
 libopengl_la_SOURCES = OpenGL.cpp \
-                       OpenGLContext.cpp
+                       OpenGLContext.cpp \
+                       OpenGLContextImpl.cpp \
+                       OpenGLPixmapContext.cpp
 
 sectiondir = $(includedir)/base/opengl
 section_HEADERS = OpenGL.h \
-                  OpenGLContext.h
+                  OpenGLContext.h \
+                  OpenGLContextImpl.h \
+                  OpenGLPixmapContext.h

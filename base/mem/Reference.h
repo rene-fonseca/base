@@ -116,7 +116,7 @@ public:
       ReferenceImpl(*pointer).addReference();
     }
   }
-
+  
   /**
     Initialization of automation pointer from other automation pointer.
   */
@@ -131,24 +131,16 @@ public:
     compile time polymorphism.
   */
   template<class POLY>
-  inline Reference(const Reference<POLY>& copy) : pointer(copy.pointer) {
+  inline Reference(const Reference<POLY>& copy) : pointer(copy.getValue()) {
     if (pointer) {
       ReferenceImpl(*pointer).addReference();
     }
   }
 
   /**
-    Assignment of normal pointer to this automation pointer.
-  */
-  inline TYPE& operator=(TYPE* eq) throw() {
-    setValue(eq);
-    return *this;
-  }
-
-  /**
     Assignment of automation pointer to this automation pointer.
   */
-  inline TYPE& operator=(const Reference& eq) /*throw(...)*/ {
+  inline Reference& operator=(const Reference& eq) /*throw(...)*/ {
     if (&eq != this) { // protect against self assignment
       setValue(eq.pointer);
     }
@@ -160,8 +152,16 @@ public:
     time polymorphism.
   */
   template<class POLY>
-  inline TYPE& operator=(const Reference<POLY>& eq) /*throw(...)*/ {
-    setValue(eq.pointer);
+  inline Reference& operator=(const Reference<POLY>& eq) /*throw(...)*/ {
+    setValue(eq.getValue());
+    return *this;
+  }
+
+  /**
+    Assignment of normal pointer to this automation pointer.
+  */
+  inline Reference& operator=(TYPE* eq) throw() {
+    setValue(eq);
     return *this;
   }
   

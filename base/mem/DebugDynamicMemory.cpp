@@ -11,43 +11,26 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/Primitives.h>
-#include <base/Base.h>
 #include <base/mem/DebugDynamicMemory.h>
+#include <base/Primitives.h>
 #include <base/OperatingSystem.h>
+#include <base/Base.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
+#include <windows.h>
 #else // unix
-  #include <stdlib.h>
+#include <stdlib.h>
 #endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-unsigned long DebugDynamicMemory::currentAllocations;
-SpinLock DebugDynamicMemory::spinLock; // init before all other objects
-
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-class DynamicMemoryImpl {
-public:
-
-  static OperatingSystem::Handle processHeap;
+namespace internal {
+  namespace specific {
+    extern OperatingSystem::Handle processHeap;
+  };
 };
-
-OperatingSystem::Handle DynamicMemoryImpl::processHeap = ::GetProcessHeap();
 #endif // flavour
-
-class DebugDynamicMemoryImpl {
-public:
-
-  DebugDynamicMemoryImpl() throw() {
-    DebugDynamicMemory::currentAllocations = 0;
-  }
-  
-  ~DebugDynamicMemoryImpl() throw() {
-    ASSERT(DebugDynamicMemory::currentAllocations == 0); // output value
-  }
-};
 
 void* DebugDynamicMemory::allocate(unsigned int size) throw() {
   unsigned long long newSize = sizeof(Descriptor) + sizeof(unsigned int) * ((size+sizeof(unsigned int)-1)/sizeof(unsigned int) + PREFIX_WORDS + SUFFIX_WORDS);
@@ -57,7 +40,7 @@ void* DebugDynamicMemory::allocate(unsigned int size) throw() {
 
   unsigned int* result;
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  result = static_cast<unsigned int*>(::HeapAlloc(DynamicMemoryImpl::processHeap, 0, newSize));
+  result = static_cast<unsigned int*>(::HeapAlloc(internal::specific::processHeap, 0, newSize));
 #else // unix
   result = static_cast<unsigned int*>(malloc(newSize)); // unspecified behavior if size is 0
 #endif // flavour  
@@ -157,7 +140,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
   spinLock.releaseLock();
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return ::HeapFree(DynamicMemoryImpl::processHeap, 0, memory);
+  return ::HeapFree(internal::specific::processHeap, 0, memory);
 #else // unix
   free(memory); // works with 0 pointer
   return true;

@@ -11,7 +11,6 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/mem/DynamicMemory.h>
 #include <base/OperatingSystem.h>
 
@@ -24,20 +23,17 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-class DynamicMemoryImpl {
-public:
-
-  static OperatingSystem::Handle processHeap;
+namespace internal {
+  namespace specific {
+    extern OperatingSystem::Handle processHeap;
+  };
 };
-
-// must be initialized very early
-OperatingSystem::Handle DynamicMemoryImpl::processHeap = ::GetProcessHeap();
-#endif
+#endif // flavour
 
 void* DynamicMemory::allocate(unsigned int size) throw() {
   void* result;
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  result = static_cast<void*>(::HeapAlloc(DynamicMemoryImpl::processHeap, 0, size));
+  result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
 #else // unix
   result = malloc(size); // unspecified behavior if size is 0
 #endif // flavour
@@ -46,7 +42,7 @@ void* DynamicMemory::allocate(unsigned int size) throw() {
 
 bool DynamicMemory::release(void* memory) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return (memory == 0) || (::HeapFree(DynamicMemoryImpl::processHeap, 0, memory) != 0);
+  return (memory == 0) || (::HeapFree(internal::specific::processHeap, 0, memory) != 0);
 #else // unix
   free(memory); // works with 0 pointer
   return true;

@@ -46,7 +46,22 @@ public:
 
   /** Specifies the maximum length of a path. */
   static const unsigned int MAXIMUM_PATH_LENGTH;
-  
+
+  /** File system entry type. */
+  enum {
+    BLOCK = 1, /**< Block. */
+    CHARACTER = 2, /**< Character. */
+    DEVICE = 1024, /**< Device. */
+    FIFO = 4, /**< Fifo. */
+    FOLDER = 8, /**< Folder. */
+    LINK = 16, /**< Link. */
+    MESSAGE_QUEUE = 32, /**< Message queue. */
+    REGULAR = 64, /**< Regular. */
+    SOCKET = 128, /**< Socket. */
+    SEMPAHORE = 256, /**< Semaphore. */
+    SHARED_MEMORY = 512 /**< Shared memory. */
+  };
+
   /** The temporary folder. */
   enum TemporaryFolder {
     /**
@@ -148,6 +163,11 @@ public:
     Sets the current folder.
   */
   static void setCurrentFolder(const String& path) throw(FileSystemException);
+
+  /**
+    Returns the file system flags describing the specified entry.
+  */
+  static unsigned int getType(const String& path) throw(FileSystemException);
 
   /**
     Returns true if the file exists.

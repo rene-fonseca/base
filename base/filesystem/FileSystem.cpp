@@ -133,6 +133,92 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
 #endif // flavor
 }
 
+unsigned int FileSystem::getType(const String& path) throw(FileSystemException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  HANDLE file = ::CreateFile(path.getElements(), // file name
+                             0 | READ_CONTROL, // access mode
+			     FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
+                             0, // security descriptor
+                             OPEN_EXISTING, // how to create
+                             FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_POSIX_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, // file attributes
+                             0); // handle to template file
+  assert(file != INVALID_HANDLE_VALUE, FileSystemException(Type::getType<FileSystem>()));
+  unsigned int flags = 0;
+
+  BY_HANDLE_FILE_INFORMATION information;
+  ::CloseHandle(file); // TAG: FIXME
+  assert(::GetFileInformationByHandle(file, &information) != 0, FileSystemException(Type::getType<FileSystem>()));
+  
+  switch (::GetFileType(file)) {
+  case FILE_TYPE_UNKNOWN:
+    flags |= 0;
+    break;
+  case FILE_TYPE_DISK:
+    flags |= FileSystem::DISK REGULAR or FOLDER
+    break;
+  case FILE_TYPE_CHAR:
+    flags |= FileSystem::CHARACTER;
+    break;
+  case FILE_TYPE_PIPE:
+    flags |= FileSystem::PIPE;
+    break;
+  }
+  
+  if (result & FILE_ATTRIBUTE_DEVICE) {
+    flags |= FileSystem::DEVICE;
+  }
+  if (result & FILE_ATTRIBUTE_DIRECTORY) {
+    flags |= FileSystem::FOLDER;
+  }
+  if (result & FILE_ATTRIBUTE_REPARSE_POINT) {
+    flags |= FileSystem::LINK;
+  }
+  return flags;
+#else // unix
+#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  struct stat64 status;
+  int result = stat64(path.getElements(), &status);
+#else
+  struct stat status;
+  int result = stat(path.getElements(), &status);
+#endif
+  assert(result == 0, FileSystemException("Unable to query entry", Type::getType<FileSystem>()));
+  unsigned int flags = 0;
+  if (S_ISBLK(status.st_mode)) {
+    flags |= FileSystem::BLOCK;
+  }
+  if (S_ISCHR(status.st_mode)) {
+    flags |= FileSystem::CHARACTER;
+  }
+  if (S_ISDIR(status.st_mode)) {
+    flags |= FileSystem::FOLDER;
+  }
+  if (S_ISFIFO(status.st_mode)) {
+    flags |= FileSystem::FIFO;
+  }
+  if (S_ISREG(status.st_mode)) {
+    flags |= FileSystem::REGULAR;
+  }
+  if (S_ISLNK(status.st_mode)) {
+    flags |= FileSystem::LINK;
+  }
+  if (S_ISSOCK(status.st_mode)) {
+    flags |= FileSystem::SOCKET;
+  }
+  
+  if (S_TYPEISMQ(&status)) {
+    flags |= FileSystem::MESSAGE_QUEUE;
+  }
+  if (S_TYPEISSEM(&status)) {
+    flags |= FileSystem::SEMPAHORE;
+  }
+  if (S_TYPEISSHM(&status)) {
+    flags |= FileSystem::SHARED_MEMORY;
+  }
+  return flags;
+#endif // flavor
+}
+
 bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   DWORD result = ::GetFileAttributes(path.getElements());

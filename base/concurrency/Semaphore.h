@@ -35,7 +35,7 @@ public:
 #ifdef __win32__
   static const unsigned int MAXIMUM = INT_MAX;
 #elif HAVE_PTHREAD_SEMAPHORE
-  static const unsigned int MAXIMUM = SEM_VALUE_MAX;
+  static const unsigned int MAXIMUM = _POSIX_SEM_VALUE_MAX;
 #else
   static const unsigned int MAXIMUM = INT_MAX;
 #endif

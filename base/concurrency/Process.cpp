@@ -16,7 +16,7 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // Unix
+#else // unix
   #include <sys/types.h>
   #include <sys/wait.h>
   #include <unistd.h>
@@ -30,21 +30,21 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 Process Process::getProcess() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return Process(GetCurrentProcessId());
-#else // Unix
+#else // unix
   return Process(getpid());
 #endif
 }
 
 Process Process::getParentProcess() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#else // Unix
+#else // unix
   return Process(getppid());
 #endif
 }
 
 Process Process::fork() throw(Exception) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#else // Unix
+#else // unix
   pid_t result = ::fork(); // should use fork1 on solaris
   if (result == (pid_t)-1) {
     throw Exception("Unable to fork child process");
@@ -79,7 +79,7 @@ int Process::getPriority() throw(ProcessException) {
   case IDLE_PRIORITY_CLASS:
     return 19;
   }
-#else // Unix
+#else // unix
   errno = 0;
   int priority = ::getpriority(PRIO_PROCESS, getpid());
   if ((priority == -1) && (errno != 0)) {
@@ -108,7 +108,7 @@ void Process::setPriority(int priority) throw(ProcessException) {
   if (!SetPriorityClass(GetCurrentProcess(), priorityClass)) {
     throw ProcessException("Unable to set priority of process");
   }
-#else // Unix
+#else // unix
   if (::setpriority(PRIO_PROCESS, getpid(), priority)) {
     ProcessException("Unable to set priority");
   }
@@ -137,7 +137,7 @@ Process& Process::operator=(const Process& eq) throw() {
 
 void Process::wait() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#else // Unix
+#else // unix
   int status;
   ::waitpid(id, &status, 0);
 #endif

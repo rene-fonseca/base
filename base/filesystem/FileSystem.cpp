@@ -17,14 +17,14 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // Unix
+#else // unix
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <fcntl.h>
   #include <unistd.h>
   #include <limits.h> // defines PATH_MAX
   #include <errno.h>
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -32,10 +32,10 @@ String FileSystem::getPath(const String& base, const String& relative) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   String result(base.getLength() + sizeof("\\") + relative.getLength());
   result.append(base).append("\\").append(relative);
-#else // Unix
+#else // unix
   String result(base.getLength() + sizeof("/") + relative.getLength());
   result.append(base).append("/").append(relative);
-#endif
+#endif // flavour
   return result;
 }
 
@@ -46,14 +46,14 @@ String FileSystem::getCurrentFolder() throw(FileSystemException) {
     throw FileSystemException("Unable to get current folder");
   }
   return String(buffer->getElements());
-#else // Unix
+#else // unix
   Allocator<char>* buffer = Thread::getLocalStorage();
   ASSERT(buffer->getSize() > PATH_MAX);
   if (::getcwd(buffer->getElements(), buffer->getSize())) {
     throw FileSystemException("Unable to get current folder");
   }
   return String(buffer->getElements());
-#endif
+#endif // flavour
 }
 
 void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException) {
@@ -61,18 +61,18 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
   if (!SetCurrentDirectory(path.getElements())) {
     throw FileSystemException("Unable to set current folder");
   }
-#else // Unix
+#else // unix
   if (::chdir(path.getElements())) {
     throw FileSystemException("Unable to set current folder");
   }
-#endif
+#endif // flavour
 }
 
 bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD result = GetFileAttributes(path.getElements());
   return (result != (DWORD)(-1)) && (result & FILE_ATTRIBUTE_DIRECTORY == 0);
-#else
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     int result = stat64(path.getElements(), &status);
@@ -102,14 +102,14 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
       throw FileSystemException("Unable to examine if file exists");
     }
   #endif
-#endif
+#endif // flavour
 }
 
 bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD result = GetFileAttributes(path.getElements());
   return (result != (DWORD)(-1)) && (result & FILE_ATTRIBUTE_DIRECTORY != 0);
-#else
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     int result = stat64(path.getElements(), &status);
@@ -139,7 +139,7 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
       throw FileSystemException("Unable to examine if folder exists");
     }
   #endif
-#endif
+#endif // flavour
 }
 
 void FileSystem::removeFile(const String& path) throw(FileSystemException) {
@@ -148,11 +148,11 @@ void FileSystem::removeFile(const String& path) throw(FileSystemException) {
   if (!DeleteFile(path.getElements())) {
     throw FileSystemException("Unable to remove file");
   }
-#else // Unix
+#else // unix
   if (unlink(path.getElements())) {
     throw FileSystemException("Unable to remove file");
   }
-#endif
+#endif // flavour
 }
 
 void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
@@ -160,11 +160,11 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
   if (!RemoveDirectory(path.getElements())) {
     throw FileSystemException("Unable to remove folder");
   }
-#else // Unix
+#else // unix
   if (rmdir(path.getElements())) {
     throw FileSystemException("Unable to remove file");
   }
-#endif
+#endif // flavour
 }
 
 void FileSystem::makeFolder(const String& path) throw(FileSystemException) {
@@ -172,11 +172,11 @@ void FileSystem::makeFolder(const String& path) throw(FileSystemException) {
   if (!CreateDirectory(path.getElements(), NULL)) { // use default security descriptor
     throw FileSystemException("Unable to make folder");
   }
-#else // Unix
+#else // unix
   if (mkdir(path.getElements(), 0)) {
     throw FileSystemException("Unable to make folder");
   }
-#endif
+#endif // flavour
 }
 
 /*
@@ -186,10 +186,10 @@ String FileSystem::getTempFolder() throw(FileSystemException) {
 //  Allocator<char> buffer = Thread::getLocalStorage();
 //  unsigned int length = GetTempPath(buffer->getSize(), buffer->getBytes());
 //  return String(buffer->getBytes(), length);
-//#else // Unix
+//#else // unix
 //  // get environment variable: TMP
 //  return String("/tmp");
-//#endif
+//#endif // flavour
 }
 
 String FileSystem::getTempFileName() throw(FileException) {
@@ -206,8 +206,8 @@ String FileSystem::getTempFileName() throw(FileException) {
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   GetTempFileName(getTempFolder()->getBytes(), , 0, buffer->getBytes());
-#else
-#endif
+#else // unix
+#endif // flavour
 }
 */
 

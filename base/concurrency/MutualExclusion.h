@@ -21,9 +21,9 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // Unix
+#else // pthread
   #include <pthread.h>
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -47,7 +47,7 @@ protected:
 #else // pthread
   /** Internal mutex representation. */
   mutable pthread_mutex_t lock;
-#endif
+#endif // flavour
 public:
 
   /** Exception thrown directly by the MutualExclusion class. */

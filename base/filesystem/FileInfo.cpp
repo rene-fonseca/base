@@ -16,11 +16,11 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // Unix
+#else // unix
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <unistd.h>
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -46,7 +46,7 @@ FileInfo::FileInfo(const String& path) throw(FileSystemException) : path(path) {
   modification = *pointer_cast<const long long*>(&buffer.ftLastWriteTime) - fileTimeOffset; // TAG: overflow problem
   change = *pointer_cast<const long long*>(&buffer.ftCreationTime) - fileTimeOffset; // TAG: overflow problem
   FindClose(handle);
-#else // Unix
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 buffer;
     if (stat64(path.getElements(), &buffer) || (!S_ISREG(buffer.st_mode))) {
@@ -62,7 +62,7 @@ FileInfo::FileInfo(const String& path) throw(FileSystemException) : path(path) {
   access = buffer.st_atime;
   modification = buffer.st_mtime;
   change = buffer.st_ctime;
-#endif
+#endif // flavour
 }
 
 long long FileInfo::getSize() throw() {

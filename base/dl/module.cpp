@@ -28,7 +28,7 @@ extern "C" BOOL DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
   }
 }
 
-#else // Unix
+#else // unix
 
 extern "C" void _init() {
   moduleEntry();
@@ -38,4 +38,4 @@ extern "C" void _fini() {
   moduleCleanUp();
 }
 
-#endif
+#endif // flavour

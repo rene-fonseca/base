@@ -24,7 +24,7 @@
   #include <windows.h>
 #else
   #include <pthread.h>
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

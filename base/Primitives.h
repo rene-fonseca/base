@@ -547,7 +547,7 @@ namespace primitives {
   class Primitive {
   public:
     enum {
-      /** True if the type a built-in type. */
+      /** True if the type is a built-in type. */
       IS_PRIMITIVE = Void<TYPE>::IS_VOID || Arithmetic<TYPE>::IS_ARITHMETIC
     };
   };

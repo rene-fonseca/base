@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 namespace constant {
 
-  /** e (or exp(1)). */
+  /** The base of the natural logarithm specified by the symbol "e" (or exp(1)). */
   const long double E = 2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427L;
   /** ln(2). */
   const long double LN2 = 0.6931471805599453094172321214581765680755001343602552541206800094933936219696947156058633269964186875L;
@@ -59,6 +59,8 @@ namespace constant {
   const long double INV_SQRT2 = 0.7071067811865475244008443621048490392848359376884740365883398689953662392310535194251937671638207864L;
   /** The golden ratio. */
   const long double GOLDEN_RATIO = 1.618033988749894848204586834365638117720309179805762862135448622705260462818902449707207204189391137L;
+  /** The Euler-Mascheroni constant (gamma). */
+  const long double EULER = 0.5772156649015328606065120900824024310421593359399235988057672348848677267776646709369470632917467495L;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -474,7 +474,6 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
       }
     } else {
       if (::GetLastError() == ERROR_MORE_DATA) {
-        Trace::message("qazxsw"); // TAG: FIXME
         ASSERT(bytesWritten >= REPARSE_DATA_BUFFER_HEADER_SIZE);
         if (IsReparseTagMicrosoft(reparseHeader->ReparseTag)) {
           switch (reparseHeader->ReparseTag) {
@@ -489,9 +488,7 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
     ::CloseHandle(link);
     return isLink;
   } else if ((attributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
-    // TAG: need variable to disable/enable this symbolic link
     // check if shell symbolic link
-    // TAG: need support for link to link for open file, cycle, ... (problem: reparse->shell link->reparse->shell link->shell link->...)
     static const unsigned char GUID[16] = {0x01, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46};
     
     typedef struct {
@@ -518,7 +515,6 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
       HAS_COMMAND_LINE_ARGUMENTS = 1 << 5,
       HAS_ICON = 1 << 6
     };
-    
     HANDLE link = ::CreateFile(path.getElements(),
                                GENERIC_READ,
                                FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -533,6 +529,7 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
     DWORD result;
     bool error = ::ReadFile(link, &header, sizeof(header), &result, 0) == 0;
     ::CloseHandle(link);
+    
     return !error &&
       (header.identifier == static_cast<unsigned int>('L')) &&
       (result == sizeof(header)) &&
@@ -554,95 +551,99 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
 }
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-bool enablePrivileges() throw() {
-  HANDLE token;
-	char buffer[sizeof(TOKEN_PRIVILEGES) * 2];
-  TOKEN_PRIVILEGES& privileges = *((TOKEN_PRIVILEGES*)buffer);
-  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &token)) {
-    return false;
-  }
-  
-  // enable SeBackupPrivilege
-  if (!::LookupPrivilegeValue(0, SE_BACKUP_NAME, &privileges.Privileges[0].Luid)) {
-    return false;  
-  }
-  
-  // enable SeRestorePrivilege
-  if (!::LookupPrivilegeValue(0, SE_RESTORE_NAME, &privileges.Privileges[1].Luid)) {
-    return false;
-  }
+class FileSystemImpl {
+public:
 
-  privileges.PrivilegeCount = 2;
-	privileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-	privileges.Privileges[1].Attributes = SE_PRIVILEGE_ENABLED;
-
-	if (!::AdjustTokenPrivileges(token, FALSE, &privileges, sizeof(privileges), 0, 0)) {
-    return false;
-  }
-  return true;
-}
-
-void createHardLinkForWINNT4(const String& target, const String& destination) throw() {
-  if (true) { // TAG: fixme
-    enablePrivileges();
-  }
-  
-	HANDLE handle = ::CreateFile(target.getElements(), 0, 0, 0, OPEN_EXISTING, 0, 0);
-	if (handle != INVALID_HANDLE_VALUE) {
-		::CloseHandle(handle);
-    throw FileSystemException("Unable to create hard link", Type::getType<FileSystem>());
-	}
-  
-	handle = ::CreateFile(
-    destination.getElements(),
-    GENERIC_WRITE,
-    0,
-    0,
-    OPEN_EXISTING,
-    FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_POSIX_SEMANTICS,
-    0
-  );
-	if (handle == INVALID_HANDLE_VALUE) {
-    throw FileSystemException("Unable to create hard link", Type::getType<FileSystem>());
+  static inline bool enablePrivileges() throw() {
+    HANDLE token;
+    char buffer[sizeof(TOKEN_PRIVILEGES) + sizeof(LUID_AND_ATTRIBUTES)]; // make room for backup and restore privileges
+    TOKEN_PRIVILEGES& privileges = *((TOKEN_PRIVILEGES*)buffer);
+    if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &token)) {
+      return false;
+    }
+    
+    privileges.PrivilegeCount = 2;
+    
+    // enable SeBackupPrivilege
+    privileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED; // ask for privilege
+    if (!::LookupPrivilegeValue(0, SE_BACKUP_NAME, &privileges.Privileges[0].Luid)) {
+      ::CloseHandle(token);
+      return false;
+    }
+    
+    // enable SeRestorePrivilege
+    privileges.Privileges[1].Attributes = SE_PRIVILEGE_ENABLED; // ask for privilege
+    if (!::LookupPrivilegeValue(0, SE_RESTORE_NAME, &privileges.Privileges[1].Luid)) {
+      ::CloseHandle(token);
+      return false;
+    }
+    
+    if (!::AdjustTokenPrivileges(token, FALSE, &privileges, 0, 0, 0)) {
+      ::CloseHandle(token);
+      return false;
+    }
+    ::CloseHandle(token);
+    return true;
   }
   
-	char fullTarget[MAX_PATH];
-	char* filename;
-  ::GetFullPathName(target.getElements(), MAX_PATH, fullTarget, &filename);
-  WideString wideFullTarget(fullTarget);
-  
-	WIN32_STREAM_ID stream;
-	stream.dwStreamId = BACKUP_LINK;
-	stream.dwStreamAttributes = 0;
-	stream.dwStreamNameSize = 0;
-	stream.Size.QuadPart = (wideFullTarget.getLength() + 1) * sizeof(wchar_t); // including terminator
-  
-  bool success = false;
-	DWORD bytesWritten;
-	void* context = 0;
-	if (::BackupWrite(handle, (BYTE*)&stream, (char*)&stream.cStreamName-(char*)&stream, &bytesWritten, FALSE, FALSE, &context) != 0) {
-    if (bytesWritten == (char*)&stream.cStreamName-(char*)&stream) {
-      if (::BackupWrite(handle, (BYTE*)wideFullTarget.getElements(), stream.Size.LowPart, &bytesWritten, FALSE, FALSE, &context) != 0) {
-        if (bytesWritten == stream.Size.LowPart) {
-          success = true;
+  static inline bool makeHardLink(const String& target, const String& path) throw() {
+    static bool elevatedPrivileges = false;
+    if (!elevatedPrivileges) {
+      enablePrivileges();
+      elevatedPrivileges = true;
+    }
+    
+    HANDLE handle = ::CreateFile(path.getElements(), 0, 0, 0, OPEN_EXISTING, 0, 0);
+    if (handle != INVALID_HANDLE_VALUE) { // make path does not exist
+      ::CloseHandle(handle);
+      return false;
+    }
+    
+    handle = ::CreateFile(
+      target.getElements(),
+      GENERIC_WRITE,
+      0,
+      0,
+      OPEN_EXISTING,
+      FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_POSIX_SEMANTICS,
+      0
+    );    
+    if (handle == INVALID_HANDLE_VALUE) {
+      return false;
+    }
+    
+    char fullPath[MAX_PATH];
+    char* filename;
+    ::GetFullPathName(path.getElements(), MAX_PATH, fullPath, &filename);
+    WideString wideFullPath(fullPath);
+    
+    WIN32_STREAM_ID stream; // setup hard link
+    stream.dwStreamId = BACKUP_LINK;
+    stream.dwStreamAttributes = 0;
+    stream.dwStreamNameSize = 0;
+    stream.Size.QuadPart = (wideFullPath.getLength() + 1) * sizeof(wchar_t); // including terminator
+    
+    bool success = false;
+    DWORD bytesWritten;
+    void* context = 0;
+    if (::BackupWrite(handle, (BYTE*)&stream, (char*)&stream.cStreamName-(char*)&stream, &bytesWritten, FALSE, FALSE, &context) != 0) {
+      if (bytesWritten == (char*)&stream.cStreamName-(char*)&stream) {
+        if (::BackupWrite(handle, (BYTE*)wideFullPath.getElements(), stream.Size.LowPart, &bytesWritten, FALSE, FALSE, &context) != 0) {
+          if (bytesWritten == stream.Size.LowPart) {
+            success = true;
+          }
         }
       }
+      
+      // release the backup context
+      ::BackupWrite(handle, (BYTE*)fullPath, 0, &bytesWritten, TRUE, FALSE, &context); // abort
     }
-    // release the backup context
-    ::BackupWrite(handle, (BYTE*)fullTarget, 0, &bytesWritten, TRUE, FALSE, &context); // abort
+    ::CloseHandle(handle);
+    return success;
   }
-	::CloseHandle(handle);
-  assert(success, FileSystemException("Unable to create hard link", Type::getType<FileSystem>()));
-}
+  
+};
 #endif // flavor
-
-// #if defined(DEBUG)
-//   #define DMESSAGE(literal) MESSAGE(literal)
-// #else
-//   #define DMESSAGE(literal) MESSAGE("")
-// #endif
-
-// #define IMESSAGE(literal) MESSAGE(literal)
 
 void FileSystem::makeHardLink(const String& target, const String& path) throw(NotSupported, FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -652,12 +653,18 @@ void FileSystem::makeHardLink(const String& target, const String& path) throw(No
 #else
   typedef BOOL (*PCreateHardLink)(LPCSTR, LPCSTR, LPSECURITY_ATTRIBUTES);
   static PCreateHardLink CreateHardLink = 0;
-  if (!CreateHardLink) {
+  static bool cachedCreateHardLink = false;
+  if (!cachedCreateHardLink) {
     CreateHardLink = (PCreateHardLink)::GetProcAddress(::GetModuleHandle("kernel32.dll"), "CreateHardLinkA");
-    assert(CreateHardLink, NotSupported("Hard link", Type::getType<FileSystem>()));
+    cachedCreateHardLink = true;
   }
-  assert(CreateHardLink(path.getElements(), target.getElements(), 0) != 0,
-         FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
+  bool error;
+  if (CreateHardLink) {
+    error = CreateHardLink(path.getElements(), target.getElements(), 0) == 0;
+  } else {
+    error = !FileSystemImpl::makeHardLink(target, path);
+  }
+  assert(!error, FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
 #endif // w2k or later
 #else // unix
   assert(::link(target.getElements(), path.getElements()) == 0, FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));

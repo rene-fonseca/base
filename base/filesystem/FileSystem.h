@@ -17,6 +17,7 @@
 #include <base/Object.h>
 #include <base/string/String.h>
 #include <base/filesystem/FileSystemException.h>
+#include <base/io/File.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -26,7 +27,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   File system.
-
+  
+  @short File system
   @ingroup filesystem
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -77,11 +79,21 @@ public:
     Makes a folder.
   */
   static void makeFolder(const String& path) throw(FileSystemException);
-
+  
+  /**
+    Returns the path to the folder intended for temporary files.
+  */
+  static String getTempFolder() throw(FileSystemException);
+  
   /**
     Returns the path of a temporary file.
   */
-//  static String getTempFileName() throw(FileException);
+  static String getTempFileName() throw(FileSystemException);
+  
+  /**
+    Returns a temporary file. The file is opened for exclusive accesss.
+  */
+  static File getTempFile() throw(IOException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

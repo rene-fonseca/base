@@ -36,9 +36,11 @@ public:
     COMMAND_DUMP_TOPOLOGY,
     COMMAND_DUMP_SPEEDS,
     COMMAND_DUMP_NODES,
+    COMMAND_ISOCHRONOUS,
     COMMAND_RESET,
     COMMAND_REGISTER_SPACE,
     COMMAND_HELP,
+    COMMAND_VERSION,
     COMMAND_USAGE,
     COMMAND_ERROR
   };
@@ -95,54 +97,50 @@ public:
   void dumpAdapter() throw() {
   }
   
-  void dumpNodes(IEEE1394& ieee1394) throw() {
-    uint64 present = ieee1394.getPresentNodes();
-    
+  void dumpNodes(IEEE1394& ieee1394) throw() {    
     fout << MESSAGE("Available nodes: ") << EOL;
     
-    for (unsigned int id = 0; id < IEEE1394::BROADCAST; ++id) {
-      if (present & (1ULL << id)) {
-        try {
-          const unsigned short node = IEEE1394::makeNodeId(id);
-          fout << MESSAGE("Node: ") << ieee1394.getIdentifier(node) << EOL
-               << MESSAGE("  Physical id: ") << id << ENDL;
-          
-          unsigned int vendor = ieee1394.getVendorId(node);
-          fout << MESSAGE("  Vendor id: ")
-               << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 16) & 0xff) << ':'
-               << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 8) & 0xff) << ':'
-               << HEX << setWidth(2) << ZEROPAD << NOPREFIX << (vendor & 0xff) << ENDL;
-          
-          unsigned int capabilities = ieee1394.getCapabilities(node);
-          if (capabilities) {
-            fout << MESSAGE("  Capabilities:") << EOL;
-            if (capabilities & IEEE1394::ISOCHRONOUS_RESOURCE_MANAGER) {
-              fout << ' ' << MESSAGE("    Isochronous resource manager") << EOL;
-            }
-            if (capabilities & IEEE1394::CYCLE_MASTER) {
-              fout << ' ' << MESSAGE("    Cycle master") << EOL;
-            }
-            if (capabilities & IEEE1394::ISOCHRONOUS_TRANSMISSION) {
-              fout << ' ' << MESSAGE("    Isochronous transmission") << EOL;
-            }
-            if (capabilities & IEEE1394::BUS_MASTER) {
-              fout << ' ' << MESSAGE("    Bus master") << EOL;
-            }
-            if (capabilities & IEEE1394::POWER_MANAGEMENT) {
-              fout << ' ' << MESSAGE("    Power management") << EOL;
-            }
+    for (unsigned int id = 0; id < ieee1394.getNumberOfNodes(); ++id) {
+      try {
+        const unsigned short node = IEEE1394::makeNodeId(id);
+        fout << MESSAGE("Node: ") << ieee1394.getIdentifier(node) << EOL
+             << MESSAGE("  Physical id: ") << id << ENDL;
+        
+        unsigned int vendor = ieee1394.getVendorId(node);
+        fout << MESSAGE("  Vendor id: ")
+             << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 16) & 0xff) << ':'
+             << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 8) & 0xff) << ':'
+             << HEX << setWidth(2) << ZEROPAD << NOPREFIX << (vendor & 0xff) << ENDL;
+        
+        unsigned int capabilities = ieee1394.getCapabilities(node);
+        if (capabilities) {
+          fout << MESSAGE("  Capabilities:") << EOL;
+          if (capabilities & IEEE1394::ISOCHRONOUS_RESOURCE_MANAGER) {
+            fout << ' ' << MESSAGE("    Isochronous resource manager") << EOL;
           }
-          
-          fout << MESSAGE("  Maximum asynchronous payload: ") << ieee1394.getMaximumPayload(node) << ENDL;
-
-          String description = ieee1394.getDescription(node);
-          if (description.isProper()) {
-            fout << MESSAGE("  Description: ") << description << ENDL;
+          if (capabilities & IEEE1394::CYCLE_MASTER) {
+            fout << ' ' << MESSAGE("    Cycle master") << EOL;
           }
-        } catch (IEEE1394Exception& e) {
-          fout << MESSAGE("Exception: ") << e << ENDL;
-          // check cause
+          if (capabilities & IEEE1394::ISOCHRONOUS_TRANSMISSION) {
+            fout << ' ' << MESSAGE("    Isochronous transmission") << EOL;
+          }
+          if (capabilities & IEEE1394::BUS_MASTER) {
+            fout << ' ' << MESSAGE("    Bus master") << EOL;
+          }
+          if (capabilities & IEEE1394::POWER_MANAGEMENT) {
+            fout << ' ' << MESSAGE("    Power management") << EOL;
+          }
         }
+        
+        fout << MESSAGE("  Maximum asynchronous payload: ") << ieee1394.getMaximumPayload(node) << ENDL;
+        
+        String description = ieee1394.getDescription(node);
+        if (description.isProper()) {
+          fout << MESSAGE("  Description: ") << description << ENDL;
+        }
+      } catch (IEEE1394Exception& e) {
+        fout << MESSAGE("Exception: ") << e << ENDL;
+        // check cause
       }
     }
     fout << EOL << ENDL;
@@ -200,7 +198,7 @@ public:
       ieee1394.open(id);
 
       if (node < 0) {
-        node = IEEE1394::makeNodeId(ieee1394.getPhysicalId());
+        node = IEEE1394::makeNodeId(ieee1394.getLocalId());
       }
       
       const uint32 DEFAULT_VALUE = 0xdccd2332;
@@ -247,8 +245,124 @@ public:
       setExitCode(Application::EXIT_CODE_ERROR);
     }
   }
-  
-  void resetBus() {
+
+  void isochronousTransfer(const EUI64& guid, unsigned int channel) throw() {
+    try {
+      IEEE1394 ieee1394;
+      
+      EUI64 id = guid;
+      if (guid.isInvalid()) {
+        Array<EUI64> adapters = ieee1394.getAdapters();
+        if (adapters.getSize() == 0) {
+          ferr << MESSAGE("No adapters available") << ENDL;
+          setExitCode(Application::EXIT_CODE_ERROR);
+          return;
+        }
+        id = adapters[0];
+      }
+      
+      fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
+      ieee1394.open(id);
+
+      char buffer[8192];
+      fout << MESSAGE("Isochronous read...") << ENDL;
+      ieee1394.readIsochronous(buffer, sizeof(buffer), channel);
+
+      MemoryDump dump(Cast::pointer<const uint8*>(buffer), sizeof(buffer));
+      fout << dump << ENDL;
+    } catch (Exception& e) {
+      fout << ENDL;
+      ferr << MESSAGE("Exception: ") << e << ENDL;
+      setExitCode(Application::EXIT_CODE_ERROR);
+    }
+  }
+
+  void resetBus(const EUI64& guid) throw() {
+    try {
+      IEEE1394 ieee1394;
+      
+      EUI64 id = guid;
+      if (guid.isInvalid()) {
+        Array<EUI64> adapters = ieee1394.getAdapters();
+        if (adapters.getSize() == 0) {
+          ferr << MESSAGE("No adapters available") << ENDL;
+          setExitCode(Application::EXIT_CODE_ERROR);
+          return;
+        }
+        id = adapters[0];
+      }
+      
+      fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
+      ieee1394.open(id);
+
+      ieee1394.reload();
+
+      static const StringLiteral SPEEDS[] = {
+        MESSAGE("S100"),
+        MESSAGE("S200"),
+        MESSAGE("S400"),
+        MESSAGE("S800"),
+        MESSAGE("S1600"),
+        MESSAGE("S3200")
+      };
+
+      fout << MESSAGE("Number of local nodes: ") << ieee1394.getNumberOfNodes() << EOL
+           << MESSAGE("Local id: ") << ieee1394.getLocalId() << EOL
+           << MESSAGE("Bus manager: ") << ieee1394.getBusManager() << EOL;
+      if (ieee1394.getIsochronousResourceManager() < IEEE1394::BROADCAST) {
+        fout << MESSAGE("Isochronous resource manager: ")
+             << ieee1394.getIsochronousResourceManager() << EOL
+             << MESSAGE("Available bandwidth: ")
+             << ieee1394.getAvailableBandwidth() << EOL
+             << MESSAGE("Available channels: ")
+             << BIN << setWidth(64) << ZEROPAD << NOPREFIX
+             << ieee1394.getAvailableIsochronousChannels() << EOL;
+      } else {
+        fout << MESSAGE("Isochronous resource manager: (not available)") << EOL;
+      }
+      fout << MESSAGE("Maximum broadcast speed: ") << SPEEDS[ieee1394.getBroadcastSpeed()] << EOL;
+      
+      for (unsigned int id = 0; id < ieee1394.getNumberOfNodes(); ++id) {
+        const unsigned int capabilities = ieee1394.getCapabilities(IEEE1394::makeNodeId(id));
+        fout << MESSAGE("Node: ") << id << EOL
+             << MESSAGE("  guid: ") << ieee1394.getLocalIdentifier(id) << EOL
+             << MESSAGE("  is link layer active: ") << ieee1394.isLinkLayerActive(id) << EOL
+             << MESSAGE("  is contender: ") << ieee1394.isContender(id) << EOL
+             << MESSAGE("  maximum speed: ") << SPEEDS[ieee1394.getMaximumSpeed(id)] << EOL
+             << MESSAGE("  is isochronous resource manager capable: ")
+             << ((capabilities & IEEE1394::ISOCHRONOUS_RESOURCE_MANAGER) != 0) << EOL
+             << MESSAGE("  is cycle master capable: ")
+             << ((capabilities & IEEE1394::CYCLE_MASTER) != 0) << EOL
+             << MESSAGE("  is isochronous capable: ")
+             << ((capabilities & IEEE1394::ISOCHRONOUS_TRANSMISSION) != 0) << EOL
+             << MESSAGE("  is bus master capable: ")
+             << ((capabilities & IEEE1394::BUS_MASTER) != 0) << EOL
+             << MESSAGE("  is power management capable: ")
+             << ((capabilities & IEEE1394::POWER_MANAGEMENT) != 0) << EOL;
+        
+        if (capabilities & IEEE1394::CYCLE_MASTER) {
+          fout << MESSAGE("  bus time: ");
+          try {
+            fout << ieee1394.getBusTime(IEEE1394::makeNodeId(id)) << EOL;
+          } catch (IEEE1394Exception& e) {
+            fout << MESSAGE("(not available)") << EOL;
+          }
+        }
+        if (capabilities & IEEE1394::ISOCHRONOUS_TRANSMISSION) {
+          fout << MESSAGE("  cycle time: ");
+          try {
+            fout << ieee1394.getCycleTime(IEEE1394::makeNodeId(id)) << EOL;
+          } catch (IEEE1394Exception& e) {
+            fout << MESSAGE("(not available)") << EOL;
+          }
+        }        
+      }
+      fout << ENDL;
+    } catch (IEEE1394Exception& e) {
+      fout << ENDL;
+      ferr << MESSAGE("Exception: ") << e << ENDL;
+      setExitCode(Application::EXIT_CODE_ERROR);
+    }
   }
   
   void main() throw() {
@@ -264,6 +378,7 @@ public:
     uint64 firstAddress;
     uint64 lastAddress;
     int nodeId = -1; // -1 indicates default
+    int channel = 0;
     
     const Array<String> arguments = getArguments();
     
@@ -273,6 +388,8 @@ public:
       } else if (arguments.getSize() == 1) {
         if (arguments[0] == "--help") {
           command = COMMAND_HELP;
+        } else if (arguments[0] == "--version") {
+          command = COMMAND_VERSION;
         } else if (arguments[0] == "--adapters") {
           command = COMMAND_DUMP_ADAPTERS;
         } else if (arguments[0] == "--topology") {
@@ -291,7 +408,12 @@ public:
           guid = arguments[1];
         }
       } else if (arguments.getSize() >= 3) {
-        if (arguments[0] == "--registers") {
+        if (arguments[0] == "--iso") {
+          command = COMMAND_ISOCHRONOUS;
+          guid = arguments[1];
+          channel = UnsignedInteger::parse(arguments[2]);
+          assert(channel <= 63, Exception("Invalid isochronous channel", this));
+        } else if (arguments[0] == "--registers") {
           command = COMMAND_REGISTER_SPACE;
         
           String registers = arguments[1];
@@ -317,27 +439,6 @@ public:
                 UnsignedLongInteger::PREFIX | UnsignedLongInteger::HEX
               );
             } else { // single register (quadlet)
-
-//     STATE_CLEAR = 0x000,
-//     STATE_SET = 0x004,
-//     NODE_IDS = 0x008,
-//     RESET_START = 0x00c,
-//     SPLIT_TIMEOUT_HI = 0x018,
-//     SPLIT_TIMEOUT_LO = 0x01c,
-//     ARGUMENT_HI = 0x0020,
-//     ARGUMENT_LO = 0x0024,
-//     TEST_START = 0x028,
-//     TEST_STATUS = 0x02c,
-//     BUS_TIME = 0x204,
-//     POWER_FAIL_IMMINENT = 0x208,
-//     POWER_SOURCE = 0x20c,
-//     BUSY_TIMEOUT = 0x210,
-//     BANDWIDTH_AVAILABLE = 0x200,
-//     CHANNELS_AVAILABLE_HI = 0x224,
-//     CHANNELS_AVAILABLE_LO = 0x228,
-//     FCP_COMMAND = 0xb00,
-//     FCP_RESPONSE = 0xd00,
-
               if (registers == "topology") {
                 firstAddress = IEEE1394::CSR_BASE_ADDRESS + IEEE1394::TOPOLOGY_MAP;
                 lastAddress = firstAddress + 0x3fc;
@@ -422,18 +523,25 @@ public:
       dumpNodes(id);
       break;
     case COMMAND_RESET:
-      resetBus();
+      resetBus(id);
       break;
     case COMMAND_REGISTER_SPACE:
       dumpRegisterSpace(firstAddress, lastAddress, id, nodeId);
       break;
+    case COMMAND_ISOCHRONOUS:
+      isochronousTransfer(id, 1);
+      break;
     case COMMAND_HELP:
       // TAG: more help
-      fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [options] [adapter EUI-64] [node EUI-64 or physical id]") << ENDL;
+      fout << MESSAGE("Usage: ") << getFormalName()
+           << MESSAGE(" [options] [adapter EUI-64] [node EUI-64 or physical id]") << ENDL;
+      break;
+    case COMMAND_VERSION:
       break;
     case COMMAND_USAGE:
-      fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [options] [adapter EUI-64] [node EUI-64 or physical id]") << ENDL;
-      break;      
+      fout << MESSAGE("Usage: ") << getFormalName()
+           << MESSAGE(" [options] [adapter EUI-64] [node EUI-64 or physical id]") << ENDL;
+      break;
     case COMMAND_ERROR:
       // fout has been flushed
       if (errorMessage.isProper()) {

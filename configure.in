@@ -3,7 +3,7 @@ AC_INIT(Makefile.am)
 
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(ellert,0.2)
+AM_INIT_AUTOMAKE(ellert,0.55)
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -17,4 +17,4 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 
 dnl Checks for library functions.
 
-AC_OUTPUT(Makefile ellert/Makefile ellert/docs/Makefile ellert/docs/en/Makefile ellert/base/Makefile ellert/vehicle/Makefile ellert/base/concurrency/Makefile ellert/base/mathematics/Makefile ellert/io/Makefile ellert/base/io/Makefile ellert/base/string/Makefile ellert/base/mem/Makefile ellert/base/net/Makefile )
+AC_OUTPUT(Makefile ellert/Makefile ellert/docs/Makefile ellert/docs/en/Makefile ellert/base/Makefile ellert/vehicle/Makefile ellert/base/concurrency/Makefile ellert/base/mathematics/Makefile ellert/io/Makefile ellert/base/io/Makefile ellert/base/string/Makefile ellert/base/mem/Makefile ellert/base/net/Makefile ellert/control/Makefile ellert/base/collection/Makefile )

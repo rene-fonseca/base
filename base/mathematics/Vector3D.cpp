@@ -40,6 +40,16 @@ TYPE Vector3D<TYPE>::getModulus() const throw() {
 }
 
 template<class TYPE>
+TYPE Vector3D<TYPE>::getXYAngle() const throw() {
+  return atan2(y, x);
+}
+
+template<class TYPE>
+TYPE Vector3D<TYPE>::getZAngle() const throw() {
+  return atan2(z, sqrt(x * x + y * y));
+}
+
+template<class TYPE>
 TYPE Vector3D<TYPE>::getX() const throw() {
   return x;
 }

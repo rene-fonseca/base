@@ -61,6 +61,16 @@ public:
   TYPE getModulus() const throw();
 
   /**
+    Returns the angle of this vector in the X-Y plane.
+  */
+  TYPE getXYAngle() const throw();
+
+  /**
+    Returns the angle between this vector and the X-Y plane.
+  */
+  TYPE getZAngle() const throw();
+
+  /**
     Returns the X coordinate of the vector.
   */
   TYPE getX() const throw();

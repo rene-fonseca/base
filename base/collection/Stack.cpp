@@ -65,8 +65,13 @@ void Stack<TYPE>::pop(unsigned int count) throw(OutOfRange) {
 }
 
 template<class TYPE>
-Stack<TYPE>::~Stack() throw() {
+void Stack<TYPE>::removeAll() throw() {
   pop(size);
+}
+
+template<class TYPE>
+Stack<TYPE>::~Stack() throw() {
+  removeAll();
 }
 
 
@@ -124,6 +129,10 @@ void Stack<void*>::pop(unsigned int count) throw(OutOfRange) {
   }
 }
 
-Stack<void*>::~Stack() throw() {
+void Stack<void*>::removeAll() throw() {
   pop(size);
+}
+
+Stack<void*>::~Stack() throw() {
+  removeAll();
 }

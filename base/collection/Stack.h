@@ -76,6 +76,11 @@ public:
   void pop(unsigned int count) throw(OutOfRange);
 
   /**
+    Removes all the elements from the stack.
+  */
+  void removeAll() throw();
+
+  /**
     Destroys the stack.
   */
   ~Stack() throw();
@@ -114,6 +119,7 @@ public:
   void push(void* value) throw(MemoryException);
   void* pop() throw(OutOfRange);
   void pop(unsigned int count) throw(OutOfRange);
+  void removeAll() throw();
   ~Stack() throw();
 };
 

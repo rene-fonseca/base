@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__INCOMPATIBLE_OPERANDS_H
-#define _DK_SDU_MIP__BASE__INCOMPATIBLE_OPERANDS_H
+#ifndef _DK_SDU_MIP__BASE_MATHEMATICS__INCOMPATIBLE_OPERANDS_H
+#define _DK_SDU_MIP__BASE_MATHEMATICS__INCOMPATIBLE_OPERANDS_H
 
 #include "base/Exception.h"
 

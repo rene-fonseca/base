@@ -10,8 +10,14 @@
 
 #if defined(_DK_SDU_MIP__BASE__DEMANGLE_GCCV3)
   extern "C" char* cplus_demangle_v3(const char* mangled);
-#elif defined(_DK_SDU_MIP__BASE__DEMANGLE_LIBERTY)
+#elif defined(_DK_SDU_MIP__BASE__DEMANGLE_GCCV23)
+  extern "C" char* cplus_demangle_new_abi(const char* mangled);
+#elif defined(_DK_SDU_MIP__BASE__DEMANGLE_GCCV2)
   extern "C" char* cplus_demangle(const char* mangled, int options);
+#elif defined(_DK_SDU_MIP__BASE__DEMANGLE_SUNWSPRO)
+  #include <demangle.h>
+#elif defined(_DK_SDU_MIP__BASE__DEMANGLE_MIPSPRO)
+  #include <dem.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -20,9 +26,24 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 String demangleTypename(const char* mangled) throw() {
   static const String prefix("_Z");
-  String temp = prefix; // make function name
+  String temp = prefix;
   temp.append(mangled);
   char* demangled = cplus_demangle_v3(temp.getElements());
+  if (!demangled) { // failed?
+    return String(mangled); // return mangled type name
+  }
+  String result(demangled);
+  free(demangled);
+  return result;
+}
+
+#elif defined(_DK_SDU_MIP__BASE__DEMANGLE_GCCV23)
+
+String demangleTypename(const char* mangled) throw() {
+  static const String prefix("_Z");
+  String temp = prefix;
+  temp.append(mangled);
+  char* demangled = cplus_demangle_new_abi(temp.getElements());
   if (!demangled) { // failed?
     return String(mangled); // return mangled type name
   }

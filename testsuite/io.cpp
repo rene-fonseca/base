@@ -28,7 +28,23 @@
 
 using namespace base;
 
-void test() {
+void test() throw() {
+  fout << 0.000009 << ENDL;
+  fout << 0.00001 << ENDL;
+  fout << 0.0002 << ENDL;
+  fout << 0.003 << ENDL;
+  fout << 0.04 << ENDL;
+  fout << 0.5 << ENDL;
+  fout << 10.5 << ENDL;
+  fout << 10. << ENDL;
+  fout << 100. << ENDL;
+  fout << 132. << ENDL;
+  fout << 1123. << ENDL;
+  fout << 112300000. << ENDL;
+  fout << 1123600000. << ENDL;
+  fout << 11236700000. << ENDL;
+  fout << 1123000000000000000000000000000000. << ENDL;
+
   fout << "Testing FormatOutputStream..." << ENDL;
 
   fout << "Writing built-in types to fout" << ENDL;

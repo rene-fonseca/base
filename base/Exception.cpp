@@ -54,16 +54,20 @@ Type Exception::getExceptionType() throw() {
 #endif
 }
 
-Exception::Exception() throw() : message(0), cause(0) {
+Exception::Exception() throw()
+  : message(0), cause(PrimitiveTraits<unsigned int>::MAXIMUM) {
 }
 
-Exception::Exception(const char* _message) throw() : message(_message), cause(0) {
+Exception::Exception(const char* _message) throw()
+  : message(_message), cause(PrimitiveTraits<unsigned int>::MAXIMUM) {
 }
 
-Exception::Exception(Type _type) throw() : message(0), type(_type), cause(0) {
+Exception::Exception(Type _type) throw()
+  : message(0), type(_type), cause(PrimitiveTraits<unsigned int>::MAXIMUM) {
 }
 
-Exception::Exception(const char* _message, Type _type) throw() : message(_message), type(_type), cause(0) {
+Exception::Exception(const char* _message, Type _type) throw()
+  : message(_message), type(_type), cause(PrimitiveTraits<unsigned int>::MAXIMUM) {
 }
 
 Exception::Exception(const Exception& copy) throw() : message(copy.message), type(copy.type), cause(copy.cause) {

@@ -48,6 +48,22 @@ public:
     ELEMENT /**< Element. */
   };
   
+  /** Content. */
+  enum Content {
+    CONTENT_PCDATA, /**< PCDATA. */
+    CONTENT_ELEMENT, /**< Element. */
+    CONTENT_SEQUENCE, /**< Sequence. */
+    CONTENT_OR /**< Or. */
+  };
+  
+  /** Content occurrences. */
+  enum Occurrence {
+    ONCE, /**< Content occurring exactly once. */
+    OPTIONAL, /**< Optional content. */
+    STAR, /**< Any number of occurrences. */
+    PLUS /**< One or more. */
+  };
+  
   inline ElementDecl(Node node) throw(CastException) : Declaration(node) {
     assert(
       node.isInvalid() || (node.getType() == ELEMENT_DECL_NODE),

@@ -13,6 +13,39 @@
 
 #include <base/platforms/features.h>
 
+#if ((_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX) || \
+     (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32))
+#else
+#  error Invalid flavor (FLAVOR) specification
+#endif
+
+#if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__UNSPECIFIED) || \
+     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || \
+     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
+     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) || \
+     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN) || \
+     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || \
+     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K) || \
+     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WXP) || \
+     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__BEOS) || \
+     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__AIX))
+#else
+#  error Invalid operating system (OS) specification
+#endif
+
+#if ((_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__UNSPECIFIED) || \
+     (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86) || \
+     (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__SPARC) || \
+     (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__MIPS) || \
+     (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__ITANIUM) || \
+     (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__ALPHA) || \
+     (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__PPC) || \
+     (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__RS) || \
+     (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64))
+#else
+#  error Invalid architecture (ARCH) specification
+#endif
+
 #if defined(_DK_SDU_MIP__BASE__EXPERIMENTAL)
 #  warning Experimental components have been enabled
 #endif

@@ -43,6 +43,12 @@ inline int compare(const TYPE& a, const TYPE& b) throw() {
 }
 
 /**
+  Returns the hash value of the specified object.
+*/
+template<class TYPE>
+inline unsigned int hash(const TYPE& value) throw() {return 0;}
+
+/**
   Swaps the values.
 */
 template<class TYPE>

@@ -7,6 +7,8 @@
 #define _DK_SDU_MIP__BASE__TYPE_H
 
 #include <base/features.h>
+#include <base/string/String.h>
+#include <typeinfo>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -180,6 +182,29 @@ typedef struct {
 #endif
 
 }; // end of namespace
+
+/**
+  Demangles the specified string as returned by typeinfo::name(). You should
+  not call this function directly. Use the getTypename<TYPE>() and
+  getTypename<TYPE>(const TYPE&) functions.
+*/
+String demangleTypename(const char* mangled) throw();
+
+/**
+  Returns the demangled type name for the specified type.
+*/
+template<class TYPE>
+inline String getTypename() throw() {
+  return demangleTypename(typeid(TYPE).name());
+}
+
+/**
+  Returns the demangled type name for the specified object.
+*/
+template<class TYPE>
+inline String getTypename(const TYPE& object) throw() {
+  return demangleTypename(typeid(object).name());
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

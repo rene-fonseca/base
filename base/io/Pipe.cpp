@@ -31,8 +31,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-Pipe::PipeImpl invalidPipe;
-
 Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   // create two named pipes with unique names (one for input and one for output - may be the same handle)
@@ -64,23 +62,23 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
   }
   Pipe p;
   Pipe q;
-  p.fd = new PipeImpl(handles[0]);
-  q.fd = new PipeImpl(handles[1]);
+  p.fd = new PipeHandle(handles[0]);
+  q.fd = new PipeHandle(handles[1]);
   return makePair(p, q);
 #endif
 }
 
 
 
-Pipe::PipeImpl::~PipeImpl() throw(PipeException) {
+Pipe::PipeHandle::~PipeHandle() throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (getHandle() != OperatingSystem::INVALID_HANDLE) {
+  if (isValid()) {
     if (::CloseHandle(getHandle())) {
       throw PipeException("Unable to close pipe");
     }
   }
 #else // unix
-  if (getHandle() != OperatingSystem::INVALID_HANDLE) {
+  if (fd->isValid()) {
     if (::close(getHandle())) {
       throw PipeException("Unable to close pipe");
     }
@@ -90,11 +88,11 @@ Pipe::PipeImpl::~PipeImpl() throw(PipeException) {
 
 
 
-Pipe::Pipe() throw() : fd(&invalidPipe), end(false) {
+Pipe::Pipe() throw() : fd(Handle::getInvalid()), end(false) {
 }
 
 void Pipe::close() throw(PipeException) {
-  fd = &invalidPipe;
+  fd = Handle::getInvalid();
   end = true;
 }
 
@@ -148,7 +146,7 @@ unsigned int Pipe::skip(unsigned int count) throw(PipeException) {
 
 void Pipe::flush() throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!FlushFileBuffers(fd->getHandle())) {
+  if (!::FlushFileBuffers(fd->getHandle())) {
     throw PipeException("Unable to flush pipe");
   }
 #else // unix
@@ -236,7 +234,7 @@ unsigned int Pipe::write(const char* buffer, unsigned int bytesToWrite, bool non
 
 void Pipe::wait() const throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  DWORD result = WaitForSingleObject(fd->getHandle(), INFINITE);
+  DWORD result = ::WaitForSingleObject(fd->getHandle(), INFINITE);
   ASSERT(result == WAIT_OBJECT_0);
 #else // unix
   fd_set rfds;
@@ -252,7 +250,7 @@ void Pipe::wait() const throw(PipeException) {
 
 bool Pipe::wait(unsigned int timeout) const throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  DWORD result = WaitForSingleObject(fd->getHandle(), timeout); // FIXME:
+  DWORD result = ::WaitForSingleObject(fd->getHandle(), timeout); // FIXME:
   return result == WAIT_OBJECT_0;
 #else // unix
   fd_set rfds;

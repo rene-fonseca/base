@@ -11,7 +11,6 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/io/File.h>
 #include <base/io/EndOfFile.h>
 #include <base/concurrency/Thread.h>
@@ -42,8 +41,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-File::FileImpl invalidFile;
-
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   inline Date FileTimeToDate(const FILETIME& time) {
     ASSERT(sizeof(FILETIME) == sizeof(long long));
@@ -51,24 +48,24 @@ File::FileImpl invalidFile;
   }
 #endif // flavour
 
-File::FileImpl::~FileImpl() throw(FileException) {
-// TAG: throw exception if region of file is still locked
-  if (handle != OperatingSystem::INVALID_HANDLE) { // dont try to close if handle is invalidated
-  #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-    if (!CloseHandle(handle)) {
+File::FileHandle::~FileHandle() throw(FileException) {
+  // TAG: throw exception if region of file is still locked
+  if (isValid()) { // dont try to close if handle is invalidated
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+    if (!::CloseHandle(getHandle())) {
       throw FileException("Unable to close file");
     }
-  #else // unix
-    if (::close(handle)) {
+#else // unix
+    if (::close(getHandle())) {
       throw FileException("Unable to close file");
     }
-  #endif
+#endif
   }
 }
 
-File::File() throw() : fd(&invalidFile) {}
+File::File() throw() : fd(Handle::getInvalid()) {}
 
-File::File(const String& path, Access access, unsigned int options) throw(FileNotFound) : fd(0) {
+File::File(const String& path, Access access, unsigned int options) throw(AccessDenied, FileNotFound) : fd(Handle::getInvalid()) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD creationFlags;
   switch (options & (CREATE | TRUNCATE)) {
@@ -86,8 +83,7 @@ File::File(const String& path, Access access, unsigned int options) throw(FileNo
     break;
   }
 
-  OperatingSystem::Handle handle;
-  handle = CreateFile( // TAG: check out FILE_FLAG_POSIX_SEMANTICS
+  OperatingSystem::Handle handle = ::CreateFile( // TAG: check out FILE_FLAG_POSIX_SEMANTICS
     path.getElements(),
     (access == READ) ? GENERIC_READ : ((access == WRITE) ? GENERIC_WRITE : (GENERIC_READ | GENERIC_WRITE)),
     (options & EXCLUSIVE) ? 0 : (FILE_SHARE_READ | FILE_SHARE_WRITE),
@@ -96,10 +92,14 @@ File::File(const String& path, Access access, unsigned int options) throw(FileNo
     FILE_ATTRIBUTE_NORMAL | ((options & ASYNCHRONOUS) ? FILE_FLAG_OVERLAPPED : 0),
     0
   );
-  if (handle == INVALID_HANDLE_VALUE) {
-    throw FileNotFound("Unable to open file");
+  if (handle == OperatingSystem::INVALID_HANDLE) {
+    if (::GetLastError() == ERROR_ACCESS_DENIED) {
+      throw AccessDenied();
+    } else {
+      throw FileNotFound("Unable to open file");
+    }
   }
-  fd = new FileImpl(handle);
+  fd = new FileHandle(handle);
 #else // unix
   // TAG: exclusive file locking problem for NFS
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
@@ -132,49 +132,54 @@ File::File(const String& path, Access access, unsigned int options) throw(FileNo
 
   OperatingSystem::Handle handle;
   if ((handle = ::open(path.getElements(), flags, S_IRUSR | S_IWUSR | S_IRGRP)) == OperatingSystem::INVALID_HANDLE) {
-    throw FileNotFound("Unable to open file");
+    if (errno == EACCES) {
+      throw AccessDenied();
+    } else {
+      throw FileNotFound("Unable to open file");
+    }
   }
-  fd = new FileImpl(handle);
+  fd = new FileHandle(handle);
 #endif
+  if (options & File::APPEND) {
+    setPosition(0, File::END);
+  }
 }
 
 File& File::operator=(const File& eq) throw() {
-  if (&eq != this) {
-    fd = eq.fd;
-  }
+  fd = eq.fd; // no need to protect against self-assignment
   return *this;
 }
 
 void File::close() throw(FileException) {
-  fd = new FileImpl(); // invalidate
+  fd = Handle::getInvalid(); // invalidate
 }
 
 bool File::isClosed() const throw() {
-  return fd->getHandle() == OperatingSystem::INVALID_HANDLE;
+  return !fd->isValid();
 }
 
 long long File::getSize() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ULARGE_INTEGER size;
-  size.LowPart = GetFileSize(fd->getHandle(), &size.HighPart);
-  if ((size.LowPart == INVALID_FILE_SIZE) && (GetLastError() != NO_ERROR )) {
+  size.LowPart = ::GetFileSize(fd->getHandle(), &size.HighPart);
+  if ((size.LowPart == INVALID_FILE_SIZE) && (::GetLastError() != NO_ERROR )) {
     throw FileException("Unable to get file size");
   }
 //  LARGE_INTEGER size; // TAG: unresolved possible byte order problem for big endian architectures
-//  if (!GetFileSizeEx(fd->getHandle(), &size)) {
+//  if (!::GetFileSizeEx(fd->getHandle(), &size)) {
 //    throw FileException("Unable to get file size");
 //  }
   return size.QuadPart;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
-    if (fstat64(fd->getHandle(), &status)) {
+    if (::fstat64(fd->getHandle(), &status)) {
       throw FileException("Unable to get file size");
     }
     return status.st_size;
   #else
     struct stat status;
-    if (fstat(fd->getHandle(), &status)) {
+    if (::fstat(fd->getHandle(), &status)) {
       throw FileException("Unable to get file size");
     }
     return status.st_size;
@@ -186,19 +191,19 @@ long long File::getPosition() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER position;
   position.QuadPart = 0;
-  position.LowPart = SetFilePointer(fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
-  if ((position.LowPart == INVALID_SET_FILE_POINTER) && (GetLastError() != NO_ERROR)) {
+  position.LowPart = ::SetFilePointer(fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
+  if ((position.LowPart == INVALID_SET_FILE_POINTER) && (::GetLastError() != NO_ERROR)) {
     throw FileException("Unable to get file position");
   }
-//  if (!SetFilePointerEx(fd->getHandle(), 0, &position, FILE_CURRENT)) {
+//  if (!::SetFilePointerEx(fd->getHandle(), 0, &position, FILE_CURRENT)) {
 //    throw FileException("Unable to get file position");
 //  }
   return position.QuadPart;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    return lseek64(fd->getHandle(), 0, SEEK_CUR); // should never fail
+    return ::lseek64(fd->getHandle(), 0, SEEK_CUR); // should never fail
   #else
-    return lseek(fd->getHandle(), 0, SEEK_CUR); // should never fail
+    return ::lseek(fd->getHandle(), 0, SEEK_CUR); // should never fail
   #endif
 #endif
 }
@@ -208,8 +213,8 @@ void File::setPosition(long long position, Whence whence) throw(FileException) {
   static DWORD relativeTo[] = {FILE_BEGIN, FILE_CURRENT, FILE_END};
   LARGE_INTEGER temp;
   temp.QuadPart = position;
-  temp.LowPart = SetFilePointer(fd->getHandle(), temp.LowPart, &temp.HighPart, relativeTo[whence]);
-  if ((temp.LowPart == INVALID_SET_FILE_POINTER) && (GetLastError() != NO_ERROR)) {
+  temp.LowPart = ::SetFilePointer(fd->getHandle(), temp.LowPart, &temp.HighPart, relativeTo[whence]);
+  if ((temp.LowPart == INVALID_SET_FILE_POINTER) && (::GetLastError() != NO_ERROR)) {
     throw FileException("Unable to get file position");
   }
 //  if (!SetFilePointerEx(fd->getHandle(), position, 0, relativeTo[whence])) {
@@ -218,10 +223,10 @@ void File::setPosition(long long position, Whence whence) throw(FileException) {
 #else // unix
   static int relativeTo[] = {SEEK_SET, SEEK_CUR, SEEK_END};
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    lseek64(fd->getHandle(), position, relativeTo[whence]); // should never fail
+    ::lseek64(fd->getHandle(), position, relativeTo[whence]); // should never fail
   #else
     assert(position <= INT_MAX, FileException("Unable to set position"));
-    lseek(fd->getHandle(), position, relativeTo[whence]); // should never fail
+    ::lseek(fd->getHandle(), position, relativeTo[whence]); // should never fail
   #endif
 #endif
 }
@@ -230,17 +235,17 @@ void File::truncate(long long size) throw(FileException) {
   long long oldSize = File::getSize();
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   setPosition(size);
-  if (!SetEndOfFile(fd->getHandle())) {
+  if (!::SetEndOfFile(fd->getHandle())) {
     throw FileException("Unable to truncate");
   }
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    if (ftruncate64(fd->getHandle(), size)) {
+    if (::ftruncate64(fd->getHandle(), size)) {
       throw FileException("Unable to truncate");
     }
   #else
     assert((size >= 0) && (size <= INT_MAX), FileException("Unable to truncate"));
-    if (ftruncate(fd->getHandle(), size)) {
+    if (::ftruncate(fd->getHandle(), size)) {
       throw FileException("Unable to truncate");
     }
   #endif
@@ -261,7 +266,7 @@ void File::truncate(long long size) throw(FileException) {
 
 void File::flush() throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!FlushFileBuffers(fd->getHandle())) {
+  if (!::FlushFileBuffers(fd->getHandle())) {
     throw FileException("Unable to flush");
   }
 #else // unix
@@ -279,14 +284,14 @@ void File::lock(const FileRegion& region, bool exclusive = true) throw(FileExcep
   OVERLAPPED overlapped;
   overlapped.Offset = offset.LowPart;
   overlapped.OffsetHigh = offset.HighPart;
-  overlapped.hEvent = CreateEvent(0, true, false, 0);
+  overlapped.hEvent = ::CreateEvent(0, true, false, 0);
   if (overlapped.hEvent == 0) {
     throw FileException("Unable to lock region");
   }
 
   LARGE_INTEGER size;
   size.QuadPart = region.getSize();
-  if (!LockFileEx(
+  if (!::LockFileEx(
     fd->getHandle(),
     exclusive ? LOCKFILE_EXCLUSIVE_LOCK : 0,
     0,
@@ -294,11 +299,11 @@ void File::lock(const FileRegion& region, bool exclusive = true) throw(FileExcep
     size.HighPart,
     &overlapped
   )) {
-    CloseHandle(overlapped.hEvent);
+    ::CloseHandle(overlapped.hEvent);
     throw FileException("Unable to lock region");
   }
-  WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for lock
-  CloseHandle(overlapped.hEvent);
+  ::WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for lock
+  ::CloseHandle(overlapped.hEvent);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct flock64 lock;
@@ -308,7 +313,7 @@ void File::lock(const FileRegion& region, bool exclusive = true) throw(FileExcep
     lock.l_len = region.getSize();
 
     while (true) {
-      if (fcntl(fd->getHandle(), F_SETLKW64, &lock) < 0) {
+      if (::fcntl(fd->getHandle(), F_SETLKW64, &lock) < 0) {
         if (errno == EINTR) { // interrupted by signal - try again
           continue;
         }
@@ -348,14 +353,14 @@ bool File::tryLock(const FileRegion& region, bool exclusive = true) throw(FileEx
   OVERLAPPED overlapped;
   overlapped.Offset = offset.LowPart;
   overlapped.OffsetHigh = offset.HighPart;
-  overlapped.hEvent = CreateEvent(0, true, false, 0);
+  overlapped.hEvent = ::CreateEvent(0, true, false, 0);
   if (overlapped.hEvent == 0) {
     throw FileException("Unable to lock region");
   }
 
   LARGE_INTEGER size;
   size.QuadPart = region.getSize();
-  if (!LockFileEx(
+  if (!::LockFileEx(
     fd->getHandle(),
     exclusive ? LOCKFILE_EXCLUSIVE_LOCK : 0,
     0,
@@ -365,8 +370,8 @@ bool File::tryLock(const FileRegion& region, bool exclusive = true) throw(FileEx
     CloseHandle(overlapped.hEvent);
     throw FileException("Unable to lock region");
   }
-  DWORD result = WaitForSingleObject(overlapped.hEvent, 0); // return immediately
-  CloseHandle(overlapped.hEvent);
+  DWORD result = ::WaitForSingleObject(overlapped.hEvent, 0); // return immediately
+  ::CloseHandle(overlapped.hEvent);
   return result == WAIT_OBJECT_0; // was the region locked
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
@@ -376,7 +381,7 @@ bool File::tryLock(const FileRegion& region, bool exclusive = true) throw(FileEx
     lock.l_start = region.getOffset();
     lock.l_len = region.getSize();
 
-    if (fcntl(fd->getHandle(), F_SETLK64, &lock) < 0) {
+    if (::fcntl(fd->getHandle(), F_SETLK64, &lock) < 0) {
       // this function is not interrupted by a signal
       if ((errno == EACCES) || (errno == EAGAIN)) {
         return false;
@@ -395,7 +400,7 @@ bool File::tryLock(const FileRegion& region, bool exclusive = true) throw(FileEx
     lock.l_start = region.getOffset();
     lock.l_len = region.getSize();
 
-    if (fcntl(fd->getHandle(), F_SETLK, &lock) < 0) {
+    if (::fcntl(fd->getHandle(), F_SETLK, &lock) < 0) {
       // this function is not interrupted by a signal
       if ((errno == EACCES) || (errno == EAGAIN)) {
         return false;
@@ -416,19 +421,19 @@ void File::unlock(const FileRegion& region) throw(FileException) {
   OVERLAPPED overlapped;
   overlapped.Offset = offset.LowPart;
   overlapped.OffsetHigh = offset.HighPart;
-  overlapped.hEvent = CreateEvent(0, true, false, 0);
+  overlapped.hEvent = ::CreateEvent(0, true, false, 0);
   if (overlapped.hEvent == 0) {
     throw FileException("Unable to unlock region");
   }
 
   LARGE_INTEGER size;
   size.QuadPart = region.getSize();
-  if (!UnlockFileEx(fd->getHandle(), 0, size.LowPart, size.HighPart, &overlapped)) {
-    CloseHandle(overlapped.hEvent);
+  if (!::UnlockFileEx(fd->getHandle(), 0, size.LowPart, size.HighPart, &overlapped)) {
+    ::CloseHandle(overlapped.hEvent);
     throw FileException("Unable to unlock region");
   }
-  WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for unlock
-  CloseHandle(overlapped.hEvent);
+  ::WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for unlock
+  ::CloseHandle(overlapped.hEvent);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region"));
@@ -439,7 +444,7 @@ void File::unlock(const FileRegion& region) throw(FileException) {
     lock.l_len = region.getSize();
 
     while (true) {
-      if (fcntl(fd->getHandle(), F_SETLKW64, &lock) < 0) {
+      if (::fcntl(fd->getHandle(), F_SETLKW64, &lock) < 0) {
         if (errno == EINTR) { // interrupted by signal - try again
           continue;
         }
@@ -459,7 +464,7 @@ void File::unlock(const FileRegion& region) throw(FileException) {
     lock.l_len = region.getSize();
 
     while (true) {
-      if (fcntl(fd->getHandle(), F_SETLKW, &lock) < 0) {
+      if (::fcntl(fd->getHandle(), F_SETLKW, &lock) < 0) {
         if (errno == EINTR) { // interrupted by signal - try again
           continue;
         }
@@ -474,7 +479,7 @@ void File::unlock(const FileRegion& region) throw(FileException) {
 Date File::getLastModification() throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME time;
-  if (GetFileTime(fd->getHandle(), 0, 0, &time)) {
+  if (::GetFileTime(fd->getHandle(), 0, 0, &time)) {
     throw FileException("Unable to get file time");
   }
   return FileTimeToDate(time);
@@ -487,7 +492,7 @@ Date File::getLastModification() throw(FileException) {
     return Date(buffer.st_mtime);
   #else
     struct stat buffer;
-    if (fstat(fd->getHandle(), &buffer)) {
+    if (::fstat(fd->getHandle(), &buffer)) {
       throw FileException("Unable to get status");
     }
     return Date(buffer.st_mtime);
@@ -498,20 +503,20 @@ Date File::getLastModification() throw(FileException) {
 Date File::getLastAccess() throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME time;
-  if (GetFileTime(fd->getHandle(), 0, &time, 0)) {
+  if (::GetFileTime(fd->getHandle(), 0, &time, 0)) {
     throw FileException("Unable to get file time");
   }
   return FileTimeToDate(time);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 buffer;
-    if (fstat64(fd->getHandle(), &buffer)) {
+    if (::fstat64(fd->getHandle(), &buffer)) {
       throw FileException("Unable to get status");
     }
     return Date(buffer.st_atime);
   #else
     struct stat buffer;
-    if (fstat(fd->getHandle(), &buffer)) {
+    if (::fstat(fd->getHandle(), &buffer)) {
       throw FileException("Unable to get status");
     }
     return Date(buffer.st_atime);
@@ -522,20 +527,20 @@ Date File::getLastAccess() throw(FileException) {
 Date File::getLastChange() throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME time;
-  if (GetFileTime(fd->getHandle(), &time, 0, 0)) {
+  if (::GetFileTime(fd->getHandle(), &time, 0, 0)) {
     throw FileException("Unable to get file time");
   }
   return FileTimeToDate(time);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 buffer;
-    if (fstat64(fd->getHandle(), &buffer)) {
+    if (::fstat64(fd->getHandle(), &buffer)) {
       throw FileException("Unable to get status");
     }
     return Date(buffer.st_ctime);
   #else
     struct stat buffer;
-    if (fstat(fd->getHandle(), &buffer)) {
+    if (::fstat(fd->getHandle(), &buffer)) {
       throw FileException("Unable to get status");
     }
     return Date(buffer.st_ctime);
@@ -550,32 +555,32 @@ unsigned int File::read(char* buffer, unsigned int bytesToRead, bool nonblocking
     DWORD result;
     BOOL success = ::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, 0);
     if (!success) { // has error occured
-      if (GetLastError() == ERROR_LOCK_VIOLATION) { // TAG: I'm guessing this error code - please confirm
+      if (::GetLastError() == ERROR_LOCK_VIOLATION) { // TAG: I'm guessing this error code - please confirm
         if (nonblocking) {
           success = true;
           result = 0;
         } else { // do blocking read
           LARGE_INTEGER position;
           position.QuadPart = 0;
-          position.LowPart = SetFilePointer(fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
-          if (!((position.LowPart == INVALID_SET_FILE_POINTER) && (GetLastError() != NO_ERROR))) {
+          position.LowPart = ::SetFilePointer(fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
+          if (!((position.LowPart == INVALID_SET_FILE_POINTER) && (::GetLastError() != NO_ERROR))) {
 	    // if (SetFilePointerEx(fd->getHandle(), 0, &position, FILE_CURRENT)) { // current position
             OVERLAPPED overlapped;
             overlapped.Offset = position.LowPart;
             overlapped.OffsetHigh = position.HighPart;
-            overlapped.hEvent = CreateEvent(0, false, false, 0); // auto reset event
+            overlapped.hEvent = ::CreateEvent(0, FALSE, FALSE, 0); // auto reset event
 
             if (overlapped.hEvent) { // was event created
-              if (LockFileEx(fd->getHandle(), 0, 0, bytesToRead, 0, &overlapped)) { // acquire shared lock
-                WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for lock
+              if (::LockFileEx(fd->getHandle(), 0, 0, bytesToRead, 0, &overlapped)) { // acquire shared lock
+                ::WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for lock
                 if (::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, 0)) {
-                  if (UnlockFileEx(fd->getHandle(), 0, bytesToRead, 0, &overlapped)) { // // release shared lock
-                    WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for unlock
+                  if (::UnlockFileEx(fd->getHandle(), 0, bytesToRead, 0, &overlapped)) { // // release shared lock
+                    ::WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for unlock
                     success = true;
                   }
                 }
               }
-              CloseHandle(overlapped.hEvent);
+              ::CloseHandle(overlapped.hEvent);
             }
           }
         }
@@ -621,32 +626,32 @@ unsigned int File::write(const char* buffer, unsigned int bytesToWrite, bool non
     DWORD result;
     BOOL success = ::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0);
     if (!success) {
-      if (GetLastError() == ERROR_LOCK_VIOLATION) { // TAG: I'm guessing this error code - please confirm
+      if (::GetLastError() == ERROR_LOCK_VIOLATION) { // TAG: I'm guessing this error code - please confirm
         if (nonblocking) {
           success = true;
           result = 0;
         } else { // do blocking write
           LARGE_INTEGER position;
           position.QuadPart = 0;
-          position.LowPart = SetFilePointer(fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
-          if (!((position.LowPart == INVALID_SET_FILE_POINTER) && (GetLastError() != NO_ERROR))) {
+          position.LowPart = ::SetFilePointer(fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
+          if (!((position.LowPart == INVALID_SET_FILE_POINTER) && (::GetLastError() != NO_ERROR))) {
 	    // if (SetFilePointerEx(fd->getHandle(), 0, &position, FILE_CURRENT)) { // current position
             OVERLAPPED overlapped;
             overlapped.Offset = position.LowPart;
             overlapped.OffsetHigh = position.HighPart;
-            overlapped.hEvent = CreateEvent(0, false, false, 0); // auto reset event
+            overlapped.hEvent = ::CreateEvent(0, FALSE, FALSE, 0); // auto reset event
 
             if (overlapped.hEvent) { // was event created
-              if (LockFileEx(fd->getHandle(), 0, 0, bytesToWrite, 0, &overlapped)) { // acquire shared lock
-                WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for lock
-                if (WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0)) {
-                  if (UnlockFileEx(fd->getHandle(), 0, bytesToWrite, 0, &overlapped)) { // // release shared lock
+              if (::LockFileEx(fd->getHandle(), 0, 0, bytesToWrite, 0, &overlapped)) { // acquire shared lock
+                ::WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for lock
+                if (::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0)) {
+                  if (::UnlockFileEx(fd->getHandle(), 0, bytesToWrite, 0, &overlapped)) { // // release shared lock
                     WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for unlock
                     success = true;
                   }
                 }
               }
-              CloseHandle(overlapped.hEvent);
+              ::CloseHandle(overlapped.hEvent);
             }
           }
         }
@@ -693,14 +698,14 @@ void File::asyncCancel() throw(AsynchronousException) {
 #endif // flavour
 }
 
-AsynchronousReadOperation File::read(void* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(AsynchronousException) {
+AsynchronousReadOperation File::read(char* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncReadFileContext(getHandle(), buffer, bytesToRead, offset, listener);
 #endif // flavour
 }
 
-AsynchronousWriteOperation File::write(const void* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
+AsynchronousWriteOperation File::write(const char* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncWriteFileContext(getHandle(), buffer, bytesToWrite, offset, listener);

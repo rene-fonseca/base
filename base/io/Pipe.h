@@ -22,7 +22,7 @@
 #include <base/io/PipeException.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/collection/Pair.h>
-#include <base/OperatingSystem.h>
+#include <base/io/Handle.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -36,26 +36,18 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class Pipe : public virtual Object, public virtual InputStream, public virtual OutputStream {
 public:
 
-  class PipeImpl : public virtual ReferenceCountedObject {
-  private:
-
-    /** Handle to the pipe. */
-    OperatingSystem::Handle handle;
+  class PipeHandle : public Handle {
   public:
 
-    /** Initializes invalid pipe. */
-    inline PipeImpl() throw() : handle(OperatingSystem::INVALID_HANDLE) {}
     /** Initializes pipe by handle. */
-    PipeImpl(OperatingSystem::Handle handle) throw() : handle(handle) {}
-    /** Returns the handle. */
-    inline OperatingSystem::Handle getHandle() const throw() {return handle;}
+    inline PipeHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {}
     /** Releases the resources use by the pipe. */
-    ~PipeImpl() throw(PipeException);
+    ~PipeHandle() throw(PipeException);
   };
 protected:
 
   /** The internal pipe representation. */
-  ReferenceCountedObjectPointer<PipeImpl> fd;
+  ReferenceCountedObjectPointer<Handle> fd;
   /** Specifies that the end has been reached. */
   bool end;
 public:

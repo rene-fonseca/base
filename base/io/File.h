@@ -22,9 +22,10 @@
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/string/String.h>
 #include <base/Date.h>
-#include <base/Type.h>
-#include <base/OperatingSystem.h>
+#include <base/Primitives.h>
+#include <base/io/Handle.h>
 #include <base/io/async/AsynchronousIOStream.h>
+#include <base/io/AccessDenied.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -60,24 +61,21 @@ public:
     CREATE = 1, /**< Specifies that the file should be created if it doesn't exist. */
     TRUNCATE = 2, /**< Specifies that the file should be truncated if it already exists. */
     EXCLUSIVE = 4, /**< Specifies that the file should be opened in exclusive mode. */
-    ASYNCHRONOUS = 8 /**< Specifies that the file should be opened for asynchronous IO (disables the synchronous IO interface). */
+    ASYNCHRONOUS = 8, /**< Specifies that the file should be opened for asynchronous IO (disables the synchronous IO interface). */
+    APPEND = 16 /**< Specifies that data should be appended to the file. */
   };
 
-  class FileImpl : public virtual ReferenceCountedObject {
-  private:
-
-    OperatingSystem::Handle handle;
+  class FileHandle : public Handle {
   public:
 
-    inline FileImpl() throw() : handle(OperatingSystem::INVALID_HANDLE) {}
-    explicit inline FileImpl(OperatingSystem::Handle _handle) throw() : handle(_handle) {}
-    inline OperatingSystem::Handle getHandle() const throw() {return handle;}
-    ~FileImpl() throw(FileException);
+    inline FileHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {}
+    
+    ~FileHandle() throw(FileException);
   };
 private:
 
   /** The handle of the file. */
-  ReferenceCountedObjectPointer<FileImpl> fd;
+  ReferenceCountedObjectPointer<Handle> fd;
 public:
 
   /**
@@ -93,7 +91,7 @@ public:
     @param access The desired access to the files.
     @param option Additional options (i.e. CREATE, TRUNCATE, EXCLUSIVE).
   */
-  File(const String& path, Access access, unsigned int options) throw(FileNotFound);
+  File(const String& path, Access access, unsigned int options) throw(AccessDenied, FileNotFound);
 
   /**
     Initialize a new file object from other file object.
@@ -242,7 +240,7 @@ public:
     @param offset The offset from the beginning of the file.
     @param listener The listener to be notified on completion.
   */
-  AsynchronousReadOperation read(void* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(AsynchronousException);
+  AsynchronousReadOperation read(char* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(AsynchronousException);
 
   /**
     Requests and asynchronous write operation. Asynchronous IO is only supported
@@ -253,7 +251,7 @@ public:
     @param offset The offset from the beginning of the file.
     @param listener The listener to be notified on completion.
   */
-  AsynchronousWriteOperation write(const void* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(AsynchronousException);
+  AsynchronousWriteOperation write(const char* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(AsynchronousException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

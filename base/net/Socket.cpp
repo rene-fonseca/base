@@ -153,7 +153,7 @@ public:
       return InetAddress(); // TAG: or should I throw an exception or just ignore
     }
   #else
-    if (sa.sa_family == AF_INET) {
+    if (sa.sin_family == AF_INET) {
       return InetAddress((const byte*)&(((const struct sockaddr_in*)&sa)->sin_addr), InetAddress::IP_VERSION_4);
     } else {
       return InetAddress(); // TAG: or should I throw an exception or just ignore
@@ -173,7 +173,7 @@ public:
       return 0; // TAG: or should I throw an exception
     }
   #else
-    if (sa.sa_family == AF_INET) {
+    if (sa.sin_family == AF_INET) {
       return ByteOrder::fromBigEndian<unsigned short>(((const struct sockaddr_in*)&sa)->sin_port);
     } else {
       return 0; // TAG: or should I throw an exception

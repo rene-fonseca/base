@@ -133,32 +133,40 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   representation = new ReadWriteLockImpl();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
+  representation = new pthread_rwlock_t[1]; // TAG: needs automatic deletion on exception
   pthread_rwlockattr_t attributes;
   if (pthread_rwlockattr_init(&attributes) != 0) {
-    throw ResourceException();
+    delete[] (pthread_rwlock_t*)representation;
+    throw ResourceException(this);
   }
   if (pthread_rwlockattr_setpshared(&attributes, PTHREAD_PROCESS_PRIVATE) != 0) {
-    // does this also work in a multiprocessor environment (still within the same process)?
+    // TAG: does this also work in a multiprocessor environment (still within the same process)?
     pthread_rwlockattr_destroy(&attributes); // should never fail
-    throw ResourceException();
+    delete[] (pthread_rwlock_t*)representation;
+    throw ResourceException(this);
   }
   if (pthread_rwlock_init((pthread_rwlock_t*)representation, &attributes) != 0) {
     pthread_rwlockattr_destroy(&attributes); // should never fail
-    throw ResourceException();
+    delete[] (pthread_rwlock_t*)representation;
+    throw ResourceException(this);
   }
   pthread_rwlockattr_destroy(&attributes); // should never fail
 #else
+  representation = new pthread_mutex_t[1]; // TAG: needs automatic deletion on exception
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
-    throw ResourceException();
+    delete[] (pthread_mutex_t*)representation;
+    throw ResourceException(this);
   }
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    throw ResourceException();
+    delete[] (pthread_mutex_t*)representation;
+    throw ResourceException(this);
   }
   if (pthread_mutex_init((pthread_mutex_t*)representation, &attributes) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    throw ResourceException();
+    delete[] (pthread_mutex_t*)representation;
+    throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 #endif
@@ -169,7 +177,7 @@ void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
   ((ReadWriteLockImpl*)representation)->exclusiveLock();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_wrlock((pthread_rwlock_t*)representation)) {
-    throw ReadWriteLockException();
+    throw ReadWriteLockException(this);
   }
 #else
   int result = pthread_mutex_lock((pthread_mutex_t*)representation);
@@ -178,7 +186,7 @@ void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
   } else if (result == EDEADLK) {
     return;
   } else {
-    throw ReadWriteLockException();
+    throw ReadWriteLockException(this);
   }
 #endif
 }
@@ -193,7 +201,7 @@ bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
   } else if (result == EBUSY) {
     return false;
   } else {
-    throw ReadWriteLockException();
+    throw ReadWriteLockException(this);
   }
 #else
   int result = pthread_mutex_trylock((pthread_mutex_t*)representation);
@@ -202,7 +210,7 @@ bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
   } else if (result == EBUSY) {
     return false;
   } else {
-    throw ReadWriteLockException();
+    throw ReadWriteLockException(this);
   }
 #endif
 }
@@ -212,7 +220,7 @@ void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
   ((ReadWriteLockImpl*)representation)->sharedLock();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_rdlock((pthread_rwlock_t*)representation)) {
-    throw ReadWriteLockException();
+    throw ReadWriteLockException(this);
   }
 #else
   int result = pthread_mutex_lock((pthread_mutex_t*)representation);
@@ -221,7 +229,7 @@ void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
   } else if (result == EDEADLK) {
     return;
   } else {
-    throw ReadWriteLockException();
+    throw ReadWriteLockException(this);
   }
 #endif
 }
@@ -236,7 +244,7 @@ bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
   } else if (result == EBUSY) {
     return false;
   } else {
-    throw ReadWriteLockException();
+    throw ReadWriteLockException(this);
   }
 #else
   int result = pthread_mutex_trylock((pthread_mutex_t*)representation);
@@ -245,7 +253,7 @@ bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
   } else if (result == EBUSY) {
     return false;
   } else {
-    throw ReadWriteLockException();
+    throw ReadWriteLockException(this);
   }
 #endif
 }
@@ -256,11 +264,11 @@ void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
   ((ReadWriteLockImpl*)representation)->releaseLock();
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_unlock((pthread_rwlock_t*)representation)) {
-    throw ReadWriteLockException();
+    throw ReadWriteLockException(this);
   }
 #else
   if (pthread_mutex_unlock((pthread_mutex_t*)representation)) {
-    throw ReadWriteLockException();
+    throw ReadWriteLockException(this);
   }
 #endif
 }
@@ -270,12 +278,12 @@ ReadWriteLock::~ReadWriteLock() throw(ReadWriteLockException) {
   delete (ReadWriteLockImpl*)representation;
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_destroy((pthread_rwlock_t*)representation)) {
-    throw ReadWriteLockException();
+    throw ReadWriteLockException(this);
   }
   delete[] (pthread_rwlock_t*)representation;
 #else
   if (pthread_mutex_destroy((pthread_mutex_t*)representation)) {
-    throw ReadWriteLockException();
+    throw ReadWriteLockException(this);
   }
   delete[] (pthread_mutex_t*)representation;
 #endif

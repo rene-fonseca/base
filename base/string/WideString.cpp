@@ -11,30 +11,250 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/platforms/features.h>
+//#include <base/platforms/features.h>
 #include <base/string/WideString.h>
 #include <base/Functor.h>
 #include <base/Architecture.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  include <windows.h>
-#else // unix
-#  include <string.h>
-#  include <stdlib.h>
-#endif // flavor
-
-#include <wchar.h>
+#include <base/string/lookup.cpp> // TAG: choose better name and directory
+#include <base/string/folding.cpp> // TAG: ditto
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 // TAG: add reference to RFC 2781
+// TAG: RFC 2044
 // TAG: need SCSU support see http://www.unicode.org/unicode/reports/tr6/
 // TAG: need support for native unicode encoding (e.g. SYSTEM_UNICODE_ENCODING)?
 // TAG: need input support for something like: "asdfd\u015fsdjfhd", "&#xXXXXX", and "&#DDDDD"
+// TAG: need support for width calculation. NBWSP=>0???
+
+// TAG: GCC 3.2 bus: fails to compile
+// const WideTraits::CharacterDescriptor WideTraits::characters[0]; // when 0 elements
+// getArraySize(characters);
+
+bool WideTraits::isControl(Character character) throw() {
+  if (getArraySize(controlCharacters) > 0) {
+    unsigned int begin = 0;
+    unsigned int last = getArraySize(controlCharacters) - 1;
+    while (begin <= last) {
+      unsigned int index = (last + begin)/2;
+      if (character < controlCharacters[index].first) {
+        last = index - 1;
+      } else if (character > controlCharacters[index].last) {
+        begin = index + 1;
+      } else {
+        return true; // found
+      }
+    }
+  }
+  return false;
+}
+
+bool WideTraits::isUpper(Character character) throw() {
+  if (getArraySize(upperCharacters) > 0) {
+    unsigned int begin = 0;
+    unsigned int last = getArraySize(upperCharacters) - 1;
+    while (begin <= last) {
+      unsigned int index = (last + begin)/2;
+      if (character < upperCharacters[index].first) {
+        last = index - 1;
+      } else if (character > upperCharacters[index].last) {
+        begin = index + 1;
+      } else {
+        return true; // found
+      }
+    }
+  }
+  return false;
+}
+
+bool WideTraits::isLower(Character character) throw() {
+  if (getArraySize(lowerCharacters) > 0) {
+    unsigned int begin = 0;
+    unsigned int last = getArraySize(lowerCharacters) - 1;
+    while (begin <= last) {
+      unsigned int index = (last + begin)/2;
+      if (character < lowerCharacters[index].first) {
+        last = index - 1;
+      } else if (character > lowerCharacters[index].last) {
+        begin = index + 1;
+      } else {
+        return true; // found
+      }
+    }
+  }
+  return false;
+}
+
+bool WideTraits::isTitle(Character character) throw() {
+  if (getArraySize(titleCharacters) > 0) {
+    unsigned int begin = 0;
+    unsigned int last = getArraySize(titleCharacters) - 1;
+    while (begin <= last) {
+      unsigned int index = (last + begin)/2;
+      if (character < titleCharacters[index].first) {
+        last = index - 1;
+      } else if (character > titleCharacters[index].last) {
+        begin = index + 1;
+      } else {
+        return true; // found
+      }
+    }
+  }
+  return false;
+}
+
+unsigned int WideTraits::getFlags(Character character) throw() {
+  if (getArraySize(characters) > 0) {
+    unsigned int begin = 0;
+    unsigned int last = getArraySize(characters) - 1;
+    while (begin <= last) {
+      unsigned int index = (last + begin)/2;
+      int diff = characters[index].code - character;
+      if (diff < 0) {
+        last = index - 1;
+      } else if (diff > 0) {
+        begin = index + 1;
+      } else {
+        return characters[index].flags; // found
+      }
+    }
+  }
+  return 0;
+}
+
+WideTraits::Character WideTraits::toLower(Character character) throw() {
+  if (getArraySize(characters) > 0) {
+    unsigned int begin = 0;
+    unsigned int last = getArraySize(characters) - 1;
+    while (begin <= last) {
+      unsigned int index = (last + begin)/2;
+      int diff = characters[index].code - character;
+      if (diff < 0) {
+        last = index - 1;
+      } else if (diff > 0) {
+        begin = index + 1;
+      } else {
+        if (characters[index].lower != 0) {
+          return characters[index].lower; // found and valid
+        }
+        break;
+      }
+    }
+  }
+  return character;
+}
+
+WideTraits::Character WideTraits::toUpper(Character character) throw() {
+  if (getArraySize(characters) > 0) {
+    unsigned int begin = 0;
+    unsigned int last = getArraySize(characters) - 1;
+    while (begin <= last) {
+      unsigned int index = (last + begin)/2;
+      int diff = characters[index].code - character;
+      if (diff < 0) {
+        last = index - 1;
+      } else if (diff > 0) {
+        begin = index + 1;
+      } else {
+        if (characters[index].upper != 0) {
+          return characters[index].upper; // found and valid
+        }
+        break;
+      }
+    }
+  }
+  return character;
+}
+
+WideTraits::Character WideTraits::toTitle(Character character) throw() {
+  if (getArraySize(characters) > 0) {
+    unsigned int begin = 0;
+    unsigned int last = getArraySize(characters) - 1;
+    while (begin <= last) {
+      unsigned int index = (last + begin)/2;
+      int diff = characters[index].code - character;
+      if (diff < 0) {
+        last = index - 1;
+      } else if (diff > 0) {
+        begin = index + 1;
+      } else {
+        if (characters[index].title != 0) {
+          return characters[index].title; // found and valid
+        }
+        break;
+      }
+    }
+  }
+  return character;
+}
+
+bool WideTraits::isSpace(Character character) throw() {
+  if (character == ' ') {
+    return true;
+  }
+  if (getArraySize(spaceCharacters) > 0) {
+    unsigned int begin = 0;
+    unsigned int last = getArraySize(spaceCharacters) - 1;
+    while (begin <= last) {
+      unsigned int index = (last + begin)/2;
+      if (character < spaceCharacters[index].first) {
+        last = index - 1;
+      } else if (character > spaceCharacters[index].last) {
+        begin = index + 1;
+      } else {
+        return true; // found
+      }
+    }
+  }
+  return false;
+}
+
+bool WideTraits::isDigit(Character character) throw() {
+  if (getArraySize(digitCharacters) > 0) {
+    unsigned int begin = 0;
+    unsigned int last = getArraySize(digitCharacters) - 1;
+    while (begin <= last) {
+      unsigned int index = (last + begin)/2;
+      if (character < digitCharacters[index].first) {
+        last = index - 1;
+      } else if (character > digitCharacters[index].last) {
+        begin = index + 1;
+      } else {
+        return true; // found
+      }
+    }
+  }
+  return false;
+}
+
+int WideTraits::digitToValue(Character character) throw() {
+  if (getArraySize(digitCharacters) > 0) {
+    unsigned int begin = 0;
+    unsigned int last = getArraySize(digitCharacters) - 1;
+    while (begin <= last) {
+      unsigned int index = (last + begin)/2;
+      if (character < digitCharacters[index].first) {
+        last = index - 1;
+      } else if (character > digitCharacters[index].last) {
+        begin = index + 1;
+      } else {
+        return (character - digitCharacters[index].first) + digitCharacters[index].value; // found
+      }
+    }
+  }
+  return -1;
+}
 
 #if 0
-FormatOutputStream& operator<<(FormatOutputStream& stream, UnicodeCharacter value) throw(IOException) {
-  return stream;
+bool isUCS4(unsigned int value) throw() {
+  if (value < 0xd800) {
+    return true;
+  } else if (value < 0x10000) {
+    return (value >= 0xe000) && (value < 0xffff); // TAG: 0xfffe is also special
+  } else {
+    return true;
+  }
 }
 #endif
 
@@ -400,14 +620,21 @@ unsigned int WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, unsigned int s
   }
 }
 
-// unsigned int UCS2ToUTF16(char* dest, const UCS2* src, unsigned int size) throw() {
-//  if ((src == 0) || (size == 0)) {
-//    return 0;
-//  }
-//   const char* const begin = dest;
-  
-//   return dest - begin;
-// }
+unsigned int WideString::UCS2ToUTF16BE(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags) throw(WideStringException) {
+  if (src == 0) {
+    return 0;
+  }
+  // TAG: fixme
+  return 0;
+}
+
+unsigned int WideString::UCS2ToUTF16LE(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags) throw(WideStringException) {
+  if (src == 0) {
+    return 0;
+  }
+  // TAG: fixme
+  return 0;
+}
 
 unsigned int WideString::UCS4ToUTF16BE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags) throw(WideStringException) {
   if (src == 0) {
@@ -936,10 +1163,10 @@ unsigned int WideString::UTF32ToUCS4(ucs4* dest, const uint8* src, unsigned int 
 }
 
 String WideString::getMultibyteString(const wchar* string) throw(NullPointer, MultibyteException, WideStringException) {
-  ASSERT((sizeof(wchar_t) == sizeof(ucs2)) || (sizeof(wchar_t) == sizeof(ucs4)));
+  ASSERT((sizeof(wchar) == sizeof(ucs2)) || (sizeof(wchar) == sizeof(ucs4)));
   
   assert(string, NullPointer(Type::getType<WideString>()));
-  const Character* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
+  const wchar* terminator = find<wchar>(string, MAXIMUM_LENGTH, 0); // find terminator
   assert(terminator, WideStringException(Type::getType<WideString>())); // maximum length exceeded
   const int numberOfCharacters = terminator - string;
   
@@ -969,67 +1196,86 @@ WideString::WideString(unsigned int capacity) throw(MemoryException) : elements(
 }
 
 WideString::WideString(const WideStringLiteral& string) throw(WideStringException, MemoryException) : elements(0) {
-  ASSERT((sizeof(wchar_t) == sizeof(ucs2)) || (sizeof(wchar_t) == sizeof(ucs4)));
+  ASSERT((sizeof(wchar) == sizeof(ucs2)) || (sizeof(wchar) == sizeof(ucs4)));
 
   unsigned int length = string.getLength();
   assert(length <= MAXIMUM_LENGTH, WideStringException(this)); // TAG: this is not required
   elements = new ReferenceCountedCapacityAllocator<Character>(length + 1, GRANULARITY);
-  copy<Character>(elements->getElements(), string, length); // no overlap
 
-  // TAG: see below
+  if (sizeof(wchar) == sizeof(ucs2)) {
+    // TAG: fixme - UCS2 to UCS4
+  } else {
+    copy<Character>(
+      elements->getElements(),
+      Cast::pointer<Character*>(static_cast<const wchar*>(string)),
+      length
+    ); // no overlap
+  }
 }
 
-WideString::WideString(const Character* string) throw(WideStringException, MemoryException) : elements(0) {
-  ASSERT((sizeof(wchar_t) == sizeof(ucs2)) || (sizeof(wchar_t) == sizeof(ucs4)));
+WideString::WideString(const wchar* string) throw(WideStringException, MemoryException) : elements(0) {
+  ASSERT((sizeof(wchar) == sizeof(ucs2)) || (sizeof(wchar) == sizeof(ucs4)));
   if (!string) { // is string null
     elements = DEFAULT_STRING.elements;
     return;
   }
-  const Character* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
+  const wchar* terminator = find<wchar>(string, MAXIMUM_LENGTH, 0); // find terminator
   assert(terminator, WideStringException(this)); // maximum length exceeded
   int numberOfCharacters = terminator - string;
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
-  copy(elements->getElements(), string, numberOfCharacters); // no overlap
   
-  // TAG: convert to ucs4
   if (sizeof(wchar) == sizeof(ucs2)) {
-    // ucs2 to uc4 conversion
-  } else { // already ucs4
-    // direct copy with validation
+    // TAG: fixme - ucs2 to uc4 conversion
+  } else {
+    copy<Character>(elements->getElements(), Cast::pointer<Character*>(string), numberOfCharacters); // no overlap
   }
 }
 
-WideString::WideString(const Character* string, unsigned int maximum) throw(OutOfDomain, MemoryException) : elements(0) {
+WideString::WideString(const wchar* string, unsigned int maximum) throw(OutOfDomain, MemoryException)
+  : elements(0) {
   assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
   assert(string, WideStringException(this)); // make sure string is proper (not empty)
-  const Character* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
+  const wchar* terminator = find<wchar>(string, maximum, 0); // find terminator
   int numberOfCharacters = terminator ? (terminator - string) : maximum;
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
-  copy(elements->getElements(), string, numberOfCharacters); // no overlap
+  
+  if (sizeof(wchar) == sizeof(ucs2)) {
+    // TAG: fixme - ucs2 to uc4 conversion
+  } else {
+    copy<Character>(elements->getElements(), Cast::pointer<Character*>(string), numberOfCharacters); // no overlap
+  }
 }
 
 WideString::WideString(const String& string) throw(MultibyteException, MemoryException) {
-  ASSERT((sizeof(wchar_t) == sizeof(ucs2)) || (sizeof(wchar_t) == sizeof(ucs4)));
+  ASSERT((sizeof(wchar) == sizeof(ucs2)) || (sizeof(wchar) == sizeof(ucs4)));
   unsigned int multibyteLength = string.getLength();
   if (sizeof(wchar) == sizeof(ucs2)) {
     int numberOfCharacters = UTF8ToUCS2(0, Cast::pointer<const uint8*>(string.getElements()), multibyteLength);
     assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
     elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
     if (numberOfCharacters) {
-      UTF8ToUCS2(Cast::pointer<ucs2*>(elements->getElements()), Cast::pointer<const uint8*>(string.getElements()), multibyteLength);
+      UTF8ToUCS2(
+        Cast::pointer<ucs2*>(elements->getElements()),
+        Cast::pointer<const uint8*>(string.getElements()),
+        multibyteLength
+      );
     }
   } else {
     int numberOfCharacters = UTF8ToUCS4(0, Cast::pointer<const uint8*>(string.getElements()), multibyteLength);
     assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
     elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
     if (numberOfCharacters) {
-      UTF8ToUCS4(Cast::pointer<ucs4*>(elements->getElements()), Cast::pointer<const uint8*>(string.getElements()), multibyteLength);
+      UTF8ToUCS4(
+        Cast::pointer<ucs4*>(elements->getElements()),
+        Cast::pointer<const uint8*>(string.getElements()),
+        multibyteLength
+      );
     }
   }
 }
 
 WideString::WideString(const char* string) throw(MultibyteException, MemoryException) : elements(0) {
-  ASSERT((sizeof(wchar_t) == sizeof(ucs2)) || (sizeof(wchar_t) == sizeof(ucs4)));
+  ASSERT((sizeof(wchar) == sizeof(ucs2)) || (sizeof(wchar) == sizeof(ucs4)));
 
   if (!string) { // is string null
     elements = DEFAULT_STRING.elements;
@@ -1058,7 +1304,7 @@ WideString::WideString(const char* string) throw(MultibyteException, MemoryExcep
 }
 
 WideString::WideString(const char* string, unsigned int maximum) throw(OutOfDomain, MultibyteException, MemoryException) : elements(0) {
-  ASSERT((sizeof(wchar_t) == sizeof(ucs2)) || (sizeof(wchar_t) == sizeof(ucs4)));
+  ASSERT((sizeof(wchar) == sizeof(ucs2)) || (sizeof(wchar) == sizeof(ucs4)));
   assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
 
   if (!string) { // is string null
@@ -1090,7 +1336,16 @@ WideString& WideString::operator=(const WideStringLiteral& string) throw(WideStr
   unsigned int length = string.getLength();
   assert(length <= MAXIMUM_LENGTH, WideStringException(this)); // TAG: this is not required
   elements = new ReferenceCountedCapacityAllocator<Character>(length + 1, GRANULARITY);
-  copy<Character>(elements->getElements(), string, length); // no overlap
+
+  if (sizeof(wchar) == sizeof(ucs2)) {
+    // TAG: fixme - UCS2 to UCS4
+  } else {
+    copy<Character>(
+      elements->getElements(),
+      Cast::pointer<Character*>(static_cast<const wchar*>(string)),
+      length
+    ); // no overlap
+  }
   return *this;
 }
 
@@ -1189,48 +1444,85 @@ WideString& WideString::insert(unsigned int index, const WideString& str) throw(
   return *this;
 }
 
-WideString& WideString::insert(unsigned int index, const WideStringLiteral& str) throw(WideStringException, MemoryException) {
+WideString& WideString::insert(unsigned int index, const WideStringLiteral& string) throw(WideStringException, MemoryException) {
   int length = getLength();
-  setLength(length + str.getLength());
+  setLength(length + string.getLength());
   Character* buffer = elements->getElements();
   if (index >= length) {
     // insert section at end of string
-    copy<Character>(buffer + length, str, str.getLength());
+    if (sizeof(wchar) == sizeof(ucs2)) {
+      // TAG: fixme - UCS2 to UCS4
+    } else {
+      copy<Character>(
+        buffer + length,
+        Cast::pointer<Character*>(static_cast<const wchar*>(string)),
+        string.getLength()
+      ); // no overlap
+    }
   } else {
     // insert section in middle or beginning of string
-    move<Character>(buffer + index + str.getLength(), buffer + index, length - index);
-    copy<Character>(buffer + index, str, str.getLength());
+    move<Character>(buffer + index + string.getLength(), buffer + index, length - index);
+    if (sizeof(wchar) == sizeof(ucs2)) {
+      // TAG: fixme - UCS2 to UCS4
+    } else {
+      copy<Character>(
+        buffer + index,
+        Cast::pointer<Character*>(static_cast<const wchar*>(string)),
+        string.getLength()
+      ); // no overlap
+    }
   }
   return *this;
 }
 
-WideString& WideString::append(const WideStringLiteral& str) throw(WideStringException, MemoryException) {
+WideString& WideString::append(const WideStringLiteral& string) throw(WideStringException, MemoryException) {
   int length = getLength();
-  setLength(length + str.getLength());
+  setLength(length + string.getLength());
   Character* buffer = elements->getElements();
-  copy<Character>(buffer + length, str, str.getLength());
+  if (sizeof(wchar) == sizeof(ucs2)) {
+    // TAG: fixme - UCS2 to UCS4
+  } else {
+    copy<Character>(
+      buffer + length,
+      Cast::pointer<Character*>(static_cast<const wchar*>(string)),
+      string.getLength()
+    ); // no overlap
+  }
   return *this;
 }
 
-WideString& WideString::append(const WideStringLiteral& str, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException) {
+WideString& WideString::append(const WideStringLiteral& string, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException) {
   assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
   int length = getLength();
-  setLength(length + minimum(str.getLength(), maximum));
+  setLength(length + minimum(string.getLength(), maximum));
   Character* buffer = elements->getElements();
-  copy<Character>(buffer + length, str, minimum(str.getLength(), maximum));
+  if (sizeof(wchar) == sizeof(ucs2)) {
+    // TAG: fixme - UCS2 to UCS4
+  } else {
+    copy<Character>(
+      buffer + length,
+      Cast::pointer<Character*>(static_cast<const wchar*>(string)),
+      minimum(string.getLength(), maximum)
+    ); // no overlap
+  }
   return *this;
 }
 
-WideString& WideString::append(const Character* str, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException) {
+WideString& WideString::append(const wchar* string, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException) {
   assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
-  assert(str, WideStringException(this)); // make sure string is proper (not empty)
+  assert(string, WideStringException(this)); // make sure string is proper (not empty)
   int strlength = 0;
-  const Character* terminator = find(str, maximum, Traits::TERMINATOR); // find terminator
-  strlength = terminator ? (terminator - str) : maximum;
+  const wchar* terminator = find<wchar>(string, maximum, 0); // find terminator
+  strlength = terminator ? (terminator - string) : maximum;
   int length = getLength();
   setLength(length + strlength);
   Character* buffer = elements->getElements();
-  copy(buffer + length, str, strlength);
+
+  if (sizeof(wchar) == sizeof(ucs2)) {
+    // TAG: fixme - UCS2 to UCS4
+  } else {
+    copy<Character>(buffer + length, Cast::pointer<Character*>(string), strlength); // no overlap
+  }
   return *this;
 }
 
@@ -1293,23 +1585,6 @@ WideString& WideString::reverse() throw() {
   return *this;
 }
 
-//WideString::Character* WideString::substring(Character* buffer, unsigned int start, unsigned int end) const throw() {
-//  if (buffer) {
-//    if ((start <= end) && (start < getLength())) {
-//      if (end >= getLength()) {
-//        end = getLength() - 1; // index of last char in this string
-//      }
-//      // 0 <= start <= end < getLength()
-//      unsigned int lengthOfSubstring = end - start + 1;
-//      copy(buffer, getBuffer() + start, lengthOfSubstring); // buffers do not overlap
-//      buffer[lengthOfSubstring] = Traits::TERMINATOR;
-//    } else {
-//      *buffer = Traits::TERMINATOR;
-//    }
-//  }
-//  return buffer;
-//}
-
 WideString& WideString::toLowerCase() throw() {
   transform(getBuffer(), getLength(), Traits::ToLowerCase());
   return *this;
@@ -1345,9 +1620,10 @@ int WideString::compareTo(const WideString& string) const throw() {
 }
 
 int WideString::compareTo(const WideStringLiteral& string) const throw() {
+  // TAG: fixme UCS2/UCS4 support
   unsigned int leftLength = getLength();
   const Character* left = getElements(); // make sure string is terminated
-  const Character* right = string;
+  const wchar* right = string;
   const Character* end = left + leftLength;
   while (*left && *right) {
     int temp = static_cast<int>(*left) - static_cast<int>(*right);
@@ -1366,12 +1642,13 @@ int WideString::compareTo(const WideStringLiteral& string) const throw() {
   }
 }
 
-int WideString::compareTo(const Character* string) const throw() {
+int WideString::compareTo(const wchar* string) const throw() {
+  // TAG: fixme UCS2/UCS4 support
   if (!string) {
     return false;
   }
   const Character* left = getElements(); // make sure string is terminated
-  const Character* right = string;
+  const wchar* right = string;
   const Character* end = left + getLength();
   while (*left && *right) {
     int temp = static_cast<int>(*left) - static_cast<int>(*right);
@@ -1410,30 +1687,11 @@ int WideString::compareToIgnoreCase(const Character* left, const Character* righ
 }
 
 int WideString::compareToIgnoreCase(const WideString& string) const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return compareToIgnoreCase(getElements(), string.getElements());
-  //return _wcsicmp(getElements(), string.getElements());
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-  return wcscasecmp(getElements(), string.getElements());
-#else // unix
-  return compareToIgnoreCase(getElements(), string.getElements());
-#endif
 }
 
-// caseless matching
-int WideString::compareToIgnoreCase(const Character* string) const throw() {
-  if (!string) {
-    return false;
-  }  
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return compareToIgnoreCase(getElements(), string);
-  //return _wcsicmp(getElements(), string);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-  return wcscasecmp(getElements(), string);
-#else // unix
-  return compareToIgnoreCase(getElements(), string);
-#endif
-}
+// TAG: need support for WideStringLiteral
+// int WideString::compareToIgnoreCase(const WideStringLiteral& string) const throw();
 
 bool WideString::startsWith(const WideString& prefix) const throw() {
   int prefixLength = prefix.getLength();
@@ -1443,8 +1701,10 @@ bool WideString::startsWith(const WideString& prefix) const throw() {
 
 bool WideString::startsWith(const WideStringLiteral& prefix) const throw() {
   int prefixLength = prefix.getLength();
-  return (prefixLength > 0) && (prefixLength <= getLength()) &&
-    (compare<Character>(getBuffer(), prefix, prefixLength) == 0);
+  // TAG: fix UCS2/UCS4 support
+  return false;
+//   return (prefixLength > 0) && (prefixLength <= getLength()) &&
+//     (compare<Character>(getBuffer(), prefix, prefixLength) == 0);
 }
 
 bool WideString::endsWith(const WideString& suffix) const throw() {
@@ -1457,8 +1717,10 @@ bool WideString::endsWith(const WideString& suffix) const throw() {
 bool WideString::endsWith(const WideStringLiteral& suffix) const throw() {
   int length = getLength();
   int suffixLength = suffix.getLength();
-  return (suffixLength > 0) && (suffixLength <= length) &&
-    (compare<Character>(getBuffer() + length - suffixLength, suffix, suffixLength) == 0);
+  // TAG: fix UCS2/UCS4 support
+  return false;
+//   return (suffixLength > 0) && (suffixLength <= length) &&
+//     (compare<Character>(getBuffer() + length - suffixLength, suffix, suffixLength) == 0);
 }
 
 int WideString::indexOf(Character character, unsigned int start) const throw() {
@@ -1557,7 +1819,7 @@ unsigned int WideString::count(const WideString& string, unsigned int start) con
 }
 
 String WideString::getMultibyteString() const throw(MultibyteException, MemoryException) {
-  ASSERT((sizeof(wchar_t) == sizeof(ucs2)) || (sizeof(wchar_t) == sizeof(ucs4)));
+  ASSERT((sizeof(wchar) == sizeof(ucs2)) || (sizeof(wchar) == sizeof(ucs4)));
   String result;
   const int numberOfCharacters = getLength(); // TAG: one character per element - could be 2
   if (numberOfCharacters) {
@@ -1577,29 +1839,29 @@ String WideString::getMultibyteString() const throw(MultibyteException, MemoryEx
   return result;
 }
 
-bool WideString::isUpperCase() const throw() {
+bool WideString::isUpperCased() const throw() {
   ReadIterator i = getBeginReadIterator();
   ReadIterator end = getEndReadIterator();
   while (i != end) {
-    if (true) { // TAG: fixme (!isUpperCase(*i++)) {
+    if (!Traits::isUpper(*i++)) {
       return false;
     }
   }
   return true;
 }
 
-bool WideString::isLowerCase() const throw() {
+bool WideString::isLowerCased() const throw() {
   ReadIterator i = getBeginReadIterator();
   ReadIterator end = getEndReadIterator();
   while (i != end) {
-    if (true) { // TAG: fixme (!isLowerCase(*i++)) {
+    if (!Traits::isLower(*i++)) {
       return false;
     }
   }
   return true;
 }
 
-bool WideString::isTitleCase() const throw() {
+bool WideString::isTitleCased() const throw() {
   // TAG: fixme
   return false;
 }
@@ -1614,5 +1876,61 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& val
   // TAG: FormatOutputStream - select between \uXXXXX and UTF8, UTF8LE, and UTF8BE, or other UTF
   return stream << value.getMultibyteString();
 }
+
+#if 0
+FormatOutputStream& operator<<(FormatOutputStream& stream, UnicodeCharacter value) throw(IOException) {
+  char buffer[sizeof("&#x12345678;")]; // worst case length
+  char* dest = buffer;
+
+  if (style == STYLE_JAVA) {
+    *dest++ = '\\';
+    *dest++ = 'u';
+    *dest++ = '1';
+    *dest++ = '2';
+    *dest++ = '3';
+    *dest++ = '4';
+  } else if ((style == STYLE_HTML) || (style == STYLE_XML)) {
+    if (DEC) {
+      *dest++ = '&';
+      *dest++ = '#';
+      *dest++ = '1';
+      *dest++ = '2';
+      *dest++ = '3';
+      *dest++ = '4';
+      *dest++ = ';';
+    } else {
+      *dest++ = '&';
+      *dest++ = '#';
+      *dest++ = 'x';
+      *dest++ = '1';
+      *dest++ = '2';
+      *dest++ = '3';
+      *dest++ = '4';
+      *dest++ = ';';
+    }
+  } else if (style == STYLE_PERL) {
+    *dest++ = '\\';
+    *dest++ = 'x';
+    *dest++ = '{'
+    *dest++ = '1';
+    *dest++ = '2';
+    *dest++ = '3';
+    *dest++ = '4';
+    *dest++ = '}';
+  } else {
+    *dest++ = '\\';
+    *dest++ = 'u';
+    *dest++ = '1';
+    *dest++ = '2';
+    *dest++ = '3';
+    *dest++ = '4';
+  }
+
+  unsigned int length = dest - buffer;
+  
+  //  write to stream
+  return stream;
+}
+#endif
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -25,30 +25,9 @@
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Primitives.h>
 
-#if defined(_DK_SDU_MIP__BASE__WIDE)
-  #include <wctype.h> // TAG: alien header
-#endif
-
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class FormatOutputStream;
-
-#if !defined(_DK_SDU_MIP__BASE__WIDE)
-  typedef int wint_t;
-  inline int iswalnum(wint_t) throw() {return 0;}
-  inline int iswalpha(wint_t) throw() {return 0;}
-  inline int iswcntrl(wint_t) throw() {return 0;}
-  inline int iswdigit(wint_t) throw() {return 0;}
-  inline int iswgraph(wint_t) throw() {return 0;}
-  inline int iswlower(wint_t) throw() {return 0;}
-  inline int iswprint(wint_t) throw() {return 0;}
-  inline int iswpunct(wint_t) throw() {return 0;}
-  inline int iswspace(wint_t) throw() {return 0;}
-  inline int iswupper(wint_t) throw() {return 0;}
-  inline int iswxdigit(wint_t) throw() {return 0;}
-  inline wint_t towlower(wint_t character) throw() {return character;}
-  inline wint_t towupper(wint_t character) throw() {return character;}
-#endif
 
 /**
   This class binds together a wide string literal and its length. Use the macro
@@ -95,48 +74,144 @@ class WideTraits {
 public:
 
   /** The type of a single character. */
-  typedef wchar Character; // TAG: working towards ucs4
+  typedef uint32 Character;
   /** Specifies the terminator for NULL-terminated strings. */
-  static const wchar TERMINATOR = L'\0';
+  static const uint32 TERMINATOR = 0;
+private:
 
-  /** Returns true if the character an alphabetic character. */
-  static inline bool isAlpha(Character character) throw() {return iswalpha(character);}
-  /** Returns true if the character an alphabetic character or a digit. */
-  static inline bool isAlphaNum(Character character) throw() {return iswalnum(character);}
-  /** Returns true if the character is lowercase. */
-  static inline bool isLower(Character character) throw() {return iswlower(character);}
-  /** Returns true if the character is uppercase. */
-  static inline bool isUpper(Character character) throw() {return iswupper(character);}
+  struct Range {
+    uint32 first;
+    uint32 last;
+  };
+  
+  static const Range controlCharacters[];
+  static const Range upperCharacters[];
+  static const Range lowerCharacters[];
+  static const Range titleCharacters[];
+  static const Range spaceCharacters[];
+
+  struct CharacterDescriptor {
+    uint32 code;
+    uint32 flags;
+    uint32 lower;
+    uint32 upper;
+    uint32 title;
+  };
+  
+  static const CharacterDescriptor characters[];
+
+  struct DigitCharacterDescriptor {
+    uint32 first;
+    uint32 last;
+    uint32 value;
+  };
+
+  static const DigitCharacterDescriptor digitCharacters[];
+public:
+
+  /** Character characteristics. */
+  enum Characteristics {
+    LETTER = 1, /**< Character is a letter (e.g. "a" or "A"). */
+    LOWER = 2, /**< Character is lower cased. */
+    UPPER = 4, /**< Character is upper cased. */
+    TITLE = 8, /**< Character is title cased. */
+    DIGIT = 16, /**< Any of the characters "0123456789". */
+    CONTROL = 32, /**< The characters from 0x00 to 0x1f and 0x7f. */
+    SPACE = 64, /**< Tab, newline, vertical-tab, form-feed, carriage-return, and space. */
+    NEWLINE = 128, /**< Line separator. */
+    PUNCTUATION = 256 /**< Punctuation characters. */
+  };
+  
+  /** Returns the flags describing the specified character code. */
+  static unsigned int getFlags(Character character) throw();
+  
+  /** Returns true if the character a letter. */
+  static inline bool isLetter(Character character) throw() {
+    return getFlags(character) & LETTER;
+  }
+
+  /** Returns true if the character is a letter or a digit. */
+  static inline bool isLetterDigit(Character character) throw() {
+    return getFlags(character) & (LETTER|DIGIT);
+  }
+  
+  /** Returns true if the character is in lower case. */
+  static bool isLower(Character character) throw();
+  
+  /** Returns true if the character is in upper case. */
+  static bool isUpper(Character character) throw();
+  
+  /** Returns true if the character is in title case. */
+  static bool isTitle(Character character) throw();
+  
   /** Returns true if the character is a digit. */
-  static inline bool isDigit(Character character) throw() {return iswdigit(character);}
+  static bool isDigit(Character character) throw();
+  
   /** Returns true if the character is a hex digit. */
-  static inline bool isHexDigit(Character character) throw() {return iswxdigit(character);}
+  static inline bool isHexDigit(Character character) throw() {
+    if (character < 0x80) { // TAG: need support for all "abcdefABCDEF"
+      return ASCIITraits::isHexDigit(character);
+    }
+    return isDigit(character);
+  }
+  
   /** Returns true if the character is a white space. */
-  static inline bool isSpace(Character character) throw() {return iswspace(character);}
+  static bool isSpace(Character character) throw(); // TAG: inline check for most common space (i.e. ' ')
+  
   /** Returns true if the character is a punctuation mark. */
-  static inline bool isPunctuation(Character character) throw() {return iswpunct(character);}
-  /** Returns true if the character is printable. */
-  static inline bool isPrintable(Character character) throw() {return iswprint(character);}
-  /** Returns true if the character is a visible character. */
-  static inline bool isGraph(Character character) throw() {return iswgraph(character);}
+  static inline bool isPunctuation(Character character) throw() {
+    // TAG: check UNIX spec
+    // TAG: use table with only punctuation codes
+    return getFlags(character) & PUNCTUATION;
+  }
+  
   /** Returns true if the character is a control character. */
-  static inline bool isControl(Character character) throw() {return iswcntrl(character);}
+  static bool isControl(Character character) throw();
+  
   /** Returns true if the character is an ASCII character. */
-  static inline bool isASCII(Character character) throw() {return !(character & ~0177);} // TAG: fix this
+  static inline bool isASCII(Character character) throw() {
+    return character < 0x80;
+  }
 
-  /** Converts the character to lowercase. */
-  static inline Character toLower(Character character) throw() {return towlower(character);}
-  /** Converts the character to uppercase. */
-  static inline Character toUpper(Character character) throw() {return towupper(character);}
+  /** Maps the character to lower case. */
+  static Character toLower(Character character) throw();
+  
+  /** Maps the character to upper case. */
+  static Character toUpper(Character character) throw();
+  
+  /** Maps the character to title case. */
+  static Character toTitle(Character character) throw();
 
+  /**
+    Returns the value of the specified character. The character must be a digit
+    approved by isDigit(), isOctal(), isLowerHex(), isUpperHex(), or
+    isHexDigit(). If the character is not a digit an unspecified value is
+    returned.
+  */
+  int digitToValue(Character character) throw();
+  
   class ToLowerCase {
   public:
-    inline Character operator()(Character value) const throw() {return towlower(value);}
+    
+    inline Character operator()(Character character) const throw() {
+      return toLower(character);
+    }
   };
 
   class ToUpperCase {
   public:
-    inline Character operator()(Character value) const throw() {return towupper(value);}
+    
+    inline Character operator()(Character character) const throw() {
+      return toUpper(character);
+    }
+  };
+
+  class ToTitleCase {
+  public:
+    
+    inline Character operator()(Character character) const throw() {
+      return toTitle(character);
+    }
   };
 };
 
@@ -163,11 +238,22 @@ public:
   /** The type of a single character. */
   typedef Traits::Character Character;
 
+  struct HashEntry {
+    uint8 numberOfCodes;
+    unsigned int index;
+  };
+
   /** Specifies the granularity of the capacity. Guaranteed to be greater than 0. */
   static const unsigned int GRANULARITY = 16;
   /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. */
   static const unsigned int MAXIMUM_LENGTH = ((PrimitiveTraits<int>::MAXIMUM/sizeof(Character) - 1)/GRANULARITY)*GRANULARITY;
-
+  /** Hash modulus. */
+  static const unsigned int HASH_MODULUS = 1455;
+  /** Character folding hash table. */
+  static const HashEntry hashTable[];
+  /** Character mapping table for caseless matching. */
+  static const uint32 mappingTable[];
+  
   /** The type of the modifying string iterator. */
   typedef ReferenceCountedCapacityAllocator<Character>::Iterator Iterator;
   /** The type of the non-modifying string iterator. */
@@ -218,16 +304,28 @@ private:
     Reference to an element within a wide string.
   */
   class Reference {
-  private:
     friend class WideString;
+  private:
+    
     WideString& string;
     unsigned int index;
+    
     Reference(const Reference& copy); // prohibit default copy initialization
     Reference& operator=(const Reference& eq); // prohibit default assignment
-    inline Reference(WideString& _string, unsigned int _index) : string(_string), index(_index) {}
+    
+    inline Reference(WideString& _string, unsigned int _index)
+      : string(_string), index(_index) {
+    }
   public:
-    inline Reference& operator=(char value) throw(OutOfRange) {string.setAt(index, value); return *this;}
-    inline operator Character() const throw(OutOfRange) {return string.getAt(index);}
+    
+    inline Reference& operator=(char value) throw(OutOfRange) {
+      string.setAt(index, value);
+      return *this;
+    }
+    
+    inline operator Character() const throw(OutOfRange) {
+      return string.getAt(index);
+    }
   };
 
   /**
@@ -276,10 +374,12 @@ public:
 
   /** The style. */
   enum Style {
-    STYLE_JAVA, /**< \uXXXXX. */
-    STYLE_C = STYLE_JAVA, /**< \uXXXXX. */
-    STYLE_HTML, /**< &#xXXXX or &#DDDDD dependent on the current base integer. */
-    STYLE_XML = STYLE_HTML /**< &#xXXXX or &#DDDDD dependent on the current base integer. */
+    STYLE_JAVA, /**< Java format: \u1234 */
+    STYLE_C = STYLE_JAVA, /**< C format: \u1234 */
+    STYLE_CPP = STYLE_C, /**< C++ format: \u1234 */
+    STYLE_HTML, /**< HTML format &#x1234; or &#1234; dependent on the current base integer. */
+    STYLE_XML = STYLE_HTML, /**< XML format &#x1234; or &#1234; dependent on the current base integer. */
+    STYLE_PERL /**< Perl format: \x{1234} */
   };
 
   class UnicodeCharacter {
@@ -420,6 +520,36 @@ public:
   static unsigned int UTF16ToUCS4(ucs4* dest, const uint8* src, unsigned int size, unsigned int flags = EAT_BOM|EXPECT_BOM) throw(MultibyteException);
   
   /**
+    Low-level method which converts an UCS-2 encoded string to UTF-16BE. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF16BE)).
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UCS-2 encoded string.
+    @param size The number of characters in the UCS-2 encoded string.
+    @param flags The encoding flags. The default is ADD_BOM.
+
+    @return The number of bytes occupied by the UTF-16BE encoded string.
+  */
+  static unsigned int UCS2ToUTF16BE(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags) throw(WideStringException);
+
+  /**
+    Low-level method which converts an UCS-2 encoded string to UTF-16LE. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF16LE)).
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UCS-2 encoded string.
+    @param size The number of characters in the UCS-2 encoded string.
+    @param flags The encoding flags. The default is ADD_BOM.
+
+    @return The number of bytes occupied by the UTF-16LE encoded string.
+  */
+  static unsigned int UCS2ToUTF16LE(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags) throw(WideStringException);
+
+  /**
     Low-level method which converts an UCS-4 encoded string to UTF-16BE. A
     null-terminator is NOT appended to the string. The destination buffer must
     have room for enough bytes (guaranteed to not exceed
@@ -525,7 +655,7 @@ public:
     @param string NULL-terminated string. If NULL, the string is initialized with
     no characters in it.
   */
-  WideString(const Character* string) throw(WideStringException, MemoryException);
+  WideString(const wchar* string) throw(WideStringException, MemoryException);
 
   /**
     Initializes the string from a NULL-terminated string. If the length of the
@@ -536,7 +666,7 @@ public:
     no characters in it.
     @param maximum Specifies the maximum length.
   */
-  WideString(const Character* string, unsigned int maximum) throw(OutOfDomain, MemoryException);
+  WideString(const wchar* string, unsigned int maximum) throw(OutOfDomain, MemoryException);
 
   /**
     Initializes string from a NULL-terminated multibyte character string.
@@ -769,7 +899,7 @@ public:
     @param string The string to be appended.
     @param maximum The maximum length of the to be appended string.
   */
-  WideString& append(const Character* string, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException);
+  WideString& append(const wchar* string, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException);
 
   /**
     Prepends the character to this string.
@@ -869,20 +999,7 @@ public:
     @param suffix The suffix to be removed.
   */
   WideString& operator-=(const WideString& suffix) throw(MemoryException);
-
-  /**
-    Returns a NULL terminated string that contains a subsequence of characters
-    currently contained in this string. If 'end' is less than 'start' an empty
-    string is returned. Does nothing if buffer is NULL.
-
-    @param buffer The buffer to receive the NULL terminated string.
-    @param start Specifies the start of the substring.
-    @param end Specifies the end of the substring.
-
-    @return The specified buffer.
-  */
-  //Character* substring(Character* buffer, unsigned int start, unsigned int end) const throw();
-
+  
 // ****************************************************************************
 //   UNARY SECTION
 // ****************************************************************************
@@ -937,7 +1054,7 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareTo(const Character* string) const throw();
+  int compareTo(const wchar* string) const throw();
 
   /**
     Compares this string with other string ignoring the case of the characters.
@@ -949,17 +1066,6 @@ public:
     specified string.
   */
   int compareToIgnoreCase(const WideString& string) const throw();
-
-  /**
-    Compares this string with NULL-terminated string ignoring the case of the characters.
-
-    @param string The string to compare this string with.
-
-    @return Integer less than, equal to, or greater than zero if this string is
-    found, respectively, to be less than, equal to, or greater than the
-    specified string.
-  */
-  int compareToIgnoreCase(const Character* string) const throw();
 
   /**
     Returns true if this string starts with the specified prefix.
@@ -1123,17 +1229,17 @@ public:
   /**
     Returns true if the string is upper cased.
   */
-  bool isUpperCase() const throw();
+  bool isUpperCased() const throw();
 
   /**
     Returns true if the string is lower case.
   */
-  bool isLowerCase() const throw();
+  bool isLowerCased() const throw();
 
   /**
     Returns true if the string is title cased.
   */
-  bool isTitleCase() const throw();
+  bool isTitleCased() const throw();
   
 // ****************************************************************************
 //   FRIEND SECTION

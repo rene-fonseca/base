@@ -792,6 +792,17 @@ esac
 
 
 
+dnl Handle sound support
+case "$ac_base_flavour" in
+unix)
+;;
+win32)
+  BASE_ADDITIONAL_LIBADD="${BASE_ADDITIONAL_LIBADD}${BASE_ADDITIONAL_LIBADD:+ }"'-lwinmm'
+;;
+esac
+
+
+
 if test "$ac_base_flavour" = unix; then
 if test $base_explicit_large_file_system = auto; then
   AC_BASE_CHECK(
@@ -959,4 +970,4 @@ ac_base_header=base/configuration.h
 echo "updating configuration..."
 mv $ac_base_config $ac_base_header
 
-AC_OUTPUT(Makefile config/Makefile base/Makefile base/docs/Makefile base/docs/en/Makefile base/Makefile base/platforms/Makefile base/communication/Makefile base/concurrency/Makefile base/mathematics/Makefile base/io/Makefile base/string/Makefile base/mem/Makefile base/net/Makefile base/collection/Makefile base/filesystem/Makefile base/iterator/Makefile base/dl/Makefile base/xml/Makefile base/security/Makefile base/sound/Makefile)
+AC_OUTPUT(Makefile config/Makefile base/Makefile base/docs/Makefile base/docs/en/Makefile base/Makefile base/platforms/Makefile base/communication/Makefile base/concurrency/Makefile base/mathematics/Makefile base/io/Makefile base/io/async/Makefile base/string/Makefile base/mem/Makefile base/net/Makefile base/collection/Makefile base/filesystem/Makefile base/iterator/Makefile base/dl/Makefile base/xml/Makefile base/security/Makefile base/sound/Makefile)

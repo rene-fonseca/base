@@ -16,6 +16,8 @@
 
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
   #include <base/platforms/os/cygwin/cygwin.h>
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT)
+  #include <base/platforms/os/winnt/winnt.h>
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   #include <base/platforms/os/solaris/solaris.h>
 #endif

@@ -28,7 +28,7 @@
   #ifndef SSIZE_MAX
     #define SSIZE_MAX (1024*1024)
   #endif
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -64,7 +64,7 @@ void FileDescriptorOutputStream::flush() throw(IOException) {
 //  if (ioctl(fd->getHandle(), I_FLUSH, FLUSHRW) != 0) {
 //    throw IOException("Unable to flush stream");
 //  }
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int bytesToWrite, bool nonblocking) throw(IOException) {
@@ -89,7 +89,7 @@ unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int 
         throw IOException("Unable to write to object");
       }
     }
-#endif // flavour
+#endif // flavor
     bytesWritten += result;
     buffer += result;
     bytesToWrite -= result;

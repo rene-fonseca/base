@@ -165,7 +165,7 @@ Process Process::execute(const String& command) throw(ProcessException) {
   } else {
     return Process(pid);
   }
-#endif // flavour
+#endif // flavor
 }
 
 Process::Process(unsigned int id) throw() : id(id) {
@@ -219,7 +219,7 @@ bool Process::isAlive() const throw(ProcessException) {
     throw ProcessException("Unable to query process", this);
   }
   // TAG: need to protect against EINTR
-#endif // flavour
+#endif // flavor
 }
 
 int Process::wait() const  throw(ProcessException) {
@@ -244,7 +244,7 @@ int Process::wait() const  throw(ProcessException) {
   } else {
     return Application::EXIT_CODE_INVALID;
   }
-#endif // flavour
+#endif // flavor
 }
 
 // TAG: need process group support
@@ -274,7 +274,7 @@ void Process::terminate(bool force) throw(ProcessException) {
       throw ProcessException(this);
     }
   }
-#endif // flavour
+#endif // flavor
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

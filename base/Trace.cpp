@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,7 +21,7 @@
   #include <string.h>
   #include <stdio.h>
   #include <syslog.h>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -34,7 +34,7 @@ void Trace::message(const char* message) {
   syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, message);
   closelog();
 //  fprintf(stderr, "TRACE %s\n", message); // fprintf must be MT-safe
-#endif // flavour
+#endif // flavor
 }
 
 void Trace::member(const void* ptr, const char* message) {
@@ -52,7 +52,7 @@ void Trace::member(const void* ptr, const char* message) {
   syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, message);
   closelog();
 //  fprintf(stderr, "TRACE %08x >> %s\n", ptr, message); // fprintf must be MT-safe
-#endif // flavour
+#endif // flavor
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

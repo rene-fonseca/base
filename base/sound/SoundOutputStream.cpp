@@ -41,7 +41,7 @@
     #include <sys/audio.h>
     #include <sys/audioio.h>
   #endif // os
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -109,7 +109,7 @@ SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int cha
 
     assert(::ioctl(handle, I_FLUSH, FLUSHW) == 0, UnexpectedFailure()); // should never fail
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SoundOutputStream::getChannels() const throw() {
@@ -127,7 +127,7 @@ unsigned int SoundOutputStream::getChannels() const throw() {
     assert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.play.channels;
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SoundOutputStream::getRate() const throw() {
@@ -145,7 +145,7 @@ unsigned int SoundOutputStream::getRate() const throw() {
     assert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.play.sample_rate;
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SoundOutputStream::getPosition() const throw() {
@@ -166,7 +166,7 @@ unsigned int SoundOutputStream::getPosition() const throw() {
     assert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.play.samples;
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 void SoundOutputStream::resume() throw() {
@@ -179,7 +179,7 @@ void SoundOutputStream::resume() throw() {
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     assert(::ioctl(handle, I_FLUSH, FLUSHW) == 0, UnexpectedFailure()); // should never fail
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 void SoundOutputStream::pause() throw() {
@@ -198,7 +198,7 @@ void SoundOutputStream::reset() throw() {
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     assert(::ioctl(handle, I_FLUSH, FLUSHW) == 0, UnexpectedFailure()); // should never fail
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 void SoundOutputStream::wait() throw() {
@@ -228,7 +228,7 @@ void SoundOutputStream::wait() throw() {
     assert(::ioctl(handle, SNDCTL_DSP_SYNC, 0) == 0, UnexpectedFailure());
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) throw() {
@@ -268,7 +268,7 @@ unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) thr
     bytesWritten += result;
   }
   return bytesWritten;
-#endif // flavour
+#endif // flavor
 }
 
 SoundOutputStream::~SoundOutputStream() throw() {
@@ -277,7 +277,7 @@ SoundOutputStream::~SoundOutputStream() throw() {
   ::waveOutClose((HWAVEOUT)handle);
 #else
   SoundDevice::soundDevice.relinquishWriteAccess();
-#endif // flavour
+#endif // flavor
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

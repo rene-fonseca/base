@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,7 +17,7 @@
   #include <windows.h>
 #else // unix
   #include <errno.h>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

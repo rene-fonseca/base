@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,7 +20,7 @@
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <unistd.h>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -62,7 +62,7 @@ FileInfo::FileInfo(const String& path) throw(FileSystemException) : path(path) {
   access = buffer.st_atime;
   modification = buffer.st_mtime;
   change = buffer.st_ctime;
-#endif // flavour
+#endif // flavor
 }
 
 long long FileInfo::getSize() throw() {

@@ -18,7 +18,7 @@
   #include <windows.h>
 #else // unix
   #include <stdlib.h>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -28,7 +28,7 @@ namespace internal {
     extern OperatingSystem::Handle processHeap;
   };
 };
-#endif // flavour
+#endif // flavor
 
 void* DynamicMemory::allocate(unsigned int size) throw() {
   void* result;
@@ -36,7 +36,7 @@ void* DynamicMemory::allocate(unsigned int size) throw() {
   result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
 #else // unix
   result = malloc(size); // unspecified behavior if size is 0
-#endif // flavour
+#endif // flavor
   return result;
 }
 
@@ -46,7 +46,7 @@ bool DynamicMemory::release(void* memory) throw() {
 #else // unix
   free(memory); // works with 0 pointer
   return true;
-#endif // flavour
+#endif // flavor
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -20,7 +20,7 @@
   #include <base/platforms/win32/AsyncReadStreamContext.cpp>
   #include <base/platforms/win32/AsyncWriteFileContext.cpp>
   #include <base/platforms/win32/AsyncWriteStreamContext.cpp>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

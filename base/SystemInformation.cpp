@@ -19,7 +19,7 @@
   #include <windows.h>
 #else
   #include <sys/utsname.h>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -56,7 +56,7 @@ String SystemInformation::getSystem() throw() {
   struct utsname name;
   int result = ::uname(&name);
   return String(name.sysname);
-#endif // flavour
+#endif // flavor
 }
 
 String SystemInformation::getRelease() throw() {

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,7 +32,7 @@
   #include <unistd.h>
   #include <limits.h> // defines PATH_MAX
   #include <errno.h>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -45,7 +45,7 @@ String FileSystem::getPath(const String& base, const String& relative) throw() {
 #else // unix
   String result(base.getLength() + sizeof("/") + relative.getLength());
   result.append(base).append("/").append(relative);
-#endif // flavour
+#endif // flavor
   return result;
 }
 
@@ -63,7 +63,7 @@ String FileSystem::getCurrentFolder() throw(FileSystemException) {
     throw FileSystemException("Unable to get current folder", Type::getType<FileSystem>());
   }
   return String(buffer->getElements());
-#endif // flavour
+#endif // flavor
 }
 
 void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException) {
@@ -75,7 +75,7 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
   if (::chdir(path.getElements())) {
     throw FileSystemException("Unable to set current folder", Type::getType<FileSystem>());
   }
-#endif // flavour
+#endif // flavor
 }
 
 bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
@@ -112,7 +112,7 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
       throw FileSystemException("Unable to examine if file exists", Type::getType<FileSystem>());
     }
   #endif
-#endif // flavour
+#endif // flavor
 }
 
 bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
@@ -149,7 +149,7 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
       throw FileSystemException("Unable to examine if folder exists", Type::getType<FileSystem>());
     }
   #endif
-#endif // flavour
+#endif // flavor
 }
 
 void FileSystem::removeFile(const String& path) throw(FileSystemException) {
@@ -162,7 +162,7 @@ void FileSystem::removeFile(const String& path) throw(FileSystemException) {
   if (unlink(path.getElements())) {
     throw FileSystemException("Unable to remove file", Type::getType<FileSystem>());
   }
-#endif // flavour
+#endif // flavor
 }
 
 void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
@@ -174,7 +174,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
   if (rmdir(path.getElements())) {
     throw FileSystemException("Unable to remove file", Type::getType<FileSystem>());
   }
-#endif // flavour
+#endif // flavor
 }
 
 void FileSystem::makeFolder(const String& path) throw(FileSystemException) {
@@ -186,7 +186,7 @@ void FileSystem::makeFolder(const String& path) throw(FileSystemException) {
   if (mkdir(path.getElements(), 0)) {
     throw FileSystemException("Unable to make folder", Type::getType<FileSystem>());
   }
-#endif // flavour
+#endif // flavor
 }
 
 String FileSystem::getTempFolder(TemporaryFolder folder) throw() {
@@ -206,13 +206,13 @@ String FileSystem::getTempFolder(TemporaryFolder folder) throw() {
     return MESSAGE("C:\\temp"); // TAG: fixme - use same drive as windows directory
 #else // unix
     return MESSAGE("/tmp");
-#endif // flavour
+#endif // flavor
   case MACHINE_PERSISTENT:
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     return MESSAGE("C:\\temp"); // TAG: fixme - use same drive as windows directory
 #else // unix
     return MESSAGE("/var/tmp");
-#endif // flavour
+#endif // flavor
   }
 }
 

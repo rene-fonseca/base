@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,7 +30,7 @@
   #ifndef SSIZE_MAX
     #define SSIZE_MAX (1024*1024)
   #endif
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -97,7 +97,7 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException) {
     }
     return status.st_size;
   #endif
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(IOException) {
@@ -127,7 +127,7 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int bytesToR
         throw IOException("Unable to read from object", this);
       }
     }
-#endif // flavour
+#endif // flavor
     if (result == 0) { // has end been reached
       end = true;
       if (bytesToRead > 0) {
@@ -164,7 +164,7 @@ void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
       setFlags(flags & ~O_NONBLOCK);
     }
   }
-#endif // flavour
+#endif // flavor
 }
 
 void FileDescriptorInputStream::wait() const throw(IOException) {
@@ -180,7 +180,7 @@ void FileDescriptorInputStream::wait() const throw(IOException) {
   if (result == -1) {
     throw IOException("Unable to wait for input", this);
   }
-#endif // flavour
+#endif // flavor
 }
 
 bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOException) {
@@ -201,7 +201,7 @@ bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOExcepti
     throw IOException("Unable to wait for input", this);
   }
   return result; // return true if data available
-#endif // flavour
+#endif // flavor
 }
 
 FileDescriptorInputStream::~FileDescriptorInputStream() {

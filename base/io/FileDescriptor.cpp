@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +26,7 @@
   #if !defined(SSIZE_MAX)
     #define SSIZE_MAX (1024*1024)
   #endif
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -40,7 +40,7 @@ FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
     if (::close(getHandle()) != 0) {
       throw IOException("Unable to close file descriptor", this);
     }
-#endif // flavour
+#endif // flavor
   }
 }
 
@@ -73,7 +73,7 @@ int FileDescriptor::getFlags() const throw(IOException) {
     throw IOException("Unable to get flags of file descriptor", this);
   }
   return result;
-#endif // flavour
+#endif // flavor
 }
 
 void FileDescriptor::setFlags(int flags) throw(IOException) {
@@ -82,7 +82,7 @@ void FileDescriptor::setFlags(int flags) throw(IOException) {
   if (::fcntl(fd->getHandle(), F_SETFL, flags) != 0) {
     throw IOException("Unable to set flags of file descriptor", this);
   }
-#endif // flavour
+#endif // flavor
 }
 
 OperatingSystem::Handle FileDescriptor::getHandle() const throw() {
@@ -112,7 +112,7 @@ void FileDescriptor::setNonBlocking(bool value) throw(IOException) {
       setFlags(flags & ~O_NONBLOCK);
     }
   }
-#endif // flavour
+#endif // flavor
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor& value) {
@@ -136,7 +136,7 @@ FileDescriptor FileDescriptor::getStandardInput() throw() {
   return FileDescriptor(handle);
 #else // unix
   return FileDescriptor(0);
-#endif // flavour
+#endif // flavor
 }
 
 FileDescriptor FileDescriptor::getStandardOutput() throw() {
@@ -154,7 +154,7 @@ FileDescriptor FileDescriptor::getStandardOutput() throw() {
   return FileDescriptor(handle);
 #else // unix
   return FileDescriptor(1);
-#endif // flavour
+#endif // flavor
 }
 
 FileDescriptor FileDescriptor::getStandardError() throw() {
@@ -181,7 +181,7 @@ FileDescriptor FileDescriptor::getStandardError() throw() {
   return FileDescriptor(handle);
 #else // unix
   return FileDescriptor(2);
-#endif // flavour
+#endif // flavor
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

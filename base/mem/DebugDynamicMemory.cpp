@@ -20,7 +20,7 @@
 #include <windows.h>
 #else // unix
 #include <stdlib.h>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -30,7 +30,7 @@ namespace internal {
     extern OperatingSystem::Handle processHeap;
   };
 };
-#endif // flavour
+#endif // flavor
 
 void* DebugDynamicMemory::allocate(unsigned int size) throw() {
   unsigned long long newSize = sizeof(Descriptor) + sizeof(unsigned int) * ((size+sizeof(unsigned int)-1)/sizeof(unsigned int) + PREFIX_WORDS + SUFFIX_WORDS);
@@ -43,7 +43,7 @@ void* DebugDynamicMemory::allocate(unsigned int size) throw() {
   result = static_cast<unsigned int*>(::HeapAlloc(internal::specific::processHeap, 0, newSize));
 #else // unix
   result = static_cast<unsigned int*>(malloc(newSize)); // unspecified behavior if size is 0
-#endif // flavour  
+#endif // flavor  
   //assert(result % sizeof(unsigned int) == 0, MemoryCorruption());
 
   Descriptor* descriptor = pointer_cast<Descriptor*>(result);
@@ -144,7 +144,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
 #else // unix
   free(memory); // works with 0 pointer
   return true;
-#endif // flavour
+#endif // flavor
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -40,7 +40,7 @@
     #define BSD_COMP 1 // request BSD flags - don't known if this is ok to do
   #endif
   #include <sys/ioctl.h> // defines FIONREAD
-#endif // flavour
+#endif // flavor
 
 // do we need to repair bad header file
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) && defined(bind)
@@ -212,7 +212,7 @@ Socket::SocketImpl::~SocketImpl() throw(IOException) {
     if (::close((int)getHandle())) {
       throw NetworkException("Unable to close socket", this);
     }
-#endif // flavour
+#endif // flavor
   }
 }
 
@@ -249,7 +249,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
       throw NetworkException("Unable to accept connection", this);
     }
   }
-#endif // flavour
+#endif // flavor
   this->socket = new SocketImpl(handle);
   this->socket->setRemoteAddress(sa.getAddress());
   this->socket->setRemotePort(sa.getPort());
@@ -299,7 +299,7 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
     default:
       throw NetworkException("Unable to connect to socket", this);
     }
-#endif // flavour
+#endif // flavor
   }
 //  sa.setSocket((int)getHandle());
 //  socket->setLocalAddress(sa.getAddress());
@@ -368,7 +368,7 @@ void Socket::shutdownInputStream() throw(IOException) {
   if (::shutdown((int)getHandle(), 0)) { // disallow further receives
     throw IOException("Unable to shutdown socket for reading", this);
   }
-#endif // flavour
+#endif // flavor
 }
 
 void Socket::shutdownOutputStream() throw(IOException) {
@@ -381,7 +381,7 @@ void Socket::shutdownOutputStream() throw(IOException) {
   if (::shutdown((int)getHandle(), 1)) { // disallow further sends
     throw IOException("Unable to shutdown socket for writing", this);
   }
-#endif // flavour
+#endif // flavor
 }
 
 bool Socket::getBooleanOption(int option) const throw(IOException) {
@@ -496,7 +496,7 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
       }
     }
   }
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int Socket::available() const throw(IOException) {
@@ -514,7 +514,7 @@ unsigned int Socket::available() const throw(IOException) {
     throw IOException("Unable to determine the amount of data pending in the input buffer", this);
   }
   return result;
-#endif // flavour
+#endif // flavor
 }
 
 bool Socket::atEnd() const throw() {
@@ -556,7 +556,7 @@ unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocki
         throw IOException("Unable to read from socket", this);
       }
     }
-#endif // flavour
+#endif // flavor
     bytesRead += result;
     buffer += result;
     bytesToRead -= result;
@@ -599,7 +599,7 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
         throw IOException("Unable to write to socket", this);
       }
     }
-#endif // flavour
+#endif // flavor
     bytesWritten += result;
     buffer += result;
     bytesToWrite -= result;
@@ -633,21 +633,21 @@ void Socket::asyncCancel() throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ::CancelIo(getHandle());
 #else // unix
-#endif // flavour
+#endif // flavor
 }
 
 AsynchronousReadOperation Socket::read(char* buffer, unsigned int bytesToRead, AsynchronousReadEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncReadStreamContext(getHandle(), buffer, bytesToRead, listener);
-#endif // flavour
+#endif // flavor
 }
 
 AsynchronousWriteOperation Socket::write(const char* buffer, unsigned int bytesToWrite, AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncWriteStreamContext(getHandle(), buffer, bytesToWrite, listener);
-#endif // flavour
+#endif // flavor
 }
 
 void Socket::wait() const throw(IOException) {

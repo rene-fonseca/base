@@ -51,7 +51,7 @@ public:
   static const unsigned int MAXIMUM = _POSIX_SEM_VALUE_MAX;
 #else
   static const unsigned int MAXIMUM = PrimitiveTraits<int>::MAXIMUM;
-#endif // flavour
+#endif // flavor
 private:
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)

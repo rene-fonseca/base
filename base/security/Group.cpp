@@ -21,7 +21,7 @@
 #include <grp.h>
 #include <pwd.h>
 #include <unistd.h>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -39,7 +39,7 @@ Group::Group(const String& name) throw(Exception) {
   int result = ::getgrnam_r(name.getElements(), &grp, buffer->getElements(), buffer->getSize(), &entry);
   assert(result == 0, Exception(this));
   id = entry->gr_gid;
-#endif // flavour
+#endif // flavor
 }
 
 Group::Group(const User& user) throw(Exception) {
@@ -52,7 +52,7 @@ Group::Group(const User& user) throw(Exception) {
   int result = ::getpwuid_r(id, &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result, Exception(this));
   id = entry->pw_gid;
-#endif // flavour
+#endif // flavor
 }
 
 Group::Group(const Group& copy) throw() : id(copy.id) {
@@ -69,7 +69,7 @@ String Group::getName() const throw(Exception) {
   int result = ::getgrgid_r(id, &grp, buffer->getElements(), buffer->getSize(), &entry);
   assert(result == 0, Exception(this));
   return String(entry->gr_name);
-#endif // flavour
+#endif // flavor
 }
 
 Array<String> Group::getMembers() const throw(Exception) {
@@ -88,7 +88,7 @@ Array<String> Group::getMembers() const throw(Exception) {
     members.append(*memberName++);
   }
   return members;
-#endif // flavour
+#endif // flavor
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

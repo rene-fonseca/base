@@ -38,7 +38,7 @@
   #include <sys/mman.h>
 
   #undef assert
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -47,7 +47,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
     ASSERT(sizeof(FILETIME) == sizeof(long long));
     return Date((*pointer_cast<const long long*>(&time) - 116444736000000000LL)/10000000); // TAG: 0x0000001c1a021060LL
   }
-#endif // flavour
+#endif // flavor
 
 File::FileHandle::~FileHandle() throw(FileException) {
   // TAG: throw exception if region of file is still locked
@@ -60,7 +60,7 @@ File::FileHandle::~FileHandle() throw(FileException) {
     if (::close(getHandle())) {
       throw FileException("Unable to close file", this);
     }
-#endif // flavour
+#endif // flavor
   }
 }
 
@@ -702,21 +702,21 @@ void File::asyncCancel() throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ::CancelIo(getHandle());
 #else // unix
-#endif // flavour
+#endif // flavor
 }
 
 AsynchronousReadOperation File::read(char* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncReadFileContext(getHandle(), buffer, bytesToRead, offset, listener);
-#endif // flavour
+#endif // flavor
 }
 
 AsynchronousWriteOperation File::write(const char* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncWriteFileContext(getHandle(), buffer, bytesToWrite, offset, listener);
-#endif // flavour
+#endif // flavor
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

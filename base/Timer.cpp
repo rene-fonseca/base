@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,7 +18,7 @@
   #include <windows.h>
 #else // unix
   #include <sys/time.h>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -34,7 +34,7 @@ void Timer::start() throw() {
   struct timeval temp;
   gettimeofday(&temp, 0);
   startTime = 1000000l * temp.tv_sec + temp.tv_usec;
-#endif // flavour
+#endif // flavor
 }
 
 void Timer::stop() throw() {
@@ -45,7 +45,7 @@ void Timer::stop() throw() {
   struct timeval temp;
   gettimeofday(&temp, 0);
   stopTime = 1000000l * temp.tv_sec + temp.tv_usec;
-#endif // flavour
+#endif // flavor
 }
 
 long long Timer::getStartTime() const throw() {
@@ -55,7 +55,7 @@ long long Timer::getStartTime() const throw() {
   return static_cast<long long>(startTime * 1000000./frequency.QuadPart);
 #else // unix
   return startTime;
-#endif // flavour
+#endif // flavor
 }
 
 long long Timer::getStopTime() const throw() {
@@ -65,7 +65,7 @@ long long Timer::getStopTime() const throw() {
   return static_cast<long long>(stopTime * 1000000./frequency.QuadPart);
 #else // unix
   return stopTime;
-#endif // flavour
+#endif // flavor
 }
 
 long long Timer::getMicroseconds() const throw() {
@@ -75,7 +75,7 @@ long long Timer::getMicroseconds() const throw() {
   return static_cast<long long>((stopTime - startTime) * 1000000./frequency.QuadPart);
 #else // unix
   return stopTime - startTime;
-#endif // flavour
+#endif // flavor
 }
 
 long long Timer::getLiveMicroseconds() const throw() {
@@ -89,7 +89,7 @@ long long Timer::getLiveMicroseconds() const throw() {
   struct timeval temp;
   gettimeofday(&temp, 0);
   return 1000000l * temp.tv_sec + temp.tv_usec - startTime;
-#endif // flavour
+#endif // flavor
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Timer& value) throw(IOException) {

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +23,7 @@
   #include <unistd.h>
   #include <dirent.h>
   #include <errno.h>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -59,7 +59,7 @@ FolderInfo::FolderInfo(const String& path) throw(FileSystemException) : path(pat
   access = buffer.st_atime;
   modification = buffer.st_mtime;
   change = buffer.st_ctime;
-#endif // flavour
+#endif // flavor
 }
 
 FolderInfo FolderInfo::getParent() const throw(FileSystemException) {
@@ -153,7 +153,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
       throw FileSystemException("Unable to close folder");
     }
   #endif
-#endif // flavour
+#endif // flavor
   return result;
 }
 

@@ -41,7 +41,7 @@
     #include <sys/audio.h>
     #include <sys/audioio.h>
   #endif // os
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -109,7 +109,7 @@ SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int chann
 
     assert(::ioctl(handle, I_FLUSH, FLUSHR) == 0, UnexpectedFailure()); // should never fail
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SoundInputStream::available() const throw() {
@@ -126,7 +126,7 @@ unsigned int SoundInputStream::available() const throw() {
     return available;
 //    return available & ~(channels * 2 - 1); // align to sample frame (channels * bitsPerSample/8)
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SoundInputStream::getChannels() const throw() {
@@ -144,7 +144,7 @@ unsigned int SoundInputStream::getChannels() const throw() {
     assert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.record.channels;
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SoundInputStream::getRate() const throw() {
@@ -162,7 +162,7 @@ unsigned int SoundInputStream::getRate() const throw() {
     assert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.record.sample_rate;
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SoundInputStream::getPosition() const throw() {
@@ -183,7 +183,7 @@ unsigned int SoundInputStream::getPosition() const throw() {
     assert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.record.samples;
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 void SoundInputStream::resume() throw() {
@@ -202,7 +202,7 @@ void SoundInputStream::resume() throw() {
     assert(::ioctl(handle, AUDIO_SETINFO, &info) == 0, UnexpectedFailure());
     reset();
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 void SoundInputStream::pause() throw() {
@@ -220,7 +220,7 @@ void SoundInputStream::pause() throw() {
     assert(::ioctl(handle, AUDIO_SETINFO, &info) == 0, UnexpectedFailure());
     assert(::ioctl(handle, I_FLUSH, FLUSHR) == 0, UnexpectedFailure()); // should never fail
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 void SoundInputStream::reset() throw() {
@@ -238,7 +238,7 @@ void SoundInputStream::reset() throw() {
     assert(::ioctl(handle, AUDIO_SETINFO, &info) == 0, UnexpectedFailure());
     assert(::ioctl(handle, I_FLUSH, FLUSHR) == 0, UnexpectedFailure()); // should not fail
   #endif // os
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SoundInputStream::read(void* buffer, unsigned int size) throw() {
@@ -278,7 +278,7 @@ unsigned int SoundInputStream::read(void* buffer, unsigned int size) throw() {
     bytesRead += result;
   }
   return bytesRead;
-#endif // flavour
+#endif // flavor
 }
 
 SoundInputStream::~SoundInputStream() throw() {

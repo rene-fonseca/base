@@ -65,7 +65,7 @@ namespace internal {
       Trace::message(errorMessage);
       return EXCEPTION_EXECUTE_HANDLER; // terminate process (or call originalExceptionFilter(exception))
     }
-#endif // flavour
+#endif // flavor
   }; // end of namespace - specific
 }; // end of namespace - internal
 
@@ -139,6 +139,6 @@ ProcessPreinitialization::ProcessPreinitialization() throw() {
 ProcessPreinitialization::~ProcessPreinitialization() throw() {
 }
 
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,7 +28,7 @@
   #include <netdb.h> // may define MAXHOSTNAMELEN (solaris)
   #include <arpa/inet.h> // defines inet_ntop...
   #include <unistd.h> // defines gethostname
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -45,7 +45,7 @@ String InetAddress::getLocalHost() throw(NetworkException) {
 #else // unix
   char name[MAXHOSTNAMELEN + 1]; // does MAXHOSTNAMELEN include terminator
   gethostname(name, sizeof(name));
-#endif // flavour
+#endif // flavor
   return String(name);
 }
 

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,7 +17,7 @@
   #include <windows.h>
 #else // unix
   #include <pthread.h>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -30,7 +30,7 @@ ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
   if (pthread_key_create(&key, 0)) {
     throw ResourceException(this);
   }
-#endif // flavour
+#endif // flavor
 }
 
 void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
@@ -42,7 +42,7 @@ void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
   return result;
 #else
   return pthread_getspecific(key); // no errors are returned
-#endif // flavour
+#endif // flavor
 }
 
 void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
@@ -54,7 +54,7 @@ void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
   if (pthread_setspecific(key, value)) {
     throw ThreadKeyException(this);
   }
-#endif // flavour
+#endif // flavor
 }
 
 ThreadKeyImpl::~ThreadKeyImpl() throw(ThreadKeyException) {
@@ -66,7 +66,7 @@ ThreadKeyImpl::~ThreadKeyImpl() throw(ThreadKeyException) {
   if (pthread_key_delete(key)) { // key should always be valid at this point
     throw ThreadKeyException(this);
   }
-#endif // flavour
+#endif // flavor
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

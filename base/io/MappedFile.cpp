@@ -33,7 +33,7 @@
   #include <sys/mman.h>
 
   #undef assert
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -64,7 +64,7 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
     address = mmap(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, getHandle(file), region.getOffset());
   #endif
   assert(address != (void*)-1, FileException("Unable to map file region", this));
-#endif // flavour
+#endif // flavor
   bytes = address;
 }
 
@@ -77,7 +77,7 @@ void MappedFile::MappedFileImpl::flush() const throw(FileException) {
   if (msync(bytes, region.getSize(), MS_SYNC)) {
     throw FileException("Unable to flush", this);
   }
-#endif // flavour
+#endif // flavor
 }
 
 MappedFile::MappedFileImpl::~MappedFileImpl() throw(FileException) {
@@ -89,7 +89,7 @@ MappedFile::MappedFileImpl::~MappedFileImpl() throw(FileException) {
   if (munmap(bytes, region.getSize())) {
     throw FileException("Unable to unmap file", this);
   }
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int MappedFile::getGranularity() throw() {
@@ -100,7 +100,7 @@ unsigned int MappedFile::getGranularity() throw() {
 #else // unix
   ASSERT(sysconf(_SC_PAGE_SIZE) <= PrimitiveTraits<unsigned int>::MAXIMUM); // this should never happen
   return sysconf(_SC_PAGE_SIZE);
-#endif // flavour
+#endif // flavor
 }
 
 MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeable) throw(FileException) : map(0) {
@@ -135,7 +135,7 @@ MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeabl
 //    throw FileException("Unable to map file", this);
 //  }
 //  map = new MappedFileImpl(f, address, r);
-//#endif // flavour
+//#endif // flavor
 }
 
 MappedFile& MappedFile::operator=(const MappedFile& eq) throw() {

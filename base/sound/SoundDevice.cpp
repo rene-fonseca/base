@@ -40,7 +40,7 @@
     #include <sys/audio.h>
     #include <sys/audioio.h>
   #endif // os
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -72,7 +72,7 @@ void SoundDevice::reacquireAccess(unsigned int access) throw(NotSupported) {
       deviceDescriptor.setHandle(handle);
     }
   #endif // os
-#endif // flavour
+#endif // flavor
   }
 }
 

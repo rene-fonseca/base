@@ -21,7 +21,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <unistd.h>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -47,7 +47,7 @@ User User::getCurrentUser() throw() {
 #else // unix
   uid_t uid = ::getuid();
   return User(uid);
-#endif // flavour
+#endif // flavor
 }
 
 User::User(unsigned long long _id) throw() : id(_id) {
@@ -66,7 +66,7 @@ User::User(const String& name) throw(Exception) {
   int result = ::getpwnam_r(name.getElements(), &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result, Exception(this));
   id = entry->pw_uid;
-#endif // flavour
+#endif // flavor
 }
 
 String User::getName() const throw(Exception) {
@@ -79,7 +79,7 @@ String User::getName() const throw(Exception) {
   int result = ::getpwuid_r(id, &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result, Exception(this));
   return String(entry->pw_name);
-#endif // flavour
+#endif // flavor
 }
 
 String User::getHomeFolder() const throw() {
@@ -92,7 +92,7 @@ String User::getHomeFolder() const throw() {
   int result = ::getpwuid_r(id, &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result, Exception(this));
   return String(entry->pw_dir);
-#endif // flavour
+#endif // flavor
 }
 
 bool User::isMemberOf(const Group& group) throw(Exception) {
@@ -100,7 +100,7 @@ bool User::isMemberOf(const Group& group) throw(Exception) {
   throw NotImplemented(this);
 #else // unix
   throw NotImplemented(this);
-#endif // flavour
+#endif // flavor
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,7 +18,7 @@
   #include <windows.h>
 #else // unix
   #include <stdlib.h>
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -28,7 +28,7 @@ namespace internal {
     extern OperatingSystem::Handle processHeap;
   };
 };
-#endif // flavour
+#endif // flavor
 
 void* HeapImpl::allocate(unsigned int size) throw(MemoryException) {
   void* result;
@@ -36,7 +36,7 @@ void* HeapImpl::allocate(unsigned int size) throw(MemoryException) {
   result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
 #else // unix
   result = malloc(size);
-#endif // flavour
+#endif // flavor
   if ((!result) && (size != 0)) { // was memory allocated
     throw MemoryException("Unable to allocate heap", Type::getType<HeapImpl>());
   }
@@ -61,7 +61,7 @@ void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException) {
   }
 #else // unix
   result = realloc(heap, size);
-#endif // flavour
+#endif // flavor
   if ((!result) && (size != 0)) { // was memory allocated
     throw MemoryException("Unable to resize heap", Type::getType<HeapImpl>());
   }
@@ -84,7 +84,7 @@ void* HeapImpl::tryResize(void* heap, unsigned int size) throw(MemoryException) 
   }
 #else // unix
   return 0;
-#endif // flavour
+#endif // flavor
 }
 
 void HeapImpl::release(void* heap) throw(MemoryException) {
@@ -94,7 +94,7 @@ void HeapImpl::release(void* heap) throw(MemoryException) {
   }
 #else // unix
   free(heap);
-#endif // flavour
+#endif // flavor
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

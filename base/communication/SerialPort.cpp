@@ -36,7 +36,7 @@
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   #endif // os
-#endif // flavour
+#endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -50,7 +50,7 @@ SerialPort::SerialPortHandle::~SerialPortHandle() throw(CommunicationsException)
     if (::close(getHandle())) {
       throw CommunicationsException("Unable to close port", this);
     }
-#endif // flavour
+#endif // flavor
   }
 }
 
@@ -99,7 +99,7 @@ List<String> SerialPort::getPorts() throw() {
       stream << MESSAGE("/dev/ttyS") << i << FLUSH;
     }
   #endif // os
-#endif // flavour
+#endif // flavor
   return result;
 }
 
@@ -115,7 +115,7 @@ SerialPort::SerialPort(const String& _name) throw(CommunicationsException) : nam
   );
   assert(handle != OperatingSystem::INVALID_HANDLE, CommunicationsException("Unable to open serial port", this));
   this->handle = new Handle(handle);
-#endif // flavour
+#endif // flavor
 }
 
 String SerialPort::getName() const throw() {
@@ -126,7 +126,7 @@ void SerialPort::close() throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert(::CloseHandle(handle->getHandle()) != 0, CommunicationsException());
   handle = new SerialPortHandle(OperatingSystem::INVALID_HANDLE);
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SerialPort::getBaudRate() const throw(CommunicationsException) {
@@ -134,7 +134,7 @@ unsigned int SerialPort::getBaudRate() const throw(CommunicationsException) {
   DCB dcb;
   assert(::GetCommState(handle->getHandle(), &dcb) != 0, CommunicationsException());
   return dcb.BaudRate;
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SerialPort::getDataBits() const throw(CommunicationsException) {
@@ -142,7 +142,7 @@ unsigned int SerialPort::getDataBits() const throw(CommunicationsException) {
   DCB dcb;
   assert(::GetCommState(handle->getHandle(), &dcb) != 0, CommunicationsException());
   return dcb.ByteSize;
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SerialPort::getParity() const throw(CommunicationsException) {
@@ -163,7 +163,7 @@ unsigned int SerialPort::getParity() const throw(CommunicationsException) {
   default:
     throw UnexpectedFailure(this); // we should never end up here
   }
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SerialPort::getStopBits() const throw(CommunicationsException) {
@@ -180,12 +180,12 @@ unsigned int SerialPort::getStopBits() const throw(CommunicationsException) {
   default:
     throw UnexpectedFailure(this); // we should never end up here
   }
-#endif // flavour
+#endif // flavor
 }
 
 bool SerialPort::isCD() const throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#endif // flavour
+#endif // flavor
 }
 
 bool SerialPort::isCTS() const throw(CommunicationsException) {
@@ -193,7 +193,7 @@ bool SerialPort::isCTS() const throw(CommunicationsException) {
   DWORD state;
   assert(::GetCommModemStatus(handle->getHandle(), &state) != 0, CommunicationsException());
   return (state & MS_CTS_ON) != 0;
-#endif // flavour
+#endif // flavor
 }
 
 bool SerialPort::isDSR() const throw(CommunicationsException) {
@@ -201,12 +201,12 @@ bool SerialPort::isDSR() const throw(CommunicationsException) {
   DWORD state;
   assert(::GetCommModemStatus(handle->getHandle(), &state) != 0, CommunicationsException());
   return (state & MS_DSR_ON) != 0;
-#endif // flavour
+#endif // flavor
 }
 
 bool SerialPort::isDTR() const throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#endif // flavour
+#endif // flavor
 }
 
 bool SerialPort::isRI() const throw(CommunicationsException) {
@@ -214,12 +214,12 @@ bool SerialPort::isRI() const throw(CommunicationsException) {
   DWORD state;
   assert(::GetCommModemStatus(handle->getHandle(), &state) != 0, CommunicationsException());
   return (state & MS_RING_ON) != 0;
-#endif // flavour
+#endif // flavor
 }
 
 bool SerialPort::isRTS() const throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#endif // flavour
+#endif // flavor
 }
 
 void SerialPort::setParameters(unsigned int baudRate, unsigned int dataBits, unsigned int parity, unsigned int stopBits) throw(NotSupported, CommunicationsException) {
@@ -234,7 +234,7 @@ void SerialPort::setParameters(unsigned int baudRate, unsigned int dataBits, uns
   dcb.StopBits = mapStopBits[stopBits]; // FIXME
   assert(::SetCommState(handle->getHandle(), &dcb) != 0, CommunicationsException());
   // need to throw NotSupported
-#endif // flavour
+#endif // flavor
 }
 
 void SerialPort::setFlowControlMode(unsigned int flowMode) throw(CommunicationsException) {
@@ -245,31 +245,31 @@ void SerialPort::sendBreak(unsigned int milliseconds) throw(CommunicationsExcept
   ::SetCommBreak(handle->getHandle());
   ::Sleep(milliseconds); // FIXME: what if INFINITE
   ::ClearCommBreak(handle->getHandle());
-#endif // flavour
+#endif // flavor
 }
 
 void SerialPort::setDTR(bool state) throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert(::EscapeCommFunction(handle->getHandle(), state ? (SETDTR) : (CLRDTR)) != 0, CommunicationsException());
-#endif // flavour
+#endif // flavor
 }
 
 void SerialPort::setRTS(bool state) throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert(::EscapeCommFunction(handle->getHandle(), state ? (SETRTS) : (CLRRTS)) != 0, CommunicationsException());
-#endif // flavour
+#endif // flavor
 }
 
 bool SerialPort::isReadTimeoutSupported() const throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return true;
-#endif // flavour
+#endif // flavor
 }
 
 bool SerialPort::isWriteTimeoutSupported() const throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return true;
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SerialPort::getReadTimeout() const throw(CommunicationsException) {
@@ -277,7 +277,7 @@ unsigned int SerialPort::getReadTimeout() const throw(CommunicationsException) {
   COMMTIMEOUTS timeouts;
   assert(::GetCommTimeouts(handle->getHandle(), &timeouts) != 0, CommunicationsException());
   return timeouts.ReadTotalTimeoutConstant;
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SerialPort::getWriteTimeout() const throw(CommunicationsException) {
@@ -285,7 +285,7 @@ unsigned int SerialPort::getWriteTimeout() const throw(CommunicationsException) 
   COMMTIMEOUTS timeouts;
   assert(::GetCommTimeouts(handle->getHandle(), &timeouts) != 0, CommunicationsException());
   return timeouts.WriteTotalTimeoutConstant;
-#endif // flavour
+#endif // flavor
 }
 
 void SerialPort::setReadTimeout(unsigned int milliseconds) throw(CommunicationsException) {
@@ -294,7 +294,7 @@ void SerialPort::setReadTimeout(unsigned int milliseconds) throw(CommunicationsE
   clear(timeouts);
   timeouts.ReadTotalTimeoutConstant = milliseconds;
   assert(::SetCommTimeouts(handle->getHandle(), &timeouts) != 0, CommunicationsException());
-#endif // flavour
+#endif // flavor
 }
 
 void SerialPort::setWriteTimeout(unsigned int milliseconds) throw(CommunicationsException) {
@@ -303,7 +303,7 @@ void SerialPort::setWriteTimeout(unsigned int milliseconds) throw(Communications
   clear(timeouts);
   timeouts.WriteTotalTimeoutConstant = milliseconds;
   assert(::SetCommTimeouts(handle->getHandle(), &timeouts) != 0, CommunicationsException());
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SerialPort::getInputBufferSize() const throw(CommunicationsException) {
@@ -311,7 +311,7 @@ unsigned int SerialPort::getInputBufferSize() const throw(CommunicationsExceptio
   COMMPROP properties;
   assert(::GetCommProperties(handle->getHandle(), &properties) != 0, CommunicationsException());
   return properties.dwCurrentRxQueue;
-#endif // flavour
+#endif // flavor
 }
 
 void SerialPort::setInputBufferSize(unsigned int size) throw(CommunicationsException) {
@@ -319,7 +319,7 @@ void SerialPort::setInputBufferSize(unsigned int size) throw(CommunicationsExcep
   COMMPROP properties;
   assert((::GetCommProperties(handle->getHandle(), &properties) != 0) &&
          (::SetupComm(handle->getHandle(), size, properties.dwCurrentTxQueue) != 0), CommunicationsException());
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SerialPort::getOutputBufferSize() const throw(CommunicationsException) {
@@ -327,7 +327,7 @@ unsigned int SerialPort::getOutputBufferSize() const throw(CommunicationsExcepti
   COMMPROP properties;
   assert(::GetCommProperties(handle->getHandle(), &properties) != 0, CommunicationsException());
   return properties.dwCurrentTxQueue;
-#endif // flavour
+#endif // flavor
 }
 
 void SerialPort::setOutputBufferSize(unsigned int size) throw(CommunicationsException) {
@@ -335,28 +335,28 @@ void SerialPort::setOutputBufferSize(unsigned int size) throw(CommunicationsExce
   COMMPROP properties;
   assert((::GetCommProperties(handle->getHandle(), &properties) != 0) &&
          (::SetupComm(handle->getHandle(), properties.dwCurrentRxQueue, size) != 0), CommunicationsException());
-#endif // flavour
+#endif // flavor
 }
 
 void SerialPort::asyncCancel() throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ::CancelIo(handle->getHandle());
 #else // unix
-#endif // flavour
+#endif // flavor
 }
 
 AsynchronousReadOperation SerialPort::read(char* buffer, unsigned int bytesToRead, AsynchronousReadEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncReadStreamContext(handle->getHandle(), buffer, bytesToRead, listener);
-#endif // flavour
+#endif // flavor
 }
 
 AsynchronousWriteOperation SerialPort::write(const char* buffer, unsigned int bytesToWrite, AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncWriteStreamContext(handle->getHandle(), buffer, bytesToWrite, listener);
-#endif // flavour
+#endif // flavor
 }
 
 unsigned int SerialPort::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(IOException) {
@@ -384,7 +384,7 @@ unsigned int SerialPort::read(char* buffer, unsigned int bytesToRead, bool nonbl
         throw IOException("Unable to read from object", this);
       }
     }
-#endif // flavour
+#endif // flavor
     if (result == 0) { // has end been reached
       if (bytesToRead > 0) {
         throw EndOfFile(this); // attempt to read beyond end of stream
@@ -419,7 +419,7 @@ unsigned int SerialPort::write(const char* buffer, unsigned int bytesToWrite, bo
         throw IOException("Unable to write to object", this);
       }
     }
-#endif // flavour
+#endif // flavor
     bytesWritten += result;
     buffer += result;
     bytesToWrite -= result;

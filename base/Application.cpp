@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -308,7 +308,7 @@ Application::~Application() throw() {
 //   if (::UnregisterClass("mip.sdu.dk/~fonseca/base", HINSTANCE(0)) == 0) { // TAG: should be done automatically
 //     // failed but we do not care
 //   }
-#endif // flavour
+#endif // flavor
   
   std::set_terminate(internal::terminationExceptionHandler);
   std::set_unexpected(internal::unexpectedExceptionHandler);

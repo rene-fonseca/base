@@ -70,7 +70,9 @@ private:
 public:
 
   /** Initializes message. Automatically invocated by the macro WIDEMESSAGE. */
-  inline WideStringLiteral(unsigned int l, const wchar* m) throw() : length(l), message(m) {}
+  inline WideStringLiteral(unsigned int _length, const wchar* _message) throw()
+    : length(_length), message(_message) {
+  }
   /** Cast to the usual message type. */
   inline operator const wchar*() const throw() {return message;}
   /** Returns the length of the string. */
@@ -93,7 +95,7 @@ class WideTraits {
 public:
 
   /** The type of a single character. */
-  typedef wchar Character;
+  typedef wchar Character; // TAG: working towards ucs4
   /** Specifies the terminator for NULL-terminated strings. */
   static const wchar TERMINATOR = L'\0';
 
@@ -908,23 +910,43 @@ public:
     Compare this string with another string.
 
     @param string The string to compare this string with.
-    @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
+    
+    @return Integer less than, equal to, or greater than zero if this string is
+    found, respectively, to be less than, equal to, or greater than the
+    specified string.
   */
   int compareTo(const WideString& string) const throw();
 
   /**
+    Compare this string with a string literal.
+
+    @param string The string literal to compare this string with.
+    
+    @return Integer less than, equal to, or greater than zero if this string is
+    found, respectively, to be less than, equal to, or greater than the
+    specified string.
+  */
+  int compareTo(const WideStringLiteral& string) const throw();
+  
+  /**
     Compare this string with NULL-terminated string.
 
     @param string The string to compare this string with.
-    @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
+    
+    @return Integer less than, equal to, or greater than zero if this string is
+    found, respectively, to be less than, equal to, or greater than the
+    specified string.
   */
-  int compareTo(const Character* string) const throw(WideStringException);
+  int compareTo(const Character* string) const throw();
 
   /**
     Compares this string with other string ignoring the case of the characters.
 
     @param string The string to compare this string with.
-    @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
+    
+    @return Integer less than, equal to, or greater than zero if this string is
+    found, respectively, to be less than, equal to, or greater than the
+    specified string.
   */
   int compareToIgnoreCase(const WideString& string) const throw();
 
@@ -932,9 +954,12 @@ public:
     Compares this string with NULL-terminated string ignoring the case of the characters.
 
     @param string The string to compare this string with.
-    @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
+
+    @return Integer less than, equal to, or greater than zero if this string is
+    found, respectively, to be less than, equal to, or greater than the
+    specified string.
   */
-  int compareToIgnoreCase(const Character* string) const throw(WideStringException);
+  int compareToIgnoreCase(const Character* string) const throw();
 
   /**
     Returns true if this string starts with the specified prefix.
@@ -968,6 +993,11 @@ public:
     Equality operator.
   */
   inline bool operator==(const WideString& string) const throw() {return compareTo(string) == 0;}
+
+  /**
+    Equality operator.
+  */
+  inline bool operator==(const WideStringLiteral& string) const throw() {return compareTo(string) == 0;}
 
   /**
     Inequality operator.
@@ -1090,6 +1120,21 @@ public:
     return result;
   }
 
+  /**
+    Returns true if the string is upper cased.
+  */
+  bool isUpperCase() const throw();
+
+  /**
+    Returns true if the string is lower case.
+  */
+  bool isLowerCase() const throw();
+
+  /**
+    Returns true if the string is title cased.
+  */
+  bool isTitleCase() const throw();
+  
 // ****************************************************************************
 //   FRIEND SECTION
 // ****************************************************************************

@@ -48,8 +48,7 @@
 #  include <string.h> // required by FD_SET on solaris
 #  include <sys/mman.h>
 
-#  if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) || \
-       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65))
+#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
 #    include <sys/acl.h> // solaris and irix
 enum {
   _COM_SUN__ACL_USER = USER,
@@ -57,6 +56,8 @@ enum {
 };
 #    undef USER
 #    undef GROUP
+#  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
+#    include <sys/acl.h> // irix
 #  endif
 
 #  undef assert

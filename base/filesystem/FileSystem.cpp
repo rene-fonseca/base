@@ -62,7 +62,7 @@ struct packedStat64 { // temporary fix for unaligned st_size
   __time_t st_ctime;
   unsigned long int __unused3;
   __ino64_t st_ino;
-} __attribute__ ((packed));
+} _DK_SDU_MIP__BASE__PACKED;
 #endif // GNU Linux
 
 unsigned int FileSystem::counter = 0;
@@ -491,20 +491,20 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
     // check if shell symbolic link
     static const unsigned char GUID[16] = {0x01, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46};
     
-    typedef struct {
-      LittleEndian::UnsignedInt identifier; // 'L'
+    struct ShortcutHeader {
+      LittleEndian<uint32> identifier; // 'L'
       unsigned char guid[16];
-      LittleEndian::UnsignedInt flags;
-      LittleEndian::UnsignedInt attributes;
-      LittleEndian::UnsignedLongLong time1;
-      LittleEndian::UnsignedLongLong time2;
-      LittleEndian::UnsignedLongLong time3;
-      LittleEndian::UnsignedInt length;
-      LittleEndian::UnsignedInt icon;
-      LittleEndian::UnsignedInt windowMode;
-      LittleEndian::UnsignedInt hotKey;
-      LittleEndian::UnsignedInt reserved[2];
-    } __attribute__ ((packed)) ShortcutHeader;
+      LittleEndian<uint32> flags;
+      LittleEndian<uint32> attributes;
+      LittleEndian<uint64> time1;
+      LittleEndian<uint64> time2;
+      LittleEndian<uint64> time3;
+      LittleEndian<uint32> length;
+      LittleEndian<uint32> icon;
+      LittleEndian<uint32> windowMode;
+      LittleEndian<uint32> hotKey;
+      LittleEndian<uint32> reserved[2];
+    } _DK_SDU_MIP__BASE__PACKED;
     
     enum Flags {
       SHELL_ITEM_ID_PRESENT = 1 << 0,
@@ -825,47 +825,47 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
   // check if shell symbolic link
   static const unsigned char GUID[16] = {0x01, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46};
   
-  typedef struct {
-    LittleEndian::UnsignedInt identifier; // 'L'
+  struct ShortcutHeader {
+    LittleEndian<uint32> identifier; // 'L'
     unsigned char guid[16];
-    LittleEndian::UnsignedInt flags;
-    LittleEndian::UnsignedInt attributes;
-    LittleEndian::UnsignedLongLong time1;
-    LittleEndian::UnsignedLongLong time2;
-    LittleEndian::UnsignedLongLong time3;
-    LittleEndian::UnsignedInt length;
-    LittleEndian::UnsignedInt icon;
-    LittleEndian::UnsignedInt windowMode;
-    LittleEndian::UnsignedInt hotKey;
-    LittleEndian::UnsignedInt reserved[2];
-  } __attribute__ ((packed)) ShortcutHeader;
+    LittleEndian<uint32> flags;
+    LittleEndian<uint32> attributes;
+    LittleEndian<uint64> time1;
+    LittleEndian<uint64> time2;
+    LittleEndian<uint64> time3;
+    LittleEndian<uint32> length;
+    LittleEndian<uint32> icon;
+    LittleEndian<uint32> windowMode;
+    LittleEndian<uint32> hotKey;
+    LittleEndian<uint32> reserved[2];
+  } _DK_SDU_MIP__BASE__PACKED;
   
-  typedef struct {
-    LittleEndian::UnsignedInt size; // size of structure and data
-    LittleEndian::UnsignedInt offset; // 0x1c
-    LittleEndian::UnsignedInt flags;
-    LittleEndian::UnsignedInt volumeOffset;
-    LittleEndian::UnsignedInt pathOffset;
-    LittleEndian::UnsignedInt networkVolumeOffset;
-    LittleEndian::UnsignedInt remainingPathOffset;
-  } __attribute__ ((packed)) FileLocationInfo;
+  struct FileLocationInfo {
+    LittleEndian<uint32> size; // size of structure and data
+    LittleEndian<uint32> offset; // 0x1c
+    LittleEndian<uint32> flags;
+    LittleEndian<uint32> volumeOffset;
+    LittleEndian<uint32> pathOffset;
+    LittleEndian<uint32> networkVolumeOffset;
+    LittleEndian<uint32> remainingPathOffset;
+  } _DK_SDU_MIP__BASE__PACKED;
   
-  typedef struct {
-    LittleEndian::UnsignedInt size; // size of structure
-    LittleEndian::UnsignedInt type;
-    LittleEndian::UnsignedInt serialNumber;
-    LittleEndian::UnsignedInt labelOffset;
+  struct LocalVolume {
+    LittleEndian<uint32> size; // size of structure
+    LittleEndian<uint32> type;
+    LittleEndian<uint32> serialNumber;
+    LittleEndian<uint32> labelOffset;
     char label;
-  } __attribute__ ((packed)) LocalVolume;
+  } _DK_SDU_MIP__BASE__PACKED;
   
-  typedef struct {
-    LittleEndian::UnsignedInt size; // size of structure
-    LittleEndian::UnsignedInt reserved0;
-    LittleEndian::UnsignedInt shareOffset;
-    LittleEndian::UnsignedInt reserved1;
-    LittleEndian::UnsignedInt reserved2;
+  struct NetworkVolume {
+    LittleEndian<uint32> size; // size of structure
+    LittleEndian<uint32> reserved0;
+    LittleEndian<uint32> shareOffset;
+    LittleEndian<uint32> reserved1;
+    LittleEndian<uint32> reserved2;
     char share;
-  } __attribute__ ((packed)) NetworkVolume;
+  } _DK_SDU_MIP__BASE__PACKED;
   
   enum Flags {
     SHELL_ITEM_ID_PRESENT = 1 << 0,
@@ -902,11 +902,11 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
     }
     unsigned long long offset = sizeof(ShortcutHeader);
     if (header->flags & SHELL_ITEM_ID_PRESENT) {
-      if (offset + sizeof(LittleEndian::UnsignedShort) > linkLength) {
+      if (offset + sizeof(LittleEndian<uint16>) > linkLength) {
         break;
       }
-      const LittleEndian::UnsignedShort* shellItemSize = (const LittleEndian::UnsignedShort*)(buffer + offset);
-      offset += *shellItemSize + sizeof(LittleEndian::UnsignedShort);
+      const LittleEndian<uint16>* shellItemSize = (const LittleEndian<uint16>*)(buffer + offset);
+      offset += *shellItemSize + sizeof(LittleEndian<uint16>);
     }
     
     if (header->flags & POINTS_TO_FILE_OR_FOLDER) {
@@ -984,22 +984,22 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
       }
     } else if (header->flags & HAS_RELATIVE_PATH) {
       if (header->flags & HAS_DESCRIPTION) { // skip description if present
-        if (offset + sizeof(LittleEndian::UnsignedShort) > linkLength) {
+        if (offset + sizeof(LittleEndian<uint16>) > linkLength) {
           break;
         }
-        const LittleEndian::UnsignedShort* length = (const LittleEndian::UnsignedShort*)(buffer + offset);
-        offset += *length + sizeof(LittleEndian::UnsignedShort); // skip description
+        const LittleEndian<uint16>* length = (const LittleEndian<uint16>*)(buffer + offset);
+        offset += *length + sizeof(LittleEndian<uint16>); // skip description
         if (offset > linkLength) {
           break;
         }
       }
 
       // read relative path
-      if (offset + sizeof(LittleEndian::UnsignedShort) > linkLength) {
+      if (offset + sizeof(LittleEndian<uint16>) > linkLength) {
         break;
       }
-      const LittleEndian::UnsignedShort* length = (const LittleEndian::UnsignedShort*)(buffer + offset);
-      if (offset + *length + sizeof(LittleEndian::UnsignedShort) > linkLength) { // make sure path fits in file (with terminator)
+      const LittleEndian<uint16>* length = (const LittleEndian<uint16>*)(buffer + offset);
+      if (offset + *length + sizeof(LittleEndian<uint16>) > linkLength) { // make sure path fits in file (with terminator)
         break;
       }
       
@@ -1009,17 +1009,17 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
 //       if (linkLength + 1 > sizeof(buffer)) {
 //         break; // no room for terminator
 //       }
-//       buffer[offset + sizeof(LittleEndian::UnsignedShort) + *length] = 0; // add terminator
+//       buffer[offset + sizeof(LittleEndian<uint16>) + *length] = 0; // add terminator
 //       char fullPath[MAX_PATH];
 //       char* fullFilename;
-//       bool error = ::GetFullPathName(buffer + offset + sizeof(LittleEndian::UnsignedShort),
+//       bool error = ::GetFullPathName(buffer + offset + sizeof(LittleEndian<uint16>),
 //                                      sizeof(fullPath),
 //                                      fullPath,
 //                                      &fullFilename) == 0;
 //       if (error) {
 //         break;
 //       }
-      return String(buffer + offset + sizeof(LittleEndian::UnsignedShort), *length); // return relative path
+      return String(buffer + offset + sizeof(LittleEndian<uint16>), *length); // return relative path
     }
 
     break; // exit while loop

@@ -131,7 +131,7 @@ public:
   /**
     Initializes an empty allocator.
   */
-  inline explicit Allocator() throw() {}
+  inline explicit Allocator() throw() : elements(0) {}
 
   /**
     Initializes an allocator of the specified size without initializing the
@@ -146,13 +146,17 @@ public:
   /**
     Initializes allocator from other allocator.
   */
-  inline Allocator(const Allocator& copy) throw(MemoryException) : AllocatorImpl(copy) {}
+  inline Allocator(const Allocator& copy) throw(MemoryException) :
+    AllocatorImpl(copy), elements(copy.elements) {}
 
   /**
     Assignment of allocator by allocator.
   */
   inline Allocator& operator=(const Allocator& eq) throw(MemoryException) {
-    AllocatorImpl::operator=(eq);
+    if (&eq != this) { // protect against self assignment
+      AllocatorImpl::operator=(eq);
+      elements = eq.elements;
+    }
     return *this;
   }
 
@@ -181,8 +185,8 @@ public:
     Sets the size of the allocated memory.
   */
   inline void setSize(unsigned int size) throw(MemoryException) {
-    if (size != this->size) {
-      this->size = size;
+    if (size != elements) {
+      elements = size;
       AllocatorImpl::setSize(size * sizeof(TYPE));
     }
   }

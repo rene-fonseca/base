@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -233,7 +233,7 @@ public:
 
 #define _DK_SDU_MIP__BASE__STUB(APPLICATION) \
 int main(int argc, const char* argv[], const char* env[]) throw() { \
-  return Application::stub<APPLICATION>(argc, argv, env); \
+  return dk::sdu::mip::base::Application::stub<APPLICATION>(argc, argv, env); \
 }
 
 #if (!defined(STUB))

@@ -15,10 +15,11 @@
 #include <base/Functor.h>
 #include <base/io/EndOfFile.h>
 #include <base/concurrency/Thread.h>
+#include <base/string/String.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // __unix__
+#else // unix
   #include <sys/types.h>
   #include <sys/time.h> // defines timeval on Linux systems
   #include <sys/stat.h>
@@ -34,8 +35,29 @@ Pipe::PipeImpl invalidPipe;
 
 Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  // create two anonymous pipes for duplex
-#else // __unix__
+  // create two named pipes with unique names (one for input and one for output - may be the same handle)
+  HANDLE ihandle = CreateFile(
+    String("\\\\.\\pipe\\???i").getElements(), // file name
+    GENERIC_READ | SYNCHRONIZE, // access mode FIXME
+    FILE_SHARE_DELETE, // share mode
+    0, // security descriptor
+    CREATE_NEW, // how to create (fail is already exists)
+    FILE_FLAG_OVERLAPPED | FILE_FLAG_DELETE_ON_CLOSE, // file attributes
+    0
+  );
+  HANDLE ohandle = CreateFile(
+    String("\\\\.\\pipe\\???o").getElements(), // file name - generate unique name - formal name - time - prefix
+    GENERIC_WRITE | SYNCHRONIZE, // access mode FIXME
+    FILE_SHARE_DELETE, // share mode
+    0, // security descriptor
+    CREATE_NEW, // how to create (fail is already exists)
+    FILE_FLAG_OVERLAPPED | FILE_FLAG_DELETE_ON_CLOSE, // file attributes
+    0
+  );
+  // FIXME: remember to close before raising an exception
+  assert(ihandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes"));
+  assert(ohandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes"));
+#else // unix
   OperatingSystem::Handle handles[2];
   if (::pipe(handles)) {
     throw PipeException("Unable to create pipe");
@@ -57,7 +79,7 @@ Pipe::PipeImpl::~PipeImpl() throw(PipeException) {
       throw PipeException("Unable to close pipe");
     }
   }
-#else // __unix__
+#else // unix
   if (getHandle() != OperatingSystem::INVALID_HANDLE) {
     if (::close(getHandle())) {
       throw PipeException("Unable to close pipe");
@@ -79,9 +101,9 @@ void Pipe::close() throw(PipeException) {
 unsigned int Pipe::getBufferSize() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD result;
-  GetNamedPipeInfo(fd->getHandle(), NULL, &result, NULL, NULL);
+  GetNamedPipeInfo(fd->getHandle(), 0, &result, 0, 0); // TAG: separate input and output buffer sizes
   return result;
-#else // __unix__
+#else // unix
   return PIPE_BUF;
 #endif
 }
@@ -93,11 +115,11 @@ bool Pipe::atEnd() const throw(PipeException) {
 unsigned int Pipe::available() const throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD bytesAvailable;
-  if (!::PeekNamedPipe(fd->getHandle(), NULL, 0, NULL, &bytesAvailable, NULL)) {
+  if (!::PeekNamedPipe(fd->getHandle(), 0, 0, 0, &bytesAvailable, 0)) {
     throw PipeException("Unable to get available bytes");
   }
   return bytesAvailable;
-#else // __unix__
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     if (::fstat64(fd->getHandle(), &status) != 0) {
@@ -129,7 +151,7 @@ void Pipe::flush() throw(PipeException) {
   if (!FlushFileBuffers(fd->getHandle())) {
     throw PipeException("Unable to flush pipe");
   }
-#else // __unix__
+#else // unix
   int command = FLUSHW;
   if (::ioctl(fd->getHandle(), I_FLUSH, &command)) {
     throw PipeException("Unable to flush pipe");
@@ -137,23 +159,27 @@ void Pipe::flush() throw(PipeException) {
 #endif
 }
 
-unsigned int Pipe::read(char* buffer, unsigned int size, bool nonblocking) throw(PipeException) {
+unsigned int Pipe::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(PipeException) {
   // TAG: currently always blocks
+  // select wait mode with SetNamedPipeHandleState for win32
   assert(!end, EndOfFile());
   unsigned int bytesRead = 0;
-  while (bytesRead < size) {
+  while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
-    BOOL success = ::ReadFile(fd->getHandle(), buffer, size, &result, NULL);
+    BOOL success = ::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, NULL);
     if (!success) { // has error occured
-      if (::GetLastError() == ERROR_BROKEN_PIPE) {
+      DWORD error = ::GetLastError();
+      if (error == ERROR_BROKEN_PIPE) { // eof
         result = 0;
+      } else if (error = ERROR_NO_DATA) { // no data available (only in non-blocking mode)
+        return bytesRead;
       } else {
         throw PipeException("Unable to read from pipe");
       }
     }
-#else // __unix__
-    int result = ::read(fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
+#else // unix
+    int result = ::read(fd->getHandle(), buffer, minimum<unsigned int>(bytesToRead, SSIZE_MAX));
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
       case EINTR: // interrupted by signal before any data was read
@@ -167,27 +193,29 @@ unsigned int Pipe::read(char* buffer, unsigned int size, bool nonblocking) throw
 #endif
     if (result == 0) { // has end been reached
       end = true;
-      if (bytesRead < size) {
+      if (bytesToRead > 0) {
         throw EndOfFile(); // attempt to read beyond end of stream
       }
     }
     bytesRead += result;
+    buffer += result;
+    bytesToRead -= result;
   }
   return bytesRead;
 }
 
-unsigned int Pipe::write(const char* buffer, unsigned int size, bool nonblocking) throw(PipeException) {
+unsigned int Pipe::write(const char* buffer, unsigned int bytesToWrite, bool nonblocking) throw(PipeException) {
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
-  while (bytesWritten < size) {
+  while (bytesToWrite) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
-    BOOL success = ::WriteFile(fd->getHandle(), buffer, size, &result, NULL);
+    BOOL success = ::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0);
     if (!success) {
       throw PipeException("Unable to write to pipe");
     }
-#else // __unix__
-    int result = ::write(fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
+#else // unix
+    int result = ::write(fd->getHandle(), buffer, minimum<unsigned int>(bytesToWrite, SSIZE_MAX));
     if (result < 0) { // has an error occured
       switch (errno) {
       case EINTR: // interrupted by signal before any data was written
@@ -200,19 +228,22 @@ unsigned int Pipe::write(const char* buffer, unsigned int size, bool nonblocking
     }
 #endif
     bytesWritten += result;
+    buffer += result;
+    bytesToWrite -= result;
   }
   return bytesWritten;
 }
 
 void Pipe::wait() const throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  // TAG: not implemented
-#else // __unix__
+  DWORD result = WaitForSingleObject(fd->getHandle(), INFINITE);
+  ASSERT(result == WAIT_OBJECT_0);
+#else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET(fd->getHandle(), &rfds);
 
-  int result = ::select(fd->getHandle() + 1, &rfds, NULL, NULL, NULL);
+  int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
     throw PipeException("Unable to wait for input");
   }
@@ -221,8 +252,9 @@ void Pipe::wait() const throw(PipeException) {
 
 bool Pipe::wait(unsigned int timeout) const throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  // TAG: not implemented
-#else // __unix__
+  DWORD result = WaitForSingleObject(fd->getHandle(), timeout); // FIXME:
+  return result == WAIT_OBJECT_0;
+#else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET(fd->getHandle(), &rfds);
@@ -231,7 +263,7 @@ bool Pipe::wait(unsigned int timeout) const throw(PipeException) {
   tv.tv_sec = timeout/1000000;
   tv.tv_usec = timeout % 1000000;
 
-  int result = ::select(fd->getHandle() + 1, &rfds, NULL, NULL, &tv);
+  int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
     throw PipeException("Unable to wait for input");
   }

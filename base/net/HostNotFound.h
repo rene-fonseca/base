@@ -21,6 +21,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Specifies that the host doesn't exist or couldn't be found.
 
+  @short Host not found exception
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -39,6 +41,23 @@ public:
     @param message The message.
   */
   HostNotFound(const char* message);
+
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
+  HostNotFound(Type type) throw() : NetworkException(type) {
+  }
+  
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  HostNotFound(const char* message, Type type) throw() : NetworkException(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

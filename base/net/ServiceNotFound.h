@@ -41,6 +41,22 @@ public:
     @param message The message.
   */
   ServiceNotFound(const char* message);
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
+  ServiceNotFound(Type type) throw() : NetworkException(type) {
+  }
+  
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  ServiceNotFound(const char* message, Type type) throw() : NetworkException(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

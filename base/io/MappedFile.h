@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short File region mapper.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.1
 */
 
 class MappedFile : public Object {
@@ -49,7 +49,7 @@ private:
 
     inline bool isWriteable() throw() {return writeable;}
 
-    void flush() const throw(FileException);
+    void synchronize() throw(FileException);
 
     ~MappedFileImpl() throw(FileException);
   };
@@ -104,7 +104,7 @@ public:
   /**
     Flushes the mapping.
   */
-  inline void flush() const throw(FileException) {map->flush();}
+  inline void synchronize() throw(FileException) {map->synchronize();}
 
   /**
     Maps the specified file region.

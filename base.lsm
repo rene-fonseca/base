@@ -7,8 +7,8 @@ Keywords:       base c++
 Author:         René Møller Fonseca <fonseca@mip.sdu.dk>
 Maintained-by:  René Møller Fonseca <fonseca@mip.sdu.dk>
 Primary-site:   
-Home-page:      http://www.mip.sdu.dk/base
+BHome-page:     http://www.mip.sdu.dk/~fonseca/base
 Original-site:  
-Platforms:      Linux, Irix, Solaris, and Windows NT.
-Copying-policy: GNU Public License
+Platforms:      Linux (x86), Irix (mips), Solaris (sparc), and Windows NT (x86).
+Copying-policy: GNU General Public License Version 2, June 1991
 End

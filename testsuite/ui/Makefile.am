@@ -16,10 +16,11 @@ AUTOMAKE_OPTIONS = 1.4 foreign nostdinc
 
 LIBS=-lbase
 
-bin_PROGRAMS = opengl pixmap window
+bin_PROGRAMS = opengl pixmap simple window
 
 opengl_SOURCES = opengl.cpp
 pixmap_SOURCES = pixmap.cpp
 window_SOURCES = window.cpp
+simple_SOURCES = simple.cpp
 
 EXTRA_DIST =

@@ -6,7 +6,9 @@
 #include <base/features.h>
 #include <base/io/File.h>
 #include <base/io/EndOfFile.h>
+#include <base/concurrency/Thread.h>
 #include <base/Base.h>
+#include <base/Functor.h>
 
 #if defined(__win32__)
   #include <windows.h>
@@ -184,7 +186,7 @@ File::File(const String& path, Access access, unsigned int options) throw(FileNo
   }
 
   int handle;
-  if ((handle = ::open(path, flags)) == -1) {
+  if ((handle = ::open(path, flags, S_IRUSR | S_IWUSR | S_IRGRP)) == -1) {
     throw FileNotFound("Unable to open file");
   }
   fd = new FileImpl(handle);
@@ -261,9 +263,10 @@ void File::setPosition(long long position, Whence whence) throw(FileException) {
 }
 
 void File::truncate(long long size) throw(FileException) {
+  long long oldSize = File::getSize();
 #if defined(__win32__)
   setPosition(size);
-  if (!SetFileEnd((HANDLE)fd->getHandle())) {
+  if (!SetEndOfFile((HANDLE)fd->getHandle())) {
     throw FileException("Unable to truncate");
   }
 #else // __unix__
@@ -272,12 +275,24 @@ void File::truncate(long long size) throw(FileException) {
       throw FileException("Unable to truncate");
     }
   #else
-    assert((size >= 0) && (size <= INT_MAX), FileException("Unable to truncate"))
+    assert((size >= 0) && (size <= INT_MAX), FileException("Unable to truncate"));
     if (ftruncate(fd->getHandle(), size)) {
       throw FileException("Unable to truncate");
     }
   #endif
+  if (File::getSize() > oldSize) { // has file been extended
+    return;
+  }
 #endif
+  if (size > oldSize) {
+    Allocator<char>* buffer = Thread::getLocalStorage();
+    fill<char>(buffer->getElements(), buffer->getSize(), 0);
+    setPosition(oldSize);
+    long long count = size - oldSize;
+    while (count > 0) {
+      count -= write(buffer->getElements(), minimum<long long>(count, buffer->getSize())); // blocking write
+    }
+  }
 }
 
 void File::flush() throw(FileException) {

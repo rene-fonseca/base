@@ -75,9 +75,9 @@ public:
   } Access;
   /** Type used to specify the relative offset. */
   typedef enum {
-    BEGIN, /**< position is relative to begining of file */
-    CURRENT, /**< position is relative to current position of file */
-    END /**< position is relative to end of file */
+    BEGIN, /**< Position is relative to begining of file */
+    CURRENT, /**< Position is relative to current position of file */
+    END /**< Position is relative to end of file */
   } Whence;
   /** File initialization options. */
   enum Options {
@@ -151,8 +151,10 @@ public:
   void setPosition(long long position, Whence whence = BEGIN) throw(FileException);
 
   /**
-    Truncates the file to the specified length. The file must be opened with
-    write access.
+    Truncates the file to the specified size. The file must have been opened
+    with write access. If the file previously was larger than the specified
+    size, the extra data is discarded. If the file was previously shorter, it
+    is extended with zeros.
   */
   void truncate(long long size) throw(FileException);
 
@@ -257,7 +259,7 @@ public:
 
 
 /**
-  File map.
+  Mapping of file into processes address space.
 
   @author René Møller Fonseca
   @version 1.0

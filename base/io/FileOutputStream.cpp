@@ -26,4 +26,8 @@ FileOutputStream& FileOutputStream::operator=(const FileOutputStream& eq) throw(
   return *this;
 }
 
+void FileOutputStream::close() throw(IOException) {
+  file.close();
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

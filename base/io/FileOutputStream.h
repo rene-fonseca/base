@@ -44,12 +44,14 @@ public:
 
   FileOutputStream& operator=(const FileOutputStream& eq) throw();
 
+  void close() throw(IOException);
+
   /**
     Forces any buffered bytes to be written out.
   */
   inline void flush() throw(IOException) {file.flush();}
 
-  inline unsigned int write(char* buffer, unsigned int count, bool nonblocking = false) throw(IOException) {
+  inline unsigned int write(const char* buffer, unsigned int count, bool nonblocking = false) throw(IOException) {
     file.write(buffer, count, nonblocking);
   }
 };

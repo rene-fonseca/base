@@ -138,21 +138,18 @@ FormatInputStream& operator>>(FormatInputStream& stream, unsigned int& value) th
     ch = stream.getCharacter();
   } while (String::Traits::isSpace(ch));
 
-  assert((ch >= '0') && (ch <= '9'), InvalidFormat("Not an unsigned int"));
   do {
-    ch -= '0';
-    if ((ch >= 0) && (ch <= 9)) {
-      if ((value < UnsignedInt::MAXIMUM/10) || ((value == UnsignedInt::MAXIMUM/10) && (ch <= UnsignedInt::MAXIMUM%10))) {
-        value = ch + 10 * value;
-        try {
-          ch = stream.getCharacter(); // TAG: must accept eof
-        } catch (EndOfFile& e) {
-          break;
-        }
-        continue;
+    assert(ASCIITraits::isDigit(ch), InvalidFormat("Not an unsigned int"));
+    unsigned char temp = ASCIITraits::digitToValue(ch);
+    if ((value < UnsignedInt::MAXIMUM/10) || ((value == UnsignedInt::MAXIMUM/10) && (temp <= UnsignedInt::MAXIMUM%10))) {
+      value = ch + 10 * value;
+      try {
+        ch = stream.getCharacter(); // TAG: must accept eof
+      } catch (EndOfFile& e) {
+        break;
       }
+      continue;
     }
-    throw InvalidFormat("Not an unsigned int");
   } while (!String::Traits::isSpace(ch));
   return stream;
 }

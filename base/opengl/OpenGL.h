@@ -1082,7 +1082,8 @@ public:
     // TEXTURE_INTENSITY_SIZE
     // TEXTURE_PRIORITY
     // TEXTURE_RESIDENT
-
+    DEPTH_TEXTURE_MODE = 0x884b,
+    
     // HintMode
     DONT_CARE = 0x1100,
     FASTEST = 0x1101,

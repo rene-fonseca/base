@@ -8,7 +8,7 @@
 
 #if defined(__win32__)
   #include <windows.h>
-#else // __UNIX__
+#else // __unix__
   #include <sys/time.h>
 #endif
 
@@ -21,7 +21,7 @@ Timer::Timer() throw() : stopTime(0) {
 void Timer::start() throw() {
 #if defined(__win32__)
   ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
-  QueryPerformanceCounter((LARGE_INTERGER*)&startTime);
+  QueryPerformanceCounter((LARGE_INTEGER*)&startTime);
 #else // __unix__
   struct timeval temp;
   gettimeofday(&temp, 0);
@@ -32,7 +32,7 @@ void Timer::start() throw() {
 void Timer::stop() throw() {
 #if defined(__win32__)
   ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
-  QueryPerformanceCounter((LARGE_INTERGER*)&stopTime);
+  QueryPerformanceCounter((LARGE_INTEGER*)&stopTime);
 #else // __unix__
   struct timeval temp;
   gettimeofday(&temp, 0);
@@ -44,7 +44,7 @@ long long Timer::getStartTime() const throw() {
 #if defined(__win32__)
   LARGE_INTEGER frequency; // ticks per second
   QueryPerformanceFrequency(&frequency); // ignore any error
-  return startTime * 1000000./frequency.QuadPart;
+  return static_cast<long long>(startTime * 1000000./frequency.QuadPart);
 #else // __unix__
   return startTime;
 #endif
@@ -54,7 +54,7 @@ long long Timer::getStopTime() const throw() {
 #if defined(__win32__)
   LARGE_INTEGER frequency; // ticks per second
   QueryPerformanceFrequency(&frequency); // ignore any error
-  return stopTime * 1000000./frequency.QuadPart;
+  return static_cast<long long>(stopTime * 1000000./frequency.QuadPart);
 #else // __unix__
   return stopTime;
 #endif
@@ -64,7 +64,7 @@ long long Timer::getMicroseconds() const throw() {
 #if defined(__win32__)
   LARGE_INTEGER frequency; // ticks per second
   QueryPerformanceFrequency(&frequency); // ignore any error
-  return (stopTime - startTime) * 1000000./frequency.QuadPart;
+  return static_cast<long long>((stopTime - startTime) * 1000000./frequency.QuadPart);
 #else // __unix__
   return stopTime - startTime;
 #endif

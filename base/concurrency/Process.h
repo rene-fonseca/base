@@ -79,11 +79,20 @@ public:
   static Process getProcess() throw();
   
   /**
-    Returns parent process.
+    Returns parent process. A process object with id 0 is returned when no
+    parent is available.
 
     @return Invalid process if not supported.
   */
   static Process getParentProcess() throw();
+  
+  /**
+    Returns the number of processors in the system. It is legal for the
+    operating system to lie about the true number of processors.
+
+    @return Returns 0 if the value cannot be determined.
+  */
+  static unsigned long getNumberOfProcessers() throw();
   
   /**
     Forks a child process.
@@ -167,8 +176,10 @@ public:
     Requests the process to terminate.
     
     @param force Specifies whether to force the process to terminate. The default is false.
+
+    @return True if the signal was delivered.
   */
-  void terminate(bool force = false) throw(ProcessException);
+  bool terminate(bool force = false) throw(ProcessException);
 
   /**
     Returns the current processing times (both user and system times).

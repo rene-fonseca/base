@@ -103,6 +103,8 @@ public:
     Returns the handle associated with write access to device (may be identical to the read handle).
   */
   inline OperatingSystem::Handle getWriteHandle() const throw() {return deviceDescriptor.getHandle();}
+
+  ~SoundDevice() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

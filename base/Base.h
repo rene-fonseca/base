@@ -6,6 +6,8 @@
 #ifndef _DK_SDU_MIP__BASE__BASE_H
 #define _DK_SDU_MIP__BASE__BASE_H
 
+#include <base/features.h>
+
 /** This cast function is used to down cast pointers. */
 template<class TYPE>
 inline TYPE down_cast(TYPE argument) throw() {return argument;}

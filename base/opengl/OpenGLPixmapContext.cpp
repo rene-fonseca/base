@@ -16,7 +16,7 @@
 #include <base/platforms/backend/WindowImpl.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  include <base/platforms/os/win32/GDI.h>
+#  include <base/platforms/win32/GDI.h>
 #else // unix
 #  include <base/platforms/os/unix/GLX.h>
 #endif // flavor
@@ -74,7 +74,6 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
   };
   
   pfd.dwFlags |= PFD_GENERIC_ACCELERATED; // prefer accelerated
-  // pfd.dwFlags |= PFD_DRAW_TO_BITMAP
   // pfd.dwFlags |= PFD_SWAP_LAYER_BUFFERS
   if (flags & OpenGLContextImpl::DOUBLE_BUFFERED) {
     pfd.dwFlags |= PFD_DOUBLEBUFFER;
@@ -142,14 +141,14 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
     drawableHandle = 0;
     throw OpenGLException("Unable to set format", this);
   }
-  if (!(renderingContextHandle = openGLContextImpl::wglCreateContext((HDC)graphicsContextHandle))) {
+  if (!(renderingContextHandle = native::GDI::wglCreateContext((HDC)graphicsContextHandle))) {
     ::DeleteDC((HDC)graphicsContextHandle);
     graphicsContextHandle = 0;
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
     throw OpenGLException("Unable to create rendering context", this);
   }
-  if (!openGLContextImpl::wglMakeCurrent((HDC)graphicsContextHandle, (HGLRC)renderingContextHandle)) {
+  if (!native::GDI::wglMakeCurrent((HDC)graphicsContextHandle, (HGLRC)renderingContextHandle)) {
     ::DeleteDC((HDC)graphicsContextHandle);
     graphicsContextHandle = 0;
     ::DestroyWindow((HWND)drawableHandle);

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,6 @@
 
 #include <base/Object.h>
 #include <base/OutOfRange.h>
-#include <base/OutOfDomain.h>
 #include <base/mem/Reference.h>
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
 #include <base/io/IOException.h>
@@ -148,10 +147,16 @@ public:
   
   /** Specifies the string terminator. */
   static const char TERMINATOR = '\0';
-  /** Specifies the granularity of the capacity. Guaranteed to be greater than 0. */
+  /**
+    Specifies the granularity of the capacity. Guaranteed to be greater than 0.
+  */
   static const unsigned int GRANULARITY = 16;
-  /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. */
-  static const unsigned int MAXIMUM_LENGTH = ((PrimitiveTraits<int>::MAXIMUM - sizeof(TERMINATOR))/GRANULARITY)*GRANULARITY;
+  /**
+    Specifies the maximum length of any string. Guarantees that an int can hold
+    the length of the string.
+  */
+  static const unsigned int MAXIMUM_LENGTH =
+    ((PrimitiveTraits<int>::MAXIMUM - sizeof(TERMINATOR))/GRANULARITY)*GRANULARITY;
 
   typedef ReferenceCountedCapacityAllocator<char>::Iterator Iterator;
   typedef ReferenceCountedCapacityAllocator<char>::ReadIterator ReadIterator;
@@ -159,7 +164,10 @@ public:
   typedef ReferenceCountedCapacityAllocator<char>::ReadEnumerator ReadEnumerator;
 private:
 
-  /** The default string. This is used to avoid multiple allocations of empty string buffers. */
+  /**
+    The default string. This is used to avoid multiple allocations of empty
+    string buffers.
+  */
   static const String DEFAULT_STRING;
 
   /*
@@ -198,6 +206,12 @@ private:
 protected:
 
   /**
+    Initializes string.
+  */
+  void initialize(
+    const char* string, unsigned int length) throw(MemoryException);
+  
+  /**
     Returns a modifiable buffer. Forces copy of internal buffer if shared by
     multiple strings.
   */
@@ -216,8 +230,12 @@ protected:
   /**
     Sets the length of the string.
   */
-  inline void setLength(unsigned int length) throw(StringException, MemoryException) {
-    assert(length <= MAXIMUM_LENGTH, StringException(Type::getType<String>()));
+  inline void setLength(
+    unsigned int length) throw(StringException, MemoryException) {
+    assert(
+      length <= MAXIMUM_LENGTH,
+      StringException(Type::getType<String>())
+    );
     elements.copyOnWrite(); // we are about to modify the buffer
     elements->setSize(length + 1);
   }
@@ -235,7 +253,9 @@ public:
     @param maximum The maximum length of the string. The default is
     MAXIMUM_LENGTH.
   */
-  static inline unsigned int getLengthOfMustBeTerminated(const char* string, unsigned int maximum = MAXIMUM_LENGTH) throw(StringException) {
+  static inline unsigned int getLengthOfMustBeTerminated(
+    const char* string,
+    unsigned int maximum = MAXIMUM_LENGTH) throw(StringException) {
     assert(string, StringException(Type::getType<String>()));
     const char* terminator = find(string, maximum, Traits::TERMINATOR);
     assert(terminator, StringException(Type::getType<String>()));
@@ -249,9 +269,11 @@ public:
     @param maximum The maximum length of the string. The default is
     MAXIMUM_LENGTH.
 
-    @return maximum if terminator is not found. 0 if string is invalid (i.e. 0).
+    @return maximum if terminator is not found. 0 if string is invalid
+    (i.e. 0).
   */
-  static inline unsigned int getLengthOfTerminated(const char* string, unsigned int maximum = MAXIMUM_LENGTH) throw() {
+  static inline unsigned int getLengthOfTerminated(
+    const char* string, unsigned int maximum = MAXIMUM_LENGTH) throw() {
     if (!string) {
       return 0;
     }
@@ -282,24 +304,40 @@ public:
   String(const StringLiteral& string) throw(StringException, MemoryException);
 
   /**
+    Initializes the string from a string literal. Implicit initialization is
+    allowed.
+    
+    @param string String literal.
+  */
+  template<MemorySize SIZE>
+  inline String(const char (&string)[SIZE]) throw(MemoryException)
+    : elements(0) {
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    initialize(string, SIZE - 1);
+  }
+  
+  /**
     Initializes the string from a NULL-terminated string.
 
-    @param string NULL-terminated string. If NULL, the string is initialized with
-    no characters in it.
+    @param string NULL-terminated string. If NULL, the string is initialized
+    with no characters in it.
   */
-  String(const char* string) throw(StringException, MemoryException);
-
+  String(const NativeString& string) throw(MemoryException);
+  
   /**
     Initializes the string from a NULL-terminated string. If the length of the
     specified string (string) exceeds the maximum length (n) only the first n
-    characters are used.
-
-    @param string NULL-terminated string. If NULL, the string is initialized with
-    no characters in it.
+    characters are used. Raises StringException is string exceeds the maximum
+    allowed length.
+    
+    @param string NULL-terminated string. If NULL, the string is initialized
+    with no characters in it.
     @param maximum Specifies the maximum length.
   */
-  String(const char* string, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException);
-
+  String(
+    const NativeString& string,
+    unsigned int maximum) throw(StringException, MemoryException);
+  
   /**
     Initializes string from other string.
   */
@@ -317,12 +355,14 @@ public:
   /**
     Assignment of string literal to string.
   */
-  String& operator=(const StringLiteral& eq) throw(StringException, MemoryException);
+  String& operator=(const StringLiteral& eq)
+    throw(StringException, MemoryException);
   
   /**
     Assignment of string to NULL-terminated string.
   */
-  String& operator=(const char* string) throw(StringException, MemoryException);
+  String& operator=(const char* string)
+    throw(StringException, MemoryException);
   
   /**
     Returns the number of characters in the string.
@@ -384,7 +424,8 @@ public:
   /**
     Sets the length of the string without initializing the elements.
   */
-  void forceToLength(unsigned int length) throw(StringException, MemoryException);
+  void forceToLength(
+    unsigned int length) throw(StringException, MemoryException);
 
 // *************************************************************************
 //   TRAVERSE SECTION
@@ -511,7 +552,8 @@ public:
 
     @param string The string to be appended.
   */
-  inline String& append(const String& string) throw(StringException, MemoryException) {
+  inline String& append(
+    const String& string) throw(StringException, MemoryException) {
     return insert(getLength(), string);
   }
 
@@ -520,7 +562,8 @@ public:
 
     @param string The string to be appended.
   */
-  inline String& append(const char* string) throw(StringException, MemoryException) {
+  inline String& append(
+    const char* string) throw(StringException, MemoryException) {
     return insert(getLength(), string);
   }
 
@@ -529,7 +572,8 @@ public:
 
     @param string The string to be appended.
   */
-  String& append(const StringLiteral& string) throw(StringException, MemoryException);
+  String& append(
+    const StringLiteral& string) throw(StringException, MemoryException);
 
   /**
     Appends the string literal to this string.
@@ -537,7 +581,9 @@ public:
     @param string The string to be appended.
     @param maximum The maximum length of the string to be appended.
   */
-  String& append(const StringLiteral& string, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException);
+  String& append(
+    const StringLiteral& string,
+    unsigned int maximum) throw(StringException, MemoryException);
 
   /**
     Appends the NULL-terminated string to this string.
@@ -545,7 +591,9 @@ public:
     @param string The string to be appended.
     @param maximum The maximum length of the string to be appended.
   */
-  String& append(const char* string, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException);
+  String& append(
+    const char* string,
+    unsigned int maximum) throw(StringException, MemoryException);
 
   /**
     Prepends the character to this string.
@@ -561,7 +609,8 @@ public:
 
     @param string The string to be prepended.
   */
-  inline String& prepend(const String& string) throw(StringException, MemoryException) {
+  inline String& prepend(
+    const String& string) throw(StringException, MemoryException) {
     return insert(0, string);
   }
 
@@ -572,7 +621,8 @@ public:
     exceeds the end of this string the character is inserted at the end.
     @param ch The character to be inserted.
   */
-  String& insert(unsigned int index, char ch) throw(StringException, MemoryException);
+  String& insert(
+    unsigned int index, char ch) throw(StringException, MemoryException);
 
   /**
     Inserts the string into this string.
@@ -581,7 +631,9 @@ public:
     exceeds the end of this string the string is inserted at the end.
     @param string The string to be inserted.
   */
-  String& insert(unsigned int index, const String& string) throw(StringException, MemoryException);
+  String& insert(
+    unsigned int index,
+    const String& string) throw(StringException, MemoryException);
 
   /**
     Inserts the string literal into this string.
@@ -590,7 +642,9 @@ public:
     exceeds the end of this string the string is inserted at the end.
     @param string The string literal to be inserted.
   */
-  String& insert(unsigned int index, const StringLiteral& string) throw(StringException, MemoryException);
+  String& insert(
+    unsigned int index,
+    const StringLiteral& string) throw(StringException, MemoryException);
 
   /**
     Inserts NULL-terminated string into this string.
@@ -599,7 +653,9 @@ public:
     exceeds the end of this string the string is inserted at the end.
     @param string The NULL-terminated string to be inserted.
   */
-  String& insert(unsigned int index, const char* string) throw(StringException, MemoryException);
+  String& insert(
+    unsigned int index,
+    const char* string) throw(StringException, MemoryException);
 
   /**
     Replaces the characters in a substring of this string with the characters
@@ -609,7 +665,10 @@ public:
     @param end The end of the substring.
     @param string The string to replace with.
   */
-  String& replace(unsigned int start, unsigned int end, const String& string) throw(StringException, MemoryException);
+  String& replace(
+    unsigned int start,
+    unsigned int end,
+    const String& string) throw(StringException, MemoryException);
 
   /**
     Replaces all occurances of the specified substring with another string in
@@ -619,7 +678,9 @@ public:
     @param toStr The new string.
     @return The number of substrings that was replaced.
   */
-  unsigned int replaceAll(const String& fromStr, const String& toStr) throw(StringException, MemoryException);
+  unsigned int replaceAll(
+    const String& fromStr,
+    const String& toStr) throw(StringException, MemoryException);
 
   /**
     Returns a new string that contains a subsequence of characters currently
@@ -629,7 +690,8 @@ public:
     @param start Specifies the start of the substring.
     @param end Specifies the end of the substring.
   */
-  String substring(unsigned int start, unsigned int end) const throw(MemoryException);
+  String substring(
+    unsigned int start, unsigned int end) const throw(MemoryException);
 
   /**
     Returns a new string that contains a subsequence of characters currently
@@ -669,25 +731,13 @@ public:
   */
   String& operator-=(const String& suffix) throw(MemoryException);
 
-  /**
-    Returns a NULL terminated string that contains a subsequence of characters
-    currently contained in this string. If 'end' is less than 'start' an empty
-    string is returned. Does nothing if buffer is NULL.
-
-    @param buffer The buffer to receive the NULL terminated string.
-    @param start Specifies the start of the substring.
-    @param end Specifies the end of the substring.
-
-    @return The specified buffer.
-  */
-  //char* substring(char* buffer, unsigned int start, unsigned int end) const throw();
-
 // *************************************************************************
 //   UNARY SECTION
 // *************************************************************************
 
   /**
-    The character sequence contained in this string is replaced by the reverse sequence.
+    The character sequence contained in this string is replaced by the reverse
+    sequence.
   */
   String& reverse() throw();
 
@@ -710,8 +760,8 @@ public:
 
     @param string The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is
-    found, respectively, to be less than, equal to, or greater than the specified
-    string.
+    found, respectively, to be less than, equal to, or greater than the
+    specified string.
   */
   int compareTo(const String& string) const throw();
   
@@ -720,8 +770,8 @@ public:
 
     @param string The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is
-    found, respectively, to be less than, equal to, or greater than the specified
-    string.
+    found, respectively, to be less than, equal to, or greater than the
+    specified string.
   */
   int compareTo(const StringLiteral& string) const throw();
   
@@ -730,8 +780,8 @@ public:
     
     @param string The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is
-    found, respectively, to be less than, equal to, or greater than the specified
-    string. False, if string is 0.
+    found, respectively, to be less than, equal to, or greater than the
+    specified string. False, if string is 0.
   */
   int compareTo(const char* string) const throw();
   
@@ -740,18 +790,19 @@ public:
 
     @param string The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is
-    found, respectively, to be less than, equal to, or greater than the specified
-    string.
+    found, respectively, to be less than, equal to, or greater than the
+    specified string.
   */
   int compareToIgnoreCase(const String& string) const throw();
 
   /**
-    Compares this string with NULL-terminated string ignoring the case of the characters.
+    Compares this string with NULL-terminated string ignoring the case of the
+    characters.
 
     @param string The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is
-    found, respectively, to be less than, equal to, or greater than the specified
-    string.
+    found, respectively, to be less than, equal to, or greater than the
+    specified string.
   */
   int compareToIgnoreCase(const char* string) const throw(StringException);
 
@@ -796,6 +847,12 @@ public:
   inline bool operator==(const StringLiteral& string) const throw() {
     return compareTo(string) == 0;
   }
+
+  template<MemorySize SIZE>
+  inline bool operator==(const char (&string)[SIZE]) const throw() {
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    return compareTo(string) == 0;
+  }
   
   /**
     Inequality operator.
@@ -804,6 +861,12 @@ public:
     return compareTo(string) != 0;
   }
 
+  template<MemorySize SIZE>
+  inline bool operator!=(const char (&string)[SIZE]) const throw() {
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    return compareTo(string) != 0;
+  }
+  
   /**
     Less than operator.
   */
@@ -811,6 +874,12 @@ public:
     return compareTo(string) < 0;
   }
 
+  template<MemorySize SIZE>
+  inline bool operator<(const char (&string)[SIZE]) const throw() {
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    return compareTo(string) < 0;
+  }
+  
   /**
     Less than or equal operator.
   */
@@ -818,6 +887,12 @@ public:
     return compareTo(string) <= 0;
   }
 
+  template<MemorySize SIZE>
+  inline bool operator<=(const char (&string)[SIZE]) const throw() {
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    return compareTo(string) <= 0;
+  }
+  
   /**
     Greater than or equal operator.
   */
@@ -825,6 +900,12 @@ public:
     return compareTo(string) >= 0;
   }
 
+  template<MemorySize SIZE>
+  inline bool operator>=(const char (&string)[SIZE]) const throw() {
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    return compareTo(string) >= 0;
+  }
+  
   /**
     Greater than operator.
   */
@@ -832,46 +913,52 @@ public:
     return compareTo(string) > 0;
   }
 
+  template<MemorySize SIZE>
+  inline bool operator>(const char (&string)[SIZE]) const throw() {
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    return compareTo(string) > 0;
+  }
+  
   /**
     Equality operator.
   */
-  inline bool operator==(const char* string) const throw() {
-    return compareTo(string) == 0;
+  inline bool operator==(const NativeString& string) const throw() {
+    return compareTo(string.getValue()) == 0;
   }
 
   /**
     Inequality operator.
   */
-  inline bool operator!=(const char* string) const throw() {
-    return compareTo(string) != 0;
+  inline bool operator!=(const NativeString& string) const throw() {
+    return compareTo(string.getValue()) != 0;
   }
 
   /**
     Less than operator.
   */
-  inline bool operator<(const char* string) const throw() {
-    return compareTo(string) < 0;
+  inline bool operator<(const NativeString& string) const throw() {
+    return compareTo(string.getValue()) < 0;
   }
 
   /**
     Less than or equal operator.
   */
-  inline bool operator<=(const char* string) const throw() {
-    return compareTo(string) <= 0;
+  inline bool operator<=(const NativeString& string) const throw() {
+    return compareTo(string.getValue()) <= 0;
   }
 
   /**
     Greater than or equal operator.
   */
-  inline bool operator>=(const char* string) const throw() {
-    return compareTo(string) >= 0;
+  inline bool operator>=(const NativeString& string) const throw() {
+    return compareTo(string.getValue()) >= 0;
   }
 
   /**
     Greater than operator.
   */
-  inline bool operator>(const char* string) const throw() {
-    return compareTo(string) > 0;
+  inline bool operator>(const NativeString& string) const throw() {
+    return compareTo(string.getValue()) > 0;
   }
 
 // *************************************************************************
@@ -946,7 +1033,8 @@ public:
     @param start The start position. Default is 0.
     @return The number of occurances of the substring.
   */
-  unsigned int count(const String& string, unsigned int start = 0) const throw();
+  unsigned int count(
+    const String& string, unsigned int start = 0) const throw();
 
   /**
     Trims the string.
@@ -961,7 +1049,8 @@ public:
     @param separator Separator.
     @param group Group separators. Default is false.
   */
-  Array<String> split(char separator, bool group = false) throw(MemoryException);
+  Array<String> split(
+    char separator, bool group = false) throw(MemoryException);
   
 // *************************************************************************
 //   END SECTION
@@ -1004,12 +1093,15 @@ public:
 /**
   Writes string to format stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const String& value) throw(IOException);
 
 /**
   Returns a new string that is the concatenation of the two specified strings.
 */
-inline String operator+(const String& left, const String& right) throw(MemoryException) {
+inline String operator+(
+  const String& left,
+  const String& right) throw(StringException, MemoryException) {
   return String(left.getLength() + right.getLength()).append(left).append(right);
 }
 
@@ -1018,7 +1110,8 @@ inline String operator+(const String& left, const String& right) throw(MemoryExc
   suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas
   ("pre"-"suf") results in "pre").
 */
-inline String operator-(const String& left, const String& right) throw(MemoryException) {
+inline String operator-(
+  const String& left, const String& right) throw(MemoryException) {
   if (left.endsWith(right)) {
     return left.substring(0, left.getLength() - right.getLength()); // return copy of left without suffix
   } else {

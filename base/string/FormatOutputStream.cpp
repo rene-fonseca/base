@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -331,11 +331,14 @@ void FormatOutputStream::addCharacterField(
   context = defaultContext;
 }
 
-void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, bool isSigned) throw(IOException) {
+void FormatOutputStream::addIntegerField(
+  const char* buffer, unsigned int size, bool isSigned) throw(IOException) {
   ExclusiveSynchronize<Guard> _guard(guard);
   unsigned int requiredWidth = size;
 
-  if (isSigned && ((context.integerBase != Symbols::BINARY) && (context.integerBase != Symbols::HEXADECIMAL))) {
+  if (isSigned &&
+      ((context.integerBase != Symbols::BINARY) &&
+       (context.integerBase != Symbols::HEXADECIMAL))) {
     ++requiredWidth; // "-"
   }
 
@@ -539,31 +542,18 @@ void FormatOutputStream::addDateField(const Date& date) throw(IOException) {
 FormatOutputStream::~FormatOutputStream() throw(IOException) {
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, bool value) throw(IOException) {
-  return stream << (value ? MESSAGE("true") : MESSAGE("false")); // TAG: need locale support
+FormatOutputStream& FormatOutputStream::operator<<(
+  bool value) throw(IOException) {
+  // TAG: need locale support
+  return *this << (value ? MESSAGE("true") : MESSAGE("false"));
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, char value) throw(IOException) {
-  stream.addCharacterField(&value, 1);
-  return stream;
-}
-
-FormatOutputStream& operator<<(FormatOutputStream& stream, const char* value) throw(OutOfDomain, OutOfRange, IOException) {
-  if (value) {
-    const char* terminator = find<char>(value, 1U << 16 - 1, 0); // find terminator
-    assert(terminator, OutOfRange(Type::getType<FormatOutputStream>())); // maximum length exceeded
-    stream.addCharacterField(value, terminator - value);
-  } else {
-    stream.addCharacterField("", 0);
-  }
-  return stream;
-}
-
-FormatOutputStream& operator<<(FormatOutputStream& stream, short value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(
+  short value) throw(IOException) {
   char buffer[sizeof(short) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
-  switch (stream.getBase()) {
+  switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
       unsigned short temp = Cast::impersonate<unsigned short>(value); // no sign
@@ -601,7 +591,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short value) throw(IO
     {
       unsigned short temp = Cast::impersonate<unsigned short>(value); // no sign
       do {
-        *dest = ASCIITraits::valueToDigit(temp & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
+        *dest = ASCIITraits::valueToDigit(
+          temp & 0x0000000f,
+          (getFlags() & FormatOutputStream::Symbols::UPPER) != 0
+        ); // get bits of digit
         temp >>= 4; // bits per digit
         --dest;
       } while(temp > 0);
@@ -609,18 +602,19 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short value) throw(IO
       break;
     }
   default:
-    return stream; // do not do anything if base is unknown
+    return *this; // do not do anything if base is unknown
   }
 
-  stream.addIntegerField(dest, sizeof(buffer) - (dest - buffer), value < 0);
-  return stream;
+  addIntegerField(dest, sizeof(buffer) - (dest - buffer), value < 0);
+  return *this;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(
+  unsigned short value) throw(IOException) {
   char buffer[sizeof(unsigned short) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
-  switch (stream.getBase()) {
+  switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
       do {
@@ -654,7 +648,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short value)
   case FormatOutputStream::Symbols::HEXADECIMAL:
     {
       do {
-        *dest = ASCIITraits::valueToDigit(value & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
+        *dest = ASCIITraits::valueToDigit(
+          value & 0x0000000f,
+          (getFlags() & FormatOutputStream::Symbols::UPPER) != 0
+        ); // get bits of digit
         value >>= 4; // bits per digit
         --dest;
       } while(value > 0);
@@ -662,18 +659,19 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short value)
       break;
     }
   default:
-    return stream; // do not do anything if base is unknown
+    return *this; // do not do anything if base is unknown
   }
 
-  stream.addIntegerField(dest, sizeof(buffer) - (dest - buffer), false);
-  return stream;
+  addIntegerField(dest, sizeof(buffer) - (dest - buffer), false);
+  return *this;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, int value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(
+  int value) throw(IOException) {
   char buffer[sizeof(int) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
-  switch (stream.getBase()) {
+  switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
       unsigned int temp = Cast::impersonate<unsigned int>(value); // no sign
@@ -711,7 +709,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) throw(IOEx
     {
       unsigned int temp = Cast::impersonate<unsigned int>(value); // no sign
       do {
-        *dest = ASCIITraits::valueToDigit(temp & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
+        *dest = ASCIITraits::valueToDigit(
+          temp & 0x0000000f,
+          (getFlags() & FormatOutputStream::Symbols::UPPER) != 0
+        ); // get bits of digit
         temp >>= 4; // bits per digit
         --dest;
       } while(temp > 0);
@@ -719,18 +720,19 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) throw(IOEx
       break;
     }
   default:
-    return stream; // do not do anything if base is unknown
+    return *this; // do not do anything if base is unknown
   }
 
-  stream.addIntegerField(dest, sizeof(buffer) - (dest - buffer), value < 0);
-  return stream;
+  addIntegerField(dest, sizeof(buffer) - (dest - buffer), value < 0);
+  return *this;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(
+  unsigned int value) throw(IOException) {
   char buffer[sizeof(unsigned int) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
-  switch (stream.getBase()) {
+  switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
       do {
@@ -764,7 +766,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value) t
   case FormatOutputStream::Symbols::HEXADECIMAL:
     {
       do {
-        *dest = ASCIITraits::valueToDigit(value & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
+        *dest = ASCIITraits::valueToDigit(
+          value & 0x0000000f,
+          (getFlags() & FormatOutputStream::Symbols::UPPER) != 0
+        ); // get bits of digit
         value >>= 4; // bits per digit
         --dest;
       } while(value > 0);
@@ -772,18 +777,19 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value) t
       break;
     }
   default:
-    return stream; // do not do anything if base is unknown
+    return *this; // do not do anything if base is unknown
   }
 
-  stream.addIntegerField(dest, sizeof(buffer) - (dest - buffer), false);
-  return stream;
+  addIntegerField(dest, sizeof(buffer) - (dest - buffer), false);
+  return *this;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, long value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(
+  long value) throw(IOException) {
   char buffer[sizeof(long) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
-  switch (stream.getBase()) {
+  switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
       unsigned long temp = Cast::impersonate<unsigned long>(value); // no sign
@@ -821,7 +827,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long value) throw(IOE
     {
       unsigned long temp = Cast::impersonate<unsigned long>(value); // no sign
       do {
-        *dest = ASCIITraits::valueToDigit(temp & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
+        *dest = ASCIITraits::valueToDigit(
+          temp & 0x0000000f,
+          (getFlags() & FormatOutputStream::Symbols::UPPER) != 0
+        ); // get bits of digit
         temp >>= 4; // bits per digit
         --dest;
       } while(temp > 0);
@@ -829,18 +838,19 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long value) throw(IOE
       break;
     }
   default:
-    return stream; // do not do anything if base is unknown
+    return *this; // do not do anything if base is unknown
   }
 
-  stream.addIntegerField(dest, sizeof(buffer) - (dest - buffer), value < 0);
-  return stream;
+  addIntegerField(dest, sizeof(buffer) - (dest - buffer), value < 0);
+  return *this;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(
+  unsigned long value) throw(IOException) {
   char buffer[sizeof(unsigned long) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
-  switch (stream.getBase()) {
+  switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
       do {
@@ -874,7 +884,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long value) 
   case FormatOutputStream::Symbols::HEXADECIMAL:
     {
       do {
-        *dest = ASCIITraits::valueToDigit(value & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
+        *dest = ASCIITraits::valueToDigit(
+          value & 0x0000000f,
+          (getFlags() & FormatOutputStream::Symbols::UPPER) != 0
+        ); // get bits of digit
         value >>= 4; // bits per digit
         --dest;
       } while(value > 0);
@@ -882,18 +895,19 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long value) 
       break;
     }
   default:
-    return stream; // do not do anything if base is unknown
+    return *this; // do not do anything if base is unknown
   }
 
-  stream.addIntegerField(dest, sizeof(buffer) - (dest - buffer), false);
-  return stream;
+  addIntegerField(dest, sizeof(buffer) - (dest - buffer), false);
+  return *this;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, long long value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(
+  long long value) throw(IOException) {
   char buffer[sizeof(long long) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
-  switch (stream.getBase()) {
+  switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
       unsigned long long temp = Cast::impersonate<unsigned long long>(value); // no sign
@@ -931,7 +945,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long value) thro
     {
       unsigned long long temp = Cast::impersonate<unsigned long long>(value); // no sign
       do {
-        *dest = ASCIITraits::valueToDigit(temp & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
+        *dest = ASCIITraits::valueToDigit(
+          temp & 0x0000000f,
+          (getFlags() & FormatOutputStream::Symbols::UPPER) != 0
+        ); // get bits of digit
         temp >>= 4; // bits per digit
         --dest;
       } while(temp > 0);
@@ -939,18 +956,19 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long value) thro
       break;
     }
   default:
-    return stream; // do not do anything if base is unknown
+    return *this; // do not do anything if base is unknown
   }
 
-  stream.addIntegerField(dest, sizeof(buffer) - (dest - buffer), value < 0);
-  return stream;
+  addIntegerField(dest, sizeof(buffer) - (dest - buffer), value < 0);
+  return *this;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(
+  unsigned long long value) throw(IOException) {
   char buffer[sizeof(unsigned long long) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
-  switch (stream.getBase()) {
+  switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
       do {
@@ -984,7 +1002,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long va
   case FormatOutputStream::Symbols::HEXADECIMAL:
     {
       do {
-        *dest = ASCIITraits::valueToDigit(value & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
+        *dest = ASCIITraits::valueToDigit(
+          value & 0x0000000f,
+          (getFlags() & FormatOutputStream::Symbols::UPPER) != 0
+        ); // get bits of digit
         value >>= 4; // bits per digit
         --dest;
       } while(value > 0);
@@ -992,11 +1013,11 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long va
       break;
     }
   default:
-    return stream; // do not do anything if base is unknown
+    return *this; // do not do anything if base is unknown
   }
 
-  stream.addIntegerField(dest, sizeof(buffer) - (dest - buffer), false);
-  return stream;
+  addIntegerField(dest, sizeof(buffer) - (dest - buffer), false);
+  return *this;
 }
 
 
@@ -1093,7 +1114,8 @@ public:
     }
   }
 
-  static inline bool add(unsigned int* value, unsigned int size, unsigned int a) throw() {
+  static inline bool add(
+    unsigned int* value, unsigned int size, unsigned int a) throw() {
     const unsigned int* end = value + size;
     unsigned int carrier = a;
     for (; value < end; ++value) {
@@ -1104,7 +1126,10 @@ public:
     return carrier > 0;
   }
   
-  static inline bool add(unsigned int* restrict value, const unsigned int* restrict right, unsigned int size) throw() {
+  static inline bool add(
+    unsigned int* restrict value,
+    const unsigned int* restrict right,
+    unsigned int size) throw() {
     const unsigned int* end = value + size;
     unsigned int carrier = 0;
     for (; value < end; ++value, ++right) {
@@ -1115,7 +1140,10 @@ public:
     return carrier > 0;
   }
 
-  static inline bool subtract(unsigned int* restrict value, const unsigned int* restrict right, unsigned int size) throw() {
+  static inline bool subtract(
+    unsigned int* restrict value,
+    const unsigned int* restrict right,
+    unsigned int size) throw() {
     const unsigned int* end = value + size;
     unsigned int borrow = 0;
     for (; value < end; ++value, ++right) {
@@ -1137,7 +1165,8 @@ public:
     return carrier > 0;
   }
 
-  static inline bool multiply(unsigned int* value, unsigned int size, unsigned int m) throw() {
+  static inline bool multiply(
+    unsigned int* value, unsigned int size, unsigned int m) throw() {
     const unsigned int* end = value + size;
     unsigned int carrier = 0;
     for (; value < end; ++value) {
@@ -1148,7 +1177,8 @@ public:
     return carrier > 0;
   }
 
-  static inline unsigned int getSize(const unsigned int* value, unsigned int size) throw() {
+  static inline unsigned int getSize(
+    const unsigned int* value, unsigned int size) throw() {
     const unsigned int* src = value + size; // start at end of value
     while (src > value) {
       if (*--src != 0) {
@@ -1158,7 +1188,8 @@ public:
     return 0; // all words are zero
   }
 
-  static inline unsigned int getBitSize(const unsigned int* value, unsigned int size) throw() {
+  static inline unsigned int getBitSize(
+    const unsigned int* value, unsigned int size) throw() {
     const unsigned int* src = value + size; // start at end of value
     while (src > value) {
       if (*--src != 0) {
@@ -1173,7 +1204,8 @@ public:
     return 0; // all bits are zero
   }
 
-  static inline bool isZero(const unsigned int* value, unsigned int size) throw() {
+  static inline bool isZero(
+    const unsigned int* value, unsigned int size) throw() {
     for (const unsigned int* end = value + size; value < end; ++value) {
       if (*value != 0) {
         return false;
@@ -1182,7 +1214,10 @@ public:
     return true;
   }
 
-  static inline bool lessThan(const unsigned int* restrict left, const unsigned int* restrict right, unsigned int size) throw() {
+  static inline bool lessThan(
+    const unsigned int* restrict left,
+    const unsigned int* restrict right,
+    unsigned int size) throw() {
     const unsigned int* end = left;
     left += size;
     right += size;
@@ -1198,7 +1233,10 @@ public:
     return false;
   }
 
-  static inline bool equal(const unsigned int* restrict left, const unsigned int* restrict right, unsigned int size) throw() {
+  static inline bool equal(
+    const unsigned int* restrict left,
+    const unsigned int* restrict right,
+    unsigned int size) throw() {
     const unsigned int* end = left + size;
     while (left < end) {
       if (*left++ != *right++) {
@@ -1209,7 +1247,12 @@ public:
   }
 
   // may remainder be the same as dividend - I think so
-  static inline void divide(unsigned int* restrict quotient, unsigned int* remainder, const unsigned int* dividend, const unsigned int* restrict divisor, unsigned int size) throw() {
+  static inline void divide(
+    unsigned int* restrict quotient,
+    unsigned int* remainder,
+    const unsigned int* dividend,
+    const unsigned int* restrict divisor,
+    unsigned int size) throw() {
     unsigned int temp[size];
     clear(quotient, size);
     unsigned int* tempDividend = remainder;
@@ -1253,9 +1296,21 @@ enum CutMode {
   CUT_MODE_RELATIVE
 };
 
-void convertFloatingPoint(unsigned int significant, unsigned int precision, CutMode cutMode, FormatOutputStream::Symbols::RealStyle realStyle, unsigned int* restrict mantissa, unsigned int mantissaSize, int base2Exponent, uint8* restrict buffer, unsigned int& numberOfDigits, int& exponent) throw() {
+void convertFloatingPoint(
+  unsigned int significant,
+  unsigned int precision,
+  CutMode cutMode,
+  FormatOutputStream::Symbols::RealStyle realStyle,
+  unsigned int* restrict mantissa,
+  unsigned int mantissaSize,
+  int base2Exponent,
+  uint8* restrict buffer,
+  unsigned int& numberOfDigits,
+  int& exponent) throw() {
   // TAG: there is plenty room for optimization
-  static const unsigned int power[] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
+  static const unsigned int power[] = {
+    1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000
+  };
 
   numberOfDigits = 0;
   exponent = 0; // TAG: fixme could already have been initialized (only in FASTEST mode)
@@ -1443,7 +1498,8 @@ void convertFloatingPoint(unsigned int significant, unsigned int precision, CutM
   }
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, float value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(
+  float value) throw(IOException) {
   union {
     float primitive;
     FloatingPoint::FloatRepresentation fields;
@@ -1455,17 +1511,18 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, float value) throw(IO
   int exponent;
   unsigned int flags;
   analyseFloatingPoint(representation.fields, precision, mantissa, exponent, flags);
-  stream.writeFloatingPointType(
+  writeFloatingPointType(
     precision,
     mantissa,
     (FloatingPoint::FloatRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8),
     exponent,
     flags
   );
-  return stream;
+  return *this;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, double value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(
+  double value) throw(IOException) {
   union {
     double primitive;
     FloatingPoint::DoubleRepresentation fields;
@@ -1477,17 +1534,18 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, double value) throw(I
   int exponent;
   unsigned int flags;
   analyseFloatingPoint(representation.fields, precision, mantissa, exponent, flags);
-  stream.writeFloatingPointType(
+  writeFloatingPointType(
     precision,
     mantissa,
     (FloatingPoint::DoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8),
     exponent,
     flags
   );
-  return stream;
+  return *this;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(
+  long double value) throw(IOException) {
   union {
     long double primitive;
     FloatingPoint::LongDoubleRepresentation fields;
@@ -1499,42 +1557,52 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) th
   int exponent;
   unsigned int flags;
   analyseFloatingPoint(representation.fields, precision, mantissa, exponent, flags);
-  stream.writeFloatingPointType(
+  writeFloatingPointType(
     precision,
     mantissa,
     (FloatingPoint::LongDoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8),
     exponent,
     flags
   );
-  return stream;
+  return *this;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const void* value) throw(IOException) {
-  return stream << HEX << PREFIX << ZEROPAD << Cast::getOffset(value);
+FormatOutputStream& FormatOutputStream::operator<<(
+  const void* value) throw(IOException) {
+  return *this << HEX << PREFIX << ZEROPAD << Cast::getOffset(value);
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Exception& e) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(
+  const Exception& e) throw(IOException) {
   StringOutputStream s;
-  s << MESSAGE("Exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
+  s << MESSAGE("Exception '")
+         << TypeInfo::getTypename(e) << MESSAGE("' was raised");
   if (e.getType().isInitialized()) {
     s << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
   }
+  const unsigned int cause = e.getCause();
+  const unsigned int nativeError = e.getError();
   const char* message = e.getMessage();
-  unsigned int cause = e.getCause();
   if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
     s << MESSAGE(" with");
   }
   if (message) {
-    s << MESSAGE(" message '") << message << '\'';
+    s << MESSAGE(" message '") << NativeString(message) << '\'';
   }
   if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
     s << MESSAGE(" and");
   }
   if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
-    s << MESSAGE(" cause ") << HEX << setWidth(10) << ZEROPAD << cause;
+    s << MESSAGE(" cause ") << cause;
+  } else if (nativeError != 0) {
+    s << MESSAGE(" due to native error ") << nativeError;
+    unsigned int error = OperatingSystem::getErrorCode(nativeError);
+    if (error != OperatingSystem::UNSPECIFIED_ERROR) {
+      s << ' ' << '(' << OperatingSystem::getErrorMessage(error) << ')';
+    }
   }
   s << '.' << FLUSH;
-  return stream << s.getString();
+  return *this << s.getString();
 }
 
 /*

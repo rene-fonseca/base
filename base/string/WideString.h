@@ -322,7 +322,19 @@ private:
   */
   static int compareToIgnoreCase(const ucs4* left, const ucs4* right) throw();
 protected:
-
+  
+  /**
+    Initializes string.
+  */
+  void initialize(
+    const wchar* string, unsigned int length) throw(MemoryException);
+  
+  /**
+    Initializes string.
+  */
+  void initialize(
+    const char* string, unsigned int length) throw(MemoryException);
+  
   /**
     Returns a modifiable buffer. Forces the internal buffer to be copied if
     shared by multiple strings.
@@ -342,7 +354,8 @@ protected:
   /**
     Sets the length of the string.
   */
-  inline void setLength(unsigned int length) throw(WideStringException, MemoryException) {
+  inline void setLength(
+    unsigned int length) throw(WideStringException, MemoryException) {
     assert(length <= MAXIMUM_LENGTH, WideStringException(this));
     elements.copyOnWrite(); // we are about to modify the buffer
     elements->setSize(length + 1);
@@ -403,8 +416,11 @@ public:
      Returns the maximum number of bytes required to represent any UCS-4
      character.
   */
-  static inline unsigned int getMaximumNumberOfMultibytes(MultibyteEncoding encoding) throw() {
-    static const unsigned int MAXIMUM_MULTIBYTES[] = {0, 6, 4, 4, 4, 4, 4, 4};
+  static inline unsigned int getMaximumNumberOfMultibytes(
+    MultibyteEncoding encoding) throw() {
+    static const unsigned int MAXIMUM_MULTIBYTES[] = {
+      0, 6, 4, 4, 4, 4, 4, 4
+    };
     return MAXIMUM_MULTIBYTES[encoding];
   }
 
@@ -423,7 +439,8 @@ public:
     @param src The multibyte encoded string.
     @param size The number of bytes in the multibyte encoded string.
   */
-  MultibyteEncoding getMultibyteEncoding(const uint8* src, unsigned int size) throw();
+  MultibyteEncoding getMultibyteEncoding(
+    const uint8* src, unsigned int size) throw();
 
   /**
     Returns a MIME charsets for the specified encoding.
@@ -445,7 +462,11 @@ public:
 
     @return The number of bytes occupied by the UTF-8 encoded string.
   */
-  static unsigned int UCS2ToUTF8(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags = 0) throw(WideStringException);
+  static unsigned int UCS2ToUTF8(
+    uint8* dest,
+    const ucs2* src,
+    unsigned int size,
+    unsigned int flags = 0) throw(WideStringException);
   
   /**
     Low-level method which converts an UCS-4 encoded string to UTF-8. A
@@ -460,7 +481,11 @@ public:
 
     @return The number of bytes occupied by the UTF-8 encoded string.
   */
-  static unsigned int UCS4ToUTF8(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags = 0) throw(WideStringException);
+  static unsigned int UCS4ToUTF8(
+    uint8* dest,
+    const ucs4* src,
+    unsigned int size,
+    unsigned int flags = 0) throw(WideStringException);
 
   // TAG: UTF-16 see RFC 2781  Unicode Standard, version 3.0
   
@@ -476,7 +501,11 @@ public:
     
     @return The number of characters in the UCS-2 encoded string.
   */
-  static unsigned int UTF8ToUCS2(ucs2* dest, const uint8* src, unsigned int size, unsigned int flags = EAT_BOM) throw(MultibyteException);
+  static unsigned int UTF8ToUCS2(
+    ucs2* dest,
+    const uint8* src,
+    unsigned int size,
+    unsigned int flags = EAT_BOM) throw(MultibyteException);
 
   /**
     Low-level method which converts an UTF-8 encoded string to UCS-4 encoding.
@@ -490,7 +519,11 @@ public:
     
     @return The number of characters in the UCS-4 encoded string.
   */
-  static unsigned int UTF8ToUCS4(ucs4* dest, const uint8* src, unsigned int size, unsigned int flags = EAT_BOM) throw(MultibyteException);
+  static unsigned int UTF8ToUCS4(
+    ucs4* dest,
+    const uint8* src,
+    unsigned int size,
+    unsigned int flags = EAT_BOM) throw(MultibyteException);
 
   /**
     Low-level method which converts an UTF-16 encoded string to UCS-4 encoding.
@@ -505,7 +538,11 @@ public:
     
     @return The number of characters in the UCS-4 encoded string.
   */
-  static unsigned int UTF16ToUCS4(ucs4* dest, const uint8* src, unsigned int size, unsigned int flags = EAT_BOM|EXPECT_BOM) throw(MultibyteException);
+  static unsigned int UTF16ToUCS4(
+    ucs4* dest,
+    const uint8* src,
+    unsigned int size,
+    unsigned int flags = EAT_BOM|EXPECT_BOM) throw(MultibyteException);
 
   /**
     Low-level method which converts an UCS-2 encoded string to UCS-4 encoding.
@@ -520,7 +557,11 @@ public:
     
     @return The number of characters in the UCS-4 encoded string.
   */
-  static unsigned int UCS2ToUCS4(ucs4* dest, const ucs2* src, unsigned int size, unsigned int flags = 0) throw(WideStringException);
+  static unsigned int UCS2ToUCS4(
+    ucs4* dest,
+    const ucs2* src,
+    unsigned int size,
+    unsigned int flags = 0) throw(WideStringException);
 
   /**
     Low-level method which converts an UCS-4 encoded string to UCS-2 encoding.
@@ -534,7 +575,11 @@ public:
     
     @return The number of characters in the UCS-2 encoded string.
   */
-  static unsigned int UCS4ToUCS2(ucs2* dest, const ucs4* src, unsigned int size, unsigned int flags = 0) throw(WideStringException);
+  static unsigned int UCS4ToUCS2(
+    ucs2* dest,
+    const ucs4* src,
+    unsigned int size,
+    unsigned int flags = 0) throw(WideStringException);
   
   /**
     Low-level method which converts an UCS-2 encoded string to UTF-16BE. A
@@ -549,7 +594,11 @@ public:
 
     @return The number of bytes occupied by the UTF-16BE encoded string.
   */
-  static unsigned int UCS2ToUTF16BE(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags = ADD_BOM) throw(WideStringException);
+  static unsigned int UCS2ToUTF16BE(
+    uint8* dest,
+    const ucs2* src,
+    unsigned int size,
+    unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
     Low-level method which converts an UCS-2 encoded string to UTF-16LE. A
@@ -564,7 +613,11 @@ public:
 
     @return The number of bytes occupied by the UTF-16LE encoded string.
   */
-  static unsigned int UCS2ToUTF16LE(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags = ADD_BOM) throw(WideStringException);
+  static unsigned int UCS2ToUTF16LE(
+    uint8* dest,
+    const ucs2* src,
+    unsigned int size,
+    unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
     Low-level method which converts an UCS-4 encoded string to UTF-16BE. A
@@ -579,7 +632,11 @@ public:
 
     @return The number of bytes occupied by the UTF-16BE encoded string.
   */
-  static unsigned int UCS4ToUTF16BE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags = ADD_BOM) throw(WideStringException);
+  static unsigned int UCS4ToUTF16BE(
+    uint8* dest,
+    const ucs4* src,
+    unsigned int size,
+    unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
     Low-level method which converts an UCS-4 encoded string to UTF-16LE. A
@@ -594,7 +651,11 @@ public:
 
     @return The number of bytes occupied by the UTF-16LE encoded string.
   */
-  static unsigned int UCS4ToUTF16LE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags = ADD_BOM) throw(WideStringException);
+  static unsigned int UCS4ToUTF16LE(
+    uint8* dest,
+    const ucs4* src,
+    unsigned int size,
+    unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
     Low-level method which converts an UCS-4 encoded string to UTF-32BE. A
@@ -609,7 +670,11 @@ public:
 
     @return The number of bytes occupied by the UTF-32BE encoded string.
   */
-  static unsigned int UCS4ToUTF32BE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags = ADD_BOM) throw(WideStringException);
+  static unsigned int UCS4ToUTF32BE(
+    uint8* dest,
+    const ucs4* src,
+    unsigned int size,
+    unsigned int flags = ADD_BOM) throw(WideStringException);
   
   /**
     Low-level method which converts an UCS-4 encoded string to UTF-32LE. A
@@ -624,7 +689,11 @@ public:
 
     @return The number of bytes occupied by the UTF-32LE encoded string.
   */
-  static unsigned int UCS4ToUTF32LE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags = ADD_BOM) throw(WideStringException);
+  static unsigned int UCS4ToUTF32LE(
+    uint8* dest,
+    const ucs4* src,
+    unsigned int size,
+    unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
     Low-level method which converts an UTF-32 encoded string to UCS-4 encoding.
@@ -640,12 +709,17 @@ public:
     
     @return The number of characters in the UCS-4 encoded string.
   */
-  static unsigned int UTF32ToUCS4(ucs4* dest, const uint8* src, unsigned int size, unsigned int flags = EAT_BOM|EXPECT_BOM) throw(MultibyteException);
+  static unsigned int UTF32ToUCS4(
+    ucs4* dest,
+    const uint8* src,
+    unsigned int size,
+    unsigned int flags = EAT_BOM|EXPECT_BOM) throw(MultibyteException);
 
   /**
     Returns a multibyte string from a NULL-terminated wide-string.
   */
-  static String getMultibyteString(const wchar* string) throw(NullPointer, MultibyteException, WideStringException);
+  static String getMultibyteString(const wchar* string)
+    throw(NullPointer, MultibyteException, WideStringException);
 
   /**
     Returns the length of the NULL-terminated string.
@@ -653,7 +727,9 @@ public:
     @param string The NULL-terminated string.
     @param maximum The maximum length of the string. The default is MAXIMUM_LENGTH.
   */
-  static inline unsigned int getLengthOfMustBeTerminated(const wchar* string, unsigned int maximum = MAXIMUM_LENGTH) throw(StringException) {
+  static inline unsigned int getLengthOfMustBeTerminated(
+    const wchar* string,
+    unsigned int maximum = MAXIMUM_LENGTH) throw(StringException) {
     assert(string, StringException(Type::getType<String>()));
     const wchar* terminator = find<wchar>(string, maximum, 0);
     assert(terminator, StringException(Type::getType<String>()));
@@ -668,7 +744,8 @@ public:
 
     @return maximum if terminator is not found. 0 if string is invalid (i.e. 0).
   */
-  static inline unsigned int getLengthOfTerminated(const wchar* string, unsigned int maximum = MAXIMUM_LENGTH) throw() {
+  static inline unsigned int getLengthOfTerminated(
+    const wchar* string, unsigned int maximum = MAXIMUM_LENGTH) throw() {
     if (!string) {
       return 0;
     }
@@ -682,7 +759,8 @@ public:
   WideString() throw();
 
   /**
-    Initializes a string with no characters in it, initial capacity and granularity of capacity.
+    Initializes a string with no characters in it, initial capacity and
+    granularity of capacity.
 
     @param capacity The initial capacity of the internal buffer.
   */
@@ -695,42 +773,74 @@ public:
     @param string String literal generated by the macro WIDEMESSAGE (e.g.
     WIDEMESSAGE("My string"))
   */
-  WideString(const WideStringLiteral& string) throw(WideStringException, MemoryException);
+  WideString(const WideStringLiteral& string)
+    throw(WideStringException, MemoryException);
 
+  /**
+    Initializes the string from a string literal. Implicit initialization is
+    allowed.
+    
+    @param string String literal.
+  */
+  template<MemorySize SIZE>
+  inline WideString(const wchar (&string)[SIZE]) throw(MemoryException)
+    : elements(0) {
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    initialize(string, SIZE - 1);
+  }
+  
   /**
     Initializes the string from a NULL-terminated string.
 
-    @param string NULL-terminated string. If NULL, the string is initialized with
-    no characters in it.
+    @param string NULL-terminated string. If NULL, the string is initialized
+    with no characters in it.
   */
-  WideString(const wchar* string) throw(WideStringException, MemoryException);
-
+  WideString(const NativeWideString& string)
+    throw(WideStringException, MemoryException);
+  
   /**
     Initializes the string from a NULL-terminated string. If the length of the
     specified string exceeds the maximum length (n) only the first n
     characters are used.
 
-    @param string NULL-terminated string. If NULL, the string is initialized with
-    no characters in it.
+    @param string NULL-terminated string. If NULL, the string is initialized
+    with no characters in it.
     @param maximum Specifies the maximum length.
   */
-  WideString(const wchar* string, unsigned int maximum) throw(OutOfDomain, MemoryException);
+  WideString(const NativeWideString& string, unsigned int maximum)
+    throw(OutOfDomain, WideStringException, MemoryException);
 
   /**
     Initializes string from a NULL-terminated multibyte character string.
 
     @param string The NULL-terminated string.
   */
-  WideString(const char* string) throw(MultibyteException, MemoryException);
+  template<MemorySize SIZE>
+  inline WideString(const char (&string)[SIZE])
+    throw(MultibyteException, MemoryException)
+    : elements(0) {
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    initialize(string, SIZE - 1);
+  }
+  
+  /**
+    Initializes the string from a NULL-terminated string.
 
+    @param string NULL-terminated string. If NULL, the string is initialized
+    with no characters in it.
+  */
+  WideString(const NativeString& string)
+    throw(MultibyteException, MemoryException);
+  
   /**
     Initializes string from a NULL-terminated multibyte string.
 
     @param string The NULL-terminated string.
     @param maxmimum The maximum length of the string.
   */
-  WideString(const char* string, unsigned int maximum) throw(OutOfDomain, MultibyteException, MemoryException);
-
+  WideString(const NativeString& string, unsigned int maximum)
+    throw(OutOfDomain, MultibyteException, MemoryException);
+  
   /**
     Initializes string from other string.
   */

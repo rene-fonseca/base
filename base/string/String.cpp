@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,6 +18,13 @@
 #include <base/collection/Array.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+void String::initialize(
+  const char* string, unsigned int length) throw(MemoryException) {
+  elements =
+    new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
+  copy<char>(elements->getElements(), string, length); // no overlap
+}
 
 String::String() throw() : elements(DEFAULT_STRING.elements) {
 }
@@ -37,47 +44,53 @@ String::String(
   copy<char>(elements->getElements(), string, length); // no overlap
 }
 
-String::String(const char* string) throw(StringException, MemoryException)
+String::String(const NativeString& string) throw(MemoryException)
   : elements(0) {
-  if (string) {
-    int numberOfCharacters = getLengthOfMustBeTerminated(string);
+  if (string.getValue()) {
+    int numberOfCharacters = getLengthOfMustBeTerminated(string.getValue());
     elements = new ReferenceCountedCapacityAllocator<char>(
       numberOfCharacters + 1,
       GRANULARITY
     );
-    copy(elements->getElements(), string, numberOfCharacters); // no overlap
+    // no overlap
+    copy(elements->getElements(), string.getValue(), numberOfCharacters);
   } else {
     elements = DEFAULT_STRING.elements;
   }
 }
 
 String::String(
-  const char* string,
-  unsigned int maximum) throw(OutOfDomain, StringException, MemoryException)
+  const NativeString& string,
+  unsigned int maximum) throw(StringException, MemoryException)
   : elements(0) {
-  if (string) {
-    assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
-    const char* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
-    int numberOfCharacters = terminator ? (terminator - string) : maximum;
+  if (string.getValue()) {
+    assert(maximum <= MAXIMUM_LENGTH, StringException(this));
+    const char* terminator =
+      find(string.getValue(), maximum, Traits::TERMINATOR);
+    int numberOfCharacters =
+      terminator ? (terminator - string.getValue()) : maximum;
     elements = new ReferenceCountedCapacityAllocator<char>(
       numberOfCharacters + 1,
       GRANULARITY
     );
-    copy(elements->getElements(), string, numberOfCharacters); // no overlap
+    copy(elements->getElements(), string.getValue(), numberOfCharacters);
   } else {
     elements = DEFAULT_STRING.elements;
   }
 }
 
-String& String::operator=(const StringLiteral& string) throw(StringException, MemoryException) {
+String& String::operator=(
+  const StringLiteral& string) throw(StringException, MemoryException) {
   unsigned int length = string.getLength();
   // assert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
-  elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
+  elements =
+    new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
   copy<char>(elements->getElements(), string, length); // no overlap
   return *this;
 }
 
-String& String::operator=(const char* string) throw(StringException, MemoryException) {
+String& String::operator=(
+  const char* string) throw(StringException, MemoryException) {
   if (string) {
     int numberOfCharacters = getLengthOfMustBeTerminated(string);
     elements = new ReferenceCountedCapacityAllocator<char>(numberOfCharacters + 1, GRANULARITY);
@@ -115,7 +128,8 @@ void String::setGranularity(unsigned int granularity) throw() {
   elements->setGranularity(granularity);
 }
 
-void String::forceToLength(unsigned int length) throw(StringException, MemoryException) {
+void String::forceToLength(
+  unsigned int length) throw(StringException, MemoryException) {
   setLength(length);
 }
 
@@ -133,7 +147,8 @@ void String::setAt(unsigned int index, char value) throw(OutOfRange) {
   }
 }
 
-String& String::remove(unsigned int start, unsigned int end) throw(MemoryException) {
+String& String::remove(
+  unsigned int start, unsigned int end) throw(MemoryException) {
   unsigned int length = getLength();
   if ((start < end) && (start < length)) { // protect against some cases
     if (end >= length) {
@@ -157,7 +172,8 @@ String& String::removeFrom(unsigned int start) throw(MemoryException) {
   return *this;
 }
 
-String& String::insert(unsigned int index, char ch) throw(StringException, MemoryException) {
+String& String::insert(
+  unsigned int index, char ch) throw(StringException, MemoryException) {
   unsigned int length = getLength();
   setLength(length + 1);
   char* buffer = elements->getElements();
@@ -171,7 +187,9 @@ String& String::insert(unsigned int index, char ch) throw(StringException, Memor
   return *this;
 }
 
-String& String::insert(unsigned int index, const String& string) throw(StringException, MemoryException) {
+String& String::insert(
+  unsigned int index,
+  const String& string) throw(StringException, MemoryException) {
   unsigned int length = getLength();
   if (length == 0) {
     elements = string.elements;
@@ -191,7 +209,9 @@ String& String::insert(unsigned int index, const String& string) throw(StringExc
   return *this;
 }
 
-String& String::insert(unsigned int index, const StringLiteral& string) throw(StringException, MemoryException) {
+String& String::insert(
+  unsigned int index,
+  const StringLiteral& string) throw(StringException, MemoryException) {
   unsigned int length = getLength();
   setLength(length + string.getLength());
   char* buffer = elements->getElements();
@@ -206,11 +226,13 @@ String& String::insert(unsigned int index, const StringLiteral& string) throw(St
   return *this;
 }
 
-String& String::insert(unsigned int index, const char* string) throw(StringException, MemoryException) {
+String& String::insert(
+  unsigned int index,
+  const char* string) throw(StringException, MemoryException) {
   int strlength = 0;
   if (string) { // is string proper (not empty)
-    const char* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
-    assert(terminator, StringException(this)); // maximum length exceeded
+    const char* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR);
+    assert(terminator, StringException(this));
     strlength = terminator - string;
   }
   unsigned int length = getLength();
@@ -227,7 +249,8 @@ String& String::insert(unsigned int index, const char* string) throw(StringExcep
   return *this;
 }
 
-String& String::append(const StringLiteral& string) throw(StringException, MemoryException) {
+String& String::append(
+  const StringLiteral& string) throw(StringException, MemoryException) {
   unsigned int length = getLength();
   setLength(length + string.getLength());
   char* buffer = elements->getElements();
@@ -235,28 +258,33 @@ String& String::append(const StringLiteral& string) throw(StringException, Memor
   return *this;
 }
 
-String& String::append(const StringLiteral& string, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException) {
-  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
-  unsigned int length = getLength();
+String& String::append(
+  const StringLiteral& string,
+  unsigned int maximum) throw(StringException, MemoryException) {
+  assert(maximum <= MAXIMUM_LENGTH, StringException(this));
+  const unsigned int length = getLength();
   setLength(length + minimum(string.getLength(), maximum));
   char* buffer = elements->getElements();
   copy<char>(buffer + length, string, minimum(string.getLength(), maximum));
   return *this;
 }
 
-String& String::append(const char* string, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException) {
-  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
-  assert(string, StringException(this)); // make sure string is proper (not empty)
-  const char* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
-  int strlength = terminator ? (terminator - string) : maximum;
-  unsigned int length = getLength();
-  setLength(length + strlength);
+String& String::append(
+  const char* string,
+  unsigned int maximum) throw(StringException, MemoryException) {
+  assert(maximum <= MAXIMUM_LENGTH, StringException(this));
+  const unsigned int suffixLength = getLengthOfTerminated(string, maximum);
+  const unsigned int length = getLength();
+  setLength(length + suffixLength);
   char* buffer = elements->getElements();
-  copy(buffer + length, string, strlength);
+  copy(buffer + length, string, suffixLength);
   return *this;
 }
 
-String& String::replace(unsigned int start, unsigned int end, const String& string) throw(StringException, MemoryException) {
+String& String::replace(
+  unsigned int start,
+  unsigned int end,
+  const String& string) throw(StringException, MemoryException) {
   unsigned int length = getLength();
   unsigned int strlength = string.getLength();
   unsigned int lengthAfterRemove = length;
@@ -290,7 +318,9 @@ String& String::replace(unsigned int start, unsigned int end, const String& stri
   return *this;
 }
 
-unsigned int String::replaceAll(const String& fromStr, const String& toStr) throw(StringException, MemoryException) {
+unsigned int String::replaceAll(
+  const String& fromStr,
+  const String& toStr) throw(StringException, MemoryException) {
   unsigned int count = 0;
   unsigned int start = 0;
   int found;
@@ -301,7 +331,8 @@ unsigned int String::replaceAll(const String& fromStr, const String& toStr) thro
   return count;
 }
 
-String String::substring(unsigned int start, unsigned int end) const throw(MemoryException) {
+String String::substring(
+  unsigned int start, unsigned int end) const throw(MemoryException) {
   unsigned int length = getLength();
   if ((start < end) && (start < length)) {
     if (end > length) {
@@ -423,7 +454,8 @@ int String::compareToIgnoreCase(const String& string) const throw() {
   return compareToIgnoreCase(getElements(), string.getElements());
 }
 
-int String::compareToIgnoreCase(const char* string) const throw(StringException) {
+int String::compareToIgnoreCase(
+  const char* string) const throw(StringException) {
   assert(string, StringException(this));
   return compareToIgnoreCase(getElements(), string);
 }
@@ -530,7 +562,8 @@ int String::lastIndexOf(char ch, unsigned int start) const throw() {
   return -1; // not found
 }
 
-int String::lastIndexOf(const String& string, unsigned int start) const throw() {
+int String::lastIndexOf(
+  const String& string, unsigned int start) const throw() {
   if ((string.isEmpty()) || (string.getLength() > getLength())) { // eliminate some cases
     return -1; // not found
   }
@@ -588,7 +621,8 @@ unsigned int String::count(char ch, unsigned int start) const throw() {
   return count;
 }
 
-unsigned int String::count(const String& string, unsigned int start) const throw() {
+unsigned int String::count(
+  const String& string, unsigned int start) const throw() {
   int result;
   unsigned int count = 0;
   while ((result = indexOf(string, start)) >= 0) { // until not found - works for empty string
@@ -638,7 +672,8 @@ String& String::trim(char character) throw() {
   return *this;
 }
 
-Array<String> String::split(char separator, bool group) throw(MemoryException) {
+Array<String> String::split(
+  char separator, bool group) throw(MemoryException) {
   Array<String> result;
   
   const ReadIterator begin = getBeginReadIterator();
@@ -693,7 +728,8 @@ unsigned long Hash<String>::operator()(const String& value) throw() {
   return result;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const String& value) throw(IOException) {
   stream.addCharacterField(value.getBytes(), value.getLength());
   return stream;
 }

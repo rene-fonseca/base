@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,15 +16,19 @@
 
 #include <base/Object.h>
 #include <base/string/String.h>
+#include <base/OutOfDomain.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class NumericFormatSet : public Object {
 private:
-  
-  unsigned int groupingDigits; /**< The number of digits in a group (0 ~ disables grouping). */
-  char groupingSymbol; /**< The grouping symbol. */
-  char decimalSymbol; /**< Decimal point symbol. */
+
+  /** The number of digits in a group (0 ~ disables grouping). */
+  unsigned int groupingDigits;
+  /** The grouping symbol. */
+  char groupingSymbol;
+  /** Decimal point symbol. */
+  char decimalSymbol;
 public:
 
   NumericFormatSet() throw() {
@@ -40,19 +44,38 @@ public:
 
   /** Relative currency positions. */
   enum CurrencyPosition {
-    PRECEDES_QUANTITY, /**< Currency symbol immediately precedes the quantity (i.e. symbol and quantity are not separated). */
-    SUCCEEDS_QUANTITY, /**< Currency symbol immediately succeeds the quantity (i.e. symbol and quantity are not separated). */
-    PRECEDES_QUANTITY_WITH_SPACE, /**< Currency symbol precedes the quantity but is separated with a space. */
-    SUCCEEDS_QUANTITY_WITH_SPACE, /**< Currency symbol succeeds the quantity but is separated with a space. */
+    /**
+      Currency symbol immediately precedes the quantity (i.e. symbol and
+      quantity are not separated).
+    */
+    PRECEDES_QUANTITY,
+    /**
+      Currency symbol immediately succeeds the quantity (i.e. symbol and
+      quantity are not separated).
+    */
+    SUCCEEDS_QUANTITY,
+    /**
+      Currency symbol precedes the quantity but is separated with a space.
+    */
+    PRECEDES_QUANTITY_WITH_SPACE,
+    /**
+      Currency symbol succeeds the quantity but is separated with a space.
+    */
+    SUCCEEDS_QUANTITY_WITH_SPACE,
   };
 
   /** Relative sign positions. */
   enum SignPosition {
-    PARENTHESES, /**< Quantity is contained within parentheses. */
-    SIGN_PRECEDES_QUANTITY, /**< Sign precedes quantity and currency symbol. */
-    SIGN_SUCCEEDS_QUANTITY, /**< Sign succeeds quantity and currency symbol. */
-    SIGN_PRECEDES_SYMBOL, /**< Sign immediately precedes the currency symbol. */
-    SIGN_SUCCEEDS_SYMBOL /**< Sign immediately succeeds the currency symbol. */
+    /** Quantity is contained within parentheses. */
+    PARENTHESES,
+    /** Sign precedes quantity and currency symbol. */
+    SIGN_PRECEDES_QUANTITY,
+    /** Sign succeeds quantity and currency symbol. */
+    SIGN_SUCCEEDS_QUANTITY,
+    /** Sign immediately precedes the currency symbol. */
+    SIGN_PRECEDES_SYMBOL,
+    /** Sign immediately succeeds the currency symbol. */
+    SIGN_SUCCEEDS_SYMBOL
   };
 private:
   

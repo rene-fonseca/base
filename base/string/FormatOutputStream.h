@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -482,12 +482,14 @@ public:
   /**
     Writes the specifies number of characters to the stream.
   */
-  void addCharacterField(const char* buffer, unsigned int size) throw(IOException);
+  void addCharacterField(
+    const char* buffer, unsigned int size) throw(IOException);
 
   /**
     Writes a preformated integer to the stream.
   */
-  void addIntegerField(const char* buffer, unsigned int size, bool isSigned) throw(IOException);
+  void addIntegerField(
+    const char* buffer, unsigned int size, bool isSigned) throw(IOException);
   
   /**
     Writes a date object to the stream.
@@ -497,7 +499,12 @@ public:
   /**
     Writes a preformated floating point value to stream.
   */
-  void writeFloatingPointType(unsigned int significant, unsigned int* mantissa, unsigned int mantissaSize, int base2Exponent, unsigned int valueFlags) throw(IOException);
+  void writeFloatingPointType(
+    unsigned int significant,
+    unsigned int* mantissa,
+    unsigned int mantissaSize,
+    int base2Exponent,
+    unsigned int valueFlags) throw(IOException);
   
   /**
     Gets the context.
@@ -513,6 +520,71 @@ public:
     Writes the debug information to the stream.
   */
   FormatOutputStream& operator<<(const Debug& debug) throw(IOException);
+
+  /**
+    Writes the given string literal to the stream.
+    
+    @param literal String literal.
+  */
+  template<MemorySize SIZE>
+  inline FormatOutputStream& operator<<(
+    const char (&literal)[SIZE]) throw(IOException) {
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    addCharacterField(literal, SIZE - 1);
+    return *this;
+  }
+
+  FormatOutputStream& operator<<(bool value) throw(IOException);
+  
+  inline FormatOutputStream& operator<<(char value) throw(IOException) {
+    addCharacterField(&value, 1);
+    return *this;
+  }
+  
+  FormatOutputStream& operator<<(short int value) throw(IOException);
+  FormatOutputStream& operator<<(unsigned short int value) throw(IOException);
+  FormatOutputStream& operator<<(int value) throw(IOException);
+  FormatOutputStream& operator<<(unsigned int value) throw(IOException);
+  FormatOutputStream& operator<<(long value) throw(IOException);
+  FormatOutputStream& operator<<(unsigned long value) throw(IOException);
+  FormatOutputStream& operator<<(long long value) throw(IOException);
+  FormatOutputStream& operator<<(unsigned long long value) throw(IOException);
+  FormatOutputStream& operator<<(float value) throw(IOException);
+  FormatOutputStream& operator<<(double value) throw(IOException);
+  FormatOutputStream& operator<<(long double value) throw(IOException);
+  
+  inline FormatOutputStream& operator<<(
+    const NativeString& value) throw(IOException) {
+    return *this << String(value);
+  }
+  
+  /**
+    Writes a pointer to a format output stream.
+  */
+  FormatOutputStream& operator<<(const void* value) throw(IOException);
+
+  /**
+    Writes a reference to a format output stream.
+  */
+  template<class TYPE>
+  inline FormatOutputStream& operator<<(
+    Reference<TYPE> value) throw(IOException) {
+    return *this << value.getValue();
+  }
+
+  /**
+    Writes a string literal to a format output stream.
+  */
+  inline FormatOutputStream& operator<<(
+    const StringLiteral& value) throw(IOException) {
+    addCharacterField(value, value.getLength());
+    return *this;
+  }
+  
+  /**
+    Writes a nice description of the exception to the format output stream.
+  */
+  FormatOutputStream& operator<<(const Exception& e) throw(IOException);
   
   /**
     Destroy format output stream.
@@ -532,59 +604,12 @@ extern FormatOutputStream fout;
 */
 extern FormatOutputStream ferr;
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, bool value) throw(IOException);
-FormatOutputStream& operator<<(FormatOutputStream& stream, char value) throw(IOException);
-
-/**
-  Writes a NULL-terminated string literal to a format output stream (you are advised against using this function).
-*/
-FormatOutputStream& operator<<(FormatOutputStream& stream, const char* value) throw(OutOfDomain, OutOfRange, IOException);
-
 /**
   Indent.
 */
 inline FormatOutputStream::Indent indent(unsigned int length) throw() {
   return FormatOutputStream::Indent(length);
 }
-
-FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) throw(IOException);
-FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int value) throw(IOException);
-FormatOutputStream& operator<<(FormatOutputStream& stream, int value) throw(IOException);
-FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value) throw(IOException);
-FormatOutputStream& operator<<(FormatOutputStream& stream, long value) throw(IOException);
-FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long value) throw(IOException);
-FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) throw(IOException);
-FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long int value) throw(IOException);
-
-FormatOutputStream& operator<<(FormatOutputStream& stream, float value) throw(IOException);
-FormatOutputStream& operator<<(FormatOutputStream& stream, double value) throw(IOException);
-FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) throw(IOException);
-
-/**
-  Writes a pointer to a format output stream.
-*/
-FormatOutputStream& operator<<(FormatOutputStream& stream, const void* value) throw(IOException);
-
-/**
-  Writes a reference to a format output stream.
-*/
-template<class TYPE>
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, Reference<TYPE> value) throw(IOException) {
-  return stream << value.getValue();
-}
-
-/**
-  Writes a string literal to a format output stream.
-*/
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, const StringLiteral& value) throw(IOException) {
-  stream.addCharacterField(value, value.getLength());
-  return stream;
-}
-
-/**
-  Writes a nice description of the exception to the format output stream.
-*/
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Exception& e) throw(IOException);
 
 
 
@@ -661,7 +686,8 @@ public:
   Writes a sequence to the format output stream.
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Sequence<TYPE>& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Sequence<TYPE>& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);
   const TYPE* src = value.getValue();
   const TYPE* end = src + value.getSize();
@@ -691,46 +717,73 @@ inline FormatOutputStream::Manipulator setWidth(unsigned int width) throw() {
   return FormatOutputStream::Manipulator(&FormatOutputStream::setWidth, width);
 }
 
-/** Sets the desired number of digits after the decimal-point for real numbers. */
-inline FormatOutputStream::Manipulator setPrecision(unsigned int precision) throw() {
-  return FormatOutputStream::Manipulator(&FormatOutputStream::setPrecision, precision);
+/**
+  Sets the desired number of digits after the decimal-point for real numbers.
+*/
+inline FormatOutputStream::Manipulator setPrecision(
+  unsigned int precision) throw() {
+  return FormatOutputStream::Manipulator(
+    &FormatOutputStream::setPrecision,
+    precision
+  );
 }
 
-/** Sets the desired position of the radix (and sets the justification to Symbols::RADIX). */
-inline FormatOutputStream::Manipulator setRadixPosition(unsigned int position) throw() {
-  return FormatOutputStream::Manipulator(&FormatOutputStream::setRadixPosition, position);
+/**
+  Sets the desired position of the radix (and sets the justification to
+  Symbols::RADIX).
+*/
+inline FormatOutputStream::Manipulator setRadixPosition(
+  unsigned int position) throw() {
+  return FormatOutputStream::Manipulator(
+    &FormatOutputStream::setRadixPosition,
+    position
+  );
 }
 
 /** Sets the desired date format. */
-inline FormatOutputStream::StringManipulator setDateFormat(const String& format) throw() {
-  return FormatOutputStream::StringManipulator(&FormatOutputStream::setDateFormat, format);
+inline FormatOutputStream::StringManipulator setDateFormat(
+  const String& format) throw() {
+  return FormatOutputStream::StringManipulator(
+    &FormatOutputStream::setDateFormat,
+    format
+  );
 }
 
 
 
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::Manipulator manipulator) throw(IOException) {
+inline FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  FormatOutputStream::Manipulator manipulator) throw(IOException) {
   return manipulator(stream);
 }
 
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::StringManipulator manipulator) throw(IOException) {
+inline FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  FormatOutputStream::StringManipulator manipulator) throw(IOException) {
   return manipulator(stream);
 }
 
 /** Restores the context of the stream. */
-inline FormatOutputStream::SetContext setContext(const FormatOutputStream::Context& context) throw() {
+inline FormatOutputStream::SetContext setContext(
+  const FormatOutputStream::Context& context) throw() {
   return FormatOutputStream::SetContext(context);
 }
 
 /** Stores the context of the stream. */
-inline FormatOutputStream::GetContext getContext(FormatOutputStream::Context& context) throw() {
+inline FormatOutputStream::GetContext getContext(
+  FormatOutputStream::Context& context) throw() {
   return FormatOutputStream::GetContext(context);
 }
 
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::SetContext setContext) throw() {
+inline FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  FormatOutputStream::SetContext setContext) throw() {
   return setContext(stream);
 }
 
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::GetContext getContext) throw() {
+inline FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  FormatOutputStream::GetContext getContext) throw() {
   return getContext(stream);
 }
 

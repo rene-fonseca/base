@@ -115,8 +115,8 @@ public:
   static LRESULT CALLBACK messageHandler(HWND window, UINT message, WPARAM primaryParameter, LPARAM secondaryParameter) {
     // TAG: we should destroy window in destructor
     StringOutputStream stream;
-    stream << MESSAGE("messageHandler: message=") << message << " primary=" << primaryParameter << " second=" << secondaryParameter << FLUSH;
-    Trace::message(stream.getString().getElements());
+    //stream << MESSAGE("messageHandler: message=") << message << " primary=" << primaryParameter << " second=" << secondaryParameter << FLUSH;
+    //Trace::message(stream.getString().getElements());
     switch (message) {
     case WM_QUIT:
       Trace::message("Quit");

@@ -14,16 +14,32 @@
 #include <base/platforms/features.h>
 #include <base/string/WideString.h>
 #include <base/Functor.h>
-//#undef __STRICT_ANSI__
-#include <string.h>
-#include <stdlib.h>
+
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  #include <windows.h>
+#else // unix
+  #include <string.h>
+  #include <stdlib.h>
+#endif // flavor
+
 #include <wchar.h>
 #include <limits.h> // defines MB_LEN_MAX
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if !defined(_DK_SDU_MIP__BASE__WIDE)
+namespace isoc {
 
+#if defined(_DK_SDU_MIP__BASE__WIDE)
+  extern "C" int wcscmp(const wchar_t*, const wchar_t*);
+
+  extern "C" int wcsncmp(const wchar_t*, const wchar_t*, size_t);
+
+  // WARNING: not-compliant with standard which requires returning a non-const
+  extern "C" const wchar_t* wcschr(const wchar_t*, wchar_t);
+
+  // WARNING: not-compliant with standard which requires returning a non-const
+  extern "C" const wchar_t* wcsstr(const wchar_t* restrict, const wchar_t* restrict);
+#else
   inline int wcscmp(const wchar_t* ws1, const wchar_t* ws2) throw() {
     while (*ws1 && *ws2) {
       if (*ws1 < *ws2) {
@@ -102,7 +118,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
     }
     return 0; // not found
   }
-#endif
+#endif // end of namespace isoc
+};
 
 #if !defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
   #warning Assuming that mbstowcs is reentrant
@@ -146,7 +163,7 @@ WideString::WideString(const char* string) throw(MultibyteException, MemoryExcep
   if (string) { // is string proper (not empty)
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   numberOfCharacters = ::MultiByteToWideChar(CP_UTF8, 0, string, -1, 0, 0); // includes terminator
-  assert(numberOfCharacters > 0, MultiByteException(this));
+  assert(numberOfCharacters > 0, MultibyteException(this));
   --numberOfCharacters;
   assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
@@ -431,12 +448,12 @@ WideString& WideString::toUpperCase() throw() {
 }
 
 int WideString::compareTo(const WideString& str) const throw() {
-  return wcscmp(getElements(), str.getElements());
+  return isoc::wcscmp(getElements(), str.getElements());
 }
 
 int WideString::compareTo(const Character* str) const throw(WideStringException) {
   assert(str, WideStringException(this));
-  return wcscmp(getElements(), str);
+  return isoc::wcscmp(getElements(), str);
 }
 
 int WideString::compareToIgnoreCase(const Character* left, const Character* right) throw() {
@@ -478,19 +495,19 @@ int WideString::compareToIgnoreCase(const Character* str) const throw(WideString
 }
 
 bool WideString::startsWith(const WideString& prefix) const throw() {
-  return !prefix.isEmpty() && (wcsncmp(getBuffer(), prefix.getBuffer(), prefix.getLength()) == 0); // null-terminators are not required
+  return !prefix.isEmpty() && (isoc::wcsncmp(getBuffer(), prefix.getBuffer(), prefix.getLength()) == 0); // null-terminators are not required
 }
 
 bool WideString::startsWith(const WideStringLiteral& prefix) const throw() {
-  return (prefix.getLength() > 0) && (wcsncmp(getBuffer(), prefix, prefix.getLength()) == 0); // null-terminator is not required
+  return (prefix.getLength() > 0) && (isoc::wcsncmp(getBuffer(), prefix, prefix.getLength()) == 0); // null-terminator is not required
 }
 
 bool WideString::endsWith(const WideString& suffix) const throw() {
-  return !suffix.isEmpty() && (wcsncmp(getBuffer() + getLength() - suffix.getLength(), suffix.getBuffer(), suffix.getLength()) == 0); // null-terminators are not required
+  return !suffix.isEmpty() && (isoc::wcsncmp(getBuffer() + getLength() - suffix.getLength(), suffix.getBuffer(), suffix.getLength()) == 0); // null-terminators are not required
 }
 
 bool WideString::endsWith(const WideStringLiteral& suffix) const throw() {
-  return (suffix.getLength() > 0) && (wcsncmp(getBuffer() + getLength() - suffix.getLength(), suffix, suffix.getLength()) == 0); // null-terminator is not required
+  return (suffix.getLength() > 0) && (isoc::wcsncmp(getBuffer() + getLength() - suffix.getLength(), suffix, suffix.getLength()) == 0); // null-terminator is not required
 }
 
 int WideString::indexOf(Character ch, unsigned int start) const throw() {
@@ -500,7 +517,7 @@ int WideString::indexOf(Character ch, unsigned int start) const throw() {
   }
 
   const Character* buffer = getElements();
-  const Character* result = wcschr(buffer + start, ch);
+  const Character* result = isoc::wcschr(buffer + start, ch);
   if (result) { // did we find the value
     return result - buffer; // return index
   } else {
@@ -514,7 +531,7 @@ int WideString::indexOf(const WideString& str, unsigned int start) const throw()
   }
 
   const Character* buffer = getElements();
-  const Character* result = wcsstr(buffer + start, str.getElements());
+  const Character* result = isoc::wcsstr(buffer + start, str.getElements());
   if (result) {
     return result - buffer;
   } else {
@@ -570,7 +587,7 @@ unsigned int WideString::count(const WideString& str, unsigned int start) const 
 
 template<>
 int compare<WideString>(const WideString& left, const WideString& right) throw() {
-  return wcscmp(left.getElements(), right.getElements());
+  return isoc::wcscmp(left.getElements(), right.getElements());
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value) throw(MultibyteException, IOException) {

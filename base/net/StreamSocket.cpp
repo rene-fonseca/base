@@ -15,26 +15,27 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-StreamSocket::StreamSocket() throw(IOException) {
+StreamSocket::StreamSocket() throw(NetworkException) {
   create(STREAM);
-}
-
-StreamSocket::StreamSocket(const InetAddress& addr, unsigned short port) throw(IOException) {
-  create(STREAM);
-  connect(addr, port);
 }
 
 StreamSocket::StreamSocket(
-  const InetAddress& addr,
-  unsigned short port,
-  InetAddress& localAddr,
-  unsigned short localPort) throw(IOException) {
+  const InetAddress& address, unsigned short port) throw(NetworkException) {
   create(STREAM);
-  bind(localAddr, localPort);
-  connect(addr, port);
+  connect(address, port);
 }
 
-StreamSocket::StreamSocket(ServerSocket& socket) throw(IOException) {
+StreamSocket::StreamSocket(
+  const InetAddress& address,
+  unsigned short port,
+  InetAddress& localAddress,
+  unsigned short localPort) throw(NetworkException) {
+  create(STREAM);
+  bind(localAddress, localPort);
+  connect(address, port);
+}
+
+StreamSocket::StreamSocket(ServerSocket& socket) throw(NetworkException) {
   accept(*Cast::pointer<Socket*>(&socket));
 }
 

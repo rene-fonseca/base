@@ -7,9 +7,12 @@
 #include <base/io/FileDescriptorOutputStream.h>
 #include <string.h>
 
-FileDescriptorOutputStream standardOutputStream(FileDescriptor(1));
+FileDescriptor standardOutputDescriptor(1);
+FileDescriptorOutputStream standardOutputStream(standardOutputDescriptor);
 FormatOutputStream fout(standardOutputStream);
-FileDescriptorOutputStream standardErrorStream(FileDescriptor(2));
+
+FileDescriptor standardErrorDescriptor(2);
+FileDescriptorOutputStream standardErrorStream(standardErrorDescriptor);
 FormatOutputStream ferr(standardErrorStream);
 
 const char FormatOutputStream::DIGITS[] = "0123456789abcdef";

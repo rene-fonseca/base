@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
+#include <base/platforms/features.h>
 #include <base/Daemon.h>
 #include <base/ResourceException.h>
 #include <base/SystemLogger.h>

@@ -146,6 +146,15 @@ public:
   /**
     Returns the character representation of the specified value. An unspecified
     value is returned if the argument falls outside the range [0..15].
+
+    @param value The value of the digit.
+    @param upper Selects upper case if true otherwise lower case.
+  */
+  static inline char valueToDigit(unsigned int value, bool upper) throw() {return upper ? UPPER_DIGITS[value & 0x0f] : LOWER_DIGITS[value & 0x0f];}
+
+  /**
+    Returns the character representation of the specified value. An unspecified
+    value is returned if the argument falls outside the range [0..15].
   */
   static inline char valueToLowerDigit(unsigned int value) throw() {return LOWER_DIGITS[value & 0x0f];}
 

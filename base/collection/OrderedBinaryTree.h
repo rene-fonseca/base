@@ -92,15 +92,13 @@ public:
     Node* node = BinaryTree<TYPE>::getRoot();
 
     while (node) {
-      switch (compare(value, *node->getValue())) {
-      case -1:
+      int result = compare(value, *node->getValue());
+      if (result < 0) {
         node = node->getLeft();
-        break;
-      case 0:
-        return node;
-      case 1:
+      } else if (result > 0) {
         node = node->getRight();
-        break;
+      } else {
+        return node;
       }
     }
     return 0; // not found
@@ -117,15 +115,13 @@ public:
     const Node* node = BinaryTree<TYPE>::getRoot();
 
     while (node) {
-      switch (compare(value, *node->getValue())) {
-      case -1:
+      int result = compare(value, *node->getValue());
+      if (result < 0) {
         node = node->getLeft();
-        break;
-      case 0:
-        return node;
-      case 1:
+      } else if (result > 0) {
         node = node->getRight();
-        break;
+      } else {
+        return node;
       }
     }
     return 0; // not found
@@ -178,24 +174,23 @@ public:
     }
 
     while (true) {
-      switch (compare(value, *node->getValue())) {
-      case -1:
+      int result = compare(value, *node->getValue());
+      if (result < 0) {
         if (node->getLeft()) {
           node = node->getLeft();
         } else { // attach left child node
           node->setLeft(new Node(node, 0, 0, value));
           return 0;
         }
-        break;
-      case 0:
-        return node->getValue(); // node with this value already exists
-      case 1:
+      } else if (result > 0) {
         if (node->getRight()) {
           node = node->getRight();
         } else { // attach right child node
           node->setRight(new Node(node, 0, 0, value));
           return 0;
         }
+      } else {
+        return node->getValue(); // node with this value already exists
       }
     }
   }

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,7 +28,7 @@ Button::Button(Window& owner) throw(UserInterfaceException)
     pressed(false),
     highlighted(false) {
   setBrush(Color(96, 128, 255));
-  setFont(Font(MESSAGE("Arial"), 14, HEAVY));
+  setFont(Font("Arial", 14, HEAVY));
   setBackgroundMode(true);
 }
 
@@ -76,7 +76,7 @@ void Button::onMouseButton(const Position& position, Mouse::Button button, Mouse
 }
 
 void Button::onSelection() throw() {
-  fout << MESSAGE("Button: Selection event") << ENDL;
+  fout << "Button: Selection event" << ENDL;
 }
 
 void Button::onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw() {

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -67,7 +67,7 @@ void Split::setOffset(int offset, Field field) throw() {
 }
 
 void Split::onResize(const Dimension& dimension) throw() {
-  fout << MESSAGE("Split: Event: resize ") << dimension << ENDL;
+  fout << "Split: Event: resize " << dimension << ENDL;
   setOffset(offset, FIRST); // keep but honor limit
   invalidate();
 }
@@ -81,11 +81,12 @@ void Split::onMouseScope(bool scope) throw() {
 }
 
 void Split::onMouseMove(const Position& position, unsigned int state) throw() {
-  fout << MESSAGE("Split: Mouse motion event: ") << position << ENDL;
+  fout << "Split: Mouse motion event: " << position << ENDL;
   if (drag) {
     setOffset(originalOffset + position.getX() - originalPosition, FIRST);
   } else {
-    if ((position.getX() >= offset) && (position.getX() < (offset + widthOfSplit))) {
+    if ((position.getX() >= offset) &&
+        (position.getX() < (offset + widthOfSplit))) {
       split = Brush(0xb0b0b0); // highlight
       setCursor(WEST_EAST);
     } else {
@@ -96,11 +97,17 @@ void Split::onMouseMove(const Position& position, unsigned int state) throw() {
   }
 }
 
-void Split::onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) throw() {
-  fout << MESSAGE("Split: Mouse button event: ") << position << ENDL;
+void Split::onMouseButton(
+  const Position& position,
+  Mouse::Button button,
+  Mouse::Event event,
+  unsigned int state) throw() {
+  
+  fout << "Split: Mouse button event: " << position << ENDL;
   if (button == Mouse::LEFT) {
     if (event == Mouse::PRESSED) {
-      if ((position.getX() >= offset) && (position.getX() < (offset + widthOfSplit))) {
+      if ((position.getX() >= offset) &&
+          (position.getX() < (offset + widthOfSplit))) {
         drag = true;
         split = Brush(0x404040); // select
         setCapture(true);

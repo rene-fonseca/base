@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,7 +17,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const MemoryDump& value) throw(IOException) {
   const unsigned int bytesPerRow = 16;
   const unsigned int rowsPerHeader = 16;
   const unsigned int wordSize = value.wordSize;
@@ -36,58 +37,60 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& val
   
   for (unsigned int row = 0; row < rows; ++row) {
     if (row % rowsPerHeader == 0) {
-      if ((options & MemoryDump::HEADER) && ((row == 0) || (options & MemoryDump::REPEAT_HEADER))) {
+      if ((options & MemoryDump::HEADER) &&
+          ((row == 0) || (options & MemoryDump::REPEAT_HEADER))) {
         if (row > 0) {
           stream << EOL;
         }
         
         if (options & MemoryDump::OFFSET) {
-          stream << MESSAGE(" offset   ");
+          stream << " offset   ";
         } else if (options & MemoryDump::ADDRESS) {
-          stream << MESSAGE("  addr    ");
+          stream << "  addr    ";
         }
         
         switch (wordSize) {
         case 2:
-          stream << MESSAGE("   0    2    4    6    8    a    c    e");
+          stream << "   0    2    4    6    8    a    c    e";
           break;
         case 4:
-          stream << MESSAGE("       0        4        8        c");
+          stream << "       0        4        8        c";
           break;
         case 8:
-          stream << MESSAGE("               0                8");
+          stream << "               0                8";
           break;
         default:
-          stream << MESSAGE(" 0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f");
+          stream << " 0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f";
           break;
         }
 
         if (options & MemoryDump::CHARS) {
-          stream << MESSAGE("  0123456789abcdef");
+          stream << "  0123456789abcdef";
         }
         stream << EOL;
         
-        if ((options & MemoryDump::OFFSET) || (options & MemoryDump::ADDRESS)) {
-          stream << underlineOffset << MESSAGE("  ");
+        if ((options & MemoryDump::OFFSET) ||
+            (options & MemoryDump::ADDRESS)) {
+          stream << underlineOffset << "  ";
         }
         
         switch (wordSize) {
         case 2:
-          stream << MESSAGE("---- ---- ---- ---- ---- ---- ---- ----");
+          stream << "---- ---- ---- ---- ---- ---- ---- ----";
           break;
         case 4:
-          stream << MESSAGE("-------- -------- -------- --------");
+          stream << "-------- -------- -------- --------";
           break;
         case 8:
-          stream << MESSAGE("---------------- ----------------");
+          stream << "---------------- ----------------";
           break;
         default:
-          stream << MESSAGE("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+          stream << "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --";
           break;
         }
         
         if (options & MemoryDump::CHARS) {
-          stream << MESSAGE("  ----------------");
+          stream << "  ----------------";
         }
         
         stream << EOL;
@@ -96,10 +99,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& val
     
     if (options & MemoryDump::OFFSET) {
       stream << HEX << setWidth(value.offsetDigits) << NOPREFIX << ZEROPAD
-             << (((src - value.memory) + value.offset) & offsetMask) << MESSAGE("  ");
+             << (((src - value.memory) + value.offset) & offsetMask) << "  ";
     } else if (options & MemoryDump::ADDRESS) {
       stream << HEX << setWidth(value.offsetDigits) << NOPREFIX << ZEROPAD
-             << src << MESSAGE("  ");
+             << src << "  ";
     }
 
     bool lastRow = ((row + 1) == rows);
@@ -152,7 +155,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& val
     }
     
     if (options & MemoryDump::CHARS) {
-      stream << MESSAGE("  ");
+      stream << "  ";
       
       const uint8* chars = src;
       for (unsigned int i = 0; i < bytes/sizeof(uint8); ++i) {

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -50,7 +50,8 @@ public:
   /**
     Initialization of automation pointer from other automation pointer.
   */
-  inline ProtectedPointer(const ProtectedPointer& copy) throw() : value(copy.value) {
+  inline ProtectedPointer(const ProtectedPointer& copy) throw()
+    : value(copy.value) {
   }
 
   /**
@@ -75,7 +76,8 @@ public:
     time polymorphism.
   */
   template<class POLY>
-  inline ProtectedPointer& operator=(const ProtectedPointer<POLY>& eq) throw() {
+  inline ProtectedPointer& operator=(
+    const ProtectedPointer<POLY>& eq) throw() {
     value = eq.value;
     return *this;
   }
@@ -120,7 +122,8 @@ template<class TYPE>
 class Hash<ProtectedPointer<TYPE> > {
 public:
 
-  inline unsigned long operator()(const ProtectedPointer<TYPE>& value) throw() {
+  inline unsigned long operator()(
+    const ProtectedPointer<TYPE>& value) throw() {
     Hash<void*> hash;
     return hash(value.getValue());
   }

@@ -725,7 +725,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
             &bytesWritten,
             0
           ) == 0) {
-        fout << MESSAGE("12345: ") << ::GetLastError() << ENDL;
+        fout << "12345: " << ::GetLastError() << ENDL;
         ::CloseHandle(link);
         throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
       }
@@ -1223,7 +1223,10 @@ void FileSystem::makeLink(const String& target, const String& path)
       0
     );
   } else {
-    assert(!nativePath.endsWith(MESSAGE("\\")), FileSystemException(Type::getType<FileSystem>()));
+    assert(
+      !nativePath.endsWith(MESSAGE("\\")),
+      FileSystemException(Type::getType<FileSystem>())
+    );
     assert(
       nativePath.getLength() <= MAX_PATH,
       FileSystemException(Type::getType<FileSystem>())
@@ -1457,7 +1460,8 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
       if (offset + sizeof(LittleEndian<uint16>) > linkLength) {
         break;
       }
-      const LittleEndian<uint16>* shellItemSize = (const LittleEndian<uint16>*)(buffer + offset);
+      const LittleEndian<uint16>* shellItemSize =
+        (const LittleEndian<uint16>*)(buffer + offset);
       offset += *shellItemSize + sizeof(LittleEndian<uint16>);
     }
     
@@ -1465,14 +1469,15 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
       if (offset + sizeof(FileLocationInfo) > linkLength) {
         break;
       }
-      const FileLocationInfo* fileLocationInfo = (const FileLocationInfo*)(buffer + offset);
-//       ferr << MESSAGE("file location: ") << fileLocationInfo->size << EOL
-//            << MESSAGE("file location: ") << fileLocationInfo->offset << EOL
-//            << MESSAGE("file location: ") << fileLocationInfo->flags << EOL
-//            << MESSAGE("file location: ") << fileLocationInfo->volumeOffset << EOL
-//            << MESSAGE("file location: ") << fileLocationInfo->pathOffset << EOL
-//            << MESSAGE("file location: ") << fileLocationInfo->networkVolumeOffset << EOL
-//            << MESSAGE("file location: ") << fileLocationInfo->remainingPathOffset << EOL
+      const FileLocationInfo* fileLocationInfo =
+        (const FileLocationInfo*)(buffer + offset);
+//       ferr << "file location: " << fileLocationInfo->size << EOL
+//            << "file location: " << fileLocationInfo->offset << EOL
+//            << "file location: " << fileLocationInfo->flags << EOL
+//            << "file location: " << fileLocationInfo->volumeOffset << EOL
+//            << "file location: " << fileLocationInfo->pathOffset << EOL
+//            << "file location: " << fileLocationInfo->networkVolumeOffset << EOL
+//            << "file location: " << fileLocationInfo->remainingPathOffset << EOL
 //            << ENDL;
       
       if (!((fileLocationInfo->size > sizeof(FileLocationInfo)) &&

@@ -1575,27 +1575,27 @@ FormatOutputStream& FormatOutputStream::operator<<(
 FormatOutputStream& FormatOutputStream::operator<<(
   const Exception& e) throw(IOException) {
   StringOutputStream s;
-  s << MESSAGE("Exception '")
-         << TypeInfo::getTypename(e) << MESSAGE("' was raised");
+  s << "Exception '"
+         << TypeInfo::getTypename(e) << "' was raised";
   if (e.getType().isInitialized()) {
-    s << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
+    s << " by '" << TypeInfo::getTypename(e.getType()) << '\'';
   }
   const unsigned int cause = e.getCause();
   const unsigned int nativeError = e.getError();
   const char* message = e.getMessage();
   if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
-    s << MESSAGE(" with");
+    s << " with";
   }
   if (message) {
-    s << MESSAGE(" message '") << NativeString(message) << '\'';
+    s << " message '" << NativeString(message) << '\'';
   }
   if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
-    s << MESSAGE(" and");
+    s << " and";
   }
   if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
-    s << MESSAGE(" cause ") << cause;
+    s << " cause " << cause;
   } else if (nativeError != 0) {
-    s << MESSAGE(" due to native error ") << nativeError;
+    s << " due to native error " << nativeError;
     unsigned int error = OperatingSystem::getErrorCode(nativeError);
     if (error != OperatingSystem::UNSPECIFIED_ERROR) {
       s << ' ' << '(' << OperatingSystem::getErrorMessage(error) << ')';

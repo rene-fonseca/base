@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -303,7 +303,7 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
     throw OpenGLException("Invalid rendering context", this);
   }
 #else // unix
-  fout << MESSAGE("GLX version: ") << HEX << native::GLX::version << ENDL;
+  fout << "GLX version: " << HEX << native::GLX::version << ENDL;
   
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
@@ -334,7 +334,7 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
 //     };
     
 //     for (unsigned int i = 0; i < numberOfConfigs; ++i) {
-//       fout << MESSAGE("Config: ") << i << ENDL;
+//       fout << "Config: " << i << ENDL;
 //       for (unsigned int j = 0; j < getArraySize(ATTRIBUTES); ++j) {
 //         int value;
 //         int result = native::GLX::glXGetFBConfigAttrib((Display*)displayHandle, configs[i], ATTRIBUTES[j], &value);

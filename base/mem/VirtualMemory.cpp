@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -128,25 +128,25 @@ void VirtualMemory::dump() throw() {
     if (result == 0) {
       return;
     }
-    fout << MESSAGE("base: ") << info.BaseAddress
-         << MESSAGE(" size:") << HEX << PREFIX << info.RegionSize << ' ';
+    fout << "base: " << info.BaseAddress
+         << " size:" << HEX << PREFIX << info.RegionSize << ' ';
     if (info.State == MEM_COMMIT) {
-      fout << MESSAGE("COMMITTED") << ' ';
+      fout << "COMMITTED" << ' ';
     }
     if (info.State == MEM_FREE) {
-      fout << MESSAGE("FREE") << ' ';
+      fout << "FREE" << ' ';
     }
     if (info.State == MEM_RESERVE) {
-      fout << MESSAGE("RESERVED") << ' ';
+      fout << "RESERVED" << ' ';
     }
     if (info.Type & MEM_IMAGE) {
-      fout << MESSAGE("IMAGE") << ' ';
+      fout << "IMAGE" << ' ';
     }
     if (info.Type & MEM_MAPPED) {
-      fout << MESSAGE("MAPPED") << ' ';
+      fout << "MAPPED" << ' ';
     }
     if (info.Type & MEM_PRIVATE) {
-      fout << MESSAGE("PRIVATE") << ' ';
+      fout << "PRIVATE" << ' ';
     }
     fout << EOL;
     address += (info.RegionSize+pageSize-1)/pageSize*pageSize;

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -726,9 +726,9 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
   if (value.family == InetAddress::IP_VERSION_6) {
     unsigned int type = value.getType();
     if (type & InetAddress::IPV4_MAPPED) { // ::ffff:255.255.255.255
-      stream << MESSAGE("::ffff:"); // write IPv4 address after this
+      stream << "::ffff:"; // write IPv4 address after this
     } else if (type & (InetAddress::IPV4_COMPATIBLE|InetAddress::LOOPBACK) == InetAddress::IPV4_COMPATIBLE) { // ::255.255.255.255
-      stream << MESSAGE("::"); // write IPv4 address after this
+      stream << "::"; // write IPv4 address after this
     } else { // 1080::8:800:200c:417a
       const uint16* addr = value.address.halfWords;
 
@@ -755,12 +755,13 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
         }
       }
       if (firstZero < endZero) { // are zeros present
-        stream << MESSAGE("::");
+        stream << "::";
         for (int i = endZero; i < 8; ++i) { // write values after zeros
           if (i > endZero) {
             stream << ':';
           }
-          stream << NOPREFIX << HEX << ByteOrder::fromBigEndian<uint16>(addr[i]);
+          stream << NOPREFIX
+                 << HEX << ByteOrder::fromBigEndian<uint16>(addr[i]);
         }
       }
       return stream; // do not write IPv4 address
@@ -768,7 +769,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
   }
 
   const uint8* addr = value.getIPv4Address();
-  return stream << DEC << addr[0] << '.' << DEC << addr[1] << '.' << DEC << addr[2] << '.' << DEC << addr[3];
+  return stream << DEC << addr[0] << '.'
+                << DEC << addr[1] << '.'
+                << DEC << addr[2] << '.'
+                << DEC << addr[3];
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

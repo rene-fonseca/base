@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,11 +29,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   digest.
 
   @code
-  String message = MESSAGE("abcdefghijklmnopqrstuvwxyz");
+  String message = "abcdefghijklmnopqrstuvwxyz";
   MD5Sum checksum;
   checksum.push(Cast::pointer<const uint8*>(message.getElements()), message.getLength());
   checksum.pushEnd();
-  fout << MESSAGE("message digest: ") << checksum.getValue() << ENDL;
+  fout << "message digest: " << checksum.getValue() << ENDL;
   @endcode
 
   @short MD5 message-digest.

@@ -5,6 +5,7 @@ AM_CONFIG_HEADER(config.h)
 
 AM_INIT_AUTOMAKE(ellert,0.9)
 
+AC_LIBTOOL_WIN32_DLL()
 AM_PROG_LIBTOOL()
 
 AC_CANONICAL_HOST()
@@ -15,6 +16,7 @@ cygwin)
   AC_DEFINE(__win32__, 1, Specifies that the WIN32 API is available)
 
   CPPFLAGS="${CPPFLAGS}${CPPFLAGS:+ }"'-I/usr/include/w32api'
+  LIBS="${LIBS}${LIBS:+ }"'-lwsock32'
 ;;
 linux-gnu)
   AC_DEFINE(_GNU_SOURCE, 1, Specifies that the UNIX 98 functionality and GNU extensions are utilized)

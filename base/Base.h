@@ -134,6 +134,24 @@ inline void assert(bool assertion, EXCEPTION exception) {
   }
 }
 
+/**
+  Assertion.
+*/
+template<class EXCEPTION>
+class Assertion {
+public:
+  
+  /**
+    @param assertion The assertion.
+    @param exception The exception.
+  */
+  inline Assertion(bool assertion, EXCEPTION exception) throw() {
+    if (!assertion) {
+      throw exception;
+    }
+  }
+};
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

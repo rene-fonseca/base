@@ -68,6 +68,10 @@ public:
   };
 private:
 
+  enum Message {
+    PING_MESSAGE = 0
+  };
+  
   /** Resource allocation and release lock. */
   static SpinLock spinLock;
   /** Specifies the current number of windows. */
@@ -106,7 +110,7 @@ protected:
   /** The maximum dimension of the window. */
   Dimension maximumSize;
   /** Opaque handle to the display. */
-  void* displayHandle;
+  static void* displayHandle;
   /** Opaque handle to the screen. */
   void* screenHandle;
   /** Opaque handle to the window. */
@@ -285,7 +289,7 @@ public:
   /**
     Initializes a new window.
   */
-  WindowImpl(const String& title, const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException);
+  WindowImpl(const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException);
 
   /**
     Flushes the window requests to the server.
@@ -470,6 +474,16 @@ public:
   // ViewState getView() throw(UserInterfaceException);
 
   /**
+    Returns true if this object is a child of the specified object.
+  */
+  bool isChildOf(const WindowImpl& object) throw(UserInterfaceException);
+  
+  /**
+    Returns true if this object is the parent of the specified object.
+  */
+  bool isParentOf(const WindowImpl& object) throw(UserInterfaceException);
+  
+  /**
     Returns true if the window is maximized.
   */
   bool isMaximized() throw(UserInterfaceException); // TAG: replace with inline
@@ -515,6 +529,11 @@ public:
   */
   void disable() throw(UserInterfaceException);  
 
+  /**
+    Raises the window.
+  */
+  void raise() throw(UserInterfaceException);
+  
   /**
     Acquire focus for this window.
   */
@@ -695,6 +714,18 @@ public:
     Returns the dimension of the display.
   */
   Dimension getDisplayDimension() throw();
+
+  /**
+    Returns true if the window is reponsing within the specified timeout period.
+
+    @param milliseconds The timeout period (silently reduced to 999999999).
+  */
+  bool isResponding(unsigned int milliseconds) throw(UserInterfaceException);
+  
+  /**
+    Destroys the window.
+  */
+  void destroy() throw(UserInterfaceException);
   
   /**
     Releases the window.

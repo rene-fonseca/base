@@ -15,8 +15,6 @@
 #include <base/dl/DynamicLinker.h>
 #include <base/NotImplemented.h>
 
-// TAG: isChildOf(WindowImpl* object) method
-
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <windows.h>
 #  undef DELETE // yikes
@@ -28,24 +26,19 @@
 #  include <X11/keysym.h>
 #endif // flavor
 
-#if 1 // TAG: GCC specific
-#  define CALL_PASCAL __attribute__((stdcall))
-#  define CALL_CPP __attribute__((cdecl))
-#endif
-
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define CALL_UI CALL_PASCAL
+#  define CALL_UI _DK_SDU_MIP__BASE__CALL_PASCAL
 #else
 #  define CALL_UI
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-// TAG: windows should shared display
-
 SpinLock WindowImpl::spinLock;
 // overflow is not possible due to limited resources
 unsigned int WindowImpl::numberOfWindows = 0;
+// TAG: should be separate reference counted class
+void* WindowImpl::displayHandle = 0;
 
 namespace windowImpl {
 
@@ -144,10 +137,6 @@ namespace windowImpl {
         return 0;
       case WM_DESTROY:
         window->onDestruction();
-        if (window->graphicsContextHandle) {
-          ::DeleteDC((HDC)window->graphicsContextHandle);
-          window->graphicsContextHandle = 0;
-        }
         ::PostQuitMessage(0);
         return 0;
         // case WM_CAPTURECHANGED:
@@ -577,6 +566,8 @@ namespace windowImpl {
         //         return 0;
         //       case WM_EXITMENULOOP:
         //         return 0;
+      case WM_USER + WindowImpl::PING_MESSAGE:
+        return true;
       }
       return ::DefWindowProc((HWND)window->windowHandle, message, wParam, lParam);
     }
@@ -699,9 +690,11 @@ namespace windowImpl {
   //     VERTICAL_ARROW, /**< A vertical arrow. */
   //     WAITING /**< Cursor indicating blocked wait. */
   //   };
-  
+
+  Atom destroyAtom;
+  Atom pingAtom;
 #endif // flavor
-}; // end of WindowImpl namespace
+}; // end of windowImpl namespace
 
 void WindowImpl::onConstruction() throw() {
   // finalize generic initialization
@@ -722,8 +715,7 @@ void WindowImpl::onDestruction() throw() {
 }
 
 WindowImpl::WindowImpl() throw(UserInterfaceException)
-  : displayHandle(0),
-    screenHandle(0),
+  : screenHandle(0),
     windowHandle(0),
     graphicsContextHandle(0),
     displayMode(MODE_WINDOW),
@@ -767,90 +759,30 @@ WindowImpl::WindowImpl() throw(UserInterfaceException)
     UserInterfaceException("Unable to create window context", this)
   );
 #else // unix
-  Display* display = ::XOpenDisplay(0); // TAG: need support for connection to any server (e.g. "localhost:0.0")
-  assert(display, UserInterfaceException("Unable to connect to X server", this));
-  
-  fout << MESSAGE("Number of available screens: ") << ::XScreenCount(display) << ENDL;
-  fout << MESSAGE("Default screen: ") << ::XDefaultScreen(display) << ENDL;
-  
-  int screenId = ::XDefaultScreen(display);
-  Screen* screen = ::XScreenOfDisplay(display, screenId);
-  assert(screen, UserInterfaceException("Unable to open screen", this));
-
-  fout << MESSAGE("default depth of screen: ") << DefaultDepthOfScreen(screen) << ENDL;
-  
-  int blackPixel = ::XBlackPixelOfScreen(screen);
-  int whitePixel = ::XWhitePixelOfScreen(screen);
-  
-  ::Window window = ::XCreateSimpleWindow(
-    display,
-    DefaultRootWindow(display),
-    position.getX(),
-    position.getY(),
-    dimension.getWidth(),
-    dimension.getHeight(),
-    0, // border width
-    blackPixel, // border color
-    blackPixel // background
-  );
-
-  ::XChangeProperty(
-    display,
-    window,
-    XA_WM_NAME, // ::XInternAtom(display, "WM_NAME", False)
-    XA_STRING,
-    8,
-    PropModeReplace, // mode
-    (unsigned char*)title.getElements(),
-    title.getLength()
-  );
-  
-  ::XChangeProperty(
-    display,
-    window,
-    XA_WM_ICON_NAME, // ::XInternAtom(display, "WM_ICON_NAME", False)
-    XA_STRING,
-    8,
-    PropModeReplace, // mode
-    (unsigned char*)iconTitle.getElements(),
-    iconTitle.getLength()
-  );
-
-  ::XSelectInput(
-    display,
-    window,
-    StructureNotifyMask |
-    FocusChangeMask |
-    VisibilityChangeMask |
-    KeyPressMask |
-    KeyReleaseMask |
-    KeymapStateMask |
-    ButtonPressMask |
-    ButtonReleaseMask |
-    EnterWindowMask |
-    LeaveWindowMask |
-    PointerMotionMask
-  );
-  ::XMapWindow(display, window);
-  GC graphicsContext = ::XCreateGC(display, window, 0, 0);
-  ::XSetForeground(display, graphicsContext, whitePixel);
-  
-  // wait for the MapNotify event
-  XEvent event;
-  do {
-    ::XNextEvent(display, &event);
-  } while (event.type != MapNotify);
-  
-  displayHandle = display;
-  screenHandle = screen;
-  windowHandle = (void*)window; // int to void*
-  graphicsContextHandle = (void*)graphicsContext; // GC to void*
+  // TAG: fix display handle support (DISPLAY variable could have been changed)
+  spinLock.exclusiveLock();
+  if (WindowImpl::numberOfWindows++ == 0) { // TAG: must be atomic
+    Display* display = ::XOpenDisplay(0); // TAG: need support for connection to any server (e.g. "localhost:0.0")
+    if (display) {
+      windowImpl::destroyAtom =
+        ::XInternAtom(display, "WM_DELETE_WINDOW", True);
+      windowImpl::pingAtom =
+        ::XInternAtom(display, "http://www.mip.sdu.dk/~fonseca/base/ui/WindowImpl/PING_MESSAGE", False);
+    } else {
+      --numberOfWindows; // undo increment above
+    }
+    // TAG: store static
+    displayHandle = display;
+  }
+  spinLock.releaseLock();
+  assert(displayHandle, UserInterfaceException("Unable to connect to X server", this));
+// ::XSetWMProtocols((Display*)displayHandle, (::Window)windowHandle, &windowImpl::deleteAtom, 1); // all windows
+// ::XSetWMProtocols((Display*)displayHandle, (::Window)windowHandle, &windowImpl::pingAtom, 1); // only with main window
 #endif // flavor
 }
 
-WindowImpl::WindowImpl(const String& _title, const Position& _position, const Dimension& _dimension, unsigned int _flags) throw(UserInterfaceException)
-  : displayHandle(0),
-    screenHandle(0),
+WindowImpl::WindowImpl(const Position& _position, const Dimension& _dimension, unsigned int _flags) throw(UserInterfaceException)
+  : screenHandle(0),
     windowHandle(0),
     graphicsContextHandle(0),
     displayMode(MODE_WINDOW),
@@ -859,8 +791,6 @@ WindowImpl::WindowImpl(const String& _title, const Position& _position, const Di
     scope(false),
     autorepeat(true),
     modifiers(0),
-    title(_title),
-    iconTitle(_title),
     position(_position),
     dimension(_dimension),
     flags(_flags),
@@ -871,6 +801,7 @@ WindowImpl::WindowImpl(const String& _title, const Position& _position, const Di
   lastMousePosition = Position(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM);
   
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  ATOM windowClass = 0;
   spinLock.exclusiveLock();
   // only register class if not already registered
   if (WindowImpl::numberOfWindows++ == 0) { // TAG: must be atomic
@@ -888,95 +819,28 @@ WindowImpl::WindowImpl(const String& _title, const Position& _position, const Di
       "mip.sdu.dk/~fonseca/base/ui/Window", // class name
       0 // small icon
     };
-    ATOM windowClass = ::RegisterClassEx(&temp); // zero if fails
+    windowClass = ::RegisterClassEx(&temp); // zero if fails
     if (windowClass == 0) {
       --numberOfWindows; // undo increment above
     }
   }
   spinLock.releaseLock();
   assert(
-    numberOfWindows != 0,
+    windowClass != 0,
     UserInterfaceException("Unable to create window context", this)
   );
 #else // unix
-  Display* display = ::XOpenDisplay(0); // TAG: need support for connection to any server (e.g. "localhost:0.0")
-  assert(display, UserInterfaceException("Unable to connect to X server", this));
-  
-  fout << MESSAGE("Number of available screens: ") << ::XScreenCount(display) << ENDL;
-  fout << MESSAGE("Default screen: ") << ::XDefaultScreen(display) << ENDL;
-  
-  int screenId = ::XDefaultScreen(display);
-  Screen* screen = ::XScreenOfDisplay(display, screenId);
-  assert(screen, UserInterfaceException("Unable to open screen", this));
-
-  fout << MESSAGE("default depth of screen: ") << DefaultDepthOfScreen(screen) << ENDL;
-  
-  int blackPixel = ::XBlackPixelOfScreen(screen);
-  int whitePixel = ::XWhitePixelOfScreen(screen);
-  
-  ::Window window = ::XCreateSimpleWindow(
-    display,
-    DefaultRootWindow(display),
-    position.getX(),
-    position.getY(),
-    dimension.getWidth(),
-    dimension.getHeight(),
-    0, // border width
-    blackPixel, // border color
-    blackPixel // background
-  );
-
-  ::XChangeProperty(
-    display,
-    window,
-    XA_WM_NAME, // ::XInternAtom(display, "WM_NAME", False)
-    XA_STRING,
-    8,
-    PropModeReplace, // mode
-    (unsigned char*)title.getElements(),
-    title.getLength()
-  );
-  
-  ::XChangeProperty(
-    display,
-    window,
-    XA_WM_ICON_NAME, // ::XInternAtom(display, "WM_ICON_NAME", False)
-    XA_STRING,
-    8,
-    PropModeReplace, // mode
-    (unsigned char*)iconTitle.getElements(),
-    iconTitle.getLength()
-  );
-
-  ::XSelectInput(
-    display,
-    window,
-    StructureNotifyMask |
-    FocusChangeMask |
-    VisibilityChangeMask |
-    KeyPressMask |
-    KeyReleaseMask |
-    KeymapStateMask |
-    ButtonPressMask |
-    ButtonReleaseMask |
-    EnterWindowMask |
-    LeaveWindowMask |
-    PointerMotionMask
-  );
-  ::XMapWindow(display, window);
-  GC graphicsContext = ::XCreateGC(display, window, 0, 0);
-  ::XSetForeground(display, graphicsContext, whitePixel);
-  
-  // wait for the MapNotify event
-  XEvent event;
-  do {
-    ::XNextEvent(display, &event);
-  } while (event.type != MapNotify);
-  
-  displayHandle = display;
-  screenHandle = screen;
-  windowHandle = (void*)window; // int to void*
-  graphicsContextHandle = (void*)graphicsContext; // GC to void*
+  // TAG: fix display handle support (DISPLAY variable could have been changed)
+  spinLock.exclusiveLock();
+  if (WindowImpl::numberOfWindows++ == 0) { // TAG: must be atomic
+    Display* display = ::XOpenDisplay(0); // TAG: need support for connection to any server (e.g. "localhost:0.0")
+    if (display == 0) {
+      --numberOfWindows; // undo increment above
+    }
+    displayHandle = display;
+  }
+  spinLock.releaseLock();
+  assert(displayHandle, UserInterfaceException("Unable to connect to X server", this));
 #endif // flavor
 }
 
@@ -1415,6 +1279,16 @@ void WindowImpl::close() throw(UserInterfaceException) {
 #endif // flavor
 }
 
+bool WindowImpl::isChildOf(const WindowImpl& object) throw(UserInterfaceException) {
+  // TAG: fixme
+  return false;
+}
+
+bool WindowImpl::isParentOf(const WindowImpl& object) throw(UserInterfaceException) {
+  // TAG: fixme
+  return false;
+}
+
 bool WindowImpl::isMaximized() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return ::IsZoomed((HWND)windowHandle) == TRUE;
@@ -1504,8 +1378,7 @@ void WindowImpl::show() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::ShowWindow((HWND)windowHandle, SW_SHOW);
 #else // unix
-  // TAG: raise?
-  throw NotImplemented(this);
+  ::XMapWindow((Display*)displayHandle, (::Window)windowHandle);
 #endif // flavor
 }
 
@@ -1513,7 +1386,7 @@ void WindowImpl::hide() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::ShowWindow((HWND)windowHandle, SW_HIDE);
 #else // unix
-  throw NotImplemented(this);
+  ::XUnmapWindow((Display*)displayHandle, (::Window)windowHandle);
 #endif // flavor
 }
 
@@ -1524,6 +1397,8 @@ void WindowImpl::enable() throw(UserInterfaceException) {
     UserInterfaceException(this)
   );
 #else // unix
+  // TAG: is there a better alternative
+  ::XMapWindow((Display*)displayHandle, (::Window)windowHandle);
 #endif // flavor
 }
 
@@ -1534,14 +1409,29 @@ void WindowImpl::disable() throw(UserInterfaceException) {
     UserInterfaceException(this)
   );
 #else // unix
+  // TAG: is there a better alternative
+  ::XUnmapWindow((Display*)displayHandle, (::Window)windowHandle);
 #endif // flavor
 }
 
+void WindowImpl::raise() throw(UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  assert(
+    ::SetForegroundWindow((HWND)windowHandle),
+    UserInterfaceException(this)
+  );
+#else // unix
+  ::XMapRaised((Display*)displayHandle, (::Window)windowHandle);
+  // TAG: what about focus
+#endif // flavor
+}
 
 void WindowImpl::acquireFocus() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(::SetFocus((HWND)windowHandle), UserInterfaceException(this));
 #else // unix
+  // show()
+  // raise()
   ::XSetInputFocus(
     (Display*)displayHandle,
     (::Window)windowHandle,
@@ -1551,6 +1441,7 @@ void WindowImpl::acquireFocus() throw(UserInterfaceException) {
 #endif // flavor
 }
 
+// TAG: wrong name; use hasCapture or isCapturing
 bool WindowImpl::getCapture() const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return ::GetCapture() == (HWND)windowHandle;
@@ -1795,11 +1686,17 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
     }
   }
 #else // unix
-  for (;;) {
+  while (true) {
     XEvent event;
     ::XNextEvent((Display*)displayHandle, &event);
     // TAG: check if src and dest window are ok
     switch (event.type) {
+    case ClientMessage:
+      // TAG: fixme
+      if (event.xclient.data.l[0] == windowImpl::destroyAtom) {
+        onDestruction();
+      }
+      break;
     case MapNotify:
       fout << MESSAGE("Event: MapNotify") << ENDL;
       break;
@@ -1827,6 +1724,12 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
         // Region(Position(specificEvent->x, specificEvent->y), Dimension(specificEvent->width, specificEvent->height));
         onDisplay();
       }
+      break;
+    case FocusIn:
+      onFocus(WindowImpl::ACQUIRED_FOCUS);
+      break;
+    case FocusOut:
+      onFocus(WindowImpl::LOST_FOCUS);
       break;
     case ButtonPress:
     case ButtonRelease:
@@ -2391,12 +2294,72 @@ StringLiteral WindowImpl::getMouseButtonName(Mouse::Button button) throw() {
   }
 }
 
+bool WindowImpl::isResponding(unsigned int milliseconds) throw(UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  DWORD_PTR result;
+  LRESULT temp = ::SendMessageTimeout(
+    (HWND)windowHandle,
+    WM_USER + WindowImpl::PING_MESSAGE,
+    0,
+    0,
+    SMTO_NORMAL,
+    minimum(milliseconds, 99999999),
+    &result
+  );
+  if (temp) {
+    return result;
+  }
+  assert(::GetLastError() == 0, UserInterfaceException(this));
+  return false;
+#else // unix
+  // TAG: use timeout period
+  XClientMessageEvent event;
+  event.type = ClientMessage;
+  event.window = (::Window)windowHandle;
+  event.message_type = ::XInternAtom((Display*)displayHandle, "WM_PROTOCOLS", True); // TAG: static cache
+  event.format = 32;
+  event.data.l[0] = windowImpl::pingAtom;
+  event.data.l[1] = CurrentTime;
+  
+  ::XSendEvent(
+    (Display*)displayHandle,
+    (::Window)windowHandle,
+    False,
+    0,
+    (XEvent*)&event
+  );
+#endif // flavor
+}
+
+void WindowImpl::destroy() throw(UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  if (windowHandle) {
+    assert(::DestroyWindow((HWND)windowHandle), UserInterfaceException(this));
+  }
+#else // unix
+  if (windowHandle) {
+    XClientMessageEvent event;
+    event.type = ClientMessage;
+    event.window = (::Window)windowHandle;
+    event.message_type = ::XInternAtom((Display*)displayHandle, "WM_PROTOCOLS", True); // TAG: static cache
+    event.format = 32;
+    event.data.l[0] = windowImpl::destroyAtom;
+    event.data.l[1] = CurrentTime;
+    
+    ::XSendEvent(
+      (Display*)displayHandle,
+      (::Window)windowHandle,
+      False,
+      0,
+      (XEvent*)&event
+    );
+  }
+#endif // flavor
+}
+
 WindowImpl::~WindowImpl() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  // TAG: do we need reference counting for context?
-  if (windowHandle) {
-    ::DestroyWindow((HWND)windowHandle);
-  }
+  ::DestroyWindow((HWND)windowHandle);
   windowImpl::removeWindow(windowHandle); // should be atomic
   spinLock.exclusiveLock();
   if (--numberOfWindows == 0) {
@@ -2404,10 +2367,28 @@ WindowImpl::~WindowImpl() throw() {
   }
   spinLock.releaseLock();
 #else // unix
-  if (windowHandle) {
-    ::XDestroyWindow((Display*)displayHandle, (::Window)windowHandle);
+  XClientMessageEvent event;
+  event.type = ClientMessage;
+  event.window = (::Window)windowHandle;
+  event.message_type = ::XInternAtom((Display*)displayHandle, "WM_PROTOCOLS", True); // TAG: static cache
+  event.format = 32;
+  event.data.l[0] = windowImpl::destroyAtom;
+  event.data.l[1] = CurrentTime; // TAG: is this ok
+  
+  ::XSendEvent(
+    (Display*)displayHandle,
+    (::Window)windowHandle,
+    False,
+    0,
+    (XEvent*)&event
+  );
+  // TAG: must block until destruction has completed
+  spinLock.exclusiveLock();
+  if (--numberOfWindows == 0) {
+    ::XCloseDisplay((Display*)displayHandle);
+    displayHandle = 0;
   }
-  ::XCloseDisplay((Display*)displayHandle);
+  spinLock.releaseLock();
 #endif // flavor
 }
 

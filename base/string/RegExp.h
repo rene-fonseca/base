@@ -110,9 +110,9 @@ private:
 
   /** The pattern. */
   String pattern;
-  /** Internal information. */
+  /** Internal compilation data. */
   void* compiled;
-  /** Case sensitive. */
+  /** Specifies the case sensitivity. */
   bool caseSensitive;
 protected:
 
@@ -168,6 +168,7 @@ public:
 
     @param value The string to be matched.
     @param start The start index. The default is 0.
+    @return The substring matched by the entire pattern.
   */
   Substring match(const String& value, unsigned int start = 0) throw(RegExpException, OutOfRange);
 
@@ -178,6 +179,7 @@ public:
     @param value The string to be matched.
     @param arguments The array to receive the captured substrings from the matched string.
     @param start The start index. The default is 0.
+    @return The substring matched by the entire pattern.
   */
   Substring match(const String& value, Array<Substring>& arguments, unsigned int start = 0) throw(RegExpException, OutOfRange);
 

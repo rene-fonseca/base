@@ -12,18 +12,37 @@
  ***************************************************************************/
 
 #include <base/communication/IEEE1394.h>
-#include <base/ByteOrder.h>
-#include <base/concurrency/Thread.h>
+
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  define _DK_SDU_MIP__BASE__IEEE_1394_IMPL UnibrainIEEE1394
+#  include <base/communication/UnibrainIEEE1394.cpp>
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  define _DK_SDU_MIP__BASE__IEEE_1394_IMPL LinuxRawIEEE1394
+#  include <base/communication/LinuxRawIEEE1394.cpp>
+#else
+#  define _DK_SDU_MIP__BASE__IEEE_1394_IMPL DummyIEEE1394
+#  include <base/communication/DummyIEEE1394.h>
+#endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+IEEE1394::IEEE1394() throw(IEEE1394Exception) {
+  ieee1394impl = new _DK_SDU_MIP__BASE__IEEE_1394_IMPL();
+}
+
 void IEEE1394::IsochronousRequestImpl::setOptions(unsigned int options) throw(IEEE1394Exception) {
-  assert(status == READY, bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY));
+  assert(
+    status == READY,
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
+  );
   this->options = options;
 }
 
 void IEEE1394::IsochronousRequestImpl::reset() throw(IEEE1394Exception) {
-  assert(status != PENDING, bindCause(IEEE1394Exception("Request is pending", this), IEEE1394::REQUEST_NOT_PENDING));
+  assert(
+    status != PENDING,
+    bindCause(IEEE1394Exception("Request is pending", this), IEEE1394::REQUEST_NOT_PENDING)
+  );
   resetContext();
   status = READY;
 }
@@ -40,36 +59,54 @@ IEEE1394::IsochronousReadRequestImpl::IsochronousReadRequestImpl() throw()
 }
 
 void IEEE1394::IsochronousReadRequestImpl::setSubchannel(unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception) {
-  assert(getStatus() == READY, bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY));
+  assert(
+    getStatus() == READY,
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
+  );
   assert(subchannel <= IEEE1394::BROADCAST, OutOfDomain(this));
   this->subchannel = subchannel;
 }
 
 void IEEE1394::IsochronousReadRequestImpl::setBuffer(char* buffer, unsigned int size) throw(IEEE1394Exception) {
-  assert(getStatus() == READY, bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY));
+  assert(
+    getStatus() == READY,
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
+  );
   this->buffer = buffer;
   this->bufferSize = size;
 }
 
 void IEEE1394::IsochronousReadFixedPacketsRequestImpl::setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
-  assert(getStatus() == READY, bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY));
+  assert(
+    getStatus() == READY,
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
+  );
   assert(payload % sizeof(IEEE1394::Quadlet) == 0, OutOfDomain(this));
   this->payload = payload;
 }
 
 void IEEE1394::IsochronousReadFixedDataRequestImpl::setNumberOfPackets(unsigned int packets) throw(OutOfDomain, IEEE1394Exception) {
-  assert(getStatus() == READY, bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY));
+  assert(
+    getStatus() == READY,
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
+  );
   this->numberOfPackets = packets;
 }
 
 void IEEE1394::IsochronousReadFixedDataRequestImpl::setHeaderSize(unsigned int size) throw(OutOfDomain, IEEE1394Exception) {
-  assert(getStatus() == READY, bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY));
+  assert(
+    getStatus() == READY,
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
+  );
   assert(payload % sizeof(IEEE1394::Quadlet) == 0, OutOfDomain(this));
   this->headerSize = size;
 }
 
 void IEEE1394::IsochronousReadFixedDataRequestImpl::setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
-  assert(getStatus() == READY, bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY));
+  assert(
+    getStatus() == READY,
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
+  );
   assert(payload % sizeof(IEEE1394::Quadlet) == 0, OutOfDomain(this));
   this->payload = payload;
 }
@@ -117,7 +154,10 @@ void IEEE1394::IsochronousWriteRequestImpl::setBuffer(const char* buffer, unsign
 // }
 
 void IEEE1394::IsochronousWriteRequestImpl::setSpeed(unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
-  assert(getStatus() == READY, bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY));
+  assert(
+    getStatus() == READY,
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
+  );
   switch (speed) {
   case 100:
   case 200:
@@ -137,54 +177,6 @@ void IEEE1394::IsochronousWriteDataRequestImpl::setBuffer(const char* buffer, un
   this->secondaryBuffer = secondaryBuffer;
 }
 
-namespace IEEE1394Impl {
-
-  enum NodeCapability {
-    BURST_TRANSFER = 1 << 0
-  };
-  
-  struct BusInfo {
-    BigEndian<uint32> name;
-    BigEndian<uint32> flags;
-    uint8 guid[8];
-  } _DK_SDU_MIP__BASE__PACKED;
-
-  struct RootDirectory {
-    BigEndian<uint32> crc;
-    BigEndian<uint32> vendorId;
-    BigEndian<uint32> capabilities;
-    BigEndian<uint32> nodeOffset;
-    BigEndian<uint32> deviceDirectoryOffset;
-  } _DK_SDU_MIP__BASE__PACKED;
-
-  struct DeviceIndependentDirectory {
-    BigEndian<uint32> crc;
-    BigEndian<uint32> specification;
-    BigEndian<uint32> version;
-    BigEndian<uint32> dependentOffset;
-  } _DK_SDU_MIP__BASE__PACKED;
-
-  struct DeviceDependentDirectory {
-    BigEndian<uint32> crc;
-    BigEndian<uint32> commandRegisters;
-    BigEndian<uint32> vendorNameLeaf;
-    BigEndian<uint32> modelNameLeaf;
-  } _DK_SDU_MIP__BASE__PACKED;
-
-  struct ConfigurationIntro {
-    BigEndian<uint32> crc;
-    BusInfo busInfo;
-  } _DK_SDU_MIP__BASE__PACKED;
-  
-};
-
-bool IEEE1394::hasBeenReset() const throw() { // TAG: not implemented
-  return false;
-}
-
-void IEEE1394::acknowledgeReset() throw() { // TAG: not implemented
-}
-
 Array<EUI64> IEEE1394::getNodes() throw(IEEE1394Exception) {
   uint8 guid[IEEE1394::BROADCAST][8];
   unsigned int numberOfDevices;
@@ -201,9 +193,9 @@ Array<EUI64> IEEE1394::getNodes() throw(IEEE1394Exception) {
         linkOnNodes &= ~(1ULL << i);
         
         try {
-          IEEE1394Impl::ConfigurationIntro config;
+          ConfigurationIntro config;
           read(i, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::CONFIGURATION_ROM, getCharAddress(config), sizeof(config));
-          if (((config.crc >> 24) * sizeof(Quadlet)) < sizeof(IEEE1394Impl::BusInfo)) {
+          if (((config.crc >> 24) * sizeof(Quadlet)) < sizeof(BusInfo)) {
             continue; // general ROM format not present
           }
           if (config.busInfo.name != 0x31333934) {
@@ -232,11 +224,11 @@ EUI64 IEEE1394::getIdentifier(unsigned int node) throw(OutOfDomain, IEEE1394Exce
   Quadlet quadlet;
   read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::CONFIGURATION_ROM, getCharAddress(quadlet), sizeof(quadlet));
   assert(
-    ((quadlet >> 24) * sizeof(Quadlet)) >= sizeof(IEEE1394Impl::BusInfo),
+    ((quadlet >> 24) * sizeof(Quadlet)) >= sizeof(BusInfo),
     bindCause(IEEE1394Exception("Device has no configuration ROM", this), IEEE1394::NO_GENERAL_CONFIGURATION_ROM)
   );
   
-  IEEE1394Impl::BusInfo busInfo;
+  BusInfo busInfo;
   read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BUS_INFO_BLOCK, getCharAddress(busInfo), sizeof(busInfo));
   
   return EUI64(busInfo.guid);
@@ -248,11 +240,11 @@ unsigned int IEEE1394::getMaximumPayload(unsigned int node) throw(IEEE1394Except
   Quadlet quadlet;
   read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::CONFIGURATION_ROM, getCharAddress(quadlet), sizeof(quadlet));
   assert(
-    ((quadlet >> 24) * sizeof(Quadlet)) >= sizeof(IEEE1394Impl::BusInfo),
+    ((quadlet >> 24) * sizeof(Quadlet)) >= sizeof(BusInfo),
     bindCause(IEEE1394Exception("Device has no configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
 
-  IEEE1394Impl::BusInfo busInfo;
+  BusInfo busInfo;
   read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BUS_INFO_BLOCK, getCharAddress(busInfo), sizeof(busInfo));
   assert(busInfo.name == 0x31333934, bindCause(IEEE1394Exception(this), INVALID_BUS_INFORMATION_BLOCK));
   return 1 << ((busInfo.flags >> 12) & 0x0f + 1);
@@ -264,14 +256,14 @@ unsigned int IEEE1394::getCapabilities(unsigned int node) throw(IEEE1394Exceptio
   Quadlet quadlet;
   read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::CONFIGURATION_ROM, getCharAddress(quadlet), sizeof(quadlet));
   assert(
-    ((quadlet >> 24) * sizeof(Quadlet)) >= sizeof(IEEE1394Impl::BusInfo),
+    ((quadlet >> 24) * sizeof(Quadlet)) >= sizeof(BusInfo),
     bindCause(IEEE1394Exception("Device has no configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
   
-  IEEE1394Impl::BusInfo busInfo;
+  BusInfo busInfo;
   read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BUS_INFO_BLOCK, getCharAddress(busInfo), sizeof(busInfo));
   
-//   IEEE1394Impl::RootDirectory rootDirectory;
+//   RootDirectory rootDirectory;
 //   unsigned int rootDirectoryOffset = IEEE1394::BUS_INFO_BLOCK + (quadlet >> 24) * sizeof(Quadlet);
 //   read(node, IEEE1394::CSR_BASE_ADDRESS + rootDirectoryOffset, getCharAddress(rootDirectory), sizeof(rootDirectory));
   
@@ -295,11 +287,11 @@ unsigned int IEEE1394::getVendorId(unsigned int node) throw(IEEE1394Exception) {
   }
   
   assert(
-    ((quadlet >> 24) * sizeof(Quadlet)) >= sizeof(IEEE1394Impl::BusInfo),
+    ((quadlet >> 24) * sizeof(Quadlet)) >= sizeof(BusInfo),
     bindCause(IEEE1394Exception("Device has invalid configuration ROM", this), IEEE1394::INVALID_BUS_INFORMATION_BLOCK)
   );
   
-  IEEE1394Impl::RootDirectory rootDirectory;
+  RootDirectory rootDirectory;
   unsigned int rootDirectoryOffset = IEEE1394::BUS_INFO_BLOCK + (quadlet >> 24) * sizeof(Quadlet);
   read(node, IEEE1394::CSR_BASE_ADDRESS + rootDirectoryOffset, getCharAddress(rootDirectory), sizeof(rootDirectory));
 //  assert((rootDirectory.vendorId >> 24) == 0x03, IEEE1394Exception(this)); // TAG: Basler has 0x0c in MSB
@@ -318,11 +310,11 @@ int IEEE1394::getPhysicalId(const EUI64& guid) throw(IEEE1394Exception) {
     try {
       Quadlet quadlet;
       read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::CONFIGURATION_ROM, getCharAddress(quadlet), sizeof(quadlet));
-      if (((quadlet >> 24) * sizeof(Quadlet)) < sizeof(IEEE1394Impl::BusInfo)) {
+      if (((quadlet >> 24) * sizeof(Quadlet)) < sizeof(BusInfo)) {
         continue;
       }
       
-      IEEE1394Impl::BusInfo busInfo;
+      BusInfo busInfo;
       read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BUS_INFO_BLOCK, getCharAddress(busInfo), sizeof(busInfo));
 
       if (compare(guid.getBytes(), busInfo.guid, sizeof(busInfo.guid)) == 0) {

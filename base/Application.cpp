@@ -16,6 +16,7 @@
 #include <base/Type.h>
 #include <base/TypeInfo.h>
 #include <base/SystemLogger.h>
+#include <base/concurrency/Thread.h>
 #include <stdlib.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
@@ -70,38 +71,50 @@ public:
   static void signalHandler(int signal) throw() {
     switch (signal) {
     case SIGHUP: // hangup
-      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Hangup signal"));
-      if (Application::application) {
-        Application::application->hangup();
+      if (Thread::getThread()->isMainThread()) {
+        SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Hangup signal"));
+        if (Application::application) {
+          Application::application->hangup();
+        }
       }
       break;
     case SIGQUIT: // quit signal from keyboard
-      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Quit signal"));
-      if (Application::application) {
-        Application::application->terminate();
+      if (Thread::getThread()->isMainThread()) {
+        SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Quit signal"));
+        if (Application::application) {
+          Application::application->terminate();
+        }
       }
       break;
     case SIGINT: // interrrupt from keyboard
-      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Interrupt signal"));
-      if (Application::application) {
-        Application::application->terminate();
+      if (Thread::getThread()->isMainThread()) {
+        SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Interrupt signal"));
+        if (Application::application) {
+          Application::application->terminate();
+        }
       }
       break;
     case SIGABRT: // abort
-      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Abort signal"));
+      if (Thread::getThread()->isMainThread()) {
+        SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Abort signal"));
+      }
       break;
     case SIGTERM: // terminate
-      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Terminate signal"));
-      if (Application::application) {
-        Application::application->terminate();
+      if (Thread::getThread()->isMainThread()) {
+        SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Terminate signal"));
+        if (Application::application) {
+          Application::application->terminate();
+        }
       }
       break;
     case SIGCHLD: // child state changed
       break;
     case SIGPWR: // power fail or restart
-      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Power signal"));
-      if (Application::application) {
-        Application::application->terminate();
+      if (Thread::getThread()->isMainThread()) {
+        SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Power signal"));
+        if (Application::application) {
+          Application::application->terminate();
+        }
       }
       break;
     }
@@ -136,6 +149,7 @@ void Application::initialize() throw() {
       throw Exception("Unable to install signal handler");
     }
   #else
+    /* use sigaction */
     if (!((signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (signal(SIGTERM, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (signal(SIGCHLD, ApplicationImpl::signalHandler) != SIG_ERR) &&

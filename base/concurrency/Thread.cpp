@@ -16,7 +16,7 @@
 #include <base/Trace.h>
 #include <stdio.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else // pthread
   #include <pthread.h>
@@ -29,7 +29,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 // The original unhandled exception filter
 static LPTOP_LEVEL_EXCEPTION_FILTER originalExceptionFilter = NULL;
 
@@ -40,7 +40,7 @@ LONG __stdcall exceptionFilter(EXCEPTION_POINTERS* exception) {
   return originalExceptionFilter(exception);
   //  return result;
 }
-#endif // __win32__
+#endif
 
 /**
   The class is used to make a Thread object for the current context.
@@ -56,11 +56,11 @@ public:
   */
   MainThread() throw() : thread() {
     TRACE_MEMBER();
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     if (originalExceptionFilter == NULL) {
       originalExceptionFilter = SetUnhandledExceptionFilter(exceptionFilter);
     }
-#endif // __win32__
+#endif // win32
   }
 
   inline Thread* getThread() throw() {
@@ -68,12 +68,12 @@ public:
   }
 
   ~MainThread() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     // Restore the original unhandled exception filter
     if (originalExceptionFilter != NULL) {
       SetUnhandledExceptionFilter(originalExceptionFilter);
     }
-#endif // __win32__
+#endif // win32
     TRACE_MEMBER();
   }
 };
@@ -127,7 +127,7 @@ void* Thread::entry(Thread* thread) throw() {
   //  TRACE("TRACE %p >> %s\n", thread, __PRETTY_FUNCTION__);
   try {
     ThreadLocal local(thread);
-#if !defined(__win32__)
+#if !(_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     thread->event.wait(); // wait until signaled - win32 uses suspend/resume
 #endif
     try {
@@ -148,7 +148,7 @@ void* Thread::entry(Thread* thread) throw() {
 }
 
 void Thread::exit() throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ExitThread(0); // will properly create resource leaks
 #else // pthread
   pthread_exit(0); // will properly create resource leaks
@@ -165,7 +165,7 @@ Allocator<char>* Thread::getLocalStorage() throw() {
 
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
   assert(nanoseconds < 1000000000, OutOfDomain());
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   Sleep(nanoseconds/1000);
 #else // __unix__
   struct timespec interval;
@@ -181,7 +181,7 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
 
 void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
   assert(microseconds < 1000000000, OutOfDomain());
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   Sleep(microseconds/1000);
 #else // __unix__
   struct timespec interval;
@@ -197,7 +197,7 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
 
 void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
   assert(milliseconds < 1000000000, OutOfDomain());
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   Sleep(milliseconds);
 #else // __unix__
   struct timespec interval;
@@ -213,7 +213,7 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
 
 void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
   assert(seconds < 1000000, OutOfDomain());
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   Sleep(seconds * 1000);
 #else // __unix__
   struct timespec interval;
@@ -228,7 +228,7 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
 }
 
 void Thread::yield() throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SwitchToThread(); // no errors
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_YIELD)
   pthread_yield(); // ignore errors
@@ -247,7 +247,7 @@ void Thread::onChildTermination(Thread* thread) {
 
 
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 Thread::Thread() throw() :
   parent(0), runnable(0), terminated(false), termination(ALIVE), threadHandle(0) {
   threadID = GetCurrentThreadId();
@@ -262,7 +262,7 @@ Thread::Thread() throw() :
 Thread::Thread(Runnable* runnable) throw(ResourceException) :
   runnable(runnable), terminated(false), termination(ALIVE), threadID(0) {
   parent = getThread(); // must never be NULL
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   // we need to grant SYNCHRONIZE access so we can join the thread object
 /*
   EXPLICIT_ACCESS ea;
@@ -360,7 +360,7 @@ bool Thread::isParent() const throw() {
 }
 
 bool Thread::isSelf() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return GetCurrentThreadId() == threadID;
 #else // pthread
   return pthread_self() == threadID;
@@ -372,7 +372,7 @@ void Thread::join() const throw(ThreadException) {
 //    if (isSelf()) { // is thread trying to wait for itself to exit
 //      throw Self();
 //    }
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   WaitForSingleObject(threadHandle, INFINITE);
 #else // pthread
   if (pthread_join(threadID, NULL)) {
@@ -382,7 +382,7 @@ void Thread::join() const throw(ThreadException) {
 }
 
 void Thread::start() throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   //  event.signal();
   ResumeThread((HANDLE)threadHandle);
 #else // pthread
@@ -406,7 +406,7 @@ Thread::~Thread() throw(ThreadException) {
     if (isAlive()) {
       throw ThreadException();
     }
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     if (!CloseHandle(threadHandle)) {
       ThreadException("Unable to release thread");
     }

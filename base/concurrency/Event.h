@@ -19,11 +19,11 @@
 #include <base/Overflow.h>
 #include <base/ResourceException.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else
+#else // Unix
   #include <pthread.h>
-#endif // __win32__
+#endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -37,7 +37,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class Event : public virtual Object {
 private:
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   /** Event handle. */
   HANDLE event;
 #else

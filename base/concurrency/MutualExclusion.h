@@ -19,9 +19,9 @@
 #include <base/ResourceException.h>
 #include <base/concurrency/Lock.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // pthread
+#else // Unix
   #include <pthread.h>
 #endif
 
@@ -41,7 +41,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class MutualExclusion : public virtual Object, public virtual Lock {
 protected:
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   /** Internal mutex representation. */
   mutable CRITICAL_SECTION lock;
 #else // pthread

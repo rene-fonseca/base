@@ -38,7 +38,7 @@ public:
   */
   Daemon(Runnable* runnable) throw(SingletonException, ResourceException);
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   static void install();
 #endif
 };

@@ -13,16 +13,16 @@
 
 #include <base/concurrency/MutualExclusion.h>
 
-#if !defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
   #include <errno.h>
-#endif // __win32__
+#endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 MutualExclusion::MutualExclusion() throw(ResourceException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   InitializeCriticalSection(&lock);
-#else
+#else // pthread
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
     throw ResourceException();
@@ -40,7 +40,7 @@ MutualExclusion::MutualExclusion() throw(ResourceException) {
 }
 
 void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   EnterCriticalSection(&lock);
 #else // pthread
   int result = pthread_mutex_lock(&lock);
@@ -55,7 +55,7 @@ void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
 }
 
 bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   BOOL result;
   result = TryEnterCriticalSection(&lock);
   return result;
@@ -72,7 +72,7 @@ bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
 }
 
 void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   LeaveCriticalSection(&lock);
 #else // pthread
   if (pthread_mutex_unlock(&lock)) {
@@ -82,7 +82,7 @@ void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
 }
 
 MutualExclusion::~MutualExclusion() throw(MutualExclusionException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DeleteCriticalSection(&lock);
 #else // pthread
   if (pthread_mutex_destroy(&lock)) {

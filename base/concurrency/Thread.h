@@ -25,9 +25,9 @@
 #include <base/concurrency/Synchronize.h>
 #include <base/mem/Allocator.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else
+#else // Unix
   #include <pthread.h>
 #endif
 
@@ -115,7 +115,7 @@ private:
   volatile bool terminated;
   /** Termination status. */
   ThreadTermination termination;
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   /** Handle to the thread. */
   HANDLE threadHandle;
   /** Identifier for the thread. */

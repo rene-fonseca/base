@@ -14,9 +14,9 @@
 #include <base/features.h>
 #include <base/concurrency/Process.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // __unix__
+#else // Unix
   #include <sys/types.h>
   #include <sys/wait.h>
   #include <unistd.h>
@@ -28,23 +28,23 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Process Process::getProcess() throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return Process(GetCurrentProcessId());
-#else // __unix__
+#else // Unix
   return Process(getpid());
 #endif
 }
 
 Process Process::getParentProcess() throw() {
-#if defined(__win32__)
-#else // __unix__
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#else // Unix
   return Process(getppid());
 #endif
 }
 
 Process Process::fork() throw(Exception) {
-#if defined(__win32__)
-#else // __unix__
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#else // Unix
   pid_t result = ::fork(); // should use fork1 on solaris
   if (result == (pid_t)-1) {
     throw Exception("Unable to fork child process");
@@ -62,7 +62,7 @@ Process Process::fork() throw(Exception) {
 #endif
 
 int Process::getPriority() throw(ProcessException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   switch (GetPriorityClass(GetCurrentProcess())) { // no need to close handle
   case 0:
     throw ProcessException("Unable to get priority of process");
@@ -79,7 +79,7 @@ int Process::getPriority() throw(ProcessException) {
   case IDLE_PRIORITY_CLASS:
     return 19;
   }
-#else // __unix__
+#else // Unix
   errno = 0;
   int priority = ::getpriority(PRIO_PROCESS, getpid());
   if ((priority == -1) && (errno != 0)) {
@@ -90,7 +90,7 @@ int Process::getPriority() throw(ProcessException) {
 }
 
 void Process::setPriority(int priority) throw(ProcessException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD priorityClass;
   if (priority <= -20) {
     priorityClass = REALTIME_PRIORITY_CLASS;
@@ -108,7 +108,7 @@ void Process::setPriority(int priority) throw(ProcessException) {
   if (!SetPriorityClass(GetCurrentProcess(), priorityClass)) {
     throw ProcessException("Unable to set priority of process");
   }
-#else // __unix__
+#else // Unix
   if (::setpriority(PRIO_PROCESS, getpid(), priority)) {
     ProcessException("Unable to set priority");
   }
@@ -136,8 +136,8 @@ Process& Process::operator=(const Process& eq) throw() {
 }
 
 void Process::wait() throw() {
-#if defined(__win32__)
-#else // __unix__
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#else // Unix
   int status;
   ::waitpid(id, &status, 0);
 #endif

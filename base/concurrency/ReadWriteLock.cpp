@@ -13,14 +13,14 @@
 
 #include <base/concurrency/ReadWriteLock.h>
 
-#if !defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
   #include <errno.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 ReadWriteLock::ReadWriteLock() throw(ResourceException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   //  __try {
     InitializeCriticalSection(&lock);
     //  } __except(STATUS_NO_MEMORY) {
@@ -59,7 +59,7 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException) {
 }
 
 void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   //  __try {
     EnterCriticalSection(&lock);
     //  } __except(STATUS_INVALID_HANDLE) {
@@ -82,7 +82,7 @@ void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
 }
 
 bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   BOOL result;
   //  __try {
     result = TryEnterCriticalSection(&lock);
@@ -112,7 +112,7 @@ bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
 }
 
 void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   //  __try {
     EnterCriticalSection(&lock);
     //  } __except(STATUS_INVALID_HANDLE) {
@@ -135,7 +135,7 @@ void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
 }
 
 bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   BOOL result;
   //  __try {
     result = TryEnterCriticalSection(&lock);
@@ -165,7 +165,7 @@ bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
 }
 
 void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   LeaveCriticalSection(&lock);
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_unlock(&lock)) {
@@ -179,7 +179,7 @@ void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
 }
 
 ReadWriteLock::~ReadWriteLock() throw(ReadWriteLockException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DeleteCriticalSection(&lock);
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_destroy(&lock)) {

@@ -318,22 +318,22 @@ int WideString::compareToIgnoreCase(const Character* left, const Character* righ
 }
 
 int WideString::compareToIgnoreCase(const WideString& str) const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return _wcsicmp(getElements(), str.getElements());
-#elif defined(__linux__)
+#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
   return wcscasecmp(getElements(), str.getElements());
-#else // __unix__
+#else // Unix
   return compareToIgnoreCase(getElements(), str.getElements());
 #endif
 }
 
 int WideString::compareToIgnoreCase(const Character* str) const throw(WideStringException) {
   assert(str, WideStringException());
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return _wcsicmp(getElements(), str);
-#elif defined(__linux__)
+#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
   return wcscasecmp(getElements(), str);
-#else // __unix__
+#else // Unix
   return compareToIgnoreCase(getElements(), str);
 #endif
 }

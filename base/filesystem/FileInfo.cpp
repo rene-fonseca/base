@@ -14,9 +14,9 @@
 #include <base/features.h>
 #include <base/filesystem/FileInfo.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // __unix__
+#else // Unix
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <unistd.h>
@@ -25,7 +25,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 FileInfo::FileInfo(const String& path) throw(FileSystemException) : path(path) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 //  static const SYSTEMTIME systemTimeOffset = {1970, 1, 0, 0, 0, 0, 0, 0}; // TAG: day starts with 0 or 1
 //  FILETIME fileTimeOffset;
 //  SystemTimeToFileTime(&systemTimeOffset, &fileTimeOffset);
@@ -46,7 +46,7 @@ FileInfo::FileInfo(const String& path) throw(FileSystemException) : path(path) {
   modification = *(long long*)(&buffer.ftLastWriteTime) - fileTimeOffset; // TAG: overflow problem
   change = *(long long*)(&buffer.ftCreationTime) - fileTimeOffset; // TAG: overflow problem
   FindClose(handle);
-#else // __unix__
+#else // Unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 buffer;
     if (stat64(path.getElements(), &buffer) || (!S_ISREG(buffer.st_mode))) {

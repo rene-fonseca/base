@@ -15,7 +15,7 @@
 #include <base/Date.h>
 #include <base/concurrency/Thread.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
   #include <time.h>
 #else // __unix__
@@ -31,7 +31,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 inline Date FileTimeToDate(const FILETIME& time) {
   ASSERT(sizeof(FILETIME) == sizeof(long long));
   return Date((*(long long*)(&time) - 116444736000000000LL)/10000000); // TAG: 0x0000001c1a021060LL
@@ -39,7 +39,7 @@ inline Date FileTimeToDate(const FILETIME& time) {
 #endif
 
 Date Date::getNow() throw(DateException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME buffer;
   GetSystemTimeAsFileTime(&buffer);
   return FileTimeToDate(buffer);
@@ -49,7 +49,7 @@ Date Date::getNow() throw(DateException) {
 }
 
 Date Date::getTime(int second, int minute, int hour) throw(DateException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME buffer;
   SYSTEMTIME time = {0, 0, 0, 0, hour, minute, second, 0};
   SystemTimeToFileTime(&time, &buffer);
@@ -65,7 +65,7 @@ Date Date::getTime(int second, int minute, int hour) throw(DateException) {
 }
 
 Date Date::getDate(int day, int month, int year) throw(DateException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME buffer;
   SYSTEMTIME time = {year, month, 0, day, 0, 0, 0, 0};
   SystemTimeToFileTime(&time, &buffer);
@@ -81,7 +81,7 @@ Date Date::getDate(int day, int month, int year) throw(DateException) {
 }
 
 Date Date::getDate(int second, int minute, int hour, int day, int month, int year) throw(DateException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME buffer;
   SYSTEMTIME time = {year, month, 0, day, hour, minute, second, 0};
   SystemTimeToFileTime(&time, &buffer);
@@ -97,7 +97,7 @@ Date Date::getDate(int second, int minute, int hour, int day, int month, int yea
 }
 
 int Date::getSecond() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wSecond;
@@ -109,7 +109,7 @@ int Date::getSecond() const throw() {
 }
 
 int Date::getMinute() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wMinute;
@@ -121,7 +121,7 @@ int Date::getMinute() const throw() {
 }
 
 int Date::getHour() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wHour;
@@ -133,7 +133,7 @@ int Date::getHour() const throw() {
 }
 
 int Date::getDay() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wDay;
@@ -145,7 +145,7 @@ int Date::getDay() const throw() {
 }
 
 int Date::getDayOfWeek() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wDayOfWeek;
@@ -157,7 +157,7 @@ int Date::getDayOfWeek() const throw() {
 }
 
 int Date::getDayOfYear() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: not implemented
   SYSTEMTIME time;
   GetLocalTime(&time);
@@ -170,7 +170,7 @@ int Date::getDayOfYear() const throw() {
 }
 
 int Date::getMonth() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wMonth;
@@ -182,7 +182,7 @@ int Date::getMonth() const throw() {
 }
 
 int Date::getYear() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetLocalTime(&time);
   return time.wYear;
@@ -194,7 +194,7 @@ int Date::getYear() const throw() {
 }
 
 int Date::getUTCSecond() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wSecond;
@@ -206,7 +206,7 @@ int Date::getUTCSecond() const throw() {
 }
 
 int Date::getUTCMinute() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wMinute;
@@ -218,7 +218,7 @@ int Date::getUTCMinute() const throw() {
 }
 
 int Date::getUTCHour() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wHour;
@@ -230,7 +230,7 @@ int Date::getUTCHour() const throw() {
 }
 
 int Date::getUTCDay() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wDay;
@@ -242,7 +242,7 @@ int Date::getUTCDay() const throw() {
 }
 
 int Date::getUTCDayOfWeek() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wDayOfWeek;
@@ -254,7 +254,7 @@ int Date::getUTCDayOfWeek() const throw() {
 }
 
 int Date::getUTCDayOfYear() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: not implemented
   //  SYSTEMTIME time;
   //  GetSystemTime(&time);
@@ -267,7 +267,7 @@ int Date::getUTCDayOfYear() const throw() {
 }
 
 int Date::getUTCMonth() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wMonth;
@@ -279,7 +279,7 @@ int Date::getUTCMonth() const throw() {
 }
 
 int Date::getUTCYear() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   GetSystemTime(&time);
   return time.wYear;
@@ -291,7 +291,7 @@ int Date::getUTCYear() const throw() {
 }
 
 String Date::format(const String& format, bool local) const throw(MemoryException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 #else // __unix__
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct tm time;
@@ -307,7 +307,7 @@ String Date::format(const String& format, bool local) const throw(MemoryExceptio
 
 WideString Date::format(const WideString& format, bool local) const throw(MemoryException) {
 #if defined(_DK_SDU_MIP__BASE__WCSFTIME)
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 #else // __unix__
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct tm time;
@@ -326,13 +326,13 @@ WideString Date::format(const WideString& format, bool local) const throw(Memory
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Date& value) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   int date = value.getValue();
-  return stream << ctime(&(time_t)date); // not MT-safe
+  return stream << ctime(&(time_t)date); // TAG: not MT-safe
 #else // __unix__
   char buffer[256];
   int date = value.getValue();
-  return stream << ctime_r(&(time_t)date, buffer);
+  return stream << ctime_r(&(time_t)date, buffer); // TAG: depends on specific API
 #endif
 }
 

@@ -16,11 +16,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if ((key = TlsAlloc()) == TLS_OUT_OF_INDEXES) {
     throw ResourceException();
   }
-#else
+#else // Unix
   if (pthread_key_create(&key, NULL)) {
     throw ResourceException();
   }
@@ -28,7 +28,7 @@ ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
 }
 
 void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   void* result = TlsGetValue(key);
   if (!result && (GetLastError() != NO_ERROR)) {
     throw ThreadKeyException(__func__);
@@ -40,7 +40,7 @@ void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
 }
 
 void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!TlsSetValue(key, value)) {
     throw ThreadKeyException(__func__);
   }
@@ -52,7 +52,7 @@ void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
 }
 
 ThreadKeyImpl::~ThreadKeyImpl() throw(ThreadKeyException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!TlsFree(key)) {
     throw ThreadKeyException(__func__);
   }

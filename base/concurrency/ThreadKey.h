@@ -18,7 +18,7 @@
 #include <base/Exception.h>
 #include <base/ResourceException.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else
   #include <pthread.h>
@@ -37,7 +37,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class ThreadKeyImpl : public Object {
 private:
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   /** Internal data. */
   DWORD key;
 #else

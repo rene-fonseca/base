@@ -63,15 +63,15 @@ public:
 #elif defined(mips) // MIPS II - R4000 processors
     register unsigned int success;
     asm volatile (
-      "0:"
-      "lld %0, (%1);" // get state of lock: 0 (unlocked), or 1 (locked)
-      "xor %0, %0, $1;"
-      "beq %0, $0, 1f;" // stop if already locked
-      "nop;"
-      "scd %0, (%1);" // try to lock
-      "beq %0, $0, 0b;" // retry if we did not succeed
-      "nop;"
       "1:"
+      "ll %0, %1;" // get state of lock: 0 (unlocked), or 1 (locked)
+      "xor %0, %0, 1;" // flip bit
+      "beq %0, 0, 2f;" // check if already locked
+      "nop;"
+      "sc %0, %1;" // try to lock
+      "beq %0, 0, 1b;" // retry if we did not succeed
+      "nop;"
+      "2:"
       : "=&r" (success), "=m" (value) // outputs
     );
     return success;

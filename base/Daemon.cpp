@@ -18,16 +18,16 @@
 #include <base/Application.h>
 #include <base/concurrency/Thread.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // __unix__
+#else // Unix
   #include <sys/types.h>
   #include <unistd.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 
 class DaemonImpl {
 public:

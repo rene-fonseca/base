@@ -15,9 +15,9 @@
 #include <base/filesystem/FolderInfo.h>
 #include <base/concurrency/Thread.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // __unix__
+#else // Unix
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <unistd.h>
@@ -28,7 +28,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 FolderInfo::FolderInfo(const String& path) throw(FileSystemException) : path(path) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 //  static const SYSTEMTIME systemTimeOffset = {1970, 1, 0, 0, 0, 0, 0, 0}; // TAG: day starts with 0 or 1
 //  FILETIME fileTimeOffset;
 //  SystemTimeToFileTime(&systemTimeOffset, &fileTimeOffset);
@@ -44,7 +44,7 @@ FolderInfo::FolderInfo(const String& path) throw(FileSystemException) : path(pat
   modification = *(long long*)(&buffer.ftLastWriteTime) - fileTimeOffset; // TAG: overflow problem
   change = *(long long*)(&buffer.ftCreationTime) - fileTimeOffset; // TAG: overflow problem
   FindClose(handle);
-#else // __unix__
+#else // Unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 buffer;
     if (stat64(path.getElements(), &buffer) || (!S_ISDIR(buffer.st_mode))) {
@@ -68,7 +68,7 @@ FolderInfo FolderInfo::getParent() const throw(FileSystemException) {
 
 Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   Array<String> result;
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   HANDLE handle;
   WIN32_FIND_DATA entry;
 
@@ -93,7 +93,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
       throw FileSystemException("Unable to close folder");
     }
   }
-#else // __unix__
+#else // Unix
   Allocator<char>* buffer = Thread::getLocalStorage();
 
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)

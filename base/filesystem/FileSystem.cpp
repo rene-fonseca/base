@@ -15,9 +15,9 @@
 #include <base/filesystem/FileSystem.h>
 #include <base/concurrency/Thread.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // __unix__
+#else // Unix
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <fcntl.h>
@@ -29,10 +29,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 String FileSystem::getPath(const String& base, const String& relative) throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   String result(base.getLength() + sizeof("\\") + relative.getLength());
   result.append(base).append("\\").append(relative);
-#else // __unix__
+#else // Unix
   String result(base.getLength() + sizeof("/") + relative.getLength());
   result.append(base).append("/").append(relative);
 #endif
@@ -40,13 +40,13 @@ String FileSystem::getPath(const String& base, const String& relative) throw() {
 }
 
 String FileSystem::getCurrentFolder() throw(FileSystemException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   Allocator<char>* buffer = Thread::getLocalStorage();
   if (GetCurrentDirectory(buffer->getSize(), buffer->getElements())) {
     throw FileSystemException("Unable to get current folder");
   }
   return String(buffer->getElements());
-#else // __unix__
+#else // Unix
   Allocator<char>* buffer = Thread::getLocalStorage();
   ASSERT(buffer->getSize() > PATH_MAX);
   if (::getcwd(buffer->getElements(), buffer->getSize())) {
@@ -57,11 +57,11 @@ String FileSystem::getCurrentFolder() throw(FileSystemException) {
 }
 
 void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!SetCurrentDirectory(path.getElements())) {
     throw FileSystemException("Unable to set current folder");
   }
-#else // __unix__
+#else // Unix
   if (::chdir(path.getElements())) {
     throw FileSystemException("Unable to set current folder");
   }
@@ -69,7 +69,7 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
 }
 
 bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD result = GetFileAttributes(path.getElements());
   return (result != (DWORD)(-1)) && (result & FILE_ATTRIBUTE_DIRECTORY == 0);
 #else
@@ -106,7 +106,7 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 }
 
 bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD result = GetFileAttributes(path.getElements());
   return (result != (DWORD)(-1)) && (result & FILE_ATTRIBUTE_DIRECTORY != 0);
 #else
@@ -143,12 +143,12 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
 }
 
 void FileSystem::removeFile(const String& path) throw(FileSystemException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 //  SetFileAttributes(file, FILE_ATTRIBUTE_NORMAL);
   if (!DeleteFile(path.getElements())) {
     throw FileSystemException("Unable to remove file");
   }
-#else // __unix__
+#else // Unix
   if (unlink(path.getElements())) {
     throw FileSystemException("Unable to remove file");
   }
@@ -156,11 +156,11 @@ void FileSystem::removeFile(const String& path) throw(FileSystemException) {
 }
 
 void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!RemoveDirectory(path.getElements())) {
     throw FileSystemException("Unable to remove folder");
   }
-#else // __unix__
+#else // Unix
   if (rmdir(path.getElements())) {
     throw FileSystemException("Unable to remove file");
   }
@@ -168,11 +168,11 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
 }
 
 void FileSystem::makeFolder(const String& path) throw(FileSystemException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!CreateDirectory(path.getElements(), NULL)) { // use default security descriptor
     throw FileSystemException("Unable to make folder");
   }
-#else // __unix__
+#else // Unix
   if (mkdir(path.getElements(), 0)) {
     throw FileSystemException("Unable to make folder");
   }
@@ -181,12 +181,12 @@ void FileSystem::makeFolder(const String& path) throw(FileSystemException) {
 
 /*
 String FileSystem::getTempFolder() throw(FileSystemException) {
-//#if defined(__win32__)
+//#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 //  // TAG:  check buffer with ASSERT
 //  Allocator<char> buffer = Thread::getLocalStorage();
 //  unsigned int length = GetTempPath(buffer->getSize(), buffer->getBytes());
 //  return String(buffer->getBytes(), length);
-//#else // __unix__
+//#else // Unix
 //  // get environment variable: TMP
 //  return String("/tmp");
 //#endif
@@ -204,7 +204,7 @@ String FileSystem::getTempFileName() throw(FileException) {
 // StringOutputStream stream(tempFile);
 // stream << User::getUser() << "- " << InetAddress::getHostname() << "-" << Process::getProcess().getId() << "-" << ".tmp";
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   GetTempFileName(getTempFolder()->getBytes(), , 0, buffer->getBytes());
 #else
 #endif

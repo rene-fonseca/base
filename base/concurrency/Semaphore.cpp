@@ -13,9 +13,9 @@
 
 #include <base/concurrency/Semaphore.h>
 
-#if !defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
   #include <errno.h>
-#endif // __win32__
+#endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -23,7 +23,7 @@ Semaphore::Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceExceptio
   if (value > MAXIMUM) {
     OutOfDomain();
   }
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!(semaphore = CreateSemaphore(NULL, value, MAXIMUM, NULL))) {
     throw ResourceException();
   }
@@ -54,7 +54,7 @@ Semaphore::Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceExceptio
 #endif
 }
 
-#if !defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
 unsigned int Semaphore::getValue() const throw(SemaphoreException) {
 #if defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   int value;
@@ -62,7 +62,7 @@ unsigned int Semaphore::getValue() const throw(SemaphoreException) {
     throw SemaphoreException();
   }
   return value;
-#else
+#else // mutual exclusion
   unsigned int result;
   if (pthread_mutex_lock(&mutex)) {
     throw SemaphoreException();
@@ -74,10 +74,10 @@ unsigned int Semaphore::getValue() const throw(SemaphoreException) {
   return result;
 #endif
 }
-#endif // __win32__
+#endif
 
 void Semaphore::post() throw(Overflow, SemaphoreException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!ReleaseSemaphore(semaphore, 1, NULL)) {
     throw SemaphoreException();
   }
@@ -104,7 +104,7 @@ void Semaphore::post() throw(Overflow, SemaphoreException) {
 }
 
 void Semaphore::wait() throw(SemaphoreException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (WaitForSingleObject(semaphore, INFINITE) != WAIT_OBJECT_0) {
     throw SemaphoreException();
   }
@@ -127,7 +127,7 @@ void Semaphore::wait() throw(SemaphoreException) {
 }
 
 bool Semaphore::tryWait() throw(SemaphoreException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return WaitForSingleObject(semaphore, 0) == WAIT_OBJECT_0;
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   return sem_trywait(&semaphore) == 0; // did we decrement?
@@ -147,7 +147,7 @@ bool Semaphore::tryWait() throw(SemaphoreException) {
 }
 
 Semaphore::~Semaphore() throw(SemaphoreException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!CloseHandle(semaphore)) {
     throw SemaphoreException();
   }

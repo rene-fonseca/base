@@ -20,7 +20,7 @@
 #include <base/ResourceException.h>
 #include <base/concurrency/Lock.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else
   #include <pthread.h>
@@ -43,7 +43,7 @@ class ReadWriteLock : public virtual Object, public virtual Lock {
 protected:
 
   /** Internal mutex representation. */
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   mutable CRITICAL_SECTION lock;
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
   mutable pthread_rwlock_t lock;

@@ -11,10 +11,12 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/features.h>
+
 extern void moduleEntry();
 extern void moduleCleanUp();
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 
 #include <windows.h>
 
@@ -26,7 +28,7 @@ extern "C" BOOL DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
   }
 }
 
-#else // __unix__
+#else // Unix
 
 extern "C" void _init() {
   moduleEntry();

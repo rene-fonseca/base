@@ -13,7 +13,7 @@
 
 #include <base/concurrency/Event.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else // pthread
   #include <pthread.h>
@@ -25,7 +25,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Event::Event() throw(ResourceException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if ((event = CreateEvent(NULL, true, false, NULL)) == NULL) {
     throw ResourceException("Unable to initialize event");
   }
@@ -53,7 +53,7 @@ Event::Event() throw(ResourceException) {
 }
 
 bool Event::isSignaled() const throw(EventException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return WaitForSingleObject(event, 0) == WAIT_OBJECT_0; // should never fail
 #else // pthread
   bool result;
@@ -69,7 +69,7 @@ bool Event::isSignaled() const throw(EventException) {
 }
 
 void Event::reset() throw(EventException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!ResetEvent(event)) {
     throw EventException("Unable to reset event");
   }
@@ -85,7 +85,7 @@ void Event::reset() throw(EventException) {
 }
 
 void Event::signal() throw(EventException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!SetEvent(event)) {
     throw EventException("Unable to signal event");
   }
@@ -104,7 +104,7 @@ void Event::signal() throw(EventException) {
 }
 
 void Event::wait() const throw(EventException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (WaitForSingleObject(event, INFINITE) != WAIT_OBJECT_0) {
     throw EventException("Unable to wait for event");
   }
@@ -127,7 +127,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
   if (microseconds >= 1000000) {
     throw OutOfDomain();
   }
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   switch (WaitForSingleObject(event, microseconds/1000)) {
   case WAIT_OBJECT_0:
     return true;
@@ -167,7 +167,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
 }
 
 Event::~Event() throw(EventException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!CloseHandle(event)) {
     throw EventException("Unable to destroy event");
   }

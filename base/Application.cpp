@@ -14,12 +14,13 @@
 #include <base/features.h>
 #include <base/Application.h>
 #include <base/Type.h>
+#include <base/TypeInfo.h>
 #include <base/SystemLogger.h>
 #include <stdlib.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // __unix__
+#else // Unix
   #include <signal.h>
 #endif
 
@@ -47,7 +48,7 @@ public:
   }
 
   /* The application signal handler. */
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 
   static BOOL WINAPI signalHandler(DWORD signal) throw() {
     switch (signal) {
@@ -62,7 +63,7 @@ public:
     return FALSE;
   }
 
-#else // __unix__
+#else // Unix
 
   static void signalHandler(int signal) throw() {
     switch (signal) {
@@ -95,11 +96,11 @@ Application::Application(const String& name, int argc, const char* argv[], const
   ++singleton;
 
   // install signal handler
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!SetConsoleCtrlHandler(ApplicationImpl::signalHandler, TRUE)) {
     throw Exception("Unable to install signal handler");
   }
-#else // __unix__
+#else // Unix
   assert(signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR, Exception("Unable to install signal handler"));
   assert(signal(SIGTERM, ApplicationImpl::signalHandler) != SIG_ERR, Exception("Unable to install signal handler"));
   assert(signal(SIGCHLD, ApplicationImpl::signalHandler) != SIG_ERR, Exception("Unable to install signal handler"));

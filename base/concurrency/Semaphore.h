@@ -21,9 +21,9 @@
 #include <base/Overflow.h>
 #include <base/Type.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#elif _DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   #include <semaphore.h>
   #include <limits.h>
 #else
@@ -42,18 +42,18 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class Semaphore : public virtual Object {
 public:
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   static const unsigned int MAXIMUM = Int::MAXIMUM;
-#elif _DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   static const unsigned int MAXIMUM = _POSIX_SEM_VALUE_MAX;
 #else
   static const unsigned int MAXIMUM = Int::MAXIMUM;
 #endif
 private:
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   HANDLE semaphore;
-#elif _DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   mutable sem_t semaphore;
 #else
   /** The value of the semaphore. */
@@ -74,13 +74,13 @@ public:
   */
   Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceException);
 
-#if !defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
   /**
     Returns the current value of the semaphore. Warning this is a non-portable
     method.
   */
   unsigned int getValue() const throw(SemaphoreException);
-#endif // __win32__
+#endif
 
   /**
     Increments the semaphore and signals any thread waiting for a change. This

@@ -14,7 +14,7 @@
 #include <base/features.h>
 #include <base/Timer.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else // __unix__
   #include <sys/time.h>
@@ -27,7 +27,7 @@ Timer::Timer() throw() : stopTime(0) {
 }
 
 void Timer::start() throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
   QueryPerformanceCounter((LARGE_INTEGER*)&startTime);
 #else // __unix__
@@ -38,7 +38,7 @@ void Timer::start() throw() {
 }
 
 void Timer::stop() throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
   QueryPerformanceCounter((LARGE_INTEGER*)&stopTime);
 #else // __unix__
@@ -49,7 +49,7 @@ void Timer::stop() throw() {
 }
 
 long long Timer::getStartTime() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>(startTime * 1000000./frequency.QuadPart);
@@ -59,7 +59,7 @@ long long Timer::getStartTime() const throw() {
 }
 
 long long Timer::getStopTime() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>(stopTime * 1000000./frequency.QuadPart);
@@ -69,7 +69,7 @@ long long Timer::getStopTime() const throw() {
 }
 
 long long Timer::getMicroseconds() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>((stopTime - startTime) * 1000000./frequency.QuadPart);
@@ -79,7 +79,7 @@ long long Timer::getMicroseconds() const throw() {
 }
 
 long long Timer::getLiveMicroseconds() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER now;
   QueryPerformanceCounter(&now);
   LARGE_INTEGER frequency; // ticks per second

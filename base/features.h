@@ -62,17 +62,21 @@ namespace base {
 #  define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 #endif
 
-#define _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE) #VALUE
-#define _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(VALUE) _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE)
+#define _DK_SDU_MIP__BASE__STRINGIFY(value) #value
+#define _DK_SDU_MIP__BASE__INDIRECT_STRINGIFY(value) _DK_SDU_MIP__BASE__STRINGIFY(value)
+
+#if (!defined(STRINGIFY))
+#  define STRINGIFY(value) #value
+#endif
 
 // allow macros to be overridden
 #if (defined(DEBUG))
 #  include <base/Trace.h>
 #  if (!defined(ASSERT))
-#    define ASSERT(expression) {if (!(expression)) {Trace::message("Assertion failure of (" #expression ") at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__));}}
+#    define ASSERT(expression) {if (!(expression)) {Trace::message("Assertion failure of (" #expression ") at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFY(__LINE__));}}
 #  endif
 #  if (!defined(ASSERTION))
-#    define ASSERTION(expression) namespace {Assertion assertion(expression, "Assertion failure of (" #expression ") at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__));}
+#    define ASSERTION(expression) namespace {Assertion assertion(expression, "Assertion failure of (" #expression ") at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFY(__LINE__));}
 #  endif
 #else
 #  if (!defined(ASSERT))
@@ -86,7 +90,7 @@ namespace base {
 #if (!defined(GET_SOURCE_LOCATION))
 #  define GET_SOURCE_LOCATION() \
   FormatOutputStream::Debug( \
-    MESSAGE(__FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__)) \
+    MESSAGE(__FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFY(__LINE__)) \
   )
 #endif
 

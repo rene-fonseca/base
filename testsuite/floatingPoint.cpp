@@ -77,16 +77,22 @@ public:
          << MESSAGE("Representation of 'double': ") << getRepresentationAsString<DoubleRepresentation>() << EOL
          << MESSAGE("Representation of 'long double': ") << getRepresentationAsString<LongDoubleRepresentation>() << ENDL;
 
-    fout << 0.0949123123123 << " " << FLUSH << setPrecision(3) << 0.0949123123123 << ENDL;
-    fout << 0.0952523123123 << " " << FLUSH << setPrecision(3) << 0.0952523123123 << ENDL;
-    fout << 0.08950523123123 << " " << FLUSH << setPrecision(3) << 0.08950523123123 << ENDL;
-    fout << 0.09850523123123 << " " << FLUSH << setPrecision(3) << 0.09850523123123 << ENDL;
-    fout << 0.09940523123123 << " " << FLUSH << setPrecision(3) << 0.09940523123123 << ENDL;
-    fout << 0.09950523123123 << " " << FLUSH << setPrecision(3) << 0.09950523123123 << ENDL;
+    fout << SCIENTIFIC << 1.0096670247046187e-1 << " " << FLUSH << setPrecision(3) << SCIENTIFIC << 1.0096670247046187e-1 << ENDL;
+    fout << SCIENTIFIC << 0.0949123123123 << " " << FLUSH << setPrecision(3) << SCIENTIFIC << 0.0949123123123 << ENDL;
+    fout << SCIENTIFIC << 0.0952523123123 << " " << FLUSH << setPrecision(3) << SCIENTIFIC << 0.0952523123123 << ENDL;
+    fout << SCIENTIFIC << 0.08950523123123 << " " << FLUSH << setPrecision(3) << SCIENTIFIC << 0.08950523123123 << ENDL;
+    fout << SCIENTIFIC << 0.09850623123123 << " " << FLUSH << setPrecision(3) << SCIENTIFIC << 0.09850923123123 << ENDL;
+    fout << SCIENTIFIC << 0.09940623123123 << " " << FLUSH << setPrecision(3) << SCIENTIFIC << 0.09940923123123 << ENDL;
+    fout << SCIENTIFIC << 0.09950623123123 << " " << FLUSH << setPrecision(3) << SCIENTIFIC << 0.09950923123123 << ENDL;
     
     for (unsigned int i = 0; i < 100; ++i) {
-      fout << i/931.0 << " " << FLUSH << setPrecision(3) << i/931.0 << ENDL;
-    }    
+      fout << setWidth(2) << i
+            << setWidth(25) << SCIENTIFIC << i/931.0 << " " << FLUSH
+            << setWidth(10) << setPrecision(3) << SCIENTIFIC << i/931.0 << FLUSH
+            << setWidth(12) << setPrecision(3) << ENGINEERING << i/931.0 << FLUSH
+            << setWidth(8) << setPrecision(3) << FIXED << i/931.0 << FLUSH
+            << setWidth(25) << FIXED << i/931.0 << ENDL;
+    }
   }
 };
 

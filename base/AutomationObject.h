@@ -34,15 +34,20 @@ private:
   /** Prevent dynamic construction. */
   static void* operator new(MemorySize) throw() /*final*/;
   /** Prevent dynamic destruction. */
-  static operator delete(void*, MemorySize) throw() /*final*/;
+  static void operator delete(void*, MemorySize) throw() /*final*/;
   /** Prevent dynamic array construction. */
   static void* operator new[](MemorySize) throw() /*final*/;
   /** Prevent dynamic array destruction. */
-  static operator delete[](void*, MemorySize) throw() /*final*/;
+  static void operator delete[](void*, MemorySize) throw() /*final*/;
   /** Prevent default copy construction. */
   AutomationObject(const AutomationObject& copy) throw() /*final*/;
   /** Prevent default assignment. */
   AutomationObject& operator=(const AutomationObject& eq) throw() /*final*/;
+protected:
+  
+  /** Default initialization. */
+  inline AutomationObject() throw() {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

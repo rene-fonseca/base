@@ -18,6 +18,11 @@
 */
 
 class FileDescriptor : public virtual Object, public virtual Stream {
+public:
+
+  static FileDescriptor getStandardInput() throw();
+  static FileDescriptor getStandardOutput() throw();
+  static FileDescriptor getStandardError() throw();
 protected:
 
   /**
@@ -123,6 +128,11 @@ public:
     Gets the handle of the file descriptor.
   */
   int getHandle() const throw();
+
+  /**
+    Returns true if the handle is valid.
+  */
+  bool isValid() const throw();
 
   /**
     Sets the handle of the file descriptor.

@@ -5,14 +5,19 @@
 
 #include <base/io/FileDescriptorOutputStream.h>
 #include <base/io/EndOfFile.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
 
-#ifndef SSIZE_MAX
-#define SSIZE_MAX (1024*1024)
+#if defined(__win32__)
+  #include <windows.h>
+#else // __unix__
+  #include <sys/types.h>
+  #include <sys/stat.h>
+  #include <fcntl.h>
+  #include <unistd.h>
+  #include <errno.h>
+
+  #ifndef SSIZE_MAX
+    #define SSIZE_MAX (1024*1024)
+  #endif
 #endif
 
 FileDescriptorOutputStream::FileDescriptorOutputStream() throw() :
@@ -35,22 +40,40 @@ FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDesc
 }
 
 void FileDescriptorOutputStream::flush() throw(IOException) {
-//#if defined(__CYGWIN__)
-//#else
-//  if (::fdatasync(fd->getHandle()) != 0) {
-//    throw IOException("Unable to flush file descriptor");
-//  }
-//#endif
-
+#if defined(__win32__)
+  // Handle to a console output cannot be flushed 'cause it isn't buffered, aarrgh
+  if (!isValid()) {
+    throw IOException("Unable to flush file descriptor");
+  }
+  FlushFileBuffers((void*)fd->getHandle()); // yes ignore any error
+#else // __unix__
   fsync(fd->getHandle());
 //  if (ioctl(fd->getHandle(), I_FLUSH, FLUSHRW) != 0) {
 //    throw IOException("Unable to flush stream");
 //  }
+#endif
 }
 
 unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {
   unsigned int totalBytesWritten = 0;
 
+#if defined(__win32__)
+  while (totalBytesWritten < size) {
+    unsigned int bytesWritten;
+    int test = fd->getHandle();
+    bool success = WriteFile((void*)fd->getHandle(), &buffer[totalBytesWritten], size - totalBytesWritten, (DWORD*)&bytesWritten, NULL);
+
+    if (success) {
+      if (bytesWritten == 0) {
+        return totalBytesWritten;
+      }
+      totalBytesWritten += bytesWritten;
+    } else { // error occured
+      DWORD errcode = GetLastError();
+      throw IOException("Unable to write to file descriptor");
+    }
+  }
+#else // __unix__
   while (totalBytesWritten < size) {
     int result = ::write(fd->getHandle(), &buffer[totalBytesWritten], (size - totalBytesWritten) % SSIZE_MAX);
 
@@ -72,7 +95,7 @@ unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int 
       totalBytesWritten += result;
     }
   }
-
+#endif
   return totalBytesWritten;
 }
 

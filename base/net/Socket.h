@@ -263,6 +263,11 @@ public:
   unsigned int available() const throw(IOException);
 
   /**
+    Forces any buffered bytes to be written out.
+  */
+  void flush() throw(IOException); 
+
+  /**
     Fills the buffer with bytes from the socket input stream. Blocks if asked
     to read more bytes than available.
 

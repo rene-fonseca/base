@@ -389,7 +389,7 @@ void Socket::setSendBufferSize(int size) throw(IOException) {
 void Socket::setNonBlocking(bool value) throw(IOException) {
 #if defined(__win32__)
   unsigned int buffer = value; // set to zero to disable nonblocking
-  if (ioctlsocket(getHandle(), FIONBIO, &buffer)) {
+  if (ioctlsocket(getHandle(), FIONBIO, (u_long*)&buffer)) {
     throw IOException("Unable to set blocking mode");
   }
 #else // __unix__
@@ -418,7 +418,7 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
 unsigned int Socket::available() const throw(IOException) {
 #if defined(__win32__)
   unsigned int result;
-  if (ioctlsocket(getHandle(), FIONREAD, &result)) {
+  if (ioctlsocket(getHandle(), FIONREAD, (u_long*)&result)) {
     throw IOException("Unable to determine the amount of data pending in the input buffer");
   }
   return result;
@@ -431,9 +431,38 @@ unsigned int Socket::available() const throw(IOException) {
 #endif
 }
 
+void Socket::flush() throw(IOException) {
+#if defined(__win32__)
+  if (!FlushFileBuffers((void*)getHandle())) {
+    throw IOException("Unable to flush socket");
+  }
+#else // __unix__
+  // How do you flush the output stream of a socket?
+#endif
+}
+
 unsigned int Socket::read(char* buffer, unsigned int size) throw(IOException) {
   unsigned int totalBytesRead = 0;
+#if defined(__win32__)
+  while (totalBytesRead < size) {
+    int result = ::recv(getHandle(), &buffer[totalBytesRead], (size - totalBytesRead) % INT_MAX, 0);
 
+    if (result == 0) {
+      return totalBytesRead; // early return
+    } else if (result < 0) {
+      switch (WSAGetLastError()) {
+      case WSAEINTR:
+        break;
+      case WSAEWOULDBLOCK:
+        return totalBytesRead;
+      default:
+        throw IOException("Unable to read from socket");
+      }
+    } else {
+      totalBytesRead += result;
+    }
+  }
+#else // __unix__
   while (totalBytesRead < size) {
     int result = ::read(getHandle(), &buffer[totalBytesRead], (size - totalBytesRead) % SSIZE_MAX);
 
@@ -443,7 +472,7 @@ unsigned int Socket::read(char* buffer, unsigned int size) throw(IOException) {
 //      }
 //      eof = true; // remember end of file
       return totalBytesRead; // early return
-    } else if (result == -1) { // has an error occured
+    } else if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
       case EINTR: // interrupted by signal before any data was read
         // try again
@@ -457,16 +486,35 @@ unsigned int Socket::read(char* buffer, unsigned int size) throw(IOException) {
       totalBytesRead += result;
     }
   }
-
+#endif
   return totalBytesRead;
 }
 
 unsigned int Socket::write(const char* buffer, unsigned int size) throw(IOException) {
   unsigned int totalBytesWritten = 0;
 
+#if defined(__win32__)
   while (totalBytesWritten < size) {
-    int result = ::write(getHandle(), &buffer[totalBytesWritten], (size - totalBytesWritten) % SSIZE_MAX);
-
+    int result = ::send(getHandle(), &buffer[totalBytesWritten], (size - totalBytesWritten) % INT_MAX, 0);
+    if (result == 0) {
+      // do not know if it is possible to end up here
+      return totalBytesWritten;
+    } else if (result == -1) { // has an error occured
+      switch (WSAGetLastError()) {
+      case WSAEINTR:
+        break;
+      case WSAEWOULDBLOCK:
+        return totalBytesWritten;
+      default:
+        throw IOException("Unable to write to socket");
+      }
+    } else {
+      totalBytesWritten += result;
+    }
+  }
+#else // __unix__
+  while (totalBytesWritten < size) {
+    int result = ::send(getHandle(), &buffer[totalBytesWritten], (size - totalBytesWritten) % SSIZE_MAX, 0);
     if (result == 0) {
       // do not know if it is possible to end up here
       return totalBytesWritten;
@@ -485,6 +533,7 @@ unsigned int Socket::write(const char* buffer, unsigned int size) throw(IOExcept
       totalBytesWritten += result;
     }
   }
+#endif
 
   return totalBytesWritten;
 }

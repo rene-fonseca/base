@@ -5,14 +5,20 @@
 
 #include <base/io/FileDescriptorInputStream.h>
 #include <base/io/EndOfFile.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
+
+#if defined(__win32__)
+  #include <windows.h>
+#else // __unix__
+  #include <sys/types.h>
+  #include <sys/stat.h>
+  #include <fcntl.h>
+  #include <unistd.h>
+  #include <errno.h>
 
 #ifndef SSIZE_MAX
 #define SSIZE_MAX (1024*1024)
+#endif
+
 #endif
 
 FileDescriptorInputStream::FileDescriptorInputStream() throw() :
@@ -36,6 +42,11 @@ FileDescriptorInputStream& FileDescriptorInputStream::operator=(const FileDescri
 }
 
 unsigned int FileDescriptorInputStream::available() const throw(IOException) {
+#if defined(__win32__)
+  // use GetFileSizeEx instead
+  DWORD highWord;
+  return GetFileSize((void*)getHandle(), &highWord);
+#else // __unix__
   // pipes: returns current bytes in buffer
   // files: returns the total size in bytes
   struct stat status;
@@ -43,11 +54,31 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException) {
     throw IOException("Unable to get status of file descriptor");
   }
   return status.st_size;
+#endif
 }
 
 unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int size) throw(IOException) {
   unsigned int totalBytesRead = 0;
 
+#if defined(__win32__)
+  while (totalBytesRead < size) {
+    DWORD bytesRead;
+    BOOL success = ReadFile((void*)fd->getHandle(), &buffer[totalBytesRead], size - totalBytesRead, &bytesRead, NULL);
+
+    if (success) {
+      if (bytesRead == 0) {
+        if (eof) {
+          throw EndOfFile();
+        }
+        eof = true; // remember end of file
+        return totalBytesRead;
+      }
+      totalBytesRead += bytesRead;
+    } else { // error occured
+      throw IOException("Unable to read from file descriptor");
+    }
+  }
+#else // __unix__
   while (totalBytesRead < size) {
     int result = ::read(getHandle(), &buffer[totalBytesRead], (size - totalBytesRead) % SSIZE_MAX);
 
@@ -71,13 +102,14 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int size) th
       totalBytesRead += result;
     }
   }
+#endif
 
   return totalBytesRead;
 }
 
 unsigned int FileDescriptorInputStream::skip(unsigned int count) throw(IOException) {
   unsigned int temp = count;
-  char buffer[1024];
+  char buffer[1024]; // USE THREAD LOCAL STORAGE INSTEAD
   while (temp) {
     temp -= read((char*)&buffer, sizeof(buffer) <? temp);
   }
@@ -85,6 +117,8 @@ unsigned int FileDescriptorInputStream::skip(unsigned int count) throw(IOExcepti
 }
 
 void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
+#if defined(__win32__)
+#else // __unix__
   int flags = getFlags();
   if (value) {
     if (flags & O_NONBLOCK == 0) { // do we need to set flag
@@ -95,6 +129,7 @@ void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
       setFlags(flags & ~O_NONBLOCK);
     }
   }
+#endif
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorInputStream& value) {

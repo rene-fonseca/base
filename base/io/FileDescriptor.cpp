@@ -5,31 +5,45 @@
 
 #include <base/io/FileDescriptor.h>
 #include <base/io/EndOfFile.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
 
-#ifndef SSIZE_MAX
-#define SSIZE_MAX (1024*1024)
+#if defined(__win32__)
+  #include <windows.h>
+#else // __unix__
+  #include <sys/types.h>
+  #include <sys/stat.h>
+  #include <fcntl.h>
+  #include <unistd.h>
+  #include <errno.h>
+
+  #if !defined(SSIZE_MAX)
+    #define SSIZE_MAX (1024*1024)
+  #endif
 #endif
 
 int FileDescriptor::Descriptor::getFlags() const throw(IOException) {
+#if defined(__win32__)
+  return 0;
+#else // __unix__
   int result;
   if ((result = ::fcntl(handle, F_GETFL)) < 0) {
     throw IOException("Unable to get flags of file descriptor");
   }
   return result;
+#endif
 }
 
 void FileDescriptor::Descriptor::setFlags(int flags) throw(IOException) {
+#if defined(__win32__)
+#else // __unix__
   if (::fcntl(handle, F_SETFL, flags) != 0) {
     throw IOException("Unable to set flags of file descriptor");
   }
+#endif
 }
 
 void FileDescriptor::Descriptor::setNonBlocking(bool value) throw(IOException) {
+#if defined(__win32__)
+#else // __unix__
   int flags = getFlags();
   if (value) {
     if (flags & O_NONBLOCK == 0) { // do we need to set flag
@@ -40,13 +54,20 @@ void FileDescriptor::Descriptor::setNonBlocking(bool value) throw(IOException) {
       setFlags(flags & ~O_NONBLOCK);
     }
   }
+#endif
 }
 
 FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
   if (handle != -1) {
+#if defined(__win32__)
+    if (!CloseHandle((HANDLE)handle)) {
+      throw IOException("Unable to close file descriptor");
+    }
+#else // __unix__
     if (::close(handle) != 0) {
       throw IOException("Unable to close file descriptor");
     }
+#endif
   }
 }
 
@@ -84,6 +105,10 @@ int FileDescriptor::getHandle() const throw() {
   return fd->getHandle();
 }
 
+bool FileDescriptor::isValid() const throw() {
+  return fd->getHandle() != -1;
+}
+
 void FileDescriptor::setHandle(int handle) throw() {
   if (handle != fd->getHandle()) {
     fd = new Descriptor(handle);
@@ -98,4 +123,28 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor&
   return stream << "class/FileDescriptor{"
                 << "handle=" << value.fd->getHandle()
                 << "}";
+}
+
+FileDescriptor FileDescriptor::getStandardInput() throw() {
+#if defined(__win32__)
+  return FileDescriptor((int)GetStdHandle(STD_INPUT_HANDLE));
+#else // __unix__
+  return FileDescriptor(0);
+#endif
+}
+
+FileDescriptor FileDescriptor::getStandardOutput() throw() {
+#if defined(__win32__)
+  return FileDescriptor((int)GetStdHandle(STD_OUTPUT_HANDLE));
+#else // __unix__
+  return FileDescriptor(1);
+#endif
+}
+
+FileDescriptor FileDescriptor::getStandardError() throw() {
+#if defined(__win32__)
+  return FileDescriptor((int)GetStdHandle(STD_ERROR_HANDLE));
+#else // __unix__
+  return FileDescriptor(2);
+#endif
 }

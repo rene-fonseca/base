@@ -18,6 +18,7 @@
 #include <base/communication/IEEE1394Exception.h>
 #include <base/OutOfDomain.h>
 #include <base/mem/ReferenceCountedObject.h>
+#include <base/ByteOrder.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -61,6 +62,27 @@ public:
     COMPLETED /**< Request has been completed without errors. */
   };
 
+  /** IEEE 1394 adapter status. */
+  enum Status {
+    STATUS_OK, /**< No error. */
+    STATUS_INCOMPATIBLE, /**< Implementation is incompatible with background API or driver. */
+    STATUS_INTERNAL, /**< Failure due to an internal error in the implementation. */
+    STATUS_CONFLICT, /**< Indicates that a resource is already in use. */
+    STATUS_BUSY, /**< Indicates that the device is currently busy. */
+    STATUS_ABORTED, /**< Request was aborted. */
+    STATUS_TIMEOUT, /**< Request timed out. */
+    STATUS_ERROR /**< An unspecified error. */
+  };
+
+  enum Speed {
+    S100,
+    S200,
+    S400,
+    S800,
+    S1600,
+    S3200
+  };
+
   /** Isochronous request options. */
   enum IsochronousRequestOption {
     SWAP_BYTE_ORDER = 1 /**< Activates byte order swapping on quadlet level. */
@@ -71,6 +93,23 @@ public:
     EUI64 guid;
     Standard standard;
   };
+  
+  typedef BigEndian<uint32> Quadlet;
+  
+  /** Broadcast id. */
+  static const unsigned int BROADCAST = 63;
+  /** Specifies the maximum number of retries. */
+  static const unsigned int MAXIMUM_ATTEMPTS = 5;
+
+  /**
+    Returns node id for the specified physical id and bus id.
+    
+    @param physicalId The physical id [0; 63].
+    @param busId The bus id. The default is the local bus (i.e. 0x3ff).
+  */
+  static inline unsigned short makeNodeId(unsigned short physicalId, unsigned short busId = 0x3ff) throw() {
+    return ((busId & 0x3ff) << 6) | (physicalId & 0x3f);
+  }
   
   /**
     Isochronous request descriptor.

@@ -99,13 +99,24 @@ Process Process::getParentProcess() throw() {
 #endif
 }
 
+unsigned long Process::getNumberOfProcessers() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  SYSTEM_INFO systemInfo;
+  ::GetSystemInfo(&systemInfo);
+  return systemInfo.dwNumberOfProcessors;
+#else // unix
+  unsigned long result = sysconf(_SC_NPROCESSORS_ONLN);
+  return result;
+#endif // flavor
+}
+
 Process Process::fork() throw(NotSupported, ProcessException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   throw NotSupported(Type::getType<Process>());
 #else // unix
   pid_t result = ::fork(); // should we use fork1 on solaris
   if (result == (pid_t)-1) {
-    throw ProcessException("Unable to fork child process", Type::getType<Process>());
+    throw ProcessException("Unable to fork process", Type::getType<Process>());
   }
   return Process(result);
 #endif
@@ -345,19 +356,104 @@ int Process::wait() const  throw(ProcessException) {
 #endif // flavor
 }
 
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+class KillImpl {
+public:
+  
+  enum State {WAITING, FAILED, SUCCEEDED};
+private:
+  
+  Process process;
+  State state;
+public:
+  
+  inline KillImpl(Process _process) throw() : process(_process), state(WAITING) {
+  }
+
+  inline Process getProcess() const throw() {return process;}
+  
+  inline void onFailure() throw() {
+    state = FAILED;
+  }
+  
+  inline void onSuccess() throw() {
+    state = SUCCEEDED;
+  }
+  
+  inline bool succeeded() const throw() {
+    return state == SUCCEEDED;
+  }
+  
+  static BOOL CALLBACK windowHandler(HWND window, LPARAM parameter) {
+    KillImpl* kill = (KillImpl*)(parameter);
+    
+    DWORD processId;
+    DWORD threadId = ::GetWindowThreadProcessId(window, &processId);
+    
+    if (processId == kill->getProcess().getId()) {
+      static const char messageHandlerIdentity[] = "mip.sdu.dk/~fonseca/base?message handler";
+      char className[sizeof(messageHandlerIdentity) + 1];
+      int length = ::GetClassName(window, className, sizeof(className)); // excludes terminator
+      if (length > 0) {
+        Trace::message(className);
+      }
+//      if ((length == (sizeof(messageHandlerIdentity) - 1)) &&
+//          (compare(className, messageHandlerIdentity, sizeof(messageHandlerIdentity) - 1) == 0)) {
+      DWORD dispatchResult;
+      // TAG: WM_QUIT is normally not posted - is this ok
+      DWORD processId;
+      DWORD threadId = ::GetWindowThreadProcessId(window, &processId);
+      fout << "threadId=" << threadId << " processId=" << processId << ENDL;
+      
+      Trace::message("sending WM_CLOSE now");
+      LRESULT result = ::SendMessageTimeout(window, WM_CLOSE, 0, 0, SMTO_NORMAL, 3000, &dispatchResult);
+      Trace::message("sending WM_DESTROY now");
+      result = ::SendMessageTimeout(window, WM_DESTROY, 0, 0, SMTO_NORMAL, 3000, &dispatchResult);
+      Trace::message("sending WM_QUIT now");
+      result = ::SendMessageTimeout(window, WM_QUIT, Application::EXIT_CODE_EXTERNAL, 0, SMTO_NORMAL, 3000, &dispatchResult);
+      fout << "result=" << result << ENDL;
+      result = 1;
+      if (result == 0) {
+        kill->onFailure();
+      } else {
+        kill->onSuccess();
+      }
+      return TRUE; // stop enumeration
+//      }
+    }
+    return TRUE; // continue enumeration
+  }
+  
+  inline bool signal() throw() {
+    BOOL ignore = ::EnumWindows(windowHandler, (LPARAM)this);
+    return state == SUCCEEDED;
+  }
+};
+#endif // flavor
+
 // TAG: need process group support
-void Process::terminate(bool force) throw(ProcessException) {
+bool Process::terminate(bool force) throw(ProcessException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (force) {
-    HANDLE handle = ::OpenProcess(PROCESS_TERMINATE, FALSE, (DWORD)id);
+    // TAG: ask nicely first
+    HANDLE handle = ::OpenProcess(PROCESS_TERMINATE, FALSE, static_cast<DWORD>(id));
     assert(handle != 0, ProcessException("Unable to terminate process", this));
     ::TerminateProcess(handle, Application::EXIT_CODE_EXTERNAL);
     ::CloseHandle(handle);
+    return true;
   } else {
     // TAG: if service then ask to stop
+
+    HANDLE handle = ::OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(id));
+    assert(handle != 0, ProcessException("Unable to terminate process", this));
+    KillImpl kill(id);
+    kill.signal();
+    ::CloseHandle(handle);
+    return kill.succeeded();
+    
     // TAG: WM_QUIT is normally not posted - is this ok - do we need to post to specific window handle
-    BOOL result = ::PostThreadMessage(static_cast<DWORD>(id), WM_QUIT, Application::EXIT_CODE_EXTERNAL, 0);
-    ASSERT(result != 0);
+    // BOOL result = ::PostThreadMessage(static_cast<DWORD>(id), WM_QUIT, Application::EXIT_CODE_EXTERNAL, 0);
+    // ASSERT(result != 0);
     // TAG: throw ProcessException(this)
   }
 #else
@@ -372,6 +468,7 @@ void Process::terminate(bool force) throw(ProcessException) {
       throw ProcessException(this);
     }
   }
+  return result == 0;
 #endif // flavor
 }
 

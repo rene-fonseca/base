@@ -107,5 +107,9 @@
 */
 
 /**
+  @example testsuite/validate.cpp
+*/
+
+/**
   @example testsuite/xsltprocessor.cpp
 */

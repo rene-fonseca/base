@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE_ITERATOR__SEQUENCE_ITERATOR_H
 
 #include <base/Iterator.h>
+#include <base/Primitives.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -181,7 +182,7 @@ public:
 };
 
 template<class LTRAITS, class RTRAITS>
-inline long operator-(const SequenceIterator<LTRAITS>& left, const SequenceIterator<RTRAITS>& right) throw() {
+inline MemoryDiff operator-(const SequenceIterator<LTRAITS>& left, const SequenceIterator<RTRAITS>& right) throw() {
   return left.getValue() - right.getValue();
 }
 

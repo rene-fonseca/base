@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE_ITERATOR__INTERLEAVED_ITERATOR_H
 
 #include <base/Iterator.h>
+#include <base/Primitives.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -125,6 +126,20 @@ public:
   inline Pointer operator->() const throw() {
     return element;
   }
+
+  /**
+    Returns the pointer value of the iterator.
+  */
+  inline Pointer getValue() const throw() {
+    return element;
+  }
+
+  /**
+    Returns the element at the specified index from this element.
+  */
+  inline Reference operator[](int index) const throw() {
+    return element[index * step];
+  }  
 };
 
 template<class TRAITS>

@@ -31,7 +31,7 @@
   #include <errno.h> // errno
   #include <limits.h> // SSIZE_MAX
 
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     #include <sys/ioctl.h> // ioctl
     #include <sys/soundcard.h> // ioctl
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
@@ -54,7 +54,7 @@ void SoundDevice::reacquireAccess(unsigned int access) throw(NotSupported) {
   if (this->access != access) {
     this->access = access;
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
-  #if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
+  #if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
     deviceDescriptor.close(); // must close before reopening
     if (access != 0) { // only open if required
       int flags;

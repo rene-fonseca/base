@@ -32,7 +32,7 @@
   #include <errno.h> // errno
   #include <limits.h> // SSIZE_MAX
 
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     #include <sys/ioctl.h> // ioctl
     #include <sys/soundcard.h> // ioctl
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
@@ -75,17 +75,17 @@ SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int chann
   SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
 
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     int format = AFMT_S16_LE;
-    assert(::ioctl(handle, SNDCTL_DSP_SETFMT, &format) == 0), UnexpectedFailure());
+    assert(::ioctl(handle, SNDCTL_DSP_SETFMT, &format) == 0, UnexpectedFailure());
     assert(format == AFMT_S16_LE, NotSupported());
 
     unsigned int desiredChannels = channels;
-    assert(::ioctl(handle, SNDCTL_DSP_CHANNELS, &desiredChannels) == 0), UnexpectedFailure());
+    assert(::ioctl(handle, SNDCTL_DSP_CHANNELS, &desiredChannels) == 0, UnexpectedFailure());
     assert(desiredChannels == channels, NotSupported());
 
     unsigned int desiredRate = samplingRate;
-    assert(::ioctl(handle, SNDCTL_DSP_SPEED, &desiredRate) == 0), UnexpectedFailure());
+    assert(::ioctl(handle, SNDCTL_DSP_SPEED, &desiredRate) == 0, UnexpectedFailure());
     assert(desiredRate == samplingRate, NotSupported());
 
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
@@ -118,7 +118,7 @@ unsigned int SoundInputStream::available() const throw() {
 #else
   SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     return 0;
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     unsigned int available;
@@ -135,9 +135,9 @@ unsigned int SoundInputStream::getChannels() const throw() {
 #else
   SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     int channels;
-    assert(::ioctl(handle, SOUND_PCM_READ_CHANNELS, &channels) == 0), UnexpectedFailure());
+    assert(::ioctl(handle, SOUND_PCM_READ_CHANNELS, &channels) == 0, UnexpectedFailure());
     return channels;
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     audio_info_t info;
@@ -153,9 +153,9 @@ unsigned int SoundInputStream::getRate() const throw() {
 #else
   SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     int rate;
-    assert(::ioctl(handle, SOUND_PCM_READ_RATE, &rate) == 0), UnexpectedFailure());
+    assert(::ioctl(handle, SOUND_PCM_READ_RATE, &rate) == 0, UnexpectedFailure());
     return rate;
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     audio_info_t info;
@@ -176,7 +176,7 @@ unsigned int SoundInputStream::getPosition() const throw() {
 #else
   SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     return 0;
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     audio_info_t info;
@@ -193,7 +193,7 @@ void SoundInputStream::resume() throw() {
 #else
   SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     reset();
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     audio_info_t info;
@@ -212,7 +212,7 @@ void SoundInputStream::pause() throw() {
 #else
   SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     audio_info_t info;
     AUDIO_INITINFO(&info);
@@ -229,8 +229,8 @@ void SoundInputStream::reset() throw() {
 #else
   SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
-    assert(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0), UnexpectedFailure());
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+    assert(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0, UnexpectedFailure());
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     audio_info_t info;
     AUDIO_INITINFO(&info);

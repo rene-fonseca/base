@@ -61,9 +61,14 @@ public:
   long long getStopTime() const throw();
 
   /**
-    Returns the number of elapsed microseconds.
+    Returns the number of elapsed microseconds between start and stop times.
   */
   long long getMicroseconds() const throw();
+
+  /**
+    Returns the number of elapsed microseconds since start.
+  */
+  long long getLiveMicroseconds() const throw();
 };
 
 /**

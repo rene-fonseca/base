@@ -78,6 +78,20 @@ long long Timer::getMicroseconds() const throw() {
 #endif
 }
 
+long long Timer::getLiveMicroseconds() const throw() {
+#if defined(__win32__)
+  LARGE_INTEGER now;
+  QueryPerformanceCounter(&now);
+  LARGE_INTEGER frequency; // ticks per second
+  QueryPerformanceFrequency(&frequency); // ignore any error
+  return static_cast<long long>((now.QuadPart - startTime) * 1000000./frequency.QuadPart);
+#else // __unix__
+  struct timeval temp;
+  gettimeofday(&temp, 0);
+  return 1000000l * temp.tv_sec + temp.tv_usec - startTime;
+#endif
+}
+
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Timer& value) throw(IOException) {
   long long microseconds = value.getMicroseconds();
   long long seconds = microseconds/1000000;

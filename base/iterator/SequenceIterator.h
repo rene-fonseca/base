@@ -100,6 +100,13 @@ public:
   /**
     Returns true if the iterators are equal.
   */
+  inline bool operator==(const SequenceIterator& eq) const throw() {
+    return element == eq.element;
+  }
+
+  /**
+    Returns true if the iterators aren't equal.
+  */
   inline bool operator!=(const SequenceIterator& eq) const throw() {
     return element != eq.element;
   }
@@ -109,6 +116,13 @@ public:
   */
   inline bool operator<(const SequenceIterator& eq) const throw() {
     return element < eq.element;
+  }
+
+  /**
+    Returns true if this iterator is greater than or equal to the specified iterator.
+  */
+  inline bool operator>=(const SequenceIterator& eq) const throw() {
+    return element >= eq.element;
   }
 
   /**
@@ -131,6 +145,20 @@ public:
 template<class TYPE>
 inline long operator-(SequenceIterator<TYPE> left, SequenceIterator<TYPE> right) throw() {
   return left.element - right.element;
+}
+
+template<class TYPE>
+inline SequenceIterator<TYPE> operator-(SequenceIterator<TYPE> left, int right) throw() {
+  SequenceIterator<TYPE> temp = left;
+  temp -= right;
+  return temp;
+}
+
+template<class TYPE>
+inline SequenceIterator<TYPE> operator+(SequenceIterator<TYPE> left, int right) throw() {
+  SequenceIterator<TYPE> temp = left;
+  temp += right;
+  return temp;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

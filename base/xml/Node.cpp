@@ -91,6 +91,12 @@ Node::NodeType Node::getType() const throw() {
     return Node::DOCUMENT_FRAGMENT_NODE;
   case XML_NOTATION_NODE:
     return Node::NOTATION_NODE;
+  case XML_ATTRIBUTE_DECL:
+    return Node::ATTRIBUTE_DECL_NODE;
+  case XML_ELEMENT_DECL:
+    return Node::ELEMENT_DECL_NODE;
+  case XML_ENTITY_DECL:
+    return Node::ENTITY_DECL_NODE;
   default:
     throw UnexpectedFailure(this);
   }

@@ -19,6 +19,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+class Declaration;
 class Document;
 class DOMImplementation;
 
@@ -36,6 +37,7 @@ class DOMImplementation;
 */
 
 class DocumentType : public Node {
+  friend class Declaration;
   friend class Document;
   friend class DOMImplementation;
 protected:

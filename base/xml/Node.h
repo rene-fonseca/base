@@ -56,7 +56,10 @@ public:
     DOCUMENT_NODE,
     DOCUMENT_TYPE_NODE,
     DOCUMENT_FRAGMENT_NODE,
-    NOTATION_NODE
+    NOTATION_NODE,
+    ATTRIBUTE_DECL_NODE,
+    ELEMENT_DECL_NODE,
+    ENTITY_DECL_NODE
   };
 
   /*
@@ -163,11 +166,6 @@ public:
     Adds the node to the end of the list of children of this node.
   */
   Node& appendChild(Node child) throw(DOMException);
-
-  /**
-    Returns a NodeList that contains all children of this node.
-  */
-  // NodeList getChildNodes() throw();
   
   /**
     Returns a duplicate of this node.

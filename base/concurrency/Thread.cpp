@@ -12,9 +12,7 @@
  ***************************************************************************/
 
 #include <base/concurrency/Thread.h>
-#include <base/concurrency/MutualExclusion.h>
-#include <base/Trace.h>
-#include <stdio.h>
+#include <base/string/String.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
@@ -30,127 +28,125 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
+
+// pthread_t is an arithmetic type according to The Single UNIX Specification, Version 2
+ASSERTION(sizeof(Thread::Identifier) >= sizeof(pthread_t));
+
+#endif
+
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-// The original unhandled exception filter
-static LPTOP_LEVEL_EXCEPTION_FILTER originalExceptionFilter = NULL;
+
+ASSERTION(sizeof(Thread::Identifier) >= sizeof(DWORD));
 
 // win32 - structured exception handler
 LONG __stdcall exceptionFilter(EXCEPTION_POINTERS* exception) {
-  //  LONG result = EXCEPTION_CONTINUE_SEARCH;
-  printf("System exception: 0x%8x at %p\n", exception->ExceptionRecord->ExceptionCode, exception->ExceptionRecord->ExceptionAddress);
-  return originalExceptionFilter(exception);
-  //  return result;
+  // LONG result = EXCEPTION_CONTINUE_SEARCH;
+  // return result;
+  char errorMessage[sizeof("System exception 0x################ at 0x################")]; // worst case
+  char* dest = errorMessage;
+  copy<char>(dest, "System exception 0x", sizeof("System exception 0x") - 1);
+  dest += sizeof("System exception 0x") - 1;
+
+  DWORD exceptionCode = exception->ExceptionRecord->ExceptionCode;
+  for (unsigned int i = 0; i < (sizeof(DWORD) * 2); ++i) {
+    dest[sizeof(DWORD)*2 - 1 - i] = ASCIITraits::valueToDigit(exceptionCode & 0x0f);
+    exceptionCode >>= 4; // bits per digit
+  }
+  dest += sizeof(DWORD) * 2;
+
+  copy<char>(dest, " at 0x", sizeof(" at 0x") - 1);
+  dest += sizeof(" at 0x") - 1;
+  unsigned long exceptionAddress = reinterpret_cast<unsigned long>(exception->ExceptionRecord->ExceptionAddress);
+  for (unsigned int i = 0; i < (sizeof(unsigned long) * 2); ++i) {
+    dest[sizeof(unsigned long)*2 - 1 - i] = ASCIITraits::valueToDigit(exceptionAddress & 0x0f);
+    exceptionAddress >>= 4; // bits per digit
+  }
+  dest += sizeof(unsigned long) * 2;
+
+  *dest = 0; // terminate string
+  Trace::message(errorMessage);
+  return EXCEPTION_EXECUTE_HANDLER; // terminate process
+  // return originalExceptionFilter(exception);
 }
+
 #endif
 
-/**
-  The class is used to make a Thread object for the current context.
-*/
-class MainThread {
+ThreadKey<Thread> Thread::ThreadLocal::thread; // thread object
+ThreadKey<Allocator<char> > Thread::ThreadLocal::storage; // thread local storage
+
+Thread::ThreadLocal::ThreadLocal(Thread* _thread) throw(MemoryException) {
+  thread.setKey(_thread);
+  storage.setKey(new Allocator<char>(Thread::THREAD_LOCAL_STORAGE));
+}
+
+Thread::ThreadLocal::~ThreadLocal() throw() {
+  delete getStorage(); // free thread local storage
+}
+
+// this class is used to make a Thread object for the current context
+class ThreadImpl {
 private:
 
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  // the original unhandled exception filter
+  LPTOP_LEVEL_EXCEPTION_FILTER originalExceptionFilter;
+#endif
+  
   Thread thread;
+  Thread::ThreadLocal threadLocal;
 public:
 
-  /**
-    Initialize thread object for the current context.
-  */
-  MainThread() throw() : thread() {
-    TRACE_MEMBER();
+  // initialize thread object for the current context
+  ThreadImpl() throw() : thread(static_cast<Thread*>(0)), threadLocal(&thread) { // no parent for main thread
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-    if (originalExceptionFilter == NULL) {
-      originalExceptionFilter = SetUnhandledExceptionFilter(exceptionFilter);
-    }
+    originalExceptionFilter = ::SetUnhandledExceptionFilter(exceptionFilter);
+    //::SetErrorMode(SEM_NOGPFAULTERRORBOX);
 #endif // win32
   }
-
-  inline Thread* getThread() throw() {
-    return &thread;
-  }
-
-  ~MainThread() {
+  
+  ~ThreadImpl() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-    // Restore the original unhandled exception filter
-    if (originalExceptionFilter != NULL) {
-      SetUnhandledExceptionFilter(originalExceptionFilter);
-    }
+    // restore the original unhandled exception filter
+    ::SetUnhandledExceptionFilter(originalExceptionFilter);
 #endif // win32
-    TRACE_MEMBER();
   }
 };
 
-// Setup main thread object
-MainThread mainThread; // use this variable through 'threadLocal'
-
-/**
-  This class is used to initialize and destroy the thread local resources.
-*/
-class ThreadLocal {
-private:
-
-  /** Thread object */
-  static ThreadKey<Thread> thread;
-  /** Thread local storage */
-  static ThreadKey<Allocator<char> > storage;
-public:
-
-  ThreadLocal(Thread* thread) {
-    TRACE_MEMBER();
-    this->thread.setKey(thread);
-    storage.setKey(new Allocator<char>(Thread::THREAD_LOCAL_STORAGE));
-  }
-
-  static inline Thread* getThread() throw() {
-    return thread.getKey();
-  }
-
-  static inline Allocator<char>* getStorage() throw() {
-    return storage.getKey();
-  }
-
-  ~ThreadLocal() {
-    TRACE_MEMBER();
-    delete getStorage(); // free thread local storage
-  }
+namespace {
+  
+  // setup main thread object
+  ThreadImpl mainThread; // use this variable through 'threadLocal'
 };
-
-/** Thread object */
-ThreadKey<Thread> ThreadLocal::thread;
-/** Thread local storage */
-ThreadKey<Allocator<char> > ThreadLocal::storage;
-
-// Setup thread local variables for the main thread
-ThreadLocal threadLocal(mainThread.getThread());
 
 
 
 void* Thread::entry(Thread* thread) throw() {
-  //  TRACE("TRACE %p >> %s\n", thread, __PRETTY_FUNCTION__);
   try {
-    ThreadLocal local(thread);
-#if !(_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-    thread->event.wait(); // wait until signaled - win32 uses suspend/resume
-#endif
+    thread->state = ALIVE;
+    ThreadLocal threadLocal(thread);
     try {
       thread->getRunnable()->run();
-      thread->termination = NORMAL;
+      thread->state = TERMINATED;
       Thread* parent = thread->getParent();
-      if (parent) {
-        parent->onChildTermination(thread); // signal parent
-      }
+      assert(parent, ThreadException());
+      parent->onChildTermination(thread); // signal parent
+      // TAG: problem if parent is destroyed before child
     } catch(...) {
-      thread->termination = EXCEPTION; // uncaugth exception
+      thread->state = EXCEPTION; // uncaugth exception
     }
   } catch(...) {
-    thread->termination = INTERNAL; // hopefully we will never end up here
+    thread->state = INTERNAL; // hopefully we will never end up here
   }
-  //  TRACE("TRACE %p << %s\n", thread, __PRETTY_FUNCTION__);
+  thread->terminationEvent.signal(); // do not access state here after
   return 0;
 }
 
 void Thread::exit() throw() {
+  ASSERT(getThread()->state == ALIVE);
+  getThread()->state = EXIT;
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ExitThread(0); // will properly create resource leaks
+  ::ExitThread(0); // will properly create resource leaks
 #else // pthread
   pthread_exit(0); // will properly create resource leaks
 #endif
@@ -167,8 +163,8 @@ Allocator<char>* Thread::getLocalStorage() throw() {
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
   assert(nanoseconds < 1000000000, OutOfDomain());
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  Sleep(nanoseconds/1000);
-#elif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // __unix__
+  ::Sleep(nanoseconds/1000);
+#elif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // unix
   struct timespec interval;
   interval.tv_sec = nanoseconds / 1000000000;
   interval.tv_nsec = nanoseconds % 1000000000;
@@ -185,8 +181,8 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
 void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
   assert(microseconds < 1000000000, OutOfDomain());
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  Sleep(microseconds/1000);
-#elif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // __unix__
+  ::Sleep(microseconds/1000);
+#elif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // unix
   struct timespec interval;
   interval.tv_sec = microseconds / 1000000;
   interval.tv_nsec = (microseconds % 1000000) * 1000;
@@ -203,8 +199,8 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
 void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
   assert(milliseconds < 1000000000, OutOfDomain());
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  Sleep(milliseconds);
-#elif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // __unix__
+  ::Sleep(milliseconds);
+#elif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // unix
   struct timespec interval;
   interval.tv_sec = milliseconds / 1000;
   interval.tv_nsec = (milliseconds % 1000) * 1000000;
@@ -221,8 +217,8 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
 void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
   assert(seconds < 1000000, OutOfDomain());
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  Sleep(seconds * 1000);
-#elif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // __unix__
+  ::Sleep(seconds * 1000);
+#elif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // unix
   struct timespec interval;
   interval.tv_sec = seconds;
   interval.tv_nsec = 0;
@@ -238,10 +234,10 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
 
 void Thread::yield() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  SwitchToThread(); // no errors
+  ::SwitchToThread(); // no errors
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_YIELD)
   pthread_yield(); // ignore errors
-#else // __unix__
+#else // unix
   sched_yield(); // ignore errors
 #endif
 }
@@ -256,83 +252,36 @@ void Thread::onChildTermination(Thread* thread) {
 
 
 
+Thread::Thread(Thread* _parent) throw()
+  : parent(_parent),
+    runnable(0),
+    terminated(false),
+    state(ALIVE) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-Thread::Thread() throw() :
-  parent(0), runnable(0), terminated(false), termination(ALIVE), threadHandle(0) {
-  threadID = GetCurrentThreadId();
-}
+  identifier = ::GetCurrentThreadId();
 #else // pthread
-Thread::Thread() throw() :
-  parent(0), runnable(0), terminated(false), termination(ALIVE) {
-  threadID = pthread_self();
+  identifier = pthread_self();
+#endif
 }
-#endif
 
-Thread::Thread(Runnable* runnable) throw(ResourceException) :
-  runnable(runnable), terminated(false), termination(ALIVE), threadID(0) {
-  parent = getThread(); // must never be NULL
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  // we need to grant SYNCHRONIZE access so we can join the thread object
-/*
-  EXPLICIT_ACCESS ea;
+Thread::Thread(Runnable* _runnable) throw(NullPointer, ResourceException)
+  : runnable(_runnable),
+    terminated(false),
+    state(NOTSTARTED),
+    identifier(0) {  
+  assert(runnable, NullPointer());
+  parent = Thread::getThread();
+  ASSERT(parent); // a parent must always exist
+}
 
-  BuildExplicitAccessWithName(&ea, "CURRENT_USER", SYNCHRONIZE, GRANT_ACCESS, NO_INHERITANCE);
-
-  PACL newACL;
-  if (SetEntriesInAcl(1, &ea, NULL, &newACL) != ERROR_SUCCESS) {
-    throw ResourceException("Unable to create thread");
-  }
-
-  PSECURITY_DESCRIPTOR sd = (PSECURITY_DESCRIPTOR)LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH);
-  if (!sd) {
-    LocalFree(newACL);
-    throw ResourceException("Unable to create thread");
-  }
-  if (!InitializeSecurityDescriptor(sd, SECURITY_DESCRIPTOR_REVISION)) {
-    LocalFree(sd);
-    LocalFree(newACL);
-    throw ResourceException("Unable to create thread");
-  }
-
-  if (!SetSecurityDescriptorDacl(sd, true, newACL, false)) {
-    LocalFree(sd);
-    LocalFree(newACL);
-    throw ResourceException("Unable to create thread");
-  }
-
-  SECURITY_ATTRIBUTES sa;
-  fill<char>(pointer_cast<char*>(&sa), sizeof(SECURITY_ATTRIBUTES), 0);
-  sa.nLength = sizeof(SECURITY_ATTRIBUTES); 
-  sa.lpSecurityDescriptor = sd;
-  sa.bInheritHandle = false;
-*/
-  if ((threadHandle = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)entry, this, CREATE_SUSPENDED, &threadID)) == 0) {
-    //    LocalFree(sd);
-    //    LocalFree(newACL);
-    throw ResourceException("Unable to create thread");
-  }
-
-  /*  if (!CloseHandle(threadHandle)) { // ignore error???
-    ThreadException("Unable to release thread");
-    }*/
-  
-  //  LocalFree(sd);
-  //  LocalFree(newACL);
-#else // pthread
-  pthread_attr_t attributes;
-  pthread_attr_init(&attributes);
-  pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_JOINABLE);
-  pthread_attr_setinheritsched(&attributes, PTHREAD_INHERIT_SCHED);
-  if (pthread_create(&threadID, &attributes, (void*(*)(void*))&entry, (void*) this)) {
-    pthread_attr_destroy(&attributes);
-    throw ResourceException("Unable to create thread");
-  }
-  pthread_attr_destroy(&attributes);
-#endif
+void Thread::setTerminationState(State state) throw() {
+  ASSERT(isSelf() && (state > ALIVE));
+  this->state = state;
+  terminationEvent.signal(); // do not access state here after
 }
 
 bool Thread::isAlive() const throw() {
-  return termination == ALIVE;
+  return state == ALIVE;
 }
 
 bool Thread::isAncestor() const throw() {
@@ -370,32 +319,42 @@ bool Thread::isParent() const throw() {
 
 bool Thread::isSelf() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return GetCurrentThreadId() == threadID;
+  return ::GetCurrentThreadId() == identifier;
 #else // pthread
-  return pthread_self() == threadID;
+  return pthread_self() == identifier;
 #endif
 }
 
-void Thread::join() const throw(ThreadException) {
-  TRACE_MEMBER();
-//    if (isSelf()) { // is thread trying to wait for itself to exit
-//      throw Self();
-//    }
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  WaitForSingleObject(threadHandle, INFINITE);
-#else // pthread
-  if (pthread_join(threadID, NULL)) {
-    throw ThreadException("Unable to join thread");
+bool Thread::join() const throw(ThreadException) {
+  if (state == NOTSTARTED) {
+    return false;
   }
-#endif
+  terminationEvent.wait(); // allows multiple contexts to wait for thread to terminate
+  ASSERT(state > ALIVE); // thread must be terminated here
+  return true;
 }
 
-void Thread::start() throw() {
+void Thread::start() throw(ThreadException) {
+  // TAG: don't forget the thread priority
+  assert(state == NOTSTARTED, ThreadException());
+  state = STARTING;
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  //  event.signal();
-  ResumeThread((HANDLE)threadHandle);
+  HANDLE handle;
+  if ((handle = ::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)entry, this, 0, &identifier)) == 0) {
+    throw ResourceException("Unable to create thread");
+  }
+  ::CloseHandle(handle); // detach
+  // TAG: does this always work or must this be postponed until entry function
 #else // pthread
-  event.signal();
+  pthread_attr_t attributes;
+  pthread_attr_init(&attributes);
+  pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_DETACHED);
+  pthread_attr_setinheritsched(&attributes, PTHREAD_INHERIT_SCHED);
+  if (pthread_create(&identifier, &attributes, (void*(*)(void*))&entry, (void*)this)) {
+    pthread_attr_destroy(&attributes);
+    throw ResourceException("Unable to create thread");
+  }
+  pthread_attr_destroy(&attributes);
 #endif
 }
 
@@ -409,25 +368,22 @@ void Thread::terminate() throw() {
 }
 
 Thread::~Thread() throw(ThreadException) {
-  // do not close handle for main thread
   TRACE_MEMBER();
+  Trace::message(__PRETTY_FUNCTION__);
   if (getParent() != 0) {
-    if (isAlive()) {
-      throw ThreadException();
+    if (state != NOTSTARTED) {
+      terminationEvent.wait(); // allows multiple contexts to wait for thread to terminate
+      ASSERT(state > ALIVE); // thread must be terminated here
     }
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-    if (!CloseHandle(threadHandle)) {
-      ThreadException("Unable to release thread");
-    }
-#endif
   }
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value) {
-  stream << "class/Thread{"
-         << "alive=" << value.isAlive()
-         << "; terminated=" << value.isTerminated()
-         << "}";
+  stream << '{'
+         << MESSAGE("alive=") << value.isAlive()
+         << MESSAGE("; terminated=") << value.isTerminated()
+         << MESSAGE("; state=") << value.getState()
+         << '}';
   return stream;
 }
 

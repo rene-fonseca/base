@@ -14,41 +14,19 @@
 #ifndef _DK_SDU_MIP__BASE_CONCURRENCY__THREAD_H
 #define _DK_SDU_MIP__BASE_CONCURRENCY__THREAD_H
 
-#include <base/Object.h>
 #include <base/Exception.h>
+#include <base/Object.h>
 #include <base/OutOfDomain.h>
-#include <base/concurrency/MutualExclusion.h>
 #include <base/concurrency/Event.h>
 #include <base/concurrency/Runnable.h>
 #include <base/concurrency/ThreadKey.h>
-#include <base/string/FormatOutputStream.h>
-#include <base/concurrency/Synchronize.h>
 #include <base/mem/Allocator.h>
-
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
-  #include <pthread.h>
-#endif // flavour
+#include <base/mem/NullPointer.h>
+#include <base/string/FormatOutputStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class Runnable;
-
-/** Scheduling policy type. */
-typedef enum {INHERITED, FIFO, REALTIME, OTHER} SchedulingPolicy;
-
-/** Thread termination state type. */
-typedef enum {ALIVE, NORMAL, EXIT, EXCEPTION, CANCEL, INTERNAL} ThreadTermination;
-
-/*
-typedef enum {
-  ALIVE, // thread is still running
-  NORMAL, // thread has exited normally
-  EXIT, // thread was exited using Thread::exit()
-  EXCEPTION, // thread has exited due to uncaught exception
-  CANCEL, // thread was cancelled
-  INTERNAL // thread was exited due to internal exception - please forgive me
-} ThreadTermination;
-*/
 
 /**
   Thread (a single flow of control).
@@ -80,11 +58,36 @@ typedef enum {
 
   @see Runnable
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.1
+  @version 1.2
 */
 
 class Thread : public Object {
+  friend class ThreadImpl;
+  friend class DaemonImpl;
 public:
+
+  /** Thread identifier type. */
+  typedef unsigned long Identifier;
+  
+  /** Scheduling policy type. */
+  enum SchedulingPolicy {
+    INHERITED, /**< Scheduling policy is inherited from parent to child thread. */
+    FIFO, /**< First-in-first-out policy. */
+    REALTIME, /**< Real time scheduling policy. */
+    OTHER /**< Unspecified policy. */
+  };
+
+  /** Thread running state. */
+  enum State {
+    NOTSTARTED, /**< Thrad has been created but not started. */
+    STARTING, /**< Thread has been started but may not have begun execution. */
+    ALIVE, /**< Thread is running. */
+    TERMINATED, /**< Thread has exited normally. */
+    EXIT, /**< Thread was exited using Thread::exit(). */
+    EXCEPTION, /** Thread has exited due to uncaught exception. */
+    CANCEL, /**< Thread was cancelled. */
+    INTERNAL /**< Thread was exited due to internal exception - please forgive me. */
+  };
 
   /** Specifies the size of the thread local storage. */
   static const unsigned int THREAD_LOCAL_STORAGE = 4096;
@@ -106,29 +109,62 @@ public:
   };
 private:
 
-  /** Redirects a thread to a specified runnable object. */
-  static void* entry(Thread* thread) throw();
-private:
-
   /** The parent thread of the thread. */
   Thread* parent;
   /** The runnable object. */
   Runnable* runnable;
   /** Specifies that the thread should be terminated. */
   volatile bool terminated;
-  /** Termination status. */
-  ThreadTermination termination;
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  /** State. */
+  volatile State state;
   /** Handle to the thread. */
-  OperatingSystem::Handle threadHandle;
+  //OperatingSystem::Handle handle;
   /** Identifier for the thread. */
-  DWORD threadID;
-#else // pthread
-  /** Event used to start thread. */
-  Event event;
-  /** Identifier for the thread. */
-  pthread_t threadID;
-#endif
+  Identifier identifier;
+  /** Termination synchronization object. */
+  Event terminationEvent;
+  
+  /**
+    This class is used to initialize and destroy the thread local resources.
+  */
+  class ThreadLocal {
+  private:
+
+    /** The thread object associated with context. */
+    static ThreadKey<Thread> thread;
+    /** The thread local storage. */
+    static ThreadKey<Allocator<char> > storage;
+  public:
+
+    /**
+      Initializes thread local storage.
+    */
+    ThreadLocal(Thread* thread) throw(MemoryException);
+    
+    /**
+      Returns the thread object.
+    */
+    static inline Thread* getThread() throw() {
+      return thread.getKey();
+    }
+
+    /**
+      Returns the thread local storage.
+    */
+    static inline Allocator<char>* getStorage() throw() {
+      return storage.getKey();
+    }
+
+    /**
+      Release thread local storage.
+    */
+    ~ThreadLocal() throw();
+  };
+
+  /**
+    Redirects a thread to a specified runnable object.
+  */
+  static void* entry(Thread* thread) throw();
 protected:
 
   /**
@@ -193,16 +229,22 @@ public:
   */
   static void yield() throw();
 private:
-
+  
   /**
-    Initializes thread object for the current execution context. Only to be
-    used for the main thread.
+    Initializes thread object for the current execution context with the
+    specified parent.
   */
-  Thread() throw();
+  Thread(Thread* parent) throw();
+  
+  /**
+    Sets the termination state of the thread just before the thread is exiting.
+  */
+  void setTerminationState(State state) throw();
 protected:
 
   /**
-    Invocated by a child thread of this thread upon termination.
+    Invoked by a child thread of this thread upon termination. Only threads that
+    have been started result in a notification on termination.
 
     @param child The child thread.
   */
@@ -215,7 +257,7 @@ public:
 
     @param runnable The desired object to be run when the thread is started.
   */
-  Thread(Runnable* runnable) throw(ResourceException);
+  Thread(Runnable* runnable) throw(NullPointer, ResourceException);
 
   /**
     Returns the thread that created this thread. Returns 0 for the main thread.
@@ -223,9 +265,9 @@ public:
   inline Thread* getParent() const throw() {return parent;}
 
   /**
-    Returns the termination state.
+    Returns the execution state of the thread.
   */
-  inline ThreadTermination getTerminationState() const throw() {return termination;}
+  inline State getState() const throw() {return state;}
 
   /**
     Returns true if the thread is alive and kicking.
@@ -263,16 +305,23 @@ public:
   inline bool isTerminated() const throw() {return terminated;}
 
   /**
-    Waits for this thread to terminate. Throws a 'ThreadException' if a
-    thread tries to wait for itself to exit. Several threads are not allowed
-    to be waiting for the same thread to complete.
+    The calling thread waits for the thread complete. Several threads are
+    allowed to be waiting for the same thread to complete. A thread will block
+    indefinitely if it tries to join itself. The resources associated with the
+    thread context may linger for some time until the operating system desides
+    its time to release them. It is, however, legal to destroy the thread object
+    after join() has returned.
+
+    @return The method returns false if the thread has not been started and
+    otherwise true.
   */
-  void join() const throw(ThreadException);
+  bool join() const throw(ThreadException);
 
   /**
-    Starts the thread. Has no effect the second time.
+    Starts the thread. The underlying context of execution is allocated here
+    and not in the thread constructor.
   */
-  void start() throw();
+  void start() throw(ThreadException);
 
   /**
     Asks the thread to terminate as soon as possible. This does not block
@@ -281,20 +330,13 @@ public:
   void terminate() throw();
 
   /**
-    Destroys the thread object. The thread must be completed prior to
-    destruction.
+    Destroys the thread object. The calling thread blocks until the thread has
+    completed. It is also valid to destroy a thread which has never been
+    started. The thread will dead-lock if it tries to destroy itself. The
+    resources associated with the thread context may linger for some time until
+    the operating system desides its time to release them.
   */
   ~Thread() throw(ThreadException);
-
-  /**
-    Writes a string representation of a thread object to a format stream.
-  */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value);
-
-  /**
-    Internal class responsible for initializing the main thread object.
-  */
-  friend class MainThread;
 };
 
 /**

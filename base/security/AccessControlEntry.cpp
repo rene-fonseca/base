@@ -47,17 +47,17 @@ void AccessControlEntry::replace(const Permissions& permissions) throw() {
   this->permissions.allowed = permissions.allowed & ~permissions.denied;
 }
 
-// TAG: FIXME
-// void AccessControlEntry::revoke(AccessMask permissions) throw() {
-//   permissions.allowed &= ~permissions;
-// }
+void AccessControlEntry::filter(AccessMask mask) throw() {
+  permissions.allowed &= mask;
+  permissions.denied &= mask;
+}
 
 void AccessControlEntry::grant(AccessMask allowed) throw() {
   permissions.denied &= ~allowed;
   permissions.allowed |= allowed;
 }
 
-void AccessControlEntry::deny(AccessMask denied) throw() {
+void AccessControlEntry::revoke(AccessMask denied) throw() {
   permissions.allowed &= ~denied;
   permissions.denied |= denied;
 }
@@ -69,10 +69,88 @@ void AccessControlEntry::combine(const Permissions& permissions) throw() {
   this->permissions.denied |= permissions.denied;
 }
 
+String AccessControlEntry::maskToString(AccessMask mask) throw() {
+  String result; // TAG: should be optimized using iterator
+  mask &= FULL; // filters out SYNCHRONIZE
+  
+  if (mask == FULL) {
+    return MESSAGE("F");
+  } else if (mask == MODIFY) {
+    return MESSAGE("M");
+  }
+
+  if (mask & READ) {
+    result += MESSAGE("R");
+    if ((mask & READ) != READ) {
+      result += '[';
+      if (mask & READ_DATA) {
+        result += MESSAGE("D");
+      }
+      if (mask & READ_ATTRIBUTES) {
+        result += MESSAGE("At");
+      }
+      if (mask & READ_EXTENDED_ATTRIBUTES) {
+        result += MESSAGE("Eat");
+      }
+      if (mask & READ_PERMISSIONS) {
+        result += MESSAGE("P");
+      }
+      result += ']';
+    }
+  }
+  
+  if (mask & WRITE) {
+    result += MESSAGE("W");
+    if ((mask & WRITE) != WRITE) {
+      result += '[';
+      if (mask & WRITE_DATA) {
+        result += MESSAGE("D");
+      }
+      if (mask & ADD_CONTENT) {
+        result += MESSAGE("A");
+      }
+      if (mask & CHANGE_ATTRIBUTES) {
+        result += MESSAGE("At");
+      }
+      if (mask & CHANGE_EXTENDED_ATTRIBUTES) {
+        result += MESSAGE("Ea");
+      }
+      if (mask & CHANGE_PERMISSIONS) {
+        result += MESSAGE("P");
+      }
+      if (mask & CHANGE_OWNER) {
+        result += MESSAGE("O");
+      }
+      if (mask & REMOVE) {
+        result += MESSAGE("R");
+      }
+      if (mask & REMOVE_COMPONENT) {
+        result += MESSAGE("Rc");
+      }
+      result += ']';
+    }
+  }
+  
+  if (mask & EXECUTE) {
+    result += MESSAGE("X");
+  }
+  
+  return result;
+}
+
 FormatOutputStream& operator<<(FormatOutputStream& stream, const AccessControlEntry& ace) throw(IOException) {
-  // TAG: FIXME
   StringOutputStream s;
-  s << ace.getTrustee() << ':' << HEX << ace.getPermissions().allowed << '-' << HEX << ace.getPermissions().denied << FLUSH;
+  s << ace.getTrustee().getName() << ':';
+  
+  AccessControlEntry::AccessMask mask = ace.getPermissions().allowed;
+  if (mask != 0) {
+    s << AccessControlEntry::maskToString(mask);
+  }
+  mask = ace.getPermissions().denied;
+  if (mask != 0) {
+    s << '-' << AccessControlEntry::maskToString(mask);
+  }
+  s << FLUSH;
   return stream << s.getString();
 }
 

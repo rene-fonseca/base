@@ -29,10 +29,19 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+namespace win32 {
+  extern "C" void __stdcall OutputDebugStringA(const char*);
+#define OutputDebugString OutputDebugStringA
+};
+#endif // cygwin
+
 void Trace::message(const char* message) throw() {
   assert(message, NullPointer(Type::getType<Trace>()));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::OutputDebugString(message);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN) // special case
+  win32::OutputDebugString(message);
 #else // unix
   const char* ident;
   openlog("TRACE", LOG_PID, 0); // TAG: fixme - do not reopen
@@ -54,6 +63,8 @@ void Trace::member(const void* pointer, const char* message) throw() {
 #endif
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::OutputDebugString(buffer);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN) // special case
+  win32::OutputDebugString(buffer);
 #else // unix
   openlog("TRACE", LOG_PID, 0); // TAG: fixme - do not reopen
   syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, buffer);

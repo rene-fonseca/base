@@ -63,7 +63,7 @@ MimeType::MimeType() throw(MemoryException) {
 }
 
 MimeType::MimeType(const String& _type, const String& _subtype) throw()
-  : type(_type), subtype(_subtype) {
+  : type(_type), subtype(_subtype), mediaType(UNINITIALIZED) {
 }
 
 MimeType::MimeType(MediaType _mediaType, const String& _subtype) throw(OutOfDomain, MemoryException) {
@@ -103,6 +103,13 @@ MimeType::MimeType(const String& value) throw(InvalidFormat) : mediaType(UNINITI
   assert(index >= 0, InvalidFormat(this));
   type = value.substring(0, index - 1);
   subtype = value.substring(index + 1);
+}
+
+MimeType& MimeType::operator=(const MimeType& eq) throw() {
+  type = eq.type;
+  subtype = eq.subtype;
+  mediaType = eq.mediaType;
+  return *this;
 }
 
 bool MimeType::isValid() const throw() {

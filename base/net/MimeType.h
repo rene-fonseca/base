@@ -22,7 +22,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Multipurpose Internet Mail Extensions (MIME) (see RFC 2046).
-  
+
+  @ingroup net
   @short Internet Media Type
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -86,6 +87,11 @@ public:
     @param value The string representation of the mime object (e.g. "text/html").
   */
   MimeType(const String& value) throw(InvalidFormat);
+
+  /**
+    Assignment of MIME type to MIME type.
+  */
+  MimeType& operator=(const MimeType& eq) throw();
   
   /**
     Returns true if the type and subtype complies with the grammar described in

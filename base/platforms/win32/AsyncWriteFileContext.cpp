@@ -48,8 +48,8 @@ namespace win32 {
       bytesWritten(0),
       flags(0) {
     clear(callbackInfo.overlapped);
-    callbackInfo.overlapped.Offset = getLowWord(offset);
-    callbackInfo.overlapped.OffsetHigh = getHighWord(offset);
+    callbackInfo.overlapped.Offset = getLowWordOf64(offset);
+    callbackInfo.overlapped.OffsetHigh = getHighWordOf64(offset);
     callbackInfo.context = this;
     
     BOOL result = ::WriteFileEx(handle, buffer, bytesToWrite, &callbackInfo.overlapped, pointer_cast<LPOVERLAPPED_COMPLETION_ROUTINE>(&asyncWriteFileCallback));

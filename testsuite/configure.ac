@@ -3,7 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(Makefile.am)
 
-AC_PREREQ(2.5)
+AC_PREREQ(2.50)
 dnl AC_CHECK_COMPILERS()
 AC_PROG_CXX()
 dnl AC_ENABLE_SHARED(yes)

@@ -7,7 +7,7 @@ ac_base_build_date=`date -u +"%D %T UTC"`
 ac_base_build_user=`whoami`
 ac_base_build_host=`uname -n`
 
-AC_PREREQ(2.5)
+AC_PREREQ(2.50)
 AC_CANONICAL_SYSTEM()
 dnl perform program name transformation
 AC_ARG_PROGRAM()

@@ -16,6 +16,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/Base.h>
 #include <base/Functor.h>
+#include <stdio.h>
 
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
   #define _LARGEFILE64_SOURCE 1
@@ -176,6 +177,12 @@ long long File::getSize() const throw(FileException) {
     if (::fstat64(fd->getHandle(), &status)) {
       throw FileException("Unable to get file size", this);
     }
+    fout << "size of status: " << sizeof(status) << ENDL;
+    fout << "offset of size: " << (char*)&status.st_size - (char*)&status << ENDL;
+    for (int i = 0; i < sizeof(status); ++i) {
+      fout << HEX << static_cast<unsigned int>(((const unsigned char*)(&status))[i]) << " ";
+    }
+    printf("File size = %ld\n", status.st_size);
     return status.st_size;
   #else
     struct stat status;
@@ -225,7 +232,7 @@ void File::setPosition(long long position, Whence whence) throw(FileException) {
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     ::lseek64(fd->getHandle(), position, relativeTo[whence]); // should never fail
   #else
-    assert(position <= PrimitiveTraits<int>::MAXIMUM, FileException("Unable to set position"), this);
+    assert(position <= PrimitiveTraits<int>::MAXIMUM, FileException("Unable to set position", this));
     ::lseek(fd->getHandle(), position, relativeTo[whence]); // should never fail
   #endif
 #endif

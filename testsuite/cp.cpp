@@ -124,15 +124,16 @@ public:
     version();
     fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [options] source destination") << EOL
          << EOL
-         << MESSAGE("--help      this message") << EOL
-         << MESSAGE("--version   dump the version") << EOL
+         << MESSAGE("Options:") << EOL
+         << indent(2) << MESSAGE("--help      this message") << EOL
+         << indent(2) << MESSAGE("--version   dump the version") << EOL
          << EOL
-         << MESSAGE("--force     force copying") << EOL
-         << MESSAGE("--link      make link") << EOL
-         << MESSAGE("--preserve  preserve attributes") << EOL
-         << MESSAGE("--progress  show progress while copying") << EOL
-         << MESSAGE("--recursive copy folders recursively") << EOL
-         << MESSAGE("--silent    do not output") << EOL
+         << indent(2) << MESSAGE("--force     force copying") << EOL
+         << indent(2) << MESSAGE("--link      make link") << EOL
+         << indent(2) << MESSAGE("--preserve  preserve attributes") << EOL
+         << indent(2) << MESSAGE("--progress  show progress while copying") << EOL
+         << indent(2) << MESSAGE("--recursive copy folders recursively") << EOL
+         << indent(2) << MESSAGE("--silent    do not output") << EOL
          << ENDL;
   }
   
@@ -232,7 +233,7 @@ public:
           
           if (progress) {
             String temp = getProgress(size, size, timer.getLiveMicroseconds());
-            fout << setWidth(previousLength) << temp << '\r' << FLUSH;
+            fout << setWidth(previousLength) << temp << '\r' << ENDL;
           }
         } catch (FileSystemException& e) {
           ferr << source << MESSAGE(": ") << e << ENDL; // ignore exception

@@ -28,6 +28,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class Complex {
+public:
+
+  typedef long double Type;
 private:
 
   /** The real part of the complex number. */

@@ -11,10 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/io/FileDescriptor.h>
 #include <base/io/EndOfFile.h>
-#include <base/Trace.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
@@ -70,11 +68,9 @@ void FileDescriptor::Descriptor::setNonBlocking(bool value) throw(IOException) {
 }
 
 FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
-  Trace::message(__PRETTY_FUNCTION__);
   if (handle != OperatingSystem::INVALID_HANDLE) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     if (!::CloseHandle((HANDLE)handle)) {
-      Trace::message(__PRETTY_FUNCTION__);
       throw IOException("Unable to close file descriptor");
     }
 #else // unix
@@ -86,8 +82,6 @@ FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
 }
 
 
-
-FileDescriptor::Descriptor FileDescriptor::invalid;
 
 FileDescriptor::FileDescriptor() throw() : fd(&invalid) {
 }
@@ -134,8 +128,6 @@ void FileDescriptor::setNonBlocking(bool value) throw(IOException) {
 }
 
 FileDescriptor::~FileDescriptor() throw(IOException) {
-  TRACE_MEMBER();
-  Trace::message(__PRETTY_FUNCTION__);
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor& value) {

@@ -228,14 +228,14 @@ AC_DEFUN(AC_BASE_APPEND, [dnl
 $1="[$]{$1}[$]{$1:+ }$2"
 ])
 
-dnl AC_BASE_ADDLIB(library list) e.g. AC_BASE_ADDLIB(-lxml -ldl)
+dnl AC_BASE_ADDLIB(library list) e.g. AC_BASE_ADDLIB(-lxml2 -ldl)
 dnl AC_DEFUN(AC_BASE_ADDLIB, [dnl
 dnl for ac_base_temp in [$1]; do
 dnl   AC_BASE_APPEND(BASE_LIBS, [$]ac_base_temp)
 dnl done
 dnl ])
 
-dnl AC_BASE_ADDLIB(library list) e.g. AC_BASE_ADDLIB(-lxml -ldl)
+dnl AC_BASE_ADDLIB(library list) e.g. AC_BASE_ADDLIB(-lxml2 -ldl)
 AC_DEFUN(AC_BASE_ADDLIB, [dnl
 BASE_LIBS="[$]BASE_LIBS $1"
 ac_base_system_libs=
@@ -529,6 +529,14 @@ AC_ARG_ENABLE(
       Specifies that XML support should be included. 'xmlsoft' selects the
       Gnome XML Library. The default is no.],
   AC_BASE_CHECK_ARG(base_explicit_xml, xmlsoft no, Invalid argument used with the xml flag.))
+
+base_explicit_xslt=no
+AC_ARG_ENABLE(
+  xslt,[
+  --enable-xslt=[xmlsoft|no]
+      Specifies that XSLT support should be included. 'xmlsoft' selects the
+      Gnome XSLT Library. The default is no.],
+  AC_BASE_CHECK_ARG(base_explicit_xslt, xmlsoft no, Invalid argument used with the xslt flag.))
 
 base_explicit_ieee1394=yes
 AC_ARG_ENABLE(
@@ -960,7 +968,12 @@ fi
 
 if test x$base_explicit_xml = xxmlsoft; then
   AC_BASE_DEFINE_PRIVATE(XML_XMLSOFT_ORG)
-  AC_BASE_ADDLIB(-lxml -lz)
+  AC_BASE_ADDLIB(-lxml2)
+fi
+
+if test x$base_explicit_xslt = xxmlsoft; then
+  AC_BASE_DEFINE_PRIVATE(XSLT_XMLSOFT_ORG)
+  AC_BASE_ADDLIB(-lxslt)
 fi
 
 

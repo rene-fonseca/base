@@ -307,44 +307,59 @@ public:
 };
 
 template<class TYPE>
-inline Quaternion<TYPE>::Quaternion(const TYPE& _x, const TYPE& _y, const TYPE& _z, const TYPE& _w) throw()
+inline Quaternion<TYPE>::Quaternion(
+  const TYPE& _x, const TYPE& _y, const TYPE& _z, const TYPE& _w) throw()
   : x(_x), y(_y), z(_z), w(_w) {
 }
 
 /**
   Returns the sum of the quaternion.
+
+  @relates Quaternion
 */
 template<class TYPE>
-inline Quaternion<TYPE> operator+(const Quaternion<TYPE>& left, const Quaternion<TYPE>& right) throw() {
+inline Quaternion<TYPE> operator+(
+  const Quaternion<TYPE>& left, const Quaternion<TYPE>& right) throw() {
   return Quaternion<TYPE>(left).add(right);
 }
 
 /**
   Returns the difference of the quaternion.
+
+  @relates Quaternion
 */
 template<class TYPE>
-inline Quaternion<TYPE> operator-(const Quaternion<TYPE>& left, const Quaternion<TYPE>& right) throw() {
+inline Quaternion<TYPE> operator-(
+  const Quaternion<TYPE>& left, const Quaternion<TYPE>& right) throw() {
   return Quaternion<TYPE>(left).subtract(right);
 }
 
 /**
   Returns the product of the quaternion and the value.
+
+  @relates Quaternion
 */
 template<class TYPE>
-inline Quaternion<TYPE> operator*(const Quaternion<TYPE>& left, const TYPE& right) throw() {
+inline Quaternion<TYPE> operator*(
+  const Quaternion<TYPE>& left, const TYPE& right) throw() {
   return Quaternion<TYPE>(left).multiply(right);
 }
 
 /**
   Returns the product of the quaternion and the value.
+
+  @relates Quaternion
 */
 template<class TYPE>
-inline Quaternion<TYPE> operator*(const TYPE& left, const Quaternion<TYPE>& right) throw() {
+inline Quaternion<TYPE> operator*(
+  const TYPE& left, const Quaternion<TYPE>& right) throw() {
   return Quaternion<TYPE>(right).multiply(left);
 }
 
 /**
   Returns the result of the quaternion divided by the value.
+
+  @relates Quaternion
 */
 template<class TYPE>
 inline Quaternion<TYPE> operator/(const Quaternion<TYPE>& left, const TYPE& right) throw() {
@@ -352,10 +367,14 @@ inline Quaternion<TYPE> operator/(const Quaternion<TYPE>& left, const TYPE& righ
 }
 
 /**
-  Writes a string representation of a Quaternion object to a format stream. The format is "(x; y; z; w)".
+  Writes a string representation of a Quaternion object to a format stream. The
+  format is "(x; y; z; w)".
+
+  @relates Quaternion
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Quaternion<TYPE>& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Quaternion<TYPE>& value) throw(IOException) {
   return stream << '(' << value.getX() << ';'
                 << value.getY() << ';'
                 << value.getZ() << ';'

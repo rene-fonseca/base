@@ -673,6 +673,8 @@ public:
 
 /**
   Writes a string representation of a bit set to a format stream.
+  
+  @relates BitSet
 */
 FormatOutputStream& operator<<(
   FormatOutputStream& stream, const BitSet& value) throw(IOException);

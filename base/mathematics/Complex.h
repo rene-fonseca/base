@@ -544,9 +544,13 @@ inline Complex operator/(const Complex& left, long double right) throw() {
 }
 
 /**
-  Writes a string representation of the complex number to a format stream "(real; imaginary)".
+  Writes a string representation of the complex number to a format stream
+  "(real; imaginary)".
+
+  @relates Complex
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value) throw(IOException);
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Complex& value) throw(IOException);
 
 template<>
 class Uninitializeable<Complex> {

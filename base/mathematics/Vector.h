@@ -417,9 +417,12 @@ TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw();
 
 /**
   Writes a string representation of a vector object to a format stream.
+
+  @relates Vector
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value) throw(IOException);
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Vector<TYPE>& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

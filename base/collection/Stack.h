@@ -421,6 +421,8 @@ public:
 
 /**
   Writes a string representation of a stack to a format output stream.
+
+  @relates Stack
 */
 template<class TYPE>
 FormatOutputStream& operator<<(

@@ -39,6 +39,189 @@ protected:
 public:
 
   /**
+    Returns a homogeneous rotation matrix corresponding to the specified angle of
+    rotation (in radians) around the X-axis.
+  */
+  static Matrix4x4 getXRotation(TYPE angle) throw() {
+    Matrix4x4 result;
+    TYPE* dest = result.getElements();
+    const TYPE zero(0);
+    const TYPE one(1);
+    const TYPE ca = Math::cos(angle);
+    const TYPE sa = Math::sin(angle);
+    
+    *dest++ = one;
+    *dest++ = zero;
+    *dest++ = zero;
+    *dest++ = zero;
+    
+    *dest++ = zero;
+    *dest++ = ca;
+    *dest++ = -sa;
+    *dest++ = zero;
+  
+    *dest++ = zero;
+    *dest++ = sa;
+    *dest++ = ca;
+    *dest++ = zero;
+    
+    *dest++ = zero;
+    *dest++ = zero;
+    *dest++ = zero;
+    *dest++ = one;  
+    return result;
+  }
+  
+  /**
+    Returns a homogeneous rotation matrix corresponding to the specified angle of
+    rotation (in radians) around the Y-axis.
+  */
+  static Matrix4x4 getYRotation(TYPE angle) throw() {
+    Matrix4x4 result;
+    TYPE* dest = result.getElements();
+    const TYPE zero(0);
+    const TYPE one(1);
+    const TYPE ca = Math::cos(angle);
+    const TYPE sa = Math::sin(angle);
+    
+    *dest++ = ca;
+    *dest++ = zero;
+    *dest++ = -sa;
+    *dest++ = zero;
+    
+    *dest++ = zero;
+    *dest++ = one;
+    *dest++ = zero;
+    *dest++ = zero;
+    
+    *dest++ = sa;
+    *dest++ = zero;
+    *dest++ = ca;
+    *dest++ = zero;
+    
+    *dest++ = zero;
+    *dest++ = zero;
+    *dest++ = zero;
+    *dest++ = one;  
+    return result;
+  }
+  
+  /**
+    Returns a homogeneous rotation matrix corresponding to the specified angle of
+    rotation (in radians) around the Z-axis.
+  */
+  static Matrix4x4 getZRotation(TYPE angle) throw() {
+    Matrix4x4 result;
+    TYPE* dest = result.getElements();
+    const TYPE zero(0);
+    const TYPE one(1);
+    const TYPE ca = Math::cos(angle);
+    const TYPE sa = Math::sin(angle);
+    
+    *dest++ = ca;
+    *dest++ = -sa;
+    *dest++ = zero;
+    *dest++ = zero;
+    
+    *dest++ = sa;
+    *dest++ = ca;
+    *dest++ = zero;
+    *dest++ = zero;
+    
+    *dest++ = zero;
+    *dest++ = zero;
+    *dest++ = one;
+    *dest++ = zero;
+    
+    *dest++ = zero;
+    *dest++ = zero;
+    *dest++ = zero;
+    *dest++ = one;  
+    return result;
+  }
+  
+  /**
+    Returns a homogeneous rotation matrix corresponding to the specified Euler
+    angles.
+  */
+  static Matrix4x4 getXYZRotation(const Vector3D<TYPE> rotation) throw() {
+    const TYPE cx = Math::cos(rotation.getX());
+    const TYPE sx = Math::sin(rotation.getX());
+    const TYPE cy = Math::cos(rotation.getY());
+    const TYPE sy = Math::sin(rotation.getY());
+    const TYPE cz = Math::cos(rotation.getZ());
+    const TYPE sz = Math::sin(rotation.getZ());
+    const TYPE cxsy = cx * sy;
+    const TYPE sxsy = sx * sy;
+    
+    Matrix4x4 result;
+    TYPE* dest = result.getElements();
+    
+    *dest++ = cy * cz;
+    *dest++ = -cy * sz;
+    *dest++ = -sy;
+    *dest++ = TYPE(0);
+    
+    *dest++ = -sxsy * cz + cx * sz;
+    *dest++ = sxsy * sz + cx * cz;
+    *dest++ = -sx * cy;
+    *dest++ = TYPE(0);
+    
+    *dest++ = cxsy * cz + sx * sz;
+    *dest++ = -cxsy * sz + sx * cz;
+    *dest++ = cx * cy;
+    *dest++ = TYPE(0);
+    
+    *dest++ = TYPE(0);
+    *dest++ = TYPE(0);
+    *dest++ = TYPE(0);
+    *dest++ = TYPE(1);
+    
+    return result;
+  }
+  
+  /**
+    Returns a homogeneous rotation matrix corresponding to the specified
+    quaternion.
+  */
+  static Matrix4x4 getQRotation(const Quaternion<TYPE>& quaternion) throw() {
+    const TYPE xx = quaternion.getX() * quaternion.getX();
+    const TYPE xy = quaternion.getX() * quaternion.getY();
+    const TYPE xz = quaternion.getX() * quaternion.getZ();
+    const TYPE xw = quaternion.getX() * quaternion.getW();
+    const TYPE yy = quaternion.getX() * quaternion.getX();
+    const TYPE yz = quaternion.getY() * quaternion.getZ();
+    const TYPE yw = quaternion.getY() * quaternion.getW();
+    const TYPE zz = quaternion.getZ() * quaternion.getZ();
+    const TYPE zw = quaternion.getZ() * quaternion.getW();
+    
+    Matrix4x4 result;
+    TYPE* dest = result.getElements();
+    
+    *dest++ = 1 - 2 * (yy + zz);
+    *dest++ = 2 * (xy - zw);
+    *dest++ = 2 * (xz + yw);
+    *dest++ = TYPE(0);
+    
+    *dest++ = 2 * (xy + zw);
+    *dest++ = 1 - 2 * (xx + zz);
+    *dest++ = 2 * (yz - xw);
+    *dest++ = TYPE(0);
+    
+    *dest++ = 2 * (xz - yw);
+    *dest++ = 2 * (yz + xw);
+    *dest++ = 1 - 2 * (xx + yy);
+    *dest++ = TYPE(0);
+    
+    *dest++ = TYPE(0);
+    *dest++ = TYPE(0);
+    *dest++ = TYPE(0);
+    *dest++ = TYPE(1);
+    
+    return result;
+  }
+  
+  /**
     Construct an unitialized matrix.
   */
   inline Matrix4x4() throw() {
@@ -47,15 +230,15 @@ public:
   /**
     Initializes matrix by copying from other matrix.
   */
-  inline Matrix4x4(const Matrix4x4& cpy) throw() {
+  inline Matrix4x4(const Matrix4x4& _copy) throw() {
     // no need to protect against self-assignment (possible overlap)
     copy<TYPE>(
       Cast::pointer<TYPE*>(elements),
-      Cast::pointer<const TYPE*>(cpy.elements),
+      Cast::pointer<const TYPE*>(_copy.elements),
       4 * 4
     );
   }
-
+  
   /**
     Assignment of matrix to matrix.
   */
@@ -74,7 +257,8 @@ public:
     return elements[row][column];
   }
 
-  inline void setAt(unsigned int row, unsigned int column, const TYPE& value) throw() {
+  inline void setAt(
+    unsigned int row, unsigned int column, const TYPE& value) throw() {
     // TAG: check row and column
     elements[row][column] = value;
   }
@@ -88,27 +272,36 @@ public:
   }
 
   bool isEqual(const Matrix4x4& value) const throw() {
-    return equal(elements, value.elements, 16);
+    return equal(elements, value.elements, 4 * 4);
   }
 
   /**
     Returns true if the length of this vector is zero.
   */
   bool isZero() const throw() {
-    return !findPredicate(elements, 16, bind2Second(NotEqual<TYPE>(), TYPE(0)));
+    return !findPredicate(
+      elements,
+      4 * 4,
+      bind2Second(NotEqual<TYPE>(), TYPE(0))
+    );
   }
 
   bool isDiagonal() const throw() {
     const TYPE zero(0);
-    return (elements[0][1] == zero) && (elements[0][2] == zero) && (elements[0][3] == zero) &&
-      (elements[1][0] == zero) && (elements[1][2] == zero) && (elements[1][3] == zero) &&
-      (elements[2][0] == zero) && (elements[2][1] == zero) && (elements[2][3] == zero) &&
-      (elements[3][0] == zero) && (elements[3][1] == zero) && (elements[3][2] == zero);
+    return (elements[0][1] == zero) && (elements[0][2] == zero) &&
+      (elements[0][3] == zero) && (elements[1][0] == zero) &&
+      (elements[1][2] == zero) && (elements[1][3] == zero) &&
+      (elements[2][0] == zero) && (elements[2][1] == zero) &&
+      (elements[2][3] == zero) && (elements[3][0] == zero) &&
+      (elements[3][1] == zero) && (elements[3][2] == zero);
   }
   
   bool isSymmetric() const throw() {
-    return (elements[0][1] == elements[1][0]) && (elements[0][2] == elements[2][0]) && (elements[0][3] == zelements[3][0]) &&
-      (elements[1][2] == elements[2][1]) && (elements[1][3] == elements[3][1]) &&
+    return (elements[0][1] == elements[1][0]) &&
+      (elements[0][2] == elements[2][0]) &&
+      (elements[0][3] == elements[3][0]) &&
+      (elements[1][2] == elements[2][1]) &&
+      (elements[1][3] == elements[3][1]) &&
       (elements[2][3] == elements[3][2]);
   }
 
@@ -117,7 +310,7 @@ public:
   */
   TYPE getL1Norm() const throw() {
     AbsoluteSum<TYPE> absoluteSum;
-    forEach(elements, 16, absoluteSum);
+    forEach(elements, 4 * 4, absoluteSum);
     return absoluteSum.getResult();
   }
   
@@ -126,7 +319,7 @@ public:
   */
   TYPE getSquareHSNorm() const throw() {
     SquareSum<TYPE> squareSum;
-    forEach(elements, 16, squareSum);
+    forEach(elements, 4 * 4, squareSum);
     return squareSum.getResult();
   }
 
@@ -135,7 +328,7 @@ public:
   */
   TYPE getInfinityNorm() const throw() {
     Maximum<TYPE> maximum;
-    forEach(elements, 16, maximum);
+    forEach(elements, 4 * 4, maximum);
     return maximum.getResult();
   }
 
@@ -159,7 +352,8 @@ public:
     TYPE det2 = (src[1*4+0] * det13 + src[1*4+1] * det30 + src[1*4+3] * det01);
     TYPE det3 = -(src[1*4+0] * det12 - src[1*4+1] * det02 + src[1*4+2] * det01);
 
-    return src[0*4+0] * det0 + src[0*4+1] * det1 + src[0*4+2] * det2 + src[0*4+3] * det3;
+    return src[0*4+0] * det0 + src[0*4+1] * det1 + src[0*4+2] * det2 +
+      src[0*4+3] * det3;
   }
 
   /**
@@ -182,7 +376,8 @@ public:
     dest[2] = (src[1*4+0] * det13 + src[1*4+1] * det30 + src[1*4+3] * det01);
     dest[3] = -(src[1*4+0] * det12 - src[1*4+1] * det02 + src[1*4+2] * det01);
 
-    TYPE determinant = src[0*4+0] * dest[0] + src[0*4+1] * dest[1] + src[0*4+2] * dest[2] + src[0*4+3] * dest[3];
+    TYPE determinant = src[0*4+0] * dest[0] + src[0*4+1] * dest[1] +
+      src[0*4+2] * dest[2] + src[0*4+3] * dest[3];
 
     // TAG: should we raise an exception if singular
     if (determinant != TYPE(0)) { // check for singularity
@@ -244,7 +439,7 @@ public:
     Negates the quaternion.
   */
   Matrix4x4 negate() throw() {
-    transform(elements, 16, Negate<TYPE>());
+    transform(elements, 4 * 4, Negate<TYPE>());
     return *this;
   }
 
@@ -252,7 +447,7 @@ public:
     Adds the specified vector to this vector.
   */
   Matrix4x4& add(const Matrix4x4& value) throw() {
-    transformByBinary(elements, value.getElements(), 16, Add<TYPE>());
+    transformByBinary(elements, value.getElements(), 4 * 4, Add<TYPE>());
     return *this;
   }
 
@@ -260,7 +455,7 @@ public:
     Subtracts the specified vector from this vector.
   */
   Matrix4x4& subtract(const Matrix4x4& value) throw() {
-    transformByBinary(elements, value.getElements(), 16, Subtract<TYPE>());
+    transformByBinary(elements, value.getElements(), 4 * 4, Subtract<TYPE>());
     return *this;
   }
 
@@ -268,7 +463,7 @@ public:
     Multiplies the matrix elements with the specified value.
   */
   Matrix4x4& multiply(const TYPE& value) throw() {
-    transform(elements, 16, bind2Second(Multiply<TYPE>(), value));
+    transform(elements, 4 * 4, bind2Second(Multiply<TYPE>(), value));
     return *this;
   }
 
@@ -277,10 +472,14 @@ public:
   */
   Quaternion<TYPE> multiply(const Quaternion<TYPE>& value) throw() {
     return Quaternion<TYPE>(
-      elements[0][0] * value.getX() + elements[0][1] * value.getY() + elements[0][2] * value.getZ() + elements[0][3] * value.getW(),
-      elements[1][0] * value.getX() + elements[1][1] * value.getY() + elements[1][2] * value.getZ() + elements[1][3] * value.getW(),
-      elements[2][0] * value.getX() + elements[2][1] * value.getY() + elements[2][2] * value.getZ() + elements[2][3] * value.getW(),
-      elements[3][0] * value.getX() + elements[3][1] * value.getY() + elements[3][2] * value.getZ() + elements[3][3] * value.getW()
+      elements[0][0] * value.getX() + elements[0][1] * value.getY() +
+      elements[0][2] * value.getZ() + elements[0][3] * value.getW(),
+      elements[1][0] * value.getX() + elements[1][1] * value.getY() +
+      elements[1][2] * value.getZ() + elements[1][3] * value.getW(),
+      elements[2][0] * value.getX() + elements[2][1] * value.getY() +
+      elements[2][2] * value.getZ() + elements[2][3] * value.getW(),
+      elements[3][0] * value.getX() + elements[3][1] * value.getY() +
+      elements[3][2] * value.getZ() + elements[3][3] * value.getW()
     );
   }
 
@@ -307,7 +506,7 @@ public:
   */
   TYPE deviationFromZero() const throw() {
     AbsoluteSum<TYPE> absoluteSum;
-    forEach(getElements(), 16, absoluteSum);
+    forEach(getElements(), 4 * 4, absoluteSum);
     return absoluteSum.getResult();
   }
 
@@ -339,7 +538,8 @@ public:
   }
 
   /**
-    Fills the last row with the vector [0 0 0 1] and leaves the other elements unchanged.
+    Fills the last row with the vector [0 0 0 1] and leaves the other elements
+    unchanged.
   */
   void forceHomogeneous() throw() {
     // TAG: any deviation from 0 0 0 1 should be feed back into the other elements
@@ -353,7 +553,7 @@ public:
     Divides this matrix elements with the specified value.
   */
   Matrix4x4& divide(const TYPE& value) throw() {
-    transform(elements, 16, bind2Second(Divide<TYPE>(), value));
+    transform(elements, 4 * 4, bind2Second(Divide<TYPE>(), value));
     return *this;
   }
 
@@ -448,254 +648,99 @@ public:
 
 /**
   Returns the sum of the vectors.
+  
+  @relates Matrix4x4
 */
 template<class TYPE>
-inline Matrix4x4<TYPE> operator+(const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) throw() {
+inline Matrix4x4<TYPE> operator+(
+  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) throw() {
   return Matrix4x4<TYPE>(left).add(right);
 }
 
 /**
   Returns the difference of the vectors.
+
+  @relates Matrix4x4
 */
 template<class TYPE>
-inline Matrix4x4<TYPE> operator-(const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) throw() {
+inline Matrix4x4<TYPE> operator-(
+  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) throw() {
   return Matrix4x4<TYPE>(left).subtract(right);
 }
 
 /**
   Returns the product of the matrix and the value.
+  
+  @relates Matrix4x4
 */
 template<class TYPE>
-inline Matrix4x4<TYPE> operator*(const Matrix4x4<TYPE>& left, const TYPE& right) throw() {
+inline Matrix4x4<TYPE> operator*(
+  const Matrix4x4<TYPE>& left, const TYPE& right) throw() {
   return Matrix4x4<TYPE>(left).multiply(right);
 }
 
 /**
   Returns the product of the matrix and the value.
+
+  @relates Matrix4x4
 */
 template<class TYPE>
-inline Matrix4x4<TYPE> operator*(const TYPE& left, const Matrix4x4<TYPE>& right) throw() {
+inline Matrix4x4<TYPE> operator*(
+  const TYPE& left, const Matrix4x4<TYPE>& right) throw() {
   return Matrix4x4<TYPE>(right).multiply(left);
 }
 
 /**
   Returns the product of the matrices.
+
+  @relates Matrix4x4
 */
 template<class TYPE>
-inline Matrix4x4<TYPE> operator*(const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) throw() {
+inline Matrix4x4<TYPE> operator*(
+  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) throw() {
   return Matrix4x4<TYPE>(left).multiply(right);
 }
 
 /**
   Returns the result of the vector divided by the value.
+  
+  @relates Matrix4x4
 */
 template<class TYPE>
-inline Matrix4x4<TYPE> operator/(const Matrix4x4<TYPE>& left, const TYPE& right) throw() {
+inline Matrix4x4<TYPE> operator/(
+  const Matrix4x4<TYPE>& left, const TYPE& right) throw() {
   return Matrix4x4<TYPE>(left).divide(right);
 }
 
 /**
   Writes a string representation of a Matrix4x4 object to a format stream.
+  
+  @relates Matrix4x4
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix4x4<TYPE>& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Matrix4x4<TYPE>& value) throw(IOException) {
   const TYPE* src = value.getElements()--;
   stream << '[';
   for (unsigned int i = 4; i > 0; --i) {
-    stream << '[' << *++src << ' ' << *++src << ' ' << *++src << ' ' << *++src << ']';
+    stream << '['
+           << *++src << ' '
+           << *++src << ' '
+           << *++src << ' '
+           << *++src << ']';
   }
   stream << ']';
   return stream;
 }
 
 /**
-  Returns a homogeneous rotation matrix corresponding to the specified angle of rotation (in radians) around the X-axis.
-*/
-template<class TYPE>
-Matrix4x4<TYPE> getXRotation(TYPE angle) throw() {
-  Matrix4x4<TYPE> result;
-  TYPE* dest = result.getElements();
-  const TYPE zero(0);
-  const TYPE one(1);
-  const TYPE ca = Math::cos(angle);
-  const TYPE sa = Math::sin(angle);
-  
-  *dest++ = one;
-  *dest++ = zero;
-  *dest++ = zero;
-  *dest++ = zero;
-  
-  *dest++ = zero;
-  *dest++ = ca;
-  *dest++ = -sa;
-  *dest++ = zero;
-  
-  *dest++ = zero;
-  *dest++ = sa;
-  *dest++ = ca;
-  *dest++ = zero;
-
-  *dest++ = zero;
-  *dest++ = zero;
-  *dest++ = zero;
-  *dest++ = one;  
-  return result;
-}
-
-/**
-  Returns a homogeneous rotation matrix corresponding to the specified angle of rotation (in radians) around the Y-axis.
-*/
-template<class TYPE>
-Matrix4x4<TYPE> getYRotation(TYPE angle) throw() {
-  Matrix4x4<TYPE> result;
-  TYPE* dest = result.getElements();
-  const TYPE zero(0);
-  const TYPE one(1);
-  const TYPE ca = Math::cos(angle);
-  const TYPE sa = Math::sin(angle);
-  
-  *dest++ = ca;
-  *dest++ = zero;
-  *dest++ = -sa;
-  *dest++ = zero;
-  
-  *dest++ = zero;
-  *dest++ = one;
-  *dest++ = zero;
-  *dest++ = zero;
-  
-  *dest++ = sa;
-  *dest++ = zero;
-  *dest++ = ca;
-  *dest++ = zero;
-
-  *dest++ = zero;
-  *dest++ = zero;
-  *dest++ = zero;
-  *dest++ = one;  
-  return result;
-}
-
-/**
-  Returns a homogeneous rotation matrix corresponding to the specified angle of rotation (in radians) around the Z-axis.
-*/
-template<class TYPE>
-Matrix4x4<TYPE> getZRotation(TYPE angle) throw() {
-  Matrix4x4<TYPE> result;
-  TYPE* dest = result.getElements();
-  const TYPE zero(0);
-  const TYPE one(1);
-  const TYPE ca = Math::cos(angle);
-  const TYPE sa = Math::sin(angle);
-  
-  *dest++ = ca;
-  *dest++ = -sa;
-  *dest++ = zero;
-  *dest++ = zero;
-  
-  *dest++ = sa;
-  *dest++ = ca;
-  *dest++ = zero;
-  *dest++ = zero;
-  
-  *dest++ = zero;
-  *dest++ = zero;
-  *dest++ = one;
-  *dest++ = zero;
-
-  *dest++ = zero;
-  *dest++ = zero;
-  *dest++ = zero;
-  *dest++ = one;  
-  return result;
-}
-
-/**
-  Returns a homogeneous rotation matrix corresponding to the specified Euler angles.
-*/
-template<class TYPE>
-Matrix4x4<TYPE> getXYZRotation(const Vector3D<TYPE> rotation) throw() {
-  const TYPE cx = Math::cos(rotation.getX());
-  const TYPE sx = Math::sin(rotation.getX());
-  const TYPE cy = Math::cos(rotation.getY());
-  const TYPE sy = Math::sin(rotation.getY());
-  const TYPE cz = Math::cos(rotation.getZ());
-  const TYPE sz = Math::sin(rotation.getZ());
-  const TYPE cxsy = cx * sy;
-  const TYPE sxsy = sx * sy;
-
-  Matrix4x4<TYPE> result;
-  TYPE* dest = result.getElements();
-  
-  *dest++ = cy * cz;
-  *dest++ = -cy * sz;
-  *dest++ = -sy;
-  *dest++ = TYPE(0);
-
-  *dest++ = -sxsy * cz + cx * sz;
-  *dest++ = sxsy * sz + cx * cz;
-  *dest++ = -sx * cy;
-  *dest++ = TYPE(0);
-
-  *dest++ = cxsy * cz + sx * sz;
-  *dest++ = -cxsy * sz + sx * cz;
-  *dest++ = cx * cy;
-  *dest++ = TYPE(0);
-  
-  *dest++ = TYPE(0);
-  *dest++ = TYPE(0);
-  *dest++ = TYPE(0);
-  *dest++ = TYPE(1);
-  
-  return result;
-}
-
-/**
-  Returns a homogeneous rotation matrix corresponding to the specified quaternion.
-*/
-template<class TYPE>
-Matrix4x4<TYPE> getQRotation(const Quaternion<TYPE>& quaternion) throw() {
-  const TYPE xx = quaternion.getX() * quaternion.getX();
-  const TYPE xy = quaternion.getX() * quaternion.getY();
-  const TYPE xz = quaternion.getX() * quaternion.getZ();
-  const TYPE xw = quaternion.getX() * quaternion.getW();
-  const TYPE yy = quaternion.getX() * quaternion.getX();
-  const TYPE yz = quaternion.getY() * quaternion.getZ();
-  const TYPE yw = quaternion.getY() * quaternion.getW();
-  const TYPE zz = quaternion.getZ() * quaternion.getZ();
-  const TYPE zw = quaternion.getZ() * quaternion.getW();
-  
-  Matrix4x4<TYPE> result;
-  TYPE* dest = result.getElements();
-
-  *dest++ = 1 - 2 * (yy + zz);
-  *dest++ = 2 * (xy - zw);
-  *dest++ = 2 * (xz + yw);
-  *dest++ = TYPE(0);
-  
-  *dest++ = 2 * (xy + zw);
-  *dest++ = 1 - 2 * (xx + zz);
-  *dest++ = 2 * (yz - xw);
-  *dest++ = TYPE(0);
-  
-  *dest++ = 2 * (xz - yw);
-  *dest++ = 2 * (yz + xw);
-  *dest++ = 1 - 2 * (xx + yy);
-  *dest++ = TYPE(0);
-  
-  *dest++ = TYPE(0);
-  *dest++ = TYPE(0);
-  *dest++ = TYPE(0);
-  *dest++ = TYPE(1);
-  
-  return result;
-}
-
-/**
   Returns the product of the matrix and quaternion.
+
+  @relates Matrix4x4
 */
 template<class TYPE>
-inline Quaternion<TYPE> operator*(const Matrix4x4<TYPE>& left, const Quaternion<TYPE>& right) throw() {
+inline Quaternion<TYPE> operator*(
+  const Matrix4x4<TYPE>& left, const Quaternion<TYPE>& right) throw() {
   return Matrix4x4<TYPE>(left).multiply(right);
 }
 

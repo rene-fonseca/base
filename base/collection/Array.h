@@ -334,9 +334,12 @@ public:
 
 /**
   Writes a string representation of an array to a format stream.
+  
+  @relates Array
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Array<TYPE>& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Array<TYPE>& value) throw(IOException) {
   typename Array<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {

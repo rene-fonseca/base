@@ -148,8 +148,14 @@ public:
   }
 };
 
+/**
+  Writes a string representation of a set to a format stream.
+
+  @relates Set
+*/
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Set<TYPE>& value)  throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Set<TYPE>& value)  throw(IOException) {
   typename Set<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {

@@ -336,33 +336,65 @@ inline Vector2D<TYPE>::Vector2D(const TYPE& _x, const TYPE& _y) throw()
   : x(_x), y(_y) {
 }
 
+/**
+  Returns the sum of the vectors.
+
+  @relates Vector2D
+*/
 template<class TYPE>
-inline Vector2D<TYPE> operator+(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
+inline Vector2D<TYPE> operator+(
+  const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
   return Vector2D<TYPE>(left).add(right);
 }
 
+/**
+  Returns the difference of the vectors.
+
+  @relates Vector2D
+*/
 template<class TYPE>
-inline Vector2D<TYPE> operator-(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
+inline Vector2D<TYPE> operator-(
+  const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
   return Vector2D<TYPE>(left).subtract(right);
 }
 
+/**
+  Returns the product of the vector and the value.
+
+  @relates Vector2D
+*/
 template<class TYPE>
-inline Vector2D<TYPE> operator*(const Vector2D<TYPE>& left, const TYPE& right) throw() {
+inline Vector2D<TYPE> operator*(
+  const Vector2D<TYPE>& left, const TYPE& right) throw() {
   return Vector2D<TYPE>(left).multiply(right);
 }
 
+/**
+  Returns the product of the vector and the value.
+
+  @relates Vector2D
+*/
 template<class TYPE>
-inline Vector2D<TYPE> operator*(const TYPE& left, const Vector2D<TYPE>& right) throw() {
+inline Vector2D<TYPE> operator*(
+  const TYPE& left, const Vector2D<TYPE>& right) throw() {
   return Vector2D<TYPE>(right).multiply(left);
 }
 
+/**
+  Returns the ratio of the vector and the value.
+
+  @relates Vector2D
+*/
 template<class TYPE>
-inline Vector2D<TYPE> operator/(const Vector2D<TYPE>& left, const TYPE& right) throw() {
+inline Vector2D<TYPE> operator/(
+  const Vector2D<TYPE>& left, const TYPE& right) throw() {
   return Vector2D<TYPE>(left).divide(right);
 }
 
 /**
   Returns the dot product of the two vectors.
+
+  @relates Vector2D
 */
 template<class TYPE>
 inline TYPE dot(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
@@ -371,17 +403,24 @@ inline TYPE dot(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw()
 
 /**
   Returns the determinant of the two vectors.
+
+  @relates Vector2D
 */
 template<class TYPE>
-inline TYPE determinant(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
+inline TYPE determinant(
+  const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
   return left.determinant(right);
 }
 
 /**
-  Writes a string representation of a Vector2D object to a format stream. The format is "(x; y)".
+  Writes a string representation of a Vector2D object to a format stream. The
+  format is "(x; y)".
+
+  @relates Vector2D
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector2D<TYPE>& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Vector2D<TYPE>& value) throw(IOException) {
   return stream << '(' << value.getX() << ';' << value.getY() << ')';
 }
 

@@ -354,51 +354,69 @@ public:
 };
 
 template<class TYPE>
-inline Vector3D<TYPE>::Vector3D(const TYPE& _x, const TYPE& _y, const TYPE& _z) throw() : x(_x), y(_y), z(_z) {
+inline Vector3D<TYPE>::Vector3D(
+  const TYPE& _x, const TYPE& _y, const TYPE& _z) throw() : x(_x), y(_y), z(_z) {
 }
 
 /**
   Returns the sum of the vectors.
+
+  @relates Vector3D
 */
 template<class TYPE>
-inline Vector3D<TYPE> operator+(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
+inline Vector3D<TYPE> operator+(
+  const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
   return Vector3D<TYPE>(left).add(right);
 }
 
 /**
   Returns the difference of the vectors.
+
+  @relates Vector3D
 */
 template<class TYPE>
-inline Vector3D<TYPE> operator-(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
+inline Vector3D<TYPE> operator-(
+  const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
   return Vector3D<TYPE>(left).subtract(right);
 }
 
 /**
   Returns the product of the vector and the value.
+
+  @relates Vector3D
 */
 template<class TYPE>
-inline Vector3D<TYPE> operator*(const Vector3D<TYPE>& left, const TYPE& right) throw() {
+inline Vector3D<TYPE> operator*(
+  const Vector3D<TYPE>& left, const TYPE& right) throw() {
   return Vector3D<TYPE>(left).multiply(right);
 }
 
 /**
   Returns the product of the vector and the value.
+
+  @relates Vector3D
 */
 template<class TYPE>
-inline Vector3D<TYPE> operator*(const TYPE& left, const Vector3D<TYPE>& right) throw() {
+inline Vector3D<TYPE> operator*(
+  const TYPE& left, const Vector3D<TYPE>& right) throw() {
   return Vector3D<TYPE>(right).multiply(left);
 }
 
 /**
   Returns the result of the vector divided by the value.
+
+  @relates Vector3D
 */
 template<class TYPE>
-inline Vector3D<TYPE> operator/(const Vector3D<TYPE>& left, const TYPE& right) throw() {
+inline Vector3D<TYPE> operator/(
+  const Vector3D<TYPE>& left, const TYPE& right) throw() {
   return Vector3D<TYPE>(left).divide(right);
 }
 
 /**
   Returns the dot product of the two vectors.
+
+  @relates Vector3D
 */
 template<class TYPE>
 inline TYPE dot(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
@@ -407,18 +425,29 @@ inline TYPE dot(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw()
 
 /**
   Returns the cross product of the two vectors.
+
+  @relates Vector3D
 */
 template<class TYPE>
-inline Vector3D<TYPE> cross(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
+inline Vector3D<TYPE> cross(
+  const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw() {
   return left.cross(right);
 }
 
 /**
-  Writes a string representation of a Vector3D object to a format stream. The format is "(x; y; z)".
+  Writes a string representation of a Vector3D object to a format stream. The
+  format is "(x; y; z)".
+
+  @relates Vector3D
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector3D<TYPE>& value) throw(IOException) {
-  return stream << '(' << value.getX() << ';' << value.getY() << ';' << value.getZ() << ')';
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Vector3D<TYPE>& value) throw(IOException) {
+  return stream << '('
+                << value.getX() << ';'
+                << value.getY() << ';'
+                << value.getZ()
+                << ')';
 }
 
 template<class TYPE>

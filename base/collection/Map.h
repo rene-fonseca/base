@@ -252,8 +252,14 @@ public:
   }
 };
 
+/**
+  Writes a string representation of a map to a format stream.
+
+  @relates Map
+*/
 template<class KEY, class VALUE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Map<KEY, VALUE>& value) throw(IOException) {
   typename Map<KEY, VALUE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {

@@ -624,9 +624,12 @@ public:
 
 /**
   Writes a string representation of a list to a format stream.
+
+  @relates List
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const List<TYPE>& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const List<TYPE>& value) throw(IOException) {
   typename List<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {

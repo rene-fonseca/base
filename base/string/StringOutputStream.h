@@ -17,6 +17,7 @@
 #include <base/Object.h>
 #include <base/string/String.h>
 #include <base/io/OutputStream.h>
+#include <base/string/FormatOutputStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -53,7 +54,7 @@ protected:
   StringOutputStreamWrapper stream;
 public:
 
-  inline StringOutputStreamImpl() {}
+  inline StringOutputStreamImpl() throw() {}
 };
 
 

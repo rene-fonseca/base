@@ -403,4 +403,57 @@ Process::Times Process::getTimes() throw() {
 #endif // flavor
 }
 
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Process::Layout& value) throw(IOException) {
+  // modules
+  // stack
+  // threads
+  // segments: text, data, stack, ...
+  // ...
+  stream << MESSAGE("Process layout of ") << Process::getProcess().getId() << EOL;
+
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  MEMORY_BASIC_INFORMATION information;
+  ::VirtualQuery(::GetModuleHandle(0), &information, sizeof(information));
+  
+  stream << MESSAGE("  base address: ") << information.BaseAddress << EOL
+         << MESSAGE("  allocation base: ") << information.AllocationBase << EOL
+         << MESSAGE("  region size: ") << information.RegionSize << EOL
+         << MESSAGE("  protection: ") << HEX << information.AllocationProtect << EOL
+         << MESSAGE("  type: ") << HEX << information.Type << EOL;
+
+  CONTEXT context;
+  unsigned short ss;
+  unsigned int current;
+  asm (
+    "movl %%ss,%0; \n\t"
+    : "=m" (ss) // output
+  );
+
+  LDT_ENTRY ldt;
+  BOOL xxx = ::GetThreadSelectorEntry(::GetCurrentThread(), ss, &ldt);
+  current = ldt.BaseLow | (ldt.HighWord.Bytes.BaseMid << 16) | (ldt.HighWord.Bytes.BaseHi << 24);
+
+  //::GetThreadContext(::GetCurrentThread(), &context);
+  stream << MESSAGE("  esp: ") << HEX << current << EOL;
+
+  ::VirtualQuery((void*)context.Esp, &information, sizeof(information));
+  stream << MESSAGE("  stack base address: ") << information.BaseAddress << EOL
+         << MESSAGE("  stack allocation base: ") << information.AllocationBase << EOL
+         << MESSAGE("  stack region size: ") << information.RegionSize << EOL
+         << MESSAGE("  stack protection: ") << HEX << information.AllocationProtect << EOL
+         << MESSAGE("  stack type: ") << HEX << information.Type << EOL;
+  
+#elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) && (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86))
+  // text, data, bss begin at 0x08048000 for IA-32
+  // last address is 0xbfffffff for IA-32
+      
+  stream << MESSAGE("  begin of text segment: ") << 0x08048000 << EOL
+         << MESSAGE("  end of data segment: ") << sbrk(0) << EOL
+         << MESSAGE("  end of stack segment: ") << 0xbfffffff << EOL;
+#endif // flavor
+  
+  stream << ENDL;
+  return stream;
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

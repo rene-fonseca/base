@@ -16,7 +16,11 @@
 #include <base/Base.h>
 #include <base/Functor.h>
 
-#if defined(__win32__)
+#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #define _LARGEFILE64_SOURCE 1
+#endif
+
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else // __unix__
   #include <sys/types.h>
@@ -37,7 +41,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 MappedFile::MappedFileImpl::MappedFileImpl(const File& f, const FileRegion& r, bool w) throw(FileException) :
   file(f), region(r), writeable(w) {
   assert(region.getOffset() >= 0, FileException("Unable to map file region"));
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   HANDLE handle = CreateFileMapping((HANDLE)getHandle(file), NULL, writeable ? PAGE_READWRITE : PAGE_READONLY, 0, 0, NULL);
   assert(handle != NULL, FileException("Unable to map file region"));
   LARGE_INTEGER offset;
@@ -66,7 +70,7 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& f, const FileRegion& r, b
 }
 
 void MappedFile::MappedFileImpl::flush() const throw(FileException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!FlushViewOfFile(bytes, 0)) {
     throw FileException("Unable to flush");
   }
@@ -78,7 +82,7 @@ void MappedFile::MappedFileImpl::flush() const throw(FileException) {
 }
 
 MappedFile::MappedFileImpl::~MappedFileImpl() throw(FileException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!UnmapViewOfFile(bytes)) {
     throw FileException("Unable to unmap file");
   }
@@ -90,7 +94,7 @@ MappedFile::MappedFileImpl::~MappedFileImpl() throw(FileException) {
 }
 
 unsigned int MappedFile::getGranularity() throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEM_INFO info;
   GetSystemInfo(&info);
   return info.dwAllocationGranularity;
@@ -103,7 +107,7 @@ unsigned int MappedFile::getGranularity() throw() {
 MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeable) throw(FileException) : map(0) {
   map = new MappedFileImpl(file, region, writeable);
 //  assert(r.getOffset() >= 0, FileException("Unable to map file"));
-//#if defined(__win32__)
+//#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 //  HANDLE handle = CreateFileMapping((HANDLE)f.fd->getHandle(), NULL, writeable ? PAGE_READWRITE : PAGE_READONLY, 0, 0, NULL);
 //  if (handle == NULL) {
 //    throw FileException("Unable to map file");

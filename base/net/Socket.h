@@ -320,11 +320,11 @@ public:
 
     @param buffer The buffer.
     @param size The size of the buffer.
-    @param address The address.
-    @param port The port.
+    @param address The Internet address of the remote host.
+    @param port The port of the remote host.
     @return The number of bytes sent.
   */
-  unsigned int sendTo(const char* buffer, unsigned int size, InetAddress& address, unsigned short port) throw(IOException);
+  unsigned int sendTo(const char* buffer, unsigned int size, const InetAddress& address, unsigned short port) throw(IOException);
 
   /**
     Receives data from any address using an unconnected socket.

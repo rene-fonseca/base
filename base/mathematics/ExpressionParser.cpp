@@ -148,7 +148,7 @@ void ExpressionParser::push(Operation opr) throw(ExpressionException) {
 
   if (!stack.isEmpty() &&
        (stack.peek().getPrecedence() == opr.getPrecedence()) &&
-       (stack.peek().getGlue() == LEFT)
+       (stack.peek().getGlue() == eval::LEFT)
   ) {
     pop();
   }

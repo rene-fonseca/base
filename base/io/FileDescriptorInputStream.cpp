@@ -16,9 +16,9 @@
 #include <base/concurrency/Thread.h>
 #include <base/Trace.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // __unix__
+#else // Unix
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <sys/time.h>
@@ -55,11 +55,11 @@ FileDescriptorInputStream& FileDescriptorInputStream::operator=(const FileDescri
 }
 
 unsigned int FileDescriptorInputStream::available() const throw(IOException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   // use GetFileSizeEx instead
   DWORD highWord;
   return GetFileSize((HANDLE)fd->getHandle(), &highWord);
-#else // __unix__
+#else // Unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     if (::fstat64(fd->getHandle(), &status) != 0) {
@@ -81,7 +81,7 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int size, bo
   assert(!end, EndOfFile());
   unsigned int bytesRead = 0;
   while (bytesRead < size) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
     BOOL success = ::ReadFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
     if (!success) { // has error occured
@@ -91,7 +91,7 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int size, bo
         throw IOException("Unable to read from object");
       }
     }
-#else // __unix__
+#else // Unix
     int result = ::read(fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
@@ -126,8 +126,8 @@ unsigned int FileDescriptorInputStream::skip(unsigned int count) throw(IOExcepti
 }
 
 void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
-#if defined(__win32__)
-#else // __unix__
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#else // Unix
   int flags = getFlags();
   if (value) {
     if (flags & O_NONBLOCK == 0) { // do we need to set flag
@@ -142,8 +142,8 @@ void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
 }
 
 void FileDescriptorInputStream::wait() const throw(IOException) {
-#if defined(__win32__)
-#else // __unix__
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#else // Unix
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET(fd->getHandle(), &rfds);
@@ -156,8 +156,8 @@ void FileDescriptorInputStream::wait() const throw(IOException) {
 }
 
 bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOException) {
-#if defined(__win32__)
-#else // __unix__
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#else // Unix
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET(fd->getHandle(), &rfds);

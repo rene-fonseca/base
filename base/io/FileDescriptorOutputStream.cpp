@@ -16,9 +16,9 @@
 #include <base/io/EndOfFile.h>
 #include <base/Trace.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // __unix__
+#else // Unix
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <fcntl.h>
@@ -52,13 +52,13 @@ FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDesc
 }
 
 void FileDescriptorOutputStream::flush() throw(IOException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   // Handle to a console output cannot be flushed 'cause it isn't buffered, aarrgh
   if (!isValid()) {
     throw IOException("Unable to flush file descriptor");
   }
   ::FlushFileBuffers((HANDLE)fd->getHandle()); // yes ignore any error
-#else // __unix__
+#else // Unix
   ::fsync(fd->getHandle());
 //  if (ioctl(fd->getHandle(), I_FLUSH, FLUSHRW) != 0) {
 //    throw IOException("Unable to flush stream");
@@ -70,13 +70,13 @@ unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int 
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesWritten < size) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
     BOOL success = ::WriteFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
     if (!success) {
       throw IOException("Unable to write to object");
     }
-#else // __unix__
+#else // Unix
     int result = ::write(fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
     if (result < 0) { // has an error occured
       switch (errno) {

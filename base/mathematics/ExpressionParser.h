@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 namespace eval {
 
   /** The valid types of a node in an expression. */
-  typedef enum {VALUE, VARIABLE, CONSTANT, BUILTIN, FUNCTION, UNKNOWN} NodeType;
+  enum NodeType {VALUE, VARIABLE, CONSTANT, BUILTIN, FUNCTION, UNKNOWN};
 
   /** Node of expression. */
   struct EvaluationNode {
@@ -48,7 +48,7 @@ namespace eval {
 
   typedef EvaluationNode Node;
 
-  typedef enum {LEFT, RIGHT} Glue; // determines order when operators have same precedence
+  enum Glue {LEFT, RIGHT}; // determines order when operators have same precedence
 
   class Operation {
   private:

@@ -15,11 +15,12 @@
 #include <base/net/InetAddress.h>
 #include <base/Functor.h>
 #include <base/concurrency/Thread.h>
+#include <base/ByteOrder.h>
 
-#if defined(__win32__) // temporary solution until arch independant types have been defined
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32) // temporary solution until arch independant types have been defined
   #include <winsock.h>
   typedef DWORD uint32_t;
-#else // __unix__
+#else // Unix
   #include <sys/types.h>
   #include <sys/socket.h>
   #include <sys/param.h> // may define MAXHOSTNAMELEN (linux, irix)
@@ -31,7 +32,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 class WindowsSocketsInitializer {
 public:
 
@@ -59,10 +60,10 @@ public:
 
 // Request access to the Windows Sockets interface
 WindowsSocketsInitializer windowsSockets;
-#endif // __win32__
+#endif // win32
 
 String InetAddress::getLocalHost() throw(NetworkException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   // I use thread local storage 'cause I don't know what the maximum length is
   // the microsoft example code that I have seen assumes that the name cannot exceed 200 chars
   Allocator<char>* buffer = Thread::getLocalStorage();
@@ -71,7 +72,7 @@ String InetAddress::getLocalHost() throw(NetworkException) {
   if (gethostname(name, buffer->getSize())) {
     throw NetworkException("Unable to get local host name");
   }
-#else // __unix__
+#else // Unix
   char name[MAXHOSTNAMELEN + 1]; // does MAXHOSTNAMELEN include terminator
   gethostname(name, sizeof(name));
 #endif
@@ -97,11 +98,11 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
     switch (i->ai_family) {
     case PF_INET:
       addr = (char*)&((struct sockaddr_in*)(i->ai_addr))->sin_addr;
-      result.append(InetAddress(addr, IPv4));
+      result.append(InetAddress(addr, IP_VERSION_4));
       break;
     case PF_INET6:
       addr = (char*)&((struct sockaddr_in6*)(i->ai_addr))->sin6_addr;
-      result.append(InetAddress(addr, IPv6));
+      result.append(InetAddress(addr, IP_VERSION_6));
       break;
 //    default:
 // just ignore the unsupported families
@@ -114,18 +115,18 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 #else // use ordinary BSD sockets
   struct hostent* hp;
 
-  #if defined(__win32__)
+  #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
       throw HostNotFound("Unable to lookup host by name");
     }
-  #elif defined(__sgi__) || defined(__solaris__)
+  #elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__SOLARIS)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
     if (!(hp = gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &error))) {
       throw HostNotFound("Unable to lookup host by name");
     }
-  #elif defined(__linux__)
+  #elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
@@ -140,63 +141,136 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
   #endif
 
   for (char** p = hp->h_addr_list; *p != 0; p++) {
-    result.append(InetAddress(*p, IPv4));
+    result.append(InetAddress((const byte*)*p, IP_VERSION_4));
   }
 #endif // _DK_SDU_MIP__BASE__INET_IPV6
   return result;
 }
 
-InetAddress::InetAddress() throw() {
-  fill<char>((char*)&address, sizeof(address), 0); // set to unspecified addr
+bool InetAddress::parse(const String& addr) throw() {
+  String::ReadIterator i = addr.getBeginReadIterator();
+  const String::ReadIterator end = addr.getEndReadIterator();
+
+  int colon = addr.indexOf(':');
+  bool readIPv4 = true; // read IPv4 address from end of addr
+
+  if (colon < 0) { // IPv4
+    family = IP_VERSION_4;
+    address.words[0] = 0;
+    address.words[1] = 0;
+    address.words[2] = 0;
+  } else { // IPv6
+    family = IP_VERSION_6;
+    int dot = addr.indexOf('.', colon + 1);
+    readIPv4 = (dot >= 0);
+    const String::ReadIterator endIPv6 = (dot >= 0) ? (i + addr.lastIndexOf(':', dot) + 1) : end;
+
+    unsigned int maxValues = readIPv4 ? 6 : 8; // maximum number of half-words to read
+    int zeroIndex = -1; // index of zero-compression (invalidated)
+    unsigned int writeHead = 0;
+
+    if ((i < endIPv6) && (*i == ':')) { // addr begins with zero-compression
+      ++i;
+      if (!((i < endIPv6) && (*i == ':'))) {
+        return false;
+      }
+      ++i;
+      zeroIndex = 0;
+    }
+
+    while ((writeHead < maxValues) && (i < endIPv6) && ASCIITraits::isHexDigit(*i)) { // read half-words
+      unsigned int value = 0; // overflow not possible with 4 digits [0x0000;0xffff]
+      value = ASCIITraits::digitToValue(*i++);
+      if ((i < endIPv6) && ASCIITraits::isHexDigit(*i)) {
+        value = 16 * value + ASCIITraits::digitToValue(*i++);
+        if ((i < endIPv6) && ASCIITraits::isHexDigit(*i)) {
+          value = 16 * value + ASCIITraits::digitToValue(*i++);
+          if ((i < endIPv6) && ASCIITraits::isHexDigit(*i)) {
+            value = 16 * value + ASCIITraits::digitToValue(*i++);
+          }
+        }
+      }
+      address.halfWords[writeHead++] = ByteOrder::toBigEndian<unsigned short>(value);
+
+      if (i == endIPv6) {
+        break;
+      }
+
+      if (!((i < endIPv6) && (*i++ == ':') && (i < end))) { // check for value separator - yes last check must be (i < end)
+        return false;
+      }
+
+      if ((zeroIndex < 0) && (*i == ':')) { // check for zero-compression
+        ++i;
+        zeroIndex = writeHead;
+      }
+    }
+    if (!((i == endIPv6) && ((zeroIndex >= 0) || (writeHead == maxValues)))) {
+      return false;
+    }
+    if (zeroIndex >= 0) { // is zero-compression present
+      move(&address.halfWords[zeroIndex + maxValues - writeHead], &address.halfWords[zeroIndex], writeHead - zeroIndex);
+      fill<unsigned short>(&address.halfWords[zeroIndex], maxValues - writeHead, 0);
+    }
+  }
+
+  if (readIPv4) { // should we read an IPv4 address
+    unsigned int relativeIndex = 0;
+    while ((relativeIndex < 4) && (i < end) && ASCIITraits::isDigit(*i)) { // get 4 integer values
+      unsigned int value = ASCIITraits::digitToValue(*i++); // overflow not possible with 3 digits [0;999]
+      if ((i < end) && ASCIITraits::isDigit(*i)) {
+        value = 10 * value + ASCIITraits::digitToValue(*i++);
+        if ((i < end) && ASCIITraits::isDigit(*i)) {
+          value = 10 * value + ASCIITraits::digitToValue(*i++);
+        }
+      }
+      if (value > 255) {
+        return false;
+      }
+      address.octets[12 + relativeIndex++] = value;
+      if (i == end) {
+        break;
+      }
+      if (!((i < end) && (*i++ == '.'))) {
+        return false;
+      }
+    }
+    if (relativeIndex != 4) { // i == end checked below
+      return false;
+    }
+  }
+
+  return i == end;
 }
 
-InetAddress::InetAddress(const char* addr, Family family) throw(NetworkException) {
+InetAddress::InetAddress() throw() : family(IP_VERSION_4) {
+  address.words[0] = 0; // set to unspecified address
+  address.words[1] = 0;
+  address.words[2] = 0;
+  address.words[3] = 0;
+}
+
+InetAddress::InetAddress(const byte* addr, Family family) throw() {
   setAddress(addr, family);
 }
 
 InetAddress::InetAddress(const String& addr) throw(InvalidFormat) {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  struct in_addr temp;
-  if (inet_pton(AF_INET, addr.getElements(), &temp) > 0) { // try IPv4 format - MT-level is safe
-    // make IPv4-mapped IPv6 address (network byte order)
-    ((uint32_t*)(&address))[0] = 0x00000000;
-    ((uint32_t*)(&address))[1] = 0x00000000;
-    ((uint32_t*)(&address))[2] = htonl(0x0000ffff);
-    ((uint32_t*)(&address))[3] = ((uint32_t*)(&temp))[0]; // temp is in network byte order
-  } else if (inet_pton(AF_INET6, addr.getElements(), &address) > 0) { // try IPv6 format - MT-level is safe
-    // IPv6 address already copied to address field
-  } else {
-    throw InvalidFormat("Not a valid IP address");
-  }
-#else
-  struct in_addr temp;
-  if ((temp.s_addr = inet_addr(addr.getElements())) == -1) { // MT-level is safe???
-    throw InvalidFormat("Not a valid IPv4 address");
-  }
-  ((uint32_t*)(&address))[0] = ((uint32_t*)(&temp))[0];
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+  assert(parse(addr), InvalidFormat("Not an Internet address"));
 }
 
-InetAddress::InetAddress(const InetAddress& copy) throw() : address(copy.address) {
+InetAddress::InetAddress(const String& addr, Family family) throw(InvalidFormat) {
+  assert(parse(addr) && (this->family == family), InvalidFormat("Not an Internet address"));
+}
+
+InetAddress::InetAddress(const InetAddress& copy) throw() :
+  family(copy.family),
+  address(copy.address) {
 }
 
 InetAddress& InetAddress::operator=(const InetAddress& eq) throw() {
-  if (&eq != this) { // protect against self assignment
-    address = eq.address;
-  }
+  family = eq.family; // no need to protect against self-assignment
+  address = eq.address;
   return *this;
-}
-
-const unsigned char* InetAddress::getAddress() const throw() {
-  return (unsigned char*)&address;
-}
-
-const unsigned char* InetAddress::getIPv4Address() const throw() {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  return (unsigned char*)&address.buffer[12];
-#else
-  return (unsigned char*)&address.buffer;
-#endif
 }
 
 String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
@@ -218,18 +292,18 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 #else // use ordinary BSD sockets
   struct hostent* hp;
 
-  #if defined(__win32__)
+  #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     if (!(hp = gethostbyaddr((const char*)&address, sizeof(address), AF_INET))) { // MT-safe
       throw HostNotFound("Unable to resolve IP address");
     }
-  #elif defined(__sgi__) || defined(__solaris__)
+  #elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__SOLARIS)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error;
     if (!(hp = gethostbyaddr_r((const char*)&address, sizeof(address), AF_INET, &result, buffer, sizeof(buffer), &error))) {
       throw HostNotFound("Unable to resolve IP address");
     }
-  #elif defined(__linux__)
+  #elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error;
@@ -251,112 +325,167 @@ bool InetAddress::operator==(const InetAddress& eq) throw() {
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   return IN6_ARE_ADDR_EQUAL((struct in6_addr*)&address, (struct in6_addr*)&eq.address);
 #else
-  return address.buffer == eq.address.buffer;
+  return address.words == eq.address.words;
 #endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 bool InetAddress::isUnspecified() const throw() {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  return IN6_IS_ADDR_UNSPECIFIED((struct in6_addr*)&address);
-#else
-  return (uint32_t)address.buffer == htonl(0x00000000);
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+  // ok for both IPv4 and IPv6
+  return (address.words[0] == 0) && (address.words[1] == 0) && (address.words[2] == 0) && (address.words[3] == 0);
 }
 
 bool InetAddress::isLoopback() const throw() {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  return IN6_IS_ADDR_LOOPBACK((struct in6_addr*)&address);
-#else
-  return (uint32_t)address.buffer == htonl(0x7f000001);
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+  return (address.words[0] == 0) && (address.words[1] == 0) && (address.words[2] == 0) &&
+    (
+      (family == IP_VERSION_6) && (address.words[3] == ByteOrder::toBigEndian<unsigned int>(0x00000001U)) || // IPv6 only
+      (family == IP_VERSION_4) && (address.words[3] == ByteOrder::toBigEndian<unsigned int>(0x7f000001U)) // IPv4 only
+    );
 }
 
 bool InetAddress::isMulticast() const throw() {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  return IN6_IS_ADDR_MULTICAST((struct in6_addr*)&address);
-#else
-  return false;
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+  return (family == IP_VERSION_6) && (address.octets[0] == 0xff); // TAG: IPv4 version?
 }
 
 bool InetAddress::isLinkLocal() const throw() {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  return IN6_IS_ADDR_LINKLOCAL((struct in6_addr*)&address);
-#else
-  return false;
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+  return (family == IP_VERSION_6) && (address.words[0] & ByteOrder::toBigEndian<unsigned int>(0xffc00000U) == ByteOrder::toBigEndian<unsigned int>(0xfe800000U)); // TAG: IPv4 version?
 }
 
 bool InetAddress::isSiteLocal() const throw() {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  return IN6_IS_ADDR_SITELOCAL((struct in6_addr*)&address);
-#else
-  return false;
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+  return (family == IP_VERSION_6) && (address.words[0] & ByteOrder::toBigEndian<unsigned int>(0xffc00000U) == ByteOrder::toBigEndian<unsigned int>(0xfec00000U)); // TAG: IPv4 version?
 }
 
-bool InetAddress::isV4Mapped() const throw() {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  return IN6_IS_ADDR_V4MAPPED((struct in6_addr*)&address);
-#else
-  return true;
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+bool InetAddress::isIPv4Mapped() const throw() {
+  return (family == IP_VERSION_6) && (address.words[0] == 0) && (address.words[1] == 0) && (address.words[2] == ByteOrder::toBigEndian<unsigned int>(0xffffU)) && (address.words[3] != 0);
 }
 
-bool InetAddress::isV4Compatible() const throw() {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  return IN6_IS_ADDR_V4COMPAT((struct in6_addr*)&address);
-#else
-  return true;
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+bool InetAddress::isIPv4Compatible() const throw() {
+  // ok for both IPv4 and IPv6
+  return (address.words[0] == 0) && (address.words[1] == 0) && (address.words[2] == 0) && (address.words[3] != 0);
 }
 
-void InetAddress::setAddress(const char* addr, Family family) throw(NetworkException) {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
+unsigned int InetAddress::getType() const throw() {
+  unsigned int result = (family == IP_VERSION_4) ? IPV4 : IPV6;
+  if (family == IP_VERSION_4) {
+    if (address.words[3] == 0) {
+      result |= UNSPECIFIED;
+    } else if (address.words[3] == ByteOrder::toBigEndian<unsigned int>(0x7f000001U)) {
+      result |= LOOPBACK;
+    }
+    result |= IPV4_COMPATIBLE;
+  } else { // IPv6
+    if ((address.words[0] == 0) && (address.words[1] == 0)) {
+      if (address.words[2] == 0) {
+        if (address.words[3] == 0) {
+          result |= UNSPECIFIED;
+        } else if (address.words[3] == ByteOrder::toBigEndian<unsigned int>(0x00000001U)) {
+          result |= LOOPBACK;
+          result |= IPV4_COMPATIBLE;
+        } else {
+          result |= IPV4_COMPATIBLE;
+        }
+      } else if ((address.words[2] == ByteOrder::toBigEndian<unsigned int>(0x0000ffffU)) && (address.words[3] != 0)) {
+        result |= IPV4_MAPPED;
+      }
+    } else if (address.octets[0] == 0xff) {
+      result |= MULTICAST;
+    } else if (address.words[0] & ByteOrder::toBigEndian<unsigned int>(0xffc00000U) == ByteOrder::toBigEndian<unsigned int>(0xfe800000U)) {
+      result |= LINK_LOCAL;
+    } else if (address.words[0] & ByteOrder::toBigEndian<unsigned int>(0xffc00000U) == ByteOrder::toBigEndian<unsigned int>(0xfec00000U)) {
+      result |= SITE_LOCAL;
+    }
+  }
+  return result;
+}
+
+bool InetAddress::convertToIPv6() throw() {
+  if (family == IP_VERSION_4) {
+    family = IP_VERSION_6;
+    address.words[2] = ByteOrder::toBigEndian<unsigned int>(0x0000ffffU);
+  }
+  return true; // cannot fail
+}
+
+bool InetAddress::convertToIPv4() throw() {
+  if (family == IP_VERSION_6) {
+    if (isIPv4Mapped()) {
+      family = IP_VERSION_4;
+      address.words[2] = 0;
+      return true;
+    } else {
+      return false; // cannot convert
+    }
+  } else {
+    return true; // already IPv4
+  }
+}
+
+void InetAddress::setAddress(const byte* addr, Family family) throw() {
+  this->family = family;
   switch (family) {
-  case IPv4:
-    // make IPv4-mapped IPv6 address (network byte order)
-    ((uint32_t*)(&address))[0] = 0x00000000;
-    ((uint32_t*)(&address))[1] = 0x00000000;
-    ((uint32_t*)(&address))[2] = htonl(0x0000ffff);
-    ((uint32_t*)(&address))[3] = ((uint32_t*)addr)[0];
+  case IP_VERSION_4:
+    address.words[0] = 0;
+    address.words[1] = 0;
+    address.words[2] = 0;
+    address.octets[12] = *addr++;
+    address.octets[13] = *addr++;
+    address.octets[14] = *addr++;
+    address.octets[15] = *addr++;
     break;
-  case IPv6:
-    ((uint32_t*)(&address))[0] = ((uint32_t*)addr)[0];
-    ((uint32_t*)(&address))[1] = ((uint32_t*)addr)[1];
-    ((uint32_t*)(&address))[2] = ((uint32_t*)addr)[2];
-    ((uint32_t*)(&address))[3] = ((uint32_t*)addr)[3];
+  case IP_VERSION_6:
+    copy(address.octets, addr, 16);
     break;
   }
-#else
-  switch (family) {
-  case IPv4:
-    *(uint32_t*)&address = *(uint32_t*)addr;
-    break;
-  case IPv6:
-    throw NetworkException("Operating system does not support IPv6");
-    break;
-  }
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  #if (INET6_ADDRSTRLEN > THREAD_LOCAL_STORAGE)
-    #error The requested amount of local storage is not available.
-  #endif
-  Allocator<char>* buffer = Thread::getLocalStorage();
-  ASSERT(buffer->getSize() > sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")); // longest possible string
-  if (value.isV4Mapped()) {
-    inet_ntop(AF_INET, &((uint32_t*)(&value.address))[3], buffer->getElements(), buffer->getSize()); // MT-level is safe
-  } else {
-    inet_ntop(AF_INET6, &value.address, buffer->getElements(), buffer->getSize()); // MT-level is safe
+  // TAG: do not write directly to stream: use internal stream first
+  if (value.family == InetAddress::IP_VERSION_6) {
+    unsigned int type = value.getType();
+    if (type & InetAddress::IPV4_MAPPED) { // ::ffff:255.255.255.255
+      stream << MESSAGE("::ffff:"); // write IPv4 address after this
+    } else if (type & (InetAddress::IPV4_COMPATIBLE|InetAddress::LOOPBACK) == InetAddress::IPV4_COMPATIBLE) { // ::255.255.255.255
+      stream << MESSAGE("::"); // write IPv4 address after this
+    } else { // 1080::8:800:200c:417a
+      const unsigned short* addr = value.address.halfWords;
+
+      // find longest zero sequence
+      int firstZero = 8; // index 8 used later
+      int endZero = 8;
+      for (int i = 0; i < 8;) {
+        if (addr[i] == 0) {
+          int first = i;
+          for (int j = first; (j < 8) && (addr[j] == 0); ++j, ++i) { // find end of zeros
+          }
+          if ((i - first) > (endZero - firstZero)) {
+            firstZero = first;
+            endZero = i;
+          }
+        }
+        ++i; // also skip non-zero element after zero element
+      }
+
+      bool anythingWritten = false;
+      for (int i = 0; i < firstZero;) { // write values before zeros
+        stream << NOPREFIX << HEX << ByteOrder::fromBigEndian<unsigned short>(addr[i++]);
+        if (i < firstZero) {
+          stream << ':';
+        }
+      }
+      if (firstZero < endZero) { // are zeros present
+        stream << MESSAGE("::");
+        for (int i = endZero; i < 8; ++i) { // write values after zeros
+          if (i > endZero) {
+            stream << ':';
+          }
+          stream << NOPREFIX << HEX << ByteOrder::fromBigEndian<unsigned short>(addr[i]);
+        }
+      }
+      return stream; // do not write IPv4 address
+    }
   }
-  return stream << buffer->getElements();
-#else
-  // longest possible string is "255.255.255.255"
-  return stream << inet_ntoa(*(struct in_addr*)&value.address); // Uses static buffer
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+
+  const byte* addr = value.getIPv4Address();
+  return stream << DEC << addr[0] << '.' << DEC << addr[1] << '.' << DEC << addr[2] << '.' << DEC << addr[3];
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -18,7 +18,11 @@
 #include <base/Base.h>
 #include <base/Functor.h>
 
-#if defined(__win32__)
+#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #define _LARGEFILE64_SOURCE 1
+#endif
+
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else // __unix__
   #include <sys/types.h>
@@ -36,7 +40,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   inline Date FileTimeToDate(const FILETIME& time) {
     ASSERT(sizeof(FILETIME) == sizeof(long long));
     return Date((*(long long*)(&time) - 116444736000000000LL)/10000000); // TAG: 0x0000001c1a021060LL
@@ -46,7 +50,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 File::FileImpl::~FileImpl() throw(FileException) {
 // TAG: throw exception if region of file is still locked
   if (handle != -1) { // dont try to close if handle is invalidated
-  #if defined(__win32__)
+  #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     if (!CloseHandle((HANDLE)handle)) {
       throw FileException("Unable to close file");
     }
@@ -59,7 +63,7 @@ File::FileImpl::~FileImpl() throw(FileException) {
 }
 
 File::File(const String& path, Access access, unsigned int options) throw(FileNotFound) : fd(0) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD creationFlags;
   switch (options & (CREATE | TRUNCATE)) {
   case 0:
@@ -140,7 +144,7 @@ void File::close() throw(FileException) {
 }
 
 long long File::getSize() const throw(FileException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ULARGE_INTEGER size;
   size.LowPart = GetFileSize((HANDLE)fd->getHandle(), &size.HighPart);
   if ((size.LowPart == INVALID_FILE_SIZE) && (GetLastError() != NO_ERROR )) {
@@ -169,7 +173,7 @@ long long File::getSize() const throw(FileException) {
 }
 
 long long File::getPosition() const throw(FileException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER position;
   position.QuadPart = 0;
   position.LowPart = SetFilePointer((HANDLE)fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
@@ -190,7 +194,7 @@ long long File::getPosition() const throw(FileException) {
 }
 
 void File::setPosition(long long position, Whence whence) throw(FileException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   static DWORD relativeTo[] = {FILE_BEGIN, FILE_CURRENT, FILE_END};
   LARGE_INTEGER temp;
   temp.QuadPart = position;
@@ -214,7 +218,7 @@ void File::setPosition(long long position, Whence whence) throw(FileException) {
 
 void File::truncate(long long size) throw(FileException) {
   long long oldSize = File::getSize();
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   setPosition(size);
   if (!SetEndOfFile((HANDLE)fd->getHandle())) {
     throw FileException("Unable to truncate");
@@ -246,7 +250,7 @@ void File::truncate(long long size) throw(FileException) {
 }
 
 void File::flush() throw(FileException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!FlushFileBuffers((HANDLE)fd->getHandle())) {
     throw FileException("Unable to flush");
   }
@@ -258,7 +262,7 @@ void File::flush() throw(FileException) {
 }
 
 void File::lock(const FileRegion& region, bool exclusive = true) throw(FileException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region"));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
@@ -327,7 +331,7 @@ void File::lock(const FileRegion& region, bool exclusive = true) throw(FileExcep
 }
 
 bool File::tryLock(const FileRegion& region, bool exclusive = true) throw(FileException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region"));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
@@ -394,7 +398,7 @@ bool File::tryLock(const FileRegion& region, bool exclusive = true) throw(FileEx
 }
 
 void File::unlock(const FileRegion& region) throw(FileException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region"));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
@@ -458,81 +462,81 @@ void File::unlock(const FileRegion& region) throw(FileException) {
 }
 
 Date File::getLastModification() throw(FileException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME time;
   if (GetFileTime((HANDLE)fd->getHandle(), NULL, NULL, &time)) {
     throw FileException("Unable to get file time");
   }
   return FileTimeToDate(time);
-#else // __unix__
-#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  struct stat64 buffer;
-  if (fstat64(fd->getHandle(), &buffer)) {
-    throw FileException("Unable to get status");
-  }
-  return Date(buffer.st_mtime);
-#else
-  struct stat buffer;
-  if (fstat(fd->getHandle(), &buffer)) {
-    throw FileException("Unable to get status");
-  }
-  return Date(buffer.st_mtime);
-#endif // LFS
-#endif // __win32__
+#else // Unix
+  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+    struct stat64 buffer;
+    if (fstat64(fd->getHandle(), &buffer)) {
+      throw FileException("Unable to get status");
+    }
+    return Date(buffer.st_mtime);
+  #else
+    struct stat buffer;
+    if (fstat(fd->getHandle(), &buffer)) {
+      throw FileException("Unable to get status");
+    }
+    return Date(buffer.st_mtime);
+  #endif // LFS
+#endif
 }
 
 Date File::getLastAccess() throw(FileException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME time;
   if (GetFileTime((HANDLE)fd->getHandle(), NULL, &time, NULL)) {
     throw FileException("Unable to get file time");
   }
   return FileTimeToDate(time);
-#else // __unix__
-#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  struct stat64 buffer;
-  if (fstat64(fd->getHandle(), &buffer)) {
-    throw FileException("Unable to get status");
-  }
-  return Date(buffer.st_atime);
-#else
-  struct stat buffer;
-  if (fstat(fd->getHandle(), &buffer)) {
-    throw FileException("Unable to get status");
-  }
-  return Date(buffer.st_atime);
-#endif // LFS
-#endif // __win32__
+#else // Unix
+  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+    struct stat64 buffer;
+    if (fstat64(fd->getHandle(), &buffer)) {
+      throw FileException("Unable to get status");
+    }
+    return Date(buffer.st_atime);
+  #else
+    struct stat buffer;
+    if (fstat(fd->getHandle(), &buffer)) {
+      throw FileException("Unable to get status");
+    }
+    return Date(buffer.st_atime);
+  #endif // LFS
+#endif
 }
 
 Date File::getLastChange() throw(FileException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   FILETIME time;
   if (GetFileTime((HANDLE)fd->getHandle(), &time, NULL, NULL)) {
     throw FileException("Unable to get file time");
   }
   return FileTimeToDate(time);
-#else // __unix__
-#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  struct stat64 buffer;
-  if (fstat64(fd->getHandle(), &buffer)) {
-    throw FileException("Unable to get status");
-  }
-  return Date(buffer.st_ctime);
-#else
-  struct stat buffer;
-  if (fstat(fd->getHandle(), &buffer)) {
-    throw FileException("Unable to get status");
-  }
-  return Date(buffer.st_ctime);
-#endif // LFS
-#endif // __win32__
+#else // Unix
+  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+    struct stat64 buffer;
+    if (fstat64(fd->getHandle(), &buffer)) {
+      throw FileException("Unable to get status");
+    }
+    return Date(buffer.st_ctime);
+  #else
+    struct stat buffer;
+    if (fstat(fd->getHandle(), &buffer)) {
+      throw FileException("Unable to get status");
+    }
+    return Date(buffer.st_ctime);
+  #endif // LFS
+#endif
 }
 
 unsigned int File::read(char* buffer, unsigned int size, bool nonblocking) throw(FileException) {
   unsigned int bytesRead = 0;
   while (bytesRead < size) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
     BOOL success = ::ReadFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
     if (!success) { // has error occured
@@ -601,7 +605,7 @@ unsigned int File::read(char* buffer, unsigned int size, bool nonblocking) throw
 unsigned int File::write(const char* buffer, unsigned int size, bool nonblocking) throw(FileException) {
   unsigned int bytesWritten = 0;
   while (bytesWritten < size) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
     BOOL success = ::WriteFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
     if (!success) {

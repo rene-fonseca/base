@@ -17,9 +17,9 @@
 #include <base/io/EndOfFile.h>
 #include <base/Trace.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <winsock2.h>
-#else // __unix__
+#else // Unix
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <sys/socket.h>
@@ -32,14 +32,14 @@
   #include <string.h> // memset (required on solaris)
   #include <limits.h> // defines SSIZE_MAX
 
-  #if defined(__solaris__)
+  #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__SOLARIS)
     #define BSD_COMP 1 // request BSD flags - don't known if this is ok to do
   #endif
   #include <sys/ioctl.h> // defines FIONREAD
 #endif
 
 // do we need to repair bad header file
-#if defined(__solaris__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__SOLARIS) && defined(bind)
   #define _DK_SDU_MIP__BASE__SOCKET_BIND __xnet_bind
   #define _DK_SDU_MIP__BASE__SOCKET_CONNECT __xnet_connect
   #define _DK_SDU_MIP__BASE__SOCKET_RECVMSG __xnet_recvmsg
@@ -84,7 +84,7 @@
 #endif
 
 /*
-  __win32__ specific:
+  WIN32 specific:
     SOCKET is compatible with int (it is really an unsigned int).
     INVALID_SOCKET is equal to int(-1) (it is defined as unsigned int(~0)).
 
@@ -94,7 +94,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class SocketAddress {
+class SocketAddress { // Internet end point
 private:
 
   struct sockaddr sa;
@@ -103,21 +103,29 @@ public:
   inline SocketAddress() throw() {}
 
   /** Initializes socket address. */
-  SocketAddress(const InetAddress& addr, unsigned short port) throw() {
+  SocketAddress(const InetAddress& addr, unsigned short port) throw(NetworkException) {
     fill<char>((char*)&sa, sizeof(sa), 0);
   #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-    struct sockaddr_in6& sa6 = *(struct sockaddr_in6*)&sa;
+    if (addr.getFamily() == IP_VERSION_6) {
+      struct sockaddr_in6& sa6 = *(struct sockaddr_in6*)&sa;
     #if defined(SIN6_LEN)
-    sa6.sin6_len = sizeof(sa);
+      sa6.sin6_len = sizeof(sa);
     #endif // SIN6_LEN
-    sa6.sin6_family = AF_INET6;
-    sa6.sin6_port = htons(port);
-    copy<unsigned char>((unsigned char*)&sa6.sin6_addr, addr.getAddress(), sizeof(struct in6_addr));
-  #else
+      sa6.sin6_family = AF_INET6;
+      sa6.sin6_port = htons(port);
+      copy<byte>((byte*)&sa6.sin6_addr, addr.getAddress(), sizeof(struct in6_addr));
+    } else { // its an IPv4 address
+      struct sockaddr_in& sa4 = *(struct sockaddr_in*)&sa;
+      sa4.sin_family = AF_INET;
+      sa4.sin_port = htons(port);
+      copy<byte>((byte*)&(sa4.sin_addr), addr.getIPv4Address(), sizeof(struct in_addr));
+    }
+  #else // only IPv4 support
+    assert((addr.getFamily() == InetAddress::IP_VERSION_4) || addr.isIPv4Mapped(), NetworkException("Address not supported"));
     struct sockaddr_in& sa4 = *(struct sockaddr_in*)&sa;
     sa4.sin_family = AF_INET;
     sa4.sin_port = htons(port);
-    copy<unsigned char>((unsigned char*)&(sa4.sin_addr), addr.getAddress(), sizeof(struct in_addr));
+    copy<byte>((byte*)&(sa4.sin_addr), addr.getIPv4Address(), sizeof(struct in_addr));
   #endif // _DK_SDU_MIP__BASE__INET_IPV6
   }
 
@@ -135,17 +143,17 @@ public:
   #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
     switch (sa.sa_family) {
     case AF_INET:
-      return InetAddress((const char*)&(((const struct sockaddr_in*)&sa)->sin_addr), InetAddress::IPv4);
+      return InetAddress((const byte*)&(((const struct sockaddr_in*)&sa)->sin_addr), InetAddress::IP_VERSION_4);
     case AF_INET6:
-      return InetAddress((const char*)&(((const struct sockaddr_in6*)&sa)->sin6_addr), InetAddress::IPv6);
+      return InetAddress((const byte*)&(((const struct sockaddr_in6*)&sa)->sin6_addr), InetAddress::IP_VERSION_6);
     default:
-      return InetAddress(); // TAG: or should I throw an exception
+      return InetAddress(); // TAG: or should I throw an exception or just ignore
     }
   #else
     if (sa.sa_family == AF_INET) {
-      return InetAddress((const char*)&(((const struct sockaddr_in*)&sa)->sin_addr), InetAddress::IPv4);
+      return InetAddress((const byte*)&(((const struct sockaddr_in*)&sa)->sin_addr), InetAddress::IP_VERSION_4);
     } else {
-      return InetAddress(); // TAG: or should I throw an exception
+      return InetAddress(); // TAG: or should I throw an exception or just ignore
     }
   #endif
   }
@@ -203,11 +211,11 @@ Socket::SocketImpl::SocketImpl(int handle) throw() :  handle(handle), remotePort
 
 Socket::SocketImpl::~SocketImpl() throw(IOException) {
   if (handle != -1) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     if (::closesocket(getHandle())) {
       throw NetworkException("Unable to close socket");
     }
-#else // __unix__
+#else // Unix
     if (::close(getHandle())) {
       throw NetworkException("Unable to close socket");
     }
@@ -230,7 +238,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
   SocketAddress sa;
   socklen_t sl = sa.getSize();
   int handle = ::accept(socket.getHandle(), sa.getValue(), &sl);
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (handle == -1) {
     switch (WSAGetLastError()) {
     case WSAEWOULDBLOCK:
@@ -239,7 +247,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
       throw NetworkException("Unable to accept connection");
     }
   }
-#else // __unix__
+#else // Unix
   if (handle == -1) {
     switch (errno) {
     case EAGAIN: // EWOULDBLOCK
@@ -280,7 +288,7 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
   SynchronizeExclusively();
   SocketAddress sa(addr, port);
   if (::connect(getHandle(), sa.getValue(), sa.getSize())) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     switch (WSAGetLastError()) {
     case WSAECONNREFUSED:
       throw AccessDenied();
@@ -289,7 +297,7 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
     default:
       throw NetworkException("Unable to connect to socket");
     }
-#else // __unix__
+#else // Unix
     switch (errno) {
     case ECONNREFUSED:
       throw AccessDenied();
@@ -359,11 +367,11 @@ unsigned short Socket::getLocalPort() const throw() {
 
 void Socket::shutdownInputStream() throw(IOException) {
   SynchronizeShared();
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (::shutdown(getHandle(), SD_RECEIVE)) { // disallow further receives
     throw IOException("Unable to shutdown socket for reading");
   }
-#else // __unix__
+#else // Unix
   if (::shutdown(getHandle(), 0)) { // disallow further receives
     throw IOException("Unable to shutdown socket for reading");
   }
@@ -372,11 +380,11 @@ void Socket::shutdownInputStream() throw(IOException) {
 
 void Socket::shutdownOutputStream() throw(IOException) {
   SynchronizeShared();
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (::shutdown(getHandle(), SD_SEND)) { // disallow further sends
     throw IOException("Unable to shutdown socket for writing");
   }
-#else // __unix__
+#else // Unix
   if (::shutdown(getHandle(), 1)) { // disallow further sends
     throw IOException("Unable to shutdown socket for writing");
   }
@@ -470,12 +478,12 @@ void Socket::setSendBufferSize(int size) throw(IOException) {
 
 void Socket::setNonBlocking(bool value) throw(IOException) {
   SynchronizeShared();
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int buffer = value; // set to zero to disable nonblocking
   if (ioctlsocket(getHandle(), FIONBIO, (u_long*)&buffer)) {
     throw IOException("Unable to set blocking mode");
   }
-#else // __unix__
+#else // Unix
   int flags;
   if ((flags = fcntl(getHandle(), F_GETFL)) == -1) {
     throw IOException("Unable to get flags for socket");
@@ -500,13 +508,13 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
 
 unsigned int Socket::available() const throw(IOException) {
   SynchronizeShared();
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int result;
   if (ioctlsocket(getHandle(), FIONREAD, (u_long*)&result)) {
     throw IOException("Unable to determine the amount of data pending in the input buffer");
   }
   return result;
-#else // __unix__
+#else // Unix
   // this implementation is not very portable?
   int result;
   if (ioctl(getHandle(), FIONREAD, &result)) {
@@ -531,7 +539,7 @@ unsigned int Socket::read(char* buffer, unsigned int size, bool nonblocking) thr
   assert(!socket->atEnd(), EndOfFile());
   unsigned int bytesRead = 0;
   while (bytesRead < size) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     int result = ::recv(socket->getHandle(), buffer, minimum<int>(size, Int::MAXIMUM), 0);
     if (result < 0) { // has an error occured
       switch (WSAGetLastError()) {
@@ -543,7 +551,7 @@ unsigned int Socket::read(char* buffer, unsigned int size, bool nonblocking) thr
         throw IOException("Unable to read from socket");
       }
     }
-#else // __unix__
+#else // Unix
     unsigned int bytesToRead = (size <= SSIZE_MAX) ? size : SSIZE_MAX;
     int result = ::recv(socket->getHandle(), buffer, bytesToRead, 0);
     if (result < 0) { // has an error occured
@@ -573,7 +581,7 @@ unsigned int Socket::write(const char* buffer, unsigned int size, bool nonblocki
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesWritten < size) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     int result = ::send(socket->getHandle(), buffer, minimum<int>(size, Int::MAXIMUM), 0);
     if (result < 0) { // has an error occured
       switch (WSAGetLastError()) {
@@ -585,7 +593,7 @@ unsigned int Socket::write(const char* buffer, unsigned int size, bool nonblocki
         throw IOException("Unable to write to socket");
       }
     }
-#else // __unix__
+#else // Unix
     int result = ::send(socket->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX, 0);
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
@@ -605,31 +613,17 @@ unsigned int Socket::write(const char* buffer, unsigned int size, bool nonblocki
 
 unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(IOException) {
   int result = 0;
-
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  struct sockaddr_in6 sa;
-#else
-  struct sockaddr_in sa;
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
-  socklen_t sl = sizeof(sa);
-
-  if ((result = ::recvfrom(getHandle(),  buffer, size, 0, (struct sockaddr*)&sa, &sl)) == -1) {
+  SocketAddress sa;
+  socklen_t sl = sa.getSize();
+  if ((result = ::recvfrom(getHandle(),  buffer, size, 0, sa.getValue(), &sl)) == -1) {
     throw IOException("Unable to receive from");
   }
-
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  // check if really an IPv4 address
-  address.setAddress((char*)&(sa.sin6_addr), InetAddress::IPv6);
-  port = ntohs(sa.sin6_port);
-#else
-  address.setAddress((char*)&(sa.sin_addr), InetAddress::IPv4);
-  port = ntohs(sa.sin_port);
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
-
+  address = sa.getAddress();
+  port = sa.getPort();
   return result;
 }
 
-unsigned int Socket::sendTo(const char* buffer, unsigned int size, InetAddress& address, unsigned short port) throw(IOException) {
+unsigned int Socket::sendTo(const char* buffer, unsigned int size, const InetAddress& address, unsigned short port) throw(IOException) {
   SynchronizeShared();
   int result = 0;
   const SocketAddress sa(address, port);

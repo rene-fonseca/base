@@ -20,32 +20,46 @@
 #include <base/collection/List.h>
 #include <base/net/HostNotFound.h>
 #include <base/net/NetworkException.h>
+#include <base/Type.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This class represents an Internet Protocol (IP) address (support for both IPv4 and IPv6).
+  This class represents an Internet Protocol (IP) address (supports both IPv4
+  and IPv6 addresses). IPv6 addresses can be represented on platforms without
+  builtin IPv6 support. However, using an IPv6 address on platforms without
+  direct support requires implicit conversion to an IPv4 address. If such a
+  conversion isn't possible a NetworkException is thrown.
 
+  @short Internet Protocol address
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.1
 */
 
 class InetAddress : public virtual Object {
 public:
 
   /** Family of internet addresses. */
-  typedef enum {
-    IPv4, /**< Specifies Internet Protocol (IP) version 4. */
-    IPv6 /**< Specifies Internet Protocol (IP) version 6. */
-  } Family;
+  enum Family {
+    IP_VERSION_4, /**< Specifies Internet Protocol (IP) version 4. */
+    IP_VERSION_6 /**< Specifies Internet Protocol (IP) version 6. */
+  };
+
+  /** Type of address. */
+  enum Type {IPV4 = 1, IPV6 = 2, UNSPECIFIED = 4, LOOPBACK = 8, MULTICAST = 16, LINK_LOCAL = 32, SITE_LOCAL = 64, IPV4_MAPPED = 128, IPV4_COMPATIBLE = 256};
 private:
 
+  /** The family of the address. */
+  Family family;
   /** Internal structure holding the IP address in network byte order. */
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  struct {char buffer[16];} address; // enough for IPv6 and IPv4 addresses
-#else
-  struct {char buffer[4];} address; // enough for IPv4 addresses
-#endif
+  union Address {
+    unsigned int words[4]; // enough for IPv6 and IPv4 addresses
+    unsigned short halfWords[8];
+    byte octets[16];
+  } address;
+
+  /** Parses the specified string as an Internet address (both IPv4 and IPv6). */
+  bool parse(const String& addr) throw();
 public:
 
   /**
@@ -61,17 +75,17 @@ public:
   static List<InetAddress> getAddressesByName(const String& name) throw(HostNotFound);
 
   /**
-    Initializes the address as unspecified address (matches any address).
+    Initializes the address as unspecified IPv4 address (matches any address).
   */
   InetAddress() throw();
 
   /**
     Initializes the address as from the specified binary address.
 
-    @param addr The internet address in network byte order.
+    @param addr The Internet address in network byte order.
     @param family Specifies the family of the binary address (IPv4 or IPv6).
   */
-  InetAddress(const char* addr, Family family) throw(NetworkException);
+  InetAddress(const byte* addr, Family family) throw();
 
   /**
     Initializes the address from the specified string. Implicit initialization is allowed.
@@ -79,6 +93,14 @@ public:
     @param addr The internet address (e.g. '172.30.33.14' or '::ffff:172.30.33.14').
   */
   InetAddress(const String& addr) throw(InvalidFormat);
+
+  /**
+    Initializes the address from the specified string.
+
+    @param addr The internet address (e.g. '172.30.33.14' or '::ffff:172.30.33.14').
+    @param family Specifies the family to accept.
+  */
+  InetAddress(const String& addr, Family family) throw(InvalidFormat);
 
   /**
     Copy constructor.
@@ -91,15 +113,20 @@ public:
   InetAddress& operator=(const InetAddress& eq) throw();
 
   /**
+    Returns the family of the address.
+  */
+  inline Family getFamily() const throw() {return family;}
+
+  /**
     Returns the IP address in binary format in network byte order.
   */
-  const unsigned char* getAddress() const throw();
+  inline const byte* getAddress() const throw() {return address.octets;}
 
   /**
     Returns the IP address in binary format in network byte order (this is only
-    valid if either isV4Mapped() or isV4Compatible() returns true).
+    valid if either isIPv4Mapped() or isIPv4Compatible() returns true).
   */
-  const unsigned char* getIPv4Address() const throw();
+  inline const byte* getIPv4Address() const throw() {return &address.octets[12];}
 
   /**
     Returns the domain/host name associated with this IP address. Throws
@@ -143,25 +170,45 @@ public:
   bool isSiteLocal() const throw();
 
   /**
-    Returns true if the address is an IPv4-mapped IPv6 address
-    (e.g. '::ffff:127.0.0.1'). Returns false for IPv4 addresses.
+    Returns true if the address is an IPv4-mapped IPv6 address (e.g.
+    '::ffff:127.0.0.1'). Returns false if address is an IPv4 addresses or the
+    address is the unspecified address (i.e. ::).
   */
-  bool isV4Mapped() const throw();
+  bool isIPv4Mapped() const throw();
 
   /**
-    Returns true if this address is IPv4 compatible (e.g. '::127.0.0.1').
-    Returns true for IPv4 addresses.
+    Returns true if this address is an IPv4 compatible IPv6 address (e.g.
+    '::127.0.0.1') or if it is an IPv4 address. Returns false if the address is
+    the unspecified address (i.e. ::).
   */
-  bool isV4Compatible() const throw();
+  bool isIPv4Compatible() const throw();
 
   /**
-    Sets the address. Throws 'NetworkException' if the specified family is not
-    supported by the operating system.
+    Returns the type of the address.
+  */
+  unsigned int getType() const throw();
 
-    @param addr The internet address in network byte order.
+  /**
+    Converts an IPv4 address to an IPv4-mapped IPv6 address (IPv6 addresses are not modified).
+
+    @return Always returns true.
+  */
+  bool convertToIPv6() throw();
+
+  /**
+    Converts an IPv4-mapped IPv6 address to an IPv4 address (IPv4 addresses are not modified).
+
+    @return Returns true on success (fails if address isn't an IPv4-mapped IPv6 address or an IPv4 address).
+  */
+  bool convertToIPv4() throw();
+
+  /**
+    Sets the address.
+
+    @param addr The Internet address in network byte order.
     @param family Specifies the family of the binary address (IPv4 or IPv6).
   */
-  void setAddress(const char* addr, Family family) throw(NetworkException);
+  void setAddress(const byte* addr, Family family) throw();
 
   /**
     Writes a string representation of the address to a stream.

@@ -13,9 +13,9 @@
 
 #include <base/io/FileOutputStream.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // __unix
+#else // Unix
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

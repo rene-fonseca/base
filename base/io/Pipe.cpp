@@ -16,7 +16,7 @@
 #include <base/io/EndOfFile.h>
 #include <base/concurrency/Thread.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else // __unix__
   #include <sys/types.h>
@@ -33,7 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 Pipe::PipeImpl invalidPipe;
 
 Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   // create two anonymous pipes for duplex
 #else // __unix__
   int handles[2];
@@ -51,7 +51,7 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
 
 
 Pipe::PipeImpl::~PipeImpl() throw(PipeException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (getHandle() != -1) {
     if (::CloseHandle((HANDLE)getHandle())) {
       throw PipeException("Unable to close pipe");
@@ -77,7 +77,7 @@ void Pipe::close() throw(PipeException) {
 }
 
 unsigned int Pipe::getBufferSize() const throw() {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD result;
   GetNamedPipeInfo((HANDLE)fd->getHandle(), NULL, &result, NULL, NULL);
   return result;
@@ -91,7 +91,7 @@ bool Pipe::atEnd() const throw(PipeException) {
 }
 
 unsigned int Pipe::available() const throw(PipeException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD bytesAvailable;
   if (!::PeekNamedPipe((HANDLE)fd->getHandle(), NULL, 0, NULL, &bytesAvailable, NULL)) {
     throw PipeException("Unable to get available bytes");
@@ -125,7 +125,7 @@ unsigned int Pipe::skip(unsigned int count) throw(PipeException) {
 }
 
 void Pipe::flush() throw(PipeException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!FlushFileBuffers((HANDLE)fd->getHandle())) {
     throw PipeException("Unable to flush pipe");
   }
@@ -142,7 +142,7 @@ unsigned int Pipe::read(char* buffer, unsigned int size, bool nonblocking) throw
   assert(!end, EndOfFile());
   unsigned int bytesRead = 0;
   while (bytesRead < size) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
     BOOL success = ::ReadFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
     if (!success) { // has error occured
@@ -180,7 +180,7 @@ unsigned int Pipe::write(const char* buffer, unsigned int size, bool nonblocking
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesWritten < size) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
     BOOL success = ::WriteFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
     if (!success) {
@@ -205,7 +205,7 @@ unsigned int Pipe::write(const char* buffer, unsigned int size, bool nonblocking
 }
 
 void Pipe::wait() const throw(PipeException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: not implemented
 #else // __unix__
   fd_set rfds;
@@ -220,7 +220,7 @@ void Pipe::wait() const throw(PipeException) {
 }
 
 bool Pipe::wait(unsigned int timeout) const throw(PipeException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: not implemented
 #else // __unix__
   fd_set rfds;

@@ -109,9 +109,9 @@ public:
   */
   template<typename TYPE>
   inline static TYPE* tryResize(void* heap, unsigned int size) throw(MemoryException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     return static_cast<TYPE*>(HeapImpl::tryResize(heap, size * sizeof(TYPE)));
-#else // __unix__
+#else // Unix
     return 0; // not implemented
 #endif
   }

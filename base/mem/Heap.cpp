@@ -14,9 +14,9 @@
 #include <base/features.h>
 #include <base/mem/Heap.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // __unix__
+#else // Unix
   #include <stdlib.h>
 #endif
 
@@ -24,9 +24,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 void* HeapImpl::allocate(unsigned int size) throw(MemoryException) {
   void* result;
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   result = (void*)HeapAlloc(GetProcessHeap(), 0, size);
-#else // __unix__
+#else // Unix
   result = malloc(size);
 #endif
   if ((!result) && (size != 0)) { // was memory allocated
@@ -37,7 +37,7 @@ void* HeapImpl::allocate(unsigned int size) throw(MemoryException) {
 
 void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException) {
   void* result;
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   // is serialization enabled for the heap object returned by GetProcessHeap
   if (heap) {
     if (size) {
@@ -51,7 +51,7 @@ void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException) {
   } else {
     result = (void*)HeapAlloc(GetProcessHeap(), 0, size);
   }
-#else // __unix__
+#else // Unix
   result = realloc(heap, size);
 #endif
   if ((!result) && (size != 0)) { // was memory allocated
@@ -61,7 +61,7 @@ void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException) {
 }
 
 void* HeapImpl::tryResize(void* heap, unsigned int size) throw(MemoryException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (heap) {
     if (size) {
       return (void*)HeapReAlloc(GetProcessHeap(), HEAP_REALLOC_IN_PLACE_ONLY, heap, size);
@@ -74,17 +74,17 @@ void* HeapImpl::tryResize(void* heap, unsigned int size) throw(MemoryException) 
   } else {
     return 0;
   }
-#else // __unix__
+#else // Unix
   return 0;
 #endif
 }
 
 void HeapImpl::release(void* heap) throw(MemoryException) {
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!HeapFree(GetProcessHeap(), 0, heap)) {
     throw MemoryException("Unable to release heap");
   }
-#else // __unix__
+#else // Unix
   free(heap);
 #endif
 }

@@ -67,6 +67,14 @@ public:
   unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
 
   /**
+    Writes a single value multiple times to the stream.
+
+    @param value The value to be written.
+    @param count The number of bytes to be written.
+  */
+  void unfoldValue(char value, unsigned int count) throw(IOException);
+
+  /**
     Flushes the buffer and releases any resources used by the output stream.
   */
   ~BufferedOutputStream() throw(IOException);

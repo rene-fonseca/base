@@ -13,7 +13,7 @@
 
 #include <base/net/InetService.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <winsock.h>
 #else // __unix__
   #include <netdb.h>
@@ -24,13 +24,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 unsigned short InetService::getByName(const String& name, const String& protocol) throw() {
   struct servent* sp;
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   sp = getservbyname(name.getElements(), protocol.getElements()); // MT-safe
-#elif defined(__sgi__) || defined(__solaris__)
+#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__SOLARIS)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   sp = getservbyname_r(name.getElements(), protocol.getElements(), &result, buffer, sizeof(buffer));
-#elif defined(__linux__)
+#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   getservbyname_r(name.getElements(), protocol.getElements(), &result, buffer, sizeof(buffer), &sp);
@@ -43,13 +43,13 @@ unsigned short InetService::getByName(const String& name, const String& protocol
 
 String InetService::getByPort(unsigned short port, const String& protocol) throw() {
   struct servent* sp;
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   sp = getservbyport(htons(port), protocol.getElements()); // MT-safe
-#elif defined(__sgi__) || defined(__solaris__)
+#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__SOLARIS)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   sp = getservbyport_r(htons(port), protocol.getElements(), &result, buffer, sizeof(buffer));
-#elif defined(__linux__)
+#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   getservbyport_r(htons(port), protocol.getElements(), &result, buffer, sizeof(buffer), &sp);

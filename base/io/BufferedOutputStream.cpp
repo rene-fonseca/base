@@ -56,6 +56,23 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size, 
   return bytesWritten;
 }
 
+void BufferedOutputStream::unfoldValue(char value, unsigned int size) throw(IOException) {
+  while (true) {
+    unsigned int bytesAvailable = minimum(size, this->buffer.getSize() - writeHead);
+    fill(this->buffer.getElements() + writeHead, bytesAvailable, value);
+    size -= bytesAvailable;
+    writeHead += bytesAvailable;
+
+    if (size == 0) { // have we written all the bytes we were asked to write
+      break;
+    }
+
+    FilterOutputStream::write(this->buffer.getElements() + readHead, writeHead - readHead);
+    readHead = 0;
+    writeHead = 0;
+  }
+}
+
 BufferedOutputStream::~BufferedOutputStream() throw(IOException) {
   TRACE_MEMBER();
   flush();

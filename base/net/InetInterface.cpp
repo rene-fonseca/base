@@ -15,12 +15,12 @@
 #include <base/net/InetInterface.h>
 #include <base/concurrency/Thread.h>
 
-#if defined(__win32__)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 #elif defined(_DK_SDU_MIP__BASE__INET_IPV6)
   #include <sys/types.h>
   #include <sys/socket.h>
   #include <net/if.h>
-#else // __unix__
+#else // Unix
   #include <sys/types.h>
   #include <sys/socket.h>
   #include <net/if.h>
@@ -40,7 +40,7 @@ List<InetInterface> InetInterface::getInetInterfaces() throw(NetworkException) {
   interfaces.append(InetInterface(ni->if_index, ni->if_name));
   if_freenameindex(ni); // MT-safe
   return interfaces;
-#elif defined(__linux__)
+#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
   List<InetInterface> interfaces;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   try {

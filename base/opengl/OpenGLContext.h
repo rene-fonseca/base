@@ -11,17 +11,13 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_OPEN_GL__OPEN_GL_CONTEXT_H
-#define _DK_SDU_MIP__BASE_OPEN_GL__OPEN_GL_CONTEXT_H
+#ifndef _DK_SDU_MIP__BASE_OPENGL__OPEN_GL_CONTEXT_H
+#define _DK_SDU_MIP__BASE_OPENGL__OPEN_GL_CONTEXT_H
 
-#include <base/opengl/OpenGL.h>
+#include <base/opengl/OpenGLContextImpl.h>
 #include <base/ui/WindowImpl.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
-// TAG: put in primitives
-struct Empty {
-};
 
 /**
   OpenGL rendering context.
@@ -31,28 +27,20 @@ struct Empty {
   @version 1.0
 */
 
-class OpenGLContext : public WindowImpl {
+class OpenGLContext : public WindowImpl, public OpenGLContextImpl {
 private:
 
-  Empty prefixInitialization;
-  /** Version of the OpenGL window management (e.g. 0x010300). */
-  unsigned int version;
-  /** Opaque handle to OpenGL rendering context. */
-  void* renderingContext;
-  /** The number of overlay planes. */
-  unsigned int numberOfOverlayPlanes;
-  /** The number of underlay planes. */
-  unsigned int numberOfUnderlayPlanes;
-
+  nothing prefixInitialization;
+  
   /**
     Initializes the OpenGL context.
   */
-  Empty initialize() throw(UserInterfaceException);
+  nothing initialize() throw(UserInterfaceException);
   
   /**
     Releases the rendering context.
   */
-  void onDestruction() throw();
+  void destroy() throw();
 public:
 
   /** OpenGL implementation. */
@@ -80,121 +68,10 @@ public:
     DIRECT = UNDERLAY << 1 /**< Direct rendering support. */
   };
   
-  uint8 colorBits;
-  uint8 redBits;
-  uint8 redShift;
-  uint8 greenBits;
-  uint8 greenShift;
-  uint8 blueBits;
-  uint8 blueShift;
-  uint8 alphaBits;
-  uint8 alphaShift;
-  uint8 accumulatorBits;
-  uint8 accumulatorRedBits;
-  uint8 accumulatorGreenBits;
-  uint8 accumulatorBlueBits;
-  uint8 accumulatorAlphaBits;
-  uint8 depthBits;
-  uint8 stencilBits;
-  uint8 auxBuffers;
-  
   /**
     Initializes a new OpenGL context.
   */
   OpenGLContext(const Position& position, const Dimension& dimension, unsigned int flags) throw(OpenGLException, UserInterfaceException);
-
-  /**
-    Returns the vendor of the client.
-  */
-  String getGLClientVendor() const throw(UserInterfaceException);
-
-  /**
-    Returns the release of the client.
-  */
-  String getGLClientRelease() const throw(UserInterfaceException);
-
-  /**
-    Returns the client extensions.
-  */
-  String getGLClientExtensions() const throw(UserInterfaceException);
-
-  /**
-    Returns the vendor of the server.
-  */
-  String getGLServerVendor() const throw(UserInterfaceException);
-
-  /**
-    Returns the release of the server.
-  */
-  String getGLServerRelease() const throw(UserInterfaceException);
-
-  /**
-    Returns the server extensions.
-  */
-  String getGLServerExtensions() const throw(UserInterfaceException);
-  
-  /**
-    Returns the number of overlay planes.
-  */
-  inline unsigned int getNumberOfOverlayPlanes() const throw(OpenGLException) {
-    return numberOfOverlayPlanes;
-  }
-
-  /**
-    Returns the number of underlay planes.
-  */
-  inline unsigned int getNumberOfUnderlayPlanes() const throw(OpenGLException) {
-    return numberOfUnderlayPlanes;
-  }
-
-  inline bool isDoubleBuffered() const throw() {
-    return false; // TAG: fixme
-  }
-
-  inline bool isRGBA() const throw() {
-    return false; // TAG: fixme
-  }
-
-  // inline bool isHasAccumulatorBuffer() const throw();
-  // inline bool isHasDepthBuffer() const throw();
-  // inline bool isHasStencilBuffer() const throw();
-
-  /**
-    Returns true if context is a direct rendering context.
-  */
-  bool isDirect() const throw(OpenGLException);
-  
-  /**
-    Returns true if the executing thread has an associated OpenGL context.
-  */
-  bool hasCurrent() const throw(OpenGLException);
-  
-  /**
-    Returns true if the OpenGL context is the current context of the executing thread.
-  */
-  bool isCurrent() const throw(OpenGLException);
-  
-  /**
-    Selects this OpenGL context as the current context of the executing thread.
-  */
-  void makeCurrent() throw(OpenGLException);
-
-  /**
-    Deselects the OpenGL context of the executing thread.
-  */
-  void deselect() throw();
-
-  /**
-    Swaps all the buffers.
-  */
-  void swap() throw(OpenGLException);
-
-  /**
-    Swaps the specified layer.
-
-    @param plane The layer to swap.
-  */
-  void swap(int plane) throw(OutOfRange, OpenGLException);
   
   /**
     Invoked when the display should be updated.

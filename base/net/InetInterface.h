@@ -18,6 +18,9 @@
 #include <base/string/String.h>
 #include <base/collection/List.h>
 #include <base/net/NetworkException.h>
+#include <base/net/InetAddress.h>
+#include <base/communication/EUI64.h>
+#include <base/collection/HashTable.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -34,24 +37,76 @@ class InetInterface : public virtual Object {
 private:
 
   /** Specifies the index of the network interface. */
-  const unsigned int index;
+  unsigned int index;
   /** Specifies the name of the network interface. */
-  const String name;
+  String name;
+  /** Flags. */
+  unsigned int flags;
+  /** Address. */
+  InetAddress address;
+  /** Broadcast address. */
+  InetAddress broadcast;
+  /** Destination address. */
+  InetAddress destination;
+  /** Metric. */
+  unsigned int metric;
+  /** Ethernet address. */
+  EUI64 ethernet;
 public:
+  
+  enum Flag {
+    UP = 1,
+    LOOPBACK = 2,
+    POINT_TO_POINT = 4,
+    BROADCAST = 8,
+    MULTICAST = 16
+  };
 
+  /**
+    Returns the names and indices of the available interfaces.
+  */
+  static HashTable<String, unsigned int> getInterfaceNames() throw();
+  
   /**
     Returns all of the Internet Protocol network interfaces of the host.
   */
-  static List<InetInterface> getInetInterfaces() throw(NetworkException);
+  static List<InetInterface> getInterfaces() throw(NetworkException);
+  
+  /**
+    Returns the index of the specified interface.
+  */
+  static unsigned int getIndexByName(const String& name) throw(NetworkException);
+  
+  /**
+    Returns the index of the interface associated with the specified address.
+  */
+  static unsigned int getIndexByAddress(const InetAddress& address) throw(NetworkException);
+  
+  /**
+    Returns the name of the specified interface.
+  */
+  static String getName(unsigned int index) throw(NetworkException);
+  
+  /**
+    Returns the address of the specified interface.
+  */
+  static InetAddress getAddress(unsigned int index) throw(NetworkException);
+  
+  /**
+    Initializes interface.
+  */
+  InetInterface() throw();
 
   /**
-    Initializes the network interface .
-
-    @param index The index of the network interface.
-    @param name The name of the network interface.
+    Initializes interface by name.
   */
-  InetInterface(unsigned int index, const char* name);
-
+  InetInterface(const String& name) throw(NetworkException);  
+  
+  /**
+    Initializes interface by address.
+  */
+  InetInterface(const InetAddress& address) throw();
+  
   /**
     Copy constructor.
   */
@@ -60,12 +115,58 @@ public:
   /**
     Returns the index of the network interface.
   */
-  unsigned int getIndex() const throw();
-
+  inline unsigned int getIndex() const throw() {
+    return index;
+  }
+  
   /**
     Returns the name of the network interface.
   */
-  String getName() const throw();
+  inline String getName() const throw() {
+    return name;
+  }
+  
+  /**
+    Returns the flags.
+  */
+  inline unsigned int getFlags() const throw() {
+    return flags;
+  }
+  
+  /**
+    Returns the address.
+  */
+  inline InetAddress getAddress() const throw() {
+    return address;
+  }
+  
+  /**
+    Returns the broadcast address. Only valid if BROADCAST is set.
+  */
+  inline InetAddress getBroadcast() const throw() {
+    return broadcast;
+  }
+  
+  /**
+    Returns the destination address. Only valid if POINT_TO_POINT is set.
+  */
+  inline InetAddress getDestination() const throw() {
+    return destination;
+  }
+  
+  /**
+    Returns the ethernet address.
+  */
+  inline EUI64 getEthernetAddress() const throw() {
+    return ethernet;
+  }
+
+  /**
+    Returns the metric.
+  */
+  inline unsigned int getMetric() const throw() {
+    return metric;
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -13,7 +13,7 @@
 
 include $(top_srcdir)/common.am
 
-# the "platforms" directory must be built before all other source
+# the "platforms" directory must be built before all other sources
 SUBDIRS = docs platforms archive collection communication compression concurrency dl extension filesystem io iterator mathematics mem net rmi security sound string xml
 
 lib_LTLIBRARIES = libbase.la
@@ -30,6 +30,5 @@ libbase_la_LDFLAGS = -no-undefined -version-info 0:0:0 @LDFLAGS_BASE@
 libbase_la_DEPENDENCIES = archive/libarchive.la collection/libcollection.la communication/libcommunication.la compression/libcompression.la concurrency/libconcurrency.la filesystem/libfilesystem.la io/libio.la io/async/libaio.la iterator/libiterator.la mathematics/libmathematics.la mem/libmem.la net/libnet.la platforms/libplatform.la string/libstring.la dl/libdl.la xml/libxml.la security/libsecurity.la sound/libsound.la @DEPENDENCIES_BASE@
 
 # Windows version resource
-# TAG: move to platform specific directory
-winrcver.o: base.rc features.h
-	cat $< | windres --preprocessor "${CXXCPP} ${AM_CPPFLAGS} ${CPPFLAGS}" -o $@ --output-format coff
+win32rc.o: base.rc features.h
+	cat $< | ${WINDRES} --preprocessor "${CPP} ${AM_CPPFLAGS} ${CPPFLAGS}" -o $@ --output-format coff

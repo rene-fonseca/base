@@ -59,6 +59,15 @@ public:
   }
   
   /**
+    Initializes object by other object.
+  */
+  inline ValidifiedResult& operator=(const ValidifiedResult& eq) throw() {
+    value = eq.value;
+    valid = eq.valid;
+    return *this;
+  }
+  
+  /**
     Returns the value. Raises InvalidException if result is invalid.
   */
   inline TYPE getValue() const throw(InvalidException) {

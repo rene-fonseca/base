@@ -58,9 +58,12 @@ public:
 /** This macro generates a WideStringLiteral object from a string literal. */
 #define WIDEMESSAGE(msg) WideStringLiteral(sizeof(L ## msg)/sizeof(wchar_t) - 1, L ## msg)
 
-/**
-  Default wide character manipulators.
 
+
+/**
+  Default wide-character properties and manipulators.
+
+  @short Wide-character description.
   @author René Møller Fonseca
   @version 1.0
 */
@@ -103,11 +106,19 @@ public:
   static inline Character toUpper(Character character) throw() {return towupper(character);}
 };
 
-/**
-  String class. The first modifing operation on a string may force the internal
-  buffer to be duplicated. The implementation is currently NOT MT-safe.
 
-  @short Unicode string.
+
+/**
+  Wide-character string implementation. The first modifying operation on a
+  string may force the internal buffer to be duplicated. The implementation is
+  currently NOT MT-safe.
+
+  <pre>
+  WideString myString = WIDEMESSAGE("Hello, World!");
+  WideString myOtherString = myString;
+  </pre>
+
+  @short Wide-character string.
   @author René Møller Fonseca
   @version 1.0
 */
@@ -125,14 +136,17 @@ public:
   /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. Unresolved problem: size of int depends on architecture. */
   static const unsigned int MAXIMUM_LENGTH = ((INT_MAX/sizeof(Character) - 1)/GRANULARITY)*GRANULARITY;
 
+  /** The type of the modifying string iterator. */
   typedef ReferenceCountedCapacityAllocator<Character>::Iterator Iterator;
+  /** The type of the non-modifying string iterator. */
   typedef ReferenceCountedCapacityAllocator<Character>::ReadIterator ReadIterator;
+  /** The type of the modifying string enumerator. */
   typedef ReferenceCountedCapacityAllocator<Character>::Enumerator Enumerator;
+  /** The type of the non-modifying string enumerator. */
   typedef ReferenceCountedCapacityAllocator<Character>::ReadEnumerator ReadEnumerator;
 private:
 
-  /** Default wide string buffer used to avoid multiple allocations of empty string buffers. */
-//  static const ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<Character> > DEFAULT_BUFFER;
+  /** The default wide string. This is used to avoid multiple allocations of empty string buffers. */
   static const WideString DEFAULT_STRING;
 
   /**
@@ -152,14 +166,16 @@ private:
   };
 
   /**
-    Reference counted buffer holding NULL-terminated string. The array is
-    guarantied to be non-empty when the string has been initialized.
+    Reference counted buffer holding the character array (possible
+    NULL-terminated). The array is guarantied to be non-empty when the string
+    has been initialized.
   */
   ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<Character> > elements;
 protected:
 
   /**
-    Returns a modifiable buffer. Forces copy of internal buffer if shared by multiple strings.
+    Returns a modifiable buffer. Forces the internal buffer to be copied if
+    shared by multiple strings.
   */
   inline Character* getBuffer() throw(MemoryException) {
     elements.copyOnWrite();
@@ -174,14 +190,9 @@ protected:
   }
 
   /**
-    Sets the length of the string. Also terminates the string properly.
+    Sets the length of the string.
   */
   void setLength(unsigned int length) throw(WideStringException);
-
-  /**
-    Compare two null-terminated strings.
-  */
-  static int compareToIgnoreCase(const Character* left, const Character* right) throw();
 public:
 
   /**
@@ -192,7 +203,7 @@ public:
   /**
     Initializes a string with no characters in it, initial capacity and granularity of capacity.
 
-    @param capacity The initial capacity.
+    @param capacity The initial capacity of the internal buffer.
   */
   explicit WideString(unsigned int capacity) throw(MemoryException);
 
@@ -383,21 +394,21 @@ public:
 
     @param ch The character to be appended.
   */
-  inline WideString& append(Character ch) throw(MemoryException) {return insert(getLength(), ch);}
+  inline WideString& append(Character ch) throw(WideStringException, MemoryException) {return insert(getLength(), ch);}
 
   /**
     Appends the string to this string.
 
     @param str The string to be appended.
   */
-  inline WideString& append(const WideString& str) throw(MemoryException) {return insert(getLength(), str);}
+  inline WideString& append(const WideString& str) throw(WideStringException, MemoryException) {return insert(getLength(), str);}
 
   /**
     Appends the NULL-terminated string to this string.
 
     @param str The string to be appended.
   */
-  inline WideString& append(const Character* str) throw(MemoryException) {return insert(getLength(), str);}
+  inline WideString& append(const WideStringLiteral& str) throw(WideStringException, MemoryException) {return insert(getLength(), str);}
 
   /**
     Appends the NULL-terminated string to this string.
@@ -405,21 +416,21 @@ public:
     @param str The string to be appended.
     @param maximum The maximum length of the to be appended string.
   */
-  WideString& append(const Character* str, unsigned int maximum) throw(MemoryException);
+  WideString& append(const WideStringLiteral& str, unsigned int maximum) throw(WideStringException, MemoryException);
 
   /**
     Prepends the character to this string.
 
     @param ch The character to be prepended.
   */
-  inline WideString& prepend(Character ch) throw(MemoryException) {return insert(0, ch);}
+  inline WideString& prepend(Character ch) throw(WideStringException, MemoryException) {return insert(0, ch);}
 
   /**
     Prepends the string to this string.
 
     @param str The string to be prepended.
   */
-  inline WideString& prepend(const WideString& str) throw(MemoryException) {return insert(0, str);}
+  inline WideString& prepend(const WideString& str) throw(WideStringException, MemoryException) {return insert(0, str);}
 
   /**
     Inserts the character into this string.
@@ -429,7 +440,7 @@ public:
 
     @param ch The character to be inserted.
   */
-  WideString& insert(unsigned int index, Character ch) throw(MemoryException);
+  WideString& insert(unsigned int index, Character ch) throw(WideStringException, MemoryException);
 
   /**
     Inserts the string into this string.
@@ -439,7 +450,7 @@ public:
 
     @param str The string to be inserted.
   */
-  WideString& insert(unsigned int index, const WideString& str) throw(MemoryException);
+  WideString& insert(unsigned int index, const WideString& str) throw(WideStringException, MemoryException);
 
   /**
     Inserts NULL-terminated string into this string.
@@ -449,7 +460,7 @@ public:
 
     @param str The NULL-terminated string to be inserted.
   */
-  WideString& insert(unsigned int index, const Character* str) throw(MemoryException);
+  WideString& insert(unsigned int index, const WideStringLiteral& str) throw(WideStringException, MemoryException);
 
   /**
     Replaces the characters in a substring of this string with the characters
@@ -459,7 +470,7 @@ public:
     @param end The end of the substring.
     @param str The string to replace with.
   */
-  WideString& replace(unsigned int start, unsigned int end, const WideString& str) throw(MemoryException);
+  WideString& replace(unsigned int start, unsigned int end, const WideString& str) throw(WideStringException, MemoryException);
 
   /**
     Replaces all occurances of the specified substring with another string in
@@ -469,7 +480,7 @@ public:
     @param toStr The new string.
     @return The number of substrings that was replaced.
   */
-  unsigned int replaceAll(const WideString& fromStr, const WideString& toStr) throw(MemoryException);
+  unsigned int replaceAll(const WideString& fromStr, const WideString& toStr) throw(WideStringException, MemoryException);
 
   /**
     Returns a new string that contains a subsequence of characters currently
@@ -575,19 +586,31 @@ public:
   int compareToIgnoreCase(const Character* str) const throw();
 
   /**
-    Returns true if this string starts with prefix.
+    Returns true if this string starts with the specified prefix.
 
     @param prefix The string to compare start of this string with.
   */
   bool startsWith(const WideString& prefix) const throw();
+
+  /**
+    Returns true if this string starts with the specified prefix.
+
+    @param prefix The string to compare start of this string with.
+  */
   bool startsWith(const WideStringLiteral& prefix) const throw();
 
   /**
-    Returns true if this string ends with suffix.
+    Returns true if this string ends with the specified suffix.
 
     @param suffix The string to compare end of this string with.
   */
   bool endsWith(const WideString& suffix) const throw();
+
+  /**
+    Returns true if this string ends with the specified suffix.
+
+    @param suffix The string to compare end of this string with.
+  */
   bool endsWith(const WideStringLiteral& suffix) const throw();
 
   /**

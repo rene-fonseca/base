@@ -26,10 +26,7 @@ void WideString::setLength(unsigned int length) throw(WideStringException) {
   }
 }
 
-/* Default wide string buffer used to avoid multiple allocations of empty string buffers. */
 const WideString WideString::DEFAULT_STRING(WIDEMESSAGE(""));
-
-//const ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<WideString::Character> > WideString::DEFAULT_BUFFER = new ReferenceCountedCapacityAllocator<WideString::Character>(1);
 
 WideString::WideString() throw() : elements(DEFAULT_STRING.elements) {
 }
@@ -169,7 +166,7 @@ WideString& WideString::remove(unsigned int start, unsigned int end) throw(Memor
   return *this;
 }
 
-WideString& WideString::insert(unsigned int index, Character ch) throw(MemoryException) {
+WideString& WideString::insert(unsigned int index, Character ch) throw(WideStringException, MemoryException) {
   setLength(getLength() + 1);
   Character* buffer = getBuffer();
   if (index >= getLength()) {
@@ -183,7 +180,7 @@ WideString& WideString::insert(unsigned int index, Character ch) throw(MemoryExc
   return *this;
 }
 
-WideString& WideString::insert(unsigned int index, const WideString& str) throw(MemoryException) {
+WideString& WideString::insert(unsigned int index, const WideString& str) throw(WideStringException, MemoryException) {
 // problem if insert string into itself - copy.... -> move
   int length = getLength();
   int strlength = str.getLength();
@@ -200,43 +197,30 @@ WideString& WideString::insert(unsigned int index, const WideString& str) throw(
   return *this;
 }
 
-WideString& WideString::insert(unsigned int index, const Character* str) throw(MemoryException) {
-  if (str) {
-    int length = getLength();
-
-    const Character* terminator = find(str, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
-    assert(terminator, MemoryException()); // maximum length exceeded
-    int strlength = terminator - str;
-
-    setLength(length + strlength);
-    Character* buffer = getBuffer();
-    if (index >= length) {
-      // insert section at end of string
-      copy(buffer + length, str, strlength);
-    } else {
-      // insert section in middle or beginning of string
-      move(buffer + index + strlength, buffer + index, strlength);
-      copy(buffer + index, str, strlength);
-    }
-  }
-  return *this;
-}
-
-WideString& WideString::append(const Character* str, unsigned int maximum) throw(MemoryException) {
-  int strlength = 0;
-  if (str) { // is string proper
-    const Character* terminator = find(str, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
-    assert(terminator, MemoryException()); // maximum length exceeded
-    strlength = minimum(static_cast<unsigned int>(terminator - str), maximum);
-  }
+WideString& WideString::insert(unsigned int index, const WideStringLiteral& str) throw(WideStringException, MemoryException) {
   int length = getLength();
-  setLength(length + strlength);
+  setLength(length + str.getLength());
   Character* buffer = getBuffer();
-  copy(buffer + length, str, strlength);
+  if (index >= length) {
+    // insert section at end of string
+    copy<Character>(buffer + length, str, str.getLength());
+  } else {
+    // insert section in middle or beginning of string
+    move<Character>(buffer + index + str.getLength(), buffer + index, str.getLength());
+    copy<Character>(buffer + index, str, str.getLength());
+  }
   return *this;
 }
 
-WideString& WideString::replace(unsigned int start, unsigned int end, const WideString& str) throw(MemoryException) {
+WideString& WideString::append(const WideStringLiteral& str, unsigned int maximum) throw(WideStringException, MemoryException) {
+  int length = getLength();
+  setLength(length + str.getLength());
+  Character* buffer = getBuffer();
+  copy<Character>(buffer + length, str, str.getLength());
+  return *this;
+}
+
+WideString& WideString::replace(unsigned int start, unsigned int end, const WideString& str) throw(WideStringException, MemoryException) {
   // need better implementation
   if (start <= end) {
     ensureCapacity(getLength() - (end - start + 1) + str.getLength());
@@ -246,7 +230,7 @@ WideString& WideString::replace(unsigned int start, unsigned int end, const Wide
   return *this;
 }
 
-unsigned int WideString::replaceAll(const WideString& fromStr, const WideString& toStr) throw(MemoryException) {
+unsigned int WideString::replaceAll(const WideString& fromStr, const WideString& toStr) throw(WideStringException, MemoryException) {
   unsigned int count = 0;
   unsigned int start = 0;
   int found;
@@ -337,55 +321,28 @@ int WideString::compareTo(const Character* str) const throw() {
   return wcscmp(getElements(), str);
 }
 
-int WideString::compareToIgnoreCase(const Character* left, const Character* right) throw() {
-  while (*left && *right) { // continue until end of any string has been reached
-    if (*left != *right) { // not equal
-      int result = Traits::toLower(*left) - Traits::toLower(*right);
-      if (result != 0) { // not equal
-        return result;
-      }
-    }
-    ++left;
-    ++right;
-  }
-  // possible cases: only end of 'left' (less than), only end of 'right' (greater than), end of both (equal)
-  return (Traits::toLower(*left) - Traits::toLower(*right));
-}
-
 int WideString::compareToIgnoreCase(const WideString& str) const throw() {
-  return compareToIgnoreCase(getBuffer(), str.getBuffer());
+  return wcscasecmp(getElements(), str.getElements());
 }
 
 int WideString::compareToIgnoreCase(const Character* str) const throw() {
-  return compareToIgnoreCase(getBuffer(), str);
+  return wcscasecmp(getElements(), str);
 }
 
 bool WideString::startsWith(const WideString& prefix) const throw() {
-  if ((prefix.isEmpty()) || (prefix.getLength() > getLength())) { // 0 < prefix.getLength() <= getLength()
-    return false;
-  }
-  return wmemcmp(getBuffer(), prefix.getBuffer(), prefix.getLength()) == 0; // null-terminators not required
+  return !prefix.isEmpty() && (wcsncmp(getBuffer(), prefix.getBuffer(), prefix.getLength()) == 0); // null-terminators are not required
 }
 
 bool WideString::startsWith(const WideStringLiteral& prefix) const throw() {
-  if ((prefix.getLength() == 0) || (prefix.getLength() > getLength())) { // 0 < prefix.getLength() <= getLength()
-    return false;
-  }
-  return wmemcmp(getBuffer(), prefix, prefix.getLength()) == 0; // null-terminator not required
+  return (prefix.getLength() > 0) && (wcsncmp(getBuffer(), prefix, prefix.getLength()) == 0); // null-terminator is not required
 }
 
 bool WideString::endsWith(const WideString& suffix) const throw() {
-  if ((suffix.isEmpty()) || (suffix.getLength() > getLength())) { // 0 < suffix.getLength() <= getLength()
-    return false;
-  }
-  return wmemcmp(getBuffer() + getLength() - suffix.getLength(), suffix.getBuffer(), suffix.getLength()) == 0; // null-terminators not required
+  return !suffix.isEmpty() && (wcsncmp(getBuffer() + getLength() - suffix.getLength(), suffix.getBuffer(), suffix.getLength()) == 0); // null-terminators are not required
 }
 
 bool WideString::endsWith(const WideStringLiteral& suffix) const throw() {
-  if ((suffix.getLength() == 0) || (suffix.getLength() > getLength())) { // 0 < prefix.getLength() <= getLength()
-    return false;
-  }
-  return wmemcmp(getBuffer() + getLength() - suffix.getLength(), suffix, suffix.getLength()) == 0; // null-terminators not required
+  return (suffix.getLength() > 0) && (wcsncmp(getBuffer() + getLength() - suffix.getLength(), suffix, suffix.getLength()) == 0); // null-terminator is not required
 }
 
 int WideString::indexOf(Character ch, unsigned int start) const throw() {
@@ -393,10 +350,8 @@ int WideString::indexOf(Character ch, unsigned int start) const throw() {
     return -1; // not found
   }
 
-  const Character* buffer = getBuffer();
-  unsigned int count = getLength() - start;
-
-  const Character* result = find(buffer + start, count, ch);
+  const Character* buffer = getElements();
+  const Character* result = wcschr(buffer + start, ch);
   if (result) { // did we find the value
     return result - buffer; // return index
   } else {
@@ -405,16 +360,14 @@ int WideString::indexOf(Character ch, unsigned int start) const throw() {
 }
 
 int WideString::indexOf(const WideString& str, unsigned int start) const throw() {
-  int length = getLength();
-  int sublength = str.getLength();
-
-  if ((start >= length) || (sublength == 0) || (sublength > length)) {
+  if (start >= getLength()) {
     return -1; // not found
   }
 
-  wchar_t* result = wcsstr(getElements() + start, str.getElements());
+  const Character* buffer = getElements();
+  const Character* result = wcsstr(buffer + start, str.getElements());
   if (result) {
-    return result - getBuffer(); // TAG: bytes or character index???
+    return result - buffer;
   } else {
     return -1; // not found
   }

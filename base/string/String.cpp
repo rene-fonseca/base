@@ -336,17 +336,11 @@ int String::compareToIgnoreCase(const char* str) const throw() {
 }
 
 bool String::startsWith(const String& prefix) const throw() {
-  if ((prefix.isEmpty()) || (prefix.getLength() > getLength())) { // 0 < prefix.getLength() <= getLength()
-    return false;
-  }
-  return compare(getReadOnlyBuffer(), prefix.getReadOnlyBuffer(), prefix.getLength()) == 0;
+  return !prefix.isEmpty() && (compare(getReadOnlyBuffer(), prefix.getReadOnlyBuffer(), prefix.getLength()) == 0);
 }
 
 bool String::endsWith(const String& suffix) const throw() {
-  if ((suffix.isEmpty()) || (suffix.getLength() > getLength())) { // 0 < suffix.getLength() <= getLength()
-    return false;
-  }
-  return compare(getReadOnlyBuffer() + getLength() - suffix.getLength(), suffix.getReadOnlyBuffer(), suffix.getLength()) == 0;
+  return !suffix.isEmpty() && (compare(getReadOnlyBuffer() + getLength() - suffix.getLength(), suffix.getReadOnlyBuffer(), suffix.getLength()) == 0);
 }
 
 int String::indexOf(char ch, unsigned int start) const throw() {

@@ -194,6 +194,85 @@ const char* HTTPTraits::SHORT_MONTH[12] = {"Jan", "Feb", "Mar", "Apr", "May", "J
   };
 
 
+class PushInterface {
+public:
+
+  virtual bool pushBegin(long long totalSize) throw() = 0;
+  virtual void push(const char* buffer, unsigned int size) throw() = 0;
+  virtual void pushEnd() throw() = 0;
+};
+
+class PullInterface {
+public:
+
+  virtual long long pullBegin() const throw() = 0;
+  virtual unsigned int pull(char* buffer, unsigned int size) throw() = 0;
+};
+
+
+class PushToStandardOutput : public virtual Object, public PushInterface {
+public:
+
+  PushToStandardOutput() throw() {
+  }
+
+  bool pushBegin(long long totalSize) throw() {
+    return true;
+  }
+
+  void push(const char* buffer, unsigned int size) throw() {
+    for (unsigned int i = 0; i < size; ++i, ++buffer) {
+      char ch = *buffer;
+      if (ch == '\n') {
+        fout << EOL;
+      } else if (ASCIITraits::isGraph(ch)) {
+        fout << ch;
+      } else {
+        fout << ' ';
+      }
+    }
+  }
+
+  void pushEnd() throw() {
+    fout << ENDL;
+  }
+};
+
+
+class PushToFile : public virtual Object, public PushInterface {
+private:
+
+  File file;
+  Timer timer;
+  long long bytesWritten;
+  long long totalSize;
+public:
+
+  PushToFile(File f) throw() : file(f) {
+    bytesWritten = 0;
+  }
+
+  bool pushBegin(long long totalSize) throw() {
+    this->totalSize = totalSize;
+    timer.start();
+    return true;
+  }
+
+  void push(const char* buffer, unsigned int size) throw() {
+    unsigned int result = file.write(buffer, size);
+    ASSERT(result == size);
+    bytesWritten += size;
+    fout << "  bytes written=" << bytesWritten
+         << "  completed=" << FIXED << setWidth(10) << setPrecision(6) << static_cast<long double>(bytesWritten)/totalSize*100 << "%"
+         << "  time=" << FIXED << setWidth(10) << timer.getLiveMicroseconds()/1000000.
+         << "  rate=" << FIXED << setWidth(15) << setPrecision(6) << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds()) << "kbs\r" << FLUSH;
+  }
+
+  void pushEnd() throw() {
+    fout << ENDL;
+    file.close();
+  }
+};
 
 /**
   Hypertext Transfer Protocol (HTTP) client (uses a subset of RFC 2616).
@@ -249,6 +328,8 @@ private:
   unsigned int retryDelay;
   /** The number of retry attempts. */
   unsigned int retryAttempts;
+  /** Read buffer. */
+  Allocator<char> buffer;
 protected:
 
   void translateStatus(const String& value) throw(HTTPException) {
@@ -329,7 +410,7 @@ protected:
     return stream.getString();
   }
 
-  void getResponse() throw(HTTPException) {
+  void getResponse(PushInterface* push) throw(HTTPException) {
     FormatInputStream instream(controlConnection);
 
     int terminationCode = -1; // invalidate
@@ -376,8 +457,20 @@ protected:
       if (verbosity >= DEBUG) {
         fout << "Reading content: " << contentLength << " byte(s)" << ENDL;
       }
-      while (contentLength--) {
-        instream.getCharacter();
+
+      if (push) {
+        if (push->pushBegin(contentLength)) {
+          long long bytesRead = 0;
+          while (bytesRead < contentLength) {
+            unsigned int bytesToRead = minimum<long long>(buffer.getSize(), contentLength - bytesRead);
+            unsigned int result = instream.read(buffer.getElements(), bytesToRead);
+            bytesRead += result;
+            push->push(buffer.getElements(), result);
+          }
+          push->pushEnd();
+        }
+      } else {
+        instream.skip(contentLength);
       }
     }
   }
@@ -413,7 +506,8 @@ public:
     endPoint(ep),
     verbosity(v),
     retryDelay(DEFAULT_RETRY_DELAY),
-    retryAttempts(DEFAULT_RETRY_ATTEMPTS) {
+    retryAttempts(DEFAULT_RETRY_ATTEMPTS),
+    buffer(4096 * 4) {
   }
 
   unsigned int getRetryDelay() const throw() {
@@ -445,10 +539,10 @@ public:
     String request = makeRequest(OPTIONS, "*");
     FormatOutputStream outstream(controlConnection);
     outstream << request << FLUSH;
-    getResponse();
+    getResponse(0);
   }
 
-  void getResource(const String& resource) throw(HTTPException) {
+  void getResource(const String& resource, PushInterface* push) throw(HTTPException) {
     if (resource.isProper()) {
       String request = makeRequest(GET, resource);
       FormatOutputStream outstream(controlConnection);
@@ -458,7 +552,7 @@ public:
       FormatOutputStream outstream(controlConnection);
       outstream << request << FLUSH;
     }
-    getResponse();
+    getResponse(push);
   }
 
   ~HypertextTransferProtocolClient() {
@@ -472,14 +566,11 @@ public:
 
 
 
-void httpclient(const String& resource, const String& file) {
+void httpclient(const String& resource, const String& filename) {
   Url url(resource, false);
 
   if (url.getScheme().isEmpty()) {
     url.setScheme("http");
-  }
-  if (url.getPort().isEmpty()) {
-    url.setPort("80");
   }
 
   fout << "Individual parts of the specified url:" << EOL
@@ -487,7 +578,7 @@ void httpclient(const String& resource, const String& file) {
        << "  user: " << url.getUser() << EOL
        << "  password: " << url.getPassword() << EOL
        << "  host: " << url.getHost() << EOL
-       << "  port: " << url.getPort() << EOL
+       << "  port: " << (url.getPort().isProper() ? url.getPort() : String(MESSAGE("80"))) << EOL
        << "  path: " << url.getPath() << ENDL;
 
   if (url.getScheme() != "http") {
@@ -512,12 +603,19 @@ void httpclient(const String& resource, const String& file) {
     }
   }
 
-  InetEndPoint endPoint(address, url.getPort());
+  InetEndPoint endPoint(address, (url.getPort().isProper() ? url.getPort() : String(MESSAGE("80"))));
 
   HypertextTransferProtocolClient client(endPoint);
   client.connect();
   client.getOptions();
-  client.getResource(url.getUrl());
+
+  if (filename == "") {
+    PushToStandardOutput push;
+    client.getResource(url.getUrl(), &push);
+  } else {
+    PushToFile push(File(filename, File::WRITE, File::CREATE | File::TRUNCATE));
+    client.getResource(url.getUrl(), &push);
+  }
 }
 
 int main(int argc, const char* argv[], const char* envp[]) {
@@ -526,7 +624,7 @@ int main(int argc, const char* argv[], const char* envp[]) {
   Array<String> arguments = Application::getApplication()->getArguments();
 
   String url = "www.mip.sdu.dk/~fonseca/index.html"; // default url
-  String file = "httpoutput"; // default file
+  String file = ""; // default file
 
   switch (arguments.getSize()) {
   case 0:

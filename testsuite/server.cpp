@@ -17,7 +17,7 @@
 #include <base/net/InetService.h>
 #include <base/net/ServerSocket.h>
 #include <base/Integer.h>
-#include <base/Type.h>
+#include <base/TypeInfo.h>
 
 using namespace base;
 

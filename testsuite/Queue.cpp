@@ -13,7 +13,7 @@
 
 #include <base/collection/Queue.h>
 #include <base/string/FormatOutputStream.h>
-#include <base/Type.h>
+#include <base/TypeInfo.h>
 
 using namespace base;
 

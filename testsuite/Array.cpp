@@ -14,7 +14,7 @@
 #include <base/collection/Array.h>
 #include <base/collection/Functor.h>
 #include <base/Functor.h>
-#include <base/Type.h>
+#include <base/TypeInfo.h>
 
 using namespace base;
 

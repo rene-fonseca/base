@@ -19,7 +19,7 @@
 #include <base/net/InetService.h>
 #include <base/net/InetEndPoint.h>
 #include <base/concurrency/Thread.h>
-#include <base/Type.h>
+#include <base/TypeInfo.h>
 
 using namespace base;
 

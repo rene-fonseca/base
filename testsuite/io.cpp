@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/Application.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
 #include <base/string/String.h>
@@ -19,11 +20,15 @@
 #include <base/collection/Map.h>
 #include <base/Date.h>
 #include <base/net/Url.h>
+#include <base/net/InetAddress.h>
+#include <base/Functor.h>
+#include <base/ByteOrder.h>
+#include <math.h>
 
 using namespace base;
 
 void test() {
-  fout << "Testing Streaming..." << ENDL;
+  fout << "Testing FormatOutputStream..." << ENDL;
 
   fout << "Writing built-in types to fout" << ENDL;
   fout << "short (-1234): " << short(-1234) << ENDL;
@@ -61,17 +66,36 @@ void test() {
   fout << "Map<int, int>: "<< mss << ENDL;
 
   fout << "Url: " << Url("http://fonseca:password@www.mip.sdu.dk:80/~fonseca/base/", false) << ENDL;
+
+  fout << "127.0.0.1 - " << InetAddress("127.0.0.1", InetAddress::IP_VERSION_4) << ENDL;
+  fout << ":: - " << InetAddress("::") << ENDL;
+  fout << "::1 - " << InetAddress("::1") << ENDL;
+  fout << "1080::8:800:200c:417a - " << InetAddress("1080::8:800:200c:417a") << ENDL;
+  fout << "ffff::127.0.0.1 - " << InetAddress("ffff::127.0.0.1", InetAddress::IP_VERSION_6) << ENDL;
+  fout << "::ffff:127.0.0.1 - " << InetAddress("::ffff:127.0.0.1") << ENDL;
+
+  fout << FIXED << setPrecision(24) << 0.30102999566398119521373889472449L << ' '
+       << FIXED << 1.0 << ' '
+       << FIXED << 10.5 << ' '
+       << FIXED << 149.9 << ENDL;
+
+  for (int i = -12; i < 22; ++i) {
+    long double temp = 0.30102999566398119521373889472449L * i * i * i * exp(i * log(10.0L));
+    fout << setWidth(30) << SCIENTIFIC << NECESSARY << temp << " "
+         << setWidth(10) << SCIENTIFIC << setPrecision(0) << temp << " "
+         << setWidth(20) << ENGINEERING << setRadixPosition(5) << setPrecision(6) << temp << " "
+         << setWidth(30) << FIXED << GROUPING << setRadixPosition(20) << setPrecision(2) << temp << ENDL;
+  }
 }
 
-int main() {
+int main(int argc, const char* argv[], const char* envp[]) {
+  Application app("io", argc, argv, envp);
   try {
     test();
   } catch(Exception& e) {
-    ferr << "Exception: " << e.getMessage() << ENDL;
-    return 1;
+    return Application::getApplication()->exceptionHandler(e);
   } catch(...) {
-    ferr << "Unknown exception" << ENDL;
-    return 1;
+    return Application::getApplication()->exceptionHandler();
   }
-  return 0;
+  return Application::EXIT_CODE_NORMAL;
 }

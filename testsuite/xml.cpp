@@ -14,7 +14,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/io/File.h>
 #include <base/xml/XMLParser.h>
-#include <base/Type.h>
+#include <base/TypeInfo.h>
 #include <base/collection/Stack.h>
 #include <base/collection/Array.h>
 

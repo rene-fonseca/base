@@ -1282,23 +1282,103 @@ public:
     Returns the inverse hyperbolic cosecant of the value (do not invoke for 0).
   */
   static inline float acosech(float value) throw() {
-    return Math::ln((1 + Math::sqrt(1 + value * value))/((value >= 0) ? value : -value));
+    return Math::ln(
+      (1 + Math::sqrt(1 + value * value))/((value >= 0) ? value : -value)
+    );
   }
   
   /**
     Returns the inverse hyperbolic cosecant of the value (do not invoke for 0).
   */
   static inline double acosech(double value) throw() {
-    return Math::ln((1 + Math::sqrt(1 + value * value))/((value >= 0) ? value : -value));
+    return Math::ln(
+      (1 + Math::sqrt(1 + value * value))/((value >= 0) ? value : -value)
+    );
   }
   
   /**
     Returns the inverse hyperbolic cosecant of the value (do not invoke for 0).
   */
   static inline long double acosech(long double value) throw() {
-    return Math::ln((1 + Math::sqrt(1 + value * value))/((value >= 0) ? value : -value));
+    return Math::ln(
+      (1 + Math::sqrt(1 + value * value))/((value >= 0) ? value : -value)
+    );
   }
 
+
+
+  /**
+    Returns the sinc (with normalization PI) of the value.
+  */
+  static inline float sinc(float value) throw() {
+    return (value == 0) ? 1 : Math::sin(value)/value;
+  }
+  
+  /**
+    Returns the sinc (with normalization PI) of the value.
+  */
+  static inline double sinc(double value) throw() {
+    return (value == 0) ? 1 : Math::sin(value)/value;
+  }
+  
+  /**
+    Returns the sinc (with normalization PI) of the value.
+  */
+  static inline long double sinc(long double value) throw() {
+    return (value == 0) ? 1 : Math::sin(value)/value;
+  }
+
+  /**
+    Returns the sinc (with normalization 1) of the value.
+  */
+  static inline float sincPi(float value) throw() {
+    return (value == 0) ? 1 :
+      Math::sin(constant::PI * value)/(constant::PI * value);
+  }
+  
+  /**
+    Returns the sinc (with normalization 1) of the value.
+  */
+  static inline double sincPi(double value) throw() {
+    return (value == 0) ? 1 :
+      Math::sin(constant::PI * value)/(constant::PI * value);
+  }
+  
+  /**
+    Returns the sinc (with normalization 1) of the value.
+  */
+  static inline long double sincPi(long double value) throw() {
+    return (value == 0) ? 1 :
+      Math::sin(constant::PI * value)/(constant::PI * value);
+  }
+  
+  /**
+    Returns the tanc of the value.
+  */
+  static inline float tanc(float value) throw() {
+    return (value == 0) ? 1 : Math::tan(value)/value;
+  }
+  
+  /**
+    Returns the tanc of the value.
+  */
+  static inline double tanc(double value) throw() {
+    return (value == 0) ? 1 : Math::tan(value)/value;
+  }
+  
+  /**
+    Returns the tanc of the value.
+  */
+  static inline long double tanc(long double value) throw() {
+    return (value == 0) ? 1 : Math::tan(value)/value;
+  }
+
+  /**
+    Returns the natural logarithm of the gamma of the specified value (i.e.
+    ln(gamma(x))) where gamma is defined as (x - 1)!.
+  */
+  static double lngamma(double value) throw();
+  
   
   
   /**
@@ -1308,7 +1388,7 @@ public:
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2; i > 0; --i) {
-      remainder =  (remainder << 2) | (value >> (sizeof(unsigned int) * 8 - 2));
+      remainder = (remainder << 2) | (value >> (sizeof(unsigned int) * 8 - 2));
       value <<= 2;
       accumulator <<= 1;
       unsigned int e = accumulator << 1;
@@ -1328,7 +1408,7 @@ public:
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2 + 8; i > 0; --i) {
-      remainder =  (remainder << 2) | (value >> (sizeof(unsigned int) * 8 - 2));
+      remainder = (remainder << 2) | (value >> (sizeof(unsigned int) * 8 - 2));
       value <<= 2;
       accumulator <<= 1;
       unsigned int e = accumulator << 1;
@@ -1348,7 +1428,7 @@ public:
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2 + 16; i > 0; --i) {
-      remainder =  (remainder << 2) | (value >> (sizeof(unsigned int) * 8 - 2));
+      remainder = (remainder << 2) | (value >> (sizeof(unsigned int) * 8 - 2));
       value <<= 2;
       accumulator <<= 1;
       unsigned int e = accumulator << 1;
@@ -1368,7 +1448,7 @@ public:
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2 + 8; i > 0; --i) {
-      remainder =  (remainder << 2) | (value >> (sizeof(unsigned int) * 8 - 2));
+      remainder = (remainder << 2) | (value >> (sizeof(unsigned int) * 8 - 2));
       value <<= 2;
       accumulator <<= 1;
       unsigned int e = accumulator << 1;
@@ -1388,7 +1468,8 @@ public:
     Returns true if the specified integer is a power of 2.
   */
   static inline bool isPowerOf2(unsigned char value) throw() {
-    // powers of 2 for 4 bit nibble: 1, 2, 4, and 8 => 0b0000000100010110 => 0x0116
+    // powers of 2 for 4 bit nibble
+    // 1, 2, 4, and 8 => 0b0000000100010110 => 0x0116
     const unsigned int IS_POWER_OF_2 = 0x0116;
     return (((value & 0xf0) == 0) && (IS_POWER_OF_2 & (1 << value))) ||
       (((value & 0x0f) == 0) && (IS_POWER_OF_2 & (1 << (value >> 4))));
@@ -1425,8 +1506,8 @@ public:
   }
 
   /**
-    Returns the base-2 logarithm of the specified integer. The result is rounded
-    down.
+    Returns the base-2 logarithm of the specified integer. The result is
+    rounded down.
 
     @return 0 if value is 0.
   */
@@ -1442,8 +1523,8 @@ public:
   }
   
   /**
-    Returns the base-2 logarithm of the specified integer. The result is rounded
-    down.
+    Returns the base-2 logarithm of the specified integer. The result is
+    rounded down.
     
     @return 0 if value is 0.
   */
@@ -1489,21 +1570,30 @@ public:
     Returns the bit reversal of the specified 16 bit unsigned integer.
   */
   static inline uint16 getBitReversal(uint16 value) throw() {
-    return merge(getBitReversal(getHighWordOf16(value)), getBitReversal(getLowWordOf16(value)));
+    return merge(
+      getBitReversal(getHighWordOf16(value)),
+      getBitReversal(getLowWordOf16(value))
+    );
   }
   
   /**
     Returns the bit reversal of the specified 32 bit unsigned integer.
   */
   static inline uint32 getBitReversal(uint32 value) throw() {
-    return merge(getBitReversal(getHighWordOf32(value)), getBitReversal(getLowWordOf32(value)));
+    return merge(
+      getBitReversal(getHighWordOf32(value)),
+      getBitReversal(getLowWordOf32(value))
+    );
   }
 
   /**
     Returns the bit reversal of the specified 64 bit unsigned integer.
   */
   static inline uint64 getBitReversal(uint64 value) throw() {
-    return merge(getBitReversal(getHighWordOf64(value)), getBitReversal(getLowWordOf64(value)));
+    return merge(
+      getBitReversal(getHighWordOf64(value)),
+      getBitReversal(getLowWordOf64(value))
+    );
   }
 
   /**
@@ -1512,7 +1602,8 @@ public:
     @param value The value to be rotated.
     @param count The number of bit to rotate. The default is 1.
   */
-  static inline unsigned int ror(unsigned int value, unsigned int count = 1) throw() {
+  static inline unsigned int ror(
+    unsigned int value, unsigned int count = 1) throw() {
     count &= sizeof(unsigned int) * 8 - 1;
     return (value >> count) | (value << (sizeof(unsigned int) * 8 - count));
   }
@@ -1523,9 +1614,34 @@ public:
     @param value The value to be rotated.
     @param count The number of bit to rotate. The default is 1.
   */
-  static inline unsigned int rol(unsigned int value, unsigned int count = 1) throw() {
+  static inline unsigned int rol(
+    unsigned int value, unsigned int count = 1) throw() {
     count &= sizeof(unsigned int) * 8 - 1;
     return (value << count) | (value >> (sizeof(unsigned int) * 8 - count));
+  }
+
+  /**
+    Returns the greatest common divisor.
+  */
+  static int gcd(int m, int n) throw();
+  
+  /**
+    Returns the greatest common divisor.
+  */
+  static unsigned int gcd(unsigned int n, unsigned int m) throw();
+
+  /**
+    Returns the least common multiple.
+  */
+  static inline int lcm(int m, int n) throw() {
+    return m * (n/gcd(m, n));
+  }
+  
+  /**
+    Returns the least common multiple.
+  */
+  static inline unsigned int lcm(unsigned int n, unsigned int m) throw() {
+    return m * (n/gcd(m, n));
   }
 };
 

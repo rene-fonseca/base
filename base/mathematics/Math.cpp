@@ -50,4 +50,71 @@ const uint8 Math::BIT_REVERSAL[] = {
   0x1f, 0x9f, 0x5f, 0xdf, 0x3f, 0xbf, 0x7f, 0xff
 };
 
+double Math::lngamma(double value) throw() {
+  // TAG: need better approximation
+  // B_2n/(2n * (2n-1) x^(2n-1))
+  double coefficients[] = {
+    1./6 * 1./2,
+    -1./30 * 1./12,
+    1./42 * 1./30,
+    -1./30 * 1./56,
+    5./66 * 1./90,
+    -691./2730 * 1./132,
+    7./6 * 1./182
+  };
+  
+  // 0.5 * Math::ln(2 * PI)
+  const double LN_2_PI_OVER_2 = 0.9189385332046727417803297364056176398613974736377834128171515404827656959272603976947432986359541976;
+  double result = (value - 0.5) * Math::ln(value) - value + LN_2_PI_OVER_2;
+
+  double factor = 1/value;
+  double square = factor * factor;
+  for (unsigned int i = 0; i <= getArraySize(coefficients); i++) {
+    result += coefficients[i] * factor;
+    factor *= square;
+  }
+  return result;
+}
+
+unsigned int Math::gcd(unsigned int m, unsigned int n) throw() {
+  unsigned int M = (m > n) ? m : n;
+  unsigned int N = (m > n) ? n : m;
+  if (N == 0) {
+    return 1;
+  }
+  while (true) {
+    unsigned int rest = M%N;
+    if (rest == 0) {
+      break;
+    }
+    M = N;
+    N = rest;
+  }
+  return N;
+}
+
+int Math::gcd(int m, int n) throw() {
+  bool negative = (m < 0) && (n < 0);
+  if (m < 0) {
+    m = -m;
+  }
+  if (n < 0) {
+    n = -n;
+  }
+  int M = (m > n) ? m : n;
+  int N = (m > n) ? n : m;
+  if (N == 0) {
+    return 1;
+  }
+  while (true) {
+    unsigned int rest = M%N;
+    if (rest == 0) {
+      break;
+    }
+    M = N;
+    N = rest;
+  }
+  return negative ? -N : N;
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

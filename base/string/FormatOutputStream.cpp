@@ -932,7 +932,7 @@ FormatOutputStream& FormatOutputStream::operator<<(
     }
   case FormatOutputStream::Symbols::DECIMAL:
     {
-      unsigned int temp = (value >= 0) ? value : -value;
+      unsigned long long temp = (value >= 0) ? value : -value;
       do {
         *dest = ASCIITraits::valueToDigit(temp % 10); // get digit
         temp = temp/10;
@@ -1576,7 +1576,7 @@ FormatOutputStream& FormatOutputStream::operator<<(
   const Exception& e) throw(IOException) {
   StringOutputStream s;
   s << "Exception '"
-         << TypeInfo::getTypename(e) << "' was raised";
+    << TypeInfo::getTypename(e) << "' was raised";
   if (e.getType().isInitialized()) {
     s << " by '" << TypeInfo::getTypename(e.getType()) << '\'';
   }

@@ -93,7 +93,13 @@ Group::Group(const String& name) throw(GroupException) {
     Allocator<char>* buffer = Thread::getLocalStorage();
     struct group grp;
     struct group* entry;
-    int result = ::getgrnam_r(name.getElements(), &grp, buffer->getElements(), buffer->getSize(), &entry);
+    int result = ::getgrnam_r(
+      name.getElements(),
+      &grp,
+      buffer->getElements(),
+      buffer->getSize(),
+      &entry
+    );
     assert(result == 0, GroupException(this));
     integralId = Cast::container<unsigned long>(entry->gr_gid);
   #else
@@ -135,14 +141,17 @@ String Group::getName() const throw(GroupException) {
   DWORD nameSize = sizeof(name);
   char domainName[DNLEN+1]; // TAG: what is the maximum size
   DWORD domainNameSize = sizeof(domainName);
-  assert(::LookupAccountSid(0,
-                            (PSID)id->getElements(),
-                            name,
-                            &nameSize,
-                            domainName,
-                            &domainNameSize,
-                            &sidType) != 0,
-         GroupException("Unable to lookup name", this)
+  assert(
+    ::LookupAccountSid(
+      0,
+      (PSID)id->getElements(),
+      name,
+      &nameSize,
+      domainName,
+      &domainNameSize,
+      &sidType
+    ) != 0,
+    GroupException("Unable to lookup name", this)
   );
   if (domainName[0] != 0) {
     return String(domainName) + MESSAGE("\\") + String(name);
@@ -195,16 +204,20 @@ Array<String> Group::getMembers() const throw(GroupException) {
   GROUP_USERS_INFO_0* buffer = 0;
   DWORD numberOfEntries = 0;
   DWORD totalEntries = 0;
-  NET_API_STATUS status = ::NetGroupGetUsers(0, // use local machine
-                                             name,
-                                             0,
-                                             (LPBYTE*)&buffer,
-                                             MAX_PREFERRED_LENGTH,
-                                             &numberOfEntries,
-                                             &totalEntries,
-                                             0
+  NET_API_STATUS status = ::NetGroupGetUsers(
+    0, // use local machine
+    name,
+    0,
+    (LPBYTE*)&buffer,
+    MAX_PREFERRED_LENGTH,
+    &numberOfEntries,
+    &totalEntries,
+    0
   );
-  assert((status == NERR_Success) || (status == ERROR_MORE_DATA), GroupException("Unable to get members", this));
+  assert(
+    (status == NERR_Success) || (status == ERROR_MORE_DATA),
+    GroupException("Unable to get members", this)
+  );
   if (buffer != 0) {
     const GROUP_USERS_INFO_0* p = buffer;
     const GROUP_USERS_INFO_0* end = p + numberOfEntries;
@@ -242,14 +255,15 @@ Array<String> Group::getMembers() const throw(GroupException) {
     Array<String> members;
     char** memberName = entry->gr_mem;
     while (memberName) {
-      members.append(*memberName++);
+      members.append(NativeString(*memberName++));
     }
     return members;
   #endif
 #endif // flavor
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Group& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Group& value) throw(IOException) {
   if (!value.isValid()) {
     return stream << MESSAGE("<unknown>");
   }
@@ -268,12 +282,18 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Group& value) t
       (static_cast<unsigned int>(identifier->Value[3]) << 16) +
       (static_cast<unsigned int>(identifier->Value[2]) << 24);
   } else {
-    s << HEX << ZEROPAD << PREFIX << static_cast<unsigned int>(identifier->Value[0])
-      << HEX << ZEROPAD << NOPREFIX << static_cast<unsigned int>(identifier->Value[1])
-      << HEX << ZEROPAD << NOPREFIX << static_cast<unsigned int>(identifier->Value[2])
-      << HEX << ZEROPAD << NOPREFIX << static_cast<unsigned int>(identifier->Value[3])
-      << HEX << ZEROPAD << NOPREFIX << static_cast<unsigned int>(identifier->Value[4])
-      << HEX << ZEROPAD << NOPREFIX << static_cast<unsigned int>(identifier->Value[5]);
+    s << HEX << ZEROPAD << PREFIX
+      << static_cast<unsigned int>(identifier->Value[0])
+      << HEX << ZEROPAD << NOPREFIX
+      << static_cast<unsigned int>(identifier->Value[1])
+      << HEX << ZEROPAD << NOPREFIX
+      << static_cast<unsigned int>(identifier->Value[2])
+      << HEX << ZEROPAD << NOPREFIX
+      << static_cast<unsigned int>(identifier->Value[3])
+      << HEX << ZEROPAD << NOPREFIX
+      << static_cast<unsigned int>(identifier->Value[4])
+      << HEX << ZEROPAD << NOPREFIX
+      << static_cast<unsigned int>(identifier->Value[5]);
   }
   
   // write subauthorities

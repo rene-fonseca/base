@@ -15,15 +15,18 @@
 #define _DK_SDU_MIP__BASE_COMMUNICATION__IEEE_1394_H
 
 #include <base/communication/CommunicationsPort.h>
+#include <base/communication/IEEE1394Exception.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/mem/Allocator.h>
+#include <base/collection/Array.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  IEEE 1394 (FireWire) support.
-
-  @short IEEE 1394 (FireWire)
+  IEEE-1394 (also known as FireWire (Apple Computer) and iLINK (Sony Corp.))
+  support. See 1394 Trade Association (http://www.1394ta.org).
+  
+  @short IEEE-1394 (FireWire)
   @ingroup communications
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -31,23 +34,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class IEEE1394 : public CommunicationsPort {
 public:
-  
-  /**
-    Exception raised by the IEEE 1394 classes.
-
-    @short Exception raised by IEEE 1394 classes.
-    @ingroup exceptions communications
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
-  */
-  class IEEE1394Exception : public CommunicationsException {
-  public:
-    
-    inline IEEE1394Exception() throw() {}
-    inline IEEE1394Exception(const char* message) throw() : CommunicationsException(message) {}
-    inline IEEE1394Exception(Type type) throw() : CommunicationsException(type) {}
-    inline IEEE1394Exception(const char* message, Type type) throw() : CommunicationsException(message, type) {}
-  };
 
   /** Broadcast id. */
   static const unsigned int BROADCAST = 63;
@@ -94,6 +80,111 @@ public:
       return reinterpret_cast<const unsigned char*>(&id);
     }
   };
+
+
+
+  /**
+    Returns the adapters available.
+  */
+  virtual Array<GloballyUniqueIdentifier> getAdapters() throw(IEEE1394Exception) = 0;
+
+  /**
+    Opens a connection to the primary adapter.
+  */
+  virtual void open() throw(IEEE1394Exception) = 0;
+  
+  /**
+    Opens a connection to the specified adapter.
+    
+    @param adapter The id of the adapter.
+  */
+  virtual void open(const GloballyUniqueIdentifier& adapter) throw(IEEE1394Exception) = 0;
+  
+  /**
+    Closes the handle to the adapter. The adapter is destroyed when all handles
+    have been closed.
+  */
+  virtual void close() throw(IEEE1394Exception) = 0;
+  
+  /**
+    Returns the devices on the bus.
+  */
+  virtual Array<GloballyUniqueIdentifier> getDevices() throw(IEEE1394Exception) = 0;
+  
+  /**
+    Returns the unique identifier of the specified node.
+
+    @param physicalId The physical id of the node [0; 63[.
+  */
+  virtual GloballyUniqueIdentifier getIdentifier(unsigned int physicalId) throw(OutOfDomain, IEEE1394Exception) = 0;
+  
+  /**
+    Returns the current error status.
+  */
+  virtual unsigned int getStatus() const throw(IEEE1394Exception) = 0;
+  
+  /**
+    Returns the size of the FIFO.
+  */
+  virtual unsigned int getFIFOSize() const throw(IEEE1394Exception) = 0;
+  
+  /**
+    Returns true if the specified node is a contended for...
+
+    @param physicalId The id of the node [0; 63[.
+  */
+  virtual bool isPresent(unsigned int physicalId) const throw(OutOfDomain, IEEE1394Exception) = 0;
+  
+  /**
+    Returns true if the specified node is a contended for...
+
+    @param physicalId The id of the node [0; 63[.
+  */
+  virtual bool isLinkLayerActivated(unsigned int physicalId) const throw(OutOfDomain, IEEE1394Exception) = 0;
+
+  /**
+    Returns true if the specified node is a contended for...
+
+    @param physicalId The id of the node [0; 63[.
+  */
+  virtual bool isContended(unsigned int physicalId) const throw(OutOfDomain, IEEE1394Exception) = 0;
+  
+  /**
+    Returns the maximum speed of a node.
+  */
+  virtual unsigned int getSpeedOfNode(unsigned int physicalId) const throw(OutOfDomain, IEEE1394Exception) = 0;
+  
+  /**
+    Returns the maximum speed for communication with node.
+  */
+  virtual unsigned int getMaximumSpeedToNode(unsigned int physicalId) const throw(OutOfDomain, IEEE1394Exception) = 0;
+  
+  /**
+    Returns the maximum broadcast speed.
+  */
+  virtual unsigned int getBroadcastSpeed() const throw(IEEE1394Exception) = 0;
+  
+  /**
+    Read data from device.
+
+    @param node The physical id of source node.
+    @param offset The offset of the data to read from.
+    @param buffer The data buffer.
+    @param size The number of bytes to read.
+  */
+  virtual unsigned int read(unsigned short node, uint64 offset, char* buffer, unsigned int size) throw(OutOfDomain, IOException) = 0;
+
+  /**
+    Write data to device.
+
+    @param node The physical id of destination node.
+    @param offset The offset of the data to write to.
+    @param buffer The data buffer.
+    @param size The number of bytes to write.
+  */
+  virtual unsigned int write(unsigned short node, uint64 offset, const char* buffer, unsigned int size) throw(OutOfDomain, IOException) = 0;
+
+
 
   /** Isochronous request type. */
   enum IsochronousRequestType {

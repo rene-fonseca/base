@@ -422,10 +422,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector3D<TYPE>&
 }
 
 template<class TYPE>
-class Relocateable<Vector3D<TYPE> > {
+class Uninitializeable<Vector3D<TYPE> > {
 public:
 
-  static const bool IS_RELOCATEABLE = Relocateable<TYPE>::IS_RELOCATEABLE;
+  static const bool IS_UNINITIALIZEABLE = Uninitializeable<TYPE>::IS_UNINITIALIZEABLE;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

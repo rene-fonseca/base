@@ -46,19 +46,30 @@ namespace isoc {
 /**
   Specifies whether or not the type is relocateable (i.e. objects may be moved
   directly from one memory location to another without corrupting the object
-  state). Additionally, a relocateable object must not require to be initialized
-  or destroyed to function properly. The relocateable property of an object is
-  only intended to be used when really required due to performance
-  considerations. If this function returns false objects have to be copy
-  constructed at the new location and then destoyed at the old location. This
-  function is primarily used by allocators to avoid these operations on their
-  elements. Be very careful when adding your own specializations.
+  state). The relocateable property of an object is only intended to be used
+  when really required due to performance considerations. If this function
+  returns false objects have to be copy constructed at the new location and then
+  destoyed at the old location. This function is primarily used by allocators to
+  avoid these operations on their elements. Be very careful when adding your own
+  specializations.
 */
 template<class TYPE>
 class Relocateable {
 public:
   
-  static const bool IS_RELOCATEABLE = primitives::Arithmetic<TYPE>::IS_ARITHMETIC;
+  static const bool IS_RELOCATEABLE = primitives::Primitive<TYPE>::IS_PRIMITIVE;
+};
+
+/**
+  Specifies whether or not the object may be created and destroyed without
+  invoking the constructor and destructor. This also implies that the object is
+  relocatable. Be extremely careful when adding your own specializations.
+*/
+template<class TYPE>
+class Uninitializeable {
+public:
+  
+  static const bool IS_UNINITIALIZEABLE = primitives::Primitive<TYPE>::IS_PRIMITIVE;
 };
 
 

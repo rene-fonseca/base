@@ -354,10 +354,10 @@ inline Date::Date(int _date) throw() : date(_date) {
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Date& date) throw(InvalidFormat, IOException);
 
 template<>
-class Relocateable<Date> {
+class Uninitializeable<Date> {
 public:
 
-  static const bool IS_RELOCATEABLE = Relocateable<int>::IS_RELOCATEABLE; // TAG: fixme - long long
+  static const bool IS_UNINITIALIZEABLE = Uninitializeable<int>::IS_UNINITIALIZEABLE; // TAG: fixme - long long
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

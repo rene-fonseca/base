@@ -713,10 +713,10 @@ inline Quaternion<TYPE> operator*(const Matrix4x4<TYPE>& left, const Quaternion<
 }
 
 template<class TYPE>
-class Relocateable<Matrix4x4<TYPE> > {
+class Uninitializeable<Matrix4x4<TYPE> > {
 public:
 
-  static const bool IS_RELOCATEABLE = Relocateable<TYPE>::IS_RELOCATEABLE;
+  static const bool IS_UNINITIALIZEABLE = Uninitializeable<TYPE>::IS_UNINITIALIZEABLE;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -186,10 +186,10 @@ inline Dimension::Dimension(unsigned int _width, unsigned int _height) throw()
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value) throw(IOException);
 
 template<>
-class Relocateable<Dimension> {
+class Uninitializeable<Dimension> {
 public:
 
-  static const bool IS_RELOCATEABLE = Relocateable<unsigned int>::IS_RELOCATEABLE;
+  static const bool IS_UNINITIALIZEABLE = Uninitializeable<unsigned int>::IS_UNINITIALIZEABLE;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

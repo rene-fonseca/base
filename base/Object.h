@@ -21,6 +21,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   The base class of all non-abstract classes. Objects are not copyable by default.
 
+  @short Object.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -42,10 +43,10 @@ public:
 };
 
 template<>
-class Relocateable<Object> {
+class Uninitializeable<Object> {
 public:
 
-  static const bool IS_RELOCATEABLE = Relocateable<bool>::IS_RELOCATEABLE;
+  static const bool IS_UNINITIALIZEABLE = Uninitializeable<bool>::IS_UNINITIALIZEABLE;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

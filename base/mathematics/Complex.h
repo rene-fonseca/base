@@ -549,10 +549,10 @@ inline Complex operator/(const Complex& left, long double right) throw() {
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value) throw(IOException);
 
 template<>
-class Relocateable<Complex> {
+class Uninitializeable<Complex> {
 public:
 
-  static const bool IS_RELOCATEABLE = Relocateable<long double>::IS_RELOCATEABLE;
+  static const bool IS_UNINITIALIZEABLE = Uninitializeable<long double>::IS_UNINITIALIZEABLE;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -192,10 +192,10 @@ public:
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Color& value) throw(IOException);
 
 template<>
-class Relocateable<Color> {
+class Uninitializeable<Color> {
 public:
 
-  static const bool IS_RELOCATEABLE = Relocateable<uint32>::IS_RELOCATEABLE;
+  static const bool IS_UNINITIALIZEABLE = Uninitializeable<uint32>::IS_UNINITIALIZEABLE;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

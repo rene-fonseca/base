@@ -25,9 +25,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Allocator of resizeable memory block. The implementation is not MT-safe.
 
+  @short Allocator.
   @see ReferenceCountedAllocator CapacityAllocator
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.01
+  @version 1.2
 */
 
 template<class TYPE>
@@ -48,14 +49,14 @@ public:
 
   /**
     Initializes the elements of the sequence using the default constructor.
-    Relocatable objects are not initialized.
+    Uninitializeable objects are not initialized.
   */
-  static inline void initialize(TYPE* element, unsigned int count) throw() {
-    if (!Relocateable<TYPE>::IS_RELOCATEABLE) {
-      const TYPE* end = element + count;
-      --element;
-      while (++element != end) {
-        new(element) TYPE();
+  static inline void initialize(TYPE* dest, unsigned int count) throw() {
+    if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
+      const TYPE* end = dest + count;
+      while (dest != end) {
+        new(dest) TYPE();
+        ++dest;
       }
     }
   }
@@ -64,8 +65,9 @@ public:
     Initializes the elements of the sequence by copying elements from other
     sequence. The memory image is copied directly for relocatable objects.
   */
-  static inline void initializeByCopy(TYPE* dest, const TYPE* src, unsigned int count) throw() {
-    if (Relocateable<TYPE>::IS_RELOCATEABLE) {
+  static inline void initializeByCopy(TYPE* restrict dest, const TYPE* restrict src, unsigned int count) throw() {
+    if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE ||
+        Relocateable<TYPE>::IS_RELOCATEABLE) {
       copy<TYPE>(dest, src, count); // blocks do not overlap
     } else {
       const TYPE* end = dest + count;
@@ -82,7 +84,8 @@ public:
     sequence. This does nothing for relocateable object.
   */
   static inline void initializeByMove(TYPE* dest, const TYPE* src, unsigned int count) throw() {
-    if (!Relocateable<TYPE>::IS_RELOCATEABLE) {
+    if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE &&
+        !Relocateable<TYPE>::IS_RELOCATEABLE) {
       const TYPE* end = dest + count;
       while (dest != end) {
         new(dest) TYPE(*src); // copy object
@@ -94,14 +97,14 @@ public:
   }
 
   /**
-    Destroys the elements of the sequence. Does nothing for relocateable objects.
+    Destroys the elements of the sequence. Does nothing for uninitializeable objects.
   */
-  static inline void destroy(TYPE* element, unsigned int count) throw() {
-    if (!Relocateable<TYPE>::IS_RELOCATEABLE) { // must we destroy the elements
-      const TYPE* end = element + count;
-      --element;
-      while (++element != end) {
-        element->~TYPE();
+  static inline void destroy(TYPE* dest, unsigned int count) throw() {
+    if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
+      const TYPE* end = dest + count;
+      while (dest != end) {
+        dest->~TYPE();
+        ++dest;
       }
     }
   }
@@ -267,11 +270,10 @@ public:
   */
   void setSize(unsigned int size) throw(MemoryException) {
     if (size != this->size) {
-      if (Relocateable<TYPE>::IS_RELOCATEABLE) {
+      if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
         // no need to destroy or initialize elements
         elements = Heap::resize(elements, size);
       } else {
-        
         if (size < this->size) { // are we about to reduce the array
           destroy(elements + size, this->size - size);
           elements = Heap::resize(elements, size);

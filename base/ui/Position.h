@@ -314,10 +314,10 @@ inline Position operator+(const Position& left, const Position& right) throw() {
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Position& value) throw(IOException);
 
 template<>
-class Relocateable<Position> {
+class Uninitializeable<Position> {
 public:
 
-  static const bool IS_RELOCATEABLE = Relocateable<int>::IS_RELOCATEABLE;
+  static const bool IS_UNINITIALIZEABLE = Uninitializeable<int>::IS_UNINITIALIZEABLE;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

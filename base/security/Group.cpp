@@ -15,7 +15,7 @@
 #include <base/security/Group.h>
 #include <base/concurrency/Thread.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else // unix
   #include <sys/types.h>
@@ -32,11 +32,15 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Group::Group(unsigned long long _id) throw(OutOfDomain) : id(_id) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  // not implemented
+#else // unix
   assert(id <= PrimitiveTraits<gid_t>::MAXIMUM, OutOfDomain("Invalid group id", this));
+#endif // flavor
 }
 
 Group::Group(const String& name) throw(GroupException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__HAVE__GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
@@ -57,7 +61,7 @@ Group::Group(const String& name) throw(GroupException) {
 }
 
 Group::Group(const User& user) throw(GroupException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #else // unix
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
@@ -72,7 +76,7 @@ Group::Group(const Group& copy) throw() : id(copy.id) {
 }
 
 String Group::getName() const throw(GroupException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__HAVE__GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
@@ -92,7 +96,7 @@ String Group::getName() const throw(GroupException) {
 }
 
 Array<String> Group::getMembers() const throw(GroupException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__HAVE__GETGRGID_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);

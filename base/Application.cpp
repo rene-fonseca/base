@@ -12,7 +12,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Application* Application::application = 0; // initialize application as uninitialized
 
-Application::Application(int argc, const char* argv[], const char* envp[]) throw(SingletonException, OutOfDomain) {
+Application::Application(const String& name, int argc, const char* argv[], const char* envp[]) throw(SingletonException, OutOfDomain) : formalName(name) {
   static unsigned int singleton = 0;
   assert(singleton++ == 0, SingletonException("Application has been instantiated"));
 

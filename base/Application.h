@@ -27,6 +27,8 @@ private:
 
   /** The application object. */
   static Application* application;
+  /** The formal name of the application. */
+  String formalName;
   /** The path used to start the application. */
   String path;
   /** Container for the arguments passed to the application. */
@@ -57,11 +59,17 @@ public:
     }
     </pre>
 
+    @param name The formal name.
     @param argc The argc argument of the entry function main.
     @param argv The argv argument of the entry function main.
     @param envp The envp argument of the entry function main. This argument is not required.
   */
-  Application(int argc, const char* argv[], const char *envp[] = 0) throw(SingletonException, OutOfDomain);
+  Application(const String& name, int argc, const char* argv[], const char *envp[] = 0) throw(SingletonException, OutOfDomain);
+
+  /**
+    Returns the formal name of the application.
+  */
+  inline String getFormalName() const throw() {return formalName;}
 
   /**
     Returns the name/path of the application.

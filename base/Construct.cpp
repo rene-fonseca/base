@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "IOException.h"
+#include "Construct.h"
 
-IOException::IOException() {
+Construct::Construct() {
 }
 
-IOException::~IOException() {
+Construct::~Construct() {
 }

@@ -58,5 +58,5 @@ template<class TYPE> void Vector2D<TYPE>::setY(const TYPE& y) throw() {
 }
 
 template<class TYPE> ostream& Vector2D<TYPE>::toString(ostream& stream) const {
-  stream << "(" << x << "," << y << ")";
+  return stream << "(" << x << "," << y << ")";
 }

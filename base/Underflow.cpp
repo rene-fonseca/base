@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "IOException.h"
+#include "Underflow.h"
 
-IOException::IOException() {
+Underflow::Underflow() {
 }
 
-IOException::~IOException() {
+Underflow::~Underflow() {
 }

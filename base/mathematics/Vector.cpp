@@ -4,7 +4,6 @@
  ***************************************************************************/
 
 #include "Vector.h"
-#include "base/OutOfDomainException.h"
 #include <math.h>
 
 template<class TYPE> Vector<TYPE>::Vector(unsigned int length) throw() {
@@ -40,21 +39,21 @@ template<class TYPE> unsigned int Vector<TYPE>::getLength() const throw() {
   return length;
 }
 
-template<class TYPE> TYPE& Vector<TYPE>::operator[](unsigned int index) const throw(RangeException) {
+template<class TYPE> TYPE& Vector<TYPE>::operator[](unsigned int index) const throw(OutOfRange) {
   if (index >= length) {
     throw RangeException();
   }
   return elements[index];
 }
 
-template<class TYPE> TYPE& Vector<TYPE>::getAt(unsigned int index) const throw(RangeException) {
+template<class TYPE> TYPE& Vector<TYPE>::getAt(unsigned int index) const throw(OutOfRange) {
   if (index >= length) {
     throw RangeException();
   }
   return elements[index];
 }
 
-template<class TYPE> void Vector<TYPE>::setAt(unsigned int index, const TYPE& value) throw(RangeException) {
+template<class TYPE> void Vector<TYPE>::setAt(unsigned int index, const TYPE& value) throw(OutOfRange) {
   if (index >= length) {
     throw RangeException();
   }

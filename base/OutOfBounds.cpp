@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "IOException.h"
+#include "OutOfBounds.h"
 
-IOException::IOException() {
+OutOfBounds::OutOfBounds() {
 }
 
-IOException::~IOException() {
+OutOfBounds::~OutOfBounds() {
 }

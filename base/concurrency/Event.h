@@ -7,7 +7,9 @@
 #define _BASE_EVENT_H
 
 #include "MutualExclusion.h"
-#include "base/RangeException.h"
+#include "base/Construct.h"
+#include "base/OutOfRange.h"
+#include "base/ResourceException.h"
 
 /**
   Event.
@@ -51,14 +53,14 @@ public:
   /**
     Wait for signal. The executing thread is suspended until event is signaled. Will wait forever if never signaled. If the event if currently being reset the thread is suspended. Throws an 'RangeException' exception if the maximum number of waiting threads is exceeded.
   */
-  void wait() throw(RangeException, MutualExclusion::MutualExclusionException);
+  void wait() throw(OutOfRange, MutualExclusion::MutualExclusionException);
 
   /**
     Wait for signal. The executing thread is suspended until event is signaled or a time out occures. If the event if currently being reset the thread is suspended. Throws an 'RangeException' exception if the maximum number of waiting threads is exceeded.
 
     @param microseconds The desired time out interval in microseconds.
   */
-  bool wait(unsigned int microseconds) throw(RangeException, MutualExclusion::MutualExclusionException);
+  bool wait(unsigned int microseconds) throw(OutOfRange, MutualExclusion::MutualExclusionException);
 
   /**
     Destroys the event.

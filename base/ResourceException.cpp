@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "IOException.h"
+#include "ResourceException.h"
 
-IOException::IOException() {
+ResourceException::ResourceException() {
 }
 
-IOException::~IOException() {
+ResourceException::~ResourceException() {
 }

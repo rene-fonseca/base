@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "IOException.h"
+#include "Overflow.h"
 
-IOException::IOException() {
+Overflow::Overflow() {
 }
 
-IOException::~IOException() {
+Overflow::~Overflow() {
 }

@@ -64,5 +64,5 @@ template<class TYPE> void Vector3D<TYPE>::setZ(const TYPE& z) throw() {
 }
 
 template<class TYPE> ostream& Vector3D<TYPE>::toString(ostream& stream) const {
-  stream << "(" << x << "," << y << "," << z << ")";
+  return stream << "(" << x << "," << y << "," << z << ")";
 }

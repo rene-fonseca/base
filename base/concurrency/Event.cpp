@@ -45,7 +45,7 @@ void Event::signal() throw(MutualExclusion::MutualExclusionException) {
   MutualExclusion::unlock();
 }
 
-void Event::wait() throw(RangeException, MutualExclusion::MutualExclusionException) {
+void Event::wait() throw(OutOfRange, MutualExclusion::MutualExclusionException) {
   MutualExclusion::lock();
 
     while (resetting) { // wait if resetting
@@ -54,7 +54,7 @@ void Event::wait() throw(RangeException, MutualExclusion::MutualExclusionExcepti
 
     if (waitingThreads == maximum) {
       MutualExclusion::unlock();
-      throw RangeException();
+      throw OutOfRange();
     }
 
     ++waitingThreads;
@@ -72,7 +72,7 @@ void Event::wait() throw(RangeException, MutualExclusion::MutualExclusionExcepti
   MutualExclusion::unlock();
 }
 
-bool Event::wait(unsigned int microseconds) throw(RangeException, MutualExclusion::MutualExclusionException) {
+bool Event::wait(unsigned int microseconds) throw(OutOfRange, MutualExclusion::MutualExclusionException) {
   int result = true; // no assignment gives warning
 
   MutualExclusion::lock();
@@ -83,7 +83,7 @@ bool Event::wait(unsigned int microseconds) throw(RangeException, MutualExclusio
 
     if (waitingThreads == maximum) {
       MutualExclusion::unlock();
-      throw RangeException();
+      throw OutOfRange();
     }
 
     struct timespec absoluteTime;

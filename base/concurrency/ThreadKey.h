@@ -7,6 +7,7 @@
 #define _BASE_THREAD_KEY_H
 
 #include "base/Exception.h"
+#include "base/ResourceException.h"
 #include <pthread.h>
 
 /**

@@ -8,7 +8,7 @@
 
 #include "base/Object.h"
 #include "base/Exception.h"
-#include "base/RangeException.h"
+#include "base/OutOfRange.h"
 
 /**
   Vector class.
@@ -72,14 +72,14 @@ public:
 
     @param index The index of the desired element.
   */
-  TYPE& operator[](unsigned int index) const throw(RangeException);
+  TYPE& operator[](unsigned int index) const throw(OutOfRange);
 
   /**
     Returns the element at the specified index.
 
     @param index The index of the desired element.
   */
-  TYPE& getAt(unsigned int index) const throw(RangeException);
+  TYPE& getAt(unsigned int index) const throw(OutOfRange);
 
   /**
     Sets the element at the specified index.
@@ -87,7 +87,7 @@ public:
     @param index The index of the desired element.
     @param value The desired value.
   */
-  void setAt(unsigned int index, const TYPE& value) throw(RangeException);
+  void setAt(unsigned int index, const TYPE& value) throw(OutOfRange);
 
   /**
     Initializes the elements of the vector using another vector.

@@ -1,33 +1,24 @@
 /***************************************************************************
-    begin       : Fri May 19 2000
     copyright   : (C) 2000 by René Møller Fonseca
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _OUT_OF_BOUNDS_EXCEPTION_H
-#define _OUT_OF_BOUNDS_EXCEPTION_H
+#ifndef _BASE_OUT_OF_RANGE_H
+#define _BASE_OUT_OF_RANGE_H
 
 #include "Exception.h"
 
 /**
-  Out of bounds exception.
+  Exception used to specify that an index is out of range.
 
   @author René Møller Fonseca
   @version 1.0
 */
 
-class OutOfBoundsException : public Exception {
-public: 
-
-  /**
-    Initializes the exception.
-  */
-	OutOfBoundsException();
-
-  /**
-    Destroys the exception.
-  */
-	~OutOfBoundsException();
+class OutOfRange : public Exception {
+public:
+  OutOfRange();
+  ~OutOfRange();
 };
 
 #endif

@@ -9,6 +9,9 @@
 #include "config.h"
 #include "MutualExclusion.h"
 #include "base/Exception.h"
+#include "base/Construct.h"
+#include "base/Destruct.h"
+#include "base/Overflow.h"
 #include <limits.h>
 
 #ifdef HAVE_PTHREAD_SEMAPHORE

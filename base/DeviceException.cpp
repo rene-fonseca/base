@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "IOException.h"
+#include "DeviceException.h"
 
-IOException::IOException() {
+DeviceException::DeviceException() {
 }
 
-IOException::~IOException() {
+DeviceException::~DeviceException() {
 }

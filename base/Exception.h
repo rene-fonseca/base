@@ -71,38 +71,4 @@ public:
   virtual ~Exception();
 };
 
-/** Thrown on value greater than maximum valid value. */
-class Overflow : public Exception {};
-/** Thrown on value less than minimum valid value. */
-class Underflow : public Exception {};
-
-/* Exception used to specify that an index is out of range. */
-class OutOfRange : public Exception {};
-/* Out of bounds exception. */
-class OutOfBounds : public Exception {};
-/** Exception used to specify that a variable has been assigned a value not in the variables domain. */
-class OutOfDomain : public Exception {};
-
-/** Thrown on IO error. */
-class IOException : public Exception {
-public:
-  IOException();
-  ~IOException();
-};
-
-/** Thrown if required resource could not be found. */
-class NotFoundException : public Exception {};
-
-/** Thrown on object construction error. */
-class Construct : public Exception {};
-/** Thrown on object deconstruction error. Used to detect resource leaks. */
-class Destruct : public Exception {};
-
-/** Thrown on resource allocation/deallocation error. */
-class ResourceException : public Exception {};
-/** Thrown on memory allocation/deallocation error. */
-class MemoryException : public ResourceException {};
-/** Thrown on device access error. */
-class DeviceException : public ResourceException {};
-
 #endif

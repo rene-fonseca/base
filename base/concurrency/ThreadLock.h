@@ -9,6 +9,8 @@
 #include "config.h"
 #include "base/Object.h"
 #include "base/Exception.h"
+#include "base/Construct.h"
+#include "base/Destruct.h"
 #include <pthread.h>
 
 /**

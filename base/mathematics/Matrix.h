@@ -9,6 +9,8 @@
 #include "base/Object.h"
 #include "base/Dimension.h"
 #include "base/Exception.h"
+#include "base/OutOfBounds.h"
+#include "base/OutOfDomain.h"
 #include "base/RandomIterator.h"
 #include "base/mathematics/Vector.h"
 #include <string>

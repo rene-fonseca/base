@@ -3,24 +3,22 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _BASE_MATRIX_EXCEPTION_H
-#define _BASE_MATRIX_EXCEPTION_H
+#ifndef _BASE_OVERFLOW_H
+#define _BASE_OVERFLOW_H
 
-#include "base/Exception.h"
+#include "Exception.h"
 
 /**
-  Matrix exception.
+  Thrown on value greater than maximum valid value.
 
   @author René Møller Fonseca
   @version 1.0
 */
 
-class MatrixException : public Exception {
-public: 
-
-	MatrixException();
-
-	~MatrixException();
+class Overflow : public Exception {
+public:
+  Overflow();
+  ~Overflow();
 };
 
 #endif

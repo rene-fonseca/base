@@ -6,12 +6,12 @@ AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE(ellert,0.55)
 
 AC_CANONICAL_HOST()
-dnl The following variables have been set: $host, $host_cpu, and $host_os
+dnl The following variables have been set: $host, $host_cpu, $host_vendor, and $host_os
 
 case "$host_os" in
 linux-gnu) AC_DEFINE(_GNU_SOURCE, 1, Specifies that the UNIX 98 functionality and GNU extensions are utilized)
 ;;
-sgi*) AC_DEFINE(_SGI_SOURCE, 1, Specifies that the UNIX 98 functionality and SGI extensions are utilized)
+irix*) AC_DEFINE(_SGI_SOURCE, 1, Specifies that the UNIX 98 functionality and SGI extensions are utilized)
 ;;
 *) AC_DEFINE(_XOPEN_SOURCE, 500, Specifies that the UNIX 98 functionality is utilized)
 ;;
@@ -412,7 +412,7 @@ AC_BASE_CHECK(
     AC_BASE_ATTEMPT(
       base_cv_inet_ipv6,
       base_cv_inet_ipv6_libs,
-      "" -lsocket,
+      "" -lsocket "-lsocket -lnsl",
       AC_BASE_TRY_CXX_LINK(base_cv_inet_ipv6, config/ipv6.c, $base_cv_inet_ipv6_libs)dnl
     )dnl
   ),

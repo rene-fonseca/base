@@ -10,7 +10,7 @@ template ThreadKey<Thread>;
 
 template<class TYPE>
 ThreadKey<TYPE>::ThreadKey() throw(ResourceException) {
-#ifdef __win32__
+#if defined(__win32__)
   if ((key = TlsAlloc()) == TLS_OUT_OF_INDEXES) {
     throw ResourceException();
   }
@@ -23,7 +23,7 @@ ThreadKey<TYPE>::ThreadKey() throw(ResourceException) {
 
 template<class TYPE>
 TYPE* ThreadKey<TYPE>::getKey() const throw(ThreadKeyException) {
-#ifdef __win32__
+#if defined(__win32__)
   TYPE* result = (TYPE*)TlsGetValue(key);
   if (!result && (GetLastError() != NO_ERROR)) {
     throw ThreadKeyException(__func__);
@@ -36,7 +36,7 @@ TYPE* ThreadKey<TYPE>::getKey() const throw(ThreadKeyException) {
 
 template<class TYPE>
 void ThreadKey<TYPE>::setKey(TYPE* value) throw(ThreadKeyException) {
-#ifdef __win32__
+#if defined(__win32__)
   if (!TlsSetValue(key, (void*)value)) {
     throw ThreadKeyException(__func__);
   }
@@ -49,7 +49,7 @@ void ThreadKey<TYPE>::setKey(TYPE* value) throw(ThreadKeyException) {
 
 template<class TYPE>
 ThreadKey<TYPE>::~ThreadKey() throw(ThreadKeyException) {
-#ifdef __win32__
+#if defined(__win32__)
   if (!TlsFree(key)) {
     throw ThreadKeyException(__func__);
   }

@@ -12,7 +12,7 @@
 #include "base/ResourceException.h"
 #include "Lock.h"
 
-#ifdef __win32__
+#if defined(__win32__)
   #include <windows.h>
 #else
   #include <pthread.h>
@@ -33,9 +33,9 @@ class ReadWriteLock : public Object, public virtual Lock {
 protected:
 
   /** Internal mutex representation. */
-#ifdef __win32__
+#if defined(__win32__)
   mutable CRITICAL_SECTION lock;
-#elif HAVE_PTHREAD_RWLOCK
+#elif defined(HAVE_PTHREAD_RWLOCK)
   mutable pthread_rwlock_t lock;
 #else
   mutable pthread_mutex_t lock;

@@ -29,7 +29,7 @@
 class SocketAddress {
 private:
 
-#ifdef HAVE_INET_IPV6
+#if defined(HAVE_INET_IPV6)
   struct sockaddr_in6 sa;
 #else
   struct sockaddr_in sa;
@@ -41,8 +41,8 @@ public:
   */
   SocketAddress(InetAddress addr, unsigned short port) {
     fill<char>((char*)&sa, sizeof(sa), 0);
-#ifdef HAVE_INET_IPV6
-#ifdef SIN6_LEN
+#if defined(HAVE_INET_IPV6)
+#if defined(SIN6_LEN)
     sa.sin6_len = sizeof(sa);
 #endif // SIN6_LEN
     sa.sin6_family = AF_INET6;
@@ -101,14 +101,14 @@ bool Socket::accept(Socket& socket) throw(IOException) {
 
   // don't know if accept() fills 'sa' with something different from sockaddr_in6 - do you know this
   int handle;
-#ifdef HAVE_INET_IPV6
+#if defined(HAVE_INET_IPV6)
   struct sockaddr_in6 sa;
 #else
   struct sockaddr_in sa;
 #endif // HAVE_INET_IPV6
   socklen_t sl = sizeof(sa);
 
-#ifdef __win32__
+#if defined(__win32__)
 #else
   if ((handle = ::accept(socket.fd.getHandle(), (struct sockaddr*)&sa, &sl)) != 0) {
     switch (errno) {
@@ -122,7 +122,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
 #endif
 
   fd.setHandle(handle);
-#ifdef HAVE_INET_IPV6
+#if defined(HAVE_INET_IPV6)
   remoteAddress.setAddress((char*)&(sa.sin6_addr), InetAddress::IPv6);
   remotePort = ntohs(sa.sin6_port);
 #else
@@ -144,7 +144,7 @@ void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOExceptio
 
 void Socket::close() throw(IOException) {
   SynchronizeExclusively();
-#ifdef __win32__
+#if defined(__win32__)
   if (::closesocket(fd.getHandle())) {
     throw NetworkException("Unable to close socket");
   }
@@ -164,7 +164,7 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
   SocketAddress sa(addr, port);
 
   if (::connect(fd.getHandle(), sa.getValue(), sa.getSize())) {
-#ifdef __win32__
+#if defined(__win32__)
     switch (WSAGetLastError()) {
     case WSAECONNREFUSED:
       throw AccessDenied();
@@ -192,7 +192,7 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
 void Socket::create(bool stream) throw(IOException) {
   SynchronizeExclusively();
   int handle;
-#ifdef HAVE_INET_IPV6
+#if defined(HAVE_INET_IPV6)
   if (isCreated() || ((handle = ::socket(PF_INET6, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == INVALID_SOCKET)) {
     throw NetworkException("Unable to create socket");
   }

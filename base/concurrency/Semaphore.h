@@ -14,7 +14,7 @@
 #include "base/Overflow.h"
 #include <limits.h>
 
-#ifdef __win32__
+#if defined(__win32__)
   #include <windows.h>
 #elif HAVE_PTHREAD_SEMAPHORE
   #include <semaphore.h>
@@ -32,7 +32,7 @@
 class Semaphore : public Object {
 public:
 
-#ifdef __win32__
+#if defined(__win32__)
   static const unsigned int MAXIMUM = INT_MAX;
 #elif HAVE_PTHREAD_SEMAPHORE
   static const unsigned int MAXIMUM = _POSIX_SEM_VALUE_MAX;
@@ -41,7 +41,7 @@ public:
 #endif
 private:
 
-#ifdef __win32__
+#if defined(__win32__)
   HANDLE semaphore;
 #elif HAVE_PTHREAD_SEMAPHORE
   mutable sem_t semaphore;
@@ -64,7 +64,7 @@ public:
   */
   Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceException);
 
-#ifndef __win32__
+#if !defined(__win32__)
   /**
     Returns the current value of the semaphore. Warning this is a non-portable
     method.

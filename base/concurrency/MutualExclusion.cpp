@@ -5,12 +5,12 @@
 
 #include "MutualExclusion.h"
 
-#ifndef __win32__
+#if !defined(__win32__)
   #include <errno.h>
 #endif // __win32__
 
 MutualExclusion::MutualExclusion() throw(ResourceException) {
-#ifdef __win32__
+#if defined(__win32__)
   __try {
     InitializeCriticalSection(&lock);
   } __except(STATUS_NO_MEMORY) {
@@ -34,7 +34,7 @@ MutualExclusion::MutualExclusion() throw(ResourceException) {
 }
 
 void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
-#ifdef __win32__
+#if defined(__win32__)
   __try {
     EnterCriticalSection(&lock);
   } __except(STATUS_INVALID_HANDLE) {
@@ -53,7 +53,7 @@ void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
 }
 
 bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
-#ifdef __win32__
+#if defined(__win32__)
   BOOL result;
   __try {
     result = TryEnterCriticalSection(&lock);
@@ -74,7 +74,7 @@ bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
 }
 
 void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
-#ifdef __win32__
+#if defined(__win32__)
   LeaveCriticalSection(&lock);
 #else
   if (pthread_mutex_unlock(&lock)) {
@@ -84,7 +84,7 @@ void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
 }
 
 MutualExclusion::~MutualExclusion() throw(MutualExclusionException) {
-#ifdef __win32__
+#if defined(__win32__)
   DeleteCriticalSection(&lock);
 #else
   if (pthread_mutex_destroy(&lock)) {

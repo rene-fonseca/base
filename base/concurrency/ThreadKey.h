@@ -11,7 +11,7 @@
 #include "base/Exception.h"
 #include "base/ResourceException.h"
 
-#ifdef __win32__
+#if defined(__win32__)
   #include <windows.h>
 #else
   #include <pthread.h>
@@ -28,7 +28,7 @@ template<class TYPE>
 class ThreadKey : public Object {
 private:
 
-#ifdef __win32__
+#if defined(__win32__)
   /** Internal data. */
   DWORD key;
 #else

@@ -4,7 +4,7 @@
  ***************************************************************************/
 
 #include <config.h>
-#include "PrimitiveOutputStream.h"
+#include <base/io/PrimitiveOutputStream.h>
 
 PrimitiveOutputStream::PrimitiveOutputStream(OutputStream& out) throw(BindException) :
   FilterOutputStream(out) {
@@ -19,7 +19,7 @@ void PrimitiveOutputStream::writeChar(char value) throw(IOException) {
 }
 
 void PrimitiveOutputStream::writeShortInteger(short value) throw(IOException) {
-#ifdef WORDS_BIGENDIAN
+#if defined(HAVE_BIG_ENDIAN)
   write((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -31,7 +31,7 @@ void PrimitiveOutputStream::writeShortInteger(short value) throw(IOException) {
 }
 
 void PrimitiveOutputStream::writeUnsignedShortInteger(unsigned short value) throw(IOException) {
-#ifdef WORDS_BIGENDIAN
+#if defined(HAVE_BIG_ENDIAN)
   write((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -43,7 +43,7 @@ void PrimitiveOutputStream::writeUnsignedShortInteger(unsigned short value) thro
 }
 
 void PrimitiveOutputStream::writeInteger(int value) throw(IOException) {
-#ifdef WORDS_BIGENDIAN
+#if defined(HAVE_BIG_ENDIAN)
   write((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -57,7 +57,7 @@ void PrimitiveOutputStream::writeInteger(int value) throw(IOException) {
 }
 
 void PrimitiveOutputStream::writeUnsignedInteger(unsigned int value) throw(IOException) {
-#ifdef WORDS_BIGENDIAN
+#if defined(HAVE_BIG_ENDIAN)
   write((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -71,7 +71,7 @@ void PrimitiveOutputStream::writeUnsignedInteger(unsigned int value) throw(IOExc
 }
 
 void PrimitiveOutputStream::writeLongInteger(long long value) throw(IOException) {
-#ifdef WORDS_BIGENDIAN
+#if defined(HAVE_BIG_ENDIAN)
   write((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -89,7 +89,7 @@ void PrimitiveOutputStream::writeLongInteger(long long value) throw(IOException)
 }
 
 void PrimitiveOutputStream::writeUnsignedLongInteger(unsigned long long value) throw(IOException) {
-#ifdef WORDS_BIGENDIAN
+#if defined(HAVE_BIG_ENDIAN)
   write((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -107,7 +107,7 @@ void PrimitiveOutputStream::writeUnsignedLongInteger(unsigned long long value) t
 }
 
 void PrimitiveOutputStream::writeFloat(float value) throw(IOException) {
-#ifdef WORDS_BIGENDIAN
+#if defined(HAVE_BIG_ENDIAN)
   write((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -121,7 +121,7 @@ void PrimitiveOutputStream::writeFloat(float value) throw(IOException) {
 }
 
 void PrimitiveOutputStream::writeDouble(double value) throw(IOException) {
-#ifdef WORDS_BIGENDIAN
+#if defined(HAVE_BIG_ENDIAN)
   write((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;
@@ -139,7 +139,7 @@ void PrimitiveOutputStream::writeDouble(double value) throw(IOException) {
 }
 
 void PrimitiveOutputStream::writeLongDouble(long double value) throw(IOException) {
-#ifdef WORDS_BIGENDIAN
+#if defined(HAVE_BIG_ENDIAN)
   write((char*)&value, sizeof(value));
 #else
   char* p = (char*)&value;

@@ -3,20 +3,20 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "ReadWriteLock.h"
+#include <base/concurrency/ReadWriteLock.h>
 
-#ifndef __win32__
+#if !defined(__win32__)
   #include <errno.h>
 #endif
 
 ReadWriteLock::ReadWriteLock() throw(ResourceException) {
-#ifdef __win32__
+#if defined(__win32__)
   __try {
     InitializeCriticalSection(&lock);
   } __except(STATUS_NO_MEMORY) {
     throw ResourceException();
   }
-#elif HAVE_PTHREAD_RWLOCK
+#elif defined(HAVE_PTHREAD_RWLOCK)
   pthread_rwlockattr_t attributes;
   if (pthread_rwlockattr_init(&attributes) != 0) {
     throw ResourceException();
@@ -49,13 +49,13 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException) {
 }
 
 void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
-#ifdef __win32__
+#if defined(__win32__)
   __try {
     EnterCriticalSection(&lock);
   } __except(STATUS_INVALID_HANDLE) {
     throw ReadWriteLockException();
   }
-#elif HAVE_PTHREAD_RWLOCK
+#elif defined(HAVE_PTHREAD_RWLOCK)
   if (pthread_rwlock_wrlock(&lock)) {
     throw ReadWriteLockException();
   }
@@ -72,7 +72,7 @@ void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
 }
 
 bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
-#ifdef __win32__
+#if defined(__win32__)
   BOOL result;
   __try {
     result = TryEnterCriticalSection(&lock);
@@ -80,7 +80,7 @@ bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
     throw ReadWriteLockException();
   }
   return result;
-#elif HAVE_PTHREAD_RWLOCK
+#elif defined(HAVE_PTHREAD_RWLOCK)
   int result = pthread_rwlock_trywrlock(&lock);
   if (result == 0) {
     return true;
@@ -102,13 +102,13 @@ bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
 }
 
 void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
-#ifdef __win32__
+#if defined(__win32__)
   __try {
     EnterCriticalSection(&lock);
   } __except(STATUS_INVALID_HANDLE) {
     throw ReadWriteLockException();
   }
-#elif HAVE_PTHREAD_RWLOCK
+#elif defined(HAVE_PTHREAD_RWLOCK)
   if (pthread_rwlock_rdlock(&lock)) {
     throw ReadWriteLockException();
   }
@@ -125,7 +125,7 @@ void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
 }
 
 bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
-#ifdef __win32__
+#if defined(__win32__)
   BOOL result;
   __try {
     result = TryEnterCriticalSection(&lock);
@@ -133,7 +133,7 @@ bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
     throw ReadWriteLockException();
   }
   return result;
-#elif HAVE_PTHREAD_RWLOCK
+#elif defined(HAVE_PTHREAD_RWLOCK)
   int result = pthread_rwlock_tryrdlock(&lock);
   if (result == 0) {
     return true;
@@ -155,9 +155,9 @@ bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
 }
 
 void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
-#ifdef __win32__
+#if defined(__win32__)
   LeaveCriticalSection(&lock);
-#elif HAVE_PTHREAD_RWLOCK
+#elif defined(HAVE_PTHREAD_RWLOCK)
   if (pthread_rwlock_unlock(&lock)) {
     throw ReadWriteLockException();
   }
@@ -169,9 +169,9 @@ void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
 }
 
 ReadWriteLock::~ReadWriteLock() throw(ReadWriteLockException) {
-#ifdef __win32__
+#if defined(__win32__)
   DeleteCriticalSection(&lock);
-#elif HAVE_PTHREAD_RWLOCK
+#elif defined(HAVE_PTHREAD_RWLOCK)
   if (pthread_rwlock_destroy(&lock)) {
     throw ReadWriteLockException();
   }

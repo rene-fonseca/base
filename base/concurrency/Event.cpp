@@ -5,7 +5,7 @@
 
 #include "Event.h"
 
-#ifndef __win32__
+#if !defined(__win32__)
   #include <pthread.h>
   #include <sys/time.h>
   #include <unistd.h>
@@ -13,7 +13,7 @@
 #endif
 
 Event::Event() throw(ResourceException) {
-#ifdef __win32__
+#if defined(__win32__)
   if ((event = CreateEvent(NULL, true, false, NULL)) == NULL) {
     throw ResourceException("Unable to initialize event");
   }
@@ -41,7 +41,7 @@ Event::Event() throw(ResourceException) {
 }
 
 bool Event::isSignaled() const throw(EventException) {
-#ifdef __win32__
+#if defined(__win32__)
   return WaitForSingleObject(event, 0) == WAIT_OBJECT_0;
 #else
   bool result;
@@ -57,7 +57,7 @@ bool Event::isSignaled() const throw(EventException) {
 }
 
 void Event::reset() throw(EventException) {
-#ifdef __win32__
+#if defined(__win32__)
   if (ResetEvent(event)) {
     throw EventException("Unable to reset event");
   }
@@ -73,7 +73,7 @@ void Event::reset() throw(EventException) {
 }
 
 void Event::signal() throw(EventException) {
-#ifdef __win32__
+#if defined(__win32__)
   if (SetEvent(event)) {
     throw EventException("Unable to signal event");
   }
@@ -92,7 +92,7 @@ void Event::signal() throw(EventException) {
 }
 
 void Event::wait() const throw(EventException) {
-#ifdef __win32__
+#if defined(__win32__)
   if (WaitForSingleObject(event, INFINITE) != WAIT_OBJECT_0) {
     throw EventException("Unable to wait for event");
   }
@@ -115,7 +115,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
   if (microseconds >= 1000000) {
     throw OutOfDomain();
   }
-#ifdef __win32__
+#if defined(__win32__)
   switch (WaitForSingleObject(event, microseconds/1000)) {
   case WAIT_OBJECT_0:
     return true;
@@ -155,7 +155,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
 }
 
 Event::~Event() throw(EventException) {
-#ifdef __win32__
+#if defined(__win32__)
   if (!CloseHandle(event)) {
     throw EventException("Unable to destroy event");
   }

@@ -12,7 +12,7 @@
 #include "base/Overflow.h"
 #include "base/ResourceException.h"
 
-#ifdef __win32__
+#if defined(__win32__)
   #include <windows.h>
 #else
   #include <pthread.h>
@@ -28,7 +28,7 @@
 class Event : public Object {
 private:
 
-#ifdef __win32__
+#if defined(__win32__)
   /** Event handle. */
   HANDLE event;
 #else

@@ -13,6 +13,10 @@
 
 #include <base/platforms/features.h>
 
+#if defined(_DK_SDU_MIP__BASE__EXPERIMENTAL)
+#  warning Experimental components have been enabled
+#endif
+
 #if !defined(_DK_SDU_MIP__BASE__CPP_BOOL)
 #  error Compiler does not support the bool primitive
 #endif
@@ -21,7 +25,7 @@
 #  error Compiler does not support the const qualifier
 #endif
 
-#if !defined(_DK_SDU_MIP__BASE__CPP_RESTRICT)
+#if !defined(_DK_SDU_MIP__BASE__CPP_RESTRICT) && !defined(restrict)
 #  if defined(_DK_SDU_MIP__BASE__COMPILER_RESTRICT)
 #    warning Using alternative restrict qualifier keyword
 #  else
@@ -29,7 +33,7 @@
 #  endif
 #endif
 
-#if !defined(_DK_SDU_MIP__BASE__CPP_INLINE)
+#if !defined(_DK_SDU_MIP__BASE__CPP_INLINE) && !defined(inline)
 #  if defined(_DK_SDU_MIP__BASE__COMPILER_INLINE)
 #    warning Using alternative inline specifier keyword
 #  else

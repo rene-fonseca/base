@@ -301,7 +301,12 @@ public:
   /**
     Draws an arc.
   */
-  void arc(const Position& position, const Dimension& dimension, int start, int stop, unsigned int flags = 0) throw(UserInterfaceException);
+  void arc(
+    const Position& position,
+    const Dimension& dimension,
+    int start,
+    int stop,
+    unsigned int flags = 0) throw(UserInterfaceException);
 
   /**
     Draws a rectangle.

@@ -81,19 +81,22 @@ Window::Window(unsigned int flags) throw(UserInterfaceException)
   int blackPixel = ::XBlackPixelOfScreen((Screen*)screenHandle);
   int whitePixel = ::XWhitePixelOfScreen((Screen*)screenHandle);
   
-  drawableHandle = (void*)::XCreateSimpleWindow(
+   WRITE_SOURCE_LOCATION();
+ drawableHandle = (void*)::XCreateSimpleWindow(
     (Display*)displayHandle,
     DefaultRootWindow((Display*)displayHandle),
-    0, // x
-    0, // y
+    1, // x
+    1, // y
     0, // width
     0, // height
     0, // border width
     blackPixel, // border color
     blackPixel // background
   );
-  // TAG: detect error and raise exception
-  
+   ::XFlush((Display*)displayHandle);
+ // TAG: detect error and raise exception
+   WRITE_SOURCE_LOCATION();
+ 
   ::XSelectInput(
     (Display*)displayHandle,
     (::Window)drawableHandle,
@@ -109,8 +112,10 @@ Window::Window(unsigned int flags) throw(UserInterfaceException)
     LeaveWindowMask |
     PointerMotionMask
   );
+  WRITE_SOURCE_LOCATION();
   graphicsContextHandle = (void*)::XCreateGC((Display*)displayHandle, (::Window)drawableHandle, 0, 0);
   ::XSetForeground((Display*)displayHandle, (GC)graphicsContextHandle, whitePixel);
+  WRITE_SOURCE_LOCATION();
 #endif // flavor
   construct();
   invalidate();
@@ -178,14 +183,14 @@ Window::Window(const Position& position, const Dimension& dimension, unsigned in
     DefaultRootWindow((Display*)displayHandle),
     position.getX(),
     position.getY(),
-    dimension.getWidth(),
-    dimension.getHeight(),
+    maximum(dimension.getWidth(), 1U), // TAG: X-Win32 5.4 does not accept 0
+    maximum(dimension.getHeight(), 1U), // TAG: X-Win32 5.4 does not accept 0
     0, // border width
     blackPixel, // border color
     blackPixel // background
   );
   // TAG: detect error and raise exception
-  
+ 
   ::XSelectInput(
     (Display*)displayHandle,
     (::Window)drawableHandle,

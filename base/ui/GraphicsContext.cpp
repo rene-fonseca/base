@@ -25,9 +25,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 GraphicsContext::GraphicsContextObjectHandle::~GraphicsContextObjectHandle() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (graphicsContextHandle) {
-    ::DeleteObject((HGDIOBJ)graphicsContextHandle);
-    graphicsContextHandle = 0;
+  if (handle) {
+    ::DeleteObject((HGDIOBJ)handle);
+    handle = 0;
   }
 #else // unix
 #endif // flavor
@@ -52,7 +52,7 @@ GraphicsContext::Pen::Pen(PenStyle style, Color color, unsigned int width) throw
   HPEN pen = ::CreatePen(
     NATIVE_STYLES[style],
     width,
-    color.value
+    color.getValue()
   );
   assert(pen, UserInterfaceException(this));
   setHandle(pen);
@@ -84,7 +84,7 @@ GraphicsContext::Brush::Brush(SystemColor color) throw(UserInterfaceException) {
 
 GraphicsContext::Brush::Brush(Color color) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  HBRUSH brush = ::CreateSolidBrush(color.value);
+  HBRUSH brush = ::CreateSolidBrush(color.getValue());
   assert(brush, UserInterfaceException(this));
   setHandle(brush);
 #else // unix
@@ -161,7 +161,7 @@ void GraphicsContext::setBackgroundColor(Color color) throw(UserInterfaceExcepti
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::SetBkColor(
     (HDC)graphicsContextHandle,
-    color.value
+    color.getValue()
   );
 #else // unix
 #endif // flavor
@@ -171,7 +171,7 @@ void GraphicsContext::setTextColor(Color color) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::SetTextColor(
     (HDC)graphicsContextHandle,
-    color.value
+    color.getValue()
   );
 #else // unix
 #endif // flavor
@@ -201,15 +201,6 @@ void GraphicsContext::setTextAlignment(unsigned int alignment) throw(UserInterfa
 #else // unix
 #endif // flavor
 }
-
-// Dimension GraphicsContext::getDimension() const throw(UserInterfaceException) {
-// #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-//   RECT rect;
-//   ::GetClientRect((HWND)drawableHandle, &rect);
-//   return Region();
-// #else // unix
-// #endif // flavor
-// }
 
 void GraphicsContext::clear() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)

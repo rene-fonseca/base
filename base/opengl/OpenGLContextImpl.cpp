@@ -18,7 +18,7 @@
 #include <base/concurrency/SpinLock.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  include <base/platforms/os/unix/GDI.cpp>
+#  include <base/platforms/win32/GDI.cpp>
 #else // unix
 #  include <base/platforms/os/unix/GLX.cpp>
 #endif // flavor
@@ -45,9 +45,7 @@ void OpenGLContextImpl::loadModule() throw(OpenGLException) {
   );
 }
 
-OpenGLContextImpl::OpenGLContextImpl() throw(OpenGLException)
-  : version(0),
-    openGL() {
+OpenGLContextImpl::OpenGLContextImpl() throw(OpenGLException) {
 }
 
 String OpenGLContextImpl::getGLClientVendor() const throw(OpenGLException) {
@@ -142,7 +140,10 @@ bool OpenGLContextImpl::isCurrent() const throw(OpenGLException) {
 
 void OpenGLContextImpl::makeCurrent() throw(OpenGLException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
-  native::GDI::wglMakeCurrent((HDC)graphicsContextHandle, (HGLRC)renderingContextHandle);
+  assert(
+    native::GDI::wglMakeCurrent((HDC)graphicsContextHandle, (HGLRC)renderingContextHandle),
+    OpenGLException(this)
+  );
 #else // unix
   assert(
     native::GLX::glXMakeCurrent(
@@ -186,11 +187,11 @@ void OpenGLContextImpl::deselect() throw() {
 
 void OpenGLContextImpl::swap() throw(OpenGLException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  // ::SwapBuffers((HDC)graphicsContextHandle); // ignore errors
-  assert(
-    ::SwapBuffers((HDC)graphicsContextHandle),
-    OpenGLException("Unable to swap buffers", this)
-  );
+  native::GDI::wglSwapBuffers((HDC)graphicsContextHandle); // ignore errors
+//   assert(
+//     native::GDI::wglSwapBuffers((HDC)graphicsContextHandle),
+//     OpenGLException("Unable to swap buffers", this)
+//   );
 #else // unix
   native::GLX::glXSwapBuffers((Display*)Backend<WindowImpl>::getDisplay(), (GLXDrawable)drawableHandle);
 #endif // flavor

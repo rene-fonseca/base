@@ -80,14 +80,14 @@ Widget::Widget(Window& owner) throw(UserInterfaceException) {
   
   int blackPixel = ::XBlackPixelOfScreen((Screen*)screenHandle);
   int whitePixel = ::XWhitePixelOfScreen((Screen*)screenHandle);
-  
+
   drawableHandle = (void*)::XCreateSimpleWindow(
     (Display*)displayHandle,
     (::Window)owner.drawableHandle, // parent
     0, // x
     0, // y
-    0, // width
-    0, // height
+    1, // width // TAG: X-Win32 5.4 does not accept 0
+    1, // height // TAG: X-Win32 5.4 does not accept 0
     0, // border width
     blackPixel, // border color
     blackPixel // background

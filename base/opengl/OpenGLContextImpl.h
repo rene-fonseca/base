@@ -30,8 +30,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class OpenGLContextImpl : virtual public Drawable {
 protected:
 
-  /** Version of the OpenGL window management (e.g. 0x010300). */
-  unsigned int version;
   void* graphicsContextHandle;
   /** Opaque handle to OpenGL rendering context. */
   void* renderingContextHandle;
@@ -63,10 +61,7 @@ protected:
   static void loadModule() throw(OpenGLException);
 public:
 
-  /** OpenGL implementation. */
-  OpenGL openGL;
-
-  /** OpenGL support flags. */
+  /** OpenGL format flags. */
   enum Flag {
     COLOR_INDEX = 1, /**< Color index. */
     DOUBLE_BUFFERED = COLOR_INDEX << 1, /**< Request double buffered. */
@@ -85,9 +80,9 @@ public:
     RGBA32 = RGB24 << 1,
     OVERLAY = RGBA32 << 1,
     UNDERLAY = OVERLAY << 1,
-    DIRECT = UNDERLAY << 1 /**< Direct rendering support. */
-    // ACCELERATED (same as DIRECT?)
-    // GENERIC
+    SWAP_LAYER, /**< Swap individual layers. */
+    DIRECT = UNDERLAY << 1, /**< Direct rendering support (accelerated). */
+    GENERIC = DIRECT << 1 /**< Generic implementation. */
   };
   
   /**
@@ -140,26 +135,32 @@ public:
   }
 
   inline bool isDoubleBuffered() const throw() {
-    return false;
+    return false; // TAG: fixme
   }
-
+  
   inline bool isRGBA() const throw() {
-    return false;
+    return false; // TAG: fixme
+  }  
+  
+  inline bool hasAlphaBuffer() const throw() {
+    return alphaBits;
   }
   
-  inline bool isHasAccumulatorBuffer() const throw() {
-    return false;
+  inline bool hasAccumulatorBuffer() const throw() {
+    return accumulatorBits;
   }
   
-  inline bool isHasDepthBuffer() const throw() {
-    return false;
+  inline bool hasDepthBuffer() const throw() {
+    return depthBits;
   }
   
-  inline bool isHasStencilBuffer() const throw() {
-    return false;
+  inline bool hasStencilBuffer() const throw() {
+    return stencilBits;
   }
-
-  // ...
+  
+  inline bool hasAuxBuffers() const throw() {
+    return auxBuffers;
+  }
 
   /**
     Returns true if context is a direct rendering context.

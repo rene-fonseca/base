@@ -52,10 +52,13 @@ libbase_la_SOURCES = \
   Destruct.cpp \
   DeviceException.cpp \
   Dimension.cpp \
+  Double.cpp \
   Exception.cpp \
+  Float.cpp \
   FloatingPoint.cpp \
   Integer.cpp \
   UnsignedInteger.cpp \
+  LongDouble.cpp \
   LongInteger.cpp \
   UnsignedLongInteger.cpp \
   MemoryException.cpp \
@@ -96,7 +99,9 @@ section_HEADERS = \
   Cast.h \
   CastException.h \
   Dimension.h \
+  Double.h \
   Exception.h \
+  Float.h \
   FloatingPoint.h \
   Object.h \
   Character.h \
@@ -109,6 +114,7 @@ section_HEADERS = \
   BidirectionalIterator.h \
   Integer.h \
   UnsignedInteger.h \
+  LongDouble.h \
   LongInteger.h \
   UnsignedLongInteger.h \
   Overflow.h \

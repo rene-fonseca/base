@@ -316,8 +316,6 @@ public:
   inline Position getLocalBindingOffset(Binding binding) const throw() {
     const Dimension dimension = getDimension();
     switch (binding) {
-    case UPPER_LEFT:
-      return Position(0, 0);
     case UPPER_CENTER:
       return Position(dimension.getWidth()/2, 0);
     case UPPER_RIGHT:
@@ -334,6 +332,9 @@ public:
       return Position(dimension.getWidth()/2, static_cast<int>(dimension.getHeight()) - 1);
     case LOWER_RIGHT:
       return Position(static_cast<int>(dimension.getWidth()) - 1, static_cast<int>(dimension.getHeight()) - 1);
+    case UPPER_LEFT:
+    default:
+      return Position(0, 0);
     }
   }
   

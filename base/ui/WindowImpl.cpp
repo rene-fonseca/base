@@ -2417,8 +2417,6 @@ Dimension WindowImpl::getDisplayDimension() throw() {
 unsigned int WindowImpl::getMouseButtonIndex(Mouse::Button button) throw() {
   // keep out to date with WindowImpl::Mouse::Button
   switch (button) {
-  case Mouse::LEFT:
-    return 0;
   case Mouse::MIDDLE:
     return 1;
   case Mouse::RIGHT:
@@ -2429,14 +2427,15 @@ unsigned int WindowImpl::getMouseButtonIndex(Mouse::Button button) throw() {
     return 4;
   case Mouse::WHEEL:
     return 5;
+  case Mouse::LEFT:
+  default:
+    return 0;
   }
 }
 
 StringLiteral WindowImpl::getMouseButtonName(Mouse::Button button) throw() {
   // keep out to date with WindowImpl::Mouse::Button
   switch (button) {
-  case Mouse::LEFT:
-    return MESSAGE("LEFT");
   case Mouse::MIDDLE:
     return MESSAGE("MIDDLE");
   case Mouse::RIGHT:
@@ -2447,6 +2446,9 @@ StringLiteral WindowImpl::getMouseButtonName(Mouse::Button button) throw() {
     return MESSAGE("EXTRA2");
   case Mouse::WHEEL:
     return MESSAGE("WHEEL");
+  case Mouse::LEFT:
+  default:
+    return MESSAGE("LEFT");
   }
 }
 

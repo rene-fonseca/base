@@ -23,7 +23,7 @@
 #include <base/string/MultibyteException.h>
 #include <base/string/WideStringException.h>
 #include <base/mem/AllocatorEnumeration.h>
-#include <limits.h>
+#include <base/Type.h>
 #include <wctype.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -104,6 +104,16 @@ public:
   static inline Character toLower(Character character) throw() {return towlower(character);}
   /** Converts the character to uppercase. */
   static inline Character toUpper(Character character) throw() {return towupper(character);}
+
+  class ToLowerCase {
+  public:
+    inline Character operator()(Character value) const throw() {return towlower(value);}
+  };
+
+  class ToUpperCase {
+  public:
+    inline Character operator()(Character value) const throw() {return towupper(value);}
+  };
 };
 
 
@@ -134,7 +144,7 @@ public:
   /** Specifies the granularity of the capacity. Guaranteed to be greater than 0. */
   static const unsigned int GRANULARITY = 16;
   /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. Unresolved problem: size of int depends on architecture. */
-  static const unsigned int MAXIMUM_LENGTH = ((INT_MAX/sizeof(Character) - 1)/GRANULARITY)*GRANULARITY;
+  static const unsigned int MAXIMUM_LENGTH = ((Int::MAXIMUM/sizeof(Character) - 1)/GRANULARITY)*GRANULARITY;
 
   /** The type of the modifying string iterator. */
   typedef ReferenceCountedCapacityAllocator<Character>::Iterator Iterator;
@@ -175,7 +185,7 @@ private:
   /**
     Compare the null-terminated strings ignoring the case.
   */
-  int compareToIgnoreCase(const Character* left, const Character* right) const throw();
+  static int compareToIgnoreCase(const Character* left, const Character* right) throw();
 protected:
 
   /**
@@ -197,7 +207,11 @@ protected:
   /**
     Sets the length of the string.
   */
-  void setLength(unsigned int length) throw(WideStringException);
+  inline void setLength(unsigned int length) throw(WideStringException, MemoryException) {
+    assert(length <= MAXIMUM_LENGTH, WideStringException());
+    elements.copyOnWrite(); // we are about to modify the buffer
+    elements->setSize(length + 1);
+  }
 public:
 
   /**
@@ -225,7 +239,7 @@ public:
     @param string NULL-terminated string. If NULL, the string is initialized with
     no characters in it.
   */
-  WideString(const Character* string) throw(MemoryException);
+  WideString(const Character* string) throw(WideStringException, MemoryException);
 
   /**
     Initializes the string from a NULL-terminated string. If the length of the
@@ -248,12 +262,15 @@ public:
   /**
     Initializes string from other string.
   */
-  WideString(const WideString& copy) throw();
+  inline WideString(const WideString& copy) throw() : elements(copy.elements) {}
 
   /**
     Assignment of string with string.
   */
-  WideString& operator=(const WideString& eq) throw();
+  WideString& operator=(const WideString& eq) throw() {
+    elements = eq.elements; // self assignment handled by automation pointer
+    return *this;
+  }
 
   /**
     Returns the number of characters in the string.
@@ -276,14 +293,16 @@ public:
   inline unsigned int getCapacity() const throw() {return elements->getCapacity();}
 
   /**
-    Ensures that the capacity of the buffer is at least equal to the specified minimum.
+    Ensures that the capacity of the buffer is at least equal to the specified
+    minimum. This applies to all shared strings.
 
     @param capacity Specifies the minimum capacity of the string.
   */
   void ensureCapacity(unsigned int capacity) throw(MemoryException);
 
   /**
-    Releases any unused capacity of the string.
+    Releases any unused capacity of the string. This applies to all shared
+    strings.
   */
   void optimizeCapacity() throw();
 
@@ -427,6 +446,14 @@ public:
     @param maximum The maximum length of the to be appended string.
   */
   WideString& append(const WideStringLiteral& str, unsigned int maximum) throw(WideStringException, MemoryException);
+
+  /**
+    Appends the NULL-terminated string to this string.
+
+    @param str The string to be appended.
+    @param maximum The maximum length of the to be appended string.
+  */
+  WideString& append(const Character* str, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException);
 
   /**
     Prepends the character to this string.
@@ -720,8 +747,7 @@ public:
   /**
     Returns null-terminated wide string.
   */
-  inline const Character* getElements() const {
-    // TAG: problem with const
+  inline const Character* getElements() const throw() {
     elements->getElements()[elements->getSize() - 1] = Traits::TERMINATOR; // no need to copy on write
     return getBuffer();
   }

@@ -15,16 +15,9 @@
 #include <base/Functor.h>
 #include <stdlib.h>
 #include <wchar.h>
+#include <limits.h> // defines MB_LEN_MAX
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
-void WideString::setLength(unsigned int length) throw(WideStringException) {
-  if (length != getLength()) {
-    assert(length <= MAXIMUM_LENGTH, WideStringException()); // choose better exception
-    Character* buffer = getBuffer(); // we are about to modify the buffer
-    elements->setSize(length + 1);
-  }
-}
 
 const WideString WideString::DEFAULT_STRING(WIDEMESSAGE(""));
 
@@ -38,36 +31,27 @@ WideString::WideString(unsigned int capacity) throw(MemoryException) : elements(
 
 WideString::WideString(const WideStringLiteral& str) throw(WideStringException, MemoryException) : elements(0) {
   unsigned int length = str.getLength();
-  assert(length <= MAXIMUM_LENGTH, WideStringException()); // choose better exception
+  assert(length <= MAXIMUM_LENGTH, WideStringException()); // TAG: this is not required
   elements = new ReferenceCountedCapacityAllocator<Character>(length + 1, GRANULARITY);
   copy<Character>(elements->getElements(), str, length); // no overlap
 }
 
-WideString::WideString(const Character* string) throw(MemoryException) : elements(0) {
-  int numberOfCharacters = 0;
-  if (string) { // is string proper (not empty)
-    const Character* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
-    assert(terminator, MemoryException()); // maximum length exceeded
-    numberOfCharacters = terminator - string;
-  }
+WideString::WideString(const Character* string) throw(WideStringException, MemoryException) : elements(0) {
+  assert(string, WideStringException()); // make sure string is proper (not empty)
+  const Character* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
+  assert(terminator, WideStringException()); // maximum length exceeded
+  int numberOfCharacters = terminator - string;
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
-  if (numberOfCharacters) {
-    copy(elements->getElements(), string, numberOfCharacters); // no overlap
-  }
+  copy(elements->getElements(), string, numberOfCharacters); // no overlap
 }
 
 WideString::WideString(const Character* string, unsigned int maximum) throw(OutOfDomain, MemoryException) : elements(0) {
   assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
-  int numberOfCharacters = 0;
-  if (string) { // is string proper (not empty)
-    const Character* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
-    assert(terminator, MemoryException()); // maximum length exceeded
-    numberOfCharacters = terminator - string;
-  }
+  assert(string, WideStringException()); // make sure string is proper (not empty)
+  const Character* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
+  int numberOfCharacters = terminator ? (terminator - string) : maximum;
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
-  if (numberOfCharacters) {
-    copy(elements->getElements(), string, numberOfCharacters); // no overlap
-  }
+  copy(elements->getElements(), string, numberOfCharacters); // no overlap
 }
 
 WideString::WideString(const char* string) throw(MultibyteException, MemoryException) : elements(0) {
@@ -111,22 +95,12 @@ WideString::WideString(const char* string, unsigned int maximum) throw(OutOfDoma
   }
 }
 
-WideString::WideString(const WideString& copy) throw() : elements(copy.elements) {
-}
-
-WideString& WideString::operator=(const WideString& eq) throw() {
-  this->elements = eq.elements; // self assignment handled by automation pointer
-  return *this;
-}
-
 void WideString::ensureCapacity(unsigned int capacity) throw(MemoryException) {
-  // no need to do copyOnWrite - or should we?
-  elements->ensureCapacity(capacity);
+  elements->ensureCapacity(capacity); // no need to do copyOnWrite
 }
 
 void WideString::optimizeCapacity() throw() {
-  // no need to do copyOnWrite - or should we?
-  elements->optimizeCapacity();
+  elements->optimizeCapacity(); // no need to do copyOnWrite
 }
 
 unsigned int WideString::getGranularity() const throw() {
@@ -152,15 +126,16 @@ void WideString::setAt(unsigned int index, Character value) throw(OutOfRange) {
 }
 
 WideString& WideString::remove(unsigned int start, unsigned int end) throw(MemoryException) {
-  if ((start <= end) && (start < getLength())) { // protect against some cases
-    if (end >= getLength() - 1) {
-      // remove section from end of string
-      setLength(start);
+  int length = getLength();
+  if ((start < end) && (start < length)) { // protect against some cases
+    if (end >= length) {
+      elements.copyOnWrite(); // we are about to modify the buffer
+      elements->setSize(start + 1); // remove section from end of string
     } else {
       // remove section from middle of string
-      Character* buffer = getBuffer();
-      move(buffer + start, buffer + end + 1, getLength() - end - 1); // move end of string
-      setLength(getLength() - (end - start + 1));
+      Character* buffer = getBuffer(); // we are about to modify the buffer
+      move(buffer + start, buffer + end, length - end); // move end of string
+      elements->setSize(length - (end - start) + 1); // remember space for terminator
     }
   }
   return *this;
@@ -169,29 +144,28 @@ WideString& WideString::remove(unsigned int start, unsigned int end) throw(Memor
 WideString& WideString::insert(unsigned int index, Character ch) throw(WideStringException, MemoryException) {
   int length = getLength();
   setLength(length + 1);
-  Character* buffer = getBuffer();
+  Character* buffer = elements->getElements();
   if (index >= length) {
     buffer[length] = ch; // insert section at end of string
   } else {
     // insert section in middle or beginning of string
-    move(buffer + index + 1, buffer + index, 1);
-    buffer[length] = ch;
+    move(buffer + index + 1, buffer + index, length - index);
+    buffer[index] = ch;
   }
   return *this;
 }
 
 WideString& WideString::insert(unsigned int index, const WideString& str) throw(WideStringException, MemoryException) {
-// problem if insert string into itself - copy.... -> move
   int length = getLength();
   int strlength = str.getLength();
-  setLength(length + strlength);
-  Character* buffer = getBuffer();
+  setLength(length + strlength); // TAG: also protects against self insertion - but can this be circumvented
+  Character* buffer = elements->getElements();
   if (index >= length) {
     // insert section at end of string
     copy(buffer + length, str.getBuffer(), strlength);
   } else {
     // insert section in middle or beginning of string
-    move(buffer + index + strlength, buffer + index, strlength); // move end of string
+    move(buffer + index + strlength, buffer + index, length - index); // move end of string
     copy(buffer + index, str.getBuffer(), strlength);
   }
   return *this;
@@ -200,13 +174,13 @@ WideString& WideString::insert(unsigned int index, const WideString& str) throw(
 WideString& WideString::insert(unsigned int index, const WideStringLiteral& str) throw(WideStringException, MemoryException) {
   int length = getLength();
   setLength(length + str.getLength());
-  Character* buffer = getBuffer();
+  Character* buffer = elements->getElements();
   if (index >= length) {
     // insert section at end of string
     copy<Character>(buffer + length, str, str.getLength());
   } else {
     // insert section in middle or beginning of string
-    move<Character>(buffer + index + str.getLength(), buffer + index, str.getLength());
+    move<Character>(buffer + index + str.getLength(), buffer + index, length - index);
     copy<Character>(buffer + index, str, str.getLength());
   }
   return *this;
@@ -215,8 +189,21 @@ WideString& WideString::insert(unsigned int index, const WideStringLiteral& str)
 WideString& WideString::append(const WideStringLiteral& str, unsigned int maximum) throw(WideStringException, MemoryException) {
   int length = getLength();
   setLength(length + str.getLength());
-  Character* buffer = getBuffer();
+  Character* buffer = elements->getElements();
   copy<Character>(buffer + length, str, str.getLength());
+  return *this;
+}
+
+WideString& WideString::append(const Character* str, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException) {
+  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
+  assert(str, WideStringException()); // make sure string is proper (not empty)
+  int strlength = 0;
+  const Character* terminator = find(str, maximum, Traits::TERMINATOR); // find terminator
+  strlength = terminator ? (terminator - str) : maximum;
+  int length = getLength();
+  setLength(length + strlength);
+  Character* buffer = elements->getElements();
+  copy(buffer + length, str, strlength);
   return *this;
 }
 
@@ -297,20 +284,12 @@ WideString& WideString::reverse() throw() {
 //}
 
 WideString& WideString::toLowerCase() throw() {
-  Character* p = getBuffer();
-  while (*p != Traits::TERMINATOR) {
-    *p = Traits::toLower(*p);
-    ++p;
-  }
+  transform(getBuffer(), getLength(), Traits::ToLowerCase());
   return *this;
 }
 
 WideString& WideString::toUpperCase() throw() {
-  Character* p = getBuffer();
-  while (*p != Traits::TERMINATOR) {
-    *p = Traits::toUpper(*p);
-    ++p;
-  }
+  transform(getBuffer(), getLength(), Traits::ToUpperCase());
   return *this;
 }
 
@@ -323,7 +302,7 @@ int WideString::compareTo(const Character* str) const throw(WideStringException)
   return wcscmp(getElements(), str);
 }
 
-int WideString::compareToIgnoreCase(const Character* left, const Character* right) const throw() {
+int WideString::compareToIgnoreCase(const Character* left, const Character* right) throw() {
   while (*left && *right) { // continue until end of any string has been reached
     if (*left != *right) { // not equal
       int result = Traits::toLower(*left) - Traits::toLower(*right);
@@ -376,7 +355,8 @@ bool WideString::endsWith(const WideStringLiteral& suffix) const throw() {
 }
 
 int WideString::indexOf(Character ch, unsigned int start) const throw() {
-  if (start >= getLength()) {
+  int length = getLength();
+  if (start >= length) {
     return -1; // not found
   }
 

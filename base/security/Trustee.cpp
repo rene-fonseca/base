@@ -190,7 +190,7 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
       type = Trustee::GROUP;
       integralId = entry->gr_gid;
     } else {
-      if (name == MESSAGE("other")) {
+      if (name == "other") {
         type = Trustee::EVERYONE;
         integralId = 0;
       } else {
@@ -338,16 +338,17 @@ String Trustee::getName() const throw(TrusteeException) {
 #endif // flavor
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Trustee& value) throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!value.id.isValid()) {
-    return stream << MESSAGE("<unknown>");
+    return stream << "<unknown>";
   }
   StringOutputStream s;
   PSID sid = (PSID)value.id->getElements(); // must be valid
   
   // write prefix and revision number
-  s << MESSAGE("S-") << ((SID*)sid)->Revision << '-';
+  s << "S-" << ((SID*)sid)->Revision << '-';
   
   // write identifier authority
   PSID_IDENTIFIER_AUTHORITY identifier = ::GetSidIdentifierAuthority(sid);
@@ -375,7 +376,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value)
 #else
   unsigned long id = value.integralId;
   if (id == PrimitiveTraits<unsigned long>::MAXIMUM) {
-    return stream << MESSAGE("<unknown>");
+    return stream << "<unknown>";
   }
   StringOutputStream s;
   switch (value.getType()) {
@@ -387,7 +388,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value)
     break;
   case Trustee::EVERYONE:
   default: // UNSPECIFIED and CLASS not possible
-    s << 'G' << '-' << MESSAGE("other");
+    s << 'G' << '-' << "other";
     break;
   }
   return stream << s.getString();

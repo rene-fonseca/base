@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,8 +29,12 @@ MessageDialog::MessageDialog() throw()
   : category(MessageDialog::INFORMATION), answer(MessageDialog::CANCEL) {
 }
 
-MessageDialog::MessageDialog(const String& _title, const String& _message, Category _category) throw()
-  :  category(_category), title(_title), message(_message), answer(MessageDialog::CANCEL) {
+MessageDialog::MessageDialog(
+  const String& _title, const String& _message, Category _category) throw()
+  : category(_category),
+    title(_title),
+    message(_message),
+    answer(MessageDialog::CANCEL) {
 }
 
 bool MessageDialog::execute() throw(UserInterfaceException) {

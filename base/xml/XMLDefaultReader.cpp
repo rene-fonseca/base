@@ -536,13 +536,13 @@ XMLDefaultReader::XMLDefaultReader() throw()
 bool XMLDefaultReader::getFeature(const String& name) const
   throw(SAXNotRecognizedException, SAXNotSupportedException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  if (name == MESSAGE("http://xml.org/sax/features/validation")) {
+  if (name == "http://xml.org/sax/features/validation") {
     return validate;
-  } else if (name == MESSAGE("http://xml.org/sax/features/namespaces")) {
+  } else if (name == "http://xml.org/sax/features/namespaces") {
     return false; // TAG: fixme
-  } else if (name == MESSAGE("http://xml.org/sax/features/namespaces-prefixes")) {
+  } else if (name == "http://xml.org/sax/features/namespaces-prefixes") {
     return false; // TAG: fixme
-  } else if (name == MESSAGE("http://xml.org/sax/features/is-standalone")) {
+  } else if (name == "http://xml.org/sax/features/is-standalone") {
     assert(parsing, SAXNotSupportedException(this));
     return standalone;
   } else {
@@ -561,11 +561,11 @@ void XMLDefaultReader::setFeature(const String& name, bool value)
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   
   // TAG: what about recovering
-  if (name == MESSAGE("http://xml.org/sax/features/validation")) {
+  if (name == "http://xml.org/sax/features/validation") {
     validate = value;
-  } else if (name == MESSAGE("http://xml.org/sax/features/namespaces")) {
+  } else if (name == "http://xml.org/sax/features/namespaces") {
     throw SAXNotSupportedException(this);
-  } else if (name == MESSAGE("http://xml.org/sax/features/namespaces-prefixes")) {
+  } else if (name == "http://xml.org/sax/features/namespaces-prefixes") {
     throw SAXNotSupportedException(this);
   } else {
     throw SAXNotRecognizedException(this);

@@ -27,6 +27,22 @@ template<class TYPE>
 inline TYPE maximum(TYPE a, TYPE b) throw() {return (a >= b) ? a : b;}
 
 /**
+  Returns -1, 0, and 1 if a is less than b, a is equal to b, and a is greater
+  than b, respectively. The type must implement the less than and equal to
+  operators.
+*/
+template<class TYPE>
+inline int compare(const TYPE& a, const TYPE& b) throw() {
+  if (a < b) {
+    return -1;
+  } else if (a == b) {
+    return 0;
+  } else {
+    return 1;
+  }
+}
+
+/**
   Swaps the values.
 */
 template<class TYPE>
@@ -41,6 +57,19 @@ inline void swapper(TYPE& a, TYPE& b) throw() {
 */
 template<class TYPE> inline TYPE absolute(const TYPE& value) {return (value >= TYPE(0)) ? value : -value;}
 //template<class TYPE> inline TYPE absolute<double>(const TYPE& value) {return fabs(value);}
+
+/**
+  Throws the specified exception if the assertion is false.
+
+  @param assertion The assertion.
+  @param exception The exception.
+*/
+template<class EXCEPTION>
+inline void assert(bool assertion, EXCEPTION exception) {
+  if (!assertion) {
+    throw exception;
+  }
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -322,11 +322,19 @@ int WideString::compareTo(const Character* str) const throw() {
 }
 
 int WideString::compareToIgnoreCase(const WideString& str) const throw() {
+#if defined(__win32__)
+  return _wcsicmp(getElements(), str.getElements());
+#else // __unix__
   return wcscasecmp(getElements(), str.getElements());
+#endif
 }
 
 int WideString::compareToIgnoreCase(const Character* str) const throw() {
+#if defined(__win32__)
+  return _wcsicmp(getElements(), str);
+#else // __unix__
   return wcscasecmp(getElements(), str);
+#endif
 }
 
 bool WideString::startsWith(const WideString& prefix) const throw() {

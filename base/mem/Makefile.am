@@ -23,6 +23,7 @@ libmem_la_SOURCES = \
   MemoryCorruption.cpp \
   MemoryDump.cpp \
   NullPointer.cpp \
+  Reference.cpp \
   SharedMemory.cpp \
   VirtualMemory.cpp
 
@@ -39,6 +40,7 @@ section_HEADERS = \
   MemoryCorruption.h \
   MemoryDump.h \
   NullPointer.h \
+  Reference.h \
   ReferenceCountedObjectWrapper.h \
   ReferenceCountedObjectPointer.h \
   ReferenceCounter.h \

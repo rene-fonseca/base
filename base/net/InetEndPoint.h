@@ -86,6 +86,20 @@ public:
   InetEndPoint& operator=(const InetEndPoint& eq) throw();
 
   /**
+    Returns true if the end point are equal.
+  */
+  inline bool operator==(const InetEndPoint& eq) const throw() {
+    return (port == eq.port) && (address == eq.address);
+  }
+  
+  /**
+    Returns true if the end point are non-equal.
+  */
+  inline bool operator!=(const InetEndPoint& eq) const throw() {
+    return (port != eq.port) || (address != eq.address);
+  }
+  
+  /**
     Returns the address.
   */
   inline const InetAddress& getAddress() const throw() {

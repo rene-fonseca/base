@@ -19,7 +19,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Raised on memory corruption such as buffer overflows is detected.
+  Raised on memory corruption such as buffer overflows.
   
   @short Memory corruption exception.
   @ingroup exceptions memory

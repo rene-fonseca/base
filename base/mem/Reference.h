@@ -145,8 +145,8 @@ public:
   /**
     Returns the pointer value of this automation pointer. Be careful when
     utilizing this member function. Its completely up to you to ensure that
-    the reference counting rules aren't violated. Invocation of this method should
-    be avoided.
+    the reference counting rules aren't violated. Invocation of this method
+    should be avoided.
   */
   inline TYPE* getValue() const throw() {
     return value;

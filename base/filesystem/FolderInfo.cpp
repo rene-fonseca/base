@@ -142,8 +142,8 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
     }
   #endif
   mode = buffer.st_mode;
-  owner = User(buffer.st_uid);
-  group = Group(buffer.st_gid);    
+  owner = User((const void*)buffer.st_uid);
+  group = Group((const void*)buffer.st_gid);    
   access = buffer.st_atime;
   modification = buffer.st_mtime;
   change = buffer.st_ctime;

@@ -143,8 +143,8 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException) : path(_path)
   #endif
   size = buffer.st_size;
   mode = buffer.st_mode;
-  owner = User(buffer.st_uid);
-  group = Group(buffer.st_gid);
+  owner = User((const void*)buffer.st_uid);
+  group = Group((const void*)buffer.st_gid);
   access = buffer.st_atime;
   modification = buffer.st_mtime;
   change = buffer.st_ctime;

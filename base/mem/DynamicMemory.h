@@ -83,7 +83,7 @@ namespace alloc {
   inline void* operator new(MemorySize size) throw(MemoryException) {
     assert(size > 0, MemoryException()); // should optimized out by compiler under normal circumstances
     void* result = DynamicMemory::allocate(size);
-    assert(result == 0, MemoryException());
+    assert(result != 0, MemoryException());
     return result;
   }
   
@@ -100,13 +100,9 @@ namespace alloc {
     bytes. Raises MemoryException if the requested size is 0.
   */
   inline void* operator new[](MemorySize size) throw(MemoryException) {
-    if (size == 0) { // should optimized out by compiler under normal circumstances
-      throw MemoryException();
-    }
+    assert(size > 0, MemoryException()); // should optimized out by compiler under normal circumstances
     void* result = DynamicMemory::allocate(size);
-    if (result == 0) {
-      throw MemoryException();
-    }
+    assert(result != 0, MemoryException());
     return result;
   }
 

@@ -70,6 +70,10 @@ struct uint128 {
 
 /** A native wide character. */
 typedef wchar_t wchar;
+/** UCS-2 encoded character. */
+typedef uint16 ucs2;
+/** UCS-4 encoded character (ISO/IEC 10646). */
+typedef uint32 ucs4;
 
 /** A void type. */
 struct nothing {

@@ -468,7 +468,7 @@ AC_BASE_CHECK(
 
 dnl Additional libraries to test
 base_additional_attempts=
-AC_BASE_EQUAL($ac_base_flavour, unix, AC_BASE_APPEND(base_additional_attempts, '-lpthread'))
+AC_BASE_EQUAL($ac_base_flavour, unix, AC_BASE_APPEND(base_additional_attempts, -lpthread))
 
 AC_BASE_CHECK(
   whether C++ compiler (AC_BASE_TRIM($CXX $CXXFLAGS $CPPFLAGS $LDFLAGS $LIBS)) is a cross compiler,
@@ -477,7 +477,7 @@ AC_BASE_CHECK(
     AC_BASE_ATTEMPT(
       base_cxx_not_cross,
       base_cv_cxx_libs,
-      "" $base_additional_attempts,
+      "" [$base_additional_attempts],
       AC_BASE_TRY_CXX_RUN(base_cxx_not_cross, config/cross++.cpp, $base_cv_cxx_libs)dnl
     )dnl
     AC_BASE_NOT(base_cv_cxx_cross, base_cxx_not_cross)dnl

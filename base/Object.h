@@ -14,7 +14,6 @@
 #ifndef _DK_SDU_MIP__BASE__OBJECT_H
 #define _DK_SDU_MIP__BASE__OBJECT_H
 
-#include <base/features.h>
 #include <base/Functor.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -42,24 +41,11 @@ public:
 };
 
 template<>
-inline bool isRelocateable<Object>() throw() {return true;}
+class Relocateable<Object> {
+public:
 
-
-
-/**
-  This operator allocates memory for an object on the heap. Throws an exception if unable to allocate object.
-
-  @param size The size of the object.
-  @return The object.
-*/
-//void* operator new(size_t size) throw(MemoryException);
-
-/**
-  This operator releases memeory used by an object.
-
-  @param p The object to be released.
-*/
-//void operator delete(void* p);
+  static const bool IS_RELOCATEABLE = Relocateable<bool>::IS_RELOCATEABLE;
+};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

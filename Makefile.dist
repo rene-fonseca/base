@@ -23,14 +23,14 @@ all:
 	autoconf
 	rm -f config.cache
 
-qwerty:
-	for src in `find . -name 'Makefile.bam'` ; do dest=`echo $$src | sed 's/\.bam$$/\.am/'` ; cp $$src $$dest ; done
-
 debug: all
-	CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --enable-debug --enable-trace --enable-regexp=pcre
+	CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --enable-debug --enable-trace --enable-regexp=posix
 
 normal: all
 	CXXFLAGS="-O2 -g2" ./configure --prefix=/usr/local/base --enable-debug
 
 final: all
 	CXXFLAGS="-O3" ./configure --prefix=/usr/local/base
+
+lendum: all
+	CXX=gcc CXXFLAGS="-O0 -g3" LDFLAGS="-lm" ./configure --prefix=/usr/local/base --enable-debug --enable-trace --enable-demangle=iberty --enable-regexp=pcre --enable-xml=gnomexml

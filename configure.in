@@ -122,6 +122,22 @@ if test "$base_explicit_namespace" = yes; then
   AC_DEFINE(_DK_SDU_MIP__BASE__NAMESPACE, 1, Specifies that the symbols of this framework should be placed in the namespace 'base')
 fi
 
+base_explicit_demangle=no
+AC_ARG_ENABLE(
+  demangle,[
+  --enable-demangle=[iberty|no]
+      Specifies that support for type name demangling should be included. This
+      feature is disabled by default. 'iberty' makes the framework use the
+      demangling functions of the iberty library.],
+  if test $enableval = iberty; then
+    base_explicit_demangle=iberty
+  elif test $enableval = no; then
+    base_explicit_demangle=no
+  else
+    AC_MSG_ERROR(Invalid argument used with the demangle flag.)
+  fi
+)
+
 base_explicit_inet_ipv6=auto
 AC_ARG_ENABLE(
   ipv6,[
@@ -181,9 +197,10 @@ base_explicit_regexp=no
 AC_ARG_ENABLE(
   regexp,[
   --enable-regexp=[pcre|posix|no]
-      Specifies that support for regular expressions should be included.
-      'pcre' selects Perl-Compatible Regular Expression library. The default
-      is no.],
+      Specifies that regular expression support should be included. 'pcre'
+      selects Perl-Compatible Regular Expression library. 'posix' selects POSIX
+      compatible regular expression support provided by the C library. The
+      default is no.],
   if test $enableval = pcre; then
     base_explicit_regexp=pcre
   elif test $enableval = posix; then
@@ -191,7 +208,22 @@ AC_ARG_ENABLE(
   elif test $enableval = no; then
     base_explicit_regexp=no
   else
-    AC_MSG_ERROR(The regular expression must be either 'pcre', 'posix', or 'no'.)
+    AC_MSG_ERROR(Invalid argument used with the regexp flag.)
+  fi
+)
+
+base_explicit_xml=no
+AC_ARG_ENABLE(
+  xml,[
+  --enable-xml=[gnomexml|no]
+      Specifies that XML support should be included. 'gnomexml' selects the
+      Gnome XML Library. The default is no.],
+  if test $enableval = gnomexml; then
+    base_explicit_xml=gnomexml
+  elif test $enableval = no; then
+    base_explicit_xml=no
+  else
+    AC_MSG_ERROR(Invalid argument used with the xml flag.)
   fi
 )
 
@@ -424,6 +456,13 @@ for ac_temp in [$1]; do
 done
 ])
 
+dnl AC_BASE_ADDBASELIB(library list)
+AC_DEFUN(AC_BASE_ADDBASELIB, [dnl
+for ac_temp in [$1]; do
+  BASELIBS="${BASELIBS}${BASELIBS:+ }${ac_temp}"
+done
+])
+
 
 AC_BASE_CHECK(
   checking whether C compiler (`echo $CC $CFLAGS $CPPFLAGS $LIBS`) works,
@@ -471,6 +510,27 @@ AC_BASE_CHECK(
   base_cv_stl_available,
   base_cv_stl_libs)
 AC_BASE_ADDLIB($base_cv_stl_libs)
+
+
+
+dnl Explicit features.
+
+if test "$base_explicit_demangle" = iberty; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__DEMANGLE_IBERTY, 1, Demangling support.)
+  AC_BASE_ADDBASELIB(-liberty -ldl)
+fi
+
+if test "$base_explicit_regexp" = posix; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__REGEXP_POSIX, 1, Utilize POSIX regular expression.)
+elif test "$base_explicit_regexp" = pcre; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__REGEXP_PCRE, 1, Utilize Perl-compatible regular expressions library.)
+  AC_BASE_ADDBASELIB(-lpcre)
+fi
+
+if test "$base_explicit_xml" = gnomexml; then
+  AC_DEFINE(_DK_SDU_MIP__BASE__XML_GNOME, 1, Utilize the Gnome XML library.)
+  AC_BASE_ADDBASELIB(-lxml -lz)
+fi
 
 
 
@@ -593,13 +653,6 @@ AC_BASE_YES(
   AC_DEFINE(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM, 1, Specifies that the Large File System should be utilized)
   AC_DEFINE(_LARGEFILE64_SOURCE, 1, Requests availability of the Large File System)
 )
-
-if test "$base_explicit_regexp" = posix; then
-  AC_DEFINE(_DK_SDU_MIP__BASE__REGEXP_POSIX, 1, Utilize POSIX regular expression.)
-elif test "$base_explicit_regexp" = pcre; then
-  AC_DEFINE(_DK_SDU_MIP__BASE__REGEXP_PCRE, 1, Utilize Perl-compatible regular expressions library.)
-  AC_BASE_ADDLIB(-lpcre)
-fi
 
 
 
@@ -740,7 +793,7 @@ fi
 
 
 CPPFLAGS="${CPPFLAGS}${CPPFLAGS:+ }"'-I${top_srcdir}/ellert'
+AC_SUBST(BASELIBS)
 
 
-
-AC_OUTPUT(Makefile ellert/Makefile ellert/docs/Makefile ellert/docs/en/Makefile ellert/base/Makefile ellert/vehicle/Makefile ellert/base/concurrency/Makefile ellert/base/mathematics/Makefile ellert/io/Makefile ellert/base/io/Makefile ellert/base/string/Makefile ellert/base/mem/Makefile ellert/base/net/Makefile ellert/control/Makefile ellert/base/collection/Makefile ellert/test/Makefile ellert/base/filesystem/Makefile ellert/base/iterator/Makefile )
+AC_OUTPUT(Makefile ellert/Makefile ellert/docs/Makefile ellert/docs/en/Makefile ellert/base/Makefile ellert/vehicle/Makefile ellert/base/concurrency/Makefile ellert/base/mathematics/Makefile ellert/io/Makefile ellert/base/io/Makefile ellert/base/string/Makefile ellert/base/mem/Makefile ellert/base/net/Makefile ellert/control/Makefile ellert/base/collection/Makefile ellert/test/Makefile ellert/base/filesystem/Makefile ellert/base/iterator/Makefile ellert/base/xml/Makefile )

@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/io/FileDescriptorInputStream.h>
 #include <base/io/EndOfFile.h>
 #include <base/concurrency/Thread.h>

@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/io/async/AsynchronousStream.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)

@@ -14,7 +14,6 @@
 #include <base/io/BufferedInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/Base.h>
-#include <base/Trace.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -103,7 +102,6 @@ bool BufferedInputStream::wait(unsigned int timeout) const throw(IOException) {
 }
 
 BufferedInputStream::~BufferedInputStream() throw(IOException) {
-  TRACE_MEMBER();
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

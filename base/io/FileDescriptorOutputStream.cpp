@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
+#include <base/platforms/features.h>
 #include <base/io/FileDescriptorOutputStream.h>
 #include <base/io/EndOfFile.h>
 #include <base/Trace.h>

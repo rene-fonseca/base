@@ -103,6 +103,13 @@ public:
     INTERNAL /**< Thread was exited due to internal exception - please forgive me. */
   };
   
+  enum Priority {
+    LOWEST_PRIORITY, /**< Asks for the lowest priority level. */
+    NORMAL_PRIORITY, /**< Asks for the normal priority level (which is 0). */
+    HIGHEST_PRIORITY, /**< Asks for the highest recommended priority level. */
+    HIGHEST_REALTIME_PRIORITY /**< Asks for the highest supported priority level. */
+  };
+  
   /** Specifies the size of the thread local storage. */
   static const unsigned int THREAD_LOCAL_STORAGE = 4096;
   
@@ -161,6 +168,13 @@ public:
     Self(Type type) throw() : ThreadException(type) {}
     Self(const char* message, Type type) throw() : ThreadException(message, type) {}
   };
+
+  /**
+    Returns the priority level corresponding to the named priority.
+
+    @param priority The named priority.
+  */
+  static int getNamedPriority(Priority priority) throw();
 private:
 
   /** The parent thread of the thread. */
@@ -275,9 +289,9 @@ public:
   static void sleep(unsigned int seconds) throw(OutOfDomain);
 
   /**
-    Relinquishes the currently executing thread voluntarily without blocking.
-    Notifies the scheduler that the current thread is willing to release its
-    time slice to other threads of the same or higher priority.
+    Relinquishes the time slot of currently executing thread voluntarily
+    without blocking. Notifies the scheduler that the current thread is willing
+    to release its time slice to other threads of the same or higher priority.
   */
   static void yield() throw();
 private:
@@ -342,6 +356,17 @@ public:
   inline bool isMainThread() const throw() {return parent == 0;}
 
   /**
+    Returns true if the executing thread is the only thread within the process.
+    This method is experimental!
+  */
+  static bool isStandalone() throw();
+  
+  /**
+    Returns the priority level of the executing thread.
+  */
+  static int getPriority() throw(ThreadException);
+
+  /**
     Returns true if the executing thread is the parent of this thread.
   */
   bool isParent() const throw();
@@ -359,7 +384,7 @@ public:
   /**
     Returns the current processing times (both user and system times).
   */
-  Times getTimes() const throw();
+  static Times getTimes() throw();
   
   /**
     The calling thread waits for the thread complete. Several threads are

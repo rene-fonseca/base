@@ -107,8 +107,9 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
   HANDLE timer = ::CreateWaitableTimer(0, TRUE, 0);
   if (timer) {
     long long timeout = -(nanoseconds+99)/100; // "-" selects relative mode
-    ::SetWaitableTimer(timer, (const FILETIME*)&timeout, 0, 0, 0, FALSE);
-    ::WaitForSingleObject(timer);
+    ::SetWaitableTimer(timer, (const LARGE_INTEGER*)&timeout, 0, 0, 0, FALSE);
+    DWORD result = ::WaitForSingleObjectEx(timer, INFINITE, TRUE);
+    // either WAIT_OBJECT_0 or WAIT_IO_COMPLETION
     ::CloseHandle(timer);
   } else {
     ::Sleep((nanoseconds+999999)/1000000); // round up
@@ -290,10 +291,8 @@ Thread::Thread(Thread* _parent) throw()
   const abi::__cxa_eh_globals* abi::__cxa_get_globals(); // this allows us to use __cxa_get_globals_fast
 #endif
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ASSERT(sizeof(DWORD) <= sizeof(Identifier));
   identifier = (Identifier)::GetCurrentThreadId();
 #else // pthread
-  ASSERT(sizeof(pthread_t) <= sizeof(Identifier));
   identifier = (Identifier)::pthread_self();
 #endif
 }
@@ -353,20 +352,174 @@ bool Thread::isParent() const throw() {
 
 bool Thread::isSelf() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ASSERT(sizeof(DWORD) <= sizeof(Identifier));
   return ::GetCurrentThreadId() == (DWORD)identifier;
 #else // pthread
-  ASSERT(sizeof(pthread_t) <= sizeof(Identifier));
   return ::pthread_self() == (pthread_t)identifier;
 #endif
 }
 
-Thread::Times Thread::getTimes() const throw() {
+bool Thread::isStandalone() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  // THREAD_AM_I_LAST_THREAD info;
+//  status = ntapi::NtQueryInformationThread(::GetCurrentThread(), ntapi::ThreadAmILastThread, &info, sizeof(info), 0);
+  return false;
+#else
+  return false;
+#endif
+}
+
+
+// TAG: put in Base.h
+template<class TYPE>
+inline TYPE clamp(TYPE minimum, TYPE value, TYPE maximum) throw() {
+  if (value < minimum) {
+    return minimum;
+  } else if (value > maximum) {
+    return maximum;
+  } else {
+    return value;
+  }
+}
+
+// TAG: put in Base.h
+template<class TYPE>
+inline bool isWithin(TYPE minimum, TYPE value, TYPE maximum) throw() {
+  if (value < minimum) {
+    return false;
+  } else if (value > maximum) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+int Thread::getNamedPriority(Priority priority) throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  static const int PRIORITY[] = {7 - 31, 7 - 15, 7 - 7, 7 - 1};
+#else // unix
+  static const int PRIORITY[] = {-20, -20, 0, 19};
+#endif // flavor
+  ASSERT(isWithin(0, priority, 3));
+  return PRIORITY[priority];
+}
+
+#if !defined(BELOW_NORMAL_PRIORITY_CLASS) // should have been in winbase.h
+  #define BELOW_NORMAL_PRIORITY_CLASS ((DWORD)0x00004000)
+#endif
+
+#if !defined(ABOVE_NORMAL_PRIORITY_CLASS) // should have been in winbase.h
+  #define ABOVE_NORMAL_PRIORITY_CLASS ((DWORD)0x00008000)
+#endif
+
+int Thread::getPriority() throw(ThreadException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  // see http://msdn.microsoft.com/library/en-us/dllproc/prothred_75ir.asp
+  DWORD priorityClass = ::GetPriorityClass(::GetCurrentProcess());
+  int priority = ::GetThreadPriority(::GetCurrentThread());
+  if ((priorityClass == 0) || (priority == THREAD_PRIORITY_ERROR_RETURN)) {
+    throw ThreadException("Unable to get priority of thread", Type::getType<Thread>());
+  }
+  
+  // named thread priorities
+  //   THREAD_PRIORITY_IDLE
+  //   THREAD_PRIORITY_TIME_CRITICAL
+  //   THREAD_PRIORITY_LOWEST
+  //   THREAD_PRIORITY_BELOW_NORMAL
+  //   THREAD_PRIORITY_NORMAL
+  //   THREAD_PRIORITY_ABOVE_NORMAL
+  //   THREAD_PRIORITY_HIGHEST
+
+  int basePriority;
+  switch (priorityClass) {
+  case IDLE_PRIORITY_CLASS:
+    switch (priority) {
+    case THREAD_PRIORITY_IDLE:
+      basePriority = 1;
+      break;
+    case THREAD_PRIORITY_TIME_CRITICAL:
+      basePriority = 15;
+      break;
+    default:
+      basePriority = 4 + priority;
+    }
+    break;
+  case BELOW_NORMAL_PRIORITY_CLASS: // w2k or later
+    switch (priority) {
+    case THREAD_PRIORITY_IDLE:
+      basePriority = 1;
+      break;
+    case THREAD_PRIORITY_TIME_CRITICAL:
+      basePriority = 15;
+      break;
+    default:
+      basePriority = 6 + priority;
+    }
+    break;
+  case NORMAL_PRIORITY_CLASS:
+    switch (priority) {
+    case THREAD_PRIORITY_IDLE:
+      basePriority = 1;
+      break;
+    case THREAD_PRIORITY_TIME_CRITICAL:
+      basePriority = 15;
+      break;
+    default:
+      basePriority = 7 + priority;
+    }
+    break;
+  case ABOVE_NORMAL_PRIORITY_CLASS: // w2k or later
+    switch (priority) {
+    case THREAD_PRIORITY_IDLE:
+      basePriority = 1;
+      break;
+    case THREAD_PRIORITY_TIME_CRITICAL:
+      basePriority = 15;
+      break;
+    default:
+      basePriority = 10 + priority;
+    }
+    break;
+  case HIGH_PRIORITY_CLASS:
+    switch (priority) {
+    case THREAD_PRIORITY_IDLE:
+      basePriority = 1;
+      break;
+    case THREAD_PRIORITY_TIME_CRITICAL:
+      basePriority = 15;
+      break;
+    default:
+      basePriority = 13 + priority;
+    }
+    break;
+  case REALTIME_PRIORITY_CLASS:
+    switch (priority) {
+    case THREAD_PRIORITY_IDLE:
+      basePriority = 16;
+      break;
+    case THREAD_PRIORITY_TIME_CRITICAL:
+      basePriority = 31;
+      break;
+    default:
+      basePriority = 24 + priority; // [17; 31]
+    }
+    break;
+  }
+  
+  if (priorityClass == REALTIME_PRIORITY_CLASS) {
+    clamp(16, basePriority, 31);
+  } else {
+    clamp(1, basePriority, 15);
+  }
+  return 7 - basePriority;
+#else // unix
+  return 0; // TAG: use process priority?
+#endif
+}
+
+Thread::Times Thread::getTimes() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   Thread::Times result;
-  HANDLE thread = ::OpenThread(THREAD_QUERY_INFORMATION, FALSE, (DWORD)identifier);
-  ::GetThreadTimes(thread, 0, 0, (FILETIME*)&result.system, (FILETIME*)&result.user);
-  ::CloseHandle(thread);
+  ::GetThreadTimes(::GetCurrentThread(), 0, 0, (FILETIME*)&result.system, (FILETIME*)&result.user);
   return result;
 #else // unix
   Thread::Times result;
@@ -390,7 +543,6 @@ void Thread::start() throw(ThreadException) {
   assert(state == NOTSTARTED, ThreadException(this));
   state = STARTING;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ASSERT(sizeof(DWORD) <= sizeof(Identifier));
   HANDLE handle;
   DWORD id;
   if ((handle = ::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)entry, this, 0, &id)) == 0) {
@@ -400,7 +552,6 @@ void Thread::start() throw(ThreadException) {
   ::CloseHandle(handle); // detach
   // TAG: does this always work or must this be postponed until entry function
 #else // pthread
-  ASSERT(sizeof(pthread_t) <= sizeof(Identifier));
   pthread_attr_t attributes;
   pthread_attr_init(&attributes);
   pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_DETACHED);

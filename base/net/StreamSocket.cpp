@@ -16,11 +16,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 StreamSocket::StreamSocket() throw(IOException) {
-  create(true);
+  create(STREAM);
 }
 
 StreamSocket::StreamSocket(const InetAddress& addr, unsigned short port) throw(IOException) {
-  create(true);
+  create(STREAM);
   connect(addr, port);
 }
 
@@ -29,7 +29,7 @@ StreamSocket::StreamSocket(
   unsigned short port,
   InetAddress& localAddr,
   unsigned short localPort) throw(IOException) {
-  create(true);
+  create(STREAM);
   bind(localAddr, localPort);
   connect(addr, port);
 }

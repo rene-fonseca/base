@@ -192,6 +192,7 @@ bool Url::isHost(String::ReadIterator i, const String::ReadIterator& end) throw(
     while (*i != ']') {
       ++i;
     }
+    return false;
   } else if (ASCIITraits::isDigit(*i)) { // is IP address
     // "123.123.123.123" or "123.123.123" or "123.123" or "123"
     for (unsigned int digitGroup = 0; digitGroup < 4; ++digitGroup) {

@@ -19,7 +19,7 @@ ServerSocket::ServerSocket(
   const InetAddress& address,
   unsigned short port,
   unsigned int backlog) throw(IOException) {
-  create(true);
+  create(STREAM);
   bind(address, port);
   listen(backlog);
 }

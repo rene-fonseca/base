@@ -34,7 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Internet Protocol address.
   @ingroup net
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.1
+  @version 1.2
 */
 
 class InetAddress : public virtual Object {
@@ -56,7 +56,12 @@ public:
     LINK_LOCAL = 32, /**< Address is a link local address. */
     SITE_LOCAL = 64, /**< Address is a site local address. */
     IPV4_MAPPED = 128, /**< Address is an IPv4 mapped address. */
-    IPV4_COMPATIBLE = 256 /**< Address is compatible with IPv4. */
+    IPV4_COMPATIBLE = 256, /**< Address is compatible with IPv4. */
+    CLASS_A = 512, /** IPv4 class A. */
+    CLASS_B = 1024, /** IPv4 class B. */
+    CLASS_C = 2048, /** IPv4 class C. */
+    CLASS_D = 4096, /** IPv4 class D. */
+    CLASS_E = 8192 /** IPv4 class E (experimantal). */
   };
 private:
 
@@ -70,7 +75,7 @@ private:
   } _DK_SDU_MIP__BASE__PACKED address;
   
   /** Parses the specified string as an Internet address (both IPv4 and IPv6). */
-  bool parse(const String& addr) throw();
+  bool parse(const String& address) throw();
 public:
 
   /**

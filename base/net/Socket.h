@@ -44,23 +44,47 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class Socket : public virtual Object, public virtual AsynchronousInputStream, public virtual AsynchronousOutputStream, public Synchronizeable<Unsafe> {
+class Socket : public virtual Object,
+               public virtual AsynchronousInputStream,
+               public virtual AsynchronousOutputStream {
   friend class Initialization;
-private:
+public:
 
-  /** The type of the guard. */
-  typedef Unsafe Guard;
+  /** Domain. */
+  enum Domain {
+    IPV4, /**< IP version 4. */
+    IPV6 /**< IP version 6. */
+    // UNIX /**< UNIX domain. */
+  };
+  
+  /** Socket type. */
+  enum Kind {
+    STREAM, /** Stream socket. */
+    DATAGRAM, /**< Datagram socket. */
+    RAW /**< Raw socket. */
+  };  
+private:
   
   class SocketImpl : public Handle {
   private:
 
+    /** The socket domain. */
+    Domain domain;
+    /** The socket type. */
+    Kind kind;
     /** Specifies the remote address to which the socket is connected. */
     InetAddress remoteAddress;
-    /** Specifies the remote port (in host byte order) to which the socket is connected (unconnected if 0). */
+    /**
+      Specifies the remote port (in host byte order) to which the socket is
+      connected (unconnected if 0).
+    */
     unsigned short remotePort;
     /** Specifies the local address to which the socket is bound. */
     InetAddress localAddress;
-    /** Specifies the local port (in host byte order) to which the socket is bound (unbound if 0). */
+    /**
+      Specifies the local port (in host byte order) to which the socket is bound
+      (unbound if 0).
+    */
     unsigned short localPort;
   public:
 
@@ -68,7 +92,17 @@ private:
     static SocketImpl* invalid;
     
     /** Initializes the socket with the specified handle. */
-    SocketImpl(OperatingSystem::Handle handle) throw();
+    SocketImpl(OperatingSystem::Handle handle, Domain domain, Kind kind) throw();
+    
+    /** Returns the protocol. */
+    inline Domain getDomain() const throw() {
+      return domain;
+    }
+    
+    /** Returns the type. */
+    inline Kind getKindype() const throw() {
+      return kind;
+    }
     
     /** Returns the local address. */
     inline const InetAddress& getLocalAddress() const throw() {
@@ -129,14 +163,11 @@ private:
     ~SocketImpl() throw(IOException);
   };
 protected:
-
+  
+  typedef ReferenceCountedObjectPointer<SocketImpl> Reference;
+  
   /** The internal socket representation. */
   ReferenceCountedObjectPointer<SocketImpl> socket;
-
-  /** Returns the handle. */
-  inline OperatingSystem::Handle getHandle() const throw() {
-    return socket->getHandle();
-  }
   
   /** Get boolean socket option. */
   bool getBooleanOption(int option) const throw(IOException);
@@ -201,10 +232,9 @@ public:
   /**
     Creates either a stream or a datagram socket.
 
-    @param stream True if stream socket should be created (otherwise a
-    datagram socket is created).
+    @param kind The socket type (e.g. STREAM).
   */
-  void create(bool stream) throw(IOException);
+  void create(Kind kind) throw(IOException);
 
   /**
     Caches the locally assigned address and port of the socket. This member
@@ -329,6 +359,20 @@ public:
     Disables/enables the Nagle's algorithm.
   */
   void setTcpNoDelay(bool value) throw(IOException);
+
+  // SO_DONTROUTE int (boolean)
+  // SO_ERROR
+  // SO_RCVTIMEO timeval
+  // SO_SNDTIMEO timeval
+  // SO_TYPE
+  
+  // IPV6_V6ONLY
+  // IPV6_UNICAST_HOPS int -1 to select default, range 0-255
+  // IPV6_MULTICAST_IF unsigned int
+  // IPV6_MULTICAST_HOPS int range 0-255
+
+//   bool getIPv6Restriction() const throw();
+//   void setIPv6Restriction(bool value) throw();
   
   /**
     Returns the current time to live (TTL) value.
@@ -359,7 +403,27 @@ public:
     Sets the multicast loop-back value.
   */
   void setMulticastLoopback(bool value) throw(IOException);
+
+  /**
+    Returns the default interface for outgoing multicast packets.
+  */
+  InetAddress getMulticastInterface() const throw(IOException);
   
+  /**
+    Sets the default interface for outgoing multicast packets.
+  */
+  void setMulticastInterface(const InetAddress& interface) throw(IOException);
+
+  /**
+    Joins the specified multicast group of the specified interface.
+  */
+  void joinGroup(const InetAddress& interface, const InetAddress& group) throw(IOException);
+
+  /**
+    Leaves the specified multicast group of the specified interface.
+  */
+  void leaveGroup(const InetAddress& interface, const InetAddress& group) throw(IOException);
+
   /**
     Sets the blocking mode of the socket.
   */
@@ -377,8 +441,8 @@ public:
   */
   inline bool isValid() const throw() {
     return socket->isValid();
-  }  
-
+  }
+  
   /**
     Forces any buffered bytes to be written out.
   */

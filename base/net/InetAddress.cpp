@@ -22,7 +22,8 @@
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32) // temporary solution until arch independant types have been defined
 #  include <winsock2.h>
 #  include <ws2tcpip.h>
-#  if (!defined(_DK_SDU_MIP__BASE__INET_IPV6) && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WXP))
+#  if (!defined(_DK_SDU_MIP__BASE__INET_IPV6) && \
+       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WXP))
 #    define _DK_SDU_MIP__BASE__INET_IPV6
 #  endif
 typedef DWORD uint32_t;
@@ -68,7 +69,7 @@ String InetAddress::getLocalHost() throw(NetworkException) {
 List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(HostNotFound) {
   List<InetAddress> result;
   
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
+#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   struct addrinfo hint;
   fill<char>(Cast::getCharAddress(hint), sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
@@ -135,7 +136,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 }
 
 InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound) {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
+#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   struct addrinfo hint;
   fill<char>(Cast::getCharAddress(hint), sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
@@ -239,7 +240,7 @@ bool InetAddress::parse(const String& addr) throw() {
           }
         }
       }
-      address.halfWords[writeHead++] = ByteOrder::toBigEndian<unsigned short>(value);
+      address.halfWords[writeHead++] = ByteOrder::toBigEndian<uint16>(value);
 
       if (i == endIPv6) {
         break;
@@ -259,7 +260,7 @@ bool InetAddress::parse(const String& addr) throw() {
     }
     if (zeroIndex >= 0) { // is zero-compression present
       move(&address.halfWords[zeroIndex + maxValues - writeHead], &address.halfWords[zeroIndex], writeHead - zeroIndex);
-      fill<unsigned short>(&address.halfWords[zeroIndex], maxValues - writeHead, 0);
+      fill<uint16>(&address.halfWords[zeroIndex], maxValues - writeHead, 0);
     }
   }
 
@@ -308,7 +309,10 @@ InetAddress::InetAddress(const String& addr) throw(InvalidFormat) {
 }
 
 InetAddress::InetAddress(const String& addr, Family family) throw(InvalidFormat) {
-  assert(parse(addr) && (this->family == family), InvalidFormat("Not an Internet address", this));
+  assert(
+    parse(addr) && (this->family == family),
+    InvalidFormat("Not an Internet address", this)
+  );
 }
 
 InetAddress::InetAddress(const InetAddress& copy) throw() :
@@ -323,10 +327,10 @@ InetAddress& InetAddress::operator=(const InetAddress& eq) throw() {
 }
 
 String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
+#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   struct sockaddr_in6 addr;
   fill<char>(Cast::getCharAddress(addr), sizeof(addr), 0);
-#if defined(SIN6_LEN)
+#if (defined(SIN6_LEN))
   addr.sin6_len = sizeof(addr);
 #endif
   addr.sin6_family = AF_INET6;
@@ -352,7 +356,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
   if ((family == IP_VERSION_6) &&
       ((address.words[0] != 0) ||
        (address.words[1] != 0) ||
-       (address.words[2] != ByteOrder::toBigEndian<unsigned int>(0xffffU)) &&
+       (address.words[2] != ByteOrder::toBigEndian<uint32>(0xffffU)) &&
        (address.words[3] != 0))) {
     throw HostNotFound("Unable to resolve IP address", this);
   }
@@ -421,32 +425,48 @@ bool InetAddress::isUnspecified() const throw() {
 }
 
 bool InetAddress::isLoopback() const throw() {
-  return (address.words[0] == 0) && (address.words[1] == 0) && (address.words[2] == 0) &&
-    (
-      (family == IP_VERSION_6) && (address.words[3] == ByteOrder::toBigEndian<unsigned int>(0x00000001U)) || // IPv6 only
-      (family == IP_VERSION_4) && (address.words[3] == ByteOrder::toBigEndian<unsigned int>(0x7f000001U)) // IPv4 only
-    );
+  if (family == IP_VERSION_6) {
+    return (address.words[0] == 0) && (address.words[1] == 0) && (address.words[2] == 0) &&
+      (address.words[3] == ByteOrder::toBigEndian<uint32>(0x00000001U));
+  } else {
+    return address.words[3] == ByteOrder::toBigEndian<uint32>(0x7f000001U); // IPv4 only
+  }
 }
 
 bool InetAddress::isMulticast() const throw() {
-  return (family == IP_VERSION_6) && (address.octets[0] == 0xff); // TAG: IPv4 version?
+  return (family == IP_VERSION_6) && (address.octets[0] == 0xff) ||
+    (family == IP_VERSION_4) && ((address.octets[12] & 0xf0) == 0xe0); // class d
 }
 
 bool InetAddress::isLinkLocal() const throw() {
-  return (family == IP_VERSION_6) && (address.words[0] & ByteOrder::toBigEndian<unsigned int>(0xffc00000U) == ByteOrder::toBigEndian<unsigned int>(0xfe800000U)); // TAG: IPv4 version?
+  if (family == IP_VERSION_6) {
+    return (address.words[0] & ByteOrder::toBigEndian<uint32>(0xffc00000U)) ==
+      ByteOrder::toBigEndian<uint32>(0xfe800000U);
+  } else {
+    return false;
+  }
 }
 
 bool InetAddress::isSiteLocal() const throw() {
-  return (family == IP_VERSION_6) && (address.words[0] & ByteOrder::toBigEndian<unsigned int>(0xffc00000U) == ByteOrder::toBigEndian<unsigned int>(0xfec00000U)); // TAG: IPv4 version?
+  return (family == IP_VERSION_6) &&
+    ((address.words[0] & ByteOrder::toBigEndian<uint32>(0xffc00000U)) ==
+     ByteOrder::toBigEndian<uint32>(0xfec00000U));
 }
 
 bool InetAddress::isIPv4Mapped() const throw() {
-  return (family == IP_VERSION_6) && (address.words[0] == 0) && (address.words[1] == 0) && (address.words[2] == ByteOrder::toBigEndian<unsigned int>(0xffffU)) && (address.words[3] != 0);
+  return (family == IP_VERSION_6) &&
+    (address.words[0] == 0) &&
+    (address.words[1] == 0) &&
+    (address.words[2] == ByteOrder::toBigEndian<uint32>(0xffffU)) &&
+    (address.words[3] != 0);
 }
 
 bool InetAddress::isIPv4Compatible() const throw() {
   // ok for both IPv4 and IPv6
-  return (address.words[0] == 0) && (address.words[1] == 0) && (address.words[2] == 0) && (address.words[3] != 0);
+  return (address.words[0] == 0) &&
+    (address.words[1] == 0) &&
+    (address.words[2] == 0) &&
+    (address.words[3] != 0);
 }
 
 unsigned int InetAddress::getType() const throw() {
@@ -454,8 +474,19 @@ unsigned int InetAddress::getType() const throw() {
   if (family == IP_VERSION_4) {
     if (address.words[3] == 0) {
       result |= UNSPECIFIED;
-    } else if (address.words[3] == ByteOrder::toBigEndian<unsigned int>(0x7f000001U)) {
+    } else if (address.words[3] == ByteOrder::toBigEndian<uint32>(0x7f000001U)) {
       result |= LOOPBACK;
+    }
+    if (address.octets[12] < 0x80) {
+      result |= CLASS_A;
+    } else if (address.octets[12] < 0xc0) {
+      result |= CLASS_B;
+    } else if (address.octets[12] < 0xe0) {
+      result |= CLASS_C;
+    } else if (address.octets[12] < 0xf0) {
+      result |= CLASS_D | MULTICAST;
+    } else {
+      result |= CLASS_E;
     }
     result |= IPV4_COMPATIBLE;
   } else { // IPv6
@@ -463,20 +494,20 @@ unsigned int InetAddress::getType() const throw() {
       if (address.words[2] == 0) {
         if (address.words[3] == 0) {
           result |= UNSPECIFIED;
-        } else if (address.words[3] == ByteOrder::toBigEndian<unsigned int>(0x00000001U)) {
+        } else if (address.words[3] == ByteOrder::toBigEndian<uint32>(0x00000001U)) {
           result |= LOOPBACK;
           result |= IPV4_COMPATIBLE;
         } else {
           result |= IPV4_COMPATIBLE;
         }
-      } else if ((address.words[2] == ByteOrder::toBigEndian<unsigned int>(0x0000ffffU)) && (address.words[3] != 0)) {
+      } else if ((address.words[2] == ByteOrder::toBigEndian<uint32>(0x0000ffffU)) && (address.words[3] != 0)) {
         result |= IPV4_MAPPED;
       }
     } else if (address.octets[0] == 0xff) {
       result |= MULTICAST;
-    } else if (address.words[0] & ByteOrder::toBigEndian<unsigned int>(0xffc00000U) == ByteOrder::toBigEndian<unsigned int>(0xfe800000U)) {
+    } else if ((address.words[0] & ByteOrder::toBigEndian<uint32>(0xffc00000U)) == ByteOrder::toBigEndian<uint32>(0xfe800000U)) {
       result |= LINK_LOCAL;
-    } else if (address.words[0] & ByteOrder::toBigEndian<unsigned int>(0xffc00000U) == ByteOrder::toBigEndian<unsigned int>(0xfec00000U)) {
+    } else if ((address.words[0] & ByteOrder::toBigEndian<uint32>(0xffc00000U)) == ByteOrder::toBigEndian<uint32>(0xfec00000U)) {
       result |= SITE_LOCAL;
     }
   }
@@ -486,7 +517,9 @@ unsigned int InetAddress::getType() const throw() {
 bool InetAddress::convertToIPv6() throw() {
   if (family == IP_VERSION_4) {
     family = IP_VERSION_6;
-    address.words[2] = ByteOrder::toBigEndian<unsigned int>(0x0000ffffU);
+    if (!isUnspecified()) { // leave unspecified
+      address.words[2] = ByteOrder::toBigEndian<uint32>(0x0000ffffU);
+    }
   }
   return true; // cannot fail
 }
@@ -498,7 +531,7 @@ bool InetAddress::convertToIPv4() throw() {
       address.words[2] = 0;
       return true;
     } else {
-      return false; // cannot convert
+      return isUnspecified(); // cannot convert (unspecified is ok)
     }
   } else {
     return true; // already IPv4
@@ -524,6 +557,7 @@ void InetAddress::setAddress(const uint8* addr, Family family) throw() {
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) throw(IOException) {
+  // char buffer[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:123.123.123.123")];
   // TAG: do not write directly to stream: use internal stream first
   if (value.family == InetAddress::IP_VERSION_6) {
     unsigned int type = value.getType();
@@ -532,7 +566,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
     } else if (type & (InetAddress::IPV4_COMPATIBLE|InetAddress::LOOPBACK) == InetAddress::IPV4_COMPATIBLE) { // ::255.255.255.255
       stream << MESSAGE("::"); // write IPv4 address after this
     } else { // 1080::8:800:200c:417a
-      const unsigned short* addr = value.address.halfWords;
+      const uint16* addr = value.address.halfWords;
 
       // find longest zero sequence
       int firstZero = 8; // index 8 used later
@@ -551,7 +585,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
       }
 
       for (int i = 0; i < firstZero;) { // write values before zeros
-        stream << NOPREFIX << HEX << ByteOrder::fromBigEndian<unsigned short>(addr[i++]);
+        stream << NOPREFIX << HEX << ByteOrder::fromBigEndian<uint16>(addr[i++]);
         if (i < firstZero) {
           stream << ':';
         }
@@ -562,7 +596,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
           if (i > endZero) {
             stream << ':';
           }
-          stream << NOPREFIX << HEX << ByteOrder::fromBigEndian<unsigned short>(addr[i]);
+          stream << NOPREFIX << HEX << ByteOrder::fromBigEndian<uint16>(addr[i]);
         }
       }
       return stream; // do not write IPv4 address

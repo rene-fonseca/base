@@ -24,12 +24,37 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Network IO exception
   @ingroup exceptions net
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0.1
+  @version 1.1
 */
 
 class NetworkException : public IOException {
 public:
 
+  /** Cause. */
+  enum Cause {
+    ALREADY_CONNECTED, /**< Socket has already been connected. */
+    NOT_CONNECTED, /**< Socket has not been connected. */
+    CONNECTION_TIMED_OUT, /**< Connection timed out. */
+    ADDRESS_NOT_AVAILABLE, /**< Address is not available. */
+    ADDRESS_IN_USE, /**< Address already in use. */
+    DESTINATION_REQUIRED, /**< Destination address is required. */
+    FAMILY_NOT_SUPPORTED, /**< Family not supported. */
+    PROTOCOL_NOT_SUPPORTED, /**< Protocol not supported. */
+    TYPE_NOT_SUPPORTED, /**< Type not supported. */
+    OPERATION_NOT_SUPPORTED, /**< Operation not supported. */
+    IN_PROGRESS, /** Operation already in progress. */
+    NON_BLOCKING, /**< Operation would have blocked. */
+    CONNECTION_ABORTED, /**< Connection aborted locally. */
+    CONNECTION_REFUSED, /**< Connection refused. */
+    CONNECTION_RESET, /**< Connection aborted by peer. */
+    HOST_DOWN, /**< Host is down or disconnected. */
+    HOST_UNREACHABLE, /**< Host is not reachable. */
+    PREVIOUS_DATAGRAM_REJECTED, /**< A previous datagram could not be delivered due to invalid message size. */
+    NETWORK_DOWN, /**< Local network is not operational. */
+    NETWORK_RESET, /**< Connection aborted by network. */
+    NETWORK_UNREACHABLE /**< Network is not reachable. */
+  };
+  
   /**
     Initializes the exception object with no message.
   */
@@ -47,7 +72,7 @@ public:
     
     @param type The identity of the type.
   */
-  NetworkException(Type type) throw() : IOException(type) {
+  inline NetworkException(Type type) throw() : IOException(type) {
   }
   
   /**
@@ -56,7 +81,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  NetworkException(const char* message, Type type) throw() : IOException(message, type) {
+  inline NetworkException(const char* message, Type type) throw()
+    : IOException(message, type) {
   }
 };
 

@@ -43,6 +43,7 @@ bool AccessControlList::add(const AccessControlEntry& ace, bool replace) throw()
       }
       return true; // tell that trustee was found
     }
+    ++i;
   }
   acl.append(ace); // when replace is set and not set
   return false;
@@ -60,6 +61,7 @@ bool AccessControlList::remove(const Trustee& trustee) throw() {
       acl.remove(i - acl.getBeginIterator());
       return true;
     }
+    ++i;
   }
   return false;
 }
@@ -71,6 +73,7 @@ bool AccessControlList::hasTrustee(const Trustee& trustee) const throw() {
     if (i->getTrustee() == trustee) {
       return true;
     }
+    ++i;
   }
   return false;
 }

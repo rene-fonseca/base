@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -130,7 +130,9 @@ struct UnsignedShort {
     return eq;
   }
 
-  inline operator unsigned short() const throw() {(return static_cast<unsigned short>(highByte) << 8) + lowByte;}
+  inline operator unsigned short() const throw() {
+    return (static_cast<unsigned short>(highByte) << 8) + lowByte;
+  }
 } __attribute__ ((packed));
 
 /** 32 bit signed integer represented in little endian byte order. */
@@ -236,7 +238,7 @@ typedef int SignedInt;
 /** 32 bit unsigned integer represented in little endian byte order. */
 typedef unsigned int UnsignedInt;
 /** 64 bit signed integer represented in little endian byte order. */
-typedef long long SignedLonglong;
+typedef long long SignedLongLong;
 /** 64 bit unsigned integer represented in little endian byte order. */
 typedef unsigned long long UnsignedLongLong;
 
@@ -269,7 +271,7 @@ typedef int SignedInt;
 /** 32 bit unsigned integer represented in big endian byte order. */
 typedef unsigned int UnsignedInt;
 /** 64 bit signed integer represented in little endian byte order. */
-typedef long long SignedLonglong;
+typedef long long SignedLongLong;
 /** 64 bit unsigned integer represented in little endian byte order. */
 typedef unsigned long long UnsignedLongLong;
 

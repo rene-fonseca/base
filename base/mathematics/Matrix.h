@@ -25,7 +25,7 @@
 */
 
 template<class TYPE> class Matrix : public Object {
-protected:
+public:
 
   class Row {
   public:
@@ -60,6 +60,10 @@ protected:
         AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(matrix.getElements(), matrix.getElements() + matrix.getSize()) {}
     };
   };
+
+  friend class Row::Enumeration;
+  friend class Row::ReadOnlyEnumeration;
+protected:
 
   /**
     The elements of the matrix stored in an array. The array is guarantied to

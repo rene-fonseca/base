@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -116,6 +116,19 @@ bool NISpinLock::tryExclusiveLock() const throw() {
     : "=&r" (success), "=m" (value) // output
   );
   return success;
+#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__S390)
+  unsigned int success;
+  asm volatile (
+    "        sr 0,0\n" // subtract
+    "        la 1,1\n" // load address
+    "        cs 0,1,%1\n" // compare and swap
+    "        ipm %0\n"
+    "        srl %0,28\n" // shift right single logical
+    : "=&d" (success), "+m" (value) // output
+    :
+    : "cc", "0", "1" // clobbered
+  );
+  return success == 0;
 #else
 #  error Architecture is not supported
 #endif // architecture

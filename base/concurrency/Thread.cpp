@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,7 @@
 //  #defined _WIN32_WINNT 0x0400
 #  include <windows.h>
 #else // pthread
+#  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
 #  include <pthread.h>
 #  include <signal.h>
 #  include <time.h>

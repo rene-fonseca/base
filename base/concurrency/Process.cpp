@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
 #  include <windows.h>
 #  include <psapi.h>
 #else // unix
+#  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
 #  include <sys/types.h>
 #  include <sys/wait.h>
 #  include <sys/time.h>
@@ -466,7 +467,7 @@ public:
       // TAG: WM_QUIT is normally not posted - is this ok
       DWORD processId;
       DWORD threadId = ::GetWindowThreadProcessId(window, &processId);
-      fout << MESSAGE("threadId=") << threadId << MESSAGE(" processId=") << processId << ENDL;
+      fout << "threadId=" << threadId << " processId=" << processId << ENDL;
       
       Trace::message("sending WM_CLOSE now");
       LRESULT result = ::SendMessageTimeout(window, WM_CLOSE, 0, 0, SMTO_NORMAL, 3000, &dispatchResult);
@@ -474,7 +475,7 @@ public:
       result = ::SendMessageTimeout(window, WM_DESTROY, 0, 0, SMTO_NORMAL, 3000, &dispatchResult);
       Trace::message("sending WM_QUIT now");
       result = ::SendMessageTimeout(window, WM_QUIT, Application::EXIT_CODE_EXTERNAL, 0, SMTO_NORMAL, 3000, &dispatchResult);
-      fout << MESSAGE("result=") << result << ENDL;
+      fout << "result=" << result << ENDL;
       result = 1;
       if (result == 0) {
         kill->onFailure();
@@ -573,23 +574,123 @@ Process::Times Process::getTimes() throw() {
 #endif // flavor
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Process::Layout& value) throw(IOException) {
+extern "C" int main();
+
+// TAG: need method to dump stack trace and registers of context
+// class Context (architure)
+
+#if (0 && (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32))
+void dumpDebugInfo(const BYTE* caller, void* instance) throw() {
+  const char* name = ::GetModuleFilename(module) ;
+  
+  // offset 0 is DOS header
+  PIMAGE_DOS_HEADER fileBase =  ::MapFileInMemory(name);
+  
+  // retrieve NT header
+  PIMAGE_NT_HEADER NT_Header = fileBase + filebase->e_lfanew;
+  
+  // Get debug header
+  // Borland:
+  PIMAGE_SECTION_HEADER debugHeader =
+    SectionHeaderFromName( ".debug" ) ;
+  PIMAGE_DEBUG_DIRECTORY debugDir =
+    fileBase + debugHeader->PointerToRawData ;
+  // Microsoft
+  debugHeader = SectionHeaderFromName( ".rdata" ) ;
+  debugDir = fileBase + 
+    debugHeader->PointerToRawData + 
+    debugDirRVA - debugHeader->VirtualAddress ;
+
+  // Get COFF debug directory and COFF debug header
+  Look for an entry in the debug directory table 
+  with Type == IMAGE_DEBUG_TYPE_COFF ;
+  PIMAGE_COFF_SYMBOLS_HEADER COFFdebug  = 
+    fileBase + debugDir->PointerToRawData ;
+
+  // Get symbol table, symbol count, string table;
+  // the string table starts right after the symbol table
+  PIMAGE_SYMBOL COFFsymbol = 
+    filebase + NT_Header->FileHeader.PointerToSymbolTable ;
+  int COFFcount = 
+    NT_Header->FileHeader.NumberOfSymbols ;
+  const char* stringTable = COFFsymbolTable + COFFsymbolCount ;
+  
+  // Dump info about caller
+  int RVA = caller - (BYTE*)hInstance ;
+  if(COFFcount && COFFsymbolTable) {
+    // Lookup source file name
+    Search in COFFsymbolTable a ".text"
+    (or "CODE") section which includes RVA:
+    that gives the filename ;
+    
+    // Lookup function name
+    Search in COFFsymbolTable the function symbol 
+    with the biggest address <= RVA ;
+    Lookup the function name in stringTable
+    given the function symbol ;
+
+    // Lookup line number
+    PIMAGE_LINENUMBER lineTable = 
+      COFFDebugInfo + 
+      COFFDebugInfo->LvaToFirstLinenumber ;
+    Search in lineTable the line number 
+    with the biggest address <= RVA ;
+
+    Dump file/function/line info ;
+    }
+  else
+    only module name and caller address available ;
+  }
+#endif  
+
+// TAG: add method Thread::getInvocationLevel() const throw();
+// TAG: get current stack usage
+// TAG: get stack available
+
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  const Process::Layout& value) throw(IOException) {
+  
+#if (0 && (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86))
+  void** frame = 0;
+  asm (
+    "movl %%ebp,%0;\n"
+    : "=m" (frame) // output
+  );
+  
+  // TAG: save entry method in thread local storage
+  void* entry = (void*)&main; // should be init with current frame in entry
+  fout << "entry: " << entry << ENDL;
+  void* invoker = 0;
+  unsigned int i = 0;
+  while (invoker != entry) {
+    invoker = *((void**)frame + 1);
+    void** parentFrame = (void**)*frame;
+    fout << "i:" << i++ << FLUSH
+         << "  frame:" << (void*)frame << FLUSH
+         << "  invoker:" << invoker << FLUSH
+         << "  data:" << ((parentFrame-frame)-sizeof(invoker)) << ENDL;
+    frame = parentFrame;
+  }
+#endif
+  return stream;
+  
   // modules
   // stack
   // threads
   // segments: text, data, stack, ...
   // ...
-  stream << MESSAGE("Process layout of ") << Process::getProcess().getId() << EOL;
+  stream << "Process layout of " << Process::getProcess().getId() << EOL;
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   MEMORY_BASIC_INFORMATION information;
   ::VirtualQuery(::GetModuleHandle(0), &information, sizeof(information));
   
-  stream << MESSAGE("  base address: ") << information.BaseAddress << EOL
-         << MESSAGE("  allocation base: ") << information.AllocationBase << EOL
-         << MESSAGE("  region size: ") << information.RegionSize << EOL
-         << MESSAGE("  protection: ") << HEX << information.AllocationProtect << EOL
-         << MESSAGE("  type: ") << HEX << information.Type << EOL;
+  stream << "  base address: " << information.BaseAddress << EOL
+         << "  allocation base: " << information.AllocationBase << EOL
+         << "  region size: " << information.RegionSize << EOL
+         << "  protection: " << HEX << information.AllocationProtect << EOL
+         << "  type: " << HEX << information.Type << EOL;
 
   CONTEXT context;
   unsigned short ss;
@@ -604,22 +705,22 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Process::Layout
   current = ldt.BaseLow | (ldt.HighWord.Bytes.BaseMid << 16) | (ldt.HighWord.Bytes.BaseHi << 24);
 
   //::GetThreadContext(::GetCurrentThread(), &context);
-  stream << MESSAGE("  esp: ") << HEX << current << EOL;
+  stream << "  esp: " << HEX << current << EOL;
 
   ::VirtualQuery((void*)context.Esp, &information, sizeof(information));
-  stream << MESSAGE("  stack base address: ") << information.BaseAddress << EOL
-         << MESSAGE("  stack allocation base: ") << information.AllocationBase << EOL
-         << MESSAGE("  stack region size: ") << information.RegionSize << EOL
-         << MESSAGE("  stack protection: ") << HEX << information.AllocationProtect << EOL
-         << MESSAGE("  stack type: ") << HEX << information.Type << EOL;
+  stream << "  stack base address: " << information.BaseAddress << EOL
+         << "  stack allocation base: " << information.AllocationBase << EOL
+         << "  stack region size: " << information.RegionSize << EOL
+         << "  stack protection: " << HEX << information.AllocationProtect << EOL
+         << "  stack type: " << HEX << information.Type << EOL;
   
 #elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) && (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86))
   // text, data, bss begin at 0x08048000 for IA-32
   // last address is 0xbfffffff for IA-32
   
-  stream << MESSAGE("  begin of text segment: ") << 0x08048000 << EOL
-         << MESSAGE("  end of data segment: ") << sbrk(0) << EOL
-         << MESSAGE("  end of stack segment: ") << 0xbfffffff << EOL;
+  stream << "  begin of text segment: " << 0x08048000 << EOL
+         << "  end of data segment: " << sbrk(0) << EOL
+         << "  end of stack segment: " << 0xbfffffff << EOL;
 #endif // flavor
   
   stream << ENDL;

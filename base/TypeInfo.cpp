@@ -260,7 +260,7 @@ public:
 
       while (true) { // prefix+
         unsigned int beginClassName = demangled.getLength();
-        if (templateArguments()) {
+        if (templateArguments()) { // do not add delimiter
           addCandidate(begin);
         } else {
           if (delimiterPending) {
@@ -282,7 +282,6 @@ public:
         }
       }
       ++p; // skip E
-      ASSERT(!delimiterPending);
       return true;
     }
     return false;

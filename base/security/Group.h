@@ -76,7 +76,12 @@ public:
     */
     inline GroupException(const char* message, Type type) throw() : Exception(message, type) {}
   };
-  
+
+  /**
+    Initializes group with id 0.
+  */
+  inline Group() throw() : id(0) {}
+
   /**
     Initializes the group by id.
 
@@ -101,6 +106,13 @@ public:
   */
   Group(const Group& copy) throw();
 
+  /**
+    Returns the id of the group.
+  */
+  inline unsigned long long getId() const throw() {
+    return id;
+  }
+  
   /**
     Returns the name of the group.
   */

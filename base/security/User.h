@@ -83,6 +83,11 @@ public:
   static User getCurrentUser() throw();
 
   /**
+    Initializes user with id 0.
+  */
+  inline User() throw() : id(0) {}
+
+  /**
     Initializes user by id. Raises 
   */
   User(unsigned long long id) throw(OutOfDomain);
@@ -96,6 +101,13 @@ public:
     Initializes user by name.
   */
   User(const String& name) throw(UserException);
+
+  /**
+    Returns the id of the user.
+  */
+  inline unsigned long long getId() const throw() {
+    return id;
+  }
 
   /**
     Returns the short name of the account.

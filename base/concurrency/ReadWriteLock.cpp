@@ -158,11 +158,15 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException) {
     delete[] static_cast<pthread_mutex_t*>(representation);
     throw ResourceException(this);
   }
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+   #warning disabled selection of mutex type due to CYGWIN bug
+#else
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     delete[] static_cast<pthread_mutex_t*>(representation);
     throw ResourceException(this);
   }
+#endif // cygwin temporary bug fix
   if (pthread_mutex_init(static_cast<pthread_mutex_t*>(representation), &attributes) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     delete[] static_cast<pthread_mutex_t*>(representation);

@@ -14,7 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_IO__HANDLE_H
 #define _DK_SDU_MIP__BASE_IO__HANDLE_H
 
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/OperatingSystem.h>
 #include <base/io/IOException.h>
 

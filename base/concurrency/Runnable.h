@@ -70,6 +70,12 @@ public:
   virtual void onTermination() throw() {
     terminated = true;
   }
+
+  /**
+    Destroys the runnable object.
+  */
+//   virtual ~Runnable() throw() {
+//   }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

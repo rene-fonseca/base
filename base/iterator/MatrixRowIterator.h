@@ -35,24 +35,26 @@ public:
   typedef typename InterleavedIterator<TRAITS>::Pointer Pointer;
   typedef SequenceIterator<TRAITS> ElementIterator;
   
-  /**
+  /*
     Reference to an element within the iterator.
   */
-  class Reference {
+  class Element {
     friend class MatrixRowIterator;
   public:
+    
     typedef typename ElementIterator::Value Value;
   private:
+    
     ElementIterator iterator;
-    Reference(const Reference& copy); // prohibit default copy initialization
-    Reference& operator=(const Reference& eq); // prohibit default assignment
-
-    inline Reference(const ElementIterator& _iterator) throw()
+    Element(const Element& copy) throw();
+    Element& operator=(const Element& eq) throw();
+    
+    inline Element(const ElementIterator& _iterator) throw()
       : iterator(_iterator) {
     }
   public:
     
-    inline Reference& operator=(Value value) throw() {
+    inline Element& operator=(Value value) throw() {
       *iterator = value;
       return *this;
     }
@@ -130,8 +132,8 @@ public:
     return ElementIterator(element + step);
   }
 
-  inline Reference operator[](unsigned int index) const throw() {
-    return Reference(ElementIterator(element + index));
+  inline Element operator[](unsigned int index) const throw() {
+    return Element(ElementIterator(element + index));
   }
 };
 

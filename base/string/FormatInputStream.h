@@ -40,11 +40,11 @@ public:
   static const unsigned int WINDOW_SIZE = 4096;
 protected:
 
-  typedef Allocator<String::Character>::Iterator Iterator;
-  typedef Allocator<String::Character>::ReadIterator ReadIterator;
+  typedef Allocator<char>::Iterator Iterator;
+  typedef Allocator<char>::ReadIterator ReadIterator;
 
   /** The internal buffer. */
-  Allocator<String::Character> buffer;
+  Allocator<char> buffer;
   /** The current write position. */
   Iterator head;
   /** The current read position. */

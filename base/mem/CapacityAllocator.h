@@ -23,6 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Same as Allocator but allocates memory in larger blocks at a time. The
   implementation is not MT-safe.
 
+  @short Capacity allocator.
   @see Allocator.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -38,49 +39,17 @@ public:
       greater than or equal to MINIMUM_GRANULARITY. */
   static const unsigned int DEFAULT_GRANULARITY = MINIMUM_GRANULARITY;
 private:
-
+  
   /** The number of elements in the block. */
   unsigned int capacity;
   /** The granularity of the allocated block memory. */
   unsigned int granularity;
 public:
-
+  
   typedef typename Allocator<TYPE>::Iterator Iterator;
   typedef typename Allocator<TYPE>::ReadIterator ReadIterator;
   typedef typename Allocator<TYPE>::Enumerator Enumerator;
   typedef typename Allocator<TYPE>::ReadEnumerator ReadEnumerator;
-
-//  /**
-//    Enumeration of all the elements of an Allocator.
-//  */
-//  class Enumeration : public AllocatorEnumeration<TYPE, TYPE&, TYPE*> {
-//  public:
-//
-//    /**
-//      Initializes an enumeration of all the elements of the specified Allocator.
-//
-//      @param allocator The Allocator being enumerated.
-//    */
-//    Enumeration(CapacityAllocator& allocator) throw()
-//      : AllocatorEnumeration<TYPE, TYPE&, TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {
-//    }
-//  };
-//
-//  /**
-//    Non-modifying enumeration of all the elements of an Allocator.
-//  */
-//  class ReadOnlyEnumeration : public AllocatorEnumeration<TYPE, const TYPE&, const TYPE*> {
-//  public:
-//
-//    /**
-//      Initializes a non-modifying enumeration of all the elements of the specified Allocator.
-//
-//      @param allocator The Allocator being enumerated.
-//    */
-//    ReadOnlyEnumeration(const CapacityAllocator& allocator) throw()
-//      : AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {
-//    }
-//  };
 public:
 
   /**
@@ -120,10 +89,12 @@ public:
     Initializes allocator from other allocator.
   */
   inline CapacityAllocator(const CapacityAllocator& copy) throw(MemoryException)
-    : Allocator<TYPE>(copy), capacity(copy.capacity), granularity(copy.granularity) {
+    : Allocator<TYPE>(copy),
+      capacity(copy.capacity),
+      granularity(copy.granularity) {
     // TAG: we only want to copy the first 'capacity' number of elements!
   }
-
+  
   /**
     Assignment of allocator by allocator.
   */
@@ -136,7 +107,7 @@ public:
     }
     return *this;
   }
-
+  
   /**
     Returns the number of elements of the allocator.
   */
@@ -211,7 +182,9 @@ public:
   inline void setSize(unsigned int size) throw(MemoryException) {
     if (size != capacity) {
       capacity = size;
-      Allocator<TYPE>::setSize((capacity + granularity - 1)/granularity * granularity);
+      Allocator<TYPE>::setSize(
+        (capacity + granularity - 1)/granularity * granularity
+      );
     }
   }
 
@@ -252,7 +225,7 @@ public:
     that the allocated memory is not going to be resized for a "long time".
   */
   inline void optimizeCapacity() throw() {
-    // internal knowledge: does not raise an exception 'cause we do not expand the buffer
+    // knowledge: does not raise an exception 'cause we do not expand the buffer
     Allocator<TYPE>::setSize(capacity);
   }
 };

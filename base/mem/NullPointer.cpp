@@ -15,10 +15,4 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-NullPointer::NullPointer() {
-}
-
-NullPointer::NullPointer(const char* message) : MemoryException(message) {
-}
-
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

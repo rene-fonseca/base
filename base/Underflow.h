@@ -24,7 +24,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   condition will occur if the result of subtracting two 32 bit signed integers
   is less than -2^31.
 
+  @short Underflow exception.
   @see Overflow
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -35,14 +37,34 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  Underflow() throw();
+  inline Underflow() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  Underflow(const char* message) throw();
+  inline Underflow(const char* message) throw() : Exception(message) {
+  }
+  
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
+  inline Underflow(Type type) throw() : Exception(type) {
+  }
+  
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  inline Underflow(const char* message, Type type) throw()
+    : Exception(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

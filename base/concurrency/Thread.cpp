@@ -585,9 +585,9 @@ void Thread::terminate() throw() {
 
 Thread::~Thread() throw(ThreadException) {
   if (getParent() != 0) {
-    if (state != NOTSTARTED) {
+    if (state != Thread::NOTSTARTED) {
       terminationEvent.wait(); // allows multiple contexts to wait for thread to terminate
-      ASSERT(state > ALIVE); // thread must be terminated here
+      ASSERT(state > Thread::ALIVE); // thread must be terminated here
     }
   }
 }

@@ -19,6 +19,7 @@
 #include <base/Exception.h>
 #include <base/NotSupported.h>
 #include <base/io/Handle.h>
+#include <base/mem/Reference.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -168,7 +169,7 @@ private:
   /** The host local id of the process. */
   unsigned long id;
   /** Handle to the process. */
-  ReferenceCountedObjectPointer<Handle> handle;
+  Reference<Handle> handle;
 public:
 
   /**

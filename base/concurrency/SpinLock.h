@@ -22,9 +22,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Spin lock is a synchronization object just like MutualExclusion. SpinLock
   does not use any operating system resources. The SpinLock is fast. The CPU
   cannot do anything useful while waiting for a spin lock to be released.
-
+  
+  @short Spin lock (fast).
   @ingroup concurrency
-  @see MutualExclusion
+  @see MutualExclusion NISpinLock
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
@@ -34,7 +35,7 @@ private:
   
   volatile mutable unsigned int value;
   // TAG: reduce crosstalk through cache line
-
+  
   /**
     Acquires the exclusive lock.
   */

@@ -33,7 +33,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline MultibyteException() throw() : Exception() {
+  inline MultibyteException() throw() {
   }
 
   /**

@@ -33,14 +33,17 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  IncompatibleOperands();
-
+  inline IncompatibleOperands() throw() {
+  }
+  
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  IncompatibleOperands(const char* message);
+  inline IncompatibleOperands(const char* message) throw() 
+    : Exception(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.
@@ -56,7 +59,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline IncompatibleOperands(const char* message, Type type) throw() : Exception(message, type) {
+  inline IncompatibleOperands(const char* message, Type type) throw()
+    : Exception(message, type) {
   }
 };
 

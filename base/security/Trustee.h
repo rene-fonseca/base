@@ -50,7 +50,7 @@ private:
   /** Identifier of the trustee represented as an integral. */
   unsigned long integralId;
   /** Opaque identifier of the trustee. */
-  ReferenceCountedObjectPointer<ReferenceCountedAllocator<uint8> > id;
+  Reference<ReferenceCountedAllocator<uint8> > id;
 public:
   
   /**

@@ -16,7 +16,7 @@
 
 #include <base/io/async/AsynchronousWriteEventListener.h>
 #include <base/io/async/AsynchronousIOStream.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -24,7 +24,7 @@ class AsynchronousWriteContext : public Object, public ReferenceCountedObject {
 protected:
   
   /** Self-reference used to protect the object from premature destruction. */
-  ReferenceCountedObjectPointer<AsynchronousWriteContext> selfReference;
+  Reference<AsynchronousWriteContext> selfReference;
 
   inline AsynchronousWriteContext() throw() : selfReference(this) {
   }

@@ -21,7 +21,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   This exception specifies that the service could not be resolved.
 
-  @short Internet Protocol service exception
+  @short Internet Protocol service exception.
   @ingroup exceptions net
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -33,20 +33,24 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  ServiceNotFound();
+  inline ServiceNotFound() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  ServiceNotFound(const char* message);
+  inline ServiceNotFound(const char* message) throw()
+    : NetworkException(message) {
+  }
+  
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  ServiceNotFound(Type type) throw() : NetworkException(type) {
+  inline ServiceNotFound(Type type) throw() : NetworkException(type) {
   }
   
   /**
@@ -55,7 +59,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  ServiceNotFound(const char* message, Type type) throw() : NetworkException(message, type) {
+  inline ServiceNotFound(const char* message, Type type) throw()
+    : NetworkException(message, type) {
   }
 };
 

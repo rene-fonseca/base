@@ -17,7 +17,7 @@
 #include <base/communication/EUI64.h>
 #include <base/communication/IEEE1394Exception.h>
 #include <base/OutOfDomain.h>
-#include <base/mem/ReferenceCountedObject.h>
+#include <base/mem/Reference.h>
 #include <base/ByteOrder.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -624,7 +624,7 @@ public:
   private:
 
     /** Context information. */
-    ReferenceCountedObjectPointer<IsochronousReadPacketsRequestImpl> context;
+    Reference<IsochronousReadPacketsRequestImpl> context;
   public:
 
     /**
@@ -744,7 +744,7 @@ public:
   private:
 
     /** Context information. */
-    ReferenceCountedObjectPointer<IsochronousReadFixedPacketsRequestImpl> context;
+    Reference<IsochronousReadFixedPacketsRequestImpl> context;
   public:
     
     /**
@@ -878,7 +878,7 @@ public:
   private:
 
     /** Context information. */
-    ReferenceCountedObjectPointer<IsochronousReadFixedDataRequestImpl> context;
+    Reference<IsochronousReadFixedDataRequestImpl> context;
   public:
 
     /**
@@ -1053,7 +1053,7 @@ public:
   private:
 
     /** Context information. */
-    ReferenceCountedObjectPointer<IsochronousReadRequestImpl> context;
+    Reference<IsochronousReadRequestImpl> context;
   public:
 
     /**
@@ -1188,7 +1188,7 @@ public:
   private:
 
     /** Context information. */
-    ReferenceCountedObjectPointer<IsochronousWritePacketsRequestImpl> context;
+    Reference<IsochronousWritePacketsRequestImpl> context;
   public:
 
     /**
@@ -1298,7 +1298,7 @@ public:
   private:
 
     /** Context information. */
-    ReferenceCountedObjectPointer<IsochronousWriteFixedPacketsRequestImpl> context;
+    Reference<IsochronousWriteFixedPacketsRequestImpl> context;
   public:
 
     /**
@@ -1408,7 +1408,7 @@ public:
   private:
 
     /** Context information. */
-    ReferenceCountedObjectPointer<IsochronousWriteDataRequestImpl> context;
+    Reference<IsochronousWriteDataRequestImpl> context;
   public:
 
     /**
@@ -1517,7 +1517,7 @@ public:
   private:
 
     /** Context information. */
-    ReferenceCountedObjectPointer<IsochronousWriteRequestImpl> context;
+    Reference<IsochronousWriteRequestImpl> context;
   public:
 
     /**
@@ -1804,7 +1804,7 @@ protected:
   /**
     Returns the context.
   */
-  static inline ReferenceCountedObjectPointer<IsochronousReadPacketsRequestImpl>
+  static inline Reference<IsochronousReadPacketsRequestImpl>
   getContext(IsochronousReadPacketsRequest& request) throw() {
     return request.context;
   }
@@ -1812,7 +1812,7 @@ protected:
   /**
     Returns the context.
   */
-  static inline ReferenceCountedObjectPointer<IsochronousReadFixedPacketsRequestImpl>
+  static inline Reference<IsochronousReadFixedPacketsRequestImpl>
   getContext(IsochronousReadFixedPacketsRequest& request) throw() {
     return request.context;
   }
@@ -1820,7 +1820,7 @@ protected:
   /**
     Returns the context.
   */
-  static inline ReferenceCountedObjectPointer<IsochronousReadFixedDataRequestImpl>
+  static inline Reference<IsochronousReadFixedDataRequestImpl>
   getContext(IsochronousReadFixedDataRequest& request) throw() {
     return request.context;
   }
@@ -1828,7 +1828,7 @@ protected:
   /**
     Returns the context.
   */
-  static inline ReferenceCountedObjectPointer<IsochronousReadRequestImpl>
+  static inline Reference<IsochronousReadRequestImpl>
   getContext(IsochronousReadRequest& request) throw() {
     return request.context;
   }
@@ -1836,7 +1836,7 @@ protected:
   /**
     Returns the context.
   */
-  static inline ReferenceCountedObjectPointer<IsochronousWritePacketsRequestImpl>
+  static inline Reference<IsochronousWritePacketsRequestImpl>
   getContext(IsochronousWritePacketsRequest& request) throw() {
     return request.context;
   }
@@ -1844,7 +1844,7 @@ protected:
   /**
     Returns the context.
   */
-  static inline ReferenceCountedObjectPointer<IsochronousWriteFixedPacketsRequestImpl>
+  static inline Reference<IsochronousWriteFixedPacketsRequestImpl>
   getContext(IsochronousWriteFixedPacketsRequest& request) throw() {
     return request.context;
   }
@@ -1852,7 +1852,7 @@ protected:
   /**
     Returns the context.
   */
-  static inline ReferenceCountedObjectPointer<IsochronousWriteDataRequestImpl>
+  static inline Reference<IsochronousWriteDataRequestImpl>
   getContext(IsochronousWriteDataRequest& request) throw() {
     return request.context;
   }
@@ -1860,7 +1860,7 @@ protected:
   /**
     Returns the context.
   */
-  static inline ReferenceCountedObjectPointer<IsochronousWriteRequestImpl>
+  static inline Reference<IsochronousWriteRequestImpl>
   getContext(IsochronousWriteRequest& request) throw() {
     return request.context;
   }
@@ -1870,7 +1870,7 @@ public:
   private:
     
     /** Isochronous read channel implementation. */
-    ReferenceCountedObjectPointer<IsochronousReadChannelImpl> readChannel;
+    Reference<IsochronousReadChannelImpl> readChannel;
   public:
 
     /**
@@ -2016,7 +2016,7 @@ public:
   private:
     
     /** Isochronous write channel implementation. */
-    ReferenceCountedObjectPointer<IsochronousWriteChannelImpl> writeChannel;
+    Reference<IsochronousWriteChannelImpl> writeChannel;
   public:
 
     /**
@@ -2153,7 +2153,7 @@ public:
   public:
     
     /**
-      Invoked on an incomming isochronous packet.
+      Invoked on an incoming isochronous packet.
       
       @param buffer The buffer.
       @param size The size of the data.
@@ -2170,7 +2170,7 @@ public:
   public:
     
     /**
-      Invoked on an incomming FCP request.
+      Invoked on an incoming FCP request.
       
       @param nodeId The id of the source node.
       @param buffer The buffer.
@@ -2179,7 +2179,7 @@ public:
     virtual void onFCPRequest(unsigned short nodeId, const uint8* buffer, unsigned int size) throw() = 0;
 
     /**
-      Invoked on an incomming FCP response.
+      Invoked on an incoming FCP response.
       
       @param nodeId The id of the source node.
       @param buffer The buffer.

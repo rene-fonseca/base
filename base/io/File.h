@@ -18,8 +18,7 @@
 #include <base/io/FileException.h>
 #include <base/io/FileNotFound.h>
 #include <base/io/FileRegion.h>
-#include <base/mem/ReferenceCountedObject.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/string/String.h>
 #include <base/Date.h>
 #include <base/Primitives.h>
@@ -123,7 +122,7 @@ public:
 private:
 
   /** The handle of the file. */
-  ReferenceCountedObjectPointer<Handle> fd;
+  Reference<Handle> fd;
 public:
 
   /**

@@ -123,7 +123,8 @@ public:
 
     @param microseconds The timeout periode in microseconds.
     
-    @return True, if incomming connection is available. False, if the timeout periode expired.
+    @return True, if incoming connection is available. False, if the timeout
+    periode expired.
   */
   inline bool wait(unsigned int microseconds) const throw(IOException) {
     return Socket::wait(microseconds);

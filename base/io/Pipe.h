@@ -20,7 +20,7 @@
 #include <base/io/InputStream.h>
 #include <base/io/OutputStream.h>
 #include <base/io/PipeException.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/collection/Pair.h>
 #include <base/io/Handle.h>
 
@@ -56,7 +56,7 @@ public:
 protected:
 
   /** The internal pipe representation. */
-  ReferenceCountedObjectPointer<Handle> fd;
+  Reference<Handle> fd;
   /** Specifies that the end has been reached. */
   bool end;
 public:

@@ -15,7 +15,7 @@
 #define _DK_SDU_MIP__BASE_UI__BITMAP_H
 
 #include <base/Dimension.h>
-#include <base/mem/ReferenceCountedObject.h>
+#include <base/mem/Reference.h>
 #include <base/ui/UserInterfaceException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -51,7 +51,7 @@ private:
   };
 
   /** Handle to the bitmap. */
-  ReferenceCountedObjectPointer<Handle> handle;
+  Reference<Handle> handle;
 public:
 
   /** Pixel format. */

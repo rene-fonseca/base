@@ -44,14 +44,16 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  IOException() throw();
+  inline IOException() throw() {
+  }
 
   /**
     Initializes exception object as unspecified.
 
     @param message The message.
   */
-  IOException(const char* message) throw();
+  inline IOException(const char* message) throw() : Exception(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.
@@ -67,7 +69,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline IOException(const char* message, Type type) throw() : Exception(message, type) {
+  inline IOException(const char* message, Type type) throw()
+    : Exception(message, type) {
   }
 };
 

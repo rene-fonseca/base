@@ -33,21 +33,23 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  TimedOut() throw();
+  inline TimedOut() throw() {
+  }
 
   /**
     Initializes exception object as unspecified.
 
     @param message The message.
   */
-  TimedOut(const char* message) throw();
+  inline TimedOut(const char* message) throw() : IOException(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  TimedOut(Type type) throw() : IOException(type) {
+  inline TimedOut(Type type) throw() : IOException(type) {
   }
   
   /**
@@ -56,7 +58,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  TimedOut(const char* message, Type type) throw() : IOException(message, type) {
+  inline TimedOut(const char* message, Type type) throw()
+    : IOException(message, type) {
   }
 };
 

@@ -33,6 +33,7 @@ section_HEADERS = \
   AllocatorEnumeration.h \
   Buffer.h \
   CapacityAllocator.h \
+  CheckedPointer.h \
   DebugDynamicMemory.h \
   DynamicMemory.h \
   Heap.h \
@@ -40,6 +41,7 @@ section_HEADERS = \
   MemoryCorruption.h \
   MemoryDump.h \
   NullPointer.h \
+  ProtectedPointer.h \
   Reference.h \
   ReferenceCountedObjectWrapper.h \
   ReferenceCountedObjectPointer.h \
@@ -49,4 +51,5 @@ section_HEADERS = \
   ReferenceCountedAllocator.h \
   ReferenceCountedCapacityAllocator.h \
   SharedMemory.h \
+  StrictPointer.h \
   VirtualMemory.h

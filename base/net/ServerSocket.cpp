@@ -22,6 +22,7 @@ ServerSocket::ServerSocket(
   create(STREAM);
   bind(address, port);
   listen(backlog);
+  getName();
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

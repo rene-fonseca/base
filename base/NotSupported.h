@@ -19,9 +19,12 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Exception used to specify that some feature is not supported.
-
+  Exception used to specify that some feature is not supported. This exception is
+  legal in a final application. However, the exception most be caught.
+  
+  @short Not supported exception.
   @see NotImplemented.
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -32,18 +35,31 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  NotSupported() throw();
+  inline NotSupported() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  NotSupported(const char* message) throw();
+  inline NotSupported(const char* message) throw() : Exception(message) {
+  }
 
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
   inline NotSupported(Type type) throw() : Exception(type) {
   }
   
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
   inline NotSupported(const char* message, Type type) throw()
     : Exception(message, type) {
   }

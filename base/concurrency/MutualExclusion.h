@@ -135,7 +135,7 @@ public:
   /**
     This method unlocks this mutual exclusion object. The calling thread must
     have a lock on this mutual exlusion object prior to invocation otherwise
-    the behaviour is undefined. Raises MutualExclusionException on
+    the behavior is undefined. Raises MutualExclusionException on
     failure.
   */
   void releaseLock() const throw(MutualExclusionException);

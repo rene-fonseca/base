@@ -16,7 +16,7 @@
 
 #include <base/io/Stream.h>
 #include <base/string/FormatOutputStream.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/io/Handle.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -58,7 +58,8 @@ public:
     static Handle* invalid;
 
     /** Initializes descriptor. */
-    inline explicit Descriptor(OperatingSystem::Handle handle) throw() : Handle(handle) {
+    inline explicit Descriptor(OperatingSystem::Handle handle) throw()
+      : Handle(handle) {
     }
     
     /** Releases the resources taken up by the descriptor. */
@@ -67,7 +68,7 @@ public:
 protected:
 
   /** Reference counted handle to file descriptor. */
-  ReferenceCountedObjectPointer<Handle> fd;
+  Reference<Handle> fd;
 public:
 
   /**

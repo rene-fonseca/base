@@ -16,7 +16,7 @@
 
 #include <base/io/async/AsynchronousOperation.h>
 #include <base/io/async/AsynchronousReadContext.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -32,7 +32,7 @@ class AsynchronousReadOperation : public AsynchronousOperation {
 private:
 
   /** Context of operation. */
-  ReferenceCountedObjectPointer<AsynchronousReadContext> context;
+  Reference<AsynchronousReadContext> context;
 public:
 
   inline AsynchronousReadOperation(AsynchronousReadContext* _context) throw()

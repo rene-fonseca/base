@@ -22,7 +22,9 @@ ExpressionException::ExpressionException(const char* message) throw()
   : Exception(message), index(0) {
 }
 
-ExpressionException::ExpressionException(unsigned int _index, const char* message) throw()
+ExpressionException::ExpressionException(
+  unsigned int _index,
+  const char* message) throw()
   : Exception(message), index(_index) {
 }
 

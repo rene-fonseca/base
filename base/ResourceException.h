@@ -33,14 +33,16 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  ResourceException() throw();
+  inline ResourceException() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  ResourceException(const char* message) throw();
+  inline ResourceException(const char* message) throw() : Exception(message) {
+  }
 
   /**
     Initializes the exception object without an associated message.

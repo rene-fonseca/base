@@ -17,6 +17,7 @@
 #include <base/MemoryException.h>
 #include <base/OperatingSystem.h>
 #include <base/io/File.h>
+#include <base/mem/Reference.h>
 #include <base/NotSupported.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -92,7 +93,7 @@ public:
   friend class SharedMemoryImpl;
   
   /** The internal shared memory representation. */
-  ReferenceCountedObjectPointer<SharedMemoryImpl> sharedMemory;
+  Reference<SharedMemoryImpl> sharedMemory;
   
   /** Access to shared memory. */
   enum Access {

@@ -17,7 +17,7 @@
 #include <base/Object.h>
 #include <base/OutOfRange.h>
 #include <base/OutOfDomain.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/MultibyteException.h>
@@ -39,9 +39,7 @@ class FormatOutputStream;
 */
 class WideTraits {
 public:
-
-  /** The type of a single character. */
-  typedef ucs4 Character;
+  
   /** Specifies the terminator for NULL-terminated strings. */
   static const ucs4 TERMINATOR = 0;
 private:
@@ -90,35 +88,35 @@ public:
   };
   
   /** Returns the flags describing the specified character code. */
-  static unsigned int getFlags(Character character) throw();
+  static unsigned int getFlags(ucs4 character) throw();
   
   /** Returns true if the character a letter. */
-  static inline bool isLetter(Character character) throw() {
+  static inline bool isLetter(ucs4 character) throw() {
     return getFlags(character) & LETTER;
   }
 
   /** Returns true if the character is a letter or a digit. */
-  static inline bool isLetterDigit(Character character) throw() {
+  static inline bool isLetterDigit(ucs4 character) throw() {
     return getFlags(character) & (LETTER|DIGIT);
   }
   
   /** Returns true if the character is in lower case. */
-  static bool isLower(Character character) throw();
+  static bool isLower(ucs4 character) throw();
   
   /** Returns true if the character is in upper case. */
-  static bool isUpper(Character character) throw();
+  static bool isUpper(ucs4 character) throw();
   
   /** Returns true if the character is in title case. */
-  static bool isTitle(Character character) throw();
+  static bool isTitle(ucs4 character) throw();
 
   /** Returns true if the character is cased. */
-  // static inline bool isCased(Character character) throw();
+  // static inline bool isCased(ucs4 character) throw();
   
   /** Returns true if the character is a digit. */
-  static bool isDigit(Character character) throw();
+  static bool isDigit(ucs4 character) throw();
   
   /** Returns true if the character is a hex digit. */
-  static inline bool isHexDigit(Character character) throw() {
+  static inline bool isHexDigit(ucs4 character) throw() {
     if (character < 0x80) { // TAG: need support for all "abcdefABCDEF"
       return ASCIITraits::isHexDigit(character);
     }
@@ -126,31 +124,31 @@ public:
   }
   
   /** Returns true if the character is a white space. */
-  static bool isSpace(Character character) throw(); // TAG: inline check for most common space (i.e. ' ')
+  static bool isSpace(ucs4 character) throw(); // TAG: inline check for most common space (i.e. ' ')
   
   /** Returns true if the character is a punctuation mark. */
-  static inline bool isPunctuation(Character character) throw() {
+  static inline bool isPunctuation(ucs4 character) throw() {
     // TAG: check UNIX spec
     // TAG: use table with only punctuation codes
     return getFlags(character) & PUNCTUATION;
   }
   
   /** Returns true if the character is a control character. */
-  static bool isControl(Character character) throw();
+  static bool isControl(ucs4 character) throw();
   
   /** Returns true if the character is an ASCII character. */
-  static inline bool isASCII(Character character) throw() {
+  static inline bool isASCII(ucs4 character) throw() {
     return character < 0x80;
   }
 
   /** Maps the character to lower case. */
-  static Character toLower(Character character) throw();
+  static ucs4 toLower(ucs4 character) throw();
   
   /** Maps the character to upper case. */
-  static Character toUpper(Character character) throw();
+  static ucs4 toUpper(ucs4 character) throw();
   
   /** Maps the character to title case. */
-  static Character toTitle(Character character) throw();
+  static ucs4 toTitle(ucs4 character) throw();
 
   /**
     Returns the value of the specified character. The character must be a digit
@@ -158,12 +156,12 @@ public:
     isHexDigit(). If the character is not a digit an unspecified value is
     returned.
   */
-  int digitToValue(Character character) throw();
+  int digitToValue(ucs4 character) throw();
   
   class ToLowerCase {
   public:
     
-    inline Character operator()(Character character) const throw() {
+    inline ucs4 operator()(ucs4 character) const throw() {
       return toLower(character);
     }
   };
@@ -171,7 +169,7 @@ public:
   class ToUpperCase {
   public:
     
-    inline Character operator()(Character character) const throw() {
+    inline ucs4 operator()(ucs4 character) const throw() {
       return toUpper(character);
     }
   };
@@ -179,7 +177,7 @@ public:
   class ToTitleCase {
   public:
     
-    inline Character operator()(Character character) const throw() {
+    inline ucs4 operator()(ucs4 character) const throw() {
       return toTitle(character);
     }
   };
@@ -206,8 +204,6 @@ public:
 
   /** Character specific properties and manipulators. */
   typedef WideTraits Traits;
-  /** The type of a single character. */
-  typedef Traits::Character Character;
 
   struct HashEntry {
     uint8 numberOfCodes;
@@ -217,7 +213,7 @@ public:
   /** Specifies the granularity of the capacity. Guaranteed to be greater than 0. */
   static const unsigned int GRANULARITY = 16;
   /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. */
-  static const unsigned int MAXIMUM_LENGTH = ((PrimitiveTraits<int>::MAXIMUM/sizeof(Character) - 1)/GRANULARITY)*GRANULARITY;
+  static const unsigned int MAXIMUM_LENGTH = ((PrimitiveTraits<int>::MAXIMUM/sizeof(ucs4) - 1)/GRANULARITY)*GRANULARITY;
   /** Hash modulus. */
   static const unsigned int HASH_MODULUS = 1455;
   /** Character folding hash table. */
@@ -226,13 +222,13 @@ public:
   static const uint32 mappingTable[];
   
   /** The type of the modifying string iterator. */
-  typedef ReferenceCountedCapacityAllocator<Character>::Iterator Iterator;
+  typedef ReferenceCountedCapacityAllocator<ucs4>::Iterator Iterator;
   /** The type of the non-modifying string iterator. */
-  typedef ReferenceCountedCapacityAllocator<Character>::ReadIterator ReadIterator;
+  typedef ReferenceCountedCapacityAllocator<ucs4>::ReadIterator ReadIterator;
   /** The type of the modifying string enumerator. */
-  typedef ReferenceCountedCapacityAllocator<Character>::Enumerator Enumerator;
+  typedef ReferenceCountedCapacityAllocator<ucs4>::Enumerator Enumerator;
   /** The type of the non-modifying string enumerator. */
-  typedef ReferenceCountedCapacityAllocator<Character>::ReadEnumerator ReadEnumerator;
+  typedef ReferenceCountedCapacityAllocator<ucs4>::ReadEnumerator ReadEnumerator;
 
   /** Multibyte encoding. */
   enum MultibyteEncoding {
@@ -266,30 +262,30 @@ private:
   /** The default wide string. This is used to avoid multiple allocations of empty string buffers. */
   static const WideString DEFAULT_STRING;
 
-  /**
+  /*
     Reference to an element within a wide string.
   */
-  class Reference {
+  class Element {
     friend class WideString;
   private:
     
     WideString& string;
     unsigned int index;
     
-    Reference(const Reference& copy); // prohibit default copy initialization
-    Reference& operator=(const Reference& eq); // prohibit default assignment
+    Element(const Element& copy) throw();
+    Element& operator=(const Element& eq) throw();
     
-    inline Reference(WideString& _string, unsigned int _index)
+    inline Element(WideString& _string, unsigned int _index) throw()
       : string(_string), index(_index) {
     }
   public:
     
-    inline Reference& operator=(char value) throw(OutOfRange) {
+    inline Element& operator=(ucs4 value) throw(OutOfRange) {
       string.setAt(index, value);
       return *this;
     }
     
-    inline operator Character() const throw(OutOfRange) {
+    inline operator ucs4() const throw(OutOfRange) {
       return string.getAt(index);
     }
   };
@@ -299,19 +295,19 @@ private:
     guarantied to be NULL-terminated). However, the attribute is guarantied to
     point to a valid buffer even for empty strings.
   */
-  ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<Character> > elements;
+  Reference<ReferenceCountedCapacityAllocator<ucs4> > elements;
 
   /**
     Compare the NULL-terminated strings ignoring the case.
   */
-  static int compareToIgnoreCase(const Character* left, const Character* right) throw();
+  static int compareToIgnoreCase(const ucs4* left, const ucs4* right) throw();
 protected:
 
   /**
     Returns a modifiable buffer. Forces the internal buffer to be copied if
     shared by multiple strings.
   */
-  inline Character* getBuffer() throw(MemoryException) {
+  inline ucs4* getBuffer() throw(MemoryException) {
     elements.copyOnWrite();
     return elements->getElements();
   }
@@ -319,7 +315,7 @@ protected:
   /**
     Returns a non-modifiable buffer.
   */
-  inline const Character* getBuffer() const throw() {
+  inline const ucs4* getBuffer() const throw() {
     return elements->getElements();
   }
 
@@ -375,7 +371,8 @@ public:
   };
   
   /**
-     Returns the maximum number of bytes required to represent any UCS-4 character.
+     Returns the maximum number of bytes required to represent any UCS-4
+     character.
   */
   static inline unsigned int getMaximumNumberOfMultibytes(MultibyteEncoding encoding) throw() {
     static const unsigned int MAXIMUM_MULTIBYTES[] = {0, 6, 4, 4, 4, 4, 4, 4};
@@ -663,9 +660,11 @@ public:
   explicit WideString(unsigned int capacity) throw(MemoryException);
 
   /**
-    Initializes the string from a string literal. The string literal is not copied into internal buffer. Implicit initialization is allowed.
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
 
-    @param string String literal generated by the macro WIDEMESSAGE (e.g. WIDEMESSAGE("My string"))
+    @param string String literal generated by the macro WIDEMESSAGE (e.g.
+    WIDEMESSAGE("My string"))
   */
   WideString(const WideStringLiteral& string) throw(WideStringException, MemoryException);
 
@@ -838,7 +837,7 @@ public:
     Returns the character at the specified index in this string. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  Character getAt(unsigned int index) const throw(OutOfRange);
+  ucs4 getAt(unsigned int index) const throw(OutOfRange);
 
   /**
     Sets the character at the specified index of this string. If the new
@@ -849,14 +848,14 @@ public:
     @param index The index of the character to set.
     @param value The new character value.
   */
-  void setAt(unsigned int index, Character value) throw(OutOfRange);
+  void setAt(unsigned int index, ucs4 value) throw(OutOfRange);
 
   /**
     Returns a reference to character at the specified index. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  Reference operator[](unsigned int index) throw(OutOfRange) {
-    return Reference(*this, index);
+  inline Element operator[](unsigned int index) throw(OutOfRange) {
+    return Element(*this, index);
   }
 
   /**
@@ -891,7 +890,7 @@ public:
 
     @param index Specifies the character to be removed.
   */
-  inline WideString& removeCharacter(unsigned int index) throw(MemoryException) {
+  inline WideString& removeAt(unsigned int index) throw(MemoryException) {
     return remove(index, index);
   }
 
@@ -900,7 +899,7 @@ public:
 
     @param ch The character to be appended.
   */
-  inline WideString& append(Character ch) throw(WideStringException, MemoryException) {
+  inline WideString& append(ucs4 ch) throw(WideStringException, MemoryException) {
     return insert(getLength(), ch);
   }
 
@@ -941,7 +940,7 @@ public:
 
     @param ch The character to be prepended.
   */
-  inline WideString& prepend(Character ch) throw(WideStringException, MemoryException) {
+  inline WideString& prepend(ucs4 ch) throw(WideStringException, MemoryException) {
     return insert(0, ch);
   }
 
@@ -962,7 +961,7 @@ public:
 
     @param ch The character to be inserted.
   */
-  WideString& insert(unsigned int index, Character ch) throw(WideStringException, MemoryException);
+  WideString& insert(unsigned int index, ucs4 ch) throw(WideStringException, MemoryException);
 
   /**
     Inserts the string into this string.
@@ -1199,7 +1198,7 @@ public:
     @param start Specifies the start position of the search. Default is 0.
     @return Index of the first match if any otherwise -1.
   */
-  int indexOf(Character ch, unsigned int start = 0) const throw();
+  int indexOf(ucs4 ch, unsigned int start = 0) const throw();
 
   /**
     Returns the index of the first substring that matches the specified string
@@ -1219,13 +1218,13 @@ public:
     @param start Specifies the start position of the search. Default is end of string.
     @return Index of the last match if any otherwise -1.
   */
-  int lastIndexOf(Character ch, unsigned int start) const throw();
+  int lastIndexOf(ucs4 ch, unsigned int start) const throw();
 
   /**
     Returns the index of the last character that matches the specified character
     starting from the end of the string.
   */
-  inline int lastIndexOf(Character ch) const throw() {
+  inline int lastIndexOf(ucs4 ch) const throw() {
     return lastIndexOf(ch, getLength());
   }
 
@@ -1258,7 +1257,7 @@ public:
     @param start The start position. Default is 0.
     @return The number of occurances of the character.
   */
-  unsigned int count(Character ch, unsigned int start = 0) const throw();
+  unsigned int count(ucs4 ch, unsigned int start = 0) const throw();
 
   /**
     Counts the number of occurances of the specified substring in this string.
@@ -1281,8 +1280,9 @@ public:
   /**
     Returns NULL-terminated wide string.
   */
-  inline const Character* getElements() const throw() {
-    Character* result = elements->getElements(); // no need to copy on write
+  inline const ucs4* getElements() const throw() {
+    // special case: no need to copy on write 'cause we only add terminator
+    ucs4* result = const_cast<ucs4*>(elements->getElements());
     result[getLength()] = Traits::TERMINATOR;
     return result;
   }

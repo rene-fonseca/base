@@ -20,7 +20,7 @@
 #include <base/OutOfDomain.h>
 #include <base/mathematics/IncompatibleOperands.h>
 #include <base/mathematics/Vector.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/string/FormatOutputStream.h>
@@ -137,7 +137,7 @@ protected:
     The elements of the matrix stored in an array. The array is guarantied to
     be non-empty when the matrix object has been initialized.
   */
-  ReferenceCountedObjectPointer<ReferenceCountedAllocator<TYPE> > elements;
+  Reference<ReferenceCountedAllocator<TYPE> > elements;
 
   /** The number of rows in the matrix. */
   unsigned int rows;

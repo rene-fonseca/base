@@ -18,6 +18,7 @@
 #include <base/ui/Color.h>
 #include <base/ui/WindowImpl.h>
 #include <base/collection/Array.h>
+#include <base/mem/Reference.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -77,7 +78,7 @@ public:
   class GraphicsContextObject {
   protected:
     
-    ReferenceCountedObjectPointer<GraphicsContextObjectHandle> handle;
+    Reference<GraphicsContextObjectHandle> handle;
   public:
 
     inline GraphicsContextObject() throw() {

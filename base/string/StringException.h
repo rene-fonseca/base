@@ -33,7 +33,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline StringException() throw() : Exception() {
+  inline StringException() throw() {
   }
 
   /**

@@ -24,7 +24,7 @@
 #include <base/net/NetworkException.h>
 #include <base/net/InetAddress.h>
 #include <base/string/FormatOutputStream.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/OperatingSystem.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -48,6 +48,7 @@ class Socket : public virtual Object,
                public virtual AsynchronousInputStream,
                public virtual AsynchronousOutputStream {
   friend class Initialization;
+  friend class MultipleSockets;
 public:
 
   /** Domain. */
@@ -165,15 +166,14 @@ private:
   };
 protected:
   
-  typedef ReferenceCountedObjectPointer<SocketImpl> Reference;
-  
   /** The internal socket representation. */
-  ReferenceCountedObjectPointer<SocketImpl> socket;
+  Reference<SocketImpl> socket;
 
   /** Socket options. */
   enum {
     OPTION_DONT_ROUTE,
-    OPTION_TCP_NO_DELAY
+    OPTION_TCP_NO_DELAY,
+    OPTION_TCP_DEFER_ACCEPT
   };
   
   /** Get boolean socket option. */
@@ -188,6 +188,13 @@ public:
   */
   Socket() throw();
 
+  /**
+    Returns a reference to the socket.
+  */
+  inline Reference<ReferenceCountedObject> getReference() throw() {
+    return socket;
+  }
+  
   /**
     Initialization of socket from other socket.
   */
@@ -218,10 +225,13 @@ public:
   /**
     Associates a local name (address and port) with this socket.
 
-    @param addr The IP address the socket should be bound to. If unspecified the assigned address may not be known until the socket has been connected with connect or accept.
-    @param port The port the socket should be bound to. If zero the socket is assigned to a unique port.
+    @param address The IP address the socket should be bound to. If unspecified
+    the assigned address may not be known until the socket has been connected
+    with connect or accept.
+    @param port The port the socket should be bound to. If zero the socket is
+    assigned to a unique port.
   */
-  void bind(const InetAddress& addr, unsigned short port) throw(NetworkException);
+  void bind(const InetAddress& address, unsigned short port) throw(NetworkException);
 
   /**
     Closes this socket.
@@ -231,10 +241,10 @@ public:
   /**
     Connects this socket to the specified address and port.
 
-    @param addr The IP address to connect to.
+    @param address The IP address to connect to.
     @param port The port to connect to.
   */
-  void connect(const InetAddress& addr, unsigned  short port) throw(NetworkException);
+  void connect(const InetAddress& address, unsigned  short port) throw(NetworkException);
 
   /**
     Creates either a stream or a datagram socket.
@@ -397,6 +407,16 @@ public:
     Disables/enables the Nagle's algorithm.
   */
   void setTcpNoDelay(bool value) throw(NetworkException);
+
+  /**
+    Returns the timeout period in nanoseconds for send.
+  */
+  uint64 getTcpDeferAccept() const throw(NetworkException);
+
+  /**
+    Sets the timeout period for send (clamped to one day).
+  */
+  void setTcpDeferAccept(uint64 nanoseconds) throw(NetworkException);
   
   /**
     Returns the current time to live (TTL) value.
@@ -520,7 +540,8 @@ public:
   unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(NetworkException);
 
   /**
-    Sends the contents of the buffer to the specified address using an unconnected socket.
+    Sends the contents of the buffer to the specified address using an
+    unconnected socket.
 
     @param buffer The buffer.
     @param size The size of the buffer.

@@ -15,13 +15,14 @@
 #define _DK_SDU_MIP__BASE_COMMUNICATION__SERIAL_PORT_H
 
 #include <base/communication/CommunicationsPort.h>
+#include <base/OperatingSystem.h>
+#include <base/NotSupported.h>
+#include <base/collection/List.h>
 #include <base/io/Handle.h>
 #include <base/io/async/AsynchronousInputStream.h>
 #include <base/io/async/AsynchronousOutputStream.h>
-#include <base/OperatingSystem.h>
-#include <base/NotSupported.h>
+#include <base/mem/Reference.h>
 #include <base/string/String.h>
-#include <base/collection/List.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -41,7 +42,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class SerialPort : public CommunicationsPort, public virtual AsynchronousIOStream {
 private:
 
-  ReferenceCountedObjectPointer<Handle> handle;
+  Reference<Handle> handle;
   const String name;
 
   class SerialPortHandle : public Handle {

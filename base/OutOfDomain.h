@@ -19,8 +19,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Exception used to specify that a variable has been assigned a value not in the valid domain.
-
+  Exception used to specify that a variable has been assigned a value not in the
+  valid domain. This exception if offen raised on invalid arguments.
+  
+  @short Out of domain exception.
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -31,14 +34,16 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  OutOfDomain() throw();
+  inline OutOfDomain() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  OutOfDomain(const char* message) throw();
+  inline OutOfDomain(const char* message) throw() : Exception(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.
@@ -47,14 +52,16 @@ public:
   */
   inline OutOfDomain(Type type) throw() : Exception(type) {
   }
-
+  
   /**
     Initializes the exception object.
     
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  OutOfDomain(const char* message, Type type) throw();
+  inline OutOfDomain(const char* message, Type type) throw()
+    : Exception(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -52,6 +52,9 @@ namespace isoc {
   destoyed at the old location. This function is primarily used by allocators to
   avoid these operations on their elements. Be very careful when adding your own
   specializations.
+
+  @short Relocateable template class.
+  @ingroup memory
 */
 template<class TYPE>
 class Relocateable {
@@ -64,6 +67,9 @@ public:
   Specifies whether or not the object may be created and destroyed without
   invoking the constructor and destructor. This also implies that the object is
   relocatable. Be extremely careful when adding your own specializations.
+  
+  @short Uninitializeable template class.
+  @ingroup memory
 */
 template<class TYPE>
 class Uninitializeable {

@@ -33,7 +33,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  EndOfFile();
+  inline EndOfFile() throw() {
+  }
 
   /**
     Initializes the exception object.
@@ -41,7 +42,8 @@ public:
     @param message The message.
   */
   
-  EndOfFile(const char* message);
+  inline EndOfFile(const char* message) throw() : IOException(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.

@@ -67,8 +67,8 @@ bool AccessControlList::remove(const Trustee& trustee) throw() {
 }
 
 bool AccessControlList::hasTrustee(const Trustee& trustee) const throw() {
-  Array<AccessControlEntry>::ReadIterator i = acl.getBeginIterator();
-  const Array<AccessControlEntry>::ReadIterator end = acl.getEndIterator();
+  Array<AccessControlEntry>::ReadIterator i = acl.getBeginReadIterator();
+  const Array<AccessControlEntry>::ReadIterator end = acl.getEndReadIterator();
   while (i < end) {
     if (i->getTrustee() == trustee) {
       return true;

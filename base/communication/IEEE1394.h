@@ -20,6 +20,7 @@
 #include <base/communication/IEEE1394Exception.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/mem/Allocator.h>
+#include <base/mem/Reference.h>
 #include <base/collection/Array.h>
 #include <base/Cast.h>
 
@@ -271,7 +272,7 @@ public:
 private:
 
   /** The IEEE 1394 implementation. */
-  ReferenceCountedObjectPointer<IEEE1394Impl> ieee1394impl;
+  Reference<IEEE1394Impl> ieee1394impl;
 
   inline IEEE1394(IEEE1394Impl* _ieee1394impl) throw()
     : ieee1394impl(_ieee1394impl) {

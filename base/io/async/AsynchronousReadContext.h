@@ -17,7 +17,7 @@
 #include <base/io/async/AsynchronousReadEventListener.h>
 #include <base/io/async/AsynchronousReadCompletion.h>
 #include <base/io/async/AsynchronousException.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -25,7 +25,7 @@ class AsynchronousReadContext : public Object, public ReferenceCountedObject {
 protected:  
 
   /** Self-reference used to protect the object from premature destruction. */
-  ReferenceCountedObjectPointer<AsynchronousReadContext> selfReference;
+  Reference<AsynchronousReadContext> selfReference;
   
   inline AsynchronousReadContext() throw() : selfReference(this) {
   }

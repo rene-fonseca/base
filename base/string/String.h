@@ -17,7 +17,7 @@
 #include <base/Object.h>
 #include <base/OutOfRange.h>
 #include <base/OutOfDomain.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
 #include <base/io/IOException.h>
 #include <base/string/StringException.h>
@@ -41,85 +41,83 @@ class FormatOutputStream;
 class CharTraits {
 public:
   
-  /** The type of a single character. */
-  typedef char Character;
   /** Specifies the terminator for NULL-terminated strings. */
   static const char TERMINATOR = '\0';
 
   /** Returns true if the character an alphabetic character. */
-  static inline bool isAlpha(Character character) throw() {
+  static inline bool isAlpha(char character) throw() {
     return isalpha(character);
   }
   
   /** Returns true if the character an alphabetic character or a digit. */
-  static inline bool isAlphaNum(Character character) throw() {
+  static inline bool isAlphaNum(char character) throw() {
     return isalnum(character);
   }
 
   /** Returns true if the character is lowercase. */
-  static inline bool isLower(Character character) throw() {
+  static inline bool isLower(char character) throw() {
     return islower(character);
   }
   
   /** Returns true if the character is uppercase. */
-  static inline bool isUpper(Character character) throw() {
+  static inline bool isUpper(char character) throw() {
     return isupper(character);
   }
   
   /** Returns true if the character is a digit. */
-  static inline bool isDigit(Character character) throw() {
+  static inline bool isDigit(char character) throw() {
     return isdigit(character);
   }
   
   /** Returns true if the character is a hex digit. */
-  static inline bool isHexDigit(Character character) throw() {
+  static inline bool isHexDigit(char character) throw() {
     return isxdigit(character);
   }
   
   /** Returns true if the character is a white space. */
-  static inline bool isSpace(Character character) throw() {
+  static inline bool isSpace(char character) throw() {
     return isspace(character);
   }
   
   /** Returns true if the character is a punctuation mark. */
-  static inline bool isPunctuation(Character character) throw() {
+  static inline bool isPunctuation(char character) throw() {
     return ispunct(character);
   }
   
   /** Returns true if the character is printable. */
-  static inline bool isPrintable(Character character) throw() {
+  static inline bool isPrintable(char character) throw() {
     return isprint(character);
   }
   
   /** Returns true if the character is a visible character. */
-  static inline bool isGraph(Character character) throw() {
+  static inline bool isGraph(char character) throw() {
     return isgraph(character);
   }
   
   /** Returns true if the character is a control character. */
-  static inline bool isControl(Character character) throw() {
+  static inline bool isControl(char character) throw() {
     return iscntrl(character);
   }
   
   /** Returns true if the character is an ASCII character. */
-  static inline bool isASCII(Character character) throw() {
+  static inline bool isASCII(char character) throw() {
     return  !(character & ~0177U);
   }
 
   /** Converts the character to lowercase. */
-  static inline Character toLower(Character character) throw() {
+  static inline char toLower(char character) throw() {
     return tolower(character);
   }
   
   /** Converts the character to uppercase. */
-  static inline Character toUpper(Character character) throw() {
+  static inline char toUpper(char character) throw() {
     return toupper(character);
   }
 
   class ToLowerCase {
   public:
     
-    inline Character operator()(Character value) const throw() {
+    inline char operator()(char value) const throw() {
       return tolower(value);
     }
   };
@@ -127,7 +125,7 @@ public:
   class ToUpperCase {
   public:
     
-    inline Character operator()(Character value) const throw() {
+    inline char operator()(char value) const throw() {
       return toupper(value);
     }
   };
@@ -145,10 +143,9 @@ public:
 class String : public virtual Object {
 public:
 
+  /** Character specific properties and manipulators. */
   typedef CharTraits Traits;
-  /** The type of an element (character). */
-  typedef CharTraits::Character Character;
-
+  
   /** Specifies the string terminator. */
   static const char TERMINATOR = '\0';
   /** Specifies the granularity of the capacity. Guaranteed to be greater than 0. */
@@ -165,30 +162,30 @@ private:
   /** The default string. This is used to avoid multiple allocations of empty string buffers. */
   static const String DEFAULT_STRING;
 
-  /**
+  /*
     Reference to an element within a string.
   */
-  class Reference {
+  class Element {
     friend class String;
   private:
     
     String& string;
     unsigned int index;
     
-    Reference(const Reference& copy); // prohibit default copy initialization
-    Reference& operator=(const Reference& eq); // prohibit default assignment
-
-    inline Reference(String& _string, unsigned int _index)
+    Element(const Element& copy) throw();
+    Element& operator=(const Element& eq) throw();
+    
+    inline Element(String& _string, unsigned int _index) throw()
       : string(_string), index(_index) {
     }
   public:
     
-    inline Reference& operator=(Character value) throw(OutOfRange) {
+    inline Element& operator=(char value) throw(OutOfRange) {
       string.setAt(index, value);
       return *this;
     }
     
-    inline operator Character() const throw(OutOfRange) {
+    inline operator char() const throw(OutOfRange) {
       return string.getAt(index);
     }
   };
@@ -197,21 +194,22 @@ private:
     Reference counted buffer holding NULL-terminated string. The array is
     guarantied to be non-empty when the string has been initialized.
   */
-  ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<char> > elements;
+  Reference<ReferenceCountedCapacityAllocator<char> > elements;
 protected:
 
   /**
-    Returns a modifiable buffer. Forces copy of internal buffer if shared by multiple strings.
+    Returns a modifiable buffer. Forces copy of internal buffer if shared by
+    multiple strings.
   */
-  inline Character* getBuffer() throw(MemoryException) {
+  inline char* getBuffer() throw(MemoryException) {
     elements.copyOnWrite();
     return elements->getElements();
   }
-
+  
   /**
     Returns a non-modifiable buffer.
   */
-  inline const Character* getBuffer() const throw() {
+  inline const char* getBuffer() const throw() {
     return elements->getElements();
   }
   
@@ -234,7 +232,8 @@ public:
     Returns the length of the NULL-terminated string.
 
     @param string The NULL-terminated string.
-    @param maximum The maximum length of the string. The default is MAXIMUM_LENGTH.
+    @param maximum The maximum length of the string. The default is
+    MAXIMUM_LENGTH.
   */
   static inline unsigned int getLengthOfMustBeTerminated(const char* string, unsigned int maximum = MAXIMUM_LENGTH) throw(StringException) {
     assert(string, StringException(Type::getType<String>()));
@@ -247,7 +246,8 @@ public:
     Returns the length of the NULL-terminated string.
 
     @param string The NULL-terminated string.
-    @param maximum The maximum length of the string. The default is MAXIMUM_LENGTH.
+    @param maximum The maximum length of the string. The default is
+    MAXIMUM_LENGTH.
 
     @return maximum if terminator is not found. 0 if string is invalid (i.e. 0).
   */
@@ -265,16 +265,19 @@ public:
   String() throw();
 
   /**
-    Initializes a string with no characters in it, initial capacity and granularity of capacity.
-
+    Initializes a string with no characters in it, initial capacity and
+    granularity of capacity.
+    
     @param capacity The initial capacity.
   */
   explicit String(unsigned int capacity) throw(MemoryException);
 
   /**
-    Initializes the string from a string literal. The string literal is not copied into internal buffer. Implicit initialization is allowed.
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
 
-    @param string String literal generated by the macro MESSAGE (e.g. MESSAGE("My string"))
+    @param string String literal generated by the macro MESSAGE (e.g.
+    MESSAGE("My string"))
   */
   String(const StringLiteral& string) throw(StringException, MemoryException);
 
@@ -454,8 +457,8 @@ public:
     Returns a reference to character at the specified index. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  Reference operator[](unsigned int index) throw(OutOfRange) {
-    return Reference(*this, index);
+  Element operator[](unsigned int index) throw(OutOfRange) {
+    return Element(*this, index);
   }
 
   /**
@@ -490,7 +493,7 @@ public:
 
     @param index Specifies the character to be removed.
   */
-  inline String& removeCharacter(unsigned int index) throw(MemoryException) {
+  inline String& removeAt(unsigned int index) throw(MemoryException) {
     return remove(index, index);
   }
 
@@ -653,7 +656,7 @@ public:
 
     @param suffix The character to be appended.
   */
-  inline String& operator+=(Character suffix) throw(MemoryException) {
+  inline String& operator+=(char suffix) throw(MemoryException) {
     return append(suffix);
   }
 
@@ -706,7 +709,9 @@ public:
     Compares this string to another string.
 
     @param string The string to compare this string with.
-    @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
+    @return Integer less than, equal to, or greater than zero if this string is
+    found, respectively, to be less than, equal to, or greater than the specified
+    string.
   */
   int compareTo(const String& string) const throw();
   
@@ -714,7 +719,9 @@ public:
     Compares this string to with string literal.
 
     @param string The string to compare this string with.
-    @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
+    @return Integer less than, equal to, or greater than zero if this string is
+    found, respectively, to be less than, equal to, or greater than the specified
+    string.
   */
   int compareTo(const StringLiteral& string) const throw();
   
@@ -722,7 +729,9 @@ public:
     Compares this string to a NULL-terminated string.
     
     @param string The string to compare this string with.
-    @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string. False, if string is 0.
+    @return Integer less than, equal to, or greater than zero if this string is
+    found, respectively, to be less than, equal to, or greater than the specified
+    string. False, if string is 0.
   */
   int compareTo(const char* string) const throw();
   
@@ -730,7 +739,9 @@ public:
     Compares this string with other string ignoring the case of the characters.
 
     @param string The string to compare this string with.
-    @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
+    @return Integer less than, equal to, or greater than zero if this string is
+    found, respectively, to be less than, equal to, or greater than the specified
+    string.
   */
   int compareToIgnoreCase(const String& string) const throw();
 
@@ -738,7 +749,9 @@ public:
     Compares this string with NULL-terminated string ignoring the case of the characters.
 
     @param string The string to compare this string with.
-    @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
+    @return Integer less than, equal to, or greater than zero if this string is
+    found, respectively, to be less than, equal to, or greater than the specified
+    string.
   */
   int compareToIgnoreCase(const char* string) const throw(StringException);
 
@@ -866,7 +879,8 @@ public:
 // *************************************************************************
 
   /**
-    Returns the index of the first character that matches the specified character after the start position.
+    Returns the index of the first character that matches the specified character
+    after the start position.
 
     @param ch The character to find.
     @param start Specifies the start position of the search. Default is 0.
@@ -875,19 +889,23 @@ public:
   int indexOf(char ch, unsigned int start = 0) const throw();
 
   /**
-    Returns the index of the first substring that matches the specified string after the start position.
+    Returns the index of the first substring that matches the specified string
+    after the start position.
 
     @param string The substring to find.
     @param start Specifies the start position of the search. Default is 0.
-    @return Index of the first match if any otherwise -1. Also returns -1 if substring is empty.
+    @return Index of the first match if any otherwise -1. Also returns -1 if
+    substring is empty.
   */
   int indexOf(const String& string, unsigned int start = 0) const throw();
 
   /**
-    Returns the index of the last character that matches the specified character before the start position.
+    Returns the index of the last character that matches the specified character
+    before the start position.
 
     @param ch The character to find.
-    @param start Specifies the start position of the search. Default is end of string.
+    @param start Specifies the start position of the search. Default is end of
+    string.
     @return Index of the last match if any otherwise -1.
   */
   int lastIndexOf(char ch, unsigned int start) const throw();
@@ -897,11 +915,14 @@ public:
   }
 
   /**
-    Returns the index of the last substring that matches the specified string before the start position.
+    Returns the index of the last substring that matches the specified string
+    before the start position.
 
     @param string The substring to find.
-    @param start Specifies the start position of the search. Default is end of string.
-    @return Index of the last match if any otherwise -1. Also returns -1 if substring is empty.
+    @param start Specifies the start position of the search. Default is end of
+    string.
+    @return Index of the last match if any otherwise -1. Also returns -1 if
+    substring is empty.
   */
   int lastIndexOf(const String& string, unsigned int start) const throw();
   
@@ -932,7 +953,7 @@ public:
 
     @param character The character to remove.
   */
-  String& trim(Character character = ' ') throw();
+  String& trim(char character = ' ') throw();
   
   /**
     Returns the substrings between the specified separator.
@@ -949,14 +970,14 @@ public:
   /**
     Returns NULL-terminated string for modifying access.
   */
-  Character* getElements() throw();
+  char* getElements() throw();
 
   /**
     Returns NULL-terminated string.
   */
-  inline const Character* getElements() const throw() {
-    // no need to copy on write 'cause we only add terminator
-    Character* result = elements->getElements();
+  inline const char* getElements() const throw() {
+    // special case: no need to copy on write 'cause we only add terminator
+    char* result = const_cast<char*>(elements->getElements()); // TAG: fix cast
     result[getLength()] = Traits::TERMINATOR;
     return result;
   }
@@ -965,7 +986,7 @@ public:
     Returns the characters of the string for non-modifying access. The elements
     may not be NULL-terminated. Avoid this method if you can.
   */
-  inline const Character* getBytes() const throw() {
+  inline const char* getBytes() const throw() {
     return elements->getElements();
   }
 };
@@ -993,7 +1014,9 @@ inline String operator+(const String& left, const String& right) throw(MemoryExc
 }
 
 /**
-  String reduction. Removes suffix from string if and only if it ends with the suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas ("pre"-"suf") results in "pre").
+  String reduction. Removes suffix from string if and only if it ends with the
+  suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas
+  ("pre"-"suf") results in "pre").
 */
 inline String operator-(const String& left, const String& right) throw(MemoryException) {
   if (left.endsWith(right)) {

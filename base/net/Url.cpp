@@ -26,9 +26,9 @@ public:
     ALWAYS // character must always be encoded
   };
 
-  typedef Encode (*Encoding)(String::Character);
+  typedef Encode (*Encoding)(char);
 
-  static inline Encode defaultEncoding(String::Character ch) throw() {
+  static inline Encode defaultEncoding(char ch) throw() {
     switch (ch) {
     case 0x00: case 0x01: case 0x02: case 0x03: case 0x04: case 0x05: case 0x06: case 0x07:
     case 0x08: case 0x09: case 0x0a: case 0x0b: case 0x0c: case 0x0d: case 0x0e: case 0x0f:
@@ -57,11 +57,11 @@ public:
     }
   }
 
-  static inline Encode userEncoding(String::Character ch) throw() {
+  static inline Encode userEncoding(char ch) throw() {
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
-  static inline Encode passwordEncoding(String::Character ch) throw() {
+  static inline Encode passwordEncoding(char ch) throw() {
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
@@ -69,7 +69,7 @@ public:
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
-      String::Character ch = *i;
+      char ch = *i;
       assert(
         ASCIITraits::isASCII(ch),
         Url::UrlException("Invalid character", Type::getType<UrlImpl>())
@@ -89,7 +89,7 @@ public:
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
-      String::Character ch = *i;
+      char ch = *i;
       if (ch == '%') {
         assert(
           end - i >= 2,
@@ -161,7 +161,7 @@ String Url::validateScheme(const String& value) throw(UrlException, MemoryExcept
   String::ReadIterator end = value.getEndReadIterator();
 
   for (String::ReadIterator i = value.getBeginReadIterator(); i < end; ++i) {
-    String::Character ch = ASCIITraits::toLower(*i);
+    char ch = ASCIITraits::toLower(*i);
     if (ASCIITraits::isLower(ch)) {
     } else if (ASCIITraits::isDigit(ch)) {
     } else if (ch == '+') {
@@ -178,7 +178,7 @@ String Url::validateScheme(const String& value) throw(UrlException, MemoryExcept
 String Url::validateUser(const String& str) throw(UrlException) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
-    String::Character ch = *i;
+    char ch = *i;
     assert(
       ASCIITraits::isASCII(ch),
       UrlException("Invalid character", Type::getType<Url>())
@@ -190,7 +190,7 @@ String Url::validateUser(const String& str) throw(UrlException) {
 String Url::validatePassword(const String& str) throw(UrlException) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
-    String::Character ch = *i;
+    char ch = *i;
     assert(
       ASCIITraits::isASCII(ch),
       UrlException("Invalid character", Type::getType<Url>())

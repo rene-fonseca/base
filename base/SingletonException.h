@@ -19,10 +19,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Exception raised on singleton violations. A singleton class that may only be
-  instantiated once.
-
-  @short Singleton violation exception
+  Exception raised on singleton violations. This exception is raised when a
+  singleton class is instantiated and an instance already exists in the context
+  (or address space).
+  
+  @short Singleton violation exception.
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -34,14 +35,16 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  SingletonException() throw();
+  inline SingletonException() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  SingletonException(const char* message) throw();
+  inline SingletonException(const char* message) throw() : Exception(message) {
+  }
 
   /**
     Initializes the exception object without an associated message.

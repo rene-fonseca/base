@@ -20,7 +20,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Exception used to specify that some context has not been fully implemented.
-
+  This exception is an internal error.
+  
+  @short Not implemented exception.
   @see NotSupported
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -32,14 +34,16 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  NotImplemented() throw();
+  inline NotImplemented() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  NotImplemented(const char* message) throw();
+  inline NotImplemented(const char* message) throw() : Exception(this) {
+  }
 
   /**
     Initializes the exception object without an associated message.

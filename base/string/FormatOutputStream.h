@@ -19,11 +19,12 @@
 #include <base/concurrency/Synchronizeable.h>
 #include <base/concurrency/Synchronize.h>
 #include <base/concurrency/SpinLock.h>
+#include <base/mem/Reference.h>
 #include <base/string/ASCIITraits.h>
+#include <base/string/String.h>
 #include <base/Primitives.h>
 #include <base/OutOfDomain.h>
 #include <base/OutOfRange.h>
-#include <base/string/String.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -61,7 +62,7 @@ enum Action {
   ZEROPADEXP, /**< Zero pads the exponent of floating-point types to the maximum number of digits. */
   PREFIX, /**< Enable prefixes for integers. This is the default if the prefix is defined for the field content. */
   NOPREFIX, /**< Disable prefixes for integers. */
-  NECESSARY, /**< Specifies that no garbage digits should be output for floating-point numbers. This is the default behaviour. */
+  NECESSARY, /**< Specifies that no garbage digits should be output for floating-point numbers. This is the default behavior. */
   UPPER, /**< Selects capital letters (both integers and real numbers). */
   LOWER, /**< Selects lower case letters (both integers and real numbers). */
   POSIX, /**< Override current locale and use POSIX formatting. */
@@ -544,6 +545,14 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) th
   Writes a pointer to a format output stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const void* value) throw(IOException);
+
+/**
+  Writes a reference to a format output stream.
+*/
+template<class TYPE>
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, Reference<TYPE> value) throw(IOException) {
+  return stream << value.getValue();
+}
 
 /**
   Writes a string literal to a format output stream.

@@ -39,7 +39,7 @@ private:
   /** Identifier of the group represented as an integral if possible. */
   unsigned long integralId;
   /** Opaque identifier of the group. */
-  ReferenceCountedObjectPointer<ReferenceCountedAllocator<uint8> > id;
+  Reference<ReferenceCountedAllocator<uint8> > id;
 public:
   
   /**

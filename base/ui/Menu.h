@@ -14,10 +14,11 @@
 #ifndef _DK_SDU_MIP__BASE_UI__MENU_H
 #define _DK_SDU_MIP__BASE_UI__MENU_H
 
-#include <base/collection/Array.h>
 #include <base/Object.h>
-#include <base/string/String.h>
+#include <base/collection/Array.h>
 #include <base/io/Handle.h>
+#include <base/mem/Reference.h>
+#include <base/string/String.h>
 #include <base/ui/UserInterfaceException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -123,7 +124,7 @@ private:
   };
 
   /** The opaque handle to the menu. */
-  ReferenceCountedObjectPointer<MenuHandle> handle;
+  Reference<MenuHandle> handle;
 public:
 
   enum Flag {

@@ -33,15 +33,16 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  BrokenStream();
+  inline BrokenStream() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  
-  BrokenStream(const char* message);
+  inline BrokenStream(const char* message) throw() : IOException(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.

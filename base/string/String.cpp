@@ -29,31 +29,32 @@ String::String(unsigned int capacity) throw(MemoryException) : elements(0) {
 
 String::String(const StringLiteral& string) throw(StringException, MemoryException) : elements(0) {
   unsigned int length = string.getLength();
-  assert(length <= MAXIMUM_LENGTH, StringException(this)); // TAG: this is not required
-  elements = new ReferenceCountedCapacityAllocator<Character>(length + 1, GRANULARITY);
-  copy<Character>(elements->getElements(), string, length); // no overlap
+  // assert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
+  elements =
+    new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
+  copy<char>(elements->getElements(), string, length); // no overlap
 }
 
 String::String(const char* string) throw(StringException, MemoryException) : elements(0) {
   int numberOfCharacters = getLengthOfMustBeTerminated(string);
-  elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
+  elements = new ReferenceCountedCapacityAllocator<char>(numberOfCharacters + 1, GRANULARITY);
   copy(elements->getElements(), string, numberOfCharacters); // no overlap
 }
 
 String::String(const char* string, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException) : elements(0) {
   assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
   assert(string, StringException(this)); // make sure string is proper
-  const Character* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
+  const char* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
   int numberOfCharacters = terminator ? (terminator - string) : maximum;
-  elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
+  elements = new ReferenceCountedCapacityAllocator<char>(numberOfCharacters + 1, GRANULARITY);
   copy(elements->getElements(), string, numberOfCharacters); // no overlap
 }
 
 String& String::operator=(const StringLiteral& string) throw(StringException, MemoryException) {
   unsigned int length = string.getLength();
-  assert(length <= MAXIMUM_LENGTH, StringException(this)); // TAG: this is not required
-  elements = new ReferenceCountedCapacityAllocator<Character>(length + 1, GRANULARITY);
-  copy<Character>(elements->getElements(), string, length); // no overlap
+  // assert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
+  elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
+  copy<char>(elements->getElements(), string, length); // no overlap
   return *this;
 }
 
@@ -65,8 +66,8 @@ String& String::operator=(const char* string) throw(StringException, MemoryExcep
 }
 
 bool String::isASCII() const throw() {
-  const Character* i = getBuffer();
-  const Character* end = i + getLength();
+  const char* i = getBuffer();
+  const char* end = i + getLength();
   while (i < end) {
     if (!ASCIITraits::isASCII(*i++)) {
       return false;
@@ -110,7 +111,7 @@ void String::setAt(unsigned int index, char value) throw(OutOfRange) {
 }
 
 String& String::remove(unsigned int start, unsigned int end) throw(MemoryException) {
-  int length = getLength();
+  unsigned int length = getLength();
   if ((start < end) && (start < length)) { // protect against some cases
     if (end >= length) {
       elements.copyOnWrite(); // we are about to modify the buffer
@@ -134,9 +135,9 @@ String& String::removeFrom(unsigned int start) throw(MemoryException) {
 }
 
 String& String::insert(unsigned int index, char ch) throw(StringException, MemoryException) {
-  int length = getLength();
+  unsigned int length = getLength();
   setLength(length + 1);
-  Character* buffer = elements->getElements();
+  char* buffer = elements->getElements();
   if (index >= length) {
     buffer[length] = ch; // insert section at end of string
   } else {
@@ -148,13 +149,13 @@ String& String::insert(unsigned int index, char ch) throw(StringException, Memor
 }
 
 String& String::insert(unsigned int index, const String& string) throw(StringException, MemoryException) {
-  int length = getLength();
+  unsigned int length = getLength();
   if (length == 0) {
     elements = string.elements;
   } else {
     int strlength = string.getLength();
     setLength(length + strlength); // TAG: also protects against self insertion - but can this be circumvented
-    Character* buffer = elements->getElements();
+    char* buffer = elements->getElements();
     if (index >= length) {
       // insert section at end of string
       copy(buffer + length, string.getBuffer(), strlength);
@@ -168,16 +169,16 @@ String& String::insert(unsigned int index, const String& string) throw(StringExc
 }
 
 String& String::insert(unsigned int index, const StringLiteral& string) throw(StringException, MemoryException) {
-  int length = getLength();
+  unsigned int length = getLength();
   setLength(length + string.getLength());
-  Character* buffer = elements->getElements();
+  char* buffer = elements->getElements();
   if (index >= length) {
     // insert section at end of string
-    copy<Character>(buffer + length, string, string.getLength());
+    copy<char>(buffer + length, string, string.getLength());
   } else {
     // insert section in middle or beginning of string
-    move<Character>(buffer + index + string.getLength(), buffer + index, length - index);
-    copy<Character>(buffer + index, string, string.getLength());
+    move<char>(buffer + index + string.getLength(), buffer + index, length - index);
+    copy<char>(buffer + index, string, string.getLength());
   }
   return *this;
 }
@@ -185,13 +186,13 @@ String& String::insert(unsigned int index, const StringLiteral& string) throw(St
 String& String::insert(unsigned int index, const char* string) throw(StringException, MemoryException) {
   int strlength = 0;
   if (string) { // is string proper (not empty)
-    const Character* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
+    const char* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
     assert(terminator, StringException(this)); // maximum length exceeded
     strlength = terminator - string;
   }
-  int length = getLength();
+  unsigned int length = getLength();
   setLength(length + strlength);
-  Character* buffer = elements->getElements();
+  char* buffer = elements->getElements();
   if (index >= length) {
     // insert section at end of string
     copy(buffer + length, string, strlength);
@@ -204,30 +205,30 @@ String& String::insert(unsigned int index, const char* string) throw(StringExcep
 }
 
 String& String::append(const StringLiteral& string) throw(StringException, MemoryException) {
-  int length = getLength();
+  unsigned int length = getLength();
   setLength(length + string.getLength());
-  Character* buffer = elements->getElements();
-  copy<Character>(buffer + length, string, string.getLength());
+  char* buffer = elements->getElements();
+  copy<char>(buffer + length, string, string.getLength());
   return *this;
 }
 
 String& String::append(const StringLiteral& string, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException) {
   assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
-  int length = getLength();
+  unsigned int length = getLength();
   setLength(length + minimum(string.getLength(), maximum));
-  Character* buffer = elements->getElements();
-  copy<Character>(buffer + length, string, minimum(string.getLength(), maximum));
+  char* buffer = elements->getElements();
+  copy<char>(buffer + length, string, minimum(string.getLength(), maximum));
   return *this;
 }
 
 String& String::append(const char* string, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException) {
   assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
   assert(string, StringException(this)); // make sure string is proper (not empty)
-  const Character* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
+  const char* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
   int strlength = terminator ? (terminator - string) : maximum;
-  int length = getLength();
+  unsigned int length = getLength();
   setLength(length + strlength);
-  Character* buffer = elements->getElements();
+  char* buffer = elements->getElements();
   copy(buffer + length, string, strlength);
   return *this;
 }
@@ -252,7 +253,7 @@ String& String::replace(unsigned int start, unsigned int end, const String& stri
   } else {
     elements.copyOnWrite();
   }
-  Character* buffer = elements->getElements();
+  char* buffer = elements->getElements();
 
   if (moveEnd) {
     move(buffer + start + strlength, buffer + end, length - end); // move end of string
@@ -278,7 +279,7 @@ unsigned int String::replaceAll(const String& fromStr, const String& toStr) thro
 }
 
 String String::substring(unsigned int start, unsigned int end) const throw(MemoryException) {
-  int length = getLength();
+  unsigned int length = getLength();
   if ((start < end) && (start < length)) {
     if (end > length) {
       end = length; // force to end of string
@@ -329,9 +330,9 @@ int String::compareTo(const String& string) const throw() {
   // both strings may contain multiple zeros
   unsigned int leftLength = getLength();
   unsigned int rightLength = string.getLength();
-  const Character* left = getBuffer();
-  const Character* right = string.getBuffer();
-  const Character* end = left + minimum(leftLength, rightLength);
+  const char* left = getBuffer();
+  const char* right = string.getBuffer();
+  const char* end = left + minimum(leftLength, rightLength);
   while (left < end) {
     int temp = static_cast<int>(*left) - static_cast<int>(*right);
     if (temp != 0) {
@@ -350,10 +351,8 @@ int String::compareTo(const String& string) const throw() {
 }
 
 int String::compareTo(const StringLiteral& string) const throw() {
-  unsigned int leftLength = getLength();
-  const Character* left = getElements(); // make sure string is terminated
-  const Character* right = string;
-  const Character* end = left + leftLength;
+  const char* left = getElements();
+  const char* right = string;
   while (*left && *right) {
     int temp = static_cast<int>(*left) - static_cast<int>(*right);
     if (temp != 0) {
@@ -362,22 +361,15 @@ int String::compareTo(const StringLiteral& string) const throw() {
     ++left;
     ++right;
   }
-  if (leftLength < string.getLength()) {
-    return -1;
-  } else if (leftLength > string.getLength()) {
-    return 1;
-  } else {
-    return 0; // equal
-  }
+  return static_cast<int>(*left) - static_cast<int>(*right);
 }
 
 int String::compareTo(const char* string) const throw() {
   if (!string) {
     return false;
   }
-  const Character* left = getElements(); // make sure string is terminated
-  const Character* right = string;
-  const Character* end = left + getLength();
+  const char* left = getElements();
+  const char* right = string;
   while (*left && *right) {
     int temp = static_cast<int>(*left) - static_cast<int>(*right);
     if (temp != 0) {
@@ -386,13 +378,7 @@ int String::compareTo(const char* string) const throw() {
     ++left;
     ++right;
   }
-  if ((left == end) && (*right != 0)) {
-    return -1;
-  } else if ((left != end) && (*right == 0)) {
-    return 1;
-  } else {
-    return 0; // equal
-  }
+  return static_cast<int>(*left) - static_cast<int>(*right);
 }
 
 int String::compareToIgnoreCase(const char* left, const char* right) throw() {
@@ -420,29 +406,33 @@ int String::compareToIgnoreCase(const char* string) const throw(StringException)
 }
 
 bool String::startsWith(const String& prefix) const throw() {
-  int prefixLength = prefix.getLength();
-  return (prefixLength > 0) && (prefixLength <= getLength()) && (compare(getBuffer(), prefix.getBuffer(), prefixLength) == 0);
+  unsigned int prefixLength = prefix.getLength();
+  return (prefixLength > 0) && (prefixLength <= getLength()) &&
+    (compare(getBuffer(), prefix.getBuffer(), prefixLength) == 0);
 }
 
 bool String::startsWith(const StringLiteral& prefix) const throw() {
-  int prefixLength = prefix.getLength();
-  return (prefixLength > 0) && (prefixLength <= getLength()) && (compare<Character>(getBuffer(), prefix, prefixLength) == 0);
+  unsigned int prefixLength = prefix.getLength();
+  return (prefixLength > 0) && (prefixLength <= getLength()) &&
+    (compare<char>(getBuffer(), prefix, prefixLength) == 0);
 }
 
 bool String::endsWith(const String& suffix) const throw() {
-  int length = getLength();
-  int suffixLength = suffix.getLength();
-  return (suffixLength > 0) && (suffixLength <= length) && (compare(getBuffer() + length - suffixLength, suffix.getBuffer(), suffixLength) == 0);
+  unsigned int length = getLength();
+  unsigned int suffixLength = suffix.getLength();
+  return (suffixLength > 0) && (suffixLength <= length) &&
+    (compare(getBuffer() + length - suffixLength, suffix.getBuffer(), suffixLength) == 0);
 }
 
 bool String::endsWith(const StringLiteral& suffix) const throw() {
-  int length = getLength();
-  int suffixLength = suffix.getLength();
-  return (suffixLength > 0) && (suffixLength <= length) && (compare<Character>(getBuffer() + length - suffixLength, suffix, suffixLength) == 0);
+  unsigned int length = getLength();
+  unsigned int suffixLength = suffix.getLength();
+  return (suffixLength > 0) && (suffixLength <= length) &&
+    (compare<char>(getBuffer() + length - suffixLength, suffix, suffixLength) == 0);
 }
 
 int String::indexOf(char ch, unsigned int start) const throw() {
-  int length = getLength();
+  unsigned int length = getLength();
   if (start >= length) {
     return -1; // not found
   }
@@ -459,8 +449,8 @@ int String::indexOf(char ch, unsigned int start) const throw() {
 }
 
 int String::indexOf(const String& string, unsigned int start) const throw() {
-  int length = getLength();
-  int sublength = string.getLength();
+  unsigned int length = getLength();
+  unsigned int sublength = string.getLength();
 
   if ((start >= length) || (sublength == 0) || (sublength > length)) {
     return -1; // not found
@@ -585,16 +575,16 @@ unsigned int String::count(const String& string, unsigned int start) const throw
   return count;
 }
 
-String::Character* String::getElements() throw() {
-  Character* result = getBuffer(); // copy on write
+char* String::getElements() throw() {
+  char* result = getBuffer(); // copy on write
   result[getLength()] = Traits::TERMINATOR;
   return result;
 }
 
-String& String::trim(Character character) throw() {
+String& String::trim(char character) throw() {
   ReadIterator begin = getBeginReadIterator();
   ReadIterator end = getEndReadIterator();
-  int length = getLength();
+  unsigned int length = getLength();
   bool modified = false;
   
   ReadIterator last = end;
@@ -671,8 +661,8 @@ int compare<String>(const String& left, const String& right) throw() {
 }
 
 unsigned long Hash<String>::operator()(const String& value) throw() {
-  const String::Character* src = value.getBytes();
-  const String::Character* end = src + value.getLength();
+  const char* src = value.getBytes();
+  const char* end = src + value.getLength();
   unsigned long result = 5381;
   while (src < end) {
     result = /*33*/ 31 /*65599*/ * result + static_cast<unsigned char>(*src++);

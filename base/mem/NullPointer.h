@@ -19,10 +19,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Raised if invalid (NULL) pointer was unexprected/prohibited.
-
-  @short Invalid pointer exception
-  @ingroup exceptions
+  This exception is raised when a 0 (NULL) pointer is dereferenced.
+  
+  @short Invalid pointer exception.
+  @ingroup exceptions memory
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -33,14 +33,16 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  NullPointer();
+  inline NullPointer() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  NullPointer(const char* message);
+  inline NullPointer(const char* message) throw() : MemoryException(message) {
+  }
 
   /**
     Initializes the exception object without an associated message.

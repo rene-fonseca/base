@@ -44,7 +44,7 @@ class DynamicMemory {
 private:
 
   /**
-    Allocates the specified number of bytes on the heap. The behaviour is
+    Allocates the specified number of bytes on the heap. The behavior is
     unspecified if the desired size is 0.
 
     @param size The desired size of the memory block in number of bytes.

@@ -33,21 +33,23 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  AccessDenied() throw();
+  inline AccessDenied() throw() {
+  }
 
   /**
     Initializes exception object as unspecified.
 
     @param message The message.
   */
-  AccessDenied(const char* message) throw();
+  inline AccessDenied(const char* message) throw() : IOException(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  AccessDenied(Type type) throw() : IOException(type) {
+  inline AccessDenied(Type type) throw() : IOException(type) {
   }
   
   /**
@@ -56,7 +58,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  AccessDenied(const char* message, Type type) throw() : IOException(message, type) {
+  inline AccessDenied(const char* message, Type type) throw()
+    : IOException(message, type) {
   }
 };
 

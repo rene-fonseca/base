@@ -19,10 +19,16 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  @defgroup memory Memory
+*/
+
+/**
   This class encapsulates the implementation used by the Heap class. Do not use
   this class directly.
 
+  @short Heap implementation.
   @see Heap
+  @ingroup memory
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -69,6 +75,8 @@ protected:
 /**
   Heap. Wrapper for memory allocation on the heap.
 
+  @short Heap provider.
+  @ingroup memory
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

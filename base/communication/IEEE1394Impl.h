@@ -150,7 +150,7 @@ public:
     
     @param channel The isochronous channel [0; 63].
     @param maximumPayload The maximum payload of a packet.
-    @param listener The listener to be notified on incomming packets.
+    @param listener The listener to be notified on incoming packets.
   */
   virtual void readIsochronous(
     unsigned int channel,

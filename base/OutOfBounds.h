@@ -20,7 +20,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Out of bounds exception.
-
+  
+  @short Out of bounds exception.
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -31,14 +33,16 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  OutOfBounds() throw();
+  inline OutOfBounds() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  OutOfBounds(const char* message) throw();
+  inline OutOfBounds(const char* message) throw() : Exception(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.
@@ -54,7 +58,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  OutOfBounds(const char* message, Type type) throw();
+  inline OutOfBounds(const char* message, Type type) throw()
+    : Exception(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

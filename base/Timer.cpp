@@ -23,6 +23,17 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+/*
+  // if optimized for PENTIUM (may not be allowed by system)
+  
+  unsigned int low;
+  unsigned int high;
+  asm (
+    "        rdtsc\n"
+    : "=a" (low), "=d" (high) // output
+  );
+  return (static_cast<uint64>(high) << 32) | low;
+*/
 Timer::Timer() throw() : stopTime(0) {
   start();
 }

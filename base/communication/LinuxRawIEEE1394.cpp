@@ -715,7 +715,7 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
     IEEE1394Exception("Unable to enable isochronous channel listener", this)
   );
 
-  // listen for incomming packets
+  // listen for incoming packets
   isochronousChannels[channel].completed = false;
   try {
     while (!isochronousChannels[channel].completed) { // TAG: need time out support

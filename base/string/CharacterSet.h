@@ -16,6 +16,7 @@
 
 #include <base/Object.h>
 #include <base/Architecture.h>
+#include <base/mem/Reference.h>
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/string/String.h>
 #include <base/string/WideString.h>
@@ -39,7 +40,7 @@ private:
   typedef ReferenceCountedAllocator<ucs4> CharacterSetImpl;
   
   /** The character set. */
-  ReferenceCountedObjectPointer<CharacterSetImpl> characterSet;
+  Reference<CharacterSetImpl> characterSet;
 public:
   
   /**

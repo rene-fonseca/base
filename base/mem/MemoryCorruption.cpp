@@ -15,10 +15,4 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-MemoryCorruption::MemoryCorruption() throw() {
-}
-
-MemoryCorruption::MemoryCorruption(const char* message) throw() : MemoryException(message) {
-}
-
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

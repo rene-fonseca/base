@@ -82,7 +82,7 @@ GraphicsContext::Brush::Brush(SystemColor color) throw(UserInterfaceException) {
   assert(brush, UserInterfaceException(this));
   setHandle(brush);
   // prevent destruction of object
-  ReferenceCountedObjectPointerImpl(*handle).addReference();
+  ReferenceImpl(*handle).addReference();
   // TAG: need method to query to current number of references
 #else // unix
 #endif // flavor

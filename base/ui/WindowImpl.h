@@ -716,7 +716,7 @@ public:
 
   /**
     Invoked continuously when no messages have been queued. The default
-    implementation waits for an incomming message.
+    implementation waits for an incoming message.
   */
   virtual void onIdle() throw();
 
@@ -770,7 +770,7 @@ public:
   bool wait(unsigned int milliseconds) throw(UserInterfaceException);
   
   /**
-    This method is responsible for dispatching incomming messages to the
+    This method is responsible for dispatching incoming messages to the
     corresponding message handlers.
 
     @return False if dispatch got an exit message.
@@ -778,7 +778,7 @@ public:
   bool openDispatch() throw(UserInterfaceException);
 
   /**
-    This method is responsible for dispatching incomming messages to the
+    This method is responsible for dispatching incoming messages to the
     corresponding message handlers.
   */
   static void dispatch() throw(UserInterfaceException);

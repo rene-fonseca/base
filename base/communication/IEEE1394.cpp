@@ -157,7 +157,7 @@ void IEEE1394::IsochronousWriteRequestImpl::setBuffer(const char* buffer, unsign
 }
 
 // void IEEE1394::IsochronousReadChannel::queue(IsochronousReadRequest& request) throw(IEEE1394Exception) {
-//   ReferenceCountedObjectPointer<IsochronousReadRequestImpl> request = request.getContext();
+//   Reference<IsochronousReadRequestImpl> request = request.getContext();
 //   void* requestImpl = context.getValue();
   
 //   IsochronousReadPacketsRequestImpl* readPacketsRequest = dynamic_cast<IsochronousReadPacketsRequestImpl*>(requestImpl);

@@ -33,7 +33,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline WideStringException() throw() : Exception() {
+  inline WideStringException() throw() {
   }
 
   /**

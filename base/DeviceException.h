@@ -20,8 +20,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   This exception is raised on device access errors.
-
-  @short Device access error
+  
+  @short Device access error.
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -33,14 +33,17 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  DeviceException() throw();
+  inline DeviceException() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  DeviceException(const char* message) throw();
+  inline DeviceException(const char* message) throw()
+    : ResourceException(message) {
+  }
 
   /**
     Initializes the exception object without an associated message.

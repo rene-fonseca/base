@@ -18,7 +18,7 @@
 #include <base/OutOfDomain.h>
 #include <base/OutOfRange.h>
 #include <base/string/FormatOutputStream.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/mem/AllocatorEnumeration.h>
 
@@ -41,24 +41,24 @@ public:
   typedef typename ReferenceCountedAllocator<TYPE>::Enumerator Enumerator;
   typedef typename ReferenceCountedAllocator<TYPE>::ReadEnumerator ReadEnumerator;
 
-  /**
+  /*
     Reference to an element within a vector.
   */
-  class Reference {
+  class Element {
     friend class Vector;
   private:
     
     Vector& vector; // use reference to avoid 'copy on write'
     unsigned int index;
-    Reference(const Reference& copy); // prohibit default copy initialization
-    Reference& operator=(const Reference& eq); // prohibit default assignment
+    Element(const Element& copy) throw();
+    Element& operator=(const Element& eq) throw();
     
-    inline Reference(Vector& _vector, unsigned int _index) throw()
+    inline Element(Vector& _vector, unsigned int _index) throw()
       : vector(_vector), index(_index) {
     }
   public:
     
-    inline Reference& operator=(const TYPE& value) throw(OutOfRange) {
+    inline Element& operator=(const TYPE& value) throw(OutOfRange) {
       vector.setAt(index, value);
       return *this;
     }
@@ -105,7 +105,7 @@ protected:
     The elements of the vector stored in an array. The array is guarantied to
     be non-empty when the vector object has been initialized.
   */
-  ReferenceCountedObjectPointer<ReferenceCountedAllocator<TYPE> > elements;
+  Reference<ReferenceCountedAllocator<TYPE> > elements;
 
   /**
     Returns the elements of the vector for modification.
@@ -253,8 +253,8 @@ public:
 
     @param index The index of the desired element.
   */
-  inline Reference operator[](unsigned int index) throw(OutOfRange) {
-    return Reference(*this, index);
+  inline Element operator[](unsigned int index) throw(OutOfRange) {
+    return Element(*this, index);
   }
 
 

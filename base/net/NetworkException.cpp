@@ -15,11 +15,4 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-NetworkException::NetworkException() throw() : IOException() {
-}
-
-NetworkException::NetworkException(const char* message) throw() :
-  IOException(message) {
-}
-
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -19,9 +19,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Raised on memory corruption.
-
-  @ingroup exceptions
+  Raised on memory corruption such as buffer overflows is detected.
+  
+  @short Memory corruption exception.
+  @ingroup exceptions memory
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -32,14 +33,17 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  MemoryCorruption() throw();
-
+  inline MemoryCorruption() throw() {
+  }
+  
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  MemoryCorruption(const char* message) throw();
+  inline MemoryCorruption(const char* message) throw()
+    : MemoryException(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.

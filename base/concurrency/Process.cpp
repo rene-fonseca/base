@@ -327,7 +327,8 @@ bool Process::isAlive() const throw(ProcessException) {
   } else if (result == 0) {
     return true;
   }
-
+  throw ProcessException("Unable to query process", this);
+  
   /*
     GCC 3.0.4 bug here which results in "Abort" when the exception is raised below.
     

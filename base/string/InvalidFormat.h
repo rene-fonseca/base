@@ -34,14 +34,16 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  InvalidFormat() throw();
+  inline InvalidFormat() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  InvalidFormat(const char* message) throw();
+  inline InvalidFormat(const char* message) throw() : Exception(message) {
+  }
 
   /**
     Initializes the exception object without an associated message.

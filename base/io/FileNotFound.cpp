@@ -15,10 +15,4 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FileNotFound::FileNotFound() throw() : FileException() {
-}
-
-FileNotFound::FileNotFound(const char* message) throw() : FileException(message) {
-}
-
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

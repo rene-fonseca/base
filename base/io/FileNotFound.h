@@ -33,14 +33,16 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  FileNotFound() throw();
+  inline FileNotFound() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  FileNotFound(const char* message) throw();
+  inline FileNotFound(const char* message) throw() : FileException(message) {
+  }
 
   /**
     Initializes the exception object without an associated message.

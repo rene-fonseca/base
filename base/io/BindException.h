@@ -33,21 +33,23 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  BindException() throw();
+  inline BindException() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  BindException(const char* message) throw();
+  inline BindException(const char* message) throw() : IOException(message) {
+  }
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  BindException(Type type) throw() : IOException(type) {
+  inline BindException(Type type) throw() : IOException(type) {
   }
   
   /**
@@ -56,7 +58,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  BindException(const char* message, Type type) throw() : IOException(message, type) {
+  inline BindException(const char* message, Type type) throw()
+    : IOException(message, type) {
   }
 };
 

@@ -35,7 +35,7 @@
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/sound/SoundDevice.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <stdlib.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -195,8 +195,8 @@ public:
     Random::randomize(); // randomize global random number generator
 
     // having a global invalid handle safes us from allocating/deallocating many handles
-    ReferenceCountedObjectPointerImpl(invalidHandle).addReference(); // prevent destruction of object
-    ReferenceCountedObjectPointerImpl(invalidSocket).addReference(); // prevent destruction of object
+    ReferenceImpl(invalidHandle).addReference(); // prevent destruction of object
+    ReferenceImpl(invalidSocket).addReference(); // prevent destruction of object
     FileDescriptor::Descriptor::invalid = &invalidHandle;
     Process::ProcessHandle::invalid = &invalidHandle;
     File::FileHandle::invalid = &invalidHandle;

@@ -51,7 +51,7 @@ public:
     Initializes the elements of the sequence using the default constructor.
     Uninitializeable objects are not initialized.
   */
-  static inline void initialize(TYPE* dest, unsigned int count) throw() {
+  static inline void initialize(TYPE* dest, unsigned int count) /*throw(...)*/ {
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
       const TYPE* end = dest + count;
       while (dest != end) {
@@ -65,7 +65,10 @@ public:
     Initializes the elements of the sequence by copying elements from other
     sequence. The memory image is copied directly for relocatable objects.
   */
-  static inline void initializeByCopy(TYPE* restrict dest, const TYPE* restrict src, unsigned int count) throw() {
+  static inline void initializeByCopy(
+    TYPE* restrict dest,
+    const TYPE* restrict src,
+    unsigned int count) /*throw(...)*/ {
     if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE ||
         Relocateable<TYPE>::IS_RELOCATEABLE) {
       copy<TYPE>(dest, src, count); // blocks do not overlap
@@ -83,7 +86,10 @@ public:
     Initializes the elements of the sequence by moving elements from other
     sequence. This does nothing for relocateable object.
   */
-  static inline void initializeByMove(TYPE* dest, const TYPE* src, unsigned int count) throw() {
+  static inline void initializeByMove(
+    TYPE* dest,
+    const TYPE* src,
+    unsigned int count) /*throw(...)*/ {
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE &&
         !Relocateable<TYPE>::IS_RELOCATEABLE) {
       const TYPE* end = dest + count;
@@ -97,9 +103,10 @@ public:
   }
 
   /**
-    Destroys the elements of the sequence. Does nothing for uninitializeable objects.
+    Destroys the elements of the sequence. Does nothing for uninitializeable
+    objects.
   */
-  static inline void destroy(TYPE* dest, unsigned int count) throw() {
+  static inline void destroy(TYPE* dest, unsigned int count) /*throw(...)*/ {
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
       const TYPE* end = dest + count;
       while (dest != end) {
@@ -165,7 +172,8 @@ public:
   */
   Allocator(const Allocator& copy) throw(MemoryException)
     : elements(Heap::allocate<TYPE>(copy.size)), size(copy.size) {
-    initializeByCopy(elements, copy.elements, size); // initialization of elements by copying
+    // initialization of elements by copying
+    initializeByCopy(elements, copy.elements, size);
   }
 
   /**
@@ -268,7 +276,7 @@ public:
 
     @param size The desired size.
   */
-  void setSize(unsigned int size) throw(MemoryException) {
+  void setSize(unsigned int size) /*throw(...)*/ {
     if (size != this->size) {
       if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
         // no need to destroy or initialize elements
@@ -282,15 +290,17 @@ public:
           initializeByMove(temp, elements, this->size);
           Heap::release(elements); // free previous array
           elements = temp;
-          initialize(elements + this->size, size - this->size); // default initialization of new objects
-          // could be optimized if we use Heap::tryResize - but currently only works for win32
+          // default initialization of new objects
+          initialize(elements + this->size, size - this->size);
+          // could be optimized if we use Heap::tryResize
+          // but currently only supported for win32
         }
       }
       this->size = size;
     }
   }
 
-  ~Allocator() {
+  ~Allocator() /*throw(...)*/ {
     destroy(elements, size);
     Heap::release(elements);
   }

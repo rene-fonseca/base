@@ -21,6 +21,7 @@ libnet_la_SOURCES = \
   InetInterface.cpp \
   InetService.cpp \
   MimeType.cpp \
+  MultipleSockets.cpp \
   NetworkException.cpp \
   ServerSocket.cpp \
   ServiceNotFound.cpp \
@@ -36,6 +37,7 @@ section_HEADERS = \
   InetAddress.h \
   HostNotFound.h \
   MimeType.h \
+  MultipleSockets.h \
   NetworkException.h \
   InetInterface.h \
   InetService.h \

@@ -20,7 +20,8 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This class is used to map a specified file region into the address space of the process.
+  This class is used to map a specified file region into the address space of
+  the process.
 
   @short File region mapper.
   @ingroup io
@@ -66,7 +67,7 @@ private:
   friend class MappedFileImpl;
 
   /** The internal mapping representation. */
-  ReferenceCountedObjectPointer<MappedFileImpl> map;
+  Reference<MappedFileImpl> map;
 protected:
 
   /**

@@ -33,7 +33,6 @@
 #  include <netinet/in.h> // defines ntohs...
 #  include <netinet/tcp.h> // options
 #  include <net/if.h>
-// #  include <sys/ioctl.h>
 #  include <unistd.h>
 #  include <fcntl.h>
 #  include <errno.h>
@@ -107,18 +106,20 @@ class SocketAddress { // Internet end point
 private:
 
   union {
-    // struct sockaddr_storage any; // large enough to hold any address
     struct sockaddr sa;
     struct sockaddr_in ipv4;
 #if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
     struct sockaddr_in6 ipv6;
+    struct sockaddr_storage storage;
+#else
+    struct sockaddr_in storage;
 #endif
   };
 public:
-
+  
   inline SocketAddress() throw() {
   }
-
+  
   /** Initializes socket address. */
   SocketAddress(
     const InetAddress& address,
@@ -211,6 +212,11 @@ public:
 #endif
   }
   
+  /** Returns the maximum size of the supported socket addresses. */
+  inline unsigned int getAnySize() const throw() {
+    return sizeof(storage);
+  }
+  
   /** Returns the address. */
   inline InetAddress getAddress() const throw() {
     switch (sa.sa_family) {
@@ -247,7 +253,7 @@ public:
   
   /** Sets the socket name from the specified socket. */
   inline void setSocket(int handle) throw() {
-    socklen length = getSize();
+    socklen length = getAnySize();
     ::getsockname(handle, getValue(), &length);
   }
 };
@@ -389,7 +395,7 @@ namespace internal {
       unsigned int* length) throw(NetworkException) {
       socklen temp = *length;
       if (::getsockopt(handle, level, option, static_cast<char*>(buffer), &temp)) {
-        raiseNetwork("Unable to get IP option");
+        raiseNetwork("Unable to get option");
       }
       *length = temp;
     }
@@ -401,7 +407,7 @@ namespace internal {
       const void* buffer,
       unsigned int length) throw(NetworkException) {
       if (::setsockopt(handle, level, option, static_cast<const char*>(buffer), length)) {
-        raiseNetwork("Unable to set IP option");
+        raiseNetwork("Unable to set option");
       }
     }
     
@@ -456,7 +462,7 @@ bool Socket::accept(Socket& socket) throw(NetworkException) {
   }
 
   SocketAddress sa;
-  socklen sl = sa.getSize();
+  socklen sl = sa.getAnySize();
   OperatingSystem::Handle handle =
     (OperatingSystem::Handle)::accept((int)socket.socket->getHandle(), sa.getValue(), &sl);
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -578,7 +584,7 @@ void Socket::listen(unsigned int backlog) throw(NetworkException) {
   // silently reduce the backlog argument
   backlog = minimum<unsigned int>(backlog, PrimitiveTraits<int>::MAXIMUM);
   if (::listen((int)socket->getHandle(), backlog)) { // may also silently limit backlog
-    internal::SocketImpl::raiseNetwork("Unable to set queue limit for incomming connections");
+    internal::SocketImpl::raiseNetwork("Unable to set queue limit for incoming connections");
   }
 }
 
@@ -873,6 +879,38 @@ void Socket::setTcpNoDelay(bool value) throw(NetworkException) {
   );
 }
 
+uint64 Socket::getTcpDeferAccept() const throw(NetworkException) {
+#if (defined(TCP_DEFER_ACCEPT))
+  int buffer;
+  unsigned int length = sizeof(buffer);
+  internal::SocketImpl::getOption(
+    (int)socket->getHandle(),
+    SOL_TCP,
+    TCP_DEFER_ACCEPT,
+    &buffer,
+    &length
+  );
+  return buffer;
+#else
+  internal::SocketImpl::raiseNetwork("Unable to get option");
+#endif
+}
+
+void Socket::setTcpDeferAccept(uint64 value) throw(NetworkException) {
+#if (defined(TCP_DEFER_ACCEPT))
+  int buffer = value;
+  internal::SocketImpl::setOption(
+    (int)socket->getHandle(),
+    SOL_TCP,
+    TCP_DEFER_ACCEPT,
+    &buffer,
+    sizeof(buffer)
+  );
+#else
+  internal::SocketImpl::raiseNetwork("Unable to set option");
+#endif
+}
+ 
 unsigned int Socket::getTimeToLive() const throw(NetworkException) {
   int buffer;
   unsigned int length = sizeof(buffer);
@@ -1546,7 +1584,7 @@ unsigned int Socket::available() const throw(NetworkException) {
   // this implementation is not very portable?
   int result;
   if (ioctl((int)socket->getHandle(), FIONREAD, &result)) {
-    internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the incomming queue");
+    internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the incoming queue");
   }
   return result;
 #endif // flavor
@@ -1681,10 +1719,11 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
 }
 
 unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(NetworkException) {
-  int result = 0;
   SocketAddress sa;
-  socklen sl = sa.getSize();
-  if ((result = ::recvfrom((int)socket->getHandle(),  buffer, size, 0, sa.getValue(), &sl)) == -1) {
+  socklen sl = sa.getAnySize();
+  size = minimum<unsigned int>(size, PrimitiveTraits<int>::MAXIMUM); // silently reduce
+  int result = ::recvfrom((int)socket->getHandle(),  buffer, size, 0, sa.getValue(), &sl);
+  if (result < 0) {
     internal::SocketImpl::raiseNetwork("Unable to receive from");
   }
   address = sa.getAddress();
@@ -1693,9 +1732,10 @@ unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& a
 }
 
 unsigned int Socket::sendTo(const char* buffer, unsigned int size, const InetAddress& address, unsigned short port) throw(NetworkException) {
-  int result = 0;
   const SocketAddress sa(address, port, socket->getDomain());
-  if ((result = ::sendto((int)socket->getHandle(), buffer, size, 0, sa.getValue(), sa.getSize())) == -1) {
+  size = minimum<unsigned int>(size, PrimitiveTraits<int>::MAXIMUM); // silently reduce
+  int result = ::sendto((int)socket->getHandle(), buffer, size, 0, sa.getValue(), sa.getSize());
+  if (result < 0) {
     internal::SocketImpl::raiseNetwork("Unable to send to");
   }
   return result;
@@ -1792,128 +1832,5 @@ bool Socket::wait(unsigned int microseconds) const throw(NetworkException) {
 
 Socket::~Socket() throw(IOException) {
 }
-
-//class FileDescriptorEvent {
-//public:
-//
-//  /** File descriptor events. */
-//  enum {
-//    INPUT = 1, /* There is data to read */
-//    PRIORITYINPUT = 2, /* There is urgent data to read */
-//    OUTPUT = 4, /* Writing now will not block */
-//    ERROR = 8, /* Error condition */
-//    HUNGUP = 16, /* Hung up */
-//    INVALID = 32 /* Invalid request: fd not open */
-//  };
-//private:
-//
-//  int handle;
-//  unsigned int requestedEvents;
-//  unsigned int events;
-//public:
-//
-//  /**
-//    Initializes event.
-//
-//    @param handle The file descriptor.
-//    @param events The requested events.
-//  */
-//  FileDescriptorEvent(int handle, unsigned int events) throw(OutOfDomain) {
-//    assert(events & ~(INPUT | PRIORITYINPUT | OUTPUT), OutOfDomain());
-//    this->handle = handle;
-//    this->requestedEvents = events;
-//    this->events = 0;
-//  }
-//
-//  /**
-//  */
-//  inline int getFileDescriptor() const throw() {return poll.fd;}
-//
-//  /**
-//  */
-//  inline unsigned int getRequestedEvents() const throw() {return poll.events;}
-//
-//  /**
-//  */
-//  inline unsigned int getEvents() const throw() {return poll.revents;}
-//
-//  /**
-//    Resets the events.
-//  */
-//  inline void reset() throw() {events = 0;}
-//
-//  bool wait(Array<FileDescriptorEvent>& objects, int timeout) throw(NetworkException) {
-//    Allocator<struct pollfd> buffer(objects.getSize());
-//    struct pollfd* p = buffer.getElements();
-//    for (unsigned int i = 0; i < objects.getSize(); ++i) {
-//      p->fd = objects[i].getFileDescriptor();
-//      p->events = objects[i].getRequestedEvents();
-//      p->revents = 0;
-//      ++p;
-//    }
-//    int result = poll(buffer.getElements(), buffer.getSize(), timeout);
-//    if (result == 0) { // timeout
-//      return false;
-//    } else if (result < 0) { // error
-//      int err = errno;
-//      if (err == EINTR) {
-//        return false;
-//      }
-//      assert(true, NetworkException());
-//    } else {
-//      struct pollfd* p = buffer.getElements();
-//      for (unsigned int i = 0; i < objects.getSize(); ++i) {
-//        objects[i].requestedEvents = p->revents;
-//        ++p;
-//      }
-//      return true;
-//    }
-//  }
-//};
-//
-//class FDEventArrayImpl {
-//private:
-//
-//  Array<struct pollfd> buffer;
-//  unsigned int modified;
-//public:
-//
-//  FDEventArray() throw() {
-//  }
-//
-//  void registerHandle(int handle, unsigned int events) throw() {
-//    // find and add
-//  }
-//
-//  void deregisterHandle(int handle) throw() {
-//    // remove handle
-//  }
-//
-//  bool wait(int timeout) throw(NetworkException) {
-//    struct pollfd* elements = buffer.getElements();
-//    struct pollfd* p = elements;
-//    const struct pollfd* q = elements + buffer.getSize();
-//    for (; p < q; ++p) { // reset envets
-//      p->revents = 0;
-//    }
-//    int result = poll(elements, buffer.getSize(), timeout);
-//    if (result == 0) { // timeout
-//      return false;
-//    } else if (result < 0) { // error
-//      int err = errno;
-//      if (err == EINTR) {
-//        return false;
-//      }
-//      throw NetworkException();
-//    } else {
-//      return true;
-//    }
-//  }
-//};
-//
-//class FDEventArray : public Object {
-//private:
-//public:
-//};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -16,7 +16,7 @@
 
 #include <base/io/async/AsynchronousOperation.h>
 #include <base/io/async/AsynchronousWriteContext.h>
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -25,6 +25,7 @@ class AsynchronousWriteContext;
 /**
   Asynchronous writing operation returned by an asynchronous IO stream.
 
+  @short Asynchronous write operation.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -33,7 +34,7 @@ class AsynchronousWriteOperation : public AsynchronousOperation {
 private:
 
   /** Context of operation. */
-  ReferenceCountedObjectPointer<AsynchronousWriteContext> context;
+  Reference<AsynchronousWriteContext> context;
 public:
 
   inline AsynchronousWriteOperation(AsynchronousWriteContext* _context) throw()

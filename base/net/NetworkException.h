@@ -20,8 +20,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Indicates a network exception.
-
-  @short Network IO exception
+  
+  @short Network IO exception.
   @ingroup exceptions net
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
@@ -42,7 +42,7 @@ public:
     PROTOCOL_NOT_SUPPORTED, /**< Protocol not supported. */
     TYPE_NOT_SUPPORTED, /**< Type not supported. */
     OPERATION_NOT_SUPPORTED, /**< Operation not supported. */
-    IN_PROGRESS, /** Operation already in progress. */
+    IN_PROGRESS, /**< Operation already in progress. */
     NON_BLOCKING, /**< Operation would have blocked. */
     CONNECTION_ABORTED, /**< Connection aborted locally. */
     CONNECTION_REFUSED, /**< Connection refused. */
@@ -58,14 +58,16 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  NetworkException() throw();
+  inline NetworkException() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  NetworkException(const char* message) throw();
+  inline NetworkException(const char* message) throw() : IOException(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.

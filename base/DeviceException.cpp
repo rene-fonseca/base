@@ -15,10 +15,4 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-DeviceException::DeviceException() throw() {
-}
-
-DeviceException::DeviceException(const char* message) throw() : ResourceException(message) {
-}
-
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

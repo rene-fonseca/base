@@ -60,7 +60,7 @@ public:
     @short URL exception
     @ingroup exceptions
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
+    @version 1.1
   */
 
   class UrlException : public InvalidFormat {
@@ -77,6 +77,21 @@ public:
       @param message The message.
     */
     inline UrlException(const char* message) throw() : InvalidFormat(message) {}
+
+    /**
+      Initializes the exception object without an associated message.
+      
+      @param type The identity of the type.
+    */
+    inline UrlException(Type type) throw() : InvalidFormat(type) {}
+
+    /**
+      Initializes the exception object.
+      
+      @param message An NULL-terminated string (ASCII).
+      @param type The identity of the type.
+    */
+    inline UrlException(const char* message, Type type) throw() : InvalidFormat(message, type) {}
   };
 protected:
 

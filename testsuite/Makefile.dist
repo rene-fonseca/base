@@ -1,5 +1,3 @@
-default: all
-
 all:
 	aclocal
 	automake
@@ -36,11 +34,11 @@ falster-gcc-3.0.4-release: all
 fyn-gcc-3.0.4: all
 
 klampenborg-gcc-2.95: all
-	CC="/usr/bin/gcc -pipe -mno-cygwin -mthreads" CFLAGS="-x c" LTCC='"/usr/bin/gcc -pipe -mno-cygwin -mthreads"' CXX="/usr/bin/gcc -pipe -mno-cygwin -mthreads" CXXFLAGS="-x c++ -ansi -O0 -g3" ./configure --target=i386-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
+	CC="/usr/bin/gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="/usr/bin/gcc" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O0 -g3" LDFLAGS="-x none" ./configure --target=i386-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
 #LDFLAGS="-Wl,--enable-auto-import"
 
 klampenborg-gcc-3.0.4: all
-	CC="gcc -pipe -mno-cygwin -mthreads" LTCC='"gcc -pipe -mno-cygwin -mthreads"' CFLAGS="-x c" CXX="g++ -pipe -mno-cygwin -mthreads" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-O0 -g3" ./configure --target=i386-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
+	CC="gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="g++" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O0 -g3" LDFLAGS="-x none" ./configure --target=i386-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
 
 klampenborg-gcc-3.0.4-release: all
-	CC="gcc -pipe -mno-cygwin -mthreads" LTCC='"gcc -pipe -mno-cygwin -mthreads"' CFLAGS="-x c" CXX="g++ -pipe -mno-cygwin -mthreads" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-O3 -g3 -mcpu=i686" ./configure --target=i686-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
+	CC="gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="g++" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-pipe -mno-cygwin -mthreads -O3 -g3 -x c++ -ansi -march=i686 -malign-double" LDFLAGS="-x none" ./configure --target=i686-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..

@@ -25,7 +25,9 @@ ac_base_build_host=`uname -n`
 AC_PREREQ(2.52)
 AC_COPYRIGHT([Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>])
 AC_REVISION($Revision$)
+
 AC_CANONICAL_SYSTEM()
+
 dnl perform program name transformation
 AC_ARG_PROGRAM()
 
@@ -45,9 +47,10 @@ BASE_MODULE_ARGUMENTS=${ac_base_general_arguments}
 
 dnl AC_CHECK_COMPILERS()
 dnl AC_EXEEXT() dnl TAG: required before 2.50
-AC_PROG_MAKE_SET()
+dnl AC_PROG_MAKE_SET()
 AC_PROG_CXX()
-dnl AC_CHECK_PROGS(CXX, ${CCC} c++ g++ gcc CC cxx cc++ cl, gcc)
+AC_PROG_CPP()
+AC_CHECK_TOOL(WINDRES, windres)
 dnl AC_ENABLE_SHARED(yes)
 dnl AC_ENABLE_STATIC(yes)
 AC_LIBTOOL_WIN32_DLL()
@@ -614,20 +617,23 @@ AC_BASE_CHECK(
   base_cv_cxx_libs)
 AC_BASE_ADDLIB(${base_cv_cxx_libs})
 
-AC_BASE_CHECK(
-  whether Standard Template Library is working,
-  AC_BASE_CACHE(
-    base_cv_stl_available base_cv_stl_libs,
-    AC_BASE_ATTEMPT(
-      base_cv_stl_available,
-      base_cv_stl_libs,
-      "" ${base_additional_attempts},
-      AC_BASE_TRY_CXX_RUN(base_cv_stl_available, stdc++.cpp, ${base_cv_stl_libs})dnl
-    )
-  ),
-  base_cv_stl_available,
-  base_cv_stl_libs)
-AC_BASE_ADDLIB(${base_cv_stl_libs})
+AC_BASE_NO(
+  base_cv_cxx_cross,
+  AC_BASE_CHECK(
+    whether Standard Template Library is working,
+    AC_BASE_CACHE(
+      base_cv_stl_available base_cv_stl_libs,
+      AC_BASE_ATTEMPT(
+        base_cv_stl_available,
+        base_cv_stl_libs,
+        "" ${base_additional_attempts},
+        AC_BASE_TRY_CXX_RUN(base_cv_stl_available, stdc++.cpp, ${base_cv_stl_libs})dnl
+      )
+    ),
+    base_cv_stl_available,
+    base_cv_stl_libs)
+  AC_BASE_ADDLIB(${base_cv_stl_libs})
+)
 
 
 
@@ -789,6 +795,46 @@ if test "${base_explicit_xml}" = xmlsoft; then
   AC_BASE_ADDLIB(-lxml -lz)
 fi
 
+dnl Cross compiler
+
+dnl x86 => prmitives
+
+AC_BASE_YES(
+  base_cv_cxx_cross,
+    
+  base_cv_unsigned_char=no
+  base_cv_char_size=1
+  base_cv_short_size=2
+  base_cv_int_size=4
+  base_cv_long_size=4
+  base_cv_long_long_size=8
+  base_cv_pointer_size=4
+  base_cv_wchar_t_size=2
+  base_cv_byte_order=_DK_SDU_MIP__BASE__LITTLE_ENDIAN
+  base_cv_byte_order_msg="little endian"
+  base_cv_word_order=_DK_SDU_MIP__BASE__LITTLE_ENDIAN
+  base_cv_word_order_msg="little endian"
+  base_cv_float=_DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION
+  base_cv_float_msg="ieee 754 single"
+  base_cv_double=_DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION
+  base_cv_double_msg="ieee 754 double"
+  base_cv_long_double=_DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96
+  base_cv_long_double_msg="ieee extended 96"
+
+  base_cv_cpp_bool=yes
+  base_cv_cpp_const=yes
+  base_cv_cpp_inline=yes
+  base_cv_cpp_static_const=yes
+  base_cv_cpp_anonymous_struct=yes
+  base_cv_cpp_specification=yes
+  base_explicit_wide=yes
+  base_cv_function_memchr=yes
+  base_cv_function_memcmp=yes
+  base_cv_function_memcpy=yes
+  base_cv_function_memmove=yes
+  base_cv_function_memset=yes
+)
+
 dnl Check primitives.
 
 AC_BASE_CHECK(
@@ -942,21 +988,21 @@ AC_BASE_DEFINE(FLOAT, ${base_cv_float})
 AC_BASE_CHECK(
   representation of double,
   AC_BASE_CACHE(
-    base_cv_double base_cv_doublestr,
+    base_cv_double base_cv_double_msg,
     AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, double.cpp, )dnl
-    AC_BASE_VALUE2FLOAT(base_cv_double, base_cv_doublestr, ${ac_base_temp})dnl
+    AC_BASE_VALUE2FLOAT(base_cv_double, base_cv_double_msg, ${ac_base_temp})dnl
   ),
-  base_cv_doublestr)
+  base_cv_double_msg)
 AC_BASE_DEFINE(DOUBLE, ${base_cv_double})
 
 AC_BASE_CHECK(
   representation of long double,
   AC_BASE_CACHE(
-    base_cv_long_double base_cv_long_doublestr,
+    base_cv_long_double base_cv_long_double_msg,
     AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, long_double.cpp, )dnl
-    AC_BASE_VALUE2FLOAT(base_cv_long_double, base_cv_long_doublestr, ${ac_base_temp})dnl
+    AC_BASE_VALUE2FLOAT(base_cv_long_double, base_cv_long_double_msg, ${ac_base_temp})dnl
   ),
-  base_cv_long_doublestr)
+  base_cv_long_double_msg)
 AC_BASE_DEFINE(LONG_DOUBLE, ${base_cv_long_double})
 
 
@@ -1249,8 +1295,8 @@ dnl Add VERSION resource to the dynamic library on Windows platforms (i.e. cygwi
 case "${ac_cv_target}" in
 *-*-cygwin|*-*-mingw32)
   dnl The -Wl option is used to circumvent libtool
-  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-Wl,winrcver.o'
-  BASE_DEPENDENCIES="${BASE_DEPENDENCIES}${BASE_DEPENDENCIES:+ }"'winrcver.o'
+  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-Wl,win32rc.o'
+  BASE_DEPENDENCIES="${BASE_DEPENDENCIES}${BASE_DEPENDENCIES:+ }"'win32rc.o'
   ;;
 esac
 

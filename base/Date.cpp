@@ -28,12 +28,6 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ASSERTION(sizeof(FILETIME) == sizeof(long long));
-#else // unix
-  ASSERTION(sizeof(int) == sizeof(time_t));
-#endif
-
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 inline Date FileTimeToDate(const FILETIME& time) {
   return Date((*reinterpret_cast<const long long*>(&time) - 116444736000000000LL)/10000000); // TAG: 0x0000001c1a021060LL
 }

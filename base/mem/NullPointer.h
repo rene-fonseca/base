@@ -19,8 +19,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Raised if NULL pointer was unexprected/prohibited.
+  Raised if invalid (NULL) pointer was unexprected/prohibited.
 
+  @short Invalid pointer exception
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -41,8 +42,19 @@ public:
   */
   NullPointer(const char* message);
 
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
   NullPointer(Type type) throw() : MemoryException(type) {}
 
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
   NullPointer(const char* message, Type type) throw() : MemoryException(message, type) {}  
 };
 

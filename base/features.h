@@ -17,11 +17,11 @@
 // order: const -> detect -> arch -> compiler -> os -> framework -> application
 
 #include <base/platforms/symbols.h>
+#include <base/platforms/platform.h>
 #include <base/configuration.h>
 #include <base/platforms/arch/architecture.h>
 #include <base/platforms/compiler/compiler.h>
 #include <base/platforms/os/os.h>
-#include <base/platforms/platform.h>
 
 #define _DK_SDU_MIP__BASE__MAJOR_VERSION 0
 #define _DK_SDU_MIP__BASE__MINOR_VERSION 9

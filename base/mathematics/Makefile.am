@@ -4,7 +4,7 @@ DEFS =
 
 noinst_LTLIBRARIES = libmathematics.la
 
-libmathematics_la_SOURCES = ExpressionParser.cpp AmbiguousRegistration.cpp ExpressionException.cpp IncompatibleOperands.cpp Vector3D.cpp Vector2D.cpp Vector.cpp Matrix.cpp Complex.cpp
+libmathematics_la_SOURCES = ExpressionParser.cpp AmbiguousRegistration.cpp ExpressionException.cpp IncompatibleOperands.cpp Vector3D.cpp Vector2D.cpp Vector.cpp Matrix.cpp Complex.cpp Random.cpp
 
 sectiondir = $(includedir)/base/mathematics
-section_HEADERS = Matrix.h Vector.h Vector2D.h Vector3D.h IncompatibleOperands.h ExpressionException.h AmbiguousRegistration.h ExpressionParser.h Complex.h
+section_HEADERS = Matrix.h Vector.h Vector2D.h Vector3D.h IncompatibleOperands.h ExpressionException.h AmbiguousRegistration.h ExpressionParser.h Complex.h Random.h

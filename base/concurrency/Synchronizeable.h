@@ -14,6 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_CONCURRENCY__SYNCHRONIZEABLE_H
 #define _DK_SDU_MIP__BASE_CONCURRENCY__SYNCHRONIZEABLE_H
 
+#include <base/Object.h>
 #include <base/concurrency/ReadWriteLock.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

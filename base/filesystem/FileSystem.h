@@ -65,6 +65,15 @@ public:
     SHARED_MEMORY = 512 /**< Shared memory. */
   };
 
+// TAG: other attributes
+// ARCHIVE
+// COMPRESSED
+// ENCRYPTED
+// HIDDEN
+// SPARSE
+// SYSTEM
+// TEMPORARY
+
   /** The temporary folder. */
   enum TemporaryFolder {
     /**
@@ -126,7 +135,7 @@ public:
   static String getPath(const String& base, const String& relative) throw();
   
   enum Component {
-    DIRECTORY, /**< The directory with an ending separator (i.e. '/' or '\'). */
+    FOLDER_PATH, /**< The folder with an ending separator (i.e. '/' or '\'). */
     FILENAME, /**< The name and extension. */
     NAME, /**< The name of the entry excluding the extension and dot. */
     DOTEXTENSION, /**< The extension (including the dot). */
@@ -147,7 +156,7 @@ public:
     Returns the specified component of the path.
 
     @param path The path.
-    @param component The desired component (DIRECTORY, NAME, or EXTENSION).
+    @param component The desired component (FOLDER_PATH, NAME, EXTENSION, ...).
   */
   static String getComponent(const String& path, Component component) throw(FileSystemException);
 
@@ -155,6 +164,12 @@ public:
     Returns true if the specifies path is an absolute path.
   */
   static bool isAbsolutePath(const String& path) throw();
+
+  /**
+    Returns true if the specified path is a explicit folder path (i.e. ends with
+    the separator).
+  */
+  static inline bool isFolderPath(const String& path) throw();
   
   /**
     Converts the path to an absolute path.
@@ -163,7 +178,18 @@ public:
     @param path The path to be converted.
   */
   static String toAbsolutePath(const String& base, const String& path) throw(FileSystemException);
-  
+
+  /**
+    Returns the absolute path of the first file found.
+    
+    @param searchPaths The search paths.
+    @param relative The relative path (SHOULD not be absolute).
+    @param index Specifies the first index in the searchPaths. The default is 0.
+    
+    @return Empty string if not found. The relative path if it is really an absolute path.
+  */
+  String findFile(const Array<String>& searchPaths, const String& relative, unsigned int index = 0) throw(FileSystemException);
+
   /**
     Returns a URL from the specified path. The URL has the following format:
     "file:///C:/WINNT" or "file:///usr/local".

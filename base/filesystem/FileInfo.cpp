@@ -16,19 +16,20 @@
 #include <base/security/Trustee.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #define _WIN32_WINNT 0x0400
-  #include <windows.h>
-  #include <aclapi.h>
-  #include <winioctl.h>
+#  define _WIN32_WINNT 0x0400
+#  include <windows.h>
+#  include <aclapi.h>
+#  include <winioctl.h>
 #else // unix
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  #include <unistd.h>
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <unistd.h>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FileInfo::FileInfo(const String& _path) throw(FileSystemException) : path(_path), mode(0) {
+FileInfo::FileInfo(const String& _path) throw(FileSystemException)
+  : path(_path), mode(0), links(0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   bool error = false;
   HANDLE file = ::CreateFile(path.getElements(), // file name
@@ -39,6 +40,14 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException) : path(_path)
                              0, // file attributes
                              0 // handle to template file
   );
+  if (file == INVALID_HANDLE_VALUE) {
+    switch (::GetLastError()) {
+    case ERROR_ACCESS_DENIED:
+    case ERROR_SHARING_VIOLATION: // possible with page file
+    case ERROR_LOCK_VIOLATION:
+      return;
+    }
+  }
   unsigned int linkLevel = 0;
   const unsigned int maximumLinkLevel = 16;
   while ((file == INVALID_HANDLE_VALUE) && (++linkLevel <= maximumLinkLevel)) {    
@@ -330,9 +339,9 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException) : path(_path)
   }
 #endif
   
-  size = status.st_size;
-  owner = User((const void*)(MemoryDiff)status.st_uid);
-  group = Group((const void*)(MemoryDiff)status.st_gid);
+  size = Cast::impersonate<uint64>(status.st_size);
+  owner = User(status.st_uid);
+  group = Group(status.st_gid);
   access = status.st_atime;
   modification = status.st_mtime;
   change = status.st_ctime;

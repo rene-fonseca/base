@@ -16,21 +16,22 @@
 #include <base/concurrency/Thread.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #define _WIN32_WINNT 0x0400
-  #include <windows.h>
-  #include <aclapi.h>
-  #include <winioctl.h>
+#  define _WIN32_WINNT 0x0400
+#  include <windows.h>
+#  include <aclapi.h>
+#  include <winioctl.h>
 #else // unix
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  #include <unistd.h>
-  #include <dirent.h>
-  #include <errno.h>
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <unistd.h>
+#  include <dirent.h>
+#  include <errno.h>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_path), mode(0) {
+FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
+  : path(_path), mode(0), links(0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   bool error = false;
   HANDLE folder = ::CreateFile(path.getElements(), // file name
@@ -41,6 +42,14 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
                                FILE_FLAG_BACKUP_SEMANTICS, // file attributes
                                0 // handle to template file
   );
+  if (folder == INVALID_HANDLE_VALUE) {
+    switch (::GetLastError()) {
+    case ERROR_ACCESS_DENIED:
+    case ERROR_SHARING_VIOLATION: // possible with page file
+    case ERROR_LOCK_VIOLATION:
+      return;
+    }
+  }
   unsigned int linkLevel = 0;
   const unsigned int maximumLinkLevel = 16;
   while ((folder == INVALID_HANDLE_VALUE) && (++linkLevel <= maximumLinkLevel)) {    
@@ -65,7 +74,7 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
     ::CloseHandle(link);
     assert(!error, FileSystemException(this));
     
-    wchar_t* substPath;
+    wchar* substPath;
     unsigned int substLength;
     switch (reparseHeader->ReparseTag) {
     case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
@@ -327,8 +336,8 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
 #if defined(S_ISUID) && defined(S_ISGID) && defined(S_ISVTX)
   }
 #endif
-  owner = User((const void*)(MemoryDiff)status.st_uid);
-  group = Group((const void*)(MemoryDiff)status.st_gid);
+  owner = User(status.st_uid);
+  group = Group(status.st_gid);
   access = status.st_atime;
   modification = status.st_mtime;
   change = status.st_ctime;

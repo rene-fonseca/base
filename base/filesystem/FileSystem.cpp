@@ -25,6 +25,82 @@
 #include <base/mathematics/Random.h>
 #include <base/ByteOrder.h>
 
+#if 0
+// TAG: need support for following a specified number of links
+// String FileSystem::getFinalPath(const String& path, unsigned int maximumLinks = 8) throw(FileSystemException);
+
+// ../../x/y/../z/..
+
+// current folder "."
+// previous folder ".."
+// duplicate separators are redundant: "//"
+
+// return true if the path is valid (syntax)
+bool FileSystem::isValid(const String& name) throw() {
+  // level "." or ".." or ? separated with "/" or "\\"
+}
+
+String FileSystem::urlToPath(Url url) throw() {
+}
+
+// returns true if the path is a ...
+bool FileSystem::isForwardPath(const String& path) throw() {
+  return false;
+}
+
+bool FileSystem::optimizePath(const String& name) throw() {
+  String result;
+  String::ReadIterator i = path.getBeginReadIterator();
+  String::ReadIterator end = path.getEndReadIterator();
+  
+  while (i < end) {
+    // read until separator and dump
+    while ((i < end) && (*i != '/')) {
+      ++i;
+    }
+    
+    if (*i == '.') {
+      ++i;
+      if (i == end) {
+        // ignore ending "."
+        break;
+      }
+      if (*i == '.') {
+        ++i;
+        if ((i == end) || ()) {
+          // remove last level
+        }
+      }
+    }
+    if (*i == SEPARATOR) {
+      
+    }
+  }
+}
+
+bool FileSystem::isName(const String& name) throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  return (name.indexOf(SEPARATOR) < 0) && (name.indexOf('\\') < 0); // TAG: "C:" drive path
+#else
+  return name.indexOf(SEPARATOR) < 0;
+#endif
+}
+
+// returns true if the specified path is a subpath of the root path
+bool FileSystem::isSubPathOf(const String& root, const String& path) throw() {
+  if (isAbsolutePath(path)) {
+    return path.startsWith(root);
+  } else {
+    String subpath = toAbsolutePath(path);
+    return subpath.startsWith(root);
+  }
+}
+#endif
+
+
+
+
+
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  define _WIN32_WINNT 0x500
 #  include <windows.h>
@@ -100,7 +176,7 @@ String FileSystem::getComponent(const String& path, Component component) throw(F
 #else // unix
   int separator = path.lastIndexOf('/');
   switch (component) {
-  case FileSystem::DIRECTORY:
+  case FileSystem::FOLDER_PATH:
     if (separator > 0) {
       return path.substring(0, separator);
     } else {
@@ -140,6 +216,19 @@ bool FileSystem::isAbsolutePath(const String& path) throw() {
 #endif // flavor
 }
 
+bool FileSystem::isFolderPath(const String& path) throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  unsigned int length = path.getLength();
+  if (length == 0) {
+    return false;
+  }
+  char lastChar = path[length - 1];
+  return (lastChar == '/') || (lastChar == '\\');
+#else
+  return path.endsWith(MESSAGE("/"));
+#endif
+}
+
 String FileSystem::toAbsolutePath(const String& base, const String& path) throw(FileSystemException) {
   if (!base.isProper() || isAbsolutePath(path)) {
     return path;
@@ -168,6 +257,26 @@ String FileSystem::toAbsolutePath(const String& base, const String& path) throw(
   }
   result.forceToLength(j - result.getBeginIterator());
   return result;
+}
+
+String FileSystem::findFile(const Array<String>& searchPaths, const String& relative, unsigned int index) throw(FileSystemException) {
+  if (relative.isProper()) {
+    if (isAbsolutePath(relative)) {
+      return relative;
+    } else {
+      Array<String>::ReadIterator i = searchPaths.getBeginIterator();
+      const Array<String>::ReadIterator end = searchPaths.getEndIterator();
+      i += index;
+      while (i < end) {
+        String absolutePath = FileSystem::toAbsolutePath(*i, relative);
+        if (FileSystem::fileExists(absolutePath)) {
+          return absolutePath;
+        }
+        ++i;
+      }
+    }
+  }
+  return String();
 }
 
 String FileSystem::toUrl(const String& path) throw(FileSystemException) {
@@ -238,16 +347,43 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
 
 unsigned int FileSystem::getType(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  unsigned int flags = 0;
   // TAG: FILE_FLAG_POSIX_SEMANTICS
   HANDLE file = ::CreateFile(path.getElements(), // file name
-                             0 | READ_CONTROL, // access mode
+                             FILE_READ_ATTRIBUTES | FILE_READ_EA /*| READ_CONTROL*/, // access mode
                              FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
                              0, // security descriptor
                              OPEN_EXISTING, // how to create
                              FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, // file attributes
                              0); // handle to template file
-  assert(file != INVALID_HANDLE_VALUE, FileSystemException(Type::getType<FileSystem>()));
-  unsigned int flags = 0;
+  if (file == INVALID_HANDLE_VALUE) {
+    switch (::GetLastError()) {
+    case ERROR_ACCESS_DENIED:
+    case ERROR_SHARING_VIOLATION: // possible with page file
+    case ERROR_LOCK_VIOLATION: // TAG: is this ok
+      break;
+    default:
+      throw FileSystemException(Type::getType<FileSystem>());
+    }
+    
+    WIN32_FIND_DATA information;
+    HANDLE find = ::FindFirstFileExA(path.getElements(), FindExInfoStandard, &information, FindExSearchNameMatch, 0, 0);
+    assert(find != INVALID_HANDLE_VALUE, FileSystemException(Type::getType<FileSystem>()));
+    ::FindClose(find);
+    if (information.dwFileAttributes & FILE_ATTRIBUTE_DEVICE) {
+      flags |= FileSystem::DEVICE;
+    }
+    if (information.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+      flags |= FileSystem::FOLDER;
+    }
+    if (information.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
+      flags |= FileSystem::LINK;
+    }
+    if (information.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) {
+      // flags |= FileSystem::SYSTEM;
+    }
+    return flags;
+  }
 
   BY_HANDLE_FILE_INFORMATION information;
   bool error = ::GetFileInformationByHandle(file, &information) == 0;
@@ -266,7 +402,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
     flags |= FileSystem::LINK;
   }
   if (information.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) {
-//    flags |= FileSystem::SYSTEM;
+    //  flags |= FileSystem::SYSTEM;
   }
   
   switch (::GetFileType(file)) {
@@ -520,7 +656,9 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
   }
   
   DWORD attributes = ::GetFileAttributes(path.getElements());
-  assert(attributes != INVALID_FILE_ATTRIBUTES, FileSystemException(Type::getType<FileSystem>()));
+  if (attributes == INVALID_FILE_ATTRIBUTES) {
+    return false;
+  }
   if ((attributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0) {
     HANDLE link = ::CreateFile(path.getElements(),
                                0,
@@ -530,8 +668,17 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
                                FILE_FLAG_BACKUP_SEMANTICS|FILE_FLAG_OPEN_REPARSE_POINT,
                                //(attributes & FILE_ATTRIBUTE_DIRECTORY) ? (FILE_FLAG_BACKUP_SEMANTICS|FILE_FLAG_OPEN_REPARSE_POINT) : (FILE_FLAG_OPEN_REPARSE_POINT),
                                0);
-    // error code 4390 - ERROR_NOT_A_REPARSE_POINT???
-    assert(link != INVALID_HANDLE_VALUE, FileSystemException(Type::getType<FileSystem>()));
+    // TAG: error code 4390 - ERROR_NOT_A_REPARSE_POINT?
+    if (link == INVALID_HANDLE_VALUE) {
+      switch (::GetLastError()) {
+      case ERROR_ACCESS_DENIED:
+      case ERROR_SHARING_VIOLATION: // possible with page file
+      case ERROR_LOCK_VIOLATION: // TAG: is this ok
+        return false;
+      default:
+        throw FileSystemException(Type::getType<FileSystem>());
+      }
+    }
     
     // TAG: test if partial support works - ERROR_MORE_DATA
     char* buffer[17000]; // TAG: fixme
@@ -567,7 +714,9 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
     return isLink;
   } else if ((attributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
     // check if shell symbolic link
-    static const unsigned char GUID[16] = {0x01, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46};
+    static const unsigned char GUID[16] = {
+      0x01, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46
+    };
     
     struct ShortcutHeader {
       LittleEndian<uint32> identifier; // 'L'
@@ -613,6 +762,8 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
       (result == sizeof(header)) &&
       ((header.flags & POINTS_TO_FILE_OR_FOLDER|HAS_RELATIVE_PATH) == POINTS_TO_FILE_OR_FOLDER|HAS_RELATIVE_PATH) &&
       (compare(header.guid, GUID, sizeof(GUID)) == 0);
+  } else {
+    return false;
   }
 #else
   struct stat status;
@@ -765,7 +916,7 @@ void FileSystem::makeLink(const String& target, const String& path) throw(NotSup
   );
   
 	// make the native target name
-	WideString nativePath(WIDEMESSAGE("\\??\\"));
+	String nativePath(MESSAGE("\\??\\"));
   nativePath += fullTargetPath;
   
   DWORD attributes = ::GetFileAttributes(target.getElements());
@@ -775,8 +926,8 @@ void FileSystem::makeLink(const String& target, const String& path) throw(NotSup
   
   HANDLE link;
   if (isDirectory) {
-    if (!nativePath.endsWith(WIDEMESSAGE(":\\"))) {
-      nativePath -= WIDEMESSAGE("\\");
+    if (!nativePath.endsWith(MESSAGE(":\\"))) {
+      nativePath -= MESSAGE("\\");
     }
     assert(nativePath.getLength() <= MAX_PATH, FileSystemException(Type::getType<FileSystem>())); // watch out for buffer overflow
     directoryCreated = ::CreateDirectory(path.getElements(), 0) != 0; // we do not care whether or not it already exists
@@ -789,7 +940,7 @@ void FileSystem::makeLink(const String& target, const String& path) throw(NotSup
                         FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_BACKUP_SEMANTICS,
                         0);
   } else {
-    assert(!nativePath.endsWith(WIDEMESSAGE("\\")), FileSystemException(Type::getType<FileSystem>()));
+    assert(!nativePath.endsWith(MESSAGE("\\")), FileSystemException(Type::getType<FileSystem>()));
     assert(nativePath.getLength() <= MAX_PATH, FileSystemException(Type::getType<FileSystem>())); // watch out for buffer overflow
     link = ::CreateFile(path.getElements(),
                         GENERIC_WRITE,
@@ -813,7 +964,13 @@ void FileSystem::makeLink(const String& target, const String& path) throw(NotSup
   reparseInfo->ReparseDataLength = nativePath.getLength() * sizeof(WCHAR) + 12;
   reparseInfo->MountPointReparseBuffer.SubstituteNameLength = nativePath.getLength() * sizeof(WCHAR);
   reparseInfo->MountPointReparseBuffer.PrintNameOffset = reparseInfo->MountPointReparseBuffer.SubstituteNameLength + sizeof(WCHAR);
-  copy<WCHAR>(reparseInfo->MountPointReparseBuffer.PathBuffer, nativePath.getElements(), nativePath.getLength()); // exclude terminator
+
+  WideString::UTF8ToUCS2(
+    Cast::pointer<WideString::ucs2*>(reparseInfo->MountPointReparseBuffer.PathBuffer),
+    Cast::pointer<const uint8*>(nativePath.getElements()),
+    nativePath.getLength(),
+    0
+  );
   
 	// set the link
   DWORD returnedLength;
@@ -853,6 +1010,14 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
                              OPEN_EXISTING,
                              FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
                              0);
+  if (link == INVALID_HANDLE_VALUE) {
+    switch (::GetLastError()) {
+    case ERROR_ACCESS_DENIED:
+    case ERROR_SHARING_VIOLATION: // possible with page file
+    case ERROR_LOCK_VIOLATION:
+      throw FileSystemException("Not a link", Type::getType<FileSystem>());
+    }
+  }
   while (link != INVALID_HANDLE_VALUE) {
     // TAG: fix buffer size
     char* buffer[17000]; // need alternative - first attempt to get length first failed

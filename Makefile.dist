@@ -1,4 +1,7 @@
-man default: all
+all:
+	aclocal
+	automake
+	autoconf
 
 dist:
 	@echo "This file is to make it easier for you to create all you need"
@@ -14,12 +17,6 @@ dist:
 	 msgfmt -o $$file2 $$i; \
 	done 
 	rm -f Makefile.dist
-
-all:
-	aclocal
-	automake
-	autoconf
-	rm -f config.cache
 
 debug: all
 	CXXFLAGS="-O0 -g3 -ansi" ./configure --prefix=/usr/local/base --enable-debug --enable-regexp=posix
@@ -64,14 +61,16 @@ fyn-gcc-3.0.4-release: all
 # Cygwin environment using the GNU Compiler Collection. The libtool-1.4.1
 # package provided by Robert Collins must be installed until libtool-1.5 is
 # released. The variable CC needs to be set properly because libtool uses the
-# value as the linker. LTCC needs to be set explicitly because libtool suffers
-# from a quote-eating disorder. The C++ compiler is set to gcc (specified by
-# CXX) since libstdc++ isn't required.
-klampenborg-gcc: all
-	CC="gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="gcc" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O0 -g3" LDFLAGS="-x none" ./configure --target=i386-pc-mingw32 --prefix=/usr/local/base --disable-shared --enable-debug --disable-demangle --disable-regexp
+# value as the linker. The C++ compiler is set to gcc (specified by CXX) since
+# libstdc++ isn't required.
+klampenborg-gcc:
+	CC="gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="gcc" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O0 -g3" LDFLAGS="-x none" configure --target=i386-pc-mingw32 --prefix=/usr/local/base --disable-shared --enable-debug --disable-demangle --disable-regexp
 
-klampenborg-gcc-3.0.4: all
-	CC="gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="gcc" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O0 -g3" LDFLAGS="-x none" BASE_LIBS="-L/usr/local/gcc-3.0.3/lib/gcc-lib/i386-pc-mingw32/3.0.3 -lsupc++" ./configure --target=i386-pc-mingw32 --prefix=/usr/local/base --enable-demangle=v3mv --enable-debug --enable-regexp=no
+klampenborg-gcc-3.0.4:
+	CC="gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="gcc" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O0 -g3" LDFLAGS="-x none" BASE_LIBS="-L/usr/local/gcc-3.0.3/lib/gcc-lib/i386-pc-mingw32/3.0.3 -lsupc++" configure --target=i386-pc-mingw32 --prefix=/usr/local/base --enable-demangle=v3mv --enable-debug --enable-regexp=no
 
-klampenborg-gcc-3.0.4-release: all
-	CC="gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="gcc" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O3 -g3 -march=i686 -malign-double" LDFLAGS="-x none" BASE_LIBS="-L/usr/local/gcc-3.0.3/lib/gcc-lib/i386-pc-mingw32/3.0.3 -lsupc++" ./configure --target=i686-pc-mingw32 --prefix=/usr/local/base --enable-demangle=v3mv --enable-debug --enable-regexp=no
+klampenborg-gcc-3.0.4-profiling:
+	CC="gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="gcc" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O3 -g3 -march=i686 -malign-double -fomit-frame-pointer -funroll-loops" LDFLAGS="-x none" BASE_LIBS="-L/usr/local/gcc-3.0.3/lib/gcc-lib/i386-pc-mingw32/3.0.3 -lsupc++" configure --target=i686-pc-mingw32 --prefix=/usr/local/base --enable-demangle=v3mv --enable-debug --enable-regexp=no
+
+klampenborg-gcc-3.0.4-release:
+	CC="gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="gcc" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O3 -g3 -march=i686 -malign-double -fomit-frame-pointer -funroll-loops" LDFLAGS="-x none" BASE_LIBS="-L/usr/local/gcc-3.0.3/lib/gcc-lib/i386-pc-mingw32/3.0.3 -lsupc++" configure --target=i686-pc-mingw32 --prefix=/usr/local/base --enable-demangle=v3mv --enable-debug --enable-regexp=no

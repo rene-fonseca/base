@@ -366,7 +366,8 @@ public:
     fout << MESSAGE("Completed") << ENDL;
   }
   
-  ~IntercomServlet() throw() {}
+  ~IntercomServlet() throw() {
+  }
 };
 
 class IntercomApplication : public Application {

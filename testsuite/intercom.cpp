@@ -488,7 +488,9 @@ public:
     }
     IntercomServlet(channels, samplingRate, loopback, isServer, endPoint).run();
   }
-  
+
+  ~IntercomApplication() throw() {
+  }
 };
 
 STUB(IntercomApplication);

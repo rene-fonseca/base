@@ -65,9 +65,10 @@ public:
   }
   
   AsyncTransfer(const String& path) throw()
-    : eof(false),
-      stop(false),
-      bufferSize(4096 * 64 * 8) {
+    : stop(false),
+      eof(false),
+      bufferSize(4096 * 64 * 8),
+      bytesRead(0) {
     fout << MESSAGE("Testing asynchronous reading from file...") << ENDL;
     try {
       File file(path, File::READ, 0);
@@ -99,9 +100,10 @@ public:
   }
 
   AsyncTransfer(const String& sourcePath, const String& destPath) throw()
-    : eof(false),
-      stop(false),
-      bufferSize(4096 * 64 * 8) {
+    : stop(false),
+      eof(false),
+      bufferSize(4096 * 64 * 8),
+      bytesRead(0) {
     fout << MESSAGE("Testing asynchronous reading from and writing to file...") << ENDL;
 
     File sourceFile;
@@ -199,7 +201,7 @@ public:
       {
         String sourcePath = arguments[0]; // file path
         String destPath = arguments[1]; // file path
-        AsyncTransfer asyncTransfer(sourcePath, destPath);
+        AsyncTransfer(sourcePath, destPath);
       }
       break;
     default:

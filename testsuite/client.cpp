@@ -117,7 +117,7 @@ public:
       // use defaults
       break;
     case 1:
-      host = arguments[1]; // the address
+      host = arguments[0]; // the address
       break;
     case 2:
       host = arguments[1]; // the address

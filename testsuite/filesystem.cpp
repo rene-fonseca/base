@@ -87,8 +87,9 @@ public:
     Array<String>::ReadEnumerator enu = entries.getReadEnumerator();
     while (enu.hasNext()) {
       const String entry = *enu.next();
-      unsigned int type = FileSystem::getType(entry);
       try {
+        unsigned int type = FileSystem::getType(entry);
+        
         bool link = false;
         bool linkTarget = false;
         String target;
@@ -133,7 +134,7 @@ public:
               flags[9] = (mode & FileInfo::XOTH) ? 'x' : '-';
             }
             
-            if (cachedOwner != info.getOwner()) {
+            if (cachedOwner != info.getOwner()) {              
               cachedOwner = info.getOwner();
               try {
                 ownerName = cachedOwner.getName();
@@ -255,7 +256,9 @@ public:
       }
     }
   }
-  
+
+  ~FileSystemApplication() throw() {
+  }
 };
 
 STUB(FileSystemApplication);

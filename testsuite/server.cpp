@@ -13,7 +13,7 @@
 
 using namespace base;
 
-void server(String<> a, String<> servicename) {
+void server(String a, String servicename) {
 
   fout << "Hostname: " << InetAddress::getLocalHost() << ENDL;
 
@@ -136,8 +136,8 @@ void server(String<> a, String<> servicename) {
 int main(int argc, char* argv[]) {
   fout << "Testing ServerSocket..." << ENDL;
 
-  String<> address; // default address
-  String<> service = "1234"; // default service
+  String address; // default address
+  String service = "1234"; // default service
 
   switch (argc) {
   case 1:

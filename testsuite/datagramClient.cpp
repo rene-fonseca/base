@@ -14,7 +14,7 @@
 
 using namespace base;
 
-void client(String<> host, String<> service) {
+void client(String host, String service) {
   fout << "Server: " << host << ENDL;
 
   InetAddress address; // the address of the remote host
@@ -84,8 +84,8 @@ void client(String<> host, String<> service) {
 int main(int argc, char* argv[]) {
   fout << "Testing datagram socket client..." << ENDL;
 
-  String<> host = InetAddress::getLocalHost(); // default host
-  String<> service = "1234"; // default service
+  String host = InetAddress::getLocalHost(); // default host
+  String service = "1234"; // default service
 
   switch (argc) {
   case 1:

@@ -10,7 +10,7 @@
 
 using namespace base;
 
-void readFile(String<>& filename) {
+void readFile(String& filename) {
   fout << "Initializing file input stream" << ENDL;
   FileInputStream file(filename, 0);
 
@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
     fout << "fileInput filename" << ENDL;
     return 0; // stop
   }
-  String<> filename = argv[1];
+  String filename = argv[1];
 
   try {
     readFile(filename);

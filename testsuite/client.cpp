@@ -9,12 +9,13 @@
 #include <base/net/ClientSocket.h>
 #include <base/net/InetInterface.h>
 #include <base/net/InetService.h>
+#include <base/net/InetEndPoint.h>
 #include <base/concurrency/Thread.h>
 #include <typeinfo>
 
 using namespace base;
 
-void client(String<> host, String<> service) {
+void client(String host, String service) {
   fout << "Server: " << host << ENDL;
 
   InetAddress address; // the address of the remote host
@@ -34,31 +35,14 @@ void client(String<> host, String<> service) {
     }
   }
 
-  unsigned short port; // the port to bind the server socket to
-  try {
-    Integer integer(service);
-    if ((integer < 0) || (integer > 0xffff)) {
-      throw OutOfRange("Port is out of range");
-    }
-    port = integer;
-  } catch(InvalidFormat& e) {
-    try {
-      InetService s(service);
-      port = s.getPort();
-      fout << "Service: name=" << s.getName()
-           << "  port=" << s.getPort()
-           << "  protocol=" << s.getProtocol() << ENDL;
-    } catch(ServiceNotFound& e) {
-      fout << "Warning: " << e.getMessage() << ENDL;
-      fout << "Service: port=" << port << ENDL;
-    }
-  }
+  InetEndPoint endPoint(address, service);
+  fout << "End point: address=" << endPoint.getAddress() << " port=" << endPoint.getPort() << ENDL;
 
   fout << "Initializing socket..." << ENDL;
   StreamSocket socket;
 
   fout << "Connecting socket..." << ENDL;
-  socket.connect(address, port);
+  socket.connect(endPoint.getAddress(), endPoint.getPort());
 
   fout << "socket: remote address=" << socket.getAddress() << " remote port=" << socket.getPort() << ENDL;
 
@@ -100,10 +84,8 @@ void client(String<> host, String<> service) {
 int main(int argc, char* argv[]) {
   fout << "Testing ClientSocket..." << ENDL;
 
-  String<> host = InetAddress::getLocalHost(); // default host
-  String<> service = "1234"; // default service
-
-host = "falster";
+  String host = InetAddress::getLocalHost(); // default host
+  String service = "1234"; // default service
 
   switch (argc) {
   case 1:

@@ -25,7 +25,7 @@ void test() {
 
   ferr << "Writing to ferr: " << "This is written to standard error" << ENDL;
 
-  fout << "String<char>: " << String<>("This is a String object") << ENDL;
+  fout << "String<char>: " << String("This is a String object") << ENDL;
   fout << "Date (now): " << Date::getNow() << ENDL;
 
   List<int> li;

@@ -114,7 +114,7 @@ public:
 
 
 
-void server(String<> desiredAddress, String<> desiredService) {
+void server(String desiredAddress, String desiredService) {
 
   fout << "Hostname: " << InetAddress::getLocalHost() << ENDL;
 
@@ -208,8 +208,8 @@ void server(String<> desiredAddress, String<> desiredService) {
 int main(int argc, char* argv[]) {
   fout << "Testing ServerSocket..." << ENDL;
 
-  String<> address; // default address
-  String<> service = "1234"; // default service
+  String address; // default address
+  String service = "1234"; // default service
 
   switch (argc) {
   case 1:

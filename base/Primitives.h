@@ -68,8 +68,12 @@ struct uint128 {
   uint64 b;
 };
 
-/** A wide character. */
-typedef wchar_t wchar; // TAG: this will change to uint32 in the future
+/** A native wide character. */
+typedef wchar_t wchar;
+
+/** A void type. */
+struct nothing {
+};
 
 
 

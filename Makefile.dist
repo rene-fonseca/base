@@ -3,7 +3,6 @@ default: all
 dist:
 	@echo "This file is to make it easier for you to create all you need"
 	aclocal
-	autoheader
 # use --include-deps, if you want to release the stuff. Don't use it for
 # yourself
 	automake --include-deps
@@ -18,7 +17,6 @@ dist:
 
 all:
 	aclocal
-	autoheader
 	automake
 	autoconf
 	rm -f config.cache
@@ -35,7 +33,7 @@ final: all
 
 
 lendum-gcc-2.96: all
-	CXX=gcc CXXFLAGS="-O0 -g3" LDFLAGS="-lm" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=gccv3 --enable-regexp=pcre --enable-xml=gnomexml
+	CXX=gcc CXXFLAGS="-O0 -g3" LDFLAGS="-lm" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=gccv2 --enable-regexp=pcre --enable-xml=gnomexml
 
 lendum-gcc-3.0: all
 	CXX=/usr/local/gcc-3.0/bin/g++ CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=gccv3 --enable-regexp=pcre --enable-xml=gnomexml

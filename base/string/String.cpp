@@ -13,11 +13,10 @@
 
 #include <base/string/String.h>
 #include <base/Functor.h>
+#include <base/mem/DynamicMemory.h>
 #include <string.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
-const String String::DEFAULT_STRING(MESSAGE(""));
 
 String::String() throw() : elements(DEFAULT_STRING.elements) {
 }
@@ -522,6 +521,12 @@ unsigned int String::count(const String& str, unsigned int start) const throw() 
     start = result + str.getLength();
   }
   return count;
+}
+
+String::Character* String::getElements() throw() {
+  Character* buffer = getBuffer(); // copy on write
+  buffer[elements->getSize() - 1] = Traits::TERMINATOR;
+  return buffer;
 }
 
 template<>

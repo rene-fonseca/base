@@ -157,8 +157,8 @@ private:
     Reference& operator=(const Reference& eq); // prohibit default assignment
     inline Reference(String& s, unsigned int i) : string(s), index(i) {}
   public:
-    inline Reference& operator=(char value) throw(OutOfRange) {string.setAt(index, value); return *this;}
-    inline operator char() const throw(OutOfRange) {return string.getAt(index);}
+    inline Reference& operator=(Character value) throw(OutOfRange) {string.setAt(index, value); return *this;}
+    inline operator Character() const throw(OutOfRange) {return string.getAt(index);}
   };
 
   /**
@@ -171,7 +171,7 @@ protected:
   /**
     Returns a modifiable buffer. Forces copy of internal buffer if shared by multiple strings.
   */
-  inline char* getBuffer() throw(MemoryException) {
+  inline Character* getBuffer() throw(MemoryException) {
     elements.copyOnWrite();
     return elements->getElements();
   }
@@ -179,7 +179,7 @@ protected:
   /**
     Returns a non-modifiable buffer.
   */
-  inline const char* getBuffer() const throw() {
+  inline const Character* getBuffer() const throw() {
     return elements->getElements();
   }
 
@@ -792,6 +792,11 @@ public:
 // *******************************************************************************************
 //   END SECTION
 // *******************************************************************************************
+
+  /**
+    Returns null-terminated string for modifying access.
+  */
+  Character* getElements() throw();
 
   /**
     Returns null-terminated string.

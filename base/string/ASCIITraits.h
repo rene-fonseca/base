@@ -29,25 +29,27 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class ASCIITraits {
 private:
 
-  enum {
-    LOWER = 1, // any of the characters "abcdefghijklmnopqrstuvwxyz"
-    UPPER = 2, // any of the characters "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    ALPHA = LOWER|UPPER,
-    DIGIT = 4, // any of the characters "0123456789"
-    ALPHANUM = ALPHA|DIGIT,
-    OCTAL = 8, // any of the characters "01234567"
-    LOWERHEX = 16, // a DIGIT or any of the characters "abcdef"
-    UPPERHEX = 32, // a DIGIT or any of the characters "ABCDEF"
-    HEX = LOWERHEX|UPPERHEX,
-    CONTROL = 64, // the characters from 0x00 to 0x1f and 0x7f
-    SPACE = 128, // tab, newline, vertical-tab, form-feed, carriage-return, and space
-    ASCII = 256, // the octets from 0x00 to 0x7f
-    SP = 512, // space ' '
-    PUNCTUATION = 1024, // punctuation characters
-    GRAPH = ALPHANUM|PUNCTUATION, // visible characters
-    PRINTABLE = SP|GRAPH, // printable characters
+  /** Character characteristics. */
+  enum Characteristics {
+    LOWER = 1, /**< Any of the characters "abcdefghijklmnopqrstuvwxyz". */
+    UPPER = 2, /**< Any of the characters "ABCDEFGHIJKLMNOPQRSTUVWXYZ". */
+    ALPHA = LOWER|UPPER, /**< Any upper or lower case letter. */
+    DIGIT = 4, /**< Any of the characters "0123456789". */
+    ALPHANUM = ALPHA|DIGIT, /**< A letter or digit. */
+    OCTAL = 8, /**< Any of the characters "01234567". */
+    LOWERHEX = 16, /**< A DIGIT or any of the characters "abcdef". */
+    UPPERHEX = 32, /**< A DIGIT or any of the characters "ABCDEF". */
+    HEX = LOWERHEX|UPPERHEX, /**< Any upper or lower case hexadicimal digit. */
+    CONTROL = 64, /**< The characters from 0x00 to 0x1f and 0x7f. */
+    SPACE = 128, /**< Tab, newline, vertical-tab, form-feed, carriage-return, and space. */
+    ASCII = 256, /**< The octets from 0x00 to 0x7f. */
+    SP = 512, /**< A simple space ' '. */
+    PUNCTUATION = 1024, /**< Punctuation characters. */
+    GRAPH = ALPHANUM|PUNCTUATION, /**< Visible characters. */
+    PRINTABLE = SP|GRAPH, /**< Printable characters. */
   };
 
+  /** Character descriptor. */
   struct CharacterDescriptor {
     unsigned short flags;
     char lower;
@@ -55,6 +57,7 @@ private:
     unsigned char value;
   };
 
+  /** Internal lookup table describing all characters (octet). */
   static const CharacterDescriptor lookup[256];
 public:
 

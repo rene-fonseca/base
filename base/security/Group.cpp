@@ -39,7 +39,10 @@ Group::Group(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   throw OutOfDomain("Invalid user id", this);
 #else // unix
-  assert(integralId <= PrimitiveTraits<uid_t>::MAXIMUM, OutOfDomain("Invalid group id", this));
+  assert(
+    static_cast<uid_t>(integralId) <= PrimitiveTraits<uid_t>::MAXIMUM,
+    OutOfDomain("Invalid group id", this)
+  );
 #endif // flavor
 }
 
@@ -93,7 +96,7 @@ Group::Group(const String& name) throw(GroupException) {
     integralId = Cast::container<unsigned long>(entry->gr_gid);
   #else
     #warning Group::Group(const String& name) uses non-reentrant getgrnam
-    //long sysconf(_SC_GETGR_R_SIZE_MAX);
+    // long sysconf(_SC_GETGR_R_SIZE_MAX);
     struct group* entry = ::getgrnam(name.getElements());
     assert(entry != 0, GroupException(this));
     integralId = Cast::container<unsigned long>(entry->gr_gid);

@@ -403,34 +403,6 @@ public:
         table.setSize(capacity);
       }
     }
-
-    void dump() throw() {
-      const Node* const* bucket = getBuckets();
-      const Node* const* end = bucket + capacity;
-      fout << "capacity: " << capacity << " size:" << size << ENDL;
-      MemorySize entry = 0;
-      while (bucket != end) {
-        const Node* node = *bucket++;
-        
-        MemorySize count = 0;
-        const Node* temp = node;
-        while (temp) {
-          ++count;
-          temp = temp->getNext();
-        }
-        
-        fout << indent(2) << "entry:" << entry << " count:"  << count << " ";
-        
-        while (node) {
-          fout << node->getHash() << "/" << *node->getKeyValue() << "; ";
-          node = node->getNext();
-        }
-        fout << ENDL;
-        
-        ++entry;
-      }
-      fout << ENDL;
-    }
     
     /**
       Returns the capacity of the hash table.
@@ -792,10 +764,6 @@ public:
   inline HashTable& operator=(const HashTable& eq) throw() {
     impl = eq.impl;
     return *this;
-  }
-
-  inline void dump() const throw() {
-    impl->dump();
   }
   
   /**

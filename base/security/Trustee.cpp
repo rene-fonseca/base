@@ -109,7 +109,8 @@ bool Trustee::operator==(const Trustee& eq) throw() {
   if (!((id.isValid()) && (eq.id.isValid()))) {
     return !id.isValid() && !eq.id.isValid();
   }
-  return (id->getSize() == eq.id->getSize()) && (compare(id->getElements(), eq.id->getElements(), id->getSize()) == 0);
+  return (id->getSize() == eq.id->getSize()) &&
+    (compare(id->getElements(), eq.id->getElements(), id->getSize()) == 0);
 #else // unix
   return integralId == eq.integralId; // id is dont-care
 #endif
@@ -262,9 +263,7 @@ String Trustee::getName() const throw(TrusteeException) {
 #else // unix
 
   switch (type) {
-  case EVERYONE:
-    return MESSAGE("other");
-  case GROUP:
+  case Trustee::GROUP:
     {
 #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRNAM_R)
       //long sysconf(_SC_GETGR_R_SIZE_MAX);
@@ -281,7 +280,7 @@ String Trustee::getName() const throw(TrusteeException) {
       return String(entry->gr_name);
 #endif // HAVE_GETGRNAM_R
     }
-  case USER:
+  case Trustee::USER:
     {
       Allocator<char>* buffer = Thread::getLocalStorage();
       struct passwd pw;
@@ -290,6 +289,9 @@ String Trustee::getName() const throw(TrusteeException) {
       assert(result == 0, TrusteeException("Unable to lookup name", this));
       return String(entry->pw_name);
     }
+  case Trustee::EVERYONE:
+  default: // UNSPECIFIED and CLASS are not possible
+    return MESSAGE("other");
   }
 #endif // flavor
 }
@@ -335,14 +337,15 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value)
   }
   StringOutputStream s;
   switch (value.getType()) {
-  case Trustee::EVERYONE:
-    s << 'G' << '-' << MESSAGE("other");
-    break;
   case Trustee::GROUP:
     s << 'G' << '-' << id << FLUSH;
     break;
   case Trustee::USER:
     s << 'U' << '-' << id << FLUSH;
+    break;
+  case Trustee::EVERYONE:
+  default: // UNSPECIFIED and CLASS not possible
+    s << 'G' << '-' << MESSAGE("other");
     break;
   }
   return stream << s.getString();

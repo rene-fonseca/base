@@ -135,16 +135,16 @@ namespace LinuxRawIEEE1394Impl {
   };
 
   void dumpRequest(const Request& request) throw() {
-    fout << "request: "<< EOL
-         << "  type: " << request.type << EOL
-         << "  error: " << request.error << EOL
-         << "  misc: " << HEX << setWidth(10) << ZEROPAD << request.misc << EOL
-         << "  generation: " << request.generation << EOL
-         << "  size: " << request.size << EOL
-         << "  address: " << HEX << setWidth(18) << ZEROPAD << request.address << EOL
-         << "  tag: " << HEX << setWidth(18) << ZEROPAD << request.tag << EOL
-         << "  sendBuffer: " << HEX << setWidth(18) << ZEROPAD << request.sendBuffer << EOL
-         << "  receiveBuffer: " << HEX << setWidth(18) << ZEROPAD << request.receiveBuffer << EOL
+    fout << MESSAGE("request: ") << EOL
+         << MESSAGE("  type: ") << request.type << EOL
+         << MESSAGE("  error: ") << request.error << EOL
+         << MESSAGE("  misc: ") << HEX << setWidth(10) << ZEROPAD << request.misc << EOL
+         << MESSAGE("  generation: ") << request.generation << EOL
+         << MESSAGE("  size: ") << request.size << EOL
+         << MESSAGE("  address: ") << HEX << setWidth(18) << ZEROPAD << request.address << EOL
+         << MESSAGE("  tag: ") << HEX << setWidth(18) << ZEROPAD << request.tag << EOL
+         << MESSAGE("  sendBuffer: ") << HEX << setWidth(18) << ZEROPAD << request.sendBuffer << EOL
+         << MESSAGE("  receiveBuffer: ") << HEX << setWidth(18) << ZEROPAD << request.receiveBuffer << EOL
          << ENDL;
   }
   

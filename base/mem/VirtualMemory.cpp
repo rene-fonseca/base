@@ -128,24 +128,25 @@ void VirtualMemory::dump() throw() {
     if (result == 0) {
       return;
     }
-    fout << "base: " << info.BaseAddress << " size:" << HEX << PREFIX << info.RegionSize << ' ';
+    fout << MESSAGE("base: ") << info.BaseAddress
+         << MESSAGE(" size:") << HEX << PREFIX << info.RegionSize << ' ';
     if (info.State == MEM_COMMIT) {
-      fout << "COMMITTED" << ' ';
+      fout << MESSAGE("COMMITTED") << ' ';
     }
     if (info.State == MEM_FREE) {
-      fout << "FREE" << ' ';
+      fout << MESSAGE("FREE") << ' ';
     }
     if (info.State == MEM_RESERVE) {
-      fout << "RESERVED" << ' ';
+      fout << MESSAGE("RESERVED") << ' ';
     }
     if (info.Type & MEM_IMAGE) {
-      fout << "IMAGE" << ' ';
+      fout << MESSAGE("IMAGE") << ' ';
     }
     if (info.Type & MEM_MAPPED) {
-      fout << "MAPPED" << ' ';
+      fout << MESSAGE("MAPPED") << ' ';
     }
     if (info.Type & MEM_PRIVATE) {
-      fout << "PRIVATE" << ' ';
+      fout << MESSAGE("PRIVATE") << ' ';
     }
     fout << EOL;
     address += (info.RegionSize+pageSize-1)/pageSize*pageSize;

@@ -229,74 +229,75 @@ public:
         Node** lowerBucket = getBuckets();
         Node** upperBucket = lowerBucket + capacity/2;
         const Node* const* endBucket = upperBucket;
+        const unsigned int bitMask = capacity/2; // the bit that desides the half
         while (lowerBucket != endBucket) {
           Node* srcNode = *lowerBucket;
           if (srcNode) {
             // keep order and do NOT construct or destroy nodes
-            if ((srcNode->getHash() & mask) < capacity/2) { // TAG: optimize
+            if ((srcNode->getHash() & bitMask) == 0) {
               // move from first to second bucket
-              Node* parentSrcNode = 0;
-              do {
+              Node* parentSrcNode = srcNode;
+              srcNode = srcNode->getNext();
+              while (srcNode && ((srcNode->getHash() & bitMask) == 0)) {
                 parentSrcNode = srcNode;
                 srcNode = srcNode->getNext();
-              } while (srcNode && ((srcNode->getHash() & mask) < capacity/2)); // TAG: optimize
-              if (!srcNode) {
-                break; // nothing to do
               }
-              parentSrcNode->setNext(srcNode->getNext()); // unlink
-              
-              *upperBucket = srcNode;
-              srcNode = srcNode->getNext();
-              
-              Node* destNode = *upperBucket;
-              // destNode->setNext(0); // only set for last node
-              
-              while (srcNode) {
-                Node* nextNode = srcNode->getNext();
-                if ((srcNode->getHash() & mask) >= capacity/2) { // TAG: optimize
-                  parentSrcNode->setNext(nextNode); // unlink
-                  destNode->setNext(srcNode);
-                  destNode = destNode->getNext();
-                  // destNode->setNext(0); // only set for last node
+              if (srcNode) {
+                parentSrcNode->setNext(srcNode->getNext()); // unlink
+                *upperBucket = srcNode;
+                srcNode = srcNode->getNext();
+                
+                Node* destNode = *upperBucket;
+                // destNode->setNext(0); // only set for last node
+                
+                while (srcNode) {
+                  Node* nextNode = srcNode->getNext();
+                  if (srcNode->getHash() & bitMask) {
+                    parentSrcNode->setNext(nextNode); // unlink
+                    destNode->setNext(srcNode);
+                    destNode = destNode->getNext();
+                    // destNode->setNext(0); // only set for last node
+                  }
+                  parentSrcNode = srcNode;
+                  srcNode = nextNode;
                 }
-                parentSrcNode = srcNode;
-                srcNode = nextNode;
+                destNode->setNext(0);
               }
-              destNode->setNext(0);
             } else {
               // move from second to first bucket
               *upperBucket = *lowerBucket;
               *lowerBucket = 0;
               
-              Node* parentSrcNode = 0;
-              do {
+              Node* parentSrcNode = srcNode;
+              srcNode = srcNode->getNext();
+              while (srcNode && (srcNode->getHash() & bitMask)) {
                 parentSrcNode = srcNode;
                 srcNode = srcNode->getNext();
-              } while (srcNode && ((srcNode->getHash() & mask) >= capacity/2)); // TAG: optimize
-              if (!srcNode) {
-                break; // nothing to do
               }
-              parentSrcNode->setNext(srcNode->getNext()); // unlink
-              
-              *lowerBucket = srcNode;
-              srcNode = srcNode->getNext();
-              
-              Node* destNode = *lowerBucket;
-              // destNode->setNext(0); // only set for last node
-              
-              while (srcNode) {
-                Node* nextNode = srcNode->getNext();
-                if ((srcNode->getHash() & mask) < capacity/2) { // TAG: optimize
-                  parentSrcNode->setNext(nextNode); // unlink
-                  destNode->setNext(srcNode);
-                  destNode = destNode->getNext();
-                  // destNode->setNext(0); // only set for last node
+              if (srcNode) {
+                parentSrcNode->setNext(srcNode->getNext()); // unlink
+                *lowerBucket = srcNode;
+                srcNode = srcNode->getNext();
+                
+                Node* destNode = *lowerBucket;
+                // destNode->setNext(0); // only set for last node
+                
+                while (srcNode) {
+                  Node* nextNode = srcNode->getNext();
+                  if ((srcNode->getHash() & bitMask) == 0) {
+                    parentSrcNode->setNext(nextNode); // unlink
+                    destNode->setNext(srcNode);
+                    destNode = destNode->getNext();
+                    // destNode->setNext(0); // only set for last node
+                  }
+                  parentSrcNode = srcNode;
+                  srcNode = nextNode;
                 }
-                parentSrcNode = srcNode;
-                srcNode = nextNode;
+                destNode->setNext(0); // terminate linked list
               }
-              destNode->setNext(0);
             }
+          } else {
+            *upperBucket = 0; // lower bucket already empty
           }
           ++lowerBucket;
           ++upperBucket;
@@ -393,35 +394,7 @@ public:
         child = child->getNext();
       }
       return child;
-    }
-    
-    void dump() const throw() {
-      const Node* const* bucket = getBuckets();
-      const Node* const* end = bucket + capacity;
-      fout << "capacity: " << capacity << " size:" << size << ENDL;
-      MemorySize entry = 0;
-      while (bucket != end) {
-        const Node* node = *bucket++;
-        
-        MemorySize count = 0;
-        const Node* temp = node;
-        while (temp) {
-          ++count;
-          temp = temp->getNext();
-        }
-        
-        fout << indent(2) << "entry:" << entry << " count:"  << count << " ";
-        
-        while (node) {
-          fout << node->getHash() << "/" << node->getValue() << "; ";
-          node = node->getNext();
-        }
-        fout << ENDL;
-        
-        ++entry;
-      }
-      fout << ENDL;
-    }
+    }    
     
     /**
       Adds the element to the set.

@@ -19,11 +19,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class StringInputStream : public InputStream, protected String<> {
+class StringInputStream : public InputStream, protected String {
 protected:
 
   /** String providing the data stream. */
-  String<>& str;
+  String& str;
   /** The current position. */
   unsigned int index;
   /** Specifies that the end has been reached. */
@@ -37,7 +37,7 @@ public:
 
     @param s The string providing the data stream.
   */
-  StringInputStream(String<>& s) throw(BindException);
+  StringInputStream(String& s) throw(BindException);
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.

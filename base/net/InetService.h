@@ -24,11 +24,11 @@ class InetService : public virtual Object {
 private:
 
   /** Specifies the official name of the service. */
-  String<> name;
+  String name;
   /** Specifies the port of the service (in host byte order). */
   unsigned short port;
   /** Specifies the name of the protocol of the service. */
-  String<> protocol;
+  String protocol;
 public:
 
   /**
@@ -39,7 +39,7 @@ public:
 
     @return 0 if the service was not found.
   */
-  static unsigned short getByName(const String<>& name, const String<>& protocol) throw();
+  static unsigned short getByName(const String& name, const String& protocol) throw();
 
   /**
     Returns the name of the service given by the specified port and protocol.
@@ -49,7 +49,7 @@ public:
 
     @return Empty string if service was not found.
   */
-  static String<> getByPort(unsigned short port, const String<>& protocol) throw();
+  static String getByPort(unsigned short port, const String& protocol) throw();
 
   /**
     Initializes a service object by specified service name and protocol.
@@ -57,7 +57,7 @@ public:
     @param name Specifies the name of the service.
     @param protocol Specifies the name of the protocol. Default is "tcp".
   */
-  InetService(const String<>& name, const String<>& protocol = "tcp") throw(ServiceNotFound);
+  explicit InetService(const String& name, const String& protocol = "tcp") throw(ServiceNotFound);
 
   /**
     Initializes a service object by specified port number and protocol.
@@ -65,7 +65,7 @@ public:
     @param port The port number.
     @param protocol Specifies the name of the protocol. Default is "tcp".
   */
-  InetService(unsigned short port, const String<>& protocol = "tcp") throw(ServiceNotFound);
+  explicit InetService(unsigned short port, const String& protocol = "tcp") throw(ServiceNotFound);
 
   /**
     Copy constructor.
@@ -80,7 +80,7 @@ public:
   /**
     Returns the name of the service.
   */
-  const String<>& getName() const throw();
+  const String& getName() const throw();
 
   /**
     Returns the port associated with the service.
@@ -90,7 +90,7 @@ public:
   /**
     Returns the protocol of the service.
   */
-  const String<>& getProtocol() const throw();
+  const String& getProtocol() const throw();
 
   /**
     Writes a string representation of a InetService object to a format stream.

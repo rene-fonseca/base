@@ -6,7 +6,6 @@
 #include <base/io/BufferedInputStream.h>
 #include <base/Base.h>
 #include <base/Trace.h>
-#include <string.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -30,7 +29,7 @@ unsigned int BufferedInputStream::read(char* buffer, unsigned int size) throw(IO
   unsigned int bytesInBuffer = this->count - this->position;
 
   if (size <= bytesInBuffer) { // does the internal buffer hold the requested bytes
-    memcpy(buffer, getBuffer() + this->position, size); // copy from internal to external buffer
+    copy(buffer, getBuffer() + this->position, size); // copy from internal to external buffer - no overlap
     this->position += size;
     return size; // everything was read
   }
@@ -43,7 +42,7 @@ unsigned int BufferedInputStream::read(char* buffer, unsigned int size) throw(IO
       break; // prevent infinite loop - we have tried to fill the buffer prior to this
     }
 
-    memcpy(buffer + position, getBuffer() + this->position, bytes); // from internal to external
+    copy(buffer + position, getBuffer() + this->position, bytes); // from internal to external - no overlap
     position += bytes;
     this->position += bytes;
 

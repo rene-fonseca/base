@@ -16,10 +16,10 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FileInputStream::FileInputStream(const String<>& p, unsigned int flags) throw(FileNotFound) :
+FileInputStream::FileInputStream(const String& p, unsigned int flags) throw(FileNotFound) :
   path(p) {
 #if defined(__win32__)
-  HANDLE handle; 
+  HANDLE handle;
   handle = CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL,
     OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
   if (handle == INVALID_HANDLE_VALUE) {
@@ -68,7 +68,7 @@ unsigned int FileInputStream::available() const throw(IOException) {
 #endif
 }
 
-const String<>& FileInputStream::getPath() const throw() {
+const String& FileInputStream::getPath() const throw() {
   return path;
 }
 

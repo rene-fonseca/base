@@ -119,7 +119,7 @@ ExpressionProvider::~ExpressionProvider() {
 
 
 
-ExpressionParser::ExpressionParser(const String<>& e, ExpressionProvider& p) throw() : expression(e), provider(p) {
+ExpressionParser::ExpressionParser(const String& e, ExpressionProvider& p) throw() : expression(e), provider(p) {
   length = expression.getLength();
 }
 

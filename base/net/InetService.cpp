@@ -14,7 +14,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-unsigned short InetService::getByName(const String<>& name, const String<>& protocol) throw() {
+unsigned short InetService::getByName(const String& name, const String& protocol) throw() {
   struct servent* sp;
 #if defined(__win32__)
   sp = getservbyname((const char*)name, (const char*)protocol); // MT-safe
@@ -33,7 +33,7 @@ unsigned short InetService::getByName(const String<>& name, const String<>& prot
   return sp ? ntohs(sp->s_port) : 0;
 }
 
-String<> InetService::getByPort(unsigned short port, const String<>& protocol) throw() {
+String InetService::getByPort(unsigned short port, const String& protocol) throw() {
   struct servent* sp;
 #if defined(__win32__)
   sp = getservbyport(htons(port), (const char*)protocol); // MT-safe
@@ -49,10 +49,10 @@ String<> InetService::getByPort(unsigned short port, const String<>& protocol) t
   #warning Using MT-unsafe getservbyport
   sp = getservbyport(htons(port), (const char*)protocol);
 #endif
-  return sp ? String<>(sp->s_name) : String<>();
+  return sp ? String(sp->s_name) : String();
 }
 
-InetService::InetService(const String<>& name, const String<>& protocol) throw(ServiceNotFound) {
+InetService::InetService(const String& name, const String& protocol) throw(ServiceNotFound) {
   if ((port = getByName(name, protocol)) == 0) {
     throw ServiceNotFound("Unable to resolve service by name");
   }
@@ -60,7 +60,7 @@ InetService::InetService(const String<>& name, const String<>& protocol) throw(S
   this->protocol = protocol;
 }
 
-InetService::InetService(unsigned short port, const String<>& protocol) throw(ServiceNotFound) {
+InetService::InetService(unsigned short port, const String& protocol) throw(ServiceNotFound) {
   if ((name = getByPort(port, protocol)) == "") {
     throw ServiceNotFound("Unable to resolve service by port");
   }
@@ -81,7 +81,7 @@ InetService& InetService::operator=(const InetService& eq) throw() {
   return *this;
 }
 
-const String<>& InetService::getName() const throw() {
+const String& InetService::getName() const throw() {
   return name;
 }
 
@@ -89,7 +89,7 @@ unsigned short InetService::getPort() const throw() {
   return port;
 }
 
-const String<>& InetService::getProtocol() const throw() {
+const String& InetService::getProtocol() const throw() {
   return protocol;
 }
 

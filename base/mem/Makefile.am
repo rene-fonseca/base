@@ -4,4 +4,4 @@ DEFS = @DEFS@
 
 noinst_LTLIBRARIES = libmem.la
 
-libmem_la_SOURCES = Allocator.cpp Buffer.cpp NullPointer.cpp OwnershipPointer.cpp ReferenceCountedAllocator.cpp ReferenceCountedObject.cpp ReferenceCountedObjectPointer.cpp ReferenceCountedObjectWrapper.cpp
+libmem_la_SOURCES = NullPointer.cpp Heap.cpp

@@ -30,7 +30,7 @@ class Unsafe {
   interface) to use for synchronize able classes when no synchronization class
   is specified.
 */
-typedef ReadWriteLock DefaultLock;
+typedef Unsafe DefaultLock;
 
 /**
   Wrapper for a synchronization object. Ensures that only one synchronization

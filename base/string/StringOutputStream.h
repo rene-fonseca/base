@@ -26,7 +26,7 @@ public:
 protected:
 
   /** The string holding the stream data. */
-  String<> str;
+  String str;
 public:
 
   /**
@@ -39,7 +39,7 @@ public:
   /**
     Returns the string associated with the stream.
   */
-  const String<>& getString() const throw();
+  const String& getString() const throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -78,7 +78,7 @@ class ExpressionEvaluator : public Object {
 private:
 
   /** Container for the names of the variables in the formula. */
-  List<String<> > variableNames;
+  List<String> variableNames;
   /** Container for the parsed formula. */
   eval::EvaluationNode* nodes;
 public:
@@ -91,7 +91,7 @@ public:
   /**
     Returns the names of variables of the formula in the order expected by the evaluate methods.
   */
-  const List<String<> > getVariables() const throw();
+  const List<String> getVariables() const throw();
 
   /**
     Evaluates the formula once.
@@ -192,7 +192,7 @@ class ExpressionParser : public Object {
 protected:
 
   /** The expression representation. */
-  String<> expression;
+  String expression;
   /** The expression provider. */
   ExpressionProvider& provider;
   /** Stack holding operations. */
@@ -235,7 +235,7 @@ public:
     @param expression The string representation of the expression to be parsed (e.g. "4+5*x/7").
     @param provider The expression provider.
   */
-  ExpressionParser(const String<>& expression, ExpressionProvider& provider) throw();
+  ExpressionParser(const String& expression, ExpressionProvider& provider) throw();
 
   /**
     Parses the specified arithmetic expression representation.

@@ -53,11 +53,12 @@ public:
 WindowsSocketsInitializer windowsSockets;
 #endif // __win32__
 
-String<> InetAddress::getLocalHost() throw(NetworkException) {
+String InetAddress::getLocalHost() throw(NetworkException) {
 #if defined(__win32__)
   // I use thread local storage 'cause I don't know what the maximum length is
   // the microsoft example code that I have seen assumes that the name cannot exceed 200 chars
   Allocator<char>* buffer = Thread::getLocalStorage();
+  ASSERT(buffer->getSize() > 200);
   char* name = buffer->getElements();
   if (gethostname(name, buffer->getSize())) {
     throw NetworkException("Unable to get local host name");
@@ -66,10 +67,10 @@ String<> InetAddress::getLocalHost() throw(NetworkException) {
   char name[MAXHOSTNAMELEN + 1]; // does MAXHOSTNAMELEN include terminator
   gethostname(name, sizeof(name));
 #endif
-  return String<>(name);
+  return String(name);
 }
 
-List<InetAddress> InetAddress::getAddressesByName(const String<>& name) throw(HostNotFound) {
+List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(HostNotFound) {
   List<InetAddress> result;
 
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
@@ -145,7 +146,7 @@ InetAddress::InetAddress(const char* addr, Family family) throw(NetworkException
   setAddress(addr, family);
 }
 
-InetAddress::InetAddress(const String<>& addr) throw(InvalidFormat) {
+InetAddress::InetAddress(const String& addr) throw(InvalidFormat) {
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct in_addr temp;
   if (inet_pton(AF_INET, addr.getBytes(), &temp) > 0) { // try IPv4 format - MT-level is safe
@@ -182,7 +183,7 @@ const char* InetAddress::getAddress() const throw() {
   return (char*)&address;
 }
 
-String<> InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
+String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct sockaddr_in6 addr;
   fill<char>((char*)&addr, sizeof(addr), 0);
@@ -197,7 +198,7 @@ String<> InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound)
     throw HostNotFound("Unable to resolve IP address");
   }
 
-  return String<>(hostname);
+  return String(hostname);
 #else // use ordinary BSD sockets
   struct hostent* hp;
 
@@ -226,7 +227,7 @@ String<> InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound)
     }
   #endif
 
-  return String<>(hp->h_name);
+  return String(hp->h_name);
 #endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
@@ -328,8 +329,8 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
   #if (INET6_ADDRSTRLEN > THREAD_LOCAL_STORAGE)
     #error The requested amount of local storage is not available.
   #endif
-  // longest possible string is "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"
   Allocator<char>* buffer = Thread::getLocalStorage();
+  ASSERT(buffer->getSize() > sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")); // longest possible string
   if (value.isV4Mapped()) {
     inet_ntop(AF_INET, &((uint32_t*)(&value.address))[3], buffer->getElements(), buffer->getSize()); // MT-level is safe
   } else {

@@ -31,7 +31,7 @@ public:
 private:
 
   /** The path of the file. */
-  String<> path;
+  String path;
 public:
 
   /**
@@ -41,12 +41,12 @@ public:
     @param flags The flags used to open the file (CREATE, TRUNCATE, APPEND, NONBLOCK, and SYNC).
     @param permissions Specifies the permissions to be used if the file is created.
   */
-  FileOutputStream(const String<>& path, unsigned int flags, unsigned int permissions = 0x640) throw(FileNotFound);
+  FileOutputStream(const String& path, unsigned int flags, unsigned int permissions = 0x640) throw(FileNotFound);
 
   /**
     Returns the path of the file.
   */
-  const String<>& getPath() const throw();
+  const String& getPath() const throw();
 
   /**
     Forces any buffered bytes to be written out.

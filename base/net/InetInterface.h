@@ -26,7 +26,7 @@ private:
   /** Specifies the index of the network interface. */
   const unsigned int index;
   /** Specifies the name of the network interface. */
-  const String<> name;
+  const String name;
 public:
 
   /**
@@ -55,7 +55,7 @@ public:
   /**
     Returns the name of the network interface.
   */
-  String<> getName() const throw();
+  String getName() const throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

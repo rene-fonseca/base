@@ -40,14 +40,14 @@ public:
   /**
     Returns the name of the local host.
   */
-  static String<> getLocalHost() throw(NetworkException);
+  static String getLocalHost() throw(NetworkException);
 
   /**
     Returns the IP addresses associated with the specified host name.
 
     @param name The name of the host (e.g. 'www.mip.sdu.dk').
   */
-  static List<InetAddress> getAddressesByName(const String<>& name) throw(HostNotFound);
+  static List<InetAddress> getAddressesByName(const String& name) throw(HostNotFound);
 
   /**
     Initializes the address as unspecified address.
@@ -67,7 +67,7 @@ public:
 
     @param addr The internet address (e.g. '172.30.33.14' or '::ffff:172.30.33.14').
   */
-  InetAddress(const String<>& addr) throw(InvalidFormat);
+  InetAddress(const String& addr) throw(InvalidFormat);
 
   /**
     Copy constructor.
@@ -90,7 +90,7 @@ public:
 
     @param fullyQualified Specifies that the fully-qualified domain name should be returned for local hosts. Default is false.
   */
-  String<> getHostName(bool fullyQualified = false) const throw(HostNotFound);
+  String getHostName(bool fullyQualified = false) const throw(HostNotFound);
 
   /**
     Equality operator.

@@ -8,7 +8,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-StringInputStream::StringInputStream(String<>& s) throw(BindException) : str(s) {
+StringInputStream::StringInputStream(String& s) throw(BindException) : str(s) {
   index = 0;
   eof = false;
   closed = false;

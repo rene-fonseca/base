@@ -28,7 +28,7 @@ public:
 protected:
 
   /** The path of the file. */
-  String<> path;
+  String path;
 public:
 
   /**
@@ -37,7 +37,7 @@ public:
     @param path The path of the file.
     @param flags The desired flags.
   */
-  FileInputStream(const String<>& name, unsigned int flags) throw(FileNotFound);
+  FileInputStream(const String& name, unsigned int flags) throw(FileNotFound);
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.
@@ -49,7 +49,7 @@ public:
   /**
     Returns the path of the file.
   */
-  const String<>& getPath() const throw();
+  const String& getPath() const throw();
 
   /**
     Blocking wait for input to become available.

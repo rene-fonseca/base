@@ -54,7 +54,7 @@ public:
 
     @param str The string.
   */
-  Integer(String<> str) throw(InvalidFormat);
+  Integer(String str) throw(InvalidFormat);
 
   /**
     Copy constructor. Initializes a new Integer from other Integer object.

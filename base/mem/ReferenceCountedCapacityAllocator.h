@@ -35,6 +35,11 @@ private:
 public:
 
   /**
+    Initializes an empty allocator with the default granularity.
+  */
+  inline explicit ReferenceCountedCapacityAllocator() throw() : CapacityAllocator<TYPE>() {}
+
+  /**
     Initializes an empty allocator.
 
     @param granularity Specifies the number of elements to allocate at a time.

@@ -14,11 +14,11 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FileOutputStream::FileOutputStream(const String<>& p, unsigned int flags, unsigned int permissions) throw(FileNotFound) :
+FileOutputStream::FileOutputStream(const String& p, unsigned int flags, unsigned int permissions) throw(FileNotFound) :
   FileDescriptorOutputStream(), path(p) {
 
 #if defined(__win32__)
-  HANDLE handle; 
+  HANDLE handle;
   handle = CreateFile(path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
   if (handle == INVALID_HANDLE_VALUE) {
     throw FileNotFound("Unable to open file for writing");
@@ -50,7 +50,7 @@ FileOutputStream::FileOutputStream(const String<>& p, unsigned int flags, unsign
 #endif
 }
 
-const String<>& FileOutputStream::getPath() const throw() {
+const String& FileOutputStream::getPath() const throw() {
   return path;
 }
 

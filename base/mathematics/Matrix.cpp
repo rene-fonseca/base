@@ -86,7 +86,7 @@ bool Matrix<TYPE>::isEqual(const Matrix& value) const throw() {
 
 template<class TYPE>
 bool Matrix<TYPE>::isZero() const throw() {
-  return !find(getReadOnlyElements(), getSize(), bind2Second(NotEqual<TYPE>(), TYPE(0)));
+  return !findPredicate(getReadOnlyElements(), getSize(), bind2Second(NotEqual<TYPE>(), TYPE(0)));
 }
 
 template<class TYPE>
@@ -100,7 +100,7 @@ bool Matrix<TYPE>::isDiagonal() const throw() {
 
   while (current < last) { // have we reached the last element
     ++current; // just skip the diagonal element
-    if (find(current, columns, bind2Second(NotEqual<TYPE>(), TYPE(0)))) {
+    if (findPredicate(current, columns, bind2Second(NotEqual<TYPE>(), TYPE(0)))) {
       return false;
     }
     current += columns; // go to next row
@@ -117,7 +117,7 @@ bool Matrix<TYPE>::isLowerTriangular() const throw() {
   const TYPE* upper = getReadOnlyElements() + columns; // end of upper triangle (first row)
 
   for (unsigned int inUpper = columns - 1; inUpper > 0; --inUpper) {
-    if (find(upper - inUpper, inUpper, bind2Second(NotEqual<TYPE>(), TYPE(0)))) {
+    if (findPredicate(upper - inUpper, inUpper, bind2Second(NotEqual<TYPE>(), TYPE(0)))) {
       return false;
     }
     upper += columns; // go to end of next row
@@ -134,7 +134,7 @@ bool Matrix<TYPE>::isUpperTriangular() const throw() {
   const TYPE* lower = getReadOnlyElements(); // first element in lower triangle
 
   for (unsigned int inLower = 0; inLower < columns; ++inLower) {
-    if (find(lower, inLower, bind2Second(NotEqual<TYPE>(), TYPE(0)))) {
+    if (findPredicate(lower, inLower, bind2Second(NotEqual<TYPE>(), TYPE(0)))) {
       return false;
     }
     lower += columns; // go to next row

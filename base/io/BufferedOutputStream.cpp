@@ -5,7 +5,6 @@
 
 #include <base/io/BufferedOutputStream.h>
 #include <base/Trace.h>
-#include <string.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -25,7 +24,7 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size) 
   unsigned int bytesLeft = getSize() - count; // bytes left in internal buffer
 
   if (size <= bytesLeft) { // do we have enough space left in the internal buffer
-    memcpy(getBuffer() + count, buffer, size); // copy from external to internal
+    copy(getBuffer() + count, buffer, size); // copy from external to internal - no overlap
     count += size;
     return size;
   }
@@ -35,7 +34,7 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size) 
 
   // fill internal buffer and write it to the stream
   if (bytesLeft > 0) {
-    memcpy(getBuffer() + count, buffer, bytesLeft); // copy from external to internal
+    copy(getBuffer() + count, buffer, bytesLeft); // copy from external to internal - no overlap
     count += bytesLeft;
     position += bytesLeft;
   }
@@ -43,7 +42,7 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size) 
   count -= result;
   if (count > 0) { // did we empty the internal buffer
     if (result > 0) {
-      memmove(getBuffer(), getBuffer() + result, count); // move bytes to beginning of buffer
+      move(getBuffer(), getBuffer() + result, count); // move bytes to beginning of buffer - possible overlap
     }
     return position; // # of bytes read from external buffer
   }
@@ -61,7 +60,7 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size) 
   }
 
   // copy rest from external buffer to internal buffer
-  memcpy(getBuffer(), buffer + position, bytesToCopy); // copy external to internal
+  copy(getBuffer(), buffer + position, bytesToCopy); // copy external to internal - no overlap
   count += bytesToCopy;
   return size; // # of bytes read from external buffer
 }

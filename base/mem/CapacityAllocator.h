@@ -26,6 +26,9 @@ public:
 
   /** Specifies the minimum block size in number of elements. */
   static const unsigned int MINIMUM_GRANULARITY = 16;
+  /** Specifies the default granularity in number of elements. Guaranteed to be
+      greater than or equal to MINIMUM_GRANULARITY. */
+  static const unsigned int DEFAULT_GRANULARITY = MINIMUM_GRANULARITY;
 private:
 
   /** The number of elements in the block. */
@@ -66,12 +69,17 @@ public:
 public:
 
   /**
+    Initializes an empty allocator with the default granularity.
+  */
+  inline explicit CapacityAllocator() throw() : capacity(0), granularity(DEFAULT_GRANULARITY) {}
+
+  /**
     Initializes an empty allocator. Throws 'OutOfRange' if granularity is less
     than MINIMUM_GRANULARITY.
 
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline explicit CapacityAllocator(unsigned int blockSize) throw() : capacity(0), granularity(granularity) {
+  inline explicit CapacityAllocator(unsigned int granularity) throw() : capacity(0), granularity(granularity) {
     if (granularity < MINIMUM_GRANULARITY) {
       throw OutOfRange();
     }

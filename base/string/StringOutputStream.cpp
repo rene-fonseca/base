@@ -14,7 +14,7 @@ StringOutputStream::StringOutputStream(unsigned int increment) throw(BindExcepti
 void StringOutputStream::write(const char* value) throw(IOException) {
 }
 */
-const String<>& StringOutputStream::getString() const throw() {
+const String& StringOutputStream::getString() const throw() {
   return str;
 }
 

@@ -7,7 +7,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-Integer::Integer(String<> str) throw(InvalidFormat) {
+Integer::Integer(String str) throw(InvalidFormat) {
   unsigned int length = str.getLength();
   bool sign = false;
   int index = 0;

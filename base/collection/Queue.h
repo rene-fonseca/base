@@ -17,7 +17,8 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Queue implemented using a unidirectional linked list.
+  Queue implemented using a unidirectional linked list. The first value pushed
+  onto the queue is also the first to be pop'ed.
 
   @author René Møller Fonseca
   @version 1.0

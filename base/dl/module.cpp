@@ -16,7 +16,7 @@
 extern void moduleEntry();
 extern void moduleCleanUp();
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 
 #include <windows.h>
 
@@ -26,6 +26,7 @@ extern "C" BOOL DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
   } else if (fdwReason == DLL_PROCESS_DETACH) {
     moduleCleanUp();
   }
+  return TRUE;
 }
 
 #else // unix

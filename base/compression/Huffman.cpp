@@ -297,7 +297,7 @@ public:
     
     // translate counts into initial offsets in the sorted symbol table (below)
     unsigned int offsets[ALPHABET_SIZE];
-    int offset = 0; // skip symbols with frequency 0
+    unsigned int offset = 0; // skip symbols with frequency 0
     unsigned int length = minimumLength;
     const unsigned int presentSymbols = ALPHABET_SIZE - numberOfSymbols[0];
     while (offset < presentSymbols) {

@@ -412,6 +412,10 @@ install_location=
 dist=true
 install=false
 type=HEADER
+[ellert/test/Makefile.am]
+files=
+sub_dirs=
+type=static_library
 [ellert/base/concurrency/ReadWriteLock.h]
 install_location=
 dist=true
@@ -856,7 +860,7 @@ install=false
 type=HEADER
 [ellert/Makefile.am]
 files=ellert/main.cpp,
-sub_dirs=docs,base,vehicle,io,control,
+sub_dirs=docs,base,vehicle,io,control,test,
 type=prog_main
 [ellert/control/LTIRegulator.h]
 install_location=
@@ -1158,7 +1162,7 @@ install=false
 type=SOURCE
 [General]
 make_options=-j1
-makefiles=Makefile.am,ellert/Makefile.am,ellert/docs/Makefile.am,ellert/docs/en/Makefile.am,ellert/base/Makefile.am,ellert/vehicle/Makefile.am,ellert/base/concurrency/Makefile.am,ellert/base/mathematics/Makefile.am,ellert/io/Makefile.am,ellert/base/io/Makefile.am,ellert/base/string/Makefile.am,ellert/base/mem/Makefile.am,ellert/base/net/Makefile.am,ellert/control/Makefile.am,ellert/base/collection/Makefile.am,
+makefiles=Makefile.am,ellert/Makefile.am,ellert/docs/Makefile.am,ellert/docs/en/Makefile.am,ellert/base/Makefile.am,ellert/vehicle/Makefile.am,ellert/base/concurrency/Makefile.am,ellert/base/mathematics/Makefile.am,ellert/io/Makefile.am,ellert/base/io/Makefile.am,ellert/base/string/Makefile.am,ellert/base/mem/Makefile.am,ellert/base/net/Makefile.am,ellert/control/Makefile.am,ellert/base/collection/Makefile.am,ellert/test/Makefile.am,
 version_control=CVS
 author=René Møller Fonseca
 project_type=normal_cpp
@@ -1167,7 +1171,7 @@ lfv_open_groups=
 workspace=1
 version=0.9
 project_name=Ellert
-AMChanged=true
+AMChanged=false
 sgml_file=/home/fonseca/src/ellert/ellert/docs/en/index.sgml
 short_info=,
 email=fonseca@mip.sdu.dk

@@ -25,6 +25,7 @@ libconcurrency_la_SOURCES = \
   LockException.cpp \
   MutualExclusion.cpp \
   NISpinLock.cpp \
+  Once.cpp \
   Process.cpp \
   ReadWriteLock.cpp \
   ReadWriteSpinLock.cpp \
@@ -50,6 +51,7 @@ section_HEADERS = \
   LockException.h \
   MutualExclusion.h \
   NISpinLock.h \
+  Once.h \
   Process.h \
   ReadWriteLock.h \
   ReadWriteSpinLock.h \

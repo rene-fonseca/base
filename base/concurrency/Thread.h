@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_THREAD__THREAD_H
-#define _DK_SDU_MIP__BASE_THREAD__THREAD_H
+#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__THREAD_H
+#define _DK_SDU_MIP__BASE_CONCURRENCY__THREAD_H
 
 #include <base/Object.h>
 #include <base/Exception.h>
@@ -32,9 +32,6 @@
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
-/** Specifies the size of the thread local buffer. */
-#define THREAD_LOCAL_STORAGE 4096
 
 class Runnable;
 
@@ -91,15 +88,23 @@ typedef enum {
 class Thread : public Object {
 public:
 
+  /** Specifies the size of the thread local storage. */
+  static const unsigned int THREAD_LOCAL_STORAGE = 4096;
+
   /** Group of exceptions thrown directly by the Thread class. */
   class ThreadException : public Exception {
   public:
+
     ThreadException() throw() : Exception() {}
     ThreadException(const char* message) throw() : Exception(message) {}
   };
 
   /** Thrown if thread tries to manage itself when disallowed. */
   class Self : public ThreadException {
+  public:
+
+    Self() throw() : ThreadException() {}
+    Self(const char* message) throw() : ThreadException(message) {}
   };
 private:
 

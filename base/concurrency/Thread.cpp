@@ -97,7 +97,7 @@ public:
   ThreadLocal(Thread* thread) {
     TRACE_MEMBER();
     this->thread.setKey(thread);
-    storage.setKey(new Allocator<char>(THREAD_LOCAL_STORAGE));
+    storage.setKey(new Allocator<char>(Thread::THREAD_LOCAL_STORAGE));
   }
 
   static inline Thread* getThread() throw() {

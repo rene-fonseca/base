@@ -54,6 +54,9 @@ public:
   */
   class EventException : public Exception {
   public:
+
+    EventException() throw() {}
+
     EventException(const char* message) throw() : Exception(message) {}
   };
 

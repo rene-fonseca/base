@@ -15,6 +15,8 @@
 #define _DK_SDU_MIP__BASE__FLOATING_POINT_H
 
 #include <base/Primitives.h>
+#include <base/string/InvalidFormat.h>
+#include <base/string/String.h>
 
 // TAG: what about rounding
 
@@ -31,6 +33,38 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class FloatingPoint {
 public:
 
+  /**
+    Specifies the maximum explicit exponent for string representations in
+    decimal format.
+  */
+  static const unsigned int MAXIMUM_DECIMAL_EXPONENT = 9999;
+  
+  /**
+    Specifies the maximum explicit exponent for string representations in
+    hexadecimal format.
+  */
+  static const unsigned int MAXIMUM_BINARY_EXPONENT = 9999;
+  
+  /**
+    Converts hex representation to a float.
+  */
+  float getFloatAsHex(const String& value) throw(InvalidFormat);
+
+  /**
+    Converts the string to a float.
+  */
+  static float getFloat(const String& value) throw(InvalidFormat);
+  
+  /**
+    Converts the string to a double.
+  */
+  static double getDouble(const String& value) throw(InvalidFormat);
+  
+  /**
+    Converts the string to a long double.
+  */
+  static long double getLongDouble(const String& value) throw(InvalidFormat);
+  
   /** Floating point flags. */
   enum Flags {
     FP_NEGATIVE = 1, /**< Specifies a negative value. */
@@ -39,7 +73,7 @@ public:
     FP_ZERO = 8, /**< Value is zero (sign is determined by the FP_NEGATIVE flag). */
     FP_INFINITY = 16, /**< Value is infinity (sign is determined by the FP_NEGATIVE flag). */
     FP_VALUE = 32 /**< Specifies an ordinary value representable in [-]d.ddde[-]dd form. */
-  };
+  };  
   
   class Representation {
   public:
@@ -48,6 +82,8 @@ public:
     /** Representation of single precision (32-bit) floating point type as specified by IEEE 754. */
     struct IEEE754SinglePrecision {
       static const bool HAS_IMPLIED_ONE = true;
+      static const int MINIMUM_EXPONENT = -125;
+      static const int MAXIMUM_EXPONENT = 128;
       static const int BIAS = 0x7f;
       static const unsigned int SIGNIFICANT = 24;
 #if ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
@@ -76,6 +112,8 @@ public:
     /** Representation of double precision (64-bit) floating point type as specified by IEEE 754. */
     struct IEEE754DoublePrecision {
       static const bool HAS_IMPLIED_ONE = true;
+      static const int MINIMUM_EXPONENT = -1021;
+      static const int MAXIMUM_EXPONENT = 1024;
       static const int BIAS = 0x3ff;
       static const unsigned int SIGNIFICANT = 53;
 #if ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
@@ -108,6 +146,8 @@ public:
     /** Representation of double-extended precision (96-bit) floating point type. */
     struct IEEEExtendedDoublePrecision96 {
       static const bool HAS_IMPLIED_ONE = false;
+      static const int MINIMUM_EXPONENT = -16381;
+      static const int MAXIMUM_EXPONENT = 16384;
       static const int BIAS = 0x3fff;
       static const unsigned int SIGNIFICANT = 64;
 #if ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
@@ -184,6 +224,8 @@ public:
     /** Representation of quadruple precision (128-bit) floating point type. */
     struct IEEEQuadruplePrecision {
       static const bool HAS_IMPLIED_ONE = true;
+      static const int MINIMUM_EXPONENT = -16381;
+      static const int MAXIMUM_EXPONENT = 16384;
       static const int BIAS = 0x3fff;
       static const unsigned int SIGNIFICANT = 113;
 #if ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
@@ -307,6 +349,19 @@ public:
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
     }
     
+    inline IEEE754SinglePrecision() throw() {
+    }
+
+    /**
+      Initializes representation from floating point components.
+      
+      @param negative True if value is negative.
+      @param mantissa The mantissa hexadecimal values (i.e. 0-15).
+      @param size The number of mantissa digits.
+      @param exponent The exponent (power of 2).
+    */
+    IEEE754SinglePrecision(bool negative, const uint8* mantissa, unsigned int size, int exponent) throw();
+    
     inline IEEE754SinglePrecision(const Representation::IEEE754SinglePrecision& value) throw() {
       setValue(value);
     }
@@ -388,6 +443,9 @@ public:
     
     inline void setValue(long double value) throw() {
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
+    }
+    
+    inline IEEE754DoublePrecision() throw() {
     }
     
     inline IEEE754DoublePrecision(const Representation::IEEE754SinglePrecision& value) throw() {
@@ -484,6 +542,9 @@ public:
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
     }
     
+    inline IEEEExtendedDoublePrecision96() throw() {
+    }
+    
     inline IEEEExtendedDoublePrecision96(const Representation::IEEE754SinglePrecision& value) throw() {
       setValue(value);
     }
@@ -578,6 +639,9 @@ public:
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
     }
     
+    inline IEEEExtendedDoublePrecision128() throw() {
+    }
+    
     inline IEEEExtendedDoublePrecision128(const Representation::IEEE754SinglePrecision& value) throw() {
       setValue(value);
     }
@@ -662,6 +726,9 @@ public:
     
     inline void setValue(long double value) throw() {
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
+    }
+    
+    inline IEEEQuadruplePrecision() throw() {
     }
     
     inline IEEEQuadruplePrecision(const Representation::IEEE754SinglePrecision& value) throw() {

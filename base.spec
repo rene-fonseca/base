@@ -61,7 +61,10 @@ software.
 
 %prep
 %setup
-CFLAGS="${RPM_OPT_FLAGS}" CXXFLAGS="${RPM_OPT_FLAGS}" ./configure \
+CFLAGS="${RPM_OPT_FLAGS}" \
+CXXFLAGS="${RPM_OPT_FLAGS}" \
+LDFLAGS=-L/usr/X11R6/lib \
+./configure \
   --target=%{_target} \
   --prefix=%{_prefix} \
   --enable-regexp=pcre \

@@ -8,6 +8,7 @@
 
 #include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
+#include <math.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -32,147 +33,205 @@ public:
   /**
     Initializes vector as the origin (0,0).
   */
-  Vector2D() throw();
+  inline Vector2D() throw() : x(0), y(0) {}
 
   /**
     Initializes vector from the specified coordinates.
 
-    @param xx The desired X coordinate.
-    @param yy The desired Y coordinate.
+    @param x The desired X coordinate.
+    @param y The desired Y coordinate.
   */
-  Vector2D(const TYPE& xx, const TYPE& yy) throw();
+  Vector2D(const TYPE& x, const TYPE& y) throw();
 
   /**
     Initializes vector by copying from the specified vector.
 
     @param copy The desired vector.
   */
-  Vector2D(const Vector2D& copy) throw();
+  inline Vector2D(const Vector2D& copy) throw() : x(copy.x), y(copy.y) {}
 
   /**
     Assignment of this vector from vector.
   */
-  Vector2D& operator=(const Vector2D& eq) throw();
+  inline Vector2D& operator=(const Vector2D& eq) throw() {
+    x = eq.x; // no need to protect against self-assignment
+    y = eq.y;
+    return *this;
+  }
 
   /**
-    Returns the angle of the vector.
+    Returns the square of the modulus of the vector.
   */
-  TYPE getAngle() const throw();
+  inline TYPE getSqrModulus() const throw() {
+    return x * x + y * y;
+  }
 
   /**
     Returns the modulus of the vector.
   */
-  TYPE getModulus() const throw();
+  inline TYPE getModulus() const throw() {
+    return sqrt(getSqrModulus());
+  }
+
+  /**
+    Returns the angle of the vector.
+  */
+  inline TYPE getAngle() const throw() {
+    return atan2(y, x);
+  }
 
   /**
     Returns the X coordinate.
   */
-  TYPE getX() const throw();
+  inline TYPE getX() const throw() {return x;}
 
   /**
     Returns the Y coordinate.
   */
-  TYPE getY() const throw();
+  inline TYPE getY() const throw() {return y;}
 
   /**
     Sets the X coordinate.
 
     @param x The desired X coordinate.
   */
-  void setX(const TYPE& x) throw();
+  inline void setX(const TYPE& x) throw() {this->x = x;}
 
   /**
     Sets the Y coordinate.
 
     @param y The desired Y coordinate.
   */
-  void setY(const TYPE& y) throw();
+  inline void setY(const TYPE& y) throw() {this->y = y;}
 
   /**
     Sets values less than the specified value to zero.
   */
-  Vector2D& zeroAdjust(const TYPE& zero) throw();
-
-  /**
-    Returns true if the vectors are equal.
-  */
-  bool isEqual(const Vector2D& value) const throw();
+  Vector2D& zeroAdjust(const TYPE& zero) throw() {
+    if (x < zero) {
+      x = TYPE(0);
+    }
+    if (y < zero) {
+      y = TYPE(0);
+    }
+    return *this;
+  }
 
   /**
     Returns true if the length of this vector is zero.
   */
-  bool isZero() const throw();
+  inline bool isZero() const throw() {
+    return (x == TYPE(0)) && (y == TYPE(0));
+  }
 
   /**
     Returns true if the length of this vector is greater zero.
   */
-  bool isProper() const throw();
+  inline bool isProper() const throw() {
+    return (x != TYPE(0)) || (y != TYPE(0));
+  }
 
   /**
     Returns true if this vector is orthogonal with the specified vector.
   */
-  bool isOrthogonal(const Vector2D& value) const throw();
+  inline bool isOrthogonal(const Vector2D& value) const throw() {
+    return dot(value) == 0;
+  }
 
   /**
     Returns true if this vector is parallel with the specified vector.
   */
-  bool isParallel(const Vector2D& value) const throw();
+  inline bool isParallel(const Vector2D& value) const throw() {
+    return determinant(value) == 0;
+  }
 
   /**
     Unary plus.
   */
-  Vector2D plus() const throw();
+  inline Vector2D plus() const throw() {
+    return Vector2D(*this);
+  }
 
   /**
     Unary minus.
   */
-  Vector2D minus() const throw();
+  inline Vector2D minus() const throw() {
+    return Vector2D(*this).negate();
+  }
 
   /**
     Negates this vector.
   */
-  Vector2D& negate() throw();
+  inline Vector2D& negate() throw() {
+    x = -x;
+    y = -y;
+    return *this;
+  }
 
   /**
     Adds the specified vector to this vector.
   */
-  Vector2D& add(const Vector2D& value) throw();
+  inline Vector2D& add(const Vector2D& value) throw() {
+    x += value.x;
+    y += value.y;
+    return *this;
+  }
 
   /**
     Subtracts the specified vector from this vector.
   */
-  Vector2D& subtract(const Vector2D& value) throw();
+  inline Vector2D& subtract(const Vector2D& value) throw() {
+    x -= value.x;
+    y -= value.y;
+    return *this;
+  }
 
   /**
     Multiplies this vector with the specified value.
   */
-  Vector2D& multiply(const TYPE& value) throw();
+  inline Vector2D& multiply(const TYPE& value) throw() {
+    x *= value;
+    y *= value;
+    return *this;
+  }
 
   /**
     Divides this vector with the specified value.
   */
-  Vector2D& divide(const TYPE& value) throw();
+  inline Vector2D& divide(const TYPE& value) throw() {
+    x /= value;
+    y /= value;
+    return *this;
+  }
 
   /**
     Returns the dot product of this vector and the specified vector.
   */
-  TYPE dot(const Vector2D& value) const throw();
+  inline TYPE dot(const Vector2D& value) const throw() {
+    return x * value.x + y * value.y;
+  }
 
   /**
     Returns the determinant of this vector and the specified vector.
   */
-  TYPE determinant(const Vector2D& value) const throw();
+  inline TYPE determinant(const Vector2D& value) const throw() {
+    return x * value.y - y * value.x;
+  }
 
   /**
     Returns the angle between this vector and the specified vector.
   */
-  TYPE getAngle(const Vector2D& value) const throw();
+  TYPE getAngle(const Vector2D& value) const throw() {
+    TYPE temp = dot(value)/sqrt(getSqrModulus() * value.getSqrModulus());
+    return atan2(sqrt(1 - temp * temp), temp);
+  }
 
   /**
     Returns the projection of this vector onto the specified vector.
   */
-  Vector2D getProjection(const Vector2D& value) const throw();
-
+  inline Vector2D getProjection(const Vector2D& value) const throw() {
+    return value * dot(value)/value.getSqrModulus();
+  }
 
 
 
@@ -181,7 +240,9 @@ public:
 
     @param vector Vector to be compared.
   */
-  inline bool operator==(const Vector2D& value) const throw() {return isEqual(value);}
+  inline bool operator==(const Vector2D& value) const throw() {
+    return (x == value.x) && (y == value.y);
+  }
 
   /**
     Adds the specified vector from this vector.
@@ -237,39 +298,58 @@ public:
     Returns the result of the vector divided by the value.
   */
   friend Vector2D operator/ <>(const Vector2D& left, const TYPE& right) throw();
-
-  /**
-    Writes a string representation of a Vector2D object to a format stream. The format is "(x, y)".
-  */
-  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Vector2D& value);
 };
 
 template<class TYPE>
-Vector2D<TYPE> operator*(const Vector2D<TYPE>& left, const TYPE& right) throw();
+inline Vector2D<TYPE>::Vector2D(const TYPE& xx, const TYPE& yy) throw() : x(xx), y(yy) {}
 
 template<class TYPE>
-Vector2D<TYPE> operator*(const TYPE& left, const Vector2D<TYPE>& right) throw();
+Vector2D<TYPE> operator*(const Vector2D<TYPE>& left, const TYPE& right) throw() {
+  return Vector2D<TYPE>(left).multiply(right);
+}
 
 template<class TYPE>
-Vector2D<TYPE> operator/(const Vector2D<TYPE>& left, const TYPE& right) throw();
+Vector2D<TYPE> operator*(const TYPE& left, const Vector2D<TYPE>& right) throw() {
+  return Vector2D<TYPE>(right).multiply(left);
+}
+
+template<class TYPE>
+Vector2D<TYPE> operator/(const Vector2D<TYPE>& left, const TYPE& right) throw() {
+  return Vector2D<TYPE>(left).divide(right);
+}
 
 /**
   Returns the dot product of the two vectors.
 */
 template<class TYPE>
-TYPE dot(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw();
+TYPE dot(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
+  return left.dot(right);
+}
 
 /**
   Returns the determinant of the two vectors.
 */
 template<class TYPE>
-TYPE determinant(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw();
+inline TYPE determinant(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
+  return left.determinant(right);
+}
 
 /**
-  Writes a string representation of a Vector2D object to a format stream. The format is "(x, y)".
+  Writes a string representation of a Vector2D object to a format stream. The format is "(x; y)".
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector2D<TYPE>& value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector2D<TYPE>& value) {
+  return stream << "(" << value.getX() << ";" << value.getY() << ")";
+}
+
+template<>
+inline bool isRelocateable<Vector2D<float> >() throw() {return isRelocateable<Object>();}
+
+template<>
+inline bool isRelocateable<Vector2D<double> >() throw() {return isRelocateable<Object>();}
+
+template<>
+inline bool isRelocateable<Vector2D<long double> >() throw() {return isRelocateable<Object>();}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -103,6 +103,8 @@ int main(int argc, char* argv[]) {
   String<> host = InetAddress::getLocalHost(); // default host
   String<> service = "1234"; // default service
 
+host = "falster";
+
   switch (argc) {
   case 1:
     // use defaults

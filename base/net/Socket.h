@@ -6,21 +6,24 @@
 #ifndef _DK_SDU_MIP__BASE_NET__SOCKET_H
 #define _DK_SDU_MIP__BASE_NET__SOCKET_H
 
-#include "base/Object.h"
-#include "base/concurrency/Synchronize.h"
-#include "base/io/FileDescriptor.h"
-#include "base/io/FileDescriptorInputStream.h"
-#include "base/io/FileDescriptorOutputStream.h"
-#include "NetworkException.h"
-#include "InetAddress.h"
-#include "base/string/FormatOutputStream.h"
+#include <base/Object.h>
+#include <base/concurrency/Synchronize.h>
+#include <base/io/AccessDenied.h>
+#include <base/io/TimedOut.h>
+#include <base/io/FileDescriptor.h>
+#include <base/io/FileDescriptorInputStream.h>
+#include <base/io/FileDescriptorOutputStream.h>
+#include <base/net/NetworkException.h>
+#include <base/net/InetAddress.h>
+#include <base/string/FormatOutputStream.h>
 
 /**
-  This class implements a socket. A socket is an endpoint for communication between two machines. MT-level is safe.
+  This class implements a socket. A socket is an endpoint for communication
+  between two machines. MT-level is safe.
 
   @see ClientSocket ServerSocket
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.1
 */
 
 class Socket : public virtual Object, public Synchronizeable<DefaultLock> {
@@ -63,12 +66,14 @@ public:
     Accepts a connection from specified socket.
 
     @param socket Specifies the socket to accept a connection from.
-    @return True if connection has been accepted. False, if connection could not be accepted without blocking.
+
+    @return True if connection has been accepted. False, if connection could
+    not be accepted without blocking.
   */
   bool accept(Socket& socket) throw(IOException);
 
   /**
-    Binds the socket to the address and port.
+    Associates name (address and port) with this socket.
 
     @param addr The IP address the socket should be bound to.
     @param port The port the socket should be bound to.
@@ -91,7 +96,8 @@ public:
   /**
     Creates either a stream or a datagram socket.
 
-    @param stream True if stream socket should be created (otherwise a datagram socket is created).
+    @param stream True if stream socket should be created (otherwise a
+    datagram socket is created).
   */
   void create(bool stream) throw(IOException);
 
@@ -121,7 +127,8 @@ public:
   unsigned short getLocalPort() const throw();
 
   /**
-    Sets the maximum length the queue of pending connections may grow to. The backlog argument may be silently reduced.
+    Sets the maximum length the queue of pending connections may grow to. The
+    backlog argument may be silently reduced.
 
     @param backlog The maxium length of the queue.
   */

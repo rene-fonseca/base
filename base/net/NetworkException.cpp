@@ -5,8 +5,9 @@
 
 #include "NetworkException.h"
 
-NetworkException::NetworkException() {
+NetworkException::NetworkException() throw() : IOException() {
 }
 
-NetworkException::NetworkException(const char* message) : Exception(message) {
+NetworkException::NetworkException(const char* message) throw() :
+  IOException(message) {
 }

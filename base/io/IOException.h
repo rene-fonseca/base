@@ -6,10 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_IO__IO_EXCEPTION_H
 #define _DK_SDU_MIP__BASE_IO__IO_EXCEPTION_H
 
-#include "base/Exception.h"
+#include <base/Exception.h>
 
   /**
-    Thrown on attempt to read stream beyond end of stream.
+    Exception thrown on IO errors.
 
     @author René Møller Fonseca
     @version 1.0
@@ -21,14 +21,14 @@
     /**
       Initializes the exception object with no message.
     */
-    IOException();
+  IOException() throw();
 
     /**
-      Initializes the exception object.
+      Initializes exception object as unspecified.
 
       @param message The message.
     */
-    IOException(const char* message);
+    IOException(const char* message) throw();
   };
 
 #endif

@@ -6,29 +6,29 @@
 #ifndef _DK_SDU_MIP__BASE_NET__NETWORK_EXCEPTION_H
 #define _DK_SDU_MIP__BASE_NET__NETWORK_EXCEPTION_H
 
-#include "base/Exception.h"
+#include <base/io/IOException.h>
 
 /**
   Indicates a network exception.
 
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.01
 */
 
-class NetworkException : public Exception {
+class NetworkException : public IOException {
 public:
 
   /**
     Initializes the exception object with no message.
   */
-  NetworkException();
+  NetworkException() throw();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  NetworkException(const char* message);
+  NetworkException(const char* message) throw();
 };
 
 #endif

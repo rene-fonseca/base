@@ -7,7 +7,7 @@
 #define _DK_SDU_MIP__BASE__EXCEPTION_H
 
 /**
-  This class fundamental exception.
+  The base class of all exceptions.
 
   @author René Møller Fonseca
   @version 1.01

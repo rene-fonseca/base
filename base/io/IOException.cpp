@@ -5,8 +5,8 @@
 
 #include "IOException.h"
 
-IOException::IOException() {
+IOException::IOException() throw() : Exception() {
 }
 
-IOException::IOException(const char* message) : Exception(message) {
+IOException::IOException(const char* message) throw() : Exception(message) {
 }

@@ -21,8 +21,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 LinkerManager* LinkerManager::linkerManager = 0; // TAG: need support for any number of managers?
 
 LinkerManager* LinkerManager::getManager() throw() {
-  ferr << "Internal error: LinkerManager has not been instantiated" << ENDL;
-  exit(Application::EXIT_CODE_ERROR);
+  if (!linkerManager) {
+    ferr << "Internal error: LinkerManager has not been instantiated" << ENDL;
+    exit(Application::EXIT_CODE_ERROR);
+  }
   return linkerManager;
 }
 

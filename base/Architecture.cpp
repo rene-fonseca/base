@@ -19,7 +19,7 @@ unsigned int Architecture::getTechonologies() throw() {
   unsigned int result = 0;
 #if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
   unsigned int eflags;
-
+  
   enum Flag {
     CF = 1 << 0,
     PF = 1 << 2,
@@ -76,7 +76,7 @@ unsigned int Architecture::getTechonologies() throw() {
 #endif
   return result;
 }
-  
+
 Architecture::Major Architecture::getArchitecture() throw() {
 #if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
   return X86;
@@ -96,6 +96,7 @@ Architecture::Major Architecture::getArchitecture() throw() {
   return X86_64;
 #else
 #  error Unsupported architecture
+#  warning Unsupported architecture
 #endif
 }
   

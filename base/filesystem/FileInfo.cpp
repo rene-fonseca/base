@@ -339,7 +339,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   }
 #endif
   
-  size = Cast::impersonate<uint64>(status.st_size);
+  size = status.st_size;
   owner = User(status.st_uid);
   group = Group(status.st_gid);
   access = status.st_atime;

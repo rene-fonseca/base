@@ -19,8 +19,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Thrown on memory allocation/deallocation error.
+  Raised on memory allocation, deallocation, and access error.
 
+  @short Memory exception
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -28,7 +28,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Bit set. Ordered sequence of boolean values. Offen used to represent a set of flags.
 
-  @short Set of bits.
+  @short Set of bits
+  @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

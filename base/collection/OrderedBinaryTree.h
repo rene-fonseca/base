@@ -22,7 +22,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Binary tree with the nodes ordered. All the values of the left and right
   subtrees are respectively less than and greater than the value for any node.
 
-  @short Ordered binary tree.
+  @short Ordered binary tree
+  @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

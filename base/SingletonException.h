@@ -19,8 +19,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Exception thrown on singleton violations. A singleton class that may only be instantiated once.
+  Exception raised on singleton violations. A singleton class that may only be
+  instantiated once.
 
+  @short Singleton violation exception
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

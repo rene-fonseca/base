@@ -19,8 +19,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Exception thrown by the Date class.
+  Exception raised by the Date class.
 
+  @short Date exception
+  @ingroup exceptions
+  @see Date
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

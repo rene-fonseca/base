@@ -19,9 +19,14 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  @defgroup collections Collections
+*/
+
+/**
   Collection is the common interface implemented by containers.
 
-  \addtogroup collection Collections
+  @short Base class for all collections
+  @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */

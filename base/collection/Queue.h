@@ -28,6 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Queue implemented using a unidirectional linked list. The first value pushed
   onto the queue is also the first to be pop'ed.
 
+  @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -19,7 +19,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  \defgroup exceptions Exceptions
+  @defgroup exceptions Exceptions
 */
 
 /**
@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   exceptions will terminate the executing context with an error (in the case of
   the main context the entire application is terminated).
 
-  \ingroup exceptions
+  @ingroup exceptions
   @short The general exception class
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.02

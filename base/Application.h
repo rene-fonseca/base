@@ -83,22 +83,35 @@ public:
 
     Example:
     <pre>
-    int main(int argc, const char* argv[], const char *envp[]) {
-      Application app(argc, argv, envp);
+    class MyApplication : public Application {
+    public:
+
+      MyApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() :
+        Application(MESSAGE("MyApplication"), numberOfArguments, arguments, environment) {
+      }
+
+      void main() throw() {
+        ...
+      }
+    };
+    
+    int main(int argc, const char* argv[], const char *env[]) {
+      MyApplication application(argc, argv, env);
       try {
-        return entry();
+        application.main();
       } catch(Exception& e) {
         return Application::getApplication()->exceptionHandler(e);
       } catch(...) {
         return Application::getApplication()->exceptionHandler();
       }
+      return Application::getApplication()->getExitCode();
     }
     </pre>
 
     @param name The formal name.
     @param numberOfArguments The "argc" argument of the entry function main.
     @param arguments The "argv" argument of the entry function main.
-    @param environment The "envp" argument of the entry function main. This argument is not required.
+    @param environment The "env" argument of the entry function main. This argument is not required.
   */
   Application(const String& name, int numberOfArguments, const char* arguments[], const char* environment[] = 0) throw(SingletonException, OutOfDomain);
 
@@ -145,7 +158,8 @@ public:
   void terminate() throw();
 
   /**
-    Returns true if the application has been signaled to hangup. The hangup flag is automatically reset.
+    Returns true if the application has been signaled to hangup. The hangup flag
+    is automatically reset.
   */
   bool isHangingup() throw();
 
@@ -158,6 +172,8 @@ public:
   
   /**
     Sets the exit code (the default is EXIT_CODE_NORMAL).
+
+    @param value The desired exit code. The value should be in the range from 0 to 127.
   */
   inline void setExitCode(int value) throw() {
     exitCode = value;
@@ -169,7 +185,8 @@ public:
   inline bool isTerminated() const throw() {return terminated;}
 
   /**
-    Invoked on application termination. Exits the application immediately by default (i.e. does not return).
+    Invoked on application termination. Exits the application immediately by
+    default (i.e. does not return).
   */
   virtual void onTermination() throw();
 };

@@ -231,10 +231,10 @@ String String::substring(unsigned int start, unsigned int end) const throw(Memor
     }
     // 0 <= start <= end < getLength()
     unsigned int lengthOfSubstring = end - start + 1;
-    String s(lengthOfSubstring);
-    copy(s.getMutableBuffer(), getReadOnlyBuffer() + start, lengthOfSubstring); // buffers do not overlap
-    s.getMutableBuffer()[lengthOfSubstring] = TERMINATOR;
-    return s;
+    String result(lengthOfSubstring);
+    result.setLength(lengthOfSubstring);
+    copy(result.getMutableBuffer(), getReadOnlyBuffer() + start, lengthOfSubstring); // buffers do not overlap
+    return result;
   } else {
     return String(); // return empty string
   }

@@ -30,6 +30,7 @@
   #include <sys/time.h> // defines timeval on Linux systems
   #include <stropts.h> // defines FLUSH macros
   #include <string.h> // memset (required on solaris)
+  #include <limits.h> // defines SSIZE_MAX
 
   #if defined(__solaris__)
     #define BSD_COMP 1 // request BSD flags - don't known if this is ok to do
@@ -323,9 +324,7 @@ void Socket::create(bool stream) throw(IOException) {
 
 void Socket::listen(unsigned int backlog) throw(IOException) {
   SynchronizeShared();
-  if (backlog > INT_MAX) { // does backlog fit in 'int' type
-    backlog = INT_MAX; // silently reduce the backlog argument
-  }
+  backlog = minimum<int>(backlog, Int::MAXIMUM); // silently reduce the backlog argument
   if (::listen(getHandle(), backlog)) { // may also silently limit backlog
     throw NetworkException("Unable to set queue limit for incomming connections");
   }
@@ -533,7 +532,7 @@ unsigned int Socket::read(char* buffer, unsigned int size, bool nonblocking) thr
   unsigned int bytesRead = 0;
   while (bytesRead < size) {
 #if defined(__win32__)
-    int result = ::recv(socket->getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, 0);
+    int result = ::recv(socket->getHandle(), buffer, minimum<int>(size, Int::MAXIMUM), 0);
     if (result < 0) { // has an error occured
       switch (WSAGetLastError()) {
       case WSAEINTR: // interrupted by signal before any data was read
@@ -575,7 +574,7 @@ unsigned int Socket::write(const char* buffer, unsigned int size, bool nonblocki
   unsigned int bytesWritten = 0;
   while (bytesWritten < size) {
 #if defined(__win32__)
-    int result = ::send(socket->getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, 0);
+    int result = ::send(socket->getHandle(), buffer, minimum<int>(size, Int::MAXIMUM), 0);
     if (result < 0) { // has an error occured
       switch (WSAGetLastError()) {
       case WSAEINTR: // interrupted by signal before any data was written

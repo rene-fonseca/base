@@ -69,6 +69,8 @@ bin_PROGRAMS += Process
 bin_PROGRAMS += quota
 bin_PROGRAMS += rm
 bin_PROGRAMS += time
+bin_PROGRAMS += dom
+bin_PROGRAMS += xsltprocessor
 
 #lib_LTLIBRARIES = dlmodule.la
 
@@ -123,6 +125,8 @@ ping_SOURCES = ping.cpp
 quota_SOURCES = Quota.cpp
 rm_SOURCES = rm.cpp
 time_SOURCES = time.cpp
+dom_SOURCES = dom.cpp
+xsltprocessor_SOURCES = xsltprocessor.cpp
 
 #dlmodule_la_SOURCES = dlmodule.cpp MyLinkerModule.cpp
 #dlmodule_la_LDFLAGS = -avoid-version -module -no-undefined -version-info 0:1:0

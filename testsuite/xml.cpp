@@ -27,7 +27,10 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  XMLApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+  XMLApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
     : Application(MESSAGE("xml"), numberOfArguments, arguments, environment) {
   }
 

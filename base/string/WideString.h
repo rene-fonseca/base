@@ -171,6 +171,11 @@ private:
     has been initialized.
   */
   ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<Character> > elements;
+
+  /**
+    Compare the null-terminated strings ignoring the case.
+  */
+  int compareToIgnoreCase(const Character* left, const Character* right) throw();
 protected:
 
   /**
@@ -567,7 +572,7 @@ public:
     @param str The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
   */
-  int compareTo(const Character* str) const throw();
+  int compareTo(const Character* str) const throw(WideStringException);
 
   /**
     Compares this string with other string ignoring the case of the characters.
@@ -583,7 +588,7 @@ public:
     @param str The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
   */
-  int compareToIgnoreCase(const Character* str) const throw();
+  int compareToIgnoreCase(const Character* str) const throw(WideStringException);
 
   /**
     Returns true if this string starts with the specified prefix.

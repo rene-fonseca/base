@@ -317,23 +317,44 @@ int WideString::compareTo(const WideString& str) const throw() {
   return wcscmp(getElements(), str.getElements());
 }
 
-int WideString::compareTo(const Character* str) const throw() {
+int WideString::compareTo(const Character* str) const throw(WideStringException) {
+  assert(str, WideStringException());
   return wcscmp(getElements(), str);
+}
+
+int WideString::compareToIgnoreCase(const Character* left, const Character* right) throw() {
+  while (*left && *right) { // continue until end of any string has been reached
+    if (*left != *right) { // not equal
+      int result = Traits::toLower(*left) - Traits::toLower(*right);
+      if (result != 0) { // not equal
+        return result;
+      }
+    }
+    ++left;
+    ++right;
+  }
+  // possible cases: only end of 'left' (less than), only end of 'right' (greater than), end of both (equal)
+  return (Traits::toLower(*left) - Traits::toLower(*right));
 }
 
 int WideString::compareToIgnoreCase(const WideString& str) const throw() {
 #if defined(__win32__)
   return _wcsicmp(getElements(), str.getElements());
-#else // __unix__
+#elif defined(__linux__)
   return wcscasecmp(getElements(), str.getElements());
+#else // __unix__
+  return compareToIgnoreCase(getElements(), str.getElements());
 #endif
 }
 
-int WideString::compareToIgnoreCase(const Character* str) const throw() {
+int WideString::compareToIgnoreCase(const Character* str) const throw(WideStringException) {
+  assert(str, WideStringException());
 #if defined(__win32__)
   return _wcsicmp(getElements(), str);
-#else // __unix__
+#elif defined(__linux__)
   return wcscasecmp(getElements(), str);
+#else // __unix__
+  return compareToIgnoreCase(getElements(), str);
 #endif
 }
 

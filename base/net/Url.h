@@ -48,10 +48,10 @@ public:
 
 
 /**
-  Implementation of Uniform Resource Locator as specified by RFC 1738. Compact
-  string representation for a resource available via the Internet. This class
-  is used to break down a url into its components. The parts of the url are
-  stored internally in decoded format.
+  Implementation of Uniform Resource Locator (URL) as specified by RFC 1738.
+  A compact string representation for a resource available via the Internet.
+  This class is used to break down a url into its components. The components
+  of the url are stored internally in decoded format.
 
   <pre>
   Url url("http://www.mip.sdu.dk")
@@ -108,7 +108,7 @@ protected:
   /**
     Parses the string as a url.
   */
-  void parse(const String& url) throw(UrlException, MemoryException);
+  void parse(const String& url, bool strict) throw(UrlException, MemoryException);
 public:
 
   /**
@@ -120,16 +120,18 @@ public:
     Initializes url from a string representation.
 
     @param url The string representation of the url.
+    @param strict Specifies that unsafe characters are required to be encoded. Default is true.
   */
-  Url(const String& url) throw(UrlException, MemoryException);
+  Url(const String& url, bool strict = true) throw(UrlException, MemoryException);
 
   /**
     Initializes url from separate string representations of relative and base url.
 
     @param relative The relative url.
     @param base The base url.
+    @param strict Specifies that unsafe characters are required to be encoded. Default is true.
   */
-  Url(const String& relative, const String& base) throw(UrlException, MemoryException);
+  Url(const String& relative, const String& base, bool strict = true) throw(UrlException, MemoryException);
 
   /**
     Initializes url from other url.

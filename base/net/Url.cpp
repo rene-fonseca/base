@@ -19,14 +19,24 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class UrlImpl {
 public:
 
-  typedef bool (*Encoding)(String::Character);
+  typedef enum {
+    NEVER, // character is not required to be encoded
+    RELAXED, // character must be encoded - however, decoding accepts unencoded character
+    ALWAYS // character must always be encoded
+  } Encode;
 
-  static inline bool defaultEncoding(String::Character ch) throw() {
-    if (ch <= 0x1f) {
-      return true;
-    }
+  typedef Encode (*Encoding)(String::Character);
+
+  static inline Encode defaultEncoding(String::Character ch) throw() {
     switch (ch) {
+    case 0x00: case 0x01: case 0x02: case 0x03: case 0x04: case 0x05: case 0x06: case 0x07:
+    case 0x08: case 0x09: case 0x0a: case 0x0b: case 0x0c: case 0x0d: case 0x0e: case 0x0f:
+    case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: case 0x16: case 0x17:
+    case 0x18: case 0x19: case 0x1a: case 0x1b: case 0x1c: case 0x1d: case 0x1e: case 0x1f:
     case ' ':
+    case '\\':
+    case 0x7f:
+      return ALWAYS;
     case '<':
     case '>':
     case '"':
@@ -35,34 +45,33 @@ public:
     case '{':
     case '}':
     case '|':
-    case '\\':
     case '^':
     case '~':
     case '[':
     case ']':
     case '`':
-    case 0x7f:
-      return true;
+      return RELAXED;
+    default:
+      return NEVER;
     }
-    return false;
   }
 
-  static inline bool userEncoding(String::Character ch) throw() {
-    return defaultEncoding(ch) || (ch == ':') || (ch == '@') || (ch == '/');
+  static inline Encode userEncoding(String::Character ch) throw() {
+    return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
-  static inline bool passwordEncoding(String::Character ch) throw() {
-    return defaultEncoding(ch) || (ch == ':') || (ch == '@') || (ch == '/');
+  static inline Encode passwordEncoding(String::Character ch) throw() {
+    return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
   static inline String encode(const String& str, Encoding encoding = defaultEncoding) throw(UrlException, MemoryException) {
     static char digits[] = "0123456789abcdef";
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
-    for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
-      String::Character ch = *i++;
+    for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
+      String::Character ch = *i;
       assert(String::Traits::isASCII(ch), UrlException("Invalid character"));
-      if (encoding(ch)) {
+      if (encoding(ch) != NEVER) {
         temp += '%';
         temp += digits[ch >> 4];
         temp += digits[ch & 0x0f];
@@ -73,40 +82,34 @@ public:
     return temp;
   }
 
-  static String decode(const String& str, Encoding encoding = defaultEncoding) throw(UrlException, MemoryException) {
+  static inline unsigned int getValueOfHex(char ch) throw(UrlException) {
+    if ((ch >= '0') && (ch <= '9')) {
+      return ch - '0';
+    } else if ((ch >= 'a') && (ch <= 'f')) {
+      return ch - 'a' + 10;
+    } else if ((ch >= 'A') && (ch <= 'F')) {
+      return ch - 'A' + 10;
+    } else {
+      throw UrlException("Invalid encoding");
+    }
+  }
+
+  static String decode(const String& str, Encoding encoding, bool strict) throw(UrlException, MemoryException) {
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
-    for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
-      String::Character ch = *i++;
+    for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
+      String::Character ch = *i;
       if (ch == '%') {
         assert(end - i >= 2, UrlException("Invalid encoding")); // need two digits
-        String::Character highDigit = *i++;
-        String::Character lowDigit = *i++;
-        assert(String::Traits::isDigit(highDigit) && String::Traits::isDigit(lowDigit), UrlException("Invalid encoding")); // need two digits
-        ch = static_cast<unsigned int>(highDigit - '0') << 4 + static_cast<unsigned int>(lowDigit - '0'); // replace with decoded char
+        ch = (getValueOfHex(*++i) << 4) + getValueOfHex(*++i); // replace with decoded char
       } else {
-        assert(encoding(ch) == false, UrlException("Part contains unencoded character"));
+        Encode encode = encoding(ch);
+        assert(strict ? (encode == NEVER) : (encode <= RELAXED), UrlException("Part contains unencoded character"));
       }
       temp += ch;
     }
     return temp;
   }
-
-//  static String validateEncoded(const String& str, Encoding encoding = defaultEncoding) throw(UrlException, MemoryException) {
-//    const String::ReadIterator end = str.getEndReadIterator();
-//    for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
-//      String::Character ch = *i++;
-//      assert(!encoding(ch), UrlException("Part contains unencoded character"));
-//      if (ch == '%') {
-//        assert(end - i >= 2, UrlException("Invalid encoding")); // need two digits
-//        String::Character highDigit = *i++;
-//        String::Character lowDigit = *i++;
-//        assert(String::Traits::isDigit(highDigit) && String::Traits::isDigit(lowDigit), UrlException("Invalid encoding")); // need two digits
-//        ch = static_cast<unsigned int>(highDigit - '0') << 4 + static_cast<unsigned int>(lowDigit - '0'); // replace with decoded char
-//      }
-//    }
-//    return str;
-//  }
 };
 
 
@@ -142,40 +145,20 @@ public:
 //    this->path = path;
 //  }
 //};
-//
-//const String FTPUrl::scheme = "ftp";
-////const String FTPUrl::DEFAULT_USER = "anonymous";
 
-
-
-class HTTPUrl : public Object {
-private:
-
-  static const String scheme;
-  static const unsigned short DEFAULT_PORT = 80;
-public:
-
-  String getScheme() const throw();
-  unsigned short getDefaultPort() const throw() {return DEFAULT_PORT;}
-
-  bool isPath(const String& path) const throw() {
-  }
-};
-
-const String HTTPUrl::scheme = "http";
 
 
 Url::Url() throw(MemoryException) {
 }
 
-Url::Url(const String& url) throw(UrlException, MemoryException) {
-  parse(url);
+Url::Url(const String& url, bool strict) throw(UrlException, MemoryException) {
+  parse(url, strict);
 }
 
-Url::Url(const String& baseUrl, const String& relativeUrl) throw(UrlException, MemoryException) {
+Url::Url(const String& baseUrl, const String& relativeUrl, bool strict) throw(UrlException, MemoryException) {
   Url url(relativeUrl);
   if (url.isRelative()) {
-    parse(baseUrl + relativeUrl);
+    parse(baseUrl + relativeUrl, strict);
   } else {
     *this = url;
   }
@@ -227,8 +210,8 @@ String Url::validateScheme(const String& value) throw(UrlException, MemoryExcept
 
 String Url::validateUser(const String& str) throw(UrlException) {
   const String::ReadIterator end = str.getEndReadIterator();
-  for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
-    String::Character ch = *i++;
+  for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
+    String::Character ch = *i;
     assert(String::Traits::isASCII(ch), UrlException("Invalid character"));
   }
   return str;
@@ -236,8 +219,8 @@ String Url::validateUser(const String& str) throw(UrlException) {
 
 String Url::validatePassword(const String& str) throw(UrlException) {
   const String::ReadIterator end = str.getEndReadIterator();
-  for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
-    String::Character ch = *i++;
+  for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
+    String::Character ch = *i;
     assert(String::Traits::isASCII(ch), UrlException("Invalid character"));
   }
   return str;
@@ -318,7 +301,7 @@ bool Url::isPort(String::ReadIterator i, const String::ReadIterator& end) throw(
   return true;
 }
 
-void Url::parse(const String& url) throw(UrlException, MemoryException) {
+void Url::parse(const String& url, bool strict) throw(UrlException, MemoryException) {
   // example url: http://fonseca:password@www.mip.sdu.dk:80/~fonseca/base/
 
   int index = 0; // current position in the url
@@ -336,7 +319,7 @@ void Url::parse(const String& url) throw(UrlException, MemoryException) {
   {
     int colonIndex = url.indexOf("://", index);
     if (colonIndex >= 0) {
-      setScheme(UrlImpl::decode(url.substring(index, colonIndex)));
+      setScheme(UrlImpl::decode(url.substring(index, colonIndex), UrlImpl::defaultEncoding, strict));
       index = colonIndex + 3;
     }
   }
@@ -349,10 +332,10 @@ void Url::parse(const String& url) throw(UrlException, MemoryException) {
     if ((atIndex >= 0) && ((slashIndex < 0) || (atIndex < slashIndex))) {
       int colonIndex = url.indexOf(':', index);
       if ((colonIndex >= 0) && (colonIndex < atIndex)) {
-        setUser(UrlImpl::decode(url.substring(index, colonIndex), UrlImpl::userEncoding));
-        setPassword(UrlImpl::decode(url.substring(colonIndex + 1, atIndex), UrlImpl::passwordEncoding));
+        setUser(UrlImpl::decode(url.substring(index, colonIndex), UrlImpl::userEncoding, strict));
+        setPassword(UrlImpl::decode(url.substring(colonIndex + 1, atIndex), UrlImpl::passwordEncoding, strict));
       } else {
-        setUser(UrlImpl::decode(url.substring(index, atIndex), UrlImpl::userEncoding));
+        setUser(UrlImpl::decode(url.substring(index, atIndex), UrlImpl::userEncoding, strict));
       }
       index = atIndex + 1;
     }
@@ -363,15 +346,15 @@ void Url::parse(const String& url) throw(UrlException, MemoryException) {
     int endIndex = (slashIndex < 0) ? end : slashIndex;
     int colonIndex = url.indexOf(':', index);
     int endOfHost = ((colonIndex >= 0) && (colonIndex < endIndex)) ? colonIndex : endIndex;
-    setHost(UrlImpl::decode(url.substring(index, endOfHost)));
+    setHost(UrlImpl::decode(url.substring(index, endOfHost), UrlImpl::defaultEncoding, strict));
     if ((colonIndex >= 0) && (colonIndex < endIndex)) {
-      setPort(UrlImpl::decode(url.substring(colonIndex + 1, endIndex)));
+      setPort(UrlImpl::decode(url.substring(colonIndex + 1, endIndex), UrlImpl::defaultEncoding, strict));
     }
   }
 
   // read path
   if (slashIndex >= 0) {
-    setPath(UrlImpl::decode(url.substring(slashIndex + 1, end))); // standard says throw away slash
+    setPath(UrlImpl::decode(url.substring(slashIndex + 1, end), UrlImpl::defaultEncoding, strict)); // standard says throw away slash
   } else {
     setPath(String()); // no path
   }

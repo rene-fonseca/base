@@ -19,7 +19,6 @@
 // TAG: need CRC class
 // TAG: get state of port of node (physical id)
 // TAG: get number of ports of node (physical id)
-// TAG: is cycle master: see 8.3.2.2.1: STATE_CLEAR.bus_depend
 // TAG: max repeated delay: 144+delay*20ns see 6.1 of P1394a
 // TAG: worst case repeater delay: 0.144 + 2 * delay/BASE_RATE (us)
 // TAG: detect errors: loop in topology
@@ -86,7 +85,7 @@ void IEEE1394::IsochronousReadFixedPacketsRequestImpl::setPayload(unsigned int p
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
-  assert(payload % sizeof(IEEE1394::Quadlet) == 0, OutOfDomain(this));
+  assert(payload % sizeof(Quadlet) == 0, OutOfDomain(this));
   this->payload = payload;
 }
 
@@ -103,7 +102,7 @@ void IEEE1394::IsochronousReadFixedDataRequestImpl::setHeaderSize(unsigned int s
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
-  assert(payload % sizeof(IEEE1394::Quadlet) == 0, OutOfDomain(this));
+  assert(payload % sizeof(Quadlet) == 0, OutOfDomain(this));
   this->headerSize = size;
 }
 
@@ -112,7 +111,7 @@ void IEEE1394::IsochronousReadFixedDataRequestImpl::setPayload(unsigned int payl
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
-  assert(payload % sizeof(IEEE1394::Quadlet) == 0, OutOfDomain(this));
+  assert(payload % sizeof(Quadlet) == 0, OutOfDomain(this));
   this->payload = payload;
 }
 
@@ -262,7 +261,7 @@ unsigned int IEEE1394::getCapabilities(unsigned short node) throw(IEEE1394Except
   try {
     uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
     // minimum size for general format
-    if (((crc >> 24) * sizeof(IEEE1394::Quadlet)) >= sizeof(BusInfo)) {
+    if (((crc >> 24) * sizeof(Quadlet)) >= sizeof(BusInfo)) {
       uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
       if (name == 0x31333934) { // "1394"
         uint32 flags = getQuadlet(node, IEEE1394::BUS_INFO_FLAGS);
@@ -287,17 +286,17 @@ unsigned int IEEE1394::getVendorId(unsigned short node) throw(IEEE1394Exception)
   uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
   
   assert(
-    ((crc >> 24) * sizeof(IEEE1394::Quadlet) >= sizeof(BusInfo)) && // check for general ROM format
+    ((crc >> 24) * sizeof(Quadlet) >= sizeof(BusInfo)) && // check for general ROM format
     (name == 0x31333934), // "1394"
     bindCause(IEEE1394Exception("Invalid configuration ROM", this), IEEE1394::INVALID_BUS_INFORMATION_BLOCK)
   );
   
   const uint32 rootDirectoryOffset =
-    IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * sizeof(IEEE1394::Quadlet);
+    IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * sizeof(Quadlet);
   uint32 quadlet = getQuadlet(node, rootDirectoryOffset);
   unsigned int numberOfEntries = quadlet >> 16;
   for (unsigned int entry = 1; entry <= numberOfEntries; ++entry) { // find mandatory Vendor_ID entry
-    const uint32 entryOffset = rootDirectoryOffset + entry * sizeof(IEEE1394::Quadlet);
+    const uint32 entryOffset = rootDirectoryOffset + entry * sizeof(Quadlet);
     uint32 quadlet = getQuadlet(node, entryOffset);
     IEEE1394::CSRKeyType keyType = getCSRKeyType(quadlet);
     IEEE1394::CSRKeyValue keyValue = getCSRKeyValue(quadlet);
@@ -330,13 +329,12 @@ String IEEE1394::getDescription(unsigned short node) throw(IEEE1394Exception) {
     name == 0x31333934, // "1394"
     bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
-  
   const uint32 rootDirectoryOffset =
-    IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * sizeof(IEEE1394::Quadlet);
+    IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * sizeof(Quadlet);
   
   // read root directory entries
-  uint32 quadlet = getQuadlet(node, rootDirectoryOffset);
-  unsigned int numberOfEntries = quadlet >> 16;
+  uint32 quadlet;
+  unsigned int numberOfEntries = getQuadlet(node, rootDirectoryOffset) >> 16;
   for (unsigned int entry = 1; entry <= numberOfEntries; ++entry) {
     const uint32 entryOffset = rootDirectoryOffset + entry * sizeof(Quadlet);
     quadlet = getQuadlet(node, entryOffset);
@@ -345,23 +343,18 @@ String IEEE1394::getDescription(unsigned short node) throw(IEEE1394Exception) {
     if (keyValue == IEEE1394::KEY_TEXTUAL) {
       IEEE1394::CSRKeyType keyType = getCSRKeyType(quadlet);
       if (keyType == IEEE1394::KEY_TYPE_LEAF) {
-        const uint32 leafOffset = entryOffset + (quadlet & 0x00ffffff) * sizeof(IEEE1394::Quadlet);
-        quadlet = getQuadlet(node, leafOffset);
-        unsigned int leafSize = quadlet >> 16;
+        uint32 leafOffset = entryOffset + (quadlet & 0x00ffffff) * sizeof(Quadlet);
+        const unsigned int leafSize = getQuadlet(node, leafOffset) >> 16;
         if (leafSize > 2) {
-          char leaf[leafSize * sizeof(IEEE1394::Quadlet)];
+          Quadlet leaf[leafSize]; // must be big endian
           for (unsigned int i = 0; i < leafSize; ++i) {
-            uint32 quadlet = getQuadlet(node, leafOffset + i * sizeof(IEEE1394::Quadlet));
-            leaf[i * sizeof(IEEE1394::Quadlet) + 0] = quadlet >> 24;
-            leaf[i * sizeof(IEEE1394::Quadlet) + 1] = quadlet >> 16;
-            leaf[i * sizeof(IEEE1394::Quadlet) + 2] = quadlet >> 8;
-            leaf[i * sizeof(IEEE1394::Quadlet) + 3] = quadlet;
+            leafOffset += sizeof(Quadlet);
+            leaf[i] = getQuadlet(node, leafOffset);
           }
-          if (!((leaf[0] == 0) && (leaf[1] == 0) && (leaf[2] == 0) && (leaf[3] == 0) &&
-                (leaf[4] == 0) && (leaf[5] == 0) && (leaf[6] == 0) && (leaf[7] == 0))) {
-            break;
+          if (!((leaf[0] == 0) && (leaf[1] == 0))) {
+            break; // unsupported format
           }
-          return String(leaf + 2 * sizeof(IEEE1394::Quadlet), (leafSize - 2) * sizeof(quadlet));
+          return String(Cast::getCharAddress(leaf[2]), (leafSize - 2) * sizeof(Quadlet));
         }
       } else if (keyType == IEEE1394::KEY_TYPE_DIRECTORY) {
         // TAG: search for a nice leaf
@@ -373,54 +366,55 @@ String IEEE1394::getDescription(unsigned short node) throw(IEEE1394Exception) {
 
 String IEEE1394::getKeywords(unsigned short node) throw(IEEE1394Exception) {
   // TAG: also search subdirectories?
-  ConfigurationIntro config;
-  read(
-    node,
-    IEEE1394::CSR_BASE_ADDRESS + IEEE1394::CONFIGURATION_ROM,
-    Cast::getCharAddress(config),
-    sizeof(config)
-  );
-  
+  uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
+  // minimum size for general format
   assert(
-    ((config.crc >> 24) * sizeof(IEEE1394::Quadlet) >= 2) && // check for general ROM format
-    (config.busInfo.name == 0x31333934), // "1394"
-    IEEE1394Exception(this)
+    ((crc >> 24) * sizeof(Quadlet)) >= sizeof(BusInfo),
+    bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
-
-  const uint64 rootDirectoryAddress =
-    IEEE1394::CSR_BASE_ADDRESS + IEEE1394::CONFIGURATION_ROM + ((config.crc >> 24) + 1) * sizeof(IEEE1394::Quadlet);
-  IEEE1394::Quadlet quadlet;
-
+  uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
+  assert(
+    name == 0x31333934, // "1394"
+    bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
+  );
+  const uint32 rootDirectoryOffset =
+    IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * sizeof(Quadlet);
+  
   // read root directory entries
-  read(node, rootDirectoryAddress, Cast::getCharAddress(quadlet), sizeof(quadlet));
-  unsigned int numberOfEntries = quadlet >> 16;
+  uint32 quadlet;
+  unsigned int numberOfEntries = getQuadlet(node, rootDirectoryOffset) >> 16;
   for (unsigned int entry = 1; entry <= numberOfEntries; ++entry) {
-    const uint64 entryAddress = rootDirectoryAddress + entry * sizeof(quadlet);
-    read(node, entryAddress, Cast::getCharAddress(quadlet), sizeof(quadlet));
+    const uint32 entryOffset = rootDirectoryOffset + entry * sizeof(Quadlet);
+    quadlet = getQuadlet(node, entryOffset);
 
     IEEE1394::CSRKeyValue keyValue = getCSRKeyValue(quadlet);
     IEEE1394::CSRKeyType keyType = getCSRKeyType(quadlet);
     if ((keyType == IEEE1394::KEY_TYPE_LEAF) && (keyValue == IEEE1394::KEY_KEYWORD)) { // Keyword_Leaf
-      const uint64 leafAddress = entryAddress + (quadlet & 0x00ffffff) * sizeof(IEEE1394::Quadlet);
-      read(node, leafAddress, Cast::getCharAddress(quadlet), sizeof(quadlet));
-      unsigned int leafSize = quadlet >> 16;
-      if (leafSize > 2) {
-        char leaf[leafSize * sizeof(IEEE1394::Quadlet)];
-        read(node, leafAddress + sizeof(quadlet), leaf, leafSize * sizeof(quadlet));
-        String result;
-        for (unsigned int i = 0; i < leafSize * sizeof(IEEE1394::Quadlet);) {
-          unsigned int j = i;
-          while ((j < leafSize * sizeof(IEEE1394::Quadlet)) && leaf[j]) {
-            ++j;
-          }
-          if (j == i) {
-            break;
-          }
-          result += String(leaf[i]);
+      uint32 leafOffset = entryOffset + (quadlet & 0x00ffffff) * sizeof(Quadlet);
+      const unsigned int leafSize = getQuadlet(node, leafOffset) >> 16;
+      Quadlet leafWords[leafSize]; // must be big endian
+      for (unsigned int i = 0; i < leafSize; ++i) {
+        leafOffset += sizeof(Quadlet);
+        leafWords[i] = getQuadlet(node, leafOffset);
+      }
+      const char* leaf = Cast::getCharAddress(leafWords);
+      String result;
+      for (unsigned int i = 0; i < leafSize * sizeof(Quadlet);) {
+        unsigned int j = i;
+        while ((j < leafSize * sizeof(Quadlet)) && leaf[j]) {
+          ++j;
+        }
+        if (j == i) {
+          break; // all words have been read
+        }
+        if (i > 0) {
           result += MESSAGE(" ");
         }
-        return result; // TAG: remove last space
+        result += String(leaf[i]);
       }
+      return result;
+    } else if (keyType == IEEE1394::KEY_TYPE_DIRECTORY) {
+      // TAG: search for a nice leaf
     }
   }
   return String();
@@ -434,7 +428,7 @@ void IEEE1394::checkResetGeneration() throw(IEEE1394Exception) {
     if (guid == nodes[busManagerId].guid) {
       // get generation from topology map
       uint32 generation =
-        getQuadlet(makeNodeId(busManagerId), IEEE1394::TOPOLOGY_MAP + sizeof(IEEE1394::Quadlet));
+        getQuadlet(makeNodeId(busManagerId), IEEE1394::TOPOLOGY_MAP + sizeof(Quadlet));
       if (generation == resetGeneration) {
         return;
       }
@@ -446,7 +440,7 @@ void IEEE1394::checkResetGeneration() throw(IEEE1394Exception) {
 
 unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDomain, IEEE1394Exception) {
   assert(busId <= IEEE1394::LOCAL_BUS, OutOfDomain(this));
-  IEEE1394::Quadlet quadlet;
+  Quadlet quadlet;
   switch (role) {
   case IEEE1394::CYCLE_MASTER: // must/should be root eventually
     for (int id = IEEE1394::BROADCAST; id > 0;) {
@@ -623,7 +617,7 @@ void IEEE1394::reload() throw(IEEE1394Exception) {
         loadSpeedMap(); // TAG: deprecated in later specification
         
         // get generation from topology map
-        uint32 generation = getQuadlet(makeNodeId(busManagerId), IEEE1394::TOPOLOGY_MAP + sizeof(IEEE1394::Quadlet));
+        uint32 generation = getQuadlet(makeNodeId(busManagerId), IEEE1394::TOPOLOGY_MAP + sizeof(Quadlet));
         resetGeneration = generation;
         break; // success
       } catch (IEEE1394Exception& e) {
@@ -642,7 +636,7 @@ void IEEE1394::loadTopologyMap() throw(IEEE1394Exception) {
   const unsigned int length = crc >> 16;
   assert(length >= 3, IEEE1394Exception(this));
   
-  uint32 count = getQuadlet(node, IEEE1394::TOPOLOGY_MAP + 2 * sizeof(IEEE1394::Quadlet));
+  uint32 count = getQuadlet(node, IEEE1394::TOPOLOGY_MAP + 2 * sizeof(Quadlet));
   // numberOfNodes = count >> 16;
   const unsigned int selfIds = count & 0xffff;
   
@@ -654,10 +648,10 @@ void IEEE1394::loadTopologyMap() throw(IEEE1394Exception) {
   
   // get topology map
   uint32 ids[selfIds];
-  uint32 offset = IEEE1394::TOPOLOGY_MAP + 3 * sizeof(IEEE1394::Quadlet);
+  uint32 offset = IEEE1394::TOPOLOGY_MAP + 3 * sizeof(Quadlet);
   for (unsigned int i = 0; i < selfIds; ++i) {
     ids[i] = getQuadlet(node, offset);
-    offset += sizeof(IEEE1394::Quadlet);
+    offset += sizeof(Quadlet);
   }
   
   // get crc
@@ -741,7 +735,7 @@ void IEEE1394::loadTopologyMap() throw(IEEE1394Exception) {
 }
 
 unsigned int IEEE1394::getCycleTime(unsigned short node) throw(IEEE1394Exception) {
-  IEEE1394::Quadlet quadlet;
+  Quadlet quadlet;
   read(
     node,
     IEEE1394::CSR_BASE_ADDRESS + IEEE1394::CYCLE_TIME,
@@ -754,7 +748,7 @@ unsigned int IEEE1394::getCycleTime(unsigned short node) throw(IEEE1394Exception
 }
 
 unsigned int IEEE1394::getBusTime(unsigned short node) throw(IEEE1394Exception) {
-  IEEE1394::Quadlet quadlet;
+  Quadlet quadlet;
   read(
     node,
     IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BUS_TIME,
@@ -765,7 +759,7 @@ unsigned int IEEE1394::getBusTime(unsigned short node) throw(IEEE1394Exception) 
 }
 
 unsigned int IEEE1394::getAvailableBandwidth() throw(IEEE1394Exception) {
-  IEEE1394::Quadlet quadlet;
+  Quadlet quadlet;
   read(
     makeNodeId(isochronousResourceManagerId),
     IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BANDWIDTH_AVAILABLE,
@@ -783,38 +777,24 @@ uint64 IEEE1394::getAvailableIsochronousChannels() throw(IEEE1394Exception) {
 
 void IEEE1394::loadSpeedMap() throw(IEEE1394Exception) {
   const unsigned short node = makeNodeId(busManagerId);
-  
-  IEEE1394::Quadlet crc;
-  read(
-    node,
-    IEEE1394::CSR_BASE_ADDRESS + IEEE1394::SPEED_MAP,
-    Cast::getCharAddress(crc),
-    sizeof(crc)
-  );
-  
+
+  uint32 crc = getQuadlet(node, IEEE1394::SPEED_MAP);
   if ((crc >> 16) != ((64 * 62 + 62 + 3)/4 + 1)) {
     throw IEEE1394Exception("Invalid speed map", this);
   }
   
   // get speeds
-  IEEE1394::Quadlet speeds[(64 * 62 + 62 + 3)/4];
+  Quadlet speeds[(64 * 62 + 62 + 3)/4];
   unsigned int numberOfSpeeds = 64 * numberOfNodes + numberOfNodes;
   uint64 address =
-    IEEE1394::CSR_BASE_ADDRESS + IEEE1394::SPEED_MAP + 2 * sizeof(IEEE1394::Quadlet);
+    IEEE1394::CSR_BASE_ADDRESS + IEEE1394::SPEED_MAP + 2 * sizeof(Quadlet);
   for (unsigned int i = 0; i < numberOfSpeeds; ++i) {
     read(node, address, Cast::getCharAddress(speeds[i]), sizeof(speeds[i]));
     address += sizeof(speeds[i]);
   }
   
   // get crc
-  IEEE1394::Quadlet quadlet;
-  read(
-    node,
-    IEEE1394::CSR_BASE_ADDRESS + IEEE1394::SPEED_MAP,
-    Cast::getCharAddress(quadlet),
-    sizeof(quadlet)
-  );
-  
+  uint32 quadlet = getQuadlet(node, IEEE1394::SPEED_MAP);
   assert(quadlet == crc, IEEE1394Exception("Unable to load speed map", this));
   
   static const unsigned int SHIFTS[4] = {24, 16, 8, 0};

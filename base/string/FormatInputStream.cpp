@@ -75,7 +75,7 @@ String FormatInputStream::getWord() throw(IOException) {
     unsigned int length = tail - beginning;
     unsigned int offset = result.getLength();
     result.forceToLength(result.getLength() + length); // extend string
-    copy<String::Character>((result.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
+    copy<char>((result.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
     
     if (tail < head) { // end of word
       break;
@@ -84,6 +84,7 @@ String FormatInputStream::getWord() throw(IOException) {
       return result; // eof reached
     }
   }
+  return result;
 }
 
 // TAG: need limit arg: unsigned int maximumLength
@@ -97,7 +98,7 @@ String FormatInputStream::getLine() throw(IOException) {
         unsigned int length = tail - beginning;
         unsigned int offset = line.getLength();
         line.forceToLength(line.getLength() + length); // extend string
-        copy<String::Character>((line.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
+        copy<char>((line.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
         ++tail; // skip '\n'
         if ((tail == head) && !overwriteFromSource()) {
           return line; // eof reached
@@ -110,7 +111,7 @@ String FormatInputStream::getLine() throw(IOException) {
         unsigned int length = tail - beginning;
         unsigned int offset = line.getLength();
         line.forceToLength(line.getLength() + length); // extend string
-        copy<String::Character>((line.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
+        copy<char>((line.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
         ++tail; // skip '\r'
         if ((tail == head) && !overwriteFromSource()) {
           return line; // eof reached
@@ -124,7 +125,7 @@ String FormatInputStream::getLine() throw(IOException) {
     unsigned int length = tail - beginning;
     unsigned int offset = line.getLength();
     line.forceToLength(line.getLength() + length); // extend string
-    copy<String::Character>((line.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
+    copy<char>((line.getBeginIterator() + offset).getValue(), beginning.getValue(), length);
     if (!overwriteFromSource()) {
       return line; // eof reached
     }
@@ -175,7 +176,9 @@ FormatInputStream& operator>>(FormatInputStream& stream, unsigned int& value) th
   do {
     assert(ASCIITraits::isDigit(ch), InvalidFormat("Not an unsigned int"));
     unsigned char temp = ASCIITraits::digitToValue(ch);
-    if ((value < PrimitiveTraits<unsigned int>::MAXIMUM/10) || ((value == PrimitiveTraits<unsigned int>::MAXIMUM/10) && (temp <= PrimitiveTraits<unsigned int>::MAXIMUM%10))) {
+    if ((value < PrimitiveTraits<unsigned int>::MAXIMUM/10) ||
+        ((value == PrimitiveTraits<unsigned int>::MAXIMUM/10) &&
+         (temp <= PrimitiveTraits<unsigned int>::MAXIMUM%10))) {
       value = ch + 10 * value;
       try {
         ch = stream.getCharacter(); // TAG: must accept eof

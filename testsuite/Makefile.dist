@@ -1,0 +1,17 @@
+default: all
+
+all:
+	aclocal
+	autoheader
+	automake
+	autoconf
+	rm -f config.cache
+
+debug: all
+	CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base
+ 
+normal: all
+	CXXFLAGS="-O2 -g2" ./configure --prefix=/usr/local/base
+
+final: all
+	CXXFLAGS="-O3" ./configure --prefix=/usr/local/base

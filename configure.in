@@ -173,7 +173,7 @@ unix)
 win32)
   case "$host" in
   i[[3456]]86-pc-cygwin)
-    ac_base_platform="i386-pc-winnt.h"
+    ac_base_platform="i386-pc-winnt4.h"
   ;;
   *)
     AC_MSG_ERROR(This target platform is not directly supported by the framework. Please refer to the section describing how to manual configure the framework.)
@@ -245,7 +245,7 @@ AC_ARG_ENABLE(
   --enable-threads=[auto|posix|win32]
       Specifies the thread API to be utilized. This feature is auto-detected
       by default. The auto-detection will fail if the compiler is a cross
-      compiler. The option is only valid in Unix mode.],
+      compiler. The option is only valid in Unix mode. The default is posix.],
   AC_BASE_CHECK_ARG(base_explicit_threads, auto posix win32, The
   threads flag must be either 'auto', 'posix', or 'win32'.))
 
@@ -287,15 +287,15 @@ AC_ARG_ENABLE(
       compiler is a cross compiler. The option is only valid in Unix mode.],
   AC_BASE_CHECK_ARG(base_explicit_large_file_system, auto yes no, The Large File System (LFS) flag must be either 'auto', 'yes', or 'no'.))
 
-base_explicit_regexp=no
+base_explicit_regexp=auto
 AC_ARG_ENABLE(
   regexp,[
-  --enable-regexp=[pcre|posix|no]
+  --enable-regexp=[auto|pcre|posix|no]
       Specifies that regular expression support should be included. 'pcre'
       selects Perl-Compatible Regular Expression library. 'posix' selects POSIX
       compatible regular expression support provided by the C library. The
       default is no.],
-  AC_BASE_CHECK_ARG(base_explicit_regexp, pcre posix no, Invalid argument used with the regexp flag.))
+  AC_BASE_CHECK_ARG(base_explicit_regexp, auto pcre posix no, Invalid argument used with the regexp flag.))
 
 base_explicit_xml=no
 AC_ARG_ENABLE(
@@ -456,7 +456,7 @@ AC_BASE_CHECK(
 
 dnl Additional libraries to test
 base_additional_attempts=
-AC_BASE_EQUAL(ac_base_flavour, unix, AC_BASE_APPEND(base_additional_attempts, '-lpthread'))
+AC_BASE_EQUAL($ac_base_flavour, unix, AC_BASE_APPEND(base_additional_attempts, '-lpthread'))
 
 AC_BASE_CHECK(
   whether C++ compiler (AC_BASE_TRIM($CXX $CXXFLAGS $CPPFLAGS $LDFLAGS $LIBS)) is a cross compiler,
@@ -508,14 +508,7 @@ elif test "$base_explicit_demangle" = mipspro; then
 fi
 
 if test "$base_explicit_threads" = auto; then
-  AC_BASE_EQUAL(base_flavour, unix, base_explicit_threads=posix)
-fi
-
-if test "$base_explicit_regexp" = posix; then
-  AC_BASE_DEFINE(REGEXP_POSIX)
-elif test "$base_explicit_regexp" = pcre; then
-  AC_BASE_DEFINE(REGEXP_PCRE)
-  AC_BASE_ADDLIB(-lpcre)
+  AC_BASE_EQUAL($ac_base_flavour, unix, base_explicit_threads=posix)
 fi
 
 if test "$base_explicit_xml" = xmlsoft; then
@@ -782,7 +775,7 @@ fi dnl end of unix
 
 
 
-AC_BASE_EQUAL(base_explicit_threads, posix,
+AC_BASE_EQUAL($base_explicit_threads, posix,
 dnl Check Posix thread support
 
 AC_BASE_CHECK(
@@ -858,23 +851,43 @@ AC_BASE_YES(base_cv_pthread_rwlock,
 
 
 
+AC_BASE_EQUAL($base_explicit_regexp, auto,
+  AC_BASE_CHECK(
+    whether Posix Regular Expression interface is available,
+    AC_BASE_CACHE(
+      base_cv_regex_available,
+      AC_BASE_TRY_CXX_RUN(base_cv_regex_available, config/regex.c)dnl
+    ),
+    base_cv_regex_available)
+  AC_BASE_YES(base_cv_regex_available, AC_BASE_DEFINE(REGEXP_POSIX)))
+
+AC_BASE_EQUAL($base_explicit_regexp, posix, AC_BASE_DEFINE(REGEXP_POSIX))
+
+AC_BASE_EQUAL($base_explicit_regexp, pcre,
+  AC_BASE_DEFINE(REGEXP_PCRE)
+  AC_BASE_ADDLIB(-lpcre))
+
+
+
 AC_BASE_CHECK_CFUNCTION(memchr)
 AC_BASE_CHECK_CFUNCTION(memcmp)
 AC_BASE_CHECK_CFUNCTION(memcpy)
 AC_BASE_CHECK_CFUNCTION(memmove)
 AC_BASE_CHECK_CFUNCTION(memset)
+AC_BASE_CHECK_CFUNCTION(nanosleep)
 AC_BASE_CHECK_CFUNCTION(mbrtowc)
 AC_BASE_CHECK_CFUNCTION(mbsrtowcs)
 
 
 
-AC_BASE_PREPEND(CPPFLAGS, ['-I${top_srcdir}'])
+CPPFLAGS='-I${top_srcdir}'"${CPPFLAGS:+ }${CPPFLAGS}"
+AC_SUBST(CPPFLAGS)
 AC_SUBST(CXXFLAGS)
 
 
 
 ac_base_header=base/configuration.h
-echo updating configuration...
+echo "updating configuration..."
 mv $ac_base_config $ac_base_header
 
 

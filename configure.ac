@@ -115,16 +115,16 @@ ac_base_system_lib_order="-lrt -lpthread -ldl -lm -lc"
 dnl AC_BASE_ADDLIB(library list) e.g. AC_BASE_ADDLIB(-lxml -ldl)
 dnl AC_DEFUN(AC_BASE_ADDLIB, [dnl
 dnl for ac_base_temp in [$1]; do
-dnl   AC_BASE_APPEND(LIBS, [$]ac_base_temp)
+dnl   AC_BASE_APPEND(BASE_LIBS, [$]ac_base_temp)
 dnl done
 dnl ])
 
 dnl AC_BASE_ADDLIB(library list) e.g. AC_BASE_ADDLIB(-lxml -ldl)
 AC_DEFUN(AC_BASE_ADDLIB, [dnl
-LIBS="[$]LIBS $1"
+BASE_LIBS="[$]BASE_LIBS $1"
 ac_base_system_libs=
 for ac_base_lib in [$]ac_base_system_lib_order; do
-  for ac_base_lib in [$]LIBS; do
+  for ac_base_lib in [$]BASE_LIBS; do
     if test "[$]ac_base_lib" = "[$]ac_base_system_lib"; then
       AC_BASE_APPEND(ac_base_system_libs, [$]ac_base_system_lib)dnl
       break
@@ -133,7 +133,7 @@ for ac_base_lib in [$]ac_base_system_lib_order; do
 done
 ac_base_ignore_libs=[$]ac_base_system_libs
 ac_base_unknown_libs=
-for ac_base_lib in [$]LIBS; do
+for ac_base_lib in [$]BASE_LIBS; do
   ac_base_ignore_lib=no
   for ac_base_temp in [$]ac_base_ignore_libs; do
     if test "[$]ac_base_temp" = "[$]ac_base_lib"; then
@@ -146,7 +146,7 @@ for ac_base_lib in [$]LIBS; do
     AC_BASE_APPEND(ac_base_unknown_libs, [$]ac_base_lib)dnl
   fi
 done
-LIBS="[$]{ac_base_unknown_libs}[$]{ac_base_unknown_libs:+ }[$]{ac_base_system_libs}"
+BASE_LIBS="[$]{ac_base_unknown_libs}[$]{ac_base_unknown_libs:+ }[$]{ac_base_system_libs}"
 ])
 
 
@@ -365,7 +365,7 @@ dnl C++ specific
 base_cxx_ext=cpp
 base_cxx_preprocess='${CXXCPP} -I. $CPPFLAGS'
 base_cxx_compile='${CXX} -o $base_obj_temp -c -I. $CPPFLAGS  $CXXFLAGS $base_cxx_src $base_cxx_opts'
-base_cxx_link='${CXX} -o $base_app_temp -I. $CPPFLAGS $CXXFLAGS $LDFLAGS $base_cxx_src $base_cxx_opts $LIBS'
+base_cxx_link='${CXX} -o $base_app_temp -I. $CPPFLAGS $CXXFLAGS $LDFLAGS $base_cxx_src $base_cxx_opts $LIBS $BASE_LIBS'
 
 dnl AC_BASE_TRIM(string)
 AC_DEFUN(AC_BASE_TRIM, [`echo $1`])
@@ -463,7 +463,7 @@ base_additional_attempts=
 AC_BASE_EQUAL($ac_base_flavour, unix, AC_BASE_APPEND(base_additional_attempts, -lpthread))
 
 AC_BASE_CHECK(
-  whether C++ compiler (AC_BASE_TRIM($CXX $CXXFLAGS $CPPFLAGS $LDFLAGS $LIBS)) is a cross compiler,
+  whether C++ compiler (AC_BASE_TRIM($CXX $CXXFLAGS $CPPFLAGS $LDFLAGS $LIBS $BASE_LIBS)) is a cross compiler,
   AC_BASE_CACHE(
     base_cv_cxx_cross base_cv_cxx_libs,
     AC_BASE_ATTEMPT(
@@ -935,6 +935,7 @@ AC_BASE_DEFINE(BUILD_HOST, [\"]$ac_base_build_host[\"])
 AC_BASE_DEFINE(BUILD_SYSTEM, [\"]$ac_cv_build[\"])
 AC_BASE_DEFINE(TARGET_SYSTEM, [\"]$ac_cv_target[\"])
 
+AC_SUBST(BASE_LIBS)
 AC_SUBST(BASE_ADDITIONAL_LIBADD)
 AC_SUBST(BASE_ADDITIONAL_LDFLAGS)
 AC_SUBST(BASE_ADDITIONAL_DEPENDENCIES)

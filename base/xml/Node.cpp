@@ -72,7 +72,7 @@ Node::NodeType Node::getType() const throw() {
   );
   return static_cast<NodeType>(type);
 #else
-  return 0; // TAG: unspecified
+  return Node::ELEMENT_NODE; // TAG: use unspecified
 #endif
 }
 

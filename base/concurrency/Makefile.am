@@ -26,6 +26,8 @@ libconcurrency_la_SOURCES = \
   NISpinLock.cpp \
   Process.cpp \
   ReadWriteLock.cpp \
+  ReadWriteSpinLock.cpp \
+  RecursiveSpinLock.cpp \
   Semaphore.cpp \
   SharedSynchronize.cpp \
   SingleExclusiveSynchronize.cpp \
@@ -48,6 +50,8 @@ section_HEADERS = \
   NISpinLock.h \
   Process.h \
   ReadWriteLock.h \
+  ReadWriteSpinLock.h \
+  RecursiveSpinLock.h \
   Runnable.h \
   Semaphore.h \
   SharedSynchronize.h \

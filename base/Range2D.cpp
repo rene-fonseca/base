@@ -69,6 +69,7 @@ void Range2D::setMaximum(double maximum) throw() {
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value) {
+  FormatOutputStream::PushContext push(stream);
   return stream << '(' << value.minimum << ',' << value.maximum << ')';
 }
 

@@ -16,6 +16,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value) {
+  FormatOutputStream::PushContext push(stream);
   return stream << '(' << value.width << ',' << value.height << ')';
 }
 

@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/Timer.h>
 #include <base/string/String.h>
 
@@ -93,6 +94,7 @@ long long Timer::getLiveMicroseconds() const throw() {
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Timer& value) throw(IOException) {
+  FormatOutputStream::PushContext push(stream);
   long long microseconds = value.getMicroseconds();
   long long seconds = microseconds/1000000;
   long long minutes = seconds/60;

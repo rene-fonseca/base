@@ -199,24 +199,21 @@ namespace internal {
   class SocketImpl {
   public:
     
-    static inline void getIPOption(int handle, int option, void* buffer, unsigned int* length) throw(IOException) {
-      // getsockopt is MT-safe
+    static inline void getOption(int handle, int level, int option, void* buffer, unsigned int* length) throw(IOException) {
       socklen temp = *length;
-      if (::getsockopt(handle, IPPROTO_IP, option, static_cast<char*>(buffer), &temp) != 0) {
+      if (::getsockopt(handle, level, option, static_cast<char*>(buffer), &temp) != 0) {
         throw IOException("Unable to get IP option");
       }
       *length = temp;
     }
     
-    static inline void setIPOption(int handle, int option, const void* buffer, unsigned int length) throw(IOException) {
-      // setsockopt is MT-safe
-      if (::setsockopt(handle, IPPROTO_IP, option, static_cast<const char*>(buffer), length) != 0) {
+    static inline void setOption(int handle, int level, int option, const void* buffer, unsigned int length) throw(IOException) {
+      if (::setsockopt(handle, level, option, static_cast<const char*>(buffer), length) != 0) {
         throw IOException("Unable to set IP option");
       }
     }
     
     static inline void getSocketOption(int handle, int option, void* buffer, unsigned int* length) throw(IOException) {
-      // getsockopt is MT-safe
       socklen temp = *length;
       if (::getsockopt(handle, SOL_SOCKET, option, static_cast<char*>(buffer), &temp) != 0) {
         throw IOException("Unable to get socket option");
@@ -228,14 +225,12 @@ namespace internal {
     // TAG: add support for RAW options: IPPROTO_RAW
     
     static inline void setSocketOption(int handle, int option, const void* buffer, unsigned int length) throw(IOException) {
-      // setsockopt is MT-safe
       if (::setsockopt(handle, SOL_SOCKET, option, static_cast<const char*>(buffer), length) != 0) {
         throw IOException("Unable to set socket option");
       }
     }
     
     static inline void getTcpOption(int handle, int option, void* buffer, unsigned int* length) throw(IOException) {
-      // getsockopt is MT-safe
       socklen temp = *length;
       if (::getsockopt(handle, IPPROTO_TCP, option, static_cast<char*>(buffer), &temp) != 0) {
         throw IOException("Unable to get TCP option");
@@ -529,6 +524,10 @@ void Socket::setSendBufferSize(int size) throw(IOException) {
 
 // TAG: TCP_MAXSEG maximum segment size
 // TAG: TCP_KEEPIDLE, TCP_KEEPINTVL, TCP_KEEPCNT interval between keepalives
+// TAG: microsoft specific datagram options: SO_MAXDG, SO_MAXPATHDG
+// TAG: time out options: SO_SNDTIMEO, SO_RCVTIMEO
+// TAG: connection time (MS specific?): SO_CONNECT_TIME (0xffffffff is not connected)
+// TAG: max backlog queue length: SOMAXCONN
 
 bool Socket::getTcpNoDelay() const throw(IOException) {
   SharedSynchronize<Guard>(*this);
@@ -548,15 +547,120 @@ unsigned int Socket::getTimeToLive() const throw(IOException) {
   SharedSynchronize<Guard>(*this);
   int buffer;
   unsigned int length = sizeof(buffer);
-  internal::SocketImpl::getIPOption((int)getHandle(), IP_TTL, &buffer, &length);
+  internal::SocketImpl::getOption((int)getHandle(), IPPROTO_IP, IP_TTL, &buffer, &length);
   return buffer != 0;
 }
 
 void Socket::setTimeToLive(unsigned int value) throw(IOException) {
   SharedSynchronize<Guard>(*this);
   int buffer = value;
-  internal::SocketImpl::setIPOption((int)getHandle(), IP_TTL, &buffer, sizeof(buffer));
+  internal::SocketImpl::setOption((int)getHandle(), IPPROTO_IP, IP_TTL, &buffer, sizeof(buffer));
 }
+
+uint8 Socket::getMulticastTTL() const throw(IOException) {
+  SharedSynchronize<Guard>(*this);
+#if 0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)
+  // TAG: fixme
+  int buffer;
+  unsigned int length = sizeof(buffer);
+  internal::SocketImpl::getOption((int)getHandle(), IPPROTO_IP, IP_MULTICAST_TTL, &buffer, &length);
+  return buffer;
+#else
+  u_char buffer;
+  unsigned int length = sizeof(buffer);
+  internal::SocketImpl::getOption((int)getHandle(), IPPROTO_IP, IP_MULTICAST_TTL, &buffer, &length);
+  return buffer;
+#endif
+}
+
+void Socket::setMulticastTTL(uint8 value) throw(IOException) {
+  SharedSynchronize<Guard>(*this);
+#if 0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)
+  if (false) {
+    uint_l buffer;
+    internal::SocketImpl::setOption((int)getHandle(), IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &buffer, sizeof(buffer));
+  } else {
+    u_char buffer = value;
+    internal::SocketImpl::setOption((int)getHandle(), IPPROTO_IP, IP_MULTICAST_TTL, &buffer, sizeof(buffer));
+  }
+#else
+  u_char buffer = value;
+  internal::SocketImpl::setOption((int)getHandle(), IPPROTO_IP, IP_MULTICAST_TTL, &buffer, sizeof(buffer));
+#endif
+}
+
+bool Socket::getMulticastLoopback() const throw(IOException) {
+  SharedSynchronize<Guard>(*this);
+#if 0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)
+  u_char buffer;
+  unsigned int length = sizeof(buffer);
+  internal::SocketImpl::getOption((int)getHandle(), IPPROTO_IP, IP_MULTICAST_LOOP, &buffer, &length);
+  return buffer != 0;
+#else
+  u_char buffer;
+  unsigned int length = sizeof(buffer);
+  internal::SocketImpl::getOption((int)getHandle(), IPPROTO_IP, IP_MULTICAST_LOOP, &buffer, &length);
+  return buffer != 0;
+#endif
+}
+
+void Socket::setMulticastLoopback(bool value) throw(IOException) {
+  SharedSynchronize<Guard>(*this);
+#if 0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)
+  if (false) {
+    uint_t loop;
+    internal::SocketImpl::setOption((int)getHandle(), IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &buffer, sizeof(buffer));
+  } else {
+    u_char buffer = value;
+    internal::SocketImpl::setOption((int)getHandle(), IPPROTO_IP, IP_MULTICAST_LOOP, &buffer, sizeof(buffer));
+  }
+#else
+  u_char buffer = value;
+  internal::SocketImpl::setOption((int)getHandle(), IPPROTO_IP, IP_MULTICAST_LOOP, &buffer, sizeof(buffer));
+#endif
+}
+
+#if 0
+void Socket::joinGroup() throw(IOException) {
+//   struct ip_mreq buffer;
+//   internal::SocketImpl::setOption((int)getHandle(), IPPROTO_IP, IP_ADD_MEMBERSHIP, &buffer, sizeof(buffer));
+// // struct ip_mreq {
+// //   struct in_addr imr_multiaddr;   /* multicast group to join */
+// //   struct in_addr imr_interface;   /* interface to join on */
+// // }
+    struct ipv6_mreq {
+        struct in6_addr ipv6mr_multiaddr;   /* IPv6 multicast addr */
+        unsigned int    ipv6mr_interface;   /* interface index */
+    }  
+
+  struct ipv6_mreq mreq;
+    setsockopt(sock, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq, sizeof(mreq)) 
+}
+
+// Family Socket::getType() const throw() {
+// }
+
+void Socket::leaveGroup(unsigned int interface, const InetAddress& address) throw(IOException) {
+#if 0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)
+  if (false) { // get INET type of socket
+    struct ipv6_mreq buffer;
+    internal::SocketImpl::setOption((int)getHandle(), IPPROTO_IPV6, IP_LEAVE_GROUP, &buffer, sizeof(buffer));  
+  } else {
+    struct ip_mreq buffer;
+    internal::SocketImpl::setOption((int)getHandle(), IPPROTO_IP, IP_DROP_MEMBERSHIP, &buffer, sizeof(buffer));
+  }
+#else
+  // resolve interface address by index
+  assert(ioctl(handle, SIOCGIFADDR, current) == 0, IOException(this));
+  interface.address = internal::InetInterface::getAddress(current->ifr_addr);
+  InetAddress temp = address;
+  assert(temp.convertToIPv4(), IOException(this));
+  struct ip_mreq buffer;
+  
+  internal::SocketImpl::setOption((int)getHandle(), IPPROTO_IP, IP_DROP_MEMBERSHIP, &buffer, sizeof(buffer));
+#endif
+}
+#endif
 
 void Socket::setNonBlocking(bool value) throw(IOException) {
   SharedSynchronize<Guard>(*this);

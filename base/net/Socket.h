@@ -346,6 +346,26 @@ public:
     Sets the time to live (TTL) value.
   */
   void setTimeToLive(unsigned int value) throw(IOException);
+
+  /**
+    Returns the multicast time to live (TTL) value.
+  */
+  uint8 getMulticastTTL() const throw(IOException);
+  
+  /**
+    Sets the multicast time to live (TTL) value.
+  */
+  void setMulticastTTL(uint8 value) throw(IOException);
+
+  /**
+    Returns the multicast loop-back value.
+  */
+  bool getMulticastLoopback() const throw(IOException);
+
+  /**
+    Sets the multicast loop-back value.
+  */
+  void setMulticastLoopback(bool value) throw(IOException);
   
   /**
     Sets the blocking mode of the socket.

@@ -31,6 +31,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+class FormatOutputStream;
+
 #if !defined(_DK_SDU_MIP__BASE__WIDE)
   typedef int wint_t;
   inline int iswalnum(wint_t) throw() {return 0;}
@@ -231,6 +233,11 @@ protected:
     elements->setSize(length + 1);
   }
 public:
+
+  /**
+    Returns a multibyte string from a NULL-terminated wide-string.
+  */
+  static String getMultibyteString(const wchar_t* string) throw(NullPointer, WideStringException);
 
   /**
     Initializes an empty string.

@@ -125,6 +125,40 @@ namespace isoc {
   #warning Assuming that mbstowcs is reentrant
 #endif
 
+String WideString::getMultibyteString(const wchar_t* string) throw(NullPointer, WideStringException) {
+  assert(string, NullPointer(Type::getType<WideString>()));
+  const Character* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
+  assert(terminator, WideStringException(Type::getType<WideString>())); // maximum length exceeded
+  int numberOfCharacters = terminator - string;
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  int multibyteLength = ::WideCharToMultiByte(CP_UTF8, // code page
+                                              0, // performance and mapping flags
+                                              string, // wide-character string
+                                              numberOfCharacters, // number of chars in string
+                                              0, // buffer for new string
+                                              0, // size of buffer
+                                              0, // default for unmappable chars
+                                              0 // set when default char used
+  );
+  ASSERT(multibyteLength > 0);
+  char multibyteBuffer[multibyteLength]; // TAG: use String capacity support
+  ::WideCharToMultiByte(CP_UTF8, // code page
+                        0, // performance and mapping flags
+                        string, // wide-character string
+                        numberOfCharacters, // number of chars in string
+                        multibyteBuffer, // buffer for new string
+                        multibyteLength, // size of buffer
+                        0, // default for unmappable chars
+                        0 // set when default char used
+  );
+  return String(multibyteBuffer, multibyteLength); // TAG: use capacity support
+#else // unix
+  return String(); // TAG: FIXME
+#endif // flavor
+}
+
+// TAG: need getMultibyteString() with maximum length argument
+
 WideString::WideString() throw() : elements(DEFAULT_STRING.elements) {
 }
 

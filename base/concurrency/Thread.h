@@ -73,7 +73,7 @@ class Thread : public Object {
 public:
 
   /** Thread resource identifier type. */
-  typedef unsigned int Identifier;
+  typedef void* Identifier;
   
   /** Scheduling policy type. */
   enum SchedulingPolicy {
@@ -140,7 +140,10 @@ public:
   /**
     Thrown if thread tries to manage itself when disallowed.
 
+    @short Exception raised by Thread.
     @ingroup concurrency exceptions
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    @version 1.0
   */
   class Self : public ThreadException {
   public:

@@ -76,7 +76,7 @@ private:
     void run() throw();
   };
 
-  friend Wrapper;
+  friend class Wrapper;
   typedef MutualExclusion LOCK;
 
   /** Runnable. */

@@ -37,6 +37,16 @@ private:
   static void* getGlobalSymbolImpl(const String& symbol) throw(LinkerException);
 public:
 
+  typedef void (*Function)();
+
+  /** Function descriptor. */
+  struct StaticFunctionDescriptor {
+    /** The symbol. */
+    const char* symbol;
+    /** The function. */
+    Function* function;
+  };
+  
   /** Linker options. */
   enum Options {
     LAZY = 1, /**< Resolve symbols during execution of module. */
@@ -90,6 +100,22 @@ public:
     @return The address of the symbol (0 is not available).
   */
   void* getUncertainSymbol(const StringLiteral& symbol) const throw();
+
+  /** Flags for use with import method. */
+  enum Flags {
+    CONTINUE = 1 /**< Continue to import symbols when symbol is not available. */
+  };
+  
+  /**
+    Imports the addresses of the specified symbols/functions.
+
+    @param functions The desired functions.
+    @param numberOfFunctions The number of functions.
+    @param flags The flags.
+    
+    @return True if all functions are available.
+  */
+  bool import(StaticFunctionDescriptor* functions, unsigned int numberOfFunctions, bool flags = 0) throw();
   
   /**
     Closes the module.

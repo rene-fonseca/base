@@ -34,16 +34,16 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerExcep
   return result;
 #else // unix
   #if defined(RTLD_LAZY)
-    void* handle = dlopen(0, RTLD_LAZY);
+    void* handle = ::dlopen(0, RTLD_LAZY);
   #else
-    void* handle = dlopen(0, 0); // use unspecified linking
+    void* handle = ::dlopen(0, 0); // use unspecified linking
   #endif
   if (handle == 0) {
     throw LinkerException("Unable to open module");
   }
-  void* result = dlsym(handle, symbol.getElements());
+  void* result = ::dlsym(handle, symbol.getElements());
   assert(dlerror() == 0, LinkerException("Unable to resolve symbol"));
-  dlclose(handle); // is this required
+  ::dlclose(handle); // is this required
   return result;
 #endif // flavor
 }
@@ -86,7 +86,7 @@ DynamicLinker::DynamicLinker(const String& module, unsigned int options) throw(L
   #else
     flags |= RTLD_GLOBAL;
   #endif
-  if ((handle = dlopen(module.getElements(), flags)) == 0) {
+  if ((handle = ::dlopen(module.getElements(), flags)) == 0) {
     throw LinkerException("Unable to open module", this);
   }
 #endif // flavor
@@ -98,7 +98,7 @@ void* DynamicLinker::getSymbol(const StringLiteral& symbol) const throw(LinkerEx
   assert(result != 0, LinkerException("Unable to resolve symbol", this));
   return result;
 #else // unix
-  void* result = dlsym(handle, symbol);
+  void* result = ::dlsym(handle, symbol);
   assert(dlerror() == 0, LinkerException("Unable to resolve symbol", this));
   return result;
 #endif // flavor
@@ -110,7 +110,7 @@ void* DynamicLinker::getSymbol(const String& symbol) const throw(LinkerException
   assert(result != 0, LinkerException("Unable to resolve symbol", this));
   return result;
 #else // unix
-  void* result = dlsym(handle, symbol.getElements());
+  void* result = ::dlsym(handle, symbol.getElements());
   assert(dlerror() == 0, LinkerException("Unable to resolve symbol", this));
   return result;
 #endif // flavor
@@ -120,7 +120,7 @@ void* DynamicLinker::getUncertainSymbol(const StringLiteral& symbol) const throw
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return (void*)(::GetProcAddress((HMODULE)handle, symbol));
 #else // unix
-  return dlsym(handle, symbol);
+  return ::dlsym(handle, symbol);
 #endif // flavor
 }
 
@@ -128,15 +128,30 @@ void* DynamicLinker::getUncertainSymbol(const String& symbol) const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));
 #else // unix
-  return dlsym(handle, symbol.getElements());
+  return ::dlsym(handle, symbol.getElements());
 #endif // flavor
+}
+
+bool DynamicLinker::import(StaticFunctionDescriptor* functions, unsigned int numberOfFunctions, bool flags) throw() {
+  bool result = true;
+  for (unsigned int i = 0; i < numberOfFunctions; ++i) {
+    void* address = getUncertainSymbol(functions[i].symbol);
+    if (!address) {
+      result = false;
+      if ((flags & CONTINUE) == 0) {
+        break;
+      }
+    }
+    *functions[i].function = (Function)address;
+  }
+  return result;
 }
 
 DynamicLinker::~DynamicLinker() throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(::FreeLibrary((HMODULE)handle), LinkerException("Unable to close module", this));
 #else // unix
-  assert(dlclose(handle) == 0, LinkerException("Unable to close module", this));
+  assert(::dlclose(handle) == 0, LinkerException("Unable to close module", this));
 #endif // flavor
 }
 

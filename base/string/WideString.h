@@ -23,7 +23,7 @@
 #include <base/string/MultibyteException.h>
 #include <base/string/WideStringException.h>
 #include <base/mem/AllocatorEnumeration.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 
 #if defined(_DK_SDU_MIP__BASE__WIDE)
   #include <wctype.h>
@@ -81,29 +81,29 @@ public:
   static const wchar_t TERMINATOR = L'\0';
 
   /** Returns true if the character an alphabetic character. */
-  static inline bool isAlpha(Character character) {return iswalpha(character);}
+  static inline bool isAlpha(Character character) throw() {return iswalpha(character);}
   /** Returns true if the character an alphabetic character or a digit. */
-  static inline bool isAlphaNum(Character character) {return iswalnum(character);}
+  static inline bool isAlphaNum(Character character) throw() {return iswalnum(character);}
   /** Returns true if the character is lowercase. */
-  static inline bool isLower(Character character) {return iswlower(character);}
+  static inline bool isLower(Character character) throw() {return iswlower(character);}
   /** Returns true if the character is uppercase. */
-  static inline bool isUpper(Character character) {return iswupper(character);}
+  static inline bool isUpper(Character character) throw() {return iswupper(character);}
   /** Returns true if the character is a digit. */
-  static inline bool isDigit(Character character) {return iswdigit(character);}
+  static inline bool isDigit(Character character) throw() {return iswdigit(character);}
   /** Returns true if the character is a hex digit. */
-  static inline bool isHexDigit(Character character) {return iswxdigit(character);}
+  static inline bool isHexDigit(Character character) throw() {return iswxdigit(character);}
   /** Returns true if the character is a white space. */
-  static inline bool isSpace(Character character) {return iswspace(character);}
+  static inline bool isSpace(Character character) throw() {return iswspace(character);}
   /** Returns true if the character is a punctuation mark. */
-  static inline bool isPunctuation(Character character) {return iswpunct(character);}
+  static inline bool isPunctuation(Character character) throw() {return iswpunct(character);}
   /** Returns true if the character is printable. */
-  static inline bool isPrintable(Character character) {return iswprint(character);}
+  static inline bool isPrintable(Character character) throw() {return iswprint(character);}
   /** Returns true if the character is a visible character. */
-  static inline bool isGraph(Character character) {return iswgraph(character);}
+  static inline bool isGraph(Character character) throw() {return iswgraph(character);}
   /** Returns true if the character is a control character. */
-  static inline bool isControl(Character character) {return iswcntrl(character);}
+  static inline bool isControl(Character character) throw() {return iswcntrl(character);}
   /** Returns true if the character is an ASCII character. */
-  static inline bool isASCII(Character character) {return !(character & ~0177);} // TAG: fix this
+  static inline bool isASCII(Character character) throw() {return !(character & ~0177);} // TAG: fix this
 
   /** Converts the character to lowercase. */
   static inline Character toLower(Character character) throw() {return towlower(character);}

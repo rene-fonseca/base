@@ -70,7 +70,8 @@ namespace native {
   int (CALL_GLX *GLX::glXQueryContext)(Display* dpy, GLXContext ctx, int attribute, int* value);
   void (CALL_GLX *GLX::glXSelectEvent)(Display* dpy, GLXDrawable draw, unsigned long event_mask);
   void (CALL_GLX *GLX::glXGetSelectedEvent)(Display* dpy, GLXDrawable draw, unsigned long* event_mask);
-  
+
+  // supports up to OpenGL 1.0
   GLX::FunctionDescriptor GLX_FUNCTIONS_1_0[] = {
     // GLX 1.0
     {"glXChooseVisual", Cast::pointer<GLX::Function*>((void*)&GLX::glXChooseVisual)},
@@ -92,6 +93,7 @@ namespace native {
     {"glXWaitX", Cast::pointer<GLX::Function*>((void*)&GLX::glXWaitX)}
   };
   
+  // supports up to OpenGL 1.0
   // GLX 1.1
   GLX::FunctionDescriptor GLX_FUNCTIONS_1_1[] = {
     {"glXQueryExtensionsString", Cast::pointer<GLX::Function*>((void*)&GLX::glXQueryExtensionsString)},
@@ -99,8 +101,13 @@ namespace native {
     {"glXQueryServerString", Cast::pointer<GLX::Function*>((void*)&GLX::glXQueryServerString)}
   };
   
+  // supports up to OpenGL 1.1
   // GLX 1.2
+  GLX::FunctionDescriptor GLX_FUNCTIONS_1_2[] = {
+    {"glXGetCurrentDisplay", Cast::pointer<GLX::Function*>((void*)&GLX::glXGetCurrentDisplay)}
+  };
   
+  // supports up to OpenGL 1.2
   // GLX 1.3
   GLX::FunctionDescriptor GLX_FUNCTIONS_1_3[] = {
     {"glXGetFBConfigs", Cast::pointer<GLX::Function*>((void*)&GLX::glXGetFBConfigs)},
@@ -117,7 +124,6 @@ namespace native {
     {"glXCreateNewContext", Cast::pointer<GLX::Function*>((void*)&GLX::glXCreateNewContext)},
     {"glXMakeContextCurrent", Cast::pointer<GLX::Function*>((void*)&GLX::glXMakeContextCurrent)},
     {"glXGetCurrentReadDrawable", Cast::pointer<GLX::Function*>((void*)&GLX::glXGetCurrentReadDrawable)},
-    {"glXGetCurrentDisplay", Cast::pointer<GLX::Function*>((void*)&GLX::glXGetCurrentDisplay)},
     {"glXQueryContext", Cast::pointer<GLX::Function*>((void*)&GLX::glXQueryContext)},
     {"glXSelectEvent", Cast::pointer<GLX::Function*>((void*)&GLX::glXSelectEvent)},
     {"glXGetSelectedEvent", Cast::pointer<GLX::Function*>((void*)&GLX::glXGetSelectedEvent)}

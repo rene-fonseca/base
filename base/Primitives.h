@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -121,7 +121,9 @@ typedef MemorySize ULargestInt; // TAG: could be different
 class StringLiteral {
 private:
 
-  /** The number of characters occupied by the message without the terminator. */
+  /**
+    The number of characters occupied by the message without the terminator.
+  */
   unsigned int length;
   /** NULL-terminated literal. */
   const char* literal;
@@ -167,7 +169,9 @@ public:
 class WideStringLiteral {
 private:
   
-  /** The number of characters occupied by the message without the terminator. */
+  /**
+    The number of characters occupied by the message without the terminator.
+  */
   const unsigned int length;
   /** NULL-terminated message. */
   const wchar* message;
@@ -194,6 +198,36 @@ public:
 /** This macro constructs a WideStringLiteral object from the given string literal. */
 #define WIDEMESSAGE(message) \
   WideStringLiteral(sizeof(L ## message)/sizeof(wchar) - 1, L ## message)
+
+
+
+class NativeString {
+private:
+
+  const char* value;
+public:
+
+  inline NativeString(const char* _value) throw() : value(_value) {
+  }
+  
+  inline const char* getValue() const throw() {
+    return value;
+  }
+};
+
+class NativeWideString {
+private:
+
+  const wchar* value;
+public:
+
+  inline NativeWideString(const wchar* _value) throw() : value(_value) {
+  }
+  
+  inline const wchar* getValue() const throw() {
+    return value;
+  }
+};
 
 
 

@@ -25,12 +25,16 @@ template<class KEY, class VALUE>
 class Map : public Collection {
 public:
 
-  /** The type of a node in the map. */
-  typedef Association<KEY, VALUE> Node;
+  /** The type of a key in the map. */
+  typedef KEY Key;
+  /** The type of a value in the map. */
+  typedef VALUE Value;
+  /** The type of an association in the map. */
+  typedef Association<Key, Value> Node;
 private:
 
   /** The associations of the map. */
-  OrderedBinaryTree<Association<KEY, VALUE> > elements;
+  OrderedBinaryTree<Node> elements;
   /** The number of associations in the map. */
   unsigned int size;
 protected:
@@ -56,13 +60,6 @@ protected:
     */
     inline Enumeration(Map& map) throw() :
       OrderedBinaryTree<Node>::Enumeration(map.elements) {}
-
-    /**
-      Returns the next element of the enumeration.
-    */
-//    inline Node* next() throw(EndOfEnumeration) {
-//      return OrderedBinaryTree<Node>::next()->getValue();
-//    }
   };
 
   /**
@@ -85,16 +82,16 @@ protected:
   };
 
   /*
-    Used to implement 'operator[](const KEY& key)'
+    Used to implement 'operator[](const Key& key)'
   */
   class Index {
   protected:
     Map& map;
-    const KEY& key;
+    const Key& key;
   public:
-    inline Index(Map& m, const KEY& k) throw() : map(m), key(k) {}
-    inline VALUE operator=(const VALUE& value) throw(MemoryException) {map.add(key, value); return value;}
-    inline operator VALUE() const throw(InvalidKey) {return map.getValue(key);}
+    inline Index(Map& m, const Key& k) throw() : map(m), key(k) {}
+    inline Value operator=(const Value& value) throw(MemoryException) {map.add(key, value); return value;}
+    inline operator Value() const throw(InvalidKey) {return map.getValue(key);}
   };
 public:
 
@@ -123,8 +120,8 @@ public:
 
     @param key The value to search for.
   */
-  bool isKey(const KEY& key) const throw() {
-    return elements.find(Association<KEY, VALUE>(key));
+  bool isKey(const Key& key) const throw() {
+    return elements.find(Association<Key, Value>(key));
   }
 
   /**
@@ -133,8 +130,8 @@ public:
 
     @param key The key of the value.
   */
-  VALUE getValue(const KEY& key) const throw(InvalidKey) {
-    const OrderedBinaryTree<Association<KEY, VALUE> >::Node* node = elements.find(Association<KEY, VALUE>(key));
+  Value getValue(const Key& key) const throw(InvalidKey) {
+    const OrderedBinaryTree<Association<Key, Value> >::Node* node = elements.find(Association<Key, Value>(key));
     if (!node) {
       throw InvalidKey();
     }
@@ -148,8 +145,8 @@ public:
     @param key The key.
     @param value The value.
   */
-  void add(const KEY& key, const VALUE& value) throw(MemoryException) {
-    Node* result = elements.add(Association<KEY, VALUE>(key, value));
+  void add(const Key& key, const Value& value) throw(MemoryException) {
+    Node* result = elements.add(Association<Key, Value>(key, value));
     if (result) {
       // key already exists
       result->setValue(value); // set the new value
@@ -163,8 +160,8 @@ public:
     Removes the specified key and its associated value from this map. Throws
     'InvalidKey' if the key doesn't exist in this map.
   */
-  void remove(const KEY& key) throw(InvalidKey) {
-    elements.remove(elements.find(Association<KEY, VALUE>(key)));
+  void remove(const Key& key) throw(InvalidKey) {
+    elements.remove(elements.find(Association<Key, Value>(key)));
     --size; // never ends up here if the key doesn't exist
   }
 
@@ -180,7 +177,7 @@ public:
     Returns the value associated with the specified key when used as 'rvalue'.
     When used as 'lvalue' the key is associated with the specified value.
   */
-  inline Index operator[](const KEY& key) throw(InvalidKey, MemoryException) {
+  inline Index operator[](const Key& key) throw(InvalidKey, MemoryException) {
     return Index(*this, key);
   }
 };
@@ -190,7 +187,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>
   Map<KEY, VALUE>::ReadOnlyEnumeration enu(value);
   stream << '{';
   while (enu.hasNext()) {
-    stream << *enu.next()->getValue();
+    stream << *enu.next();
     if (enu.hasNext()) {
       stream << ";";
     }

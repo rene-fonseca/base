@@ -21,22 +21,24 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @author René Møller Fonseca
   @version 1.0
 */
-template<class TYPE, class REF, class PTR>
-class PrefixOrderEnumeration : Enumeration<TYPE, REF, PTR> {
+template<class TYPE, class REF, class PTR, class NODEPTR>
+class PrefixOrderEnumeration : public Enumeration<TYPE, REF, PTR> {
 public:
 
   /** The type of the value. */
   typedef TYPE Value;
-  /** The type of a reference to value. */
+  /** The type of reference to value. */
   typedef REF Reference;
-  /** The type of a pointer to value. */
+  /** The type of pointer to value. */
   typedef PTR Pointer;
+  /** The type of pointer to node. */
+  typedef NODEPTR NodePointer;
 private:
 
   /** The root of the binary tree. */
-  Pointer root;
+  NodePointer root;
   /** The current position in the enumeration. */
-  Pointer node;
+  NodePointer node;
   /** Specifies that more elements are available. */
   bool more;
 public:
@@ -46,7 +48,7 @@ public:
 
     @param n The root node of the binary tree.
   */
-  PrefixOrderEnumeration(Pointer n) throw() : root(n), node(n), more(n != 0) {}
+  PrefixOrderEnumeration(NodePointer n) throw() : root(n), node(n), more(n != 0) {}
 
   /**
     Returns true if there is more elements in this enumeration.
@@ -62,14 +64,14 @@ public:
       throw EndOfEnumeration();
     }
 
-    Pointer result = node;
+    NodePointer result = node;
 
     if (node->getLeft()) { // traverse left subtree
       node = node->getLeft();
     } else if (node->getRight()) { // traverse right subtree
       node = node->getRight();
     } else {
-      Pointer temp;
+      NodePointer temp;
       do { // return from subtree
         if (node == root) {
           more = false;
@@ -82,7 +84,7 @@ public:
       node = node->getRight(); // traverse right subtree - which we know exists
     }
 
-    return result;
+    return result->getValue();
   }
 };
 
@@ -94,8 +96,8 @@ public:
   @author René Møller Fonseca
   @version 1.0
 */
-template<class TYPE, class REF, class PTR>
-class InfixOrderEnumeration : Enumeration<TYPE, REF, PTR> {
+template<class TYPE, class REF, class PTR, class NODEPTR>
+class InfixOrderEnumeration : public Enumeration<TYPE, REF, PTR> {
 public:
 
   /** The type of the value. */
@@ -104,14 +106,16 @@ public:
   typedef REF Reference;
   /** The type of a pointer to value. */
   typedef PTR Pointer;
+  /** The type of pointer to node. */
+  typedef NODEPTR NodePointer;
 private:
 
   /** The states of the infix order traversal state machine */
   typedef enum {TRAVERSE_SUBTREE, RETURN_LEFT, RETURN_RIGHT} Traverse;
   /** The root of the binary tree. */
-  Pointer root;
+  NodePointer root;
   /** The current position in the enumeration. */
-  Pointer node;
+  NodePointer node;
   /** Specifies that more elements are available. */
   bool more;
   /** Specifies that subtree should be traversed. */
@@ -123,7 +127,7 @@ public:
 
     @param n The root node of the binary tree.
   */
-  InfixOrderEnumeration(Pointer n) throw() : root(n), node(n), more(n != 0), traverse(TRAVERSE_SUBTREE) {}
+  InfixOrderEnumeration(NodePointer n) throw() : root(n), node(n), more(n != 0), traverse(TRAVERSE_SUBTREE) {}
 
   /**
     Returns true if there is more elements in this enumeration.
@@ -139,7 +143,7 @@ public:
       throw EndOfEnumeration();
     }
 
-    Pointer result = 0; // indicate no result
+    NodePointer result = 0; // indicate no result
 
     while (true) { // keep looking until we know if end has been reached
 
@@ -153,7 +157,7 @@ public:
 //        if (node->getLeft()) {
 //          node = node->getLeft();
 //          traverse = TRAVERSE_SUBTREE;
-        void* a;
+            void* a;
 //        } else {
 //          traverse = RETURN_LEFT;
 //        }
@@ -161,7 +165,7 @@ public:
 
       case RETURN_LEFT:
         if (result) { // stop if we already have found a result
-          return result;
+          return result->getValue();
         }
         result = node; // this node is the next result
         if (node->getRight()) { // has right node
@@ -177,15 +181,15 @@ public:
 //          node = node->getRight();
 //          traverse = TRAVERSE_SUBTREE;
 //        } else {
-        void* b;
+            void* b;
 //          if (node == root) {
 //            more = false; // we have reached the end of the enumeration
 //            return result;
 //          }
-//          Pointer child = node;
+//          NodePointer child = node;
 //          node = node->getParent();
 //          if (child == node->getLeft()) {
-        void* c;
+            void* c;
 //            traverse = RETURN_LEFT;
 //          } else {
 //            traverse = RETURN_RIGHT;
@@ -194,11 +198,11 @@ public:
 //        break;
 
       case RETURN_RIGHT:
-        Pointer child;
+        NodePointer child;
         do {
           if (node == root) {
             more = false; // we have reached the end of the enumeration
-            return result;
+          return result->getValue();
           }
           child = node;
           node = node->getParent();
@@ -209,9 +213,9 @@ public:
 //          more = false; // we have reached the end of the enumeration
 //          return result;
 //        }
-//        Pointer child = node;
+//        NodePointer child = node;
 //        node = node->getParent();
-	void* d;
+          void* d;
 //        if (child == node->getLeft()) {
 //          traverse = RETURN_LEFT;
 //        } else {
@@ -231,8 +235,8 @@ public:
   @author René Møller Fonseca
   @version 1.0
 */
-template<class TYPE, class REF, class PTR>
-class PostfixOrderEnumeration : Enumeration<TYPE, REF, PTR> {
+template<class TYPE, class REF, class PTR, class NODEPTR>
+class PostfixOrderEnumeration : public Enumeration<TYPE, REF, PTR> {
 public:
 
   /** The type of the value. */
@@ -241,12 +245,14 @@ public:
   typedef REF Reference;
   /** The type of a pointer to value. */
   typedef PTR Pointer;
+  /** The type of pointer to node. */
+  typedef NODEPTR NodePointer;
 private:
 
   /** The root of the binary tree. */
-  Pointer root;
+  NodePointer root;
   /** The current position in the enumeration. */
-  Pointer node;
+  NodePointer node;
   /** Specifies that more elements are available. */
   bool more;
 public:
@@ -256,7 +262,7 @@ public:
 
     @param n The root node of the binary tree.
   */
-  PostfixOrderEnumeration(Pointer n) throw() : root(n), node(n), more(n != 0) {}
+  PostfixOrderEnumeration(NodePointer n) throw() : root(n), node(n), more(n != 0) {}
 
   /**
     Returns true if there is more elements in this enumeration.
@@ -272,28 +278,28 @@ public:
       throw EndOfEnumeration();
     }
 
-    Pointer result = 0;
-while (!result) {
-    if (node->getLeft()) { // traverse left subtree
-      node = node->getLeft();
-    } else if (node->getRight()) { // traverse right subtree
-      node = node->getRight();
-    } else {
-      Pointer temp;
-      do { // return from subtree
-        result = node;
-        if (node == root) {
-          more = false;
-          return result;
-        }
-        temp = node;
-        node = node->getParent();
-      } while ((!node->getRight()) || (temp == node->getRight()));
+    NodePointer result = 0;
+    while (!result) {
+      if (node->getLeft()) { // traverse left subtree
+        node = node->getLeft();
+      } else if (node->getRight()) { // traverse right subtree
+        node = node->getRight();
+      } else {
+        NodePointer temp;
+        do { // return from subtree
+          result = node;
+          if (node == root) {
+            more = false;
+            return result->getValue();
+          }
+          temp = node;
+          node = node->getParent();
+        } while ((!node->getRight()) || (temp == node->getRight()));
 
-      node = node->getRight(); // traverse right subtree - which we know exists
+        node = node->getRight(); // traverse right subtree - which we know exists
+      }
     }
-}
-    return result;
+    return result->getValue();
   }
 };
 
@@ -396,7 +402,7 @@ public:
     @author René Møller Fonseca
     @version 1.0
   */
-  class Enumeration : public PrefixOrderEnumeration<Node, Node&, Node*> {
+  class Enumeration : public PrefixOrderEnumeration<Value, Value&, Value*, Node*> {
   public:
 
     /**
@@ -406,7 +412,7 @@ public:
       @param tree The binary tree being enumerated.
     */
     inline Enumeration(BinaryTree& tree) throw() :
-      PrefixOrderEnumeration<Node, Node&, Node*>(tree.getRoot()) {}
+      PrefixOrderEnumeration<Value, Value&, Value*, Node*>(tree.getRoot()) {}
   };
 
   /**
@@ -415,7 +421,7 @@ public:
     @author René Møller Fonseca
     @version 1.0
   */
-  class ReadOnlyEnumeration : public PrefixOrderEnumeration<Node, const Node&, const Node*> {
+  class ReadOnlyEnumeration : public PrefixOrderEnumeration<Value, const Value&, const Value*, const Node*> {
   public:
 
     /**
@@ -425,7 +431,7 @@ public:
       @param tree The binary tree being enumerated.
     */
     inline ReadOnlyEnumeration(const BinaryTree& tree) throw() :
-      PrefixOrderEnumeration<Node, const Node&, const Node*>(tree.getRoot()) {}
+      PrefixOrderEnumeration<Value, const Value&, const Value*, const Node*>(tree.getRoot()) {}
   };
 
   /**

@@ -28,6 +28,9 @@ private:
   KEY key;
   /** The value associated with the key. */
   VALUE value;
+
+  /* Disable the default assignment operator. */
+  Association& operator=(const Association& eq);
 public:
 
   /**
@@ -36,6 +39,11 @@ public:
     @param key The
   */
   inline Association(const KEY& k) throw() : key(k) {}
+
+  /**
+    Initializes association from other association.
+  */
+  inline Association(const Association& copy) throw() : key(copy.key), value(copy.value) {}
 
   /**
     Initializes an association with the specified key and value.

@@ -90,6 +90,90 @@ public:
   inline void setValue(TYPE value) throw() {this->value = value;}
 };
 
+
+
+///**
+//  Automation pointer that allows transfer of ownership and automatic deletion of the object. Do not construct more than one automation pointer from the 'normal' pointer.
+//
+//  @author René Møller Fonseca
+//  @version 1.0
+//*/
+//
+//template<class TYPE>
+//class BinaryNodePointer {
+//public:
+//
+//  /** Type of value. */
+//  typedef TYPE Value;
+//  /** Pointer to value. */
+//  typedef TYPE* Pointer;
+//  /** Reference to value. */
+//  typedef TYPE& Reference;
+//  /** Type of node. */
+//  typedef BinaryNode<Value> Node;
+//private:
+//
+//  /** Pointer to binary node. */
+//  Node* ptr;
+//public:
+//
+//  /**
+//    Initializes the pointer.
+//
+//    @param value The pointer to be automated.
+//  */
+//  explicit inline BinaryNodePointer(Node value = 0) throw() : ptr(value) {}
+//
+//  /**
+//    Copy constructor. Transfers ownership from copy to this object (copy loses ownership).
+//  */
+//  inline BinaryNodePointer(BinaryNodePointer& copy) throw() : ptr(copy.ptr) {}
+//
+//  /**
+//    Assignment operator.
+//  */
+//  inline BinaryNodePointer& operator=(BinaryNodePointer& obj) throw() {
+//    if (&obj != this) { // protect against self assignment
+//      ptr = obj.ptr;
+//    }
+//    return *this;
+//  }
+//
+//  /**
+//    Returns mutable value of binary node.
+//  */
+//  inline Reference operator*() throw(NullPointer) {
+//    if (!ptr) {
+//      throw NullPointer();
+//    }
+//    return *ptr->getValue();
+//  }
+//
+//  /**
+//    Returns constant value of binary node.
+//  */
+//  inline const Reference operator*() const throw(NullPointer) {
+//    if (!ptr) {
+//      throw NullPointer();
+//    }
+//    return *ptr->getValue();
+//  }
+//
+//  /**
+//    Returns mutable value of binary node.
+//  */
+//  inline Pointer operator->() throw() {
+//    return ptr->getValue();
+//  }
+//
+//  /**
+//    Returns constant value of binary node.
+//  */
+//  inline const Pointer operator->() const throw() {
+//    return ptr->getValue();
+//  }
+//};
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

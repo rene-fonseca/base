@@ -137,7 +137,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Set<TYPE>& valu
   Set<TYPE>::ReadOnlyEnumeration enu(value);
   stream << '{';
   while (enu.hasNext()) {
-    stream << *enu.next()->getValue();
+    stream << *enu.next();
     if (enu.hasNext()) {
       stream << ";";
     }

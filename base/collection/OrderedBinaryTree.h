@@ -23,6 +23,11 @@ template<class TYPE>
 class OrderedBinaryTree : protected BinaryTree<TYPE> {
 public:
 
+  /** The type of the value. */
+  typedef TYPE Value;
+  /** The type of the node. */
+  typedef typename BinaryTree<TYPE>::Node Node;
+
   class Enumeration;
   friend class Enumeration;
   class ReadOnlyEnumeration;
@@ -34,7 +39,7 @@ public:
     @author René Møller Fonseca
     @version 1.0
   */
-  class Enumeration : public InfixOrderEnumeration<Node, Node&, Node*> {
+  class Enumeration : public InfixOrderEnumeration<Value, Value&, Value*, Node*> {
   public:
 
     /**
@@ -44,7 +49,7 @@ public:
       @param tree The ordered binary tree being enumerated.
     */
     inline Enumeration(OrderedBinaryTree& tree) throw() :
-      InfixOrderEnumeration<Node, Node&, Node*>(tree.getRoot()) {}
+      InfixOrderEnumeration<Value, Value&, Value*, Node*>(tree.getRoot()) {}
   };
 
   /**
@@ -53,7 +58,7 @@ public:
     @author René Møller Fonseca
     @version 1.0
   */
-  class ReadOnlyEnumeration : public InfixOrderEnumeration<Node, const Node&, const Node*> {
+  class ReadOnlyEnumeration : public InfixOrderEnumeration<Value, const Value&, const Value*, const Node*> {
   public:
 
     /**
@@ -63,7 +68,7 @@ public:
       @param tree The ordered binary tree being enumerated.
     */
     inline ReadOnlyEnumeration(const OrderedBinaryTree& tree) throw() :
-      InfixOrderEnumeration<Node, const Node&, const Node*>(tree.getRoot()) {}
+      InfixOrderEnumeration<Value, const Value&, const Value*, const Node*>(tree.getRoot()) {}
   };
 
   /**

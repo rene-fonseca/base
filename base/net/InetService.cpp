@@ -16,7 +16,7 @@
 #include <base/ByteOrder.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  include <winsock.h>
+#  include <winsock2.h>
 #else // unix
 #  include <netdb.h>
 #  include <netinet/in.h>
@@ -28,7 +28,8 @@ unsigned short InetService::getByName(const String& name, const String& protocol
   struct servent* sp;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   sp = getservbyname(name.getElements(), protocol.getElements()); // MT-safe
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
+       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   sp = getservbyname_r(name.getElements(), protocol.getElements(), &result, buffer, sizeof(buffer));
@@ -47,7 +48,8 @@ String InetService::getByPort(unsigned short port, const String& protocol) throw
   struct servent* sp;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   sp = getservbyport(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements()); // MT-safe
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
+       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   sp = getservbyport_r(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements(), &result, buffer, sizeof(buffer));

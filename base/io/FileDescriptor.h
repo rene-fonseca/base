@@ -22,7 +22,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  The FileDescriptor class serves as a general handle to a source or sink of bytes within the operatingsystem (e.g. file, socket and pipe). This class is normally not used directly by the application.
+  The FileDescriptor class serves as a general handle to a source or sink of
+  bytes within the operatingsystem (e.g. file, socket and pipe). This class is
+  normally not used directly by the application.
 
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -94,6 +96,9 @@ protected:
     ~Descriptor() throw(IOException);
   };
 
+  /** Invalid descriptor. */
+  static Descriptor invalid;
+  
   /** Reference counted handle to file descriptor. */
   ReferenceCountedObjectPointer<Descriptor> fd;
 public:

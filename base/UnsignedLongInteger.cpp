@@ -24,8 +24,9 @@ unsigned long long UnsignedLongInteger::parse(const String& string, unsigned int
   while ((i < end) && (*i == ' ')) {
     ++i; // eat space
   }
-  
-  assert(i < end, InvalidFormat("String is empty", Type::getType<UnsignedLongInteger>())); // do not accept empty strings
+
+  // do not accept empty strings
+  assert(i < end, InvalidFormat("String is empty", Type::getType<UnsignedLongInteger>()));
   
   switch (accept) {
   case BIN:
@@ -46,7 +47,6 @@ unsigned long long UnsignedLongInteger::parse(const String& string, unsigned int
 
   if (accept & PREFIX) {
     // determine base by looking at prefix (0b: binary, 0x: hex, 0: octal, other: decimal)
-    char first = *i;
     if (*i == '0') { // is binary, octal, or hex
       ++i;
       if (i < end) { // has second char

@@ -15,8 +15,8 @@
 #include <base/xml/XMLTree.h>
 
 #if defined(_DK_SDU_MIP__BASE__XML_GNOME)
-  #include <gnome-xml/parser.h>
-  #include <stdlib.h>
+#  include <gnome-xml/parser.h>
+#  include <stdlib.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -184,13 +184,28 @@ bool XMLTree::write(String& buffer) const throw(MemoryException) {
 
 #else // no xml support
 
-void XMLTree::release() throw() {}
-XMLTree::XMLTree() throw() {}
-XMLTree::XMLTree(const XMLTree& copy) throw() {}
-void XMLTree::setRoot(XMLNode* node) throw() {}
-bool XMLTree::read(const String& buffer) throw(MemoryException) {}
-bool XMLTree::write(String& buffer) const throw(MemoryException) {}
-XMLTree::~XMLTree() throw() {}
+void XMLTree::release() throw() {
+}
+
+XMLTree::XMLTree() throw() {
+}
+
+XMLTree::XMLTree(const XMLTree& copy) throw() {
+}
+
+void XMLTree::setRoot(XMLNode* node) throw() {
+}
+
+bool XMLTree::read(const String& buffer) throw(MemoryException) {
+  return false;
+}
+
+bool XMLTree::write(String& buffer) const throw(MemoryException) {
+  return false;
+}
+
+XMLTree::~XMLTree() throw() {
+}
 
 #endif
 

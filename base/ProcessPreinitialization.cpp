@@ -21,10 +21,10 @@
 #include <stdlib.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
+#  include <windows.h>
 #else
-  #include <time.h> // time_t
-  #include <pthread.h> // pthread_t
+#  include <time.h> // time_t
+#  include <pthread.h> // pthread_t
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -41,7 +41,7 @@ namespace internal {
     // the original unhandled exception filter
     LPTOP_LEVEL_EXCEPTION_FILTER originalExceptionFilter;
     
-    LONG __stdcall exceptionFilter(EXCEPTION_POINTERS* exception) {
+    LONG _DK_SDU_MIP__BASE__CALL_PASCAL exceptionFilter(EXCEPTION_POINTERS* exception) {
       char errorMessage[sizeof("System exception 0x################ (floating-point exception) at 0x################")]; // worst case
       char* dest = errorMessage;
       copy<char>(dest, "System exception 0x", sizeof("System exception 0x") - 1);

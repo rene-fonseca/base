@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
 namespace win32 {
-  extern "C" void __stdcall OutputDebugStringA(const char*);
+  extern "C" void _DK_SDU_MIP__BASE__CALL_PASCAL OutputDebugStringA(const char*);
 #define OutputDebugString OutputDebugStringA
 };
 #endif // cygwin
@@ -58,11 +58,9 @@ void Trace::member(const void* pointer, const char* message) throw() {
   }
   unsigned int length = src - message;
   char buffer[sizeof("0x1234567812345678 >> ") + length];
-#if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
-  sprintf(buffer, "%08x >> %s", pointer, message); // sprintf must be MT-safe
-#elif (_DK_SDU_MIP__BASE__INT_SIZE == 8)
-  sprintf(buffer, "%016x >> %s", pointer, message); // sprintf must be MT-safe
-#else
+  // TAG: remove sprintf dependency
+  sprintf(buffer, "%p >> %s", pointer, message); // sprintf must be MT-safe
+#if (_DK_SDU_MIP__BASE__INT_SIZE > 8)
 #  error pointer type not supported
 #endif
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)

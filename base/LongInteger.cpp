@@ -17,7 +17,6 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 long long LongInteger::parse(const String& string, bool withoutSign) throw(InvalidFormat) {
-  unsigned int base = 10; // default integer base
   String::ReadIterator i = string.getBeginReadIterator();
   const String::ReadIterator end = string.getEndReadIterator();
 

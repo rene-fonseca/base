@@ -27,7 +27,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 void SystemLogger::write(MessageType type, const String& message) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   static WORD messageType[] = {EVENTLOG_INFORMATION_TYPE, EVENTLOG_WARNING_TYPE, EVENTLOG_ERROR_TYPE};
-  LPCTSTR source;
   HANDLE eventSource;
   Application* application = Application::getApplication();
   if (application) {

@@ -157,7 +157,15 @@ public:
     ((HWND)0), // no parent or owner window
                                         //isWindows2000OrLater ? ((HWND)-3) : ((HWND)0), // (HWND(-3)) ~ HWND_MESSAGE
                                         DWORD dispatchResult;
-  LRESULT result2 = ::SendMessageTimeout(messageWindow, 10000+WM_QUIT, Application::EXIT_CODE_EXTERNAL, 0, SMTO_NORMAL, 3000, &dispatchResult);
+  LRESULT result2 = ::SendMessageTimeout(
+    messageWindow,
+    10000+WM_QUIT,
+    Application::EXIT_CODE_EXTERNAL,
+    0,
+    SMTO_NORMAL,
+    3000,
+    &dispatchResult
+  );
 #endif // disabled
   
   static BOOL WINAPI signalHandler(DWORD signal) throw() {
@@ -344,14 +352,20 @@ void Application::initialize() throw() {
   std::set_unexpected(ApplicationImpl::unexpectedExceptionHandler);
 }
 
-Application::Application(const String& name) throw(SingletonException) :
-  exitCode(EXIT_CODE_NORMAL), formalName(name), terminated(false), hangingup(false) {
+Application::Application(const String& _formalName) throw(SingletonException) :
+  formalName(_formalName),
+  exitCode(EXIT_CODE_NORMAL),
+  terminated(false),
+  hangingup(false) {
   initialize();
   application = this;
 }
 
-Application::Application(const String& name, int numberOfArguments, const char* arguments[], const char* environment[]) throw(SingletonException, OutOfDomain) :
-  exitCode(EXIT_CODE_NORMAL), formalName(name), terminated(false), hangingup(false) {
+Application::Application(const String& _formalName, int numberOfArguments, const char* arguments[], const char* environment[]) throw(SingletonException, OutOfDomain) :
+  formalName(_formalName),
+  exitCode(EXIT_CODE_NORMAL),
+  terminated(false),
+  hangingup(false) {
   initialize();
 
   assert((numberOfArguments > 0) && (arguments), OutOfDomain(this));
@@ -363,7 +377,7 @@ Application::Application(const String& name, int numberOfArguments, const char* 
 #else
   path = arguments[0]; // TAG: fixme
 #endif
-  for (unsigned int i = 1; i < numberOfArguments; ++i) {
+  for (int i = 1; i < numberOfArguments; ++i) {
     this->arguments.append(arguments[i]);
   }
 

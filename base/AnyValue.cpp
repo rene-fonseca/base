@@ -75,6 +75,12 @@ AnyValue::AnyValue(const AnyValue& copy) throw()
   case BOOLEAN:
     boolean = copy.boolean;
     break;
+  case SHORT_INTEGER:
+    shortInteger = copy.shortInteger;
+    break;
+  case UNSIGNED_SHORT_INTEGER:
+    unsignedShortInteger = copy.unsignedShortInteger;
+    break;
   case INTEGER:
     integer = copy.integer;
     break;
@@ -115,10 +121,13 @@ AnyValue& AnyValue::operator=(const AnyValue& eq) throw() {
         wideString = WideString();
       }
       break;
+    default:
+      break;
     }
     representation = eq.representation;
     switch (representation) {
     case VOID:
+      break;
     case CHARACTER:
       character = eq.character;
       break;
@@ -127,6 +136,12 @@ AnyValue& AnyValue::operator=(const AnyValue& eq) throw() {
       break;
     case BOOLEAN:
       boolean = eq.boolean;
+      break;
+    case SHORT_INTEGER:
+      shortInteger = eq.shortInteger;
+      break;
+    case UNSIGNED_SHORT_INTEGER:
+      unsignedShortInteger = eq.unsignedShortInteger;
       break;
     case INTEGER:
       integer = eq.integer;
@@ -167,6 +182,10 @@ Type AnyValue::getType() const throw() {
     return Type::getType<wchar>();
   case BOOLEAN:
     return Type::getType<bool>();
+  case SHORT_INTEGER:
+    return Type::getType<short>();
+  case UNSIGNED_SHORT_INTEGER:
+    return Type::getType<unsigned short>();
   case INTEGER:
     return Type::getType<int>();
   case UNSIGNED_INTEGER:
@@ -183,6 +202,8 @@ Type AnyValue::getType() const throw() {
     return Type::getType<String>();
   case WIDE_STRING:
     return Type::getType<WideString>();
+  default:
+    return Type(); // uninitialized    
   }
 }
 
@@ -242,6 +263,8 @@ AnyValue& AnyValue::operator=(char value) throw() {
   case WIDE_STRING:
     wideString = WideString();
     break;
+  default:
+    break;
   }
   character = value;
   representation = CHARACTER;
@@ -255,6 +278,8 @@ AnyValue& AnyValue::operator=(wchar value) throw() {
     break;
   case WIDE_STRING:
     wideString = WideString();
+    break;
+  default:
     break;
   }
   wideCharacter = value;
@@ -270,6 +295,8 @@ AnyValue& AnyValue::operator=(bool value) throw() {
   case WIDE_STRING:
     wideString = WideString();
     break;
+  default:
+    break;
   }
   boolean = value;
   representation = BOOLEAN;
@@ -283,6 +310,8 @@ AnyValue& AnyValue::operator=(short value) throw() {
     break;
   case WIDE_STRING:
     wideString = WideString();
+    break;
+  default:
     break;
   }
   shortInteger = value;
@@ -298,6 +327,8 @@ AnyValue& AnyValue::operator=(unsigned short value) throw() {
   case WIDE_STRING:
     wideString = WideString();
     break;
+  default:
+    break;
   }
   unsignedShortInteger = value;
   representation = UNSIGNED_SHORT_INTEGER;
@@ -311,6 +342,8 @@ AnyValue& AnyValue::operator=(int value) throw() {
     break;
   case WIDE_STRING:
     wideString = WideString();
+    break;
+  default:
     break;
   }
   integer = value;
@@ -326,6 +359,8 @@ AnyValue& AnyValue::operator=(unsigned int value) throw() {
   case WIDE_STRING:
     wideString = WideString();
     break;
+  default:
+    break;
   }
   unsignedInteger = value;
   representation = UNSIGNED_INTEGER;
@@ -339,6 +374,8 @@ AnyValue& AnyValue::operator=(long value) throw() {
     break;
   case WIDE_STRING:
     wideString = WideString();
+    break;
+  default:
     break;
   }
   longInteger = value;
@@ -354,6 +391,8 @@ AnyValue& AnyValue::operator=(unsigned long value) throw() {
   case WIDE_STRING:
     wideString = WideString();
     break;
+  default:
+    break;
   }
   unsignedLongInteger = value;
   representation = UNSIGNED_LONG_INTEGER;
@@ -368,6 +407,8 @@ AnyValue& AnyValue::operator=(long long value) throw() {
   case WIDE_STRING:
     wideString = WideString();
     break;
+  default:
+    break;
   }
   longLongInteger = value;
   representation = LONG_LONG_INTEGER;
@@ -381,6 +422,8 @@ AnyValue& AnyValue::operator=(unsigned long long value) throw() {
     break;
   case WIDE_STRING:
     wideString = WideString();
+    break;
+  default:
     break;
   }
   unsignedLongLongInteger = value;
@@ -434,8 +477,6 @@ AnyValue& AnyValue::operator=(const WideString& value) throw() {
   return *this;
 }
 
-
-
 char AnyValue::getChar() const throw() {
   switch (representation) {
   case VOID:
@@ -472,6 +513,8 @@ char AnyValue::getChar() const throw() {
       }
       return first;
     }
+    return 0;
+  default:
     return 0;
   }
 }
@@ -513,6 +556,8 @@ wchar AnyValue::getWideChar() const throw() {
     return 0;
   case WIDE_STRING:
     return wideString.isProper() ? wideString[0] : 0;
+  default:
+    return 0;
   }
 }
 
@@ -546,6 +591,8 @@ bool AnyValue::getBoolean() const throw() {
     return string.isProper();
   case WIDE_STRING:
     return wideString.isProper();
+  default:
+    return false;
   }
 }
 
@@ -579,6 +626,8 @@ short AnyValue::getShortInteger() const throw() {
     return ShortInteger::parse(string);
   case WIDE_STRING:
     return ShortInteger::parse(wideString.getMultibyteString());
+  default:
+    return 0;
   }
 }
 
@@ -612,6 +661,8 @@ unsigned short AnyValue::getUnsignedShortInteger() const throw() {
     return ShortInteger::parse(string, true);
   case WIDE_STRING:
     return ShortInteger::parse(wideString.getMultibyteString(), true);
+  default:
+    return 0;
   }
 }
 
@@ -645,6 +696,8 @@ int AnyValue::getInteger() const throw() {
     return Integer::parse(string);
   case WIDE_STRING:
     return Integer::parse(wideString.getMultibyteString());
+  default:
+    return 0;
   }
 }
 
@@ -678,6 +731,8 @@ unsigned int AnyValue::getUnsignedInteger() const throw() {
     return Integer::parse(string, true);
   case WIDE_STRING:
     return Integer::parse(wideString.getMultibyteString(), true);
+  default:
+    return 0;
   }
 }
 
@@ -711,6 +766,8 @@ long AnyValue::getLongInteger() const throw() {
     return Integer::parse(string); // TAG: make sure long and int are compatible
   case WIDE_STRING:
     return Integer::parse(wideString.getMultibyteString()); // TAG: make sure long and int are compatible
+  default:
+    return 0;
   }
 }
 
@@ -744,6 +801,8 @@ unsigned long AnyValue::getUnsignedLongInteger() const throw() {
     return Integer::parse(string, true); // TAG: make sure long and int are compatible
   case WIDE_STRING:
     return Integer::parse(wideString.getMultibyteString(), true); // TAG: make sure long and int are compatible
+  default:
+    return 0;
   }
 }
 
@@ -777,6 +836,8 @@ long long AnyValue::getLongLongInteger() const throw() {
     return LongInteger::parse(string);
   case WIDE_STRING:
     return LongInteger::parse(wideString.getMultibyteString());
+  default:
+    return 0;
   }
 }
 
@@ -810,6 +871,8 @@ unsigned long long AnyValue::getUnsignedLongLongInteger() const throw() {
     return LongInteger::parse(string, true);
   case WIDE_STRING:
     return LongInteger::parse(wideString.getMultibyteString(), true);
+  default:
+    return 0;
   }
 }
 
@@ -831,6 +894,8 @@ String AnyValue::getString() const throw() {
     return string;
   case WIDE_STRING:
     return wideString.getMultibyteString(); // multi-byte character string
+  default:
+    break;
   }
 
   StringOutputStream stream;
@@ -856,6 +921,8 @@ String AnyValue::getString() const throw() {
   case UNSIGNED_LONG_LONG_INTEGER:
     stream << unsignedLongLongInteger;
     break;
+  default:
+    break;
   }
   stream << FLUSH;
   return stream.getString();
@@ -875,6 +942,8 @@ WideString AnyValue::getWideString() const throw() {
     return string;
   case WIDE_STRING:
     return wideString;
+  default:
+    break;
   }
   
   StringOutputStream stream;
@@ -900,6 +969,8 @@ WideString AnyValue::getWideString() const throw() {
   case UNSIGNED_LONG_LONG_INTEGER:
     stream << unsignedLongLongInteger;
     break;
+  default:
+    break;
   }
   stream << FLUSH;
   return stream.getString();
@@ -915,6 +986,8 @@ void AnyValue::setChar(char value) throw() {
   case WIDE_STRING:
     wideString = WideString();
     break;
+  default:
+    break;
   }
   character = value;
   representation = CHARACTER;
@@ -927,6 +1000,8 @@ void AnyValue::setWideChar(wchar value) throw() {
     break;
   case WIDE_STRING:
     wideString = WideString();
+    break;
+  default:
     break;
   }
   wideCharacter = value;
@@ -941,6 +1016,8 @@ void AnyValue::setBoolean(bool value) throw() {
   case WIDE_STRING:
     wideString = WideString();
     break;
+  default:
+    break;
   }
   boolean = value;
   representation = BOOLEAN;
@@ -953,6 +1030,8 @@ void AnyValue::setShortInteger(short value) throw() {
     break;
   case WIDE_STRING:
     wideString = WideString();
+    break;
+  default:
     break;
   }
   shortInteger = value;
@@ -967,6 +1046,8 @@ void AnyValue::setUnsignedShortInteger(unsigned short value) throw() {
   case WIDE_STRING:
     wideString = WideString();
     break;
+  default:
+    break;
   }
   unsignedShortInteger = value;
   representation = UNSIGNED_SHORT_INTEGER;
@@ -979,6 +1060,8 @@ void AnyValue::setInteger(int value) throw() {
     break;
   case WIDE_STRING:
     wideString = WideString();
+    break;
+  default:
     break;
   }
   integer = value;
@@ -993,6 +1076,8 @@ void AnyValue::setUnsignedInteger(unsigned int value) throw() {
   case WIDE_STRING:
     wideString = WideString();
     break;
+  default:
+    break;
   }
   unsignedInteger = value;
   representation = UNSIGNED_INTEGER;
@@ -1005,6 +1090,8 @@ void AnyValue::setLongInteger(long value) throw() {
     break;
   case WIDE_STRING:
     wideString = WideString();
+    break;
+  default:
     break;
   }
   longInteger = value;
@@ -1019,6 +1106,8 @@ void AnyValue::setUnsignedLongInteger(unsigned long value) throw() {
   case WIDE_STRING:
     wideString = WideString();
     break;
+  default:
+    break;
   }
   unsignedLongInteger = value;
   representation = UNSIGNED_LONG_INTEGER;
@@ -1032,6 +1121,8 @@ void AnyValue::setLongLongInteger(long long value) throw() {
   case WIDE_STRING:
     wideString = WideString();
     break;
+  default:
+    break;
   }
   longLongInteger = value;
   representation = LONG_LONG_INTEGER;
@@ -1044,6 +1135,8 @@ void AnyValue::setUnsignedLongLongInteger(unsigned long long value) throw() {
     break;
   case WIDE_STRING:
     wideString = WideString();
+    break;
+  default:
     break;
   }
   unsignedLongLongInteger = value;
@@ -1074,32 +1167,48 @@ void AnyValue::setWideString(const WideString& value) throw() {
 FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value) throw(IOException) {
   switch (value.representation) {
   case AnyValue::CHARACTER:
-    return stream << value.character;
+    stream << value.character;
+    break;
   case AnyValue::WIDE_CHARACTER:
-    return stream << value.wideCharacter;
+    stream << value.wideCharacter;
+    break;
   case AnyValue::BOOLEAN:
-    return stream << value.boolean;
+    stream << value.boolean;
+    break;
   case AnyValue::SHORT_INTEGER:
-    return stream << value.shortInteger;
+    stream << value.shortInteger;
+    break;
   case AnyValue::UNSIGNED_SHORT_INTEGER:
-    return stream << value.unsignedShortInteger;
+    stream << value.unsignedShortInteger;
+    break;
   case AnyValue::INTEGER:
-    return stream << value.integer;
+    stream << value.integer;
+    break;
   case AnyValue::UNSIGNED_INTEGER:
-    return stream << value.unsignedInteger;
+    stream << value.unsignedInteger;
+    break;
   case AnyValue::LONG_INTEGER:
-    return stream << value.longInteger;
+    stream << value.longInteger;
+    break;
   case AnyValue::UNSIGNED_LONG_INTEGER:
-    return stream << value.unsignedLongInteger;
+    stream << value.unsignedLongInteger;
+    break;
   case AnyValue::LONG_LONG_INTEGER:
-    return stream << value.longLongInteger;
+    stream << value.longLongInteger;
+    break;
   case AnyValue::UNSIGNED_LONG_LONG_INTEGER:
-    return stream << value.unsignedLongLongInteger;
+    stream << value.unsignedLongLongInteger;
+    break;
   case AnyValue::STRING:
-    return stream << value.string;
+    stream << value.string;
+    break;
   case AnyValue::WIDE_STRING:
-    return stream << value.wideString;
+    stream << value.wideString;
+    break;
+  default:
+    break;
   }
+  return stream;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -52,7 +52,9 @@ public:
   /**
     Initializes XML attribute from other XML attribute.
   */
-  inline XMLProperty(const XMLProperty& copy) throw() : name(copy.name), value(copy.value) {}
+  inline XMLProperty(const XMLProperty& copy) throw()
+    : name(copy.name), value(copy.value) {
+  }
 
   /**
     Assignemnt of attribute by attribute.
@@ -66,22 +68,32 @@ public:
   /**
     Returns the name of the property.
   */
-  inline const String& getName() const throw() {return name;}
+  inline const String& getName() const throw() {
+    return name;
+  }
 
   /**
     Returns the value of the property.
   */
-  inline const String& getValue() const throw() {return value;}
+  inline const String& getValue() const throw() {
+    return value;
+  }
 
   /**
     Sets the value of the property.
   */
-  inline const String& setValue(const String& value) {this->value = value;}
+  inline void setValue(const String& value) {
+    this->value = value;
+  }
 };
 
-inline XMLProperty::XMLProperty(const String& n) throw() : name(n) {}
+inline XMLProperty::XMLProperty(const String& _name) throw()
+  : name(_name) {
+}
 
-inline XMLProperty::XMLProperty(const String& n, const String& v) throw() : name(n), value(v) {}
+inline XMLProperty::XMLProperty(const String& _name, const String& _value) throw()
+  : name(_name), value(_value) {
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

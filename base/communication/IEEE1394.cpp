@@ -378,6 +378,11 @@ IEEE1394::IsochronousReadRequest IEEE1394::IsochronousReadChannelImpl::dequeue()
   throw IEEE1394Exception("Channel is closed", this);
 }
 
+unsigned int IEEE1394::IsochronousReadChannelImpl::dequeue(unsigned int requests, unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
+  assert(microseconds <= 999999999, OutOfDomain(this));
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
 bool IEEE1394::IsochronousReadChannelImpl::wait(unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
   assert(microseconds <= 999999999, OutOfDomain(this));
   throw IEEE1394Exception("Channel is closed", this);

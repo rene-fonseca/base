@@ -121,12 +121,14 @@ public:
 
   /** Exception causes. */
   enum ExceptionCause {
-    NODE_NOT_PRESENT = 1,
+    NODE_NOT_PRESENT,
     NO_GENERAL_CONFIGURATION_ROM,
     INVALID_BUS_INFORMATION_BLOCK,
     INVALID_ROOT_DIRECTORY_BLOCK,
     INVALID_DEVICE_INDEPENDENT_BLOCK,
     INVALID_DEVICE_DEPENDENT_BLOCK,
+    UNABLE_TO_OPEN_CHANNEL,
+    INVALID_REQUEST,
     REQUEST_NOT_READY,
     REQUEST_NOT_PENDING,
     UNABLE_TO_READ,
@@ -375,7 +377,7 @@ public:
 
   /** Isochronous request type. */
   enum IsochronousRequestType {
-    INVALID_REQUEST, /**< Invalid request. */
+    NOT_A_REQUEST, /**< Invalid request. */
     READ_PACKETS_REQUEST, /**< Read packets request. */
     READ_FIXED_PACKETS_REQUEST, /**< Read fixed packets request. */
     READ_FIXED_DATA_REQUEST, /**< Read fixed data request. */
@@ -1069,6 +1071,12 @@ public:
     /** Context information. */
     ReferenceCountedObjectPointer<IsochronousReadFixedDataRequestImpl> context;
   public:
+
+    /**
+      Initializes invalid request.
+    */
+    inline IsochronousReadFixedDataRequest() throw() : context(0) {
+    }
     
     /**
       Initializes object.
@@ -1321,7 +1329,7 @@ public:
       } else if (dynamic_cast<IsochronousReadFixedDataRequestImpl*>(context.getValue())) {
         return READ_FIXED_DATA_REQUEST;
       } else {
-        return INVALID_REQUEST;
+        return NOT_A_REQUEST;
       }
     }
     
@@ -1785,7 +1793,7 @@ public:
       } else if (dynamic_cast<IsochronousWriteDataRequestImpl*>(context.getValue())) {
         return WRITE_DATA_REQUEST;
       } else {
-        return INVALID_REQUEST;
+        return NOT_A_REQUEST;
       }
     }
     
@@ -1883,10 +1891,20 @@ public:
     /**
       Returns the next completed request.
 
-      @return INVALID_REQUEST if no request is available in the completion queue.
+      @return NOT_A_REQUEST if no request is available in the completion queue.
     */
     virtual IsochronousReadRequest dequeue() throw(IEEE1394Exception);
-    
+
+    /**
+      Dequeues the specified number of requests.
+      
+      @param request The number of request to dequeue.
+      @param microseconds The timeout period in microseconds [0; 999999999].
+
+      @return The number of dequeued requests.
+    */
+    virtual unsigned int dequeue(unsigned int requests, unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception);
+
     /**
       Wait for an event.
 
@@ -1961,7 +1979,7 @@ public:
     /**
       Returns the next completed request.
 
-      @return INVALID_REQUEST if no request is available in the completion queue.
+      @return NOT_A_REQUEST if no request is available in the completion queue.
     */
     virtual IsochronousWriteRequest dequeue() throw(IEEE1394Exception);
     
@@ -2155,10 +2173,22 @@ public:
     /**
       Returns the next completed request.
 
-      @return INVALID_REQUEST if no request is available in the completion queue.
+      @return NOT_A_REQUEST if no request is available in the completion queue.
     */
     inline IsochronousReadRequest dequeue() throw(IEEE1394Exception) {
       return readChannel->dequeue();
+    }
+    
+    /**
+      Dequeues the specified number of requests.
+      
+      @param request The number of request to dequeue.
+      @param microseconds The timeout period in microseconds [0; 999999999].
+
+      @return The number of dequeued requests.
+    */
+    inline unsigned int dequeue(unsigned int requests, unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
+      return readChannel->dequeue(requests, microseconds);
     }
     
     /**
@@ -2287,7 +2317,7 @@ public:
     /**
       Returns the next completed request.
 
-      @return INVALID_REQUEST if no request is available in the completion queue.
+      @return NOT_A_REQUEST if no request is available in the completion queue.
     */
     inline IsochronousWriteRequest dequeue() throw(IEEE1394Exception) {
       return writeChannel->dequeue();

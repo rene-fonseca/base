@@ -328,6 +328,26 @@ public:
   void setSendBufferSize(int size) throw(IOException);
 
   /**
+    Returns true of the Nagle's algorithm is disabled.
+  */
+  bool getTcpNoDelay() const throw(IOException);
+
+  /**
+    Disables/enables the Nagle's algorithm.
+  */
+  void setTcpNoDelay(bool value) throw(IOException);
+  
+  /**
+    Returns the current time to live (TTL) value.
+  */
+  unsigned int getTimeToLive() const throw(IOException);
+  
+  /**
+    Sets the time to live (TTL) value.
+  */
+  void setTimeToLive(unsigned int value) throw(IOException);
+  
+  /**
     Sets the blocking mode of the socket.
   */
   void setNonBlocking(bool value) throw(IOException);

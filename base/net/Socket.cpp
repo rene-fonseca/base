@@ -18,6 +18,7 @@
 #include <base/net/Socket.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 #include <base/concurrency/SharedSynchronize.h>
+#include <base/NotImplemented.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <base/platforms/win32/AsyncReadStreamContext.h> // platform specific
@@ -28,6 +29,7 @@
 #  include <sys/stat.h>
 #  include <sys/socket.h>
 #  include <netinet/in.h> // defines ntohs...
+#  include <netinet/tcp.h> // options
 #  include <unistd.h>
 #  include <fcntl.h>
 #  include <errno.h>
@@ -192,23 +194,63 @@ public:
   }
 };
 
+namespace internal {
 
-
-void getSocketOption(int handle, int option, void* buffer, unsigned int* length) throw(IOException) {
-  // getsockopt is MT-safe
-  socklen temp = *length;
-  if (::getsockopt(handle, SOL_SOCKET, option, static_cast<char*>(buffer), &temp) != 0) {
-    throw IOException("Unable to get socket option");
-  }
-  *length = temp;
-}
-
-void setSocketOption(int handle, int option, const void* buffer, unsigned int length) throw(IOException) {
-  // setsockopt is MT-safe
-  if (::setsockopt(handle, SOL_SOCKET, option, static_cast<const char*>(buffer), length) != 0) {
-    throw IOException("Unable to set socket option");
-  }
-}
+  class SocketImpl {
+  public:
+    
+    static inline void getIPOption(int handle, int option, void* buffer, unsigned int* length) throw(IOException) {
+      // getsockopt is MT-safe
+      socklen temp = *length;
+      if (::getsockopt(handle, IPPROTO_IP, option, static_cast<char*>(buffer), &temp) != 0) {
+        throw IOException("Unable to get IP option");
+      }
+      *length = temp;
+    }
+    
+    static inline void setIPOption(int handle, int option, const void* buffer, unsigned int length) throw(IOException) {
+      // setsockopt is MT-safe
+      if (::setsockopt(handle, IPPROTO_IP, option, static_cast<const char*>(buffer), length) != 0) {
+        throw IOException("Unable to set IP option");
+      }
+    }
+    
+    static inline void getSocketOption(int handle, int option, void* buffer, unsigned int* length) throw(IOException) {
+      // getsockopt is MT-safe
+      socklen temp = *length;
+      if (::getsockopt(handle, SOL_SOCKET, option, static_cast<char*>(buffer), &temp) != 0) {
+        throw IOException("Unable to get socket option");
+      }
+      *length = temp;
+    }
+    
+    // TAG: add support for UDP options: IPPROTO_UDP
+    // TAG: add support for RAW options: IPPROTO_RAW
+    
+    static inline void setSocketOption(int handle, int option, const void* buffer, unsigned int length) throw(IOException) {
+      // setsockopt is MT-safe
+      if (::setsockopt(handle, SOL_SOCKET, option, static_cast<const char*>(buffer), length) != 0) {
+        throw IOException("Unable to set socket option");
+      }
+    }
+    
+    static inline void getTcpOption(int handle, int option, void* buffer, unsigned int* length) throw(IOException) {
+      // getsockopt is MT-safe
+      socklen temp = *length;
+      if (::getsockopt(handle, IPPROTO_TCP, option, static_cast<char*>(buffer), &temp) != 0) {
+        throw IOException("Unable to get TCP option");
+      }
+      *length = temp;
+    }
+    
+    static inline void setTcpOption(int handle, int option, const void* buffer, unsigned int length) throw(IOException) {
+      // setsockopt is MT-safe
+      if (::setsockopt(handle, IPPROTO_TCP, option, static_cast<const char*>(buffer), length) != 0) {
+        throw IOException("Unable to set TCP option");
+      }
+    }
+  };
+}; // end of namespace internal
 
 
 
@@ -404,14 +446,14 @@ bool Socket::getBooleanOption(int option) const throw(IOException) {
   SharedSynchronize<Guard>(*this);
   int buffer;
   unsigned int length = sizeof(buffer);
-  getSocketOption((int)getHandle(), option, &buffer, &length);
+  internal::SocketImpl::getSocketOption((int)getHandle(), option, &buffer, &length);
   return buffer != 0;
 }
 
 void Socket::setBooleanOption(int option, bool value) throw(IOException) {
   SharedSynchronize<Guard>(*this);
   int buffer = value;
-  setSocketOption((int)getHandle(), option, &buffer, sizeof(buffer));
+  internal::SocketImpl::setSocketOption((int)getHandle(), option, &buffer, sizeof(buffer));
 }
 
 bool Socket::getReuseAddress() const throw(IOException) {
@@ -442,7 +484,7 @@ int Socket::getLinger() const throw(IOException) {
   SharedSynchronize<Guard>(*this);
   struct linger buffer;
   unsigned int length = sizeof(buffer);
-  getSocketOption((int)getHandle(), SO_LINGER, &buffer, &length);
+  internal::SocketImpl::getSocketOption((int)getHandle(), SO_LINGER, &buffer, &length);
   return (buffer.l_onoff != 0) ? buffer.l_linger : -1;
 }
 
@@ -454,35 +496,66 @@ void Socket::setLinger(int seconds) throw(IOException) {
     buffer.l_onoff = 1; // enable linger
     buffer.l_linger = seconds;
   }
-  setSocketOption((int)getHandle(), SO_LINGER, &buffer, sizeof(buffer));
+  internal::SocketImpl::setSocketOption((int)getHandle(), SO_LINGER, &buffer, sizeof(buffer));
 }
 
 int Socket::getReceiveBufferSize() const throw(IOException) {
   SharedSynchronize<Guard>(*this);
   int buffer;
   unsigned int length = sizeof(buffer);
-  getSocketOption((int)getHandle(), SO_RCVBUF, &buffer, &length);
+  internal::SocketImpl::getSocketOption((int)getHandle(), SO_RCVBUF, &buffer, &length);
   return buffer;
 }
 
 void Socket::setReceiveBufferSize(int size) throw(IOException) {
   SharedSynchronize<Guard>(*this);
   int buffer = size;
-  setSocketOption((int)getHandle(), SO_RCVBUF, &buffer, sizeof(buffer));
+  internal::SocketImpl::setSocketOption((int)getHandle(), SO_RCVBUF, &buffer, sizeof(buffer));
 }
 
 int Socket::getSendBufferSize() const throw(IOException) {
   SharedSynchronize<Guard>(*this);
   int buffer;
   unsigned int length = sizeof(buffer);
-  getSocketOption((int)getHandle(), SO_SNDBUF, &buffer, &length);
+  internal::SocketImpl::getSocketOption((int)getHandle(), SO_SNDBUF, &buffer, &length);
   return buffer;
 }
 
 void Socket::setSendBufferSize(int size) throw(IOException) {
   SharedSynchronize<Guard>(*this);
   int buffer = size;
-  setSocketOption((int)getHandle(), SO_SNDBUF, &buffer, sizeof(buffer));
+  internal::SocketImpl::setSocketOption((int)getHandle(), SO_SNDBUF, &buffer, sizeof(buffer));
+}
+
+// TAG: TCP_MAXSEG maximum segment size
+// TAG: TCP_KEEPIDLE, TCP_KEEPINTVL, TCP_KEEPCNT interval between keepalives
+
+bool Socket::getTcpNoDelay() const throw(IOException) {
+  SharedSynchronize<Guard>(*this);
+  int buffer;
+  unsigned int length = sizeof(buffer);
+  internal::SocketImpl::getTcpOption((int)getHandle(), TCP_NODELAY, &buffer, &length);
+  return buffer != 0;
+}
+
+void Socket::setTcpNoDelay(bool value) throw(IOException) {
+  SharedSynchronize<Guard>(*this);
+  int buffer = value;
+  internal::SocketImpl::setTcpOption((int)getHandle(), TCP_NODELAY, &buffer, sizeof(buffer));
+}
+
+unsigned int Socket::getTimeToLive() const throw(IOException) {
+  SharedSynchronize<Guard>(*this);
+  int buffer;
+  unsigned int length = sizeof(buffer);
+  internal::SocketImpl::getIPOption((int)getHandle(), IP_TTL, &buffer, &length);
+  return buffer != 0;
+}
+
+void Socket::setTimeToLive(unsigned int value) throw(IOException) {
+  SharedSynchronize<Guard>(*this);
+  int buffer = value;
+  internal::SocketImpl::setIPOption((int)getHandle(), IP_TTL, &buffer, sizeof(buffer));
 }
 
 void Socket::setNonBlocking(bool value) throw(IOException) {
@@ -527,11 +600,31 @@ unsigned int Socket::available() const throw(IOException) {
   // this implementation is not very portable?
   int result;
   if (ioctl((int)getHandle(), FIONREAD, &result)) {
-    throw IOException("Unable to determine the amount of data pending in the input buffer", this);
+    throw IOException("Unable to determine the amount of data pending in the incomming queue", this);
   }
   return result;
 #endif // flavor
 }
+
+#if 0
+unsigned int Socket::pending() const throw(IOException) {
+  SharedSynchronize<Guard>(*this);
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  unsigned int result = 0;
+//   if (ioctlsocket((int)getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
+//     throw IOException("Unable to determine the amount of data pending in the input buffer", this);
+//   }
+  return result;
+#else // unix
+  // this implementation is not very portable?
+  int result;
+  if (ioctl((int)getHandle(), TIOCOUTQ, &result)) {
+    throw IOException("Unable to determine the amount of data pending in the outgoing queue", this);
+  }
+  return result;
+#endif // flavor
+}
+#endif
 
 bool Socket::atEnd() const throw() {
   SharedSynchronize<Guard>(*this);
@@ -660,6 +753,8 @@ AsynchronousReadOperation Socket::read(char* buffer, unsigned int bytesToRead, A
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncReadStreamContext(getHandle(), buffer, bytesToRead, listener);
+#else // unix
+  throw NotImplemented(this);
 #endif // flavor
 }
 
@@ -667,6 +762,8 @@ AsynchronousWriteOperation Socket::write(const char* buffer, unsigned int bytesT
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncWriteStreamContext(getHandle(), buffer, bytesToWrite, listener);
+#else // unix
+  throw NotImplemented(this);
 #endif // flavor
 }
 

@@ -229,6 +229,34 @@ public:
   }
 
   /**
+    Returns true of the Nagle's algorithm is disabled.
+  */
+  inline bool getTcpNoDelay() const throw(IOException) {
+    return Socket::getTcpNoDelay();
+  }
+
+  /**
+    Disables/enables the Nagle's algorithm.
+  */
+  inline void setTcpNoDelay(bool value) throw(IOException) {
+    Socket::setTcpNoDelay(value);
+  }
+  
+  /**
+    Returns the current time to live (TTL) value.
+  */
+  inline unsigned int getTimeToLive() const throw(IOException) {
+    return Socket::getTimeToLive();
+  }
+  
+  /**
+    Sets the time to live (TTL) value.
+  */
+  inline void setTimeToLive(unsigned int value) throw(IOException) {
+    Socket::setTimeToLive(value);
+  }
+  
+  /**
     Sets the blocking mode of the socket.
   */
   inline void setNonBlocking(bool value) throw(IOException) {

@@ -12,6 +12,13 @@ template Matrix<double>;
 template Matrix<long double>;
 
 template<class TYPE>
+inline void swap(TYPE& a, TYPE& b) {
+  TYPE temp = a;
+  a = b;
+  b = temp;
+};
+
+template<class TYPE>
 class MultiplySubtract : public BinaryOperation<TYPE, TYPE, TYPE> {
 protected:
   TYPE value;

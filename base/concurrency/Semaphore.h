@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_THREAD__SEMAPHORE_H
 #define _DK_SDU_MIP__BASE_THREAD__SEMAPHORE_H
 
-#include "config.h"
+#include <config.h>
 #include "MutualExclusion.h"
 #include "base/Exception.h"
 #include "base/Construct.h"

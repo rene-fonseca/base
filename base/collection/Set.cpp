@@ -8,11 +8,11 @@
 template Set<void*>;
 
 template<class KEY>
-Set<KEY>::Set() throw() : first(NULL) {
+Set<KEY>::Set() throw() : first(0) {
 }
 
 template<class KEY>
-Set<KEY>::Set(const Set& copy) throw(MemoryException) : first(NULL) {
+Set<KEY>::Set(const Set& copy) throw(MemoryException) : first(0) {
   const SetNode* node = copy.first;
   while (node) {
     add(*node->getKey());
@@ -48,11 +48,11 @@ void Set<KEY>::add(const KEY& key) throw(MemoryException) {
 template<class KEY>
 void Set<KEY>::remove(const KEY& key) throw(InvalidKey) {
   SetNode* node = first;
-  SetNode* previous = NULL;
+  SetNode* previous = 0;
 
   while (node) {
     if (*node->getKey() == key) {
-      if (previous == NULL) {
+      if (!previous) {
         first = node->getNext();
       } else {
         previous->setNext(node->getNext());

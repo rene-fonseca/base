@@ -8,11 +8,11 @@
 template List<void*>;
 
 template<class TYPE>
-List<TYPE>::List() throw() : first(NULL), last(NULL) {
+List<TYPE>::List() throw() : first(0), last(0) {
 }
 
 template<class TYPE>
-List<TYPE>::List(const List& copy) throw(MemoryException) : first(NULL), last(NULL) {
+List<TYPE>::List(const List& copy) throw(MemoryException) : first(0), last(0) {
 //  append(copy.getEnumeration());
 }
 
@@ -21,7 +21,7 @@ int List<TYPE>::indexOf(const ListNode& node) const throw() {
   ListNode* current = first;
   unsigned int index = 0;
 
-  while (current != NULL) {
+  while (current) {
     if (current == &node) {
       return index;
     }
@@ -38,7 +38,7 @@ List<TYPE>::ListEnumeration List<TYPE>::getEnumeration() const throw() {
 
 template<class TYPE>
 void List<TYPE>::append(const TYPE& value) throw() {
-  ListNode* node = new ListNode(NULL, last, value);
+  ListNode* node = new ListNode(0, last, value);
   last->setNext(node);
   last = node;
   ++size;
@@ -53,7 +53,7 @@ void List<TYPE>::append(Enumeration<TYPE>& enu) throw() {
 
 template<class TYPE>
 void List<TYPE>::prepend(const TYPE& value) throw() {
-  ListNode* node = new ListNode(first, NULL, value);
+  ListNode* node = new ListNode(first, 0, value);
   first->setPrevious(node);
   first = node;
   ++size;
@@ -69,7 +69,7 @@ void List<TYPE>::prepend(Enumeration<TYPE>& enu) throw() {
 
 template<class TYPE>
 void List<TYPE>::add(const TYPE& value) throw() {
-  ListNode* node = new ListNode(NULL, last, value);
+  ListNode* node = new ListNode(0, last, value);
   last->setNext(node);
   last = node;
   ++size;
@@ -110,18 +110,4 @@ void List<TYPE>::removeAll() throw() {
 template<class TYPE>
 List<TYPE>::~List() {
   removeAll();
-}
-
-
-
-
-
-int main() {
-  List<int> myList;
-  myList.add(1);
-  myList.add(2);
-  myList.add(3);
-  myList.removeAll();
-  myList.indexOf(List<int>::ListNode(NULL, NULL, 0));
-  return 0;
 }

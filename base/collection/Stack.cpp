@@ -76,10 +76,10 @@ Stack<TYPE>::~Stack() throw() {
 
 
 
-Stack<void*>::Stack() throw() : top(NULL) {
+Stack<void*>::Stack() throw() : top(0) {
 }
 
-Stack<void*>::Stack(const Stack& copy) throw(MemoryException) : top(NULL) {
+Stack<void*>::Stack(const Stack& copy) throw(MemoryException) : top(0) {
   StackNode* node = copy.top;
   while (node) {
     push(*node->getValue());

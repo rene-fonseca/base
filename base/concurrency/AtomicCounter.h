@@ -6,6 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_THREAD__ATOMIC_COUNTER_H
 #define _DK_SDU_MIP__BASE_THREAD__ATOMIC_COUNTER_H
 
+#include <config.h>
 #include "Synchronize.h"
 
 /**

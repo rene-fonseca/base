@@ -6,6 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_THREAD__EVENT_H
 #define _DK_SDU_MIP__BASE_THREAD__EVENT_H
 
+#include <config.h>
 #include "MutualExclusion.h"
 #include "base/Construct.h"
 #include "base/OutOfRange.h"

@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_THREAD__THREAD_H
 #define _DK_SDU_MIP__BASE_THREAD__THREAD_H
 
-#include "config.h"
+#include <config.h>
 #include "base/Object.h"
 #include "base/Exception.h"
 #include "Runnable.h"

@@ -22,12 +22,12 @@ template<class TYPE> inline TYPE max(TYPE a, TYPE b) {return (a >= b) ? a : b;}
 /**
   Swaps the values.
 */
-template<class TYPE>
+/*template<class TYPE>
 inline void swap(TYPE& a, TYPE& b) {
   TYPE temp = a;
   a = b;
   b = temp;
-};
+};*/
 
 /**
   Returns the absolute value of the specified argument.

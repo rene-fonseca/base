@@ -5,16 +5,22 @@ AM_CONFIG_HEADER(config.h)
 
 AM_INIT_AUTOMAKE(ellert,0.55)
 
+AC_DEFINE(_REENTRANT)
+AC_DEFINE(_GNU_SOURCE)
+
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
+
 dnl Checks for libraries.
 
 dnl Checks for header files.
 
 dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_BIGENDIAN
 
 dnl Checks for library functions.
+AC_CHECK_FUNCS(pthread_yield memcmp)
 
 AC_OUTPUT(Makefile ellert/Makefile ellert/docs/Makefile ellert/docs/en/Makefile ellert/base/Makefile ellert/vehicle/Makefile ellert/base/concurrency/Makefile ellert/base/mathematics/Makefile ellert/io/Makefile ellert/base/io/Makefile ellert/base/string/Makefile ellert/base/mem/Makefile ellert/base/net/Makefile ellert/control/Makefile ellert/base/collection/Makefile )

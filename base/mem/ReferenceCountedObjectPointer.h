@@ -35,7 +35,7 @@ public:
 
     @param value The desired value. Default is NULL.
   */
-  inline ReferenceCountedObjectFriend(Pointer value = NULL) : ptr(value) {
+  inline ReferenceCountedObjectFriend(Pointer value = 0) : ptr(value) {
     if (ptr) {
       ++ptr->references; // add reference
     }
@@ -90,7 +90,7 @@ public:
     if (ptr) { // skip if NULL pointer
       if (--ptr->references) { // remove reference
         delete ptr; // could throw exception if object is destroyed unsuccessfully
-        ptr = NULL;
+        ptr = 0;
       }
     }
   }
@@ -125,7 +125,7 @@ public:
 
     @param value The desired value. Default is NULL.
   */
-  inline ReferenceCountedObjectPointer(Pointer value = NULL) : ReferenceCountedObjectFriend(value) {};
+  inline ReferenceCountedObjectPointer(Pointer value = 0) : ReferenceCountedObjectFriend(value) {};
 
   /**
     Initialization of automation pointer from other automation pointer.

@@ -87,7 +87,7 @@ public:
 };
 
 
-/*
+
 template<class TYPE> class Stack<TYPE*>;
 template<> class Stack<void*>;
 
@@ -140,5 +140,5 @@ public:
   inline TYPE pop() throw(OutOfRange) {return static_cast<TYPE>(Base::pop());}
   inline void pop(unsigned int count) throw(OutOfRange) {Base::pop(count);}
 };
-*/
+
 #endif

@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_THREAD__READ_WRITE_LOCK_H
 #define _DK_SDU_MIP__BASE_THREAD__READ_WRITE_LOCK_H
 
-#include "config.h"
+#include <config.h>
 #include "base/Object.h"
 #include "base/Construct.h"
 #include "base/Destruct.h"

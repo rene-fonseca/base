@@ -390,9 +390,3 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, double value) {
 FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) {
   return stream << "long double to stream not implemented in FormatOutputStream.cpp";
 }
-
-int main() {
-//  FormatOutputStream fout(FileDescriptorOutputStream(1));
-//  FormatOutputStream ferr(FileDescriptorOutputStream(2));
-  return 0;
-}

@@ -29,14 +29,18 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-Trustee::Trustee() throw() : type(UNSPECIFIED), integralId(PrimitiveTraits<unsigned long>::MAXIMUM), id(0) {
+Trustee::Trustee() throw()
+  : type(UNSPECIFIED),
+    integralId(PrimitiveTraits<unsigned long>::MAXIMUM),
+    id(0) {
 }
 
 Trustee::Trustee(User user) throw() : type(USER) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   integralId = 0;
   if (user.id == User::INVALID) {
-    id = user.id;
+    type = UNSPECIFIED;
+    id = 0;
     return;
   }
   DWORD size = ::GetLengthSid((PSID)user.id);
@@ -52,7 +56,8 @@ Trustee::Trustee(Group group) throw() : type(GROUP) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   integralId = 0;
   if (group.id == Group::INVALID) {
-    id = group.id;
+    type = UNSPECIFIED;
+    id = 0;
     return;
   }
   DWORD size = ::GetLengthSid((PSID)group.id);

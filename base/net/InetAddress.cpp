@@ -187,8 +187,16 @@ InetAddress& InetAddress::operator=(const InetAddress& eq) throw() {
   return *this;
 }
 
-const char* InetAddress::getAddress() const throw() {
-  return (char*)&address;
+const unsigned char* InetAddress::getAddress() const throw() {
+  return (unsigned char*)&address;
+}
+
+const unsigned char* InetAddress::getIPv4Address() const throw() {
+#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
+  return (unsigned char*)&address[12];
+#else
+  return (unsigned char*)&address;
+#endif
 }
 
 String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
@@ -291,7 +299,7 @@ bool InetAddress::isV4Mapped() const throw() {
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   return IN6_IS_ADDR_V4MAPPED((struct in6_addr*)&address);
 #else
-  return false;
+  return true;
 #endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 

@@ -34,7 +34,10 @@ class InetAddress : public virtual Object {
 public:
 
   /** Family of internet addresses. */
-  typedef enum {IPv4, IPv6} Family;
+  typedef enum {
+    IPv4, /**< Specifies Internet Protocol (IP) version 4. */
+    IPv6 /**< Specifies Internet Protocol (IP) version 6. */
+  } Family;
 private:
 
   /** Internal structure holding the IP address in network byte order. */
@@ -58,7 +61,7 @@ public:
   static List<InetAddress> getAddressesByName(const String& name) throw(HostNotFound);
 
   /**
-    Initializes the address as unspecified address.
+    Initializes the address as unspecified address (matches any address).
   */
   InetAddress() throw();
 
@@ -90,7 +93,13 @@ public:
   /**
     Returns the IP address in binary format in network byte order.
   */
-  const char* getAddress() const throw();
+  const unsigned char* getAddress() const throw();
+
+  /**
+    Returns the IP address in binary format in network byte order (this is only
+    valid if either isV4Mapped() or isV4Compatible() returns true).
+  */
+  const unsigned char* getIPv4Address() const throw();
 
   /**
     Returns the domain/host name associated with this IP address. Throws

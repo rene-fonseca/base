@@ -27,4 +27,10 @@ qwerty:
 	for src in `find . -name 'Makefile.bam'` ; do dest=`echo $$src | sed 's/\.bam$$/\.am/'` ; cp $$src $$dest ; done
 
 debug: all
-	CXXFLAGS="-O0 -g3" ./configure --enable-trace --enable-namespace
+	CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --enable-trace
+
+normal: all
+	CXXFLAGS="-O2 -g2" ./configure --prefix=/usr/local/base
+
+final: all
+	CXXFLAGS="-O3" ./configure --prefix=/usr/local/base

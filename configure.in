@@ -11,32 +11,29 @@ AM_PROG_LIBTOOL()
 AC_CANONICAL_HOST()
 dnl The following variables have been set: $host, $host_cpu, $host_vendor, and $host_os
 
+base_system=unix
+base_thread=posix
 base_define_xopen=no
-base_define_reentrant=no
 
 case "$host_os" in
 cygwin)
-  AC_DEFINE(__win32__, 1, Specifies that the WIN32 API is available and should be used)
+  base_system=win32
   CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }"'-mno-cygwin -mthreads'
   LIBS="${LIBS}${LIBS:+ }"'-lws2_32'
 ;;
 linux-gnu)
   AC_DEFINE(_GNU_SOURCE, 1, Specifies that the UNIX 98 functionality and GNU extensions are utilized)
-  base_define_reentrant=yes
 ;;
 irix*)
   AC_DEFINE(_SGI_SOURCE, 1, Specifies that the UNIX 98 functionality and SGI extensions are utilized)
-  base_define_reentrant=yes
 ;;
 solaris*)
   AC_DEFINE(__solaris__, 1, Specifies that the Solaris specific functions are available)
   AC_DEFINE(__EXTENSIONS__, 1, Specifies that the Solaris extensions are utilized)
   base_define_xopen=yes
-  base_define_reentrant=yes
 ;;
 *)
   base_define_xopen=yes
-  base_define_reentrant=yes
 ;;
 esac
 
@@ -44,9 +41,17 @@ if test $base_define_xopen = yes; then
   AC_DEFINE(_XOPEN_SOURCE, 500, Specifies that the UNIX 98 functionality is utilized)
 fi
 
-if test $base_define_reentrant = yes; then
+
+
+case "$base_system" in
+unix)
   AC_DEFINE(_REENTRANT, 1, Select additionally reentrant object)
-fi
+;;
+win32)
+  base_thread=win32
+  AC_DEFINE(__win32__, 1, Specifies that the WIN32 API is available and should be used)
+;;
+esac
 
 
 
@@ -513,6 +518,27 @@ AC_BASE_ADDLIB($base_cv_inet_ipv6_libs)
 
 
 
+dnl Check POSIX thread support
+if test "$base_thread" = posix; then
+
+AC_BASE_CHECK(
+  checking whether posix thread is supported,
+  AC_BASE_CACHE(
+    base_cv_pthread base_cv_pthread_libs,
+    AC_BASE_ATTEMPT(
+      base_cv_pthread,
+      base_cv_pthread_libs,
+      "" -lpthread,
+      AC_BASE_TRY_CXX_LINK(base_cv_pthread, config/pthread.c, $base_cv_pthread_libs)dnl
+    )dnl
+  ),
+  base_cv_pthread,
+  base_cv_pthread_libs)
+if test "$base_cv_pthread" != yes; then
+  AC_MSG_ERROR(The compiler does not support POSIX threads)
+fi
+AC_BASE_ADDLIB($base_cv_pthread_libs)
+
 AC_BASE_CHECK(
   checking whether pthread_yield is provided by the POSIX thread library,
   AC_BASE_CACHE(
@@ -566,6 +592,8 @@ if test "$base_cv_pthread_rwlock" = yes; then
   AC_DEFINE(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK, 1, Specifies that Posix read-write lock is supported)
 fi
 AC_BASE_ADDLIB($base_cv_pthread_rwlock_libs)
+
+fi dnl POSIX thread support
 
 #AC_CHECK_FUNCS(memchr memcmp memmove)
 

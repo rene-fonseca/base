@@ -18,4 +18,4 @@ libbase_la_DEPENDENCIES = collection/libcollection.la communication/libcommunica
 
 # Windows version resource
 winrcver.o: base.rc
-	windres --include-dir .. --output-format coff $< $@
+	windres --preprocessor "${CXXCPP} -xc-header ${CPPFLAGS}" --output-format coff $< $@

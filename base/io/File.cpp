@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -225,7 +225,7 @@ void File::setPosition(long long position, Whence whence) throw(FileException) {
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     ::lseek64(fd->getHandle(), position, relativeTo[whence]); // should never fail
   #else
-    assert(position <= INT_MAX, FileException("Unable to set position"));
+    assert(position <= PrimitiveTraits<int>::MAXIMUM, FileException("Unable to set position"), this);
     ::lseek(fd->getHandle(), position, relativeTo[whence]); // should never fail
   #endif
 #endif
@@ -244,7 +244,7 @@ void File::truncate(long long size) throw(FileException) {
       throw FileException("Unable to truncate", this);
     }
   #else
-    assert((size >= 0) && (size <= INT_MAX), FileException("Unable to truncate"));
+    assert((size >= 0) && (size <= PrimitiveTraits<int>::MAXIMUM), FileException("Unable to truncate", this));
     if (::ftruncate(fd->getHandle(), size)) {
       throw FileException("Unable to truncate", this);
     }
@@ -278,7 +278,7 @@ void File::flush() throw(FileException) {
 
 void File::lock(const FileRegion& region, bool exclusive = true) throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region"));
+  assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region", this));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
   OVERLAPPED overlapped;
@@ -323,8 +323,8 @@ void File::lock(const FileRegion& region, bool exclusive = true) throw(FileExcep
     }
   #else
     assert(
-      (region.getOffset() >= 0) && (region.getOffset() <= INT_MAX) && (region.getSize() >= 0) && (region.getSize() <= INT_MAX),
-      FileException("Unable to lock region")
+      (region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM) && (region.getSize() >= 0) && (region.getSize() <= PrimitiveTraits<int>::MAXIMUM),
+      FileException("Unable to lock region", this)
     );
     struct flock lock;
     lock.l_type = exclusive ? F_WRLCK : F_RDLCK; // request exclusive or shared lock
@@ -347,7 +347,7 @@ void File::lock(const FileRegion& region, bool exclusive = true) throw(FileExcep
 
 bool File::tryLock(const FileRegion& region, bool exclusive = true) throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region"));
+  assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region", this));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
   OVERLAPPED overlapped;
@@ -391,8 +391,8 @@ bool File::tryLock(const FileRegion& region, bool exclusive = true) throw(FileEx
     return true;
   #else
     assert(
-      (region.getOffset() >= 0) && (region.getOffset() <= INT_MAX) && (region.getSize() >= 0) && (region.getSize() <= INT_MAX),
-      FileException("Unable to lock region")
+      (region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM) && (region.getSize() >= 0) && (region.getSize() <= PrimitiveTraits<int>::MAXIMUM),
+      FileException("Unable to lock region", this)
     );
     struct flock lock;
     lock.l_type = exclusive ? F_WRLCK : F_RDLCK; // request exclusive or shared lock
@@ -414,7 +414,7 @@ bool File::tryLock(const FileRegion& region, bool exclusive = true) throw(FileEx
 
 void File::unlock(const FileRegion& region) throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region"));
+  assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region", this));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
 
@@ -436,7 +436,7 @@ void File::unlock(const FileRegion& region) throw(FileException) {
   ::CloseHandle(overlapped.hEvent);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region"));
+    assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region", this));
     struct flock64 lock;
     lock.l_type = F_UNLCK;
     lock.l_whence = SEEK_SET; // offset from beginning of file
@@ -454,8 +454,8 @@ void File::unlock(const FileRegion& region) throw(FileException) {
     }
   #else
     assert(
-      (region.getOffset() >= 0) && (region.getOffset() <= INT_MAX) && (region.getSize() >= 0) && (region.getSize() <= INT_MAX),
-      FileException("Unable to unlock region")
+      (region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM) && (region.getSize() >= 0) && (region.getSize() <= PrimitiveTraits<int>::MAXIMUM),
+      FileException("Unable to unlock region", this)
     );
     struct flock lock;
     lock.l_type = F_UNLCK;
@@ -700,14 +700,14 @@ void File::asyncCancel() throw(AsynchronousException) {
 
 AsynchronousReadOperation File::read(char* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  assert(listener, AsynchronousException()); // FIXME
+  assert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncReadFileContext(getHandle(), buffer, bytesToRead, offset, listener);
 #endif // flavour
 }
 
 AsynchronousWriteOperation File::write(const char* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  assert(listener, AsynchronousException()); // FIXME
+  assert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncWriteFileContext(getHandle(), buffer, bytesToWrite, offset, listener);
 #endif // flavour
 }

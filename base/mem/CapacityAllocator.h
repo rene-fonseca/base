@@ -92,10 +92,8 @@ public:
 
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline explicit CapacityAllocator(unsigned int granularity) throw() : capacity(0), granularity(granularity) {
-    if (granularity < MINIMUM_GRANULARITY) {
-      throw OutOfRange();
-    }
+  inline explicit CapacityAllocator(unsigned int granularity) throw(OutOfRange) : capacity(0), granularity(granularity) {
+    assert(granularity >= MINIMUM_GRANULARITY, OutOfRange());
   }
 
   /**
@@ -108,9 +106,7 @@ public:
     @param granularity Specifies the number of elements to allocate at a time.
   */
   inline CapacityAllocator(unsigned int size, unsigned int granularity) throw(OutOfRange, MemoryException) : capacity(0), granularity(granularity) {
-    if (granularity < MINIMUM_GRANULARITY) {
-      throw OutOfRange();
-    }
+    assert(granularity >= MINIMUM_GRANULARITY, OutOfRange());
     setSize(size);
   }
 
@@ -222,9 +218,7 @@ public:
   */
   inline void setGranularity(unsigned int granularity) throw(OutOfRange) {
     if (granularity != this->granularity) {
-      if (granularity < MINIMUM_GRANULARITY) {
-        throw OutOfRange();
-      }
+      assert(granularity >= MINIMUM_GRANULARITY, OutOfRange());
       this->granularity = granularity;
     }
   }

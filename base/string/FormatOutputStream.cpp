@@ -5,7 +5,9 @@
 
 #include <base/string/FormatOutputStream.h>
 #include <base/io/FileDescriptorOutputStream.h>
+#include <base/concurrency/Thread.h>
 #include <string.h>
+#include <stdio.h>
 
 FileDescriptorOutputStream standardOutputStream(FileDescriptor::getStandardOutput());
 FormatOutputStream fout(standardOutputStream);
@@ -513,13 +515,19 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, float value) {
-  return stream << "float to stream not implemented in FormatOutputStream.cpp";
+  char* buffer = Thread::getLocalStorage()->getElements();
+  sprintf(buffer, "%f", value);
+  return stream << buffer;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, double value) {
-  return stream << "double to stream not implemented in FormatOutputStream.cpp";
+  char* buffer = Thread::getLocalStorage()->getElements();
+  sprintf(buffer, "%f", value);
+  return stream << buffer;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) {
-  return stream << "long double to stream not implemented in FormatOutputStream.cpp";
+  char* buffer = Thread::getLocalStorage()->getElements();
+  sprintf(buffer, "%Lf", value);
+  return stream << buffer;
 }

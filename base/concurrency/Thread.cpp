@@ -55,7 +55,7 @@ public:
 
   ThreadLocal(Thread* thread) {
     this->thread.setKey(thread);
-    // storage.setKey(new Allocator<char>(THREAD_LOCAL_STORAGE)); 
+    storage.setKey(new Allocator<char>(THREAD_LOCAL_STORAGE));
   }
 
   static inline Thread* getThread() throw() {
@@ -67,8 +67,7 @@ public:
   }
 
   ~ThreadLocal() {
-    // free thread local storage
-    //    delete getStorage();
+    delete getStorage(); // free thread local storage
   }
 };
 
@@ -91,22 +90,15 @@ void* Thread::entry(Thread* thread) throw() {
     try {
       thread->getRunnable()->run();
       thread->termination = NORMAL;
-      /*
       Thread* parent = thread->getParent();
       if (parent) {
         parent->onChildTermination(thread); // signal parent
       }
-      */
     } catch(...) {
       thread->termination = EXCEPTION; // uncaugth exception
     }
   } catch(...) {
     thread->termination = INTERNAL; // hopefully we will never end up here
-  }
-
-  while (true) {
-   fout << "ENDING THREAD: " << (unsigned int)thread << EOL << FLUSH;
-   Thread::sleep(1);
   }
 
   return 0;
@@ -213,7 +205,7 @@ void Thread::onChildTermination(Thread* thread) {
 
 
 Thread::Thread() throw() :
-  runnable(0), parent(0), terminated(false), termination(ALIVE) {
+  parent(0), runnable(0), terminated(false), termination(ALIVE) {
 #if defined(__win32__)
   threadHandle = GetCurrentThread();
   threadID = GetCurrentThreadId();
@@ -223,7 +215,7 @@ Thread::Thread() throw() :
 }
 
 Thread::Thread(Runnable* runnable) throw(ResourceException) :
-  runnable(runnable), threadID(0), terminated(false), termination(ALIVE) {
+  runnable(runnable), terminated(false), termination(ALIVE), threadID(0) {
   parent = getThread(); // must never be NULL
 #if defined(__win32__)
   // we need to grant SYNCHRONIZE access so we can join the thread object

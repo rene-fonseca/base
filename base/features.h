@@ -54,7 +54,7 @@
 
 #if defined(_DK_SDU_MIP__BASE__NAMESPACE)
   #define _DK_SDU_MIP__BASE__ENTER_NAMESPACE namespace base {
-  #define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE }
+  #define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE };
 
 /**
   This is the root namespace of <strong>The Base Framework</strong>. All the

@@ -41,10 +41,10 @@ public:
   /**
     Initializes a linked node.
 
-    @param _next The next node in the container.
-    @param _value The value to be associated with the node.
+    @param next The next node in the container.
+    @param value The value to be associated with the node.
   */
-  inline SingleLinkedNode(SingleLinkedNode* _next, const TYPE& _value)
+  inline SingleLinkedNode(SingleLinkedNode* _next, const TYPE& _value) throw()
     : next(_next),
       value(_value) {
   }

@@ -52,7 +52,8 @@ struct WideStringLiteral {
 #define WIDEMESSAGE(msg) WideStringLiteral(sizeof(L ## msg), L ## msg)
 
 /**
-  String class. The first modifing operation on a string may force a duplication of the internal buffer. The implementation is currently NOT MT-safe.
+  String class. The first modifing operation on a string may force the internal
+  buffer to be duplicated. The implementation is currently NOT MT-safe.
 
   @short String.
   @author René Møller Fonseca
@@ -67,10 +68,6 @@ public:
   static const char TERMINATOR = '\0';
   /** Specifies the granularity of the capacity. Guaranteed to be greater than 0. */
   static const unsigned int GRANULARITY = 16;
-  /** Specifies the amount of memory by which the capacity is incremented when needed. Guaranteed to be greater than 0. */
-  static const unsigned int DEFAULT_INCREMENT = 256;
-  /** Specifies the default capacity of a string. Guaranteed to be greater than 0. */
-  static const unsigned int DEFAULT_CAPACITY = GRANULARITY;
   /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. Unresolved problem: size of int depends on architecture. */
   static const unsigned int MAXIMUM_LENGTH = ((INT_MAX - sizeof(TERMINATOR))/GRANULARITY)*GRANULARITY;
 
@@ -91,7 +88,7 @@ public:
       @param string The string being enumerated.
     */
     Enumeration(String& string) throw() :
-      AllocatorEnumeration<char, char&, char*>(string.getMutableBuffer(), string.getMutableBuffer() + string.length()) {}
+      AllocatorEnumeration<char, char&, char*>(string.getMutableBuffer(), string.getMutableBuffer() + string.getLength()) {}
   };
 
   /**
@@ -106,7 +103,7 @@ public:
       @param string The string being enumerated.
     */
     ReadOnlyEnumeration(const String& string) throw() :
-      AllocatorEnumeration<char, const char&, const char*>(string.getReadOnlyBuffer(), string.getReadOnlyBuffer() + string.length()) {}
+      AllocatorEnumeration<char, const char&, const char*>(string.getReadOnlyBuffer(), string.getReadOnlyBuffer() + string.getLength()) {}
   };
 private:
 
@@ -156,7 +153,7 @@ protected:
   /**
     Used by constructors to create the buffer.
   */
-  void createString(const char* buffer, unsigned int length, unsigned int capacity) throw(MemoryException);
+//  void createString(const char* buffer, unsigned int length, unsigned int capacity) throw(MemoryException);
 
   /**
     Compare two null-terminated strings.
@@ -165,11 +162,16 @@ protected:
 public:
 
   /**
+    Initializes an empty string.
+  */
+  String() throw(MemoryException);
+
+  /**
     Initializes a string with no characters in it, initial capacity and granularity of capacity.
 
-    @param capacity The initial capacity. Default is given by DEFAULT_CAPACITY.
+    @param capacity The initial capacity.
   */
-  explicit String(unsigned int capacity = DEFAULT_CAPACITY) throw(MemoryException);
+  explicit String(unsigned int capacity) throw(MemoryException);
 
   /**
     Initializes the string from a string literal. The string literal is not copied into internal buffer. Implicit initialization is allowed.
@@ -181,14 +183,18 @@ public:
   /**
     Initializes the string from a NULL-terminated string.
 
-    @param str NULL-terminated string. If NULL, the string is initialized with no characters in it.
+    @param str NULL-terminated string. If NULL, the string is initialized with
+    no characters in it.
   */
   String(const char* str) throw(MemoryException);
 
   /**
-    Initializes the string from a NULL-terminated string. If the length of the specified string (str) exceeds the maximum length (n) only the first n characters are used.
+    Initializes the string from a NULL-terminated string. If the length of the
+    specified string (str) exceeds the maximum length (n) only the first n
+    characters are used.
 
-    @param str NULL-terminated string. If NULL, the string is initialized with no characters in it.
+    @param str NULL-terminated string. If NULL, the string is initialized with
+    no characters in it.
     @param maximum Specifies the maximum length.
   */
   String(const char* str, unsigned int maximum) throw(MemoryException);
@@ -211,7 +217,7 @@ public:
   /**
     Returns the number of characters in the string.
   */
-  inline unsigned int length() const throw() {return elements->getSize() - 1;}
+  inline unsigned int getLength() const throw() {return elements->getSize() - 1;}
 
   /**
     Returns true if the string contains no characters.
@@ -292,21 +298,21 @@ public:
 
     @param ch The character to be appended.
   */
-  inline String& append(char ch) throw(MemoryException) {return insert(length(), ch);}
+  inline String& append(char ch) throw(MemoryException) {return insert(getLength(), ch);}
 
   /**
     Appends the string to this string.
 
     @param str The string to be appended.
   */
-  inline String& append(const String& str) throw(MemoryException) {return insert(length(), str);}
+  inline String& append(const String& str) throw(MemoryException) {return insert(getLength(), str);}
 
   /**
     Appends the NULL-terminated string to this string.
 
     @param str The string to be appended.
   */
-  inline String& append(const char* str) throw(MemoryException) {return insert(length(), str);}
+  inline String& append(const char* str) throw(MemoryException) {return insert(getLength(), str);}
 
   /**
     Prepends the character to this string.
@@ -389,7 +395,7 @@ public:
 
     @param start Specifies the start of the substring.
   */
-  inline String substring(unsigned int start) const throw(MemoryException) {return substring(start, length());}
+  inline String substring(unsigned int start) const throw(MemoryException) {return substring(start, getLength());}
 
   /**
     Appends the string to this string.
@@ -579,7 +585,7 @@ public:
     @return Index of the last match if any otherwise -1.
   */
   int lastIndexOf(char ch, unsigned int start) const throw();
-  inline int lastIndexOf(char ch) const throw() {return lastIndexOf(ch, length());};
+  inline int lastIndexOf(char ch) const throw() {return lastIndexOf(ch, getLength());};
 
   /**
     Returns the index of the last substring that matches the specified string before the start position.
@@ -589,7 +595,7 @@ public:
     @return Index of the last match if any otherwise -1. Also returns -1 if substring is empty.
   */
   int lastIndexOf(const String& str, unsigned int start) const throw();
-  inline int lastIndexOf(const String& str) const throw() {return lastIndexOf(str, length());};
+  inline int lastIndexOf(const String& str) const throw() {return lastIndexOf(str, getLength());};
 
   /**
     Returns the number of occurances of the specified character in this string.
@@ -665,13 +671,13 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const String<LOCK>& v
 
 template<class LOCK>
 String<LOCK> operator+(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException) {
-  return String<LOCK>(left.length() + right.length()).append(left).append(right);
+  return String<LOCK>(left.getLength() + right.getLength()).append(left).append(right);
 }
 
 template<class LOCK>
 String<LOCK> operator-(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException) {
   if (left.endsWith(right)) {
-    return left.substring(0, left.length() - right.length()); // return copy of left without suffix
+    return left.substring(0, left.getLength() - right.getLength()); // return copy of left without suffix
   } else {
     return String<LOCK>(left); // return copy of left
   }

@@ -18,7 +18,7 @@ unsigned int StringInputStream::available() throw(IOException) {
   if (closed) {
     throw IOException();
   }
-  return str.length() - index;
+  return str.getLength() - index;
 }
 
 void StringInputStream::close() throw(IOException) {
@@ -33,15 +33,15 @@ unsigned int StringInputStream::read(char* buffer, unsigned int size) throw(IOEx
   if (closed) {
     throw IOException();
   }
-  if (index >= str.length()) {
+  if (index >= str.getLength()) {
     if (eof) {
       throw EndOfFile();
     }
     eof = true;
     return 0;
   }
-  if (size >= str.length() - index) {
-    size = str.length() - index;
+  if (size >= str.getLength() - index) {
+    size = str.getLength() - index;
   }
   copy<char>(buffer, str.getBytes(), size);
   return size;
@@ -51,15 +51,15 @@ unsigned int StringInputStream::skip(unsigned int count) throw(IOException) {
   if (closed) {
     throw IOException();
   }
-  if (index >= str.length()) {
+  if (index >= str.getLength()) {
     if (eof) {
       throw EndOfFile();
     }
     eof = true;
     return 0;
   }
-  if (count >= str.length() - index) {
-    count = str.length() - index;
+  if (count >= str.getLength() - index) {
+    count = str.getLength() - index;
   }
   index += count;
   return count;

@@ -213,7 +213,7 @@ protected:
     Sets the length of the string.
   */
   inline void setLength(unsigned int length) throw(WideStringException, MemoryException) {
-    assert(length <= MAXIMUM_LENGTH, WideStringException());
+    assert(length <= MAXIMUM_LENGTH, WideStringException(this));
     elements.copyOnWrite(); // we are about to modify the buffer
     elements->setSize(length + 1);
   }

@@ -129,12 +129,12 @@ public:
   /**
     Returns the formal name of the application.
   */
-  inline String getFormalName() const throw() {return formalName;}
+  inline const String& getFormalName() const throw() {return formalName;}
 
   /**
-    Returns the name/path of the application.
+    Returns the name/path of the application (argument 0).
   */
-  inline String getName() const throw() {return path;}
+  inline const String& getName() const throw() {return path;}
 
   /**
     Returns the arguments passed to the application.

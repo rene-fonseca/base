@@ -4,8 +4,6 @@
  ***************************************************************************/
 
 #include "PrimitiveInputStream.h"
-#include <endian.h>
-#include <float.h>
 
 PrimitiveInputStream::PrimitiveInputStream(InputStream& in) throw(BindException) :
   FilterInputStream(in) {
@@ -25,41 +23,37 @@ char PrimitiveInputStream::readChar() throw(IOException) {
 
 short PrimitiveInputStream::readShortInteger() throw(IOException) {
   short value;
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   read((char*)&value, sizeof(value));
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[2]; // 16 bits
   read((char*)&buffer, sizeof(buffer));
   p[1] = buffer[0];
   p[0] = buffer[1];
-#else
-  #err Byte order not supported
 #endif
   return value;
 }
 
 unsigned short PrimitiveInputStream::readUnsignedShortInteger() throw(IOException) {
   unsigned short value;
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   read((char*)&value, sizeof(value));
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[2]; // 16 bits
   read((char*)&buffer, sizeof(buffer));
   p[1] = buffer[0];
   p[0] = buffer[1];
-#else
-  #err Byte order not supported
 #endif
   return value;
 }
 
 int PrimitiveInputStream::readInteger() throw(IOException) {
   int value;
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   read((char*)&value, sizeof(value));
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[4]; // 32 bits
   read((char*)&buffer, sizeof(buffer));
@@ -67,17 +61,15 @@ int PrimitiveInputStream::readInteger() throw(IOException) {
   p[2] = buffer[1];
   p[1] = buffer[2];
   p[0] = buffer[3];
-#else
-  #err Byte order not supported
 #endif
   return value;
 }
 
 unsigned int PrimitiveInputStream::readUnsignedInteger() throw(IOException) {
   unsigned int value;
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   read((char*)&value, sizeof(value));
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[4]; // 32 bits
   read((char*)&buffer, sizeof(buffer));
@@ -85,17 +77,15 @@ unsigned int PrimitiveInputStream::readUnsignedInteger() throw(IOException) {
   p[2] = buffer[1];
   p[1] = buffer[2];
   p[0] = buffer[3];
-#else
-  #err Byte order not supported
 #endif
   return value;
 }
 
 long long PrimitiveInputStream::readLongInteger() throw(IOException) {
   long long value;
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   read((char*)&value, sizeof(value));
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[8]; // 64 bits
   read((char*)&buffer, sizeof(buffer));
@@ -107,17 +97,15 @@ long long PrimitiveInputStream::readLongInteger() throw(IOException) {
   p[2] = buffer[5];
   p[1] = buffer[6];
   p[0] = buffer[7];
-#else
-  #err Byte order not supported
 #endif
   return value;
 }
 
 unsigned long long PrimitiveInputStream::readUnsignedLongInteger() throw(IOException) {
   unsigned long long value;
-#if BYTE_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   read((char*)&value, sizeof(value));
-#elif BYTE_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[8]; // 64 bits
   read((char*)&buffer, sizeof(buffer));
@@ -129,22 +117,16 @@ unsigned long long PrimitiveInputStream::readUnsignedLongInteger() throw(IOExcep
   p[2] = buffer[5];
   p[1] = buffer[6];
   p[0] = buffer[7];
-#else
-  #err Byte order not supported
 #endif
   return value;
 }
 
 float PrimitiveInputStream::readFloat() throw(IOException) {
   float value;
-
-#if FLT_MANT_DIG != 24
-  #err Type float not supported
-#endif
-
-#if __FLOAT_WORD_ORDER == BIG_ENDIAN
+// float may have different order
+#ifdef WORDS_BIGENDIAN
   read((char*)&value, sizeof(value));
-#elif __FLOAT_WORD_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[4]; // 32 bits
   read((char*)&buffer, sizeof(buffer));
@@ -152,8 +134,6 @@ float PrimitiveInputStream::readFloat() throw(IOException) {
   p[2] = buffer[1];
   p[1] = buffer[2];
   p[0] = buffer[3];
-#else
-  #err Byte order not supported
 #endif
   return value;
 }
@@ -161,13 +141,9 @@ float PrimitiveInputStream::readFloat() throw(IOException) {
 double PrimitiveInputStream::readDouble() throw(IOException) {
   double value;
 
-#if DBL_MANT_DIG != 53
-  #err Type double not supported
-#endif
-
-#if __FLOAT_WORD_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   read((char*)&value, sizeof(value));
-#elif __FLOAT_WORD_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[8]; // 64 bits
   read((char*)&buffer, sizeof(buffer));
@@ -179,8 +155,6 @@ double PrimitiveInputStream::readDouble() throw(IOException) {
   p[2] = buffer[5];
   p[1] = buffer[6];
   p[0] = buffer[7];
-#else
-  #err Byte order not supported
 #endif
   return value;
 }
@@ -188,13 +162,9 @@ double PrimitiveInputStream::readDouble() throw(IOException) {
 long double PrimitiveInputStream::readLongDouble() throw(IOException) {
   long double value;
 
-#if LDBL_MANT_DIG != 64
-  #err Type long double not supported
-#endif
-
-#if __FLOAT_WORD_ORDER == BIG_ENDIAN
+#ifdef WORDS_BIGENDIAN
   read((char*)&value, sizeof(value));
-#elif __FLOAT_WORD_ORDER == LITTLE_ENDIAN
+#else
   char* p = (char*)&value;
   char buffer[10]; // 80 bits
   read((char*)&buffer, sizeof(buffer));
@@ -208,8 +178,6 @@ long double PrimitiveInputStream::readLongDouble() throw(IOException) {
   p[2] = buffer[7];
   p[1] = buffer[8];
   p[0] = buffer[9];
-#else
-  #err Byte order not supported
 #endif
   return value;
 }

@@ -21,6 +21,7 @@
 #  include <limits.h>
 #  include <unistd.h>
 #  include <errno.h>
+#  include <sys/resource.h>
 
 #  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
 #    define _SC_NPROCESSORS_CONF _SC_NPROC_CONF
@@ -339,16 +340,103 @@ long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
 #endif // flavor
 }
 
-/*
-Other variables:
+int64 OperatingSystem::getResourceLimit(Resource resource, LimitType type) throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  throw NotSupported(Type::getType<OperatingSystem>());
+#else // unix
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  static const __rlimit_resource_t RESOURCES[] =
+#else
+  static const int RESOURCES[] =
+#endif
+  {
+    RLIMIT_CORE,
+    RLIMIT_CPU,
+    RLIMIT_DATA,
+    RLIMIT_FSIZE,
+    RLIMIT_NOFILE,
+    RLIMIT_STACK,
+    RLIMIT_AS
+  };
+#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  struct rlimit64 limit;
+  ::getrlimit64(RESOURCES[resource], &limit); // must not fail
+#else
+  struct rlimit limit;
+  ::getrlimit(RESOURCES[resource], &limit); // must not fail
+#endif // LFS
+  rlim_t value = (type == SOFT_LIMIT) ? limit.rlim_cur : limit.rlim_max;
+  if (value == RLIM_INFINITY) {
+    return -1;
+  } else if (value == RLIM_SAVED_MAX) {
+    return limit.rlim_max;
+  } else if (value == RLIM_SAVED_CUR) {
+    return limit.rlim_cur;
+  } else {
+    return value;
+  }
+#endif // flavor
+}
 
-_POSIX_LINK_MAX
-_POSIX_NAME_MAX
-_POSIX_SYMLINK_MAX
-_POSIX_PIPE_BUF
-_POSIX_PATH_MAX
-_POSIX_SYMLINK_MAX
-
-*/
+void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType type) throw(OutOfRange) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  throw NotSupported(Type::getType<OperatingSystem>());
+#else // unix
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  static const __rlimit_resource_t RESOURCES[] =
+#else
+  static const int RESOURCES[] =
+#endif
+  {
+    RLIMIT_CORE,
+    RLIMIT_CPU,
+    RLIMIT_DATA,
+    RLIMIT_FSIZE,
+    RLIMIT_NOFILE,
+    RLIMIT_STACK,
+    RLIMIT_AS
+  };
+#  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  assert(
+    (limit >= -1) &&
+    (limit != RLIM_INFINITY) &&
+    (limit != RLIM_SAVED_MAX) &&
+    (limit != RLIM_SAVED_CUR),
+    OutOfRange(Type::getType<OperatingSystem>())
+  );
+  struct rlimit64 rlimit;
+  ::getrlimit64(RESOURCES[resource], &rlimit); // must not fail
+  if (type == SOFT_LIMIT) {
+    rlimit.rlim_cur = (limit == -1) ? RLIM_INFINITY : limit;
+  } else {
+    rlimit.rlim_max = (limit == -1) ? RLIM_INFINITY : limit;
+  }
+  assert(
+    ::setrlimit64(RESOURCES[resource], &rlimit) == 0,
+    OutOfRange(Type::getType<OperatingSystem>())
+  );
+#  else
+  assert(
+    (limit <= PrimitiveTraits<rlim_t>::MAXIMUM) &&
+    (limit >= -1) &&
+    (limit != RLIM_INFINITY) &&
+    (limit != RLIM_SAVED_MAX) &&
+    (limit != RLIM_SAVED_CUR),
+    OutOfRange(Type::getType<OperatingSystem>())
+  );
+  struct rlimit rlimit;
+  ::getrlimit(RESOURCES[resource], &rlimit); // must not fail
+  if (type == SOFT_LIMIT) {
+    rlimit.rlim_cur = (limit == -1) ? RLIM_INFINITY : limit;
+  } else {
+    rlimit.rlim_max = (limit == -1) ? RLIM_INFINITY : limit;
+  }
+  assert(
+    ::setrlimit(RESOURCES[resource], &rlimit) == 0,
+    OutOfRange(Type::getType<OperatingSystem>())
+  );
+#  endif // LFS
+#endif // flavor
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -16,6 +16,7 @@
 
 #include <base/Object.h>
 #include <base/NotSupported.h>
+#include <base/OutOfRange.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -24,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short Operating system
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.2
 */
 
 class OperatingSystem : public Object {
@@ -75,11 +76,44 @@ public:
     SUPPORTS_MAPPED_FILES,
     SUPPORTS_PROCESS_SHARED_SYNCHRONIZATION
   };
+
+  enum Resource {
+    RESOURCE_CORE, /**< Core file size. */
+    RESOURCE_CPU, /**< CPU time. */
+    RESOURCE_DATA, /**< Data segment size. */
+    RESOURCE_FILE_SIZE, /**< File size. */
+    RESOURCE_OPEN_FILES, /**< Number of open files. */
+    RESOURCE_STACK, /**< Stack size. */
+    RESOURCE_ADDRESS_SPACE /**< Address space size. */
+  };
+
+  /** The limit type. */
+  enum LimitType {
+    HARD_LIMIT, /**< Hard limit. */
+    SOFT_LIMIT /**< Soft limit. */
+  };
   
   /**
     Returns the value of the specified system variable.
   */
   static long getVariable(Variable variable) throw(NotSupported);
+
+  /**
+    Get resource limit.
+
+    @param resource The resource limit.
+    @param type Selects between soft and hard limit . The default is SOFT_LIMIT.
+  */
+  static int64 getResourceLimit(Resource resource, LimitType type = SOFT_LIMIT) throw();
+
+  /**
+    Set resource limit.
+    
+    @param resource The resource limit.
+    @param limit The limit.
+    @param type Selects between soft and hard limit . The default is SOFT_LIMIT.
+  */
+  static void setResourceLimit(Resource resource, int64 limit, LimitType type = SOFT_LIMIT) throw(OutOfRange);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

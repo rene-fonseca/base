@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -65,7 +65,7 @@ WideString::WideString(const char* string) throw(MultibyteException, MemoryExcep
   if (string) { // is string proper (not empty)
 #if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
     mbstate_t state;
-    memset(&state, 0, sizeof(mbstate_t)); // TAG: initial state - need faster alternative
+    clear(state); // initial state
     const char* current = string;
     size_t result = mbsrtowcs(0, &current, 0, &state);
 #else
@@ -79,7 +79,7 @@ WideString::WideString(const char* string) throw(MultibyteException, MemoryExcep
   if (numberOfCharacters) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
     mbstate_t state;
-    memset(&state, 0, sizeof(mbstate_t)); // TAG: initial state - need faster alternative
+    clear(state); // initial state
     const char* current = string;
     size_t result = mbsrtowcs(elements->getElements(), &current, numberOfCharacters, &state);
 #else
@@ -94,7 +94,7 @@ WideString::WideString(const char* string, unsigned int maximum) throw(OutOfDoma
   if (string) { // is string proper
 #if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
     mbstate_t state;
-    memset(&state, 0, sizeof(mbstate_t)); // TAG: initial state - need faster alternative
+    clear(state); // initial state
     const char* current = string;
     size_t result = mbsrtowcs(0, &current, maximum, &state);
 #else
@@ -108,13 +108,21 @@ WideString::WideString(const char* string, unsigned int maximum) throw(OutOfDoma
   if (numberOfCharacters) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
     mbstate_t state;
-    memset(&state, 0, sizeof(mbstate_t)); // TAG: initial state - need faster alternative
+    clear(state); // initial state
     const char* current = string;
     size_t result = mbsrtowcs(elements->getElements(), &current, numberOfCharacters, &state);
 #else
     size_t result = mbstowcs(elements->getElements(), string, numberOfCharacters);
 #endif
   }
+}
+
+WideString& WideString::operator=(const WideStringLiteral& string) throw(WideStringException, MemoryException) {
+  unsigned int length = string.getLength();
+  assert(length <= MAXIMUM_LENGTH, WideStringException(this)); // TAG: this is not required
+  elements = new ReferenceCountedCapacityAllocator<Character>(length + 1, GRANULARITY);
+  copy<Character>(elements->getElements(), string, length); // no overlap
+  return *this;
 }
 
 void WideString::ensureCapacity(unsigned int capacity) throw(MemoryException) {

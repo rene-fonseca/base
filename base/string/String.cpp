@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,33 +28,41 @@ String::String(unsigned int capacity) throw(MemoryException) : elements(0) {
 
 String::String(const StringLiteral& str) throw(StringException, MemoryException) : elements(0) {
   unsigned int length = str.getLength();
-  assert(length <= MAXIMUM_LENGTH, StringException()); // TAG: this is not required
+  assert(length <= MAXIMUM_LENGTH, StringException(this)); // TAG: this is not required
   elements = new ReferenceCountedCapacityAllocator<Character>(length + 1, GRANULARITY);
   copy<Character>(elements->getElements(), str, length); // no overlap
 }
 
 String::String(const char* string) throw(StringException, MemoryException) : elements(0) {
-  assert(string, StringException()); // make sure string is proper
+  assert(string, StringException(this)); // make sure string is proper
   const Character* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
-  assert(terminator, StringException()); // maximum length exceeded
+  assert(terminator, StringException(this)); // maximum length exceeded
   int numberOfCharacters = terminator - string;
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
   copy(elements->getElements(), string, numberOfCharacters); // no overlap
 }
 
 String::String(const char* string, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException) : elements(0) {
-  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
-  assert(string, StringException()); // make sure string is proper
+  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
+  assert(string, StringException(this)); // make sure string is proper
   const Character* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
   int numberOfCharacters = terminator ? (terminator - string) : maximum;
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
   copy(elements->getElements(), string, numberOfCharacters); // no overlap
 }
 
+String& String::operator=(const StringLiteral& string) throw(StringException, MemoryException) {
+  unsigned int length = string.getLength();
+  assert(length <= MAXIMUM_LENGTH, StringException(this)); // TAG: this is not required
+  elements = new ReferenceCountedCapacityAllocator<Character>(length + 1, GRANULARITY);
+  copy<Character>(elements->getElements(), string, length); // no overlap
+  return *this;
+}
+
 String& String::operator=(const char* string) throw(StringException, MemoryException) {
-  assert(string, StringException()); // make sure string is proper (not empty)
+  assert(string, StringException(this)); // make sure string is valid // TAG: raise NULLPointer
   const Character* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
-  assert(terminator, StringException()); // maximum length exceeded
+  assert(terminator, StringException(this)); // maximum length exceeded
   int numberOfCharacters = terminator - string;
   elements = new ReferenceCountedCapacityAllocator<char>(numberOfCharacters + 1, GRANULARITY);
   copy(elements->getElements(), string, numberOfCharacters); // no overlap
@@ -82,12 +90,12 @@ void String::forceToLength(unsigned int length) throw(StringException, MemoryExc
 }
 
 char String::getAt(unsigned int index) const throw(OutOfRange) {
-  assert(index < getLength(), OutOfRange());
+  assert(index < getLength(), OutOfRange(this));
   return getBuffer()[index];
 }
 
 void String::setAt(unsigned int index, char value) throw(OutOfRange) {
-  assert(index < getLength(), OutOfRange());
+  assert(index < getLength(), OutOfRange(this));
   if (value != TERMINATOR) {
     getBuffer()[index] = value;
   } else {
@@ -168,7 +176,7 @@ String& String::insert(unsigned int index, const char* str) throw(StringExceptio
   int strlength = 0;
   if (str) { // is string proper (not empty)
     const Character* terminator = find(str, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
-    assert(terminator, StringException()); // maximum length exceeded
+    assert(terminator, StringException(this)); // maximum length exceeded
     strlength = terminator - str;
   }
   int length = getLength();
@@ -194,7 +202,7 @@ String& String::append(const StringLiteral& str) throw(StringException, MemoryEx
 }
 
 String& String::append(const StringLiteral& str, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException) {
-  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
+  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
   int length = getLength();
   setLength(length + minimum(str.getLength(), maximum));
   Character* buffer = elements->getElements();
@@ -203,8 +211,8 @@ String& String::append(const StringLiteral& str, unsigned int maximum) throw(Out
 }
 
 String& String::append(const char* str, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException) {
-  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
-  assert(str, StringException()); // make sure string is proper (not empty)
+  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
+  assert(str, StringException(this)); // make sure string is proper (not empty)
   const Character* terminator = find(str, maximum, Traits::TERMINATOR); // find terminator
   int strlength = terminator ? (terminator - str) : maximum;
   int length = getLength();
@@ -329,7 +337,7 @@ int String::compareTo(const String& str) const throw() {
 }
 
 int String::compareTo(const char* str) const throw(StringException) {
-  assert(str, StringException());
+  assert(str, StringException(this));
   return strcmp(getElements(), str);
 }
 
@@ -353,7 +361,7 @@ int String::compareToIgnoreCase(const String& str) const throw() {
 }
 
 int String::compareToIgnoreCase(const char* str) const throw(StringException) {
-  assert(str, StringException());
+  assert(str, StringException(this));
   return compareToIgnoreCase(getElements(), str);
 }
 

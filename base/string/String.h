@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -215,20 +215,25 @@ public:
     Initializes string from other string.
   */
   inline String(const String& copy) throw() : elements(copy.elements) {}
-
+  
   /**
-    Assignment of string with string.
+    Assignment of string to string.
   */
   inline String& operator=(const String& eq) throw() {
     elements = eq.elements; // self assignment handled by automation pointer
     return *this;
   }
-
+  
   /**
-    Assignment of string with NULL-terminated string.
+    Assignment of string literal to string.
+  */
+  String& operator=(const StringLiteral& eq) throw(StringException, MemoryException);
+  
+  /**
+    Assignment of string to NULL-terminated string.
   */
   String& operator=(const char* str) throw(StringException, MemoryException);
-
+  
   /**
     Returns the number of characters in the string.
   */

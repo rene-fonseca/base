@@ -82,7 +82,7 @@ void jobMD5Sum(const String& filePath) {
 }
 
 void jobSHA1(const String& filePath) {
-  fout << "Calculating MD5 checksum";
+  fout << "Calculating SHA1 checksum";
   FileInputStream file(filePath, 0);
 
   byte buffer[4096];

@@ -599,7 +599,11 @@ public:
     Returns the arc tangent of y/x using the signs of both arguments to determine the proper quadrant.
   */
   static inline float atan2(float y, float x) throw() {
-    return isoc::atan2f(y, x);
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATAN2F)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ATAN2F(y, x);
+    #else
+      return isoc::atan2f(y, x);
+    #endif
   }
 
   /**

@@ -96,7 +96,7 @@ case $os_minor in [0-9]*) base_cv_os_minor=$os_minor;; *) exit 1;; esac
 echo base_cv_os_minor=$base_cv_os_minor
 
 # TAG: need to check if valid syntax
-echo base_cv_features=$features
+echo base_cv_features=\""$features"\"
 
 
 

@@ -25,6 +25,7 @@ long_double=IEEE_754_DOUBLE_PRECISION
 
 # os
 os=IRIX65
+features="_REENTRANT=1 _SGI_SOURCE=1 _LANGUAGE_C_PLUS_PLUS=1 lfs:_LARGEFILE64_SOURCE=1"
 
 # functions
 functions="memchr memcmp memcpy memmove memset nanosleep readdir_r"

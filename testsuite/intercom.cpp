@@ -90,10 +90,10 @@ private:
   Player player;
   Reader reader;
   Writer writer;
-  Queue<Allocator<short>* > recordingQueue;
-  Queue<Allocator<short>* > playingQueue;
-  Queue<Allocator<short>* > readingQueue;
-  Queue<Allocator<short>* > writingQueue;
+  Queue<Allocator<short>*> recordingQueue;
+  Queue<Allocator<short>*> playingQueue;
+  Queue<Allocator<short>*> readingQueue;
+  Queue<Allocator<short>*> writingQueue;
   Semaphore recordingSemaphore;
   Semaphore playingSemaphore;
   Semaphore readingSemaphore;
@@ -102,11 +102,12 @@ private:
   unsigned int channels;
   unsigned int sampleRate;
   bool isServer;
+  bool loopback;
   InetEndPoint endPoint;
   StreamSocket streamSocket;
 public:
 
-  IntercomServlet(unsigned int channels, unsigned int sampleRate, bool isServer, const InetEndPoint& endPoint) throw() :
+  IntercomServlet(unsigned int channels, unsigned int sampleRate, bool loopback, bool isServer, const InetEndPoint& endPoint) throw() :
     recorder(this),
     player(this),
     reader(this),
@@ -115,6 +116,7 @@ public:
     this->sampleRate = sampleRate;
     this->isServer = isServer;
     this->endPoint = endPoint;
+    this->loopback = loopback;
   }
   
   void record() throw() {
@@ -131,8 +133,13 @@ public:
         guard.releaseLock();
         unsigned int bytesRead = soundInputStream.read(buffer->getElements(), buffer->getByteSize());
         guard.exclusiveLock();
-        playingQueue.push(buffer);
-        playingSemaphore.post();
+        if (loopback) {
+          playingQueue.push(buffer);
+          playingSemaphore.post();
+        } else {
+          writingQueue.push(buffer);
+          writingSemaphore.post();
+        }
         guard.releaseLock();
       }
     }
@@ -154,8 +161,13 @@ public:
         guard.releaseLock();
         unsigned int bytesWritten = soundOutputStream.write(buffer->getElements(), buffer->getByteSize());
         guard.exclusiveLock();
-        recordingQueue.push(buffer);
-        recordingSemaphore.post();
+        if (loopback) {
+          recordingQueue.push(buffer);
+          recordingSemaphore.post();
+        } else {
+          readingQueue.push(buffer);
+          readingSemaphore.post();
+        }
         guard.releaseLock();
       }
     }
@@ -164,6 +176,9 @@ public:
   }
 
   void write() throw() {
+    if (loopback) {
+      return;
+    }
     while (!Thread::getThread()->isTerminated()) {
       writingSemaphore.wait();
       if (Thread::getThread()->isTerminated()) {
@@ -184,6 +199,9 @@ public:
   }
 
   void read() throw() {
+    if (loopback) {
+      return;
+    }
     while (!Thread::getThread()->isTerminated()) {
       readingSemaphore.wait();
       if (Thread::getThread()->isTerminated()) {
@@ -193,7 +211,7 @@ public:
         guard.exclusiveLock();
         Allocator<short>* buffer = readingQueue.pop();
         guard.releaseLock();
-        unsigned int bytesRecorded = streamSocket.read(pointer_cast<char*>(buffer->getElements()), buffer->getByteSize());
+        unsigned int bytesRead = streamSocket.read(pointer_cast<char*>(buffer->getElements()), buffer->getByteSize());
         guard.exclusiveLock();
         playingQueue.push(buffer);
         playingSemaphore.post();
@@ -241,10 +259,12 @@ public:
     Thread readerThread(&reader);
     Thread writerThread(&writer);
 
-    if (isServer) {
-      server();
-    } else {
-      client();
+    if (!loopback) {
+      if (isServer) {
+        server();
+      } else {
+        client();
+      }
     }
 
     fout << MESSAGE("Starting threads...") << ENDL;
@@ -261,13 +281,21 @@ public:
         break;
       }
       Thread::millisleep(maximum<int>((i+1)*500 - timer.getLiveMicroseconds()/1000, 0));
-      fout << MESSAGE("Time: ") << setPrecision(3) << timer.getLiveMicroseconds()/1000000. << EOL
-           << MESSAGE("Recording queue: ") << recordingQueue.getSize() << EOL
-           << MESSAGE("Playing queue: ") << playingQueue.getSize() << EOL
-           << MESSAGE("Reading queue: ") << readingQueue.getSize() << EOL
-           << MESSAGE("Writing queue: ") << writingQueue.getSize() << EOL
-           << FLUSH;
+      if (!loopback) {
+        fout << MESSAGE("Time: ") << setPrecision(3) << timer.getLiveMicroseconds()/1000000. << MESSAGE(" - ")
+             << MESSAGE("Recording queue: ") << recordingQueue.getSize() << MESSAGE(" - ")
+             << MESSAGE("Playing queue: ") << playingQueue.getSize() << MESSAGE(" - ")
+             << MESSAGE("Reading queue: ") << readingQueue.getSize() << MESSAGE(" - ")
+             << MESSAGE("Writing queue: ") << writingQueue.getSize() << CR
+             << FLUSH;
+      } else {
+        fout << MESSAGE("Time: ") << setPrecision(3) << timer.getLiveMicroseconds()/1000000. << MESSAGE(" - ")
+             << MESSAGE("Recording queue: ") << recordingQueue.getSize() << MESSAGE(" - ")
+             << MESSAGE("Playing queue: ") << playingQueue.getSize() << CR
+             << FLUSH;
+      }
     }
+    fout << ENDL;
 
     if (!Application::getApplication()->isTerminated()) {
       fout << MESSAGE("Voluntary termination") << ENDL;
@@ -312,6 +340,7 @@ public:
 class IntercomApplication : public Application {
 private:
 
+  bool loopback;
   bool isServer;
   String host;
   unsigned short port;
@@ -327,6 +356,7 @@ public:
   
   IntercomApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() :
     Application(MESSAGE("intercom"), numberOfArguments, arguments, environment) {
+    loopback = false;
     isServer = true;
     port = DEFAULT_PORT;
     channels = DEFAULT_CHANNELS;
@@ -334,6 +364,7 @@ public:
   }
 
   void handleArguments() throw(OutOfDomain) {
+    bool loopbackSpecified = false;
     bool portSpecified = false;
     bool hostSpecified = false;
     bool stereoSpecified = false;
@@ -346,18 +377,22 @@ public:
     while (enu.hasNext()) {
       const String* argument = enu.next();
       if (*argument == "--help") {
+      } else if (*argument == "--loopback") {
+        assert(!loopbackSpecified && !hostSpecified && !portSpecified, OutOfDomain());
+        loopbackSpecified = true;
+        loopback = true;
       } else if (*argument == "--stereo") {
         assert(!stereoSpecified, OutOfDomain());
         stereoSpecified = true;
         channels = 2;
       } else if (*argument == "--host") {
-        assert(!hostSpecified, OutOfDomain("Already specified"));
+        assert(!hostSpecified && !loopbackSpecified, OutOfDomain("Already specified"));
         assert(enu.hasNext(), OutOfDomain("Host value missing"));
         host = *enu.next();
         hostSpecified = true;
         isServer = false;
       } else if (*argument == "--port") {
-        assert(!portSpecified, OutOfDomain());
+        assert(!portSpecified && !loopbackSpecified, OutOfDomain());
         assert(enu.hasNext(), OutOfDomain("Port value missing"));
         const String* rateString = enu.next();
         unsigned int temp = UnsignedInteger(*rateString).getValue();
@@ -382,10 +417,10 @@ public:
     // override default application termination
   }
 
-  int main() throw(OutOfDomain) {
-    fout << Application::getFormalName() << MESSAGE(" Version 1.0") << EOL
+  void main() throw(OutOfDomain) {
+    fout << Application::getFormalName() << MESSAGE(" version 1.0") << EOL
          << MESSAGE("Copyright (c) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
-         << EOL << FLUSH;
+         << ENDL;
 
     handleArguments();
 
@@ -414,9 +449,7 @@ public:
       endPoint.setAddress(*enu.next());
       endPoint.setPort(port);
     }
-    IntercomServlet(channels, samplingRate, isServer, endPoint).run();
-    
-    return 0;
+    IntercomServlet(channels, samplingRate, loopback, isServer, endPoint).run();
   }
   
 };
@@ -424,7 +457,7 @@ public:
 int main(int argc, const char* argv[], const char* envp[]) {
   IntercomApplication application(argc, argv, envp);
   try {
-    return application.main();
+    application.main();
   } catch(Exception& e) {
     return Application::getApplication()->exceptionHandler(e);
   } catch(...) {

@@ -39,41 +39,7 @@ ReadWriteLock::ReadWriteLock() throw(Construct) {
 #endif
 }
 
-void ReadWriteLock::readLock() const throw() {
-#ifdef HAVE_PTHREAD_RWLOCK
-  if (pthread_rwlock_rdlock(&lock) != 0) {
-    throw ReadWriteLock::Lock();
-  }
-#else
-  if (pthread_mutex_lock(&lock) != 0) {
-    throw ReadWriteLock::Lock();
-  }
-#endif
-}
-
-bool ReadWriteLock::tryReadLock() const throw() {
-#ifdef HAVE_PTHREAD_RWLOCK
-  int result = pthread_rwlock_tryrdlock(&lock);
-  if (result == 0) {
-    return true;
-  } else if (result == EBUSY) {
-    return false;
-  } else {
-    throw ReadWriteLock::Lock();
-  }
-#else
-  int result = pthread_mutex_trylock(&lock);
-  if (result == 0) {
-    return true;
-  } else if (result == EBUSY) {
-    return false;
-  } else {
-    throw ReadWriteLock::Lock();
-  }
-#endif
-}
-
-void ReadWriteLock::writeLock() const throw() {
+void ReadWriteLock::exclusiveLock() const throw() {
 #ifdef HAVE_PTHREAD_RWLOCK
   if (pthread_rwlock_wrlock(&lock) != 0) {
     throw ReadWriteLock::Lock();
@@ -85,7 +51,7 @@ void ReadWriteLock::writeLock() const throw() {
 #endif
 }
 
-bool ReadWriteLock::tryWriteLock() const throw() {
+bool ReadWriteLock::tryExclusiveLock() const throw() {
 #ifdef HAVE_PTHREAD_RWLOCK
   int result = pthread_rwlock_trywrlock(&lock);
   if (result == 0) {
@@ -107,7 +73,41 @@ bool ReadWriteLock::tryWriteLock() const throw() {
 #endif
 }
 
-void ReadWriteLock::unlock() const throw() {
+void ReadWriteLock::sharedLock() const throw() {
+#ifdef HAVE_PTHREAD_RWLOCK
+  if (pthread_rwlock_rdlock(&lock) != 0) {
+    throw ReadWriteLock::Lock();
+  }
+#else
+  if (pthread_mutex_lock(&lock) != 0) {
+    throw ReadWriteLock::Lock();
+  }
+#endif
+}
+
+bool ReadWriteLock::trySharedLock() const throw() {
+#ifdef HAVE_PTHREAD_RWLOCK
+  int result = pthread_rwlock_tryrdlock(&lock);
+  if (result == 0) {
+    return true;
+  } else if (result == EBUSY) {
+    return false;
+  } else {
+    throw ReadWriteLock::Lock();
+  }
+#else
+  int result = pthread_mutex_trylock(&lock);
+  if (result == 0) {
+    return true;
+  } else if (result == EBUSY) {
+    return false;
+  } else {
+    throw ReadWriteLock::Lock();
+  }
+#endif
+}
+
+void ReadWriteLock::releaseLock() const throw() {
 #ifdef HAVE_PTHREAD_RWLOCK
   if (pthread_rwlock_unlock(&lock) != 0) {
     throw ReadWriteLock::Unlock();

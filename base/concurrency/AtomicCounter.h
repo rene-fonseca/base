@@ -16,7 +16,10 @@
 */
 
 template<class TYPE>
-class AtomicCounter : protected ThreadLock {
+class AtomicCounter : public Synchronizeable<DefaultLock> {
+public:
+
+  typedef DefaultLock LOCK;
 private:
 
   /** The value of the counter. */

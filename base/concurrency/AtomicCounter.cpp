@@ -5,6 +5,9 @@
 
 #include "AtomicCounter.h"
 
+template AtomicCounter<unsigned int>;
+template AtomicCounter<unsigned long long>;
+
 template<class TYPE>
 AtomicCounter<TYPE>::AtomicCounter(TYPE value) throw() {
   this->value = value;

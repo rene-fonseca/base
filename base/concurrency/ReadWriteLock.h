@@ -50,23 +50,6 @@ public:
   ReadWriteLock() throw(Construct);
 
   /**
-    Applies a read lock to the read-write lock object. The calling thread does
-    not return until the lock can be acquired. The calling thread is allowed
-    to hold several simultaneous read locks. Results are undefined if the
-    calling thread already holds a write lock. Throws the exception
-    'ReadWriteLock:Lock' on failure.
-  */
-  void sharedLock() const throw();
-
-  /**
-    Attempts to lock the read-write object for reading. Throws the exception
-    'ReadWriteLock::Lock' on failure.
-
-    @return True if the read-write lock was successfully acquired for reading.
-  */
-  bool trySharedLock() const throw();
-
-  /**
     Lock the read-write lock for writing. The calling thread acquires the lock
     if no other thread (reader or writer) holds the lock. Otherwise, the thread
     blocks until it can be acquired. Results are undefined if the calling
@@ -81,6 +64,23 @@ public:
     @return True if the read-write lock was successfully acquired for writing.
   */
   bool tryExclusiveLock() const throw();
+
+  /**
+    Applies a read lock to the read-write lock object. The calling thread does
+    not return until the lock can be acquired. The calling thread is allowed to
+    hold several simultaneous read locks. Results are undefined if the calling
+    thread already holds a write lock. Throws the exception 'ReadWriteLock:Lock'
+    on failure.
+  */
+  void sharedLock() const throw();
+
+  /**
+    Attempts to lock the read-write object for reading. Throws the exception
+    'ReadWriteLock::Lock' on failure.
+
+    @return True if the read-write lock was successfully acquired for reading.
+  */
+  bool trySharedLock() const throw();
 
   /**
     This method unlocks the read-write lock. Throws the exception

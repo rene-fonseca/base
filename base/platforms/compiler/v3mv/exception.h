@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_V3MV__EXCEPTION_H
 
 #include <base/platforms/features.h>
+#include <base/Primitives.h>
 #include <exception>
 #include <typeinfo>
 
@@ -37,7 +38,6 @@ namespace abi {
   };
   
   typedef void (*_Unwind_Exception_Cleanup_Fn)(_Unwind_Reason_Code reason, struct _Unwind_Exception* exc);
-  typedef unsigned long long uint64; // TAG: fixme
   
   struct _Unwind_Exception {
     uint64 exception_class;

@@ -14,11 +14,11 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__ALLOCATOR_H
 #define _DK_SDU_MIP__BASE_MEM__ALLOCATOR_H
 
+#include <base/mem/DynamicMemory.h>
 #include <base/Functor.h>
 #include <base/mem/Heap.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/iterator/SequenceIterator.h>
-#include <new>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

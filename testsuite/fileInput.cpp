@@ -139,7 +139,7 @@ public:
     uint8 buffer[BLOCK_SIZE];
     MD5Sum sum;
     unsigned int count;
-    while ((count = file.read(getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
+    while ((count = file.read(Cast::getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
       fout << '.' << FLUSH;
       sum.push(buffer, count);
     }
@@ -158,7 +158,7 @@ public:
     uint8 buffer[BLOCK_SIZE];
     SHA1 sum;
     unsigned int count;
-    while ((count = file.read(getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
+    while ((count = file.read(Cast::getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
       fout << '.' << FLUSH;
       sum.push(buffer, count);
     }
@@ -177,7 +177,7 @@ public:
     uint8 buffer[BLOCK_SIZE];
     SHA256 sum;
     unsigned int count;
-    while ((count = file.read(getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
+    while ((count = file.read(Cast::getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
       fout << '.' << FLUSH;
       sum.push(buffer, count);
     }
@@ -196,7 +196,7 @@ public:
     uint8 buffer[BLOCK_SIZE];
     SHA384 sum;
     unsigned int count;
-    while ((count = file.read(getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
+    while ((count = file.read(Cast::getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
       fout << '.' << FLUSH;
       sum.push(buffer, count);
     }
@@ -215,7 +215,7 @@ public:
     uint8 buffer[BLOCK_SIZE];
     SHA512 sum;
     unsigned int count;
-    while ((count = file.read(getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
+    while ((count = file.read(Cast::getCharAddress(buffer[0]), sizeof(buffer), true)) > 0) {
       fout << '.' << FLUSH;
       sum.push(buffer, count);
     }

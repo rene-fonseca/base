@@ -14,7 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_MATHEMATICS__MATH_H
 #define _DK_SDU_MIP__BASE_MATHEMATICS__MATH_H
 
-#include <base/features.h>
+#include <base/Primitives.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -131,15 +131,19 @@ namespace isoc {
 /**
   This class is a placeholder for mathematical functions.
 
-  @ingroup mathematics
   @short Mathematical functions
+  @ingroup mathematics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
 class Math {
-public:
+private:
 
+  /** Bit reversal lookup table (8 bit). */
+  static const uint8 BIT_REVERSAL[256];
+public:
+  
   /**
     Returns the absolute value.
   */
@@ -882,6 +886,34 @@ public:
       }
     }
     return false;
+  }
+
+  /**
+    Returns the bit reversal of the specified 8 bit unsigned integer.
+  */
+  static inline uint8 getBitReversal(uint8 value) throw() {
+    return BIT_REVERSAL[value];
+  }
+
+  /**
+    Returns the bit reversal of the specified 16 bit unsigned integer.
+  */
+  static inline uint16 getBitReversal(uint16 value) throw() {
+    return merge(getBitReversal(getHighWordOf16(value)), getBitReversal(getLowWordOf16(value)));
+  }
+  
+  /**
+    Returns the bit reversal of the specified 32 bit unsigned integer.
+  */
+  static inline uint32 getBitReversal(uint32 value) throw() {
+    return merge(getBitReversal(getHighWordOf32(value)), getBitReversal(getLowWordOf32(value)));
+  }
+
+  /**
+    Returns the bit reversal of the specified 64 bit unsigned integer.
+  */
+  static inline uint64 getBitReversal(uint64 value) throw() {
+    return merge(getBitReversal(getHighWordOf64(value)), getBitReversal(getLowWordOf64(value)));
   }
 };
 

@@ -40,6 +40,20 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+SerialPort::SerialPortHandle::~SerialPortHandle() throw(CommunicationsException) {
+  if (isValid()) { // dont try to close if handle is invalidated
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+    if (!::CloseHandle(getHandle())) {
+      throw CommunicationsException("Unable to close port", this);
+    }
+#else // unix
+    if (::close(getHandle())) {
+      throw CommunicationsException("Unable to close port", this);
+    }
+#endif // flavour
+  }
+}
+
 List<String> SerialPort::getPorts() throw() {
   List<String> result;
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)

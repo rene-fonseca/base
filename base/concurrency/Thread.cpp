@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -291,7 +291,6 @@ void Thread::terminate() throw() {
 
 Thread::~Thread() throw(ThreadException) {
   TRACE_MEMBER();
-  Trace::message(__PRETTY_FUNCTION__);
   if (getParent() != 0) {
     if (state != NOTSTARTED) {
       terminationEvent.wait(); // allows multiple contexts to wait for thread to terminate
@@ -308,5 +307,12 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value) 
          << '}';
   return stream;
 }
+
+/*
+#include <sys/times.h>
+#include <limits.h>
+
+clock_t times(struct tms *buffer);
+*/
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

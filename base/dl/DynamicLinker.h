@@ -39,12 +39,12 @@ private:
 public:
 
   /** Linker options. */
-  enum {
+  enum Options {
     LAZY = 1, /**< Resolve symbols during execution of module. */
     GLOBAL = 2 /**< Include symbols of the module in the global symbol pool. */
   };
 
-  template<typename TYPE>
+  template<class TYPE>
   static inline TYPE getGlobalSymbol(const String& symbol) throw(LinkerException) {
     return (TYPE)getGlobalSymbolImpl(symbol);
   }

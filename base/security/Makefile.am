@@ -5,7 +5,7 @@ DEFAULT_INCLUDES =
 
 noinst_LTLIBRARIES = libsecurity.la
 
-libsecurity_la_SOURCES = MD5Sum.cpp Base64.cpp
+libsecurity_la_SOURCES = MD5Sum.cpp SHA1.cpp Base64.cpp
 
 sectiondir = $(includedir)/base/security
-section_HEADERS = MD5Sum.h Base64.h
+section_HEADERS = MD5Sum.h SHA1.h Base64.h

@@ -32,7 +32,7 @@ EUI64::EUI64(const unsigned char value[8]) throw() {
 }
 
 EUI64::EUI64(const String& value) throw(InvalidFormat) {
-  static const char SEPARATORS[8] = {'x', ':', ':', '-', ':', ':', ':', ':'}; // 'x' is not used
+  static const char SEPARATORS[8] = {'x', ':', ':', '-', ':', ':', ':', ':'}; // 'x' value is not used
   String::ReadIterator i = value.getBeginReadIterator();
   const String::ReadIterator end = value.getEndReadIterator();
   int index = 0;
@@ -40,7 +40,7 @@ EUI64::EUI64(const String& value) throw(InvalidFormat) {
     char first = *i++;
     assert(i < end, InvalidFormat(this));
     char second = *i++;
-    assert(ASCIITraits::isDigit(first) && ASCIITraits::isDigit(second), InvalidFormat(this));
+    assert(ASCIITraits::isHexDigit(first) && ASCIITraits::isHexDigit(second), InvalidFormat(this));
     id[index++] = (ASCIITraits::digitToValue(first) << 4) | ASCIITraits::digitToValue(second);
     if (index < getArraySize(id)) {
       assert(*i++ == SEPARATORS[index], InvalidFormat(this));

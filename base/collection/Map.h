@@ -154,12 +154,12 @@ public:
 
 
 
-
+/*
 template<class KEY, class VALUE> class Map<KEY*, VALUE>;
 template<class VALUE> class Map<void*, VALUE>;
 
 
-/*
+
 template<>
 class Stack<void*> : public Collection {
 protected:
@@ -191,6 +191,7 @@ public:
 };
 */
 
+/*
 template<class KEY, class VALUE>
 class Map<KEY*, VALUE> : private Map<void*, VALUE> {
 public:
@@ -198,7 +199,7 @@ public:
 
   inline Map() throw() : Base() {}
   inline Map(const Map& copy) throw(MemoryException) : Base(copy) {}
-  inline MapEnumeration getEnumeration() throw() {return Base::getEnumeration();}
+  inline Base::MapEnumeration getEnumeration() throw() {return Base::getEnumeration();}
   inline bool isKey(const KEY& key) const throw() {return Base::isKey(key);}
   inline VALUE getValue(const KEY& key) const throw(InvalidKey) {return Base::getValue(key);}
   inline void add(const KEY& key, const VALUE& value) throw(MemoryException) {Base::add(key, value);}
@@ -207,5 +208,6 @@ public:
   inline Index operator[](const KEY& key) throw(InvalidKey, MemoryException) {return Index(*this, key);}
   inline ~Map() throw() {};
 };
+*/
 
 #endif

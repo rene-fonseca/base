@@ -14,7 +14,7 @@
 DEFS =
 AUTOMAKE_OPTIONS = 1.4 foreign nostdinc dist-bzip2 dist-zip
 
-SUBDIRS = config base # testsuite
+SUBDIRS = config static base # testsuite
 
 dist-hook:
 # generate doxygen documentation

@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 
 #if defined(bool)
-  #undef bool
+  #undef bool // FIXME
 #endif
 
 /**

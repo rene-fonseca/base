@@ -12,13 +12,14 @@
 # ***************************************************************************
 
 DEFS =
-AUTOMAKE_OPTIONS = 1.4 foreign nostdinc dist-tarZ dist-bzip2 dist-zip
+AUTOMAKE_OPTIONS = 1.4 foreign nostdinc dist-bzip2 dist-zip
 
 LIBS=-lbase
 
 bin_PROGRAMS = Array List Queue Set Map String io client server datagramClient datagramServer Thread referenceCounting fileInput mtServer filesystem xml daemon Exception ftp http dlapp intercom Version SerialPort File floatingPoint
+bin_PROGRAMS += Process
 
-lib_LTLIBRARIES = dlmodule.la
+#lib_LTLIBRARIES = dlmodule.la
 
 Array_SOURCES = Array.cpp
 List_SOURCES = List.cpp
@@ -47,8 +48,9 @@ Version_SOURCES = Version.cpp
 SerialPort_SOURCES = SerialPort.cpp
 File_SOURCES = File.cpp
 floatingPoint_SOURCES = floatingPoint.cpp
+Process_SOURCES = Process.cpp
 
-dlmodule_la_SOURCES = dlmodule.cpp MyLinkerModule.cpp
-dlmodule_la_LDFLAGS = -avoid-version -module -no-undefined -version-info 0:1:0
+#dlmodule_la_SOURCES = dlmodule.cpp MyLinkerModule.cpp
+#dlmodule_la_LDFLAGS = -avoid-version -module -no-undefined -version-info 0:1:0
 
 EXTRA_DIST =

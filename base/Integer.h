@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short Signed integer.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.01
+  @version 1.2
 */
 
 class Integer : public Object {
@@ -48,9 +48,10 @@ public:
     Returns the value of the integer string representation.
 
     @param str The string representation.
+    @param withoutSign Effectively prevents signs from being parsed. Default is to allow a single sign.
   */
-  static int parse(const String& str) throw(InvalidFormat);
-
+  static int parse(const String& str, bool withoutSign = false) throw(InvalidFormat);
+  
   /**
     Initializes the integer as zero.
   */
@@ -109,7 +110,7 @@ public:
   inline operator int() const throw() {return value;}
 };
 
-inline Integer::Integer(int v) throw() : value(v) {}
+inline Integer::Integer(int _value) throw() : value(_value) {}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

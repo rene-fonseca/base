@@ -16,32 +16,66 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-int Integer::parse(const String& str) throw(InvalidFormat) {
-  unsigned int length = str.getLength();
-  bool sign = false;
-  unsigned int index = 0;
-
-  assert(length > 0, InvalidFormat("Not an Integer", Type::getType<Integer>()));
-
-  if (str[0] == '-') {
-    sign = true;
-    ++index;
+int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat) {
+  String::ReadIterator i = str.getBeginReadIterator();
+  const String::ReadIterator end = str.getEndReadIterator();
+  
+  while ((i < end) && (*i == ' ')) {
+    ++i; // eat space
   }
+  
+  assert(i < end, InvalidFormat(Type::getType<Integer>()));
+  
+  long long value;
+  if (withoutSign) {
+    unsigned long long temp = 0;
+    while (i < end) {
+      char ch = *i++;
+      if (!ASCIITraits::isDigit(ch)) {
+        break;
+      }
+      assert(temp < PrimitiveTraits<unsigned int>::MAXIMUM,
+             InvalidFormat(Type::getType<Integer>()));
+      temp = temp * 10 + ASCIITraits::digitToValue(ch);
+    }
+    value = temp;
+  } else {
+    bool negative = false;
+    if (*i == '-') {
+      negative = true;
+      ++i; // yummy that tasted great
+    } else if (*i == '+') {
+      ++i; // I'm not full yet
+    }
 
-  long long temp = 0;
-
-  while (index < length) {
-    char ch = str[index++];
-
-    assert(ASCIITraits::isDigit(ch), InvalidFormat("Not an Integer", Type::getType<Integer>()));
-    temp = temp * 10 + ASCIITraits::digitToValue(ch);
-
-    if ((sign && (-temp < Integer::MINIMUM)) || (!sign && (temp > Integer::MAXIMUM))) {
-      throw InvalidFormat("Not an Integer", Type::getType<Integer>());
+    value = 0; // overflow not possible (2 * sizeof(int) == sizeof(long long))
+    if (negative) {
+      while (i < end) {
+        char ch = *i++;
+        if (!ASCIITraits::isDigit(ch)) {
+          break;
+        }
+        value = value * 10 - ASCIITraits::digitToValue(ch);
+        assert(value >= Integer::MINIMUM, InvalidFormat(Type::getType<Integer>()));
+      }
+    } else {
+      while (i < end) {
+        char ch = *i++;
+        if (!ASCIITraits::isDigit(ch)) {
+          break;
+        }      
+        value = value * 10 + ASCIITraits::digitToValue(ch);
+        assert(value <= Integer::MAXIMUM, InvalidFormat(Type::getType<Integer>()));
+      }
     }
   }
-
-  return sign ? -temp : temp;
+  
+  while ((i < end) && (*i == ' ')) { // rest must be spaces
+    ++i;
+  }
+  
+  assert(i == end, InvalidFormat(Type::getType<Integer>()));
+  return value;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -15,6 +15,9 @@
 #define _DK_SDU_MIP__BASE__LONG_INTEGER_H
 
 #include <base/Object.h>
+#include <base/Primitives.h>
+#include <base/string/String.h>
+#include <base/string/InvalidFormat.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -23,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short A signed long integer
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.1
 */
 
 class LongInteger : public virtual Object {
@@ -32,32 +35,47 @@ public:
   /** True if the integer type is signed. */
   static const bool SIGNED = true;
   /** Specifies the maximum value. */
-  static const long long MAXIMUM = PrimitiveTraits<long long>::MINIMUM;
+  static const long long MAXIMUM = PrimitiveTraits<long long>::MAXIMUM;
   /** Specifies the minimum value. */
-  static const long long MINIMUM = PrimitiveTraits<long long>::MAXIMUM;
+  static const long long MINIMUM = PrimitiveTraits<long long>::MINIMUM;
 protected:
 
   /** The value. */
   long long value;
 public:
+  
+  /**
+    Returns the value of the integer string representation.
 
+    @param str The string representation.
+    @param withoutSign Effectively prevents signs from being parsed. Default is to allow a single sign.
+  */
+  static long long parse(const String& str, bool withoutSign = false) throw(InvalidFormat);
+  
   /**
     Initializes the long integer as zero.
   */
   inline LongInteger() throw() : value(0) {}
-
+  
   /**
     Initializes the long integer with the specified value. Implicit initialization allowed.
 
     @param value The desired value.
   */
-  inline LongInteger(long long value) throw() : value(value) {}
-
+  LongInteger(long long value) throw();
+  
+  /**
+    Initializes long integer from string.
+    
+    @param str The string.
+  */
+  inline LongInteger(const String& str) throw(InvalidFormat) : value(parse(str)) {}
+  
   /**
     Initializes integer by copying from other integer.
   */
   inline LongInteger(const LongInteger& copy) throw() : value(copy.value) {}
-
+  
   /**
     Assignment of integer to this integer.
   */
@@ -89,6 +107,8 @@ public:
     return value;
   }
 };
+
+inline LongInteger::LongInteger(long long _value) throw() : value(_value) {}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

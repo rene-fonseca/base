@@ -16,15 +16,17 @@
 
 #include <base/Object.h>
 #include <base/Primitives.h>
+#include <base/string/String.h>
+#include <base/string/InvalidFormat.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Signed and short integer (16 bits or more).
 
-  @short A signed short integer
+  @short A signed short integer.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.1
 */
 
 class ShortInteger : public Object {
@@ -33,27 +35,42 @@ public:
   /** True if the integer type is signed. */
   static const bool SIGNED = true;
   /** Specifies the maximum value. */
-  static const short int MAXIMUM = PrimitiveTraits<short>::MAXIMUM;
+  static const short MAXIMUM = PrimitiveTraits<short>::MAXIMUM;
   /** Specifies the minimum value. */
-  static const short int MINIMUM = PrimitiveTraits<short>::MINIMUM;
+  static const short MINIMUM = PrimitiveTraits<short>::MINIMUM;
 protected:
 
   /** The value. */
-  short int value;
+  short value;
 public:
+  
+  /**
+    Returns the value of the integer string representation.
 
+    @param str The string representation.
+    @param withoutSign Effectively prevents signs from being parsed. Default is to allow a single sign.
+  */
+  static short parse(const String& str, bool withoutSign = false) throw(InvalidFormat);
+  
   /**
     Initializes the short integer as zero.
   */
   inline ShortInteger() throw() : value(0) {}
-
+  
   /**
     Initializes the short integer with the specified value. Implicit initialization allowed.
 
     @param value The desired value.
   */
-  ShortInteger(short int value) throw();
+  ShortInteger(short value) throw();
+  
+  /**
+    Initializes short integer from string.
 
+    @param str The string.
+  */
+  inline ShortInteger(const String& str) throw(InvalidFormat) : value(parse(str)) {}
+  
   /**
     Copy constructor. Initializes a new ShortInteger from other ShortInteger object.
   */
@@ -70,7 +87,7 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline short int getValue() const throw() {
+  inline short getValue() const throw() {
     return value;
   }
 
@@ -79,19 +96,19 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(short int value) throw() {
+  inline void setValue(short value) throw() {
     this->value = value;
   }
 
   /**
     Casts integer to native type.
   */
-  inline operator short int() const throw() {
+  inline operator short () const throw() {
     return value;
   }
 };
 
-inline ShortInteger::ShortInteger(short int v) throw() : value(v) {}
+inline ShortInteger::ShortInteger(short _value) throw() : value(_value) {}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

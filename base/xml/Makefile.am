@@ -34,11 +34,7 @@ libxml_la_SOURCES = \
   Stylesheet.cpp \
   Text.cpp \
   Transformer.cpp \
-  XMLException.cpp \
-  XMLNode.cpp \
-  XMLParser.cpp \
-  XMLProperty.cpp \
-  XMLTree.cpp
+  XMLReader.cpp
 
 sectiondir = $(includedir)/base/xml
 section_HEADERS = \
@@ -59,14 +55,12 @@ section_HEADERS = \
   Notation.h \
   ProcessingInstruction.h \
   SAXException.h \
+  SAXNotRecognizedException.h \
+  SAXNotSupportedException.h \
   SAXParseException.h \
   Stylesheet.h \
   Text.h \
   Transformer.h \
   TransformerException.h \
-  XMLException.h \
-  XMLNode.h \
-  XMLParser.h \
-  XMLProperty.h \
-  XMLTree.h \
+  XMLReader.h \
   XPathException.h

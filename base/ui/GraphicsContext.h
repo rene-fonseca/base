@@ -74,7 +74,9 @@ public:
     ~GraphicsContextObjectHandle() throw();
   };
 
-  /** Handle to a graphics context object. */
+  /**
+    @short Handle to a graphics context object (e.g. pen, brush, and font).
+  */
   class GraphicsContextObject {
   protected:
     
@@ -99,7 +101,7 @@ public:
   };
 
   /**
-    Pen.
+    @short Handle to a pen.
   */
   class Pen : GraphicsContextObject {
     friend class GraphicsContext;
@@ -133,7 +135,7 @@ public:
   };
 
   /**
-    Brush.
+    @short Handle to a brush.
   */
   class Brush : GraphicsContextObject {
     friend class GraphicsContext;
@@ -179,7 +181,7 @@ public:
   };
   
   /**
-    Font.
+    @short Handle to a font.
   */
   class Font : GraphicsContextObject {
     friend class GraphicsContext;
@@ -213,7 +215,7 @@ public:
     FILLED = 1
   };
 
-  /** Alignment. */
+  /* Alignment. */
   class Alignment {
   public:
     
@@ -231,7 +233,7 @@ public:
     static const unsigned int BOTTOM = 32;
   };
 
-  /** Text format. */
+  /* Text format. */
   class TextFormat {
   public:
 

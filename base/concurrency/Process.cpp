@@ -19,6 +19,7 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
+  #include <psapi.h>
 #else // unix
   #include <sys/types.h>
   #include <sys/wait.h>
@@ -28,6 +29,7 @@
   #include <signal.h>
   #include <errno.h>
   #include <stdlib.h>
+
   #define _DK_SDU_MIP__BASE__HAVE_GETRUSAGE
 #endif
 
@@ -100,39 +102,6 @@ Process Process::getParentProcess() throw() {
 Process Process::fork() throw(NotSupported, ProcessException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   throw NotSupported(Type::getType<Process>());
-
-//   NTSYSAPI NTSTATUS NTAPI NtCreateProcess(
-//                       OUT PHANDLE ProcessHandle,
-//                       IN ACCESS_MASK DesiredAccess,
-//                       IN POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
-//                       IN HANDLE ParentProcess,
-//                       IN BOOLEAN InheritObjectTable,
-//                       IN HANDLE SectionHandle OPTIONAL,
-//                       IN HANDLE DebugPort OPTIONAL,
-//                       IN HANDLE ExceptionPort OPTIONAL
-//                    );
-//   NTSYSAPI NTSTATUS NTAPI NtCreateThread(
-//                        OUT PHANDLE ThreadHandle,
-//                        IN ACCESS_MASK DesiredAccess,
-//                        IN POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
-//                        IN HANDLE ProcessHandle,
-//                        OUT PCLIENT_ID ClientId,
-//                        IN PCONTEXT ThreadContext,
-//                        IN PINITIAL_TEB InitialTeb,
-//                        IN BOOLEAN CreateSuspended
-//                      );
-//   NTSYSAPI NTSTATUS NTAPI NtTerminateProcess(
-//                        IN HANDLE ProcessHandle OPTIONAL,
-//                        IN NTSTATUS ExitStatus
-//                      );
-//   NTSYSAPI NTSTATUS NTAPI NtTerminateThread(
-//                        IN HANDLE ThreadHandle OPTIONAL,
-//                        IN NTSTATUS ExitStatus
-//                      );
-//   NTSYSAPI NTSTATUS NTAPI NtSuspendThread(
-//                           IN HANDLE ThreadHandle,
-//                           OUT PULONG PreviousSuspendCount OPTIONAL
-//                           );
 #else // unix
   pid_t result = ::fork(); // should we use fork1 on solaris
   if (result == (pid_t)-1) {
@@ -143,30 +112,33 @@ Process Process::fork() throw(NotSupported, ProcessException) {
 }
 
 #if !defined(BELOW_NORMAL_PRIORITY_CLASS) // should have been in winbase.h
-  #define BELOW_NORMAL_PRIORITY_CLASS 0x00004000
+  #define BELOW_NORMAL_PRIORITY_CLASS ((DWORD)0x00004000)
 #endif
 
 #if !defined(ABOVE_NORMAL_PRIORITY_CLASS) // should have been in winbase.h
-  #define ABOVE_NORMAL_PRIORITY_CLASS 0x00008000
+  #define ABOVE_NORMAL_PRIORITY_CLASS ((DWORD)0x00008000)
 #endif
 
 int Process::getPriority() throw(ProcessException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  switch (::GetPriorityClass(::GetCurrentProcess())) { // no need to close handle
+  DWORD priority = ::GetPriorityClass(::GetCurrentProcess());
+  switch (priority) {
   case 0:
     throw ProcessException("Unable to get priority of process", Type::getType<Process>());
   case REALTIME_PRIORITY_CLASS:
-    return -20;
+    return 7 - 24;
   case HIGH_PRIORITY_CLASS:
-    return -10;
+    return 7 - 13;
   case ABOVE_NORMAL_PRIORITY_CLASS: // w2k or later
-    return -5;
+    return 7 - 10;
   case NORMAL_PRIORITY_CLASS:
-    return 0;
+    return 7 - 7;
   case BELOW_NORMAL_PRIORITY_CLASS: // w2k or later
-    return 5;
+    return 7 - 6;
   case IDLE_PRIORITY_CLASS:
-    return 19;
+    return 7 - 4;
+  default:
+    return 0; // unknown
   }
 #else // unix
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
@@ -285,7 +257,7 @@ bool Process::isAlive() const throw(ProcessException) {
 //     FALSE, // handle inheritance option
 //     0 // optional actions
 //   );
-  
+  // use SYNCHRONIZE
   DWORD exitCode;
   HANDLE handle = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, static_cast<DWORD>(id));
   assert(handle != 0, ProcessException("Unable to query process", this));
@@ -315,7 +287,7 @@ String Process::getName() const throw(ProcessException) {
   HANDLE process = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, id);
   assert(process, ProcessException(this));
   char buffer[MAX_PATH + 1];
-  DWORD length = ::GetModuleFimeNameEx(process, 0, buffer, sizeof(buffer));
+  DWORD length = ::GetModuleFileNameEx(process, 0, buffer, sizeof(buffer));
   assert(length > 0, ProcessException(this));
   ::CloseHandle(process);
   return String(buffer, length - 1);
@@ -382,7 +354,7 @@ void Process::terminate(bool force) throw(ProcessException) {
 Process::Times Process::getTimes() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   Process::Times result;
-  ::GetProcessTimes(::GetCurrentProcess(), 0, 0, (FILETIME*)&result.system, (FILETIME*)&result.userTime);
+  ::GetProcessTimes(::GetCurrentProcess(), 0, 0, (FILETIME*)&result.system, (FILETIME*)&result.user);
   return result;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__HAVE_GETRUSAGE)
@@ -393,15 +365,18 @@ Process::Times Process::getTimes() throw() {
     result.system = usage.ru_stime.tv_sec * 1000000000ULL + usage.ru_stime.tv_usec * 1000ULL;
     return result;
   #else
+    static unsigned long ticksPerSecond = 0; // 0 ~ not cached
     struct tms;
     ::times(&tms);
-    unsigned long ticksPerSecond = ::sysconf(_SC_CLK_TCK);
+    if (ticksPerSecond == 0) { // get if not cached
+      ticksPerSecond = ::sysconf(_SC_CLK_TCK);
+    }
     Process::Times result;
     result.user = tms.tms_utime * 1000000000ULL/ticksPerSecond;
     result.system = tms.tms_stime * 1000000000ULL/ticksPerSecond;
     return result;
   #endif
-#endif
+#endif // flavor
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

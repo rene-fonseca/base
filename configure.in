@@ -522,14 +522,14 @@ dnl Check POSIX thread support
 if test "$base_thread" = posix; then
 
 AC_BASE_CHECK(
-  checking whether posix thread is supported,
+  checking whether Posix thread is supported,
   AC_BASE_CACHE(
     base_cv_pthread base_cv_pthread_libs,
     AC_BASE_ATTEMPT(
       base_cv_pthread,
       base_cv_pthread_libs,
       "" -lpthread,
-      AC_BASE_TRY_CXX_LINK(base_cv_pthread, config/pthread.c, $base_cv_pthread_libs)dnl
+      AC_BASE_TRY_CXX_RUN(base_cv_pthread, config/pthread.c, $base_cv_pthread_libs, AC_MSG_ERROR(Autodetection of POSIX thread support does not work with cross compiler.))dnl
     )dnl
   ),
   base_cv_pthread,

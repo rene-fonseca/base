@@ -58,7 +58,7 @@ public:
       : "=&r" (previous), "=m" (value) // output (value is clobbered)
       : "0" (1) // input
     ); // TAG: get redundant instruction (mov to stack)
-    if (!previous) {
+    if (previous) {
       acquireExclusiveLock();
     }
 #elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64)
@@ -68,7 +68,7 @@ public:
       : "=&r" (previous), "=m" (value) // output (value is clobbered)
       : "0" (1) // input
     );
-    if (!previous) {
+    if (previous) {
       acquireExclusiveLock();
     }
 #elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__IA64)
@@ -102,16 +102,16 @@ public:
     register unsigned int previous;
     asm volatile (
       "        xchgl %0, %1\n"
-      : "=&r" (previous), "=m" (value)
-      : "0" (1)
+      : "=&r" (previous), "=m" (value) // output
+      : "0" (1) // input
     );
     return !previous;
 #elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64)
     unsigned int previous;
     asm volatile (
       "        xchgl %0, %1\n"
-      : "=&r" (previous), "=m" (value)
-      : "0" (1)
+      : "=&r" (previous), "=m" (value) // output
+      : "0" (1) // input
     );
     return !previous;
 #elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__IA64)

@@ -45,16 +45,4 @@ void SpinLock::acquireExclusiveLock() const throw() {
 #endif
 }
 
-extern void myFunction() throw();
-
-void myTest() throw() {
-  SpinLock lock;
-  myFunction();
-  lock.exclusiveLock();
-  myFunction();
-  lock.tryExclusiveLock();
-  myFunction();
-  lock.releaseLock();
-}
-
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

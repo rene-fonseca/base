@@ -45,7 +45,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   inline Date FileTimeToDate(const FILETIME& time) {
-    return Date((*pointer_cast<const long long*>(&time) - 116444736000000000LL)/10000000); // TAG: 0x0000001c1a021060LL
+    return Date((*pointer_cast<const long long*>(&time) - 116444736000000000LL)/10000000);
   }
 #endif // flavor
 
@@ -161,15 +161,16 @@ bool File::isClosed() const throw() {
 
 long long File::getSize() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ULARGE_INTEGER size;
-  size.LowPart = ::GetFileSize(fd->getHandle(), &size.HighPart);
-  if ((size.LowPart == INVALID_FILE_SIZE) && (::GetLastError() != NO_ERROR )) {
-    throw FileException("Unable to get file size", this);
-  }
-//  LARGE_INTEGER size; // TAG: unresolved possible byte order problem for big endian architectures
-//  if (!::GetFileSizeEx(fd->getHandle(), &size)) {
-//    throw FileException("Unable to get file size", this);
-//  }
+  #if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__W2K)
+    LARGE_INTEGER size; // TAG: unresolved possible byte order problem for big endian architectures
+    assert(::GetFileSizeEx(fd->getHandle(), &size), FileException("Unable to get file size", this));
+  #else
+    ULARGE_INTEGER size;
+    size.LowPart = ::GetFileSize(fd->getHandle(), &size.HighPart);
+    if ((size.LowPart == INVALID_FILE_SIZE) && (::GetLastError() != NO_ERROR )) {
+      throw FileException("Unable to get file size", this);
+    }
+  #endif
   return size.QuadPart;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
@@ -182,7 +183,7 @@ long long File::getSize() const throw(FileException) {
     for (int i = 0; i < sizeof(status); ++i) {
       fout << HEX << static_cast<unsigned int>(((const unsigned char*)(&status))[i]) << " ";
     }
-    printf("File size = %ld\n", status.st_size);
+    printf("File size = %ld\n", status.st_size); // TAG: fix problem on Linux
     return status.st_size;
   #else
     struct stat status;

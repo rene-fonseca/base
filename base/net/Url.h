@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__NET_URL_H
-#define _DK_SDU_MIP__BASE__NET_URL_H
+#ifndef _DK_SDU_MIP__BASE_NET__URL_H
+#define _DK_SDU_MIP__BASE_NET__URL_H
 
 #include <base/Object.h>
 #include <base/string/String.h>
@@ -32,6 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   </pre>
 
   @short Uniform Resource Locator (URL)
+  @ingroup net
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

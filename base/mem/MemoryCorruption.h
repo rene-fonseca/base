@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__MEMORY_CORRUPTION_H
-#define _DK_SDU_MIP__BASE__MEMORY_CORRUPTION_H
+#ifndef _DK_SDU_MIP__BASE_MEM__MEMORY_CORRUPTION_H
+#define _DK_SDU_MIP__BASE_MEM__MEMORY_CORRUPTION_H
 
 #include <base/MemoryException.h>
 

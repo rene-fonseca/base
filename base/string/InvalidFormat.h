@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__INVALID_FORMAT_H
-#define _DK_SDU_MIP__BASE__INVALID_FORMAT_H
+#ifndef _DK_SDU_MIP__BASE_STRING__INVALID_FORMAT_H
+#define _DK_SDU_MIP__BASE_STRING__INVALID_FORMAT_H
 
 #include <base/Exception.h>
 

@@ -11,16 +11,15 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/Application.h>
+#include <base/Daemon.h>
+#include <base/Primitives.h>
+#include <base/SystemLogger.h>
+#include <base/concurrency/Thread.h>
 #include <base/io/FileInputStream.h>
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
-#include <base/Application.h>
-#include <base/Type.h>
-#include <base/concurrency/Thread.h>
-#include <base/Daemon.h>
-#include <base/concurrency/Thread.h>
-#include <base/SystemLogger.h>
 
 using namespace base;
 
@@ -31,7 +30,7 @@ public:
     //fout << "Testing implementation of the Daemon..." << ENDL;
     SystemLogger::write(SystemLogger::INFORMATION, "Daemon is running...");
     StringOutputStream stream;
-    stream << HEX << (unsigned int)Thread::getThread() << FLUSH;
+    stream << Thread::getThread() << FLUSH;
     SystemLogger::write(SystemLogger::INFORMATION, stream.getString());
 
     while (!Thread::getThread()->isTerminated()) {
@@ -44,24 +43,32 @@ public:
   }
 };
 
-int entry() {
-  //fout << "Testing implementation of the Daemon..." << ENDL;
-  if (Application::getApplication()->getArguments().getSize() > 0) {
-  } else {
-    SystemLogger::write(SystemLogger::INFORMATION, "Attempting to start daemon...");
-    MyDaemon myDaemon;
-    Daemon daemon(&myDaemon);
-  }
-  return 0;
-}
+class DaemonApplication : public Application {
+public:
 
-int main(int argc, const char* argv[], const char* envp[]) {
-  Application app("daemon", argc, argv, envp);
+  DaemonApplication(int argc, const char* argv[], const char* env[])
+    : Application(MESSAGE("daemon"), argc, argv, env) {
+  }
+  
+  void main() throw() {
+    //fout << "Testing implementation of the Daemon..." << ENDL;
+    if (getArguments().getSize() > 0) {
+    } else {
+      SystemLogger::write(SystemLogger::INFORMATION, "Attempting to start daemon...");
+      MyDaemon myDaemon;
+      Daemon daemon(&myDaemon);
+    }
+  }
+};
+
+int main(int argc, const char* argv[], const char* env[]) {
+  DaemonApplication application(argc, argv, env);
   try {
-    return entry();
+    application.main();
   } catch(Exception& e) {
     return Application::getApplication()->exceptionHandler(e);
   } catch(...) {
     return Application::getApplication()->exceptionHandler();
   }
+  return Application::getApplication()->getExitCode();
 }

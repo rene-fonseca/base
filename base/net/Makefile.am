@@ -16,7 +16,6 @@ include $(top_srcdir)/common.am
 noinst_LTLIBRARIES = libnet.la
 
 libnet_la_SOURCES = \
-  ClientSocket.cpp \
   HostNotFound.cpp \
   InetAddress.cpp \
   InetInterface.cpp \
@@ -26,6 +25,7 @@ libnet_la_SOURCES = \
   ServerSocket.cpp \
   ServiceNotFound.cpp \
   Socket.cpp \
+  StreamSocket.cpp \
   Url.cpp \
   Urn.cpp \
   InetEndPoint.cpp
@@ -39,9 +39,9 @@ section_HEADERS = \
   NetworkException.h \
   InetInterface.h \
   InetService.h \
-  ClientSocket.h \
   ServerSocket.h \
   ServiceNotFound.h \
+  StreamSocket.h \
   Url.h \
   Urn.h \
   InetEndPoint.h

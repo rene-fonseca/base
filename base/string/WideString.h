@@ -192,6 +192,21 @@ public:
     UCS2, /**< UCS-2 encoding. */
     UCS4 /**< UCS-4 encoding. */
   };
+
+  /** Encoding flags. */
+  enum EncodingFlags {
+    ADD_BOM = 1, /**< Specifies that a BOM should be inserted when encoding to UTF. */
+    EAT_BOM = 2, /**< Specifies that the BOM should be skipped if present. */
+    EXPECT_BOM = 4, /**< Specifies that the BOM must be present. */
+    ASSUME_NATIVE_BYTE_ORDER = 8, /**< Specifies the the encoding is in native byte order. */
+    ASSUME_BE = 16, /**< Specifies the the encoding is in big endian byte order (ignored if ASSUME_NATIVE_BYTE_ORDER is set). */
+    ASSUME_LE = 32 /**< Specifies the the encoding is in little endian byte order (ignored if ASSUME_NATIVE_BYTE_ORDER or ASSUME_BE are set). */
+  };
+  
+  /** UCS-2 encoded character. */
+  typedef uint16 ucs2;
+  /** UCS-4 encoded character (ISO/IEC 10646). */
+  typedef uint32 ucs4;
 private:
 
   /** The default wide string. This is used to avoid multiple allocations of empty string buffers. */
@@ -251,6 +266,232 @@ protected:
     elements->setSize(length + 1);
   }
 public:
+
+  /** Specifies the maximum number of bytes per character for any supported encoding. */
+  static const unsigned int MAXIMUM_MULTIBYTES = 6;
+  /** Specifies the byte order mark. */
+  static const ucs4 BOM = 0x0000feff;
+
+  /** The style. */
+  enum Style {
+    STYLE_JAVA, /**< \uXXXXX. */
+    STYLE_C = STYLE_JAVA, /**< \uXXXXX. */
+    STYLE_HTML, /**< &#xXXXX or &#DDDDD dependent on the current base integer. */
+    STYLE_XML = STYLE_HTML /**< &#xXXXX or &#DDDDD dependent on the current base integer. */
+  };
+
+  class UnicodeCharacter {
+  private:
+    
+    static const Style DEFAULT_STYLE = STYLE_C;
+    ucs4 character;
+    Style style;
+  public:
+    
+    inline UnicodeCharacter(char _character) throw()
+      : style(DEFAULT_STYLE), character(_character) { // TAG: is this ok
+    }
+    
+    inline UnicodeCharacter(ucs2 _character) throw()
+      : style(DEFAULT_STYLE) {
+      // TAG: fixme
+    }
+    
+    inline UnicodeCharacter(ucs4 _character) throw()
+      : style(DEFAULT_STYLE), character(_character) {
+    }
+    
+    inline Style getStyle() const throw() {
+      return style;
+    }
+
+    inline UnicodeCharacter& setStyle(Style style) throw() {
+      this->style = style;
+    }
+  };
+  
+  /**
+     Returns the maximum number of bytes required to represent any UCS-4 character.
+  */
+  static inline unsigned int getMaximumNumberOfMultibytes(MultibyteEncoding encoding) throw() {
+    static const unsigned int MAXIMUM_MULTIBYTES[] = {0, 6, 4, 4, 4, 4, 4, 4};
+    return MAXIMUM_MULTIBYTES[encoding];
+  }
+
+  /**
+    Returns true if the specified value is a valid UCS-4 value (ISO/IEC 10646).
+  */
+  static inline bool isUCS4(unsigned int value) throw() {
+    return value <= 0x7fffffffU;
+  }
+
+  /**
+    Returns the multibyte encoding of the specifies multibyte encoded string.
+    This method will not examine the entire string. An invalid encoding may
+    return UTF8.
+    
+    @param src The multibyte encoded string.
+    @param size The number of bytes in the multibyte encoded string.
+  */
+  MultibyteEncoding getMultibyteEncoding(const uint8* src, unsigned int size) throw();
+
+  /**
+    Returns a MIME charsets for the specified encoding.
+
+    @param encoding The multibyte encoding.
+  */
+  static StringLiteral toString(MultibyteEncoding encoding) throw();
+  
+  /**
+    Low-level method which converts an UCS-2 encoded string to UTF-8. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF8)).
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UCS-2 encoded string.
+    @param size The number of characters in the UCS-2 encoded string.
+    @param flags The encoding flags. The default is 0.
+
+    @return The number of bytes occupied by the UTF-8 encoded string.
+  */
+  static unsigned int UCS2ToUTF8(uint8* dest, const ucs2* src, unsigned int size, unsigned int flags = 0) throw(WideStringException);
+
+  /**
+    Low-level method which converts an UCS-4 encoded string to UTF-8. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF8)).
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UCS-4 encoded string.
+    @param size The number of characters in the UCS-4 encoded string.
+    @param flags The encoding flags. The default is 0.
+
+    @return The number of bytes occupied by the UTF-8 encoded string.
+  */
+  static unsigned int UCS4ToUTF8(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags = 0) throw(WideStringException);
+
+  // TAG: UTF-16 see RFC 2781  Unicode Standard, version 3.0
+  
+  /**
+    Low-level method which converts an UTF-8 encoded string to UCS-2 encoding.
+    The destination buffer must have room for enough characters (guaranteed to
+    not exceed size).
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UTF-8 encoded string.
+    @param size The number of bytes in the UTF-8 encoded string.
+    @param flags The encoding flags. The default is EAT_BOM.
+    
+    @return The number of characters in the UCS-2 encoded string.
+  */
+  static unsigned int UTF8ToUCS2(ucs2* dest, const uint8* src, unsigned int size, unsigned int flags = EAT_BOM) throw(MultibyteException);
+
+  /**
+    Low-level method which converts an UTF-8 encoded string to UCS-4 encoding.
+    The destination buffer must have room for enough characters (guaranteed to
+    not exceed size).
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UTF-8 encoded string.
+    @param size The number of bytes in the UTF-8 encoded string.
+    @param flags The encoding flags. The default is EAT_BOM.
+    
+    @return The number of characters in the UCS-4 encoded string.
+  */
+  static unsigned int UTF8ToUCS4(ucs4* dest, const uint8* src, unsigned int size, unsigned int flags = EAT_BOM) throw(MultibyteException);
+
+  /**
+    Low-level method which converts an UTF-16 encoded string to UCS-4 encoding.
+    The destination buffer must have room for enough characters (guaranteed to
+    not exceed size). The UCS-4 characters are restricted to values in the range
+    0x00000000-0x0010ffff.
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UTF-16 encoded string.
+    @param size The number of bytes in the UTF-16 encoded string.
+    @param flags The encoding flags. The default is EAT_BOM|EXPECT_BOM.
+    
+    @return The number of characters in the UCS-4 encoded string.
+  */
+  static unsigned int UTF16ToUCS4(ucs4* dest, const uint8* src, unsigned int size, unsigned int flags = EAT_BOM|EXPECT_BOM) throw(MultibyteException);
+  
+  /**
+    Low-level method which converts an UCS-4 encoded string to UTF-16BE. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF16BE)).
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UCS-4 encoded string.
+    @param size The number of characters in the UCS-4 encoded string.
+    @param flags The encoding flags. The default is ADD_BOM.
+
+    @return The number of bytes occupied by the UTF-16BE encoded string.
+  */
+  static unsigned int UCS4ToUTF16BE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags) throw(WideStringException);
+
+  /**
+    Low-level method which converts an UCS-4 encoded string to UTF-16LE. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF16LE)).
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UCS-4 encoded string.
+    @param size The number of characters in the UCS-4 encoded string.
+    @param flags The encoding flags. The default is ADD_BOM.
+
+    @return The number of bytes occupied by the UTF-16LE encoded string.
+  */
+  static unsigned int UCS4ToUTF16LE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags) throw(WideStringException);
+
+  /**
+    Low-level method which converts an UCS-4 encoded string to UTF-32BE. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF32BE)).
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UCS-4 encoded string.
+    @param size The number of characters in the UCS-4 encoded string.
+    @param flags The encoding flags. The default is ADD_BOM.
+
+    @return The number of bytes occupied by the UTF-32BE encoded string.
+  */
+  static unsigned int UCS4ToUTF32BE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags = ADD_BOM) throw(WideStringException);
+  
+  /**
+    Low-level method which converts an UCS-4 encoded string to UTF-32LE. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF32LE)).
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UCS-4 encoded string.
+    @param size The number of characters in the UCS-4 encoded string.
+    @param flags The encoding flags. The default is ADD_BOM.
+
+    @return The number of bytes occupied by the UTF-32LE encoded string.
+  */
+  static unsigned int UCS4ToUTF32LE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags = ADD_BOM) throw(WideStringException);
+
+  /**
+    Low-level method which converts an UTF-32 encoded string to UCS-4 encoding.
+    The destination buffer must have room for enough characters (guaranteed to
+    not exceed size). See the technical report available at
+    http://www.unicode.org/unicode/reports/tr19. The UCS-4 characters are
+    restricted to values in the range 0x00000000-0x0010ffff.
+    
+    @param dest The destination buffer (may be 0).
+    @param src The UTF-32 encoded string.
+    @param size The number of bytes in the UTF-32 encoded string.
+    @param flags The encoding flags. The default is EAT_BOM|EXPECT_BOM.
+    
+    @return The number of characters in the UCS-4 encoded string.
+  */
+  static unsigned int UTF32ToUCS4(ucs4* dest, const uint8* src, unsigned int size, unsigned int flags = EAT_BOM|EXPECT_BOM) throw(MultibyteException);
 
   /**
     Returns a multibyte string from a NULL-terminated wide-string.

@@ -32,6 +32,7 @@ private:
   static const unsigned int MINOR_VERSION = 0;
   /** The echo service port. */
   static const unsigned short ECHO_SERVICE_PORT = 7;
+  
   /** The server port. */
   unsigned short port;
   /** The bytes to send. */
@@ -40,8 +41,9 @@ private:
   unsigned int packetsToTransmit;
   
   enum Command {
-    HELP,
-    PING
+    COMMAND_HELP,
+    COMMAND_VERSION,
+    COMMAND_PING
   };
 public:
   
@@ -86,11 +88,10 @@ public:
       return;
     }
 
-    String name;
+    String name = host;
     try {
       name = address.getHostName(true);
     } catch (...) {
-      name = host;
     }
     
     if (byName) {
@@ -105,7 +106,13 @@ public:
     
     InetEndPoint endPoint(address, port);
     StreamSocket socket;
-    socket.connect(endPoint.getAddress(), endPoint.getPort());
+    try {
+      socket.connect(endPoint.getAddress(), endPoint.getPort());
+    } catch (IOException& e) {
+      ferr << MESSAGE("Error: ") << MESSAGE("Unable to connect") << ENDL;
+      setExitCode(EXIT_CODE_ERROR);
+      return;
+    }
     
     socket.setReceiveBufferSize(dataSize);
     socket.setSendBufferSize(dataSize);
@@ -135,7 +142,7 @@ public:
       // TAG: use timer to check for timeout
       unsigned int bytesAvailable = socket.available();
       if (bytesAvailable < incomming.getSize()) {
-        fout << address << ':' << MESSAGE(" request timed out") << ENDL;
+        fout << name << ' ' << '(' << address << ')' << ':' << MESSAGE(" request timed out") << ENDL;
       } else {
         timer.stop();
         minimumTime = minimum(minimumTime, timer.getMicroseconds());
@@ -177,18 +184,22 @@ public:
          << ENDL;
   }
   
-  void help() throw() {
+  void version() throw() {
     fout << getFormalName() << MESSAGE(" version ")
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << MESSAGE("The Base Framework (Test Suite)") << EOL
          << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
          << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
+  }
+  
+  void help() throw() {
+    version();
     fout << getFormalName() << MESSAGE(" [--help] [--port PORT] [--data SIZE] [--time MS] host") << ENDL;
   }
   
   void main() throw() {
-    Command command = PING;
+    Command command = COMMAND_PING;
     String host;
     
     const Array<String> arguments = getArguments();
@@ -197,7 +208,11 @@ public:
       while (enu.hasNext()) {
         String argument = *enu.next();
         if (argument == "--help") {
-          command = HELP;
+          command = COMMAND_HELP;
+          break;
+        } else if (argument == "--version") {
+          command = COMMAND_VERSION;
+          break;
         } else if (argument == "--port") {
           String temp = *enu.next();
           try {
@@ -231,10 +246,13 @@ public:
     }
     
     switch (command) {
-    case HELP:
+    case COMMAND_HELP:
       help();
       break;
-    case PING:
+    case COMMAND_VERSION:
+      version();
+      break;
+    case COMMAND_PING:
       ping(host);
       break;
     }

@@ -42,7 +42,6 @@ public:
   void run() throw() {
     Thread* thread = Thread::getThread();
     while (!thread->isTerminated()) {
-      WRITE_SOURCE_LOCATION();
       semaphore.wait(); // wait for job
       
       StreamSocket* job = jobs.pop();
@@ -52,27 +51,30 @@ public:
       StreamSocket socket = *job; // dereference for convenience
       
       try {
-        while (!thread->isTerminated()) {
-          socket.wait(250000);
-          WRITE_SOURCE_LOCATION();
-          fout << MESSAGE("Error state: ") << socket.getErrorState() << ENDL;
-          unsigned int availableBytes = socket.available();
-          while (availableBytes) {
-            unsigned int bytesToRead = minimum(availableBytes, buffer.getSize());
-            unsigned int bytesRead = socket.read(buffer.getElements(), bytesToRead);
-            availableBytes -= bytesRead;
+        bool ended = false;
+        while (!thread->isTerminated() && !ended) {
+          bool event = socket.wait(250000);
+          if (!event) {
+            continue;
+          }
+          
+          while (true) {
+            unsigned int bytesToRead = buffer.getSize();
+            unsigned int bytesRead = socket.read(buffer.getElements(), bytesToRead, true);
+            if (bytesRead == 0) {
+              ended = true;
+              break;
+            }
             socket.write(buffer.getElements(), bytesRead);
+            if (bytesRead < buffer.getSize()) {
+              break;
+            }
           }
         }
-      } catch (EndOfFile& e) {
         socket.shutdownOutputStream();
-      } catch (IOException& e) {
-      }
-      try {
         socket.close();
       } catch (IOException& e) {
       }
-      WRITE_SOURCE_LOCATION();
     }
   }
 
@@ -216,6 +218,10 @@ public:
               return;
             }
           }
+        } else {
+          ferr << MESSAGE("Error: ") << MESSAGE("Invalid argument") << ENDL;
+          setExitCode(EXIT_CODE_ERROR);
+          return;
         }
       }
     }

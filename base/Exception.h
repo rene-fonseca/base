@@ -34,7 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short The general exception class
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.02
+  @version 1.0.3
 */
 
 class Exception {
@@ -50,19 +50,34 @@ private:
   */
   const Type type;
 public:
-
+  
+  /**
+    Returns true if the stack is currently being unwinded due to a raised exception.
+    
+    @see getExceptionType
+    @return False if not supported.
+  */
+  static bool isUnwinding() throw();
+  
+  /**
+    Returns the type of the caught exception.
+    
+    @return An uninitialized type is returned if no exception has been caught or this method isn't supported.
+  */
+  static Type getExceptionType() throw();
+  
   /**
     Initializes the exception object without an associated message and type identity.
   */
   Exception() throw();
-
+  
   /**
     Initializes the exception object.
 
     @param message An NULL-terminated string (ASCII).
   */
   Exception(const char* message) throw();
-
+  
   /**
     Initializes the exception object without an associated message.
     

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,7 +51,7 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[]) throw()
-    : Application(MESSAGE("ping"), numberOfArguments, arguments, environment) {
+    : Application("ping", numberOfArguments, arguments, environment) {
     port = ECHO_SERVICE_PORT;
     dataSize = 32;
     timeout = 1000000;
@@ -61,16 +61,20 @@ public:
   void onTermination() throw() {
   }
   
+  String getTimeAsString2(uint64 microseconds) throw() {
+    return MESSAGE("");
+  }
+  
   String getTimeAsString(uint64 microseconds) throw() {
     StringOutputStream stream;
     if (microseconds < 1000) {
-      stream << microseconds << MESSAGE("us");
+      stream << microseconds << "us";
     } else if (microseconds < 1000000) {
       stream << FIXED
-             << setPrecision(3) << microseconds/1000.0 << MESSAGE("ms");
+             << setPrecision(3) << microseconds/1000.0 << "ms";
     } else {
       stream << FIXED
-             << setPrecision(3) << microseconds/1000000.0 << MESSAGE("s");
+             << setPrecision(3) << microseconds/1000000.0 << "s";
     }
     stream << FLUSH;
     return stream.getString();
@@ -88,7 +92,7 @@ public:
     try {
       address = InetAddress::getAddressByName(host); // the address of the remote host
     } catch (HostNotFound& e) {
-      ferr << MESSAGE("Error: ") << MESSAGE("Unable to resolve host") << ENDL;
+      ferr << "Error: " << "Unable to resolve host" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
@@ -100,12 +104,12 @@ public:
     }
     
     if (byName) {
-      fout << MESSAGE("Pinging ") << name << ' ' << '(' << address << ')' << MESSAGE(" with ")
-           << dataSize << MESSAGE(" bytes of data") << EOL
+      fout << "Pinging " << name << ' ' << '(' << address << ')' << " with "
+           << dataSize << " bytes of data" << EOL
            << ENDL;
     } else {
-      fout << MESSAGE("Pinging ") << ' ' << '(' << address << ')' << MESSAGE(" with ")
-           << dataSize << MESSAGE(" bytes of data") << EOL
+      fout << "Pinging " << ' ' << '(' << address << ')' << " with "
+           << dataSize << " bytes of data" << EOL
            << ENDL;
     }
     
@@ -114,7 +118,7 @@ public:
     try {
       socket.connect(endPoint.getAddress(), endPoint.getPort());
     } catch (IOException& e) {
-      ferr << MESSAGE("Error: ") << MESSAGE("Unable to connect") << ENDL;
+      ferr << "Error: " << "Unable to connect" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
@@ -136,7 +140,9 @@ public:
     Allocator<char> incoming(dataSize);
     fill<char>(outgoing.getElements(), outgoing.getSize(), 0);
     
-    while (!isTerminated() && ((packetsToTransmit == 0) || (packetsTransmitted < packetsToTransmit))) {
+    while (!isTerminated() &&
+           ((packetsToTransmit == 0) ||
+            (packetsTransmitted < packetsToTransmit))) {
       char* dest = outgoing.getElements();
       *dest++ = packetsTransmitted;
       timeoutTimer.start();
@@ -148,7 +154,7 @@ public:
       unsigned int bytesAvailable = socket.available();
       if (bytesAvailable < incoming.getSize()) {
         fout << name << ' ' << '(' << address << ')'
-             << ':' << MESSAGE(" request timed out") << ENDL;
+             << ':' << " request timed out" << ENDL;
       } else {
         timer.stop();
         minimumTime = minimum(minimumTime, timer.getMicroseconds());
@@ -159,10 +165,10 @@ public:
           if (compare(incoming.getElements(), outgoing.getElements(), dataSize) == 0) {
             ++packetsReceived;
             fout << incoming.getSize()
-                 << MESSAGE(" bytes from ") << name << ' '
+                 << " bytes from " << name << ' '
                  << '(' << address << ')' << ':' << ' '
-                 << MESSAGE("n=") << packetsReceived << ' '
-                 << MESSAGE("time=") << getTimeAsString(timer.getMicroseconds())
+                 << "n=" << packetsReceived << ' '
+                 << "time=" << getTimeAsString(timer.getMicroseconds())
                  << ENDL;
             break;
           }
@@ -177,14 +183,15 @@ public:
     socket.close();
     
     unsigned int packetsLost = packetsTransmitted - packetsReceived;
-    long double meanTime = totalTime/packetsReceived;
+    double meanTime = totalTime/packetsReceived;
+    
     fout << EOL
-         << MESSAGE("--- statistics for ") << name << MESSAGE(" ---") << EOL
-         << MESSAGE("Packets transmitted: ") << packetsTransmitted << EOL
-         << MESSAGE("Packets received: ") << packetsReceived << EOL
-         << MESSAGE("Packets lost: ") << packetsLost << ' '
+         << "--- statistics for " << name << " ---" << EOL
+         << "Packets transmitted: " << packetsTransmitted << EOL
+         << "Packets received: " << packetsReceived << EOL
+         << "Packets lost: " << packetsLost << ' '
          << '(' << static_cast<int>(100*packetsLost/packetsTransmitted) << '%' << ')' << EOL
-         << MESSAGE("Time minimum/maximum/mean: ")
+         << "Time minimum/maximum/mean: "
          << getTimeAsString(minimumTime) << '/'
          << getTimeAsString(maximumTime) << '/'
          << getTimeAsString(static_cast<uint64>(meanTime)) << EOL
@@ -192,17 +199,17 @@ public:
   }
   
   void version() throw() {
-    fout << getFormalName() << MESSAGE(" version ")
+    fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
   }
   
   void help() throw() {
     version();
-    fout << getFormalName() << MESSAGE(" [--help] [--port PORT] [--data SIZE] [--time MS] host") << ENDL;
+    fout << getFormalName() << " [--help] [--port PORT] [--data SIZE] [--time MS] host" << ENDL;
   }
   
   void main() throw() {
@@ -225,7 +232,7 @@ public:
           try {
             UnsignedInteger value(temp);
             if (value > 0xffff) {
-              ferr << MESSAGE("Error: ") << MESSAGE("Invalid port") << ENDL;
+              ferr << "Error: " << "Invalid port" << ENDL;
               setExitCode(EXIT_CODE_ERROR);
               return;
             }
@@ -235,7 +242,7 @@ public:
               InetService service(temp);
               port = service.getPort();
             } catch (ServiceNotFound& e) {
-              ferr << MESSAGE("Error: ") << e.getMessage() << ENDL;
+              ferr << "Error: " << e.getMessage() << ENDL;
               setExitCode(EXIT_CODE_ERROR);
               return;
             }
@@ -247,7 +254,7 @@ public:
     }
 
     if (host.isEmpty()) {
-      ferr << MESSAGE("Error: ") << MESSAGE("Host not specified") << ENDL;
+      ferr << "Error: " << "Host not specified" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }

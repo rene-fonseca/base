@@ -14,12 +14,12 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+typedef Map<String, XMLProperty> XMLPropertyHash;
+
 /**
   XML parser
   @author René Møller Fonseca
 */
-
-typedef Map<String, XMLProperty> XMLPropertyHash;
 
 class XMLParser : public Object {
 friend class XMLParserImpl;

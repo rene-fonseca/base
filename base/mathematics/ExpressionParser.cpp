@@ -171,11 +171,10 @@ void ExpressionParser::readIdentifier() throw(ExpressionException) {
     throw ExpressionException(begin, "Not an identifier");
   }
 
-  char identifier[index - begin + 1];
-  expression.substring(identifier, begin, index - 1);
+  String identifier = expression.substring(begin, index);
 
   try {
-    Node node = provider.getNode(identifier);
+    Node node = provider.getNode(identifier.getElements());
     switch (node.type) {
     case VARIABLE:
       nodes.append(node);
@@ -264,11 +263,11 @@ void ExpressionParser::readValue() throw(ExpressionException) {
     }
   }
 
-  char buffer[index - begin + 1]; // i is index of character after number chars
-  expression.substring(buffer, begin, index - 1);
+  //char buffer[index - begin + 1]; // i is index of character after number chars
+  String buffer = expression.substring(begin, index);
   char* end;
-  double value = strtod(buffer, &end); // not the best solution - but it works for now
-  if ((end != &buffer[index - begin]) || (errno == ERANGE)) {
+  double value = strtod(buffer.getElements(), &end); // TAG: not the best solution - but it works for now
+  if ((end != &buffer.getElements()[index - begin]) || (errno == ERANGE)) {
     throw ExpressionException(begin, "Not a number");
   }
 

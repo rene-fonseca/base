@@ -16,19 +16,19 @@ BufferedOutputStream::BufferedOutputStream(OutputStream* out, unsigned int size)
   count = 0;
 }
 
-void BufferedOutputStream::flush() {
+void BufferedOutputStream::flush() throw(IOException) {
   flushBuffer();
   FilterOutputStream::flush();
 }
 
-void BufferedOutputStream::write(char value) {
+void BufferedOutputStream::write(char value) throw(IOException) {
   if (count >= size) {
     flushBuffer();
   }
   buffer[count++] = value;
 }
 
-void BufferedOutputStream::write(char* buffer, unsigned int size) {
+void BufferedOutputStream::write(char* buffer, unsigned int size) throw(IOException) {
   unsigned int bytesToCopy;
   if (size > this->size - count) { // do we have enough space left in the buffer
     bytesToCopy = size % this->size;

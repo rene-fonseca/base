@@ -6,50 +6,37 @@
 #ifndef _DK_SDU_MIP_BASE_IO_FILE_OUTPUT_STREAM_H
 #define _DK_SDU_MIP_BASE_IO_FILE_OUTPUT_STREAM_H
 
+#include "base/Object.h"
+#include "OutputStream.h"
+#include "FileNotFound.h"
+#include "FileDescriptor.h"
+
 /**
-  Interface.
+  File output stream.
 
   @author René Møller Fonseca
   @version 1.0
 */
 
-class InputStream {
+class FileOutputStream: public Object, public OutputStream {
+protected:
+
+  /** File descriptor. */
+  FileDescriptor* fd;
 public:
 
   /**
-    Returns
+    Initializes the file output stream.
+
+    @param name The name of the file.
+    @param options (CREATE, REPLACE, APPEND, NONBLOCK).
   */
-  virtual unsigned int available() {return 0;};
+  FileOutputStream(const char* name) throw(FileNotFound);
 
   /**
-    Closes the stream.
+    Destroys the file output stream.
   */
-  virtual void close() {};
-
-  virtual char read() = 0;
-
-  virtual unsigned int read(char* buffer, unsigned int count) {
-    char* head = &buffer[0];
-    char* tail = &buffer[count];
-    while (head != tail) {
-      buffer[head] = read();
-      ++head;
-    }
-  }
-
-  /**
-    Skips a specified number of ... blocks...
-  */
-  void skip(unsigned int count) {
-    while (count) {
-      read();
-      --count;
-    }
-  }
-
-  ~InputStream() {
-    close();
-  }
+  ~FileOutputStream();
 };
 
 #endif

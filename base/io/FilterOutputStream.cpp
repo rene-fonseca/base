@@ -9,19 +9,19 @@ FilterOutputStream::FilterOutputStream(OutputStream* out) {
   this->out = out;
 }
 
-void FilterOutputStream::close() {
+void FilterOutputStream::close() throw(IOException) {
   out->close();
 }
 
-void FilterOutputStream::flush() {
+void FilterOutputStream::flush() throw(IOException) {
   out->flush();
 }
 
-void FilterOutputStream::write(char value) {
+void FilterOutputStream::write(char value) throw(IOException) {
   out->write(value);
 }
 
-void FilterOutputStream::write(char* buffer, unsigned int size) {
+void FilterOutputStream::write(char* buffer, unsigned int size) throw(IOException) {
   out->write(buffer, size);
 }
 

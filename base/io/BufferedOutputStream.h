@@ -9,7 +9,7 @@
 #include "FilterOutputStream.h"
 
 /**
-  A FilterOutputStream that adds buffer functionality to an OutputStream for added performance.
+  A FilterOutputStream that adds buffer functionality to an OutputStream for added performance. MT-unsafe implementation.
 
   @author René Møller Fonseca
   @version 1.0
@@ -45,14 +45,14 @@ public:
   /**
     Forces any buffered bytes to be written out.
   */
-  void flush();
+  void flush() throw(IOException);
 
   /**
     Writes a single value to the stream.
 
     @param value The value to be written.
   */
-  void write(char value);
+  void write(char value) throw(IOException);
 
   /**
     Writes bytes in buffer to stream.
@@ -60,7 +60,7 @@ public:
     @param buffer The buffer containing the bytes to be written.
     @param size The number of bytes to be written.
   */
-  void write(char* buffer, unsigned int size);
+  void write(char* buffer, unsigned int size) throw(IOException);
 
   /**
     Destroys the buffered output stream.

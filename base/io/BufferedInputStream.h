@@ -9,7 +9,7 @@
 #include "FilterInputStream.h"
 
 /**
-  A FilterInputStream that adds buffer functionality to an InputStream for added performance.
+  A FilterInputStream that adds buffer functionality to an InputStream for added performance. MT-unsafe implementation.
 
   @author René Møller Fonseca
   @version 1.0
@@ -33,7 +33,7 @@ protected:
   /** The current position in the buffer. */
   unsigned int position;
   /** Fills the buffer with bytes from the input stream. */
-  void fillBuffer();
+  void fillBuffer() throw(IOException);
 public:
 
   /**
@@ -56,7 +56,7 @@ public:
 
     @return The next byte from the stream.
   */
-  int read();
+  int read() throw(IOException);
 
   /**
     Fills the buffer with bytes from the stream. Blocks if asked to read more bytes than available.
@@ -64,14 +64,14 @@ public:
     @param buffer The buffer to fill.
     @param size The size of the buffer.
   */
-  unsigned int read(char* buffer, unsigned int count);
+  unsigned int read(char* buffer, unsigned int count) throw(IOException);
 
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than available.
 
     @param count The number of bytes to skip.
   */
-  void skip(unsigned int count);
+  void skip(unsigned int count) throw(IOException);
 
   /**
     Destroys the buffered input stream.

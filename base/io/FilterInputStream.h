@@ -10,7 +10,7 @@
 #include "InputStream.h"
 
 /**
-  A FilterInputStream redirects requests to an ordinary InputStream possibly transforming data and providing additional functionality in the process. A FilterInputStream is itself an InputStream.
+  A FilterInputStream redirects requests to an ordinary InputStream possibly transforming data and providing additional functionality in the process. A FilterInputStream is itself an InputStream. MT-Safe implementation if used with MT-safe input stream.
 
   @author René Møller Fonseca
   @version 1.0
@@ -40,29 +40,29 @@ public:
   /**
     Closes the input stream and releases any system resources associated with the stream.
   */
-  void close();
+  void close() throw(IOException);
 
   /**
-    Reads the next byte from the stream. Blocks if no bytes are available.
+    Reads the next byte from the stream. Blocks if no bytes are available. Throws 'EndOfFile' if called when end of file has been reached.
 
     @return The next byte from the stream.
   */
-  int read();
+  int read() throw(IOException);
 
   /**
-    Fills the buffer with bytes from the stream. Blocks if asked to read more bytes than available.
+    Fills the buffer with bytes from the stream. Blocks if asked to read more bytes than available. Throws 'EndOfFile' if called when end of file has been reached.
 
     @param buffer The buffer.
     @param size The size of the buffer.
   */
-  unsigned int read(char* buffer, unsigned int size);
+  unsigned int read(char* buffer, unsigned int size) throw(IOException);
 
   /**
-    Skips a specified number of bytes. Blocks if asked to skip more bytes than available.
+    Skips a specified number of bytes. Blocks if asked to skip more bytes than available. Throws 'EndOfFile' if called when end of file has been reached.
 
     @param count The number of bytes to skip.
   */
-  void skip(unsigned int count);
+  void skip(unsigned int count) throw(IOException);
 
   /**
     Destroys the filter input stream.

@@ -3,28 +3,17 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Exception.h"
-#include <iostream>
+#include "FileOutputStream.h"
+#include <fcntl.h>
 
-using namespace ::std;
-
-Exception::Exception() {
+FileOutputStream::FileOutputStream(const char* name) throw(FileNotFound) {
+  int handle = open(name, 0);
+  if (handle == -1) {
+    throw FileNotFound("Unable to open file.");
+  }
+  fd = new FileDescriptor(handle);
 }
 
-Exception::Exception(const string& str) : message(str) {
-}
-
-Exception::Exception(const Exception& exception) {
-  message = exception.getMessage();
-}
-
-const string& Exception::getMessage() const {
-  return message;
-}
-
-ostream& Exception::toString(ostream& stream) const {
-  return stream << message;
-}
-
-Exception::~Exception() {
+FileOutputStream::~FileOutputStream() {
+  delete fd;
 }

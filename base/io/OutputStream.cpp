@@ -5,13 +5,13 @@
 
 #include "OutputStream.h"
 
-void OutputStream::close() {
+void OutputStream::close() throw(IOException) {
 }
 
-void OutputStream::flush() {
+void OutputStream::flush() throw(IOException) {
 }
 
-void OutputStream::write(char* buffer, unsigned int size) {
+void OutputStream::write(char* buffer, unsigned int size) throw(IOException) {
   char* head = buffer;
   while (size--) {
     write(*head);

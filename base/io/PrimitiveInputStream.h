@@ -3,13 +3,13 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_IO_DATA_INPUT_STREAM_H
-#define _DK_SDU_MIP_BASE_IO_DATA_INPUT_STREAM_H
+#ifndef _DK_SDU_MIP_BASE_IO_PRIMITIVE_INPUT_STREAM_H
+#define _DK_SDU_MIP_BASE_IO_PRIMITIVE_INPUT_STREAM_H
 
 #include "FilterInputStream.h"
 
 /**
-  A FilterOutputStream that allows you to read primitive data types from an input stream in little-endian format.
+  A FilterOutputStream that allows you to read primitive data types from an input stream in big-endian format. MT-Safe implementation if used with MT-safe input stream.
 
   @author René Møller Fonseca
   @version 1.0
@@ -26,64 +26,59 @@ public:
   explicit PrimitiveInputStream(InputStream* in);
 
   /**
-    Reads a boolean from the stream.
+    Reads a boolean (8 bits) from the stream.
   */
-  bool readBoolean();
+  bool readBoolean() throw(IOException);
 
   /**
-    Reads a character from the stream.
+    Reads a byte/character (8 bits) from the stream.
   */
-  char readChar();
+  char readChar() throw(IOException);
 
   /**
-    Reads a short integer from the stream.
+    Reads a short integer (16 bits) from the stream.
   */
-  short readShortInteger();
+  short readShortInteger() throw(IOException);
 
   /**
-    Reads an unsigned short integer from the stream.
+    Reads an unsigned short integer (16 bits) from the stream.
   */
-  unsigned short readUnsignedShortInteger();
+  unsigned short readUnsignedShortInteger() throw(IOException);
 
   /**
-    Reads an integer from the stream.
+    Reads an integer (32 bits) from the stream.
   */
-  int readInteger();
+  int readInteger() throw(IOException);
 
   /**
-    Reads an unsigned integer from the stream.
+    Reads an unsigned integer (32 bits) from the stream.
   */
-  unsigned int readUnsignedInteger();
+  unsigned int readUnsignedInteger() throw(IOException);
 
   /**
-    Reads a long integer from the stream.
+    Reads a long integer (64 bits) from the stream.
   */
-  long readLongInteger();
+  long long readLongInteger() throw(IOException);
 
   /**
-    Reads an unsigned long integer from the stream.
+    Reads an unsigned long integer (64 bits) from the stream.
   */
-  unsigned long readUnsignedLongInteger();
+  unsigned long long readUnsignedLongInteger() throw(IOException);
 
   /**
-    Reads a long long integer from the stream.
+    Reads a float (IEEE 32 bit format) from the stream.
   */
-  long long readLongLongInteger();
+  float readFloat() throw(IOException);
 
   /**
-    Reads an unsigned long long integer from the stream.
+    Reads a double (IEEE 64 bit format) from the stream.
   */
-  unsigned long long readUnsignedLongLongInteger();
+  double readDouble() throw(IOException);
 
   /**
-    Reads a float from the stream.
+    Reads a long double (Intel 386 style 80 bit format) from the stream.
   */
-  float readFloat();
-
-  /**
-    Reads a double from the stream.
-  */
-  double readDouble();
+  long double readLongDouble() throw(IOException);
 };
 
 #endif

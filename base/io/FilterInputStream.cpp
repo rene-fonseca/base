@@ -13,15 +13,19 @@ unsigned int FilterInputStream::available() {
   return in->available();
 }
 
-int FilterInputStream::read() {
+void FilterInputStream::close() throw(IOException) {
+  in->close();
+}
+
+int FilterInputStream::read() throw(IOException) {
   return in->read();
 }
 
-unsigned int FilterInputStream::read(char* buffer, unsigned int size) {
+unsigned int FilterInputStream::read(char* buffer, unsigned int size) throw(IOException) {
   return in->read(buffer, size);
 }
 
-void FilterInputStream::skip(unsigned int count) {
+void FilterInputStream::skip(unsigned int count) throw(IOException) {
   in->skip(count);
 }
 

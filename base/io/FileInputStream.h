@@ -6,46 +6,70 @@
 #ifndef _DK_SDU_MIP_BASE_IO_FILE_INPUT_STREAM_H
 #define _DK_SDU_MIP_BASE_IO_FILE_INPUT_STREAM_H
 
+#include "base/Object.h"
+#include "InputStream.h"
+#include "FileNotFound.h"
+#include "FileDescriptor.h"
+
 /**
-  Interface.
+  File input stream.
 
   @author René Møller Fonseca
   @version 1.0
 */
 
-class InputStream {
+class FileInputStream : public Object, public InputStream {
+protected:
+
+  /** File descriptor. */
+  FileDescriptor* fd;
 public:
 
   /**
-    Returns
+    Initializes the file input stream.
+
+    @param name The name of the file.
   */
-  virtual unsigned int available() {return 0;};
+  FileInputStream(const char* name) throw(FileNotFound);
 
   /**
-    Closes the stream.
+    Returns the number of bytes that can be read or skipped over without blocking.
+
+    @return Available number of bytes in stream.
   */
-  virtual void close() {};
-
-  virtual char read() = 0;
-
-  virtual unsigned int read(char* buffer, unsigned int count) {
-    char* head = &buffer[0];
-    char* tail = &buffer[count];
-    while (head != tail) {
-      buffer[head] = read();
-      ++head;
-    }
-  }
+  unsigned int available();
 
   /**
-    Skips a specified number of ... blocks...
+    Closes the input stream and releases any system resources associated with the stream.
   */
-  void skip(unsigned int count) {
-    while (count) {
-      read();
-      --count;
-    }
-  }
+  void close() throw(IOException);
+
+  /**
+    Reads the next byte from the stream. Blocks if no bytes are available.
+
+    @return The next byte from the stream.
+  */
+  int read() throw(IOException);
+
+  /**
+    Fills the buffer with bytes from the stream. Blocks if asked to read more bytes than available.
+
+    @param buffer The buffer.
+    @param size The size of the buffer.
+  */
+  unsigned int read(char* buffer, unsigned int size) throw(IOException);
+
+  /**
+    Skips a specified number of bytes. Blocks if asked to skip more bytes than available.
+
+    @param count The number of bytes to skip.
+  */
+  void skip(unsigned int count) throw(IOException);
+
+  /**
+    Destroys the file input stream.
+  */
+  ~FileInputStream();
 };
 
 #endif

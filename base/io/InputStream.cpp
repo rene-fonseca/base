@@ -5,14 +5,14 @@
 
 #include "InputStream.h"
 
-void InputStream::close() {
-}
-
 unsigned int InputStream::available() {
   return 0;
 }
 
-unsigned int InputStream::read(char* buffer, unsigned int size) {
+void InputStream::close() throw(IOException) {
+}
+
+unsigned int InputStream::read(char* buffer, unsigned int size) throw(IOException) {
   char* head = buffer;
   unsigned int count = 0;
 
@@ -28,7 +28,7 @@ unsigned int InputStream::read(char* buffer, unsigned int size) {
   return count;
 }
 
-void InputStream::skip(unsigned int count) {
+void InputStream::skip(unsigned int count) throw(IOException) {
   while (count) {
     read();
     --count;

@@ -4,7 +4,38 @@
  ***************************************************************************/
 
 #include "FileInputStream.h"
+#include <fcntl.h>
 
-FileInputStream::FileInputStream(const string& path) {
-  open(path);
+FileInputStream::FileInputStream(const char* path) throw(FileNotFound) {
+  int handle = open(path, 0);
+  if (handle == -1) {
+    throw FileNotFound("Unable to open file.");
+  }
+  fd = new FileDescriptor(handle);
+}
+
+unsigned int FileInputStream::available() {
+}
+
+void FileInputStream::close() throw(IOException) {
+  // ???
+}
+
+int FileInputStream::read() throw(IOException) {
+  char buffer;
+  unsigned int count;
+  count = read(&buffer, sizeof(buffer));
+  if (count == 0) {
+    return -1;
+  }
+  return buffer;
+}
+
+unsigned int FileInputStream::read(char* buffer, unsigned int size) throw(IOException) {
+  return fd->read(buffer, size);
+}
+
+FileInputStream::~FileInputStream() {
+//  close(fd->getHandle());
+  delete fd;
 }

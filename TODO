@@ -1,1 +1,3 @@
 Add delay when communication with Z8536 in IO_ADA08 class if required.
+
+Where is SSIZE_MAX defined. Need to include file in 'FileDestriptor.cpp'.

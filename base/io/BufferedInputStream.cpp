@@ -5,14 +5,15 @@
 
 #include "BufferedInputStream.h"
 
-void BufferedInputStream::fillBuffer() {
+void BufferedInputStream::fillBuffer() throw(IOException) {
   if (position >= count) {
     count = FilterInputStream::read(buffer, size);
     position = 0;
   }
 }
 
-BufferedInputStream::BufferedInputStream(InputStream* in, unsigned int size) : FilterInputStream(in) {
+BufferedInputStream::BufferedInputStream(InputStream* in, unsigned int size) :
+  FilterInputStream(in) {
   this->size = size > MINIMUM_BUFFER_SIZE ? size : MINIMUM_BUFFER_SIZE;
   buffer = new char[this->size];
   count = 0;
@@ -23,14 +24,14 @@ unsigned int BufferedInputStream::available() {
   return (count - position) + FilterInputStream::available();
 }
 
-int BufferedInputStream::read() {
+int BufferedInputStream::read() throw(IOException) {
   if (position >= count) {
     fillBuffer();
   }
   return buffer[position++];
 }
 
-unsigned int BufferedInputStream::read(char* buffer, unsigned int size) {
+unsigned int BufferedInputStream::read(char* buffer, unsigned int size) throw(IOException) {
   unsigned int position = 0; // position in destination buffer
 
   // need to prevent infinite loop!
@@ -54,7 +55,7 @@ unsigned int BufferedInputStream::read(char* buffer, unsigned int size) {
   return size;
 }
 
-void BufferedInputStream::skip(unsigned int count) {
+void BufferedInputStream::skip(unsigned int count) throw(IOException) {
   // need to prevent infinite loop!
   while (count > 0) {
     if (this->position >= this->count) {

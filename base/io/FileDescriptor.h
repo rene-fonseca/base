@@ -6,23 +6,49 @@
 #ifndef _DK_SDU_MIP_BASE_IO_FILE_DESCRIPTOR_H
 #define _DK_SDU_MIP_BASE_IO_FILE_DESCRIPTOR_H
 
+#include "base/Object.h"
+#include "IOException.h"
+
 /**
-  File descriptor.
+  The FileDescriptor class serves as a general handle to a source or sink of bytes within the operatingsystem (e.g. file, socket and pipe). This class is normally not used directly by the application.
 
   @author René Møller Fonseca
   @version 1.0
 */
-
-class FileDescriptor {
+class FileDescriptor : public Object {
 protected:
 
+  /** Handle to file descriptor. */
   int handle;
+  /** Specifies that the end of file has been reached. */
+  bool eof;
 public:
 
+  /**
+    Initializes the file descriptor.
+
+    @param handle Handle to file descriptor.
+  */
   FileDescriptor(int handle);
 
-  unsigned int read(char* buffer, unsigned int count);
+  unsigned int available() throw(IOException);
 
+  void close() throw(IOException);
+
+  int read() throw(IOException);
+
+  /**
+    @return The actual number of bytes read.
+  */
+  unsigned int read(char* buffer, unsigned int size) throw(IOException);
+
+  /**
+  */
+  unsigned int write(char* buffer, unsigned int size) throw(IOException);
+
+  /**
+    Destroys the file descriptor.
+  */
   ~FileDescriptor();
 };
 

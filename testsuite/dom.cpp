@@ -14,7 +14,10 @@
 #include <base/Application.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/io/File.h>
+#include <base/xml/DOMImplementation.h>
 #include <base/xml/Document.h>
+#include <base/xml/Entity.h>
+#include <base/xml/Notation.h>
 #include <base/collection/Stack.h>
 #include <base/collection/Array.h>
 
@@ -36,7 +39,181 @@ public:
       arguments,
       environment) {
   }
+  
+  void dumpTree(const Node& node) throw() {
+    switch (node.getType()) {
+    case Node::ELEMENT_NODE:
+      {
+        Element element = node;
+        if (node.hasChildNodes()) {
+          fout << '<' << element.getTagName();
+          if (element.hasAttributes()) {
+            Attribute attribute = element.getFirstAttribute();
+            while (attribute.isValid()) {
+              fout << ' '
+                   << attribute.getName() << '='
+                   << '"' << attribute.getValue() << '"';
+              attribute = attribute.getNextSibling();
+            }
+          }
+          fout << '>';
+          for (
+            Node child = element.getFirstChild();
+            child.isValid();
+            child = child.getNextSibling()
+          ) {
+            dumpTree(child);
+          }
+          fout << '<' << '/' << element.getTagName() << '>';
+        } else {
+          fout << '<' << element.getTagName();
+          if (element.hasAttributes()) {
+            Attribute attribute = element.getFirstAttribute();
+            while (attribute.isValid()) {
+              fout << ' '
+                   << attribute.getName() << '='
+                   << '"' << attribute.getValue() << '"';
+              attribute = attribute.getNextSibling();
+            }
+          }
+          fout << '/' << '>';
+        }
+      }
+      break;
+    case Node::ATTRIBUTE_NODE:
+      throw DOMException(this);
+    case Node::TEXT_NODE:
+      fout << Text(node).getData();
+      break;
+    case Node::CDATA_SECTION_NODE:
+      fout << MESSAGE("<![CDATA[")
+           << CDATASection(node).getData()
+           << MESSAGE("]]>");
+      break;
+    case Node::ENTITY_REFERENCE_NODE:
+      fout << MESSAGE("&") << node.getName() << MESSAGE(";");
+      break;
+    case Node::ENTITY_NODE:
+      {
+        Entity entity = node;
+        fout << "<!ENTITY % " << entity.getNotationName();
+        
+        String publicId = entity.getPublicId();
+        String systemId = entity.getSystemId();
+        
+        if (publicId.isProper()) {
+          fout << " PUBLIC \"" << publicId << "\"";
+        }
+        if (systemId.isProper()) {
+          fout << " \"" << systemId << "\"";
+        }
+        fout << EOL;
+      }
+      // TAG: unparsed entity ... NDATA notationName
+      // <!ENTITY VERSION "0.9.1">
+      break;
+    case Node::PROCESSING_INSTRUCTION_NODE:
+      {
+        ProcessingInstruction pi = node;
+        fout << MESSAGE("<?")
+             << pi.getTarget() << ' ' << pi.getData() << MESSAGE("?>") << EOL;
+      }
+      break;
+    case Node::COMMENT_NODE:
+      fout << MESSAGE("<!--") << Comment(node).getData() << MESSAGE("-->");
+      break;
+    case Node::DOCUMENT_NODE:
+      fout << MESSAGE("<?xml");
+      if (true) {
+        fout << MESSAGE(" version=") << MESSAGE("\"1.0\"");
+      }
+      if (true) {
+        fout << MESSAGE(" encoding=") << MESSAGE("\"UTF-8\"");
+      }
+      if (true) {
+        fout << MESSAGE(" standalone=") << MESSAGE("\"yes\"");
+      }
+      fout << MESSAGE("?>") << EOL;
+      for (
+        Node child = node.getFirstChild();
+        child.isValid();
+        child = child.getNextSibling()) {
+        dumpTree(child);
+      }
+      break;
+    case Node::DOCUMENT_TYPE_NODE:
 
+// <!ENTITY % ISOlat1 PUBLIC "ISO 8879:1986//ENTITIES Added Latin 1//EN"
+//                           "C:/local/www.oasis-open.org/docbook/xml/4.2/ent/iso-lat1.ent">
+// <!ENTITY % DocBookEBNFDTD PUBLIC "-//OASIS//DTD DocBook EBNF Module V1.0//EN"
+//                                  "C:/local/www.oasis-open.org/docbook/xml/ebnf/1.0/dbebnf.dtd">
+// <!ENTITY % DocBookMathMLDTD PUBLIC "-//OASIS//DTD DocBook MathML Module V1.0//EN"
+//                                    "C:/local/www.oasis-open.org/docbook/xml/mathml/1.0/dbmathml.dtd">
+
+// <!ENTITY gpl SYSTEM "gpl-appendix.xml">
+// <!ENTITY fdl SYSTEM "fdl-appendix.xml">
+// <!ENTITY bookindex SYSTEM "index.xml">
+
+// <!ENTITY HOMEPAGE "http://www.mip.sdu.dk/~fonseca/base">
+// <!ENTITY DISTRIBUTION "http://www.mip.sdu.dk/~fonseca/distribution">
+// <!ENTITY NIGHTLY "http://www.mip.sdu.dk/~fonseca/distribution/base-framework/nightly">
+// <!ENTITY PRERELEASE "http://www.mip.sdu.dk/~fonseca/distribution/base-framework/prerelease">
+// <!ENTITY RELEASE "http://www.mip.sdu.dk/~fonseca/distribution/base-framework/release">
+// <!ENTITY VERSION "0.9.1">
+// %ISOlat1;
+
+      {
+        DocumentType dtd = node;
+        fout << MESSAGE("<!DOCTYPE ") << dtd.getName();
+        
+        String publicId = dtd.getPublicId();
+        String systemId = dtd.getSystemId();
+        
+        if (publicId.isProper()) {
+          fout << MESSAGE(" PUBLIC \"") << publicId << MESSAGE("\"");
+        }
+        if (systemId.isProper()) {
+          fout << MESSAGE(" \"") << systemId << MESSAGE("\"");
+        }
+        fout << MESSAGE(" [");
+        
+        // entities
+        for (
+          Node child = node.getFirstChild();
+          child.isValid();
+          child = child.getNextSibling()) {
+          dumpTree(child);
+        }
+        
+        fout << MESSAGE("]>") << EOL;
+      }
+      break;
+    case Node::DOCUMENT_FRAGMENT_NODE:
+      fout << "FRAGMENT" << ENDL; // TAG: fixme
+      break;
+    case Node::NOTATION_NODE:
+      {
+        Notation notation = node;
+        fout << MESSAGE("<!NOTATION "); // TAG: << notation.getNotationName();
+        
+        String publicId = notation.getPublicId();
+        String systemId = notation.getSystemId();
+        
+        if (publicId.isProper() && systemId.isProper()) {
+          fout << "PUBLIC"
+               << ' ' << "\"" << publicId << "\""
+               << ' ' << "\"" << systemId << "\"";
+        } else if (publicId.isProper()) {
+          fout << "PUBLIC" << ' ' << "\"" << publicId << "\"";
+        } else {
+          fout << "SYSTEM" << ' ' << "\"" << systemId << "\"";
+        }
+        fout << '>' << EOL;
+      }
+      break;
+    }
+  }
+  
   void main() throw() {
     fout << getFormalName() << MESSAGE(" version ")
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
@@ -51,22 +228,74 @@ public:
       fout << getFormalName() << MESSAGE(" source destination") << ENDL;
       return; // stop
     }
-    
-    const String filename = arguments[0];
-    
-    try {
-      fout << MESSAGE("Reading document...") << ENDL;
-      Document document(filename);
 
-      ProcessingInstruction pi = document.createProcessingInstruction("", "");
-      Node node = pi;
-      pi = node;
+    DOMImplementation dom;
+    
+    const String sourceName = arguments[0];
+    const String destinationName = arguments[1];
+    
+    if (false) {
+      Document document = dom.createDocument(MESSAGE("1.0"));
       
-      fout << MESSAGE("Saving result document...") << ENDL;
-      document.save(arguments[1]);
-    } catch(DOMException& e) {
-      ferr << MESSAGE("Internal error: ") << e << ENDL;
-      setExitCode(EXIT_CODE_ERROR);
+      document.appendChild(
+        document.createProcessingInstruction(
+          "xml-stylesheet",
+          "type=\"text/xsl\" href=\"http://docbook.sourceforge.net/release/xsl/current/html/docbook.xsl\""
+        )
+      );
+
+      DocumentType documentType = document.createAndSetDocumentType(
+        "book",
+        "-//OASIS//DTD DocBook XML V4.2//EN",
+        "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+      );
+      // document.appendChild(documentType);
+      
+      Element book = document.createElement("book");
+      book.setAttribute("status", "draft");
+      document.appendChild(book);
+      
+      book.appendChild(document.createComment("This is a generated document"));
+      
+      Element chapter = document.createElement("chapter");
+      book.appendChild(chapter);
+      
+      Element title = document.createElement("title");
+      title.appendChild(document.createText("My First Chapter"));
+      chapter.appendChild(title);
+      
+      Element para = document.createElement("para");
+      chapter.appendChild(para);
+      
+      para.appendChild(document.createText("This is my paragraph "));
+      para.appendChild(document.createCDATASection("<element>"));
+      para.appendChild(document.createText("."));
+
+      para.appendChild(document.createEntityReference("VERSION"));
+      
+      
+      
+      dumpTree(document);
+      
+      document.save(destinationName);
+    } else {
+      try {
+        fout << MESSAGE("Reading document...") << ENDL;
+        Document document = dom.createFromURI(sourceName);
+
+        fout << MESSAGE("Validating document...") << ENDL;
+        if (document.validate()) {
+          fout << MESSAGE("Document is valid") << ENDL;
+        } else {
+          fout << MESSAGE("Document is not valid") << ENDL;
+        }
+        
+        fout << MESSAGE("Saving result document...") << ENDL;
+        document.save(destinationName);
+      } catch(DOMException& e) {
+        ferr << MESSAGE("Internal error: ") << e << ENDL;
+        setExitCode(EXIT_CODE_ERROR);
+      }
     }
   }
 };

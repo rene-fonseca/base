@@ -50,27 +50,30 @@ public:
     Array<String> arguments = getArguments();
   
     if (arguments.getSize() != 3) {
-      fout << getFormalName() << MESSAGE(" filename") << ENDL;
+      fout << getFormalName() << MESSAGE(" source destination") << ENDL;
       return; // stop
     }
 
-    const String filename = arguments[0];
+    const String sourceName = arguments[0];
+    const String destinationName = arguments[1];
     
     Allocator<char> buffer;
     {
        fout << MESSAGE("Reading XML file into buffer...") << ENDL;
-       File file(filename, File::READ, File::EXCLUSIVE);
+       File file(sourceName, File::READ, File::EXCLUSIVE);
        buffer.setSize(file.getSize());
        file.read(buffer.getElements(), file.getSize());
     }
+
+    DOMImplementation dom;
     
     fout << MESSAGE("Reading document") << ENDL;
-    Document source(filename);
-    source.save(filename + ".saved");
+    Document source = dom.createFromURI(sourceName);
+    source.save(sourceName + ".saved");
     
     fout << MESSAGE("Reading stylesheet...") << ENDL;
-    Document xslDocument(arguments[1]);
-    xslDocument.save(arguments[1] + ".saved");
+    Document xslDocument = dom.createFromURI(destinationName);
+    xslDocument.save(destinationName + ".saved");
     
     Stylesheet stylesheet(xslDocument);
 

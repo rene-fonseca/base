@@ -30,6 +30,6 @@
 #  define _DK_SDU_MIP__BASE__ARCH_ABI _DK_SDU_MIP__BASE__ABI_32
 #elif (_DK_SDU_MIP__BASE__POINTER_SIZE == 8)
 #  define _DK_SDU_MIP__BASE__ARCH_ABI _DK_SDU_MIP__BASE__ABI_64
-#endif // restrict
+#endif // abi
 
 #endif

@@ -2,7 +2,7 @@ dnl ***************************************************************************
 dnl    The Base Framework
 dnl    A framework for developing platform independent applications
 dnl
-dnl    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+dnl    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 dnl
 dnl    This framework is distributed in the hope that it will be useful,
 dnl    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,8 +24,8 @@ ac_base_build_user=`whoami`
 ac_base_build_host=`uname -n`
 
 AC_PREREQ(2.52)
-AC_COPYRIGHT([Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>])
-AC_REVISION($Revision$)
+AC_COPYRIGHT([Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>])
+dnl AC_REVISION
 
 AC_CANONICAL_SYSTEM()
 
@@ -95,6 +95,7 @@ mips*) base_cv_arch=MIPS;;
 powerpc*) base_cv_arch=PPC;;
 sparcv9) base_cv_arch=SPARC base_cv_arch_minor=SPARC_V9;;
 sparc*) base_cv_arch=SPARC;;
+s390) base_cv_arch=S390;;
 esac
 
 dnl specifies the generic order of libraries for the Unix flavor (some libraries may not be present)
@@ -267,16 +268,16 @@ BASE_LIBS="[$]{ac_base_unknown_libs}[$]{ac_base_unknown_libs:+ }[$]{ac_base_syst
 
 
 
-ac_base_static=yes
+ac_base_config=yes
 AC_ARG_ENABLE(
-  static,[
-  --enable-static=[yes|no]
+  config,[
+  --enable-config=[yes|no]
       This option specifies whether ot not the static target configuration
       should be utilized if available. This option is enabled by default.
       The target configuration is probed if either no static configuration
       is available or this option is disabled. Probing is not possible when
       cross compiling the framework.],
-  AC_BASE_CHECK_ARG(ac_base_static, yes no, The static option must be either 'yes' or 'no'.))
+  AC_BASE_CHECK_ARG(ac_base_config, yes no, The static option must be either 'yes' or 'no'.))
 
 
 
@@ -291,6 +292,7 @@ i486-*-linux*) ac_base_target=i486-unknown-linux-gnu;;
 i586-*-linux*) ac_base_target=i586-unknown-linux-gnu;;
 i686-*-linux*) ac_base_target=i686-unknown-linux-gnu;;
 ia64-*-linux*) ac_base_target=ia64-unknown-linux-gnu;;
+s390-ibm-linux*) ac_base_target=s390-ibm-linux-gnu;;
 mips-sgi-irix) ac_base_target=mips-sgi-irix;;
 mips-sgi-irix6.2) ac_base_target=mips-sgi-irix62;;
 mips-sgi-irix6.3) ac_base_target=mips-sgi-irix63;;
@@ -312,7 +314,7 @@ esac
 
 
 ac_base_static_loaded=no
-if test x$ac_base_static = xyes && test -f $srcdir/static/$ac_base_target; then
+if test x$ac_base_config = xyes && test -f $srcdir/static/$ac_base_target; then
   echo loading static target configuration...
   rm -f static.tmp
   if (cd $srcdir/static; ./static.sh ./$ac_base_target) > static.tmp 2>&1; then
@@ -327,7 +329,7 @@ fi
 # make sure static configuration has been loaded if cross compiling
 if test x$base_cv_cxx_cross = xyes; then
   if test x$ac_base_static_loaded != xyes; then
-    if test x$ac_base_static = xyes; then
+    if test x$ac_base_config = xyes; then
       AC_MSG_ERROR(This target currently does not support cross compilation. You could try with a generic target configuration.)
     else
       AC_MSG_ERROR(Static target configuration must be enabled when cross compiling.)
@@ -1435,6 +1437,7 @@ if test x$base_cv_flavor = xUNIX; then
   AC_BASE_CHECK_CFUNCTION_PRIVATE(nanosleep)
   AC_BASE_CHECK_CFUNCTION_PRIVATE(mbrtowc)
   AC_BASE_CHECK_CFUNCTION_PRIVATE(mbsrtowcs)
+  AC_BASE_CHECK_CFUNCTION_PRIVATE(sigaction)
 fi
 
 

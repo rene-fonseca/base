@@ -52,43 +52,47 @@ public:
 
 
 
-void test() {
-  fout << "Testing reference counting..." << ENDL;
+class ReferenceCountingApplication : public Application {
+public:
 
-  fout << "Initializing reference counted object pointers" << ENDL;
-  ReferenceCountedObjectPointer<Base> base; // ok
-  ReferenceCountedObjectPointer<Child> child; // ok
-  ReferenceCountedObjectPointer<OtherChild> otherChild; // ok
+  ReferenceCountingApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+    : Application(MESSAGE("referenceCounting"), numberOfArguments, arguments, environment) {
+  }
 
-  fout << "Checking whether base is valid (expecting false): " << base.isValid() << EOL;
+  void main() throw() {
+    fout << "Testing reference counting..." << ENDL;
 
-  const ReferenceCountedObjectPointer<Child> constChild; // ok
+    fout << "Initializing reference counted object pointers" << ENDL;
+    ReferenceCountedObjectPointer<Base> base; // ok
+    ReferenceCountedObjectPointer<Child> child; // ok
+    ReferenceCountedObjectPointer<OtherChild> otherChild; // ok
 
-  fout << "Checking whether base is multi referenced (expecting false): " << base.isMultiReferenced() << EOL;
+    fout << "Checking whether base is valid (expecting false): " << base.isValid() << EOL;
 
-  base.copyOnWrite();
+    const ReferenceCountedObjectPointer<Child> constChild; // ok
+
+    fout << "Checking whether base is multi referenced (expecting false): " << base.isMultiReferenced() << EOL;
+
+    base.copyOnWrite();
 
 
 
-  fout << "Initializing Allocator" << ENDL;
-  Allocator<int> a1;
+    fout << "Initializing Allocator" << ENDL;
+    Allocator<int> a1;
 
-  fout << "Initializing ReferenceCountedAllocator" << ENDL;
-  ReferenceCountedAllocator<int> a2;
+    fout << "Initializing ReferenceCountedAllocator" << ENDL;
+    ReferenceCountedAllocator<int> a2;
 
-  fout << "Initializing ReferenceCountedAllocator (on heap)" << ENDL;
-  ReferenceCountedAllocator<int>* a3 = new ReferenceCountedAllocator<int>();
-  delete a3;
+    fout << "Initializing ReferenceCountedAllocator (on heap)" << ENDL;
+    ReferenceCountedAllocator<int>* a3 = new ReferenceCountedAllocator<int>();
+    delete a3;
 
-  fout << "Explicit initialization of automation pointer" << ENDL;
-  ReferenceCountedObjectPointer<ReferenceCountedAllocator<int> > a4 = new ReferenceCountedAllocator<int>();
+    fout << "Explicit initialization of automation pointer" << ENDL;
+    ReferenceCountedObjectPointer<ReferenceCountedAllocator<int> > a4 = new ReferenceCountedAllocator<int>();
 
-  fout << "Assignment of automation pointer" << ENDL;
-  a4 = new ReferenceCountedAllocator<int>();
-
+    fout << "Assignment of automation pointer" << ENDL;
+    a4 = new ReferenceCountedAllocator<int>();
 /*
-
-
   ReferenceCountedObjectPointer<AAA> aaa1 = new AAA(); // test exclicit
 initialization
 //  ReferenceCountedObjectPointer<BBB> aaa2 = new AAA(); // test exclicit
@@ -139,18 +143,17 @@ initialization - should not compile
   const BBB* c2 = new BBB();
   const CCC* c3 = new CCC();
 */
-}
-
-int main() {
-  try {
-    test();
-  } catch(Exception& e) {
-    ferr << "Exception: " << e.getMessage() << ENDL;
-    return 1;
-  } catch(...) {
-    ferr << "Unknown exception" << ENDL;
-    return 1;
   }
-  fout << "Completed" << ENDL;
-  return 0;
+};
+
+int main(int argc, const char* argv[], const char* env[]) {
+  RCApplication application(argc, argv, env);
+  try {
+    application.main();
+  } catch(Exception& e) {
+    return Application::getApplication()->exceptionHandler(e);
+  } catch(...) {
+    return Application::getApplication()->exceptionHandler();
+  }
+  return Application::getApplication()->getExitCode();
 }

@@ -426,7 +426,8 @@ public:
     
     template<class ARGUMENT>
     static inline RESULT cast(ARGUMENT& value) throw() {
-      CastAssert<sizeof(RESULT) >= sizeof(ARGUMENT)>::CONTAINER_FOOTPRINT_TOO_SMALL;
+      if (CastAssert<sizeof(RESULT) >= sizeof(ARGUMENT)>::CONTAINER_FOOTPRINT_TOO_SMALL) {
+      }
       union {
         ARGUMENT argument;
         RESULT result; // make sure we do not get an access violation in the cast
@@ -437,7 +438,8 @@ public:
     
     template<class ARGUMENT>
     static inline const RESULT cast(const ARGUMENT& value) throw() {
-      CastAssert<sizeof(RESULT) >= sizeof(ARGUMENT)>::CONTAINER_FOOTPRINT_TOO_SMALL;
+      if (CastAssert<sizeof(RESULT) >= sizeof(ARGUMENT)>::CONTAINER_FOOTPRINT_TOO_SMALL) {
+      }
       union {
         const ARGUMENT argument;
         const RESULT result; // make sure we do not get an access violation in the cast
@@ -464,13 +466,15 @@ public:
     
     template<class ARGUMENT>
     static inline RESULT cast(ARGUMENT& value) throw() {
-      CastAssert<sizeof(RESULT) <= sizeof(ARGUMENT)>::ELEMENT_FOOTPRINT_TOO_LARGE;
+      if (CastAssert<sizeof(RESULT) <= sizeof(ARGUMENT)>::ELEMENT_FOOTPRINT_TOO_LARGE) {
+      }
       return *reinterpret_cast<RESULT*>(&value);
     }
     
     template<class ARGUMENT>
     static inline const RESULT cast(const ARGUMENT& value) throw() {
-      CastAssert<sizeof(RESULT) <= sizeof(ARGUMENT)>::ELEMENT_FOOTPRINT_TOO_LARGE;
+      if (CastAssert<sizeof(RESULT) <= sizeof(ARGUMENT)>::ELEMENT_FOOTPRINT_TOO_LARGE) {
+      }
       return *reinterpret_cast<const RESULT*>(&value);
     }
   };

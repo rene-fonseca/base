@@ -35,7 +35,7 @@ bool SelectFolderDialog::execute() throw(UserInterfaceException) {
   static FSHBrowseForFolderA SHBrowseForFolderA = 0;
   if (!SHBrowseForFolderA) { // TAG: need to be atomic
     DynamicLinker* dynamicLinker = new DynamicLinker(MESSAGE("shell32.dll"));
-    SHBrowseForFolderA = (FSHBrowseForFolderA)dynamicLinker->getSymbol(MESSAGE("SHBrowseForFolderA")); // TAG: fix cast
+    SHBrowseForFolderA = (FSHBrowseForFolderA)dynamicLinker->getSymbol(MESSAGE("SHBrowseForFolderA"));
   }
   
   HRESULT r = ::CoInitializeEx(0, COINIT_APARTMENTTHREADED);

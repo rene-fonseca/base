@@ -34,7 +34,7 @@ public:
   /**
     Initializes object.
   */
-  Object() {};
+  Object();
 
   /**
     Destroys the object. Ensure envocation of correct destructor when using polymophism.

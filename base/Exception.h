@@ -84,7 +84,11 @@ class OutOfBounds : public Exception {};
 class OutOfDomain : public Exception {};
 
 /** Thrown on IO error. */
-class IOException : public Exception {};
+class IOException : public Exception {
+public:
+  IOException();
+  ~IOException();
+};
 
 /** Thrown if required resource could not be found. */
 class NotFoundException : public Exception {};

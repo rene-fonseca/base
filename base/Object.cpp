@@ -5,6 +5,12 @@
 
 #include "Object.h"
 
+Object::Object() {
+}
+
+Object::~Object() {
+}
+
 /*
 void* operator new(size_t size) throw(MemoryException) {
   void* p = malloc(size);

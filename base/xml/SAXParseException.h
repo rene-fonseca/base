@@ -35,6 +35,14 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class SAXParseException : public SAXException {
 private:
 
+  /**
+    The public identifer of the entity that generated the error or warning.
+  */
+  String publicId;
+  /**
+    The system identifer of the entity that generated the error or warning.
+  */
+  String systemId;
   /** The line number. */
   unsigned int line;
   /** The column number. */
@@ -83,15 +91,25 @@ public:
     
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
+    @param publicId The public identifier of the entity where the exception
+    occurred.
+    @param systemId The system identifier of the entity where the exception
+    occurred.
     @param line The line number.
     @param column The column number.
   */
   inline SAXParseException(
     const char* message,
     Type type,
+    String _publicId,
+    String _systemId,
     unsigned int _line,
     unsigned int _column) throw()
-    : SAXException(message, type), line(_line), column(_column) {
+    : SAXException(message, type),
+      publicId(_publicId),
+      systemId(_systemId),
+      line(_line),
+      column(_column) {
   }
 
   /**
@@ -104,8 +122,25 @@ public:
   /**
     Returns the column number.
   */
-  unsigned int getColumn() const throw() {
+  inline unsigned int getColumn() const throw() {
     return column;
+  }
+  
+  /**
+    Returns the public identifier of the entity where the exception occurred.
+  */
+  inline String getPublicId() const throw() {
+    return publicId;
+  }
+  
+  /**
+    Returns the system identifier of the entity where the exception occurred.
+  */
+  inline String getSystemId() const throw() {
+    return systemId;
+  }
+
+  inline ~SAXParseException() throw() {
   }
 };
 

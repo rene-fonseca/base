@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/Timer.h>
+#include <base/string/String.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
@@ -29,7 +29,7 @@ Timer::Timer() throw() : stopTime(0) {
 void Timer::start() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
-  QueryPerformanceCounter(pointer_cast<LARGE_INTEGER*>(&startTime));
+  ::QueryPerformanceCounter(pointer_cast<LARGE_INTEGER*>(&startTime));
 #else // unix
   struct timeval temp;
   gettimeofday(&temp, 0);
@@ -40,7 +40,7 @@ void Timer::start() throw() {
 void Timer::stop() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
-  QueryPerformanceCounter(pointer_cast<LARGE_INTEGER*>(&stopTime));
+  ::QueryPerformanceCounter(pointer_cast<LARGE_INTEGER*>(&stopTime));
 #else // unix
   struct timeval temp;
   gettimeofday(&temp, 0);
@@ -51,7 +51,7 @@ void Timer::stop() throw() {
 long long Timer::getStartTime() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
-  QueryPerformanceFrequency(&frequency); // ignore any error
+  ::QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>(startTime * 1000000./frequency.QuadPart);
 #else // unix
   return startTime;
@@ -61,7 +61,7 @@ long long Timer::getStartTime() const throw() {
 long long Timer::getStopTime() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
-  QueryPerformanceFrequency(&frequency); // ignore any error
+  ::QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>(stopTime * 1000000./frequency.QuadPart);
 #else // unix
   return stopTime;
@@ -71,7 +71,7 @@ long long Timer::getStopTime() const throw() {
 long long Timer::getMicroseconds() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
-  QueryPerformanceFrequency(&frequency); // ignore any error
+  ::QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>((stopTime - startTime) * 1000000./frequency.QuadPart);
 #else // unix
   return stopTime - startTime;
@@ -81,9 +81,9 @@ long long Timer::getMicroseconds() const throw() {
 long long Timer::getLiveMicroseconds() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER now;
-  QueryPerformanceCounter(&now);
+  ::QueryPerformanceCounter(&now);
   LARGE_INTEGER frequency; // ticks per second
-  QueryPerformanceFrequency(&frequency); // ignore any error
+  ::QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<long long>((now.QuadPart - startTime) * 1000000./frequency.QuadPart);
 #else // unix
   struct timeval temp;
@@ -97,11 +97,11 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Timer& value) t
   long long seconds = microseconds/1000000;
   long long minutes = seconds/60;
   long long hours = minutes/60;
-  return stream << hours << ":" << minutes%60 << ":" << seconds%60 << "." << microseconds%1000000;
+  return stream << hours << ':' << minutes%60 << ':' << seconds%60 << '.' << microseconds%1000000;
 }
 
 void TimeScope::dump() const throw(IOException) {
-  fout << "Elapsed time (H:M:S.microseconds): " << timer << ENDL;
+  fout << MESSAGE("Elapsed time (H:M:S.microseconds): ") << timer << ENDL;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -15,7 +15,7 @@
 #define _DK_SDU_MIP__BASE__UNSIGNED_LONG_INTEGER_H
 
 #include <base/Object.h>
-#include <base/Type.h>
+#include <base/Primitives.h>
 #include <base/string/String.h>
 #include <base/string/InvalidFormat.h>
 #include <base/string/FormatInputStream.h>
@@ -42,7 +42,7 @@ public:
   /** Specifies the maximum value. */
   static const unsigned long long MAXIMUM = UnsignedLongLong::MAXIMUM;
 
-  enum {
+  enum BaseOptions {
     BIN = 1, /**< Specifies binary integer base (2). */
     DEC = 2, /**< Specifies decimal integer base (10). */
     OCT = 4, /**< Specifies octal integer base (8). */

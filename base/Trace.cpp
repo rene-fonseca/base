@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 void Trace::message(const char* message) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  OutputDebugString(message);
+  ::OutputDebugString(message);
 #else // unix
   fprintf(stderr, "TRACE %s\n", message); // fprintf must be MT-safe
 #endif // flavour
@@ -36,7 +36,7 @@ void Trace::member(const void* ptr, const char* message) {
   unsigned int length = strlen(message);
   char buffer[sizeof("0x12345678 >> ") + length];
   sprintf(buffer, "%08x >> %s", ptr, message); // sprintf must be MT-safe
-  OutputDebugString(buffer);
+  ::OutputDebugString(buffer);
 #else // unix
   fprintf(stderr, "TRACE %08x >> %s\n", ptr, message); // fprintf must be MT-safe
 #endif // flavour

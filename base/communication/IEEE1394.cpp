@@ -186,6 +186,16 @@ Array<EUI64> IEEE1394::getNodes() throw() {
   return result;
 }
 
+void IEEE1394::open() throw(IEEE1394Exception) {
+  ieee1394impl->open();
+  reload();
+}
+
+void IEEE1394::open(const EUI64& adapter) throw(IEEE1394Exception) {
+  ieee1394impl->open(adapter);
+  reload();
+}
+
 EUI64 IEEE1394::getLocalIdentifier(unsigned int physicalId) const throw(OutOfDomain) {
   assert(physicalId < numberOfNodes, OutOfDomain(this));
   return nodes[physicalId].guid;
@@ -502,7 +512,6 @@ void IEEE1394::reload() throw(IEEE1394Exception) {
             break;
           }
         } catch (IEEE1394Exception& e) {
-          fout << "unable to read from phy id: " << id << ENDL; // TAG: remove when done
         }
       }
       if (busManagerId == IEEE1394::BROADCAST) {
@@ -523,7 +532,7 @@ void IEEE1394::reload() throw(IEEE1394Exception) {
       
       localId = ieee1394impl->getLocalId();
       resetGeneration = generation;
-      break;
+      break; // success
     } catch (IEEE1394Exception& e) {
       Thread::millisleep(25);
     }

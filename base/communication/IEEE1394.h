@@ -191,24 +191,6 @@ public:
     TCODE_RESERVED_15
   };
 
-  /** Self-id. */
-  struct SelfId {
-    unsigned int packetId : 2;
-    unsigned int physicalId : 6;
-    unsigned int zero : 1;
-    unsigned int link : 1;
-    unsigned int gapCount : 6;
-    unsigned int speed : 2;
-    unsigned int delay : 2;
-    unsigned int contender : 1;
-    unsigned int power : 3;
-    unsigned int port0 : 2;
-    unsigned int port1 : 2;
-    unsigned int port2 : 2;
-    unsigned int initiatedReset : 1;
-    unsigned int morePackets : 1;
-  };
-
   enum PortState {
     PORT_NOT_CONNECTED,
     PORT_CONNECTED_TO_OHTER_LAYER,
@@ -442,18 +424,14 @@ public:
   /**
     Opens a connection to the primary adapter.
   */
-  inline void open() throw(IEEE1394Exception) {
-    ieee1394impl->open();
-  }
+  void open() throw(IEEE1394Exception);
   
   /**
     Opens a connection to the specified adapter.
     
     @param adapter The id of the adapter.
   */
-  inline void open(const EUI64& adapter) throw(IEEE1394Exception) {
-    ieee1394impl->open(adapter);
-  }
+  void open(const EUI64& adapter) throw(IEEE1394Exception);
   
   /**
     Closes the handle to the adapter. The adapter is destroyed when all handles
@@ -658,6 +636,10 @@ public:
   */
   inline IsochronousWriteChannel getWriteChannel(unsigned int maximumPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) {
     return ieee1394impl->getWriteChannel(maximumPacketsPerRequest, subchannels);
+  }
+
+  inline void readIsochronous(char* buffer, unsigned int size, unsigned int channel) throw(OutOfDomain, IEEE1394Exception) {
+    ieee1394impl->readIsochronous(buffer, size, channel);
   }
 };
 

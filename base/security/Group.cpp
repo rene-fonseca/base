@@ -15,10 +15,12 @@
 #include <base/security/Group.h>
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
+#include <base/string/WideString.h>
 #include <base/NotImplemented.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
+  #include <lm.h>
 #else // unix
   #include <sys/types.h>
   #include <grp.h>
@@ -33,6 +35,31 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+class GroupImpl {
+public:
+
+  union AnyId {
+    void* opaque;
+    gid_t system;
+  };
+
+  static inline void* getOpaque(gid_t id) throw() {
+    GroupImpl::AnyId anyId;
+    anyId.opaque = 0;
+    anyId.system= id;
+    return anyId.opaque;
+  }
+  
+  static inline gid_t getSystem(void* id) throw() {
+    GroupImpl::AnyId anyId;
+    anyId.system = 0;
+    anyId.opaque = id;
+    return anyId.system;
+  }
+};
+#endif // unix
+
 Group::Group(const void* _id) throw(OutOfDomain) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert((_id != 0) && (::IsValidSid((PSID)_id) != 0), OutOfDomain("Invalid group id", this));
@@ -41,7 +68,7 @@ Group::Group(const void* _id) throw(OutOfDomain) {
   copy<char>((char*)id, (const char*)_id, size);
 #else // unix
   assert((unsigned long)id <= PrimitiveTraits<gid_t>::MAXIMUM, OutOfDomain("Invalid group id", this));
-  id = (void*)(ptrditt_t)_id; // we only cast away const 'cause we do not dereference it
+  id = (void*)_id; // we only cast away const 'cause we do not dereference it
 #endif // flavor
 }
 
@@ -101,13 +128,13 @@ Group::Group(const String& name) throw(GroupException) {
     struct group* entry;
     int result = ::getgrnam_r(name.getElements(), &grp, buffer->getElements(), buffer->getSize(), &entry);
     assert(result == 0, GroupException(this));
-    id = (void*)(ptrditt_t)entry->gr_gid;
+    id = GroupImpl::getOpaque(entry->gr_gid);
   #else
-    #warning Using non-reentrant getgrnam (CYGWIN)
+    #warning Group::Group(const String& name) uses non-reentrant getgrnam
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     struct group* entry = ::getgrnam(name.getElements());
     assert(entry != 0, GroupException(this));
-    id = (void*)(ptrditt_t)entry->gr_gid;
+    id = GroupImpl::getOpaque(entry->gr_gid);
   #endif
 #endif // flavor
 }
@@ -119,9 +146,9 @@ Group::Group(const User& user) throw(GroupException) {
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwuid_r((gid_t)id, &pw, buffer->getElements(), buffer->getSize(), &entry);
+  int result = ::getpwuid_r(GroupImpl::getSystem(id), &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result == 0, GroupException(this));
-  id = (void*)(ptrditt_t)entry->pw_gid;
+  id = GroupImpl::getOpaque(entry->pw_gid);
 #endif // flavor
 }
 
@@ -144,20 +171,23 @@ String Group::getName() const throw(GroupException) {
                             &sidType) != 0,
          GroupException("Unable to lookup name", this)
   );
-  // ASSERT((sidType == SidTypeGroup) || ...???); // check type
-  return String(name); // TAG: does nameSize hold length of name
+  if (domainName[0] != 0) {
+    return String(domainName) + MESSAGE("\\") + String(name);
+  } else {
+    return String(name); // TAG: does nameSize hold length of name
+  }
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     Allocator<char>* buffer = Thread::getLocalStorage();
     struct group grp;
     struct group* entry;
-    int result = ::getgrgid_r((gid_t)id, &grp, buffer->getElements(), buffer->getSize(), &entry);
+    int result = ::getgrgid_r(GroupImpl::getSystem(id), &grp, buffer->getElements(), buffer->getSize(), &entry);
     assert(result == 0, GroupException(this));
     return String(entry->gr_name);
   #else
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
-    struct group* entry = ::getgrgid(id);
+    struct group* entry = ::getgrgid(GroupImpl::getSystem(id));
     assert(entry != 0, GroupException(this));
     return String(entry->gr_name);
   #endif
@@ -166,15 +196,59 @@ String Group::getName() const throw(GroupException) {
 
 Array<String> Group::getMembers() const throw(GroupException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  Array<String> members;
-  return members;
+  Array<String> result;
+
+  SID_NAME_USE sidType;
+  char name[4096]; // TAG: what is the maximum size
+  DWORD nameSize = sizeof(name);
+  char domainName[64]; // TAG: what is the maximum size
+  DWORD domainNameSize = sizeof(domainName);
+  assert(::LookupAccountSid(0,
+                            (PSID)id,
+                            name,
+                            &nameSize,
+                            domainName,
+                            &domainNameSize,
+                            &sidType) != 0,
+         GroupException("Unable to lookup name", this)
+  );
+//   if (domainName[0] != 0) {
+//     return String(domainName) + MESSAGE("\\") + String(name);
+//   } else {
+//     return String(name); // TAG: does nameSize hold length of name
+//   }
+
+  WideString wideName(name);
+  GROUP_USERS_INFO_0* buffer = 0;
+  DWORD numberOfEntries = 0;
+  DWORD totalEntries = 0;
+  NET_API_STATUS status = ::NetGroupGetUsers(0, // use local machine
+                                             wideName.getElements(),
+                                             0,
+                                             (LPBYTE*)&buffer,
+                                             MAX_PREFERRED_LENGTH,
+                                             &numberOfEntries,
+                                             &totalEntries,
+                                             0
+  );
+  assert((status == NERR_Success) || (status == ERROR_MORE_DATA), GroupException("Unable to get members", this));
+  if (buffer != 0) {
+    const GROUP_USERS_INFO_0* p = buffer;
+    const GROUP_USERS_INFO_0* end = p + numberOfEntries;
+    while (p < end) {
+      result.append(WideString::getMultibyteString(p->grui0_name));
+      ++p;
+    }
+    ::NetApiBufferFree(buffer);
+  }
+  return result;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRGID_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     Allocator<char>* buffer = Thread::getLocalStorage();
     struct group grp;
     struct group* entry;
-    int result = ::getgrgid_r((gid_t)id, &grp, buffer->getElements(), buffer->getSize(), &entry);
+    int result = ::getgrgid_r(GroupImpl::getSystem(id), &grp, buffer->getElements(), buffer->getSize(), &entry);
     assert(result == 0, GroupException(this));
     Array<String> members;
     char** memberName = entry->gr_mem;
@@ -184,7 +258,7 @@ Array<String> Group::getMembers() const throw(GroupException) {
     return members;
   #else
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
-    struct group* entry = ::getgrgid(id);
+    struct group* entry = ::getgrgid(GroupImpl::getSystem(id));
     assert(entry != 0, GroupException(this));
     Array<String> members;
     char** memberName = entry->gr_mem;

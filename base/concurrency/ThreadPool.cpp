@@ -11,10 +11,10 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/concurrency/ThreadPool.h>
 #include <base/collection/Functor.h>
-#include <base/Trace.h>
+#include <base/concurrency/ExclusiveSynchronize.h>
+#include <base/concurrency/SharedSynchronize.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -81,15 +81,15 @@ ThreadPool::ThreadPool(JobProvider* provider, unsigned int threads) throw() :
 }
 
 unsigned int ThreadPool::getThreads() const throw() {
-  SynchronizeShared();
+  SharedSynchronize<LOCK> sharedSynchronize(*this);
   return desiredThreads;
 }
 
 void ThreadPool::setThreads(unsigned int value) throw(ThreadPoolException) {
-  SynchronizeExclusively();
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
 
   if (terminated) {
-    ThreadPoolException("Thread pool has been terminated");
+    throw ThreadPoolException("Thread pool has been terminated", this);
   }
 
   if (value != desiredThreads) {
@@ -131,14 +131,14 @@ void ThreadPool::setThreads(unsigned int value) throw(ThreadPoolException) {
 }
 
 void ThreadPool::terminate() throw() {
-  SynchronizeExclusively();
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
   terminated = true;
   forEach(pool, invokeMember(&Thread::terminate));
 }
 
 void ThreadPool::join() throw() {
   // threads should not be signaled here
-  SynchronizeExclusively();
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
   forEach(pool, invokeMember(&Thread::join));
 }
 
@@ -147,7 +147,6 @@ void ThreadPool::post() throw() {
 }
 
 ThreadPool::~ThreadPool() throw() {
-  TRACE_MEMBER();
   terminate();
   join();
 

@@ -70,7 +70,7 @@ public:
     Returns the next element and advances the position of this enumeration.
   */
   inline Pointer next() throw(EndOfEnumeration) {
-    assert(current != end, EndOfEnumeration());
+    assert(current != end, EndOfEnumeration(this));
     return current++;
   }
 

@@ -15,6 +15,9 @@
 #include <base/communication/LinuxRawIEEE1394.h>
 #include <base/Cast.h>
 #include <base/UnexpectedFailure.h>
+#include <base/concurrency/Thread.h> // TAG: remove when done
+#include <base/string/ANSIEscapeSequence.h>
+#include <base/filesystem/FileSystem.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR != _DK_SDU_MIP__BASE__UNIX)
 #  error LinuxRawIEEE1394Impl not supported by flavor
@@ -30,8 +33,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 namespace LinuxRawIEEE1394Impl {
   
-  const char DEVICE_PATH[] = "/dev/raw1394"; // TAG: need something like FileSystem::getFolder(FOLDER_DEVICES)?
-
+  const StringLiteral DEVICE_NAME = MESSAGE("raw1394");
+  
   struct Request {
     uint32 type;
     int32 error;
@@ -148,7 +151,13 @@ namespace LinuxRawIEEE1394Impl {
 }; // end of LinuxRawIEEE1394Impl namespace
 
 LinuxRawIEEE1394::LinuxRawIEEE1394() throw(IEEE1394Exception) {
-  handle = ::open(LinuxRawIEEE1394Impl::DEVICE_PATH, O_RDWR);
+  handle = ::open(
+    FileSystem::toAbsolutePath(
+      FileSystem::getFolder(FileSystem::DEVICES),
+      LinuxRawIEEE1394Impl::DEVICE_NAME
+    ).getElements(),
+    O_RDWR
+  );
   assert(handle >= 0, IEEE1394Exception("Unable to open device", this));
   
   LinuxRawIEEE1394Impl::Request request;
@@ -205,6 +214,7 @@ void LinuxRawIEEE1394::resetBus() throw(IEEE1394Exception) {
   request.type = LinuxRawIEEE1394::REQUEST_RESET_BUS;
   request.generation = generation;
   assert(::write(handle, &request, sizeof(request)) >= 0, IEEE1394Exception("Unable to reset bus", this));
+  // dequeue
   // TAG: read new node ids
 }
 
@@ -242,8 +252,8 @@ Array<EUI64> LinuxRawIEEE1394::getAdapters() throw(IEEE1394Exception) {
         artificialGuid[7] = 0x01; // 0x00 is invalid
         for (unsigned int i = 0; i < request.misc; ++i) {
           result.append(EUI64(artificialGuid));
-          for (unsigned int i = 7; (i > 2) && (++artificialGuid[i] == 0x00); --i) { // next artificial guid
-            artificialGuid[i]++; // maximum number of adapters is small
+          for (unsigned int j = 7; (j > 2) && (++artificialGuid[j] == 0x00); --j) { // next artificial guid
+            artificialGuid[j]++; // maximum number of adapters is small
           }
         }
         return result;
@@ -356,14 +366,12 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
       const unsigned int tcode = (*quadlet >> 4) & 0x0f;
       const unsigned int channel = (*quadlet >> 8) & 0x3f;
       const unsigned int size = *quadlet >> 16;
-      
       assert(
         (tcode == IEEE1394Impl::TCODE_ISOCHRONOUS_DATA_BLOCK) &&
         isochronousChannels[channel].listener &&
         (size < isochronousChannels[channel].buffer.getSize()),
         UnexpectedFailure("Invalid isochronous packet", this)
       );
-      
       isochronousChannels[channel].listener->onIsochronousPacket(
         Cast::pointer<const uint8*>(Cast::getPointer(request.receiveBuffer)), size
       );
@@ -391,6 +399,7 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
     }
     break;
   default:
+    // TAG: possibly ignore response?
     LinuxRawIEEE1394Impl::RequestContext* requestContext =
       Cast::pointer<LinuxRawIEEE1394Impl::RequestContext*>(Cast::getPointer(request.tag));
     assert(requestContext, UnexpectedFailure("Invalid response", this));
@@ -402,11 +411,10 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
     case LinuxRawIEEE1394::REQUEST_FCP_LISTEN:
     case LinuxRawIEEE1394::REQUEST_ISO_SEND:
     case LinuxRawIEEE1394::REQUEST_ISO_LISTEN:
-      requestContext->dequeued = true;
       requestContext->status = LinuxRawIEEE1394Impl::mapErrorToStatus(request.error);
+      requestContext->dequeued = true;
       break;
     default: // not built-in request
-      dumpRequest(request); // TAG: remove
       throw UnexpectedFailure("Invalid context of response", this);
     }
   }
@@ -432,18 +440,25 @@ void LinuxRawIEEE1394::read(unsigned short node, uint64 address, char* buffer, u
   request.receiveBuffer = Cast::getOffset(&quadlet);
   
   for (unsigned int i = size/sizeof(IEEE1394Impl::Quadlet); i > 0; --i) {
-    requestContext.dequeued = false;
-    request.generation = generation;
-    assert(
-      ::write(handle, &request, sizeof(request)) == sizeof(request),
-      IEEE1394Exception("Unable to request read", this)
-    );
-    
-    while (!requestContext.dequeued) { // wait for completion
-      dequeueResponse();
+    for (unsigned int attempt = 0; ; ++attempt) {
+      requestContext.dequeued = false;
+      request.generation = generation;
+      assert(
+        ::write(handle, &request, sizeof(request)) == sizeof(request),
+        IEEE1394Exception("Unable to request read", this)
+      );
+      while (!requestContext.dequeued) { // wait for completion
+        dequeueResponse();
+      }
+      if (requestContext.status == IEEE1394Impl::STATUS_TIMEOUT) {
+        assert(attempt < IEEE1394Impl::MAXIMUM_ATTEMPTS, IEEE1394Exception(this));
+        fout << setForeground(ANSIEscapeSequence::BLUE) << bold() << "<TIMEOUT>" << normal() << FLUSH;
+        Thread::millisleep(10);
+        continue;
+      }
+      assert(requestContext.status == IEEE1394Impl::STATUS_OK, IEEE1394Exception(this));
+      break;
     }
-    status = requestContext.status;
-    assert(status == IEEE1394Impl::STATUS_OK, IEEE1394Exception(this));
     
     *buffer++ = quadlet[0];
     *buffer++ = quadlet[1];
@@ -499,11 +514,12 @@ unsigned int LinuxRawIEEE1394::read(unsigned short node, uint64 address, uint32*
   unsigned int hits = 0;
   
   for (unsigned int i = 0; i < size; ++i) {
+    request.address = (static_cast<uint64>(node) << 48) |
+      (address & ((static_cast<uint64>(1) << 48) - 1));
     unsigned int attempt = 0;
     while (++attempt <= IEEE1394Impl::MAXIMUM_ATTEMPTS) {
       requestContext.dequeued = false;
-      request.address = (static_cast<uint64>(IEEE1394Impl::makeNodeId(node)) << 48) |
-        (address & ((static_cast<uint64>(1) << 48) - 1));
+      
       assert(
         ::write(handle, &request, sizeof(request)) == sizeof(request),
         IEEE1394Exception("Unable to request read", this)
@@ -511,14 +527,17 @@ unsigned int LinuxRawIEEE1394::read(unsigned short node, uint64 address, uint32*
       while (!requestContext.dequeued) { // wait for completion
         dequeueResponse();
       }
-      status = requestContext.status;
       if (requestContext.status == IEEE1394Impl::STATUS_OK) {
         break;
+      }
+      if (requestContext.status == IEEE1394Impl::STATUS_TIMEOUT) {
+        fout << setForeground(ANSIEscapeSequence::BLUE) << bold() << "<TIMEOUT>" << normal() << FLUSH;
+        Thread::millisleep(10);
       }
       
       // TAG: should throw exception BusReset on bus reset?
     }
-    if (status == IEEE1394Impl::STATUS_OK) {
+    if (requestContext.status == IEEE1394Impl::STATUS_OK) {
       *buffer++ = quadlet;
       ++hits;
     } else {

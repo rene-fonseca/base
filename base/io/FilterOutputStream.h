@@ -14,6 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_IO__FILTER_OUTPUT_STREAM_H
 #define _DK_SDU_MIP__BASE_IO__FILTER_OUTPUT_STREAM_H
 
+#include <base/Object.h>
 #include <base/io/OutputStream.h>
 #include <base/io/BindException.h>
 

@@ -20,7 +20,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Operating system.
-
+  
+  @short Operating system
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -38,7 +39,7 @@ public:
   /** The type of an ordinary resource handle (do NOT assume anything about this type). */
   typedef int Handle;
   
-  /** This constants indicates an invalid handle. */
+  /** This constant indicates an invalid handle. */
   static const Handle INVALID_HANDLE = -1;
 #endif
 };

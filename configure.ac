@@ -349,6 +349,16 @@ AC_MSG_RESULT($base_cv_flavor)
 
 dnl Manual configuration
 
+dnl TAG: need version specification otherwise this option is useless
+
+dnl base_explicit_compiler=auto
+dnl AC_ARG_ENABLE(
+dnl   compiler,[
+dnl   --enable-compiler=[auto|borland|gcc|intel|mipspro|msc|sunwspro]
+dnl       Specifies that the default compiler is compatible with the
+dnl       specified compiler.],
+dnl   AC_BASE_CHECK_ARG(base_explicit_compiler, auto borland gcc intel mipspro msc sunwspro, Invalid argument used with the compiler flag.))
+
 base_explicit_debug=no
 AC_ARG_ENABLE(
   debug,[
@@ -753,9 +763,10 @@ AC_BASE_NO(
 
 dnl Lets play "name that c++ compiler"
 
-if test "x$ac_base_cxx_name" = "x"; then
-  # Check if GNU Compiler Collection
-  if AC_BASE_TRY_CMD($CXX -v 2>&1 | grep -e "gcc.*version"); then
+if test -z "$ac_base_cxx_name"; then
+  # Check if GNU Compiler Collection (C++ compiler)
+  AC_BASE_TRY_CXX_COMPILE(base_cv_gcc_compiler, gcc.cpp)
+  if test "x$base_cv_gcc_compiler" = xyes; then
     ac_base_cxx_version=`$CXX -dumpversion 2>&1`
     ac_base_cxx_major=`echo $ac_base_cxx_version | sed "s/\([[0-9]]\)\+\.[[0-9]]\+.*/\1/"`
     ac_base_cxx_minor=`echo $ac_base_cxx_version | sed "s/[[0-9]]\+\.\([[0-9]]\+\).*/\1/"`
@@ -764,9 +775,10 @@ if test "x$ac_base_cxx_name" = "x"; then
   fi
 fi
 
-if test "x$ac_base_cxx_name" = "x"; then
-  # Check if Sun WorkShop Compiler
-  if AC_BASE_TRY_CMD($CXX -V 2>&1 | grep -e "Sun.*WorkShop"); then
+if test -z "$ac_base_cxx_name"; then
+  # Check if Sun WorkShop Compiler (C++ compiler)
+  AC_BASE_TRY_CXX_COMPILE(base_cv_sunwspro_compiler, sunwspro.cpp)
+  if test "x$base_cv_sunwspro_compiler" = xyes; then
     ac_base_cxx_major=`$CXX -V 2>&1 | sed "s/.*C++.*\([[0-9]]\)\+\.[[0-9]]\+.*/\1/"`
     ac_base_cxx_minor=`$CXX -V 2>&1 | sed "s/.*C++.*[[0-9]]\+\.\([[0-9]]\+\).*/\1/"`
     ac_base_cxx_name="Sun WorkShop"
@@ -774,9 +786,10 @@ if test "x$ac_base_cxx_name" = "x"; then
   fi
 fi
 
-if test "x$ac_base_cxx_name" = "x"; then
+if test -z "$ac_base_cxx_name"; then
   # Check if MIPSpro Compiler
-  if AC_BASE_TRY_CMD($CXX -version 2>&1 | grep -e "MIPSpro.*Compilers"); then
+  AC_BASE_TRY_CXX_COMPILE(base_cv_mipspro_compiler, mipspro.cpp)
+  if test "x$base_cv_mipspro_compiler" = xyes; then
     ac_base_cxx_major=`$CXX -version 2>&1 | sed "s/.*Version.*\([[0-9]]\)\+\.[[0-9]]\+.*/\1/"`
     ac_base_cxx_minor=`$CXX -version 2>&1 | sed "s/.*Version.*[[0-9]]\+\.\([[0-9]]\+\).*/\1/"`
     ac_base_cxx_name="MIPSpro Compilers"
@@ -784,9 +797,10 @@ if test "x$ac_base_cxx_name" = "x"; then
   fi
 fi
 
-if test "x$ac_base_cxx_name" = "x"; then
+if test -z "$ac_base_cxx_name"; then
   # Check if Intel Compiler
-  if AC_BASE_TRY_CMD($CXX -V 2>&1 | grep -e "Intel.*C++.*Compiler"); then
+  AC_BASE_TRY_CXX_COMPILE(base_cv_intel_compiler, intel.cpp)
+  if test "x$base_cv_intel_compiler" = xyes; then
     ac_base_cxx_major=`$CXX -V 2>&1 | sed "s/.*Version.*\([[0-9]]\)\+\.[[0-9]]\+.*/\1/"`
     ac_base_cxx_minor=`$CXX -V 2>&1 | sed "s/.*Version.*[[0-9]]\+\.\([[0-9]]\+\).*/\1/"`
     ac_base_cxx_name="Intel Compiler"
@@ -794,20 +808,27 @@ if test "x$ac_base_cxx_name" = "x"; then
   fi
 fi
 
-if test "x$ac_base_cxx_name" = "x"; then
+if test -z "$ac_base_cxx_name"; then
   # Check if Borland Compiler
-  if AC_BASE_TRY_CMD($CXX -V 2>&1 | grep -e "Borland.*C++"); then
+  AC_BASE_TRY_CXX_COMPILE(base_cv_borland_compiler, borland.cpp)
+  if test "x$base_cv_borland_compiler" = xyes; then
     ac_base_cxx_name="Borland Compiler"
     ac_base_cxx_vendor="borland.com"
   fi
 fi
 
-if test "x$ac_base_cxx_name" = "x"; then
+if test -z "$ac_base_cxx_name"; then
   # Check if Microsoft Compiler
-  if AC_BASE_TRY_CMD($CXX -V 2>&1 | grep -e "Microsoft.*Compiler"); then
+  AC_BASE_TRY_CXX_COMPILE(base_cv_msc_compiler, msc.cpp)
+  if test "x$base_cv_msc_compiler" = xyes; then
     ac_base_cxx_name="Microsoft Optimizing Compiler"
     ac_base_cxx_vendor="microsoft.com"
   fi
+fi
+
+if test -z "$ac_base_cxx_name"; then
+  ac_base_cxx_name=generic
+  ac_base_cxx_vendor=unknown
 fi
 
 # make generic version
@@ -830,6 +851,7 @@ AC_MSG_CHECKING(ABI)
 base_abi=
 case "$ac_base_cxx_vendor/$ac_base_cxx_name" in
 "gnu.org/GNU Compiler Collection")
+  AC_BASE_DEFINE(DEFAULT_COMPILER, ${base_symbol_prefix}COMPILER_GCC)
   if test x$ac_base_cxx_major = x3; then
     AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_V3MV)
     base_abi=v3mv
@@ -839,22 +861,27 @@ case "$ac_base_cxx_vendor/$ac_base_cxx_name" in
   fi
 ;;
 "sun.com/SUN WorkShop")
+  AC_BASE_DEFINE(DEFAULT_COMPILER, ${base_symbol_prefix}COMPILER_SUNWSPRO)
   AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_SUNWSPRO)
   base_abi=sunwspro
 ;;
 "sgi.com/MIPSpro Compilers")
+  AC_BASE_DEFINE(DEFAULT_COMPILER, ${base_symbol_prefix}COMPILER_MIPSPRO)
   AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_MIPSPRO)
   base_abi=mipspro
 ;;
 "intel.com/Intel Compiler")
+  AC_BASE_DEFINE(DEFAULT_COMPILER, ${base_symbol_prefix}COMPILER_INTEL)
   AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_INTEL)
   base_abi=intel
 ;;
 "borland.com/Borland Compiler")
+  AC_BASE_DEFINE(DEFAULT_COMPILER, ${base_symbol_prefix}COMPILER_BORLAND)
   AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_BORLAND)
   base_abi=borland
 ;;
 "microsoft.com/Microsoft Optimizing Compiler")
+  AC_BASE_DEFINE(DEFAULT_COMPILER, ${base_symbol_prefix}COMPILER_MSC)
   AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_MSC)
   base_abi=intel
 ;;
@@ -1475,7 +1502,7 @@ elif test x$base_explicit_testsuite = xyes; then
   if (test -d $srcdir/testsuite); then
     ac_base_testsuite=yes
   else
-    AC_MSG_ERROR("The test suite is not available.")
+    AC_MSG_ERROR(The test suite is not available.)
   fi
 fi
 

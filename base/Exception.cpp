@@ -11,24 +11,28 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-// TAG: need config test (private)
-// #if (__GNUC__ == 3)
-//   #define _DK_SDU_MIP__BASE__HAVE_CXA_CURRENT_EXCEPTION_TYPE
-// #endif
+// TAG: need config test (private) and option
+#if (__GNUC__ == 3)
+  #define _DK_SDU_MIP__BASE__EXCEPTION_V3MV
+#endif
 
 #include <base/Exception.h>
 
 #if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
-  #include <base/platforms/compiler/v3mv/exception.h>
+  #include <base/platforms/compiler/v3mv/exception.h> // includes private features
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 bool Exception::isUnwinding() throw() {
 #if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
-  // TAG: exception handling does not have to be "fast"
-  const __cxa_eh_globals* globals = __cxa_get_globals_fast(); // __cxa_get_globals is called in Thread.cpp
-  const __cxa_exception* caughtException = globals->caughtExceptions;
+  #if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT)
+    const abi::__cxa_eh_globals* abi::__cxa_get_globals();
+  #else
+    // TAG: exception handling does not have to be "fast"
+    const abi::__cxa_eh_globals* globals = abi::__cxa_get_globals_fast(); // __cxa_get_globals is called in Thread.cpp
+  #endif
+  const abi::__cxa_exception* caughtException = globals->caughtExceptions;
   return caughtException != 0;
 #else
   return false;
@@ -37,11 +41,15 @@ bool Exception::isUnwinding() throw() {
 
 Type Exception::getExceptionType() throw() {
 #if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
-  // TAG: exception handling does not have to be "fast"
-  const __cxa_eh_globals* globals = __cxa_get_globals_fast(); // __cxa_get_globals is called in Thread.cpp
-  const __cxa_exception* caughtException = globals->caughtExceptions;
+  #if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT)
+    const abi::__cxa_eh_globals* abi::__cxa_get_globals();
+  #else
+    // TAG: exception handling does not have to be "fast"
+    const abi::__cxa_eh_globals* globals = abi::__cxa_get_globals_fast(); // __cxa_get_globals is called in Thread.cpp
+  #endif
+  const abi::__cxa_exception* caughtException = globals->caughtExceptions;
   if (caughtException) {
-    return Type(header->exceptionType);
+    return Type(caughtException->exceptionType);
   } else {
     return Type();
   }

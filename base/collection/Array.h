@@ -88,16 +88,28 @@ public:
     Reference to an element within an array.
   */
   class Reference {
-  private:
     friend class Array;
+  private:
+    
     Array& array;
     unsigned int index;
+
     Reference(const Reference& copy); // prohibit default copy initialization
     Reference& operator=(const Reference& eq); // prohibit default assignment
-    inline Reference(Array& a, unsigned int i) : array(a), index(i) {}
+    
+    inline Reference(Array& _array, unsigned int _index)
+      : array(_array), index(_index) {
+    }
   public:
-    inline Reference& operator=(Value value) throw(OutOfRange) {array.setAt(index, value); return *this;}
-    inline operator Value() const throw(OutOfRange) {return array.getAt(index);}
+    
+    inline Reference& operator=(Value value) throw(OutOfRange) {
+      array.setAt(index, value);
+      return *this;
+    }
+    
+    inline operator Value() const throw(OutOfRange) {
+      return array.getAt(index);
+    }
   };
 private:
 

@@ -154,16 +154,28 @@ private:
     Reference to an element within a string.
   */
   class Reference {
-  private:
     friend class String;
+  private:
+    
     String& string;
     unsigned int index;
+    
     Reference(const Reference& copy); // prohibit default copy initialization
     Reference& operator=(const Reference& eq); // prohibit default assignment
-    inline Reference(String& s, unsigned int i) : string(s), index(i) {}
+
+    inline Reference(String& _string, unsigned int _index)
+      : string(_string), index(_index) {
+    }
   public:
-    inline Reference& operator=(Character value) throw(OutOfRange) {string.setAt(index, value); return *this;}
-    inline operator Character() const throw(OutOfRange) {return string.getAt(index);}
+    
+    inline Reference& operator=(Character value) throw(OutOfRange) {
+      string.setAt(index, value);
+      return *this;
+    }
+    
+    inline operator Character() const throw(OutOfRange) {
+      return string.getAt(index);
+    }
   };
 
   /**

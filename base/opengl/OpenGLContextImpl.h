@@ -82,7 +82,7 @@ public:
     GENERIC = DIRECT << 1 /**< Generic implementation. */
   };
 
-  /** Format descriptor. */
+  /* Format descriptor. */
   struct Format {
     unsigned int id;
     unsigned int flags;

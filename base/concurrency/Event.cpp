@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Event::Event() throw(ResourceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if ((event = CreateEvent(0, true, false, 0)) == 0) {
+  if ((handle = ::CreateEvent(0, TRUE, FALSE, 0)) == 0) {
     throw ResourceException("Unable to initialize event");
   }
 #else // pthread
@@ -54,7 +54,7 @@ Event::Event() throw(ResourceException) {
 
 bool Event::isSignaled() const throw(EventException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return WaitForSingleObject(event, 0) == WAIT_OBJECT_0; // should never fail
+  return ::WaitForSingleObject(handle, 0) == WAIT_OBJECT_0; // should never fail
 #else // pthread
   bool result;
   if (pthread_mutex_lock(&mutex)) {
@@ -70,7 +70,7 @@ bool Event::isSignaled() const throw(EventException) {
 
 void Event::reset() throw(EventException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!ResetEvent(event)) {
+  if (!::ResetEvent(handle)) {
     throw EventException("Unable to reset event");
   }
 #else // pthread
@@ -86,7 +86,7 @@ void Event::reset() throw(EventException) {
 
 void Event::signal() throw(EventException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!SetEvent(event)) {
+  if (!::SetEvent(handle)) {
     throw EventException("Unable to signal event");
   }
 #else // pthread
@@ -105,7 +105,7 @@ void Event::signal() throw(EventException) {
 
 void Event::wait() const throw(EventException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (WaitForSingleObject(event, INFINITE) != WAIT_OBJECT_0) {
+  if (::WaitForSingleObject(handle, INFINITE) != WAIT_OBJECT_0) {
     throw EventException("Unable to wait for event");
   }
 #else // pthread
@@ -128,7 +128,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
     throw OutOfDomain();
   }
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  switch (WaitForSingleObject(event, microseconds/1000)) {
+  switch (::WaitForSingleObject(handle, microseconds/1000)) {
   case WAIT_OBJECT_0:
     return true;
   case WAIT_TIMEOUT:
@@ -168,7 +168,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
 
 Event::~Event() throw(EventException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!CloseHandle(event)) {
+  if (::CloseHandle(handle) == 0) {
     throw EventException("Unable to destroy event");
   }
 #else // pthread

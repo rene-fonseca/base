@@ -13,18 +13,21 @@
 
 #include <base/concurrency/ThreadKey.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-  ASSERTION(sizeof(unsigned long) == sizeof(DWORD));
 #else // unix
   #include <pthread.h>
 #endif // flavour
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  ASSERTION(sizeof(unsigned long) == sizeof(DWORD));
+#endif // flavour
+
 ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if ((key = TlsAlloc()) == TLS_OUT_OF_INDEXES) {
+  if ((key = ::TlsAlloc()) == TLS_OUT_OF_INDEXES) {
     throw ResourceException();
   }
 #else // unix
@@ -36,8 +39,8 @@ ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
 
 void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  void* result = TlsGetValue(key);
-  if (!result && (GetLastError() != NO_ERROR)) {
+  void* result = ::TlsGetValue(key);
+  if (!result && (::GetLastError() != NO_ERROR)) {
     throw ThreadKeyException();
   }
   return result;
@@ -48,7 +51,7 @@ void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
 
 void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!TlsSetValue(key, value)) {
+  if (!::TlsSetValue(key, value)) {
     throw ThreadKeyException();
   }
 #else
@@ -60,7 +63,7 @@ void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
 
 ThreadKeyImpl::~ThreadKeyImpl() throw(ThreadKeyException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!TlsFree(key)) {
+  if (!::TlsFree(key)) {
     throw ThreadKeyException();
   }
 #else

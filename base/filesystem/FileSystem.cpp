@@ -11,7 +11,6 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/filesystem/FileSystem.h>
 #include <base/concurrency/Thread.h>
 
@@ -42,7 +41,7 @@ String FileSystem::getPath(const String& base, const String& relative) throw() {
 String FileSystem::getCurrentFolder() throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   Allocator<char>* buffer = Thread::getLocalStorage();
-  if (GetCurrentDirectory(buffer->getSize(), buffer->getElements())) {
+  if (::GetCurrentDirectory(buffer->getSize(), buffer->getElements())) {
     throw FileSystemException("Unable to get current folder");
   }
   return String(buffer->getElements());
@@ -58,7 +57,7 @@ String FileSystem::getCurrentFolder() throw(FileSystemException) {
 
 void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!SetCurrentDirectory(path.getElements())) {
+  if (!::SetCurrentDirectory(path.getElements())) {
     throw FileSystemException("Unable to set current folder");
   }
 #else // unix
@@ -70,7 +69,7 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
 
 bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  DWORD result = GetFileAttributes(path.getElements());
+  DWORD result = ::GetFileAttributes(path.getElements());
   return (result != (DWORD)(-1)) && (result & FILE_ATTRIBUTE_DIRECTORY == 0);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
@@ -107,7 +106,7 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 
 bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  DWORD result = GetFileAttributes(path.getElements());
+  DWORD result = ::GetFileAttributes(path.getElements());
   return (result != (DWORD)(-1)) && (result & FILE_ATTRIBUTE_DIRECTORY != 0);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
@@ -144,8 +143,8 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
 
 void FileSystem::removeFile(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-//  SetFileAttributes(file, FILE_ATTRIBUTE_NORMAL);
-  if (!DeleteFile(path.getElements())) {
+//  ::SetFileAttributes(file, FILE_ATTRIBUTE_NORMAL);
+  if (!::DeleteFile(path.getElements())) {
     throw FileSystemException("Unable to remove file");
   }
 #else // unix
@@ -157,7 +156,7 @@ void FileSystem::removeFile(const String& path) throw(FileSystemException) {
 
 void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!RemoveDirectory(path.getElements())) {
+  if (!::RemoveDirectory(path.getElements())) {
     throw FileSystemException("Unable to remove folder");
   }
 #else // unix
@@ -169,7 +168,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
 
 void FileSystem::makeFolder(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!CreateDirectory(path.getElements(), NULL)) { // use default security descriptor
+  if (!::CreateDirectory(path.getElements(), 0)) { // use default security descriptor
     throw FileSystemException("Unable to make folder");
   }
 #else // unix
@@ -184,7 +183,7 @@ String FileSystem::getTempFolder() throw(FileSystemException) {
 //#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 //  // TAG:  check buffer with ASSERT
 //  Allocator<char> buffer = Thread::getLocalStorage();
-//  unsigned int length = GetTempPath(buffer->getSize(), buffer->getBytes());
+//  unsigned int length = ::GetTempPath(buffer->getSize(), buffer->getBytes());
 //  return String(buffer->getBytes(), length);
 //#else // unix
 //  // get environment variable: TMP
@@ -205,7 +204,7 @@ String FileSystem::getTempFileName() throw(FileException) {
 // stream << User::getUser() << "- " << InetAddress::getHostname() << "-" << Process::getProcess().getId() << "-" << ".tmp";
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  GetTempFileName(getTempFolder()->getBytes(), , 0, buffer->getBytes());
+  ::GetTempFileName(getTempFolder()->getBytes(), , 0, buffer->getBytes());
 #else // unix
 #endif // flavour
 }

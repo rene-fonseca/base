@@ -20,9 +20,10 @@
 #include <time.h>
 
 int main() {
+  int result;
   struct timespec interval;
   interval.tv_sec = 0;
   interval.tv_nsec = 12345;
-  int result = nanosleep(&interval, &interval);
+  result = nanosleep(&interval, &interval);
   return 0;
 }

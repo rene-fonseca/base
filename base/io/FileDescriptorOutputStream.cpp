@@ -18,7 +18,7 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // Unix
+#else // unix
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <fcntl.h>
@@ -28,7 +28,7 @@
   #ifndef SSIZE_MAX
     #define SSIZE_MAX (1024*1024)
   #endif
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -58,27 +58,27 @@ void FileDescriptorOutputStream::flush() throw(IOException) {
     throw IOException("Unable to flush file descriptor");
   }
   ::FlushFileBuffers((HANDLE)fd->getHandle()); // yes ignore any error
-#else // Unix
+#else // unix
   // TAG: this is a bug
   ::fsync(fd->getHandle());
 //  if (ioctl(fd->getHandle(), I_FLUSH, FLUSHRW) != 0) {
 //    throw IOException("Unable to flush stream");
 //  }
-#endif
+#endif // flavour
 }
 
-unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
+unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int bytesToWrite, bool nonblocking) throw(IOException) {
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
-  while (bytesWritten < size) {
+  while (bytesToWrite) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
-    BOOL success = ::WriteFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
+    BOOL success = ::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0);
     if (!success) {
       throw IOException("Unable to write to object");
     }
-#else // Unix
-    int result = ::write(fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
+#else // unix
+    int result = ::write(fd->getHandle(), buffer, minimum<unsigned int>(bytesToWrite, SSIZE_MAX));
     if (result < 0) { // has an error occured
       switch (errno) {
       case EINTR: // interrupted by signal before any data was written
@@ -89,8 +89,10 @@ unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int 
         throw IOException("Unable to write to object");
       }
     }
-#endif
+#endif // flavour
     bytesWritten += result;
+    buffer += result;
+    bytesToWrite -= result;
   }
   return bytesWritten;
 }

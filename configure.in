@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT(Makefile.am)
 
 AC_CANONICAL_SYSTEM()
-AM_INIT_AUTOMAKE()
+AM_INIT_AUTOMAKE(base, 0.9)
 
 dnl AC_PROG_RANLIB()
 dnl AC_PROG_CXX()
@@ -554,7 +554,7 @@ AC_BASE_CHECK(
   base_c_compiler_works)
 
 AC_BASE_CHECK(
-  whether C compiler ($CC $CFLAGS $CPPFLAGS $LIBS) is a cross compiler,
+  whether C compiler ($CC $CFLAGS $CPPFLAGS $LDFLAGS $LIBS) is a cross compiler,
   AC_BASE_TRY_C_RUN(base_c_not_cross, config/cross.c,)
   AC_BASE_NOT(base_cv_c_cross, base_c_not_cross),
   base_cv_c_cross)
@@ -565,7 +565,7 @@ AC_BASE_CHECK(
   base_cxx_compiler_works)
 
 AC_BASE_CHECK(
-  whether C++ compiler ($CXX $CXXFLAGS $CPPFLAGS $LIBS) is a cross compiler,
+  whether C++ compiler ($CXX $CXXFLAGS $CPPFLAGS $LDFLAGS $LIBS) is a cross compiler,
   AC_BASE_CACHE(
     base_cv_cxx_cross base_cv_cxx_libs,
     AC_BASE_ATTEMPT(
@@ -744,7 +744,7 @@ AC_DEFUN(AC_BASE_VALUE2FLOAT, [dnl
     [$1]="_DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128"
   elif test "[$3]" = 5; then
     [$2]="ieee quadruple"
-    [$1]="_DK_SDU_MIP__BASE__IEEE_QUARUPLE_PRECISION"
+    [$1]="_DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION"
   else
     [$2]="unspecified"
     [$1]="_DK_SDU_MIP__BASE__UNSPECIFIED"

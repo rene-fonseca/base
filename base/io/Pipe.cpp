@@ -74,13 +74,13 @@ Pipe::PipeHandle::~PipeHandle() throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (isValid()) {
     if (::CloseHandle(getHandle())) {
-      throw PipeException("Unable to close pipe");
+      throw PipeException("Unable to close pipe", this);
     }
   }
 #else // unix
   if (isValid()) {
     if (::close(getHandle())) {
-      throw PipeException("Unable to close pipe");
+      throw PipeException("Unable to close pipe", this);
     }
   }
 #endif
@@ -88,11 +88,11 @@ Pipe::PipeHandle::~PipeHandle() throw(PipeException) {
 
 
 
-Pipe::Pipe() throw() : fd(Handle::getInvalid()), end(false) {
+Pipe::Pipe() throw() : fd(PipeHandle::invalid), end(false) {
 }
 
 void Pipe::close() throw(PipeException) {
-  fd = Handle::getInvalid();
+  fd = PipeHandle::invalid;
   end = true;
 }
 
@@ -114,20 +114,20 @@ unsigned int Pipe::available() const throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD bytesAvailable;
   if (!::PeekNamedPipe(fd->getHandle(), 0, 0, 0, &bytesAvailable, 0)) {
-    throw PipeException("Unable to get available bytes");
+    throw PipeException("Unable to get available bytes", this);
   }
   return bytesAvailable;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     if (::fstat64(fd->getHandle(), &status) != 0) {
-      throw PipeException("Unable to get available bytes");
+      throw PipeException("Unable to get available bytes", this);
     }
     return status.st_size;
   #else
     struct stat status;
     if (::fstat(fd->getHandle(), &status) != 0) {
-      throw PipeException("Unable to get available bytes");
+      throw PipeException("Unable to get available bytes", this);
     }
     return status.st_size;
   #endif
@@ -147,12 +147,12 @@ unsigned int Pipe::skip(unsigned int count) throw(PipeException) {
 void Pipe::flush() throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!::FlushFileBuffers(fd->getHandle())) {
-    throw PipeException("Unable to flush pipe");
+    throw PipeException("Unable to flush pipe", this);
   }
 #else // unix
   int command = FLUSHW;
   if (::ioctl(fd->getHandle(), I_FLUSH, &command)) {
-    throw PipeException("Unable to flush pipe");
+    throw PipeException("Unable to flush pipe", this);
   }
 #endif
 }
@@ -173,7 +173,7 @@ unsigned int Pipe::read(char* buffer, unsigned int bytesToRead, bool nonblocking
       } else if (error = ERROR_NO_DATA) { // no data available (only in non-blocking mode)
         return bytesRead;
       } else {
-        throw PipeException("Unable to read from pipe");
+        throw PipeException("Unable to read from pipe", this);
       }
     }
 #else // unix
@@ -185,14 +185,14 @@ unsigned int Pipe::read(char* buffer, unsigned int bytesToRead, bool nonblocking
       case EAGAIN: // no data available (only in non-blocking mode)
 //        return bytesRead; // try later
       default:
-        throw PipeException("Unable to read from pipe");
+        throw PipeException("Unable to read from pipe", this);
       }
     }
 #endif
     if (result == 0) { // has end been reached
       end = true;
       if (bytesToRead > 0) {
-        throw EndOfFile(); // attempt to read beyond end of stream
+        throw EndOfFile(this); // attempt to read beyond end of stream
       }
     }
     bytesRead += result;
@@ -210,7 +210,7 @@ unsigned int Pipe::write(const char* buffer, unsigned int bytesToWrite, bool non
     DWORD result;
     BOOL success = ::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0);
     if (!success) {
-      throw PipeException("Unable to write to pipe");
+      throw PipeException("Unable to write to pipe", this);
     }
 #else // unix
     int result = ::write(fd->getHandle(), buffer, minimum<unsigned int>(bytesToWrite, SSIZE_MAX));
@@ -221,7 +221,7 @@ unsigned int Pipe::write(const char* buffer, unsigned int bytesToWrite, bool non
       case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
 //      return 0; // try later
       default:
-        throw PipeException("Unable to write to pipe");
+        throw PipeException("Unable to write to pipe", this);
       }
     }
 #endif
@@ -243,7 +243,7 @@ void Pipe::wait() const throw(PipeException) {
 
   int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
-    throw PipeException("Unable to wait for input");
+    throw PipeException("Unable to wait for input", this);
   }
 #endif
 }
@@ -263,7 +263,7 @@ bool Pipe::wait(unsigned int timeout) const throw(PipeException) {
 
   int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
-    throw PipeException("Unable to wait for input");
+    throw PipeException("Unable to wait for input", this);
   }
   return result; // return true if data available
 #endif

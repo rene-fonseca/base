@@ -18,6 +18,7 @@ noinst_LTLIBRARIES = libsecurity.la
 libsecurity_la_SOURCES = \
   AccessControlEntry.cpp \
   AccessControlList.cpp \
+  Adler32.cpp \
   Base64.cpp \
   CRC32.cpp \
   Group.cpp \
@@ -33,6 +34,7 @@ sectiondir = $(includedir)/base/security
 section_HEADERS = \
   AccessControlEntry.h \
   AccessControlList.h \
+  Adler32.h \
   Base64.h \
   CRC32.h \
   Group.h \

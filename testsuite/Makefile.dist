@@ -35,15 +35,19 @@ lendum-gcc-3.0.4: all
 	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" LDFLAGS="-x none" ./configure --target=i386-pc-linux --prefix=/usr/local/base --with-base-include=.. --with-base-lib=../base
 
 lendum-gcc-3.0.4-release: all
-	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O3 -g3 -march=i686 -malign-double -fomit-frame-pointer -funroll-loops" LDFLAGS="-x none" ./configure --target=i686-pc-linux --prefix=/usr/local/base --with-base-include=.. --with-base-lib=../base
+	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O3 -g3 -march=i686 -malign-double -fomit-frame-pointer -funroll-loops -fno-delete-null-pointer-checks -fno-math-errno -fexpensive-optimizations" LDFLAGS="-x none" ./configure --target=i686-pc-linux --prefix=/usr/local/base --with-base-include=.. --with-base-lib=../base
 
 falster-gcc-3.0.4: all
-	CXXFLAGS="-ansi -O0 -g3" ./configure --prefix=/tmp/fonseca/base --with-base-include=../.. --with-base-lib=..
+	CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" ./configure --prefix=/tmp/fonseca/base --with-base-include=.. --with-base-lib=../base
 
 falster-gcc-3.0.4-release: all
-	CXXFLAGS="-ansi -O0 -g3" ./configure --prefix=/tmp/fonseca/base --with-base-include=../.. --with-base-lib=..
+	CXXFLAGS="-pipe -x c++ -ansi -O3 -g3 -malign-double -fomit-frame-pointer -funroll-loops -fno-delete-null-pointer-check -fno-math-errno -fexpensive-optimizations" LDFLAGS="-x none" ./configure --prefix=/tmp/fonseca/base --with-base-include=.. --with-base-lib=../base
 
 fyn-gcc-3.0.4: all
+	CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" ./configure --prefix=/tmp/fonseca/base --with-base-include=.. --with-base-lib=../base
+
+fyn-gcc-3.0.4-release: all
+	CXXFLAGS="-pipe -x c++ -ansi -O3 -g3 -malign-double -fomit-frame-pointer -funroll-loops -fno-delete-null-pointer-check -fno-math-errno -fexpensive-optimizations" LDFLAGS="-x none" ./configure --prefix=/tmp/fonseca/base --with-base-include=.. --with-base-lib=../base
 
 klampenborg-gcc-2.95:
 	CC="/usr/bin/gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="/usr/bin/gcc" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O0 -g3" LDFLAGS="-x none" ./configure --target=i386-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..

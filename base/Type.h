@@ -25,17 +25,20 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Type identity
   @see TypeInfo
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.0.1
 */
 
 class Type {
+  friend class Exception;
 private:
 
   const std::type_info* type;
 
-  class Unintialized {};
+  class Uninitialized {};
 
-  inline Type(const std::type_info* _type) throw() : type(_type) {}
+  inline Type(const std::type_info* _type) throw() : type(_type) {
+    ASSERT(_type);
+  }
   
   template<class TYPE>
   class GetType {
@@ -79,7 +82,7 @@ public:
   /**
     Initializes type object in an uninitialized state.
   */
-  inline Type() throw() : type(&typeid(Unintialized)) {}
+  inline Type() throw() : type(&typeid(Uninitialized)) {}
 
   /**
     Initializes type to the type of the specified object.
@@ -105,18 +108,20 @@ public:
     Returns true if the type object has been initialized.
   */
   inline bool isInitialized() const throw() {
-    return *type != typeid(Unintialized);
+    return *type != typeid(Uninitialized);
   }
 
   /**
     Returns true if the type object hasn't been initialized.
   */
   inline bool isUninitialized() const throw() {
-    return *type == typeid(Unintialized);
+    return *type == typeid(Uninitialized);
   }
 
   /**
     Returns true if the types are identical.
+
+    @return True if both types are uninitialized.
   */
   bool operator==(const Type& eq) const throw() {
     return *type == *eq.type;
@@ -124,6 +129,8 @@ public:
 
   /**
     Returns true if the types are different.
+
+    @return False if both types are uninitialized.
   */
   bool operator!=(const Type& eq) const throw() {
     return *type != *eq.type;

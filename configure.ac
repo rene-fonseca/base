@@ -55,13 +55,26 @@ AC_PROG_LIBTOOL()
 
 
 
-ac_base_config=configuration.tmp
-rm -f ${ac_base_config}
+dnl Configuration
+ac_base_public_config=public.tmp
+echo "/* This is an automatically generated file. Do NOT edit. */" > ${ac_base_public_config}
+ac_base_private_config=private.tmp
+echo "/* This is an automatically generated file. Do NOT edit. */" > ${ac_base_private_config}
+
+
 
 dnl AC_BASE_DEFINE(symbol name, value)
 AC_DEFUN(AC_BASE_DEFINE, [dnl
 ifelse([$2], , ac_base_temp="_DK_SDU_MIP__BASE__$1", ac_base_temp="_DK_SDU_MIP__BASE__$1 $2")
-cat >> ${ac_base_config} << EOF
+cat >> ${ac_base_public_config} << EOF
+[#define] ${ac_base_temp}
+EOF
+])
+
+dnl AC_BASE_DEFINE_PRIVATE(symbol name, value)
+AC_DEFUN(AC_BASE_DEFINE_PRIVATE, [dnl
+ifelse([$2], , ac_base_temp="_DK_SDU_MIP__BASE__$1", ac_base_temp="_DK_SDU_MIP__BASE__$1 $2")
+cat >> ${ac_base_private_config} << EOF
 [#define] ${ac_base_temp}
 EOF
 ])
@@ -69,6 +82,11 @@ EOF
 dnl AC_BASE_DEFINE_FUNCTION(function name)
 AC_DEFUN(AC_BASE_DEFINE_FUNCTION, [dnl
 AC_BASE_DEFINE(["HAVE_`echo $1 | tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ`"])
+])
+
+dnl AC_BASE_DEFINE_FUNCTION_PRIVATE(function name)
+AC_DEFUN(AC_BASE_DEFINE_FUNCTION_PRIVATE, [dnl
+AC_BASE_DEFINE_PRIVATE(["HAVE_`echo $1 | tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ`"])
 ])
 
 dnl AC_BASE_EQUAL(left value, right value, equal action)
@@ -182,14 +200,14 @@ BASE_LIBS="[$]{ac_base_unknown_libs}[$]{ac_base_unknown_libs:+ }[$]{ac_base_syst
 
 
 
-ac_base_flavour=unix
+ac_base_flavor=unix
 AC_ARG_ENABLE(
-  flavour,[
-  --enable-flavour=[unix|win32]
-      This feature explicitly specifies the target flavour. This is only
-      required if the particular platform supports more than one flavour. The
+  flavor,[
+  --enable-flavor=[unix|win32]
+      This feature explicitly specifies the target flavor. This is only
+      required if the particular platform supports more than one flavor. The
       default is 'unix'.],
-  AC_BASE_CHECK_ARG(ac_base_flavour, unix win32, The flavour flag must be either 'unix' or 'win32'.))
+  AC_BASE_CHECK_ARG(ac_base_flavor, unix win32, The flavor flag must be either 'unix' or 'win32'.))
 
 ac_base_platform=
 case "${ac_cv_target}" in
@@ -214,7 +232,7 @@ sparc-sun-solaris*)
   AC_BASE_ADDLIB(-ldl)
 ;;
 i[[3456]]86-*-mingw32)
-  ac_base_flavour=win32
+  ac_base_flavor=win32
   ac_base_platform="i386-pc-winnt4.h"
 ;;
 *)
@@ -232,7 +250,16 @@ else
 
   mkdir -p base/platforms
   rm -f base/platforms/platform.h
-  ${LN_S} ../../${srcdir}/base/platforms/${ac_base_platform} base/platforms/platform.h
+  case "${srcdir}" in
+  /*)
+    dnl srcdir is an absolute path
+    ${LN_S} ${srcdir}/base/platforms/${ac_base_platform} base/platforms/platform.h
+  ;;
+  *)
+    dnl srcdir is a relative path
+    ${LN_S} ../../${srcdir}/base/platforms/${ac_base_platform} base/platforms/platform.h
+  ;;
+  esac
 fi
 
 
@@ -503,6 +530,8 @@ AC_BASE_YESNO(
   AC_MSG_ERROR(Unable to compile and link testing application.))
 ])
 
+
+
 dnl AC_BASE_CHECK_CFUNCTION(name)
 AC_DEFUN(AC_BASE_CHECK_CFUNCTION, [dnl
 AC_BASE_CHECK(
@@ -515,6 +544,18 @@ AC_BASE_CHECK(
 AC_BASE_YES(base_cv_function_$1, AC_BASE_DEFINE_FUNCTION($1))
 ])
 
+dnl AC_BASE_CHECK_CFUNCTION_PRIVATE(name)
+AC_DEFUN(AC_BASE_CHECK_CFUNCTION_PRIVATE, [dnl
+AC_BASE_CHECK(
+  whether API function $1 is available,
+  AC_BASE_CACHE(
+    base_cv_function_$1,
+    AC_BASE_TRY_CXX_LINK(base_cv_function_$1, $1.c)
+  ),
+  base_cv_function_$1)
+AC_BASE_YES(base_cv_function_$1, AC_BASE_DEFINE_FUNCTION_PRIVATE($1))
+])
+
 
 
 AC_BASE_CHECK(
@@ -524,7 +565,7 @@ AC_BASE_CHECK(
 
 dnl Additional libraries to test
 base_additional_attempts=
-AC_BASE_EQUAL(${ac_base_flavour}, unix, AC_BASE_APPEND(base_additional_attempts, -lpthread))
+AC_BASE_EQUAL(${ac_base_flavor}, unix, AC_BASE_APPEND(base_additional_attempts, -lpthread))
 
 AC_BASE_CHECK(
   whether C++ compiler (AC_BASE_TRIM(${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} ${LIBS} ${BASE_LIBS})) is a cross compiler,
@@ -632,18 +673,18 @@ else
 fi
 
 if test "${base_demangle}" = v3mv; then
-  AC_BASE_DEFINE(DEMANGLE_V3MV)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE_V3MV)
 elif test "${base_demangle}" = gccv3; then
-  AC_BASE_DEFINE(DEMANGLE_GCCV3)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE_GCCV3)
   AC_BASE_ADDLIB(-liberty)
 elif test "${base_demangle}" = gccv2; then
-  AC_BASE_DEFINE(DEMANGLE_GCCV2)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE_GCCV2)
   AC_BASE_ADDLIB(-liberty)
 elif test "${base_demangle}" = sunwspro; then
-  AC_BASE_DEFINE(DEMANGLE_SUNWSPRO)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE_SUNWSPRO)
   AC_BASE_ADDLIB(-ldemangle)
 elif test "${base_demangle}" = mipspro; then
-  AC_BASE_DEFINE(DEMANGLE_MIPSPRO)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE_MIPSPRO)
   AC_BASE_ADDLIB(-lmangle)
 fi
 
@@ -653,11 +694,11 @@ AC_MSG_RESULT([$base_demangle])
 
 
 if test "${base_explicit_threads}" = auto; then
-  AC_BASE_EQUAL(${ac_base_flavour}, unix, base_explicit_threads=posix)
+  AC_BASE_EQUAL(${ac_base_flavor}, unix, base_explicit_threads=posix)
 fi
 
 if test "${base_explicit_xml}" = xmlsoft; then
-  AC_BASE_DEFINE(XML_XMLSOFT_ORG)
+  AC_BASE_DEFINE_PRIVATE(XML_XMLSOFT_ORG)
   AC_BASE_ADDLIB(-lxml -lz)
 fi
 
@@ -902,7 +943,7 @@ AC_BASE_YES(base_cv_cpp_specification, AC_BASE_DEFINE(CPP_SPECIFICATION))
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 
-if test "${ac_base_flavour}" = unix; then
+if test "${ac_base_flavor}" = unix; then
 AC_BASE_CHECK(
   whether the type socklen_t is available,
   AC_BASE_CACHE(
@@ -910,7 +951,7 @@ AC_BASE_CHECK(
     AC_BASE_TRY_CXX_LINK(base_cv_type_socklen_t, socklen_t.c)dnl
   ),
   base_cv_type_socklen_t)
-AC_BASE_YES(base_cv_type_socklen_t, AC_BASE_DEFINE(SOCKLEN_T))
+AC_BASE_YES(base_cv_type_socklen_t, AC_BASE_DEFINE_PRIVATE(SOCKLEN_T))
 fi dnl end of unix
 
 
@@ -918,7 +959,7 @@ fi dnl end of unix
 dnl Checks for library functions.
 
 dnl Handle network support
-case "${ac_base_flavour}" in
+case "${ac_base_flavor}" in
 unix)
   if test "${base_explicit_inet_ipv6}" = auto; then
     AC_BASE_CHECK(
@@ -938,7 +979,7 @@ unix)
   fi
   AC_BASE_YES(
     base_explicit_inet_ipv6,
-    AC_BASE_DEFINE(INET_IPV6)
+    AC_BASE_DEFINE_PRIVATE(INET_IPV6)
     AC_BASE_ADDLIB(${base_cv_inet_ipv6_libs}))
 ;;
 win32)
@@ -949,7 +990,7 @@ esac
 
 
 dnl Handle sound support
-case "${ac_base_flavour}" in
+case "${ac_base_flavor}" in
 unix)
 ;;
 win32)
@@ -959,7 +1000,7 @@ esac
 
 
 
-if test "${ac_base_flavour}" = unix; then
+if test "${ac_base_flavor}" = unix; then
 if test ${base_explicit_large_file_system} = auto; then
   AC_BASE_CHECK(
     whether Large File System is supported by the operating system,
@@ -970,7 +1011,7 @@ if test ${base_explicit_large_file_system} = auto; then
     base_cv_large_file_system)
   base_explicit_large_file_system=${base_cv_large_file_system}
 fi
-AC_BASE_YES(base_explicit_large_file_system, AC_BASE_DEFINE(LARGE_FILE_SYSTEM))
+AC_BASE_YES(base_explicit_large_file_system, AC_BASE_DEFINE_PRIVATE(LARGE_FILE_SYSTEM))
 fi dnl end of unix
 
 
@@ -1009,7 +1050,7 @@ AC_BASE_CHECK(
   base_cv_pthread_yield_libs)
 AC_BASE_YES(
   base_cv_pthread_yield,
-  AC_BASE_DEFINE(PTHREAD_YIELD)
+  AC_BASE_DEFINE_PRIVATE(PTHREAD_YIELD)
   AC_BASE_ADDLIB(${base_cv_pthread_yield_libs}))
 
 AC_BASE_CHECK(
@@ -1027,7 +1068,7 @@ AC_BASE_CHECK(
   base_cv_pthread_semaphore_libs)
 AC_BASE_YES(
   base_cv_pthread_semaphore,
-  AC_BASE_DEFINE(PTHREAD_SEMAPHORE)
+  AC_BASE_DEFINE_PRIVATE(PTHREAD_SEMAPHORE)
   AC_BASE_ADDLIB(${base_cv_pthread_semaphore_libs}))
 
 AC_BASE_CHECK(
@@ -1044,7 +1085,7 @@ AC_BASE_CHECK(
   base_cv_pthread_rwlock,
   base_cv_pthread_rwlock_libs)
 AC_BASE_YES(base_cv_pthread_rwlock,
-  AC_BASE_DEFINE(PTHREAD_RWLOCK)
+  AC_BASE_DEFINE_PRIVATE(PTHREAD_RWLOCK)
   AC_BASE_ADDLIB(${base_cv_pthread_rwlock_libs}))
 
 ) dnl end of posix thread support
@@ -1059,12 +1100,12 @@ AC_BASE_EQUAL(${base_explicit_regexp}, auto,
       AC_BASE_TRY_CXX_RUN(base_cv_regex_available, regex.c)dnl
     ),
     base_cv_regex_available)
-  AC_BASE_YES(base_cv_regex_available, AC_BASE_DEFINE(REGEXP_POSIX)))
+  AC_BASE_YES(base_cv_regex_available, AC_BASE_DEFINE_PRIVATE(REGEXP_POSIX)))
 
-AC_BASE_EQUAL(${base_explicit_regexp}, posix, AC_BASE_DEFINE(REGEXP_POSIX))
+AC_BASE_EQUAL(${base_explicit_regexp}, posix, AC_BASE_DEFINE_PRIVATE(REGEXP_POSIX))
 
 AC_BASE_EQUAL(${base_explicit_regexp}, pcre,
-  AC_BASE_DEFINE(REGEXP_PCRE)
+  AC_BASE_DEFINE_PRIVATE(REGEXP_PCRE)
   AC_BASE_ADDLIB(-lpcre))
 
 
@@ -1077,8 +1118,8 @@ AC_BASE_EQUAL(${base_explicit_wide}, auto,
       AC_BASE_TRY_CXX_LINK(base_cv_wide_available, wide.c)dnl
     ),
     base_cv_wide_available)
-  AC_BASE_YES(base_cv_wide_available, AC_BASE_DEFINE(WIDE)))
-AC_BASE_YES(base_explicit_wide, AC_BASE_DEFINE(WIDE))
+  AC_BASE_YES(base_cv_wide_available, AC_BASE_DEFINE_PRIVATE(WIDE)))
+AC_BASE_YES(base_explicit_wide, AC_BASE_DEFINE_PRIVATE(WIDE))
 
 
 
@@ -1088,9 +1129,11 @@ AC_BASE_CHECK_CFUNCTION(memcmp)
 AC_BASE_CHECK_CFUNCTION(memcpy)
 AC_BASE_CHECK_CFUNCTION(memmove)
 AC_BASE_CHECK_CFUNCTION(memset)
-AC_BASE_CHECK_CFUNCTION(nanosleep)
-AC_BASE_CHECK_CFUNCTION(mbrtowc)
-AC_BASE_CHECK_CFUNCTION(mbsrtowcs)
+AC_BASE_CHECK_CFUNCTION_PRIVATE(pselect)
+AC_BASE_CHECK_CFUNCTION_PRIVATE(readdir_r)
+AC_BASE_CHECK_CFUNCTION_PRIVATE(nanosleep)
+AC_BASE_CHECK_CFUNCTION_PRIVATE(mbrtowc)
+AC_BASE_CHECK_CFUNCTION_PRIVATE(mbsrtowcs)
 
 
 
@@ -1106,12 +1149,12 @@ esac
 
 
 dnl Define some describing symbols
-AC_BASE_DEFINE(CONFIGURE, [\"]${ac_configure_args}[\"])
-AC_BASE_DEFINE(BUILD_DATE, [\"]${ac_base_build_date}[\"])
-AC_BASE_DEFINE(BUILD_USER, [\"]${ac_base_build_user}[\"])
-AC_BASE_DEFINE(BUILD_HOST, [\"]${ac_base_build_host}[\"])
-AC_BASE_DEFINE(BUILD_SYSTEM, [\"]${ac_cv_build}[\"])
-AC_BASE_DEFINE(TARGET_SYSTEM, [\"]${ac_cv_target}[\"])
+AC_BASE_DEFINE_PRIVATE(CONFIGURE, [\"]${ac_configure_args}[\"])
+AC_BASE_DEFINE_PRIVATE(BUILD_DATE, [\"]${ac_base_build_date}[\"])
+AC_BASE_DEFINE_PRIVATE(BUILD_USER, [\"]${ac_base_build_user}[\"])
+AC_BASE_DEFINE_PRIVATE(BUILD_HOST, [\"]${ac_base_build_host}[\"])
+AC_BASE_DEFINE_PRIVATE(BUILD_SYSTEM, [\"]${ac_cv_build}[\"])
+AC_BASE_DEFINE_PRIVATE(TARGET_SYSTEM, [\"]${ac_cv_target}[\"])
 
 dnl Tell the compiler where it should look for the generated and static framework headers
 if (test -f base/features.h) then
@@ -1152,21 +1195,45 @@ fi
 
 
 
-AC_SUBST(BASE_MODULE_ARGUMENTS)
-AC_SUBST(BASE_INCLUDES)
-AC_SUBST(BASE_LIBS)
-AC_SUBST(BASE_LIBADD)
-AC_SUBST(BASE_LDFLAGS)
-AC_SUBST(BASE_DEPENDENCIES)
-AC_SUBST(BASE_MODULES)
+dnl We rename some variables to avoid automake reporting them as being unused
+INCLUDES_BASE=${BASE_INCLUDES}
+AC_SUBST(INCLUDES_BASE)
+LIBS_BASE=${BASE_LIBS}
+AC_SUBST(LIBS_BASE)
+LIBADD_BASE=${BASE_LIBADD}
+AC_SUBST(LIBADD_BASE)
+LDFLAGS_BASE=${BASE_LDFLAGS}
+AC_SUBST(LDFLAGS_BASE)
+DEPENDENCIES_BASE=${BASE_DEPENDENCIES}
+AC_SUBST(DEPENDENCIES_BASE)
+MODULES_BASE=${BASE_MODULES}
+AC_SUBST(MODULES_BASE)
+MODULE_ARGUMENTS_BASE=${BASE_MODULES_ARGUMENTS}
+AC_SUBST(MODULE_ARGUMENTS_BASE)
 
 
 
-dnl Store the symbols
+dnl Store the public configuration
 ac_base_header=base/configuration.h
-echo "updating configuration header..."
-mkdir -p base
-mv ${ac_base_config} ${ac_base_header}
+if test -f ${ac_base_header} && diff -q ${ac_base_public_config} ${ac_base_header}; then
+  echo "public configuration header is already up-to-date..."
+else
+  echo "updating public configuration header..."
+  mkdir -p base
+  mv ${ac_base_public_config} ${ac_base_header}
+fi
+
+
+
+dnl Store the private configuration
+ac_base_header=base/platforms/configuration.h
+if test -f ${ac_base_header} && diff -q ${ac_base_private_config} ${ac_base_header}; then
+  echo "private configuration header is already up-to-date..."
+else
+  echo "updating private configuration header..."
+  mkdir -p base/platforms
+  mv ${ac_base_private_config} ${ac_base_header}
+fi
 
 
 

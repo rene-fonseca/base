@@ -231,6 +231,13 @@ public:
   }
 
   /**
+    Returns the number of allocated bytes.
+  */
+  inline unsigned int getByteSize() const throw() {
+    return size * sizeof(TYPE);
+  }
+
+  /**
     Returns true if no elements are allocated.
   */
   inline bool isEmpty() const throw() {

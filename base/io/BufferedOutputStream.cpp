@@ -70,5 +70,6 @@ unsigned int BufferedOutputStream::write(const char* buffer, unsigned int size) 
 }
 
 BufferedOutputStream::~BufferedOutputStream() {
+  flush();
   delete[] buffer;
 }

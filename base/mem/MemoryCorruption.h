@@ -19,8 +19,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Thrown on memory corruption.
+  Raised on memory corruption.
 
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -39,6 +40,10 @@ public:
     @param message The message.
   */
   MemoryCorruption(const char* message) throw();
+  
+  MemoryCorruption(Type type) throw() : MemoryException(type) {}
+  
+  MemoryCorruption(const char* message, Type type) throw() : MemoryException(message, type) {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

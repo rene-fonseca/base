@@ -36,7 +36,6 @@ public:
   */
   class ElementReference {
   private:
-
     friend class RowReference;
     Matrix& matrix; // use reference to avoid 'copy on write'
     unsigned int row;
@@ -45,7 +44,7 @@ public:
   public:
 
     inline ElementReference& operator=(bool value) throw(OutOfRange) {matrix.setAt(row, column, value); return *this;}
-    inline operator TYPE() throw(OutOfRange) {return matrix.getAt(row, column);}
+    inline operator TYPE() const throw(OutOfRange) {return matrix.getAt(row, column);}
   };
 
   /**
@@ -53,7 +52,6 @@ public:
   */
   class RowReference {
   private:
-
     friend class Matrix;
     Matrix& matrix; // use reference to avoid 'copy on write'
     unsigned int row;

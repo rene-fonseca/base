@@ -69,15 +69,20 @@ public:
       AllocatorEnumeration<Value, const Value&, const Value*>(array.getElements(), array.getElements() + array.getSize()) {}
   };
 
-  // Used by implement operator[]() for mutable arrays.
-  class Index {
+  /**
+    Reference to an element within an array.
+  */
+  class Reference {
   private:
+    friend class Array;
     Array& array;
     unsigned int index;
+    Reference(const Reference& copy); // prohibit default copy initialization
+    Reference& operator=(const Reference& eq); // prohibit default assignment
   public:
-    inline Index(Array& a, unsigned int i) : array(a), index(i) {}
-    inline Value operator=(Value value) throw(OutOfRange) {array.setValue(index, value); return value;}
-    inline operator Value() throw(OutOfRange) {return array.getValue(index);}
+    inline Reference(Array& a, unsigned int i) : array(a), index(i) {}
+    inline Reference& operator=(Value value) throw(OutOfRange) {array.setAt(index, value); return *this;}
+    inline operator Value() const throw(OutOfRange) {return array.getAt(index);}
   };
 private:
 
@@ -199,9 +204,7 @@ public:
     @param value The value to be inserted.
   */
   void insert(unsigned int index, const Value& value) throw(OutOfRange, MemoryException) {
-    if (index > getSize()) {
-      throw OutOfRange();
-    }
+    assert(index < getSize(), OutOfRange());
     setSize(getSize() + 1);
     Value* elements = getElements(); // size must be set before
     move(elements + index + 1, elements + index, getSize() - index);
@@ -214,9 +217,7 @@ public:
     @param index The index of the element to be removed.
   */
   void remove(unsigned int index) throw(OutOfRange) {
-    if (index >= getSize()) {
-      throw OutOfRange();
-    }
+    assert(index < getSize(), OutOfRange());
     Value* elements = getElements(); // size must be set after
     move(elements + index, elements + index + 1, getSize() - index - 1);
     setSize(getSize() - 1);
@@ -235,10 +236,8 @@ public:
 
     @param index The index of the element.
   */
-  Value getValue(unsigned int index) const throw(OutOfRange) {
-    if (index >= getSize()) {
-      throw OutOfRange();
-    }
+  Value getAt(unsigned int index) const throw(OutOfRange) {
+    assert(index < getSize(), OutOfRange());
     return getElements()[index];
   }
 
@@ -248,21 +247,27 @@ public:
     @param index The index of the element.
     @param value The desired value.
   */
-  void setValue(unsigned int index, const Value& value) throw(OutOfRange) {
-    if (index >= getSize()) {
-      throw OutOfRange();
-    }
+  void setAt(unsigned int index, const Value& value) throw(OutOfRange) {
+    assert(index < getSize(), OutOfRange());
     getElements()[index] = value;
   }
 
   /**
-    Sets the element at the specified index. Throws 'OutOfRange' if the index is invalid.
+    Returns a reference to the element at the specified index. Throws 'OutOfRange' if the index is invalid.
 
     @param index The index of the element.
-    @param value The desired value.
   */
-  inline Index operator[](unsigned int index) throw(OutOfRange) {
-    return Index(*this, index);
+  inline Reference operator[](unsigned int index) throw(OutOfRange) {
+    return Reference(*this, index);
+  }
+
+  /**
+    Returns the element at the specified index. Throws 'OutOfRange' if the index is invalid.
+
+    @param index The index of the element.
+  */
+  inline Value operator[](unsigned int index) const throw(OutOfRange) {
+    return getAt(index);
   }
 };
 

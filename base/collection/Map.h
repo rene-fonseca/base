@@ -81,16 +81,19 @@ protected:
       OrderedBinaryTree<Node>::ReadOnlyEnumeration(map.elements) {}
   };
 
-  /*
-    Used to implement 'operator[](const Key& key)'
+  /**
+    Reference to an element within a map.
   */
-  class Index {
-  protected:
+  class Reference {
+  private:
+    friend class Map;
     Map& map;
-    const Key& key;
+    const Key key;
+    Reference(const Reference& copy); // prohibit default copy initialization
+    Reference& operator=(const Reference& eq); // prohibit default assignment
   public:
-    inline Index(Map& m, const Key& k) throw() : map(m), key(k) {}
-    inline Value operator=(const Value& value) throw(MemoryException) {map.add(key, value); return value;}
+    inline Reference(Map& m, const Key& k) : map(m), key(k) {}
+    inline Reference& operator=(Value value) throw(MemoryException) {map.add(key, value); return *this;}
     inline operator Value() const throw(InvalidKey) {return map.getValue(key);}
   };
 public:
@@ -177,8 +180,15 @@ public:
     Returns the value associated with the specified key when used as 'rvalue'.
     When used as 'lvalue' the key is associated with the specified value.
   */
-  inline Index operator[](const Key& key) throw(InvalidKey, MemoryException) {
-    return Index(*this, key);
+  inline Reference operator[](const Key& key) throw(InvalidKey, MemoryException) {
+    return Reference(*this, key);
+  }
+
+  /**
+    Returns the value associated with the specified key.
+  */
+  inline Value operator[](const Key& key) const throw(InvalidKey) {
+    return getValue(key);
   }
 };
 

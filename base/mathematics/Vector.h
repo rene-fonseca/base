@@ -27,6 +27,22 @@ template<class TYPE> class Vector : public Object {
 public:
 
   /**
+    Reference to an element within a vector.
+  */
+  class Reference {
+  private:
+
+    friend class Vector;
+    Vector& vector; // use reference to avoid 'copy on write'
+    unsigned int index;
+    Reference(Vector& v, unsigned int i) throw() : vector(v), index(i) {}
+  public:
+
+    inline Reference& operator=(const TYPE& value) throw(OutOfRange) {vector.setAt(index, value); return *this;}
+    inline operator TYPE() const throw(OutOfRange) {return vector.getAt(index);}
+  };
+
+  /**
     Enumeration of all the elements of a vector.
   */
   class Enumeration : public AllocatorEnumeration<TYPE, TYPE&, TYPE*> {
@@ -162,7 +178,9 @@ public:
 
     @param index The index of the desired element.
   */
-  TYPE operator[](unsigned int index) const throw(OutOfRange);
+  inline Reference operator[](unsigned int index) throw(OutOfRange) {
+    return Reference(*this, index);
+  }
 
 
 

@@ -112,27 +112,18 @@ void String::setGranularity(unsigned int granularity) throw() {
   elements->setGranularity(granularity);
 }
 
-char String::getChar(unsigned int index) throw(OutOfRange) {
+char String::getAt(unsigned int index) const throw(OutOfRange) {
   assert(index < getLength(), OutOfRange());
   return getReadOnlyBuffer()[index];
 }
 
-void String::setChar(unsigned int index, char value) throw(OutOfRange) {
+void String::setAt(unsigned int index, char value) throw(OutOfRange) {
   assert(index < getLength(), OutOfRange());
   if (value != TERMINATOR) {
     getMutableBuffer()[index] = value;
   } else {
     setLength(index);
   }
-}
-
-String::Character String::operator[](unsigned int index) throw(OutOfRange) {
-  return Character(*this, index); // index is checked by getChar() and setChar()
-}
-
-char String::operator[](unsigned int index) const throw(OutOfRange) {
-  assert(index < getLength(), OutOfRange());
-  return getReadOnlyBuffer()[index];
 }
 
 String& String::remove(unsigned int start, unsigned int end) throw(MemoryException) {

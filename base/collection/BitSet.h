@@ -34,10 +34,11 @@ public:
   class Reference {
   private:
     friend class BitSet;
-
     BitSet& bitset; // use reference to avoid 'copy on write'
     unsigned int index;
     inline Reference(BitSet& b, unsigned int i) : bitset(b), index(i) {}
+    Reference(const Reference& copy); // prohibit default copy initialization
+    Reference& operator=(const Reference& eq); // prohibit default assignment
   public:
     inline Reference& operator=(bool value) throw(OutOfRange) {bitset.setAt(index, value); return *this;}
     inline operator bool() throw(OutOfRange) {return bitset.getAt(index);}
@@ -49,6 +50,27 @@ private:
   /** The number of bits in the bit set. */
   unsigned int size;
 protected:
+
+  /**
+    Returns the number of required elements to hold the specified number of bits.
+  */
+  static inline unsigned int getNumberOfElements(unsigned int size) throw() {
+    return (size + sizeof(unsigned long) * 8 - 1)/(sizeof(unsigned long) * 8);
+  }
+
+  /**
+    Returns the index of the internal element holding the bit at the specified index.
+  */
+  static inline unsigned int getElementIndex(unsigned int index) throw() {
+    return index/(sizeof(unsigned long) * 8);
+  }
+
+  /**
+    Returns the bit mask for the specified index.
+  */
+  static inline unsigned long getBitMask(unsigned int index) throw() {
+    return ((unsigned long)1) << (index % (sizeof(unsigned long) * 8));
+  }
 
   /**
     Returns the elements of the internal array for modifying access.
@@ -63,27 +85,6 @@ protected:
   */
   inline const unsigned long* getElements() const throw() {
     return elements->getElements();
-  }
-
-  /**
-    Returns the number of required elements to hold the specified number of bits.
-  */
-  inline unsigned int getNumberOfElements(unsigned int size) throw() {
-    return (size + sizeof(unsigned long) * 8 - 1)/(sizeof(unsigned long) * 8);
-  }
-
-  /**
-    Returns the index of the internal element holding the bit at the specified index.
-  */
-  inline unsigned int getElementIndex(unsigned int index) throw() {
-    return index/(sizeof(unsigned long) * 8);
-  }
-
-  /**
-    Returns the bit mask for the specified index.
-  */
-  inline unsigned long getBitMask(unsigned int index) throw() {
-    return ((unsigned long)1) << (index % (sizeof(unsigned long) * 8));
   }
 
   /**
@@ -148,7 +149,7 @@ public:
 
     @param index The index of the element.
   */
-  bool getAt(unsigned int index) throw(OutOfRange);
+  bool getAt(unsigned int index) const throw(OutOfRange);
 
   /**
     Sets the bit state at the specified index. Throws 'OutOfRange' if the index is invalid.
@@ -245,6 +246,15 @@ public:
   */
   inline Reference operator[](unsigned int index) throw(OutOfRange) {
     return Reference(*this, index);
+  }
+
+  /**
+    Returns the bit at the specified index. Throws 'OutOfRange' if the index is invalid.
+
+    @param index The index of the element.
+  */
+  inline bool operator[](unsigned int index) const throw(OutOfRange) {
+    return getAt(index);
   }
 
   /**

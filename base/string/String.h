@@ -105,15 +105,20 @@ public:
   };
 private:
 
-  // Used by implement operator[]() for mutable strings.
-  class Character {
+  /**
+    Reference to an element within a map.
+  */
+  class Reference {
   private:
-    String& str;
+    friend class String;
+    String& string;
     unsigned int index;
+    Reference(const Reference& copy); // prohibit default copy initialization
+    Reference& operator=(const Reference& eq); // prohibit default assignment
   public:
-    inline Character(String& s, unsigned int i) : str(s), index(i) {}
-    inline char operator=(char ch) throw(OutOfRange) {str.setChar(index, ch); return ch;} // write char (e.g. char ch = str[0] = 'a')
-    inline operator char() throw(OutOfRange) {return str.getChar(index);} // read char (e.g. char a = str[0])
+    inline Reference(String& s, unsigned int i) : string(s), index(i) {}
+    inline Reference& operator=(char value) throw(OutOfRange) {string.setAt(index, value); return *this;}
+    inline operator char() const throw(OutOfRange) {return string.getAt(index);}
   };
 
   /**
@@ -257,7 +262,7 @@ public:
     Returns the character at the specified index in this string. Throws
     'OutOfRange' if index exceeds the length of the string.
   */
-  char getChar(unsigned int index) throw(OutOfRange);
+  char getAt(unsigned int index) const throw(OutOfRange);
 
   /**
     Sets the character at the specified index of this string. If the new
@@ -268,19 +273,23 @@ public:
     @param index The index of the character to set.
     @param value The new character value.
   */
-  void setChar(unsigned int index, char value) throw(OutOfRange);
+  void setAt(unsigned int index, char value) throw(OutOfRange);
 
   /**
-    Returns the reference to character at the specified index. Throws
+    Returns a reference to character at the specified index. Throws
     'OutOfRange' if index exceeds the length of the string.
   */
-  Character operator[](unsigned int index) throw(OutOfRange);
+  Reference operator[](unsigned int index) throw(OutOfRange) {
+    return Reference(*this, index);
+  }
 
   /**
     Returns the character at the specified index. Throws 'OutOfRange' if index
     exceeds the length of the string.
   */
-  char operator[](unsigned int index) const throw(OutOfRange);
+  inline char operator[](unsigned int index) const throw(OutOfRange) {
+    return getAt(index);
+  }
 
 // *******************************************************************************************
 //   SUBSTRING SECTION

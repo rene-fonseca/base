@@ -43,7 +43,7 @@ BitSet& BitSet::operator=(const BitSet& eq) throw() {
   return *this;
 }
 
-bool BitSet::getAt(unsigned int index) throw(OutOfRange) {
+bool BitSet::getAt(unsigned int index) const throw(OutOfRange) {
   assert(index < size, OutOfRange());
   return (getElements()[getElementIndex(index)]) & getBitMask(index);
 }

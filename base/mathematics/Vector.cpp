@@ -51,14 +51,6 @@ void Vector<TYPE>::setAt(unsigned int index, const TYPE& value) throw(OutOfRange
 }
 
 template<class TYPE>
-TYPE Vector<TYPE>::operator[](unsigned int index) const throw(OutOfRange) {
-  if (index >= getSize()) {
-    throw OutOfRange();
-  }
-  return getReadOnlyElements()[index];
-}
-
-template<class TYPE>
 Vector<TYPE>& Vector<TYPE>::clear() throw() {
   fill(getElements(), getSize(), TYPE(0));
   return *this;

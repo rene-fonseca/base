@@ -82,14 +82,14 @@ public:
   inline Type() throw() : type(&typeid(Unintialized)) {}
 
   /**
-    Initialize type to the type of the specified object.
+    Initializes type to the type of the specified object.
   */
   template<class TYPE>
   inline Type(const TYPE& object) throw() : type(GetType<TYPE>()(object).type) {
   }
 
   /**
-    Initialized type object from other type object.
+    Initializes type object from other type object.
   */
   inline Type(const Type& copy) throw() : type(copy.type) {}
 

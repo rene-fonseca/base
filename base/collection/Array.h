@@ -204,7 +204,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Array<TYPE>& va
   Array<TYPE>::ReadOnlyEnumeration enu(value);
   stream << "{";
   while (enu.hasNext()) {
-    stream << enu.next();
+    stream << *enu.next();
     if (enu.hasNext()) {
       stream << ";";
     }

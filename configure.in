@@ -83,7 +83,7 @@ for ac_base_temp in $2; do
     break
   fi
 done
-AC_BASE_NOTEQUAL($ac_base_arg_valid, yes, AC_MSG_ERROR($4))
+AC_BASE_NOTEQUAL($ac_base_arg_valid, yes, AC_MSG_ERROR($3))
 $1=[$]enableval
 ])
 
@@ -122,15 +122,19 @@ done
 ac_base_ignore_libs=[$]ac_base_system_libs
 ac_base_unknown_libs=
 for ac_base_lib in [$]LIBS; do
+  ac_base_ignore_lib=no
   for ac_base_temp in [$]ac_base_ignore_libs; do
     if test "[$]ac_base_temp" = "[$]ac_base_lib"; then
+      ac_base_ignore_lib=yes
       break
     fi
+  done
+  if test [$]ac_base_ignore_lib != yes; then
     AC_BASE_APPEND(ac_base_ignore_libs, [$]ac_base_lib)
     AC_BASE_APPEND(ac_base_unknown_libs, [$]ac_base_lib)dnl
-  done
+  fi
 done
-LIBS="[$]{ac_base_unknown_libs}[$]{ac_base_unknown_libs:+}[$]{ac_base_system_libs}"
+LIBS="[$]{ac_base_unknown_libs}[$]{ac_base_unknown_libs:+ }[$]{ac_base_system_libs}"
 ])
 
 

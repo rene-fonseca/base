@@ -19,36 +19,45 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) throw(BindException) :
-  BufferedOutputStream(out, size) {
+const FormatOutputStream::Context FormatOutputStream::DEFAULT_CONTEXT = {
+  DEFAULT_FLAGS,
+  DEFAULT_EOL,
+  DEFAULT_INTEGER_BASE,
+  DEFAULT_REAL_BASE,
+  DEFAULT_REAL_STYLE,
+  DEFAULT_RADIX_POSITION,
+  DEFAULT_JUSTIFICATION,
+  DEFAULT_WIDTH,
+  DEFAULT_PRECISION
+};
 
-  defaultIntegerBase = Symbols::DECIMAL;
-  defaultRealBase = Symbols::DECIMAL;
-  defaultRealStyle = Symbols::FIXED;
-  defaultFlags = Symbols::PREFIX | Symbols::NECESSARY | Symbols::POSIX;
-  defaultWidth = 0;
-  defaultPrecision = 6;
-  endOfLine = Symbols::UNIXEOL;
-  prepareForField();
+FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) throw(BindException)
+  : BufferedOutputStream(out, size), defaultContext(DEFAULT_CONTEXT), context(DEFAULT_CONTEXT) {
+}
+
+FormatOutputStream& FormatOutputStream::setRadixPosition(unsigned int position) throw() {
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  context.justification = Symbols::RADIX;
+  context.radixPosition = position;
+  return *this;
+}
+
+FormatOutputStream& FormatOutputStream::setJustification(Symbols::Justification justification) throw() {
+  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  context.justification = justification;
+  return *this;
 }
 
 FormatOutputStream& FormatOutputStream::setWidth(unsigned int width) throw() {
   ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
-  this->width = minimum(width, MAXIMUM_WIDTH);
+  context.width = minimum(width, MAXIMUM_WIDTH);
   return *this;
 }
 
 FormatOutputStream& FormatOutputStream::setPrecision(unsigned int precision) throw() {
   ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
-  flags &= ~Symbols::NECESSARY;
-  this->precision = minimum(precision, MAXIMUM_PRECISION);
-  return *this;
-}
-
-FormatOutputStream& FormatOutputStream::setRadixPosition(unsigned int position) throw() {
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
-  justification = Symbols::RADIX;
-  this->radixPosition = position;
+  context.flags &= ~Symbols::NECESSARY;
+  context.precision = minimum(precision, MAXIMUM_PRECISION);
   return *this;
 }
 
@@ -61,97 +70,97 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
   ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
   switch (action) {
   case BIN:
-    integerBase = Symbols::BINARY;
+    context.integerBase = Symbols::BINARY;
     break;
   case OCT:
-    integerBase = Symbols::OCTAL;
+    context.integerBase = Symbols::OCTAL;
     break;
   case DEC:
-    integerBase = Symbols::DECIMAL;
+    context.integerBase = Symbols::DECIMAL;
     break;
   case HEX:
-    integerBase = Symbols::HEXADECIMAL;
+    context.integerBase = Symbols::HEXADECIMAL;
     break;
   case FBIN:
-    realBase = Symbols::BINARY;
+    context.realBase = Symbols::BINARY;
     break;
   case FOCT:
-    realBase = Symbols::OCTAL;
+    context.realBase = Symbols::OCTAL;
     break;
   case FDEC:
-    realBase = Symbols::DECIMAL;
+    context.realBase = Symbols::DECIMAL;
     break;
   case FHEX:
-    realBase = Symbols::HEXADECIMAL;
+    context.realBase = Symbols::HEXADECIMAL;
     break;
   case SCIENTIFIC:
-    realStyle = Symbols::SCIENTIFIC;
+    context.realStyle = Symbols::SCIENTIFIC;
     break;
   case FIXED:
-    realStyle = Symbols::FIXED;
+    context.realStyle = Symbols::FIXED;
     break;
   case ENGINEERING:
-    realStyle = Symbols::ENGINEERING;
+    context.realStyle = Symbols::ENGINEERING;
     break;
   case ZEROPAD:
-    flags |= Symbols::ZEROPAD;
+    context.flags |= Symbols::ZEROPAD;
     break;
   case NOZEROPAD:
-    flags &= ~Symbols::ZEROPAD;
+    context.flags &= ~Symbols::ZEROPAD;
     break;
   case PREFIX:
-    flags |= Symbols::PREFIX;
+    context.flags |= Symbols::PREFIX;
     break;
   case NOPREFIX:
-    flags &= ~Symbols::PREFIX;
+    context.flags &= ~Symbols::PREFIX;
     break;
   case GROUPING:
-    flags |= Symbols::GROUPING;
+    context.flags |= Symbols::GROUPING;
     break;
   case NOGROUPING:
-    flags &= ~Symbols::GROUPING;
+    context.flags &= ~Symbols::GROUPING;
     break;
   case PLUS:
-    flags |= Symbols::PLUS;
+    context.flags |= Symbols::PLUS;
     break;
   case FPLUS:
-    flags |= Symbols::FPLUS;
+    context.flags |= Symbols::FPLUS;
     break;
   case PLUSEXP:
-    flags |= Symbols::PLUSEXP;
+    context.flags |= Symbols::PLUSEXP;
     break;
   case ZEROPADEXP:
-    flags |= Symbols::ZEROPADEXP;
+    context.flags |= Symbols::ZEROPADEXP;
     break;
   case NECESSARY:
-    flags |= Symbols::NECESSARY;
+    context.flags |= Symbols::NECESSARY;
     break;
   case UPPER:
-    flags |= Symbols::UPPER;
+    context.flags |= Symbols::UPPER;
     break;
   case LOWER:
-    flags &= ~Symbols::UPPER;
+    context.flags &= ~Symbols::UPPER;
     break;
   case POSIX:
-    flags |= Symbols::POSIX;
+    context.flags |= Symbols::POSIX;
     break;
   case LOCALE:
-    flags &= ~Symbols::POSIX;
+    context.flags &= ~Symbols::POSIX;
     break;
   case LEFT:
-    justification = Symbols::LEFT;
+    context.justification = Symbols::LEFT;
     break;
   case RIGHT:
-    justification = Symbols::RIGHT;
+    context.justification = Symbols::RIGHT;
     break;
   case UNIXEOL:
-    endOfLine = Symbols::UNIXEOL;
+    context.endOfLine = Symbols::UNIXEOL;
     break;
   case WINDOWSEOL:
-    endOfLine = Symbols::WINDOWSEOL;
+    context.endOfLine = Symbols::WINDOWSEOL;
     break;
   case MACEOL:
-    endOfLine = Symbols::MACEOL;
+    context.endOfLine = Symbols::MACEOL;
     break;
   case CR:
     write(CR_STR, 1); // may throw IOException
@@ -166,7 +175,7 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
     write(LFCR_STR, 2); // may throw IOException
     break;
   case EOL:
-    switch (endOfLine) {
+    switch (context.endOfLine) {
     case Symbols::UNIXEOL:
       write(LF_STR, 1); // may throw IOException
       break;
@@ -182,7 +191,7 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
     flush(); // may throw IOException
     break;
   case ENDL:
-    switch (endOfLine) {
+    switch (context.endOfLine) {
     case Symbols::UNIXEOL:
       write(LF_STR, 1); // may throw IOException
       break;
@@ -205,40 +214,6 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
   return *this;
 }
 
-/*
-  FormatOutputStream& beginEntity() throw(IOException) {
-    push entity buffer
-    setup new entity buffer
-    set ENTITY flag
-  }
-
-  FormatOutputStream& endEntity() throw(IOException) {
-    reset ENTITY flag
-    prepareForField();
-    free entity buffer
-    pop entity buffer
-  }
-*/
-
-void FormatOutputStream::prepareForField() {
-  // copy default context to current context
-  /*
-    if (ENTITY flag is set) {
-      restore context
-    } else {
-      write intermediate buffer to output stream
-      restore context
-    }
-  */
-  integerBase = defaultIntegerBase;
-  realBase = defaultRealBase;
-  realStyle = defaultRealStyle;
-  flags = defaultFlags;
-  width = defaultWidth;
-  precision = defaultPrecision;
-  justification = Symbols::RIGHT;
-}
-
 FormatOutputStream& FormatOutputStream::getContext(Context& context) throw() {
 }
 
@@ -247,28 +222,28 @@ FormatOutputStream& FormatOutputStream::setContext(const Context& context) throw
 
 void FormatOutputStream::addCharacterField(const char* buffer, unsigned int size) throw(IOException) {
   ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
-  if (justification == Symbols::LEFT) { // left justification
+  if (context.justification == Symbols::LEFT) { // left justification
     write(buffer, size); // write characters
   }
-  if (size < width) { // write blanks if required
-    unfoldValue(' ', width - size);
+  if (size < context.width) { // write blanks if required
+    unfoldValue(' ', context.width - size);
   }
-  if (justification != Symbols::LEFT) { // right justification (could also be Symbols::RADIX)
+  if (context.justification != Symbols::LEFT) { // right justification (could also be Symbols::RADIX)
     write(buffer, size); // write characters
   }
-  prepareForField();
+  context = defaultContext;
 }
 
 void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, bool isSigned) throw(IOException) {
   ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
   unsigned int requiredWidth = size;
 
-  if (isSigned && ((integerBase != Symbols::BINARY) && (integerBase != Symbols::HEXADECIMAL))) {
+  if (isSigned && ((context.integerBase != Symbols::BINARY) && (context.integerBase != Symbols::HEXADECIMAL))) {
     ++requiredWidth; // "-"
   }
 
-  if ((flags & Symbols::PREFIX) != 0) { // is prefix requested
-    switch (integerBase) {
+  if ((context.flags & Symbols::PREFIX) != 0) { // is prefix requested
+    switch (context.integerBase) {
     case Symbols::BINARY:
       requiredWidth += 2;
       break;
@@ -284,23 +259,23 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
     }
   }
 
-  unsigned int pads = (requiredWidth >= width) ? 0 : (width - requiredWidth);
+  unsigned int pads = (requiredWidth >= context.width) ? 0 : (context.width - requiredWidth);
 
-  if (justification != Symbols::LEFT) { // right justify if RADIX or RIGHT
-    if ((pads > 0) && ((flags & Symbols::ZEROPAD) == 0)) { // write blanks if required
+  if (context.justification != Symbols::LEFT) { // right justify if RADIX or RIGHT
+    if ((pads > 0) && ((context.flags & Symbols::ZEROPAD) == 0)) { // write blanks if required
       unfoldValue(' ', pads);
     }
   }
 
-  if (isSigned && ((integerBase != Symbols::BINARY) && (integerBase != Symbols::HEXADECIMAL))) {
+  if (isSigned && ((context.integerBase != Symbols::BINARY) && (context.integerBase != Symbols::HEXADECIMAL))) {
     write("-", 1); // write sign
   }
 
-  if ((flags & Symbols::PREFIX) != 0) { // is prefix requested
-    switch (integerBase) {
+  if ((context.flags & Symbols::PREFIX) != 0) { // is prefix requested
+    switch (context.integerBase) {
     case Symbols::BINARY:
       write("0", 1);
-      write(((flags & FormatOutputStream::Symbols::UPPER) == 0) ? "b" : "B", 1);
+      write(((context.flags & FormatOutputStream::Symbols::UPPER) == 0) ? "b" : "B", 1);
       break;
     case Symbols::OCTAL:
       write("0", 1);
@@ -309,15 +284,15 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
       break;
     case Symbols::HEXADECIMAL:
       write("0", 1);
-      write(((flags & FormatOutputStream::Symbols::UPPER) == 0) ? "x" : "X", 1);
+      write(((context.flags & FormatOutputStream::Symbols::UPPER) == 0) ? "x" : "X", 1);
       break;
     }
   }
 
-  if ((pads > 0) && ((flags & Symbols::ZEROPAD) != 0)) { // do we need to extend field with digits
+  if ((pads > 0) && ((context.flags & Symbols::ZEROPAD) != 0)) { // do we need to extend field with digits
     unsigned int value = 0;
     if (isSigned) {
-      switch (integerBase) {
+      switch (context.integerBase) {
       case Symbols::BINARY:
         value = 0x01;
         break;
@@ -332,22 +307,22 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
         break;
       }
     }
-    char digit = ASCIITraits::valueToDigit(value, (flags & FormatOutputStream::Symbols::UPPER) != 0);
+    char digit = ASCIITraits::valueToDigit(value, (context.flags & FormatOutputStream::Symbols::UPPER) != 0);
     unfoldValue(digit, pads);
   }
 
   write(buffer, size); // write late buffer
-  if (justification == Symbols::LEFT) {
+  if (context.justification == Symbols::LEFT) {
     unfoldValue(' ', pads);
   }
-  prepareForField();
+  context = defaultContext;
 }
 
 FormatOutputStream::~FormatOutputStream() throw(IOException) {
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, bool value) throw(IOException) {
-  return stream << (value ? "true" : "false"); // TAG: need locale support
+  return stream << (value ? MESSAGE("true") : MESSAGE("false")); // TAG: need locale support
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, char value) throw(IOException) {
@@ -805,6 +780,40 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
 
 
 
+class Sequence {
+private:
+
+  const unsigned int* value;
+  const unsigned int size;
+public:
+
+  Sequence(unsigned int* _value, unsigned int _size) throw() : value(_value), size(_size) {
+  }
+
+  inline const unsigned int* getValue() const throw() {
+    return value;
+  }
+
+  inline unsigned int getSize() const throw() {
+    return size;
+  }
+};
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Sequence& value) throw() {
+  const unsigned int* begin = value.getValue();
+  const unsigned int* src = begin + value.getSize();
+  while (src > begin) {
+    if (*--src != 0) {
+      ++src;
+      while (src > begin) {
+        stream << HEX << NOPREFIX << ZEROPAD << setWidth(sizeof(unsigned int) * 2) << *--src;
+      }
+      return stream;
+    }
+  }
+  return stream << HEX << NOPREFIX << ZEROPAD << setWidth(sizeof(unsigned int) * 2) << 0;
+}
+
 
 
 class LargeInteger {
@@ -831,6 +840,9 @@ public:
 
   static inline void setBit(unsigned int* value, unsigned int size, unsigned int bit) throw() {
     ASSERT(bit < (size * sizeof(unsigned int) * 8));
+    if (!(bit < (size * sizeof(unsigned int) * 8))) {
+      ferr << "setBit: value=" << Sequence(value, size) << " size=" << size << " bit=" << bit << ENDL;
+    }
     fill(value, size, 0U);
     value[bit/(sizeof(unsigned int) * 8)] = 1U << (bit % (sizeof(unsigned int) * 8));
   }
@@ -872,14 +884,14 @@ public:
     }
     fill(value, wordShift, 0U); // mask beginning of value
   }
-
+  
   // TAG: fix this - prevent overflow
   static inline void rightShift(unsigned int* value, unsigned int size, unsigned int shift) throw() {
     unsigned int bitShift = shift % (sizeof(unsigned int) * 8);
     unsigned int wordShift = shift/(sizeof(unsigned int) * 8);
     const unsigned int* src = value + wordShift;
     unsigned int* dest = value;
-
+    
     if (bitShift != 0) {
       unsigned int nextBitShift = (sizeof(unsigned int) * 8) - bitShift; // 0 < nextBitShift < (sizeof(unsigned int) * 8)
       for (const unsigned int* end = value + (size - wordShift - 1); dest < end; ++dest) {
@@ -909,7 +921,7 @@ public:
     }
     return carrier > 0;
   }
-
+  
   static inline bool add(/*restrict*/ unsigned int* value, /*restrict*/ const unsigned int* right, unsigned int size) throw() {
     const unsigned int* end = value + size;
     unsigned int carrier = 0;
@@ -1052,39 +1064,6 @@ public:
 
 }; // LargeInteger
 
-class Sequence {
-private:
-
-  const unsigned int* value;
-  const unsigned int size;
-public:
-
-  Sequence(unsigned int* _value, unsigned int _size) throw() : value(_value), size(_size) {
-  }
-
-  inline const unsigned int* getValue() const throw() {
-    return value;
-  }
-
-  inline unsigned int getSize() const throw() {
-    return size;
-  }
-};
-
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Sequence& value) throw() {
-  const unsigned int* begin = value.getValue();
-  const unsigned int* src = begin + value.getSize();
-  while (src > begin) {
-    if (*--src != 0) {
-      ++src;
-      while (src > begin) {
-        stream << HEX << NOPREFIX << ZEROPAD << setWidth(sizeof(unsigned int) * 2) << *--src;
-      }
-      return stream;
-    }
-  }
-  return stream << HEX << NOPREFIX << ZEROPAD << setWidth(sizeof(unsigned int) * 2) << 0;
-}
 
 
 enum CutMode {
@@ -1338,7 +1317,7 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
   char buffer[128 + 2 + significant/3]; // N = 2 + floor[n/log2(10)] => N < 2 + n/3 // TAG: 128 should be calculated
   char* output = buffer;
   const char* radix = 0;
-  unsigned int flags = this->flags;
+  unsigned int flags = context.flags;
 
   if ((valueFlags & FP_NAN) != 0) {
     if ((flags & Symbols::UPPER) == 0) {
@@ -1382,11 +1361,11 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
         cutMode = CUT_MODE_RELATIVE;
       }
 
-      convertFloatingPoint(significant, precision, cutMode, realStyle, mantissa, mantissaSize, base2Exponent, digitBuffer, numberOfDigits, exponent);
+      convertFloatingPoint(significant, context.precision, cutMode, context.realStyle, mantissa, mantissaSize, base2Exponent, digitBuffer, numberOfDigits, exponent);
       bool showExponent = true;
 
       int adjustedExponent = exponent;
-      switch (realStyle) {
+      switch (context.realStyle) {
       case Symbols::SCIENTIFIC: // one digit before radix character
         if ((valueFlags & FP_ZERO) == 0) {
           adjustedExponent = exponent - 1;
@@ -1400,7 +1379,7 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
           } else {
             adjustedExponent = exponent - 1;
           }
-        } else if (exponent <= maximum<int>(precision, numberOfDigits)) { // TAG: need number of significant digits (base 10)
+        } else if (exponent <= maximum<int>(context.precision, numberOfDigits)) { // TAG: need number of significant digits (base 10)
           adjustedExponent = 0;
           showExponent = false;
         } else {
@@ -1419,7 +1398,7 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
       const byte* digit = digitBuffer;
       const byte* endDigit = digit + numberOfDigits;
       int digitsBeforeRadix = ((valueFlags & FP_ZERO) == 0) ? maximum(exponent - adjustedExponent, 0) : 1;
-      int denormalizingZeros = minimum(maximum(adjustedExponent - exponent, 0), precision);
+      int denormalizingZeros = minimum(maximum(adjustedExponent - exponent, 0), context.precision);
 
       if (digitsBeforeRadix > 0) {
         if ((flags & Symbols::POSIX) != 0) { // use posix (no grouping char specified)
@@ -1449,13 +1428,13 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
       int trailingZeros = 0;
 
       if ((flags & Symbols::NECESSARY) == 0) {
-        if (totalDigitsAfterRadix < precision) {
-          trailingZeros += precision - totalDigitsAfterRadix;
+        if (totalDigitsAfterRadix < context.precision) {
+          trailingZeros += context.precision - totalDigitsAfterRadix;
           totalDigitsAfterRadix += trailingZeros;
         }
       }
 
-      if ((totalDigitsAfterRadix > 0) || (justification == Symbols::RADIX)) {
+      if ((totalDigitsAfterRadix > 0) || (context.justification == Symbols::RADIX)) {
         radix = output; // remember position of radix for later justification
         // only show radix char if followed by digits or used in justification
         if ((flags & Symbols::POSIX) != 0) {
@@ -1508,11 +1487,11 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
   {
     ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
     unsigned int length = (output - buffer);
-    if (width <= length) {
+    if (context.width <= length) {
       write(buffer, length); // write characters
     } else {
-      unsigned int invertedLength = width - length;
-      switch (justification) {
+      unsigned int invertedLength = context.width - length;
+      switch (context.justification) {
       case Symbols::LEFT:
         write(buffer, length); // write characters
         unfoldValue(' ', invertedLength);
@@ -1525,8 +1504,8 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
         ASSERT(radix);
         unsigned int beforeRadix = radix - buffer; // character before radix (excluding)
         unsigned int prefixLength = 0; // left justify by default
-        if (radixPosition >= beforeRadix) {
-          prefixLength = minimum(radixPosition - beforeRadix, invertedLength); // right justify if radix position is too big
+        if (context.radixPosition >= beforeRadix) {
+          prefixLength = minimum(context.radixPosition - beforeRadix, invertedLength); // right justify if radix position is too big
           unfoldValue(' ', prefixLength);
         }
         write(buffer, length); // write characters
@@ -1534,7 +1513,7 @@ void FormatOutputStream::writeFloatingPointType(unsigned int significant, unsign
         break;
       }
     }
-    prepareForField();
+    context = defaultContext;
   }
 }
 

@@ -18,14 +18,15 @@
 #include <base/filesystem/FileSystem.h>
 #include <base/TypeInfo.h>
 #include <base/string/StringOutputStream.h>
+#include <base/collection/HashTable.h>
 
 using namespace base;
 
 class FileSystemApplication : public Application {
 private:
-
+  
   static const unsigned int MAJOR_VERSION = 1;
-  static const unsigned int MINOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 2;
   
   unsigned int currentYear;
   String thisYearFormat;
@@ -79,10 +80,8 @@ public:
     
     FileSystem::setCurrentFolder(path);
     
-    User cachedOwner; // we only cache the last owner
-    Group cachedGroup; // we only cache the last group
-    String ownerName;
-    String groupName;
+    HashTable<User, String> owners;
+    HashTable<Group, String> groups;
     
     Array<String>::ReadEnumerator enu = entries.getReadEnumerator();
     while (enu.hasNext()) {
@@ -133,26 +132,36 @@ public:
             } else {
               flags[9] = (mode & FileInfo::XOTH) ? 'x' : '-';
             }
-            
-            if (cachedOwner != info.getOwner()) {              
-              cachedOwner = info.getOwner();
+
+            // TAG: need upper limit on number of elements to cache
+            User owner = info.getOwner();
+            String ownerName;
+            if (owners.isKey(owner)) {
+              ownerName = owners[owner];
+            } else {
               try {
-                ownerName = cachedOwner.getName();
+                ownerName = owner.getName();
               } catch (User::UserException&) {
                 StringOutputStream stream;
-                stream << cachedOwner << FLUSH;
+                stream << owner << FLUSH;
                 ownerName = stream.getString();
               }
+              owners.add(owner, ownerName);
             }
-            if (cachedGroup != info.getGroup()) {
-              cachedGroup = info.getGroup();
+            
+            Group group = info.getGroup();
+            String groupName;
+            if (groups.isKey(group)) {
+              groupName = groups[group];
+            } else {
               try {
-                groupName = cachedGroup.getName();
+                groupName = group.getName();
               } catch (Group::GroupException&) {
                 StringOutputStream stream;
-                stream << cachedGroup << FLUSH;
+                stream << group << FLUSH;
                 groupName = stream.getString();
               }
+              groups.add(group, groupName);
             }
             
             fout << Sequence<char>(flags, sizeof(flags)) << ' '
@@ -201,25 +210,34 @@ public:
               flags[9] = (mode & FolderInfo::XOTH) ? 'x' : '-';
             }
             
-            if (cachedOwner != info.getOwner()) {
-              cachedOwner = info.getOwner();
+            User owner = info.getOwner();
+            String ownerName;
+            if (owners.isKey(owner)) {
+              ownerName = owners[owner];
+            } else {
               try {
-                ownerName = cachedOwner.getName();
+                ownerName = owner.getName();
               } catch (User::UserException&) {
                 StringOutputStream stream;
-                stream << cachedOwner << FLUSH;
+                stream << owner << FLUSH;
                 ownerName = stream.getString();
               }
+              owners.add(owner, ownerName);
             }
-            if (cachedGroup != info.getGroup()) {
-              cachedGroup = info.getGroup();
+            
+            Group group = info.getGroup();
+            String groupName;
+            if (groups.isKey(group)) {
+              groupName = groups[group];
+            } else {
               try {
-                groupName = cachedGroup.getName();
+                groupName = group.getName();
               } catch (Group::GroupException&) {
                 StringOutputStream stream;
-                stream << cachedGroup << FLUSH;
+                stream << group << FLUSH;
                 groupName = stream.getString();
               }
+              groups.add(group, groupName);
             }
             
             fout << Sequence<char>(flags, sizeof(flags)) << ' '
@@ -247,8 +265,11 @@ public:
                  << setWidth(16) << ' ' << ' '
                  << setWidth(8) << ' ' << ' '
                  << setWidth(12) << ' ' << ' '
-                 << entry
-                 << EOL;
+                 << entry;
+            if (link) {
+              fout << MESSAGE(" -> ") << target;
+            }
+            fout << EOL;
           }
         }
       } catch (Exception& e) {

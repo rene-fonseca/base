@@ -26,6 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Sound input stream.
 
   @see SoundOutputStream.
+  @ingroup sound
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

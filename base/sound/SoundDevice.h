@@ -23,14 +23,19 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  @defgroup sound Sound
+*/
+
+/**
   Sound device (singleton).
 
   @see SoundInputStream SoundOutputStream.
+  @ingroup sound
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
-class SoundDevice : public virtual Object, public virtual ReadWriteLock {
+class SoundDevice : public virtual Object {
   friend class SoundInputStream;
   friend class SoundOutputStream;
 private:
@@ -48,7 +53,9 @@ private:
   FileDescriptor deviceDescriptor;
   /** The current access to the device.*/
   unsigned int access;
-
+  /** Synchronization object. */
+  ReadWriteLock lock;
+  
   /**
     Acquires the desired access to the device.
   */
@@ -95,14 +102,20 @@ public:
   void relinquishWriteAccess() throw(IOException);
 
   /**
-    Returns the handle associated with read access from device (may be identical to the write handle).
+    Returns the handle associated with read access from device (may be identical
+    to the write handle).
   */
-  inline OperatingSystem::Handle getReadHandle() const throw() {return deviceDescriptor.getHandle();}
+  inline OperatingSystem::Handle getReadHandle() const throw() {
+    return deviceDescriptor.getHandle();
+  }
 
   /**
-    Returns the handle associated with write access to device (may be identical to the read handle).
+    Returns the handle associated with write access to device (may be identical
+    to the read handle).
   */
-  inline OperatingSystem::Handle getWriteHandle() const throw() {return deviceDescriptor.getHandle();}
+  inline OperatingSystem::Handle getWriteHandle() const throw() {
+    return deviceDescriptor.getHandle();
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

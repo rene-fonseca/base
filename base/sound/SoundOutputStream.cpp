@@ -19,34 +19,34 @@
 #include <base/sound/SoundDevice.h>
 #include <base/concurrency/SharedSynchronize.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #define NO_STRICT
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  define NO_STRICT
   // I don't get it: in STRICT mode handles are of type int but in NO_STRICT
   // mode the handles are of size void*. This is a problem on 64 bit platforms
   // where int and void* may be of different sizes.
-  #include <windows.h>
-#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
-  #include <sys/types.h> // open
-  #include <sys/stat.h> // open
-  #include <fcntl.h> // open
-  #include <unistd.h> // read
-  #include <errno.h> // errno
-  #include <limits.h> // SSIZE_MAX
+#  include <windows.h>
+#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+#  include <sys/types.h> // open
+#  include <sys/stat.h> // open
+#  include <fcntl.h> // open
+#  include <unistd.h> // read
+#  include <errno.h> // errno
+#  include <limits.h> // SSIZE_MAX
 
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    #include <sys/ioctl.h> // ioctl
-    #include <sys/soundcard.h> // ioctl
-  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
-    #include <stropts.h> // ioctl
-    #include <sys/conf.h> // ioctl
-    #include <sys/audio.h>
-    #include <sys/audioio.h>
-  #endif // os
+#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#    include <sys/ioctl.h> // ioctl
+#    include <sys/soundcard.h> // ioctl
+#  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#    include <stropts.h> // ioctl
+#    include <sys/conf.h> // ioctl
+#    include <sys/audio.h>
+#    include <sys/audioio.h>
+#  endif // os
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 class SoundOutputStream::SoundOutputStreamHelper {
 public:
 
@@ -58,7 +58,7 @@ public:
 
 SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int channels) throw(OutOfDomain, NotSupported) {
   assert(channels > 0, OutOfDomain());
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   WAVEFORMATEX format;
   clear(format);
   format.wFormatTag = WAVE_FORMAT_PCM;
@@ -114,7 +114,7 @@ SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int cha
 }
 
 unsigned int SoundOutputStream::getChannels() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return 0;
 #else
   SharedSynchronize<SoundDevice> sharedSynchronization(SoundDevice::soundDevice);
@@ -132,7 +132,7 @@ unsigned int SoundOutputStream::getChannels() const throw() {
 }
 
 unsigned int SoundOutputStream::getRate() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return 0;
 #else
   SharedSynchronize<SoundDevice> sharedSynchronization(SoundDevice::soundDevice);
@@ -150,7 +150,7 @@ unsigned int SoundOutputStream::getRate() const throw() {
 }
 
 unsigned int SoundOutputStream::getPosition() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   MMTIME time;
   clear(time);
   time.wType = TIME_SAMPLES;
@@ -171,7 +171,7 @@ unsigned int SoundOutputStream::getPosition() const throw() {
 }
 
 void SoundOutputStream::resume() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   event.reset();
 #else
   SharedSynchronize<SoundDevice> sharedSynchronization(SoundDevice::soundDevice);
@@ -188,7 +188,7 @@ void SoundOutputStream::pause() throw() {
 }
 
 void SoundOutputStream::reset() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::waveOutReset((HWAVEOUT)handle);
   event.reset();
 #else
@@ -203,7 +203,7 @@ void SoundOutputStream::reset() throw() {
 }
 
 void SoundOutputStream::wait() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   WAVEHDR header;
   clear(header);
   header.lpData = 0;
@@ -233,7 +233,7 @@ void SoundOutputStream::wait() throw() {
 }
 
 unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   WAVEHDR header;
   clear(header);
   header.lpData = Cast::pointer<char*>(const_cast<void*>(buffer)); // do not change buffer content
@@ -274,7 +274,7 @@ unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) thr
 
 SoundOutputStream::~SoundOutputStream() throw() {
   reset();
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::waveOutClose((HWAVEOUT)handle);
 #else
   SoundDevice::soundDevice.relinquishWriteAccess();

@@ -15,7 +15,13 @@ include $(top_srcdir)/common.am
 
 noinst_LTLIBRARIES = libsound.la
 
-libsound_la_SOURCES = SoundDevice.cpp SoundInputStream.cpp SoundOutputStream.cpp
+libsound_la_SOURCES = \
+  SoundDevice.cpp \
+  SoundInputStream.cpp \
+  SoundOutputStream.cpp
 
 sectiondir = $(includedir)/base/sound
-section_HEADERS = SoundDevice.h SoundInputStream.h SoundOutputStream.h
+section_HEADERS = \
+  SoundDevice.h \
+  SoundInputStream.h \
+  SoundOutputStream.h

@@ -18,29 +18,29 @@
 #include <base/sound/SoundDevice.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #define NO_STRICT
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  define NO_STRICT
   // I don't get it: in STRICT mode handles are of type int but in NO_STRICT
   // mode the handles are of size void*. This is a problem on 64 bit platforms
   // where int and void* may be of different sizes.
-  #include <windows.h>
-#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
-  #include <sys/types.h> // open
-  #include <sys/stat.h> // open
-  #include <fcntl.h> // open
-  #include <unistd.h> // read
-  #include <errno.h> // errno
-  #include <limits.h> // SSIZE_MAX
+#  include <windows.h>
+#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+#  include <sys/types.h> // open
+#  include <sys/stat.h> // open
+#  include <fcntl.h> // open
+#  include <unistd.h> // read
+#  include <errno.h> // errno
+#  include <limits.h> // SSIZE_MAX
 
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    #include <sys/ioctl.h> // ioctl
-    #include <sys/soundcard.h> // ioctl
-  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
-    #include <stropts.h> // ioctl
-    #include <sys/conf.h> // ioctl
-    #include <sys/audio.h>
-    #include <sys/audioio.h>
-  #endif // os
+#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#    include <sys/ioctl.h> // ioctl
+#    include <sys/soundcard.h> // ioctl
+#  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#    include <stropts.h> // ioctl
+#    include <sys/conf.h> // ioctl
+#    include <sys/audio.h>
+#    include <sys/audioio.h>
+#  endif // os
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -52,7 +52,7 @@ void SoundDevice::reacquireAccess(unsigned int access) throw(NotSupported) {
   // guarded externally
   if (this->access != access) {
     this->access = access;
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
   #if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
     deviceDescriptor.close(); // must close before reopening
     if (access != 0) { // only open if required
@@ -78,28 +78,28 @@ void SoundDevice::reacquireAccess(unsigned int access) throw(NotSupported) {
 }
 
 void SoundDevice::acquireReadAccess() throw(IOException) {
-  ExclusiveSynchronize<SoundDevice> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<ReadWriteLock> exclusiveSynchronize(lock);
   if (!isReadable()) {
     reacquireAccess(access | READ);
   }
 }
 
 void SoundDevice::relinquishReadAccess() throw(IOException) {
-  ExclusiveSynchronize<SoundDevice> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<ReadWriteLock> exclusiveSynchronize(lock);
   if (isReadable()) {
     reacquireAccess(access & ~READ);
   }
 }
 
 void SoundDevice::acquireWriteAccess() throw(IOException) {
-  ExclusiveSynchronize<SoundDevice> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<ReadWriteLock> exclusiveSynchronize(lock);
   if (!isWriteable()) {
     reacquireAccess(access | WRITE);
   }
 }
 
 void SoundDevice::relinquishWriteAccess() throw(IOException) {
-  ExclusiveSynchronize<SoundDevice> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<ReadWriteLock> exclusiveSynchronize(lock);
   if (isWriteable()) {
     reacquireAccess(access & ~WRITE);
   }

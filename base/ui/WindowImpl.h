@@ -17,16 +17,13 @@
 #include <base/Dimension.h>
 #include <base/ui/Menu.h>
 #include <base/ui/Position.h>
+#include <base/ui/Drawable.h>
+#include <base/backend/Backend.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 // TAG: need reference counting
 // TAG: full screen support
-
-namespace windowImpl {
-  
-  class Delegate;
-};
 
 /**
   Generic window implementation. This class cannot be instantiated.
@@ -37,9 +34,8 @@ namespace windowImpl {
   @version 1.0
 */
 
-class WindowImpl : public Object {
-  friend class windowImpl::Delegate; // TAG: temporary fix
-  friend class Button; // TAG: temporary fix
+class WindowImpl : public Object, virtual public Drawable {
+  friend class Backend<WindowImpl>;
 public:
 
   /** Display modes. */
@@ -66,10 +62,19 @@ public:
     VERTICAL_ARROW, /**< A vertical arrow. */
     WAITING /**< Cursor indicating blocked wait. */
   };
+
+  /** Visibility state. */
+  enum Visibility {
+    INVISIBLE, /**< The window is invisible. */
+    OBSCURED, /**< The window is partially visible. */
+    VISIBLE /**< The window is fully visible. */
+  };
 private:
 
   enum Message {
-    PING_MESSAGE = 0
+    DESTROY_MESSAGE = 0, /**< Request destruction of window. */
+    PING_MESSAGE = 1, /**< Request response from window. */
+    QUIT_MESSAGE /**< Exit dispatch loop. */
   };
   
   /** Resource allocation and release lock. */
@@ -91,8 +96,20 @@ private:
   bool scope;
   /** Flag specifying whether the window is active. */
   bool active;
+  /** Specifies whether to window is visible or not. */
+  Visibility visibility;
+  /** Specifies whether to window is enabled or not. */
+  bool enabled;
   /** The current cursor. */
   Cursor cursor;
+
+  /** The current number of locks on the user interface component. */
+  static unsigned int numberOfLocks;
+  
+  /**
+    Loads or unloads the user interface component.
+  */
+  static bool loadModule(bool load) throw();
 protected:
   
   /** The normal title of the window. */
@@ -113,8 +130,6 @@ protected:
   static void* displayHandle;
   /** Opaque handle to the screen. */
   void* screenHandle;
-  /** Opaque handle to the window. */
-  void* windowHandle;
   /** Opaque handle to the graphics context of the window. */
   void* graphicsContextHandle;
   
@@ -122,12 +137,12 @@ protected:
     Invoked after initial context specific initialization to finalize the
     generic initialization.
   */
-  void onConstruction() throw();
+  void construct() throw();
 
   /**
     Invoked when the window is destroyed.
   */
-  virtual void onDestruction() throw();
+  virtual void destroy() throw();
 public:
 
   /** Window flags. */
@@ -136,12 +151,6 @@ public:
     FIXED_SIZE = 1 << 1 /**< Specifies that the window cannot be resized. */
   };
 
-  /** Visibility state. */
-  enum Visibility {
-    INVISIBLE,
-    VISIBLE
-  };
-  
   /** Focus state. */
   enum Focus {
     LOST_FOCUS,
@@ -271,6 +280,19 @@ public:
     };
   };
 
+  /* Named binding points. */
+  enum Binding {
+    UPPER_LEFT, /**< Upper left corner. */
+    UPPER_CENTER, /**< Upper center. */
+    UPPER_RIGHT, /**< Upper rigth corner. */
+    MIDDLE_LEFT, /**< Middle to the left. */
+    MIDDLE_CENTER, /**< Middle at the center. */
+    MIDDLE_RIGHT, /**< Middle to the right . */
+    LOWER_LEFT, /**< Lower left corner. */
+    LOWER_CENTER, /**< Lower center. */
+    LOWER_RIGHT /**< Lower right corner. */
+  };
+  
   /**
     Returns the zero-based index of the specified mouse button.
   */
@@ -292,6 +314,11 @@ public:
   WindowImpl(const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException);
 
   /**
+    Returns the position of the binding point relative to the owner.
+  */
+  Position getBindingOffset(Binding binding) const throw();
+  
+  /**
     Flushes the window requests to the server.
   */
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -301,6 +328,11 @@ public:
   void flush() throw(UserInterfaceException);
 #endif // flavor
 
+  /**
+    Asynchronous update request.
+  */
+  void invalidate() throw(UserInterfaceException);
+  
   /**
     Returns the vendor of the server.
   */
@@ -508,6 +540,17 @@ public:
     minimized or maximized.
   */
   void normalize() throw(UserInterfaceException);
+
+  /**
+    Returns true if the window is visible.
+  */
+  inline bool isVisible() const throw() {
+    return visibility != INVISIBLE;
+  }
+
+  inline Visibility getVisibility() const throw() {
+    return visibility;
+  }
   
   /**
     Shows the window if currently hidden.
@@ -519,6 +562,13 @@ public:
   */
   void hide() throw(UserInterfaceException);
 
+  /**
+    Returns true if the window is enabled.
+  */
+  inline bool isEnabled() const throw() {
+    return enabled;
+  }
+  
   /**
     Enables the window.
   */
@@ -572,6 +622,11 @@ public:
   inline unsigned int getModifiers() const throw(UserInterfaceException) {
     return modifiers;
   }
+
+  /**
+    Invoked when the window is destroyed.
+  */
+  virtual void onDestruction() throw();
   
   /**
     Invoked when the display should be updated.
@@ -676,7 +731,7 @@ public:
     Exit message dispatcher without asking the application to exit.
   */
   static void exit() throw();
-
+  
   /**
     Waits for a message.
   */
@@ -693,7 +748,7 @@ public:
     This method is responsible for dispatching incomming messages to the
     corresponding message handlers.
   */
-  void dispatch() throw(UserInterfaceException);
+  static void dispatch() throw(UserInterfaceException);
 
   /**
     Returns true if a mouse is present.
@@ -721,11 +776,6 @@ public:
     @param milliseconds The timeout period (silently reduced to 999999999).
   */
   bool isResponding(unsigned int milliseconds) throw(UserInterfaceException);
-  
-  /**
-    Destroys the window.
-  */
-  void destroy() throw(UserInterfaceException);
   
   /**
     Releases the window.

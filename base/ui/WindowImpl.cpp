@@ -14,6 +14,7 @@
 #include <base/ui/WindowImpl.h>
 #include <base/dl/DynamicLinker.h>
 #include <base/NotImplemented.h>
+#include <base/platforms/backend/WindowImpl.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <windows.h>
@@ -39,6 +40,7 @@ SpinLock WindowImpl::spinLock;
 unsigned int WindowImpl::numberOfWindows = 0;
 // TAG: should be separate reference counted class
 void* WindowImpl::displayHandle = 0;
+unsigned int WindowImpl::numberOfLocks = 0;
 
 namespace windowImpl {
 
@@ -50,14 +52,14 @@ namespace windowImpl {
     const StringLiteral symbol;
     UIFunction* function;
   };
-  
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
-  
+
   struct Entry {
     Entry* next;
     WindowImpl* window;
     void* handle;
   };
+  
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   
   // hash table with linked lists
   // TAG: use knowledge about handles to select an optimal prime
@@ -69,509 +71,457 @@ namespace windowImpl {
     // TAG: find better shuffle
     return ((offset >> 8) | (offset << ((sizeof(MemorySize) - 1) * 8))) % getArraySize(windows);
   }
-  
-  WindowImpl* getWindow(void* handle) throw() {
-    const unsigned int hash = getHash(handle);
-    Entry* entry = windows[hash];
-    while (entry) {
-      if (entry->handle == handle) {
-        return entry->window;
-      }
-      entry = entry->next;
-    }
-    return 0;
-  }
 
-  void addWindow(WindowImpl* window, void* handle) throw() {
-    Entry* temp = new Entry;
-    temp->next = 0;
-    temp->window = window;
-    temp->handle = handle;
+  static LONG CALL_UI messageHandler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) throw() {
+    WindowImpl* window = getWindow(handle); // should be atomic
+    if (window == 0) {
+      return ::DefWindowProc(handle, message, wParam, lParam);
+    }
     
-    const unsigned int hash = getHash(handle);
-    Entry* entry = windows[hash];
-    if (entry == 0) {
-      windows[hash] = temp;
-    } else {
-      while (entry->next) {
-        entry = entry->next;
+    switch (message) {
+    case WM_QUIT:
+      return 0;
+    case WM_CLOSE:
+      if (window->onClose()) {
+        ::DestroyWindow((HWND)window->drawableHandle);
       }
-      entry->next = temp;
-    }
-  }
-
-  void removeWindow(void* handle) throw() {
-    const unsigned int hash = getHash(handle);
-    Entry* entry = windows[hash];
-    ASSERT((entry->window != 0) && (entry->handle != 0));
-    Entry* previous = 0;
-    while (entry->handle != handle) {
-      previous = entry;
-      entry = entry->next;
-    }
-    ASSERT(entry->handle == handle);
-    if (previous) {
-      previous->next = entry->next;
-    } else {
-      windows[hash] = entry->next;
-    }
-    delete entry;
-  }
-
-  class Delegate {
-  public:
-
-    static LONG CALL_UI messageHandler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) throw() {
-      WindowImpl* window = getWindow(handle); // should be atomic
-      if (window == 0) {
-        return ::DefWindowProc(handle, message, wParam, lParam);
+      return 0;
+    case WM_DESTROY:
+      window->destroy();
+      ::PostQuitMessage(0);
+      return 0;
+      // case WM_CAPTURECHANGED:
+      //   return 0;
+    case WM_MOVE:
+      {
+        Position position((int16)LOWORD(lParam), (int16)HIWORD(lParam));
+        window->position = position;
+        window->onMove(position);
+        return 0;
       }
-      
-      switch (message) {
-      case WM_QUIT:
+    case WM_SIZE:
+      {
+        Dimension dimension(LOWORD(lParam), HIWORD(lParam));
+        window->dimension = dimension;
+        window->onResize(dimension);
         return 0;
-      case WM_CLOSE:
-        if (window->onClose()) {
-          ::DestroyWindow((HWND)window->windowHandle);
-        }
-        return 0;
-      case WM_DESTROY:
-        window->onDestruction();
-        ::PostQuitMessage(0);
-        return 0;
-        // case WM_CAPTURECHANGED:
-        //   return 0;
-      case WM_MOVE:
-        {
-          Position position((int16)LOWORD(lParam), (int16)HIWORD(lParam));
-          window->position = position;
-          window->onMove(position);
-          return 0;
-        }
-      case WM_SIZE:
-        {
-          Dimension dimension(LOWORD(lParam), HIWORD(lParam));
-          window->dimension = dimension;
-          window->onResize(dimension);
-          return 0;
-        }
-      case WM_PAINT:
-        {          
-          // RECT rect;
-          // ::GetUpdateRect((HWND)window->windowHandle, &rect, FALSE);
+      }
+    case WM_PAINT:
+      {          
+        // RECT rect;
+        // ::GetUpdateRect((HWND)window->drawableHandle, &rect, FALSE);
           
-          PAINTSTRUCT ps;
-          HDC hdc = ::BeginPaint((HWND)window->windowHandle, &ps);
-          // ps.rcPaint;
-          window->onDisplay();
-          ::EndPaint((HWND)window->windowHandle, &ps);
-          // ::ValidateRect((HWND)window->windowHandle, 0); // not required with BeginPaint
-          return 0;
-        }
-      case WM_LBUTTONDOWN:
-      case WM_LBUTTONUP:
-      case WM_LBUTTONDBLCLK:
-      case WM_MBUTTONDOWN:
-      case WM_MBUTTONUP:
-      case WM_MBUTTONDBLCLK:
-      case WM_RBUTTONDOWN:
-      case WM_RBUTTONUP:
-      case WM_RBUTTONDBLCLK:
-        {
-          Position position(LOWORD(lParam), HIWORD(lParam));
-          unsigned int buttons = 0;
-          if (wParam & MK_CONTROL) {
-            buttons |= WindowImpl::Key::CONTROL;
-          }
-          if (wParam & MK_LBUTTON) {
-            buttons |= WindowImpl::Mouse::LEFT;
-          }
-          if (wParam & MK_MBUTTON) {
-            buttons |= WindowImpl::Mouse::MIDDLE;
-          }
-          if (wParam & MK_RBUTTON) {
-            buttons |= WindowImpl::Mouse::RIGHT;
-          }
-          if (wParam & MK_SHIFT) {
-            buttons |= WindowImpl::Key::SHIFT;
-          }
-          switch (message) {
-          case WM_LBUTTONDOWN:
-            window->onMouseButton(position, WindowImpl::Mouse::LEFT, WindowImpl::Mouse::PRESSED, 0);
-            return 0;
-          case WM_LBUTTONUP:
-            window->onMouseButton(position, WindowImpl::Mouse::LEFT, WindowImpl::Mouse::RELEASED, 0);
-            return 0;
-          case WM_LBUTTONDBLCLK:
-            window->onMouseButton(position, WindowImpl::Mouse::LEFT, WindowImpl::Mouse::DOUBLE_CLICKED, 0);
-            return 0;
-          case WM_MBUTTONDOWN:
-            window->onMouseButton(position, WindowImpl::Mouse::MIDDLE, WindowImpl::Mouse::PRESSED, 0);
-            return 0;
-          case WM_MBUTTONUP:
-            window->onMouseButton(position, WindowImpl::Mouse::MIDDLE, WindowImpl::Mouse::RELEASED, 0);
-            return 0;
-          case WM_MBUTTONDBLCLK:
-            window->onMouseButton(position, WindowImpl::Mouse::MIDDLE, WindowImpl::Mouse::DOUBLE_CLICKED, 0);
-            return 0;
-          case WM_RBUTTONDOWN:
-            window->onMouseButton(position, WindowImpl::Mouse::RIGHT, WindowImpl::Mouse::PRESSED, 0);
-            return 0;
-          case WM_RBUTTONUP:
-            window->onMouseButton(position, WindowImpl::Mouse::RIGHT, WindowImpl::Mouse::RELEASED, 0);
-            return 0;
-          case WM_RBUTTONDBLCLK:
-            window->onMouseButton(position, WindowImpl::Mouse::RIGHT, WindowImpl::Mouse::DOUBLE_CLICKED, 0);
-            return 0;
-          }
-        }
-      case WM_MOUSEWHEEL:
-        {
-          unsigned int keys = LOWORD(wParam); // GET_KEYSTATE_WPARAM
-          int delta = (int16)HIWORD(wParam);
-          unsigned int buttons = 0;
-          if (keys & MK_CONTROL) {
-            buttons |= WindowImpl::Key::CONTROL;
-          }
-          if (keys & MK_LBUTTON) {
-            buttons |= WindowImpl::Mouse::LEFT;
-          }
-          if (keys & MK_MBUTTON) {
-            buttons |= WindowImpl::Mouse::MIDDLE;
-          }
-          if (keys & MK_RBUTTON) {
-            buttons |= WindowImpl::Mouse::RIGHT;
-          }
-          if (keys & MK_SHIFT) {
-            buttons |= WindowImpl::Key::SHIFT;
-          }
-          window->onMouseWheel(Position((int16)LOWORD(lParam), (int16)HIWORD(lParam)), delta, buttons);
-          return 0;
-        }
-      case WM_MOUSELEAVE:
-        window->scope = false;
-        window->onMouseScope(false);
+        PAINTSTRUCT ps;
+        HDC hdc = ::BeginPaint((HWND)window->drawableHandle, &ps);
+        // ps.rcPaint;
+        window->onDisplay();
+        ::EndPaint((HWND)window->drawableHandle, &ps);
+        // ::ValidateRect((HWND)window->drawableHandle, 0); // not required with BeginPaint
         return 0;
-      case WM_MOUSEMOVE:
-        {
-          if (!window->scope) {
-            window->scope = true;
-            TRACKMOUSEEVENT mouseEvent;
-            mouseEvent.cbSize = sizeof(mouseEvent);
-            mouseEvent.dwFlags = TME_LEAVE;
-            mouseEvent.hwndTrack = (HWND)window->windowHandle;
-            mouseEvent.dwHoverTime = 0;
-            assert(::TrackMouseEvent(&mouseEvent), UserInterfaceException(Type::getType<WindowImpl>()));
-            window->onMouseScope(true);
-          }
-          unsigned int buttons = 0;
-          if (wParam & MK_CONTROL) {
-            buttons |= WindowImpl::Key::CONTROL;
-          }
-          if (wParam & MK_LBUTTON) {
-            buttons |= WindowImpl::Mouse::LEFT;
-          }
-          if (wParam & MK_MBUTTON) {
-            buttons |= WindowImpl::Mouse::MIDDLE;
-          }
-          if (wParam & MK_RBUTTON) {
-            buttons |= WindowImpl::Mouse::RIGHT;
-          }
-          if (wParam & MK_SHIFT) {
-            buttons |= WindowImpl::Key::SHIFT;
-          }
-          window->onMouseMove(Position((int16)LOWORD(lParam), (int16)HIWORD(lParam)), buttons);
+      }
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONUP:
+    case WM_LBUTTONDBLCLK:
+    case WM_MBUTTONDOWN:
+    case WM_MBUTTONUP:
+    case WM_MBUTTONDBLCLK:
+    case WM_RBUTTONDOWN:
+    case WM_RBUTTONUP:
+    case WM_RBUTTONDBLCLK:
+      {
+        Position position(LOWORD(lParam), HIWORD(lParam));
+        unsigned int buttons = 0;
+        if (wParam & MK_CONTROL) {
+          buttons |= WindowImpl::Key::CONTROL;
+        }
+        if (wParam & MK_LBUTTON) {
+          buttons |= WindowImpl::Mouse::LEFT;
+        }
+        if (wParam & MK_MBUTTON) {
+          buttons |= WindowImpl::Mouse::MIDDLE;
+        }
+        if (wParam & MK_RBUTTON) {
+          buttons |= WindowImpl::Mouse::RIGHT;
+        }
+        if (wParam & MK_SHIFT) {
+          buttons |= WindowImpl::Key::SHIFT;
+        }
+        switch (message) {
+        case WM_LBUTTONDOWN:
+          window->onMouseButton(position, WindowImpl::Mouse::LEFT, WindowImpl::Mouse::PRESSED, 0);
+          return 0;
+        case WM_LBUTTONUP:
+          window->onMouseButton(position, WindowImpl::Mouse::LEFT, WindowImpl::Mouse::RELEASED, 0);
+          return 0;
+        case WM_LBUTTONDBLCLK:
+          window->onMouseButton(position, WindowImpl::Mouse::LEFT, WindowImpl::Mouse::DOUBLE_CLICKED, 0);
+          return 0;
+        case WM_MBUTTONDOWN:
+          window->onMouseButton(position, WindowImpl::Mouse::MIDDLE, WindowImpl::Mouse::PRESSED, 0);
+          return 0;
+        case WM_MBUTTONUP:
+          window->onMouseButton(position, WindowImpl::Mouse::MIDDLE, WindowImpl::Mouse::RELEASED, 0);
+          return 0;
+        case WM_MBUTTONDBLCLK:
+          window->onMouseButton(position, WindowImpl::Mouse::MIDDLE, WindowImpl::Mouse::DOUBLE_CLICKED, 0);
+          return 0;
+        case WM_RBUTTONDOWN:
+          window->onMouseButton(position, WindowImpl::Mouse::RIGHT, WindowImpl::Mouse::PRESSED, 0);
+          return 0;
+        case WM_RBUTTONUP:
+          window->onMouseButton(position, WindowImpl::Mouse::RIGHT, WindowImpl::Mouse::RELEASED, 0);
+          return 0;
+        case WM_RBUTTONDBLCLK:
+          window->onMouseButton(position, WindowImpl::Mouse::RIGHT, WindowImpl::Mouse::DOUBLE_CLICKED, 0);
           return 0;
         }
-      case WM_ACTIVATE:
-        switch (LOWORD(wParam)) {
-        case WA_ACTIVE:
-        case WA_CLICKACTIVE:
-          if (!window->active) {
-            window->active = true;
-            window->onFocus(WindowImpl::ACQUIRED_FOCUS);
-          }
+      }
+    case WM_MOUSEWHEEL:
+      {
+        unsigned int keys = LOWORD(wParam); // GET_KEYSTATE_WPARAM
+        int delta = (int16)HIWORD(wParam);
+        unsigned int buttons = 0;
+        if (keys & MK_CONTROL) {
+          buttons |= WindowImpl::Key::CONTROL;
+        }
+        if (keys & MK_LBUTTON) {
+          buttons |= WindowImpl::Mouse::LEFT;
+        }
+        if (keys & MK_MBUTTON) {
+          buttons |= WindowImpl::Mouse::MIDDLE;
+        }
+        if (keys & MK_RBUTTON) {
+          buttons |= WindowImpl::Mouse::RIGHT;
+        }
+        if (keys & MK_SHIFT) {
+          buttons |= WindowImpl::Key::SHIFT;
+        }
+        window->onMouseWheel(Position((int16)LOWORD(lParam), (int16)HIWORD(lParam)), delta, buttons);
+        return 0;
+      }
+    case WM_MOUSELEAVE:
+      window->scope = false;
+      window->onMouseScope(false);
+      return 0;
+    case WM_MOUSEMOVE:
+      {
+        if (!window->scope) {
+          window->scope = true;
+          TRACKMOUSEEVENT mouseEvent;
+          mouseEvent.cbSize = sizeof(mouseEvent);
+          mouseEvent.dwFlags = TME_LEAVE;
+          mouseEvent.hwndTrack = (HWND)window->drawableHandle;
+          mouseEvent.dwHoverTime = 0;
+          assert(::TrackMouseEvent(&mouseEvent), UserInterfaceException(Type::getType<WindowImpl>()));
+          window->onMouseScope(true);
+        }
+        unsigned int buttons = 0;
+        if (wParam & MK_CONTROL) {
+          buttons |= WindowImpl::Key::CONTROL;
+        }
+        if (wParam & MK_LBUTTON) {
+          buttons |= WindowImpl::Mouse::LEFT;
+        }
+        if (wParam & MK_MBUTTON) {
+          buttons |= WindowImpl::Mouse::MIDDLE;
+        }
+        if (wParam & MK_RBUTTON) {
+          buttons |= WindowImpl::Mouse::RIGHT;
+        }
+        if (wParam & MK_SHIFT) {
+          buttons |= WindowImpl::Key::SHIFT;
+        }
+        window->onMouseMove(Position((int16)LOWORD(lParam), (int16)HIWORD(lParam)), buttons);
+        return 0;
+      }
+    case WM_ACTIVATE:
+      switch (LOWORD(wParam)) {
+      case WA_ACTIVE:
+      case WA_CLICKACTIVE:
+        if (!window->active) {
+          window->active = true;
+          window->onFocus(WindowImpl::ACQUIRED_FOCUS);
+        }
+        break;
+      case WA_INACTIVE:
+      default:
+        if (window->active) {
+          window->active = false;
+          window->onFocus(WindowImpl::LOST_FOCUS);
+        }
+      }
+      return 0;
+      // TAG: window->onVisibility();
+    case WM_KEYDOWN:
+    case WM_KEYUP:
+    case WM_SYSKEYDOWN:
+    case WM_SYSKEYUP:
+      {
+        unsigned int flags = 0;
+        if ((message == WM_KEYDOWN) || (message == WM_SYSKEYDOWN)) {
+          flags |= WindowImpl::Key::PRESSED;
+        }
+        if (((lParam >> 30) & 1) == 0) {
+          flags |= WindowImpl::Key::FIRST_TIME;
+        }
+        if (!(flags & WindowImpl::Key::FIRST_TIME) && !window->autorepeat) {
+          return 0; // ignore repeats
+        }
+        if (((lParam >> 24) & 1) != 0) {
+          flags |= WindowImpl::Key::EXTENDED;
+        }
+          
+        ::GetKeyboardState(Cast::pointer<BYTE*>(window->keyboardState));
+        unsigned int modifiers = 0;
+        modifiers |= (window->keyboardState[VK_LSHIFT] & 0x80) ? WindowImpl::Key::LEFT_SHIFT : 0;
+        modifiers |= (window->keyboardState[VK_RSHIFT] & 0x80) ? WindowImpl::Key::RIGHT_SHIFT : 0;
+        modifiers |= (window->keyboardState[VK_LCONTROL] & 0x80) ? WindowImpl::Key::LEFT_CONTROL : 0;
+        modifiers |= (window->keyboardState[VK_RCONTROL] & 0x80) ? WindowImpl::Key::RIGHT_CONTROL : 0;
+        modifiers |= (window->keyboardState[VK_LMENU] & 0x80) ? WindowImpl::Key::LEFT_ALT : 0;
+        modifiers |= (window->keyboardState[VK_RMENU] & 0x80) ? WindowImpl::Key::RIGHT_ALT : 0;
+        modifiers |= (window->keyboardState[VK_CAPITAL] & 0x01) ? WindowImpl::Key::CAPS_LOCK_TOGGLED : 0;
+        modifiers |= (window->keyboardState[VK_SCROLL] & 0x01) ? WindowImpl::Key::SCROLL_LOCK_TOGGLED : 0;
+        modifiers |= (window->keyboardState[VK_NUMLOCK] & 0x01) ? WindowImpl::Key::NUM_LOCK_TOGGLED : 0;
+        window->modifiers = modifiers;
+          
+        unsigned int code = 0;
+        switch (wParam) {
+        case VK_RETURN:
+          code = WindowImpl::Key::RETURN;
+          flags |= WindowImpl::Key::ASCII;
           break;
-        case WA_INACTIVE:
-        default:
-          if (window->active) {
-            window->active = false;
-            window->onFocus(WindowImpl::LOST_FOCUS);
-          }
-        }
-        return 0;
-        // TAG: window->onVisibility();
-      case WM_KEYDOWN:
-      case WM_KEYUP:
-      case WM_SYSKEYDOWN:
-      case WM_SYSKEYUP:
-        {
-          unsigned int flags = 0;
-          if ((message == WM_KEYDOWN) || (message == WM_SYSKEYDOWN)) {
-            flags |= WindowImpl::Key::PRESSED;
-          }
-          if (((lParam >> 30) & 1) == 0) {
-            flags |= WindowImpl::Key::FIRST_TIME;
-          }
-          if (!(flags & WindowImpl::Key::FIRST_TIME) && !window->autorepeat) {
-            return 0; // ignore repeats
-          }
-          if (((lParam >> 24) & 1) != 0) {
-            flags |= WindowImpl::Key::EXTENDED;
-          }
-          
-          ::GetKeyboardState(Cast::pointer<BYTE*>(window->keyboardState));
-          unsigned int modifiers = 0;
-          modifiers |= (window->keyboardState[VK_LSHIFT] & 0x80) ? WindowImpl::Key::LEFT_SHIFT : 0;
-          modifiers |= (window->keyboardState[VK_RSHIFT] & 0x80) ? WindowImpl::Key::RIGHT_SHIFT : 0;
-          modifiers |= (window->keyboardState[VK_LCONTROL] & 0x80) ? WindowImpl::Key::LEFT_CONTROL : 0;
-          modifiers |= (window->keyboardState[VK_RCONTROL] & 0x80) ? WindowImpl::Key::RIGHT_CONTROL : 0;
-          modifiers |= (window->keyboardState[VK_LMENU] & 0x80) ? WindowImpl::Key::LEFT_ALT : 0;
-          modifiers |= (window->keyboardState[VK_RMENU] & 0x80) ? WindowImpl::Key::RIGHT_ALT : 0;
-          modifiers |= (window->keyboardState[VK_CAPITAL] & 0x01) ? WindowImpl::Key::CAPS_LOCK_TOGGLED : 0;
-          modifiers |= (window->keyboardState[VK_SCROLL] & 0x01) ? WindowImpl::Key::SCROLL_LOCK_TOGGLED : 0;
-          modifiers |= (window->keyboardState[VK_NUMLOCK] & 0x01) ? WindowImpl::Key::NUM_LOCK_TOGGLED : 0;
-          window->modifiers = modifiers;
-          
-          unsigned int code = 0;
-          switch (wParam) {
-          case VK_RETURN:
-            code = WindowImpl::Key::RETURN;
-            flags |= WindowImpl::Key::ASCII;
-            break;
-          case VK_INSERT:
-            code = WindowImpl::Key::INSERT;
-            break;
-          case VK_DELETE:
-            code = WindowImpl::Key::DELETE;
-            break;
-          case VK_HOME:
-            code = WindowImpl::Key::HOME;
-            break;
-          case VK_END:
-            code = WindowImpl::Key::END;
-            break;
-          case VK_PRIOR:
-            code = WindowImpl::Key::PRIOR;
-            break;
-          case VK_NEXT:
-            code = WindowImpl::Key::NEXT;
-            break;
-          case VK_LEFT:
-            code = WindowImpl::Key::LEFT;
-            break;
-          case VK_RIGHT:
-            code = WindowImpl::Key::RIGHT;
-            break;
-          case VK_UP:
-            code = WindowImpl::Key::UP;
-            break;
-          case VK_DOWN:
-            code = WindowImpl::Key::DOWN;
-            break;
-          case VK_SELECT:
-            code = WindowImpl::Key::SELECT;
-            break;
-          case VK_PRINT:
-            code = WindowImpl::Key::PRINT;
-            break;
-          case VK_EXECUTE:
-            code = WindowImpl::Key::EXECUTE;
-            break;
-          case VK_SNAPSHOT:
-            code = WindowImpl::Key::SNAPSHOT;
-            break;
-          case VK_HELP:
-            code = WindowImpl::Key::HELP;
-            break;            
-          case VK_CAPITAL:
-            code = WindowImpl::Key::CAPS_LOCK;
-            break;
-          case VK_SCROLL:
-            code = WindowImpl::Key::SCROLL_LOCK;
-            break;
-          case VK_NUMLOCK:
-            code = WindowImpl::Key::NUM_LOCK;
-            break;
-          case VK_PAUSE:
-            code = WindowImpl::Key::PAUSE;
-            break;
-          case VK_LWIN:
-            code = WindowImpl::Key::LEFT_MANAGER;
-            break;
-          case VK_RWIN:
-            code = WindowImpl::Key::RIGHT_MANAGER;
-            break;
-          case VK_APPS:
-            code = WindowImpl::Key::MENU;
-            break;
-          case VK_F1:
-            code = WindowImpl::Key::F1;
-            break;
-          case VK_F2:
-            code = WindowImpl::Key::F2;
-            break;
-          case VK_F3:
-            code = WindowImpl::Key::F3;
-            break;
-          case VK_F4:
-            code = WindowImpl::Key::F4;
-            break;
-          case VK_F5:
-            code = WindowImpl::Key::F5;
-            break;
-          case VK_F6:
-            code = WindowImpl::Key::F6;
-            break;
-          case VK_F7:
-            code = WindowImpl::Key::F7;
-            break;
-          case VK_F8:
-            code = WindowImpl::Key::F8;
-            break;
-          case VK_F9:
-            code = WindowImpl::Key::F9;
-            break;
-          case VK_F10:
-            code = WindowImpl::Key::F10;
-            break;
-          case VK_F11:
-            code = WindowImpl::Key::F11;
-            break;
-          case VK_F12:
-            code = WindowImpl::Key::F12;
-            break;
-          case VK_F13:
-            code = WindowImpl::Key::F13;
-            break;
-          case VK_F14:
-            code = WindowImpl::Key::F14;
-            break;
-          case VK_F15:
-            code = WindowImpl::Key::F15;
-            break;
-          case VK_F16:
-            code = WindowImpl::Key::F16;
-            break;
-          case VK_F17:
-            code = WindowImpl::Key::F17;
-            break;
-          case VK_F18:
-            code = WindowImpl::Key::F18;
-            break;
-          case VK_F19:
-            code = WindowImpl::Key::F19;
-            break;
-          case VK_F20:
-            code = WindowImpl::Key::F20;
-            break;
-          case VK_F21:
-            code = WindowImpl::Key::F21;
-            break;
-          case VK_F22:
-            code = WindowImpl::Key::F22;
-            break;
-          case VK_F23:
-            code = WindowImpl::Key::F23;
-            break;
-          case VK_F24:
-            code = WindowImpl::Key::F24;
-            break;
+        case VK_INSERT:
+          code = WindowImpl::Key::INSERT;
+          break;
+        case VK_DELETE:
+          code = WindowImpl::Key::DELETE;
+          break;
+        case VK_HOME:
+          code = WindowImpl::Key::HOME;
+          break;
+        case VK_END:
+          code = WindowImpl::Key::END;
+          break;
+        case VK_PRIOR:
+          code = WindowImpl::Key::PRIOR;
+          break;
+        case VK_NEXT:
+          code = WindowImpl::Key::NEXT;
+          break;
+        case VK_LEFT:
+          code = WindowImpl::Key::LEFT;
+          break;
+        case VK_RIGHT:
+          code = WindowImpl::Key::RIGHT;
+          break;
+        case VK_UP:
+          code = WindowImpl::Key::UP;
+          break;
+        case VK_DOWN:
+          code = WindowImpl::Key::DOWN;
+          break;
+        case VK_SELECT:
+          code = WindowImpl::Key::SELECT;
+          break;
+        case VK_PRINT:
+          code = WindowImpl::Key::PRINT;
+          break;
+        case VK_EXECUTE:
+          code = WindowImpl::Key::EXECUTE;
+          break;
+        case VK_SNAPSHOT:
+          code = WindowImpl::Key::SNAPSHOT;
+          break;
+        case VK_HELP:
+          code = WindowImpl::Key::HELP;
+          break;            
+        case VK_CAPITAL:
+          code = WindowImpl::Key::CAPS_LOCK;
+          break;
+        case VK_SCROLL:
+          code = WindowImpl::Key::SCROLL_LOCK;
+          break;
+        case VK_NUMLOCK:
+          code = WindowImpl::Key::NUM_LOCK;
+          break;
+        case VK_PAUSE:
+          code = WindowImpl::Key::PAUSE;
+          break;
+        case VK_LWIN:
+          code = WindowImpl::Key::LEFT_MANAGER;
+          break;
+        case VK_RWIN:
+          code = WindowImpl::Key::RIGHT_MANAGER;
+          break;
+        case VK_APPS:
+          code = WindowImpl::Key::MENU;
+          break;
+        case VK_F1:
+          code = WindowImpl::Key::F1;
+          break;
+        case VK_F2:
+          code = WindowImpl::Key::F2;
+          break;
+        case VK_F3:
+          code = WindowImpl::Key::F3;
+          break;
+        case VK_F4:
+          code = WindowImpl::Key::F4;
+          break;
+        case VK_F5:
+          code = WindowImpl::Key::F5;
+          break;
+        case VK_F6:
+          code = WindowImpl::Key::F6;
+          break;
+        case VK_F7:
+          code = WindowImpl::Key::F7;
+          break;
+        case VK_F8:
+          code = WindowImpl::Key::F8;
+          break;
+        case VK_F9:
+          code = WindowImpl::Key::F9;
+          break;
+        case VK_F10:
+          code = WindowImpl::Key::F10;
+          break;
+        case VK_F11:
+          code = WindowImpl::Key::F11;
+          break;
+        case VK_F12:
+          code = WindowImpl::Key::F12;
+          break;
+        case VK_F13:
+          code = WindowImpl::Key::F13;
+          break;
+        case VK_F14:
+          code = WindowImpl::Key::F14;
+          break;
+        case VK_F15:
+          code = WindowImpl::Key::F15;
+          break;
+        case VK_F16:
+          code = WindowImpl::Key::F16;
+          break;
+        case VK_F17:
+          code = WindowImpl::Key::F17;
+          break;
+        case VK_F18:
+          code = WindowImpl::Key::F18;
+          break;
+        case VK_F19:
+          code = WindowImpl::Key::F19;
+          break;
+        case VK_F20:
+          code = WindowImpl::Key::F20;
+          break;
+        case VK_F21:
+          code = WindowImpl::Key::F21;
+          break;
+        case VK_F22:
+          code = WindowImpl::Key::F22;
+          break;
+        case VK_F23:
+          code = WindowImpl::Key::F23;
+          break;
+        case VK_F24:
+          code = WindowImpl::Key::F24;
+          break;
 #if 0
-          case VK_BROWSER_BACK:
-          case VK_BROWSER_FORWARD:
-          case VK_BROWSER_REFRESH:
-          case VK_BROWSER_STOP:
-          case VK_BROWSER_SEARCH:
-          case VK_BROWSER_FAVORITES:
-          case VK_BROWSER_HOME:
-          case VK_VOLUME_MUTE:
-          case VK_VOLUME_DOWN:
-          case VK_VOLUME_UP:
-          case VK_MEDIA_NEXT_TRACK:
-          case VK_MEDIA_PREV_TRACK:
-          case VK_MEDIA_STOP:
-          case VK_MEDIA_PLAY_PAUSE:
-          case VK_LAUNCH_MAIL:
-          case VK_LAUNCH_MEDIA_SELECT:
-          case VK_LAUNCH_APP1:
-          case VK_LAUNCH_APP2:
+        case VK_BROWSER_BACK:
+        case VK_BROWSER_FORWARD:
+        case VK_BROWSER_REFRESH:
+        case VK_BROWSER_STOP:
+        case VK_BROWSER_SEARCH:
+        case VK_BROWSER_FAVORITES:
+        case VK_BROWSER_HOME:
+        case VK_VOLUME_MUTE:
+        case VK_VOLUME_DOWN:
+        case VK_VOLUME_UP:
+        case VK_MEDIA_NEXT_TRACK:
+        case VK_MEDIA_PREV_TRACK:
+        case VK_MEDIA_STOP:
+        case VK_MEDIA_PLAY_PAUSE:
+        case VK_LAUNCH_MAIL:
+        case VK_LAUNCH_MEDIA_SELECT:
+        case VK_LAUNCH_APP1:
+        case VK_LAUNCH_APP2:
 #endif
-          }
-          if (code) {
-            window->onKey(code, flags, modifiers);
-          } else {
-            WORD buffer[2];
-            // ::ToUnicode(wParam, 0, Cast::pointer<BYTE*>(window->keyboardState), (wchar*)&buffer, sizeof(buffer), 0);
-            switch (::ToAscii(wParam, 0, Cast::pointer<BYTE*>(window->keyboardState), buffer, 0)) {
-            case 2:
-              window->onKey((uint8)buffer[0], flags|WindowImpl::Key::DEAD|WindowImpl::Key::ASCII, modifiers);
-              window->onKey((uint8)buffer[1], flags|WindowImpl::Key::ASCII, modifiers);
-              break;
-            case 1:
-              window->onKey((uint8)buffer[0], flags|WindowImpl::Key::ASCII, modifiers);
-              break;
-            case 0:
-              break; // ignore key
-            }
-          }
-          return  0;
         }
-      case WM_GETMINMAXINFO:
-        if (window->minimumSize.getSize() || window->maximumSize.getSize()) {
-          MINMAXINFO* temp = (MINMAXINFO*)lParam;
-          if (window->minimumSize.getSize()) {
-            temp->ptMinTrackSize.x = window->minimumSize.getWidth();
-            temp->ptMinTrackSize.y = window->minimumSize.getHeight();
-          }
-          if (window->maximumSize.getSize()) {
-            temp->ptMaxTrackSize.x = window->maximumSize.getWidth();
-            temp->ptMaxTrackSize.y = window->maximumSize.getHeight();
-          }
-          return 0;
-        }
-        break;
-        //       case WM_SETCURSOR:
-        //         if (LOWORD(lParam) == HTCLIENT) {
-        //           window->setCursor(window->cursor);
-        //           return 0;
-        //         }
-        //         break;
-        //       case WM_SETFOCUS: // keyboard focus
-        //         return 0;
-        //       case WM_KILLFOCUS: // keyboard focus
-        //         return 0;
-        //       case WM_TIMER:
-        //         return 0;
-      case WM_COMMAND:
-        if (HIWORD(wParam) == 0) { // from menu
-          window->onMenu(LOWORD(wParam));
+        if (code) {
+          window->onKey(code, flags, modifiers);
         } else {
-          window->onCommand(LOWORD(wParam));
+          WORD buffer[2];
+          // ::ToUnicode(wParam, 0, Cast::pointer<BYTE*>(window->keyboardState), (wchar*)&buffer, sizeof(buffer), 0);
+          switch (::ToAscii(wParam, 0, Cast::pointer<BYTE*>(window->keyboardState), buffer, 0)) {
+          case 2:
+            window->onKey((uint8)buffer[0], flags|WindowImpl::Key::DEAD|WindowImpl::Key::ASCII, modifiers);
+            window->onKey((uint8)buffer[1], flags|WindowImpl::Key::ASCII, modifiers);
+            break;
+          case 1:
+            window->onKey((uint8)buffer[0], flags|WindowImpl::Key::ASCII, modifiers);
+            break;
+          case 0:
+            break; // ignore key
+          }
+        }
+        return  0;
+      }
+    case WM_GETMINMAXINFO:
+      if (window->minimumSize.getSize() || window->maximumSize.getSize()) {
+        MINMAXINFO* temp = (MINMAXINFO*)lParam;
+        if (window->minimumSize.getSize()) {
+          temp->ptMinTrackSize.x = window->minimumSize.getWidth();
+          temp->ptMinTrackSize.y = window->minimumSize.getHeight();
+        }
+        if (window->maximumSize.getSize()) {
+          temp->ptMaxTrackSize.x = window->maximumSize.getWidth();
+          temp->ptMaxTrackSize.y = window->maximumSize.getHeight();
         }
         return 0;
-      case WM_SYSCOMMAND:
-        // TAG: fixme (check flags)
-        switch (wParam & 0xfff0) {
-          //         case SC_SIZE: // prevent
-          //           break;
-        case SC_SCREENSAVE: // prevent
-        case SC_MONITORPOWER: // prevent
-          return 0;
-        }
-        break;
-        //       case WM_DISPLAYCHANGE:
-        //         return 0;
-        //       case WM_ENTERMENULOOP:
-        //         return 0;
-        //       case WM_EXITMENULOOP:
-        //         return 0;
-      case WM_USER + WindowImpl::PING_MESSAGE:
-        return true;
       }
-      return ::DefWindowProc((HWND)window->windowHandle, message, wParam, lParam);
+      break;
+      //       case WM_SETCURSOR:
+      //         if (LOWORD(lParam) == HTCLIENT) {
+      //           window->setCursor(window->cursor);
+      //           return 0;
+      //         }
+      //         break;
+      //       case WM_SETFOCUS: // keyboard focus
+      //         return 0;
+      //       case WM_KILLFOCUS: // keyboard focus
+      //         return 0;
+      //       case WM_TIMER:
+      //         return 0;
+    case WM_COMMAND:
+      if (HIWORD(wParam) == 0) { // from menu
+        window->onMenu(LOWORD(wParam));
+      } else {
+        window->onCommand(LOWORD(wParam));
+      }
+      return 0;
+    case WM_SYSCOMMAND:
+      // TAG: fixme (check flags)
+      switch (wParam & 0xfff0) {
+        //         case SC_SIZE: // prevent
+        //           break;
+      case SC_SCREENSAVE: // prevent
+      case SC_MONITORPOWER: // prevent
+        return 0;
+      }
+      break;
+      //       case WM_DISPLAYCHANGE:
+      //         return 0;
+      //       case WM_ENTERMENULOOP:
+      //         return 0;
+      //       case WM_EXITMENULOOP:
+      //         return 0;
+    case WM_USER + WindowImpl::PING_MESSAGE:
+      return true;
     }
-  };
+    return ::DefWindowProc((HWND)window->drawableHandle, message, wParam, lParam);
+  }
 
 #else // unix
 
@@ -691,115 +641,215 @@ namespace windowImpl {
   //     WAITING /**< Cursor indicating blocked wait. */
   //   };
 
-  Atom destroyAtom;
-  Atom pingAtom;
+  Atom protocolsAtom;
+  Atom atoms[3];
+
+  // hash table with linked lists
+  // TAG: use knowledge about handles to select an optimal prime
+  // TAG: remember last window object (better when messages come in bursts)
+  Entry* windows[257]; // contains zeros initially
+  
+  inline unsigned int getHash(void* handle) throw() {
+    const MemorySize offset = Cast::getOffset(handle);
+    // TAG: find better shuffle
+    return ((offset >> 8) | (offset << ((sizeof(MemorySize) - 1) * 8))) % getArraySize(windows);
+  }
+
 #endif // flavor
+
+  WindowImpl* getWindow(void* handle) throw() {
+    const unsigned int hash = getHash(handle);
+    Entry* entry = windows[hash];
+    while (entry) {
+      if (entry->handle == handle) {
+        return entry->window;
+      }
+      entry = entry->next;
+    }
+    return 0;
+  }
+
+  void addWindow(WindowImpl* window, void* handle) throw() {
+    Entry* temp = new Entry;
+    temp->next = 0;
+    temp->window = window;
+    temp->handle = handle;
+    
+    const unsigned int hash = getHash(handle);
+    Entry* entry = windows[hash];
+    if (entry == 0) {
+      windows[hash] = temp;
+    } else {
+      while (entry->next) {
+        entry = entry->next;
+      }
+      entry->next = temp;
+    }
+  }
+
+  void removeWindow(void* handle) throw() {
+    const unsigned int hash = getHash(handle);
+    Entry* entry = windows[hash];
+    ASSERT((entry->window != 0) && (entry->handle != 0));
+    Entry* previous = 0;
+    while (entry->handle != handle) {
+      previous = entry;
+      entry = entry->next;
+    }
+    ASSERT(entry->handle == handle);
+    if (previous) {
+      previous->next = entry->next;
+    } else {
+      windows[hash] = entry->next;
+    }
+    delete entry;
+  }
+  
 }; // end of windowImpl namespace
 
-void WindowImpl::onConstruction() throw() {
-  // finalize generic initialization
+void WindowImpl::construct() throw() {
+  windowImpl::addWindow(this, drawableHandle);
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  windowImpl::addWindow(this, windowHandle);
-  
   TRACKMOUSEEVENT mouseEvent;
   mouseEvent.cbSize = sizeof(mouseEvent);
   mouseEvent.dwFlags = TME_LEAVE;
-  mouseEvent.hwndTrack = (HWND)windowHandle;
+  mouseEvent.hwndTrack = (HWND)drawableHandle;
   mouseEvent.dwHoverTime = 0;
   ::TrackMouseEvent(&mouseEvent);
 #else // unix
+  ::XSetWMProtocols(
+    (Display*)displayHandle,
+    (::Window)drawableHandle,
+    windowImpl::atoms,
+    getArraySize(windowImpl::atoms)
+  );
 #endif // flavor
 }
 
-void WindowImpl::onDestruction() throw() {
+void WindowImpl::destroy() throw() {
+  graphicsContextHandle = 0;
+  if (drawableHandle) {
+    windowImpl::removeWindow(drawableHandle);
+    drawableHandle = 0;
+  }
+  screenHandle = 0;
+}
+
+bool WindowImpl::loadModule(bool load) throw() {
+  bool success = true;
+  spinLock.exclusiveLock();
+  if (load) {
+    if (numberOfLocks++ == 0) { // overflow not possible due to limited resources
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+      // only register class if not already registered
+      ATOM windowClass = 0;
+      WNDCLASSEX temp = {
+        sizeof(temp),
+        CS_OWNDC, // style // TAG: other flags: CS_DBLCLKS, CS_NOCLOSE, CS_HREDRAW, CS_VREDRAW
+        windowImpl::messageHandler, // message handler
+        0, // extra bytes to allocate
+        0, // extra window bytes
+        (HINSTANCE)::GetModuleHandle(0), // instance
+        0, // icon
+        (HCURSOR)::LoadImage(0, MAKEINTRESOURCE(OCR_NORMAL), IMAGE_CURSOR, 0, 0, LR_DEFAULTCOLOR|LR_SHARED), // cursor
+        0, // background
+        0, // menu
+        "http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
+        0 // small icon
+      };
+      windowClass = ::RegisterClassEx(&temp); // zero if fails
+      success = windowClass != 0;
+#else // unix
+      // TAG: fix display handle support (DISPLAY variable could have been changed)
+      // TAG: need support for connection to any server (e.g. "localhost:0.0")
+      Display* display = ::XOpenDisplay(0);
+      if (display) {
+        windowImpl::protocolsAtom = ::XInternAtom((Display*)display, "WM_PROTOCOLS", True);
+        windowImpl::atoms[DESTROY_MESSAGE] = ::XInternAtom(display, "WM_DELETE_WINDOW", True);
+        windowImpl::atoms[PING_MESSAGE] =
+          ::XInternAtom(
+            display,
+            "http://www.mip.sdu.dk/~fonseca/base/ui/WindowImpl/PING_MESSAGE",
+            False
+          );
+        windowImpl::atoms[QUIT_MESSAGE] =
+          ::XInternAtom(
+            display,
+            "http://www.mip.sdu.dk/~fonseca/base/ui/WindowImpl/QUIT_MESSAGE",
+            False
+          );
+      }
+      displayHandle = display;
+      success = displayHandle != 0;
+#endif // flavor
+      if (!success) {
+        --numberOfLocks; // undo
+      }
+    }
+  } else { // unload
+    if (--numberOfLocks == 0) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+      ::UnregisterClass(
+        "http://mip.sdu.dk/~fonseca/base/ui/WindowImpl",
+        ::GetModuleHandle(0)
+      );
+#else // unix
+      ::XCloseDisplay((Display*)displayHandle);
+      displayHandle = 0;
+#endif // flavor
+    }
+  }
+  spinLock.releaseLock();
+  return success;
 }
 
 WindowImpl::WindowImpl() throw(UserInterfaceException)
   : screenHandle(0),
-    windowHandle(0),
     graphicsContextHandle(0),
     displayMode(MODE_WINDOW),
     cursor(WindowImpl::ARROW), // keep in sync with window class
     active(false),
     scope(false),
     autorepeat(true),
+    visibility(WindowImpl::INVISIBLE),
     modifiers(0),
     flags(0),
     minimumSize(0, 0),
     maximumSize(0, 0) {
-  
+
+  // TAG: keyboard state only for windows which accept focus
   fill<uint8>(keyboardState, getArraySize(keyboardState), 0);
   lastMousePosition = Position(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM);
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  spinLock.exclusiveLock();
-  // only register class if not already registered
-  if (WindowImpl::numberOfWindows++ == 0) { // TAG: must be atomic
-    WNDCLASSEX temp = {
-      sizeof(temp),
-      CS_OWNDC, // style // TAG: other flags: CS_DBLCLKS, CS_NOCLOSE, CS_HREDRAW, CS_VREDRAW
-      windowImpl::Delegate::messageHandler, // message handler
-      0, // extra bytes to allocate
-      0, // extra window bytes
-      (HINSTANCE)::GetModuleHandle(0), // instance
-      0, // icon
-      (HCURSOR)::LoadImage(0, MAKEINTRESOURCE(OCR_NORMAL), IMAGE_CURSOR, 0, 0, LR_DEFAULTCOLOR|LR_SHARED), // cursor
-      0, // background
-      0, // menu
-      "mip.sdu.dk/~fonseca/base/ui/Window", // class name
-      0 // small icon
-    };
-    ATOM windowClass = ::RegisterClassEx(&temp); // zero if fails
-    if (windowClass == 0) {
-      --numberOfWindows; // undo increment above
-    }
-  }
-  spinLock.releaseLock();
   assert(
-    numberOfWindows != 0,
-    UserInterfaceException("Unable to create window context", this)
+    loadModule(true),
+    UserInterfaceException("Unable to load module", this)
   );
-#else // unix
-  // TAG: fix display handle support (DISPLAY variable could have been changed)
-  spinLock.exclusiveLock();
-  if (WindowImpl::numberOfWindows++ == 0) { // TAG: must be atomic
-    Display* display = ::XOpenDisplay(0); // TAG: need support for connection to any server (e.g. "localhost:0.0")
-    if (display) {
-      windowImpl::destroyAtom =
-        ::XInternAtom(display, "WM_DELETE_WINDOW", True);
-      windowImpl::pingAtom =
-        ::XInternAtom(display, "http://www.mip.sdu.dk/~fonseca/base/ui/WindowImpl/PING_MESSAGE", False);
-    } else {
-      --numberOfWindows; // undo increment above
-    }
-    // TAG: store static
-    displayHandle = display;
-  }
-  spinLock.releaseLock();
-  assert(displayHandle, UserInterfaceException("Unable to connect to X server", this));
-// ::XSetWMProtocols((Display*)displayHandle, (::Window)windowHandle, &windowImpl::deleteAtom, 1); // all windows
-// ::XSetWMProtocols((Display*)displayHandle, (::Window)windowHandle, &windowImpl::pingAtom, 1); // only with main window
-#endif // flavor
+  ++numberOfWindows; // TAG: must be atomic
 }
 
 WindowImpl::WindowImpl(const Position& _position, const Dimension& _dimension, unsigned int _flags) throw(UserInterfaceException)
   : screenHandle(0),
-    windowHandle(0),
     graphicsContextHandle(0),
     displayMode(MODE_WINDOW),
     cursor(WindowImpl::ARROW), // keep in sync with window class
     active(false),
     scope(false),
     autorepeat(true),
+    visibility(WindowImpl::INVISIBLE),
     modifiers(0),
     position(_position),
     dimension(_dimension),
     flags(_flags),
     minimumSize(0, 0),
     maximumSize(0, 0) {
-  
   fill<uint8>(keyboardState, getArraySize(keyboardState), 0);
   lastMousePosition = Position(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM);
-  
+  assert(
+    loadModule(true),
+    UserInterfaceException("Unable to load module", this)
+  );
+  ++numberOfWindows; // TAG: must be atomic
+
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ATOM windowClass = 0;
   spinLock.exclusiveLock();
@@ -808,7 +858,7 @@ WindowImpl::WindowImpl(const Position& _position, const Dimension& _dimension, u
     WNDCLASSEX temp = {
       sizeof(temp),
       CS_OWNDC, // style // TAG: other flags: CS_DBLCLKS, CS_NOCLOSE, CS_HREDRAW, CS_VREDRAW
-      windowImpl::Delegate::messageHandler, // message handler
+      windowImpl::messageHandler, // message handler
       0, // extra bytes to allocate
       0, // extra window bytes
       (HINSTANCE)::GetModuleHandle(0), // instance
@@ -844,6 +894,45 @@ WindowImpl::WindowImpl(const Position& _position, const Dimension& _dimension, u
 #endif // flavor
 }
 
+Position WindowImpl::getBindingOffset(Binding binding) const throw() {
+  const Position position = getPosition();
+  const Dimension dimension = getDimension();
+  int x = position.getX();
+  int y = position.getY();
+  switch (binding) {
+  case UPPER_LEFT:
+    break;
+  case UPPER_CENTER:
+    x += dimension.getWidth()/2;
+    break;
+  case UPPER_RIGHT:
+    x += dimension.getWidth();
+    break;
+  case MIDDLE_LEFT:
+    y += dimension.getHeight()/2;
+    break;
+  case MIDDLE_CENTER:
+    x += dimension.getWidth()/2;
+    y += dimension.getHeight()/2;
+    break;
+  case MIDDLE_RIGHT:
+    x += dimension.getWidth();
+    y += dimension.getHeight()/2;
+    break;
+  case LOWER_LEFT:
+    y += dimension.getHeight();
+    break;
+  case LOWER_CENTER:
+    x += dimension.getWidth()/2;
+    y += dimension.getHeight();
+    break;
+  case LOWER_RIGHT:
+    x += dimension.getWidth();
+    y += dimension.getHeight();
+  }
+  return Position(x, y);
+}
+
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
 void WindowImpl::flush() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -872,24 +961,22 @@ unsigned int WindowImpl::getServerRelease() const throw(UserInterfaceException) 
 
 void WindowImpl::displayMenu(const Position& position, const Menu& menu) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::SetForegroundWindow((HWND)windowHandle);
+  ::SetForegroundWindow((HWND)drawableHandle);
   POINT point;
   point.x = position.getX();
   point.y = position.getY();
-  ::ClientToScreen((HWND)windowHandle, &point);
-        WRITE_SOURCE_LOCATION();
+  ::ClientToScreen((HWND)drawableHandle, &point);
   assert(
     ::TrackPopupMenuEx(
       (HMENU)menu.getHandle(),
       TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
       point.x,
       point.y,
-      (HWND)windowHandle,
+      (HWND)drawableHandle,
       0
     ),
     UserInterfaceException(this)
   );
-        WRITE_SOURCE_LOCATION();
 #else // unix
   throw NotImplemented(this);
 #endif // flavor
@@ -901,11 +988,11 @@ String WindowImpl::getTitle() const throw(UserInterfaceException) {
 
 void WindowImpl::setTitle(const String& title) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::SetWindowText((HWND)windowHandle, title.getElements());
+  ::SetWindowText((HWND)drawableHandle, title.getElements());
 #else // unix
   ::XChangeProperty(
     (Display*)displayHandle,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     XA_WM_NAME, // ::XInternAtom(display, "WM_NAME", False)
     XA_STRING,
     8,
@@ -927,7 +1014,7 @@ void WindowImpl::setIconTitle(const String& iconTitle) throw(UserInterfaceExcept
 #else // unix
   ::XChangeProperty(
     (Display*)displayHandle,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     XA_WM_ICON_NAME, // ::XInternAtom(display, "WM_ICON_NAME", False)
     XA_STRING,
     8,
@@ -941,10 +1028,10 @@ void WindowImpl::setIconTitle(const String& iconTitle) throw(UserInterfaceExcept
 void WindowImpl::setPosition(const Position& position) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   RECT rect;
-  ::GetWindowRect((HWND)windowHandle, &rect);
+  ::GetWindowRect((HWND)drawableHandle, &rect);
   assert(
     ::MoveWindow(
-      (HWND)windowHandle,
+      (HWND)drawableHandle,
       position.getX(),
       position.getY(),
       rect.right - rect.left + 1,
@@ -959,7 +1046,7 @@ void WindowImpl::setPosition(const Position& position) throw(UserInterfaceExcept
   changes.y = position.getY();
   ::XConfigureWindow(
     (Display*)displayHandle,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     CWX|CWY,
     &changes
   );
@@ -969,10 +1056,10 @@ void WindowImpl::setPosition(const Position& position) throw(UserInterfaceExcept
 void WindowImpl::setDimension(const Dimension& dimension) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   RECT rect;
-  ::GetWindowRect((HWND)windowHandle, &rect);
+  ::GetWindowRect((HWND)drawableHandle, &rect);
   assert(
     ::MoveWindow(
-      (HWND)windowHandle,
+      (HWND)drawableHandle,
       rect.left,
       rect.top,
       dimension.getWidth(),
@@ -987,7 +1074,7 @@ void WindowImpl::setDimension(const Dimension& dimension) throw(UserInterfaceExc
   changes.height = dimension.getHeight();
   ::XConfigureWindow(
     (Display*)displayHandle,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     CWWidth|CWHeight,
     &changes
   );
@@ -998,7 +1085,7 @@ void WindowImpl::setRegion(const Position& position, const Dimension& dimension)
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
     ::MoveWindow(
-      (HWND)windowHandle,
+      (HWND)drawableHandle,
       position.getX(),
       position.getY(),
       dimension.getWidth(),
@@ -1015,7 +1102,7 @@ void WindowImpl::setRegion(const Position& position, const Dimension& dimension)
   changes.height = dimension.getHeight();
   ::XConfigureWindow(
     (Display*)displayHandle,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     CWX|CWY|CWWidth|CWHeight,
     &changes
   );
@@ -1061,7 +1148,7 @@ void WindowImpl::setCursor(Cursor cursor) throw(UserInterfaceException) {
         0,
         LR_DEFAULTCOLOR|LR_SHARED
       );
-      ::SetClassLong((HWND)windowHandle, GCL_HCURSOR, (LONG)handle);
+      ::SetClassLong((HWND)drawableHandle, GCL_HCURSOR, (LONG)handle);
       POINT point;
       ::GetCursorPos(&point);
       ::SetCursorPos(point.x, point.y);
@@ -1100,14 +1187,14 @@ void WindowImpl::setCursor(Cursor cursor) throw(UserInterfaceException) {
     ::Cursor nativeCursor;
     if (cursor == NONE) {
       char data = 0;
-      Pixmap pixmap = ::XCreateBitmapFromData((Display*)displayHandle, (::Window)windowHandle, &data, 1, 1);
+      Pixmap pixmap = ::XCreateBitmapFromData((Display*)displayHandle, (::Window)drawableHandle, &data, 1, 1);
       XColor color;
       nativeCursor = ::XCreatePixmapCursor((Display*)displayHandle, pixmap, pixmap, &color, &color, 0, 0);
       ::XFreePixmap((Display*)displayHandle, pixmap);
     } else {
       nativeCursor = ::XCreateFontCursor((Display*)displayHandle, NATIVE_GLYPH[cursor]);
     }
-    ::XDefineCursor((Display*)displayHandle, (::Window)windowHandle, nativeCursor);
+    ::XDefineCursor((Display*)displayHandle, (::Window)drawableHandle, nativeCursor);
     ::XFlush((Display*)displayHandle);
     this->cursor = cursor;
   }
@@ -1124,7 +1211,7 @@ Position WindowImpl::toGlobalPosition(const Position& position) const throw(User
   ::Window child;
   Bool result = ::XTranslateCoordinates(
     (Display*)displayHandle,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     DefaultRootWindow((Display*)displayHandle),
     position.getX(),
     position.getY(),
@@ -1152,7 +1239,7 @@ Position WindowImpl::getCursorPosition() const throw(UserInterfaceException) {
   ::Window child;
   Bool result = ::XQueryPointer(
     (Display*)displayHandle,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     &root,
     &child,
     &rootX,
@@ -1174,7 +1261,7 @@ void WindowImpl::setCursorPosition(const Position& position) throw(UserInterface
   ::XWarpPointer(
     (Display*)displayHandle,
     None,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     0,
     0,
     0,
@@ -1204,9 +1291,9 @@ void WindowImpl::setCursorConfinement() throw(UserInterfaceException) {
   POINT offset;
   offset.x = 0;
   offset.y = 0;
-  ::ClientToScreen((HWND)windowHandle, &offset);
+  ::ClientToScreen((HWND)drawableHandle, &offset);
   RECT rect;  
-  assert(::GetClientRect((HWND)windowHandle, &rect), UserInterfaceException(this));
+  assert(::GetClientRect((HWND)drawableHandle, &rect), UserInterfaceException(this));
   rect.left += offset.x;
   rect.top += offset.y;
   rect.right += offset.x;
@@ -1215,12 +1302,12 @@ void WindowImpl::setCursorConfinement() throw(UserInterfaceException) {
 #else // unix
   int result = ::XGrabPointer(
     (Display*)displayHandle,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     False,
     PointerMotionMask|PointerMotionHintMask|ButtonPressMask|ButtonReleaseMask, // TAG: fixme
     GrabModeAsync, // pointer mode
     GrabModeAsync, // keyboard mode
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     None, // cursor // TAG: use current cursor
     CurrentTime
   );
@@ -1268,13 +1355,25 @@ void WindowImpl::setClipping(const Position& position, const Dimension& dimensio
 
 void WindowImpl::close() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (windowHandle) {
-    assert(::DestroyWindow((HWND)windowHandle), UserInterfaceException(this));
+  if (drawableHandle) {
+    assert(::DestroyWindow((HWND)drawableHandle), UserInterfaceException(this));
   }
 #else // unix
-  if (windowHandle) {
-    ::XDestroyWindow((Display*)displayHandle, (::Window)windowHandle);
-    windowHandle = 0;
+  if (drawableHandle) {
+    XClientMessageEvent event;
+    event.type = ClientMessage;
+    event.window = (::Window)drawableHandle;
+    event.message_type = windowImpl::protocolsAtom;
+    event.format = 32;
+    event.data.l[0] = windowImpl::atoms[DESTROY_MESSAGE];
+    event.data.l[1] = CurrentTime; // TAG: is this ok
+    ::XSendEvent(
+      (Display*)displayHandle,
+      (::Window)drawableHandle,
+      False,
+      0,
+      (XEvent*)&event
+    );
   }
 #endif // flavor
 }
@@ -1291,7 +1390,7 @@ bool WindowImpl::isParentOf(const WindowImpl& object) throw(UserInterfaceExcepti
 
 bool WindowImpl::isMaximized() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return ::IsZoomed((HWND)windowHandle) == TRUE;
+  return ::IsZoomed((HWND)drawableHandle) == TRUE;
 #else // unix
   // TAG: if dimension == screen dimension && position = (0, 0) relative to screen
   return false; // TAG: fixme
@@ -1300,7 +1399,7 @@ bool WindowImpl::isMaximized() throw(UserInterfaceException) {
 
 bool WindowImpl::isMinimized() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return ::IsIconic((HWND)windowHandle) == TRUE;
+  return ::IsIconic((HWND)drawableHandle) == TRUE;
 #else // unix
   throw NotImplemented(this);
 #endif // flavor
@@ -1308,7 +1407,7 @@ bool WindowImpl::isMinimized() throw(UserInterfaceException) {
 
 void WindowImpl::maximize() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::ShowWindow((HWND)windowHandle, SW_MAXIMIZE);
+  ::ShowWindow((HWND)drawableHandle, SW_MAXIMIZE);
 #else // unix
   // store current position and dimension
   // what is the decoration frame size?
@@ -1317,7 +1416,7 @@ void WindowImpl::maximize() throw(UserInterfaceException) {
   ::Window child;
   Bool result = ::XTranslateCoordinates(
     (Display*)displayHandle,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     DefaultRootWindow((Display*)displayHandle),
     position.getX(),
     position.getY(),
@@ -1334,7 +1433,7 @@ void WindowImpl::maximize() throw(UserInterfaceException) {
   changes.height = XHeightOfScreen((Screen*)screenHandle);
   ::XConfigureWindow(
     (Display*)displayHandle,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     CWX|CWY|CWWidth|CWHeight,
     &changes
   );
@@ -1343,12 +1442,12 @@ void WindowImpl::maximize() throw(UserInterfaceException) {
 
 void WindowImpl::minimize() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::ShowWindow((HWND)windowHandle, SW_MINIMIZE);
+  ::ShowWindow((HWND)drawableHandle, SW_MINIMIZE);
 #else // unix
   // WM_CHANGE_STATE ClientMessage event with a format of 32 and a first data element of IconicSlate
   ::XIconifyWindow(
    (Display*)displayHandle,
-   (::Window)windowHandle,
+   (::Window)drawableHandle,
    0 // TAG: fixme screen_number
   );
 #endif // flavor
@@ -1356,7 +1455,7 @@ void WindowImpl::minimize() throw(UserInterfaceException) {
 
 void WindowImpl::normalize() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::ShowWindow((HWND)windowHandle, SW_RESTORE);
+  ::ShowWindow((HWND)drawableHandle, SW_RESTORE);
 #else // unix
   Position originalPosition = position; // TAG: fixme - must be attribute
   Dimension originalDimension = dimension; // TAG: fixme - must be attribute
@@ -1367,7 +1466,7 @@ void WindowImpl::normalize() throw(UserInterfaceException) {
   changes.height = originalDimension.getHeight();
   ::XConfigureWindow(
     (Display*)displayHandle,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     CWX|CWY|CWWidth|CWHeight,
     &changes
   );
@@ -1376,65 +1475,65 @@ void WindowImpl::normalize() throw(UserInterfaceException) {
 
 void WindowImpl::show() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::ShowWindow((HWND)windowHandle, SW_SHOW);
+  ::ShowWindow((HWND)drawableHandle, SW_SHOW);
 #else // unix
-  ::XMapWindow((Display*)displayHandle, (::Window)windowHandle);
+  ::XMapWindow((Display*)displayHandle, (::Window)drawableHandle);
 #endif // flavor
 }
 
 void WindowImpl::hide() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::ShowWindow((HWND)windowHandle, SW_HIDE);
+  ::ShowWindow((HWND)drawableHandle, SW_HIDE);
 #else // unix
-  ::XUnmapWindow((Display*)displayHandle, (::Window)windowHandle);
+  ::XUnmapWindow((Display*)displayHandle, (::Window)drawableHandle);
 #endif // flavor
 }
 
 void WindowImpl::enable() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
-    ::EnableWindow((HWND)windowHandle, TRUE),
+    ::EnableWindow((HWND)drawableHandle, TRUE),
     UserInterfaceException(this)
   );
 #else // unix
   // TAG: is there a better alternative
-  ::XMapWindow((Display*)displayHandle, (::Window)windowHandle);
+  ::XMapWindow((Display*)displayHandle, (::Window)drawableHandle);
 #endif // flavor
 }
 
 void WindowImpl::disable() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
-    ::EnableWindow((HWND)windowHandle, FALSE),
+    ::EnableWindow((HWND)drawableHandle, FALSE),
     UserInterfaceException(this)
   );
 #else // unix
   // TAG: is there a better alternative
-  ::XUnmapWindow((Display*)displayHandle, (::Window)windowHandle);
+  ::XUnmapWindow((Display*)displayHandle, (::Window)drawableHandle);
 #endif // flavor
 }
 
 void WindowImpl::raise() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
-    ::SetForegroundWindow((HWND)windowHandle),
+    ::SetForegroundWindow((HWND)drawableHandle),
     UserInterfaceException(this)
   );
 #else // unix
-  ::XMapRaised((Display*)displayHandle, (::Window)windowHandle);
+  ::XMapRaised((Display*)displayHandle, (::Window)drawableHandle);
   // TAG: what about focus
 #endif // flavor
 }
 
 void WindowImpl::acquireFocus() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(::SetFocus((HWND)windowHandle), UserInterfaceException(this));
+  assert(::SetFocus((HWND)drawableHandle), UserInterfaceException(this));
 #else // unix
-  // show()
-  // raise()
+  // TAG: fixme
+  return;
   ::XSetInputFocus(
     (Display*)displayHandle,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     RevertToParent,
     CurrentTime
   );
@@ -1444,7 +1543,7 @@ void WindowImpl::acquireFocus() throw(UserInterfaceException) {
 // TAG: wrong name; use hasCapture or isCapturing
 bool WindowImpl::getCapture() const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return ::GetCapture() == (HWND)windowHandle;
+  return ::GetCapture() == (HWND)drawableHandle;
 #else // unix
   throw NotImplemented(this);
 #endif // flavor
@@ -1453,7 +1552,7 @@ bool WindowImpl::getCapture() const throw(UserInterfaceException) {
 void WindowImpl::setCapture(bool state) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (state) {
-    ::SetCapture((HWND)windowHandle);
+    ::SetCapture((HWND)drawableHandle);
   } else {
     ::ReleaseCapture();
   }
@@ -1461,7 +1560,7 @@ void WindowImpl::setCapture(bool state) throw(UserInterfaceException) {
   if (state) {
     int result = ::XGrabPointer(
       (Display*)displayHandle,
-      (::Window)windowHandle,
+      (::Window)drawableHandle,
       False,
       PointerMotionMask|PointerMotionHintMask|ButtonPressMask|ButtonReleaseMask, // TAG: fixme
       GrabModeAsync, // pointer mode
@@ -1572,7 +1671,10 @@ unsigned int WindowImpl::getKeyState(unsigned int code) const throw(UserInterfac
   throw NotImplemented(this);
 #endif // flavor
 }
-  
+
+void WindowImpl::onDestruction() throw() {
+}
+
 void WindowImpl::onDisplay() throw() {
 }
 
@@ -1618,26 +1720,24 @@ void WindowImpl::onMenu(unsigned int identifier) throw() {
 void WindowImpl::onCommand(unsigned int identifier) throw() {
 }
 
-// void WindowImpl::invalidate() throw(UserInterfaceException) {
-//   assert(
-//     ::InvalidateRect((HWND)windowHandle, 0, FALSE) != FALSE,
-//     UserInterfaceException(this)
-//   );
-// }
+void WindowImpl::invalidate() throw(UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  assert(
+    ::InvalidateRect((HWND)drawableHandle, 0, FALSE) != FALSE,
+    UserInterfaceException(this)
+  );
+#else // unix
+#endif // flavor
+}
 
 void WindowImpl::update() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: time this implementation and select faster choice
   assert(
-    ::UpdateWindow((HWND)windowHandle),
+    ::UpdateWindow((HWND)drawableHandle),
     UserInterfaceException(this)
   );
-//   assert(
-//     ::PostMessage((HWND)windowHandle, WM_PAINT, 0, 0),
-//     UserInterfaceException(this)
-//   );
 #else // unix
-  throw NotImplemented(this);
 #endif // flavor
 }
 
@@ -1645,7 +1745,18 @@ void WindowImpl::exit() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::PostQuitMessage(0);
 #else // unix
-  throw NotImplemented(Type::getType<WindowImpl>());
+  XClientMessageEvent event;
+  event.type = ClientMessage;
+  event.window = 0;
+  event.message_type = windowImpl::protocolsAtom;
+  event.format = 32;
+  event.data.l[0] = windowImpl::atoms[QUIT_MESSAGE];
+  event.data.l[1] = CurrentTime;  
+
+  ::XPutBackEvent(
+    (Display*)displayHandle,
+    (XEvent*)&event
+  );
 #endif // flavor
 }
 
@@ -1653,7 +1764,8 @@ void WindowImpl::wait() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::WaitMessage();
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  XEvent event;
+  ::XPeekEvent((Display*)displayHandle, &event);
 #endif // flavor
 }
 
@@ -1664,7 +1776,7 @@ bool WindowImpl::wait(unsigned int milliseconds) throw(UserInterfaceException) {
   }
   return ::MsgWaitForMultipleObjects(0, 0, FALSE, INFINITE, QS_ALLEVENTS) != WAIT_TIMEOUT;
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: wait with timeout
 #endif // flavor
 }
 
@@ -1676,45 +1788,51 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
       if (msg.message == WM_QUIT) {
         return;
       } else {
-        // if (!::TranslateAccelerator(windowHandle, table, &msg)) {
+        // if (!::TranslateAccelerator(drawableHandle, table, &msg)) {
         ::TranslateMessage(&msg);
         ::DispatchMessage(&msg);
         // }
       }
     }	else {
+      // TAG: for each window do onIdle()?
       onIdle();
     }
   }
 #else // unix
   while (true) {
+//     while (!::XPending((Display*)displayHandle)) {
+//       // TAG: for each window do onIdle()?
+//     }
     XEvent event;
     ::XNextEvent((Display*)displayHandle, &event);
-    // TAG: check if src and dest window are ok
+    if ((event.type == ClientMessage) &&
+        (event.xclient.data.l[0] == windowImpl::atoms[QUIT_MESSAGE])) {
+      return;
+    }
+    WindowImpl* window = windowImpl::getWindow((void*)((XAnyEvent*)&event)->window);
+    if (!window) {
+      continue;
+    }
+    
     switch (event.type) {
     case ClientMessage:
-      // TAG: fixme
-      if (event.xclient.data.l[0] == windowImpl::destroyAtom) {
-        onDestruction();
+      if (event.xclient.data.l[0] == windowImpl::atoms[DESTROY_MESSAGE]) {
+        window->onDestruction();
+        window->destroy();
       }
-      break;
-    case MapNotify:
-      fout << MESSAGE("Event: MapNotify") << ENDL;
-      break;
-    case MappingNotify:
-      fout << MESSAGE("Event: MappingNotify") << ENDL;
       break;
     case ConfigureNotify:
       {
         const XConfigureEvent* specificEvent = Cast::pointer<const XConfigureEvent*>(&event);
         const Dimension dimension(specificEvent->width, specificEvent->height);
-        if (dimension != this->dimension) {
-          this->dimension = dimension;
-          onResize(dimension);
+        if (dimension != window->dimension) {
+          window->dimension = dimension;
+          window->onResize(dimension);
         }
         const Position position(specificEvent->x, specificEvent->y);
-        if (position != this->position) {
-          this->position = position;
-          onMove(position);
+        if (position != window->position) {
+          window->position = position;
+          window->onMove(position);
         }
       }
       break;
@@ -1722,14 +1840,14 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
       {
         const XExposeEvent* specificEvent = Cast::pointer<const XExposeEvent*>(&event);
         // Region(Position(specificEvent->x, specificEvent->y), Dimension(specificEvent->width, specificEvent->height));
-        onDisplay();
+        window->onDisplay();
       }
       break;
     case FocusIn:
-      onFocus(WindowImpl::ACQUIRED_FOCUS);
+      window->onFocus(WindowImpl::ACQUIRED_FOCUS);
       break;
     case FocusOut:
-      onFocus(WindowImpl::LOST_FOCUS);
+      window->onFocus(WindowImpl::LOST_FOCUS);
       break;
     case ButtonPress:
     case ButtonRelease:
@@ -1789,7 +1907,7 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
           button = WindowImpl::Mouse::EXTRA2;
           break;
         }
-        onMouseButton(
+        window->onMouseButton(
           Position(specificEvent->x, specificEvent->y),
           button,
           pressed ? WindowImpl::Mouse::PRESSED : WindowImpl::Mouse::RELEASED,
@@ -1802,7 +1920,7 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
         const XMotionEvent* specificEvent = Cast::pointer<const XMotionEvent*>(&event);
         const Position position(specificEvent->x, specificEvent->y);
         // TAG: only if scope has not been changed and...?
-        if (position == lastMousePosition) {
+        if (position == window->lastMousePosition) {
           break;
         }
         unsigned int state = 0;
@@ -1840,8 +1958,8 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
         }
         if (specificEvent->state & Mod5Mask) { // TAG: what about this one
         }
-        lastMousePosition = position;
-        onMouseMove(position, state);
+        window->lastMousePosition = position;
+        window->onMouseMove(position, state);
       }
       break;
     case KeyPress:
@@ -1851,7 +1969,7 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
         if (event.type == KeyPress) {
           flags |= WindowImpl::Key::PRESSED;
         }
-        if (!autorepeat) {
+        if (!window->autorepeat) {
           XEvent nextEvent;
           if (::XEventsQueued((Display*)displayHandle, QueuedAfterReading)) {
             ::XPeekEvent((Display*)displayHandle, &nextEvent);
@@ -1878,19 +1996,19 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
         //       modifiers |= (window->keyboardState[VK_CAPITAL] & 0x01) ? WindowImpl::Key::CAPS_LOCK_TOGGLED : 0;
         //       modifiers |= (window->keyboardState[VK_SCROLL] & 0x01) ? WindowImpl::Key::SCROLL_LOCK_TOGGLED : 0;
         //       modifiers |= (window->keyboardState[VK_NUMLOCK] & 0x01) ? WindowImpl::Key::NUM_LOCK_TOGGLED : 0;
-        this->modifiers = modifiers;
+        window->modifiers = modifiers;
       
         unsigned int code = 0;
         char buffer[2];
         int numberOfChars = ::XLookupString((XKeyEvent*)&event, buffer,  sizeof(buffer), 0, 0);
         switch (numberOfChars) {
         case 2:
-          onKey((uint8)buffer[0], flags|WindowImpl::Key::DEAD|WindowImpl::Key::ASCII, modifiers);
-          onKey((uint8)buffer[1], flags|WindowImpl::Key::ASCII, modifiers);
+          window->onKey((uint8)buffer[0], flags|WindowImpl::Key::DEAD|WindowImpl::Key::ASCII, modifiers);
+          window->onKey((uint8)buffer[1], flags|WindowImpl::Key::ASCII, modifiers);
           code = 1; // TAG: clean up
           break;
         case 1:
-          onKey((uint8)buffer[0], flags|WindowImpl::Key::ASCII, modifiers);
+          window->onKey((uint8)buffer[0], flags|WindowImpl::Key::ASCII, modifiers);
           code = 1; // TAG: clean up
           break;
         case 0:
@@ -2173,42 +2291,62 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
           break;
         }
         if (code) {
-          onKey(code, flags, modifiers);
+          window->onKey(code, flags, modifiers);
         }
       }
       break;
     case EnterNotify:
-      scope = true;
-      onMouseScope(true);
+      window->scope = true;
+      window->onMouseScope(true);
       break;
     case LeaveNotify:
-      scope = false;
-      onMouseScope(false);
+      window->scope = false;
+      window->onMouseScope(false);
+      break;
+    case MapNotify:
+      if (WindowImpl::VISIBLE != window->visibility) {
+        window->visibility = WindowImpl::VISIBLE;
+        window->onVisibility(WindowImpl::VISIBLE);
+      }
       break;
     case UnmapNotify:
-      fout << MESSAGE("Event: UnmapNotify") << ENDL;
+      // TAG: I get no VisibilityNotify after UnmapNotify with X-Win32
+      if (WindowImpl::INVISIBLE != window->visibility) {
+        window->visibility = WindowImpl::INVISIBLE;
+        window->onVisibility(WindowImpl::INVISIBLE);
+      }
       break;
     case VisibilityNotify:
       {
+        // TAG: bug VisibilityUnobscured is prefixed with VisibilityPartiallyObscured for X-Win32
         const XVisibilityEvent* specificEvent = Cast::pointer<const XVisibilityEvent*>(&event);
-        onVisibility(
-          (specificEvent->state == VisibilityFullyObscured) ? WindowImpl::INVISIBLE : WindowImpl::VISIBLE
-        );
+        Visibility visibility;
+        switch (specificEvent->state) {
+        case VisibilityFullyObscured:
+          visibility = WindowImpl::INVISIBLE;
+          break;
+        case VisibilityPartiallyObscured:
+//           visibility = WindowImpl::OBSCURED;
+//           break;
+        case VisibilityUnobscured:
+        default:
+          visibility = WindowImpl::VISIBLE;
+        }
+        if (visibility != window->visibility) {
+          window->visibility = visibility;          
+          window->onVisibility(visibility);
+        }
       }
       break;
-      //     case ClientMessage:
-      //       break;
+    case GravityNotify:
+      {
+        const XGravityEvent* specificEvent = Cast::pointer<const XGravityEvent*>(&event);
+        Position position(specificEvent->x, specificEvent->y);
+        window->position = position;
+        window->onMove(position);
+      }
     case DestroyNotify:
-      fout << MESSAGE("Event: DestroyNotify") << ENDL;
       break;
-      //     case CirculateNotify:
-      //       break;
-      //     case CreateNotify:
-      //       break;
-      //     case GravityNotify:
-      //       break;
-      //     case ReparentNotify:
-      //       break;
     default:
       fout << MESSAGE("Event: unhandled") << ENDL;
     }
@@ -2298,7 +2436,7 @@ bool WindowImpl::isResponding(unsigned int milliseconds) throw(UserInterfaceExce
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   DWORD_PTR result;
   LRESULT temp = ::SendMessageTimeout(
-    (HWND)windowHandle,
+    (HWND)drawableHandle,
     WM_USER + WindowImpl::PING_MESSAGE,
     0,
     0,
@@ -2315,81 +2453,52 @@ bool WindowImpl::isResponding(unsigned int milliseconds) throw(UserInterfaceExce
   // TAG: use timeout period
   XClientMessageEvent event;
   event.type = ClientMessage;
-  event.window = (::Window)windowHandle;
-  event.message_type = ::XInternAtom((Display*)displayHandle, "WM_PROTOCOLS", True); // TAG: static cache
+  event.window = (::Window)drawableHandle;
+  event.message_type = windowImpl::protocolsAtom;
   event.format = 32;
-  event.data.l[0] = windowImpl::pingAtom;
+  event.data.l[0] = windowImpl::atoms[PING_MESSAGE];
   event.data.l[1] = CurrentTime;
   
   ::XSendEvent(
     (Display*)displayHandle,
-    (::Window)windowHandle,
+    (::Window)drawableHandle,
     False,
     0,
     (XEvent*)&event
   );
-#endif // flavor
-}
-
-void WindowImpl::destroy() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (windowHandle) {
-    assert(::DestroyWindow((HWND)windowHandle), UserInterfaceException(this));
-  }
-#else // unix
-  if (windowHandle) {
-    XClientMessageEvent event;
-    event.type = ClientMessage;
-    event.window = (::Window)windowHandle;
-    event.message_type = ::XInternAtom((Display*)displayHandle, "WM_PROTOCOLS", True); // TAG: static cache
-    event.format = 32;
-    event.data.l[0] = windowImpl::destroyAtom;
-    event.data.l[1] = CurrentTime;
-    
-    ::XSendEvent(
-      (Display*)displayHandle,
-      (::Window)windowHandle,
-      False,
-      0,
-      (XEvent*)&event
-    );
-  }
 #endif // flavor
 }
 
 WindowImpl::~WindowImpl() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::DestroyWindow((HWND)windowHandle);
-  windowImpl::removeWindow(windowHandle); // should be atomic
-  spinLock.exclusiveLock();
-  if (--numberOfWindows == 0) {
-    ::UnregisterClass("mip.sdu.dk/~fonseca/base/ui/Window", ::GetModuleHandle(0));
+  if (drawableHandle) {
+    ::DestroyWindow((HWND)drawableHandle);
   }
-  spinLock.releaseLock();
 #else // unix
-  XClientMessageEvent event;
-  event.type = ClientMessage;
-  event.window = (::Window)windowHandle;
-  event.message_type = ::XInternAtom((Display*)displayHandle, "WM_PROTOCOLS", True); // TAG: static cache
-  event.format = 32;
-  event.data.l[0] = windowImpl::destroyAtom;
-  event.data.l[1] = CurrentTime; // TAG: is this ok
-  
-  ::XSendEvent(
-    (Display*)displayHandle,
-    (::Window)windowHandle,
-    False,
-    0,
-    (XEvent*)&event
-  );
-  // TAG: must block until destruction has completed
-  spinLock.exclusiveLock();
-  if (--numberOfWindows == 0) {
-    ::XCloseDisplay((Display*)displayHandle);
-    displayHandle = 0;
+  if (drawableHandle) {
+    XClientMessageEvent event;
+    event.type = ClientMessage;
+    event.window = (::Window)drawableHandle;
+    event.message_type = windowImpl::protocolsAtom;
+    event.format = 32;
+    event.data.l[0] = windowImpl::atoms[DESTROY_MESSAGE];
+    event.data.l[1] = CurrentTime; // TAG: is this ok
+    
+    ::XSendEvent(
+      (Display*)displayHandle,
+      (::Window)drawableHandle,
+      False,
+      0,
+      (XEvent*)&event
+    );
+    // TAG: must block until destruction has completed
   }
-  spinLock.releaseLock();
 #endif // flavor
+  // TAG: dispatch until window is destroyed
+  spinLock.exclusiveLock();
+  --numberOfWindows;
+  spinLock.releaseLock();
+  loadModule(false); // never fails
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

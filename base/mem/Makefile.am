@@ -56,4 +56,5 @@ section_HEADERS = \
   ReferenceCountedObjectWrapper.h \
   ReferenceCounter.h \
   SharedMemory.h \
+  StrictPointer.h \
   VirtualMemory.h

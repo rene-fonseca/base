@@ -23,6 +23,7 @@ libsecurity_la_SOURCES = \
   CRC32.cpp \
   Group.cpp \
   MD5Sum.cpp \
+  SecurityException.cpp \
   SHA1.cpp \
   SHA256.cpp \
   SHA384.cpp \
@@ -39,6 +40,7 @@ section_HEADERS = \
   CRC32.h \
   Group.h \
   MD5Sum.h \
+  SecurityException.h \
   SHA1.h \
   SHA256.h \
   SHA384.h \

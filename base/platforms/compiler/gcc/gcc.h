@@ -14,9 +14,11 @@
 #ifndef _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_GCC__GCC_H
 #define _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_GCC__GCC_H
 
+namespace base {
+
 #define _DK_SDU_MIP__BASE__COMPILER _DK_SDU_MIP__BASE__GCC
 #define _DK_SDU_MIP__BASE__COMPILER_VERSION __GNUC__
-#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE org::gnu
+#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE compiler::org::gnu
 
 #define _DK_SDU_MIP__BASE__FUNCTION __PRETTY_FUNCTION__
 
@@ -27,6 +29,7 @@
 #define _DK_SDU_MIP__BASE__SECTION(name) __attribute__ ((section (name)))
 #define _DK_SDU_MIP__BASE__UNUSED __attribute__ ((unused))
 #define _DK_SDU_MIP__BASE__WEAK __attribute__ ((weak))
+#define _DK_SDU_MIP__BASE__FORCE_INLINE __attribute__ ((always_inline))
 
 #define _DK_SDU_MIP__BASE__COMPILER_INLINE __inline
 #define _DK_SDU_MIP__BASE__COMPILER_RESTRICT __restrict
@@ -61,37 +64,76 @@
 #  endif
 #endif
 
-namespace org {
-  
-  namespace gnu {
+  namespace compiler {
+    
+    namespace org {
+      
+      namespace gnu {
 
 #if defined(_DK_SDU_MIP__BASE__COMPILER_MMX_EXTENSION)
-    /** MMX extension data type. */
-    typedef int v8qi __attribute__ ((mode (V8QI)));
-    /** MMX extension data type. */
-    typedef int v4hi __attribute__ ((mode (V4HI)));
-    /** MMX extension data type. */
-    typedef int v2si __attribute__ ((mode (V2SI)));
+        /** MMX extension data type. */
+        typedef int v8qi __attribute__ ((mode (V8QI)));
+        /** MMX extension data type. */
+        typedef int v4hi __attribute__ ((mode (V4HI)));
+        /** MMX extension data type. */
+        typedef int v2si __attribute__ ((mode (V2SI)));
 #endif
 
 #if defined(_DK_SDU_MIP__BASE__COMPILER_SSE_EXTENSION)
-    /** Streaming SIMD Extensions (SSE) data type. */
-    typedef __m128 sse;
+        /** Streaming SIMD Extensions (SSE) data type. */
+        typedef int sse64 __attribute__ ((mode (V4HI)));
 #endif
     
-    typedef int int8 __attribute__ ((mode (QI)));
-    typedef unsigned int uint8  __attribute__ ((mode (QI)));
-    typedef int int16 __attribute__ ((mode (HI)));
-    typedef unsigned int uint16 __attribute__ ((mode (HI)));
-    typedef int int32 __attribute__ ((mode (SI)));
-    typedef unsigned int uint32 __attribute__ ((mode (SI)));
-    typedef int int64 __attribute__ ((mode (DI)));
-    typedef unsigned int uint64 __attribute__ ((mode (DI)));
+#if defined(_DK_SDU_MIP__BASE__COMPILER_SSE2_EXTENSION)
+        /** Vector of 4 32 bit floating point values (SSE2). */
+        typedef int v4sf __attribute__ ((mode (V4SF)));
+        /** Vector of 4 32 bit integers (SSE2). */
+        typedef int v4si __attribute__ ((mode (V4SI)));    
+        /** Streaming SIMD Extensions (SSE2) data type. */
+        typedef int sse128 __attribute__ ((mode (V4SF)));
+#endif
     
-    typedef int diff __attribute__ ((mode (__pointer__)));
-    typedef unsigned int size __attribute__ ((mode (__pointer__)));
-  };
+#if defined(_DK_SDU_MIP__BASE__COMPILER__SUPPORTS_128)
+        /** 128 bit signed integer. */
+        typedef int int128 __attribute__ ((mode (TI)));
+        /** 128 bit unsigned integer. */
+        typedef unsigned int uint128 __attribute__ ((mode (TI)));
+#endif
+    
+        /** 8 bit signed integer. */
+        typedef int int8 __attribute__ ((mode (QI)));
+        /** 8 bit unsigned integer. */
+        typedef unsigned int uint8  __attribute__ ((mode (QI)));
+        /** 16 bit signed integer. */
+        typedef int int16 __attribute__ ((mode (HI)));
+        /** 16 bit unsigned integer. */
+        typedef unsigned int uint16 __attribute__ ((mode (HI)));
+        /** 32 bit signed integer. */
+        typedef int int32 __attribute__ ((mode (SI)));
+        /** 32 bit unsigned integer. */
+        typedef unsigned int uint32 __attribute__ ((mode (SI)));
+        /** 64 bit signed integer. */
+        typedef int int64 __attribute__ ((mode (DI)));
+        /** 64 bit unsigned integer. */
+        typedef unsigned int uint64 __attribute__ ((mode (DI)));
+        /** 32 bit floating point data type. */
+        typedef float float32 __attribute__ ((mode (SF)));
+        /** 64 bit floating point data type. */
+        typedef float float64 __attribute__ ((mode (DF)));
+        /** Pointer difference. */
+        typedef int diff __attribute__ ((mode (__pointer__)));
+        /** Offset data type. */
+        typedef unsigned int size __attribute__ ((mode (__pointer__)));
+        
+      }; // end of namespace gnu
   
-};
+    }; // end of namespace org
+ 
+  }; // end of namespace compiler
+
+  // import GCC data types
+  using compiler::org::gnu;
+  
+}; // end of namespace base
 
 #endif

@@ -18,7 +18,7 @@ Timer::Timer() throw() : stopTime(0) {
   start();
 }
 
-inline void Timer::start() throw() {
+void Timer::start() throw() {
 #if defined(__win32__)
   ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
   QueryPerformanceCounter((LARGE_INTERGER*)&startTime);
@@ -29,7 +29,7 @@ inline void Timer::start() throw() {
 #endif
 }
 
-inline void Timer::stop() throw() {
+void Timer::stop() throw() {
 #if defined(__win32__)
   ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
   QueryPerformanceCounter((LARGE_INTERGER*)&stopTime);

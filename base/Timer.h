@@ -88,7 +88,7 @@ public:
 /**
   Times the current scope. Writes the elapsed time to fout when the scope is exited.
 */
-#define timeScope() Timer _dk_sdu_mip__base__timer
+#define timeScope() TimeScope _dk_sdu_mip__base__timer
 
 #define startScopeTimer() _dk_sdu_mip__base__timer.start()
 

@@ -1,13 +1,16 @@
 ####### kdevelop will overwrite this part!!! (begin)##########
 ####### kdevelop will overwrite this part!!! (end)############
 DEFS = @DEFS@
-bin_PROGRAMS = Array List Set Map String io client server datagramClient datagramServer Thread referenceCounting
+bin_PROGRAMS = Array List Queue Set Map String io client server datagramClient datagramServer Thread referenceCounting fileInput
 
 Array_SOURCES = Array.cpp
 Array_LDADD = ../base/libbase.la
 
 List_SOURCES = List.cpp
 List_LDADD = ../base/libbase.la
+
+Queue_SOURCES = Queue.cpp
+Queue_LDADD = ../base/libbase.la
 
 Set_SOURCES = Set.cpp
 Set_LDADD = ../base/libbase.la
@@ -39,4 +42,7 @@ Thread_LDADD = ../base/libbase.la
 referenceCounting_SOURCES = referenceCounting.cpp
 referenceCounting_LDADD = ../base/libbase.la
 
-EXTRA_DIST = Array.cpp List.cpp Set.cpp Map.cpp String.cpp io.cpp client.cpp server.cpp datagramClient.cpp datagramServer.cpp Thread.cpp referenceCounting.cpp
+fileInput_SOURCES = fileInput.cpp
+fileInput_LDADD = ../base/libbase.la
+
+EXTRA_DIST = Array.cpp List.cpp Queue.cpp Set.cpp Map.cpp String.cpp io.cpp client.cpp server.cpp datagramClient.cpp datagramServer.cpp Thread.cpp referenceCounting.cpp fileInput.cpp

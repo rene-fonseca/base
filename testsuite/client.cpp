@@ -3,24 +3,22 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/Integer.h>
 #include <base/net/ClientSocket.h>
 #include <base/net/InetInterface.h>
 #include <base/net/InetService.h>
+#include <base/concurrency/Thread.h>
+#include <typeinfo>
 
-char* hostname = 0;
-char* servicename = 0;
+void client(String<> host, String<> service) {
+  fout << "Server: " << host << EOL;
 
-void test() {
-  fout << "Testing StreamSocket...\n";
-
-  fout << "Server: " << hostname << EOL;
-
-  InetAddress address;
+  InetAddress address; // the address of the remote host
   {
     fout << "Server addresses:\n";
-    List<InetAddress> addresses = InetAddress::getAddressesByName(hostname);
+    List<InetAddress> addresses = InetAddress::getAddressesByName(host);
     List<InetAddress>::ReadOnlyEnumeration enu(addresses);
     unsigned int index = 0;
     while (enu.hasNext()) {
@@ -34,27 +32,25 @@ void test() {
     }
   }
 
-  unsigned short port = 1234; // default
+  unsigned short port; // the port to bind the server socket to
   try {
-    // does not work
-    Integer integer(servicename);
+    Integer integer(service);
     if ((integer < 0) || (integer > 0xffff)) {
       throw OutOfRange("Port is out of range");
     }
     port = integer;
   } catch(InvalidFormat& e) {
     try {
-      InetService service(servicename);
-      port = service.getPort();
-      fout << "Service: name=" << service.getName()
-           << " port=" << service.getPort()
-           << " protocol=" << service.getProtocol() << EOL;
+      InetService s(service);
+      port = s.getPort();
+      fout << "Service: name=" << s.getName()
+           << "  port=" << s.getPort()
+           << "  protocol=" << s.getProtocol() << EOL;
     } catch(ServiceNotFound& e) {
       fout << "Warning: " << e.getMessage() << EOL;
       fout << "Service: port=" << port << EOL;
     }
   }
-  port = 1234;
 
   fout << "Initializing socket...\n";
   StreamSocket socket;
@@ -65,39 +61,71 @@ void test() {
   fout << "socket: remote address=" << socket.getAddress() << " remote port=" << socket.getPort() << EOL;
 
   fout << "Talking with server...\n";
-  FormatOutputStream fstream(socket);
 
-  fstream << "Hi, I'm the client\n";
-  socket.shutdownOutputStream();
+  {
+    FormatOutputStream outstream(socket); // must be destroyed before socket is closed
+    FormatInputStream instream(socket);
 
-  char buffer[4096];
-  socket.read((char*)&buffer, sizeof(buffer));
-  fout << buffer;
+    fout << "Press enter to continue\n";
+    fin.wait();
+    fin.skip(1);
+
+    fout << "Sending request\n";
+    outstream << "Hi, I'm the client\n";
+
+    fout << "Waiting for response";
+    while (!instream.wait(1000000)) {
+      fout << ".";
+    }
+    fout << EOL;
+
+    fout << "Processing response\n";
+    fout << ">: ";
+    while (instream.available()) { // read response
+      char ch;
+      instream >> ch;
+      fout << ch;
+    }
+
+    fout << "Sending termination request\n";
+    outstream << "Thank you and have a nice day\n";
+  }
 
   fout << "Closing socket\n";
   socket.close();
 }
 
 int main(int argc, char* argv[]) {
+  fout << "Testing ClientSocket...\n";
 
-//  if (argc != 3) {
-//    fout << "client hostname service\n";
-//    return 0;
-//  }
-//  hostname = argv[1]; // the hostname of the server
-//  servicename = argv[2]; // the name of the service
+  String<> host = InetAddress::getLocalHost(); // default host
+  String<> service = "1234"; // default service
 
-  hostname = "lendum";
-  servicename = "1234";
+  switch (argc) {
+  case 1:
+    // use defaults
+    break;
+  case 2:
+    host = argv[1]; // the address
+    break;
+  case 3:
+    host = argv[1]; // the address
+    service = argv[2]; // the service
+    break;
+  default:
+    fout << "client [host] [service]\n";
+    return 0; // stop
+  }
 
   try {
-    test();
+    client(host, service);
   } catch(Exception& e) {
-    ferr << "Exception: " << e.getMessage() << "\n";
+    ferr << typeid(e).name() << ": "<< e.getMessage() << EOL;
     return 1;
   } catch(...) {
     ferr << "Unknown exception\n";
     return 1;
   }
-  fout << "Completed" << EOL;
+  fout << "Completed\n";
+  return 0;
 }

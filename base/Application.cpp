@@ -44,10 +44,21 @@ public:
         if (e.getType().isInitialized()) {
           stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
         }
-        if (e.getMessage()) {
-          stream << MESSAGE(" with message '") << e.getMessage() << MESSAGE("'.");
+        const char* message = e.getMessage();
+        unsigned int cause = e.getCause();
+        if (message || cause) {
+          stream << MESSAGE(" with");
         }
-        stream << FLUSH;
+        if (message) {
+          stream << MESSAGE(" message '") << message << '\'';
+        }
+        if (message && cause) {
+          stream << MESSAGE(" and");
+        }
+        if (cause) {
+          stream << MESSAGE(" cause ") << HEX << setWidth(10) << ZEROPAD << cause;
+        }
+        stream << '.' << FLUSH;
       } catch(...) {
         stream << MESSAGE("Internal error: uncaught and unsupported exception '") << TypeInfo::getTypename(exceptionType) << MESSAGE("' was raised.") << FLUSH;
       }
@@ -73,8 +84,19 @@ public:
         if (e.getType().isInitialized()) {
           stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
         }
-        if (e.getMessage()) {
-          stream << MESSAGE(" with message '") << e.getMessage() << '\'';
+        const char* message = e.getMessage();
+        unsigned int cause = e.getCause();
+        if (message || cause) {
+          stream << MESSAGE(" with");
+        }
+        if (message) {
+          stream << MESSAGE(" message '") << message << '\'';
+        }
+        if (message && cause) {
+          stream << MESSAGE(" and");
+        }
+        if (cause) {
+          stream << MESSAGE(" cause ") << HEX << setWidth(10) << ZEROPAD << cause;
         }
         stream << MESSAGE(" in violation with exception specification.") << FLUSH;
       } catch(...) {
@@ -98,7 +120,54 @@ public:
 
   /* The application signal handler. */
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-
+#if 0 // disabled
+     // TAG: we should destroy window in destructor
+     StringOutputStream stream;
+     stream << MESSAGE("messageHandler: message=") << message << " primary=" << primaryParameter << " second=" << secondaryParameter << FLUSH;
+  Trace::message(stream.getString().getElements());
+  Trace::message("Quit");
+  Trace::message("got WM_QUIT message");
+       if (::InSendMessage()) {
+         ::ReplyMessage(0);
+       }
+       if (Application::application) {
+         Application::application->terminate();
+       }
+       return 0;
+     case WM_CLOSE:
+       Trace::message("got WM_CLOSE message");
+       return 0;
+     case WM_DESTROY:
+       Trace::message("got WM_DESTROY message");
+       ::PostQuitMessage(Application::application->exitCode);
+       return 0;
+     case WM_QUERYENDSESSION:
+       Trace::message("got WM_QUERYENDSESSION message");
+       return TRUE; // do nothing but allow session to be closed
+     case WM_ENDSESSION: // TAG: I do NOT like this message
+       Trace::message("got WM_ENDSESSION message");
+       // wait for termination
+  Trace::message("got unspecified message");
+  return 0;
+  
+  windowClass.lpszClassName = "mip.sdu.dk/~fonseca/base?message handler";
+  OSVERSIONINFO versionInfo;
+   versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
+   ::GetVersionEx(&versionInfo); // never fails
+   bool isWindows2000OrLater = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) && (versionInfo.dwMajorVersion >= 5);
+//   OSVERSIONINFO versionInfo;
+//   versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
+//   ::GetVersionEx(&versionInfo); // never fails
+//   bool isWindows2000OrLater = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) && (versionInfo.dwMajorVersion >= 5);
+// we do not use message-only window 'cause it cannot be enumerated
+  "mip.sdu.dk/~fonseca/base?message handler", // registered class name
+isWindows2000OrLater ? ((HWND)-3) : ((HWND)0), // no parent or owner window - (HWND(-3)) ~ HWND_MESSAGE
+         ((HWND)0), // no parent or owner window
+     //isWindows2000OrLater ? ((HWND)-3) : ((HWND)0), // (HWND(-3)) ~ HWND_MESSAGE
+DWORD dispatchResult;
+   LRESULT result2 = ::SendMessageTimeout(messageWindow, 10000+WM_QUIT, Application::EXIT_CODE_EXTERNAL, 0, SMTO_NORMAL, 3000, &dispatchResult);
+#endif // disabled
+  
   static BOOL WINAPI signalHandler(DWORD signal) throw() {
     switch (signal) {
     case CTRL_LOGOFF_EVENT:

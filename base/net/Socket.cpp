@@ -892,7 +892,7 @@ uint64 Socket::getTcpDeferAccept() const throw(NetworkException) {
   );
   return buffer;
 #else
-  internal::SocketImpl::raiseNetwork("Unable to get option");
+  throw NotSupported(this); // TAG: fixme
 #endif
 }
 
@@ -907,7 +907,7 @@ void Socket::setTcpDeferAccept(uint64 value) throw(NetworkException) {
     sizeof(buffer)
   );
 #else
-  internal::SocketImpl::raiseNetwork("Unable to set option");
+  throw NotSupported(this); // TAG: fixme
 #endif
 }
  

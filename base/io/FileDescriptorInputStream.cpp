@@ -18,7 +18,7 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // Unix
+#else // unix
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <sys/time.h>
@@ -30,7 +30,7 @@
   #ifndef SSIZE_MAX
     #define SSIZE_MAX (1024*1024)
   #endif
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -59,7 +59,7 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException) {
   // use GetFileSizeEx instead
   DWORD highWord;
   return GetFileSize((HANDLE)fd->getHandle(), &highWord);
-#else // Unix
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     if (::fstat64(fd->getHandle(), &status) != 0) {
@@ -73,17 +73,17 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException) {
     }
     return status.st_size;
   #endif
-#endif
+#endif // flavour
 }
 
-unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException) {
+unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int bytesToRead, bool nonblocking = false) throw(IOException) {
   // TAG: currently always blocks
   assert(!end, EndOfFile());
   unsigned int bytesRead = 0;
-  while (bytesRead < size) {
+  while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
-    BOOL success = ::ReadFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
+    BOOL success = ::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, 0);
     if (!success) { // has error occured
       if (::GetLastError() == ERROR_BROKEN_PIPE) {
         result = 0;
@@ -91,8 +91,8 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int size, bo
         throw IOException("Unable to read from object");
       }
     }
-#else // Unix
-    int result = ::read(fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
+#else // unix
+    int result = ::read(fd->getHandle(), buffer, minimum<unsigned int>(bytesToRead, SSIZE_MAX));
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
       case EINTR: // interrupted by signal before any data was read
@@ -103,14 +103,16 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int size, bo
         throw IOException("Unable to read from object");
       }
     }
-#endif
+#endif // flavour
     if (result == 0) { // has end been reached
       end = true;
-      if (bytesRead < size) {
+      if (bytesToRead > 0) {
         throw EndOfFile(); // attempt to read beyond end of stream
       }
     }
     bytesRead += result;
+    buffer += result;
+    bytesToRead -= result;
   }
   return bytesRead;
 }
@@ -127,7 +129,7 @@ unsigned int FileDescriptorInputStream::skip(unsigned int count) throw(IOExcepti
 
 void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#else // Unix
+#else // unix
   int flags = getFlags();
   if (value) {
     if (flags & O_NONBLOCK == 0) { // do we need to set flag
@@ -138,12 +140,12 @@ void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
       setFlags(flags & ~O_NONBLOCK);
     }
   }
-#endif
+#endif // flavour
 }
 
 void FileDescriptorInputStream::wait() const throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#else // Unix
+#else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET(fd->getHandle(), &rfds);
@@ -152,12 +154,12 @@ void FileDescriptorInputStream::wait() const throw(IOException) {
   if (result == -1) {
     throw IOException("Unable to wait for input");
   }
-#endif
+#endif // flavour
 }
 
 bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#else // Unix
+#else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET(fd->getHandle(), &rfds);
@@ -171,7 +173,7 @@ bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOExcepti
     throw IOException("Unable to wait for input");
   }
   return result; // return true if data available
-#endif
+#endif // flavour
 }
 
 FileDescriptorInputStream::~FileDescriptorInputStream() {

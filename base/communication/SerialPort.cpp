@@ -89,7 +89,7 @@ List<String> SerialPort::getPorts() throw() {
   return result;
 }
 
-SerialPort::SerialPort(const String& n) throw(CommunicationsException) : name(n) {
+SerialPort::SerialPort(const String& _name) throw(CommunicationsException) : name(_name) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   HANDLE handle = ::CreateFile(name.getElements(),
                                GENERIC_READ | GENERIC_WRITE,
@@ -111,7 +111,7 @@ String SerialPort::getName() const throw() {
 void SerialPort::close() throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   assert(::CloseHandle(handle->getHandle()) != 0, CommunicationsException());
-  handle = Handle::getInvalid();
+  handle = new SerialPortHandle(OperatingSystem::INVALID_HANDLE);
 #endif // flavour
 }
 

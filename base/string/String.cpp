@@ -654,6 +654,9 @@ Array<String> String::split(char separator, bool group) throw(MemoryException) {
     }
   } else {
     while (i != end) {
+      if (*i == separator) {
+        ++i; // skip separator
+      }
       ReadIterator j = i;
       while ((j < end) && (*j != separator)) {
         ++j;
@@ -663,7 +666,6 @@ Array<String> String::split(char separator, bool group) throw(MemoryException) {
         break;
       }
       i = j;
-      ++i; // skip separator
     }
   }
   return result;

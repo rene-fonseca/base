@@ -75,75 +75,9 @@ public:
   void openAdapter(IEEE1394& ieee1394, const EUI64& id) throw() {
     fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
     ieee1394.open(id);
-    
-    static const StringLiteral STANDARD[] = {
-      MESSAGE("unspecified"),
-      MESSAGE("IEEE 1394"),
-      MESSAGE("IEEE 1394A"),
-      MESSAGE("IEEE 1394B")
-    };
-    
-    IEEE1394::Standard standard = ieee1394.getCompliance();
-    if (standard > IEEE1394::STANDARD_IEEE_1394B) {
-      standard = IEEE1394::STANDARD_UNSPECIFIED;
-    }
-    fout << MESSAGE("  Standard: ") << STANDARD[standard] << EOL
-         << MESSAGE("  Status: ") << ieee1394.getStatus() << EOL
-         << EOL << ENDL;
-    
-    // TAG: topology and speed map
   }
 
   void dumpAdapter() throw() {
-  }
-  
-  void dumpNodes(IEEE1394& ieee1394) throw() {    
-    fout << MESSAGE("Available nodes: ") << EOL;
-    
-    for (unsigned int id = 0; id < ieee1394.getNumberOfNodes(); ++id) {
-      try {
-        const unsigned short node = IEEE1394::makeNodeId(id);
-        fout << MESSAGE("Node: ") << ieee1394.getIdentifier(node) << EOL
-             << MESSAGE("  Physical id: ") << id << ENDL;
-        
-        unsigned int vendor = ieee1394.getVendorId(node);
-        fout << MESSAGE("  Vendor id: ")
-             << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 16) & 0xff) << ':'
-             << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 8) & 0xff) << ':'
-             << HEX << setWidth(2) << ZEROPAD << NOPREFIX << (vendor & 0xff) << ENDL;
-        
-        unsigned int capabilities = ieee1394.getCapabilities(node);
-        if (capabilities) {
-          fout << MESSAGE("  Capabilities:") << EOL;
-          if (capabilities & IEEE1394::ISOCHRONOUS_RESOURCE_MANAGER) {
-            fout << ' ' << MESSAGE("    Isochronous resource manager") << EOL;
-          }
-          if (capabilities & IEEE1394::CYCLE_MASTER) {
-            fout << ' ' << MESSAGE("    Cycle master") << EOL;
-          }
-          if (capabilities & IEEE1394::ISOCHRONOUS_TRANSMISSION) {
-            fout << ' ' << MESSAGE("    Isochronous transmission") << EOL;
-          }
-          if (capabilities & IEEE1394::BUS_MASTER) {
-            fout << ' ' << MESSAGE("    Bus master") << EOL;
-          }
-          if (capabilities & IEEE1394::POWER_MANAGEMENT) {
-            fout << ' ' << MESSAGE("    Power management") << EOL;
-          }
-        }
-        
-        fout << MESSAGE("  Maximum asynchronous payload: ") << ieee1394.getMaximumPayload(node) << ENDL;
-        
-        String description = ieee1394.getDescription(node);
-        if (description.isProper()) {
-          fout << MESSAGE("  Description: ") << description << ENDL;
-        }
-      } catch (IEEE1394Exception& e) {
-        fout << MESSAGE("Exception: ") << e << ENDL;
-        // check cause
-      }
-    }
-    fout << EOL << ENDL;
   }
   
   void dumpNodes(const EUI64& guid) throw() {   
@@ -160,22 +94,146 @@ public:
         }
         id = adapters[0];
       }
-
+      
       fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
       ieee1394.open(id);
+
+      ieee1394.reload();
+
+      static const StringLiteral STANDARDS[] = {
+        MESSAGE("Unspecified"),
+        MESSAGE("IEEE 1394"),
+        MESSAGE("IEEE 1394A"),
+        MESSAGE("IEEE 1394B")
+      };
       
-      // TAG: get bus id's, get nodes for specific bus, is bus present methods?
-      dumpNodes(ieee1394);
+      static const StringLiteral SPEEDS[] = {
+        MESSAGE("S100"),
+        MESSAGE("S200"),
+        MESSAGE("S400"),
+        MESSAGE("S800"),
+        MESSAGE("S1600"),
+        MESSAGE("S3200")
+      };
+
+      fout << MESSAGE("Number of local nodes: ") << ieee1394.getNumberOfNodes() << EOL
+           << MESSAGE("Local id: ") << ieee1394.getLocalId() << EOL
+           << MESSAGE("Root node: ") << ieee1394.getRootNode() << EOL;
+
       
-      fout << MESSAGE("Status: ") << ieee1394.getStatus() << ENDL;
+      if (ieee1394.getBusManager() != IEEE1394::BROADCAST) {
+        fout << MESSAGE("Bus manager: ") << ieee1394.getBusManager() << EOL;
+      } else {
+        fout << MESSAGE("Bus manager: ") << MESSAGE("(not present)") << EOL;
+      }
+
+      if (ieee1394.getCycleMaster() != IEEE1394::BROADCAST) {
+        fout << MESSAGE("Cycle master: ") << ieee1394.getCycleMaster() << EOL;
+      } else {
+        fout << MESSAGE("Cycle master: ") << MESSAGE("(not present)") << EOL;
+      }
       
-      fout << MESSAGE("Closing IEEE 1394 adapter") << ENDL;
-      ieee1394.close();
-    } catch (Exception& e) {
+      if (ieee1394.getIsochronousResourceManager() != IEEE1394::BROADCAST) {
+        fout << MESSAGE("Isochronous resource manager: ")
+             << ieee1394.getIsochronousResourceManager() << EOL
+             << MESSAGE("  Available bandwidth: ")
+             << ieee1394.getAvailableBandwidth() << EOL
+             << MESSAGE("  Available channels: ")
+             << BIN << setWidth(64) << ZEROPAD << NOPREFIX
+             << ieee1394.getAvailableIsochronousChannels() << EOL;
+      } else {
+        fout << MESSAGE("Isochronous resource manager: ") << MESSAGE("(not present)") << EOL;
+      }
+      fout << MESSAGE("Maximum broadcast speed: ") << SPEEDS[ieee1394.getBroadcastSpeed()] << EOL;
+      
+      for (unsigned int id = 0; id < ieee1394.getNumberOfNodes(); ++id) {
+        const unsigned short node = IEEE1394::makeNodeId(id);
+        const unsigned int capabilities = ieee1394.getCapabilities(node);
+        fout << MESSAGE("Node: ") << id << EOL
+             << MESSAGE("  standard: ")
+             << STANDARDS[ieee1394.getCompliance(node)] << EOL;
+
+        unsigned int vendor = ieee1394.getVendorId(node);
+        fout << MESSAGE("  vendor: ")
+             << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 16) & 0xff) << ':'
+             << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 8) & 0xff) << ':'
+             << HEX << setWidth(2) << ZEROPAD << NOPREFIX << (vendor & 0xff) << EOL;        
+        
+        String description = ieee1394.getDescription(node);
+        if (description.isProper()) {
+          fout << MESSAGE("  description: ") << description << EOL;
+        }
+        
+        if (!ieee1394.getLocalIdentifier(id).isInvalid()) {
+          fout << MESSAGE("  guid: ") << ieee1394.getLocalIdentifier(id) << EOL;
+        } else {
+          fout << MESSAGE("  guid: ") << MESSAGE("(not available)") << EOL;
+        }
+        
+        fout << MESSAGE("  maximum asynchronous payload: ")
+             << ieee1394.getMaximumPayload(node) << EOL;
+        
+        fout << MESSAGE("  is link layer active: ") << ieee1394.isLinkLayerActive(id) << EOL
+             << MESSAGE("  is contender: ") << ieee1394.isContender(id) << EOL
+             << MESSAGE("  maximum physical speed: ")
+             << SPEEDS[ieee1394.getMaximumSpeed(id)] << EOL
+             << MESSAGE("  maximum link speed: ")
+             << SPEEDS[ieee1394.getMaximumLinkSpeed(id)] << EOL;
+
+        fout << MESSAGE("  capabilities: ") << EOL;
+        if (capabilities & IEEE1394::ISOCHRONOUS_RESOURCE_MANAGER_CAPABLE) {
+          fout << MESSAGE("    isochronous resource manager") << EOL;
+        }
+        if (capabilities & IEEE1394::CYCLE_MASTER_CAPABLE) {
+          fout << MESSAGE("    cycle master") << EOL;
+        }
+        if (capabilities & IEEE1394::ISOCHRONOUS_TRANSACTION_CAPABLE) {
+          fout << MESSAGE("    isochronous transaction") << EOL;
+        }
+        if (capabilities & IEEE1394::BUS_MASTER_CAPABLE) {
+          fout << MESSAGE("    bus master") << EOL;
+        }
+        if (capabilities & IEEE1394::POWER_MANAGER_CAPABLE) {
+          fout << MESSAGE("    power manager") << EOL;
+        }
+
+        if ((ieee1394.getIsochronousResourceManager() == id) ||
+            (ieee1394.getBusManager() == id)) {
+          fout << MESSAGE("  roles: ") << EOL;
+          if (ieee1394.getCycleMaster() == id) {
+            fout << MESSAGE("    cycle master") << EOL;
+          }
+//          if (ieee1394.getPowerManager() == id) {
+//            fout << MESSAGE("    power manager") << EOL;
+//          }
+          if (ieee1394.getIsochronousResourceManager() == id) {
+            fout << MESSAGE("    isochronous resource manager") << EOL;
+          }
+          if (ieee1394.getBusManager() == id) {
+            fout << MESSAGE("    bus manager") << EOL;
+          }
+        }
+        
+        if (capabilities & IEEE1394::CYCLE_MASTER_CAPABLE) {
+          try {
+            unsigned int busTime = ieee1394.getBusTime(node);
+            fout << MESSAGE("  bus time: ") << busTime << EOL;            
+          } catch (IEEE1394Exception& e) {
+          }
+        }
+        if (capabilities & IEEE1394::ISOCHRONOUS_TRANSACTION_CAPABLE) {
+          try {
+            unsigned int cycleTime = ieee1394.getCycleTime(node);
+            fout << MESSAGE("  cycle time: ") << cycleTime << EOL;
+          } catch (IEEE1394Exception& e) {
+          }
+        }
+      }
       fout << ENDL;
-      ferr << MESSAGE("Unable to get device information: ") << e << ENDL;
-      Application::getApplication()->setExitCode(EXIT_CODE_ERROR);
-      return;
+    } catch (IEEE1394Exception& e) {
+      fout << ENDL;
+      ferr << MESSAGE("Exception: ") << e << ENDL;
+      setExitCode(Application::EXIT_CODE_ERROR);
     }
   }
 
@@ -278,91 +336,6 @@ public:
   }
 
   void resetBus(const EUI64& guid) throw() {
-    try {
-      IEEE1394 ieee1394;
-      
-      EUI64 id = guid;
-      if (guid.isInvalid()) {
-        Array<EUI64> adapters = ieee1394.getAdapters();
-        if (adapters.getSize() == 0) {
-          ferr << MESSAGE("No adapters available") << ENDL;
-          setExitCode(Application::EXIT_CODE_ERROR);
-          return;
-        }
-        id = adapters[0];
-      }
-      
-      fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
-      ieee1394.open(id);
-
-      ieee1394.reload();
-
-      static const StringLiteral SPEEDS[] = {
-        MESSAGE("S100"),
-        MESSAGE("S200"),
-        MESSAGE("S400"),
-        MESSAGE("S800"),
-        MESSAGE("S1600"),
-        MESSAGE("S3200")
-      };
-
-      fout << MESSAGE("Number of local nodes: ") << ieee1394.getNumberOfNodes() << EOL
-           << MESSAGE("Local id: ") << ieee1394.getLocalId() << EOL
-           << MESSAGE("Bus manager: ") << ieee1394.getBusManager() << EOL;
-      if (ieee1394.getIsochronousResourceManager() < IEEE1394::BROADCAST) {
-        fout << MESSAGE("Isochronous resource manager: ")
-             << ieee1394.getIsochronousResourceManager() << EOL
-             << MESSAGE("Available bandwidth: ")
-             << ieee1394.getAvailableBandwidth() << EOL
-             << MESSAGE("Available channels: ")
-             << BIN << setWidth(64) << ZEROPAD << NOPREFIX
-             << ieee1394.getAvailableIsochronousChannels() << EOL;
-      } else {
-        fout << MESSAGE("Isochronous resource manager: (not available)") << EOL;
-      }
-      fout << MESSAGE("Maximum broadcast speed: ") << SPEEDS[ieee1394.getBroadcastSpeed()] << EOL;
-      
-      for (unsigned int id = 0; id < ieee1394.getNumberOfNodes(); ++id) {
-        const unsigned int capabilities = ieee1394.getCapabilities(IEEE1394::makeNodeId(id));
-        fout << MESSAGE("Node: ") << id << EOL
-             << MESSAGE("  guid: ") << ieee1394.getLocalIdentifier(id) << EOL
-             << MESSAGE("  is link layer active: ") << ieee1394.isLinkLayerActive(id) << EOL
-             << MESSAGE("  is contender: ") << ieee1394.isContender(id) << EOL
-             << MESSAGE("  maximum speed: ") << SPEEDS[ieee1394.getMaximumSpeed(id)] << EOL
-             << MESSAGE("  is isochronous resource manager capable: ")
-             << ((capabilities & IEEE1394::ISOCHRONOUS_RESOURCE_MANAGER) != 0) << EOL
-             << MESSAGE("  is cycle master capable: ")
-             << ((capabilities & IEEE1394::CYCLE_MASTER) != 0) << EOL
-             << MESSAGE("  is isochronous capable: ")
-             << ((capabilities & IEEE1394::ISOCHRONOUS_TRANSMISSION) != 0) << EOL
-             << MESSAGE("  is bus master capable: ")
-             << ((capabilities & IEEE1394::BUS_MASTER) != 0) << EOL
-             << MESSAGE("  is power management capable: ")
-             << ((capabilities & IEEE1394::POWER_MANAGEMENT) != 0) << EOL;
-        
-        if (capabilities & IEEE1394::CYCLE_MASTER) {
-          fout << MESSAGE("  bus time: ");
-          try {
-            fout << ieee1394.getBusTime(IEEE1394::makeNodeId(id)) << EOL;
-          } catch (IEEE1394Exception& e) {
-            fout << MESSAGE("(not available)") << EOL;
-          }
-        }
-        if (capabilities & IEEE1394::ISOCHRONOUS_TRANSMISSION) {
-          fout << MESSAGE("  cycle time: ");
-          try {
-            fout << ieee1394.getCycleTime(IEEE1394::makeNodeId(id)) << EOL;
-          } catch (IEEE1394Exception& e) {
-            fout << MESSAGE("(not available)") << EOL;
-          }
-        }        
-      }
-      fout << ENDL;
-    } catch (IEEE1394Exception& e) {
-      fout << ENDL;
-      ferr << MESSAGE("Exception: ") << e << ENDL;
-      setExitCode(Application::EXIT_CODE_ERROR);
-    }
   }
   
   void main() throw() {
@@ -445,6 +418,12 @@ public:
               } else if (registers == "speed") {
                 firstAddress = IEEE1394::CSR_BASE_ADDRESS + IEEE1394::SPEED_MAP;
                 lastAddress = firstAddress + 0xffc;
+              } else if (registers == "csr") {
+                firstAddress = IEEE1394::CSR_BASE_ADDRESS;
+                lastAddress = firstAddress + 0x1fc;
+              } else if (registers == "bus") {
+                firstAddress = IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BUS_DEPENDENT;
+                lastAddress = firstAddress + 0x1fc;
               } else if (registers == "rom") {
                 firstAddress = IEEE1394::CSR_BASE_ADDRESS + IEEE1394::CONFIGURATION_ROM;
                 lastAddress = firstAddress + 0x3fc;
@@ -506,7 +485,7 @@ public:
     }
 
     if ((command != COMMAND_ERROR) && (nodeId >= 0)) {
-      if (nodeId % 64 == 63) {
+      if (IEEE1394Common::getPhysicalId(nodeId) == IEEE1394::BROADCAST) {
         errorMessage = MESSAGE("Broadcast id not premitted");
         command = COMMAND_ERROR;
       } else if (nodeId > PrimitiveTraits<uint16>::MAXIMUM) {

@@ -18,7 +18,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class FileOutputStream : public OutputStream {
+class FileOutputStream : public virtual Object, public OutputStream {
 public:
 
   /** The flags. */

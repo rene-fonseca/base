@@ -17,19 +17,20 @@
 namespace base {
 
 #define _DK_SDU_MIP__BASE__COMPILER_VERSION __COMPILER_VERSION
-#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE compiler::org::mipspro
+#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE com::sgi2::mipspro
 
-  namespace compiler {
+  namespace com {
     
-    namespace com {
+    // TAG: "sgi" is defined as symbol
+    namespace sgi2 {
       
       namespace mipspro {
       };
     };
   };
-  
+
   // import data types
-  using compiler::com::mipspro;
+  using com::sgi2::mipspro;
   
 }; // end of namespace base
 

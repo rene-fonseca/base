@@ -28,7 +28,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Sound device (singleton).
-
+  
+  @short Sound device.
   @see SoundInputStream SoundOutputStream.
   @ingroup sound
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>

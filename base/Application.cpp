@@ -54,6 +54,8 @@ public:
 
   static BOOL WINAPI signalHandler(DWORD signal) throw() {
     switch (signal) {
+    case CTRL_LOGOFF_EVENT:
+    case CTRL_SHUTDOWN_EVENT:
     case CTRL_CLOSE_EVENT: // console is closing
     case CTRL_BREAK_EVENT: // Ctrl+Break
     case CTRL_C_EVENT: // Ctrl+C

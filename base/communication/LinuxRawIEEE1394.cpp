@@ -33,7 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 namespace LinuxRawIEEE1394Impl {
   
-  const StringLiteral DEVICE_NAME = "raw1394";
+  const StringLiteral DEVICE_NAME = MESSAGE("raw1394");
   
   struct Request {
     uint32 type;

@@ -88,8 +88,8 @@ public:
 
     @return The node with the matching value. 0 if not found.
   */
-  Node* find(const TYPE& value) throw() {
-    Node* node = BinaryTree<TYPE>::getRoot();
+  Node* find(const Value& value) throw() {
+    Node* node = BinaryTree<Value>::getRoot();
 
     while (node) {
       int result = compare(value, *node->getValue());
@@ -111,8 +111,8 @@ public:
 
     @return The node with the matching value. 0 if not found.
   */
-  const Node* find(const TYPE& value) const throw() {
-    const Node* node = BinaryTree<TYPE>::getRoot();
+  const Node* find(const Value& value) const throw() {
+    const Node* node = BinaryTree<Value>::getRoot();
 
     while (node) {
       int result = compare(value, *node->getValue());
@@ -133,7 +133,7 @@ public:
     @return 0 if the tree is empty.
   */
   Node* getFirst() throw() {
-    Node* node = BinaryTree<TYPE>::getRoot();
+    Node* node = BinaryTree<Value>::getRoot();
     Node* previous = 0; // not found
 
     while (node) {
@@ -149,7 +149,7 @@ public:
     @return 0 if the tree is empty.
   */
   Node* getLast() throw() {
-    Node* node = BinaryTree<TYPE>::getRoot();
+    Node* node = BinaryTree<Value>::getRoot();
     Node* previous = 0; // not found
 
     while (node) {
@@ -165,11 +165,11 @@ public:
     @param value The value to be added.
     @return The value if it already exists. 0 if the value was not found in the tree.
   */
-  Value* add(const TYPE& value) throw(MemoryException) {
-    Node* node = BinaryTree<TYPE>::getRoot();
+  Value* add(const Value& value) throw(MemoryException) {
+    Node* node = BinaryTree<Value>::getRoot();
 
     if (!node) {
-      BinaryTree<TYPE>::setRoot(new Node(0, 0, 0, value)); // attach root node
+      elements = new BinaryTree<Value>::BinaryTreeImpl(new Node(0, 0, 0, value)); // attach root node
       return 0;
     }
 
@@ -207,6 +207,14 @@ public:
     }
 
     elements.copyOnWrite();
+
+    if (node == BinaryTree<Value>::getRoot()) { // set new root
+      if (node->getLeft()) {
+        BinaryTree<Value>::setRoot(node->getLeft());
+      } else if (node->getRight()) {
+        BinaryTree<Value>::setRoot(node->getRight());
+      }
+    }
 
     while (true) {
       if (node->getLeft()) {

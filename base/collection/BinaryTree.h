@@ -656,7 +656,8 @@ public:
     @param node The root of the tree.
   */
   void setRoot(Node* node) throw() {
-    elements = new BinaryTreeImpl(node); // no need to copy
+    elements.copyOnWrite();
+    elements->setRoot(node);
   }
 
   /**

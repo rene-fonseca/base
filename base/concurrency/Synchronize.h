@@ -15,6 +15,8 @@
 #define _DK_SDU_MIP__BASE_CONCURRENCY__SYNCHRONIZE_H
 
 #include <base/concurrency/Synchronizeable.h>
+#include <base/concurrency/ExclusiveSynchronize.h>
+#include <base/concurrency/SharedSynchronize.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -22,19 +24,19 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Selects exclusive synchronization of this scope of this synchronizeable
   object (@ref Synchronize).
 */
-#define SynchronizeExclusively() Synchronize<LOCK> _sync(*this, true)
+#define SynchronizeExclusively() ExclusiveSynchronize<LOCK> _sync(*this)
 
 /**
   Selects shared synchronization of this scope of this synchronizeable object.
   (@ref Synchronize).
 */
-#define SynchronizeShared() Synchronize<LOCK> _sync(*this, false)
+#define SynchronizeShared() SharedSynchronize<LOCK> _sync(*this)
 
 /**
   Releases the lock acquired by SynchronizeExclusively() or
   SynchronizeShared().
 */
-#define SynchronizeRelease() _sync.release()
+#define SynchronizeRelease() _sync.releaseLock()
 
 /**
   This is a stack based wrapper of a synchronize able class. A Synchronize
@@ -98,6 +100,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @see Synchronizeable
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
+  @deprecated
 */
 
 template<class LOCK>
@@ -147,6 +150,7 @@ public:
 
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
+  @deprecated
 */
 
 template<>

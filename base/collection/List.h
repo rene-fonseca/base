@@ -573,10 +573,18 @@ public:
   /**
     Initializes list from other list.
   */
-  List(const List& copy) throw(MemoryException)
+  inline List(const List& copy) throw(MemoryException)
     : elements(copy.elements) {
   }
-
+  
+  /**
+    Assignment of list by list.
+  */
+  inline List& operator=(const List& eq) throw() {
+    elements = eq.elements;
+    return *this;
+  }
+  
   // Node read-only
 
   /**

@@ -1,3 +1,3 @@
-. i486-unknown-cygwin
+. ./i486-unknown-cygwin
 
 arch_minor=586

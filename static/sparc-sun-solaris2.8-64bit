@@ -1,4 +1,4 @@
-. sparc-sun-solaris2.8
+. ./sparc-sun-solaris2.8
 
 # size of primitive
 long_size=8

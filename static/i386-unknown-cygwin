@@ -28,7 +28,7 @@ os=CYGWIN
 features="_XOPEN_SOURCE=600"
 
 # functions
-functions="memchr memcmp memcpy memmove memset nanosleep pselect readdir_r mbrtowc mbsrtowcs"
+functions="memchr memcmp memcpy memmove memset"
 
 # apis
 apis="pthread regexp"

@@ -152,6 +152,23 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   typedef unsigned long long uint32;
 #endif
 
+
+
+/**
+  Returns the address of the specified object as a byte pointer.
+*/
+template<class TYPE>
+inline byte* getByteAddress(TYPE& value) throw() {return reinterpret_cast<byte*>(&value);}
+
+template<class TYPE>
+inline const byte* getByteAddress(const TYPE& value) throw() {return reinterpret_cast<const byte*>(&value);}
+
+template<class TYPE>
+inline char* getCharAddress(TYPE& value) throw() {return reinterpret_cast<char*>(&value);}
+
+template<class TYPE>
+inline const char* getCharAddress(const TYPE& value) throw() {return reinterpret_cast<const char*>(&value);}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

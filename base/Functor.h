@@ -683,6 +683,114 @@ inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) {
   return InvokeMember<TYPE, RESULT>(member);
 }
 
+
+
+/**
+  Wrapper class used to invoke prefix and suffix pairs.
+
+  <pre>
+    class MyClass {
+    public:
+
+      MyClass();
+      int myMethod(int);
+    };
+
+    class MyLock {
+    public:
+
+      MyLock();
+      void lock();
+      void unlock();
+    };
+
+    class MyPrefix {
+    private:
+
+      MyLock lock;
+    public:
+
+      MySuffix(MyLock l) : lock(l) {}
+      inline operator()() {lock->lock();}
+    };
+
+    class MySuffix {
+    private:
+
+      MyLock lock;
+    public:
+
+      MySuffix(MyLock l) : lock(l) {}
+      inline void operator()() {lock->unlock();}
+    };
+
+    void myFunction() {
+      MyLock myLock;
+      InvokeOutfix outfix(object, MyPrefix(myLock), MySuffix(myLock));
+      int result = outfix->myMethod(1234);
+    }
+  </pre>
+
+  @author René Møller Fonseca
+  @version 1.0
+*/
+template<class TYPE, class PREFIX, class SUFFIX>
+class InvokeOutfix {
+public:
+
+  class Invoke {
+  private:
+
+    TYPE* object;
+    PREFIX prefix;
+    SUFFIX suffix;
+
+    Invoke(const Invoke& copy); // disable default copy constructor
+    Invoke& operator=(const Invoke& eq); // disable default assignment
+  public:
+
+    inline Invoke(TYPE* o, PREFIX p, SUFFIX s) : object(o), prefix(p), suffix(s) {}
+
+    inline TYPE* operator->() {
+      prefix();
+      return object;
+    }
+
+    inline ~Invoke() {
+      suffix();
+    }
+  };
+private:
+
+  Invoke invoke;
+public:
+
+  /**
+    Initialize object with specified prefix and suffix.
+  */
+  inline InvokeOutfix(TYPE* object, PREFIX prefix, SUFFIX suffix) : invoke(object, prefix, suffix) {}
+
+  /**
+    Dereference.
+  */
+  inline Invoke operator->() {
+    return invoke;
+  }
+};
+
+/**
+  Returns an InvokeOutfix object.
+*/
+template<class TYPE, class PREFIX, class SUFFIX>
+inline InvokeOutfix<TYPE, PREFIX, SUFFIX> invokeOutfix(TYPE& object, PREFIX prefix, SUFFIX suffix) {
+  return InvokeOutfix<TYPE, PREFIX, SUFFIX>(&object, prefix, suffix);
+}
+
+template<class TYPE, class PREFIX, class SUFFIX>
+inline InvokeOutfix<TYPE, PREFIX, SUFFIX> invokeOutfix(TYPE* object, PREFIX prefix, SUFFIX suffix) {
+  return InvokeOutfix<TYPE, PREFIX, SUFFIX>(object, prefix, suffix);
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

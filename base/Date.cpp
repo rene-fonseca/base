@@ -17,11 +17,12 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Date Date::getNow() throw(DateException) {
-  struct timeval tv;
-  if (gettimeofday(&tv, 0)) {
-    throw DateException("Unable to get local time");
-  }
-  return Date(tv.tv_sec);
+  return Date(::time(NULL));
+//  struct timeval tv;
+//  if (gettimeofday(&tv, 0)) {
+//    throw DateException("Unable to get local time");
+//  }
+//  return Date(tv.tv_sec);
 }
 
 Date Date::getTime(int seconds, int minutes, int hours) throw(DateException) {

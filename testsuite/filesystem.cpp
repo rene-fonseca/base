@@ -4,14 +4,14 @@
  ***************************************************************************/
 
 #include <base/string/FormatOutputStream.h>
-#include <base/filesystem/Folder.h>
-#include <base/filesystem/File.h>
+#include <base/filesystem/FolderInfo.h>
+#include <base/filesystem/FileInfo.h>
 #include <base/filesystem/FileSystem.h>
 
 using namespace base;
 
 void test(const String& path) {
-  Folder folder(path);
+  FolderInfo folder(path);
   Array<String> entries = folder.getEntries();
 
   fout << "folder: " << folder.getPath() << ENDL;

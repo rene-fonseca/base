@@ -17,8 +17,6 @@ void readFile(String& filename) {
   fout << "Binding file input stream to format input stream" << ENDL;
   FormatInputStream format(file);
 
-  fout << "getPath(): " << file.getPath() << ENDL;
-
   while (format.available()) {
     char ch;
     format >> ch;
@@ -33,6 +31,7 @@ int main(int argc, char* argv[]) {
     fout << "fileInput filename" << ENDL;
     return 0; // stop
   }
+
   String filename = argv[1];
 
   try {

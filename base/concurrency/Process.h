@@ -60,6 +60,18 @@ public:
     inline ProcessException(Type type) throw() : Exception(type) {}
     inline ProcessException(const char* message, Type type) throw() : Exception(message, type) {}
   };
+
+  // TAG: do we need a base class for this kind of class
+  class Layout {
+  public:
+  };
+  
+  /**
+    Returns the layout of the process.
+  */
+  static inline Layout getLayout() throw() {
+    return Layout();
+  }
   
   /**
     Returns this process.
@@ -122,7 +134,7 @@ public:
   /**
     Returns the id of the process.
   */
-  inline unsigned long Process::getId() throw() {
+  inline unsigned long getId() throw() {
     return id;
   }
 
@@ -163,6 +175,8 @@ public:
   */
   static Times getTimes() throw();
 };
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Process::Layout& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

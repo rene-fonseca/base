@@ -26,10 +26,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Internet. This class is used to break down a url into its components. The
   components of the url are stored internally in decoded format.
   
-  <pre>
+  @code
   Url url("http://www.mip.sdu.dk")
   Url url("ftp://ftp.gnu.org")
-  </pre>
+  @endcode
 
   @short Uniform Resource Locator (URL)
   @ingroup net

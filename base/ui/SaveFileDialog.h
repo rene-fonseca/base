@@ -48,7 +48,7 @@ private:
 public:
 
   enum Flag {
-    ASK_TO_CREATE = 1, /** Ask to create the file if it doesn't exist. */
+    ASK_TO_CREATE = 1, /**< Ask to create the file if it doesn't exist. */
     ASK_TO_OVERWRITE = 2 /**< Ask to overwrite the file if the does exist. */
   };
   

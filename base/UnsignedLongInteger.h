@@ -24,8 +24,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Unsigned long integer (64 bits or more). This class maps onto the
-  <unsigned long long> primitive. There is no wrapper class available for the
-  <long> primitive.
+  unsigned long long primitive. There is no wrapper class available for the
+  long primitive.
 
   @short An unsigned long integer
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>

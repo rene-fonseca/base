@@ -36,7 +36,7 @@ class Runnable;
   Thread (a single flow of control).
 
   Example:
-  <pre>
+  @code
   class MyActiveObject : public Runnable {
   protected:
 
@@ -59,7 +59,7 @@ class Runnable;
     myThread.join(); // wait for thread to complete
     return 0;
   }
-  </pre>
+  @endcode
 
   @short Thread
   @ingroup concurrency
@@ -444,6 +444,10 @@ public:
   */
   ~Thread() throw(ThreadException);
 };
+
+/**
+  @example testsuite/Thread.cpp
+*/
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -103,7 +103,9 @@ public:
     @return Returns 0 if the value cannot be determined.
   */
   static inline unsigned long getNumberOfConfiguredProcessors() throw() {
-    return OperatingSystem::getVariable(OperatingSystem::NUM_OF_CONFIGURED_PROCESSORS);
+    return OperatingSystem::getVariable(
+      OperatingSystem::NUM_OF_CONFIGURED_PROCESSORS
+    );
   }
   
   /**
@@ -113,7 +115,9 @@ public:
     @return Returns 0 if the value cannot be determined.
   */
   static inline unsigned long getNumberOfOnlineProcessors() throw() {
-    return OperatingSystem::getVariable(OperatingSystem::NUM_OF_ONLINE_PROCESSORS);
+    return OperatingSystem::getVariable(
+      OperatingSystem::NUM_OF_ONLINE_PROCESSORS
+    );
   }
   
   /**
@@ -231,7 +235,8 @@ public:
     
     @param microseconds The timeout period.
     
-    @return The exit code (EXIT_CODE_INVALID if exit code is not available or the timeout period expired).
+    @return The exit code (EXIT_CODE_INVALID if exit code is not available or
+    the timeout period expired).
   */
   int wait(unsigned int microseconds) throw();
   
@@ -245,7 +250,8 @@ public:
   /**
     Requests the process to terminate.
     
-    @param force Specifies whether to force the process to terminate. The default is false.
+    @param force Specifies whether to force the process to terminate. The
+    default is false.
 
     @return True if the signal was delivered.
   */
@@ -257,10 +263,16 @@ public:
   Times getTimes() throw();
 };
 
-inline Process::Process(unsigned long _id) throw() : id(_id), handle(ProcessHandle::invalid) {
+/**
+  @example testsuite/Process.cpp
+*/
+
+inline Process::Process(unsigned long _id) throw()
+  : id(_id), handle(ProcessHandle::invalid) {
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Process::Layout& value) throw(IOException);
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Process::Layout& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -28,12 +28,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   bit slower than CombinedReferenceCounter but works for any class being
   reference counted.
 
-  <pre>
+  @code
   ReferenceCounter<MyClass> myObject = new MyClass();
   ReferenceCounter<MyClass> myOtherObject = myObject;
-  </pre>
+  @endcode
 
   @short Automation pointer that counts the number of references to an object.
+  @ingroup memory
   @see CombinedReferenceCounter
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -69,9 +70,9 @@ public:
     Initializes automation pointer with the specified pointer value. The
     automation pointer may be implicitly initialized.
 
-    <pre>
+    @code
     ReferenceCounter<MyClass> rcop = new MyClass();
-    </pre>
+    @endcode
 
     @param value The desired pointer value.
   */

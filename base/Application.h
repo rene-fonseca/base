@@ -25,13 +25,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This is a singleton object for the context of this application. User-defined
-  exit codes should start from EXIT_CODE_USER.
-
-  @example testsuite/Application.cpp
+  This is a singleton object for the context of the application. User-defined
+  exit codes should start from EXIT_CODE_USER.  
   
   Example:
-  <pre>
+  @code
   class MyApplication : public Application {
   public:
   
@@ -45,9 +43,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   };
 
   STUB(MyApplication);
-  </pre>
+  @endcode
   
-  @short Application context wrapper.
+  @short Application.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.3
 */
@@ -232,6 +230,10 @@ public:
   */
   virtual ~Application() throw();
 };
+
+/**
+  @example testsuite/Version.cpp
+*/
 
 #define _DK_SDU_MIP__BASE__STUB(APPLICATION) \
 int main(int argc, const char* argv[], const char* env[]) throw() { \

@@ -444,7 +444,7 @@ public:
 
   /**
     Sets the character at the specified index of this string. If the new
-    character is the string terminator ('\0') then the string is cut off from
+    character is the string terminator ('\\0') then the string is cut off from
     the specified index. Raises OutOfRange if index exceeds the length of
     the string.
 

@@ -188,10 +188,10 @@ public:
   string may force the internal buffer to be duplicated. The implementation is
   currently NOT MT-safe.
 
-  <pre>
+  @code
   WideString myString = WIDEMESSAGE("Hello, World!");
   WideString myOtherString = myString;
-  </pre>
+  @endcode
 
   @short Wide-character string.
   @ingroup string
@@ -329,19 +329,28 @@ protected:
   }
 public:
 
-  /** Specifies the maximum number of bytes per character for any supported encoding. */
+  /**
+    Specifies the maximum number of bytes per character for any supported
+    encoding.
+  */
   static const unsigned int MAXIMUM_MULTIBYTES = 6;
   /** Specifies the byte order mark. */
   static const ucs4 BOM = 0x0000feff;
 
   /** The style. */
   enum Style {
-    STYLE_JAVA, /**< Java format: \u1234 */
-    STYLE_C = STYLE_JAVA, /**< C format: \u1234 */
-    STYLE_CPP = STYLE_C, /**< C++ format: \u1234 */
-    STYLE_HTML, /**< HTML format &#x1234; or &#1234; dependent on the current base integer. */
-    STYLE_XML = STYLE_HTML, /**< XML format &#x1234; or &#1234; dependent on the current base integer. */
-    STYLE_PERL /**< Perl format: \x{1234} */
+    /** Java format: \\u1234. */
+    STYLE_JAVA,
+    /** C format: \\u1234. */
+    STYLE_C = STYLE_JAVA,
+    /** C++ format: \\u1234. */
+    STYLE_CPP = STYLE_C,
+    /** HTML format &#x1234; or &#1234; dependent on the current base integer. */
+    STYLE_HTML,
+    /** XML format &#x1234; or &#1234; dependent on the current base integer. */
+    STYLE_XML = STYLE_HTML,
+    /** Perl format: \\x{1234}. */
+    STYLE_PERL
   };
 
   class UnicodeCharacter {
@@ -841,7 +850,7 @@ public:
 
   /**
     Sets the character at the specified index of this string. If the new
-    character is the string terminator ('\0') then the string is cut off from
+    character is the string terminator ('\\0') then the string is cut off from
     the specified index. Raises OutOfRange if index exceeds the length of
     the string.
 

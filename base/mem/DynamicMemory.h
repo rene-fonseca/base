@@ -30,8 +30,9 @@ namespace alloc {
 /**
   This class provides support for dynamic memory allocation/deallocation.
 
-  @see DebugDynamicMemory
   @short Dynamic memory.
+  @ingroup memory
+  @see DebugDynamicMemory
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

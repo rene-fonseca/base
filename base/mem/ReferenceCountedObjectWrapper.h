@@ -23,23 +23,19 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   This is a wrapper for a Reference Counted Object. Use this class if you need
   to reference count an object of a class that is not a subclass of
   ReferenceCountedObject. Allocate objects on the heap not the stack.
-
+  
+  @short Reference counted object wrapper.
+  @ingroup memory
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
 template<class TYPE>
 class ReferenceCountedObjectWrapper : public ReferenceCountedObject {
-public:
-
-  /** Type of pointer to reference counted object. */
-  typedef TYPE* Pointer;
-  /** Type of teference to reference counted object. */
-  typedef TYPE& Reference;
 private:
 
   /** Ordinary object. */
-  Pointer object;
+  TYPE* object;
 public:
 
   /**
@@ -47,23 +43,23 @@ public:
 
     @param value The object to be reference counted.
   */
-  inline ReferenceCountedObjectWrapper(Pointer value)
+  inline ReferenceCountedObjectWrapper(TYPE* value) throw()
     : object(value) {
   }
 
   /**
     Returns the object.
   */
-  inline Pointer operator->() throw() {
+  inline TYPE* operator->() throw() {
     return object;
   }
 
   /**
     Returns the object.
   */
-  inline Reference operator*() throw(NullPointer) {
+  inline TYPE& operator*() throw(NullPointer) {
     if (!object) {
-      throw NullPointer();
+      throw NullPointer(this);
     }
     return *object;
   }
@@ -71,7 +67,7 @@ public:
   /**
     Type cast to Pointer.
   */
-  inline operator Pointer() const {
+  inline operator TYPE*() const throw() {
     return object;
   }
 

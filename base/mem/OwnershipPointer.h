@@ -19,8 +19,8 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Automation pointer that allows transfer of ownership and automatic deletion of
-  the object. Do not construct more than one automation pointer from the
+  Automation pointer that allows transfer of ownership and automatic deletion
+  of the object. Do not construct more than one automation pointer from the
   'normal' pointer.
   
   @short Ownership automation pointer.

@@ -23,6 +23,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  @example testsuite/Map.cpp
+*/
+
+/**
   Map collection implemented using an ordered binary tree.
 
   @short Map
@@ -30,6 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */
+
 template<class KEY, class VALUE>
 class Map : public Collection {
 public:

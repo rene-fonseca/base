@@ -68,13 +68,20 @@ public:
   
   /** Composite permissions. */
   enum CompositePermission {
-    NO = 0, /**< Trustee does not have any access. */
-    READ = READ_DATA|READ_ATTRIBUTES|READ_EXTENDED_ATTRIBUTES|READ_PERMISSIONS, /**< Permission to read object. */
-    WRITE = WRITE_DATA|APPEND_DATA|CHANGE_ATTRIBUTES|CHANGE_EXTENDED_ATTRIBUTES|CHANGE_PERMISSIONS|CHANGE_OWNER|REMOVE|REMOVE_COMPONENT, /**< Permission to change object. */
-    READ_AND_EXECUTE = READ|EXECUTE, /**< Permission to read and execute object. */
-    LIST_AND_TRAVERSE = READ_AND_EXECUTE, /**< Permission to list and traverse a folder. */
-    MODIFY = READ_DATA|READ_ATTRIBUTES|READ_EXTENDED_ATTRIBUTES|READ_PERMISSIONS|WRITE_DATA|APPEND_DATA|CHANGE_ATTRIBUTES|CHANGE_EXTENDED_ATTRIBUTES|REMOVE|EXECUTE, /** Permission to modify object. */
-    FULL = READ|WRITE|EXECUTE /**< Trustee has full access. */
+    /** Trustee does not have any access. */
+    NO = 0,
+    /** Permission to read object. */
+    READ = READ_DATA|READ_ATTRIBUTES|READ_EXTENDED_ATTRIBUTES|READ_PERMISSIONS,
+    /** Permission to change object. */
+    WRITE = WRITE_DATA|APPEND_DATA|CHANGE_ATTRIBUTES|CHANGE_EXTENDED_ATTRIBUTES|CHANGE_PERMISSIONS|CHANGE_OWNER|REMOVE|REMOVE_COMPONENT,
+    /** Permission to read and execute object. */
+    READ_AND_EXECUTE = READ|EXECUTE,
+    /** Permission to list and traverse a folder. */
+    LIST_AND_TRAVERSE = READ_AND_EXECUTE,
+    /** Permission to modify object. */
+    MODIFY = READ_DATA|READ_ATTRIBUTES|READ_EXTENDED_ATTRIBUTES|READ_PERMISSIONS|WRITE_DATA|APPEND_DATA|CHANGE_ATTRIBUTES|CHANGE_EXTENDED_ATTRIBUTES|REMOVE|EXECUTE,
+    /** Trustee has full access. */
+    FULL = READ|WRITE|EXECUTE
   };
   
   /** The access mask. */

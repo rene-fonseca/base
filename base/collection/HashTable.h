@@ -25,6 +25,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  @example testsuite/HashTable.cpp
+*/
+
+/**
   A hash table implementation.
   
   @short Hash table.
@@ -541,7 +545,7 @@ public:
       Node** bucket = getBuckets();
       const Node* const* endBucket = bucket + capacity;
       unsigned int index = 0;
-      fout << "Capacity: " << capacity << ENDL;
+      fout << MESSAGE("Capacity: ") << capacity << ENDL;
       while (bucket != endBucket) {
         Node* srcNode = *bucket;
         fout << index << ':' << ' ';
@@ -551,7 +555,7 @@ public:
             srcNode = srcNode->getNext();
           }
         } else {
-          fout << "EMPTY";
+          fout << MESSAGE("EMPTY");
         }
         fout << ENDL;
         ++index;

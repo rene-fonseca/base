@@ -532,6 +532,10 @@ public:
   ~ExpressionParser() throw();
 };
 
+/**
+  @example testsuite/eval.cpp
+*/
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

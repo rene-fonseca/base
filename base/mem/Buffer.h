@@ -21,8 +21,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This class implements a resizeable buffer and provides some low-level operations. The implementation is not MT-safe.
+  This class implements a resizeable buffer and provides some low-level
+  operations. The implementation is not MT-safe.
 
+  @short Buffer.
+  @ingroup memory
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

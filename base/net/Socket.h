@@ -61,7 +61,7 @@ public:
   
   /** Socket type. */
   enum Kind {
-    STREAM, /** Stream socket. */
+    STREAM, /**< Stream socket. */
     DATAGRAM, /**< Datagram socket. */
     RAW /**< Raw socket. */
   };  
@@ -588,6 +588,10 @@ public:
   */
   ~Socket() throw(IOException);
 };
+
+/**
+  @example testsuite/ping.cpp
+*/
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -173,11 +173,11 @@ public:
   
   /** Font weight. */
   enum FontWeight {
-    THIN, /** Thin. */
-    LIGHT, /** Light. */
-    NORMAL, /** Normal. */
-    BOLD, /** Bold. */
-    HEAVY /** Heavy. */
+    THIN, /**< Thin. */
+    LIGHT, /**< Light. */
+    NORMAL, /**< Normal. */
+    BOLD, /**< Bold. */
+    HEAVY /**< Heavy. */
   };
   
   /**
@@ -237,23 +237,23 @@ public:
   class TextFormat {
   public:
 
-    /**< Align to the left. */
+    /** Align to the left. */
     static const unsigned int LEFT = 1;
-    /**< Align at the center (horizontally). */
+    /** Align at the center (horizontally). */
     static const unsigned int CENTER = 2;
-    /**< Align to the right. */
+    /** Align to the right. */
     static const unsigned int RIGHT = 4;
-    /**< Align to top. */
+    /** Align to top. */
     static const unsigned int TOP = 8;
-    /**< Align to middle (vertically). */
+    /** Align to middle (vertically). */
     static const unsigned int MIDDLE = 16;
-    /**< Align to bottom. */
+    /** Align to bottom. */
     static const unsigned int BOTTOM = 32;
-    /**< Allow multiple lines. */
+    /** Allow multiple lines. */
     static const unsigned int MULTIPLE_LINES = 64;
-    /**< Break words. */
+    /** Break words. */
     static const unsigned int BREAK_WORDS = 128;
-    /**< Accept '&' as underline prefix. */
+    /** Accept '&' as underline prefix. */
     static const unsigned int PREFIX = 256;
   };
 private:

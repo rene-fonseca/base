@@ -28,13 +28,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   digest, or to produce any message having a given prespecified target message
   digest.
 
-  <pre>
+  @code
   String message = "abcdefghijklmnopqrstuvwxyz";
   MD5Sum checksum;
   checksum.push(Cast::pointer<const uint8*>(message.getElements()), message.getLength());
   checksum.pushEnd();
   fout << MESSAGE("message digest: ") << checksum.getValue() << ENDL;
-  </pre>
+  @endcode
 
   @short MD5 message-digest.
   @ingroup security
@@ -103,6 +103,10 @@ public:
   */
   String getBase64() const throw();
 };
+
+/**
+  @example testsuite/digest.cpp
+*/
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -341,6 +341,22 @@ public:
   }
 };
 
+/**
+  @example testsuite/client.cpp
+*/
+
+/**
+  @example testsuite/ftp.cpp
+*/
+
+/**
+  @example testsuite/http.cpp
+*/
+
+/**
+  @example testsuite/ping.cpp
+*/
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -26,9 +26,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   location-independent, resource identifiers. The components of the urn are
   stored internally in escaped format.
   
-  <pre>
+  @code
   Urn urn("urn:NID:NSS")
-  </pre>
+  @endcode
   
   @short Uniform Resource Name (URN)
   @ingroup net

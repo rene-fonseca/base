@@ -21,9 +21,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This class describes a block of memory to be dumped to a format output stream.
+  This class describes a block of memory to be dumped to a format output
+  stream.
   
   @short Memory dump descriptor.
+  @ingroup memory
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

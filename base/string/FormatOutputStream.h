@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class Date;
 class String;
-class Locale; // forward declaration
+class Locale;
 
 /**
   Actions used to modify a format output stream. Use BIN, OCT, DEC, and HEX to
@@ -39,6 +39,8 @@ class Locale; // forward declaration
   prefixes for numbers. EOL writes a new line to the stream. FLUSH forces the
   internal buffers to be flushed. Use ENDL to both write a new line and flush
   the internal buffers.
+
+  @relates FormatOutputStream
 */
 enum Action {
   BIN, /**< Selects binary base integer types. */
@@ -75,7 +77,7 @@ enum Action {
   SHORT_FORMAT, /**< Selects short format. */
   MEDIUM_FORMAT, /**< Selects medium format. */
   LONG_FORMAT, /**< Selects long format. */
-  RFC2822_FORMAT, /** Selects RFC2822-conformant format (e.g. Tue, 07 May 2002 12:35:54 GMT). */
+  RFC2822_FORMAT, /**< Selects RFC2822-conformant format (e.g. Tue, 07 May 2002 12:35:54 GMT). */
   ISO8601_FORMAT, /**< Selects ISO 8601:2000-conformant format. */
   DEPENDENT, /**< Selects default justification of the field type. This is the default. */
   LEFT, /**< Selects left justification within field. */
@@ -110,6 +112,7 @@ public:
   
   class Symbols {
   public:
+    
     enum Base {BINARY, OCTAL, DECIMAL, HEXADECIMAL};
     enum RealStyle {SCIENTIFIC, FIXED, ENGINEERING};
     enum EndOfLine {UNIXEOL, WINDOWSEOL, MACEOL};
@@ -242,7 +245,7 @@ public:
     output stream using the stack.
 
     Example:
-    <pre>
+    @code
     class Composite : public Object {
     private:
 
@@ -260,7 +263,7 @@ public:
       FormatOutputStream::PushContext pushContext(stream); // make current context the default context
       return stream << '{' << value.x << ',' << value.y << '}';
     }
-    </pre>
+    @endcode
     
     @short Push and pop default context of format output stream
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -447,13 +450,14 @@ public:
   };
   
   /**
-    Indent.
+    Indents the stream with the specified number of spaces. This is usually
+    used immediately after an EOL.
   */
   inline FormatOutputStream& operator<<(Indent indent) throw(IOException) {
     this->indent(indent.getIndent());
     return *this;
   }
-
+  
   /**
     Writes the specified number of spaces to the stream. The current context is
     ignored and not reset by this method.
@@ -572,7 +576,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Exception& e) t
 /**
   This class describes a seqence of elements to be written to a format output stream.
 
-  <pre>
+  @code
   class MyClass : public Object {
   private:
   
@@ -586,7 +590,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Exception& e) t
       // do something
     }
   };
-  </pre>
+  @endcode
 
   @short Sequence descriptor
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>

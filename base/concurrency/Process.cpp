@@ -464,7 +464,7 @@ public:
       // TAG: WM_QUIT is normally not posted - is this ok
       DWORD processId;
       DWORD threadId = ::GetWindowThreadProcessId(window, &processId);
-      fout << "threadId=" << threadId << " processId=" << processId << ENDL;
+      fout << MESSAGE("threadId=") << threadId << MESSAGE(" processId=") << processId << ENDL;
       
       Trace::message("sending WM_CLOSE now");
       LRESULT result = ::SendMessageTimeout(window, WM_CLOSE, 0, 0, SMTO_NORMAL, 3000, &dispatchResult);
@@ -472,7 +472,7 @@ public:
       result = ::SendMessageTimeout(window, WM_DESTROY, 0, 0, SMTO_NORMAL, 3000, &dispatchResult);
       Trace::message("sending WM_QUIT now");
       result = ::SendMessageTimeout(window, WM_QUIT, Application::EXIT_CODE_EXTERNAL, 0, SMTO_NORMAL, 3000, &dispatchResult);
-      fout << "result=" << result << ENDL;
+      fout << MESSAGE("result=") << result << ENDL;
       result = 1;
       if (result == 0) {
         kill->onFailure();

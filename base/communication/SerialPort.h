@@ -49,40 +49,47 @@ private:
   public:
 
     /** Initializes file handle. */
-    inline SerialPortHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {
+    inline SerialPortHandle(OperatingSystem::Handle handle) throw()
+      : Handle(handle) {
     }
     
-    /** Releases the resources used by the file. */
+    /** Releases the resources used by the serial port. */
     ~SerialPortHandle() throw(CommunicationsException);
   };
 public:
 
   class Parity {
   public:
-    enum {EVEN, MARK, NO, ODD, SPACE};
+
+    /** Parity. */
+    enum {
+      EVEN, /**< Even parity. */
+      MARK, /**< Mark. */
+      NO, /**< No parity. */
+      ODD, /**< Odd parity. */
+      SPACE /**< Space. */
+    };
   };
 
   class StopBits {
   public:
-    enum {ONE, ONE_HALF, TWO};
+    
+    /** The defined stop bits. */
+    enum {
+      ONE, /**< 1 stop bit. */
+      ONE_HALF, /**< 1.5 stop bits. */
+      TWO /**< 2 stop bits. */
+    };
   };
-
-  /** The defined stop bits. */
-//  enum StopBits {
-//    ONE_STOPBIT, /**< 1 stop bit. */
-//    ONE_HALF_STOPBITS, /**< 1.5 stop bits. */
-//    TWO_STOPBITS, /**< 2 stop bits. */
-//    UNSPECIFIED_STOPBITS /**< Unspecified number of stop bits. */
-//  };
 
   enum Event {
     BREAK, /**< Break event. */
     CD, /**< Carrier Detect (CD) event. */
     CTS, /**< Clear To Send (CTS) event. */
     DSR, /**< Data Set Ready (DSR) event. */
-    //    ERROR, /**< Error event. */
+    ERROR, /**< Error event. */
     RING, /**< Ring Indicator (RI) event. */
-    RLSD, /**< . */
+    RLSD, /**< Received Line Signal Detector (RLSD) event. */
     INPUT_AVAILABLE, /**< Input data is available event. */
     OUTPUT_EMPTY /**< Output buffer is empty event. */
   };

@@ -22,10 +22,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   This class provides support for dynamic memory allocation/deallocation with
-  debug support. This class should not be used in final application releases due
-  to the added memory and processing requirements.
+  debug support. This class should not be used in final application releases
+  due to the added memory and processing requirements.
   
   @short Debug dynamic memory.
+  @ingroup memory
   @see DynamicMemory
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

@@ -30,6 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   The Reference class is relocateable.
   
   @short Automation pointer that counts the number of references to an object.
+  @ingroup memory
   @see ReferenceCountedObject ReferenceCounter
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -53,9 +54,9 @@ public:
     Initializes an automation pointer with the specified pointer value. The
     automation pointer may be implicitly initialized.
     
-    <pre>
+    @code
     Reference<MyClass> object = new MyClass();
-    </pre>
+    @endcode
     
     @param value The desired pointer value.
   */

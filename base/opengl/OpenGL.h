@@ -43,6 +43,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   OpenGL namespace.
+  
+  @short This namespace provides OpenGL specific types.
 */
 
 namespace opengl {

@@ -28,7 +28,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   IEEE-1394 (also known as FireWire (Apple Computer) and i.LINK (Sony Corp.))
-  support. See 1394 Trade Association (http://www.1394ta.org).
+  support. See 1394 Trade Association (<a href="http://www.1394ta.org">
+  http://www.1394ta.org</a>).
   
   @short IEEE-1394 (FireWire)
   @ingroup communications
@@ -867,10 +868,16 @@ public:
   }
 
   inline void readIsochronous(unsigned int channel, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) {
-    unsigned int maximumPayload = getMaximumIsoPayloadForSpeed(getMaximumSpeed(getLocalId())); // in bytes
+    unsigned int maximumPayload = getMaximumIsoPayloadForSpeed(
+      getMaximumSpeed(getLocalId())
+    ); // in bytes
     ieee1394impl->readIsochronous(channel, maximumPayload, listener);
   }
 };
+
+/**
+  @example testsuite/IEEE1394.cpp
+*/
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

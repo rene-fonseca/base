@@ -66,19 +66,19 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   template argument called LOCK and is a base class of Synchronizeable<LOCK>.
   Like illustrated by this example:
 
-  <pre>
+  @code
   template<class LOCK = DefaultLock>
   class MyClass : public Synchronizeable<LOCK> {
     // stuffing goes here :-)
   };
-  </pre>
+  @endcode
 
   However, if you for some reason want to use these macros within a class that
   does not take a template argument LOCK, you must define LOCK explicitly and
   identical to the template argument of the base class Synchronizeable. Like
   this:
 
-  <pre>
+  @code
   class MyClass : public Synchronizeable<DefaultLock> {
   public:
     typedef DefaultLock LOCK;
@@ -93,7 +93,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
       // do modification of object
     }
   };
-  </pre>
+  @endcode
 
   @short A stack based wrapper of a synchronize able class.
   @ingroup concurrency

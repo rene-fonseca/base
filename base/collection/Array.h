@@ -29,10 +29,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   The Array collection is a container for an ordered sequence of elements which
-  provides random access to the individual elements. Elements must have a default
-  constructor.
-  
-  @example testsuite/Array.cpp
+  provides random access to the individual elements. Elements must have a
+  default constructor.
   
   @short Array.
   @ingroup collections
@@ -334,7 +332,9 @@ public:
   }
 };
 
-
+/**
+  @example testsuite/Array.cpp
+*/
 
 /**
   Writes a string representation of an array to a format stream.

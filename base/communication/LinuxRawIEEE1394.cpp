@@ -452,7 +452,7 @@ void LinuxRawIEEE1394::read(unsigned short node, uint64 address, char* buffer, u
       }
       if (requestContext.status == IEEE1394Impl::STATUS_TIMEOUT) {
         assert(attempt < IEEE1394Impl::MAXIMUM_ATTEMPTS, IEEE1394Exception(this));
-        fout << setForeground(ANSIEscapeSequence::BLUE) << bold() << "<TIMEOUT>" << normal() << FLUSH;
+        fout << setForeground(ANSIEscapeSequence::BLUE) << bold() << MESSAGE("<TIMEOUT>") << normal() << FLUSH;
         Thread::millisleep(10);
         continue;
       }
@@ -531,7 +531,7 @@ unsigned int LinuxRawIEEE1394::read(unsigned short node, uint64 address, uint32*
         break;
       }
       if (requestContext.status == IEEE1394Impl::STATUS_TIMEOUT) {
-        fout << setForeground(ANSIEscapeSequence::BLUE) << bold() << "<TIMEOUT>" << normal() << FLUSH;
+        fout << setForeground(ANSIEscapeSequence::BLUE) << bold() << MESSAGE("<TIMEOUT>") << normal() << FLUSH;
         Thread::millisleep(10);
       }
       

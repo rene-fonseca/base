@@ -722,7 +722,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
             &bytesWritten,
             0
           ) == 0) {
-        fout << "12345: " << ::GetLastError() << ENDL;
+        fout << MESSAGE("12345: ") << ::GetLastError() << ENDL;
         ::CloseHandle(link);
         throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
       }
@@ -1454,13 +1454,13 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
         break;
       }
       const FileLocationInfo* fileLocationInfo = (const FileLocationInfo*)(buffer + offset);
-//       ferr << "file location: " << fileLocationInfo->size << EOL
-//            << "file location: " << fileLocationInfo->offset << EOL
-//            << "file location: " << fileLocationInfo->flags << EOL
-//            << "file location: " << fileLocationInfo->volumeOffset << EOL
-//            << "file location: " << fileLocationInfo->pathOffset << EOL
-//            << "file location: " << fileLocationInfo->networkVolumeOffset << EOL
-//            << "file location: " << fileLocationInfo->remainingPathOffset << EOL
+//       ferr << MESSAGE("file location: ") << fileLocationInfo->size << EOL
+//            << MESSAGE("file location: ") << fileLocationInfo->offset << EOL
+//            << MESSAGE("file location: ") << fileLocationInfo->flags << EOL
+//            << MESSAGE("file location: ") << fileLocationInfo->volumeOffset << EOL
+//            << MESSAGE("file location: ") << fileLocationInfo->pathOffset << EOL
+//            << MESSAGE("file location: ") << fileLocationInfo->networkVolumeOffset << EOL
+//            << MESSAGE("file location: ") << fileLocationInfo->remainingPathOffset << EOL
 //            << ENDL;
       
       if (!((fileLocationInfo->size > sizeof(FileLocationInfo)) &&
@@ -1477,13 +1477,13 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
         if (offset + fileLocationInfo->volumeOffset + volume->labelOffset >= linkLength) {
           break;
         }
-//         ferr << "local volume: " << volume->size << EOL
-//              << "local volume: " << volume->type << EOL
-//              << "local volume: " << volume->serialNumber << EOL
-//              << "local volume: " << volume->labelOffset << EOL
-//              << "local volume: " << buffer[offset + volume->labelOffset] << EOL
-//              << "base path: " << String(buffer + offset + fileLocationInfo->pathOffset) << EOL
-//              << "remaining path: " << String(buffer + offset + fileLocationInfo->remainingPathOffset) << EOL
+//         ferr << MESSAGE("local volume: ") << volume->size << EOL
+//              << MESSAGE("local volume: ") << volume->type << EOL
+//              << MESSAGE("local volume: ") << volume->serialNumber << EOL
+//              << MESSAGE("local volume: ") << volume->labelOffset << EOL
+//              << MESSAGE("local volume: ") << buffer[offset + volume->labelOffset] << EOL
+//              << MESSAGE("base path: ") << String(buffer + offset + fileLocationInfo->pathOffset) << EOL
+//              << MESSAGE("remaining path: ") << String(buffer + offset + fileLocationInfo->remainingPathOffset) << EOL
 //              << ENDL;
 
         if (!((offset + fileLocationInfo->pathOffset < linkLength) &&
@@ -1508,9 +1508,9 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
           break;
         }
         
-//         ferr << "network volume: " << volume->size << EOL
-//              << "network volume: " << volume->shareOffset << EOL
-//              << "network volume: " << String(buffer + offset + fileLocationInfo->networkVolumeOffset + volume->shareOffset) << EOL
+//         ferr << MESSAGE("network volume: ") << volume->size << EOL
+//              << MESSAGE("network volume: ") << volume->shareOffset << EOL
+//              << MESSAGE("network volume: ") << String(buffer + offset + fileLocationInfo->networkVolumeOffset + volume->shareOffset) << EOL
 //              << ENDL;
         
         // TAG: check if path looks valid (e.g. \\xxxx\xxxx...????)

@@ -23,7 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   object of your choice. Some guard classes may implement the shared locks
   using exclusive locks.
 
-  <pre>
+  @code
   class MyResource : public Object {
   private:
 
@@ -48,9 +48,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
       assert(!somethingWentWrong, MyResourceException()); // no need to explicitly release guard
     }
   };
-  </pre>
+  @endcode
 
-  @short Shared synchronization
+  @short Shared synchronization.
   @ingroup concurrency
   @see ExclusiveSynchronize
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -66,8 +66,8 @@ private:
   /** The synchronize able object to be synchronized. */
   const Guard& guard;
 
-  SharedSynchronize(const SharedSynchronize& copy); // prohibit copy construction
-  SharedSynchronize& operator=(const SharedSynchronize& eq); // prohibit assignment
+  SharedSynchronize(const SharedSynchronize& copy) throw();
+  SharedSynchronize& operator=(const SharedSynchronize& eq) throw();
 public:
 
   /**
@@ -75,21 +75,19 @@ public:
 
     @param guard The synchronize able object to be synchronized.
   */
-  explicit SharedSynchronize(const Guard& guard) throw();
-
+  inline explicit SharedSynchronize(const Guard& _guard) throw() 
+    : guard(_guard) {
+    guard.sharedLock();
+  }
+  
   /**
-    Releases the lock if not already released and destroys the synchronization object.
+    Releases the lock if not already released and destroys the synchronization
+    object.
   */
   inline ~SharedSynchronize() throw() {
     guard.releaseLock();
   }
 };
-
-template<class GUARD>
-inline SharedSynchronize<GUARD>::SharedSynchronize(const GUARD& _guard) throw()
-  : guard(_guard) {
-  guard.sharedLock();
-}
 
 
 
@@ -97,6 +95,7 @@ inline SharedSynchronize<GUARD>::SharedSynchronize(const GUARD& _guard) throw()
   Optimized version of SharedSynchronize intended for single threaded
   applications.
 
+  @short Unsafe shared synchronization.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -104,11 +103,11 @@ inline SharedSynchronize<GUARD>::SharedSynchronize(const GUARD& _guard) throw()
 template<>
 class SharedSynchronize<Unsafe> {
 private:
-
-  SharedSynchronize(const SharedSynchronize& copy); // prohibit copy construction
-  SharedSynchronize& operator=(const SharedSynchronize& eq); // prohibit assignment
+  
+  SharedSynchronize(const SharedSynchronize& copy) throw();
+  SharedSynchronize& operator=(const SharedSynchronize& eq) throw();
 public:
-
+  
   /**
     Initializes the synchronization object.
 

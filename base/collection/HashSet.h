@@ -25,6 +25,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  @example testsuite/HashSet.cpp
+*/
+
+/**
   A hash set implementation.
   
   @short Hash set.

@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   This class is used to synchronize executing contexts exclusively with a
   guard object of your choice.
 
-  <pre>
+  @code
   class MyResource : public Object {
   private:
 
@@ -47,9 +47,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
       assert(!somethingWentWrong, MyResourceException()); // no need to explicitly release guard
     }
   };
-  </pre>
+  @endcode
 
-  @short Exclusive synchronization
+  @short Exclusive synchronization.
   @ingroup concurrency
   @see SharedSynchronize
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -64,38 +64,37 @@ private:
   typedef GUARD Guard;
   /** The synchronize able object to be synchronized. */
   const Guard& guard;
-
-  ExclusiveSynchronize(const ExclusiveSynchronize& copy); // prohibit copy construction
-  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& eq); // prohibit assignment
+  
+  ExclusiveSynchronize(const ExclusiveSynchronize& copy) throw();
+  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& eq) throw();
 public:
-
+  
   /**
     Initializes the synchronization object.
 
     @param guard The synchronize able object to be synchronized.
   */
-  explicit ExclusiveSynchronize(const Guard& guard) throw();
-
+  inline explicit ExclusiveSynchronize(const Guard& _guard) throw() 
+    : guard(_guard) {
+    guard.exclusiveLock();
+  }
+  
   /**
-    Releases the lock if not already released and destroys the synchronization object.
+    Releases the lock if not already released and destroys the synchronization
+    object.
   */
   inline ~ExclusiveSynchronize() throw() {
     guard.releaseLock();
   }
 };
 
-template<class GUARD>
-inline ExclusiveSynchronize<GUARD>::ExclusiveSynchronize(const GUARD& _guard) throw()
-  : guard(_guard) {
-  guard.exclusiveLock();
-}
-
 
 
 /**
   Optimized version of ExclusiveSynchronize intended for single threaded
   applications.
-
+  
+  @short Unsafe exclusive synchronization.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -104,8 +103,8 @@ template<>
 class ExclusiveSynchronize<Unsafe> {
 private:
 
-  ExclusiveSynchronize(const ExclusiveSynchronize& copy); // prohibit copy construction
-  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& eq); // prohibit assignment
+  ExclusiveSynchronize(const ExclusiveSynchronize& copy) throw();
+  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& eq) throw();
 public:
 
   /**

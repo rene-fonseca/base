@@ -161,8 +161,8 @@ public:
   }
   
   /**
-    Returns true if the character is a white space (tab '\t', newline '\n',
-    vertical-tab '\v', form-feed '\f', carriage-return '\r', and space ' ').
+    Returns true if the character is a white space (tab '\\t', newline '\\n',
+    vertical-tab '\\v', form-feed '\\f', carriage-return '\\r', and space ' ').
   */
   static inline bool isSpace(char value) throw() {
     return lookup[static_cast<unsigned char>(value)].flags & SPACE;

@@ -14,7 +14,9 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__CHECKED_POINTER_H
 #define _DK_SDU_MIP__BASE_MEM__CHECKED_POINTER_H
 
+#include <base/collection/Hash.h>
 #include <base/mem/NullPointer.h>
+#include <base/Functor.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

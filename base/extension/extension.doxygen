@@ -1,6 +1,6 @@
 /**
   @defgroup extensions Extensions
-
+  
   Add-on components for the framework. Some components may only be
   available for a specific platform.
 */
@@ -8,6 +8,7 @@
 /**
   This namespace contains the extensions to the framework.
   
+  @short Extensions to the framework.
   @ingroup extensions
 */
 

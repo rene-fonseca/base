@@ -87,14 +87,14 @@ public:
   /**
     Initializes the exception object.
 
-    <pre>
+    @code
     void myMethod() throw(Exception) {
       if (!condition) {
         throw Exception("my short message", this);
       }
       ...
     }
-    </pre>
+    @endcode
     
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.

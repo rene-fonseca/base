@@ -58,13 +58,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   typedef unsigned long long uint64;
 #endif
 
-/** 128 bit signed integer. */
+/* 128 bit signed integer. */
 struct int128 {
   uint64 a;
   uint64 b;
 };
 
-/** 128 bit unsigned integer. */
+/* 128 bit unsigned integer. */
 struct uint128 {
   uint64 a;
   uint64 b;
@@ -77,11 +77,7 @@ typedef uint16 ucs2;
 /** UCS-4 encoded character (ISO/IEC 10646). */
 typedef uint32 ucs4;
 
-/**
-  A void type.
-  
-  @short A void type.
-*/
+/* A void type. */
 struct nothing {
 };
 
@@ -237,7 +233,7 @@ inline unsigned int getFieldOffset(const FIELD STRUCT::* field) throw() {
 /**
   Returns the offset of the field within the structure.
 
-  <pre>
+  @code
   namespace myNamespace {
 
     struct MyStructure {
@@ -251,7 +247,7 @@ inline unsigned int getFieldOffset(const FIELD STRUCT::* field) throw() {
     MemorySize offset = OFFSETOF(myNamespace::MyStructure, field.subfield);
     ...
   }
-  </pre>
+  @endcode
 */
 #define OFFSETOF(STRUCT, FIELD) getAddressOf(getNullPointerOf<STRUCT>()->FIELD)
 
@@ -402,7 +398,7 @@ namespace primitives {
     
     Example:
     
-    <pre>
+    @code
     template<class TYPE>
     void myFunction(const TYPE& value) throw() {
       if (Primitives::Cardinal<TYPE>::IS_CARDINAL) {
@@ -411,7 +407,7 @@ namespace primitives {
         // do something
       }
     }
-    </pre>
+    @endcode
 
     @short Cardinal information.
   */
@@ -504,7 +500,7 @@ namespace primitives {
 
     Example:
     
-    <pre>
+    @code
     template<class TYPE>
     void myFunction(const TYPE& value) throw() {
       if (Primitives::FloatingPoint<TYPE>::IS_FLOATING_POINT) {
@@ -515,7 +511,7 @@ namespace primitives {
         // do something
       }
     }
-    </pre>
+    @endcode
 
     @short Floating point information.
   */

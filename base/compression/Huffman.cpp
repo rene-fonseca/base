@@ -283,7 +283,7 @@ public:
 //       if (nodes[symbol].length == 0) {
 //         continue;
 //       }
-//       fout << "symbol=" << symbol << " length=" << nodes[symbol].length << " code=" << BIN << NOPREFIX << ZEROPAD << setWidth(nodes[symbol].length) << nodes[symbol].code << EOL;
+//       fout << MESSAGE("symbol=") << symbol << MESSAGE(" length=") << nodes[symbol].length << MESSAGE(" code=") << BIN << NOPREFIX << ZEROPAD << setWidth(nodes[symbol].length) << nodes[symbol].code << EOL;
 //     }
 //     fout << ENDL;
   }

@@ -140,7 +140,7 @@ public:
 #if 0 // disabled
   // TAG: we should destroy window in destructor
   StringOutputStream stream;
-  stream << MESSAGE("messageHandler: message=") << message << " primary=" << primaryParameter << " second=" << secondaryParameter << FLUSH;
+  stream << MESSAGE("messageHandler: message=") << message << MESSAGE(" primary=") << primaryParameter << MESSAGE(" second=") << secondaryParameter << FLUSH;
   Trace::message(stream.getString().getElements());
   if (::InSendMessage()) {
     ::ReplyMessage(0);
@@ -207,7 +207,7 @@ public:
   static LRESULT CALLBACK messageHandler(HWND window, UINT message, WPARAM primaryParameter, LPARAM secondaryParameter) {
     // TAG: we should destroy window in destructor
     StringOutputStream stream;
-    //stream << MESSAGE("messageHandler: message=") << message << " primary=" << primaryParameter << " second=" << secondaryParameter << FLUSH;
+    //stream << MESSAGE("messageHandler: message=") << message << MESSAGE(" primary=") << primaryParameter << MESSAGE(" second=") << secondaryParameter << FLUSH;
     //Trace::message(stream.getString().getElements());
     switch (message) {
     case WM_QUIT:

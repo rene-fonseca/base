@@ -978,57 +978,57 @@ inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) /*throw
 /**
   Wrapper class used to invoke prefix and suffix pairs.
 
-  <pre>
-    class MyClass {
-    public:
-
-      MyClass();
-      int myMethod(int);
-    };
-
-    class MyLock {
-    public:
-
-      MyLock();
-      void lock();
-      void unlock();
-    };
-
-    class MyPrefix {
-    private:
-
-      MyLock lock;
-    public:
-
-      MySuffix(MyLock l) : lock(l) {
-      }
-      
-      inline operator()() {
-        lock->lock();
-      }
-    };
-
-    class MySuffix {
-    private:
-
-      MyLock lock;
-    public:
-
-      MySuffix(MyLock l) : lock(l) {
-      }
-      
-      inline void operator()() {
-        lock->unlock();
-      }
-    };
-
-    void myFunction() {
-      MyLock myLock;
-      InvokeOutfix outfix(object, MyPrefix(myLock), MySuffix(myLock));
-      int result = outfix->myMethod(1234);
+  @code
+  class MyClass {
+  public:
+  
+    MyClass();
+    int myMethod(int);
+  };
+  
+  class MyLock {
+  public:
+  
+    MyLock();
+    void lock();
+    void unlock();
+  };
+  
+  class MyPrefix {
+  private:
+  
+    MyLock lock;
+  public:
+  
+    MySuffix(MyLock _lock) : lock(_lock) {
     }
-  </pre>
-
+    
+    inline operator()() {
+      lock->lock();
+    }
+  };
+  
+  class MySuffix {
+  private:
+  
+    MyLock lock;
+  public:
+  
+    MySuffix(MyLock _lock) : lock(_lock) {
+    }
+    
+    inline void operator()() {
+      lock->unlock();
+    }
+  };
+  
+  void myFunction() {
+    MyLock myLock;
+    InvokeOutfix outfix(object, MyPrefix(myLock), MySuffix(myLock));
+    int result = outfix->myMethod(1234);
+  }
+  @endcode
+  
   @short Outfix invocation.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

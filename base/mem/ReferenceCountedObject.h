@@ -24,23 +24,24 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   pointer Reference or similar to access a ReferenceCountedObject. The
   ReferenceCountedObject is nothing more than an encapsulation of the number of
   references. To avoid any invalidation of the number of references only
-  Reference can make changes to the number of references. Not even subclasses of
-  ReferenceCountedObject are allowed to change the number of references. The
+  Reference can make changes to the number of references. Not even subclasses
+  of ReferenceCountedObject are allowed to change the number of references. The
   number of references is not considered a part of the state of the object and
   can thus be modified for constant reference counted objects. Or to put it
-  simple, you can reference count constant objects. Use ReferenceCounter to count
-  the number of references to any object.
+  simple, you can reference count constant objects. Use ReferenceCounter to
+  count the number of references to any object.
   
   To make your own reference counted class you simply inherit from this class.
   Like illustrated by this example.
 
-  <pre>
+  @code
   class MyClass : public virtual Object, public virtual ReferenceCountedObject {
     ...
   };
-  </pre>
+  @endcode
   
   @short Reference counted object.
+  @ingroup memory
   @see Reference ReferenceCounter
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2

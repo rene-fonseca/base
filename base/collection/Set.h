@@ -20,6 +20,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  @example testsuite/Set.cpp
+*/
+
+/**
   Set collection implemented using an ordered binary tree.
 
   @short Set of elements.

@@ -26,8 +26,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   of an array of elements. The implementation is not MT-safe and the class is
   mainly used by other container classes.
 
-  @see CapacityAllocator
   @short Reference counted capacity allocator.
+  @ingroup memory
+  @see CapacityAllocator
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -26,6 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Allocator of resizeable memory block. The implementation is not MT-safe.
 
   @short Allocator.
+  @ingroup memory
   @see ReferenceCountedAllocator CapacityAllocator
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2

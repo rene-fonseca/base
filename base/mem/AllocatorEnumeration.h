@@ -21,10 +21,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Enumerator used to traverse elements of a sequence (not to be confused with the
-  Array collection).
+  Enumerator used to traverse elements of a sequence (not to be confused with
+  the Array collection).
 
   @short Enumerator of elements of a sequence.
+  @ingroup memory
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

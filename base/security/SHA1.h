@@ -32,13 +32,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   infeasible to find a message which corresponds to a given message digest, or
   to find two different messages which produce the same message digest.
 
-  <pre>
+  @code
   String message = "abcdefghijklmnopqrstuvwxyz";
   SHA1 checksum;
   checksum.push(Cast::pointer<const uint8*>(message.getElements()), message.getLength());
   checksum.pushEnd();
   fout << MESSAGE("message digest: ") << checksum.getValue() << ENDL;
-  </pre>
+  @endcode
 
   @short SHA-1 message-digest.
   @ingroup security
@@ -133,6 +133,10 @@ public:
   */
   String getBase64() const throw();
 };
+
+/**
+  @example testsuite/digest.cpp
+*/
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

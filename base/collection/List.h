@@ -25,6 +25,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  @example testsuite/List.cpp
+*/
+
+/**
   A node in a list.
 
   @short A node in a list
@@ -281,13 +285,13 @@ public:
 
   You can enumerate the elements of a list like this (myMember is a member
   function of MyClass):
-  <pre>
+  @code
     List<MyClass> myList;
     List<MyClass>::Enumeration enu(myList);
     while (enu.hasNext()) {
       enu.next()->myMember();
     }
-  </pre>
+  @endcode
 
   @short List.
   @ingroup collections

@@ -49,7 +49,7 @@ public:
     NONE, /**< No cursor. */
     WORKING_IN_BACKGROUND, /**< Cursor indicating working is being the background. */
     ARROW, /**< The normal selection cursor. */
-    CROSSHAIR, /** Cross hair. */
+    CROSSHAIR, /**< Cross hair. */
     HAND, /**< Hand. */
     HELP, /**< Help. */
     NO, /**< No. */

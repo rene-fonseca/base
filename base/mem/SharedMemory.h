@@ -99,15 +99,17 @@ public:
   enum Access {
     READ = 1, /**< Read access. */
     WRITE = 2, /**< Write access. */
-    READWRITE = READ|WRITE,  /**< Read and write access. */
+    READWRITE = READ|WRITE, /**< Read and write access. */
     EXECUTE = 4, /**< Execute access. */
     ANY = READWRITE|EXECUTE /**< Read, write, and execute access. */
   };
 
   /** Options. */
   enum Option {
-    PREPARE = 1, /**< Specifies that the file should be extended to the specified file region. */
-    CLEAR = 2 /**< Specifies that the region should be initialized with zeros. */
+    /** Specifies that the file should be extended to the specified file region. */
+    PREPARE = 1,
+    /** Specifies that the region should be initialized with zeros. */
+    CLEAR = 2
   };
   
   /**

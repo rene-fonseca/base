@@ -26,8 +26,12 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  An ordered sequence of boolean values (bits). The is offen used to represent a
-  set of flags. This class does not take up as much memory as Array<bool>.
+  @example testsuite/BitSet.cpp
+*/
+
+/**
+  An ordered sequence of boolean values (bits). The is offen used to represent
+  a set of flags. This class does not take up as much memory as Array<bool>.
   
   @short Set of bits
   @ingroup collections

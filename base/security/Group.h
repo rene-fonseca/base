@@ -16,7 +16,7 @@
 
 #include <base/security/User.h>
 #include <base/string/String.h>
-#include <base/Exception.h> // TAG: need other exception
+#include <base/OutOfDomain.h>
 #include <base/collection/Array.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -27,33 +27,74 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @ingroup security
   @short Group
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.1
 */
 
 class Group : public Object {
 private:
 
+  /** The identifier of the group. */
   unsigned long long id;
 public:
 
+  /**
+    This exception is raised by the Group class.
+
+    @short Group exception
+    @ingroup exceptions
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    @version 1.0
+  */
+
+  class GroupException : public Exception {
+  public:
+
+    /**
+      Initializes the exception object with no message.
+    */
+    inline GroupException() throw() {}
+
+    /**
+      Initializes the exception object.
+
+      @param message The message.
+    */
+    inline GroupException(const char* message) throw() : Exception(message) {}
+
+    /**
+      Initializes the exception object without an associated message.
+
+      @param type The identity of the type.
+    */
+    inline GroupException(Type type) throw() : Exception(type) {}
+
+    /**
+      Initializes the exception object.
+
+      @param message An NULL-terminated string (ASCII).
+      @param type The identity of the type.
+    */
+    inline GroupException(const char* message, Type type) throw() : Exception(message, type) {}
+  };
+  
   /**
     Initializes the group by id.
 
     @param id The identifier of the group.
   */
-  Group(unsigned long long) throw();
+  Group(unsigned long long) throw(OutOfDomain);
 
   /**
     Initializes the group by name.
 
     @param name The name of the group.
   */
-  Group(const String& name) throw(Exception);
+  Group(const String& name) throw(GroupException);
 
   /**
     Initializes group as the primary group of the specified user.
   */
-  Group(const User& user) throw(Exception);
+  Group(const User& user) throw(GroupException);
 
   /**
     Initializaes group from other group.
@@ -63,12 +104,12 @@ public:
   /**
     Returns the name of the group.
   */
-  String getName() const throw(Exception);
+  String getName() const throw(GroupException);
 
   /**
     Returns the members of the group.
   */
-  Array<String> getMembers() const throw(Exception);
+  Array<String> getMembers() const throw(GroupException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

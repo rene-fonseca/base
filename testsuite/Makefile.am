@@ -3,7 +3,7 @@
 DEFS =
 DEFAULT_INCLUDES =
 
-bin_PROGRAMS = Array List Queue Set Map String io client server datagramClient datagramServer Thread referenceCounting fileInput mtServer filesystem xml daemon Exception ftp http dlapp
+bin_PROGRAMS = Array List Queue Set Map String io client server datagramClient datagramServer Thread referenceCounting fileInput mtServer filesystem xml daemon Exception ftp http dlapp intercom
 
 lib_LTLIBRARIES = dlmodule.la
 
@@ -29,8 +29,9 @@ Exception_SOURCES = Exception.cpp
 ftp_SOURCES = ftp.cpp
 http_SOURCES = http.cpp
 dlapp_SOURCES = dlapp.cpp MyLinkerModule.cpp
+intercom_SOURCES = intercom.cpp
 
 dlmodule_la_SOURCES = dlmodule.cpp MyLinkerModule.cpp
 dlmodule_la_LDFLAGS = -avoid-version -module -no-undefined -version-info 0:1:0
 
-EXTRA_DIST = Array.cpp List.cpp Queue.cpp Set.cpp Map.cpp String.cpp io.cpp client.cpp server.cpp datagramClient.cpp datagramServer.cpp Thread.cpp referenceCounting.cpp fileInput.cpp mtServer.cpp filesystem.cpp xml.cpp daemon.cpp Exception.cpp ftp.cpp http.cpp
+EXTRA_DIST =

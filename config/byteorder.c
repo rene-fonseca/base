@@ -24,14 +24,15 @@ int main() {
     char c[sizeof(unsigned int)];
     unsigned int i;
   } u;
+  unsigned int j;
 
   if (sizeof(unsigned int) > 8) {
     return _DK_SDU_MIP__BASE__UNSPECIFIED;
   }
 
   u.i = 0;
-  for (unsigned int i = sizeof(unsigned int); i > 0; --i) {
-    u.i = u.i * 256 + i;
+  for (j = sizeof(unsigned int); j > 0; --j) {
+    u.i = u.i * 256 + j;
   }
 
   if (sizeof(unsigned int) == 2) {

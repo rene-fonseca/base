@@ -272,9 +272,9 @@ public:
     ASSERT(result == size);
     bytesWritten += size;
     fout << "  bytes written=" << bytesWritten
-         << "  completed=" << base::FIXED << setWidth(10) << setPrecision(6) << static_cast<long double>(bytesWritten)/totalSize*100 << "%"
-         << "  time=" << base::FIXED << setWidth(10) << timer.getLiveMicroseconds()/1000000.
-         << "  rate=" << base::FIXED << setWidth(15) << setPrecision(6) << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds()) << "kbs\r" << FLUSH;
+         << "  completed=" << base::FIXED << setWidth(7) << setPrecision(3) << static_cast<long double>(bytesWritten)/totalSize*100 << "%"
+         << "  time=" << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
+         << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3) << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds()) << "kbs\r" << FLUSH;
   }
 
   void pushEnd() throw() {

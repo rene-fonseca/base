@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short Dynamic linker loader.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.2
 */
 
 class DynamicLinker {
@@ -32,8 +32,7 @@ private:
 
   /** Opaque handle to the module. */
   void* handle;
-  //ReferenceCounter<void> handle;
-
+  
   /** Returns a pointer to the global symbol. */
   static void* getGlobalSymbolImpl(const String& symbol) throw(LinkerException);
 public:
@@ -75,7 +74,23 @@ public:
     @return The address of the symbol.
   */
   void* getSymbol(const StringLiteral& symbol) const throw(LinkerException);
+  
+  /**
+    Returns the address of the specified symbol.
 
+    @param symbol The symbol to be resolved.
+    @return The address of the symbol (0 is not available).
+  */
+  void* getUncertainSymbol(const String& symbol) const throw();
+  
+  /**
+    Returns the address of the specified symbol.
+
+    @param symbol The symbol to be resolved.
+    @return The address of the symbol (0 is not available).
+  */
+  void* getUncertainSymbol(const StringLiteral& symbol) const throw();
+  
   /**
     Closes the module.
   */

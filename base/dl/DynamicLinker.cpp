@@ -14,22 +14,20 @@
 #include <base/platforms/features.h>
 #include <base/dl/DynamicLinker.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  include <windows.h>
 #else // unix
-  #include <dlfcn.h>
-  // #include <link.h> // TAG: is this required for Solaris
-
-  #if !defined(RDLD_LAZY) || !defined(RDLD_NOW) || !defined(RTLD_GLOBAL) || !defined(RTDL_LOCAL)
-    #warning dlfcn.h is not compliant with IEEE Std 1003.1-2001
-  #endif
-
+#  include <dlfcn.h>
+// #include <link.h> // TAG: is this required for Solaris
+#  if !defined(RDLD_LAZY) || !defined(RDLD_NOW) || !defined(RTLD_GLOBAL) || !defined(RTDL_LOCAL)
+#    warning dlfcn.h is not compliant with IEEE Std 1003.1-2001
+#  endif
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // GetModuleHandle does not increment reference count
   void* result = (void*)(::GetProcAddress(::GetModuleHandle(0), symbol.getElements()));
   assert(result != 0, LinkerException("Unable to resolve symbol"));
@@ -54,7 +52,7 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerExcep
 // TAG: enumerate modules support
 
 //String DynamicLinker::getPath() throw() {
-//#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+//#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 //  String path(MAX_PATH); // maximum path length in ANSI mode
 //  DWORD length = ::GetModuleFileNameEx(
 //                   ::GetCurrentProcess(), // get pseudo handle
@@ -73,7 +71,7 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerExcep
 //}
 
 DynamicLinker::DynamicLinker(const String& module, unsigned int options) throw(LinkerException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if ((handle = ::LoadLibraryEx(module.getElements(), 0, 0)) == 0) {
     throw LinkerException("Unable to open module", this);
   }
@@ -95,7 +93,7 @@ DynamicLinker::DynamicLinker(const String& module, unsigned int options) throw(L
 }
 
 void* DynamicLinker::getSymbol(const StringLiteral& symbol) const throw(LinkerException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol));
   assert(result != 0, LinkerException("Unable to resolve symbol", this));
   return result;
@@ -107,7 +105,7 @@ void* DynamicLinker::getSymbol(const StringLiteral& symbol) const throw(LinkerEx
 }
 
 void* DynamicLinker::getSymbol(const String& symbol) const throw(LinkerException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));
   assert(result != 0, LinkerException("Unable to resolve symbol", this));
   return result;
@@ -118,8 +116,24 @@ void* DynamicLinker::getSymbol(const String& symbol) const throw(LinkerException
 #endif // flavor
 }
 
+void* DynamicLinker::getUncertainSymbol(const StringLiteral& symbol) const throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  return (void*)(::GetProcAddress((HMODULE)handle, symbol));
+#else // unix
+  return dlsym(handle, symbol);
+#endif // flavor
+}
+
+void* DynamicLinker::getUncertainSymbol(const String& symbol) const throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  return (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));
+#else // unix
+  return dlsym(handle, symbol.getElements());
+#endif // flavor
+}
+
 DynamicLinker::~DynamicLinker() throw(LinkerException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(::FreeLibrary((HMODULE)handle), LinkerException("Unable to close module", this));
 #else // unix
   assert(dlclose(handle) == 0, LinkerException("Unable to close module", this));

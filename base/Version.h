@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   This class returns information concerning the framework.
 
   @short Framework information.
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -54,7 +54,7 @@ public:
   */
   String getVersion() const throw();
 
-  /*
+  /**
     Returns a short banner (multiple lines) describing the framework.
   */
   String getBanner() const throw();

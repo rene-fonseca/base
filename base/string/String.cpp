@@ -524,9 +524,9 @@ unsigned int String::count(const String& str, unsigned int start) const throw() 
 }
 
 String::Character* String::getElements() throw() {
-  Character* buffer = getBuffer(); // copy on write
-  buffer[elements->getSize() - 1] = Traits::TERMINATOR;
-  return buffer;
+  Character* result = getBuffer(); // copy on write
+  result[getLength()] = Traits::TERMINATOR;
+  return result;
 }
 
 template<>

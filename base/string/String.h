@@ -802,8 +802,9 @@ public:
     Returns null-terminated string.
   */
   inline const Character* getElements() const throw() {
-    elements->getElements()[elements->getSize() - 1] = Traits::TERMINATOR; // no need to copy on write
-    return getBuffer();
+    Character* result = elements->getElements(); // no need to copy on write 'cause we only add terminator
+    result[getLength()] = Traits::TERMINATOR;
+    return result;
   }
 
 // *******************************************************************************************

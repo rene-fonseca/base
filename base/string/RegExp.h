@@ -22,7 +22,8 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  @short Regular expression.
+  @short Regular expression
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -36,16 +37,16 @@ public:
   class RegExpException : public Exception {
   public:
 
-    inline RegExpException::RegExpException() {}
+    inline RegExpException() throw() {}
 
-    inline RegExpException::RegExpException(const char* message) : Exception(message) {}
+    inline RegExpException(const char* message) throw() : Exception(message) {}
   };
 
   /**
     @short Substring descriptor.
   */
   class Substring : public Object {
-  friend class RegExp;
+    friend class RegExp;
   private:
 
     /** The offset of the substring. */

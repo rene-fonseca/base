@@ -160,7 +160,7 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
       type = Trustee::GROUP;
       integralId = entry->gr_gid;
     } else {
-      if (name == "other") {
+      if (name == MESSAGE("other")) {
         type = Trustee::EVERYONE;
         integralId = 0;
       } else {

@@ -27,13 +27,14 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   computationally infeasible to produce two messages having the same message
   digest, or to produce any message having a given prespecified target message
   digest.
-
-  The SHA-512 is designed to have the following properties: it is computationally
-  infeasible to find a message which corresponds to a given message digest, or
-  to find two different messages which produce the same message digest.
-
+  
+  The SHA-512 is designed to have the following properties: it is
+  computationally infeasible to find a message which corresponds to a given
+  message digest, or to find two different messages which produce the same
+  message digest.
+  
   @code
-  String message = "abcdefghijklmnopqrstuvwxyz";
+  String message = MESSAGE("abcdefghijklmnopqrstuvwxyz");
   SHA512 checksum;
   checksum.push(Cast::pointer<const uint8*>(message.getElements()), message.getLength());
   checksum.pushEnd();

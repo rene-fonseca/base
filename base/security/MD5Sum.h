@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   digest.
 
   @code
-  String message = "abcdefghijklmnopqrstuvwxyz";
+  String message = MESSAGE("abcdefghijklmnopqrstuvwxyz");
   MD5Sum checksum;
   checksum.push(Cast::pointer<const uint8*>(message.getElements()), message.getLength());
   checksum.pushEnd();

@@ -33,7 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   to find two different messages which produce the same message digest.
 
   @code
-  String message = "abcdefghijklmnopqrstuvwxyz";
+  String message = MESSAGE("abcdefghijklmnopqrstuvwxyz");
   SHA1 checksum;
   checksum.push(Cast::pointer<const uint8*>(message.getElements()), message.getLength());
   checksum.pushEnd();

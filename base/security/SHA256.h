@@ -34,7 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   message digest.
 
   @code
-  String message = "abcdefghijklmnopqrstuvwxyz";
+  String message = MESSAGE("abcdefghijklmnopqrstuvwxyz");
   SHA256 checksum;
   checksum.push(Cast::pointer<const uint8*>(message.getElements()), message.getLength());
   checksum.pushEnd();

@@ -26,6 +26,7 @@
 #include <base/io/Handle.h>
 #include <base/io/async/AsynchronousIOStream.h>
 #include <base/io/AccessDenied.h>
+#include <base/security/AccessControlList.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -119,6 +120,11 @@ public:
     Returns true if the file object has been closed (or need has been opened).
   */
   bool isClosed() const throw();
+  
+  /**
+    Return Access Control List (ACL).
+  */
+  AccessControlList getACL() const throw(FileException);
   
   /**
     Returns the size of the file in bytes.

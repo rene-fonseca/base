@@ -91,24 +91,14 @@ public:
 class DateFormatSet : public Object {
 private:
 
-  /** The short names of days. */
-  String daysShort[7];
-  /** The long name of days. */
-  String daysLong[7];
-  /** The short names of months. */
-  String monthsShort[12];
-  /** The long name of months. */
-  String monthsLong[12];
-  
-  /** The order of day, month, and year. */
-  enum DateOrder {
-    DMY, /**< day-month-year. */
-    DYM, /**< day-year-month. */
-    MDY, /**< month-day-year. */
-    MYD, /**< month-year-day. */
-    YDM, /**< year-day-month. */
-    YMD /**< year-month-day. */
-  };
+  /** The abbreviated name of weekdays. */
+  String shortNameOfWeekday[7];
+  /** The full name of weekdays. */
+  String longNameOfWeekday[7];
+  /** The abbreviated name of months. */
+  String shortNameOfMonth[12];
+  /** The full name of months. */
+  String longNameOfMonth[12];
   
   enum DayFormat {
     D, /**< One digit day (1-7). */
@@ -136,11 +126,105 @@ private:
   };
 
   /** Date separator used with short formats. */
-  char separator;
+  char dateSeparator;
+  /** Time separator. */
+  char timeSeparator;
+  /** AM symbol. */
+  String am;
+  /** PM symbol. */
+  String pm;
+  
+  String shortTimeFormat;
+  String mediumTimeFormat;
+  String longTimeFormat;
+  String shortDateFormat;
+  String mediumDateFormat;
+  String longDateFormat;
 public:
 
-  DateFormatSet() throw() {
+// TAG: need time zone support - specifies local time offset from UTC time
+//  int getOffset() const throw();
+//  void setOffset(int offset) throw();
+//  String getTimeZone() throw(); returns (+|-)hh:mm if unknown name
+  
+  /**
+    Initializes object with POSIX settings.
+  */
+  DateFormatSet() throw();
+
+  inline char getDateSeparator() const throw() {
+    return dateSeparator;
   }
+
+  inline char getTimeSeparator() const throw() {
+    return timeSeparator;
+  }
+
+  String getShortNameOfWeekday(unsigned int weekday) const throw(OutOfDomain) {
+    assert(weekday < 7, OutOfDomain(Type::getType<DateFormatSet>()));
+    return shortNameOfWeekday[weekday];
+  }
+  
+  String getLongNameOfWeekday(unsigned int weekday) const throw(OutOfDomain) {
+    assert(weekday < 7, OutOfDomain(Type::getType<DateFormatSet>()));
+    return longNameOfWeekday[weekday];
+  }
+  
+  String getShortNameOfMonth(unsigned int month) const throw(OutOfDomain) {
+    assert(month < 12, OutOfDomain(Type::getType<DateFormatSet>()));
+    return shortNameOfMonth[month];
+  }
+  
+  String getLongNameOfMonth(unsigned int month) const throw(OutOfDomain) {
+    assert(month < 12, OutOfDomain(Type::getType<DateFormatSet>()));
+    return longNameOfMonth[month];
+  }
+
+  inline String getPM() const throw() {
+    return pm;
+  }
+
+  inline String getAM() const throw() {
+    return am;
+  }
+  
+
+
+  inline String getShortDateFormat() const throw() {
+    return shortDateFormat;
+  }
+  
+  void setShortDateFormat(const String& format) throw();
+  
+  inline String getMediumDateFormat() const throw() {
+    return mediumDateFormat;
+  }
+  
+  void setMediumDateFormat(const String& format) throw();
+  
+  inline String getLongDateFormat() const throw() {
+    return longDateFormat;
+  }
+  
+  void setLongDateFormat(const String& format) throw();
+
+  inline String getShortTimeFormat() const throw() {
+    return shortTimeFormat;
+  }
+  
+  void setShortTimeFormat(const String& format) throw();
+  
+  inline String getMediumTimeFormat() const throw() {
+    return mediumTimeFormat;
+  }
+  
+  void setMediumTimeFormat(const String& format) throw();
+  
+  inline String getLongTimeFormat() const throw() {
+    return longTimeFormat;
+  }
+  
+  void setLongTimeFormat(const String& format) throw();
 };
 
 /**
@@ -148,27 +232,33 @@ public:
 
   @short Multi-language support
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.1
 */
 
-class Locale : public Object {
+class Locale : public DateFormatSet {
 public:
 
+  static const Locale POSIX;
+
+  //static void enable() throw(IOException);
+  
+  Locale() throw();
+  
   /**
     Returns the current locale as a string.
   */
   static String getLocale() throw();
-
+  
   /**
     Sets the application locale according to the environment settings.
   */
   static void setUserLocale() throw();
-
+  
   /**
     Sets the locale of the application.
   */
   static void setASCIILocale() throw();
-
+  
   /**
     Sets the locale of the application.
 
@@ -180,6 +270,29 @@ public:
     Queries the locale specific numeric and monetary information.
   */
   static void getLocaleSpecific() throw();
+
+
+  char listBegin; // {
+  char listEnd; // }
+  char listSeparator; // ;
+  char vectorBegin; // (
+  char vectorEnd; // )
+  char vectorSeparator; // ,
+  
+  inline char getListSeparator() const throw() {
+    return listSeparator;
+  }
+
+  String falseMessage;
+  String trueMessage;
+  
+  inline const String& getBoolean(bool value) const throw() {
+    if (value) {
+      return trueMessage;
+    } else {
+      return falseMessage;
+    }
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

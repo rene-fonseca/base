@@ -18,14 +18,14 @@
 #endif
 
 /**
-  This class allows global and static variables to hold thread-specific data.
+  Implementation used by the ThreadKey class.
 
+  @see ThreadKey
   @author René Møller Fonseca
-  @version 1.1
+  @version 1.0
 */
 
-template<class TYPE>
-class ThreadKey : public Object {
+class ThreadKeyImpl : public Object {
 private:
 
 #if defined(__win32__)
@@ -46,24 +46,59 @@ public:
   /**
     Initializes the key object.
   */
-  ThreadKey() throw(ResourceException);
+  ThreadKeyImpl() throw(ResourceException);
 
   /**
     Returns the key.
   */
-  TYPE* getKey() const throw(ThreadKeyException);
+  void* getKey() const throw(ThreadKeyException);
 
   /**
     Sets the key.
 
     @param value The desired value of the key for the executing thread.
   */
-  void setKey(TYPE* value) throw(ThreadKeyException);
+  void setKey(void* value) throw(ThreadKeyException);
 
   /**
     Destroys the key object.
   */
-  ~ThreadKey() throw(ThreadKeyException);
+  ~ThreadKeyImpl() throw(ThreadKeyException);
+};
+
+
+
+/**
+  This class allows global and static variables to hold thread-specific data.
+
+  @author René Møller Fonseca
+  @version 1.2
+*/
+
+template<class TYPE>
+class ThreadKey : private ThreadKeyImpl {
+public:
+
+  /**
+    Initializes the key object.
+  */
+  inline ThreadKey() throw(ResourceException) {}
+
+  /**
+    Returns the key.
+  */
+  inline TYPE* getKey() const throw(ThreadKeyException) {
+    return static_cast<TYPE*>(ThreadKeyImpl::getKey());
+  }
+
+  /**
+    Sets the key.
+
+    @param value The desired value of the key for the executing thread.
+  */
+  inline void setKey(TYPE* value) throw(ThreadKeyException) {
+    ThreadKeyImpl::setKey(value);
+  }
 };
 
 #endif

@@ -5,11 +5,7 @@
 
 #include <base/concurrency/ThreadKey.h>
 
-class Thread;
-template ThreadKey<Thread>;
-
-template<class TYPE>
-ThreadKey<TYPE>::ThreadKey() throw(ResourceException) {
+ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
 #if defined(__win32__)
   if ((key = TlsAlloc()) == TLS_OUT_OF_INDEXES) {
     throw ResourceException();
@@ -21,8 +17,7 @@ ThreadKey<TYPE>::ThreadKey() throw(ResourceException) {
 #endif
 }
 
-template<class TYPE>
-TYPE* ThreadKey<TYPE>::getKey() const throw(ThreadKeyException) {
+void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
 #if defined(__win32__)
   TYPE* result = (TYPE*)TlsGetValue(key);
   if (!result && (GetLastError() != NO_ERROR)) {
@@ -30,25 +25,23 @@ TYPE* ThreadKey<TYPE>::getKey() const throw(ThreadKeyException) {
   }
   return result;
 #else
-  return (TYPE*)pthread_getspecific(key); // no errors are returned
+  return pthread_getspecific(key); // no errors are returned
 #endif
 }
 
-template<class TYPE>
-void ThreadKey<TYPE>::setKey(TYPE* value) throw(ThreadKeyException) {
+void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
 #if defined(__win32__)
-  if (!TlsSetValue(key, (void*)value)) {
+  if (!TlsSetValue(key, value)) {
     throw ThreadKeyException(__func__);
   }
 #else
-  if (pthread_setspecific(key, (void*)value)) {
+  if (pthread_setspecific(key, value)) {
     throw ThreadKeyException(__func__);
   }
 #endif
 }
 
-template<class TYPE>
-ThreadKey<TYPE>::~ThreadKey() throw(ThreadKeyException) {
+ThreadKeyImpl::~ThreadKeyImpl() throw(ThreadKeyException) {
 #if defined(__win32__)
   if (!TlsFree(key)) {
     throw ThreadKeyException(__func__);

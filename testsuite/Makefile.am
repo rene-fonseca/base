@@ -20,8 +20,10 @@ LIBS=-lbase
 
 bin_PROGRAMS = Array
 bin_PROGRAMS += BitSet
+bin_PROGRAMS += calendar
 bin_PROGRAMS += Date
 bin_PROGRAMS += debug
+bin_PROGRAMS += demangle
 bin_PROGRAMS += Exception
 bin_PROGRAMS += File
 bin_PROGRAMS += HashSet
@@ -80,8 +82,10 @@ bin_PROGRAMS += cipher
 
 Array_SOURCES = Array.cpp
 BitSet_SOURCES = BitSet.cpp
+calendar_SOURCES = calendar.cpp
 Date_SOURCES = Date.cpp
 debug_SOURCES = debug.cpp
+demangle_SOURCES = demangle.cpp
 Exception_SOURCES = Exception.cpp
 File_SOURCES = File.cpp
 HashSet_SOURCES = HashSet.cpp

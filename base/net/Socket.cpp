@@ -114,6 +114,15 @@ bool Socket::accept(Socket& socket) throw(IOException) {
   socklen_t sl = sizeof(sa);
 
 #if defined(__win32__)
+  if ((handle = ::accept(socket.fd.getHandle(), (struct sockaddr*)&sa, &sl)) == INVALID_SOCKET) {
+    switch (WSAGetLastError()) {
+    case WSAEWOULDBLOCK:
+      return false;
+    default:
+      SynchronizeRelease();
+      throw NetworkException("Unable to accept connection");
+    }
+  }
 #else
   if ((handle = ::accept(socket.fd.getHandle(), (struct sockaddr*)&sa, &sl)) == -1) {
     switch (errno) {

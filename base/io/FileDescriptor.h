@@ -43,7 +43,7 @@ protected:
 
       @param handle The handle.
     */
-    inline explicit Descriptor(int handle) throw() : handle(handle) {}
+    inline explicit Descriptor(int h) throw() : handle(h) {}
 
     /**
       Initializes descriptor from other descriptor.
@@ -83,11 +83,16 @@ protected:
 public:
 
   /**
+    Initializes the file descriptor as invalid.
+  */
+  FileDescriptor() throw();
+
+  /**
     Initializes the file descriptor.
 
-    @param handle Handle to file descriptor. Default is the invalid handle '-1'.
+    @param handle Handle to file descriptor.
   */
-  FileDescriptor(int handle = -1) throw();
+  FileDescriptor(int handle) throw();
 
   /**
     Copy constructor.
@@ -133,14 +138,6 @@ public:
     Writes a string representation of a FileDescriptor object to a format stream.
   */
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor& value);
-public:
-
-  /** Handle to the standard input stream. */
-  static FileDescriptor bin;
-  /** Handle to the standard output stream. */
-  static FileDescriptor bout;
-  /** Handle to the standard error stream. */
-  static FileDescriptor berr;
 };
 
 /**

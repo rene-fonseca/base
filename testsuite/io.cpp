@@ -8,14 +8,11 @@
 #include <base/collection/List.h>
 #include <base/collection/Set.h>
 #include <base/collection/Map.h>
-#include <iostream>
-
-using namespace std;
 
 void test() {
-  cout << "Testing Streaming...\n";
+  fout << "Testing Streaming...\n";
 
-  cout << "Writing built-in types to fout\n";
+  fout << "Writing built-in types to fout\n";
   fout << "short (-1234): " << short(-1234) << EOL;
   fout << "int (-123456): " << int(-123456) << EOL;
 //  fout << "long long (-1234567890): " << -1234567890L << EOL;
@@ -51,8 +48,11 @@ int main() {
   try {
     test();
   } catch(Exception& e) {
-    cerr << "Exception: " << e.getMessage() << "\n";
+    ferr << "Exception: " << e.getMessage() << "\n";
+    return 1;
   } catch(...) {
-    cerr << "Unknown exception\n";
+    ferr << "Unknown exception\n";
+    return 1;
   }
+  return 0;
 }

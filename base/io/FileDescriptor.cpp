@@ -15,10 +15,6 @@
 #define SSIZE_MAX (1024*1024)
 #endif
 
-FileDescriptor FileDescriptor::bin(0);
-FileDescriptor FileDescriptor::bout(1);
-FileDescriptor FileDescriptor::berr(2);
-
 int FileDescriptor::Descriptor::getFlags() const throw(IOException) {
   int result;
   if ((result = ::fcntl(handle, F_GETFL)) < 0) {
@@ -55,6 +51,9 @@ FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
 }
 
 
+
+FileDescriptor::FileDescriptor() throw() : fd(new Descriptor()) {
+}
 
 FileDescriptor::FileDescriptor(int handle) throw() : fd(new Descriptor(handle)) {
 }

@@ -76,4 +76,24 @@ IEEE1394Common::IsochronousWriteChannel DummyIEEE1394::getWriteChannel(unsigned 
   throw IEEE1394Exception(this);
 }
 
+void DummyIEEE1394::readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) {
+  throw IEEE1394Exception(this);
+}
+
+bool DummyIEEE1394::wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) {
+  throw IEEE1394Exception(this);
+}
+
+void DummyIEEE1394::dequeue() throw(IEEE1394Exception) {
+  throw IEEE1394Exception(this);
+}
+  
+void DummyIEEE1394::registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception) {
+  throw IEEE1394Exception(this);
+}
+
+void DummyIEEE1394::unregisterFCPListener() throw(IEEE1394Exception) {
+  throw IEEE1394Exception(this);
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

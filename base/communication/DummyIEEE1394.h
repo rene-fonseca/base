@@ -136,6 +136,16 @@ public:
     @param subchannel Mask specifying the subchannel to reserve for this channel.
   */
   IsochronousWriteChannel getWriteChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception);
+  
+  void readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception);
+
+  bool wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception);
+  
+  void dequeue() throw(IEEE1394Exception);
+  
+  void registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception);
+  
+  void unregisterFCPListener() throw(IEEE1394Exception);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

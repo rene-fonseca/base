@@ -19,8 +19,6 @@
 #include <typeinfo>
 #include <stdio.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
 
 
 // standard c library functions
@@ -50,6 +48,8 @@ extern "C" {
 } // end of extern "C"
 
 
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 // Type checking functions
 

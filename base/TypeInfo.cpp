@@ -11,9 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
-#include <base/Type.h>
-#include <base/string/String.h>
+#include <base/TypeInfo.h>
 #include <base/concurrency/Thread.h>
 #include <base/string/ASCIITraits.h>
 #include <base/collection/Array.h>
@@ -33,10 +31,6 @@
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
-class ManglingException : public Exception {
-public:
-};
 
 #if defined(_DK_SDU_MIP__BASE__DEMANGLE_V3MV)
 
@@ -62,13 +56,13 @@ private:
   String demangled;
 public:
 
-  inline V3MultiVendorABIDemangler(const char* mangled) throw() : p(mangled) {
+  inline V3MultiVendorABIDemangler(const char* mangled) throw(InvalidFormat) : p(mangled) {
     end = find<char>(mangled, 1024, 0); // find terminator
-    assert(end, ManglingException());
+    assert(end, InvalidFormat());
     encoding();
   }
 
-  inline void addCandidate(unsigned int begin) throw() {
+  inline void addCandidate(unsigned int begin) throw(InvalidFormat) {
     CandidateRange range;
     range.begin = begin;
     range.end = demangled.getLength();
@@ -83,7 +77,7 @@ public:
     candidates.append(range); // add new candidate
   }
 
-  inline void addTemplateCandidate(unsigned int begin) throw() {
+  inline void addTemplateCandidate(unsigned int begin) throw(InvalidFormat) {
     CandidateRange range;
     range.begin = begin;
     range.end = demangled.getLength();
@@ -101,11 +95,11 @@ public:
   }
 
 
-  inline void dump(const StringLiteral& literal) throw() {
+  inline void dump(const StringLiteral& literal) throw(InvalidFormat) {
     demangled.append(literal);
   }
 
-  inline void encoding() throw() {
+  inline void encoding() throw(InvalidFormat) {
     if (name()) {
       if (p < end) {
         // remove candidate for function (if present)
@@ -116,7 +110,7 @@ public:
         }
         if (demangled[demangled.getLength() - 1] == '>') { // handle return type // TAG: are there other cases
           unsigned int beginReturnType = demangled.getLength();
-          assert(type(), ManglingException());
+          assert(type(), InvalidFormat());
           dump(MESSAGE(" "));
           String returnTypeString(demangled.substring(beginReturnType));
           demangled.removeFrom(beginReturnType);
@@ -138,19 +132,19 @@ public:
         dump(MESSAGE("("));
         if (*p == 'v') { // special case
           ++p;
-          assert(p == end, ManglingException());
+          assert(p == end, InvalidFormat());
         } else {
-          assert(type(), ManglingException());
+          assert(type(), InvalidFormat());
           while (p < end) {
             dump(MESSAGE(", "));
-            assert(type(), ManglingException());
+            assert(type(), InvalidFormat());
           }
         }
         dump(MESSAGE(")"));
       }
     } else if (specialName()) {
     } else {
-      throw ManglingException();
+      throw InvalidFormat();
     }
   }
 
@@ -171,11 +165,11 @@ public:
     }
   }
 
-  inline bool templateArgument() throw() {
+  inline bool templateArgument() throw(InvalidFormat) {
     switch (*p) {
     case 'L': // literal
       ++p; // skip L
-      assert(type(), ManglingException());
+      assert(type(), InvalidFormat());
       if (*p == 'n') {
         demangled += '-'; // negative number
       }
@@ -189,21 +183,21 @@ public:
       break;
     default:
       unsigned int beginTemplateArgument = demangled.getLength();
-      assert(type(), ManglingException());
+      assert(type(), InvalidFormat());
       addTemplateCandidate(beginTemplateArgument);
       return true;
     }
     return false;
   }
 
-  inline bool templateArguments() throw() {
+  inline bool templateArguments() throw(InvalidFormat) {
     if (*p == 'I') {
       ++p; // skip I
       demangled += '<';
-      assert(templateArgument(), ManglingException());
+      assert(templateArgument(), InvalidFormat());
       while (*p != 'E') {
         dump(MESSAGE(", "));
-        assert(templateArgument(), ManglingException());
+        assert(templateArgument(), InvalidFormat());
       }
       if (demangled.endsWith(MESSAGE(">"))) {
         dump(MESSAGE(" >"));
@@ -216,7 +210,7 @@ public:
     return false;
   }
 
-  inline bool name() throw() {
+  inline bool name() throw(InvalidFormat) {
     unsigned int begin = demangled.getLength();
     if (nested()) {
       // FIXME: insert candidate?
@@ -230,7 +224,7 @@ public:
     } else if (substitution()) {
       className.begin = begin;
       className.end = demangled.getLength();
-      assert(templateArguments(), ManglingException());
+      assert(templateArguments(), InvalidFormat());
       addCandidate(begin);
       return true;
     } else {
@@ -238,11 +232,11 @@ public:
     }
   }
 
-  inline bool unscopedName() throw() {
+  inline bool unscopedName() throw(InvalidFormat) {
     if ((*p == 'S') && (p[1] == 't')) {
       p += 2; // skip St
       dump(MESSAGE("std::"));
-      assert(unqualifiedName(), ManglingException());
+      assert(unqualifiedName(), InvalidFormat());
       // FIXME: insert candidate?
       return true;
     } else if (unqualifiedName()) {
@@ -252,7 +246,7 @@ public:
     }
   }
 
-  inline bool nested() throw() {
+  inline bool nested() throw(InvalidFormat) {
     if (*p == 'N') {
       ++p; // skip N
       CVQualifier(); // not required
@@ -272,7 +266,7 @@ public:
         } else if (operatorName()) {
         } else if (constructorAndDestructorName()) {
         } else {
-          throw ManglingException();
+          throw InvalidFormat();
         }
         if (templateArguments()) {
           addCandidate(begin);
@@ -288,7 +282,7 @@ public:
     return false;
   }
 
-  inline bool constructorAndDestructorName() throw() {
+  inline bool constructorAndDestructorName() throw(InvalidFormat) {
     if ((*p == 'C') && (p[1] == '1')) {
       p += 2; // skip C1
       demangled.append(demangled.substring(className.begin, className.end));
@@ -322,36 +316,36 @@ public:
     return true;
   }
 
-  inline bool specialName() throw() {
+  inline bool specialName() throw(InvalidFormat) {
     if (*p == 'T') {
       ++p; // skip T
       switch (*p) {
       case 'V':
         ++p; // skip V
         dump(MESSAGE("virtual table for "));
-        assert(type(), ManglingException());
+        assert(type(), InvalidFormat());
         return true;
       case 'T':
         ++p; // skip T
         dump(MESSAGE("VTT for "));
-        assert(type(), ManglingException());
+        assert(type(), InvalidFormat());
         return true;
       case 'I':
         ++p; // skip I
         dump(MESSAGE("typeinfo for "));
-        assert(type(), ManglingException());
+        assert(type(), InvalidFormat());
         return true;
       case 'S':
         ++p; // skip S
         dump(MESSAGE("typeinfo name for "));
-        assert(type(), ManglingException());
+        assert(type(), InvalidFormat());
         return true;
       }
     }
     return false;
   }
 
-  inline bool unqualifiedName() throw() {
+  inline bool unqualifiedName() throw(InvalidFormat) {
     unsigned int begin = demangled.getLength();
     if (operatorName()) {
     } else if (sourceName()) {
@@ -363,47 +357,47 @@ public:
     return true;
   }
 
-  inline bool type() throw() {
+  inline bool type() throw(InvalidFormat) {
     unsigned int begin = demangled.getLength();
     switch (*p) {
     case 'r':
       ++p;
-      assert(type(), ManglingException());
+      assert(type(), InvalidFormat());
       dump(MESSAGE(" restrict"));
       break;
     case 'V':
       ++p;
-      assert(type(), ManglingException());
+      assert(type(), InvalidFormat());
       dump(MESSAGE(" volatile"));
       break;
     case 'K':
       ++p;
-      assert(type(), ManglingException());
+      assert(type(), InvalidFormat());
       dump(MESSAGE(" const"));
       break;
     case 'P':
       ++p;
-      assert(type(), ManglingException());
+      assert(type(), InvalidFormat());
       dump(MESSAGE("*"));
       break;
     case 'R':
       ++p;
-      assert(type(), ManglingException());
+      assert(type(), InvalidFormat());
       dump(MESSAGE("&"));
       break;
     case 'C':
       ++p;
-      assert(type(), ManglingException());
+      assert(type(), InvalidFormat());
       dump(MESSAGE("complex "));
       break;
     case 'G':
       ++p;
-      assert(type(), ManglingException());
+      assert(type(), InvalidFormat());
       dump(MESSAGE("imaginary "));
       break;
     case 'U':
       ++p;
-      assert(type(), ManglingException());
+      assert(type(), InvalidFormat());
       return sourceName();
       break;
     case 'A': // array type
@@ -413,16 +407,16 @@ public:
         while (ASCIITraits::isDigit(*p)) {
           dimension = dimension * 10 + ASCIITraits::digitToValue(*p++);
         }
-        assert(*p++ == '_', ManglingException());
-        assert(type(), ManglingException());
+        assert(*p++ == '_', InvalidFormat());
+        assert(type(), InvalidFormat());
         dump(MESSAGE("["));
         StringOutputStream stream; // insert dimension
         stream << dimension << FLUSH;
         demangled.append(stream.getString());
         dump(MESSAGE("]"));
       } else { // variable length array
-        assert(*p++ == '_', ManglingException());
-        assert(type(), ManglingException());
+        assert(*p++ == '_', InvalidFormat());
+        assert(type(), InvalidFormat());
         dump(MESSAGE("[]"));
       }
 // FIXME: need support for - A [<dimension expression>] _ <element type>
@@ -433,12 +427,12 @@ public:
         ++p; // skip Y
         dump(MESSAGE("extern \"C\" "));
       }
-      assert(type(), ManglingException()); // return type
+      assert(type(), InvalidFormat()); // return type
       dump(MESSAGE(" (*)("));
-      assert(type(), ManglingException());
+      assert(type(), InvalidFormat());
       while (*p != 'E') {
         dump(MESSAGE(", "));
-        assert(type(), ManglingException());
+        assert(type(), InvalidFormat());
       }
       dump(MESSAGE(")"));
       ++p; // skip E
@@ -448,7 +442,7 @@ public:
         ++p; // skip M
 
         unsigned int beginName = demangled.getLength();
-        assert(name(), ManglingException());
+        assert(name(), InvalidFormat());
         String nameString = demangled.substring(beginName);
 
         if (*p == 'F') { // special case
@@ -459,7 +453,7 @@ public:
           }
 
           unsigned int beginType = demangled.getLength();
-          assert(type(), ManglingException()); // return type
+          assert(type(), InvalidFormat()); // return type
 
           unsigned int lengthOfName = beginType - beginName;
           unsigned int lengthOfType = demangled.getLength() - beginType;
@@ -493,16 +487,16 @@ public:
           demangled.append(nameString);
           dump(MESSAGE("::*)("));
 
-          assert(type(), ManglingException());
+          assert(type(), InvalidFormat());
           while (*p != 'E') {
             dump(MESSAGE(", "));
-            assert(type(), ManglingException());
+            assert(type(), InvalidFormat());
           }
           dump(MESSAGE(")"));
           ++p; // skip E
         } else {
           unsigned int beginType = demangled.getLength();
-          assert(type(), ManglingException());
+          assert(type(), InvalidFormat());
 
           unsigned int lengthOfName = beginType - beginName;
           unsigned int lengthOfType = demangled.getLength() - beginType;
@@ -614,7 +608,7 @@ public:
       return true; // no substitution for builtin type
     case 'u': // vendor specific
       ++p;
-      assert(sourceName(), ManglingException());
+      assert(sourceName(), InvalidFormat());
       break; // substitute
     default:
       if (nested()) {
@@ -632,7 +626,7 @@ public:
     return true;
   }
 
-  inline bool operatorName() throw() {
+  inline bool operatorName() throw(InvalidFormat) {
     if ((*p == 'n') && (p[1] == 'w')) {
       p += 2;
       dump(MESSAGE("new"));
@@ -805,12 +799,12 @@ public:
     return true;
   }
 
-  inline void appendTemplateCandidate(unsigned int candidate) throw(ManglingException) {
-    assert(candidate < templateCandidates.getSize(), ManglingException());
+  inline void appendTemplateCandidate(unsigned int candidate) throw(InvalidFormat) {
+    assert(candidate < templateCandidates.getSize(), InvalidFormat());
     demangled.append(demangled.substring(static_cast<CandidateRange>(templateCandidates[candidate]).begin, static_cast<CandidateRange>(templateCandidates[candidate]).end));
   }
 
-  inline bool templateParameter() throw(ManglingException) {
+  inline bool templateParameter() throw(InvalidFormat) {
     if (*p == 'T') {
       ++p; // skip T
       switch (*p) {
@@ -833,7 +827,7 @@ public:
             }
             ++p;
           }
-          assert(*p++ == '_', ManglingException()); // skip underscore
+          assert(*p++ == '_', InvalidFormat()); // skip underscore
           appendTemplateCandidate(id + 1);
         }
         return true;
@@ -842,12 +836,12 @@ public:
     return false;
   }
 
-  inline void appendCandidate(unsigned int candidate) throw(ManglingException) {
-    assert(candidate < candidates.getSize(), ManglingException());
+  inline void appendCandidate(unsigned int candidate) throw(InvalidFormat) {
+    assert(candidate < candidates.getSize(), InvalidFormat());
     demangled.append(demangled.substring(static_cast<CandidateRange>(candidates[candidate]).begin, static_cast<CandidateRange>(candidates[candidate]).end));
   }
 
-  inline bool substitution() throw(ManglingException) {
+  inline bool substitution() throw(InvalidFormat) {
     if (*p == 'S') {
       ++p; // skip S
       switch (*p) {
@@ -870,7 +864,7 @@ public:
             }
             ++p;
           }
-          assert(*p++ == '_', ManglingException()); // skip underscore
+          assert(*p++ == '_', InvalidFormat()); // skip underscore
           appendCandidate(id + 1);
         }
         break;
@@ -921,13 +915,13 @@ public:
 
 
 
-String demangleTypename(const char* mangled) throw() {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   return V3MultiVendorABIDemangler(mangled).getDemangled();
 }
 
 #elif defined(_DK_SDU_MIP__BASE__DEMANGLE_GCCV3)
 
-String demangleTypename(const char* mangled) throw() {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   static const String prefix(MESSAGE("_Z"));
   String temp = prefix;
   temp.append(mangled);
@@ -942,7 +936,7 @@ String demangleTypename(const char* mangled) throw() {
 
 #elif defined(_DK_SDU_MIP__BASE__DEMANGLE_GCCV23)
 
-String demangleTypename(const char* mangled) throw() {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   static const String prefix(MESSAGE("_Z"));
   String temp = prefix;
   temp.append(mangled);
@@ -957,7 +951,7 @@ String demangleTypename(const char* mangled) throw() {
 
 #elif defined(_DK_SDU_MIP__BASE__DEMANGLE_GCCV2)
 
-String demangleTypename(const char* mangled) throw() {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   static const String prefix(MESSAGE("a__"));
   static const String suffix(MESSAGE("::a"));
   // cplus_demangle only demangles function names - need alternative demangler
@@ -976,7 +970,7 @@ String demangleTypename(const char* mangled) throw() {
 
 #elif defined(_DK_SDU_MIP__BASE__DEMANGLE_SUNWSPRO)
 
-String demangleTypename(const char* mangled) throw() {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   Allocator<char>* buffer = Thread::getLocalStorage();
   int result = cplus_demangle(mangled, buffer->getElements(), buffer->getSize());
   ASSERT(!result);
@@ -985,7 +979,7 @@ String demangleTypename(const char* mangled) throw() {
 
 #elif defined(_DK_SDU_MIP__BASE__DEMANGLE_MIPSPRO)
 
-String demangleTypename(const char* mangled) throw() {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   char buffer[MAXDBUF];
   int result = demangle(mangled, buffer);
   ASSERT(!result);
@@ -994,7 +988,7 @@ String demangleTypename(const char* mangled) throw() {
 
 #else // no demangling support
 
-String demangleTypename(const char* mangled) throw() {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   return mangled;
 }
 

@@ -16,7 +16,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
 #include <base/UnsignedInteger.h>
-#include <base/net/ClientSocket.h>
+#include <base/net/StreamSocket.h>
 #include <base/net/ServerSocket.h>
 #include <base/net/InetInterface.h>
 #include <base/net/InetService.h>

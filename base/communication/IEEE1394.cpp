@@ -13,6 +13,7 @@
 
 #include <base/communication/IEEE1394.h>
 #include <base/ByteOrder.h>
+#include <base/concurrency/Thread.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -27,8 +28,7 @@ void IEEE1394::IsochronousRequestImpl::reset() throw(IEEE1394Exception) {
   status = READY;
 }
 
-IEEE1394::IsochronousRequestImpl::~IsochronousRequestImpl() throw() {
-  Trace::message("IEEE1394::IsochronousRequestImpl::~IsochronousRequestImp");
+IEEE1394::IsochronousRequestImpl::~IsochronousRequestImpl() throw() { // TAG: is this required
 }
 
 IEEE1394::IsochronousReadRequestImpl::IsochronousReadRequestImpl() throw()
@@ -148,7 +148,7 @@ namespace IEEE1394Impl {
   struct RootDirectory {
     BigEndian<uint32> crc;
     BigEndian<uint32> vendorId;
-    BigEndian<uint32> flags;
+    BigEndian<uint32> capabilities;
     BigEndian<uint32> nodeOffset;
     BigEndian<uint32> deviceDirectoryOffset;
   } _DK_SDU_MIP__BASE__PACKED;
@@ -229,13 +229,77 @@ EUI64 IEEE1394::getIdentifier(unsigned int node) throw(OutOfDomain, IEEE1394Exce
   read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::CONFIGURATION_ROM, getCharAddress(quadlet), sizeof(quadlet));
   assert(
     ((quadlet >> 24) * sizeof(Quadlet)) >= sizeof(IEEE1394Impl::BusInfo),
-    IEEE1394Exception("Device has no guid", this)
+    IEEE1394Exception("Device has no configuration ROM", this)
   );
   
   IEEE1394Impl::BusInfo busInfo;
   read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BUS_INFO_BLOCK, getCharAddress(busInfo), sizeof(busInfo));
   
   return EUI64(busInfo.guid);
+}
+
+unsigned int IEEE1394::getMaximumPayload(unsigned int node) throw(IEEE1394Exception) {
+  assert(node < IEEE1394::BROADCAST, OutOfDomain(this));
+  
+  Quadlet quadlet;
+  read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::CONFIGURATION_ROM, getCharAddress(quadlet), sizeof(quadlet));
+  assert(
+    ((quadlet >> 24) * sizeof(Quadlet)) >= sizeof(IEEE1394Impl::BusInfo),
+    IEEE1394Exception("Device has no configuration ROM", this)
+  );
+
+  IEEE1394Impl::BusInfo busInfo;
+  assert(busInfo.id31333934 = 0x31333934, IEEE1394Exception(this).bindCause(INVALID_BUS_INFORMATION_BLOCK));
+  read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BUS_INFO_BLOCK, getCharAddress(busInfo), sizeof(busInfo));
+  return 1 << ((busInfo.flags >> 12) & 0x0f + 1);
+}
+
+unsigned int IEEE1394::getCapabilities(unsigned int node) throw(IEEE1394Exception) {
+  assert(node < IEEE1394::BROADCAST, OutOfDomain(this));
+  
+  Quadlet quadlet;
+  read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::CONFIGURATION_ROM, getCharAddress(quadlet), sizeof(quadlet));
+  assert(
+    ((quadlet >> 24) * sizeof(Quadlet)) >= sizeof(IEEE1394Impl::BusInfo),
+    IEEE1394Exception("Device has no configuration ROM", this)
+  );
+  
+  IEEE1394Impl::BusInfo busInfo;
+  read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::BUS_INFO_BLOCK, getCharAddress(busInfo), sizeof(busInfo));
+  
+//   IEEE1394Impl::RootDirectory rootDirectory;
+//   unsigned int rootDirectoryOffset = IEEE1394::BUS_INFO_BLOCK + (quadlet >> 24) * sizeof(Quadlet);
+//   read(node, IEEE1394::CSR_BASE_ADDRESS + rootDirectoryOffset, getCharAddress(rootDirectory), sizeof(rootDirectory));
+  
+  unsigned int capabilities = 0;
+  capabilities |= ((busInfo.flags >> 31) & 1) ? ISOCHRONOUS_RESOURCE_MANAGER : 0;
+  capabilities |= ((busInfo.flags >> 30) & 1) ? CYCLE_MASTER : 0;
+  capabilities |= ((busInfo.flags >> 29) & 1) ? ISOCHRONOUS_TRANSMISSION : 0;
+  capabilities |= ((busInfo.flags >> 28) & 1) ? BUS_MASTER : 0;
+//   capabilities |= (false) ? POWER_MANAGEMENT : 0; // TAG: fixme
+  return capabilities;
+}
+
+unsigned int IEEE1394::getVendorId(unsigned int node) throw(IEEE1394Exception) {
+  assert(node < IEEE1394::BROADCAST, OutOfDomain(this));
+  
+  Quadlet quadlet;
+  read(node, IEEE1394::CSR_BASE_ADDRESS + IEEE1394::CONFIGURATION_ROM, getCharAddress(quadlet), sizeof(quadlet));
+
+  if ((quadlet >> 24) * sizeof(Quadlet) == sizeof(Quadlet)) { // check for minimal ROM
+    return quadlet & 0x00ffffff;
+  }
+  
+  assert(
+    ((quadlet >> 24) * sizeof(Quadlet)) >= sizeof(IEEE1394Impl::BusInfo),
+    IEEE1394Exception("Device has invalid configuration ROM", this)
+  );
+  
+  IEEE1394Impl::RootDirectory rootDirectory;
+  unsigned int rootDirectoryOffset = IEEE1394::BUS_INFO_BLOCK + (quadlet >> 24) * sizeof(Quadlet);
+  read(node, IEEE1394::CSR_BASE_ADDRESS + rootDirectoryOffset, getCharAddress(rootDirectory), sizeof(rootDirectory));
+//  assert((rootDirectory.vendorId >> 24) == 0x03, IEEE1394Exception(this)); // TAG: Basler has 0x0c in MSB
+  return rootDirectory.vendorId & 0x00ffffff;
 }
 
 int IEEE1394::getPhysicalId(const EUI64& guid) throw(IEEE1394Exception) {
@@ -264,6 +328,104 @@ int IEEE1394::getPhysicalId(const EUI64& guid) throw(IEEE1394Exception) {
     }
   }
   return -1; // not found
+}
+
+uint64 IEEE1394::IsochronousReadChannelImpl::getSubchannels() throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+void IEEE1394::IsochronousReadChannelImpl::cancel() throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+IEEE1394::IsochronousReadPacketsRequest IEEE1394::IsochronousReadChannelImpl::getReadPacketsRequest() const throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+IEEE1394::IsochronousReadFixedPacketsRequest IEEE1394::IsochronousReadChannelImpl::getReadFixedPacketsRequest() const throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+IEEE1394::IsochronousReadFixedDataRequest IEEE1394::IsochronousReadChannelImpl::getReadFixedDataRequest() const throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+void IEEE1394::IsochronousReadChannelImpl::queue(IsochronousReadRequest& request) throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+void IEEE1394::IsochronousReadChannelImpl::queue(IsochronousReadPacketsRequest& request) throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+void IEEE1394::IsochronousReadChannelImpl::queue(IsochronousReadFixedPacketsRequest& request) throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+void IEEE1394::IsochronousReadChannelImpl::queue(IsochronousReadFixedDataRequest& request) throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+void IEEE1394::IsochronousReadChannelImpl::queue(Allocator<IsochronousReadRequest>& request) throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+IEEE1394::IsochronousReadRequest IEEE1394::IsochronousReadChannelImpl::dequeue() throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+bool IEEE1394::IsochronousReadChannelImpl::wait(unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
+  assert(microseconds <= 999999999, OutOfDomain(this));
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+uint64 IEEE1394::IsochronousWriteChannelImpl::getSubchannels() throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+void IEEE1394::IsochronousWriteChannelImpl::cancel() throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+IEEE1394::IsochronousWritePacketsRequest IEEE1394::IsochronousWriteChannelImpl::getWritePacketsRequest() const throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+IEEE1394::IsochronousWriteFixedPacketsRequest IEEE1394::IsochronousWriteChannelImpl::getWriteFixedPacketsRequest() const throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+IEEE1394::IsochronousWriteDataRequest IEEE1394::IsochronousWriteChannelImpl::getWriteDataRequest() const throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+void IEEE1394::IsochronousWriteChannelImpl::queue(IsochronousWriteRequest& request) throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+void IEEE1394::IsochronousWriteChannelImpl::queue(IsochronousWritePacketsRequest& request) throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+void IEEE1394::IsochronousWriteChannelImpl::queue(IsochronousWriteFixedPacketsRequest& request) throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+void IEEE1394::IsochronousWriteChannelImpl::queue(IsochronousWriteDataRequest& request) throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+void IEEE1394::IsochronousWriteChannelImpl::queue(Allocator<IsochronousWriteRequest>& request) throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+
+IEEE1394::IsochronousWriteRequest IEEE1394::IsochronousWriteChannelImpl::dequeue() throw(IEEE1394Exception) {
+  throw IEEE1394Exception("Channel is closed", this);
+}
+    
+bool IEEE1394::IsochronousWriteChannelImpl::wait(unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
+  assert(microseconds <= 999999999, OutOfDomain(this));
+  throw IEEE1394Exception("Channel is closed", this);
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

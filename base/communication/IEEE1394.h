@@ -82,17 +82,28 @@ public:
 
 
 
+  /** Exception causes. */
+  enum ExceptionCause {
+    NO_GENERAL_CONFIGURATION_ROM = 1,
+    INVALID_BUS_INFORMATION_BLOCK,
+    INVALID_ROOT_DIRECTORY_BLOCK
+  };
+  
+  /** Capability flags of nodes. */
+  enum Capability {
+    ISOCHRONOUS_RESOURCE_MANAGER = 1 << 0,
+    CYCLE_MASTER = 1 << 1,
+    ISOCHRONOUS_TRANSMISSION = 1 << 2,
+    BUS_MASTER = 1 << 3,
+    POWER_MANAGEMENT = 1 << 4
+  };
+
   /** IEEE 1394 standard. */
   enum Standard {
     STANDARD_UNSPECIFIED,
     STANDARD_IEEE_1394,
     STANDARD_IEEE_1394A,
     STANDARD_IEEE_1394B
-  };
-
-  enum Flag {
-    ASYNCHRONOUS_TRANSMISSION = 1,
-    ISOCHRONOUS_TRANSMISSION = 2
   };
 
   struct Descriptor {
@@ -163,11 +174,6 @@ public:
   }
   
   /**
-    Returns the vendor id of the adapter.
-  */
-  virtual unsigned int getVendorId() const throw(IEEE1394Exception) = 0;
-  
-  /**
     Returns the product id of the adapter.
   */
   virtual unsigned int getProductId() const throw(IEEE1394Exception) = 0;
@@ -176,7 +182,7 @@ public:
     Returns the IEEE 1394 standard of the adapter.
   */
   virtual Standard getCompliance() const throw(IEEE1394Exception) = 0;
-
+  
   /**
     Returns the vendor name of the specified node.
     
@@ -198,6 +204,30 @@ public:
   */
   EUI64 getIdentifier(unsigned int node) throw(OutOfDomain, IEEE1394Exception);
 
+  /**
+    Returns the maximum payload in bytes for asynchronous write transmissions
+    addressed to the specified node.
+    
+    @param node The physical id of the node [0; 63[.
+  */
+  unsigned int getMaximumPayload(unsigned int node) throw(IEEE1394Exception);
+  
+  /**
+    Returns the capabilities of the specified node.
+    
+    @param node The physical id of the node [0; 63[.
+  */
+  unsigned int getCapabilities(unsigned int node) throw(IEEE1394Exception);
+  
+  /**
+    Returns the 24 bit module vendor id of the specified node. Please note that
+    this vendor id does not have to be identical to the vendor id of the EUI-64
+    identifier.
+    
+    @param node The physical id of the node [0; 63[.
+  */
+  unsigned int getVendorId(unsigned int node) throw(IEEE1394Exception);
+  
   /**
     Returns the physical id ([0; 63[) of the specified device.
     
@@ -1690,9 +1720,164 @@ public:
       return IsochronousWriteDataRequest(dynamic_cast<IsochronousWriteDataRequestImpl*>(context.getValue()));
     }
   };
+
+
+
+  /**
+    Interface implemented by isochronous read channels.
+    
+    @ingroup communications
+    @short Isochronous read channel.
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    @version 1.0
+  */
+  class IsochronousReadChannelImpl : public ReferenceCountedObject {
+  public:
+    
+    /**
+      Returns the reserved subchannels.
+    */
+    virtual uint64 getSubchannels() throw(IEEE1394Exception);
+
+    /**
+      Cancels all pending requests.
+    */
+    virtual void cancel() throw(IEEE1394Exception);
+    
+    /**
+      Returns a read packet request object (READ_PACKETS_REQUEST).
+    */    
+    virtual IsochronousReadPacketsRequest getReadPacketsRequest() const throw(IEEE1394Exception);
+    
+    /**
+      Returns a read fixed packet request object (READ_FIXED_PACKETS_REQUEST).
+    */    
+    virtual IsochronousReadFixedPacketsRequest getReadFixedPacketsRequest() const throw(IEEE1394Exception);
+    
+    /**
+      Returns a read fixed data request object (READ_FIXED_DATA_REQUEST).
+    */    
+    virtual IsochronousReadFixedDataRequest getReadFixedDataRequest() const throw(IEEE1394Exception);
+
+    /**
+      Queues the specified read request.
+    */
+    virtual void queue(IsochronousReadRequest& request) throw(IEEE1394Exception);
+
+    /**
+      Queues the specified read request.
+    */
+    virtual void queue(IsochronousReadPacketsRequest& request) throw(IEEE1394Exception);
+
+    /**
+      Queues the specified read request.
+    */
+    virtual void queue(IsochronousReadFixedPacketsRequest& request) throw(IEEE1394Exception);
+
+    /**
+      Queues the specified read request.
+    */
+    virtual void queue(IsochronousReadFixedDataRequest& request) throw(IEEE1394Exception);
+    
+    /**
+      Queues the specified read requests.
+    */
+    virtual void queue(Allocator<IsochronousReadRequest>& request) throw(IEEE1394Exception);
+
+    /**
+      Returns the next completed request.
+
+      @return INVALID_REQUEST if no request is available in the completion queue.
+    */
+    virtual IsochronousReadRequest dequeue() throw(IEEE1394Exception);
+    
+    /**
+      Wait for an event.
+
+      @param microseconds The timeout period in microseconds [0; 999999999].
+      
+      @return True if event occured within the specified timeout period and otherwise false.
+    */
+    virtual bool wait(unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception);
+  };
   
-  
-  
+  /**
+    Interface implemented by isochronous write channels.
+    
+    @ingroup communications
+    @short Isochronous write channel.
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    @version 1.0
+  */
+  class IsochronousWriteChannelImpl : public ReferenceCountedObject {
+  public:
+
+    /**
+      Returns the reserved subchannels.
+    */
+    virtual uint64 getSubchannels() throw(IEEE1394Exception);
+
+    /**
+      Cancels all pending requests.
+    */
+    virtual void cancel() throw(IEEE1394Exception);
+    
+    /**
+      Returns a write packet request object (WRITE_PACKETS_REQUEST).
+    */    
+    virtual IsochronousWritePacketsRequest getWritePacketsRequest() const throw(IEEE1394Exception);
+    
+    /**
+      Returns a write fixed packet request object (WRITE_FIXED_PACKETS_REQUEST).
+    */
+    virtual IsochronousWriteFixedPacketsRequest getWriteFixedPacketsRequest() const throw(IEEE1394Exception);
+    
+    /**
+      Returns a write data request object (WRITE_DATA_REQUEST).
+    */
+    virtual IsochronousWriteDataRequest getWriteDataRequest() const throw(IEEE1394Exception);
+    
+    /**
+      Queues the specified write request.
+    */
+    virtual void queue(IsochronousWriteRequest& request) throw(IEEE1394Exception);
+
+    /**
+      Queues the specified write request.
+    */
+    virtual void queue(IsochronousWritePacketsRequest& request) throw(IEEE1394Exception);
+
+    /**
+      Queues the specified write request.
+    */
+    virtual void queue(IsochronousWriteFixedPacketsRequest& request) throw(IEEE1394Exception);
+
+    /**
+      Queues the specified write request.
+    */
+    virtual void queue(IsochronousWriteDataRequest& request) throw(IEEE1394Exception);
+
+    /**
+      Queues the specified write requests.
+    */
+    virtual void queue(Allocator<IsochronousWriteRequest>& request) throw(IEEE1394Exception);
+
+    /**
+      Returns the next completed request.
+
+      @return INVALID_REQUEST if no request is available in the completion queue.
+    */
+    virtual IsochronousWriteRequest dequeue() throw(IEEE1394Exception);
+    
+    /**
+      Wait for an event.
+
+      @param microseconds The timeout period in microseconds [0; 999999999].
+      
+      @return True if event occured within the specified timeout period and otherwise false.
+    */
+    virtual bool wait(unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception);
+  };
 protected:
   
   /**
@@ -1759,183 +1944,284 @@ protected:
     return request.context;
   }
 public:
-
-  /**
-    Isochronous communication channel.
-    
-    @ingroup communications
-    @short Isochronous communication channel.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
-  */
-  class IsochronousChannel : public Object {
-  };
   
-  /**
-    Isochronous read channel.
+  class IsochronousReadChannel {
+    friend class IEEE1394;
+  private:
+    
+    /** Isochronous read channel implementation. */
+    ReferenceCountedObjectPointer<IsochronousReadChannelImpl> readChannel;
 
-    @ingroup communications
-    @short Isochronous read channel.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
-  */
-  class IsochronousReadChannel : public IsochronousChannel {
+    /** Initializes read channel. */
+    inline IsochronousReadChannel(IsochronousReadChannelImpl* _readChannel) throw() :
+      readChannel(_readChannel) {
+    }
   public:
+
+    /**
+      Initialize channel from other channel.
+    */
+    inline IsochronousReadChannel(const IsochronousReadChannel& copy) throw()
+      : readChannel(copy.readChannel) {
+    }
+
+    /**
+      Assignment of channel by channel.
+    */
+    inline IsochronousReadChannel& operator=(const IsochronousReadChannel& eq) throw() {
+      readChannel = eq.readChannel;
+      return *this;
+    }
     
     /**
       Returns the reserved subchannels.
     */
-    virtual uint64 getSubchannels() throw(IEEE1394Exception) = 0;
-
+    inline uint64 getSubchannels() throw(IEEE1394Exception) {
+      return readChannel->getSubchannels();
+    }
+    
     /**
       Cancels all pending requests.
     */
-    virtual void cancel() throw(IEEE1394Exception) = 0;
+    inline void cancel() throw(IEEE1394Exception) {
+      readChannel->cancel();
+    }
     
     /**
       Closes the channel.
     */
-    virtual void close() throw(IEEE1394Exception) = 0;
+    inline void close() throw(IEEE1394Exception) {
+      readChannel = new IsochronousReadChannelImpl();
+    }
 
     /**
       Returns a read packet request object (READ_PACKETS_REQUEST).
     */    
-    virtual IsochronousReadPacketsRequest getReadPacketsRequest() const throw() = 0;
+    inline IsochronousReadPacketsRequest getReadPacketsRequest() const throw() {
+      return readChannel->getReadPacketsRequest();
+    }
     
     /**
       Returns a read fixed packet request object (READ_FIXED_PACKETS_REQUEST).
     */    
-    virtual IsochronousReadFixedPacketsRequest getReadFixedPacketsRequest() const throw() = 0;
+    inline IsochronousReadFixedPacketsRequest getReadFixedPacketsRequest() const throw() {
+      return readChannel->getReadFixedPacketsRequest();
+    }
     
     /**
       Returns a read fixed data request object (READ_FIXED_DATA_REQUEST).
     */    
-    virtual IsochronousReadFixedDataRequest getReadFixedDataRequest() const throw() = 0;
+    inline IsochronousReadFixedDataRequest getReadFixedDataRequest() const throw() {
+      return readChannel->getReadFixedDataRequest();
+    }
 
     /**
       Queues the specified read request.
     */
-    virtual void queue(IsochronousReadRequest& request) throw(IEEE1394Exception) = 0;
-
+    inline void queue(IsochronousReadRequest& request) throw(IEEE1394Exception) {
+      readChannel->queue(request);
+    }
+    
     /**
       Queues the specified read request.
     */
-    virtual void queue(IsochronousReadPacketsRequest& request) throw(IEEE1394Exception) = 0;
-
+    inline void queue(IsochronousReadPacketsRequest& request) throw(IEEE1394Exception) {
+      readChannel->queue(request);
+    }
+    
     /**
       Queues the specified read request.
     */
-    virtual void queue(IsochronousReadFixedPacketsRequest& request) throw(IEEE1394Exception) = 0;
-
+    inline void queue(IsochronousReadFixedPacketsRequest& request) throw(IEEE1394Exception) {
+      readChannel->queue(request);
+    }
+    
     /**
       Queues the specified read request.
     */
-    virtual void queue(IsochronousReadFixedDataRequest& request) throw(IEEE1394Exception) = 0;
+    inline void queue(IsochronousReadFixedDataRequest& request) throw(IEEE1394Exception) {
+      readChannel->queue(request);
+    }
     
     /**
       Queues the specified read requests.
     */
-    virtual void queue(Allocator<IsochronousReadRequest>& request) throw(IEEE1394Exception) = 0;
-
+    inline void queue(Allocator<IsochronousReadRequest>& request) throw(IEEE1394Exception) {
+      readChannel->queue(request);
+    }
+    
     /**
       Returns the next completed request.
 
       @return INVALID_REQUEST if no request is available in the completion queue.
     */
-    virtual IsochronousReadRequest dequeue() throw(IEEE1394Exception) = 0;
+    inline IsochronousReadRequest dequeue() throw(IEEE1394Exception) {
+      return readChannel->dequeue();
+    }
     
     /**
       Wait for an event.
 
-      @param nanoseconds The timeout period [0; 999999999].
+      @param microseconds The timeout period in microseconds [0; 999999999].
       
       @return True if event occured within the specified timeout period and otherwise false.
     */
-    virtual bool wait(unsigned int nanoseconds) throw(OutOfDomain) = 0;
+    inline bool wait(unsigned int microseconds) throw(OutOfDomain) {
+      return readChannel->wait(microseconds);
+    }
   };
   
-  /**
-    Isochronous write channel.
+  class IsochronousWriteChannel {
+    friend class IEEE1394;
+  private:
+    
+    /** Isochronous write channel implementation. */
+    ReferenceCountedObjectPointer<IsochronousWriteChannelImpl> writeChannel;
 
-    @ingroup communications
-    @short Isochronous write channel.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
-  */
-  class IsochronousWriteChannel : public IsochronousChannel {
+    /** Initializes write channel. */
+    inline IsochronousWriteChannel(IsochronousWriteChannelImpl* _writeChannel) throw() :
+      writeChannel(_writeChannel) {
+    }
   public:
+
+    /**
+      Initialize channel from other channel.
+    */
+    inline IsochronousWriteChannel(const IsochronousWriteChannel& copy) throw()
+      : writeChannel(copy.writeChannel) {
+    }
+
+    /**
+      Assignment of channel by channel.
+    */
+    inline IsochronousWriteChannel& operator=(const IsochronousWriteChannel& eq) throw() {
+      writeChannel = eq.writeChannel;
+      return *this;
+    }
 
     /**
       Returns the reserved subchannels.
     */
-    virtual uint64 getSubchannels() throw(IEEE1394Exception) = 0;
+    inline uint64 getSubchannels() throw(IEEE1394Exception) {
+      return writeChannel->getSubchannels();
+    }
 
     /**
       Cancels all pending requests.
     */
-    virtual void cancel() throw(IEEE1394Exception) = 0;
+    inline void cancel() throw(IEEE1394Exception) {
+      writeChannel->cancel();
+    }
     
     /**
       Closes the channel.
     */
-    virtual void close() throw(IEEE1394Exception) = 0;
+    inline void close() throw(IEEE1394Exception) {
+      writeChannel = new IsochronousWriteChannelImpl();
+    }
     
     /**
       Returns a write packet request object (WRITE_PACKETS_REQUEST).
     */    
-    virtual IsochronousWritePacketsRequest getWritePacketsRequest() const throw() = 0;
+    inline IsochronousWritePacketsRequest getWritePacketsRequest() const throw() {
+      return writeChannel->getWritePacketsRequest();
+    }
     
     /**
       Returns a write fixed packet request object (WRITE_FIXED_PACKETS_REQUEST).
     */
-    virtual IsochronousWriteFixedPacketsRequest getWriteFixedPacketsRequest() const throw() = 0;
+    inline IsochronousWriteFixedPacketsRequest getWriteFixedPacketsRequest() const throw() {
+      return writeChannel->getWriteFixedPacketsRequest();
+    }
     
     /**
       Returns a write data request object (WRITE_DATA_REQUEST).
     */
-    virtual IsochronousWriteDataRequest getWriteDataRequest() const throw() = 0;
+    inline IsochronousWriteDataRequest getWriteDataRequest() const throw() {
+      return writeChannel->getWriteDataRequest();
+    }
     
     /**
       Queues the specified write request.
     */
-    virtual void queue(IsochronousWriteRequest& request) throw(IEEE1394Exception) = 0;
+    inline void queue(IsochronousWriteRequest& request) throw(IEEE1394Exception) {
+      return writeChannel->queue(request);
+    }
 
     /**
       Queues the specified write request.
     */
-    virtual void queue(IsochronousWritePacketsRequest& request) throw(IEEE1394Exception) = 0;
+    inline void queue(IsochronousWritePacketsRequest& request) throw(IEEE1394Exception) {
+      return writeChannel->queue(request);
+    }
 
     /**
       Queues the specified write request.
     */
-    virtual void queue(IsochronousWriteFixedPacketsRequest& request) throw(IEEE1394Exception) = 0;
+    inline void queue(IsochronousWriteFixedPacketsRequest& request) throw(IEEE1394Exception) {
+      return writeChannel->queue(request);
+    }
 
     /**
       Queues the specified write request.
     */
-    virtual void queue(IsochronousWriteDataRequest& request) throw(IEEE1394Exception) = 0;
+    inline void queue(IsochronousWriteDataRequest& request) throw(IEEE1394Exception) {
+      return writeChannel->queue(request);
+    }
 
     /**
       Queues the specified write requests.
     */
-    virtual void queue(Allocator<IsochronousWriteRequest>& request) throw(IEEE1394Exception) = 0;
-
+    inline void queue(Allocator<IsochronousWriteRequest>& request) throw(IEEE1394Exception) {
+      return writeChannel->queue(request);
+    }
+    
     /**
       Returns the next completed request.
 
       @return INVALID_REQUEST if no request is available in the completion queue.
     */
-    virtual IsochronousWriteRequest dequeue() throw(IEEE1394Exception) = 0;
+    inline IsochronousWriteRequest dequeue() throw(IEEE1394Exception) {
+      return writeChannel->dequeue();
+    }
     
     /**
       Wait for an event.
 
-      @param nanoseconds The timeout period [0; 999999999].
+      @param microseconds The timeout period in microseconds [0; 999999999].
       
       @return True if event occured within the specified timeout period and otherwise false.
     */
-    virtual bool wait(unsigned int nanoseconds) throw(OutOfDomain) = 0;
+    inline bool wait(unsigned int microseconds) throw(OutOfDomain) {
+      return writeChannel->wait(microseconds);
+    }
   };
+protected:
+
+  inline IsochronousReadChannel makeReadChannel(IsochronousReadChannelImpl* readChannel) throw() {
+    return IsochronousReadChannel(readChannel);
+  }
+  
+  inline IsochronousWriteChannel makeWriteChannel(IsochronousWriteChannelImpl* writeChannel) throw() {
+    return IsochronousWriteChannel(writeChannel);
+  }
+public:
+  
+  /**
+    Returns an isochronous read channel.
+
+    @param maximumPacketsPerRequest The maximum number of packets per request.
+    @param subchannel Mask specifying the subchannel to reserve for this channel.
+  */
+  virtual IsochronousReadChannel getReadChannel(unsigned int maximumPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) = 0;
+  
+  /**
+    Returns an isochronous write channel.
+
+    @param maximumPacketsPerRequest The maximum number of packets per request.
+    @param subchannel Mask specifying the subchannel to reserve for this channel.
+  */
+  virtual IsochronousWriteChannel getWriteChannel(unsigned int maximumPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) = 0;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -419,8 +419,17 @@ inline void clear(TYPE& value) throw() {
     *p++ = 0;
   }
   uint8* q = Cast::pointer<uint8*>(p);
-  for (int i = 0; i < sizeof(TYPE)%sizeof(long); ++i) {
-    *q++ = 0;
+  unsigned int rest = sizeof(TYPE)%sizeof(long);
+  if (rest == 0) {
+    return;
+  }
+  switch (rest) {
+  case 0:
+    break;
+  default:
+    for (int i = 0; i < rest; ++i) {
+      *q++ = 0;
+    }
   }
 }
 

@@ -237,34 +237,50 @@ public:
   }
 
   /**
-    Rounds the value to the nearest integer.
+    Rounds the value to the nearest integer (away from 0).
   */
   static inline float round(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ROUNDF)
-      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ROUNDF(value);
-    #else
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUNDF)
       return isoc::roundf(value);
+    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUNDL)
+      return isoc::roundl(value);
+    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUND)
+      return isoc::round(value);
+    #else
+      return (value >= 0) ? Math::ceil(value) : Math::floor(value);
     #endif
   }
-
+  
   /**
     Rounds the value to the nearest integer.
   */
   static inline double round(double value) throw() {
-    return isoc::round(value);
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUND)
+      return isoc::round(value);
+    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUNDL)
+      return isoc::roundl(value);
+    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUNDF)
+      return isoc::roundf(value);
+    #else
+      return 0; // TAG: fixme
+    #endif
   }
-
+  
   /**
     Rounds the value to the nearest integer.
   */
   static inline long double round(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ROUNDL)
-      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ROUNDL(value);
-    #else
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUNDL)
       return isoc::roundl(value);
+    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUND)
+      return isoc::round(value);
+    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUNDF)
+      return isoc::roundf(value);
+    #else
+      return 0; // TAG: fixme
     #endif
   }
-
+  
   /**
     Rounds (towards zero) the value to the nearest integer.
   */
@@ -419,7 +435,7 @@ public:
   /**
     Returns the natural logarithm of the value.
   */
-  static inline float log(float value) throw() {
+  static inline float ln(float value) throw() {
     #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOGF)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOGF(value);
     #else
@@ -430,14 +446,14 @@ public:
   /**
     Returns the natural logarithm of the value.
   */
-  static inline double log(double value) throw() {
+  static inline double ln(double value) throw() {
     return isoc::log(value);
   }
 
   /**
     Returns the natural logarithm of the value.
   */
-  static inline long double log(long double value) throw() {
+  static inline long double ln(long double value) throw() {
     #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOGL)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOGL(value);
     #else
@@ -449,18 +465,14 @@ public:
     Returns the logarithm with base 2 of the value.
   */
   static inline float log2(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOG2F)
-      return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOG2F(value);
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2F)
+      return isoc::log2f(value);
+    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2L)
+      return isoc::log2l(value);
+    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2)
+      return isoc::log2(value);
     #else
-      #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2F)
-        return isoc::log2f(value);
-      #else
-        #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOGF)
-          return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOGF(value) * constant::LOG2E;
-        #else
-          return isoc::logf(value) * constant::LOG2E;
-        #endif
-      #endif
+      return Math::ln(value) * constant::LOG2E;
     #endif
   }
 
@@ -468,15 +480,14 @@ public:
     Returns the logarithm with base 2 of the value.
   */
   static inline double log2(double value) throw() {
-    return isoc::log2(value);
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOG2)
-      return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOG2(value);
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2)
+      return isoc::log2(value);
+    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2L)
+      return isoc::log2l(value);
+    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2F)
+      return isoc::log2f(value);
     #else
-      #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2)
-        return isoc::log2(value);
-      #else
-        return log(value) * constant::LOG2E;
-      #endif
+      return Math::ln(value) * constant::LOG2E;
     #endif
   }
 
@@ -484,21 +495,17 @@ public:
     Returns the logarithm with base 2 of the value.
   */
   static inline long double log2(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOG2L)
-      return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOG2L(value);
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2L)
+      return isoc::log2l(value);
+    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2)
+      return isoc::log2(value);
+    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2F)
+      return isoc::log2f(value);
     #else
-      #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2L)
-        return isoc::log2l(value);
-      #else
-        #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_LOGL)
-          return _DK_SDU_MIP__BASE__COMPILER_ISOC_LOGL(value) * constant::LOG2E;
-        #else
-          return isoc::logl(value) * constant::LOG2E;
-        #endif
-      #endif
+      return Math::ln(value) * constant::LOG2E;
     #endif
   }
-
+  
   /**
     Returns the logarithm with base 10 of the value.
   */
@@ -545,9 +552,16 @@ public:
   }
 
   /**
+    Returns the logarithm with base n of the value.
+  */
+  static inline long double logn(long double value, long double base) throw() {
+    return Math::ln(value)/base;
+  }
+  
+  /**
     Returns the power a^b.
   */
-  static inline float pow(float a, float b) throw() {
+  static inline float power(float a, float b) throw() {
     #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_POWF)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_POWF(a, b);
     #else
@@ -558,19 +572,38 @@ public:
   /**
     Returns the power a^b.
   */
-  static inline double pow(double a, double b) throw() {
+  static inline double power(double a, double b) throw() {
     return isoc::pow(a, b);
   }
 
   /**
     Returns the power a^b.
   */
-  static inline long double pow(long double a, long double b) throw() {
+  static inline long double power(long double a, long double b) throw() {
     #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_POWL)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_POWL(a, b);
     #else
       return isoc::powl(a, b);
     #endif
+//       if (a > 0) {
+//         return Math::exp(b * Math::ln(a));
+//       } else if (a == 0) {
+//         if (b > 0) {
+//           return 0;
+//         } else if (b == 0) {
+//           return 1;
+//         } else {
+//           // out of domain
+//         }
+//       } else if (Math::frac(b) == 0) {
+//         if (Math::frac(b * 0.5) == 0) { // equal or unequal
+//           return Math::exp(b * Math::ln(-a));
+//         } else {
+//           return -Math::exp(b * Math::ln(-a));
+//         }
+//       } else {
+//         // out of domain
+//       }
   }
 
 
@@ -630,10 +663,13 @@ public:
     Returns the inverse sine.
   */
   static inline long double asin(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ASINL)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ASINL)
+      return isoc::asinl(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ASINL)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_ASINL(value);
     #else
-      return isoc::asinl(value);
+      return Math::atan2(value, Math::sqrt(1 - value * value));
+      // return Math::atan(value/Math::sqrt((1 - value * value)));
     #endif
   }
 
@@ -692,10 +728,13 @@ public:
     Returns the inverse cosine.
   */
   static inline long double acos(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSL)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ACOSL)
+      return isoc::acosl(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSL)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSL(value);
     #else
-      return isoc::acosl(value);
+      return Math::atan2(Math::sqrt(1 - value * value), value);
+      // return constant::PI_2 - Math::atan(value/Math::sqrt((1 - value * value)));
     #endif
   }
 
@@ -727,15 +766,18 @@ public:
       return isoc::tanl(value);
     #endif
   }
-
+  
+  
   /**
     Returns the inverse tangent.
   */
   static inline float atan(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATANF)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ATANF)
+      return isoc::atanf(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATANF)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_ATANF(value);
     #else
-      return isoc::atanf(value);
+      return isoc::atan(value);
     #endif
   }
 
@@ -745,20 +787,121 @@ public:
   static inline double atan(double value) throw() {
     return isoc::atan(value);
   }
-
+  
   /**
     Returns the inverse tangent.
   */
   static inline long double atan(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATANL)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ATANL)
+      return isoc::atanl(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATANL)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_ATANL(value);
     #else
-      return isoc::atanl(value);
+      return isoc::atan(value);
     #endif
   }
-
+  
   /**
-    Returns the arc tangent of y/x using the signs of both arguments to determine the proper quadrant.
+    Returns the cotangent of the value.
+  */
+  static inline long double cotan(long double value) throw() {
+    return 1/Math::tan(value);
+  }
+  
+  /**
+    Returns the inverse cotangent of the value.
+  */
+  static inline long double acotan(long double value) throw() {
+    return Math::atan2(1, value);
+  }
+  
+  /**
+    Returns the secant of the value.
+  */
+  static inline long double sec(long double value) throw() {
+    return 1/Math::cos(value);
+  }
+  
+  /**
+    Returns the inverse secant of the value.
+  */
+  static inline long double asec(long double value) throw() {
+    return Math::atan2(value, Math::sqrt(1 - value * value)); // acos(1/value)
+  }
+  
+  /**
+    Returns the cosecant of the value.
+  */
+  static inline long double cosec(long double value) throw() {
+    return 1/Math::sin(value);
+  }
+  
+  /**
+    Returns the inverse cosecant of the value.
+  */
+  static inline long double acosec(long double value) throw() {
+    return Math::atan2(Math::sqrt(1 - value * value), value); // asin(1/value)
+  }
+  
+  /**
+    Returns the exsecant of the value.
+  */
+  static inline long double exsec(long double value) throw() {
+    return 1/Math::cos(value) - 1;
+  }
+  
+  /**
+    Returns the inverse exsecant of the value.
+  */
+  static inline long double aexsec(long double value) throw() {
+    return Math::atan(Math::sqrt(value * (value + 2)));
+  }
+  
+  /**
+    Returns versine of value.
+  */
+  static inline long double vers(long double value) throw() {
+    return 1 - Math::cos(value);
+  }
+  
+  /**
+    Returns the inverse versine of the value.
+  */
+  static inline long double avers(long double value) throw() {
+    return Math::atan(Math::sqrt((2 - value) * value/((value - 1)*(value - 1))));
+  }
+  
+  /**
+    Returns the haversine of value.
+  */
+  static inline long double hav(long double value) throw() {
+    return (1 - Math::cos(value))/2;
+  }
+  
+  /**
+    Returns the inverse hav of the value.
+  */
+  static inline long double ahav(long double value) throw() {
+    return Math::atan(Math::sqrt(1/((1 - 2 * value) * (1 - 2 * value)) - 1));
+  }
+  
+  /**
+    Returns the coversine of value.
+  */
+  static inline long double covers(long double value) throw() {
+    return 1 - Math::sin(value);
+  }
+  
+  /**
+    Returns the inverse coversine of the value.
+  */
+  static inline long double acovers(long double value) throw() {
+    return Math::atan(Math::sqrt(-1/(value * (value - 2)) - 1));
+  }
+  
+  /**
+    Returns the arc tangent of y/x using the signs of both arguments to
+    determine the proper quadrant.
   */
   static inline float atan2(float y, float x) throw() {
     #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATAN2F)
@@ -769,14 +912,16 @@ public:
   }
 
   /**
-    Returns the arc tangent of y/x using the signs of both arguments to determine the proper quadrant.
+    Returns the arc tangent of y/x using the signs of both arguments to
+    determine the proper quadrant.
   */
   static inline double atan2(double y, double x) throw() {
     return isoc::atan2(y, x);
   }
 
   /**
-    Returns the arc tangent of y/x using the signs of both arguments to determine the proper quadrant.
+    Returns the arc tangent of y/x using the signs of both arguments to
+    determine the proper quadrant.
   */
   static inline long double atan2(long double y, long double x) throw() {
     #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATAN2L)
@@ -792,10 +937,12 @@ public:
     Returns the hyperbolic sine.
   */
   static inline float sinh(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_SINHF)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_SINHF)
+      return isoc::sinhf(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_SINHF)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_SINHF(value);
     #else
-      return isoc::sinhf(value);
+      return (Math::exp(value) - Math::exp(-value))/2;
     #endif
   }
 
@@ -803,17 +950,25 @@ public:
     Returns the hyperbolic sine.
   */
   static inline double sinh(double value) throw() {
-    return isoc::sinh(value);
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_SINH)
+      return isoc::sinh(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_SINH)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_SINH(value);
+    #else
+      return (Math::exp(value) - Math::exp(-value))/2;
+    #endif
   }
 
   /**
     Returns the hyperbolic sine.
   */
   static inline long double sinh(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_SINHL)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_SINH)
+      return isoc::sinhl(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_SINHL)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_SINHL(value);
     #else
-      return isoc::sinhl(value);
+      return (Math::exp(value) - Math::exp(-value))/2;
     #endif
   }
 
@@ -821,10 +976,12 @@ public:
     Returns the inverse hyperbolic sine.
   */
   static inline float asinh(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ASINHF)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ASINHF)
+      return isoc::asinhf(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ASINHF)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_ASINHF(value);
     #else
-      return isoc::asinhf(value);
+      return Math::ln(value + Math::sqrt(1 + value * value));
     #endif
   }
 
@@ -832,17 +989,25 @@ public:
     Returns the inverse hyperbolic sine.
   */
   static inline double asinh(double value) throw() {
-    return isoc::asinh(value);
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ASINH)
+      return isoc::asinh(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ASINH)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ASINH(value);
+    #else
+      return Math::ln(value + Math::sqrt(1 + value * value));
+    #endif
   }
 
   /**
     Returns the inverse hyperbolic sine.
   */
   static inline long double asinh(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ASINHL)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ASINHL)
+      return isoc::asinhl(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ASINHL)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_ASINHL(value);
     #else
-      return isoc::asinhl(value);
+      return Math::ln(value + Math::sqrt(1 + value * value));
     #endif
   }
 
@@ -850,10 +1015,12 @@ public:
     Returns the hyperbolic cosine.
   */
   static inline float cosh(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_COSHF)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_COSHF)
+      return isoc::coshf(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_COSHF)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_COSHF(value);
     #else
-      return isoc::coshf(value);
+      return (Math::exp(value) + Math::exp(-value))/2;
     #endif
   }
 
@@ -861,17 +1028,25 @@ public:
     Returns the hyperbolic cosine.
   */
   static inline double cosh(double value) throw() {
-    return isoc::cosh(value);
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_COSH)
+      return isoc::cosh(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_COSH)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_COSH(value);
+    #else
+      return (Math::exp(value) + Math::exp(-value))/2;
+    #endif
   }
 
   /**
     Returns the hyperbolic cosine.
   */
   static inline long double cosh(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_COSHL)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_COSHL)
+      return isoc::coshl(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_COSHL)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_COSHL(value);
     #else
-      return isoc::coshl(value);
+      return (Math::exp(value) + Math::exp(-value))/2;
     #endif
   }
 
@@ -879,10 +1054,12 @@ public:
     Returns the inverse hyperbolic cosine.
   */
   static inline float acosh(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSHF)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ACOSHF)
+      return isoc::acoshf(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSHF)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSHF(value);
     #else
-      return isoc::acoshf(value);
+      return Math::ln(value + Math::sqrt(value * value - 1));
     #endif
   }
 
@@ -890,17 +1067,25 @@ public:
     Returns the inverse hyperbolic cosine.
   */
   static inline double acosh(double value) throw() {
-    return isoc::acosh(value);
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ACOSH)
+      return isoc::acosh(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSH)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSH(value);
+    #else
+      return Math::ln(value + Math::sqrt(value * value - 1));
+    #endif
   }
 
   /**
     Returns the inverse hyperbolic cosine.
   */
   static inline long double acosh(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSHL)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ACOSHL)
+      return isoc::acoshl(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSHL)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_ACOSHL(value);
     #else
-      return isoc::acoshl(value);
+      return Math::ln(value + Math::sqrt(value * value - 1));
     #endif
   }
 
@@ -908,10 +1093,13 @@ public:
     Returns the hyperbolic tangent.
   */
   static inline float tanh(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_TANHF)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_TANHF)
+      return isoc::tanhf(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_TANHF)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_TANHF(value);
     #else
-      return isoc::tanhf(value);
+      const float temp = Math::exp(2 * value);
+      return (temp - 1)/(temp + 1);
     #endif
   }
 
@@ -919,17 +1107,27 @@ public:
     Returns the hyperbolic tangent.
   */
   static inline double tanh(double value) throw() {
-    return isoc::tanh(value);
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_TANH)
+      return isoc::tanh(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_TANH)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_TANH(value);
+    #else
+      const double temp = Math::exp(2 * value);
+      return (temp - 1)/(temp + 1);
+    #endif
   }
 
   /**
     Returns the hyperbolic tangent.
   */
   static inline long double tanh(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_TANHL)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_TANHL)
+      return isoc::tanhl(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_TANHL)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_TANHL(value);
     #else
-      return isoc::tanhl(value);
+      const long double temp = Math::exp(2 * value);
+      return (temp - 1)/(temp + 1);
     #endif
   }
 
@@ -937,33 +1135,172 @@ public:
     Returns the inverse hyperbolic tangent.
   */
   static inline float atanh(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATANHF)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ATANHF)
+      return isoc::atanhf(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATANHF)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_ATANHF(value);
     #else
-      return isoc::atanhf(value);
+      return Math::ln((1 + value)/(1 - value))/2;
     #endif
   }
-
+  
   /**
     Returns the inverse hyperbolic tangent.
   */
   static inline double atanh(double value) throw() {
-    return isoc::atanh(value);
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ATANH)
+      return isoc::atanh(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATANH)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ATANH(value);
+    #else
+      return Math::ln((1 + value)/(1 - value))/2;
+    #endif
   }
 
   /**
     Returns the inverse hyperbolic tangent.
   */
   static inline long double atanh(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATANHL)
+    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ATANHL)
+      return isoc::atanhl(value);
+    #elif defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATANHL)
       return _DK_SDU_MIP__BASE__COMPILER_ISOC_ATANHL(value);
     #else
-      return isoc::atanhl(value);
+      return Math::ln((1 + value)/(1 - value))/2;
     #endif
   }
+  
+  /**
+    Returns the hyperbolic cotangent of the value (do not invoke for 0).
+  */
+  static inline float cotanh(float value) throw() {
+    const float temp = Math::exp(2 * value);
+    return (temp + 1)/(temp - 1);
+  }
 
+  /**
+    Returns the hyperbolic cotangent of the value (do not invoke for 0).
+  */
+  static inline double cotanh(double value) throw() {
+    const double temp = Math::exp(2 * value);
+    return (temp + 1)/(temp - 1);
+  }
+  
+  /**
+    Returns the hyperbolic cotangent of the value (do not invoke for 0).
+  */
+  static inline long double cotanh(long double value) throw() {
+    const long double temp = Math::exp(2 * value);
+    return (temp + 1)/(temp - 1);
+  }
+  
+  /**
+    Returns the inverse hyperbolic cotangent of the value.
+  */
+  static inline float acotanh(float value) throw() {
+    return Math::ln((value + 1)/(value - 1))/2;
+  }
+  
+  /**
+    Returns the inverse hyperbolic cotangent of the value.
+  */
+  static inline double acotanh(double value) throw() {
+    return Math::ln((value + 1)/(value - 1))/2;
+  }
+  
+  /**
+    Returns the inverse hyperbolic cotangent of the value.
+  */
+  static inline long double acotanh(long double value) throw() {
+    return Math::ln((value + 1)/(value - 1))/2;
+  }
+  
+  /**
+    Returns the hyperbolic secant of the value.
+  */
+  static inline float sech(float value) throw() {
+    return 2/(Math::exp(value) + Math::exp(-value));
+  }
+  
+  /**
+    Returns the hyperbolic secant of the value.
+  */
+  static inline double sech(double value) throw() {
+    return 2/(Math::exp(value) + Math::exp(-value));
+  }
+  
+  /**
+    Returns the hyperbolic secant of the value.
+  */
+  static inline long double sech(long double value) throw() {
+    return 2/(Math::exp(value) + Math::exp(-value));
+  }
+  
+  /**
+    Returns the inverse hyperbolic secant of the value.
+  */
+  static inline float asech(float value) throw() {
+    return Math::ln((1 + Math::sqrt(1 - value * value))/value);
+  }
+  
+  /**
+    Returns the inverse hyperbolic secant of the value.
+  */
+  static inline double asech(double value) throw() {
+    return Math::ln((1 + Math::sqrt(1 - value * value))/value);
+  }
+  
+  /**
+    Returns the inverse hyperbolic secant of the value.
+  */
+  static inline long double asech(long double value) throw() {
+    return Math::ln((1 + Math::sqrt(1 - value * value))/value);
+  }
+  
+  /**
+    Returns the hyperbolic cosecant of the value (do not invoke for 0).
+  */
+  static inline float cosech(float value) throw() {
+    return 2/(Math::exp(value) - Math::exp(-value));
+  }
+  
+  /**
+    Returns the hyperbolic cosecant of the value (do not invoke for 0).
+  */
+  static inline double cosech(double value) throw() {
+    return 2/(Math::exp(value) - Math::exp(-value));
+  }
+  
+  /**
+    Returns the hyperbolic cosecant of the value (do not invoke for 0).
+  */
+  static inline long double cosech(long double value) throw() {
+    return 2/(Math::exp(value) - Math::exp(-value));
+  }
+  
+  /**
+    Returns the inverse hyperbolic cosecant of the value (do not invoke for 0).
+  */
+  static inline float acosech(float value) throw() {
+    return Math::ln((1 + Math::sqrt(1 + value * value))/((value >= 0) ? value : -value));
+  }
+  
+  /**
+    Returns the inverse hyperbolic cosecant of the value (do not invoke for 0).
+  */
+  static inline double acosech(double value) throw() {
+    return Math::ln((1 + Math::sqrt(1 + value * value))/((value >= 0) ? value : -value));
+  }
+  
+  /**
+    Returns the inverse hyperbolic cosecant of the value (do not invoke for 0).
+  */
+  static inline long double acosech(long double value) throw() {
+    return Math::ln((1 + Math::sqrt(1 + value * value))/((value >= 0) ? value : -value));
+  }
 
-
+  
+  
   /**
     Returns the square root of the specified integer. The result is round down.
   */

@@ -15,7 +15,6 @@
 #define _DK_SDU_MIP__BASE__FLOATING_POINT_H
 
 #include <base/features.h>
-#include <base/platforms/arch/arch.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -29,7 +28,7 @@ enum FloatingPointFlags {
   FP_VALUE = 32 /**< Specifies an ordinary value representable in [-]d.ddde[-]dd form. */
 };
 
-#if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
+#if (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN)
   /** Representation of single precision (32-bit) floating point type as specified by IEEE 754. */
   struct IEEE_754_SinglePrecision {
     static const bool HAS_IMPLIED_ONE = true;
@@ -53,7 +52,7 @@ enum FloatingPointFlags {
   };
 #endif
 
-#if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
+#if (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN)
   /** Representation of double precision (64-bit) floating point type as specified by IEEE 754. */
   struct IEEE_754_DoublePrecision {
     static const bool HAS_IMPLIED_ONE = true;
@@ -79,9 +78,9 @@ enum FloatingPointFlags {
   };
 #endif
 
-#if defined(_DK_MIP_SDU__BASE__BIG_ENDIAN)
+#if (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN)
   /** Representation of double-extended precision (96-bit) floating point type. */
-  struct IEEE_DoubleExtendedPrecision96 {
+  struct IEEE_ExtendedDoublePrecision96 {
     static const bool HAS_IMPLIED_ONE = false;
     static const int BIAS = 0x3fff;
     static const unsigned int SIGNIFICANT = 64;
@@ -94,7 +93,7 @@ enum FloatingPointFlags {
   };
 #else
   /** Representation of double-extended precision (96-bit) floating point type. */
-  struct IEEE_DoubleExtendedPrecision96 {
+  struct IEEE_ExtendedDoublePrecision96 {
     static const bool HAS_IMPLIED_ONE = false;
     static const int BIAS = 0x3fff;
     static const unsigned int SIGNIFICANT = 64;
@@ -107,7 +106,7 @@ enum FloatingPointFlags {
   };
 #endif
 
-#if defined(_DK_MIP_SDU__BASE__BIG_ENDIAN)
+#if (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN)
   /** Representation of quadruple precision (128-bit) floating point type. */
   struct IEEE_QuadruplePrecision {
     static const bool HAS_IMPLIED_ONE = true;
@@ -139,26 +138,46 @@ enum FloatingPointFlags {
 
 
 
-#if defined(_DK_SDU_MIP__BASE__FLOAT_IEEE_754_SINGLE)
+#if (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
   typedef IEEE_754_SinglePrecision FloatRepresentation;
+#elif (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION)
+  typedef IEEE_754_DoublePrecision FloatRepresentation;
+#elif (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+  typedef IEEE_ExtendedDoublePrecision96 FloatRepresentation;
+#elif (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+  typedef IEEE_ExtendedDoublePrecision128 FloatRepresentation;
+#elif (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION)
+  typedef IEEE_QuadruplePrecision FloatRepresentation;
 #else
-  #error Invalid representation of type float specified by arch.h
+  #error Invalid representation of type float
 #endif
 
-#if defined(_DK_SDU_MIP__BASE__DOUBLE_IEEE_754_DOUBLE)
+#if (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
+  typedef IEEE_754_SinglePrecision DoubleRepresentation;
+#elif (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION)
   typedef IEEE_754_DoublePrecision DoubleRepresentation;
+#elif (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+  typedef IEEE_ExtendedDoublePrecision96 DoubleRepresentation;
+#elif (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+  typedef IEEE_ExtendedDoublePrecision128 DoubleRepresentation;
+#elif (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION)
+  typedef IEEE_QuadruplePrecision DoubleRepresentation;
 #else
-  #error Invalid representation of type double specified by arch.h
+  #error Invalid representation of type double
 #endif
 
-#if defined(_DK_SDU_MIP__BASE__LONG_DOUBLE_IEEE_754_DOUBLE)
+#if (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
+  typedef IEEE_754_SinglePrecision LongDoubleRepresentation;
+#elif (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION)
   typedef IEEE_754_DoublePrecision LongDoubleRepresentation;
-#elif defined(_DK_SDU_MIP__BASE__LONG_DOUBLE_IEEE_DOUBLE_EXTENDED_96)
-  typedef IEEE_DoubleExtendedPrecision96 LongDoubleRepresentation;
-#elif defined(_DK_SDU_MIP__BASE__LONG_DOUBLE_IEEE_QUADRUPLE)
+#elif (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+  typedef IEEE_ExtendedDoublePrecision96 LongDoubleRepresentation;
+#elif (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+  typedef IEEE_ExtendedDoublePrecision128 LongDoubleRepresentation;
+#elif (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef IEEE_QuadruplePrecision LongDoubleRepresentation;
 #else
-  #error Invalid representation of type long double specified by arch.h
+  #error Invalid representation of type long double
 #endif
 
 /**
@@ -178,7 +197,7 @@ void analyseFloatingPoint<IEEE_754_SinglePrecision>(const IEEE_754_SinglePrecisi
 template<>
 void analyseFloatingPoint<IEEE_754_DoublePrecision>(const IEEE_754_DoublePrecision& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw();
 template<>
-void analyseFloatingPoint<IEEE_DoubleExtendedPrecision96>(const IEEE_DoubleExtendedPrecision96& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw();
+void analyseFloatingPoint<IEEE_ExtendedDoublePrecision96>(const IEEE_ExtendedDoublePrecision96& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw();
 template<>
 void analyseFloatingPoint<IEEE_QuadruplePrecision>(const IEEE_QuadruplePrecision& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw();
 

@@ -23,7 +23,7 @@ void analyseFloatingPoint<IEEE_754_SinglePrecision>(const IEEE_754_SinglePrecisi
   mantissa[0] = value.mantissa0;
   flags = value.negative ? FP_NEGATIVE : 0;
   if (~fieldExponent == 0) {
-    if (~mantissa[0] == 0) { // check for infinity
+    if (mantissa[0] == 0) { // check for infinity
       flags |= FP_INFINITY;
     } else {
       flags &= ~FP_NEGATIVE;
@@ -64,7 +64,7 @@ void analyseFloatingPoint<IEEE_754_DoublePrecision>(const IEEE_754_DoublePrecisi
   mantissa[1] = value.mantissa1;
   flags = value.negative ? FP_NEGATIVE : 0;
   if (~fieldExponent == 0) {
-    if ((~mantissa[1] == 0) && (~mantissa[0] == 0)) { // check for infinity
+    if ((mantissa[1] == 0) && (mantissa[0] == 0)) { // check for infinity
       flags |= FP_INFINITY;
     } else {
       flags &= ~FP_NEGATIVE;
@@ -97,15 +97,15 @@ void analyseFloatingPoint<IEEE_754_DoublePrecision>(const IEEE_754_DoublePrecisi
 }
 
 template<>
-void analyseFloatingPoint<IEEE_DoubleExtendedPrecision96>(const IEEE_DoubleExtendedPrecision96& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw() {
-  typedef IEEE_DoubleExtendedPrecision96 Representation;
+void analyseFloatingPoint<IEEE_ExtendedDoublePrecision96>(const IEEE_ExtendedDoublePrecision96& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw() {
+  typedef IEEE_ExtendedDoublePrecision96 Representation;
 
   unsigned int fieldExponent = value.exponent;
   mantissa[0] = value.mantissa0;
   mantissa[1] = value.mantissa1;
   flags = value.negative ? FP_NEGATIVE : 0;
   if (~fieldExponent == 0) {
-    if ((~mantissa[1] == 0) && (~mantissa[0] == 0)) { // check for infinity
+    if ((mantissa[1] == 0) && (mantissa[0] == 0)) { // check for infinity
       flags |= FP_INFINITY;
     } else {
       flags &= ~FP_NEGATIVE;
@@ -148,7 +148,7 @@ void analyseFloatingPoint<IEEE_QuadruplePrecision>(const IEEE_QuadruplePrecision
   mantissa[3] = value.mantissa3;
   flags = value.negative ? FP_NEGATIVE : 0;
   if (~fieldExponent == 0) {
-    if ((~mantissa[3] == 0) && (~mantissa[2] == 0) && (~mantissa[1] == 0) && (~mantissa[0] == 0)) { // check for infinity
+    if ((mantissa[3] == 0) && (mantissa[2] == 0) && (mantissa[1] == 0) && (mantissa[0] == 0)) { // check for infinity
       flags |= FP_INFINITY;
     } else {
       flags &= ~FP_NEGATIVE;

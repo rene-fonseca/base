@@ -25,22 +25,60 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This is a singleton object for the context of this application.
+  This is a singleton object for the context of this application. User-defined
+  exit codes should start from EXIT_CODE_USER.
+
+  Example:
+  <pre>
+  class MyApplication : public Application {
+  public:
+  
+    MyApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+      : Application(MESSAGE("MyApplication"), numberOfArguments, arguments, environment) {
+    }
+
+    void main() throw() {
+      ...
+    }
+  };
+  
+  int main(int argc, const char* argv[], const char *env[]) {
+    MyApplication application(argc, argv, env);
+    try {
+      application.main();
+    } catch(Exception& e) {
+      return Application::getApplication()->exceptionHandler(e);
+    } catch(...) {
+      return Application::getApplication()->exceptionHandler();
+    }
+    return Application::getApplication()->getExitCode();
+  }
+  </pre>
 
   @short Application context wrapper.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.2
 */
 
 class Application : public Object {
   friend class ApplicationImpl;
 public:
 
-  /** The normal exit code of the application (indicating no errors). */
-  static const int EXIT_CODE_NORMAL = 0;
-  /** The exit code returned by the application on errors. */
-  static const int EXIT_CODE_ERROR = 1;
-  /** The exit code returned by the application on initialization error. */
-  static const int EXIT_CODE_INITIALIZATION = 2;
+  /** Application exit code. Exit codes should always be in the range [0; 127]. */
+  enum ExitCode {
+    /** This value specifies an invalid exit code which is used when the true exit code isn't available. */
+    EXIT_CODE_INVALID = -1,
+    /** The normal exit code of the application (indicating no errors). */
+    EXIT_CODE_NORMAL = 0,
+    /** The first user defined exit code. */
+    EXIT_CODE_USER = 1,
+    /** The default exit code indicating an unspecified error. */
+    EXIT_CODE_ERROR = 125,
+    /** The exit code returned by the application on initialization error. */
+    EXIT_CODE_INITIALIZATION = 126,
+    /** The exit code used when the application exit code is determined externally. */
+    EXIT_CODE_EXTERNAL = 127
+  };
 private:
 
   /** The application object. */
@@ -80,33 +118,6 @@ public:
 
   /**
     Initializes application.
-
-    Example:
-    <pre>
-    class MyApplication : public Application {
-    public:
-
-      MyApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() :
-        Application(MESSAGE("MyApplication"), numberOfArguments, arguments, environment) {
-      }
-
-      void main() throw() {
-        ...
-      }
-    };
-    
-    int main(int argc, const char* argv[], const char *env[]) {
-      MyApplication application(argc, argv, env);
-      try {
-        application.main();
-      } catch(Exception& e) {
-        return Application::getApplication()->exceptionHandler(e);
-      } catch(...) {
-        return Application::getApplication()->exceptionHandler();
-      }
-      return Application::getApplication()->getExitCode();
-    }
-    </pre>
 
     @param name The formal name.
     @param numberOfArguments The "argc" argument of the entry function main.
@@ -189,6 +200,11 @@ public:
     default (i.e. does not return).
   */
   virtual void onTermination() throw();
+
+  /**
+    Destroys the application object.
+  */
+  ~Application() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -15,6 +15,8 @@
 #include <base/UnexpectedFailure.h>
 #include <base/io/IOException.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/sound/SoundDevice.h>
+#include <base/concurrency/SharedSynchronize.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #define NO_STRICT
@@ -69,15 +71,16 @@ SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int cha
   assert(result == MMSYSERR_NOERROR, NotSupported());
   event.reset();
 #else
-  handle = ::open("/dev/audio", O_WRONLY);
-  assert(handle != OperatingSystem::INVALID_HANDLE, NotSupported());
+  SoundDevice::soundDevice.acquireWriteAccess();
+  SharedSynchronize<SoundDevice> sharedSynchronization(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
 
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     audio_info_t info;
     AUDIO_INITINFO(&info);
     info.play.pause = 1;
-    info.play.rate = samplingRate;
+    info.play.sample_rate = samplingRate;
     info.play.channels = channels;
     info.play.precision = 16;
     info.play.encoding = AUDIO_ENCODING_LINEAR; // PCM
@@ -85,7 +88,7 @@ SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int cha
 
     assert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure());
     assert(
-      (info.play.rate == samplingRate) &&
+      (info.play.sample_rate == samplingRate) &&
       (info.play.channels == channels) &&
       (info.play.precision == 16) &&
       (info.play.encoding == AUDIO_ENCODING_LINEAR),
@@ -101,6 +104,8 @@ unsigned int SoundOutputStream::getChannels() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return 0;
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronization(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     int channels;
     assert(::ioctl(handle, SOUND_PCM_READ_CHANNELS, &channels) == 0), UnexpectedFailure());
@@ -117,6 +122,8 @@ unsigned int SoundOutputStream::getRate() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return 0;
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronization(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     int rate;
     assert(::ioctl(handle, SOUND_PCM_READ_RATE, &rate) == 0), UnexpectedFailure());
@@ -138,6 +145,8 @@ unsigned int SoundOutputStream::getPosition() const throw() {
   assert(time.wType == TIME_SAMPLES, UnexpectedFailure());
   return time.u.sample;
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronization(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     return 0;
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
@@ -152,6 +161,8 @@ void SoundOutputStream::resume() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   event.reset();
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronization(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     assert(::ioctl(handle, I_FLUSH, FLUSHW) == 0, UnexpectedFailure()); // should never fail
@@ -159,11 +170,17 @@ void SoundOutputStream::resume() throw() {
 #endif // flavour
 }
 
+void SoundOutputStream::pause() throw() {
+  // FIXME
+}
+
 void SoundOutputStream::reset() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ::waveOutReset((HWAVEOUT)handle);
   event.reset();
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronization(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     assert(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0), UnexpectedFailure()); // should never fail
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
@@ -193,6 +210,8 @@ void SoundOutputStream::wait() throw() {
   result = ::waveOutUnprepareHeader((HWAVEOUT)handle, &header, sizeof(header));
   assert(result == MMSYSERR_NOERROR, UnexpectedFailure());
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronization(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     assert(::ioctl(handle, SNDCTL_DSP_SYNC, 0) == 0), UnexpectedFailure());
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
@@ -224,6 +243,8 @@ unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) thr
 
   return header.dwBytesRecorded;
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronization(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   unsigned int bytesWritten = 0;
   while (bytesWritten < size) {
     int result;
@@ -244,7 +265,7 @@ SoundOutputStream::~SoundOutputStream() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ::waveOutClose((HWAVEOUT)handle);
 #else
-  ::close(handle);
+  SoundDevice::soundDevice.relinquishWriteAccess();
 #endif // flavour
 }
 

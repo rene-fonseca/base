@@ -5,7 +5,7 @@ DEFAULT_INCLUDES =
 
 noinst_LTLIBRARIES = libsound.la
 
-libsound_la_SOURCES = SoundInputStream.cpp SoundOutputStream.cpp
+libsound_la_SOURCES = SoundDevice.cpp SoundInputStream.cpp SoundOutputStream.cpp
 
 sectiondir = $(includedir)/base/sound
-section_HEADERS = SoundInputStream.h SoundOutputStream.h
+section_HEADERS = SoundDevice.h SoundInputStream.h SoundOutputStream.h

@@ -15,6 +15,8 @@
 #include <base/UnexpectedFailure.h>
 #include <base/io/IOException.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/sound/SoundDevice.h>
+#include <base/concurrency/SharedSynchronize.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #define NO_STRICT
@@ -69,13 +71,14 @@ SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int chann
   assert(result == MMSYSERR_NOERROR, NotSupported("Cannot open device"));
   event.reset();
 #else
-  handle = ::open("/dev/audio", O_RDONLY);
-  assert(handle != OperatingSystem::INVALID_HANDLE, NotSupported());
+  SoundDevice::soundDevice.acquireReadAccess();
+  SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
 
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
-    int format = AFMT_S16_NE;
+    int format = AFMT_S16_LE;
     assert(::ioctl(handle, SNDCTL_DSP_SETFMT, &format) == 0), UnexpectedFailure());
-    assert(format == AFMT_S16_NE, NotSupported());
+    assert(format == AFMT_S16_LE, NotSupported());
 
     unsigned int desiredChannels = channels;
     assert(::ioctl(handle, SNDCTL_DSP_CHANNELS, &desiredChannels) == 0), UnexpectedFailure());
@@ -89,7 +92,7 @@ SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int chann
     audio_info_t info;
     AUDIO_INITINFO(&info);
     info.record.pause = 1;
-    info.record.rate = samplingRate;
+    info.record.sample_rate = samplingRate;
     info.record.channels = channels;
     info.record.precision = 16;
     info.record.encoding = AUDIO_ENCODING_LINEAR; // PCM
@@ -97,7 +100,7 @@ SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int chann
 
     assert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // is this required
     assert(
-      (info.record.rate == samplingRate) &&
+      (info.record.sample_rate == samplingRate) &&
       (info.record.channels == channels) &&
       (info.record.precision == 16) &&
       (info.record.encoding == AUDIO_ENCODING_LINEAR),
@@ -113,12 +116,15 @@ unsigned int SoundInputStream::available() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return 0;
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     return 0;
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     unsigned int available;
     assert(::ioctl(handle, I_NREAD, &available) == 0, UnexpectedFailure()); // should not fail
-    return available & ~(channels * 2 - 1); // align to sample frame (channels * bitsPerSample/8)
+    return available;
+//    return available & ~(channels * 2 - 1); // align to sample frame (channels * bitsPerSample/8)
   #endif // os
 #endif // flavour
 }
@@ -127,6 +133,8 @@ unsigned int SoundInputStream::getChannels() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return 0;
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     int channels;
     assert(::ioctl(handle, SOUND_PCM_READ_CHANNELS, &channels) == 0), UnexpectedFailure());
@@ -143,6 +151,8 @@ unsigned int SoundInputStream::getRate() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return 0;
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     int rate;
     assert(::ioctl(handle, SOUND_PCM_READ_RATE, &rate) == 0), UnexpectedFailure());
@@ -164,6 +174,8 @@ unsigned int SoundInputStream::getPosition() const throw() {
   assert(time.wType == TIME_SAMPLES, UnexpectedFailure());
   return time.u.sample;
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     return 0;
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
@@ -179,6 +191,8 @@ void SoundInputStream::resume() throw() {
   ::waveInStart((HWAVEIN)handle);
   event.reset();
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     reset();
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
@@ -196,6 +210,8 @@ void SoundInputStream::pause() throw() {
   ::waveInStop((HWAVEIN)handle);
   event.reset();
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     audio_info_t info;
@@ -211,6 +227,8 @@ void SoundInputStream::reset() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ::waveInReset((HWAVEIN)handle);
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     assert(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0), UnexpectedFailure());
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
@@ -246,6 +264,8 @@ unsigned int SoundInputStream::read(void* buffer, unsigned int size) throw() {
 
   return header.dwBytesRecorded;
 #else
+  SharedSynchronize<SoundDevice> sharedSynchronize(SoundDevice::soundDevice);
+  OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   unsigned int bytesRead = 0;
   while (bytesRead < size) {
     int result;
@@ -266,7 +286,7 @@ SoundInputStream::~SoundInputStream() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ::waveInClose((HWAVEIN)handle);
 #else
-  ::close(handle);
+  SoundDevice::soundDevice.relinquishReadAccess();
 #endif
 }
 

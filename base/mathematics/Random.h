@@ -14,7 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_MATHEMATICS__RANDOM_H
 #define _DK_SDU_MIP__BASE_MATHEMATICS__RANDOM_H
 
-#include <base/features.h>
+#include <base/concurrency/SpinLock.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -38,6 +38,7 @@ namespace RandomImpl {
 */
 
 class Random {
+  friend class Initialization;
 public:
 
   /** The supported generators. */
@@ -50,6 +51,8 @@ private:
   static unsigned int state[];
   /** The internal state of the random number generator. */
   static unsigned int nextWord;
+  /** Synchronization object. */
+  static SpinLock spinLock;
 public:
 
   /**

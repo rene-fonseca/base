@@ -48,7 +48,6 @@ mv base/test testsuite
 CFLAGS="${RPM_OPT_FLAGS}" CXXFLAGS="${RPM_OPT_FLAGS}" ./configure \
   --target=%{_target} \
   --prefix=%{prefix} \
-  --enable-demangle=v3mv \
   --enable-regexp=pcre \
   --enable-xml=xmlsoft
 

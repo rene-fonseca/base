@@ -14,7 +14,7 @@ files=ellert/docs/en/index.html,ellert/docs/en/index-1.html,ellert/docs/en/index
 sub_dirs=
 type=normal
 [Config for BinMakefileAm]
-ldflags= 
+ldflags=
 cxxflags=-O0 -g3 -Wall
 bin_program=ellert
 [ellert/docs/en/index-5.html]
@@ -76,9 +76,11 @@ version_control=CVS
 author=René Møller Fonseca
 project_type=normal_cpp
 sub_dir=ellert/
+lfv_open_groups=
+workspace=1
 version=0.1
 project_name=Ellert
-AMChanged=true
+AMChanged=false
 sgml_file=/home/fonseca/src/ellert/ellert/docs/en/index.sgml
 email=fonseca@mip.sdu.dk
 kdevprj_version=1.2

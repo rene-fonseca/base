@@ -2,13 +2,13 @@ Begin3
 Title:          Ellert 
 Version:        0.1
 Entered-date:   
-Description:    
-Keywords:        
+Description:    Autonomous Guided Vehicle
+Keywords:       AGV
 Author:         René Møller Fonseca <fonseca@mip.sdu.dk> 
 Maintained-by:  René Møller Fonseca <fonseca@mip.sdu.dk> 
 Primary-site:   	        
-Home-page:      http:// 
+Home-page:      http://www.mip.sdu.dk/ellert
 Original-site:  
-Platforms:       Linux and other Unices
+Platforms:      Linux and other Unices
 Copying-policy: GNU Public License
 End

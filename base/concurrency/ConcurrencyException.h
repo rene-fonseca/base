@@ -24,8 +24,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   constraints). The normal behavior is to block a thread context until a shared
   resource becomes available but occasionally it is more appropriate to simply
   prohibit concurrent invocations. ConcurrencyException is considered an
-  internal error just like parsing invalid arguments to the method. Thus do NOT
-  catch ConcurrencyException.
+  internal error just like parsing invalid arguments to a method and thus the
+  exception should never be handled in a try-catch statement.
   
   @short Concurrency exception.
   @ingroup exception

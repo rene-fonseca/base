@@ -19,9 +19,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Exception thrown on unexpected errors (this is an internal error).
+  Exception raised on unexpected errors (this is an internal error).
 
-  @short Exception thrown on unexpected conditions
+  @short Exception raised on unexpected conditions
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

@@ -19,8 +19,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Thrown on object deconstruction error. Used to detect resource leaks.
+  Raised on object deconstruction errors. This exception is used to detect
+  resource leaks.
 
+  @short Destruction exception.
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

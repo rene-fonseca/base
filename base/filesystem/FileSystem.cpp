@@ -271,8 +271,8 @@ String FileSystem::findFile(const Array<String>& searchPaths, const String& rela
     if (isAbsolutePath(relative)) {
       return relative;
     } else {
-      Array<String>::ReadIterator i = searchPaths.getBeginIterator();
-      const Array<String>::ReadIterator end = searchPaths.getEndIterator();
+      Array<String>::ReadIterator i = searchPaths.getBeginReadIterator();
+      const Array<String>::ReadIterator end = searchPaths.getEndReadIterator();
       i += index;
       while (i < end) {
         String absolutePath = FileSystem::toAbsolutePath(*i, relative);

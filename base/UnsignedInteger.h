@@ -56,10 +56,10 @@ public:
   /**
     Returns the value of the integer string representation.
 
-    @param str The string representation.
+    @param string The string representation.
     @param accept Specifies the integer bases to accept. Default is ANY.
   */
-  static unsigned int parse(const String& str, unsigned int accept = ANY) throw(InvalidFormat);
+  static unsigned int parse(const String& string, unsigned int accept = ANY) throw(InvalidFormat);
 
   /**
     Initializes the integer as zero.

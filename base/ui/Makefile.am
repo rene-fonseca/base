@@ -24,7 +24,10 @@ libui_la_SOURCES = Bitmap.cpp \
                    Label.cpp \
                    Menu.cpp \
                    MessageDialog.cpp \
+                   Picture.cpp \
+                   Pixmap.cpp \
                    Position.cpp \
+                   ProgressBar.cpp \
                    SaveFileDialog.cpp \
                    SelectFolderDialog.cpp \
                    Split.cpp \
@@ -43,7 +46,10 @@ section_HEADERS = Bitmap.h \
                   Label.h \
                   Menu.h \
                   MessageDialog.h \
+                  Picture.h \
+                  Pixmap.h \
                   Position.h \
+                  ProgressBar.h \
                   SaveFileDialog.h \
                   SelectFolderDialog.h \
                   Split.h \

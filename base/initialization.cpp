@@ -83,7 +83,7 @@ public:
 
   ~DebugDynamicMemoryImpl() throw() {
     if (DebugDynamicMemory::currentAllocations > 0) {
-      char message[sizeof("0x1234567812345678 allocations have not been releaced for DebugDynamicMemory")];
+      char message[sizeof("0x1234567812345678 allocations have not been released for DebugDynamicMemory")];
       char* dest = message;
       *dest++ = '0';
       *dest++ = 'x';
@@ -95,8 +95,8 @@ public:
       }
       dest += sizeof(unsigned long) * 2;
       
-      copy<char>(dest, " allocations have not been releaced for DebugDynamicMemory", sizeof(" allocations have not been releaced for DebugDynamicMemory") - 1);
-      dest += sizeof(" allocations have not been releaced for DebugDynamicMemory") - 1;
+      copy<char>(dest, " allocations have not been released for DebugDynamicMemory", sizeof(" allocations have not been released for DebugDynamicMemory") - 1);
+      dest += sizeof(" allocations have not been released for DebugDynamicMemory") - 1;
       *dest = 0; // terminate string
       Trace::message(message);
     }

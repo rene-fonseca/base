@@ -49,7 +49,7 @@ public:
         }
         stream << FLUSH;
       } catch(...) {
-        stream << MESSAGE("Internal error: uncaugth and unsupported exception '") << TypeInfo::getTypename(exceptionType) << MESSAGE("' was raised.") << FLUSH;
+        stream << MESSAGE("Internal error: uncaught and unsupported exception '") << TypeInfo::getTypename(exceptionType) << MESSAGE("' was raised.") << FLUSH;
       }
     } else {
       stream << MESSAGE("Internal error: explicit termination.") << FLUSH;

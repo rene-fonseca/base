@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -283,7 +283,7 @@ public:
 //       if (nodes[symbol].length == 0) {
 //         continue;
 //       }
-//       fout << MESSAGE("symbol=") << symbol << MESSAGE(" length=") << nodes[symbol].length << MESSAGE(" code=") << BIN << NOPREFIX << ZEROPAD << setWidth(nodes[symbol].length) << nodes[symbol].code << EOL;
+//       fout << "symbol=" << symbol << " length=" << nodes[symbol].length << " code=" << BIN << NOPREFIX << ZEROPAD << setWidth(nodes[symbol].length) << nodes[symbol].code << EOL;
 //     }
 //     fout << ENDL;
   }

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
     
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -42,7 +42,7 @@ private:
     unsigned int begin; // The index of the first char
     unsigned int end; // The index of the end char
   };
-
+  
   /* The current position within the mangled string. */
   const char* p;
   /* The end of the mangled string. */
@@ -57,7 +57,8 @@ private:
   String demangled;
 public:
 
-  inline V3MultiVendorABIDemangler(const char* mangled) throw(InvalidFormat) : p(mangled) {
+  inline V3MultiVendorABIDemangler(const char* mangled) throw(InvalidFormat)
+    : p(mangled) {
     end = find<char>(mangled, 1024, 0); // find terminator
     assert(end, InvalidFormat(this));
     encoding();
@@ -117,13 +118,15 @@ public:
           demangled.removeFrom(beginReturnType);
           demangled.prepend(returnTypeString);
 
-          Array<CandidateRange>::Enumerator enu = candidates.getEnumerator(); // remap candidates
+          Array<CandidateRange>::Enumerator enu =
+            candidates.getEnumerator(); // remap candidates
           while (enu.hasNext()) {
             CandidateRange* range(enu.next());
             range->begin += returnTypeString.getLength();
             range->end += returnTypeString.getLength();
           }
-          Array<CandidateRange>::Enumerator enuTemplateCandidate = templateCandidates.getEnumerator(); // remap candidates
+          Array<CandidateRange>::Enumerator enuTemplateCandidate =
+            templateCandidates.getEnumerator(); // remap candidates
           while (enuTemplateCandidate.hasNext()) {
             CandidateRange* range(enuTemplateCandidate.next());
             range->begin += returnTypeString.getLength();
@@ -144,6 +147,7 @@ public:
         dump(MESSAGE(")"));
       }
     } else if (specialName()) {
+    } else if (type()) { // TAG: not validated
     } else {
       throw InvalidFormat(this);
     }
@@ -470,18 +474,21 @@ public:
             if (range->begin >= beginType) { // is range within type
               range->begin -= lengthOfName;
               range->end -= lengthOfName;
-            } else if ((range->begin >= beginName) && (range->end < beginType)) { // is range within name
+            } else if ((range->begin >= beginName) &&
+                       (range->end < beginType)) { // is range within name
               range->begin += lengthOfType;
               range->end += lengthOfType;
             }
           }
-          Array<CandidateRange>::Enumerator enuTemplateCandidate = templateCandidates.getEnumerator(); // remap candidates
+          Array<CandidateRange>::Enumerator enuTemplateCandidate =
+            templateCandidates.getEnumerator(); // remap candidates
           while (enuTemplateCandidate.hasNext()) {
             CandidateRange* range(enuTemplateCandidate.next());
             if (range->begin >= beginType) { // is range within type
               range->begin -= lengthOfName;
               range->end -= lengthOfName;
-            } else if ((range->begin >= beginName) && (range->end < beginType)) { // is range within name
+            } else if ((range->begin >= beginName) &&
+                       (range->end < beginType)) { // is range within name
               range->begin += lengthOfType;
               range->end += lengthOfType;
             }
@@ -513,7 +520,8 @@ public:
             if (range->begin >= beginType) { // is range within type
               range->begin -= lengthOfName;
               range->end -= lengthOfName;
-            } else if ((range->begin >= beginName) && (range->end < beginType)) { // is range within name
+            } else if ((range->begin >= beginName) &&
+                       (range->end < beginType)) { // is range within name
               range->begin += lengthOfType;
               range->end += lengthOfType;
             }
@@ -610,7 +618,7 @@ public:
       return true; // no substitution for builtin type
     case 'z':
       ++p;
-      dump(MESSAGE("ellipsis")); // ???
+      dump(MESSAGE("ellipsis")); // TAG: ???
       return true; // no substitution for builtin type
     case 'u': // vendor specific
       ++p;
@@ -805,9 +813,15 @@ public:
     return true;
   }
 
-  inline void appendTemplateCandidate(unsigned int candidate) throw(InvalidFormat) {
+  inline void appendTemplateCandidate(
+    unsigned int candidate) throw(InvalidFormat) {
     assert(candidate < templateCandidates.getSize(), InvalidFormat(this));
-    demangled.append(demangled.substring(static_cast<CandidateRange>(templateCandidates[candidate]).begin, static_cast<CandidateRange>(templateCandidates[candidate]).end));
+    demangled.append(
+      demangled.substring(
+        static_cast<CandidateRange>(templateCandidates[candidate]).begin,
+        static_cast<CandidateRange>(templateCandidates[candidate]).end
+      )
+    );
   }
 
   inline bool templateParameter() throw(InvalidFormat) {
@@ -844,7 +858,12 @@ public:
 
   inline void appendCandidate(unsigned int candidate) throw(InvalidFormat) {
     assert(candidate < candidates.getSize(), InvalidFormat(this));
-    demangled.append(demangled.substring(static_cast<CandidateRange>(candidates[candidate]).begin, static_cast<CandidateRange>(candidates[candidate]).end));
+    demangled.append(
+      demangled.substring(
+        static_cast<CandidateRange>(candidates[candidate]).begin,
+        static_cast<CandidateRange>(candidates[candidate]).end
+      )
+    );
   }
 
   inline bool substitution() throw(InvalidFormat) {
@@ -855,9 +874,12 @@ public:
         ++p; // skip underscore
         appendCandidate(0);
         break;
-      case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
-      case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': case 'G': case 'H': case 'I': case 'J':
-      case 'K': case 'L': case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R': case 'S': case 'T':
+      case '0': case '1': case '2': case '3': case '4':
+      case '5': case '6': case '7': case '8': case '9':
+      case 'A': case 'B': case 'C': case 'D': case 'E':
+      case 'F': case 'G': case 'H': case 'I': case 'J':
+      case 'K': case 'L': case 'M': case 'N': case 'O':
+      case 'P': case 'Q': case 'R': case 'S': case 'T':
       case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z':
         // base 36 encoding
         {
@@ -963,7 +985,8 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   // cplus_demangle only demangles function names - need alternative demangler
   String temp = prefix; // make function name
   temp.append(mangled);
-  char* demangled = cplus_demangle(temp.getElements(), 1<<1); // include const and volatile
+  // include const and volatile
+  char* demangled = cplus_demangle(temp.getElements(), 1 << 1);
   if (!demangled) { // failed?
     return String(mangled); // return mangled type name
   }
@@ -978,7 +1001,8 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
 
 String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   Allocator<char>* buffer = Thread::getLocalStorage();
-  int result = cplus_demangle(mangled, buffer->getElements(), buffer->getSize());
+  int result =
+    cplus_demangle(mangled, buffer->getElements(), buffer->getSize());
   ASSERT(!result);
   return String(buffer->getElements());
 }

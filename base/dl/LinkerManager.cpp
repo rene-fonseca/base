@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,13 +23,14 @@ LinkerManager* LinkerManager::linkerManager = 0; // TAG: need support for any nu
 
 LinkerManager* LinkerManager::getManager() throw() {
   if (!linkerManager) {
-    ferr << MESSAGE("Internal error: LinkerManager has not been instantiated") << ENDL;
+    ferr << "Internal error: LinkerManager has not been instantiated" << ENDL;
     exit(Application::EXIT_CODE_ERROR);
   }
   return linkerManager;
 }
 
-LinkerManager::LinkerManager() throw(SingletonException) : registratedModule(0) {
+LinkerManager::LinkerManager() throw(SingletonException)
+  : registratedModule(0) {
   assert(linkerManager == 0, SingletonException(this));
   linkerManager = this;
 }
@@ -42,7 +43,8 @@ LinkerModule* LinkerManager::deregistrate() throw() {
   return registratedModule;
 }
 
-LinkerModule* LinkerManager::load(const String& modulePath) throw(LinkerException) {
+LinkerModule* LinkerManager::load(
+  const String& modulePath) throw(LinkerException) {
   // acquire lock
   ASSERT(!registratedModule);
   DynamicLinker* dl = new DynamicLinker(modulePath, DynamicLinker::LAZY);
@@ -53,7 +55,8 @@ LinkerModule* LinkerManager::load(const String& modulePath) throw(LinkerExceptio
   return module;
 }
 
-void LinkerManager::unload(LinkerModule* module) throw(InvalidKey, LinkerException) {
+void LinkerManager::unload(
+  LinkerModule* module) throw(InvalidKey, LinkerException) {
   // acquire lock
   ASSERT(!registratedModule);
   DynamicLinker* dl = modules[module];

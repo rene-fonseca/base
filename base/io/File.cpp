@@ -172,7 +172,7 @@ File::File(const String& path, Access access, unsigned int options) throw(Access
       break;
     }
     
-    wchar_t* substPath;
+    wchar* substPath;
     unsigned int substLength;
     switch (reparseHeader->ReparseTag) {
     case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:

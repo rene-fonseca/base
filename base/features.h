@@ -14,8 +14,13 @@
 #ifndef _DK_SDU_MIP__BASE__FEATURES_H
 #define _DK_SDU_MIP__BASE__FEATURES_H
 
-#include <base/platforms/symbols.h> // must be first
+// order: const -> detect -> arch -> compiler -> os -> framework -> application
+
+#include <base/platforms/symbols.h>
 #include <base/configuration.h>
+#include <base/platforms/arch/architecture.h>
+#include <base/platforms/compiler/compiler.h>
+#include <base/platforms/os/os.h>
 #include <base/platforms/platform.h>
 
 #define _DK_SDU_MIP__BASE__MAJOR_VERSION 0
@@ -31,26 +36,6 @@
 
 // TAG: temporary fix until all symbols have been replaced
 #define _DK_SDU_MIP__BASE__FLAVOUR _DK_SDU_MIP__BASE__FLAVOR
-
-#if !defined(_DK_SDU_MIP__BASE__CPP_RESTRICT) && !defined(restrict)
-  #if (__GNUC__ == 2) || (__GNUC__ == 3)
-    #define restrict __restrict
-  #else
-    #define restrict
-  #endif
-#endif
-
-#if !defined(_DK_SDU_MIP__BASE__CPP_INLINE) && !defined(inline)
-  #define inline
-#endif
-
-#if (_DK_SDU_MIP__BASE__POINTER_SIZE == 4)
-  #define _DK_SDU_MIP__BASE__ABI32
-#elif (_DK_SDU_MIP__BASE__POINTER_SIZE == 8)
-  #define _DK_SDU_MIP__BASE__ABI64
-#else
-  #error Unsupported pointer size
-#endif
 
 #if defined(_DK_SDU_MIP__BASE__NAMESPACE)
   #define _DK_SDU_MIP__BASE__ENTER_NAMESPACE namespace base {

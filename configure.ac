@@ -234,6 +234,7 @@ sparc-sun-solaris*)
 i[[3456]]86-*-mingw32)
   ac_base_flavor=win32
   ac_base_platform="i386-pc-winnt4.h"
+  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-lpsapi -lnetapi32'
 ;;
 *)
   AC_MSG_ERROR(This target platform is not directly supported by the framework. Please refer to the section describing how to manually configure the framework.)
@@ -658,46 +659,86 @@ AC_MSG_RESULT([$ac_base_cxx_name $ac_base_cxx_major.$ac_base_cxx_minor ($ac_base
 
 dnl Explicit features.
 
+AC_MSG_CHECKING(ABI)
+base_abi=
+case "${ac_base_cxx_vendor}/${ac_base_cxx_name}" in
+"gnu.org/GNU Compiler Collection")
+  if test "x$ac_base_cxx_major" = "x3"; then
+    AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_V3MV)
+    base_abi=v3mv
+  elif test "x$ac_base_cxx_major" = "x2"; then
+    AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_GCCV2)
+    base_abi=gccv2
+  fi
+;;
+"sun.com/SUN WorkShop")
+  AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_SUNWSPRO)
+  base_abi=sunwspro
+;;
+"sgi.com/MIPSpro Compilers")
+  AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_MIPSPRO)
+  base_abi=mipspro
+;;
+"intel.com/Intel Compiler")
+  AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_INTEL)
+  base_abi=intel
+;;
+"borland.com/Borland Compiler")
+  AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_BORLAND)
+  base_abi=borland
+;;
+"microsoft.com/Microsoft Optimizing Compiler")
+  AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_MSC)
+  base_abi=intel
+;;
+*)
+  AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__UNSPECIFIED)
+;;
+esac
+AC_MSG_RESULT([$base_abi])
+
+
+
+AC_MSG_CHECKING(selected demangling scheme)
 if test "${base_explicit_demangle}" = auto; then
-  base_demangle=no
-  case "${ac_base_cxx_vendor}/${ac_base_cxx_name}" in
-  "gnu.org/GNU Compiler Collection")
-    if test "x$ac_base_cxx_major" = "x3"; then
-      base_demangle=v3mv
-    elif test "x$ac_base_cxx_major" = "x2"; then
-      base_demangle=gccv2
-    fi
-  ;;
-  "sun.com/SUN WorkShop")
-    base_demangle=sunwspro
-  ;;
-  "sgi.com/MIPSpro Compilers")
-    base_demangle=mipspro
-  ;;
-  "intel.com/Intel Compiler")
-  ;;
-  esac
+  base_demangle=${base_abi}
 else
   base_demangle=${base_explicit_demangle}
 fi
 
-if test "${base_demangle}" = v3mv; then
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE_V3MV)
-elif test "${base_demangle}" = gccv3; then
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE_GCCV3)
+case "${base_demangle}" in
+"v3mv")
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_V3MV)
+;;
+"gccv3")
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_GCCV3)
   AC_BASE_ADDLIB(-liberty)
-elif test "${base_demangle}" = gccv2; then
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE_GCCV2)
+;;
+"gccv2")
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_GCCV2)
   AC_BASE_ADDLIB(-liberty)
-elif test "${base_demangle}" = sunwspro; then
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE_SUNWSPRO)
-  AC_BASE_ADDLIB(-ldemangle)
-elif test "${base_demangle}" = mipspro; then
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE_MIPSPRO)
+;;
+"mipspro")
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_MIPSPRO)
   AC_BASE_ADDLIB(-lmangle)
-fi
-
-AC_MSG_CHECKING(selected demangling API)
+;;
+"sunwspro")
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_SUNWSPRO)
+  AC_BASE_ADDLIB(-ldemangle)
+;;
+"intel")
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_INTEL)
+;;
+"borland")
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_BORLAND)
+;;
+"msc")
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_MSC)
+;;
+*)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__UNSPECIFIED)
+;;
+esac
 AC_MSG_RESULT([$base_demangle])
 
 
@@ -992,7 +1033,7 @@ unix)
     AC_BASE_ADDLIB(${base_cv_inet_ipv6_libs}))
 ;;
 win32)
-  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-lws2_32 -lpsapi -lnetapi32'
+  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-lws2_32'
 ;;
 esac
 
@@ -1156,11 +1197,14 @@ AC_BASE_CHECK_CFUNCTION(memcmp)
 AC_BASE_CHECK_CFUNCTION(memcpy)
 AC_BASE_CHECK_CFUNCTION(memmove)
 AC_BASE_CHECK_CFUNCTION(memset)
+
+if test ${ac_base_flavor} = unix; then
 AC_BASE_CHECK_CFUNCTION_PRIVATE(pselect)
 AC_BASE_CHECK_CFUNCTION_PRIVATE(readdir_r)
 AC_BASE_CHECK_CFUNCTION_PRIVATE(nanosleep)
 AC_BASE_CHECK_CFUNCTION_PRIVATE(mbrtowc)
 AC_BASE_CHECK_CFUNCTION_PRIVATE(mbsrtowcs)
+fi
 
 
 

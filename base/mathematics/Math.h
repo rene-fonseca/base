@@ -42,8 +42,7 @@ namespace isoc {
   extern "C" float truncf(float);
   extern "C" double trunc(double);
   extern "C" long double truncl(long double);
-
-
+  
   extern "C" float sqrtf(float);
   extern "C" double sqrt(double);
   extern "C" long double sqrtl(long double);
@@ -144,105 +143,117 @@ public:
   /**
     Returns the absolute value.
   */
-  static float inline abs(float value) throw() {
-    return isoc::fabsf(value);
+  static inline float abs(float value) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_FABSF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_FABSF(value);
+    #else
+      return isoc::fabsf(value);
+    #endif
   }
 
   /**
     Returns the absolute value.
   */
-  static double inline abs(double value) throw() {
-    return isoc::fabs(value);
+  static inline double abs(double value) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_FABS)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_FABS(value);
+    #else
+      return isoc::fabs(value);
+    #endif
   }
 
   /**
     Returns the absolute value.
   */
-  static long double inline abs(long double value) throw() {
-    return isoc::fabsl(value);
+  static inline long double abs(long double value) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_FABSL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_FABSL(value);
+    #else
+      return isoc::fabsl(value);
+    #endif
   }
 
   /**
     Rounds (towards +infinity) the value to the nearest integer.
   */
-  static float inline ceil(float value) throw() {
+  static inline float ceil(float value) throw() {
     return isoc::ceilf(value);
   }
 
   /**
     Rounds (towards +infinity) the value to the nearest integer.
   */
-  static double inline ceil(double value) throw() {
+  static inline double ceil(double value) throw() {
     return isoc::ceil(value);
   }
 
   /**
     Rounds (towards +infinity) the value to the nearest integer.
   */
-  static long double inline ceil(long double value) throw() {
+  static inline long double ceil(long double value) throw() {
     return isoc::ceill(value);
   }
 
   /**
     Rounds (towards -infinity) the value to the nearest integer.
   */
-  static float inline floor(float value) throw() {
+  static inline float floor(float value) throw() {
     return isoc::floorf(value);
   }
 
   /**
     Rounds (towards -infinity) the value to the nearest integer.
   */
-  static double inline floor(double value) throw() {
+  static inline double floor(double value) throw() {
     return isoc::floor(value);
   }
 
   /**
     Rounds (towards -infinity) the value to the nearest integer.
   */
-  static long double inline floor(long double value) throw() {
+  static inline long double floor(long double value) throw() {
     return isoc::floorl(value);
   }
 
   /**
     Rounds the value to the nearest integer.
   */
-  static float inline round(float value) throw() {
+  static inline float round(float value) throw() {
     return isoc::roundf(value);
   }
 
   /**
     Rounds the value to the nearest integer.
   */
-  static double inline round(double value) throw() {
+  static inline double round(double value) throw() {
     return isoc::round(value);
   }
 
   /**
     Rounds the value to the nearest integer.
   */
-  static long double inline round(long double value) throw() {
+  static inline long double round(long double value) throw() {
     return isoc::roundl(value);
   }
 
   /**
     Rounds (towards zero) the value to the nearest integer.
   */
-  static float inline trunc(float value) throw() {
+  static inline float trunc(float value) throw() {
     return isoc::truncf(value);
   }
 
   /**
     Rounds (towards zero) the value to the nearest integer.
   */
-  static double inline trunc(double value) throw() {
+  static inline double trunc(double value) throw() {
     return isoc::trunc(value);
   }
 
   /**
     Rounds (towards zero) the value to the nearest integer.
   */
-  static long double inline trunc(long double value) throw() {
+  static inline long double trunc(long double value) throw() {
     return isoc::truncl(value);
   }
 
@@ -251,172 +262,180 @@ public:
   /**
     Returns the square root of the value.
   */
-  static float inline sqrt(float value) throw() {
-    return isoc::sqrtf(value);
+  static inline float sqrt(float value) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_SQRTF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_SQRTF(value);
+    #else
+      return isoc::sqrtf(value);
+    #endif
   }
 
   /**
     Returns the square root of the value.
   */
-  static double inline sqrt(double value) throw() {
-    return isoc::sqrt(value);
+  static inline double sqrt(double value) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_SQRT)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_SQRT(value);
+    #else
+      return isoc::sqrt(value);
+    #endif
   }
 
   /**
     Returns the square root of the value.
   */
-  static long double inline sqrt(long double value) throw() {
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
-    return isoc::sqrt(value);
-#else
-    return isoc::sqrtl(value);
-#endif
+  static inline long double sqrt(long double value) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_SQRTL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_SQRTL(value);
+    #else
+      return isoc::sqrtl(value);
+    #endif
   }
 
   /**
     Returns the cube root of the value.
   */
-  static float inline cbrt(float value) throw() {
+  static inline float cbrt(float value) throw() {
     return isoc::cbrtf(value);
   }
 
   /**
     Returns the cube root of the value.
   */
-  static double inline cbrt(double value) throw() {
+  static inline double cbrt(double value) throw() {
     return isoc::cbrt(value);
   }
 
   /**
     Returns the cube root of the value.
   */
-  static long double inline cbrt(long double value) throw() {
+  static inline long double cbrt(long double value) throw() {
     return isoc::cbrtl(value);
   }
 
   /**
     Returns the Euclidian distance - sqrt(x^2 + y^2).
   */
-  static float inline hypot(float x, float y) throw() {
+  static inline float hypot(float x, float y) throw() {
     return isoc::hypotf(x, y);
   }
 
   /**
     Returns the Euclidian distance - sqrt(x^2 + y^2).
   */
-  static double inline hypot(double x, double y) throw() {
+  static inline double hypot(double x, double y) throw() {
     return isoc::hypot(x, y);
   }
 
   /**
     Returns the Euclidian distance - sqrt(x^2 + y^2).
   */
-  static long double inline hypot(long double x, long double y) throw() {
+  static inline long double hypot(long double x, long double y) throw() {
     return isoc::hypotl(x, y);
   }
 
   /**
     Returns the exponential of the value.
   */
-  static float inline exp(float value) throw() {
+  static inline float exp(float value) throw() {
     return isoc::expf(value);
   }
 
   /**
     Returns the exponential of the value.
   */
-  static double inline exp(double value) throw() {
+  static inline double exp(double value) throw() {
     return isoc::exp(value);
   }
 
   /**
     Returns the exponential of the value.
   */
-  static long double inline exp(long double value) throw() {
+  static inline long double exp(long double value) throw() {
     return isoc::expl(value);
   }
 
   /**
     Returns the natural logarithm of the value.
   */
-  static float inline log(float value) throw() {
+  static inline float log(float value) throw() {
     return isoc::logf(value);
   }
 
   /**
     Returns the natural logarithm of the value.
   */
-  static double inline log(double value) throw() {
+  static inline double log(double value) throw() {
     return isoc::log(value);
   }
 
   /**
     Returns the natural logarithm of the value.
   */
-  static long double inline log(long double value) throw() {
+  static inline long double log(long double value) throw() {
     return isoc::logl(value);
   }
 
   /**
     Returns the logarithm with base 2 of the value.
   */
-  static float inline log2(float value) throw() {
+  static inline float log2(float value) throw() {
     return isoc::log2f(value);
   }
 
   /**
     Returns the logarithm with base 2 of the value.
   */
-  static double inline log2(double value) throw() {
+  static inline double log2(double value) throw() {
     return isoc::log2(value);
   }
 
   /**
     Returns the logarithm with base 2 of the value.
   */
-  static long double inline log2(long double value) throw() {
+  static inline long double log2(long double value) throw() {
     return isoc::log2l(value);
   }
 
   /**
     Returns the logarithm with base 10 of the value.
   */
-  static float inline log10(float value) throw() {
+  static inline float log10(float value) throw() {
     return isoc::log10f(value);
   }
 
   /**
     Returns the logarithm with base 10 of the value.
   */
-  static double inline log10(double value) throw() {
+  static inline double log10(double value) throw() {
     return isoc::log10(value);
   }
 
   /**
     Returns the logarithm with base 10 of the value.
   */
-  static long double inline log10(long double value) throw() {
+  static inline long double log10(long double value) throw() {
     return isoc::log10l(value);
   }
 
   /**
     Returns the power a^b.
   */
-  static float inline pow(float a, float b) throw() {
+  static inline float pow(float a, float b) throw() {
     return isoc::powf(a, b);
   }
 
   /**
     Returns the power a^b.
   */
-  static double inline pow(double a, double b) throw() {
+  static inline double pow(double a, double b) throw() {
     return isoc::pow(a, b);
   }
 
   /**
     Returns the power a^b.
   */
-  static long double inline pow(long double a, long double b) throw() {
+  static inline long double pow(long double a, long double b) throw() {
     return isoc::powl(a, b);
   }
 
@@ -425,152 +444,180 @@ public:
   /**
     Returns the sine.
   */
-  static float inline sin(float value) throw() {
-    return isoc::sinf(value);
+  static inline float sin(float value) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_SINF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_SINF(value);
+    #else
+      return isoc::sinf(value);
+    #endif
   }
 
   /**
     Returns the sine.
   */
-  static double inline sin(double value) throw() {
-    return isoc::sin(value);
+  static inline double sin(double value) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_SIN)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_SIN(value);
+    #else
+      return isoc::sin(value);
+    #endif
   }
 
   /**
     Returns the sine.
   */
-  static long double inline sin(long double value) throw() {
-    return isoc::sinl(value);
+  static inline long double sin(long double value) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_SINL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_SINL(value);
+    #else
+      return isoc::sinl(value);
+    #endif
   }
 
   /**
     Returns the inverse sine.
   */
-  static float inline asin(float value) throw() {
+  static inline float asin(float value) throw() {
     return isoc::asinf(value);
   }
 
   /**
     Returns the inverse sine.
   */
-  static double inline asin(double value) throw() {
+  static inline double asin(double value) throw() {
     return isoc::asin(value);
   }
 
   /**
     Returns the inverse sine.
   */
-  static long double inline asin(long double value) throw() {
+  static inline long double asin(long double value) throw() {
     return isoc::asinl(value);
   }
 
   /**
     Returns the cosine.
   */
-  static float inline cos(float value) throw() {
-    return isoc::cosf(value);
+  static inline float cos(float value) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_COSF)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_COSF(value);
+    #else
+      return isoc::cosf(value);
+    #endif
   }
 
   /**
     Returns the cosine.
   */
-  static double inline cos(double value) throw() {
-    return isoc::cos(value);
+  static inline double cos(double value) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_COS)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_COS(value);
+    #else
+      return isoc::cos(value);
+    #endif
   }
 
   /**
     Returns the cosine.
   */
-  static long double inline cos(long double value) throw() {
-    return isoc::cosl(value);
+  static inline long double cos(long double value) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_COSL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_COSL(value);
+    #else
+      return isoc::cosl(value);
+    #endif
   }
 
   /**
     Returns the inverse cosine.
   */
-  static float inline acos(float value) throw() {
+  static inline float acos(float value) throw() {
     return isoc::acosf(value);
   }
 
   /**
     Returns the inverse cosine.
   */
-  static double inline acos(double value) throw() {
+  static inline double acos(double value) throw() {
     return isoc::acos(value);
   }
 
   /**
     Returns the inverse cosine.
   */
-  static long double inline acos(long double value) throw() {
+  static inline long double acos(long double value) throw() {
     return isoc::acosl(value);
   }
 
   /**
     Returns the tangent.
   */
-  static float inline tan(float value) throw() {
+  static inline float tan(float value) throw() {
     return isoc::tanf(value);
   }
 
   /**
     Returns the tangent.
   */
-  static double inline tan(double value) throw() {
+  static inline double tan(double value) throw() {
     return isoc::tan(value);
   }
 
   /**
     Returns the tangent.
   */
-  static long double inline tan(long double value) throw() {
-    return isoc::tanl(value);
+  static inline long double tan(long double value) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_TANL)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_TANL(value);
+    #else
+      return isoc::tanl(value);
+    #endif
   }
 
   /**
     Returns the inverse tangent.
   */
-  static float inline atan(float value) throw() {
+  static inline float atan(float value) throw() {
     return isoc::atanf(value);
   }
 
   /**
     Returns the inverse tangent.
   */
-  static double inline atan(double value) throw() {
+  static inline double atan(double value) throw() {
     return isoc::atan(value);
   }
 
   /**
     Returns the inverse tangent.
   */
-  static long double inline atan(long double value) throw() {
+  static inline long double atan(long double value) throw() {
     return isoc::atanl(value);
   }
 
   /**
     Returns the arc tangent of y/x using the signs of both arguments to determine the proper quadrant.
   */
-  static float inline atan2(float y, float x) throw() {
+  static inline float atan2(float y, float x) throw() {
     return isoc::atan2f(y, x);
   }
 
   /**
     Returns the arc tangent of y/x using the signs of both arguments to determine the proper quadrant.
   */
-  static double inline atan2(double y, double x) throw() {
+  static inline double atan2(double y, double x) throw() {
     return isoc::atan2(y, x);
   }
 
   /**
     Returns the arc tangent of y/x using the signs of both arguments to determine the proper quadrant.
   */
-  static long double inline atan2(long double y, long double x) throw() {
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
-    return isoc::atan2(y, x);
-#else
-    return isoc::atan2l(y, x);
-#endif
+  static inline long double atan2(long double y, long double x) throw() {
+    #if defined(_DK_SDU_MIP__BASE__COMPILER_ISOC_ATAN2L)
+      return _DK_SDU_MIP__BASE__COMPILER_ISOC_ATAN2L(y, x);
+    #else
+      return isoc::atan2l(y, x);
+    #endif
   }
 
 
@@ -578,126 +625,126 @@ public:
   /**
     Returns the hyperbolic sine.
   */
-  static float inline sinh(float value) throw() {
+  static inline float sinh(float value) throw() {
     return isoc::sinhf(value);
   }
 
   /**
     Returns the hyperbolic sine.
   */
-  static double inline sinh(double value) throw() {
+  static inline double sinh(double value) throw() {
     return isoc::sinh(value);
   }
 
   /**
     Returns the hyperbolic sine.
   */
-  static long double inline sinh(long double value) throw() {
+  static inline long double sinh(long double value) throw() {
     return isoc::sinhl(value);
   }
 
   /**
     Returns the inverse hyperbolic sine.
   */
-  static float inline asinh(float value) throw() {
+  static inline float asinh(float value) throw() {
     return isoc::asinhf(value);
   }
 
   /**
     Returns the inverse hyperbolic sine.
   */
-  static double inline asinh(double value) throw() {
+  static inline double asinh(double value) throw() {
     return isoc::asinh(value);
   }
 
   /**
     Returns the inverse hyperbolic sine.
   */
-  static long double inline asinh(long double value) throw() {
+  static inline long double asinh(long double value) throw() {
     return isoc::asinhl(value);
   }
 
   /**
     Returns the hyperbolic cosine.
   */
-  static float inline cosh(float value) throw() {
+  static inline float cosh(float value) throw() {
     return isoc::coshf(value);
   }
 
   /**
     Returns the hyperbolic cosine.
   */
-  static double inline cosh(double value) throw() {
+  static inline double cosh(double value) throw() {
     return isoc::cosh(value);
   }
 
   /**
     Returns the hyperbolic cosine.
   */
-  static long double inline cosh(long double value) throw() {
+  static inline long double cosh(long double value) throw() {
     return isoc::coshl(value);
   }
 
   /**
     Returns the inverse hyperbolic cosine.
   */
-  static float inline acosh(float value) throw() {
+  static inline float acosh(float value) throw() {
     return isoc::acoshf(value);
   }
 
   /**
     Returns the inverse hyperbolic cosine.
   */
-  static double inline acosh(double value) throw() {
+  static inline double acosh(double value) throw() {
     return isoc::acosh(value);
   }
 
   /**
     Returns the inverse hyperbolic cosine.
   */
-  static long double inline acosh(long double value) throw() {
+  static inline long double acosh(long double value) throw() {
     return isoc::acoshl(value);
   }
 
   /**
     Returns the hyperbolic tangent.
   */
-  static float inline tanh(float value) throw() {
+  static inline float tanh(float value) throw() {
     return isoc::tanhf(value);
   }
 
   /**
     Returns the hyperbolic tangent.
   */
-  static double inline tanh(double value) throw() {
+  static inline double tanh(double value) throw() {
     return isoc::tanh(value);
   }
 
   /**
     Returns the hyperbolic tangent.
   */
-  static long double inline tanh(long double value) throw() {
+  static inline long double tanh(long double value) throw() {
     return isoc::tanhl(value);
   }
 
   /**
     Returns the inverse hyperbolic tangent.
   */
-  static float inline atanh(float value) throw() {
+  static inline float atanh(float value) throw() {
     return isoc::atanhf(value);
   }
 
   /**
     Returns the inverse hyperbolic tangent.
   */
-  static double inline atanh(double value) throw() {
+  static inline double atanh(double value) throw() {
     return isoc::atanh(value);
   }
 
   /**
     Returns the inverse hyperbolic tangent.
   */
-  static long double inline atanh(long double value) throw() {
+  static inline long double atanh(long double value) throw() {
     return isoc::atanhl(value);
   }
 

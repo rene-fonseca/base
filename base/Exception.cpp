@@ -11,11 +11,6 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-// TAG: need config test (private) and option
-#if (__GNUC__ == 3)
-  #define _DK_SDU_MIP__BASE__EXCEPTION_V3MV
-#endif
-
 #include <base/Exception.h>
 
 #if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)

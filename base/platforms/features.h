@@ -26,6 +26,10 @@
 // grants access to internal headers
 #define _DK_SDU_MIP__BASE__INTERNAL_ACCESS
 
+#if (_DK_SDU_MIP__BASE__ABI == _DK_SDU_MIP__BASE__ABI_V3MV)
+  #define _DK_SDU_MIP__BASE__EXCEPTION_V3MV
+#endif
+
 #if !defined(TRACE) && !defined(TRACE_MEMBER) // allow macros to be overridden
 #if defined(_DK_SDU_MIP__BASE__TRACE)
   #include <base/Trace.h>

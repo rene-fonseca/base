@@ -23,22 +23,33 @@
     // Specifies the flavor
     _DK_SDU_MIP__BASE__FLAVOR
 
+    // Specifies the compiler
+    _DK_SDU_MIP__BASE__COMPILER
+    
+    // Specifies the ABI
+    _DK_SDU_MIP__BASE__ABI
+    // Specifies the ABI flavor
+    _DK_SDU_MIP__BASE__ABI_FLAVOR
+    
+    // Specifies the demangling API
+    _DK_SDU_MIP__BASE__DEMANGLE
+    
     // Specifies the operating-system
     _DK_SDU_MIP__BASE__OS
-
+    
     // Specifies the architecture (major)
     _DK_SDU_MIP__BASE__ARCH
     // Specifies the architecture (minor)
     _DK_SDU_MIP__BASE__ARCH_MINOR
-
+    
     // Specifies the native byte order
     _DK_SDU_MIP__BASE__BYTE_ORDER
     // Specifies the word order of floating-point representations
     _DK_SDU_MIP__BASE__FLOAT_WORD_ORDER
-
+    
     // Specifies that char is unsigned
     _DK_SDU_MIP__BASE__UNSIGNED_CHAR
-
+    
     // Specifies the representation of float
     _DK_SDU_MIP__BASE__FLOAT
     // Specifies the representation of double
@@ -53,7 +64,39 @@
 #define _DK_SDU_MIP__BASE__UNIX 1 // selects The Single UNIX Specification 2
 #define _DK_SDU_MIP__BASE__WIN32 2 // selects WIN32 api
 
-// Specific operating systems api's
+// Specific compilers
+#define _DK_SDU_MIP__BASE__COMPILER_GCC 1
+#define _DK_SDU_MIP__BASE__COMPILER_SUNWSPRO 2
+#define _DK_SDU_MIP__BASE__COMPILER_MIPSPRO 3
+#define _DK_SDU_MIP__BASE__COMPILER_INTEL 4
+#define _DK_SDU_MIP__BASE__COMPILER_BORLAND 5
+#define _DK_SDU_MIP__BASE__COMPILER_MSC 6
+
+// Specific ABIs
+#define _DK_SDU_MIP__BASE__ABI_V3MV 1 // V3 multi vendor ABI
+#define _DK_SDU_MIP__BASE__ABI_GCCV2 2 // GCC version 2
+#define _DK_SDU_MIP__BASE__ABI_SUNWSPRO 3 // SUN Workshop Compiler
+#define _DK_SDU_MIP__BASE__ABI_MIPSPRO 4 // SGI MIPSpro compiler
+#define _DK_SDU_MIP__BASE__ABI_INTEL 5 // Intel Compiler
+#define _DK_SDU_MIP__BASE__ABI_BORLAND 6 // Borland Compiler
+#define _DK_SDU_MIP__BASE__ABI_MSC 7 // Microsoft Compiler
+
+// Supported ABI flavors
+#define _DK_SDU_MIP__BASE__ABI_32 1 // 32 bit pointer...
+#define _DK_SDU_MIP__BASE__ABI_64 2 // 64 bit pointer...
+
+// Demangling APIs
+#define _DK_SDU_MIP__BASE__DEMANGLE_V3MV 1 // V3 multi vendor ABI
+#define _DK_SDU_MIP__BASE__DEMANGLE_GCCV3 2 // GCC version 3
+#define _DK_SDU_MIP__BASE__DEMANGLE_GCCV23 3 // GCC in-between version 2 and 3
+#define _DK_SDU_MIP__BASE__DEMANGLE_GCCV2 4 // GCC version 2
+#define _DK_SDU_MIP__BASE__DEMANGLE_SUNWSPRO 5 // SUN Workshop Compiler
+#define _DK_SDU_MIP__BASE__DEMANGLE_MIPSPRO 6 // SGI MIPSpro compiler
+#define _DK_SDU_MIP__BASE__DEMANGLE_INTEL 7 // Intel Compiler
+#define _DK_SDU_MIP__BASE__DEMANGLE_BORLAND 8 // Borland Compiler
+#define _DK_SDU_MIP__BASE__DEMANGLE_MSC 9 // Microsoft Compiler
+
+// Specific operating systems APIs
 #define _DK_SDU_MIP__BASE__GNULINUX 1 // only Unix
 #define _DK_SDU_MIP__BASE__IRIX65 2 // only Unix
 #define _DK_SDU_MIP__BASE__SOLARIS 3 // only Unix

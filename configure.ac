@@ -277,17 +277,18 @@ AC_ARG_ENABLE(
   AC_BASE_CHECK_ARG(base_explicit_namespace, yes no, The namespace flag must be either 'yes' or 'no'.))
 AC_BASE_YES(base_explicit_namespace, AC_BASE_DEFINE(NAMESPACE))
 
-base_explicit_demangle=no
+base_explicit_demangle=auto
 AC_ARG_ENABLE(
   demangle,[
-  --enable-demangle=[v3mv|gccv3|gccv2|sunwspro|mipspro|no]
+  --enable-demangle=[auto|v3mv|gccv3|gccv2|sunwspro|mipspro|no]
       Specifies that support for type name demangling should be included for
-      the given compiler/ABI. This feature is disabled by default. 'v3mv'
-      selects builtin support for the V3 multi-vendor C++ standard ABI.
-      'gccv3' enables support for GCC 3.0. 'gccv2' enables support for GCC
-      2.95.3. 'sunwspro' enables support for the SUN WorkShop C++ compiler.
-      'mipspro' enables support for SGI MIPSpro.],
-  AC_BASE_CHECK_ARG(base_explicit_demangle, v3mv gccv3 gccv2 sunwspro mipspro no, Invalid argument used with the demangle flag.))
+      the given compiler/ABI. If this option is not specified the demangling
+      API will be auto-detected. 'v3mv' selects builtin support for the V3
+      multi-vendor C++ standard ABI. 'gccv3' and 'gccv2' enables support for
+      GCC version 3.0 and 2.95, respectively, using the libiberty library.
+      'sunwspro' enables support for the SUN WorkShop C++ compiler and
+      'mipspro' enables support for the SGI MIPSpro Compiler.],
+  AC_BASE_CHECK_ARG(base_explicit_demangle, auto v3mv gccv3 gccv2 sunwspro mipspro no, Invalid argument used with the demangle flag.))
 
 base_explicit_threads=auto
 AC_ARG_ENABLE(
@@ -558,23 +559,98 @@ AC_BASE_ADDLIB(${base_cv_stl_libs})
 
 
 
+dnl Lets play name that c++ compiler
+
+if test "x$ac_base_cxx_name" = "x"; then
+  # Check if GNU Compiler Collection
+  if AC_BASE_TRY_CMD($CXX -v 2>&1 | grep -e "gcc.*version"); then
+    ac_base_cxx_major=`$CXX -dumpversion 2>&1 | sed "s/\([[0-9]]\)\+\.[[0-9]]\+.*/\1/"`
+    ac_base_cxx_minor=`$CXX -dumpversion 2>&1 | sed "s/[[0-9]]\+\.\([[0-9]]\+\).*/\1/"`
+    ac_base_cxx_name="GNU Compiler Collection"
+    ac_base_cxx_vendor="gnu.org"
+  fi
+fi
+
+if test "x$ac_base_cxx_name" = "x"; then
+  # Check if Sun WorkShop Compiler
+  if AC_BASE_TRY_CMD($CXX -V 2>&1 | grep -e "Sun.*WorkShop"); then
+    ac_base_cxx_major=`$CXX -V 2>&1 | sed "s/.*C++.*\([[0-9]]\)\+\.[[0-9]]\+.*/\1/"`
+    ac_base_cxx_minor=`$CXX -V 2>&1 | sed "s/.*C++.*[[0-9]]\+\.\([[0-9]]\+\).*/\1/"`
+    ac_base_cxx_name="Sun WorkShop"
+    ac_base_cxx_vendor="sun.com"
+  fi
+fi
+
+if test "x$ac_base_cxx_name" = "x"; then
+  # Check if MIPSpro Compiler
+  if AC_BASE_TRY_CMD($CXX -version 2>&1 | grep -e "MIPSpro.*Compilers"); then
+    ac_base_cxx_major=`$CXX -version 2>&1 | sed "s/.*Version.*\([[0-9]]\)\+\.[[0-9]]\+.*/\1/"`
+    ac_base_cxx_minor=`$CXX -version 2>&1 | sed "s/.*Version.*[[0-9]]\+\.\([[0-9]]\+\).*/\1/"`
+    ac_base_cxx_name="MIPSpro Compilers"
+    ac_base_cxx_vendor="sgi.com"
+  fi
+fi
+
+if test "x$ac_base_cxx_name" = "x"; then
+  # Check if Intel Compiler
+  if AC_BASE_TRY_CMD($CXX -V 2>&1 | grep -e "Intel.*C++.*Compiler"); then
+    ac_base_cxx_major=`$CXX -V 2>&1 | sed "s/.*Version.*\([[0-9]]\)\+\.[[0-9]]\+.*/\1/"`
+    ac_base_cxx_minor=`$CXX -V 2>&1 | sed "s/.*Version.*[[0-9]]\+\.\([[0-9]]\+\).*/\1/"`
+    ac_base_cxx_name="Intel Compiler"
+    ac_base_cxx_vendor="intel.com"
+  fi
+fi
+
+AC_MSG_CHECKING(identity of c++ compiler)
+AC_MSG_RESULT([$ac_base_cxx_name $ac_base_cxx_major.$ac_base_cxx_minor ($ac_base_cxx_vendor)])
+
+
+
 dnl Explicit features.
 
-if test "${base_explicit_demangle}" = v3mv; then
+if test "${base_explicit_demangle}" = auto; then
+  base_demangle=no
+  case "${ac_base_cxx_vendor}/${ac_base_cxx_name}" in
+  "gnu.org/GNU Compiler Collection")
+    if test "x$ac_base_cxx_major" = "x3"; then
+      base_demangle=v3mv
+    elif test "x$ac_base_cxx_major" = "x2"; then
+      base_demangle=gccv2
+    fi
+  ;;
+  "sun.com/SUN WorkShop")
+    base_demangle=sunwspro
+  ;;
+  "sgi.com/MIPSpro Compilers")
+    base_demangle=mipspro
+  ;;
+  "intel.com/Intel Compiler")
+  ;;
+  esac
+else
+  base_demangle=${base_explicit_demangle}
+fi
+
+if test "${base_demangle}" = v3mv; then
   AC_BASE_DEFINE(DEMANGLE_V3MV)
-elif test "${base_explicit_demangle}" = gccv3; then
+elif test "${base_demangle}" = gccv3; then
   AC_BASE_DEFINE(DEMANGLE_GCCV3)
   AC_BASE_ADDLIB(-liberty)
-elif test "${base_explicit_demangle}" = gccv2; then
+elif test "${base_demangle}" = gccv2; then
   AC_BASE_DEFINE(DEMANGLE_GCCV2)
   AC_BASE_ADDLIB(-liberty)
-elif test "${base_explicit_demangle}" = sunwspro; then
+elif test "${base_demangle}" = sunwspro; then
   AC_BASE_DEFINE(DEMANGLE_SUNWSPRO)
   AC_BASE_ADDLIB(-ldemangle)
-elif test "${base_explicit_demangle}" = mipspro; then
+elif test "${base_demangle}" = mipspro; then
   AC_BASE_DEFINE(DEMANGLE_MIPSPRO)
   AC_BASE_ADDLIB(-lmangle)
 fi
+
+AC_MSG_CHECKING(selected demangling API)
+AC_MSG_RESULT([$base_demangle])
+
+
 
 if test "${base_explicit_threads}" = auto; then
   AC_BASE_EQUAL(${ac_base_flavour}, unix, base_explicit_threads=posix)
@@ -681,7 +757,7 @@ AC_BASE_COMPARE(
     byte order of architecture,
     AC_BASE_CACHE(
       base_cv_byte_order base_cv_byte_order_msg,
-      AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, byteorder.c, , Autodetection of byte order does not work with cross compiler. Please specify byte order explicitly using --enable-byte-order.)dnl
+      AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, byteorder.c, , Auto-detection of byte order does not work with cross compiler. Please specify byte order explicitly using --enable-byte-order.)dnl
       AC_BASE_VALUE2BYTEORDER(base_cv_byte_order, base_cv_byte_order_msg, ${ac_base_temp})dnl
     ),
     base_cv_byte_order_msg),
@@ -694,7 +770,7 @@ AC_BASE_COMPARE(
     word order of architecture/operating system/compiler,
     AC_BASE_CACHE(
       base_cv_word_order,
-      AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, float_word_order.cpp, , Autodection of word order does not work with cross compiler.)
+      AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, float_word_order.cpp, , Auto-dection of word order does not work with cross compiler.)
       AC_BASE_VALUE2BYTEORDER(base_cv_word_order, base_cv_word_order_msg, ${ac_base_temp})
     ),
     base_cv_word_order_msg),
@@ -853,7 +929,7 @@ unix)
           base_cv_inet_ipv6,
           base_cv_inet_ipv6_libs,
           "" -lsocket "-lsocket -lnsl",
-          AC_BASE_TRY_CXX_RUN(base_cv_inet_ipv6, ipv6.c, ${base_cv_inet_ipv6_libs}, Autodetection of IPv6 support does not work with cross compiler.)dnl
+          AC_BASE_TRY_CXX_RUN(base_cv_inet_ipv6, ipv6.c, ${base_cv_inet_ipv6_libs}, Auto-detection of IPv6 support does not work with cross compiler.)dnl
         )
       ),
       base_cv_inet_ipv6,
@@ -889,7 +965,7 @@ if test ${base_explicit_large_file_system} = auto; then
     whether Large File System is supported by the operating system,
     AC_BASE_CACHE(
       base_cv_large_file_system,
-      AC_BASE_TRY_CXX_LINK(base_cv_large_file_system, largefile.c, , Autodetection of Large File System does not work with cross compiler.)
+      AC_BASE_TRY_CXX_LINK(base_cv_large_file_system, largefile.c, , Auto-detection of Large File System does not work with cross compiler.)
     ),
     base_cv_large_file_system)
   base_explicit_large_file_system=${base_cv_large_file_system}
@@ -910,7 +986,7 @@ AC_BASE_CHECK(
       base_cv_pthread,
       base_cv_pthread_libs,
       "" -lpthread,
-      AC_BASE_TRY_CXX_RUN(base_cv_pthread, pthread.c, ${base_cv_pthread_libs}, Autodetection of POSIX thread support does not work with cross compiler.)dnl
+      AC_BASE_TRY_CXX_RUN(base_cv_pthread, pthread.c, ${base_cv_pthread_libs}, Auto-detection of POSIX thread support does not work with cross compiler.)dnl
     )
   ),
   base_cv_pthread,

@@ -14,8 +14,6 @@
 #include <base/concurrency/Barrier.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 
-// TAG: need thread once support?
-
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Barrier::Barrier() throw(ResourceException)
@@ -40,7 +38,7 @@ unsigned int Barrier::getWaiting() const throw() {
   return waiting;
 }
 
-unsigned int Barrier::wait(bool reset) throw() {
+unsigned int Barrier::wait(bool reset) throw(LockException) {
   {
     ExclusiveSynchronize<MutualExclusion> _guard(mutex); // blocking
     bool waitReset = false;
@@ -72,11 +70,11 @@ unsigned int Barrier::wait(bool reset) throw() {
   }
 }
 
-void Barrier::reset() throw() {
+void Barrier::reset() throw(LockException) {
   wait(true);
 }
 
-Barrier::~Barrier() throw() {
+Barrier::~Barrier() throw(LockException) {
   reset();
 }
 

@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE_CONCURRENCY__BARRIER_H
 
 #include <base/Object.h>
+#include <base/concurrency/LockException.h>
 #include <base/concurrency/Event.h>
 #include <base/concurrency/MutualExclusion.h>
 #include <base/concurrency/SpinLock.h>
@@ -50,52 +51,6 @@ protected:
 public:
   
   /**
-    Exception raised directly by the Barrier class.
-    
-    @short Barrier synchronization object exception.
-    @ingroup concurrency exceptions
-    @author Rene Moeller Fonseca
-    @version 1.0
-  */
-  class BarrierException : public LockException {
-  public:
-
-    /**
-      Initializes the exception object with no message.
-    */
-    inline BarrierException() throw() {
-    }
-
-    /**
-      Initializes the exception object.
-
-      @param message The message.
-    */
-    inline BarrierException(const char* message) throw()
-      : LockException(message) {
-    }
-
-    /**
-      Initializes the exception object without an associated message.
-      
-      @param type The identity of the type.
-    */
-    inline BarrierException(Type type) throw()
-      : LockException(type) {
-    }
-
-    /**
-      Initializes the exception object.
-    
-      @param message An NULL-terminated string (ASCII).
-      @param type The identity of the type.
-    */
-    inline BarrierException(const char* message, Type type) throw()
-      : LockException(message, type) {
-    }
-  };
-  
-  /**
     Initializes the barrier with a count of 0. Raises ResourceException if
     unable to allocate the required resources.
   */
@@ -124,18 +79,18 @@ public:
     
     @return The number of still waiting threads.
   */
-  unsigned int wait(bool reset = false) throw();
+  unsigned int wait(bool reset = false) throw(LockException);
   
   /**
     Resets the barrier. This method is used to wake up all waiting threads
     before the barrier count has been reached.
   */
-  void reset() throw();
+  void reset() throw(LockException);
   
   /**
     Destroys the barrier.
   */
-  ~Barrier() throw();
+  ~Barrier() throw(LockException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,14 +36,14 @@ String IEEE1394::getAsString(unsigned short nodeId) throw() {
   StringOutputStream stream;
   unsigned int busId = getBusId(nodeId);
   if (busId == IEEE1394::LOCAL_BUS) {
-    stream << MESSAGE("local");
+    stream << "local";
   } else {
     stream << busId;
   }
   stream << ':';
   unsigned int physicalId = IEEE1394Common::getPhysicalId(nodeId);
   if (physicalId == IEEE1394::BROADCAST) {
-    stream << MESSAGE("broadcast");
+    stream << "broadcast";
   } else {
     stream << physicalId;
   }
@@ -433,7 +433,7 @@ String IEEE1394::getKeywords(unsigned short node) throw(IEEE1394Exception) {
           break; // all words have been read
         }
         if (i > 0) {
-          result += MESSAGE(" ");
+          result += " ";
         }
         result += String(leaf[i]);
       }

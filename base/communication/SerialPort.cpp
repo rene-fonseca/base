@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -62,7 +62,7 @@ List<String> SerialPort::getPorts() throw() {
   unsigned int failures = 0;
   for (unsigned int i = 1; i <= 256; ++i) { // only the first 256 ports
     StringOutputStream stream;
-    stream << MESSAGE("com") << i << FLUSH;
+    stream << "com" << i << FLUSH;
     HANDLE handle = ::CreateFile(stream.getString().getElements(),
                                  0, // query only
                                  0, // comm devices must be opened w/exclusive-access
@@ -85,19 +85,19 @@ List<String> SerialPort::getPorts() throw() {
     unsigned int failures = 0;
     for (unsigned int i = 0; i < 256; ++i) { // only the first 256 ports
       StringOutputStream stream;
-      stream << MESSAGE("/dev/ttyS") << i << FLUSH;
+      stream << "/dev/ttyS" << i << FLUSH;
     }
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     unsigned int failures = 0;
     for (unsigned int i = 0; i < 256; ++i) { // only the first 256 ports
       StringOutputStream stream;
-      stream << MESSAGE("/dev/ttyS") << i << FLUSH;
+      stream << "/dev/ttyS" << i << FLUSH;
     }
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
     unsigned int failures = 0;
     for (unsigned int i = 0; i < 256; ++i) { // only the first 256 ports
       StringOutputStream stream;
-      stream << MESSAGE("/dev/ttyS") << i << FLUSH;
+      stream << "/dev/ttyS" << i << FLUSH;
     }
   #endif // os
 #endif // flavor

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,7 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 namespace LinuxRawIEEE1394Impl {
   
-  const StringLiteral DEVICE_NAME = MESSAGE("raw1394");
+  const StringLiteral DEVICE_NAME = "raw1394";
   
   struct Request {
     uint32 type;
@@ -135,16 +135,21 @@ namespace LinuxRawIEEE1394Impl {
   };
 
   void dumpRequest(const Request& request) throw() {
-    fout << MESSAGE("request: ") << EOL
-         << MESSAGE("  type: ") << request.type << EOL
-         << MESSAGE("  error: ") << request.error << EOL
-         << MESSAGE("  misc: ") << HEX << setWidth(10) << ZEROPAD << request.misc << EOL
-         << MESSAGE("  generation: ") << request.generation << EOL
-         << MESSAGE("  size: ") << request.size << EOL
-         << MESSAGE("  address: ") << HEX << setWidth(18) << ZEROPAD << request.address << EOL
-         << MESSAGE("  tag: ") << HEX << setWidth(18) << ZEROPAD << request.tag << EOL
-         << MESSAGE("  sendBuffer: ") << HEX << setWidth(18) << ZEROPAD << request.sendBuffer << EOL
-         << MESSAGE("  receiveBuffer: ") << HEX << setWidth(18) << ZEROPAD << request.receiveBuffer << EOL
+    fout << "request: " << EOL
+         << indent(2) << "type: " << request.type << EOL
+         << indent(2) << "error: " << request.error << EOL
+         << indent(2) << "misc: "
+         << HEX << setWidth(10) << ZEROPAD << request.misc << EOL
+         << indent(2) << "generation: " << request.generation << EOL
+         << indent(2) << "size: " << request.size << EOL
+         << indent(2) << "address: "
+         << HEX << setWidth(18) << ZEROPAD << request.address << EOL
+         << indent(2) << "tag: "
+         << HEX << setWidth(18) << ZEROPAD << request.tag << EOL
+         << indent(2) << "sendBuffer: "
+         << HEX << setWidth(18) << ZEROPAD << request.sendBuffer << EOL
+         << indent(2) << "receiveBuffer: "
+         << HEX << setWidth(18) << ZEROPAD << request.receiveBuffer << EOL
          << ENDL;
   }
   
@@ -362,7 +367,7 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
   case LinuxRawIEEE1394::EVENT_ISO_RECEIVE:
     {
       const LittleEndian<uint32>* quadlet =
-        Cast::pointer<const LittleEndian<uint32>*>(Cast::getPointer(request.receiveBuffer));
+        Cast::getPointer<const LittleEndian<uint32>*>(request.receiveBuffer);
       const unsigned int tcode = (*quadlet >> 4) & 0x0f;
       const unsigned int channel = (*quadlet >> 8) & 0x3f;
       const unsigned int size = *quadlet >> 16;
@@ -373,7 +378,8 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
         UnexpectedFailure("Invalid isochronous packet", this)
       );
       isochronousChannels[channel].listener->onIsochronousPacket(
-        Cast::pointer<const uint8*>(Cast::getPointer(request.receiveBuffer)), size
+        Cast::getPointer<const uint8*>(request.receiveBuffer),
+        size
       );
     }
     break;
@@ -386,13 +392,13 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
       if (response) {
         fcpListener->onFCPResponse(
           nodeId,
-          Cast::pointer<const uint8*>(Cast::getPointer(request.receiveBuffer)),
+          Cast::getPointer<const uint8*>(request.receiveBuffer),
           request.size
         );
       } else {
         fcpListener->onFCPRequest(
           nodeId,
-          Cast::pointer<const uint8*>(Cast::getPointer(request.receiveBuffer)),
+          Cast::getPointer<const uint8*>(request.receiveBuffer),
           request.size
         );
       }
@@ -401,7 +407,7 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
   default:
     // TAG: possibly ignore response?
     LinuxRawIEEE1394Impl::RequestContext* requestContext =
-      Cast::pointer<LinuxRawIEEE1394Impl::RequestContext*>(Cast::getPointer(request.tag));
+      Cast::getPointer<LinuxRawIEEE1394Impl::RequestContext*>(request.tag);
     assert(requestContext, UnexpectedFailure("Invalid response", this));
     switch (requestContext->type) {
     case LinuxRawIEEE1394::REQUEST_ASYNC_READ:
@@ -451,8 +457,12 @@ void LinuxRawIEEE1394::read(unsigned short node, uint64 address, char* buffer, u
         dequeueResponse();
       }
       if (requestContext.status == IEEE1394Impl::STATUS_TIMEOUT) {
-        assert(attempt < IEEE1394Impl::MAXIMUM_ATTEMPTS, IEEE1394Exception(this));
-        fout << setForeground(ANSIEscapeSequence::BLUE) << bold() << MESSAGE("<TIMEOUT>") << normal() << FLUSH;
+        assert(
+          attempt < IEEE1394Impl::MAXIMUM_ATTEMPTS,
+          IEEE1394Exception(this)
+        );
+        fout << setForeground(ANSIEscapeSequence::BLUE) << bold()
+             << "<TIMEOUT>" << normal() << FLUSH;
         Thread::millisleep(10);
         continue;
       }
@@ -531,7 +541,8 @@ unsigned int LinuxRawIEEE1394::read(unsigned short node, uint64 address, uint32*
         break;
       }
       if (requestContext.status == IEEE1394Impl::STATUS_TIMEOUT) {
-        fout << setForeground(ANSIEscapeSequence::BLUE) << bold() << MESSAGE("<TIMEOUT>") << normal() << FLUSH;
+        fout << setForeground(ANSIEscapeSequence::BLUE) << bold()
+             << "<TIMEOUT>" << normal() << FLUSH;
         Thread::millisleep(10);
       }
       

@@ -15,11 +15,11 @@
 #include <base/xml/Stylesheet.h>
 
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
-//#  include <libxml/xmlmemory.h>
-//#  include <libxml/xmlIO.h>
-//#  include <libxml/xinclude.h>
-//#  include <libxml/catalog.h>
-#  include <libxml/globals.h>
+//#  include <libxml2/libxml/xmlmemory.h>
+//#  include <libxml2/libxml/xmlIO.h>
+//#  include <libxml2/libxml/xinclude.h>
+//#  include <libxml2/libxml/catalog.h>
+#  include <libxml2/libxml/globals.h>
 #  include <libxslt/xslt.h>
 #  include <libxslt/xsltInternals.h>
 //#  include <libxslt/transform.h>

@@ -18,7 +18,7 @@
 #include <base/string/FormatOutputStream.h>
 
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-#  include <libxml/tree.h>
+#  include <libxml2/libxml/tree.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

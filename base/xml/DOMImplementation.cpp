@@ -16,7 +16,7 @@
 #include <base/xml/XMLReader.h>
 
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-#  include <libxml/tree.h>
+#  include <libxml2/libxml/tree.h>
 #  include <stdarg.h>
 #endif
 

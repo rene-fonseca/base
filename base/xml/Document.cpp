@@ -16,11 +16,11 @@
 #include <base/Cast.h>
 
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-#  include <libxml/xmlmemory.h>
-#  include <libxml/xmlIO.h>
-#  include <libxml/xinclude.h>
-#  include <libxml/tree.h>
-#  include <libxml/hash.h>
+#  include <libxml2/libxml/xmlmemory.h>
+#  include <libxml2/libxml/xmlIO.h>
+#  include <libxml2/libxml/xinclude.h>
+#  include <libxml2/libxml/tree.h>
+#  include <libxml2/libxml/hash.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

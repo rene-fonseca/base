@@ -17,8 +17,8 @@
 #include <base/io/FileReader.h>
 
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-#  include <libxml/parser.h>
-#  include <libxml/parserInternals.h>
+#  include <libxml2/libxml/parser.h>
+#  include <libxml2/libxml/parserInternals.h>
 #  include <stdarg.h>
 #endif
 

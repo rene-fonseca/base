@@ -219,7 +219,7 @@ namespace primitives {
   /**
     Specifies whether or not the type is void.
   */
-  template<class TYPE> class Void {public: enum {IS_VOID = false};};
+  template<class TYPE> class Void {public: enum {IS_VOID = false /**< True if type is void. */};};
   template<> class Void<void> {public: enum {IS_VOID = true};};
 
   /**
@@ -238,7 +238,7 @@ namespace primitives {
     }
     </pre>
   */
-  template<class TYPE> class Cardinal {public: enum {IS_CARDINAL = false};};
+  template<class TYPE> class Cardinal {public: enum {IS_CARDINAL = false /**< True if type is a cardinal type. */};};
   template<> class Cardinal<bool> {public: enum {IS_CARDINAL = true};};
   template<> class Cardinal<char> {public: enum {IS_CARDINAL = true};};
   template<> class Cardinal<signed char> {public: enum {IS_CARDINAL = true};};
@@ -270,7 +270,7 @@ namespace primitives {
     }
     </pre>
   */
-  template<class TYPE> class FloatingPoint {public: enum {IS_FLOATING_POINT = false};};
+  template<class TYPE> class FloatingPoint {public: enum {IS_FLOATING_POINT = false /**< True if type is a floating point type. */};};
   template<> class FloatingPoint<float> {public: enum {IS_FLOATING_POINT = true};};
   template<> class FloatingPoint<double> {public: enum {IS_FLOATING_POINT = true};};
   template<> class FloatingPoint<long double> {public: enum {IS_FLOATING_POINT = true};};
@@ -281,7 +281,10 @@ namespace primitives {
   template<class TYPE>
   class Arithmetic {
   public:
-    enum {IS_ARITHMETIC = Cardinal<TYPE>::IS_CARDINAL || FloatingPoint<TYPE>::IS_FLOATING_POINT};
+    enum {
+      /** True if the type is an arithmetic type. */
+      IS_ARITHMETIC = Cardinal<TYPE>::IS_CARDINAL || FloatingPoint<TYPE>::IS_FLOATING_POINT
+    };
   };
 
   /**
@@ -290,7 +293,10 @@ namespace primitives {
   template<class TYPE>
   class Primitive {
   public:
-    enum {IS_PRIMITIVE = Void<TYPE>::IS_VOID || Arithmetic<TYPE>::IS_ARITHMETIC};
+    enum {
+      /** True if the type a built-in type. */
+      IS_PRIMITIVE = Void<TYPE>::IS_VOID || Arithmetic<TYPE>::IS_ARITHMETIC
+    };
   };
 };
 

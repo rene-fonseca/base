@@ -232,14 +232,22 @@ public:
 
   /** Multibyte encoding. */
   enum MultibyteEncoding {
-    UTF7, /**< Unicode transformation format (UTF-7). */
-    UTF8, /**< Unicode transformation format (UTF-8). */
-    UTF16, /**< Unicode transformation format (UTF-16). */
-    UTF16BE, /**< Unicode transformation format (UTF-16) with big endian byte order. */
-    UTF16LE, /**< Unicode transformation format (UTF-16) with little endian byte order. */
-    UTF32, /**< Unicode transformation format (UTF-32). */
-    UTF32BE, /**< Unicode transformation format (UTF-32) with big endian byte order. */
-    UTF32LE /**< Unicode transformation format (UTF-32) with little endian byte order. */
+    /** Unicode transformation format (UTF-7). */
+    UTF7,
+    /** Unicode transformation format (UTF-8). */
+    UTF8,
+    /** Unicode transformation format (UTF-16). */
+    UTF16,
+    /** Unicode transformation format (UTF-16) with big endian byte order. */
+    UTF16BE,
+    /** Unicode transformation format (UTF-16) with little endian byte order. */
+    UTF16LE,
+    /** Unicode transformation format (UTF-32). */
+    UTF32,
+    /** Unicode transformation format (UTF-32) with big endian byte order. */
+    UTF32BE,
+    /** Unicode transformation format (UTF-32) with little endian byte order. */
+    UTF32LE
   };
 
   /** Wide character encoding. */
@@ -250,12 +258,24 @@ public:
 
   /** Encoding flags. */
   enum EncodingFlags {
-    ADD_BOM = 1, /**< Specifies that a BOM should be inserted when encoding to UTF. */
-    EAT_BOM = 2, /**< Specifies that the BOM should be skipped if present. */
-    EXPECT_BOM = 4, /**< Specifies that the BOM must be present. */
-    ASSUME_NATIVE_BYTE_ORDER = 8, /**< Specifies the the encoding is in native byte order. */
-    ASSUME_BE = 16, /**< Specifies the the encoding is in big endian byte order (ignored if ASSUME_NATIVE_BYTE_ORDER is set). */
-    ASSUME_LE = 32 /**< Specifies the the encoding is in little endian byte order (ignored if ASSUME_NATIVE_BYTE_ORDER or ASSUME_BE are set). */
+    /** Specifies that a BOM should be inserted when encoding to UTF. */
+    ADD_BOM = 1,
+    /** Specifies that the BOM should be skipped if present. */
+    EAT_BOM = 2,
+    /** Specifies that the BOM must be present. */
+    EXPECT_BOM = 4,
+    /** Specifies that the encoding is in native byte order. */
+    ASSUME_NATIVE_BYTE_ORDER = 8,
+    /**
+      Specifies that the encoding is in big endian byte order (ignored if
+      ASSUME_NATIVE_BYTE_ORDER is set).
+    */
+    ASSUME_BE = 16,
+    /**
+      Specifies that the encoding is in little endian byte order (ignored if
+      ASSUME_NATIVE_BYTE_ORDER or ASSUME_BE are set).
+    */
+    ASSUME_LE = 32
   };  
 private:
 

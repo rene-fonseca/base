@@ -79,11 +79,7 @@ ProcessPreinitialization::ProcessPreinitialization() throw() {
   ::GetVersionEx(&versionInfo); // never fails
   // only Windows NT 4.0 or later
   // TAG: check w2k and
-#if !defined(_DK_SDU_MIP__BASE__WINXP)
-  #define _DK_SDU_MIP__BASE__WINXP (_DK_SDU_MIP__BASE__W2K + 1)
-  #warning _DK_SDU_MIP__BASE__WINXP is not defined
-#endif
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINXP)
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WXP)
   bool compatible = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) && (versionInfo.dwMajorVersion >= 5) && (versionInfo.dwMinorVersion >= 1);
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K)
   bool compatible = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) && (versionInfo.dwMajorVersion >= 5);

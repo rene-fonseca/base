@@ -171,7 +171,7 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
   
   for (unsigned int i = 0; i < aclInfo.AceCount; ++i) {
     ACE_HEADER* ace;
-    ::GetAce(acl, i, &ace);
+    ::GetAce(acl, i, (void**)&ace); // TAG: why cast under cygwin
     PSID sid;
     ACCESS_MASK mask;
     switch (ace->AceType) {

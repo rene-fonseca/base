@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/io/Pipe.h>
 #include <base/Functor.h>
 #include <base/io/EndOfFile.h>
@@ -26,7 +27,11 @@
   #include <limits.h> // defines PIPE_BUF...
   #include <unistd.h>
   #include <errno.h>
-  #include <stropts.h> // defines FLUSH macros
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+    #warning ioctl is not supported (CYGWIN)
+  #else
+    #include <stropts.h> // defines FLUSH macros
+  #endif
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -150,10 +155,14 @@ void Pipe::flush() throw(PipeException) {
     throw PipeException("Unable to flush pipe", this);
   }
 #else // unix
-  int command = FLUSHW;
-  if (::ioctl(fd->getHandle(), I_FLUSH, &command)) {
-    throw PipeException("Unable to flush pipe", this);
-  }
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+    #warning Pipe::flush() not supported (CYGWIN)
+  #else
+    int command = FLUSHW;
+    if (::ioctl(fd->getHandle(), I_FLUSH, &command)) {
+      throw PipeException("Unable to flush pipe", this);
+    }
+  #endif
 #endif
 }
 

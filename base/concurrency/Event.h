@@ -99,6 +99,11 @@ public:
   */
   bool wait(unsigned int microseconds) const throw(OutOfDomain, EventException);
 
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  /** Returns the event handle. */
+  inline OperatingSystem::Handle getHandle() const throw() {return event;}
+#endif
+
   /**
     Destroys the event object.
   */

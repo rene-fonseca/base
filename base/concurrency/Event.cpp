@@ -58,11 +58,11 @@ bool Event::isSignaled() const throw(EventException) {
 #else // pthread
   bool result;
   if (pthread_mutex_lock(&mutex)) {
-    throw EventException(__func__);
+    throw EventException();
   }
   result = signaled;
   if (pthread_mutex_unlock(&mutex)) {
-    throw EventException(__func__);
+    throw EventException();
   }
   return result;
 #endif
@@ -145,7 +145,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
 
   struct timespec absoluteTime;
   struct timeval now; // microsecond resolution
-  gettimeofday(&now, NULL);
+  gettimeofday(&now, 0);
   long long nanoseconds = (now.tv_usec + microseconds) * 1000;
   absoluteTime.tv_sec = now.tv_sec + nanoseconds/1000000000;
   absoluteTime.tv_nsec = nanoseconds % 1000000000;

@@ -6,9 +6,24 @@
 #include "String.h"
 #include <string.h>
 #include <ctype.h>
+#include "base/Functor.h"
 
 template String<DefaultLock>;
 template String<Unsafe>;
+
+#ifndef HAVE_MEMCHR
+inline const char* memchr(const char* src, int value, unsigned int count) {
+  return find<char>(src, count, bind2Second(Equal<char>(), value));
+}
+#endif
+
+#ifndef HAVE_MEMMOVE
+inline char* memmove(char* dest, const char* src, unsigned int count) {
+  // problem if overlapping
+  copy<char>(dest, src, count);
+  return dest;
+}
+#endif
 
 #define NOTFOUND -1
 #define CAPACITY(desired) ((desired+GRANULARITY-1)/GRANULARITY*GRANULARITY)

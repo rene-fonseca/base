@@ -7,18 +7,22 @@
 #define _DK_SDU_MIP__BASE__BASE_H
 
 /** This cast function is used to down cast pointers. */
-template<class TYPE> inline TYPE down_cast(TYPE argument) throw() {return argument;}
+template<class TYPE>
+inline TYPE down_cast(TYPE argument) throw() {return argument;}
 
 /**
   Returns the minimum value.
 */
-template<class TYPE> inline TYPE min(TYPE a, TYPE b) {return (a <= b) ? a : b;}
-
+/*template<class TYPE>
+inline TYPE min(TYPE a, TYPE b) {return (a <= b) ? a : b;}
+*/
 /**
   Returns the maximum value.
 */
-template<class TYPE> inline TYPE max(TYPE a, TYPE b) {return (a >= b) ? a : b;}
-
+/*
+template<class TYPE>
+inline TYPE max(TYPE a, TYPE b) {return (a >= b) ? a : b;}
+*/
 /**
   Swaps the values.
 */

@@ -19,7 +19,12 @@ unsigned short InetService::getByName(const String<>& name, const String<>& prot
   struct servent* pResult;
   char buffer[1024]; // how big should this buffer be
   pResult = getservbyname_r((const char*)name, (const char*)protocol, &result, buffer, sizeof(buffer));
-  return pResult ? ntohs(result.s_port) : 0;
+  return pResult ? ntohs(pResult->s_port) : 0;
+#elif __CYGWIN__
+  // WARNING: NOT MT-SAFE
+  struct servent* pResult;
+  pResult = getservbyname((const char*)name, (const char*)protocol);
+  return pResult ? ntohs(pResult->s_port) : 0;
 #else
   #err "Operating system not supported"
 #endif
@@ -37,7 +42,12 @@ String<> InetService::getByPort(unsigned short port, const String<>& protocol) t
   struct servent* pResult;
   char buffer[1024]; // how big should this buffer be
   pResult = getservbyport_r(htons(port), (const char*)protocol, &result, buffer, sizeof(buffer));
-  return pResult ? String<>(result.s_name) : String<>();
+  return pResult ? String<>(pResult->s_name) : String<>();
+#elif __CYGWIN__
+  // WARNING: NOT MT-SAFE
+  struct servent* pResult;
+  pResult = getservbyport(htons(port), (const char*)protocol);
+  return pResult ? String<>(pResult->s_name) : String<>();
 #else
   #err "Operating system not supported"
 #endif

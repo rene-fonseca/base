@@ -14,12 +14,16 @@
 #include <unistd.h> // defines gethostname
 
 String<> InetAddress::getLocalHost() {
+#ifdef HAVE_IPV6
   char name[NI_MAXHOST]; // MAXHOSTNAMELEN was not defined in netdb.h
   gethostname(name, sizeof(name));
   return String<>(name);
+#else
+#endif
 }
 
 List<InetAddress> InetAddress::getAddressesByName(const String<>& name) throw(HostNotFound) {
+#ifdef HAVE_IPV6
   List<InetAddress> result;
 
   struct addrinfo hint;
@@ -51,10 +55,12 @@ List<InetAddress> InetAddress::getAddressesByName(const String<>& name) throw(Ho
 
   freeaddrinfo(ai); // release resources - MT-level is safe
   return result;
+#else
+#endif
 }
 
 InetAddress::InetAddress() throw() {
-  fill<char>((char*)&address, sizeof(address), 0); // set to the unspecified address
+  fill<char>((char*)&address, sizeof(address), 0); // set to unspecified addr
 }
 
 InetAddress::InetAddress(const char* addr, Family family) throw() {
@@ -62,6 +68,7 @@ InetAddress::InetAddress(const char* addr, Family family) throw() {
 }
 
 InetAddress::InetAddress(const String<>& addr) throw(InvalidFormat) {
+#ifdef HAVE_IPV6
   struct in_addr temp;
   if (inet_pton(AF_INET, addr.getBytes(), &temp) > 0) { // try IPv4 format - MT-level is safe
     // make IPv4-mapped IPv6 address (network byte order)
@@ -74,6 +81,8 @@ InetAddress::InetAddress(const String<>& addr) throw(InvalidFormat) {
   } else {
     throw InvalidFormat("Not a valid IP address");
   }
+#else
+#endif
 }
 
 InetAddress::InetAddress(const InetAddress& copy) throw() : address(copy.address) {
@@ -91,6 +100,7 @@ const char* InetAddress::getAddress() const throw() {
 }
 
 String<> InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
+#ifdef HAVE_IPV6
   struct sockaddr_in6 addr;
   fill<char>((char*)&addr, sizeof(addr), 0);
 #ifdef SIN6_LEN
@@ -105,41 +115,68 @@ String<> InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound)
   }
 
   return String<>(hostname);
+#else
+#endif
 }
 
 bool InetAddress::operator==(const InetAddress& eq) throw() {
+#ifdef HAVE_IPV6
   return IN6_ARE_ADDR_EQUAL(&address, &eq.address);
+#else
+#endif
 }
 
 bool InetAddress::isUnspecified() const throw() {
+#ifdef HAVE_IPV6
   return IN6_IS_ADDR_UNSPECIFIED(&address);
+#else
+#endif
 }
 
 bool InetAddress::isLoopback() const throw() {
+#ifdef HAVE_IPV6
   return IN6_IS_ADDR_LOOPBACK(&address);
+#else
+#endif
 }
 
 bool InetAddress::isMulticast() const throw() {
+#ifdef HAVE_IPV6
   return IN6_IS_ADDR_MULTICAST(&address);
+#else
+#endif
 }
 
 bool InetAddress::isLinkLocal() const throw() {
+#ifdef HAVE_IPV6
   return IN6_IS_ADDR_LINKLOCAL(&address);
+#else
+#endif
 }
 
 bool InetAddress::isSiteLocal() const throw() {
+#ifdef HAVE_IPV6
   return IN6_IS_ADDR_SITELOCAL(&address);
+#else
+#endif
 }
 
 bool InetAddress::isV4Mapped() const throw() {
+#ifdef HAVE_IPV6
   return IN6_IS_ADDR_V4MAPPED(&address);
+#else
+#endif
 }
 
 bool InetAddress::isV4Compatible() const throw() {
+#ifdef HAVE_IPV6
   return IN6_IS_ADDR_V4COMPAT(&address);
+#else
+#endif
 }
 
 void InetAddress::setAddress(const char* addr, Family family) throw() {
+#ifdef HAVE_IPV6
   switch (family) {
   case IPv4:
     // make IPv4-mapped IPv6 address (network byte order)
@@ -152,9 +189,12 @@ void InetAddress::setAddress(const char* addr, Family family) throw() {
     copy<char>((char*)&address, addr, sizeof(address));
     break;
   }
+#else
+#endif
 }
 
 FormatOutputStream& InetAddress::toFormatStream(FormatOutputStream& stream) const {
+#ifdef HAVE_IPV6
   char buffer[INET6_ADDRSTRLEN]; // longest possible string is "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"
   if (isV4Mapped()) {
     inet_ntop(AF_INET, &((uint32_t*)(&address))[3], buffer, sizeof(buffer)); // MT-level is safe
@@ -162,6 +202,9 @@ FormatOutputStream& InetAddress::toFormatStream(FormatOutputStream& stream) cons
     inet_ntop(AF_INET6, &address, buffer, sizeof(buffer)); // MT-level is safe
   }
   return stream << buffer;
+#else
+  return stream;
+#endif
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) {

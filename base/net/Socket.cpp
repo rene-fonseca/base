@@ -11,6 +11,10 @@
 #include <errno.h>
 #include <string.h>
 
+#ifdef __CYGWIN__
+#define socklen_t int
+#endif
+
 void getSocketOption(int handle, int option, void* buffer, socklen_t* len) throw(IOException) {
   // getsockopt is MT-safe
   if (::getsockopt(handle, SOL_SOCKET, option, buffer, len) != 0) {

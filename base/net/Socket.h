@@ -18,6 +18,7 @@
 /**
   This class implements a socket. A socket is an endpoint for communication between two machines. MT-level is safe.
 
+  @see ClientSocket ServerSocket
   @author René Møller Fonseca
   @version 1.0
 */

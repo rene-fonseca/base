@@ -100,8 +100,7 @@ public:
       
       fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
       ieee1394.open(id);
-
-      ieee1394.reload();
+      ieee1394.checkResetGeneration();
 
       static const StringLiteral STANDARDS[] = {
         MESSAGE("Unspecified"),
@@ -288,6 +287,7 @@ public:
       const uint64 endAddress = lastAddress + sizeof(uint32);
       
       uint32 buffer[4096];
+      
       while (firstAddress < endAddress) {
         uint32 bytesToRead = endAddress - firstAddress;
         if (bytesToRead > getArraySize(buffer) * sizeof(uint32)) {

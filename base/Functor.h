@@ -633,14 +633,12 @@ public:
 
 
 
-/** Returns the element unchanged. */
-/*template<class TYPE>
-class Same : UnaryOperation<TYPE, TYPE> {
+/** Returns the value unchanged. */
+template<class TYPE>
+class Same : public UnaryOperation<TYPE, TYPE> {
 public:
   inline TYPE operator()(const TYPE& value) const throw() {return value;}
-};*/
-
-
+};
 
 /** Sums elements in a sequence. */
 template<class TYPE, class RESULT = TYPE>

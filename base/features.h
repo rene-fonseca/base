@@ -54,6 +54,16 @@
 namespace base {
 };
 
+namespace dk {
+  namespace sdu {
+    namespace mip {
+      namespace base {
+        using namespace ::base;
+      };
+    };
+  };
+};
+
 #else
 #  define _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 #  define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

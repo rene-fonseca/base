@@ -26,14 +26,16 @@
 #elif (_DK_SDU_MIP__BASE__COMPILER == _DK_SDU_MIP__BASE__COMPILER_BORLAND)
   #include <base/platforms/compiler/borland/borland.h>
 #elif (_DK_SDU_MIP__BASE__COMPILER == _DK_SDU_MIP__BASE__COMPILER_MSC)
-  #include <base/platforms/compiler/msvc/msc.h>
+  #include <base/platforms/compiler/msc/msc.h>
+#elif (_DK_SDU_MIP__BASE__COMPILER == _DK_SDU_MIP__BASE__COMPILER_DOXYGEN)
+  #include <base/platforms/compiler/doxygen/doxygen.h>
 #endif
 
 #if !defined(_DK_SDU_MIP__BASE__CPP_INLINE) && !defined(inline)
   #if defined(_DK_SDU_MIP__BASE__COMPILER_INLINE)
     #define inline _DK_SDU_MIP__BASE__COMPILER_INLINE
   #else
-    #define inline
+    #define inline // remove inline
   #endif
 #endif // inline
 
@@ -41,7 +43,7 @@
   #if defined(_DK_SDU_MIP__BASE__COMPILER_RESTRICT)
     #define restrict _DK_SDU_MIP__BASE__COMPILER_RESTRICT
   #else
-    #define restrict
+    #define restrict // remove restrict
   #endif
 #endif // restrict
 

@@ -115,8 +115,8 @@ private:
     unsigned int index;
     Reference(const Reference& copy); // prohibit default copy initialization
     Reference& operator=(const Reference& eq); // prohibit default assignment
-  public:
     inline Reference(String& s, unsigned int i) : string(s), index(i) {}
+  public:
     inline Reference& operator=(char value) throw(OutOfRange) {string.setAt(index, value); return *this;}
     inline operator char() const throw(OutOfRange) {return string.getAt(index);}
   };

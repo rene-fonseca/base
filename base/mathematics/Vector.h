@@ -31,13 +31,13 @@ public:
   */
   class Reference {
   private:
-
     friend class Vector;
     Vector& vector; // use reference to avoid 'copy on write'
     unsigned int index;
+    Reference(const Reference& copy); // prohibit default copy initialization
+    Reference& operator=(const Reference& eq); // prohibit default assignment
     Reference(Vector& v, unsigned int i) throw() : vector(v), index(i) {}
   public:
-
     inline Reference& operator=(const TYPE& value) throw(OutOfRange) {vector.setAt(index, value); return *this;}
     inline operator TYPE() const throw(OutOfRange) {return vector.getAt(index);}
   };

@@ -40,6 +40,7 @@ public:
     Matrix& matrix; // use reference to avoid 'copy on write'
     unsigned int row;
     unsigned int column;
+
     ElementReference(Matrix& m, unsigned int r, unsigned int c) throw() : matrix(m), row(r), column(c) {}
   public:
 

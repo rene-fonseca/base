@@ -91,8 +91,8 @@ protected:
     const Key key;
     Reference(const Reference& copy); // prohibit default copy initialization
     Reference& operator=(const Reference& eq); // prohibit default assignment
-  public:
     inline Reference(Map& m, const Key& k) : map(m), key(k) {}
+  public:
     inline Reference& operator=(Value value) throw(MemoryException) {map.add(key, value); return *this;}
     inline operator Value() const throw(InvalidKey) {return map.getValue(key);}
   };

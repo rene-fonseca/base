@@ -36,9 +36,9 @@ public:
     friend class BitSet;
     BitSet& bitset; // use reference to avoid 'copy on write'
     unsigned int index;
-    inline Reference(BitSet& b, unsigned int i) : bitset(b), index(i) {}
     Reference(const Reference& copy); // prohibit default copy initialization
     Reference& operator=(const Reference& eq); // prohibit default assignment
+    inline Reference(BitSet& b, unsigned int i) : bitset(b), index(i) {}
   public:
     inline Reference& operator=(bool value) throw(OutOfRange) {bitset.setAt(index, value); return *this;}
     inline operator bool() throw(OutOfRange) {return bitset.getAt(index);}

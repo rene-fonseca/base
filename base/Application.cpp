@@ -69,7 +69,7 @@ public:
       throw;
     } catch(Exception& e) {
       ferr << MESSAGE("Internal error: Violation of exception specification with") << EOL
-           << MESSAGE("  ") << getTypename(e) << MESSAGE(": ") << e.getMessage() << ENDL;
+           << MESSAGE("  ") << TypeInfo::getTypename(e) << MESSAGE(": ") << e.getMessage() << ENDL;
     } catch(...) {
       ferr << MESSAGE("Internal error: Exception violates exception specification") << ENDL;
     }
@@ -223,7 +223,7 @@ Application::Application(const String& name, int numberOfArguments, const char* 
 }
 
 int Application::exceptionHandler(const Exception& e) const throw() {
-  ferr << getTypename(e) << MESSAGE(": ") << e.getMessage() << ENDL;
+  ferr << TypeInfo::getTypename(e) << MESSAGE(": ") << e.getMessage() << ENDL;
   return Application::EXIT_CODE_ERROR;
 }
 

@@ -97,7 +97,7 @@ private:
   const Synchronizeable<LOCK>& obj;
 
   inline Synchronize(const Synchronize& copy) {} // prohibit copy constructor
-  inline Synchronize& operator=(const Synchronize& eq) {} // prohibit assignment
+  inline Synchronize& operator=(const Synchronize& eq) {return *this;} // prohibit assignment
 public:
 
   /**
@@ -143,7 +143,7 @@ class Synchronize<Unsafe> {
 private:
 
   inline Synchronize(const Synchronize& copy) {} // prohibit copy constructor
-  inline Synchronize& operator=(const Synchronize& eq) {} // prohibit assignment
+  inline Synchronize& operator=(const Synchronize& eq) {return *this;} // prohibit assignment
 public:
 
   /**

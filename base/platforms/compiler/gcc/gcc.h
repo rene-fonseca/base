@@ -16,6 +16,8 @@
 
 namespace base {
 
+#define _DK_SDU_MIP__BASE__COMPILER_PRIMITIVES
+
 #define _DK_SDU_MIP__BASE__COMPILER_VERSION __GNUC__
 #define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE org::gnu::compiler
 
@@ -120,7 +122,7 @@ namespace base {
     } // end of namespace gnu
  
   } // end of namespace org
-  
+
   // import GCC data types
   using namespace org::gnu::compiler;
   

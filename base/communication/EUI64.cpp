@@ -35,7 +35,7 @@ EUI64::EUI64(const String& value) throw(InvalidFormat) {
   static const char SEPARATORS[8] = {'x', ':', ':', '-', ':', ':', ':', ':'}; // 'x' value is not used
   String::ReadIterator i = value.getBeginReadIterator();
   const String::ReadIterator end = value.getEndReadIterator();
-  int index = 0;
+  unsigned int index = 0;
   while (i < end) {
     char first = *i++;
     assert(i < end, InvalidFormat(this));

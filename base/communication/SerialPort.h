@@ -38,7 +38,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SerialPort : public CommunicationsPort, public virtual AsynchronousInputStream, public virtual AsynchronousOutputStream {
+class SerialPort : public CommunicationsPort, public virtual AsynchronousIOStream {
 private:
 
   ReferenceCountedObjectPointer<Handle> handle;
@@ -249,14 +249,20 @@ public:
 
   void asyncCancel() throw(AsynchronousException);
   
-  AsynchronousReadOperation read(char* buffer, unsigned int bytesToRead, AsynchronousReadEventListener* listener) throw(AsynchronousException);
+  AsynchronousReadOperation read(
+    char* buffer,
+    unsigned int bytesToRead,
+    AsynchronousReadEventListener* listener) throw(AsynchronousException);
 
-  AsynchronousWriteOperation write(const char* buffer, unsigned int bytesToWrite, AsynchronousWriteEventListener* listener) throw(AsynchronousException);
+  AsynchronousWriteOperation write(
+    const char* buffer,
+    unsigned int bytesToWrite,
+    AsynchronousWriteEventListener* listener) throw(AsynchronousException);
   
   /**
     Destroys the serial port object.
   */
-  ~SerialPort() throw(CommunicationsException);
+  virtual ~SerialPort() throw(CommunicationsException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -19,24 +19,24 @@
 #include <base/io/EndOfFile.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <base/platforms/win32/AsyncReadStreamContext.h> // platform specific
-  #include <base/platforms/win32/AsyncWriteStreamContext.h> // platform specific
-  #define NO_STRICT
+#  include <base/platforms/win32/AsyncReadStreamContext.h> // platform specific
+#  include <base/platforms/win32/AsyncWriteStreamContext.h> // platform specific
+#  define NO_STRICT
   // I don't get it: in STRICT mode handles are of type int but in NO_STRICT
   // mode the handles are of size void*. This is a problem on 64 bit platforms
   // where int and void* may be of different sizes.
-  #include <windows.h>
+#  include <windows.h>
 #elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
-  #include <sys/types.h>
-  #include <sys/stat.h> // open
-  #include <fcntl.h> // open
-  #include <unistd.h> // close, read...
-  #include <errno.h> // errno
-  #include <limits.h> // SSIZE_MAX
+#  include <sys/types.h>
+#  include <sys/stat.h> // open
+#  include <fcntl.h> // open
+#  include <unistd.h> // close, read...
+#  include <errno.h> // errno
+#  include <limits.h> // SSIZE_MAX
 
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
-  #endif // os
+#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#  endif // os
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -186,6 +186,9 @@ unsigned int SerialPort::getStopBits() const throw(CommunicationsException) {
 
 bool SerialPort::isCD() const throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  return false; // TAG: fixme
+#else // unix
+  return false; // TAG: fixme
 #endif // flavor
 }
 
@@ -194,6 +197,8 @@ bool SerialPort::isCTS() const throw(CommunicationsException) {
   DWORD state;
   assert(::GetCommModemStatus(handle->getHandle(), &state) != 0, CommunicationsException());
   return (state & MS_CTS_ON) != 0;
+#else // unix
+  return false; // TAG: fixme
 #endif // flavor
 }
 
@@ -202,11 +207,16 @@ bool SerialPort::isDSR() const throw(CommunicationsException) {
   DWORD state;
   assert(::GetCommModemStatus(handle->getHandle(), &state) != 0, CommunicationsException());
   return (state & MS_DSR_ON) != 0;
+#else // unix
+  return false; // TAG: fixme
 #endif // flavor
 }
 
 bool SerialPort::isDTR() const throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  return false; // TAG: fixme
+#else // unix
+  return false; // TAG: fixme
 #endif // flavor
 }
 
@@ -215,11 +225,16 @@ bool SerialPort::isRI() const throw(CommunicationsException) {
   DWORD state;
   assert(::GetCommModemStatus(handle->getHandle(), &state) != 0, CommunicationsException());
   return (state & MS_RING_ON) != 0;
+#else // unix
+  return false; // TAG: fixme
 #endif // flavor
 }
 
 bool SerialPort::isRTS() const throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  return false; // TAG: fixme
+#else // unix
+  return false; // TAG: fixme
 #endif // flavor
 }
 
@@ -235,6 +250,8 @@ void SerialPort::setParameters(unsigned int baudRate, unsigned int dataBits, uns
   dcb.StopBits = mapStopBits[stopBits]; // FIXME
   assert(::SetCommState(handle->getHandle(), &dcb) != 0, CommunicationsException());
   // need to throw NotSupported
+#else // unix
+  // TAG: fixme
 #endif // flavor
 }
 

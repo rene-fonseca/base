@@ -467,7 +467,6 @@ void IEEE1394::checkResetGeneration() throw(IEEE1394Exception) {
 
 unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDomain, IEEE1394Exception) {
   assert(busId <= IEEE1394::LOCAL_BUS, OutOfDomain(this));
-  Quadlet quadlet;
   switch (role) {
   case IEEE1394::CYCLE_MASTER: // must/should be root eventually
     for (int id = IEEE1394::BROADCAST; id > 0;) {
@@ -495,7 +494,7 @@ unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDoma
       --id;
       const unsigned short node = makeNodeId(id, busId);
       try {
-        uint32 cycleTime = getQuadlet(node, IEEE1394::CYCLE_TIME); // isochronous capable
+        /*uint32 cycleTime =*/ getQuadlet(node, IEEE1394::CYCLE_TIME); // isochronous capable
         uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
         if ((crc >> 24) < 4) { // minimum size for general format
           continue;
@@ -517,11 +516,11 @@ unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDoma
     }
     break;
   case IEEE1394::BUS_MANAGER:
-    for (int id = IEEE1394::BROADCAST; id > 0;) {
+    for (unsigned int id = IEEE1394::BROADCAST; id > 0;) {
       --id;
       const unsigned short node = makeNodeId(id, busId);
       try {
-        uint32 cycleTime = getQuadlet(node, IEEE1394::CYCLE_TIME); // isochronous capable
+        /*uint32 cycleTime =*/ getQuadlet(node, IEEE1394::CYCLE_TIME); // isochronous capable
         uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
         if ((crc >> 24) < 4) { // minimum size for general format
           continue;
@@ -544,7 +543,7 @@ unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDoma
     }
     break;
   case IEEE1394::ROOT:
-    for (int id = IEEE1394::BROADCAST; id > 0;) {
+    for (unsigned int id = IEEE1394::BROADCAST; id > 0;) {
       --id;
       try {
         uint32 temp = getQuadlet(makeNodeId(id, busId), IEEE1394::NODE_IDS);

@@ -47,6 +47,11 @@ public:
   const String<>& getPath() const throw();
 
   /**
+    Forces any buffered bytes to be written out.
+  */
+  void flush() throw(IOException); 
+
+  /**
     Writes a string representation of a FileOutputStream object to a stream.
   */
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const FileOutputStream& value);

@@ -33,25 +33,27 @@ void analyseFloatingPoint<IEEE_754_SinglePrecision>(const IEEE_754_SinglePrecisi
     exponent = 0;
   } else {
     flags |= FP_VALUE; // ordinary value
-    if (fieldExponent == 0) {
-      if (mantissa[0] == 0) { // check for zero
-        flags |= FP_ZERO;
-      } else { // denormalized value (does not have implied one)
+    if ((fieldExponent == 0) && (mantissa[0] == 0)) { // check for zero
+      flags |= FP_ZERO;
+      exponent = 0;
+      precision = Representation::SIGNIFICANT;
+    } else {
+      if (fieldExponent == 0) { // denormalized value (does not have implied one)
         flags |= FP_DENORMALIZED;
       }
-    }
 
-    if (Representation::HAS_IMPLIED_ONE) {
-      if (flags & FP_DENORMALIZED) {
-        precision = Representation::SIGNIFICANT - 1;
+      if (Representation::HAS_IMPLIED_ONE) {
+        if (flags & FP_DENORMALIZED) {
+          precision = Representation::SIGNIFICANT - 1;
+        } else {
+          precision = Representation::SIGNIFICANT;
+          mantissa[(Representation::SIGNIFICANT - 1)/32] |= 1 << ((Representation::SIGNIFICANT - 1)%32);
+        }
       } else {
         precision = Representation::SIGNIFICANT;
-        mantissa[(Representation::SIGNIFICANT - 1)/32] |= 1 << ((Representation::SIGNIFICANT - 1)%32);
       }
-    } else {
-      precision = Representation::SIGNIFICANT;
+      exponent = fieldExponent - Representation::BIAS;
     }
-    exponent = fieldExponent - Representation::BIAS;
   }
 }
 
@@ -74,25 +76,27 @@ void analyseFloatingPoint<IEEE_754_DoublePrecision>(const IEEE_754_DoublePrecisi
     exponent = 0;
   } else {
     flags |= FP_VALUE; // ordinary value
-    if (fieldExponent == 0) {
-      if ((mantissa[1] == 0) && (mantissa[0] == 0)) { // check for zero
-        flags |= FP_ZERO;
-      } else { // denormalized value (does not have implied one)
+    if ((fieldExponent == 0) && (mantissa[1] == 0) && (mantissa[0] == 0)) { // check for zero
+      flags |= FP_ZERO;
+      exponent = 0;
+      precision = Representation::SIGNIFICANT;
+    } else {
+      if (fieldExponent == 0) { // denormalized value (does not have implied one)
         flags |= FP_DENORMALIZED;
       }
-    }
 
-    if (Representation::HAS_IMPLIED_ONE) {
-      if (flags & FP_DENORMALIZED) {
-        precision = Representation::SIGNIFICANT - 1;
+      if (Representation::HAS_IMPLIED_ONE) {
+        if (flags & FP_DENORMALIZED) {
+          precision = Representation::SIGNIFICANT - 1;
+        } else {
+          precision = Representation::SIGNIFICANT;
+          mantissa[(Representation::SIGNIFICANT - 1)/32] |= 1 << ((Representation::SIGNIFICANT - 1)%32);
+        }
       } else {
         precision = Representation::SIGNIFICANT;
-        mantissa[(Representation::SIGNIFICANT - 1)/32] |= 1 << ((Representation::SIGNIFICANT - 1)%32);
       }
-    } else {
-      precision = Representation::SIGNIFICANT;
+      exponent = fieldExponent - Representation::BIAS;
     }
-    exponent = fieldExponent - Representation::BIAS;
   }
 }
 
@@ -115,25 +119,70 @@ void analyseFloatingPoint<IEEE_ExtendedDoublePrecision96>(const IEEE_ExtendedDou
     exponent = 0;
   } else {
     flags |= FP_VALUE; // ordinary value
-    if (fieldExponent == 0) {
-      if ((mantissa[1] == 0) && (mantissa[0] == 0)) { // check for zero
-        flags |= FP_ZERO;
-      } else { // denormalized value (does not have implied one)
+    if ((fieldExponent == 0) && (mantissa[1] == 0) && (mantissa[0] == 0)) { // check for zero
+      flags |= FP_ZERO;
+      exponent = 0;
+      precision = Representation::SIGNIFICANT;
+    } else {
+      if (fieldExponent == 0) { // denormalized value (does not have implied one)
         flags |= FP_DENORMALIZED;
       }
-    }
 
-    if (Representation::HAS_IMPLIED_ONE) {
-      if (flags & FP_DENORMALIZED) {
-        precision = Representation::SIGNIFICANT - 1;
+      if (Representation::HAS_IMPLIED_ONE) {
+        if (flags & FP_DENORMALIZED) {
+          precision = Representation::SIGNIFICANT - 1;
+        } else {
+          precision = Representation::SIGNIFICANT;
+          mantissa[(Representation::SIGNIFICANT - 1)/32] |= 1 << ((Representation::SIGNIFICANT - 1)%32);
+        }
       } else {
         precision = Representation::SIGNIFICANT;
-        mantissa[(Representation::SIGNIFICANT - 1)/32] |= 1 << ((Representation::SIGNIFICANT - 1)%32);
       }
-    } else {
-      precision = Representation::SIGNIFICANT;
+      exponent = fieldExponent - Representation::BIAS;
     }
-    exponent = fieldExponent - Representation::BIAS;
+  }
+}
+
+template<>
+void analyseFloatingPoint<IEEE_ExtendedDoublePrecision128>(const IEEE_ExtendedDoublePrecision128& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw() {
+  typedef IEEE_ExtendedDoublePrecision128 Representation;
+
+  unsigned int fieldExponent = value.exponent;
+  mantissa[0] = value.mantissa0;
+  mantissa[1] = value.mantissa1;
+  flags = value.negative ? FP_NEGATIVE : 0;
+  if (~fieldExponent == 0) {
+    if ((mantissa[1] == 0) && (mantissa[0] == 0)) { // check for infinity
+      flags |= FP_INFINITY;
+    } else {
+      flags &= ~FP_NEGATIVE;
+      flags |= FP_NAN;
+    }
+    precision = 0;
+    exponent = 0;
+  } else {
+    flags |= FP_VALUE; // ordinary value
+    if ((fieldExponent == 0) && (mantissa[1] == 0) && (mantissa[0] == 0)) { // check for zero
+      flags |= FP_ZERO;
+      exponent = 0;
+      precision = Representation::SIGNIFICANT;
+    } else {
+      if (fieldExponent == 0) { // denormalized value (does not have implied one)
+        flags |= FP_DENORMALIZED;
+      }
+
+      if (Representation::HAS_IMPLIED_ONE) {
+        if (flags & FP_DENORMALIZED) {
+          precision = Representation::SIGNIFICANT - 1;
+        } else {
+          precision = Representation::SIGNIFICANT;
+          mantissa[(Representation::SIGNIFICANT - 1)/32] |= 1 << ((Representation::SIGNIFICANT - 1)%32);
+        }
+      } else {
+        precision = Representation::SIGNIFICANT;
+      }
+      exponent = fieldExponent - Representation::BIAS;
+    }
   }
 }
 
@@ -158,25 +207,27 @@ void analyseFloatingPoint<IEEE_QuadruplePrecision>(const IEEE_QuadruplePrecision
     exponent = 0;
   } else {
     flags |= FP_VALUE; // ordinary value
-    if (fieldExponent == 0) {
-      if ((mantissa[3] == 0) && (mantissa[2] == 0) && (mantissa[1] == 0) && (mantissa[0] == 0)) { // check for zero
-        flags |= FP_ZERO;
-      } else { // denormalized value (does not have implied one)
+    if ((fieldExponent == 0) && (mantissa[3] == 0) && (mantissa[2] == 0) && (mantissa[1] == 0) && (mantissa[0] == 0)) { // check for zero
+      flags |= FP_ZERO;
+      exponent = 0;
+      precision = Representation::SIGNIFICANT;
+    } else {
+      if (fieldExponent == 0) { // denormalized value (does not have implied one)
         flags |= FP_DENORMALIZED;
       }
-    }
 
-    if (Representation::HAS_IMPLIED_ONE) {
-      if (flags & FP_DENORMALIZED) {
-        precision = Representation::SIGNIFICANT - 1;
+      if (Representation::HAS_IMPLIED_ONE) {
+        if (flags & FP_DENORMALIZED) {
+          precision = Representation::SIGNIFICANT - 1;
+        } else {
+          precision = Representation::SIGNIFICANT;
+          mantissa[(Representation::SIGNIFICANT - 1)/32] |= 1 << ((Representation::SIGNIFICANT - 1)%32);
+        }
       } else {
         precision = Representation::SIGNIFICANT;
-        mantissa[(Representation::SIGNIFICANT - 1)/32] |= 1 << ((Representation::SIGNIFICANT - 1)%32);
       }
-    } else {
-      precision = Representation::SIGNIFICANT;
+      exponent = fieldExponent - Representation::BIAS;
     }
-    exponent = fieldExponent - Representation::BIAS;
   }
 }
 

@@ -107,6 +107,36 @@ enum FloatingPointFlags {
 #endif
 
 #if (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN)
+  /** Representation of double-extended precision (128-bit) floating point type. */
+  struct IEEE_ExtendedDoublePrecision128 {
+    static const bool HAS_IMPLIED_ONE = false;
+    static const int BIAS = 0x3fff;
+    static const unsigned int SIGNIFICANT = 64;
+
+    unsigned int empty1 : 32;
+    unsigned int negative : 1;
+    unsigned int exponent : 15;
+    unsigned int empty0 : 16;
+    unsigned int mantissa1 : 32;
+    unsigned int mantissa0 : 32;
+  };
+#else
+  /** Representation of double-extended precision (128-bit) floating point type. */
+  struct IEEE_ExtendedDoublePrecision128 {
+    static const bool HAS_IMPLIED_ONE = false;
+    static const int BIAS = 0x3fff;
+    static const unsigned int SIGNIFICANT = 64;
+
+    unsigned int mantissa0 : 32;
+    unsigned int mantissa1 : 32;
+    unsigned int exponent : 15;
+    unsigned int negative : 1;
+    unsigned int empty0 : 16;
+    unsigned int empty1 : 32;
+  };
+#endif
+
+#if (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN)
   /** Representation of quadruple precision (128-bit) floating point type. */
   struct IEEE_QuadruplePrecision {
     static const bool HAS_IMPLIED_ONE = true;
@@ -198,6 +228,8 @@ template<>
 void analyseFloatingPoint<IEEE_754_DoublePrecision>(const IEEE_754_DoublePrecision& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw();
 template<>
 void analyseFloatingPoint<IEEE_ExtendedDoublePrecision96>(const IEEE_ExtendedDoublePrecision96& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw();
+template<>
+void analyseFloatingPoint<IEEE_ExtendedDoublePrecision128>(const IEEE_ExtendedDoublePrecision128& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw();
 template<>
 void analyseFloatingPoint<IEEE_QuadruplePrecision>(const IEEE_QuadruplePrecision& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw();
 

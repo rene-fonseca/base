@@ -33,6 +33,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class Trace {
+private:
+
+  /** The message to be written. */
+  const char* msg;
 public:
 
   /**
@@ -44,6 +48,16 @@ public:
     Write pointer and message to standard error.
   */
   static void member(const void* ptr, const char* message) throw();
+
+  /**
+    Writes the message.
+  */
+  Trace(const char* message) throw();
+
+  /**
+    Writes the message.
+  */
+  ~Trace() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/Trace.h>
+#include <base/NullPointer.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
@@ -27,6 +28,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 void Trace::message(const char* message) throw() {
+  assert(message, NullPointer(Type::getType<Trace>()));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::OutputDebugString(message);
 #else // unix
@@ -34,26 +36,35 @@ void Trace::message(const char* message) throw() {
   openlog("TRACE", LOG_PID, 0); // TAG: fixme - do not reopen
   syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, message);
   closelog();
-//  fprintf(stderr, "TRACE %s\n", message); // fprintf must be MT-safe
 #endif // flavor
 }
 
-void Trace::member(const void* ptr, const char* message) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+void Trace::member(const void* pointer, const char* message) throw() {
+  assert(message, NullPointer(Type::getType<Trace>()));
   unsigned int length = strlen(message);
   char buffer[sizeof("0x1234567812345678 >> ") + length];
-  sprintf(buffer, "%08x >> %s", ptr, message); // sprintf must be MT-safe
+#if (sizeof(unsigned int) == 4)
+  sprintf(buffer, "%08x >> %s", pointer, message); // sprintf must be MT-safe
+#elif (sizeof(unsigned int) == 8)
+  sprintf(buffer, "%016x >> %s", pointer, message); // sprintf must be MT-safe
+#else
+  #error pointer type not supported
+#endif
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::OutputDebugString(buffer);
 #else // unix
-  unsigned int length = strlen(message);
-  char buffer[sizeof("0x1234567812345678 >> ") + length];
-  sprintf(buffer, "%08x >> %s", ptr, message); // sprintf must be MT-safe
   openlog("TRACE", LOG_PID, 0); // TAG: fixme - do not reopen
-
-  syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, message);
+  syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, buffer);
   closelog();
-//  fprintf(stderr, "TRACE %08x >> %s\n", ptr, message); // fprintf must be MT-safe
 #endif // flavor
+}
+
+Trace::Trace() throw(const char* _msg) : msg(_msg) {
+  Trace::member(this, msg);
+}
+
+Trace::~Trace() throw() {
+  Trace::member(this, msg);
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

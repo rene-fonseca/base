@@ -17,8 +17,8 @@ int main() {
   char buffer[INET6_ADDRSTRLEN];
   int handle;
 
-  getaddrinfo(NULL, NULL, &hint, &ai);
-  freeaddrinfo(NULL);
+  getaddrinfo("localhost", NULL, NULL, &ai);
+  freeaddrinfo(ai);
   inet_pton(AF_INET6, "::", &ia);
   inet_ntop(AF_INET6, &ia, buffer, sizeof(buffer));
   handle = socket(PF_INET6, SOCK_STREAM, 0);

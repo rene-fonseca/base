@@ -311,8 +311,11 @@ ac_base_static_loaded=no
 if test x$ac_base_static = xyes && test -f $srcdir/static/$ac_base_target; then
   echo loading static target configuration...
   rm -f static.tmp
-  (cd $srcdir/static; ./static.sh $ac_base_target) > static.tmp 2>&1
-  . static.tmp
+  (cd $srcdir/static; ./static.sh ./$ac_base_target) > static.tmp 2>&1
+  if $? != 0; then
+    AC_MSG_ERROR(Unable to import static target configuration)
+  fi
+  . ./static.tmp
   ac_base_static_loaded=yes
 fi
 
@@ -1380,50 +1383,59 @@ else
 fi
 
 
+# TAG: replace ac_base_temp=base_cv_component_$component
+# TAG: replace short param names
 
-dnl add required libraries
-for entry in $base_cv_libraries; do
-  case $entry in
+# add required libraries for enabled components
+for ac_base_entry in "$base_cv_libraries"; do
+  ac_base_library=
+  case $ac_base_entry in
   *:*)
-    library=${entry/*:}
-    component=${entry/:*}
-    if test x$component = "x-"; then
+    ac_base_component=${ac_base_entry/:*}
+    if test x$ac_base_component = "x-"; then
       continue;
     fi
-    ac_base_temp=base_cv_component_$component
-    if test x${!ac_base_temp} != xyes; then
-      continue;
-    fi
+    for ac_base_temp in "$base_cv_components"; do
+      if test x$ac_base_temp = x$ac_base_component; then
+        ac_base_library=${ac_base_entry/*:}
+        break;
+      fi
+    done
   ;;
   *)
-    library=$entry
+    ac_base_library=$ac_base_entry
   ;;
   esac
-  AC_BASE_ADDLIB("-l$library")
+  if test x$ac_base_library != x; then
+    AC_BASE_ADDLIB("-l$ac_base_library")
+  fi
 done
 
 # TAG: make sure the same lib is given only once (use the last one)
 
-dnl add libc feature enabling defines
-for entry in $base_cv_features; do
-  case $entry in
+# add libc feature enabling defines
+for ac_base_entry in "$base_cv_features"; do
+  ac_base_feature=
+  case $ac_base_entry in
   *:*)
-    feature=${entry/*:}
-    component=${entry/:*}
-    ac_base_temp=base_cv_component_$component
-    if test x${!ac_base_temp} != xyes; then
-      continue;
-    fi
+    ac_base_component=${ac_base_entry/:*}
+    for ac_base_temp in "$base_cv_components"; do
+      if test x$ac_base_temp = x$ac_base_component; then
+        ac_base_feature=${ac_base_entry/*:}
+        break;
+      fi
+    done
   ;;
   *)
-    feature=$entry
+    ac_base_feature=$ac_base_entry
   ;;
   esac
-  
-  case $feature in
-  *=*) AC_BASE_DEFINE_FEATURE(${feature/=*}, ${feature/*=});;
-  *) AC_BASE_DEFINE_FEATURE(${feature});;
-  esac
+  if test x$ac_base_feature != x; then
+    case $ac_base_feature in
+    *=*) AC_BASE_DEFINE_FEATURE(${ac_base_feature/=*}, ${ac_base_feature/*=});;
+    *) AC_BASE_DEFINE_FEATURE(${ac_base_feature});;
+    esac
+  fi
 done
 
 
@@ -1493,26 +1505,70 @@ dnl store probed and/or static configuration
 echo "dumping probed (final) target configuration..."
 
 # functions
-functions="mbrtowc mbsrtowcs memchr memcmp memcpy memmove memset nanosleep pselect pthread_yield readdir_r yield"
-
 available_functions=
-for function in $functions; do
-  ac_base_temp=base_cv_function_$function
-  if test x${!ac_base_temp} = xyes; then
-    available_functions=${available_functions}${available_functions:+ }$function
-  fi
-done
+if test x$base_cv_function_mbrtowc = xyes; then
+  available_functions=${available_functions}${available_functions:+ }mbrtowc
+fi
+if test x$base_cv_function_mbsrtowcs = xyes; then
+  available_functions=${available_functions}${available_functions:+ }mbsrtowcs
+fi
+if test x$base_cv_function_memchr = xyes; then
+  available_functions=${available_functions}${available_functions:+ }memchr
+fi
+if test x$base_cv_function_memcmp = xyes; then
+  available_functions=${available_functions}${available_functions:+ }memcmp
+fi
+if test x$base_cv_function_memcpy = xyes; then
+  available_functions=${available_functions}${available_functions:+ }memcpy
+fi
+if test x$base_cv_function_memmove = xyes; then
+  available_functions=${available_functions}${available_functions:+ }memmove
+fi
+if test x$base_cv_function_memset = xyes; then
+  available_functions=${available_functions}${available_functions:+ }memset
+fi
+if test x$base_cv_function_nanosleep = xyes; then
+  available_functions=${available_functions}${available_functions:+ }nanosleep
+fi
+if test x$base_cv_function_pselect = xyes; then
+  available_functions=${available_functions}${available_functions:+ }pselect
+fi
+if test x$base_cv_function_pthread_yield = xyes; then
+  available_functions=${available_functions}${available_functions:+ }pthread_yield
+fi
+if test x$base_cv_function_readdir_r = xyes; then
+  available_functions=${available_functions}${available_functions:+ }readdir_r
+fi
+if test x$base_cv_function_yield = xyes; then
+  available_functions=${available_functions}${available_functions:+ }yield
+fi
 
 # apis
-apis="aio inet_ipv6 lfs pthread pthread_rwlock pthread_semaphore regexp wide"
-
-available_api=
-for api in $apis; do
-  ac_base_temp=base_cv_api_$api
-  if test x${!ac_base_temp} = xyes; then
-    available_apis=${available_apis}${available_apis:+ }$api
-  fi
-done
+available_apis=
+if test x$base_cv_api_aio = xyes; then
+  available_apis=${available_apis}${available_apis:+ }aio
+fi
+if test x$base_cv_api_inet_ipv6 = xyes; then
+  available_apis=${available_apis}${available_apis:+ }inet_ipv6
+fi
+if test x$base_cv_api_lfs = xyes; then
+  available_apis=${available_apis}${available_apis:+ }lfs
+fi
+if test x$base_cv_api_pthread = xyes; then
+  available_apis=${available_apis}${available_apis:+ }pthread
+fi
+if test x$base_cv_api_pthread_rwlock = xyes; then
+  available_apis=${available_apis}${available_apis:+ }pthread_rwlock
+fi
+if test x$base_cv_api_pthread_semaphore = xyes; then
+  available_apis=${available_apis}${available_apis:+ }pthread_semaphore
+fi
+if test x$base_cv_api_regexp = xyes; then
+  available_apis=${available_apis}${available_apis:+ }regexp
+fi
+if test x$base_cv_api_wide = xyes; then
+  available_apis=${available_apis}${available_apis:+ }wide
+fi
 
 cat > "${ac_base_target-target}.probed" << EOF
 flavor=$base_cv_flavor

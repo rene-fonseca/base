@@ -23,8 +23,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Stack using a linked list implementation.
-
+  A stack is a last-in-first-out data structure. This class is implemented as a
+  linked list.
+  
+  @short Stack of elements
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1

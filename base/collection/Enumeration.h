@@ -36,6 +36,11 @@ public:
 
 /**
   Defines the types of a non-modifying enumerator (may only read the values of the elements).
+
+  @short Enumeration interface for non-modifying access
+  @ingroup collections
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.0
 */
 template<class VALUE>
 class ReadEnumeratorTraits {
@@ -55,7 +60,8 @@ public:
   one by one. If possible, the enumeration interface should be used in
   preference to the iteration interface.
 
-  @short Enumeration interface
+  @short Enumeration interface for modifying access
+  @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

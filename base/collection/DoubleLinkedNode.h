@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   A double linked node. This class is used by collections that only require
   bidirectional traversal of elements.
 
-  @short Double linked node.
+  @short Double linked node
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -28,10 +28,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Array. Ordered sequence of elements.
+  Array. Ordered sequence of elements with random access to the individual
+  elements.
 
-  @ingroup collections
   @short Array
+  @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -20,7 +20,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   This exception indicates that an enumeration is used incorrectly.
-
+  
+  @short Invalid enumeration exception
+  @ingroup collections exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -39,6 +41,21 @@ public:
     @param message The message.
   */
   InvalidEnumeration(const char* message);
+  
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
+  InvalidEnumeration(Type type) throw() {}
+  
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  InvalidEnumeration(const char* message, Type type) throw() {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

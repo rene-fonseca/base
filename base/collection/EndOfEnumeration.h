@@ -22,6 +22,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Exception thrown when the end of an enumeration is exceeded.
 
+  @short End of enumeration exception  
+  @ingroup collections exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -40,6 +42,21 @@ public:
     @param message The message.
   */
   EndOfEnumeration(const char* message);
+  
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
+  EndOfEnumeration(Type type) throw() {}
+  
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  EndOfEnumeration(const char* message, Type type) throw() {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

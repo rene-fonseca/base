@@ -25,7 +25,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Enumeration of all the elements of a binary tree traversed in prefix order.
-
+  
+  @short Prefix order enumerator
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -90,6 +91,8 @@ public:
 /**
   Enumeration of all the elements of a binary tree traversed in infix order.
 
+  @short Infix order enumerator
+  @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -215,6 +218,8 @@ public:
 /**
   Enumeration of all the elements of a binary tree traversed in infix order.
 
+  @short Postfix order enumerator
+  @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -353,9 +358,10 @@ public:
 //  }
 
 /**
-  Binary tree.
+  Binary tree data structure.
 
-  @short Binary tree.
+  @short Binary tree
+  @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

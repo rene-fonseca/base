@@ -22,9 +22,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Association of value with other value. An association has the properties of
   its key (i.e. the key is the only significant when comparing associations
-  with each other).
+  with each other). The value of the association is the associated value.
 
+  @short Association of value with value
   @see Map
+  @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

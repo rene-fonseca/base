@@ -20,8 +20,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   A binary linked node. This class is used by the binary tree collection.
-
-  @short Binary node.
+  
+  @short Binary node
   @see BinaryTree
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

@@ -28,6 +28,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   A node in a list.
 
+  @short A node in a list
+  @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -113,7 +115,9 @@ public:
 
 /**
   Enumeration of elements in a list.
-
+  
+  @short List enumerator
+  @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -232,7 +236,7 @@ public:
 
 
 /**
-  Linked list.
+  Linked list data structure.
 
   You can enumerate the elements of a list like this (myMember is a member function of MyClass):
   <pre>
@@ -243,6 +247,7 @@ public:
     }
   </pre>
 
+  @short List
   @ingroup collections
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

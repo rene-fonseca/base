@@ -165,14 +165,23 @@ public:
 };
 
 class FileApplication : public Application {
+private:
+
+  static const unsigned int MAJOR_VERSION = 1;
+  static const unsigned int MINOR_VERSION = 0;
 public:
   
   FileApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw() 
     : Application(MESSAGE("File"), numberOfArguments, arguments, environment) {
   }
   
-  static void main() throw() {
-    fout << MESSAGE("Testing implementation of the File class.") << ENDL;
+  void main() throw() {
+    fout << Application::getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << MESSAGE("The Base Framework (Test Suite)") << EOL
+         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
+         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << ENDL;
+    
     Array<String> arguments = Application::getApplication()->getArguments();
     
     switch (arguments.getSize()) {
@@ -201,12 +210,12 @@ public:
 };
 
 int main(int argc, const char* argv[], const char *env[]) {
-  FileApplication app(argc, argv, env);
+  FileApplication application(argc, argv, env);
   try {
-    FileApplication::main();
-  } catch(Exception& e) {
+    application.main();
+  } catch (Exception& e) {
     return Application::getApplication()->exceptionHandler(e);
-  } catch(...) {
+  } catch (...) {
     return Application::getApplication()->exceptionHandler();
   }
   return Application::getApplication()->getExitCode();

@@ -114,8 +114,6 @@ Attribute Element::removeAttributeNode(Attribute attribute) throw(DOMException) 
   throw DOMException(this);
 }
 
-// NodeList Element::getElementsByTagName(const String& name) throw();
-
 Attribute Element::getAttributeNodeNS(
   const String& namespaceURI,
   const String& localName) throw(DOMException) {

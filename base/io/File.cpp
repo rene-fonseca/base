@@ -484,10 +484,10 @@ AccessControlList File::getACL() const throw(FileException) {
 	}
   DWORD size = ::GetSecurityDescriptorLength(securityDescriptor); // TAG: remove when done
   
-//   ferr << "Security descriptor:" << EOL
-//        << "  size: " << size << EOL
-//        << "  revision: " << revision << EOL
-//        << "  control: " << HEX << (WORD)control << EOL;
+//   ferr << MESSAGE("Security descriptor:") << EOL
+//        << indent(2) << MESSAGE("size: ") << size << EOL
+//        << MESSAGE("  revision: ") << revision << EOL
+//        << MESSAGE("  control: ") << HEX << (WORD)control << EOL;
 
 //   ULONG numberOfEntries; // TAG: what is explicit entries
 //   PEXPLICIT_ACCESS entries;
@@ -496,17 +496,17 @@ AccessControlList File::getACL() const throw(FileException) {
 //     throw FileException("Unable to get ACL", this);
 //   }
 
-//   ferr << "Explicit entries:" << EOL
-//        << "  #entries: " << numberOfEntries << EOL;
+//   ferr << MESSAGE("Explicit entries:") << EOL
+//        << MESSAGE("  #entries: ") << numberOfEntries << EOL;
   
 //   PEXPLICIT_ACCESS entry = entries;
 //   for (unsigned int i = 0; i < numberOfEntries; ++i) {
-//     ferr << "  index: " << i << EOL
-//          << "  permissions: " << HEX << entry->grfAccessPermissions << EOL
-//          << "  access mode: " << entry->grfAccessMode << EOL
-//          << "  inherit: " << HEX << entry->grfInheritance << EOL
-//          << "  form: " << entry->Trustee.TrusteeForm << EOL
-//          << "  type: " << entry->Trustee.TrusteeType << EOL;
+//     ferr << MESSAGE("  index: ") << i << EOL
+//          << MESSAGE("  permissions: ") << HEX << entry->grfAccessPermissions << EOL
+//          << MESSAGE("  access mode: ") << entry->grfAccessMode << EOL
+//          << MESSAGE("  inherit: ") << HEX << entry->grfInheritance << EOL
+//          << MESSAGE("  form: ") << entry->Trustee.TrusteeForm << EOL
+//          << MESSAGE("  type: ") << entry->Trustee.TrusteeType << EOL;
 //     ++entry;
 //   }
 //   ::LocalFree(entries);
@@ -517,10 +517,10 @@ AccessControlList File::getACL() const throw(FileException) {
       throw FileException("Unable to get ACL", this);
   }
 
-//   ferr << "ACL:" << EOL
-//        << "  #entries: " << information.AceCount << EOL
-//        << "  bytes used: " << information.AclBytesInUse << EOL
-//        << "  bytes free: " << information.AclBytesFree << EOL;
+//   ferr << MESSAGE("ACL:") << EOL
+//        << MESSAGE("  #entries: ") << information.AceCount << EOL
+//        << MESSAGE("  bytes used: ") << information.AclBytesInUse << EOL
+//        << MESSAGE("  bytes free: ") << information.AclBytesFree << EOL;
   
   for (unsigned int i = 0; i < information.AceCount; ++i) {
     ACE_HEADER* ace;
@@ -606,12 +606,12 @@ AccessControlList File::getACL() const throw(FileException) {
       permissions.denied = 0;
     }
     
-//     ferr << "ACE: " << i << EOL
-//          << "  type: " << ace->AceType << EOL
-//          << "  flags: " << ace->AceFlags << EOL
-//          << "  size: " << ace->AceSize << EOL
-//          << "  access: " << setWidth(8) << ZEROPAD << HEX << mask << EOL
-//          << "  id: " << Trustee(Trustee::UNSPECIFIED, (const void*)sid) << EOL;
+//     ferr << MESSAGE("ACE: ") << i << EOL
+//          << MESSAGE("  type: ") << ace->AceType << EOL
+//          << MESSAGE("  flags: ") << ace->AceFlags << EOL
+//          << MESSAGE("  size: ") << ace->AceSize << EOL
+//          << MESSAGE("  access: ") << setWidth(8) << ZEROPAD << HEX << mask << EOL
+//          << MESSAGE("  id: ") << Trustee(Trustee::UNSPECIFIED, (const void*)sid) << EOL;
     
     result.add(AccessControlEntry(Trustee(Trustee::UNSPECIFIED, (const void*)sid), permissions));
   }

@@ -9,20 +9,60 @@
 #include <base/concurrency/Thread.h>
 
 #if defined(__win32__) // temporary solution until arch independant types have been defined
+  #include <winsock.h>
   typedef DWORD uint32_t;
+#else // __unix__
+  #include <sys/types.h>
+  #include <sys/socket.h>
+  #include <sys/param.h> // may define MAXHOSTNAMELEN (linux, irix)
+  #include <netinet/in.h> // define IP address
+  #include <netdb.h> // may define MAXHOSTNAMELEN (solaris)
+  #include <arpa/inet.h> // defines inet_ntop...
+  #include <unistd.h> // defines gethostname
 #endif
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/param.h> // may define MAXHOSTNAMELEN (linux, irix)
-#include <netinet/in.h> // define IP address
-#include <netdb.h> // may define MAXHOSTNAMELEN (solaris)
-#include <arpa/inet.h> // defines inet_ntop...
-#include <unistd.h> // defines gethostname
+#if defined(__win32__)
+class WindowsSocketsInitializer {
+public:
 
-String<> InetAddress::getLocalHost() {
+  WindowsSocketsInitializer::WindowsSocketsInitializer() throw(NetworkException) {
+    WORD wVersionRequested;
+    WSADATA wsaData;
+    wVersionRequested = MAKEWORD(2, 2);
+
+    if (WSAStartup(wVersionRequested, &wsaData)) {
+      throw NetworkException("Unable to startup Windows Sockets");
+    }
+
+    if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {
+      WSACleanup();
+      throw NetworkException("Unable to startup Windows Sockets");
+    }
+  }
+
+  ~WindowsSocketsInitializer() throw(NetworkException) {
+    if (WSACleanup()) {
+      throw NetworkException("Unable to cleanup Windows Sockets");
+    }
+  }
+};
+
+// Request access to the Windows Sockets interface
+WindowsSocketsInitializer windowsSockets;
+#endif // __win32__
+
+String<> InetAddress::getLocalHost() throw(NetworkException) {
+#if defined(__win32__)
+  // I use thread local storage 'cause I don't know what the maximum length is
+  // the microsoft example code that I have seen assumes that the name cannot exceed 200 chars
+  char* name = Thread::getLocalStorage()->getElements();
+  if (gethostname(name, Thread::getLocalStorage()->getSize())) {
+    throw NetworkException("Unable to get local host name");
+  }
+#else // __unix__
   char name[MAXHOSTNAMELEN + 1]; // does MAXHOSTNAMELEN include terminator
   gethostname(name, sizeof(name));
+#endif
   return String<>(name);
 }
 

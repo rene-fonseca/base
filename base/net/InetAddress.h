@@ -38,7 +38,7 @@ public:
   /**
     Returns the name of the local host.
   */
-  static String<> getLocalHost();
+  static String<> getLocalHost() throw(NetworkException);
 
   /**
     Returns the IP addresses associated with the specified host name.

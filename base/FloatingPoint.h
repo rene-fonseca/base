@@ -67,19 +67,32 @@ public:
   
   /** Floating point flags. */
   enum Flags {
-    FP_NEGATIVE = 1, /**< Specifies a negative value. */
-    FP_DENORMALIZED = 2, /**< Specifies a denormalized value. */
-    FP_NAN = 4, /**< Specifies that the value isn't a number. */
-    FP_ZERO = 8, /**< Value is zero (sign is determined by the FP_NEGATIVE flag). */
-    FP_INFINITY = 16, /**< Value is infinity (sign is determined by the FP_NEGATIVE flag). */
-    FP_VALUE = 32 /**< Specifies an ordinary value representable in [-]d.ddde[-]dd form. */
-  };  
+    /** Specifies a negative value. */
+    FP_NEGATIVE = 1,
+    /** Specifies a denormalized value. */
+    FP_DENORMALIZED = 2,
+    /** Specifies that the value is a quite NaN. */
+    FP_QUITE_NAN = 4,
+    /** Specifies that the value is a signaling NaN. */
+    FP_SIGNALING_NAN = 8,
+    /** Specifies that the value is a NaN. */
+    FP_NAN = FP_QUITE_NAN | FP_SIGNALING_NAN,
+    /** Value is zero (the sign is determined by the FP_NEGATIVE flag). */
+    FP_ZERO = 16,
+    /** Value is infinity (the sign is determined by the FP_NEGATIVE flag). */
+    FP_INFINITY = 32,
+    /** Specifies an ordinary value representable in [-]d.ddde[-]dd form. */
+    FP_VALUE = 64
+  };
   
   class Representation {
   public:
     // TAG: problem if sizeof(uint32) != sizeof(unsigned int)
     
-    /* Representation of single precision (32-bit) floating point type as specified by IEEE 754. */
+    /*
+      Representation of single precision (32-bit) floating point type as
+      specified by IEEE 754.
+    */
     struct IEEE754SinglePrecision {
       static const bool HAS_IMPLIED_ONE = true;
       static const int MINIMUM_EXPONENT = -125;
@@ -109,7 +122,10 @@ public:
 #endif // bit allocation
     } _DK_SDU_MIP__BASE__PACKED;
     
-    /* Representation of double precision (64-bit) floating point type as specified by IEEE 754. */
+    /*
+      Representation of double precision (64-bit) floating point type as
+      specified by IEEE 754.
+    */
     struct IEEE754DoublePrecision {
       static const bool HAS_IMPLIED_ONE = true;
       static const int MINIMUM_EXPONENT = -1021;
@@ -143,7 +159,9 @@ public:
 #endif // bit allocation
     } _DK_SDU_MIP__BASE__PACKED;
     
-    /* Representation of double-extended precision (96-bit) floating point type. */
+    /*
+      Representation of double-extended precision (96-bit) floating point type.
+    */
     struct IEEEExtendedDoublePrecision96 {
       static const bool HAS_IMPLIED_ONE = false;
       static const int MINIMUM_EXPONENT = -16381;
@@ -181,7 +199,10 @@ public:
 #endif // bit allocation
     } _DK_SDU_MIP__BASE__PACKED;
     
-    /* Representation of double-extended precision (128-bit) floating point type. */
+    /*
+      Representation of double-extended precision (128-bit) floating point
+      type.
+    */
     struct IEEEExtendedDoublePrecision128 {
       static const bool HAS_IMPLIED_ONE = false;
       static const int BIAS = 0x3fff;
@@ -306,15 +327,27 @@ public:
 #  error Invalid floating-point representation of type long double
 #endif
   
-  /** @short IEEE 754 single precision convertion support. */
+  /** @short IEEE 754 single precision conversion support. */
   struct IEEE754SinglePrecision {
     Representation::IEEE754SinglePrecision value;
+
+    /** Minimum normalized positive floating-point number (2^(e_min-1)). */
+    static const long double MINIMUM = 1.1754943508222875079687365372222456778186655567720875215087517062784172594547271728515625e-38L;
+    /** Maximum representable finite floating-point number (2^e_max). */
+    static const long double MAXIMUM = 3.40282366920938463463374607431768211456e38L;
+    /**
+      The difference between 1 and the least value greater than 1 that is
+      representable in the given floating point type.
+    */
+    static const long double EPSILON = 1.1920928955078125e-7L;
     
-    inline void setValue(const Representation::IEEE754SinglePrecision& value) throw() {
+    inline void setValue(
+      const Representation::IEEE754SinglePrecision& value) throw() {
       this->value = value;
     }
     
-    inline void setValue(const Representation::IEEE754DoublePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEE754DoublePrecision& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent; // possible overflow and underflow
@@ -324,11 +357,14 @@ public:
       value.mantissa0 = mantissa;
     }
     
-    void setValue(const Representation::IEEEExtendedDoublePrecision96& _value) throw();
+    void setValue(
+      const Representation::IEEEExtendedDoublePrecision96& value) throw();
     
-    void setValue(const Representation::IEEEExtendedDoublePrecision128& _value) throw();
+    void setValue(
+      const Representation::IEEEExtendedDoublePrecision128& value) throw();
     
-    inline void setValue(const Representation::IEEEQuadruplePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEEQuadruplePrecision& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent; // possible overflow and underflow
@@ -362,23 +398,28 @@ public:
     */
     IEEE754SinglePrecision(bool negative, const uint8* mantissa, unsigned int size, int exponent) throw();
     
-    inline IEEE754SinglePrecision(const Representation::IEEE754SinglePrecision& value) throw() {
+    inline IEEE754SinglePrecision(
+      const Representation::IEEE754SinglePrecision& value) throw() {
       setValue(value);
     }
     
-    inline IEEE754SinglePrecision(const Representation::IEEE754DoublePrecision& value) throw() {
+    inline IEEE754SinglePrecision(
+      const Representation::IEEE754DoublePrecision& value) throw() {
       setValue(value);
     }
     
-    inline IEEE754SinglePrecision(const Representation::IEEEExtendedDoublePrecision96& value) throw() {
+    inline IEEE754SinglePrecision(
+      const Representation::IEEEExtendedDoublePrecision96& value) throw() {
       setValue(value);
     }
     
-    inline IEEE754SinglePrecision(const Representation::IEEEExtendedDoublePrecision128& value) throw() {
+    inline IEEE754SinglePrecision(
+      const Representation::IEEEExtendedDoublePrecision128& value) throw() {
       setValue(value);
     }
     
-    inline IEEE754SinglePrecision(const Representation::IEEEQuadruplePrecision& value) throw() {
+    inline IEEE754SinglePrecision(
+      const Representation::IEEEQuadruplePrecision& value) throw() {
       setValue(value);
     }
     
@@ -394,6 +435,54 @@ public:
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
     }
     
+    /**
+      Returns true if the value is negative.
+    */
+    inline bool isNegative() const throw() {
+      return value.negative != 0;
+    }
+    
+    /**
+      Returns true if the value is an ordinary number (not infinity or NaN).
+    */
+    inline bool isOrdinary() const throw() {
+      return ~value.exponent != 0;
+    }
+    
+    /**
+      Returns true if the value is either +INFINITY or -INFINITY.
+    */
+    inline bool isInfinity() const throw() {
+      return (~value.exponent == 0) && (value.mantissa0 == 0);
+    }
+    
+    /**
+      Returns true if the value is Not-a-Number (NaN).
+    */
+    inline bool isNaN() const throw() {
+      return (~value.exponent == 0) && (value.mantissa0 != 0);
+    }
+    
+    /**
+      Returns true if the value is a quite NaN. A NaN that behaves predictably
+      and does not raise exceptions in arithmetic operations is called a quiet
+      NaN.
+    */
+    inline bool isQuiteNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa0 & (1 << (23 - 1))) != 0);
+    }
+    
+    /**
+      Returns true if the value is a signaling NaN. A NaN that generally raises
+      an exception when encountered as an operand of arithmetic operations is
+      called a signaling NaN.
+    */
+    inline bool isSignalingNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa0 & (1 << (23 - 1))) == 0) && (value.mantissa0 != 0);
+    }
+    
     operator float() const throw();
     
     operator double() const throw();
@@ -401,11 +490,22 @@ public:
     operator long double() const throw();
   } _DK_SDU_MIP__BASE__PACKED;
 
-  /** @short IEEE 754 double precision convertion support. */
+  /** @short IEEE 754 double precision conversion support. */
   struct IEEE754DoublePrecision {
     Representation::IEEE754DoublePrecision value;
+
+    /** Minimum normalized positive floating-point number (2^(e_min-1)). */
+    static const long double MINIMUM = 2.225073858507201383090232717332404064219215980462331830553327416887204434813918195854283159012511021e-308L;
+    /** Maximum representable finite floating-point number (2^e_max). */
+    static const long double MAXIMUM = 1.79769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536e308L;
+    /**
+      The difference between 1 and the least value greater than 1 that is
+      representable in the given floating point type.
+    */
+    static const long double EPSILON = 1.1102230246251565404236316680908203125e-16L;
     
-    inline void setValue(const Representation::IEEE754SinglePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEE754SinglePrecision& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent; // possible overflow and underflow
@@ -414,15 +514,19 @@ public:
       value.mantissa0 = static_cast<uint32>(_value.mantissa0) << (32 - (23 - 20));
     }
     
-    inline void setValue(const Representation::IEEE754DoublePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEE754DoublePrecision& value) throw() {
       this->value = value;
     }
     
-    void setValue(const Representation::IEEEExtendedDoublePrecision96& _value) throw();
+    void setValue(
+      const Representation::IEEEExtendedDoublePrecision96& value) throw();
     
-    void setValue(const Representation::IEEEExtendedDoublePrecision128& _value) throw();
+    void setValue(
+      const Representation::IEEEExtendedDoublePrecision128& value) throw();
     
-    inline void setValue(const Representation::IEEEQuadruplePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEEQuadruplePrecision& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent; // possible overflow and underflow
@@ -448,23 +552,28 @@ public:
     inline IEEE754DoublePrecision() throw() {
     }
     
-    inline IEEE754DoublePrecision(const Representation::IEEE754SinglePrecision& value) throw() {
+    inline IEEE754DoublePrecision(
+      const Representation::IEEE754SinglePrecision& value) throw() {
       setValue(value);
     }
     
-    inline IEEE754DoublePrecision(const Representation::IEEE754DoublePrecision& value) throw() {
+    inline IEEE754DoublePrecision(
+      const Representation::IEEE754DoublePrecision& value) throw() {
       setValue(value);
     }
     
-    inline IEEE754DoublePrecision(const Representation::IEEEExtendedDoublePrecision96& value) throw() {
+    inline IEEE754DoublePrecision(
+      const Representation::IEEEExtendedDoublePrecision96& value) throw() {
       setValue(value);
     }
     
-    inline IEEE754DoublePrecision(const Representation::IEEEExtendedDoublePrecision128& value) throw() {
+    inline IEEE754DoublePrecision(
+      const Representation::IEEEExtendedDoublePrecision128& value) throw() {
       setValue(value);
     }
     
-    inline IEEE754DoublePrecision(const Representation::IEEEQuadruplePrecision& value) throw() {
+    inline IEEE754DoublePrecision(
+      const Representation::IEEEQuadruplePrecision& value) throw() {
       setValue(value);
     }
     
@@ -479,6 +588,57 @@ public:
     inline IEEE754DoublePrecision(long double value) throw() {
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
     }
+
+    /**
+      Returns true if the value is negative.
+    */
+    inline bool isNegative() const throw() {
+      return value.negative != 0;
+    }
+    
+    /**
+      Returns true if the value is an ordinary number (not infinity or NaN).
+    */
+    inline bool isOrdinary() const throw() {
+      return ~value.exponent != 0;
+    }
+    
+    /**
+      Returns true if the value is either +INFINITY or -INFINITY.
+    */
+    inline bool isInfinity() const throw() {
+      return (~value.exponent == 0) && (value.mantissa1 == 0) &&
+        (value.mantissa0 == 0);
+    }
+    
+    /**
+      Returns true if the value is Not-a-Number (NaN).
+    */
+    inline bool isNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa1 != 0) || (value.mantissa0 != 0));
+    }
+    
+    /**
+      Returns true if the value is a quite NaN. A NaN that behaves predictably
+      and does not raise exceptions in arithmetic operations is called a quiet
+      NaN.
+    */
+    inline bool isQuiteNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa1 & (1 << (20 - 1))) != 0);
+    }
+    
+    /**
+      Returns true if the value is a signaling NaN. A NaN that generally raises
+      an exception when encountered as an operand of arithmetic operations is
+      called a signaling NaN.
+    */
+    inline bool isSignalingNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa1 & (1 << (20 - 1))) == 0) &&
+        ((value.mantissa1 != 0) || (value.mantissa0 != 0));
+    }
     
     operator float() const throw();
     
@@ -487,11 +647,22 @@ public:
     operator long double() const throw();
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /** @short IEEE extended double precision (96 bit) convertion support. */
+  /** @short IEEE extended double precision (96 bit) conversion support. */
   struct IEEEExtendedDoublePrecision96 {
-    Representation::IEEEExtendedDoublePrecision128 value;
+    Representation::IEEEExtendedDoublePrecision96 value;
+
+    /** Minimum normalized positive floating-point number (2^(e_min-1)). */
+    static const long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
+    /** Maximum representable finite floating-point number (2^e_max). */
+    static const long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
+    /**
+      The difference between 1 and the least value greater than 1 that is
+      representable in the given floating point type.
+    */
+    static const long double EPSILON = 1.08420217248550443400745280086994171142578125e-19L;
     
-    inline void setValue(const Representation::IEEE754SinglePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEE754SinglePrecision& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent;
@@ -499,7 +670,8 @@ public:
       value.mantissa0 = 0;
     }
     
-    inline void setValue(const Representation::IEEE754DoublePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEE754DoublePrecision& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent;
@@ -508,11 +680,13 @@ public:
       value.mantissa0 = static_cast<uint32>(_value.mantissa0) << (32 - 20 - 1);
     }
     
-    inline void setValue(const Representation::IEEEExtendedDoublePrecision96& _value) throw() {
+    inline void setValue(
+      const Representation::IEEEExtendedDoublePrecision96& value) throw() {
       this->value = value;
     }
     
-    inline void setValue(const Representation::IEEEExtendedDoublePrecision128& _value) throw() {
+    inline void setValue(
+      const Representation::IEEEExtendedDoublePrecision128& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent;
@@ -520,7 +694,8 @@ public:
       value.mantissa0 = _value.mantissa0;
     }
     
-    inline void setValue(const Representation::IEEEQuadruplePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEEQuadruplePrecision& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent;
@@ -545,23 +720,28 @@ public:
     inline IEEEExtendedDoublePrecision96() throw() {
     }
     
-    inline IEEEExtendedDoublePrecision96(const Representation::IEEE754SinglePrecision& value) throw() {
+    inline IEEEExtendedDoublePrecision96(
+      const Representation::IEEE754SinglePrecision& value) throw() {
       setValue(value);
     }
     
-    inline IEEEExtendedDoublePrecision96(const Representation::IEEE754DoublePrecision& value) throw() {
+    inline IEEEExtendedDoublePrecision96(
+      const Representation::IEEE754DoublePrecision& value) throw() {
       setValue(value);
     }
     
-    inline IEEEExtendedDoublePrecision96(const Representation::IEEEExtendedDoublePrecision96& value) throw() {
+    inline IEEEExtendedDoublePrecision96(
+      const Representation::IEEEExtendedDoublePrecision96& value) throw() {
       setValue(value);
     }
     
-    inline IEEEExtendedDoublePrecision96(const Representation::IEEEExtendedDoublePrecision128& value) throw() {
+    inline IEEEExtendedDoublePrecision96(
+      const Representation::IEEEExtendedDoublePrecision128& value) throw() {
       setValue(value);
     }
     
-    inline IEEEExtendedDoublePrecision96(const Representation::IEEEQuadruplePrecision& value) throw() {
+    inline IEEEExtendedDoublePrecision96(
+      const Representation::IEEEQuadruplePrecision& value) throw() {
       setValue(value);
     }
     
@@ -576,6 +756,57 @@ public:
     inline IEEEExtendedDoublePrecision96(long double value) throw() {
       setValue(value);
     }
+
+    /**
+      Returns true if the value is negative.
+    */
+    inline bool isNegative() const throw() {
+      return value.negative != 0;
+    }
+    
+    /**
+      Returns true if the value is an ordinary number (not infinity or NaN).
+    */
+    inline bool isOrdinary() const throw() {
+      return ~value.exponent != 0;
+    }
+    
+    /**
+      Returns true if the value is either +INFINITY or -INFINITY.
+    */
+    inline bool isInfinity() const throw() {
+      return (~value.exponent == 0) && (value.mantissa1 == 0) &&
+        (value.mantissa0 == 0);
+    }
+    
+    /**
+      Returns true if the value is Not-a-Number (NaN).
+    */
+    inline bool isNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa1 != 0) || (value.mantissa0 != 0));
+    }
+    
+    /**
+      Returns true if the value is a quite NaN. A NaN that behaves predictably
+      and does not raise exceptions in arithmetic operations is called a quiet
+      NaN.
+    */
+    inline bool isQuiteNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa1 & (1 << (20 - 1))) != 0);
+    }
+    
+    /**
+      Returns true if the value is a signaling NaN. A NaN that generally raises
+      an exception when encountered as an operand of arithmetic operations is
+      called a signaling NaN.
+    */
+    inline bool isSignalingNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa1 & (1 << (20 - 1))) == 0) &&
+        ((value.mantissa1 != 0) || (value.mantissa0 != 0));
+    }
     
     operator float() const throw();
     
@@ -584,11 +815,22 @@ public:
     operator long double() const throw();
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /** @short IEEE extended double precision (128 bit) convertion support. */
+  /** @short IEEE extended double precision (128 bit) conversion support. */
   struct IEEEExtendedDoublePrecision128 {
     Representation::IEEEExtendedDoublePrecision128 value;
+
+    /** Minimum normalized positive floating-point number (2^(e_min-1)). */
+    static const long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
+    /** Maximum representable finite floating-point number (2^e_max). */
+    static const long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
+    /**
+      The difference between 1 and the least value greater than 1 that is
+      representable in the given floating point type.
+    */
+    static const long double EPSILON = 1.08420217248550443400745280086994171142578125e-19L;
     
-    inline void setValue(const Representation::IEEE754SinglePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEE754SinglePrecision& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent;
@@ -596,7 +838,8 @@ public:
       value.mantissa0 = 0;
     }
     
-    inline void setValue(const Representation::IEEE754DoublePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEE754DoublePrecision& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent;
@@ -605,7 +848,8 @@ public:
       value.mantissa0 = static_cast<uint32>(_value.mantissa0) << (32 - 20 - 1);
     }
     
-    inline void setValue(const Representation::IEEEExtendedDoublePrecision96& _value) throw() {
+    inline void setValue(
+      const Representation::IEEEExtendedDoublePrecision96& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent;
@@ -613,11 +857,13 @@ public:
       value.mantissa0 = _value.mantissa0;
     }
     
-    inline void setValue(const Representation::IEEEExtendedDoublePrecision128& _value) throw() {
+    inline void setValue(
+      const Representation::IEEEExtendedDoublePrecision128& value) throw() {
       this->value = value;
     }
     
-    inline void setValue(const Representation::IEEEQuadruplePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEEQuadruplePrecision& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent;
@@ -642,23 +888,28 @@ public:
     inline IEEEExtendedDoublePrecision128() throw() {
     }
     
-    inline IEEEExtendedDoublePrecision128(const Representation::IEEE754SinglePrecision& value) throw() {
+    inline IEEEExtendedDoublePrecision128(
+      const Representation::IEEE754SinglePrecision& value) throw() {
       setValue(value);
     }
     
-    inline IEEEExtendedDoublePrecision128(const Representation::IEEE754DoublePrecision& value) throw() {
+    inline IEEEExtendedDoublePrecision128(
+      const Representation::IEEE754DoublePrecision& value) throw() {
       setValue(value);
     }
     
-    inline IEEEExtendedDoublePrecision128(const Representation::IEEEExtendedDoublePrecision96& value) throw() {
+    inline IEEEExtendedDoublePrecision128(
+      const Representation::IEEEExtendedDoublePrecision96& value) throw() {
       setValue(value);
     }
     
-    inline IEEEExtendedDoublePrecision128(const Representation::IEEEExtendedDoublePrecision128& value) throw() {
+    inline IEEEExtendedDoublePrecision128(
+      const Representation::IEEEExtendedDoublePrecision128& value) throw() {
       setValue(value);
     }
     
-    inline IEEEExtendedDoublePrecision128(const Representation::IEEEQuadruplePrecision& value) throw() {
+    inline IEEEExtendedDoublePrecision128(
+      const Representation::IEEEQuadruplePrecision& value) throw() {
       setValue(value);
     }
     
@@ -673,6 +924,57 @@ public:
     inline IEEEExtendedDoublePrecision128(long double value) throw() {
       setValue(value);
     }
+
+    /**
+      Returns true if the value is negative.
+    */
+    inline bool isNegative() const throw() {
+      return value.negative != 0;
+    }
+    
+    /**
+      Returns true if the value is an ordinary number (not infinity or NaN).
+    */
+    inline bool isOrdinary() const throw() {
+      return ~value.exponent != 0;
+    }
+    
+    /**
+      Returns true if the value is either +INFINITY or -INFINITY.
+    */
+    inline bool isInfinity() const throw() {
+      return (~value.exponent == 0) && (value.mantissa1 == 0) &&
+        (value.mantissa0 == 0);
+    }
+    
+    /**
+      Returns true if the value is Not-a-Number (NaN).
+    */
+    inline bool isNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa1 != 0) || (value.mantissa0 != 0));
+    }
+    
+    /**
+      Returns true if the value is a quite NaN. A NaN that behaves predictably
+      and does not raise exceptions in arithmetic operations is called a quiet
+      NaN.
+    */
+    inline bool isQuiteNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa1 & (1 << (20 - 1))) != 0);
+    }
+    
+    /**
+      Returns true if the value is a signaling NaN. A NaN that generally raises
+      an exception when encountered as an operand of arithmetic operations is
+      called a signaling NaN.
+    */
+    inline bool isSignalingNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa1 & (1 << (20 - 1))) == 0) &&
+        ((value.mantissa1 != 0) || (value.mantissa0 != 0));
+    }
     
     operator float() const throw();
     
@@ -681,11 +983,22 @@ public:
     operator long double() const throw();
   } _DK_SDU_MIP__BASE__PACKED;
   
-  /** @short IEEE quadruple precision convertion support. */
+  /** @short IEEE quadruple precision conversion support. */
   struct IEEEQuadruplePrecision {
     Representation::IEEEQuadruplePrecision value;
+
+    /** Minimum normalized positive floating-point number (2^(e_min-1)). */
+    static const long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
+    /** Maximum representable finite floating-point number (2^e_max). */
+    static const long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
+    /**
+      The difference between 1 and the least value greater than 1 that is
+      representable in the given floating point type.
+    */
+    static const long double EPSILON = 1.925929944387235853055977942584927318538101648215388195239938795566558837890625e-34L;
     
-    inline void setValue(const Representation::IEEE754SinglePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEE754SinglePrecision& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent; // possible overflow and underflow
@@ -696,7 +1009,8 @@ public:
       value.mantissa0 = 0;
     }
     
-    inline void setValue(const Representation::IEEE754DoublePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEE754DoublePrecision& _value) throw() {
       value.negative = _value.negative;
       int exponent = _value.exponent - _value.BIAS + value.BIAS;
       value.exponent = exponent; // possible overflow and underflow
@@ -708,11 +1022,14 @@ public:
       value.mantissa0 = 0;
     }
     
-    void setValue(const Representation::IEEEExtendedDoublePrecision96& _value) throw();
+    void setValue(
+      const Representation::IEEEExtendedDoublePrecision96& value) throw();
     
-    void setValue(const Representation::IEEEExtendedDoublePrecision128& _value) throw();
+    void setValue(
+      const Representation::IEEEExtendedDoublePrecision128& value) throw();
     
-    inline void setValue(const Representation::IEEEQuadruplePrecision& _value) throw() {
+    inline void setValue(
+      const Representation::IEEEQuadruplePrecision& value) throw() {
       this->value = value;
     }
     
@@ -731,23 +1048,28 @@ public:
     inline IEEEQuadruplePrecision() throw() {
     }
     
-    inline IEEEQuadruplePrecision(const Representation::IEEE754SinglePrecision& value) throw() {
+    inline IEEEQuadruplePrecision(
+      const Representation::IEEE754SinglePrecision& value) throw() {
       setValue(value);
     }
     
-    inline IEEEQuadruplePrecision(const Representation::IEEE754DoublePrecision& value) throw() {
+    inline IEEEQuadruplePrecision(
+      const Representation::IEEE754DoublePrecision& value) throw() {
       setValue(value);
     }
     
-    inline IEEEQuadruplePrecision(const Representation::IEEEExtendedDoublePrecision96& value) throw() {
+    inline IEEEQuadruplePrecision(
+      const Representation::IEEEExtendedDoublePrecision96& value) throw() {
       setValue(value);
     }
     
-    inline IEEEQuadruplePrecision(const Representation::IEEEExtendedDoublePrecision128& value) throw() {
+    inline IEEEQuadruplePrecision(
+      const Representation::IEEEExtendedDoublePrecision128& value) throw() {
       setValue(value);
     }
     
-    inline IEEEQuadruplePrecision(const Representation::IEEEQuadruplePrecision& value) throw() {
+    inline IEEEQuadruplePrecision(
+      const Representation::IEEEQuadruplePrecision& value) throw() {
       setValue(value);
     }
     
@@ -761,6 +1083,60 @@ public:
     
     inline IEEEQuadruplePrecision(long double value) throw() {
       setValue(value);
+    }
+
+    /**
+      Returns true if the value is negative.
+    */
+    inline bool isNegative() const throw() {
+      return value.negative != 0;
+    }
+    
+    /**
+      Returns true if the value is an ordinary number (not infinity or NaN).
+    */
+    inline bool isOrdinary() const throw() {
+      return ~value.exponent != 0;
+    }
+    
+    /**
+      Returns true if the value is either +INFINITY or -INFINITY.
+    */
+    inline bool isInfinity() const throw() {
+      return (~value.exponent == 0) && (value.mantissa3 == 0) &&
+        (value.mantissa2 == 0) && (value.mantissa1 == 0) &&
+        (value.mantissa0 == 0);
+    }
+    
+    /**
+      Returns true if the value is Not-a-Number (NaN).
+    */
+    inline bool isNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa3 != 0) || (value.mantissa2 != 0) ||
+         (value.mantissa1 != 0) || (value.mantissa0 != 0));
+    }
+    
+    /**
+      Returns true if the value is a quite NaN. A NaN that behaves predictably
+      and does not raise exceptions in arithmetic operations is called a quiet
+      NaN.
+    */
+    inline bool isQuiteNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa3 & (1 << (20 - 1))) != 0);
+    }
+    
+    /**
+      Returns true if the value is a signaling NaN. A NaN that generally raises
+      an exception when encountered as an operand of arithmetic operations is
+      called a signaling NaN.
+    */
+    inline bool isSignalingNaN() const throw() {
+      return (~value.exponent == 0) &&
+        ((value.mantissa3 & (1 << (20 - 1))) == 0) &&
+        ((value.mantissa3 != 0) || (value.mantissa2 != 0) ||
+         (value.mantissa1 != 0) || (value.mantissa0 != 0));
     }
     
     operator float() const throw();

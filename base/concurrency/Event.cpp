@@ -38,10 +38,10 @@ public:
 };
 
 // TAG: why "throw(Event::EventException)" and not just "throw(EventException)"
-Event::Event() throw(Event::EventException) {
+Event::Event() throw(ResourceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if ((context = Cast::pointer<void*>(::CreateEvent(0, TRUE, FALSE, 0))) == 0) {
-    throw EventException("Unable to initialize event", this);
+    throw ResourceException("Unable to initialize event", this);
   }
 #else // pthread
   EventImpl::Context* context = new EventImpl::Context[1];
@@ -50,7 +50,7 @@ Event::Event() throw(Event::EventException) {
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes)) {
     delete[] context;
-    throw EventException(this);
+    throw ResourceException(this);
   }
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
 #  warning disabled selection of mutex type due to CYGWIN bug
@@ -58,20 +58,20 @@ Event::Event() throw(Event::EventException) {
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     delete[] context;
-    throw EventException(this);
+    throw ResourceException(this);
   }
-#endif // cygwin temporary bug fix
+#endif // TAG: cygwin temporary bug fix
   if (pthread_mutex_init(&Cast::pointer<EventImpl::Context*>(context)->mutex, &attributes)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     delete[] context;
-    throw EventException(this);
+    throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 
   if (pthread_cond_init(&Cast::pointer<EventImpl::Context*>(context)->condition, 0)) {
     pthread_mutex_destroy(&Cast::pointer<EventImpl::Context*>(context)->mutex);
     delete[] context;
-    throw EventException(this);
+    throw ResourceException(this);
   }
   this->context = context;
 #endif

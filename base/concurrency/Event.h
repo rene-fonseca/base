@@ -18,6 +18,7 @@
 #include <base/OutOfDomain.h>
 #include <base/Overflow.h>
 #include <base/concurrency/LockException.h>
+#include <base/ResourceException.h>
 #include <base/OperatingSystem.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -86,7 +87,7 @@ public:
   /**
     Initializes the event in the non-signaled state.
   */
-  explicit Event() throw(EventException);
+  explicit Event() throw(ResourceException);
 
   /**
     Returns true if this event is in the signaled state.

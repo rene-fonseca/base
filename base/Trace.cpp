@@ -9,11 +9,11 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 void Trace::message(const char* message) {
-  printf("TRACE %s\n", message); // printf must be MT-safe
+  fprintf(stderr, "TRACE %s\n", message); // fprintf must be MT-safe
 }
 
 void Trace::member(const void* ptr, const char* message) {
-  printf("TRACE %08x >> %s\n", ptr, message); // printf must be MT-safe
+  fprintf(stderr, "TRACE %08x >> %s\n", ptr, message); // fprintf must be MT-safe
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

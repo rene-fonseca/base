@@ -19,6 +19,7 @@
 #include <base/concurrency/Synchronizeable.h>
 #include <base/concurrency/Synchronize.h>
 #include <base/concurrency/SpinLock.h>
+#include <base/string/ASCIITraits.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -52,10 +53,6 @@ typedef enum {
 */
 
 class FormatOutputStream : public BufferedOutputStream, public Synchronizeable<SpinLock> {
-public:
-
-  /** Digits of all bases. */
-  static const char DIGITS[]; // = "0123456789abcdef";
 protected:
 
   unsigned int defaultWidth;

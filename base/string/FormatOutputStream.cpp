@@ -26,8 +26,6 @@ FormatOutputStream fout(standardOutputStream);
 FileDescriptorOutputStream standardErrorStream(FileDescriptor::getStandardError());
 FormatOutputStream ferr(standardErrorStream);
 
-const char FormatOutputStream::DIGITS[] = "0123456789abcdef";
-
 FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) throw(BindException) :
   BufferedOutputStream(out, size) {
 
@@ -206,7 +204,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) {
     {
       unsigned short int temp = (unsigned short int)value; // no sign
       do {
-        *dest = FormatOutputStream::DIGITS[temp & 0x00000001]; // get digit
+        *dest = ASCIITraits::valueToDigit(temp & 0x00000001); // get digit
         temp >>= 1; // bits per digit
         --dest;
       } while(temp > 0);
@@ -217,7 +215,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) {
     {
       unsigned short int temp = (unsigned short int)value; // no sign
       do {
-        *dest = FormatOutputStream::DIGITS[temp & 0x00000007]; // get digit
+        *dest = ASCIITraits::valueToDigit(temp & 0x00000007); // get digit
         temp >>= 3; // bits per digit
         --dest;
       } while(temp > 0);
@@ -228,7 +226,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) {
     {
       unsigned short int temp = (value >= 0) ? value : -value;
       do {
-        *dest = FormatOutputStream::DIGITS[temp % 10]; // get digit
+        *dest = ASCIITraits::valueToDigit(temp % 10); // get digit
         temp = temp/10;
         --dest;
       } while(temp > 0);
@@ -239,7 +237,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) {
     {
       unsigned short int temp = (unsigned short int)value; // no sign
       do {
-        *dest = FormatOutputStream::DIGITS[temp & 0x0000000f]; // get bits of digit
+        *dest = ASCIITraits::valueToDigit(temp & 0x0000000f); // get bits of digit
         temp >>= 4; // bits per digit
         --dest;
       } while(temp > 0);
@@ -262,7 +260,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int va
   case BIN:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value & 0x00000001]; // get digit
+        *dest = ASCIITraits::valueToDigit(value & 0x00000001); // get digit
         value >>= 1; // bits per digit
         --dest;
       } while(value > 0);
@@ -272,7 +270,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int va
   case OCT:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value & 0x00000007]; // get digit
+        *dest = ASCIITraits::valueToDigit(value & 0x00000007); // get digit
         value >>= 3; // bits per digit
         --dest;
       } while(value > 0);
@@ -282,7 +280,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int va
   case DEC:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value % 10]; // get digit
+        *dest = ASCIITraits::valueToDigit(value % 10); // get digit
         value /= 10;
         --dest;
       } while(value > 0);
@@ -292,7 +290,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int va
   case HEX:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value & 0x0000000f]; // get bits of digit
+        *dest = ASCIITraits::valueToDigit(value & 0x0000000f); // get bits of digit
         value >>= 4; // bits per digit
         --dest;
       } while(value > 0);
@@ -316,7 +314,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) {
     {
       unsigned int temp = (unsigned int)value; // no sign
       do {
-        *dest = FormatOutputStream::DIGITS[temp & 0x00000001]; // get digit
+        *dest = ASCIITraits::valueToDigit(temp & 0x00000001); // get digit
         temp >>= 1; // bits per digit
         --dest;
       } while(temp > 0);
@@ -327,7 +325,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) {
     {
       unsigned int temp = (unsigned int)value; // no sign
       do {
-        *dest = FormatOutputStream::DIGITS[temp & 0x00000007]; // get digit
+        *dest = ASCIITraits::valueToDigit(temp & 0x00000007); // get digit
         temp >>= 3; // bits per digit
         --dest;
       } while(temp > 0);
@@ -338,7 +336,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) {
     {
       unsigned int temp = (value >= 0) ? value : -value;
       do {
-        *dest = FormatOutputStream::DIGITS[temp % 10]; // get digit
+        *dest = ASCIITraits::valueToDigit(temp % 10); // get digit
         temp = temp/10;
         --dest;
       } while(temp > 0);
@@ -349,7 +347,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) {
     {
       unsigned int temp = (unsigned int)value; // no sign
       do {
-        *dest = FormatOutputStream::DIGITS[temp & 0x0000000f]; // get bits of digit
+        *dest = ASCIITraits::valueToDigit(temp & 0x0000000f); // get bits of digit
         temp >>= 4; // bits per digit
         --dest;
       } while(temp > 0);
@@ -372,7 +370,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value) {
   case BIN:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value & 0x00000001]; // get digit
+        *dest = ASCIITraits::valueToDigit(value & 0x00000001); // get digit
         value >>= 1; // bits per digit
         --dest;
       } while(value > 0);
@@ -382,7 +380,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value) {
   case OCT:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value & 0x00000007]; // get digit
+        *dest = ASCIITraits::valueToDigit(value & 0x00000007); // get digit
         value >>= 3; // bits per digit
         --dest;
       } while(value > 0);
@@ -392,7 +390,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value) {
   case DEC:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value % 10]; // get digit
+        *dest = ASCIITraits::valueToDigit(value % 10); // get digit
         value /= 10;
         --dest;
       } while(value > 0);
@@ -402,7 +400,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value) {
   case HEX:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value & 0x0000000f]; // get bits of digit
+        *dest = ASCIITraits::valueToDigit(value & 0x0000000f); // get bits of digit
         value >>= 4; // bits per digit
         --dest;
       } while(value > 0);
@@ -426,7 +424,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long value) {
     {
       unsigned long temp = (unsigned long)value; // no sign
       do {
-        *dest = FormatOutputStream::DIGITS[temp & 0x00000001]; // get digit
+        *dest = ASCIITraits::valueToDigit(temp & 0x00000001); // get digit
         temp >>= 1; // bits per digit
         --dest;
       } while(temp > 0);
@@ -437,7 +435,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long value) {
     {
       unsigned long temp = (unsigned long)value; // no sign
       do {
-        *dest = FormatOutputStream::DIGITS[temp & 0x00000007]; // get digit
+        *dest = ASCIITraits::valueToDigit(temp & 0x00000007); // get digit
         temp >>= 3; // bits per digit
         --dest;
       } while(temp > 0);
@@ -448,7 +446,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long value) {
     {
       unsigned long temp = (value >= 0) ? value : -value;
       do {
-        *dest = FormatOutputStream::DIGITS[temp % 10]; // get digit
+        *dest = ASCIITraits::valueToDigit(temp % 10); // get digit
         temp = temp/10;
         --dest;
       } while(temp > 0);
@@ -459,7 +457,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long value) {
     {
       unsigned long temp = (unsigned long)value; // no sign
       do {
-        *dest = FormatOutputStream::DIGITS[temp & 0x0000000f]; // get bits of digit
+        *dest = ASCIITraits::valueToDigit(temp & 0x0000000f); // get bits of digit
         temp >>= 4; // bits per digit
         --dest;
       } while(temp > 0);
@@ -482,7 +480,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long value) 
   case BIN:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value & 0x00000001]; // get digit
+        *dest = ASCIITraits::valueToDigit(value & 0x00000001); // get digit
         value >>= 1; // bits per digit
         --dest;
       } while(value > 0);
@@ -492,7 +490,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long value) 
   case OCT:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value & 0x00000007]; // get digit
+        *dest = ASCIITraits::valueToDigit(value & 0x00000007); // get digit
         value >>= 3; // bits per digit
         --dest;
       } while(value > 0);
@@ -502,7 +500,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long value) 
   case DEC:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value % 10]; // get digit
+        *dest = ASCIITraits::valueToDigit(value % 10); // get digit
         value /= 10;
         --dest;
       } while(value > 0);
@@ -512,7 +510,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long value) 
   case HEX:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value & 0x0000000f]; // get bits of digit
+        *dest = ASCIITraits::valueToDigit(value & 0x0000000f); // get bits of digit
         value >>= 4; // bits per digit
         --dest;
       } while(value > 0);
@@ -536,7 +534,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
     {
       unsigned long long int temp = (unsigned long long int)value; // no sign
       do {
-        *dest = FormatOutputStream::DIGITS[temp & 0x00000001]; // get digit
+        *dest = ASCIITraits::valueToDigit(temp & 0x00000001); // get digit
         temp >>= 1; // bits per digit
         --dest;
       } while(temp > 0);
@@ -547,7 +545,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
     {
       unsigned long long int temp = (unsigned long long int)value; // no sign
       do {
-        *dest = FormatOutputStream::DIGITS[temp & 0x00000007]; // get digit
+        *dest = ASCIITraits::valueToDigit(temp & 0x00000007); // get digit
         temp >>= 3; // bits per digit
         --dest;
       } while(temp > 0);
@@ -558,7 +556,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
     {
       unsigned int temp = (value >= 0) ? value : -value;
       do {
-        *dest = FormatOutputStream::DIGITS[temp % 10]; // get digit
+        *dest = ASCIITraits::valueToDigit(temp % 10); // get digit
         temp = temp/10;
         --dest;
       } while(temp > 0);
@@ -569,7 +567,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
     {
       unsigned long long int temp = (unsigned long long int)value; // no sign
       do {
-        *dest = FormatOutputStream::DIGITS[temp & 0x0000000f]; // get bits of digit
+        *dest = ASCIITraits::valueToDigit(temp & 0x0000000f); // get bits of digit
         temp >>= 4; // bits per digit
         --dest;
       } while(temp > 0);
@@ -592,7 +590,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
   case BIN:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value & 0x00000001]; // get digit
+        *dest = ASCIITraits::valueToDigit(value & 0x00000001); // get digit
         value >>= 1; // bits per digit
         --dest;
       } while(value > 0);
@@ -602,7 +600,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
   case OCT:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value & 0x00000007]; // get digit
+        *dest = ASCIITraits::valueToDigit(value & 0x00000007); // get digit
         value >>= 3; // bits per digit
         --dest;
       } while(value > 0);
@@ -612,7 +610,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
   case DEC:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value % 10]; // get digit
+        *dest = ASCIITraits::valueToDigit(value % 10); // get digit
         value /= 10;
         --dest;
       } while(value > 0);
@@ -622,7 +620,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
   case HEX:
     {
       do {
-        *dest = FormatOutputStream::DIGITS[value & 0x0000000f]; // get bits of digit
+        *dest = ASCIITraits::valueToDigit(value & 0x0000000f); // get bits of digit
         value >>= 4; // bits per digit
         --dest;
       } while(value > 0);

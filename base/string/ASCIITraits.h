@@ -1,0 +1,176 @@
+/***************************************************************************
+    The Base Framework
+    A framework for developing platform independent applications
+
+    Copyright (C) 2001 by René Møller Fonseca <fonseca@mip.sdu.dk>
+
+    This framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    For the licensing terms refer to the file 'LICENSE'.
+ ***************************************************************************/
+
+#ifndef _DK_SDU_MIP__BASE_STRING__ASCII_TRAITS_H
+#define _DK_SDU_MIP__BASE_STRING__ASCII_TRAITS_H
+
+#include <base/features.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+/**
+  This class is a wrapper for the 7-bit ASCII octet manipulators and more. This
+  class does not depend on the current locale of the application.
+
+  @short ASCII character traits.
+  @author René Fonseca
+  @version 1.0
+*/
+class ASCIITraits {
+private:
+
+  enum {
+    LOWER = 1, // any of the characters "abcdefghijklmnopqrstuvwxyz"
+    UPPER = 2, // any of the characters "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    ALPHA = LOWER|UPPER,
+    DIGIT = 4, // any of the characters "0123456789"
+    ALPHANUM = ALPHA|DIGIT,
+    LOWERHEX = 8, // a DIGIT or any of the characters "abcdef"
+    UPPERHEX = 16, // a DIGIT or any of the characters "ABCDEF"
+    HEX = LOWERHEX|UPPERHEX,
+    CONTROL = 32, // the characters from 0x00 to 0x1f and 0x7f
+    SPACE = 64, // tab, newline, vertical-tab, form-feed, carriage-return, and space
+    ASCII = 128, // the octets from 0x00 to 0x7f
+    SP = 256, // space ' '
+    PUNCTUATION = 512, // punctuation characters
+    GRAPH = ALPHANUM|PUNCTUATION, // visible characters
+    PRINTABLE = SP|GRAPH, // printable characters
+  };
+
+  struct CharacterDescriptor {
+    unsigned short flags;
+    char lower;
+    char upper;
+    unsigned char value;
+  };
+
+  static const CharacterDescriptor lookup[256];
+public:
+
+  /** Array of all digits (lower case) in ascending order of corresponding value. */
+  static const char LOWER_DIGITS[];
+  /** Array of all digits (upper case) in ascending order of corresponding value. */
+  static const char UPPER_DIGITS[];
+
+  static const char NUL = '\0';
+  static const char SOH = 0x01;
+  static const char STX = 0x02;
+  static const char ETX = 0x03;
+  static const char EOT = 0x04;
+  static const char ENQ = 0x05;
+  static const char ACK = 0x06;
+  static const char BEL = '\a';
+  static const char BS = '\b';
+  static const char HT = '\t';
+  static const char LF = '\n';
+  static const char VT = '\v';
+  static const char FF = '\f';
+  static const char CR = '\r';
+  static const char SO = 0x0e;
+  static const char SI = 0x0f;
+  static const char DLE = 0x10;
+  static const char DC1 = 0x11;
+  static const char DC2 = 0x12;
+  static const char DC3 = 0x13;
+  static const char DC4 = 0x14;
+  static const char NAK = 0x15;
+  static const char SYN = 0x16;
+  static const char ETB = 0x17;
+  static const char CAN = 0x18;
+  static const char EM = 0x19;
+  static const char SUB = 0x1a;
+  static const char ESC = 0x1b;
+  static const char FS = 0x1c;
+  static const char GS = 0x1d;
+  static const char RS = 0x1e;
+  static const char US = 0x1f;
+  static const char SPC = ' ';
+  static const char DEL = 0x7f;
+
+  /** Returns true if the character an alphabetic character. */
+  static inline bool isAlpha(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & ALPHA;}
+  /** Returns true if the character an alphabetic character or a digit. */
+  static inline bool isAlphaNum(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & ALPHANUM;}
+  /** Returns true if the character is lowercase. */
+  static inline bool isLower(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & LOWER;}
+  /** Returns true if the character is uppercase. */
+  static inline bool isUpper(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & UPPER;}
+  /** Returns true if the character is a digit. */
+  static inline bool isDigit(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & DIGIT;}
+  /** Returns true if the character is a lower hex digit (any of the characters "0123456789abcdef"). */
+  static inline bool isLowerHex(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & LOWERHEX;}
+  /** Returns true if the character is an upper hex digit (any of the characters "0123456789ABCDEF"). */
+  static inline bool isUpperHex(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & UPPERHEX;}
+  /** Returns true if the character is a hex digit (either lower or upper hex digit). */
+  static inline bool isHexDigit(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & HEX;}
+  /** Returns true if the character is a white space (tab '\t', newline '\n', vertical-tab '\v', form-feed '\f', carriage-return '\r', and space ' '). */
+  static inline bool isSpace(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & SPACE;}
+  /** Returns true if the character is a punctuation mark. */
+  static inline bool isPunctuation(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & PUNCTUATION;}
+  /** Returns true if the character is printable. */
+  static inline bool isPrintable(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & PRINTABLE;}
+  /** Returns true if the character is a visible character. */
+  static inline bool isGraph(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & GRAPH;}
+  /** Returns true if the character is a control character (the octets from 0x00 to 0x1f). */
+  static inline bool isControl(char value) throw() {return lookup[static_cast<unsigned char>(value)].flags & CONTROL;}
+  /** Returns true if the character is an ASCII character (i.e. the octets from 0x00 to 0x7f). */
+  static inline bool isASCII(char value) throw() {return !(value & ~0177U);}
+
+  /**
+    Returns the value of the specified character. The character must be a digit
+    approved by isDigit(), isLowerHex(), isUpperHex(), or isHexDigit(). If the
+    character is not a digit an unspecified value is returned.
+  */
+  static inline unsigned char digitToValue(char value) throw() {return lookup[static_cast<unsigned char>(value)].value;}
+
+  /**
+    Returns the character representation of the specified value. An unspecified
+    value is returned if the argument falls outside the range [0..15].
+  */
+  static inline char valueToDigit(unsigned int value) throw() {return LOWER_DIGITS[value] & 0x0f;}
+
+  /**
+    Returns the character representation of the specified value. An unspecified
+    value is returned if the argument falls outside the range [0..15].
+  */
+  static inline char valueToLowerDigit(unsigned int value) throw() {return LOWER_DIGITS[value] & 0x0f;}
+
+  /**
+    Returns the character representation of the specified value. An unspecified
+    value is returned if the argument falls outside the range [0..15].
+  */
+  static inline char valueToUpperDigit(unsigned int value) throw() {return UPPER_DIGITS[value] & 0x0f;}
+
+  /** Returns the lower case representation of the character. */
+  static inline char toLower(char value) throw() {return lookup[static_cast<unsigned char>(value)].lower;}
+  /** Returns the upper case representation of the character. */
+  static inline char toUpper(char value) throw() {return lookup[static_cast<unsigned char>(value)].upper;}
+  /** Compares the specified characters (less than (negative), equal (0), and greater than (positive). */
+  static inline int compare(char left, char right) throw() {return left - right;}
+  /** Compares the specified characters ignoring the case (less than (negative), equal (0), and greater than (positive). */
+  static inline int compareCaseless(char left, char right) throw() {return lookup[static_cast<unsigned char>(left)].lower - lookup[static_cast<unsigned char>(right)].lower;}
+
+  class ToLowerCase {
+  public:
+    inline char operator()(char value) const throw() {return lookup[static_cast<unsigned char>(value)].lower;}
+  };
+
+  class ToUpperCase {
+  public:
+    inline char operator()(char value) const throw() {return lookup[static_cast<unsigned char>(value)].upper;}
+  };
+};
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+
+#endif

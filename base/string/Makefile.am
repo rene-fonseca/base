@@ -4,7 +4,7 @@ DEFS =
 
 noinst_LTLIBRARIES = libstring.la
 
-libstring_la_SOURCES = StringInputStream.cpp StringOutputStream.cpp FormatOutputStream.cpp FormatInputStream.cpp InvalidFormat.cpp String.cpp RegExp.cpp WideString.cpp
+libstring_la_SOURCES = ASCIITraits.cpp StringInputStream.cpp StringOutputStream.cpp FormatOutputStream.cpp FormatInputStream.cpp InvalidFormat.cpp String.cpp RegExp.cpp WideString.cpp
 
 sectiondir = $(includedir)/base/string
-section_HEADERS = String.h StringException.h StringInputStream.h StringOutputStream.h InvalidFormat.h FormatOutputStream.h FormatInputStream.h RegExp.h MultibyteException.h WideStringException.h WideString.h
+section_HEADERS = ASCIITraits.h String.h StringException.h StringInputStream.h StringOutputStream.h InvalidFormat.h FormatOutputStream.h FormatInputStream.h RegExp.h MultibyteException.h WideStringException.h WideString.h

@@ -18,7 +18,7 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
-#else // Unix
+#else // unix
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <fcntl.h>
@@ -28,34 +28,34 @@
   #if !defined(SSIZE_MAX)
     #define SSIZE_MAX (1024*1024)
   #endif
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 int FileDescriptor::Descriptor::getFlags() const throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return 0;
-#else // __unix__
+#else // unix
   int result;
   if ((result = ::fcntl(handle, F_GETFL)) < 0) {
     throw IOException("Unable to get flags of file descriptor");
   }
   return result;
-#endif
+#endif // flavour
 }
 
 void FileDescriptor::Descriptor::setFlags(int flags) throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#else // Unix
+#else // unix
   if (::fcntl(handle, F_SETFL, flags) != 0) {
     throw IOException("Unable to set flags of file descriptor");
   }
-#endif
+#endif // flavour
 }
 
 void FileDescriptor::Descriptor::setNonBlocking(bool value) throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#else // Unix
+#else // unix
   int flags = getFlags();
   if (value) {
     if (flags & O_NONBLOCK == 0) { // do we need to set flag
@@ -66,7 +66,7 @@ void FileDescriptor::Descriptor::setNonBlocking(bool value) throw(IOException) {
       setFlags(flags & ~O_NONBLOCK);
     }
   }
-#endif
+#endif // flavour
 }
 
 FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
@@ -75,11 +75,11 @@ FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
     if (!CloseHandle((HANDLE)handle)) {
       throw IOException("Unable to close file descriptor");
     }
-#else // __unix__
+#else // unix
     if (::close(handle) != 0) {
       throw IOException("Unable to close file descriptor");
     }
-#endif
+#endif // flavour
   }
 }
 
@@ -144,25 +144,25 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor&
 FileDescriptor FileDescriptor::getStandardInput() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return FileDescriptor(GetStdHandle(STD_INPUT_HANDLE));
-#else // Unix
+#else // unix
   return FileDescriptor(0);
-#endif
+#endif // flavour
 }
 
 FileDescriptor FileDescriptor::getStandardOutput() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return FileDescriptor(GetStdHandle(STD_OUTPUT_HANDLE));
-#else // Unix
+#else // unix
   return FileDescriptor(1);
-#endif
+#endif // flavour
 }
 
 FileDescriptor FileDescriptor::getStandardError() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   return FileDescriptor(GetStdHandle(STD_ERROR_HANDLE));
-#else // __unix__
+#else // unix
   return FileDescriptor(2);
-#endif
+#endif // flavour
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

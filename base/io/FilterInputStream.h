@@ -65,9 +65,17 @@ public:
   unsigned int skip(unsigned int count) throw(IOException);
 
   /**
-    Destroys the filter input stream.
+    Blocking wait for input to become available.
   */
-  ~FilterInputStream();
+  void wait() const throw(IOException);
+
+  /**
+    Blocking wait for input to become available.
+
+    @param timeout The timeout periode in microseconds.
+    @return True, if data is available. False, if the timeout periode expired.
+  */
+  bool wait(unsigned int timeout) const throw(IOException);
 };
 
 #endif

@@ -28,5 +28,10 @@ unsigned int FilterInputStream::skip(unsigned int count) throw(IOException) {
   return in.skip(count);
 }
 
-FilterInputStream::~FilterInputStream() {
+void FilterInputStream::wait() const throw(IOException) {
+  in.wait();
+}
+
+bool FilterInputStream::wait(unsigned int timeout) const throw(IOException) {
+  return in.wait(timeout);
 }

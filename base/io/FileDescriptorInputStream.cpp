@@ -5,24 +5,25 @@
 
 #include <base/io/FileDescriptorInputStream.h>
 #include <base/io/EndOfFile.h>
+#include <base/concurrency/Thread.h>
 
 #if defined(__win32__)
   #include <windows.h>
 #else // __unix__
   #include <sys/types.h>
   #include <sys/stat.h>
-  #include <fcntl.h>
+  #include <sys/time.h>
   #include <unistd.h>
+  #include <fcntl.h>
   #include <errno.h>
 
-#ifndef SSIZE_MAX
-#define SSIZE_MAX (1024*1024)
-#endif
-
+  #ifndef SSIZE_MAX
+    #define SSIZE_MAX (1024*1024)
+  #endif
 #endif
 
 FileDescriptorInputStream::FileDescriptorInputStream() throw() :
-  FileDescriptor(), eof(true) {
+  FileDescriptor(), eof(false) {
 }
 
 FileDescriptorInputStream::FileDescriptorInputStream(const FileDescriptor& fd) throw() :
@@ -58,60 +59,45 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException) {
 }
 
 unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int size) throw(IOException) {
-  unsigned int totalBytesRead = 0;
-
+  if (eof) {
+    throw EndOfFile();
+  }
 #if defined(__win32__)
-  while (totalBytesRead < size) {
-    DWORD bytesRead;
-    BOOL success = ReadFile((void*)fd->getHandle(), &buffer[totalBytesRead], size - totalBytesRead, &bytesRead, NULL);
-
-    if (success) {
-      if (bytesRead == 0) {
-        if (eof) {
-          throw EndOfFile();
-        }
-        eof = true; // remember end of file
-        return totalBytesRead;
-      }
-      totalBytesRead += bytesRead;
-    } else { // error occured
-      throw IOException("Unable to read from file descriptor");
+  DWORD bytesRead;
+  BOOL success = ReadFile((void*)fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX, &bytesRead, NULL);
+  if (success) {
+    if (bytesRead == 0) { // has end of file been reached
+      eof = true; // remember end of file
+      return 0;
     }
+    return bytesRead;
+  } else { // error occured
+    throw IOException("Unable to read from file descriptor");
   }
 #else // __unix__
-  while (totalBytesRead < size) {
-    int result = ::read(getHandle(), &buffer[totalBytesRead], (size - totalBytesRead) % SSIZE_MAX);
-
-    if (result == 0) { // has end of file been reached
-      if (eof) {
-        throw EndOfFile();
-      }
-      eof = true; // remember end of file
-      return totalBytesRead; // early return
-    } else if (result == -1) { // has an error occured
-      switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
-      case EINTR: // interrupted by signal before any data was read
-        // try again
-        break;
-      case EAGAIN: // no data available (only in non-blocking mode)
-        return totalBytesRead; // early return
-      default:
-        throw IOException("Unable to read from file descriptor");
-      }
-    } else {
-      totalBytesRead += result;
+  int result = ::read(getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
+  if (result == 0) { // has end of file been reached
+    eof = true; // remember end of file
+    return 0; // return
+  } else if (result < 0) { // has an error occured
+    switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
+    case EINTR: // interrupted by signal before any data was read
+      return 0; // try later
+    case EAGAIN: // no data available (only in non-blocking mode)
+      return 0; // try later
+    default:
+      throw IOException("Unable to read from pipe");
     }
   }
+  return result;
 #endif
-
-  return totalBytesRead;
 }
 
 unsigned int FileDescriptorInputStream::skip(unsigned int count) throw(IOException) {
   unsigned int temp = count;
-  char buffer[1024]; // USE THREAD LOCAL STORAGE INSTEAD
+  Allocator<char>* buffer = Thread::getLocalStorage();
   while (temp) {
-    temp -= read((char*)&buffer, sizeof(buffer) <? temp);
+    temp -= read(buffer->getElements(), buffer->getSize() <? temp);
   }
   return count - temp;
 }
@@ -130,6 +116,33 @@ void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
     }
   }
 #endif
+}
+
+void FileDescriptorInputStream::wait() const throw(IOException) {
+  fd_set rfds;
+  FD_ZERO(&rfds);
+  FD_SET(fd->getHandle(), &rfds);
+
+  int result = ::select(fd->getHandle() + 1, &rfds, NULL, NULL, NULL);
+  if (result == -1) {
+    throw IOException("Unable to wait for input");
+  }
+}
+
+bool FileDescriptorInputStream::wait(unsigned int timeout) const throw(IOException) {
+  fd_set rfds;
+  FD_ZERO(&rfds);
+  FD_SET(fd->getHandle(), &rfds);
+
+  struct timeval tv;
+  tv.tv_sec = timeout/1000000;
+  tv.tv_usec = timeout % 1000000;
+
+  int result = ::select(fd->getHandle() + 1, &rfds, NULL, NULL, &tv);
+  if (result == -1) {
+    throw IOException("Unable to wait for input");
+  }
+  return result; // return true if data available
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorInputStream& value) {

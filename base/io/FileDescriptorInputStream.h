@@ -79,6 +79,19 @@ public:
   void setNonBlocking(bool value) throw(IOException);
 
   /**
+    Blocking wait for input to become available.
+  */
+  void wait() const throw(IOException);
+
+  /**
+    Blocking wait for input to become available.
+
+    @param timeout The timeout periode in microseconds.
+    @return True, if data is available. False, if the timeout periode expired.
+  */
+  bool wait(unsigned int timeout) const throw(IOException);
+
+  /**
     Writes a string representation of a FileDescriptorInputStream object to a format stream.
   */
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorInputStream& value);

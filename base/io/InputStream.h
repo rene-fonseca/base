@@ -46,6 +46,19 @@ public:
     @return The actual number of bytes skipped.
   */
   virtual unsigned int skip(unsigned int count) throw(IOException) = 0;
+
+  /**
+    Blocking wait for input to become available.
+  */
+  virtual void wait() const throw(IOException) = 0;
+
+  /**
+    Blocking wait for input to become available.
+
+    @param timeout The timeout periode in microseconds.
+    @return True, if data is available. False, if the timeout periode expired.
+  */
+  virtual bool wait(unsigned int timeout) const throw(IOException) = 0;
 };
 
 #endif

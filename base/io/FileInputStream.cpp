@@ -4,7 +4,9 @@
  ***************************************************************************/
 
 #include <base/io/FileInputStream.h>
+#include <sys/types.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 FileInputStream::FileInputStream(const String<>& p, unsigned int flags) throw(FileNotFound) :
   path(p) {
@@ -19,8 +21,25 @@ FileInputStream::FileInputStream(const String<>& p, unsigned int flags) throw(Fi
   setHandle(handle);
 }
 
+unsigned int FileInputStream::available() const throw(IOException) {
+  struct stat status;
+  off_t position;
+  if ((::fstat(getHandle(), &status) != 0) || ((position = ::lseek(getHandle(), 0, SEEK_CUR)) == -1)) {
+    throw IOException("Unable to get available bytes");
+  }
+  return status.st_size - position;
+}
+
 const String<>& FileInputStream::getPath() const throw() {
   return path;
+}
+
+void FileInputStream::wait() const throw(IOException) {
+  // now what
+}
+
+bool FileInputStream::wait(unsigned int timeout) const throw(IOException) {
+  // now what
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileInputStream& value) {

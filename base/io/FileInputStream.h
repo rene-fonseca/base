@@ -38,9 +38,29 @@ public:
   FileInputStream(const String<>& name, unsigned int flags) throw(FileNotFound);
 
   /**
+    Returns the number of bytes that can be read or skipped over without blocking.
+
+    @return Available number of bytes in stream.
+  */
+  unsigned int available() const throw(IOException);
+
+  /**
     Returns the path of the file.
   */
   const String<>& getPath() const throw();
+
+  /**
+    Blocking wait for input to become available.
+  */
+  void wait() const throw(IOException);
+
+  /**
+    Blocking wait for input to become available.
+
+    @param timeout The timeout periode in microseconds.
+    @return True, if data is available. False, if the timeout periode expired.
+  */
+  bool wait(unsigned int timeout) const throw(IOException);
 
   /**
     Writes a string representation of a FileInputStream object to a stream.

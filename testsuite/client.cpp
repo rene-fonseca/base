@@ -12,6 +12,8 @@
 #include <base/concurrency/Thread.h>
 #include <typeinfo>
 
+using namespace base;
+
 void client(String<> host, String<> service) {
   fout << "Server: " << host << ENDL;
 

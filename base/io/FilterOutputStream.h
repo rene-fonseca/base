@@ -9,6 +9,8 @@
 #include <base/io/OutputStream.h>
 #include <base/io/BindException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A FilterOutputStream redirects requests to an ordinary OutputStream possibly transforming data and providing additional functionality in the process. A FilterOutputStream is itself an OutputStream.
 
@@ -54,5 +56,7 @@ public:
   */
   ~FilterOutputStream();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

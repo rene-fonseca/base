@@ -13,7 +13,7 @@ void Trace::message(const char* message) {
 }
 
 void Trace::member(const void* ptr, const char* message) {
-  printf("TRACE %p >> %s\n", ptr, message); // printf must be MT-safe
+  printf("TRACE %08x >> %s\n", ptr, message); // printf must be MT-safe
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

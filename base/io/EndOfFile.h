@@ -8,6 +8,8 @@
 
 #include <base/io/IOException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Specifies that the end of stream has been reached unexpectedly during input.
 
@@ -30,5 +32,7 @@ public:
   */
   EndOfFile(const char* message);
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

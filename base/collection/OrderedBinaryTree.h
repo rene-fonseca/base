@@ -8,6 +8,8 @@
 
 #include <base/collection/BinaryTree.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Binary tree with the nodes ordered. All the values of the left and right
   subtrees are respectively less than and greater than the value for any node.
@@ -198,5 +200,7 @@ public:
     BinaryTree<TYPE>::removeAll();
   }
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -6,7 +6,6 @@
 #ifndef _DK_SDU_MIP__BASE_THREAD__MUTUAL_EXCLUSION_H
 #define _DK_SDU_MIP__BASE_THREAD__MUTUAL_EXCLUSION_H
 
-#include <base/features.h>
 #include <base/Object.h>
 #include <base/Exception.h>
 #include <base/ResourceException.h>
@@ -14,9 +13,11 @@
 
 #if defined(__win32__)
   #include <windows.h>
-#else
+#else // pthread
   #include <pthread.h>
 #endif
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   This class implements a mutual exclusion object used to protect shared
@@ -35,10 +36,10 @@ protected:
 #if defined(__win32__)
   /** Internal mutex representation. */
   mutable CRITICAL_SECTION lock;
-#else
+#else // pthread
   /** Internal mutex representation. */
   mutable pthread_mutex_t lock;
-#endif // __win32__
+#endif
 public:
 
   /** Exception thrown directly by the MutualExclusion class. */
@@ -104,5 +105,7 @@ public:
   */
   ~MutualExclusion() throw(MutualExclusionException);
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

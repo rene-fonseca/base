@@ -11,6 +11,8 @@
 #include <base/Integer.h>
 #include <typeinfo>
 
+using namespace base;
+
 void server(String<> a, String<> servicename) {
 
   fout << "Hostname: " << InetAddress::getLocalHost() << ENDL;

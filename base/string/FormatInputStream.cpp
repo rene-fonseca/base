@@ -3,10 +3,11 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/string/FormatInputStream.h>
 #include <base/io/FileDescriptorInputStream.h>
 #include <base/Trace.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 FileDescriptorInputStream standardInputStream(FileDescriptor::getStandardInput());
 FormatInputStream fin(standardInputStream);
@@ -39,3 +40,5 @@ FormatInputStream& operator>>(FormatInputStream& stream, char*& value) {
 //  char* buffer = stream.readUntil("\n");
   return stream;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

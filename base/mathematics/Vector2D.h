@@ -9,6 +9,8 @@
 #include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A two-dimensional vector represented by X and Y coordinates.
 
@@ -268,5 +270,7 @@ TYPE determinant(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw(
 */
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector2D<TYPE>& value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

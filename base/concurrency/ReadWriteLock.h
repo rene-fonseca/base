@@ -18,6 +18,8 @@
   #include <pthread.h>
 #endif
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   The ReadWriteLock class implements a read-write lock for optimal reader
   performance on systems which have rwlock support and reverts to a simple
@@ -98,5 +100,7 @@ public:
   */
   ~ReadWriteLock() throw(ReadWriteLockException);
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

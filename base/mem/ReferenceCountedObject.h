@@ -6,6 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_H
 #define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_H
 
+#include <base/features.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A reference counted object is used to count the number of references from
   ReferenceCountedObjectPointer objects to itself. You should always use the
@@ -34,43 +38,40 @@
   @version 1.01
 */
 
-  class ReferenceCountedObject {
+class ReferenceCountedObject {
 
-  friend class ReferenceCountedObjectPointerImpl;
+friend class ReferenceCountedObjectPointerImpl;
 
-  private:
+private:
 
-    /** The current number of references to the object. */
-    mutable unsigned int references; // its not likely that we get an overflow or is it
-  public:
+  /** The current number of references to the object. */
+  mutable unsigned int references; // its not likely that we get an overflow or is it
+public:
 
-    /**
-      Initializes reference counted object with zero references.
-    */
-    inline ReferenceCountedObject() throw() : references(0) {}
+  /**
+    Initializes reference counted object with zero references.
+  */
+  inline ReferenceCountedObject() throw() : references(0) {}
 
-    /**
-      Initializes object from other reference counted object. The new object
-      is initialized with zero references. This is an unusual behaviour for a
-      copy constructor but makes sense since a new object cannot have any
-      references.
-    */
-    inline ReferenceCountedObject(const ReferenceCountedObject& copy) throw() : references(0) {}
+  /**
+    Initializes object from other reference counted object. The new object
+    is initialized with zero references. This is an unusual behaviour for a
+    copy constructor but makes sense since a new object cannot have any
+    references.
+  */
+  inline ReferenceCountedObject(const ReferenceCountedObject& copy) throw() : references(0) {}
 
-    /**
-      Assignment of reference counted object does not change this object. This
-      is unusual behaviour for the assignment operator but makes sense since
-      the assignment doesn't influence the number of ReferenceCountedObjectPointer
-      objects that point to this object.
-    */
-    inline ReferenceCountedObject& operator=(const ReferenceCountedObject& copy) throw() {
-      return *this;
-    }
+  /**
+    Assignment of reference counted object does not change this object. This
+    is unusual behaviour for the assignment operator but makes sense since
+    the assignment doesn't influence the number of ReferenceCountedObjectPointer
+    objects that point to this object.
+  */
+  inline ReferenceCountedObject& operator=(const ReferenceCountedObject& copy) throw() {
+    return *this;
+  }
+};
 
-    /**
-      Destroys the reference counted object.
-    */
-//    inline ~ReferenceCountedObject() throw() {}
-  };
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

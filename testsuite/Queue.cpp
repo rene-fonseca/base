@@ -7,6 +7,8 @@
 #include <base/string/FormatOutputStream.h>
 #include <typeinfo>
 
+using namespace base;
+
 int main() {
   fout << "Testing implementation of the Queue class" << ENDL;
 

@@ -8,6 +8,8 @@
 
 #include <base/io/FilterInputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A FilterOutputStream that allows you to read primitive data types from an input stream in big-endian format. MT-Safe implementation if used with MT-safe input stream.
 
@@ -80,5 +82,7 @@ public:
   */
   long double readLongDouble() throw(IOException);
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -15,6 +15,8 @@
 #include <base/mem/ReferenceCountedObject.h>
 #include <base/string/FormatOutputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A node in a list.
 
@@ -649,5 +651,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const List<TYPE>& val
   stream << "}";
   return stream;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

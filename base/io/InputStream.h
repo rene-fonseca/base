@@ -8,6 +8,8 @@
 
 #include <base/io/Stream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Class representing an input stream of bytes.
 
@@ -60,5 +62,7 @@ public:
   */
   virtual bool wait(unsigned int timeout) const throw(IOException) = 0;
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

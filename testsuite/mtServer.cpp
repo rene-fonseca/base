@@ -15,7 +15,7 @@
 #include <base/concurrency/Semaphore.h>
 #include <typeinfo>
 
-
+using namespace base;
 
 Queue<StreamSocket*> jobs;
 Semaphore semaphore;

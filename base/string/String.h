@@ -14,6 +14,8 @@
 #include <base/string/FormatOutputStream.h>
 #include <limits.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This structure binds together a string literal and its size. Use the macro MESSAGE to generate an object of this class for a given string literal (e.g. MESSAGE("Hello World")). Do not call the constructor manually.
 */
@@ -633,5 +635,7 @@ String<LOCK> operator-(const String<LOCK>& left, const String<LOCK>& right) thro
     return String<LOCK>(left); // return copy of left
   }
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

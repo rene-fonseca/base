@@ -3,11 +3,12 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/io/BufferedInputStream.h>
 #include <base/Base.h>
 #include <base/Trace.h>
 #include <string.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 BufferedInputStream::BufferedInputStream(InputStream& in, unsigned int size) throw(BindException, MemoryException) :
   FilterInputStream(in), buffer(maximum(size, MINIMUM_BUFFER_SIZE)) {
@@ -92,3 +93,5 @@ bool BufferedInputStream::wait(unsigned int timeout) const throw(IOException) {
 BufferedInputStream::~BufferedInputStream() {
   TRACE_MEMBER();
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -8,27 +8,31 @@
 
 #include <base/io/IOException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+/**
+  IO exception thrown on errors due to denied access.
+
+  @author René Møller Fonseca
+  @version 1.0
+*/
+
+class AccessDenied : public IOException {
+public:
+
   /**
-    IO exception thrown on errors due to denied access.
-
-    @author René Møller Fonseca
-    @version 1.0
+    Initializes the exception object with no message.
   */
+  AccessDenied() throw();
 
-  class AccessDenied : public IOException {
-  public:
+  /**
+    Initializes exception object as unspecified.
 
-    /**
-      Initializes the exception object with no message.
-    */
-    AccessDenied() throw();
+    @param message The message.
+  */
+  AccessDenied(const char* message) throw();
+};
 
-    /**
-      Initializes exception object as unspecified.
-
-      @param message The message.
-    */
-    AccessDenied(const char* message) throw();
-  };
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

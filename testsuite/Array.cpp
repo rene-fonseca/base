@@ -5,6 +5,8 @@
 
 #include <base/collection/Array.h>
 
+using namespace base;
+
 int main() {
   fout << "Testing implementation of the Array class" << ENDL;
 

@@ -9,6 +9,8 @@
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
 #include <base/string/String.h>
 
+using namespace base;
+
 int main() {
   fout << "Testing String implementation..." << EOL << ENDL;
 

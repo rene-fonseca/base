@@ -9,6 +9,8 @@
 #include <base/collection/Set.h>
 #include <base/collection/Map.h>
 
+using namespace base;
+
 void test() {
   fout << "Testing Streaming..." << ENDL;
 

@@ -3,10 +3,11 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/io/BufferedOutputStream.h>
 #include <base/Trace.h>
 #include <string.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 BufferedOutputStream::BufferedOutputStream(OutputStream& out, unsigned int size) throw(BindException, MemoryException) :
   FilterOutputStream(out), buffer(maximum(size, MINIMUM_BUFFER_SIZE)) {
@@ -69,3 +70,5 @@ BufferedOutputStream::~BufferedOutputStream() {
   TRACE_MEMBER();
   flush();
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -8,6 +8,8 @@
 
 #include <base/Object.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Collection is the common interface implemented by containers.
 
@@ -17,5 +19,7 @@
 
 class Collection : public Object {
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -8,6 +8,8 @@
 
 #include <base/io/IOException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Indicates a network exception.
 
@@ -30,5 +32,7 @@ public:
   */
   NetworkException(const char* message) throw();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

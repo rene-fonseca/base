@@ -5,6 +5,8 @@
 
 #include <base/collection/Set.h>
 
+using namespace base;
+
 int main() {
   fout << "Testing Set" << ENDL;
 

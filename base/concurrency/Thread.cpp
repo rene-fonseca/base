@@ -3,7 +3,6 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/MutualExclusion.h>
 #include <base/Trace.h>
@@ -19,6 +18,9 @@
   #include <unistd.h>
 #endif
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+#if defined(__win32__)
 // The original unhandled exception filter
 static LPTOP_LEVEL_EXCEPTION_FILTER originalExceptionFilter = NULL;
 
@@ -29,6 +31,7 @@ LONG __stdcall exceptionFilter(EXCEPTION_POINTERS* exception) {
   return originalExceptionFilter(exception);
   //  return result;
 }
+#endif // __win32__
 
 /**
   The class is used to make a Thread object for the current context.
@@ -44,9 +47,11 @@ public:
   */
   MainThread() throw() : thread() {
     TRACE_MEMBER();
+#if defined(__win32__)
     if (originalExceptionFilter == NULL) {
       originalExceptionFilter = SetUnhandledExceptionFilter(exceptionFilter);
     }
+#endif // __win32__
   }
 
   inline Thread* getThread() throw() {
@@ -54,10 +59,12 @@ public:
   }
 
   ~MainThread() {
+#if defined(__win32__)
     // Restore the original unhandled exception filter
     if (originalExceptionFilter != NULL) {
       SetUnhandledExceptionFilter(originalExceptionFilter);
     }
+#endif // __win32__
     TRACE_MEMBER();
   }
 };
@@ -231,14 +238,17 @@ void Thread::onChildTermination(Thread* thread) {
 
 
 
+#if defined(__win32__)
 Thread::Thread() throw() :
   parent(0), runnable(0), terminated(false), termination(ALIVE), threadHandle(0) {
-#if defined(__win32__)
   threadID = GetCurrentThreadId();
-#else // pthread
-  threadID = pthread_self();
-#endif
 }
+#else // pthread
+Thread::Thread() throw() :
+  parent(0), runnable(0), terminated(false), termination(ALIVE) {
+  threadID = pthread_self();
+}
+#endif
 
 Thread::Thread(Runnable* runnable) throw(ResourceException) :
   runnable(runnable), terminated(false), termination(ALIVE), threadID(0) {
@@ -402,3 +412,5 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value) 
          << "}";
   return stream;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

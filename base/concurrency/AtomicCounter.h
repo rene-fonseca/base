@@ -9,6 +9,8 @@
 #include <base/features.h>
 #include <base/concurrency/Synchronize.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   MT-safe counter.
 
@@ -95,5 +97,7 @@ public:
   }
 
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

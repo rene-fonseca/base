@@ -12,6 +12,8 @@
   #include <unistd.h>
 #endif
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 FileOutputStream::FileOutputStream(const String<>& p, unsigned int flags, unsigned int permissions) throw(FileNotFound) :
   FileDescriptorOutputStream(), path(p) {
 
@@ -71,3 +73,5 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const FileOutputStrea
                 << "}";
   return stream;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

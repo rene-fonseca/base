@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <errno.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 namespace eval {
 
   EvaluationNode makeValueNode(double value) {
@@ -418,3 +420,5 @@ void ExpressionParser::parse() throw(ExpressionException) {
 
 ExpressionParser::~ExpressionParser() {
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

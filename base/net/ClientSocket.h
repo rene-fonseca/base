@@ -10,6 +10,8 @@
 #include <base/io/InputStream.h>
 #include <base/io/OutputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 class ServerSocket;
 
 /**
@@ -220,5 +222,7 @@ public:
   */
   inline void flush() throw(IOException) {Socket::flush();}
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

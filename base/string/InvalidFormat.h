@@ -8,6 +8,8 @@
 
 #include <base/Exception.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Invalid format exception is thrown when a string does not comply with a given format.
 
@@ -30,5 +32,7 @@ public:
   */
   InvalidFormat(const char* message);
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

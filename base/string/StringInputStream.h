@@ -10,6 +10,8 @@
 #include <base/io/EndOfFile.h>
 #include <base/string/String.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A string input stream is a input stream which receives its data from a string.
 
@@ -64,5 +66,7 @@ public:
   */
   unsigned int skip(unsigned int count) throw(IOException);
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

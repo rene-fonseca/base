@@ -24,6 +24,8 @@
   #endif
 #endif
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 FileDescriptorInputStream::FileDescriptorInputStream() throw() :
   FileDescriptor(), eof(false) {
 }
@@ -163,3 +165,5 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorI
                 << "handle=" << value.fd->getHandle()
                 << "}";
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

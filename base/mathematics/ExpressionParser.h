@@ -15,6 +15,8 @@
 #include <base/mathematics/ExpressionException.h>
 #include <base/mathematics/AmbiguousRegistration.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 namespace eval {
 
   /** The valid types of a node in an expression. */
@@ -250,5 +252,7 @@ public:
   */
   ~ExpressionParser();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

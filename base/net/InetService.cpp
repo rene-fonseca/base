@@ -12,6 +12,8 @@
   #include <netinet/in.h>
 #endif
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 unsigned short InetService::getByName(const String<>& name, const String<>& protocol) throw() {
   struct servent* sp;
 #if defined(__win32__)
@@ -98,3 +100,5 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetService& va
                 << "protocol=" << value.protocol
                 << "}";
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

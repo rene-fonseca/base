@@ -8,6 +8,8 @@
 
 #include <base/net/NetworkException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This exception specifies that the service could not be resolved.
 
@@ -30,5 +32,7 @@ public:
   */
   ServiceNotFound(const char* message);
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

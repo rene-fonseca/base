@@ -8,27 +8,31 @@
 
 #include <base/Exception.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+/**
+  Exception thrown on IO errors.
+
+  @author René Møller Fonseca
+  @version 1.0
+*/
+
+class IOException : public Exception {
+public:
+
   /**
-    Exception thrown on IO errors.
-
-    @author René Møller Fonseca
-    @version 1.0
+    Initializes the exception object with no message.
   */
+IOException() throw();
 
-  class IOException : public Exception {
-  public:
+  /**
+    Initializes exception object as unspecified.
 
-    /**
-      Initializes the exception object with no message.
-    */
-  IOException() throw();
+    @param message The message.
+  */
+  IOException(const char* message) throw();
+};
 
-    /**
-      Initializes exception object as unspecified.
-
-      @param message The message.
-    */
-    IOException(const char* message) throw();
-  };
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

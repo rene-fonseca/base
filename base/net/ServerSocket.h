@@ -9,6 +9,8 @@
 #include <base/net/Socket.h>
 #include <base/net/ClientSocket.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This class implements a stream server socket. A socket is an endpoint for
   communication between two hosts.
@@ -58,5 +60,7 @@ public:
   */
   inline void setNonBlocking(bool value) throw(IOException) {Socket::setNonBlocking(value);}
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

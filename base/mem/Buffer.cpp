@@ -7,6 +7,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 #define NUMBER_TO_GRAN(NUMBER, GRAN) ((((NUMBER) + (GRAN) - 1)/(GRAN)) * (GRAN))
 
 Buffer::Buffer(unsigned int size, unsigned int granularity) throw(MemoryException) {
@@ -43,3 +45,5 @@ void Buffer::setSize(unsigned int size) throw(MemoryException) {
 Buffer::~Buffer() throw() {
   ::free(bytes);
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

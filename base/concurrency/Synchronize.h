@@ -8,6 +8,8 @@
 
 #include <base/concurrency/Synchronizeable.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Selects exclusive synchronization of this scope of this synchronizeable
   object (@ref Synchronize).
@@ -164,5 +166,7 @@ public:
   */
   inline ~Synchronize() throw() {}
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

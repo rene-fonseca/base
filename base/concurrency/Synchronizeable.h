@@ -8,6 +8,8 @@
 
 #include <base/concurrency/ReadWriteLock.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This class is used to specify that a synchronize able class should not be
   synchronized. In other words the class will be unsafe to use in a multi-
@@ -43,7 +45,7 @@ typedef ReadWriteLock DefaultLock;
 */
 
 template<class LOCK = DefaultLock>
-class Synchronizeable : private virtual LOCK {
+class Synchronizeable : public virtual LOCK {
 private:
 
   /**
@@ -109,5 +111,7 @@ protected:
   */
   inline void releaseLock() const throw() {}
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

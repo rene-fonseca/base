@@ -8,6 +8,8 @@
 
 #include <base/io/FilterOutputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A FilterOutputStream that allows you to write primitive data types to an output stream in big-endian format. MT-Safe implementation if used with MT-safe input stream.
 
@@ -80,5 +82,7 @@ public:
   */
   void writeLongDouble(long double value) throw(IOException);
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

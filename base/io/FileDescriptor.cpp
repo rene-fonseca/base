@@ -22,6 +22,8 @@
   #endif
 #endif
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 int FileDescriptor::Descriptor::getFlags() const throw(IOException) {
 #if defined(__win32__)
   return 0;
@@ -154,3 +156,5 @@ FileDescriptor FileDescriptor::getStandardError() throw() {
   return FileDescriptor(2);
 #endif
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -11,6 +11,8 @@
 #include <base/io/BindException.h>
 #include <base/string/String.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   File output stream.
 
@@ -61,5 +63,7 @@ public:
   Writes a string representation of a FileOutputStream object to a stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileOutputStream& value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

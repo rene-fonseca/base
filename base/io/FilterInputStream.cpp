@@ -5,6 +5,8 @@
 
 #include <base/io/FilterInputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 FilterInputStream::FilterInputStream(InputStream& i) throw(BindException) : in(i) {
 }
 
@@ -35,3 +37,5 @@ void FilterInputStream::wait() const throw(IOException) {
 bool FilterInputStream::wait(unsigned int timeout) const throw(IOException) {
   return in.wait(timeout);
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

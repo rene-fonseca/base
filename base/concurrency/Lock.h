@@ -6,6 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_THREAD__LOCK_H
 #define _DK_SDU_MIP__BASE_THREAD__LOCK_H
 
+#include <base/features.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This interface is implemented by classes used to synchronize contexts of
   execution by locking/unlocking.
@@ -48,5 +52,7 @@ public:
   */
   virtual void releaseLock() const = 0;
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

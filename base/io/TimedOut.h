@@ -8,27 +8,31 @@
 
 #include <base/io/IOException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+/**
+  Exception thrown on timed out IO requests.
+
+  @author René Møller Fonseca
+  @version 1.0
+*/
+
+class TimedOut : public IOException {
+public:
+
   /**
-    Exception thrown on timed out IO requests.
-
-    @author René Møller Fonseca
-    @version 1.0
+    Initializes the exception object with no message.
   */
+  TimedOut() throw();
 
-  class TimedOut : public IOException {
-  public:
+  /**
+    Initializes exception object as unspecified.
 
-    /**
-      Initializes the exception object with no message.
-    */
-    TimedOut() throw();
+    @param message The message.
+  */
+  TimedOut(const char* message) throw();
+};
 
-    /**
-      Initializes exception object as unspecified.
-
-      @param message The message.
-    */
-    TimedOut(const char* message) throw();
-  };
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

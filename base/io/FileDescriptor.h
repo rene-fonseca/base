@@ -10,6 +10,8 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   The FileDescriptor class serves as a general handle to a source or sink of bytes within the operatingsystem (e.g. file, socket and pipe). This class is normally not used directly by the application.
 
@@ -159,5 +161,7 @@ public:
   Writes a string representation of a FileDescriptor object to a format stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor& value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -9,6 +9,8 @@
 #include <base/mem/ReferenceCountedObject.h>
 #include <base/mem/NullPointer.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This is a wrapper for a Reference Counted Object. Use this class if you need
   to reference count an object of a class that is not a subclass of
@@ -66,5 +68,7 @@ public:
   */
   inline ~ReferenceCountedObjectWrapper() {delete obj;}
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

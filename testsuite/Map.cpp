@@ -5,6 +5,8 @@
 
 #include <base/collection/Map.h>
 
+using namespace base;
+
 int main() {
   fout << "Testing Map implementation" << ENDL;
 

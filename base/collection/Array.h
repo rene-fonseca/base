@@ -17,6 +17,8 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/Functor.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Array. Ordered sequence of elements.
 
@@ -214,5 +216,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Array<TYPE>& va
   stream << "}";
   return stream;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

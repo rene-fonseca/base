@@ -10,6 +10,8 @@
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Functor.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This class encapsulates the implementation used by the Allocator class. Do
   not use directly.
@@ -166,5 +168,7 @@ public:
     setSize(0); // free memory
   }
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

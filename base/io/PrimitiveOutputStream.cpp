@@ -3,8 +3,9 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/io/PrimitiveOutputStream.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 PrimitiveOutputStream::PrimitiveOutputStream(OutputStream& out) throw(BindException) :
   FilterOutputStream(out) {
@@ -157,3 +158,5 @@ void PrimitiveOutputStream::writeLongDouble(long double value) throw(IOException
   write((char*)&buffer, sizeof(buffer));
 #endif
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

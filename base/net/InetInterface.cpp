@@ -20,6 +20,8 @@
   #include <unistd.h>
 #endif
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 List<InetInterface> InetInterface::getInetInterfaces() throw(NetworkException) {
 #if defined(HAVE_INET_IPV6)
   List<InetInterface> interfaces;
@@ -76,3 +78,5 @@ unsigned int InetInterface::getIndex() const throw() {
 const String<> InetInterface::getName() const throw() {
   return name;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -6,6 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__DOUBLE_LINKED_NODE_H
 #define _DK_SDU_MIP__BASE_COLLECTION__DOUBLE_LINKED_NODE_H
 
+#include <base/features.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A double linked node. This class is used by collections that only require
   bidirectional traversal of elements.
@@ -72,5 +76,7 @@ public:
   */
   inline void setValue(TYPE value) throw() {this->value = value;}
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

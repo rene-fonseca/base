@@ -11,6 +11,8 @@
 #include <base/collection/List.h>
 #include <base/net/NetworkException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This class represents an Internet Protocol network interface.
 
@@ -55,5 +57,7 @@ public:
   */
   const String<> getName() const throw();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

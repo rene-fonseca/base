@@ -37,6 +37,8 @@
   interface. Is this going to be a problem?
 */
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 class SocketAddress {
 private:
 
@@ -600,3 +602,5 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) 
   stream << "}";
   return stream;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

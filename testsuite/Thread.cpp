@@ -6,6 +6,8 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/concurrency/Thread.h>
 
+using namespace base;
+
 class MyThread : public Runnable {
 private:
 

@@ -8,8 +8,11 @@
 
 #include <base/io/BufferedOutputStream.h>
 #include <base/io/BindException.h>
+#include <base/concurrency/Synchronizeable.h>
 #include <base/concurrency/Synchronize.h>
-#include <base/concurrency/MutualExclusion.h>
+#include <base/concurrency/SpinLock.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /*
 struct DateFormatSet {
@@ -50,7 +53,7 @@ typedef enum {BIN, OCT, DEC, HEX, ZEROPAD, NOZEROPAD, PREFIX, NOPREFIX, EOL, FLU
   @version 1.0
 */
 
-class FormatOutputStream : public BufferedOutputStream, public Synchronizeable<MutualExclusion> {
+class FormatOutputStream : public BufferedOutputStream, public Synchronizeable<SpinLock> {
 public:
 
   /** Digits of all bases. */
@@ -66,7 +69,7 @@ protected:
   unsigned int flags;
 public:
 
-  typedef MutualExclusion LOCK;
+  typedef SpinLock LOCK;
 
   /**
     Initializes the format output stream.
@@ -153,5 +156,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
 FormatOutputStream& operator<<(FormatOutputStream& stream, float value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, double value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, long double value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

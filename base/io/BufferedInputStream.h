@@ -9,6 +9,8 @@
 #include <base/io/FilterInputStream.h>
 #include <base/mem/Allocator.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A FilterInputStream that adds buffer functionality to an InputStream for added performance. MT-unsafe implementation.
 
@@ -107,5 +109,7 @@ public:
   */
   ~BufferedInputStream();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

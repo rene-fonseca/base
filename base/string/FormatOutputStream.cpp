@@ -3,13 +3,14 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/io/FileDescriptorOutputStream.h>
 #include <base/concurrency/Thread.h>
 #include <base/Trace.h>
 #include <string.h>
 #include <stdio.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 FileDescriptorOutputStream standardOutputStream(FileDescriptor::getStandardOutput());
 FormatOutputStream fout(standardOutputStream);
@@ -29,7 +30,7 @@ FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) thr
 }
 
 FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOException) {
-  exclusiveLock();
+  SynchronizeExclusively();
   switch (action) {
   case BIN:
     base = BIN;
@@ -72,7 +73,6 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
     flush(); // may throw IOException
     break;
   }
-  releaseLock();
   return *this;
 }
 
@@ -83,7 +83,7 @@ void FormatOutputStream::prepareForField() {
 }
 
 void FormatOutputStream::addCharacterField(const char* buf, unsigned int size) throw(IOException) {
-  exclusiveLock();
+  SynchronizeExclusively();
   static const char* white = "                ";
 
   if (size < width) { // write blanks if required
@@ -101,7 +101,6 @@ void FormatOutputStream::addCharacterField(const char* buf, unsigned int size) t
 
   write(buf, size); // write characters
   prepareForField();
-  releaseLock();
 }
 
 void FormatOutputStream::addIntegerField(const char* buf, unsigned int size, bool isSigned) throw(IOException) {
@@ -114,7 +113,7 @@ void FormatOutputStream::addIntegerField(const char* buf, unsigned int size, boo
   static const char strf[replicates + sizeof('\0')] = "ffffffffffffffffffffffffffffffff";
   static const char* signedPad[] = {str1, str0, str0, strf};
 
-  exclusiveLock();
+  SynchronizeExclusively();
   unsigned int requiredWidth = size;
 
   if (isSigned) {
@@ -162,13 +161,11 @@ void FormatOutputStream::addIntegerField(const char* buf, unsigned int size, boo
 
   write(buf, size); // write late buffer
   prepareForField();
-  releaseLock();
 }
 
 void FormatOutputStream::addDoubleField(const char* early, unsigned int earlySize, const char* late, unsigned int lateSize, bool isSigned) throw(IOException) {
-  exclusiveLock();
+  SynchronizeExclusively();
   prepareForField();
-  releaseLock();
 }
 
 FormatOutputStream::~FormatOutputStream() {
@@ -539,3 +536,5 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long double value) {
   sprintf(buffer, "%Lf", value);
   return stream << buffer;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

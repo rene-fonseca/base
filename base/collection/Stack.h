@@ -12,6 +12,8 @@
 #include <base/mem/ReferenceCountedObject.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Stack using a linked list implementation.
 
@@ -273,5 +275,7 @@ public:
     elements = 0; // no need to copy
   }
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

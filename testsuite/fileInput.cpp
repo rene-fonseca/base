@@ -8,6 +8,8 @@
 #include <base/string/FormatOutputStream.h>
 #include <typeinfo>
 
+using namespace base;
+
 void readFile(String<>& filename) {
   fout << "Initializing file input stream" << ENDL;
   FileInputStream file(filename, 0);

@@ -13,6 +13,8 @@
 #include <base/net/HostNotFound.h>
 #include <base/net/NetworkException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This class represents an Internet Protocol (IP) address (support for both IPv4 and IPv6).
 
@@ -154,5 +156,7 @@ public:
   Writes a string representation of the InetAddress object to a format stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

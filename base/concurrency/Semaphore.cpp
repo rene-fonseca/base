@@ -9,6 +9,8 @@
   #include <errno.h>
 #endif // __win32__
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 Semaphore::Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceException) {
   if (value > MAXIMUM) {
     OutOfDomain();
@@ -152,3 +154,5 @@ Semaphore::~Semaphore() throw(SemaphoreException) {
   pthread_mutex_destroy(&mutex); // lets just hope that this doesn't fail
 #endif
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -6,7 +6,6 @@
 #ifndef _DK_SDU_MIP__BASE_THREAD__EVENT_H
 #define _DK_SDU_MIP__BASE_THREAD__EVENT_H
 
-#include <base/features.h>
 #include <base/Object.h>
 #include <base/OutOfDomain.h>
 #include <base/Overflow.h>
@@ -17,6 +16,8 @@
 #else
   #include <pthread.h>
 #endif // __win32__
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Event.
@@ -96,5 +97,7 @@ public:
   */
   ~Event() throw(EventException);
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

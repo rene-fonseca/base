@@ -3,11 +3,12 @@
     email                : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/string/String.h>
 #include <base/Functor.h>
 #include <string.h>
 #include <ctype.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 template String<DefaultLock>;
 template String<Unsafe>;
@@ -539,3 +540,5 @@ FormatOutputStream& String<LOCK>::operator<<(FormatOutputStream& stream) const {
   stream.addCharacterField(getReadOnlyBuffer(), length());
   return stream;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

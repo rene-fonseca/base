@@ -11,6 +11,8 @@
 #include <base/mem/CapacityAllocator.h>
 #include <base/mem/ReferenceCountedObject.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This class is a reference counted, low-level, and resizeable implementation
   of an array of elements. The implementation is not MT-safe and the class is
@@ -59,5 +61,7 @@ public:
   ReferenceCountedCapacityAllocator(const ReferenceCountedCapacityAllocator& copy) throw(MemoryException) :
     CapacityAllocator<TYPE>(copy) {}
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

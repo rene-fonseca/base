@@ -9,6 +9,8 @@
 #include <base/Object.h>
 #include <base/string/String.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A string output stream is a format output stream that directs the stream data into a string.
 
@@ -39,5 +41,7 @@ public:
   */
   const String<>& getString() const throw();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

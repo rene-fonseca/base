@@ -8,6 +8,8 @@
 
 #include <base/io/Stream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Class representing an output stream of bytes.
 
@@ -32,5 +34,7 @@ public:
   */
   virtual unsigned int write(const char* buffer, unsigned int size) throw(IOException) = 0;
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

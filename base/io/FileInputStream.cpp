@@ -13,6 +13,8 @@
   #include <unistd.h>
 #endif
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 FileInputStream::FileInputStream(const String<>& p, unsigned int flags) throw(FileNotFound) :
   path(p) {
 #if defined(__win32__)
@@ -84,3 +86,5 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const FileInputStream
                 << "}";
   return stream;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -5,6 +5,8 @@
 
 #include <base/collection/List.h>
 
+using namespace base;
+
 int main() {
   fout << "Testing List implementation" << ENDL;
 

@@ -3,8 +3,9 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/concurrency/ThreadKey.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
 #if defined(__win32__)
@@ -53,3 +54,5 @@ ThreadKeyImpl::~ThreadKeyImpl() throw(ThreadKeyException) {
   }
 #endif
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -14,6 +14,8 @@
 #include <base/mem/ReferenceCountedObject.h>
 #include <base/concurrency/Synchronize.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Queue implemented using a unidirectional linked list.
 
@@ -171,5 +173,7 @@ public:
     return elements->pop();
   }
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

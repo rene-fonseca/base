@@ -6,7 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__ASSOCIATION_H
 #define _DK_SDU_MIP__BASE_COLLECTION__ASSOCIATION_H
 
+#include <base/features.h>
 #include <base/string/FormatOutputStream.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Association of value with other value. An association has the properties of
@@ -82,5 +85,7 @@ template<class KEY, class VALUE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Association<KEY, VALUE>& value) {
   return stream << '[' << value.getKey() << ']' << '=' << value.getValue();
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

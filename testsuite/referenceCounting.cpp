@@ -9,6 +9,8 @@
 #include <base/mem/Allocator.h>
 #include <base/mem/ReferenceCountedAllocator.h>
 
+using namespace base;
+
 /*
   When debugging the this program the states of the objects should be visible.
 */

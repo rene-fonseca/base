@@ -8,27 +8,31 @@
 
 #include <base/io/IOException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+/**
+  Thrown if unable to bind streams together.
+
+  @author René Møller Fonseca
+  @version 1.0
+*/
+
+class BindException : public IOException {
+public:
+
   /**
-    Thrown if unable to bind streams together.
-
-    @author René Møller Fonseca
-    @version 1.0
+    Initializes the exception object with no message.
   */
+  BindException();
 
-  class BindException : public IOException {
-  public:
+  /**
+    Initializes the exception object.
 
-    /**
-      Initializes the exception object with no message.
-    */
-    BindException();
+    @param message The message.
+  */
+  BindException(const char* message);
+};
 
-    /**
-      Initializes the exception object.
-
-      @param message The message.
-    */
-    BindException(const char* message);
-  };
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

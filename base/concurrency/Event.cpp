@@ -3,7 +3,6 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/concurrency/Event.h>
 
 #if defined(__win32__)
@@ -14,6 +13,8 @@
   #include <unistd.h>
   #include <errno.h>
 #endif
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Event::Event() throw(ResourceException) {
 #if defined(__win32__)
@@ -169,3 +170,5 @@ Event::~Event() throw(EventException) {
   pthread_mutex_destroy(&mutex); // lets just hope that this doesn't fail
 #endif
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

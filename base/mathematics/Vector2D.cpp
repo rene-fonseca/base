@@ -6,6 +6,8 @@
 #include <base/mathematics/Vector2D.h>
 #include <math.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 template Vector2D<float>;
 template Vector2D<double>;
 template Vector2D<long double>;
@@ -192,3 +194,5 @@ template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector2D<TYPE>& value) {
   return stream << "(" << value.x << "," << value.y << ")";
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

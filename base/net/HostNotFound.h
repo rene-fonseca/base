@@ -8,6 +8,8 @@
 
 #include <base/net/NetworkException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Specifies that the host doesn't exist or couldn't be found.
 
@@ -30,5 +32,7 @@ public:
   */
   HostNotFound(const char* message);
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

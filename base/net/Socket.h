@@ -16,6 +16,8 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This class implements a socket. A socket is an endpoint for communication
   between two hosts on a network. MT-level is safe.
@@ -345,5 +347,7 @@ public:
   Writes a string representation of a Socket object to a format stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

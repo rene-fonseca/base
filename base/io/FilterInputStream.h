@@ -9,6 +9,8 @@
 #include <base/io/InputStream.h>
 #include <base/io/BindException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A FilterInputStream redirects requests to an ordinary InputStream possibly transforming data and providing additional functionality in the process. A FilterInputStream is itself an InputStream. MT-Safe implementation if used with MT-safe input stream.
 
@@ -77,5 +79,7 @@ public:
   */
   bool wait(unsigned int timeout) const throw(IOException);
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

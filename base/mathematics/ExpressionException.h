@@ -8,6 +8,8 @@
 
 #include <base/Exception.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This exception is thrown by ExpressionParser on errors in an expression
   representation.
@@ -49,5 +51,7 @@ public:
   */
   unsigned int getIndex() const throw();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

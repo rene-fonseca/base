@@ -3,10 +3,11 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/mathematics/Vector.h>
 #include <base/Functor.h>
 #include <math.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 template<class TYPE>
 Vector<TYPE>::Vector(unsigned int size) throw(OutOfDomain) {
@@ -174,3 +175,5 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& v
   stream << *element << ')'; // dump the last element of the vector
   return stream;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

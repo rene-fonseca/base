@@ -5,6 +5,8 @@
 
 #include <base/net/ClientSocket.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 StreamSocket::StreamSocket() throw(IOException) {
   create(true);
 }
@@ -23,3 +25,5 @@ StreamSocket::StreamSocket(const InetAddress& addr, unsigned short port, InetAdd
 StreamSocket::StreamSocket(ServerSocket& socket) throw(IOException) {
   accept(*(Socket*)&socket);
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -6,6 +6,10 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__BINARY_NODE_H
 #define _DK_SDU_MIP__BASE_COLLECTION__BINARY_NODE_H
 
+#include <base/features.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A binary linked node. This class is used by the binary tree collection.
 
@@ -85,5 +89,7 @@ public:
   */
   inline void setValue(TYPE value) throw() {this->value = value;}
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -9,6 +9,8 @@
 #include <base/Object.h>
 #include <base/io/IOException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Base class of all streams of bytes.
 
@@ -24,5 +26,7 @@ public:
   */
   virtual void close() throw(IOException) = 0;
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

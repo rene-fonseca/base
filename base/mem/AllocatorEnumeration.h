@@ -10,6 +10,8 @@
 #include <base/collection/Enumeration.h>
 #include <base/collection/EndOfEnumeration.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Enumeration of successive elements.
 
@@ -80,5 +82,7 @@ public:
     return current != eq.current;
   }
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

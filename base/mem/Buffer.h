@@ -10,6 +10,8 @@
 #include <base/MemoryException.h>
 #include <base/OutOfRange.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This class implements a resizeable buffer and provides some low-level operations. The implementation is not MT-safe.
 
@@ -75,5 +77,7 @@ public:
   */
   ~Buffer() throw();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

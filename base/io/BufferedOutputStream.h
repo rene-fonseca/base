@@ -9,6 +9,8 @@
 #include <base/io/FilterOutputStream.h>
 #include <base/mem/Allocator.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A FilterOutputStream that adds buffer functionality to an OutputStream for added performance. MT-unsafe implementation.
 
@@ -72,5 +74,7 @@ public:
   */
   ~BufferedOutputStream();
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

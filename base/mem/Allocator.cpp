@@ -3,7 +3,6 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/mem/Allocator.h>
 
 #if defined(__win32__)
@@ -11,6 +10,8 @@
 #else // __unix__
   #include <stdlib.h>
 #endif
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 void* AllocatorImpl::setSize(void* buffer, unsigned int size) throw(MemoryException) {
   // Allocator::setSize() checks if we really have to set the size
@@ -38,3 +39,5 @@ void* AllocatorImpl::setSize(void* buffer, unsigned int size) throw(MemoryExcept
   }
   return result;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

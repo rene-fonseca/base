@@ -9,6 +9,8 @@
 #include <base/mem/Allocator.h>
 #include <base/OutOfRange.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Same as Allocator but allocates memory in larger blocks at a time. The
   implementation is not MT-safe.
@@ -191,5 +193,7 @@ public:
     Allocator<TYPE>::setSize(capacity);
   }
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

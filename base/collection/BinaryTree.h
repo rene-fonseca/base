@@ -13,6 +13,8 @@
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/mem/ReferenceCountedObject.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Enumeration of all the elements of a binary tree traversed in prefix order.
 
@@ -658,5 +660,7 @@ public:
     elements = new BinaryTreeImpl(); // no need to copy
   }
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

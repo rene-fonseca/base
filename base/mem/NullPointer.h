@@ -8,6 +8,8 @@
 
 #include <base/MemoryException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Thrown if NULL pointer was unexprected.
 
@@ -30,5 +32,7 @@ public:
   */
   NullPointer(const char* message);
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

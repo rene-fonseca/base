@@ -8,27 +8,31 @@
 
 #include <base/io/IOException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+/**
+  Specifies that the file doesn't exist or couldn't be opened.
+
+  @author René Møller Fonseca
+  @version 1.0
+*/
+
+class FileNotFound : public IOException {
+public:
+
   /**
-    Specifies that the file doesn't exist or couldn't be opened.
-
-    @author René Møller Fonseca
-    @version 1.0
+    Initializes the exception object with no message.
   */
+  FileNotFound();
 
-  class FileNotFound : public IOException {
-  public:
+  /**
+    Initializes the exception object.
 
-    /**
-      Initializes the exception object with no message.
-    */
-    FileNotFound();
+    @param message The message.
+  */
+  FileNotFound(const char* message);
+};
 
-    /**
-      Initializes the exception object.
-
-      @param message The message.
-    */
-    FileNotFound(const char* message);
-  };
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

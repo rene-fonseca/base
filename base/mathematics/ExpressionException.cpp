@@ -5,6 +5,8 @@
 
 #include <base/mathematics/ExpressionException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 ExpressionException::ExpressionException() throw() : index(0) {
 }
 
@@ -17,3 +19,5 @@ ExpressionException::ExpressionException(unsigned int i, const char* message) th
 unsigned int ExpressionException::getIndex() const throw() {
   return index;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

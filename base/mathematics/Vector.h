@@ -14,6 +14,8 @@
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/mem/AllocatorEnumeration.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Vector implementation.
 
@@ -339,5 +341,7 @@ TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw();
 */
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

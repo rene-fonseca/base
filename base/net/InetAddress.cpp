@@ -21,6 +21,8 @@
   #include <unistd.h> // defines gethostname
 #endif
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 #if defined(__win32__)
 class WindowsSocketsInitializer {
 public:
@@ -338,3 +340,5 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
   return stream << inet_ntoa(*(struct in_addr*)&value.address); // Uses static buffer
 #endif // HAVE_INET_IPV6
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

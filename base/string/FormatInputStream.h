@@ -9,6 +9,8 @@
 #include <base/io/BufferedInputStream.h>
 #include <base/io/BindException.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Format input stream. This class provides...
 
@@ -56,5 +58,7 @@ FormatInputStream& operator>>(FormatInputStream& stream, char*& value);
 //FormatInputStream& operator>>(FormatInputStream& stream, float value);
 //FormatInputStream& operator>>(FormatInputStream& stream, double value);
 //FormatInputStream& operator>>(FormatInputStream& stream, long double value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

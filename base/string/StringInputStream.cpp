@@ -6,6 +6,8 @@
 #include <base/string/StringInputStream.h>
 #include <base/Functor.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 StringInputStream::StringInputStream(String<>& s) throw(BindException) : str(s) {
   index = 0;
   eof = false;
@@ -62,3 +64,5 @@ unsigned int StringInputStream::skip(unsigned int count) throw(IOException) {
   index += count;
   return count;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

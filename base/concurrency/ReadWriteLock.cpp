@@ -3,12 +3,13 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/concurrency/ReadWriteLock.h>
 
 #if !defined(__win32__)
   #include <errno.h>
 #endif
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 ReadWriteLock::ReadWriteLock() throw(ResourceException) {
 #if defined(__win32__)
@@ -182,3 +183,5 @@ ReadWriteLock::~ReadWriteLock() throw(ReadWriteLockException) {
   }
 #endif
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -6,7 +6,6 @@
 #ifndef _DK_SDU_MIP__BASE_THREAD__THREAD_KEY_H
 #define _DK_SDU_MIP__BASE_THREAD__THREAD_KEY_H
 
-#include <base/features.h>
 #include <base/Object.h>
 #include <base/Exception.h>
 #include <base/ResourceException.h>
@@ -16,6 +15,8 @@
 #else
   #include <pthread.h>
 #endif
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Implementation used by the ThreadKey class.
@@ -100,5 +101,7 @@ public:
     ThreadKeyImpl::setKey(value);
   }
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

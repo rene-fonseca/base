@@ -9,6 +9,8 @@
 #include <base/Object.h>
 #include <base/concurrency/Thread.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 class Thread;
 
 /**
@@ -54,5 +56,7 @@ public:
   */
   inline virtual void onTermination() throw() {terminated = true;}
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -10,6 +10,8 @@
 #include <base/mem/NullPointer.h>
 #include <base/Base.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This class is only introduced to give the general
   ReferenceCountedObjectPointer template class access to the
@@ -216,5 +218,7 @@ public:
     }
   }
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -9,6 +9,8 @@
 #include <base/io/OutputStream.h>
 #include <base/io/FileDescriptor.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   The FileDescriptorOutputStream class serves as a general handle to a sink of
   bytes within the operatingsystem (e.g. file, socket and pipe). This class is
@@ -72,5 +74,7 @@ public:
   Writes a string representation of a FileDescriptorOutputStream object to a format stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorOutputStream& value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

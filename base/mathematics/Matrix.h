@@ -17,6 +17,8 @@
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/string/FormatOutputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Matrix implementation.
 
@@ -710,5 +712,7 @@ Matrix<TYPE> operator/(const TYPE& left, const Matrix<TYPE>& right) throw(Memory
 */
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

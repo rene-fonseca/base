@@ -3,10 +3,11 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/mathematics/Matrix.h>
 #include <base/Functor.h>
 #include <math.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 template Matrix<double>;
 
@@ -797,3 +798,5 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& v
   stream << ']';
   return stream;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

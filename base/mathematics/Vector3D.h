@@ -9,6 +9,8 @@
 #include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   A three-dimensional vector represented by X, Y, and Z coordinates.
 
@@ -288,5 +290,7 @@ Vector3D<TYPE> cross(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) th
 */
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector3D<TYPE>& value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

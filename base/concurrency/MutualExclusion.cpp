@@ -3,12 +3,13 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/concurrency/MutualExclusion.h>
 
 #if !defined(__win32__)
   #include <errno.h>
 #endif // __win32__
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 MutualExclusion::MutualExclusion() throw(ResourceException) {
 #if defined(__win32__)
@@ -81,3 +82,5 @@ MutualExclusion::~MutualExclusion() throw(MutualExclusionException) {
   }
 #endif
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -9,6 +9,8 @@
 #include <base/collection/OrderedBinaryTree.h>
 #include <base/string/FormatOutputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Set collection implemented using an ordered binary tree.
 
@@ -143,5 +145,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Set<TYPE>& valu
   stream << '}';
   return stream;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -13,6 +13,8 @@
 #include <base/collection/InvalidKey.h>
 #include <base/string/FormatOutputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Map collection implemented using an ordered binary tree.
 
@@ -196,5 +198,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>
   stream << '}';
   return stream;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

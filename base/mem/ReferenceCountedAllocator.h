@@ -13,6 +13,8 @@
 #include <base/mem/ReferenceCountedObject.h>
 #include <base/string/FormatOutputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   This class is a reference counted, low-level, and resizeable implementation
   of an array of elements. The implementation is not MT-safe and the class is
@@ -53,5 +55,7 @@ public:
   */
   ReferenceCountedAllocator(const ReferenceCountedAllocator& copy) throw(MemoryException) : Allocator<TYPE>(copy) {}
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

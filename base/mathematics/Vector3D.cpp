@@ -6,6 +6,8 @@
 #include <base/mathematics/Vector3D.h>
 #include <math.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 template Vector3D<float>;
 template Vector3D<double>;
 template Vector3D<long double>;
@@ -218,3 +220,5 @@ template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector3D<TYPE>& value) {
   return stream << "(" << value.x << "," << value.y << "," << value.z << ")";
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -5,6 +5,8 @@
 
 #include <base/io/FilterOutputStream.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 FilterOutputStream::FilterOutputStream(OutputStream& o) throw(BindException) : out(o) {
 }
 
@@ -22,3 +24,5 @@ unsigned int FilterOutputStream::write(const char* buffer, unsigned int size) th
 
 FilterOutputStream::~FilterOutputStream() {
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

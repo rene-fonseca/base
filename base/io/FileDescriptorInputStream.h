@@ -9,6 +9,8 @@
 #include <base/io/InputStream.h>
 #include <base/io/FileDescriptor.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Input stream where source is a file descriptor.
 
@@ -106,5 +108,7 @@ public:
   Writes a string representation of a FileDescriptorInputStream object to a format stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorInputStream& value);
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

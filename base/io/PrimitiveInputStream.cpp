@@ -3,8 +3,9 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/io/PrimitiveInputStream.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 PrimitiveInputStream::PrimitiveInputStream(InputStream& in) throw(BindException) :
   FilterInputStream(in) {
@@ -182,3 +183,5 @@ long double PrimitiveInputStream::readLongDouble() throw(IOException) {
 #endif
   return value;
 }
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -8,6 +8,8 @@
 
 #include <base/collection/EndOfEnumeration.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 /**
   Enumeration interface that is used to traverse individual elements of a
   collection one by one.
@@ -37,5 +39,7 @@ public:
   */
   virtual Pointer next() throw(EndOfEnumeration) = 0;
 };
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -163,9 +163,14 @@ public:
   inline String(const String& copy) throw() : elements(copy.elements) {}
 
   /**
-    Assignment of string.
+    Assignment of string with string.
   */
   String& operator=(const String& eq) throw();
+
+  /**
+    Assignment of string with NULL-terminated string.
+  */
+  String& operator=(const char* str) throw(MemoryException);
 
   /**
     Returns the number of characters in the string.

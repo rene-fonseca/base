@@ -113,6 +113,20 @@ String<LOCK>& String<LOCK>::operator=(const String& eq) throw() {
 }
 
 template<class LOCK>
+String<LOCK>& String<LOCK>::operator=(const char* str) throw(MemoryException) {
+  if (str) { // is string proper
+    int length = getLengthOfString(str);
+    if (length < 0) { // maximum length exceeded
+      throw MemoryException();
+    }
+    createString(str, length, DEFAULT_CAPACITY);
+  } else {
+    createString(0, 0, DEFAULT_CAPACITY);
+  }
+  return *this;
+}
+
+template<class LOCK>
 void String<LOCK>::ensureCapacity(unsigned int capacity) throw(MemoryException) {
   // no need to do copyOnWrite - or should we?
   elements->ensureCapacity(capacity);

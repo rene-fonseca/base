@@ -1,0 +1,28 @@
+flavor=win32
+
+# primitive type
+unsigned_char=no
+
+# size of primitive
+char_size=1
+short_size=2
+int_size=4
+long_size=4
+long_long_size=8
+pointer_size=4
+wchar_size=4
+
+# byte order
+byte_order=LITTLE_ENDIAN
+word_order=LITTLE_ENDIAN
+
+# floating-point representation
+float=IEEE_754_SINGLE_PRECISION
+double=IEEE_754_DOUBLE_PRECISION
+long_double=IEEE_EXTENDED_DOUBLE_PRECISION_96
+
+# functions
+functions="memchr memcmp memcpy memmove memset mbrtowc mbsrtowcs"
+
+# apis
+apis="lfs wide"

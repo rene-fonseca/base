@@ -1,0 +1,27 @@
+# architecture
+unsigned_char=no
+char_size=1
+short_size=2
+int_size=4
+long_size=4
+long_long_size=8
+pointer_size=4
+wchar_size=4
+byte_order=LITTLE_ENDIAN
+word_order=LITTLE_ENDIAN
+float=IEEE_754_SINGLE_PRECISION
+double=IEEE_754_DOUBLE_PRECISION
+long_double=IEEE_EXTENDED_DOUBLE_PRECISION_96
+
+# functions
+function_memchr=yes
+functions="memchr memcmp memcpy memmove memset nanosleep pselect readdir_r mbrtowc mbsrtowcs pthread_yield"
+
+# api
+api_aio=no
+apis="inet_ipv6 lfs pthread pthread_semaphore pthread_rwlock regexp wide"
+
+lib_inet_ipv6="socket"
+lib_pthread="pthread"
+lib_rt="rt"
+lib_c="c"

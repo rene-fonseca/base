@@ -114,8 +114,9 @@ unsigned int MappedFile::getGranularity() throw() {
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
     return 4096 * 2; // TAG: fixme
   #else
-    ASSERT(::sysconf(_SC_PAGE_SIZE) <= PrimitiveTraits<unsigned int>::MAXIMUM); // this will never happen
-    return ::sysconf(_SC_PAGE_SIZE);
+    long size = ::sysconf(_SC_PAGE_SIZE);
+    ASSERT((size > 0) && (size <= PrimitiveTraits<unsigned int>::MAXIMUM));
+    return size;
   #endif
 #endif // flavor
 }

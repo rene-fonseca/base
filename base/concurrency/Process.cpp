@@ -12,6 +12,9 @@
   #include <sys/types.h>
   #include <sys/wait.h>
   #include <unistd.h>
+  #include <sys/time.h>
+  #include <sys/resource.h>
+  #include <errno.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

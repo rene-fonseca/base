@@ -261,13 +261,13 @@ long long File::getPosition() const throw(FileException) {
 #endif
 }
 
-void File::setPosition(long long pos, Whence whence) throw(FileException) {
+void File::setPosition(long long position, Whence whence) throw(FileException) {
 #if defined(__win32__)
   static DWORD relativeTo[] = {FILE_BEGIN, FILE_CURRENT, FILE_END};
-  LARGE_INTEGER position;
-  position.QuadPart = pos;
-  position.LowPart = SetFilePointer((HANDLE)fd->getHandle(), position.LowPart, &position.HighPart, relativeTo[whence]);
-  if ((position.LowPart == INVALID_SET_FILE_POINTER) && (GetLastError() != NO_ERROR)) {
+  LARGE_INTEGER temp;
+  temp.QuadPart = position;
+  temp.LowPart = SetFilePointer((HANDLE)fd->getHandle(), temp.LowPart, &temp.HighPart, relativeTo[whence]);
+  if ((temp.LowPart == INVALID_SET_FILE_POINTER) && (GetLastError() != NO_ERROR)) {
     throw FileException("Unable to get file position");
   }
 //  if (!SetFilePointerEx((HANDLE)fd->getHandle(), position, 0, relativeTo[whence])) {

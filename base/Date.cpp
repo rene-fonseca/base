@@ -46,7 +46,7 @@ Date Date::getTime(int second, int minute, int hour) throw(DateException) {
   SystemTimeToFileTime(&time, &buffer);
   return FileTimeToDate(buffer);
 #else // __unix__
-  struct tm temp = {seconds, minute, hour, 0, 0, 0, 0, 0, 0};
+  struct tm temp = {second, minute, hour, 0, 0, 0, 0, 0, 0};
   int result;
   if ((result = mktime(&temp)) == -1) {
     throw DateException("Unable to represent date");

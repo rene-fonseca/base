@@ -31,4 +31,6 @@ libbase_la_DEPENDENCIES = collection/libcollection.la communication/libcommunica
 # Windows version resource
 # TAG: move to platform specific directory
 winrcver.o: base.rc
-	windres --preprocessor "${CXXCPP} ${INCLUDES} ${CPPFLAGS}" --output-format coff $< $@
+	cp $< temp.h
+	windres --preprocessor "${CXXCPP} ${INCLUDES} ${CPPFLAGS}" --output-format coff temp.h $@
+	-rm -f temp.h

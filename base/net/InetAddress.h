@@ -57,11 +57,11 @@ public:
     SITE_LOCAL = 64, /**< Address is a site local address. */
     IPV4_MAPPED = 128, /**< Address is an IPv4 mapped address. */
     IPV4_COMPATIBLE = 256, /**< Address is compatible with IPv4. */
-    CLASS_A = 512, /** IPv4 class A. */
-    CLASS_B = 1024, /** IPv4 class B. */
-    CLASS_C = 2048, /** IPv4 class C. */
-    CLASS_D = 4096, /** IPv4 class D. */
-    CLASS_E = 8192 /** IPv4 class E (experimantal). */
+    CLASS_A = 512, /**< IPv4 class A. */
+    CLASS_B = 1024, /**< IPv4 class B. */
+    CLASS_C = 2048, /**< IPv4 class C. */
+    CLASS_D = 4096, /**< IPv4 class D. */
+    CLASS_E = 8192 /**< IPv4 class E (experimantal). */
   };
 
   /** Multicast flags. */
@@ -170,6 +170,20 @@ public:
     return family;
   }
 
+  /**
+    Returns true if the address family is IPv4.
+  */
+  inline bool isIPv4() const throw() {
+    return family == IP_VERSION_4;
+  }
+  
+  /**
+    Returns true if the address family is IPv6.
+  */
+  inline bool isIPv6() const throw() {
+    return family == IP_VERSION_6;
+  }
+  
   /**
     Returns the IP address in binary format in network byte order.
   */

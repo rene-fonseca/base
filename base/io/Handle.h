@@ -25,11 +25,12 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   within the operatingsystem (e.g. file, socket and pipe). This class is
   normally not used directly by the application.
 
+  @short Generic descriptor
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
-class Handle : public virtual ReferenceCountedObject {
+class Handle : public ReferenceCountedObject {
 private:
 
   /** Handle to resource. */
@@ -39,18 +40,8 @@ private:
   Handle(const Handle& copy);
   /* Disable the default assignment operator. */
   Handle& operator=(const Handle& eq);
-
-  /** Invalid handle. */
-  static Handle invalid;
 public:
 
-  /**
-    Returns an invalid handle.
-  */
-  static inline Handle* getInvalid() throw() {
-    return &invalid;
-  }
-  
   /**
     Initializes an invalid handle.
   */
@@ -72,7 +63,10 @@ public:
   inline bool isValid() const throw() {
     return handle != OperatingSystem::INVALID_HANDLE;
   }
-  
+
+  /**
+    Destroys the handle.
+  */
   virtual ~Handle() throw(IOException);
 };
 

@@ -28,6 +28,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 #if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
   /** 8 bit unsigned integer (a.k.a. octet). */
   typedef unsigned char byte;
+  /** 8 bit unsigned integer (a.k.a. octet). */
+  typedef unsigned char uint8;
 #else
   #error char primitive is not 8 bits
 #endif
@@ -38,57 +40,114 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 #endif
 
 #if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
+  /** 32 bit signed integer. */
+  typedef int int32;
   /** 32 bit unsigned integer. */
   typedef unsigned int uint32;
 #elif (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
+  /** 32 bit signed integer. */
+  typedef long int32;
   /** 32 bit unsigned integer. */
   typedef unsigned long uint32;
 #elif (_DK_SDI_MIP__BASE__LONG_LONG_SIZE == 4)
+  /** 32 bit signed integer. */
+  typedef long long uint32;
   /** 32 bit unsigned integer. */
   typedef unsigned long long uint32;
+#endif
+
+#if (_DK_SDU_MIP__BASE__LONG_LONG_SIZE == 8)
+  /** 64 bit signed integer. */
+  typedef long long int64;
+  /** 64 bit unsigned integer. */
+  typedef unsigned long long uint64;
+#endif
+
+/** A wide character. */
+typedef wchar_t wchar; // TAG: this will change to unsigned int in the future
+
+
+
+#if (_DK_SDU_MIP__BASE__POINTER_SIZE == _DK_SDU_MIP__BASE__INT_SIZE)
+  /** The resulting integral type of pointer subtraction. */
+  typedef int MemoryDiff;
+  /** The integral type used to represent any memory offset and any size of memory block. */
+  typedef unsigned int MemorySize;
+#elif (_DK_SDU_MIP__BASE__POINTER_SIZE == _DK_SDU_MIP__BASE__LONG_SIZE)
+  /** The result type of pointer subtraction. */
+  typedef long MemoryDiff;
+  /** The integral type used to represent any memory offset and any size of memory block. */
+  typedef unsigned long MemorySize;
+#elif (_DK_SDU_MIP__BASE__POINTER_SIZE == _DK_SDU_MIP__BASE__LONG_LONG_SIZE)
+  /** The result type of pointer subtraction. */
+  typedef int64 MemoryDiff;
+  /** The integral type used to represent any memory offset and any size of memory block. */
+  typedef uint64 MemorySize;
 #endif
 
 
 
 /**
+  Returns an unsigned int from 2 short int's.
+  
+  @param lowWord The low bits.
+  @param highWord The high bits.
+*/
+inline unsigned int merge(unsigned short lowWord, unsigned short highWord) throw() {
+  return (static_cast<unsigned int>(highWord) << (sizeof(lowWord) * 8)) | lowWord;
+}
+
+/**
+  Returns an unsigned long long from 2 unsigned int's.
+  
+  @param lowWord The low bits.
+  @param highWord The high bits.
+*/
+inline unsigned long long merge(unsigned int lowWord, unsigned int highWord) throw() {
+  return (static_cast<unsigned long long>(highWord) << (sizeof(lowWord) * 8)) | lowWord;
+}
+
+
+
+/**
   Returns the higher half-word of the specified value.
 */
-inline byte getHighWord(unsigned short value) throw() {
-  return value >> (sizeof(unsigned short) * 8/2);
+inline uint8 getHighWordOf16(uint16 value) throw() {
+  return value >> (sizeof(value) * 8/2);
 }
 
 /**
   Returns the lower half-word of the specified value.
 */
-inline byte getLowWord(unsigned short value) throw() {
+inline uint8 getLowWordOf16(uint16 value) throw() {
   return value;
 }
 
 /**
   Returns the higher half-word of the specified value.
 */
-inline unsigned short getHighWord(unsigned int value) throw() {
-  return value >> (sizeof(unsigned int) * 8/2);
+inline uint16 getHighWordOf32(uint32 value) throw() {
+  return value >> (sizeof(value) * 8/2);
 }
 
 /**
   Returns the lower half-word of the specified value.
 */
-inline unsigned short getLowWord(unsigned int value) throw() {
+inline uint16 getLowWordOf32(uint32 value) throw() {
   return value;
 }
 
 /**
   Returns the higher half-word of the specified value.
 */
-inline unsigned int getHighWord(unsigned long long value) throw() {
-  return value >> (sizeof(unsigned long long) * 8/2);
+inline uint32 getHighWordOf64(uint64 value) throw() {
+  return value >> (sizeof(value) * 8/2);
 }
 
 /**
   Returns the lower half-word of the specified value.
 */
-inline unsigned int getLowWord(unsigned long long value) throw() {
+inline uint32 getLowWordOf64(uint64 value) throw() {
   return value;
 }
 

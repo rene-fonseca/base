@@ -73,7 +73,11 @@ public:
     /** The first user defined exit code. */
     EXIT_CODE_USER = 1,
     /** The default exit code indicating an unspecified error. */
-    EXIT_CODE_ERROR = 125,
+    EXIT_CODE_ERROR = 123,
+    /** This value specifies that the true exit code conflicts a reserved exit code in the current context. */
+    EXIT_CODE_CONFLICT = 124,
+    /** The exit code indicating an internal error (e.g. uncaught exception and violations of exception specification). */
+    EXIT_CODE_INTERNAL_ERROR = 125,
     /** The exit code returned by the application on initialization error. */
     EXIT_CODE_INITIALIZATION = 126,
     /** The exit code used when the application exit code is determined externally. */

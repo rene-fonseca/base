@@ -91,7 +91,7 @@ struct packedStat64 { // temporary fix for unaligned st_size
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   inline Date FileTimeToDate(const FILETIME& time) {
-    return Date((*pointer_cast<const long long*>(&time) - 116444736000000000LL)/10000000);
+    return Date((Cast::impersonate<int64>(time) - 116444736000000000LL)/10000000);
   }
 #endif // flavor
 

@@ -351,7 +351,7 @@ namespace extension {
              ) == ERROR_SUCCESS,
              RegistryException(this)
       );
-      return Date((*pointer_cast<const long long*>(&modificationTime) - 116444736000000000LL)/10000000);
+      return Date((Cast::impersonate<int64>(modificationTime) - 116444736000000000LL)/10000000);
     }
     
     Trustee RegistryKey::getOwner() const throw(RegistryException) {

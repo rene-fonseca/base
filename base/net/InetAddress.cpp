@@ -71,11 +71,11 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
     byte* addr;
     switch (i->ai_family) {
     case PF_INET:
-      addr = getByteAddress(pointer_cast<struct sockaddr_in*>(i->ai_addr)->sin_addr);
+      addr = getByteAddress(Cast::pointer<struct sockaddr_in*>(i->ai_addr)->sin_addr);
       result.append(InetAddress(addr, IP_VERSION_4));
       break;
     case PF_INET6:
-      addr = getByteAddress(pointer_cast<struct sockaddr_in6*>(i->ai_addr)->sin6_addr);
+      addr = getByteAddress(Cast::pointer<struct sockaddr_in6*>(i->ai_addr)->sin6_addr);
       result.append(InetAddress(addr, IP_VERSION_6));
       break;
 //    default:
@@ -115,7 +115,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
   #endif
 
   for (char** p = hp->h_addr_list; *p != 0; p++) {
-    result.append(InetAddress(pointer_cast<const byte*>(*p), IP_VERSION_4));
+    result.append(InetAddress(Cast::pointer<const byte*>(*p), IP_VERSION_4));
   }
 #endif // _DK_SDU_MIP__BASE__INET_IPV6
   return result;
@@ -258,7 +258,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
   copy<char>(getCharAddress(addr.sin6_addr), getCharAddress(address), sizeof(address));
   char hostname[NI_MAXHOST]; // includes space for terminator
 
-  if (getnameinfo(pointer_cast<sockaddr*>(&addr), sizeof(addr), hostname, sizeof(hostname), 0, 0, NI_NAMEREQD | (fullyQualified ? 0 : NI_NOFQDN)) != 0) {
+  if (getnameinfo(Cast::pointer<sockaddr*>(&addr), sizeof(addr), hostname, sizeof(hostname), 0, 0, NI_NAMEREQD | (fullyQualified ? 0 : NI_NOFQDN)) != 0) {
     throw HostNotFound("Unable to resolve IP address", this);
   }
 

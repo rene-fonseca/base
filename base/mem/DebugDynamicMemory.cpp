@@ -47,12 +47,12 @@ void* DebugDynamicMemory::allocate(unsigned int size) throw() {
 #endif // flavor  
   //assert(result % sizeof(unsigned int) == 0, MemoryCorruption());
 
-  Descriptor* descriptor = pointer_cast<Descriptor*>(result);
+  Descriptor* descriptor = Cast::pointer<Descriptor*>(result);
   descriptor->magic = 0; //&allocate;
   descriptor->allocated = true;
   descriptor->size = size;
   
-  unsigned int* prefix = pointer_cast<unsigned int*>(pointer_cast<char*>(result) + sizeof(descriptor));
+  unsigned int* prefix = Cast::pointer<unsigned int*>(Cast::pointer<char*>(result) + sizeof(descriptor));
   unsigned int* user = prefix + PREFIX_WORDS;
 
   // fill prefix
@@ -60,7 +60,7 @@ void* DebugDynamicMemory::allocate(unsigned int size) throw() {
     unsigned int* dest = prefix;
     const unsigned int* end = user;
     for (; dest < end; ++dest) {
-      *dest = pointer_cast<char*>(dest) - static_cast<char*>(0);
+      *dest = Cast::pointer<char*>(dest) - static_cast<char*>(0);
     }
   }
   
@@ -68,11 +68,11 @@ void* DebugDynamicMemory::allocate(unsigned int size) throw() {
   {
     unsigned int* dest = user + size/sizeof(unsigned int);
     if ((size % sizeof(unsigned int)) != 0) {
-      *dest = pointer_cast<char*>(dest) - static_cast<char*>(0);
+      *dest = Cast::pointer<char*>(dest) - static_cast<char*>(0);
     }
     const unsigned int* end = dest + SUFFIX_WORDS;
     for (; dest < end; ++dest) {
-      *dest = pointer_cast<char*>(dest) - static_cast<char*>(0);
+      *dest = Cast::pointer<char*>(dest) - static_cast<char*>(0);
     }
   }
 
@@ -89,7 +89,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
   }
   
   // check alignment
-  assert((pointer_cast<char*>(memory) - static_cast<char*>(0)) % sizeof(unsigned int) == 0, MemoryCorruption());
+  assert((Cast::pointer<char*>(memory) - static_cast<char*>(0)) % sizeof(unsigned int) == 0, MemoryCorruption());
   unsigned int* prefix = static_cast<unsigned int*>(memory) - PREFIX_WORDS;
 
   // check prefix words
@@ -97,14 +97,14 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
     const unsigned int* src = prefix;
     const unsigned int* end = src + PREFIX_WORDS;
     for (; src < end; ++src) {
-      if (*src != (pointer_cast<const char*>(src) - static_cast<const char*>(0))) {
+      if (*src != (Cast::pointer<const char*>(src) - static_cast<const char*>(0))) {
         throw MemoryCorruption(Type::getType<DebugDynamicMemory>());
       }
     }
   }
 
   unsigned int size; // size of user block
-  Descriptor* descriptor = pointer_cast<Descriptor*>(pointer_cast<char*>(prefix) - sizeof(Descriptor));
+  Descriptor* descriptor = Cast::pointer<Descriptor*>(Cast::pointer<char*>(prefix) - sizeof(Descriptor));
   
   // check descriptor
   {
@@ -123,14 +123,14 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
     if (size % sizeof(unsigned int) != 0) {
       unsigned int mask = static_cast<unsigned int>(-1);
       for (unsigned int i = 0; i < (size % sizeof(unsigned int)); ++i) {
-        pointer_cast<char*>(&mask)[i] = 0; // filter out dont cares
+        Cast::pointer<char*>(&mask)[i] = 0; // filter out dont cares
       }
-      assert((*src & mask) == ((pointer_cast<const char*>(src) - static_cast<const char*>(0)) & mask), MemoryCorruption());
+      assert((*src & mask) == ((Cast::pointer<const char*>(src) - static_cast<const char*>(0)) & mask), MemoryCorruption());
       ++src;
     }
     const unsigned int* end = src + SUFFIX_WORDS;
     for (; src < end; ++src) {
-      if (*src != (pointer_cast<const char*>(src) - static_cast<const char*>(0))) {
+      if (*src != (Cast::pointer<const char*>(src) - static_cast<const char*>(0))) {
         throw MemoryCorruption(Type::getType<DebugDynamicMemory>());
       }
     }

@@ -155,7 +155,7 @@ public:
 //    long long granularity = MappedFile::getGranularity();
 //    const unsigned int index = position % granularity; // offset to the sequence within the window
 //    map = MappedFile(file, FileRegion(position/granularity*granularity, size * sizeof(TYPE) + index));
-//    elements = pointer_cast<const TYPE*>(map.getBytes() + index);
+//    elements = Cast::pointer<const TYPE*>(map.getBytes() + index);
 //  }
 //
 //  inline MappedSequence(const MappedSequence& copy) throw() : map(copy.map), elements(copy.elements) {

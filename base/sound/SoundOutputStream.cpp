@@ -236,7 +236,7 @@ unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) thr
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   WAVEHDR header;
   clear(header);
-  header.lpData = pointer_cast<char*>(const_cast<void*>(buffer)); // do not change buffer content
+  header.lpData = Cast::pointer<char*>(const_cast<void*>(buffer)); // do not change buffer content
   header.dwBufferLength = size;
 
   unsigned int result = ::waveOutPrepareHeader((HWAVEOUT)handle, &header, sizeof(header));

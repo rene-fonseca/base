@@ -18,20 +18,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-/**
-  This cast function is used to up cast pointers (i.e. you can explicitly
-  specify the desired pointer type). This function only works if there exists
-  implicit rules which convert the input type to the desired type.
-*/
-template<class TYPE>
-inline TYPE up_cast(TYPE argument) throw() {return argument;}
-
-/**
-  Implicit casting function.
-*/
-template<class RESULT, class ARGUMENT>
-inline RESULT implicit_cast(ARGUMENT argument) throw() {return argument;}
-
 template<class TYPE> class ConstPointerHelper {
 public:
   enum {IS_CONSTANT = false};
@@ -44,31 +30,6 @@ public:
 
 template<class TYPE> inline bool isConstPointer() throw() {
   return ConstPointerHelper<TYPE>::IS_CONSTANT;
-}
-
-template<class RESULT, class ARG> class PointerCastHelper {
-public:
-  // no casting function available
-};
-
-template<class RESULT, class ARG> class PointerCastHelper<RESULT*, ARG*> {
-public:
-  static inline RESULT* pointer_cast(ARG* value) throw() {return reinterpret_cast<RESULT*>(value);}
-};
-
-template<class RESULT, class ARG> class PointerCastHelper<const RESULT*, const ARG*> {
-public:
-  static inline const RESULT* pointer_cast(const ARG* value) throw() {return reinterpret_cast<const RESULT*>(value);}
-};
-
-/**
-  This function casts any pointer type to any other pointer type (at compile
-  time). You should definitely avoid this function when possible. However, it
-  is not as dangerous as using reinterpret_cast directly. This function does
-  not cast away the const qualifier.
-*/
-template<class RESULT, class ARG> inline RESULT pointer_cast(ARG value) throw() {
-  return PointerCastHelper<RESULT, ARG>::pointer_cast(value);
 }
 
 /**

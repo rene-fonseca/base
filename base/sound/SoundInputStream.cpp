@@ -246,7 +246,7 @@ unsigned int SoundInputStream::read(void* buffer, unsigned int size) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   WAVEHDR header;
   clear(header);
-  header.lpData = pointer_cast<LPSTR>(buffer);
+  header.lpData = Cast::pointer<LPSTR>(buffer);
   header.dwBufferLength = size;
 
   unsigned int result = ::waveInPrepareHeader((HWAVEIN)handle, &header, sizeof(header));

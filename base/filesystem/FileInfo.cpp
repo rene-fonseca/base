@@ -232,9 +232,9 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException) : path(_path)
   temp.HighPart = information.nFileSizeHigh;
   size = temp.QuadPart;
   const long long fileTimeOffset = 116444736000000000ULL;
-  access = (*pointer_cast<const long long*>(&information.ftLastAccessTime) - fileTimeOffset)/10000000;
-  modification = (*pointer_cast<const long long*>(&information.ftLastWriteTime) - fileTimeOffset)/10000000;
-  change = (*pointer_cast<const long long*>(&information.ftCreationTime) - fileTimeOffset)/10000000;
+  access = (Cast::impersonate<int64>(information.ftLastAccessTime) - fileTimeOffset)/10000000;
+  modification = (Cast::impersonate<int64>(information.ftLastWriteTime) - fileTimeOffset)/10000000;
+  change = (Cast::impersonate<int64>(information.ftCreationTime) - fileTimeOffset)/10000000;
   links = information.nNumberOfLinks;
   
 #else // unix

@@ -517,14 +517,14 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const char* value) th
   return stream;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) throw(IOException) {
-  char buffer[sizeof(short int) * 8];
+FormatOutputStream& operator<<(FormatOutputStream& stream, short value) throw(IOException) {
+  char buffer[sizeof(short) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (stream.getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
-      unsigned short int temp = *pointer_cast<const unsigned short int*>(&value); // no sign
+      unsigned short temp = Cast::impersonate<unsigned short>(value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000001); // get digit
         temp >>= 1; // bits per digit
@@ -535,7 +535,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) thro
     }
   case FormatOutputStream::Symbols::OCTAL:
     {
-      unsigned short int temp = *pointer_cast<const unsigned short int*>(&value); // no sign
+      unsigned short temp = Cast::impersonate<unsigned short>(value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000007); // get digit
         temp >>= 3; // bits per digit
@@ -546,7 +546,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) thro
     }
   case FormatOutputStream::Symbols::DECIMAL:
     {
-      unsigned short int temp = (value >= 0) ? value : -value;
+      unsigned short temp = (value >= 0) ? value : -value;
       do {
         *dest = ASCIITraits::valueToDigit(temp % 10); // get digit
         temp = temp/10;
@@ -557,7 +557,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) thro
     }
   case FormatOutputStream::Symbols::HEXADECIMAL:
     {
-      unsigned short int temp = *pointer_cast<const unsigned short int*>(&value); // no sign
+      unsigned short temp = Cast::impersonate<unsigned short>(value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
         temp >>= 4; // bits per digit
@@ -574,8 +574,8 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) thro
   return stream;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int value) throw(IOException) {
-  char buffer[sizeof(unsigned short int) * 8];
+FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short value) throw(IOException) {
+  char buffer[sizeof(unsigned short) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (stream.getBase()) {
@@ -634,7 +634,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) throw(IOEx
   switch (stream.getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
-      unsigned int temp = *pointer_cast<const unsigned int*>(&value); // no sign
+      unsigned int temp = Cast::impersonate<unsigned int>(value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000001); // get digit
         temp >>= 1; // bits per digit
@@ -645,7 +645,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) throw(IOEx
     }
   case FormatOutputStream::Symbols::OCTAL:
     {
-      unsigned int temp = *pointer_cast<const unsigned int*>(&value); // no sign
+      unsigned int temp = Cast::impersonate<unsigned int>(value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000007); // get digit
         temp >>= 3; // bits per digit
@@ -667,7 +667,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) throw(IOEx
     }
   case FormatOutputStream::Symbols::HEXADECIMAL:
     {
-      unsigned int temp = *pointer_cast<const unsigned int*>(&value); // no sign
+      unsigned int temp = Cast::impersonate<unsigned int>(value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
         temp >>= 4; // bits per digit
@@ -744,7 +744,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long value) throw(IOE
   switch (stream.getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
-      unsigned long temp = *pointer_cast<const unsigned long*>(&value); // no sign
+      unsigned long temp = Cast::impersonate<unsigned long>(value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000001); // get digit
         temp >>= 1; // bits per digit
@@ -755,7 +755,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long value) throw(IOE
     }
   case FormatOutputStream::Symbols::OCTAL:
     {
-      unsigned long temp = *pointer_cast<const unsigned long*>(&value); // no sign
+      unsigned long temp = Cast::impersonate<unsigned long>(value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000007); // get digit
         temp >>= 3; // bits per digit
@@ -777,7 +777,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long value) throw(IOE
     }
   case FormatOutputStream::Symbols::HEXADECIMAL:
     {
-      unsigned long temp = *pointer_cast<const unsigned long*>(&value); // no sign
+      unsigned long temp = Cast::impersonate<unsigned long>(value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
         temp >>= 4; // bits per digit
@@ -847,14 +847,14 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long value) 
   return stream;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) throw(IOException) {
-  char buffer[sizeof(long long int) * 8];
+FormatOutputStream& operator<<(FormatOutputStream& stream, long long value) throw(IOException) {
+  char buffer[sizeof(long long) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (stream.getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
-      unsigned long long int temp = *pointer_cast<const unsigned long long int*>(&value); // no sign
+      unsigned long long temp = Cast::impersonate<unsigned long long>(value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000001); // get digit
         temp >>= 1; // bits per digit
@@ -865,7 +865,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
     }
   case FormatOutputStream::Symbols::OCTAL:
     {
-      unsigned long long int temp = *pointer_cast<const unsigned long long int*>(&value); // no sign
+      unsigned long long temp = Cast::impersonate<unsigned long long>(value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x00000007); // get digit
         temp >>= 3; // bits per digit
@@ -887,7 +887,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
     }
   case FormatOutputStream::Symbols::HEXADECIMAL:
     {
-      unsigned long long int temp = *pointer_cast<const unsigned long long int*>(&value); // no sign
+      unsigned long long temp = Cast::impersonate<unsigned long long>(value); // no sign
       do {
         *dest = ASCIITraits::valueToDigit(temp & 0x0000000f, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0); // get bits of digit
         temp >>= 4; // bits per digit
@@ -904,8 +904,8 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
   return stream;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long int value) throw(IOException) {
-  char buffer[sizeof(unsigned long long int) * 8];
+FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long value) throw(IOException) {
+  char buffer[sizeof(unsigned long long) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (stream.getBase()) {

@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 namespace win32 {
   
   void CALLBACK asyncWriteFileCallback(DWORD errorCode, DWORD bytesWritten, OVERLAPPED* overlapped) {
-    AsyncWriteFileContext* context = pointer_cast<AsyncWriteFileContext::CallbackInfo*>(overlapped)->context;
+    AsyncWriteFileContext* context = Cast::pointer<AsyncWriteFileContext::CallbackInfo*>(overlapped)->context;
     unsigned int flags = context->flags | AsynchronousWriteCompletion::COMPLETED;
     if (errorCode == 0) {
       flags |= AsynchronousWriteCompletion::SUCCESSFUL;
@@ -52,7 +52,7 @@ namespace win32 {
     callbackInfo.overlapped.OffsetHigh = getHighWordOf64(offset);
     callbackInfo.context = this;
     
-    BOOL result = ::WriteFileEx(handle, buffer, bytesToWrite, &callbackInfo.overlapped, pointer_cast<LPOVERLAPPED_COMPLETION_ROUTINE>(&asyncWriteFileCallback));
+    BOOL result = ::WriteFileEx(handle, buffer, bytesToWrite, &callbackInfo.overlapped, Cast::pointer<LPOVERLAPPED_COMPLETION_ROUTINE>(&asyncWriteFileCallback));
     if (!result) {
       //DWORD lastError = ::GetLastError();
       selfReference = 0; // release destruction lock (do NOT access state hereafter)

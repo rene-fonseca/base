@@ -231,9 +231,9 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
 
   static const long long fileTimeOffset = 116444736000000000ULL;
   path -= MESSAGE("\\");
-  access = (*pointer_cast<const long long*>(&information.ftLastAccessTime) - fileTimeOffset)/10000000;
-  modification = (*pointer_cast<const long long*>(&information.ftLastWriteTime) - fileTimeOffset)/10000000;
-  change = (*pointer_cast<const long long*>(&information.ftCreationTime) - fileTimeOffset)/10000000;
+  access = (Cast::impersonate<int64>(information.ftLastAccessTime) - fileTimeOffset)/10000000;
+  modification = (Cast::impersonate<int64>(information.ftLastWriteTime) - fileTimeOffset)/10000000;
+  change = (Cast::impersonate<int64>(information.ftCreationTime) - fileTimeOffset)/10000000;
   links = information.nNumberOfLinks;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
@@ -387,7 +387,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
       struct dirent64* entry;
 
       errno = 0;
-      if ((status = ::readdir64_r(directory, pointer_cast<struct dirent64*>(buffer->getElements()), &entry)) != 0) {
+      if ((status = ::readdir64_r(directory, Cast::pointer<struct dirent64*>(buffer->getElements()), &entry)) != 0) {
         if (errno == 0) { // stop if last entry has been read
           break;
         }
@@ -438,7 +438,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
       struct dirent* entry;
 
       errno = 0;
-      if ((status = ::readdir_r(directory, pointer_cast<struct dirent*>(buffer->getElements()), &entry)) != 0) {
+      if ((status = ::readdir_r(directory, Cast::pointer<struct dirent*>(buffer->getElements()), &entry)) != 0) {
         if (errno == 0) { // stop if last entry has been read
           break;
         }

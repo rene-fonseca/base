@@ -998,8 +998,8 @@ WideString Date::format(const WideString& format, bool local) const throw(Invali
   } else {
     gmtime_r(&static_cast<time_t>(date), &time); // MT-safe
   }
-  size_t result = wcsftime(pointer_cast<wchar_t*>(buffer->getElements()), buffer->getSize()/sizeof(wchar_t), format.getElements(), &time);
-  return WideString(pointer_cast<const wchar_t*>(buffer->getElements()), result);
+  size_t result = wcsftime(Cast::pointer<wchar_t*>(buffer->getElements()), buffer->getSize()/sizeof(wchar_t), format.getElements(), &time);
+  return WideString(Cast::pointer<const wchar_t*>(buffer->getElements()), result);
 #else // unix
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct tm time;
@@ -1008,8 +1008,8 @@ WideString Date::format(const WideString& format, bool local) const throw(Invali
   } else {
     gmtime_r(&static_cast<time_t>(date), &time); // MT-safe
   }
-  size_t result = wcsftime(pointer_cast<wchar_t*>(buffer->getElements()), buffer->getSize()/sizeof(wchar_t), format.getElements(), &time);
-  return WideString(pointer_cast<const wchar_t*>(buffer->getElements()), result);
+  size_t result = wcsftime(Cast::pointer<wchar_t*>(buffer->getElements()), buffer->getSize()/sizeof(wchar_t), format.getElements(), &time);
+  return WideString(Cast::pointer<const wchar_t*>(buffer->getElements()), result);
 #endif
 #else
   #warning WideString Date::format(const WideString& format, bool local) const throw(MemoryException) not available

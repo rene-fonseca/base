@@ -15,7 +15,6 @@
 #include <base/string/RegExp.h>
 
 #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
-  #include <stdlib.h> // provides malloc...
   #include <regex.h>
 #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
@@ -36,9 +35,8 @@ void RegExp::compile() throw(MemoryException) {
     regex_t preq;
     int result = regcomp(&preq, pattern.getElements(), options);
     if (result) { // succesful
-      compiled = malloc(sizeof(regex_t));
-      assert(compiled, MemoryException(this));
-      copy<char>(pointer_cast<char*>(compiled), pointer_cast<const char*>(&preq), sizeof(regex_t));
+      compiled = new char[sizeof(regex_t)];
+      copy<char>(Cast::pointer<char*>(compiled), Cast::pointer<const char*>(&preq), sizeof(regex_t));
     }
   #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
     int errorOffset;
@@ -55,7 +53,7 @@ void RegExp::release() throw() {
   if (compiled) {
   #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
     regfree(static_cast<regex_t*>(compiled));
-    free(compiled);
+    delete[] compiled;
   #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
     pcre_free(compiled);
   #endif

@@ -95,7 +95,6 @@ private:
     inline volatile const void operator()(ORIGINAL value) throw() {}
   };
 
-  // types of pointers: point to variable, pointer to member (attribute/function), pointer to function
   template<class RESULT, class ORIGINAL>
   class PointerCast {
   public:
@@ -124,9 +123,9 @@ private:
       union {
         const ORIGINAL* original;
         const RESULT* result;
-      };
-      original = value;
-      return result;
+      } temp;
+      temp.original = value;
+      return temp.result;
     }
   };
 
@@ -212,7 +211,7 @@ public:
   */
   template<class RESULT>
   static inline RESULT implicit(RESULT argument) throw() {return argument;}
-
+  
   /**
     Returns the address of the specified object as a byte pointer (i.e. uint8*).
   */
@@ -221,36 +220,57 @@ public:
     return reinterpret_cast<uint8*>(&value);
   }
   
+  /**
+    Returns the address of the specified object as a byte pointer (i.e. uint8*).
+  */
   template<class TYPE>
   static inline const uint8* getAddress(const TYPE& value) throw() {
     return reinterpret_cast<const uint8*>(&value);
   }
   
+  /**
+    Returns the address of the specified object as a byte pointer (i.e. uint8*).
+  */
   template<class TYPE>
   static inline volatile uint8* getAddress(volatile TYPE& value) throw() {
     return reinterpret_cast<volatile uint8*>(&value);
   }
 
+  /**
+    Returns the address of the specified object as a byte pointer (i.e. uint8*).
+  */
   template<class TYPE>
   static inline volatile const uint8* getAddress(volatile const TYPE& value) throw() {
     return reinterpret_cast<volatile const uint8*>(&value);
   }
 
+  /**
+    Returns the address of the specified array as a byte pointer (i.e. uint8*).
+  */
   template<class TYPE>
   static inline uint8* getAddress(TYPE value[]) throw() {
     return reinterpret_cast<uint8*>(value);
   }
   
+  /**
+    Returns the address of the specified object as a byte pointer (i.e. uint8*).
+  */
   template<class TYPE>
   static inline const uint8* getAddress(const TYPE value[]) throw() {
     return reinterpret_cast<const uint8*>(value);
   }
   
+  /**
+    Returns the address of the specified object as a byte pointer (i.e. uint8*).
+  */
   template<class TYPE>
   static inline volatile uint8* getAddress(volatile TYPE value[]) throw() {
     return reinterpret_cast<volatile uint8*>(value);
   }
   
+  /**
+    Returns the address of the specified object as a byte pointer (i.e. uint8*).
+  */
   template<class TYPE>
   static inline volatile const uint8* getAddress(volatile const TYPE value[]) throw() {
     return reinterpret_cast<volatile const uint8*>(value);
@@ -264,36 +284,57 @@ public:
     return reinterpret_cast<char*>(&value);
   }
   
+  /**
+    Returns the address of the specified object as a char pointer.
+  */
   template<class TYPE>
   static inline const char* getCharAddress(const TYPE& value) throw() {
     return reinterpret_cast<const char*>(&value);
   }
   
+  /**
+    Returns the address of the specified object as a char pointer.
+  */
   template<class TYPE>
   static inline volatile char* getCharAddress(volatile TYPE& value) throw() {
     return reinterpret_cast<volatile char*>(&value);
   }
 
+  /**
+    Returns the address of the specified object as a char pointer.
+  */
   template<class TYPE>
   static inline volatile const char* getCharAddress(volatile const TYPE& value) throw() {
     return reinterpret_cast<volatile const char*>(&value);
   }
 
+  /**
+    Returns the address of the specified object as a char pointer.
+  */
   template<class TYPE>
   static inline char* getCharAddress(TYPE value[]) throw() {
     return reinterpret_cast<char*>(value);
   }
   
+  /**
+    Returns the address of the specified object as a char pointer.
+  */
   template<class TYPE>
   static inline const char* getCharAddress(const TYPE value[]) throw() {
     return reinterpret_cast<const char*>(value);
   }
   
+  /**
+    Returns the address of the specified object as a char pointer.
+  */
   template<class TYPE>
   static inline volatile char* getCharAddress(volatile TYPE value[]) throw() {
     return reinterpret_cast<volatile char*>(value);
   }
   
+  /**
+    Returns the address of the specified object as a char pointer.
+  */
   template<class TYPE>
   static inline volatile const char* getCharAddress(volatile const TYPE value[]) throw() {
     return reinterpret_cast<volatile const char*>(value);
@@ -327,7 +368,13 @@ public:
   static inline RESULT explicitly(ORIGINAL value) throw() {
     return ExplicitCast<RESULT, ORIGINAL>();
   }
-  
+
+  /**
+    This method casts any pointer type to any other pointer type (at compile
+    time). You should definitely avoid this function when possible. However, it
+    is not as dangerous as using reinterpret_cast directly. This function does
+    not cast away the qualifiers (e.g. const).
+  */
   template<class RESULT, class ORIGINAL>
   static inline RESULT pointer(ORIGINAL value) throw() {
     return PointerCast<RESULT, ORIGINAL>::cast(value);

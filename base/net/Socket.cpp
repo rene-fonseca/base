@@ -131,10 +131,10 @@ public:
   }
 
   /** Returns pointer to socket address. */
-  inline struct sockaddr* getValue() throw() {return pointer_cast<struct sockaddr*>(&sa);}
+  inline struct sockaddr* getValue() throw() {return Cast::pointer<struct sockaddr*>(&sa);}
 
   /** Returns pointer to socket address. */
-  inline const struct sockaddr* getValue() const throw() {return pointer_cast<const struct sockaddr*>(&sa);}
+  inline const struct sockaddr* getValue() const throw() {return Cast::pointer<const struct sockaddr*>(&sa);}
 
   /** Returns the size of the socket address structure. */
   inline socklen_t getSize() const throw() {return sizeof(sa);}
@@ -144,15 +144,15 @@ public:
   #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
     switch (sa.sin6_family) {
     case AF_INET:
-      return InetAddress(getByteAddress(pointer_cast<const struct sockaddr_in*>(&sa)->sin_addr), InetAddress::IP_VERSION_4);
+      return InetAddress(getByteAddress(Cast::pointer<const struct sockaddr_in*>(&sa)->sin_addr), InetAddress::IP_VERSION_4);
     case AF_INET6:
-      return InetAddress(getByteAddress(pointer_cast<const struct sockaddr_in6*>(&sa)->sin6_addr), InetAddress::IP_VERSION_6);
+      return InetAddress(getByteAddress(Cast::pointer<const struct sockaddr_in6*>(&sa)->sin6_addr), InetAddress::IP_VERSION_6);
     default:
       return InetAddress(); // TAG: or should I throw an exception or just ignore
     }
   #else
     if (sa.sin_family == AF_INET) {
-      return InetAddress(getByteAddress(pointer_cast<const struct sockaddr_in*>(&sa)->sin_addr), InetAddress::IP_VERSION_4);
+      return InetAddress(getByteAddress(Cast::pointer<const struct sockaddr_in*>(&sa)->sin_addr), InetAddress::IP_VERSION_4);
     } else {
       return InetAddress(); // TAG: or should I throw an exception or just ignore
     }
@@ -164,15 +164,15 @@ public:
   #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
     switch (sa.sin6_family) {
     case AF_INET:
-      return ByteOrder::fromBigEndian<unsigned short>(pointer_cast<const struct sockaddr_in*>(&sa)->sin_port);
+      return ByteOrder::fromBigEndian<unsigned short>(Cast::pointer<const struct sockaddr_in*>(&sa)->sin_port);
     case AF_INET6:
-      return ByteOrder::fromBigEndian<unsigned short>(pointer_cast<const struct sockaddr_in6*>(&sa)->sin6_port);
+      return ByteOrder::fromBigEndian<unsigned short>(Cast::pointer<const struct sockaddr_in6*>(&sa)->sin6_port);
     default:
       return 0; // TAG: or should I throw an exception
     }
   #else
     if (sa.sin_family == AF_INET) {
-      return ByteOrder::fromBigEndian<unsigned short>(pointer_cast<const struct sockaddr_in*>(&sa)->sin_port);
+      return ByteOrder::fromBigEndian<unsigned short>(Cast::pointer<const struct sockaddr_in*>(&sa)->sin_port);
     } else {
       return 0; // TAG: or should I throw an exception
     }
@@ -478,7 +478,7 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
   SharedSynchronize<LOCK> sharedSynchronize(*this);
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int buffer = value; // set to zero to disable nonblocking
-  if (ioctlsocket((int)getHandle(), FIONBIO, pointer_cast<u_long*>(&buffer))) {
+  if (ioctlsocket((int)getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
     throw IOException("Unable to set blocking mode", this);
   }
 #else // unix
@@ -508,7 +508,7 @@ unsigned int Socket::available() const throw(IOException) {
   SharedSynchronize<LOCK> sharedSynchronize(*this);
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int result;
-  if (ioctlsocket((int)getHandle(), FIONREAD, pointer_cast<u_long*>(&result))) {
+  if (ioctlsocket((int)getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
     throw IOException("Unable to determine the amount of data pending in the input buffer", this);
   }
   return result;

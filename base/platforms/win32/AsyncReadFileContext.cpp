@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 namespace win32 {
   
   void CALLBACK asyncReadFileCallback(DWORD errorCode, DWORD bytesRead, OVERLAPPED* overlapped) {
-    AsyncReadFileContext* context = pointer_cast<AsyncReadFileContext::CallbackInfo*>(overlapped)->context;
+    AsyncReadFileContext* context = Cast::pointer<AsyncReadFileContext::CallbackInfo*>(overlapped)->context;
     unsigned int flags = context->flags | AsynchronousReadCompletion::COMPLETED;
     if (errorCode == 0) {
       flags |= AsynchronousReadCompletion::SUCCESSFUL;
@@ -54,7 +54,7 @@ namespace win32 {
     callbackInfo.overlapped.OffsetHigh = getHighWordOf64(offset);
     callbackInfo.context = this;
     
-    BOOL result = ::ReadFileEx(handle, buffer, bytesToRead, &callbackInfo.overlapped, pointer_cast<LPOVERLAPPED_COMPLETION_ROUTINE>(&asyncReadFileCallback));
+    BOOL result = ::ReadFileEx(handle, buffer, bytesToRead, &callbackInfo.overlapped, Cast::pointer<LPOVERLAPPED_COMPLETION_ROUTINE>(&asyncReadFileCallback));
     if (!result) {
       DWORD lastError = ::GetLastError();
       if (lastError == ERROR_HANDLE_EOF) {

@@ -1,14 +1,12 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(Makefile.am)
 
-dnl AM_CONFIG_HEADER(config.h)
-
 AM_INIT_AUTOMAKE()
 
 AC_LIBTOOL_WIN32_DLL()
 AM_PROG_LIBTOOL()
 
-AC_CANONICAL_HOST()
+dnl AC_CANONICAL_HOST()
 dnl The following variables have been set: $host, $host_cpu, $host_vendor, and $host_os
 
 
@@ -28,9 +26,6 @@ dnl AC_BASE_DEFINE_FUNCTION(function name)
 AC_DEFUN(AC_BASE_DEFINE_FUNCTION, [dnl
 AC_BASE_DEFINE(["HAVE_`echo $1 | tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ`"])
 ])
-
-
-
 
 
 
@@ -326,30 +321,17 @@ AC_DEFUN(AC_BASE_NOT, [dnl
 if test "[$]$2" = no; then $1=yes; else $1=no; fi dnl
 ])
 
-dnl AC_BASE_MSG(message)
-AC_DEFUN(AC_BASE_MSG, [dnl
-echo $ac_n "$1$ac_c" 1>&AC_FD_MSG dnl
-])
-
-dnl AC_BASE_MSGLN(message)
-AC_DEFUN(AC_BASE_MSGLN, [dnl
-echo "$1" 1>&AC_FD_MSG dnl
-])
-
 dnl AC_BASE_CHECK(check message, action, result variable[, extra variable])
 AC_DEFUN(AC_BASE_CHECK, [dnl
-AC_BASE_MSG([$1... ])
+AC_MSG_CHECKING($1)
 $2
-ifelse([$4], , AC_BASE_MSGLN([$]$3), [dnl
+ifelse([$4], , AC_MSG_RESULT([$]$3), [dnl
 dnl if test "[$]$3" = yes; then
   if test -n "[$]$4"; then
-    AC_BASE_MSGLN([[$]$3 ([$]$4)])
+    AC_MSG_RESULT([[$]$3 ([$]$4)])
   else
-    AC_BASE_MSGLN([$]$3)
+    AC_MSG_RESULT([$]$3)
   fi
-dnl else
-dnl   AC_BASE_MSGLN(no)
-dnl fi
 ])dnl
 ])
 
@@ -363,7 +345,7 @@ for ac_temp_var in $1; do
   fi
 done
 if test "$ac_temp_cached" = yes; then
-  AC_BASE_MSG([(cached) ])
+  [echo $ECHO_N "(cached) $ECHO_C" >&AS_MESSAGE_FD]
 else
   $2
 fi
@@ -552,7 +534,7 @@ done
 dnl AC_BASE_CHECK_CFUNCTION(name)
 AC_DEFUN(AC_BASE_CHECK_CFUNCTION, [dnl
 AC_BASE_CHECK(
-  checking whether $1 is available,
+  whether $1 is available,
   AC_BASE_CACHE(
     base_cv_function_$1,
     AC_BASE_TRY_C_LINK(base_cv_function_$1, config/$1.c)
@@ -566,23 +548,23 @@ fi
 
 
 AC_BASE_CHECK(
-  checking whether C compiler (`echo $CC $CFLAGS $CPPFLAGS $LIBS`) works,
+  whether C compiler ($CC $CFLAGS $CPPFLAGS $LIBS) works,
   AC_BASE_TRY_C_LINK(base_c_compiler_works, config/cross.c),
   base_c_compiler_works)
 
 AC_BASE_CHECK(
-  checking whether C compiler (`echo $CC $CFLAGS $CPPFLAGS $LIBS`) is a cross compiler,
+  whether C compiler ($CC $CFLAGS $CPPFLAGS $LIBS) is a cross compiler,
   AC_BASE_TRY_C_RUN(base_c_not_cross, config/cross.c,)
   AC_BASE_NOT(base_cv_c_cross, base_c_not_cross),
   base_cv_c_cross)
 
 AC_BASE_CHECK(
-  checking whether C++ compiler (`echo $CXX $CXXFLAGS $CPPFLAGS $LIBS`) works,
+  whether C++ compiler ($CXX $CXXFLAGS $CPPFLAGS $LIBS) works,
   AC_BASE_TRY_CXX_LINK(base_cxx_compiler_works, config/cross++.cpp),
   base_cxx_compiler_works)
 
 AC_BASE_CHECK(
-  checking whether C++ compiler (`echo $CXX $CXXFLAGS $CPPFLAGS $LIBS`) is a cross compiler,
+  whether C++ compiler ($CXX $CXXFLAGS $CPPFLAGS $LIBS) is a cross compiler,
   AC_BASE_CACHE(
     base_cv_cxx_cross base_cv_cxx_libs,
     AC_BASE_ATTEMPT(
@@ -598,7 +580,7 @@ AC_BASE_CHECK(
 AC_BASE_ADDLIB($base_cv_cxx_libs)
 
 AC_BASE_CHECK(
-  checking whether Standard Template Library is working,
+  whether Standard Template Library is working,
   AC_BASE_CACHE(
     base_cv_stl_available base_cv_stl_libs,
     AC_BASE_ATTEMPT(
@@ -651,7 +633,7 @@ dnl Checks for header files.
 dnl Check primitives.
 
 AC_BASE_CHECK(
-  checking whether char is unsigned,
+  whether char is unsigned,
   AC_BASE_CACHE(
     base_cv_unsigned_char,
     AC_BASE_TRY_CXX_RUN(base_cv_unsigned_char, config/unsigned_char.cpp, )
@@ -660,7 +642,7 @@ AC_BASE_CHECK(
 AC_BASE_YES(base_cv_unsigned_char, AC_BASE_DEFINE(UNSIGNED_CHAR))
 
 AC_BASE_CHECK(
-  checking size of char,
+  size of char,
   AC_BASE_CACHE(
     base_cv_char_size,
     AC_BASE_TRY_CXX_RUNSTATUS(base_cv_char_size, config/char_size.cpp, )
@@ -669,7 +651,7 @@ AC_BASE_CHECK(
 AC_BASE_DEFINE(CHAR_SIZE, $base_cv_char_size)
 
 AC_BASE_CHECK(
-  checking size of short,
+  size of short,
   AC_BASE_CACHE(
     base_cv_short_size,
     AC_BASE_TRY_CXX_RUNSTATUS(base_cv_short_size, config/short_size.cpp, )
@@ -678,7 +660,7 @@ AC_BASE_CHECK(
 AC_BASE_DEFINE(SHORT_SIZE, $base_cv_short_size)
 
 AC_BASE_CHECK(
-  checking size of int,
+  size of int,
   AC_BASE_CACHE(
     base_cv_int_size,
     AC_BASE_TRY_CXX_RUNSTATUS(base_cv_int_size, config/int_size.cpp, )
@@ -687,7 +669,7 @@ AC_BASE_CHECK(
 AC_BASE_DEFINE(INT_SIZE, $base_cv_int_size)
 
 AC_BASE_CHECK(
-  checking size of long,
+  size of long,
   AC_BASE_CACHE(
     base_cv_long_size,
     AC_BASE_TRY_CXX_RUNSTATUS(base_cv_long_size, config/long_size.cpp, )
@@ -696,7 +678,7 @@ AC_BASE_CHECK(
 AC_BASE_DEFINE(LONG_SIZE, $base_cv_long_size)
 
 AC_BASE_CHECK(
-  checking size of long long,
+  size of long long,
   AC_BASE_CACHE(
     base_cv_long_long_size,
     AC_BASE_TRY_CXX_RUNSTATUS(base_cv_long_long_size, config/long_long_size.cpp, )
@@ -705,7 +687,7 @@ AC_BASE_CHECK(
 AC_BASE_DEFINE(LONG_LONG_SIZE, $base_cv_long_long_size)
 
 AC_BASE_CHECK(
-  checking size of pointer,
+  size of pointer,
   AC_BASE_CACHE(
     base_cv_pointer_size,
     AC_BASE_TRY_CXX_RUNSTATUS(base_cv_pointer_size, config/pointer_size.cpp, )
@@ -717,7 +699,7 @@ AC_BASE_DEFINE(POINTER_SIZE, $base_cv_pointer_size)
 
 if test $base_explicit_big_endian = auto; then
   AC_BASE_CHECK(
-    checking whether byte order of architecture is big endian,
+    whether byte order of architecture is big endian,
     AC_BASE_CACHE(
       base_cv_big_endian,
       AC_BASE_TRY_CXX_RUN(base_cv_big_endian, config/byteorder.c, , AC_MSG_ERROR(Autodetection of byte order does not work with cross compiler.))
@@ -732,7 +714,7 @@ AC_BASE_YESNO(
 )
 
 AC_BASE_CHECK(
-  checking whether floating-point word order is big endian,
+  whether floating-point word order is big endian,
   AC_BASE_CACHE(
     base_cv_float_word_order,
     AC_BASE_TRY_CXX_RUN(base_cv_float_word_order, config/float_word_order.cpp, -I. )
@@ -769,7 +751,7 @@ AC_DEFUN(AC_BASE_VALUE2FLOAT, [dnl
 ])
 
 AC_BASE_CHECK(
-  checking representation of float,
+  representation of float,
   AC_BASE_CACHE(
     base_cv_float base_cv_floatstr,
     AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, config/float.cpp, -I. )
@@ -779,7 +761,7 @@ AC_BASE_CHECK(
 AC_BASE_DEFINE(FLOAT, $base_cv_float)
 
 AC_BASE_CHECK(
-  checking representation of double,
+  representation of double,
   AC_BASE_CACHE(
     base_cv_double base_cv_doublestr,
     AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, config/double.cpp, -I. )
@@ -789,7 +771,7 @@ AC_BASE_CHECK(
 AC_BASE_DEFINE(DOUBLE, $base_cv_double)
 
 AC_BASE_CHECK(
-  checking representation of long double,
+  representation of long double,
   AC_BASE_CACHE(
     base_cv_long_double base_cv_long_doublestr,
     AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, config/long_double.cpp, -I. )
@@ -803,7 +785,7 @@ AC_BASE_DEFINE(LONG_DOUBLE, $base_cv_long_double)
 dnl Check for language features.
 
 AC_BASE_CHECK(
-  checking whether const is supported by the compiler,
+  whether const is supported by the compiler,
   AC_BASE_CACHE(
     base_cv_const,
     AC_BASE_TRY_CXX_COMPILE(base_cv_const, config/const.cpp, )
@@ -814,7 +796,7 @@ if test "$base_cv_const" = yes; then
 fi
 
 AC_BASE_CHECK(
-  checking whether inline is supported by the compiler,
+  whether inline is supported by the compiler,
   AC_BASE_CACHE(
     base_cv_inline,
     AC_BASE_TRY_CXX_COMPILE(base_cv_inline, config/inline.cpp, )
@@ -825,7 +807,7 @@ if test "$base_cv_inline" = yes; then
 fi
 
 AC_BASE_CHECK(
-  checking whether static const with init is supported inside class def,
+  whether static const with init is supported inside class def,
   AC_BASE_CACHE(
     base_cv_static_const,
     AC_BASE_TRY_CXX_COMPILE(base_cv_static_const, config/static_const.cpp, )
@@ -836,7 +818,7 @@ if test "$base_cv_static_const" = yes; then
 fi
 
 AC_BASE_CHECK(
-  checking whether anonymous struct is supported by the compiler,
+  whether anonymous struct is supported by the compiler,
   AC_BASE_CACHE(
     base_cv_anonymous_struct,
     AC_BASE_TRY_CXX_COMPILE(base_cv_anonymous_struct, config/anonymous_struct.cpp, )
@@ -851,7 +833,7 @@ fi
 dnl Checks for typedefs, structures, and compiler characteristics.
 
 AC_BASE_CHECK(
-  checking whether the type socklen_t is available,
+  whether the type socklen_t is available,
   AC_BASE_CACHE(
     base_cv_type_socklen_t,
     AC_BASE_TRY_CXX_LINK(base_cv_type_socklen_t, config/socklen_t.c)
@@ -867,7 +849,7 @@ dnl Checks for library functions.
 
 if test $base_explicit_inet_ipv6 = auto; then
   AC_BASE_CHECK(
-    checking whether IPv6 is supported by the operating system,
+    whether IPv6 is supported by the operating system,
     AC_BASE_CACHE(
       base_cv_inet_ipv6 base_cv_inet_ipv6_libs,
       AC_BASE_ATTEMPT(
@@ -891,7 +873,7 @@ AC_BASE_YES(
 
 if test $base_explicit_large_file_system = auto; then
   AC_BASE_CHECK(
-    checking whether Large File System is supported by the operating system,
+    whether Large File System is supported by the operating system,
     AC_BASE_CACHE(
       base_cv_large_file_system,
       AC_BASE_TRY_CXX_LINK(base_cv_large_file_system, config/largefile.c, , AC_MSG_ERROR(Autodetection of Large File System does not work with cross compiler.))
@@ -910,7 +892,7 @@ dnl Check POSIX thread support
 if test "$ac_base_thread" = posix; then
 
 AC_BASE_CHECK(
-  checking whether Posix thread is supported,
+  whether Posix thread is supported,
   AC_BASE_CACHE(
     base_cv_pthread base_cv_pthread_libs,
     AC_BASE_ATTEMPT(
@@ -928,7 +910,7 @@ fi
 AC_BASE_ADDLIB($base_cv_pthread_libs)
 
 AC_BASE_CHECK(
-  checking whether pthread_yield is provided by the POSIX thread library,
+  whether pthread_yield is provided by the POSIX thread library,
   AC_BASE_CACHE(
     base_cv_pthread_yield base_cv_pthread_yield_libs,
     AC_BASE_ATTEMPT(
@@ -946,7 +928,7 @@ if test "$base_cv_pthread_yield" = yes; then
 fi
 
 AC_BASE_CHECK(
-  checking whether Posix semaphore is supported,
+  whether Posix semaphore is supported,
   AC_BASE_CACHE(
     base_cv_pthread_semaphore base_cv_pthread_semaphore_libs,
     AC_BASE_ATTEMPT(
@@ -964,7 +946,7 @@ if test "$base_cv_pthread_semaphore" = yes; then
 fi
 
 AC_BASE_CHECK(
-  checking whether Posix read-write lock is supported,
+  whether Posix read-write lock is supported,
   AC_BASE_CACHE(
     base_cv_pthread_rwlock base_cv_pthread_rwlock_libs,
     AC_BASE_ATTEMPT(
@@ -1000,20 +982,8 @@ AC_SUBST(CXXFLAGS)
 
 
 ac_base_header=base/configuration.h
-if test -e $ac_base_header; then
-  ac_base_temp1=`cat $ac_base_config`
-  ac_base_temp2=`cat $ac_base_header`
-  if test "$ac_base_temp1" = "$ac_base_temp2"; then
-    echo configuration is unchanged
-    rm $ac_base_config
-  else
-    echo updating configuration...
-    mv $ac_base_config $ac_base_header
-  fi
-else
-  echo creating configuration...
-  mv $ac_base_config $ac_base_header
-fi
+AC_MSG_NOTICE(updating configuration...)
+mv $ac_base_config $ac_base_header
 
 
 

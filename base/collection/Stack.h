@@ -190,7 +190,7 @@ protected:
 
 
   /** The elements of the stack. */
-  ReferenceCountedObjectPointer<StackImpl<TYPE> > elements;
+  ReferenceCountedObjectPointer<StackImpl> elements;
 
   /**
     Makes a new copy of the internal representation of the elements if shared

@@ -479,7 +479,7 @@ protected:
   /**
     The elements of the list.
   */
-  ReferenceCountedObjectPointer<ListImpl<TYPE> > elements;
+  ReferenceCountedObjectPointer<ListImpl> elements;
 
   /**
     Returns the first node of the list.

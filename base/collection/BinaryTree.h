@@ -611,7 +611,7 @@ protected:
   /**
     The elements of the binary tree.
   */
-  ReferenceCountedObjectPointer<BinaryTreeImpl<TYPE> > elements;
+  ReferenceCountedObjectPointer<BinaryTreeImpl> elements;
 public:
 
   /**

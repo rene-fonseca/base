@@ -33,16 +33,32 @@ final: all
 
 
 lendum-gcc-2.96: all
-	CXX=gcc CXXFLAGS="-O0 -g3" LDFLAGS="-lm" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=gccv2 --enable-regexp=pcre --enable-xml=xmlsoft
+	CC='gcc -pipe -x c' CXX='gcc -pipe -x c++' CXXFLAGS="-O0 -g3" LDFLAGS="-lm" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=gccv2 --enable-regexp=pcre --enable-xml=xmlsoft
 
 lendum-gcc-3.0.3: all
-	CXX=/usr/local/gcc-3.0.3/bin/gcc CXXFLAGS="-O0 -g3" LDFLAGS=-L/usr/local/gcc-3.0.3/lib BASE_LIBS='-lsupc++ -lm' ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=gccv3 --enable-regexp=pcre --enable-xml=xmlsoft
+	CC="/usr/local/gcc-3.0.3/bin/gcc -pipe -x c" CXX='/usr/local/gcc-3.0.3/bin/gcc -pipe -x c++' CXXFLAGS="-O0 -g3" LDFLAGS=-L/usr/local/gcc-3.0.3/lib BASE_LIBS='-lsupc++ -lm' ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=pcre --enable-xml=xmlsoft
 
-falster-gcc-2.97: all
-	CXXFLAGS="-O0 -g3" ./configure --prefix=/tmp/fonsece/base --enable-debug --enable-regexp=posix
+lendum-gcc-3.0.4: all
+	CC="/usr/local/gcc-3.0.4/bin/gcc -pipe -x c" CXX='/usr/local/gcc-3.0.4/bin/gcc -pipe -x c++' CXXFLAGS="-O0 -g3" LDFLAGS=-L/usr/local/gcc-3.0.4/lib BASE_LIBS='-lsupc++ -lm' ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=pcre --enable-xml=xmlsoft
 
-falster-gcc-3.0: all
-	CXXFLAGS="-O0 -g3" ./configure --prefix=/tmp/fonsece/base --enable-debug --enable-demangle=gccv3 --enable-regexp=posix
+lendum-gcc-3.0.4-release: all
+	CC="/usr/local/gcc-3.0.4/bin/gcc -pipe -x c" CXX='/usr/local/gcc-3.0.4/bin/gcc -pipe -x c++' CXXFLAGS="-O3 -g3 -mcpu=i686" LDFLAGS=-L/usr/local/gcc-3.0.4/lib BASE_LIBS='-lsupc++ -lm' ./configure --target=i686-pc-linux --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=pcre --enable-xml=xmlsoft
+
+# use -pipe?
+# --target=ultrasparc-sun-sunos??
+falster-gcc-3.0.4: all
+	CC="/usr/local/gcc-3.0.4/bin/gcc -x c" CXX='/usr/local/gcc-3.0.4/bin/gcc -x c++' CXXFLAGS="-O0 -g3" LDFLAGS=-L/usr/local/gcc-3.0.4/lib BASE_LIBS='-lsupc++ -lm' ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=posix
+
+falster-gcc-3.0.4-release: all
+	CC="/usr/local/gcc-3.0.4/bin/gcc -x c" CXX='/usr/local/gcc-3.0.4/bin/gcc -x c++' CXXFLAGS="-O3 -g3 -mcpu=ultrasparc" LDFLAGS=-L/usr/local/gcc-3.0.4/lib BASE_LIBS='-lsupc++ -lm' ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=posix
+
+falster-gcc-3.0.4-64bit-release: all
+	CC="/usr/local/gcc-3.0.4/bin/gcc -x c" CXX='/usr/local/gcc-3.0.4/bin/gcc -x c++' CXXFLAGS="-O3 -g3 -mcpu=ultrasparc -m64" LDFLAGS=-L/usr/local/gcc-3.0.4/lib BASE_LIBS='-lsupc++ -lm' ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=posix
+
+# --target=mips2-sgi-irix64???
+fyn-gcc-3.0.4: all
+
+fyn-gcc-3.0.4-release: all
 
 # Builds the framework (both dynamic and static) for target mingw under the
 # Cygwin environment using the GNU Compiler Collection. The libtool-1.4.1
@@ -56,4 +72,7 @@ klampenborg-gcc: all
 
 #LTCC='"gcc -mno-cygwin -mthreads"'
 klampenborg-gcc-3.0.4: all
-	CC="gcc -mno-cygwin -mthreads -x c" CXX="gcc -mno-cygwin -mthreads -x c++" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-O0 -g3" BASE_LIBS='-L/usr/local/gcc-3.0.3/lib/gcc-lib/i386-pc-mingw32/3.0.3 -lsupc++' ./configure --target=mingw32 --prefix=/usr/local/base --enable-demangle=v3mv --enable-debug --enable-regexp=no
+	CC="gcc -pipe -mno-cygwin -mthreads -x c" CXX="gcc -pipe -mno-cygwin -mthreads -x c++" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-O0 -g3" BASE_LIBS='-L/usr/local/gcc-3.0.3/lib/gcc-lib/i386-pc-mingw32/3.0.3 -lsupc++' ./configure --target=mingw32 --prefix=/usr/local/base --enable-demangle=v3mv --enable-debug --enable-regexp=no
+
+klampenborg-gcc-3.0.4-release: all
+	CC="gcc -pipe -mno-cygwin -mthreads -x c" CXX="gcc -pipe -mno-cygwin -mthreads -x c++" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-O3 -g3 -mcpu=i686" BASE_LIBS='-L/usr/local/gcc-3.0.3/lib/gcc-lib/i386-pc-mingw32/3.0.3 -lsupc++' ./configure --target=i686-pc-mingw32 --prefix=/usr/local/base --enable-demangle=v3mv --enable-debug --enable-regexp=no

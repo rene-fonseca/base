@@ -16,17 +16,29 @@ final: all
 	CXXFLAGS="-O3" ./configure --prefix=/usr/local/base
 
 lendum-gcc-2.96: all
-	CXX=gcc CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
+	CC='gcc -pipe' CXX='gcc -pipe' CXXFLAGS="-O0 -g3" ./configure --target=i386-pc-linux --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
 
 lendum-gcc-3.0.3: all
-	CXX=/usr/local/gcc-3.0.3/bin/gcc CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
+	CC="/usr/local/gcc-3.0.3/bin/gcc -pipe" CXX='/usr/local/gcc-3.0.3/bin/gcc -pipe' CXXFLAGS="-O0 -g3" ./configure --target=i386-pc-linux --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
 
-falster-gcc-3.0: all
+lendum-gcc-3.0.4: all
+	CC="/usr/local/gcc-3.0.4/bin/gcc -pipe" CXX='/usr/local/gcc-3.0.4/bin/gcc -pipe' CXXFLAGS="-O0 -g3" ./configure --target=i386-pc-linux --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
+
+lendum-gcc-3.0.4-release: all
+	CC="/usr/local/gcc-3.0.4/bin/gcc -pipe" CXX='/usr/local/gcc-3.0.4/bin/gcc -pipe' CXXFLAGS="-O3 -g3 -mcpu=i686" ./configure --target=i686-pc-linux --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
+
+falster-gcc-3.0.4: all
+	CXXFLAGS="-O0 -g3" ./configure --prefix=/tmp/fonseca/base --with-base-include=../.. --with-base-lib=..
+
+fyn-gcc-3.0.4: all
 	CXXFLAGS="-O0 -g3" ./configure --prefix=/tmp/fonseca/base --with-base-include=../.. --with-base-lib=..
 
 klampenborg-gcc-2.95: all
-	CC="gcc -mno-cygwin -mthreads" LTCC='"gcc -mno-cygwin -mthreads"' CXX="gcc -mno-cygwin -mthreads" CXXFLAGS="-O0 -g3" ./configure --target=mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
+	CC="gcc -pipe -mno-cygwin -mthreads" LTCC='"gcc -pipe -mno-cygwin -mthreads"' CXX="gcc -pipe -mno-cygwin -mthreads" CXXFLAGS="-O0 -g3" ./configure --target=i386-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
 #LDFLAGS="-Wl,--enable-auto-import"
 
 klampenborg-gcc-3.0.4: all
-	CC="gcc -mno-cygwin -mthreads" CXX="g++ -mno-cygwin -mthreads" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-O0 -g3" ./configure --target=mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
+	CC="gcc -pipe -mno-cygwin -mthreads" CXX="g++ -pipe -mno-cygwin -mthreads" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-O0 -g3" ./configure --target=i386-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
+
+klampenborg-gcc-3.0.4-release: all
+	CC="gcc -pipe -mno-cygwin -mthreads" CXX="g++ -pipe -mno-cygwin -mthreads" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-O3 -g3 -mcpu=i686" ./configure --target=i686-pc-mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..

@@ -162,14 +162,12 @@ void ExpressionParser::readIdentifier() throw(ExpressionException) {
 
   while (index < length) {
     char ch = expression[index];
-    if (!(((ch >= 'a') && (ch <= 'z')) || ((ch >= '0') && (ch <= '9')))) {
+    if (!(ASCIITraits::isLower(ch) || ASCIITraits::isDigit(ch))) {
       break;
     }
     ++index;
   }
-  if (index == begin) { // has something been read
-    throw ExpressionException(begin, "Not an identifier");
-  }
+  assert(index > begin, ExpressionException(begin, "Not an identifier")); // make sure an identifier has been read
 
   String identifier = expression.substring(begin, index);
 
@@ -217,9 +215,9 @@ void ExpressionParser::readValue() throw(ExpressionException) {
   }
 
   // read digits if present before possible dot
-  if ((index < length) && ((expression[index] >= '0') || (expression[index] <= '9'))) {
+  if ((index < length) && ASCIITraits::isDigit(expression[index])) {
     digits = true;
-    while ((index < length) && ((expression[index] >= '0') || (expression[index] <= '9'))) {
+    while ((index < length) && ASCIITraits::isDigit(expression[index])) {
       ++index;
     }
   }
@@ -229,9 +227,9 @@ void ExpressionParser::readValue() throw(ExpressionException) {
     ++index;
 
     // read digits if present after dot
-    if ((index < length) && ((expression[index] >= '0') || (expression[index] <= '9'))) {
+    if ((index < length) && ASCIITraits::isDigit(expression[index])) {
       digits = true;
-      while ((index < length) && ((expression[index] >= '0') || (expression[index] <= '9'))) {
+      while ((index < length) && ASCIITraits::isDigit(expression[index])) {
         ++index;
       }
     }
@@ -254,8 +252,8 @@ void ExpressionParser::readValue() throw(ExpressionException) {
     }
 
     // read exponent value
-    if ((index < length) && ((expression[index] >= '0') || (expression[index] <= '9'))) {
-      while ((index < length) && ((expression[index] >= '0') || (expression[index] <= '9'))) {
+    if ((index < length) && ASCIITraits::isDigit(expression[index])) {
+      while ((index < length) && ASCIITraits::isDigit(expression[index])) {
         ++index;
       }
     } else {
@@ -394,13 +392,13 @@ void ExpressionParser::parse() throw(ExpressionException) {
       break;
     default:
       char ch = expression[index];
-      if ((ch >= 'a') && (ch <= 'z')) { // is this an identifier
+      if (ASCIITraits::isLower(ch)) { // is this an identifier
         if (unary) {
           readIdentifier();
         } else {
           throw ExpressionException(index, "Binary operator expected instead of operand/unary operation");
         }
-      } else if ((ch >= '0') && (ch <= '9') || (ch == '.')) { // is this a value
+      } else if (ASCIITraits::isDigit(ch) || (ch == '.')) { // is this a value
         if (unary) {
           readValue();
         } else {

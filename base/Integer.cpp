@@ -20,9 +20,7 @@ Integer::Integer(String str) throw(InvalidFormat) {
   bool sign = false;
   unsigned int index = 0;
 
-  if (length == 0) {
-    throw InvalidFormat("Not an Integer");
-  }
+  assert(length > 0, InvalidFormat("Not an Integer"));
 
   if (str[0] == '-') {
     sign = true;
@@ -34,11 +32,8 @@ Integer::Integer(String str) throw(InvalidFormat) {
   while (index < length) {
     char ch = str[index++];
 
-    if ((ch < '0') || (ch > '9')) {
-      throw InvalidFormat("Not an Integer");
-    }
-
-    temp = temp * 10 + (ch - '0') % 10;
+    assert(ASCIITraits::isDigit(ch), InvalidFormat("Not an Integer"));
+    temp = temp * 10 + ASCIITraits::digitToValue(ch);
 
     if ((sign && (-temp < Integer::MINIMUM)) || (!sign && (temp > Integer::MAXIMUM))) {
       throw InvalidFormat("Not an Integer");

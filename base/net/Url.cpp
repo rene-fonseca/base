@@ -65,33 +65,20 @@ public:
   }
 
   static inline String encode(const String& str, Encoding encoding = defaultEncoding) throw(UrlException, MemoryException) {
-    static char digits[] = "0123456789abcdef";
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
       String::Character ch = *i;
-      assert(String::Traits::isASCII(ch), UrlException("Invalid character"));
+      assert(ASCIITraits::isASCII(ch), UrlException("Invalid character"));
       if (encoding(ch) != NEVER) {
         temp += '%';
-        temp += digits[ch >> 4];
-        temp += digits[ch & 0x0f];
+        temp += ASCIITraits::valueToDigit(ch >> 4);
+        temp += ASCIITraits::valueToDigit(ch & 0x0f);
       } else {
         temp += ch;
       }
     }
     return temp;
-  }
-
-  static inline unsigned int getValueOfHex(char ch) throw(UrlException) {
-    if ((ch >= '0') && (ch <= '9')) {
-      return ch - '0';
-    } else if ((ch >= 'a') && (ch <= 'f')) {
-      return ch - 'a' + 10;
-    } else if ((ch >= 'A') && (ch <= 'F')) {
-      return ch - 'A' + 10;
-    } else {
-      throw UrlException("Invalid encoding");
-    }
   }
 
   static String decode(const String& str, Encoding encoding, bool strict) throw(UrlException, MemoryException) {
@@ -101,7 +88,10 @@ public:
       String::Character ch = *i;
       if (ch == '%') {
         assert(end - i >= 2, UrlException("Invalid encoding")); // need two digits
-        ch = (getValueOfHex(*++i) << 4) + getValueOfHex(*++i); // replace with decoded char
+        char high = *++i;
+        char low = *++i;
+        assert(ASCIITraits::isHexDigit(high) && ASCIITraits::isHexDigit(low), UrlException("Invalid encoding"));
+        ch = ASCIITraits::digitToValue(high) << 4 + ASCIITraits::digitToValue(low); // replace with decoded char
       } else {
         Encode encode = encoding(ch);
         assert(strict ? (encode == NEVER) : (encode <= RELAXED), UrlException("Part contains unencoded character"));
@@ -111,40 +101,6 @@ public:
     return temp;
   }
 };
-
-
-
-//class FTPUrl : public Object {
-//private:
-//
-//  static const String scheme;
-//  static const unsigned short DEFAULT_PORT = 21;
-//  //static const String DEFAULT_USER;
-//
-//  String path;
-//  char type;
-//public:
-//
-//  String getScheme() const throw() {return scheme;}
-//  unsigned short getDefaultPort() const throw() {return DEFAULT_PORT;}
-//
-//  String getPath() const throw() {
-//    return path;
-//  }
-//
-//  char getType() const throw() {
-//    return type;
-//  }
-//
-//  void setPath(const String& path) const throw(UrlException) {
-//    int semicolonIndex = path.indexOf(';');
-//    if (semicolonIndex >= 0) {
-//      assert(path.indexOf("type=", semicolonIndex + 1) == semicolonIndex + 1, UrlException());
-//      int index = semicolonIndex + 5;
-//    }
-//    this->path = path;
-//  }
-//};
 
 
 
@@ -192,14 +148,12 @@ String Url::validateScheme(const String& value) throw(UrlException, MemoryExcept
   String::ReadIterator end = value.getEndReadIterator();
 
   for (String::ReadIterator i = value.getBeginReadIterator(); i < end; ++i) {
-    String::Character ch = *i;
-    if ((ch >= 'a') && (ch <= 'z')) {
-    } else if ((ch >= '0') && (ch <= '9')) {
+    String::Character ch = ASCIITraits::toLower(*i);
+    if (ASCIITraits::isLower(ch)) {
+    } else if (ASCIITraits::isDigit(ch)) {
     } else if (ch == '+') {
     } else if (ch == '.') {
     } else if (ch == '-') {
-    } else if ((ch >= 'A') && (ch <= 'Z')) {
-      ch += 'a' - 'A'; // convert to lower case (ASCII)
     } else {
       throw UrlException("Invalid scheme");
     }
@@ -212,7 +166,7 @@ String Url::validateUser(const String& str) throw(UrlException) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
     String::Character ch = *i;
-    assert(String::Traits::isASCII(ch), UrlException("Invalid character"));
+    assert(ASCIITraits::isASCII(ch), UrlException("Invalid character"));
   }
   return str;
 }
@@ -221,7 +175,7 @@ String Url::validatePassword(const String& str) throw(UrlException) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
     String::Character ch = *i;
-    assert(String::Traits::isASCII(ch), UrlException("Invalid character"));
+    assert(ASCIITraits::isASCII(ch), UrlException("Invalid character"));
   }
   return str;
 }
@@ -231,17 +185,17 @@ bool Url::isHost(String::ReadIterator i, const String::ReadIterator& end) throw(
     return false;
   }
 
-  if (String::Traits::isDigit(*i)) { // is IP address
+  if (ASCIITraits::isDigit(*i)) { // is IP address
     // TAG: use InetAddress for IPv6 support
     // 0x1234.0x1234.0x1234.0x1234.0x1234.0x1234.0x1234.0x1234
     // 0x1234.0x1234.0x1234.0x1234.0x1234.0x1234.123.123.123.123
     // "123.123.123.123" or "123.123.123" or "123.123" or "123"
     for (unsigned int digitGroup = 0; digitGroup < 4; ++digitGroup) {
-      if (String::Traits::isDigit(*i)) { // first digit
+      if (ASCIITraits::isDigit(*i)) { // first digit
         ++i;
-        if ((i < end) && String::Traits::isDigit(*i)) { // second digit
+        if ((i < end) && ASCIITraits::isDigit(*i)) { // second digit
           ++i;
-          if ((i < end) && String::Traits::isDigit(*i)) { // third digit
+          if ((i < end) && ASCIITraits::isDigit(*i)) { // third digit
             ++i;
           }
         }
@@ -258,11 +212,11 @@ bool Url::isHost(String::ReadIterator i, const String::ReadIterator& end) throw(
       }
     }
     return false;
-  } else if (String::Traits::isAlpha(*i)) { // is fully qualified domain name
+  } else if (ASCIITraits::isAlpha(*i)) { // is fully qualified domain name
     while (true) { // see RFC 1034
       // check label
-      if ((i < end) && String::Traits::isAlpha(*i++)) { // check first char
-        while ((i < end) && (String::Traits::isAlphaNum(*i) || (*i == '-'))) {++i;}
+      if ((i < end) && ASCIITraits::isAlpha(*i++)) { // check first char
+        while ((i < end) && (ASCIITraits::isAlphaNum(*i) || (*i == '-'))) {++i;}
         if (*--i == '-') { // char last char
           return false;
         }
@@ -289,7 +243,7 @@ bool Url::isPort(String::ReadIterator i, const String::ReadIterator& end) throw(
     return false;
   }
 
-  for (unsigned int port = 0; (i < end) && String::Traits::isDigit(*i); ++i) {
+  for (unsigned int port = 0; (i < end) && ASCIITraits::isDigit(*i); ++i) {
     port = (*i - '0') + 10 * port;
     if (port >= (1 << 16)) { // max 16 bit
       return false;

@@ -33,14 +33,16 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  InvalidNode() throw();
+  inline InvalidNode() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  InvalidNode(const char* message) throw();
+  inline InvalidNode(const char* message) throw() : Exception(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.

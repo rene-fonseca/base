@@ -19,9 +19,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This exception specifies that a key of a collection is invalid.
-
-  @short Invalid key exception
+  This exception specifies that a key of a collection is invalid. Normally this
+  means that the key has not been associated with a value.
+  
+  @short Invalid key exception.
   @ingroup collections exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -33,21 +34,23 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  InvalidKey();
+  inline InvalidKey() throw() {
+  }
   
   /**
     Initializes the exception object.
-
+    
     @param message The message.
   */
-  InvalidKey(const char* message);
+  inline InvalidKey(const char* message) throw() : Exception(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline InvalidKey(Type type) throw() {
+  inline InvalidKey(Type type) throw() : Exception(type) {
   }
   
   /**
@@ -56,7 +59,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline InvalidKey(const char* message, Type type) throw() {
+  inline InvalidKey(const char* message, Type type) throw()
+    : Exception(message, type) {
   }
 };
 

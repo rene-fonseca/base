@@ -26,7 +26,9 @@ typedef Map<String, XMLProperty> XMLPropertyHash;
 
 /**
   XML parser.
-
+  
+  @short XML parser.
+  @ingroup xml
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -30,10 +30,34 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class XMLException : public Exception {
 public:
 
+  /**
+    Initializes the exception with no message.
+  */
   inline XMLException() throw() {
   }
 
+  /**
+    Initializes the exception with the specified message.
+  */
   inline XMLException(const char* message) throw() : Exception(message) {
+  }
+  
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
+  inline XMLException(Type type) throw() : Exception(type) {
+  }
+  
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  inline XMLException(const char* message, Type type) throw()
+    : Exception(message, type) {
   }
 };
 

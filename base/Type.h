@@ -15,10 +15,61 @@
 #define _DK_SDU_MIP__BASE__TYPE_H
 
 #include <base/features.h>
-#include <base/string/String.h>
 #include <typeinfo>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+class String;
+
+namespace Char {
+  const char MAXIMUM = 127;
+  const char MINIMUM = -128;
+};
+
+namespace UnsignedChar {
+  const unsigned char MAXIMUM = 255;
+  const unsigned char MINIMUM = 0;
+};
+
+namespace Short {
+  const short int MAXIMUM = 32767;
+  const short int MINIMUM = -32768;
+};
+
+namespace UnsignedShort {
+  const unsigned short int MAXIMUM = 65535;
+  const unsigned short int MINIMUM = 0;
+};
+
+namespace Int {
+  const int MAXIMUM = 2147483647;
+  const int MINIMUM = -MAXIMUM - 1;
+};
+
+namespace UnsignedInt {
+  const unsigned int MAXIMUM = 4294967295U;
+  const unsigned int MINIMUM = 0;
+};
+
+namespace Long {
+  const long MAXIMUM = 2147483647L;
+  const long MINIMUM = -MAXIMUM - 1L;
+};
+
+namespace UnsignedLong {
+  const unsigned long MAXIMUM = 4294967295U;
+  const unsigned long MINIMUM = 0;
+};
+
+namespace LongLong {
+  const long long MAXIMUM = 9223372036854775807LL;
+  const long long MINIMUM = -MAXIMUM - 1LL;
+};
+
+namespace UnsignedLongLong {
+  const unsigned long long MAXIMUM = 18446744073709551615ULL;
+  const unsigned long long MINIMUM = 0;
+};
 
 /** 8 bit unsigned integer. */
 typedef unsigned char byte;
@@ -28,7 +79,7 @@ namespace LittleEndian {
 #if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)
 
 /** 16 bit signed integer represented in little endian byte order. */
-typedef struct {
+struct SignedShort {
   char lowByte;
   char highByte;
 
@@ -39,10 +90,10 @@ typedef struct {
   }
 
   inline operator short() const throw() {return highByte << 8 + lowByte;}
-} __attribute__ ((packed)) SignedShort;
+} __attribute__ ((packed));
 
 /** 16 bit unsigned integer represented in little endian byte order. */
-typedef struct {
+struct UnsignedShort {
   char lowByte;
   char highByte;
 
@@ -53,10 +104,10 @@ typedef struct {
   }
 
   inline operator unsigned short() const throw() {return highByte << 8 + lowByte;}
-} __attribute__ ((packed)) UnsignedShort;
+} __attribute__ ((packed));
 
 /** 32 bit signed integer represented in little endian byte order. */
-typedef struct {
+struct SignedInt {
   char a;
   char b;
   char c;
@@ -71,10 +122,10 @@ typedef struct {
   }
 
   inline operator int() const throw() {return ((d << 8 + c) << 8 + b) << 8 + a;}
-} __attribute__ ((packed)) SignedInt;
+} __attribute__ ((packed));
 
 /** 32 bit unsigned integer represented in little endian byte order. */
-typedef struct {
+struct UnsignedInt {
   char a;
   char b;
   char c;
@@ -89,7 +140,7 @@ typedef struct {
   }
 
   inline operator unsigned int() const throw() {return ((d << 8 + c) << 8 + b) << 8 + a;}
-} __attribute__ ((packed)) UnsignedInt;
+} __attribute__ ((packed));
 
 #else
 
@@ -124,7 +175,7 @@ typedef unsigned int UnsignedInt;
 #else
 
 /** 16 bit signed integer represented in big endian byte order. */
-typedef struct {
+struct SignedShort {
   char highByte;
   char lowByte;
 
@@ -135,10 +186,10 @@ typedef struct {
   }
 
   inline operator short() const throw() {return highByte << 8 + lowByte;}
-} __attribute__ ((packed)) SignedShort;
+} __attribute__ ((packed));
 
 /** 16 bit unsigned integer represented in big endian byte order. */
-typedef struct {
+struct UnsignedShort {
   char highByte;
   char lowByte;
 
@@ -149,10 +200,10 @@ typedef struct {
   }
 
   inline operator unsigned short() const throw() {return highByte << 8 + lowByte;}
-} __attribute__ ((packed)) UnsignedShort;
+} __attribute__ ((packed));
 
 /** 32 bit signed integer represented in big endian byte order. */
-typedef struct {
+struct SignedInt {
   char d;
   char c;
   char b;
@@ -167,10 +218,10 @@ typedef struct {
   }
 
   inline operator int() const throw() {return ((d << 8 + c) << 8 + b) << 8 + a;}
-} __attribute__ ((packed)) SignedInt;
+} __attribute__ ((packed));
 
 /** 32 bit unsigned integer represented in big endian byte order. */
-typedef struct {
+struct UnsignedInt {
   char d;
   char c;
   char b;
@@ -185,7 +236,7 @@ typedef struct {
   }
 
   inline operator unsigned int() const throw() {return ((d << 8 + c) << 8 + b) << 8 + a;}
-} __attribute__ ((packed)) UnsignedInt;
+} __attribute__ ((packed));
 
 #endif
 
@@ -231,5 +282,7 @@ inline String getTypename(const TYPE& object) throw() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+
+#include <base/string/String.h>
 
 #endif

@@ -1699,7 +1699,7 @@ WideString& WideString::append(const WideStringLiteral& string, unsigned int max
       Cast::pointer<const ucs2*>(static_cast<const wchar*>(string)),
       nativeLength
     );
-    nativeLength = minimum(nativeLength, maximum);
+    nativeLength = minimum<MemorySize>(nativeLength, maximum);
     setLength(length + nativeLength);
     UCS2ToUCS4(
       buffer + length,
@@ -1707,7 +1707,7 @@ WideString& WideString::append(const WideStringLiteral& string, unsigned int max
       nativeLength
     );
   } else if (sizeof(wchar) == sizeof(ucs4)) {
-    nativeLength = minimum(nativeLength, maximum);
+    nativeLength = minimum<MemorySize>(nativeLength, maximum);
     setLength(length + nativeLength);
     ucs4* buffer = elements->getElements();
     copy<ucs4>(
@@ -1734,7 +1734,7 @@ WideString& WideString::append(const wchar* string, unsigned int maximum) throw(
       Cast::pointer<const ucs2*>(static_cast<const wchar*>(string)),
       nativeLength
     );
-    stringLength = minimum(stringLength, maximum);
+    stringLength = minimum<MemorySize>(stringLength, maximum);
     setLength(length + stringLength);
     UCS2ToUCS4(
       buffer + length,

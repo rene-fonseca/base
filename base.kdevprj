@@ -19,6 +19,7 @@ short_info=A framework for developing platform independent applications.
 sub_dir=base/
 version=1.0
 version_control=CVS
+workspace=1
 
 [LFV Groups]
 GNU=AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,NEWS

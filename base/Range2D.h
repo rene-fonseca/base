@@ -1,5 +1,4 @@
 /***************************************************************************
-    begin       : Fri May 12 2000
     copyright   : (C) 2000 by René Møller Fonseca
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
@@ -28,14 +27,14 @@ public:
   /**
     Initialize object. The minimum and maximum value are set to zero.
   */
-  Range2D();
+  Range2D() throw();
 
   /**
     Initialize object. The range is copied from the specified range.
 
     @param range The desired range.
   */
-  Range2D(const Range2D &range);
+  Range2D(const Range2D& range) throw();
 
   /**
     Initialize object.
@@ -43,14 +42,14 @@ public:
     @param minimum The desired minimum value.
     @param maximum The desired maximum value.
   */
-  Range2D(float minimum, float maximum);
+  Range2D(float minimum, float maximum) throw();
 
   /**
     Sets the range.
 
     @param range The desired range.
   */
-  void assign(const Range2D &range);
+  void assign(const Range2D &range) throw();
 
   /**
     Sets the minimum and maximum values.
@@ -58,64 +57,66 @@ public:
     @param minimum The desired minimum value.
     @param maximum The desired maximum value.
   */
-  void assign(float minimum, float maximum);
+  void assign(float minimum, float maximum) throw();
 
   /**
     Returns true if the value is above the range specified by minimum and maximum.
 
     @param value The value to be checked.
   */
-  bool isAbove(float value) const;
+  bool isAbove(float value) const throw();
 
   /**
     Returns true if the value is below the range specified by minimum and maximum.
 
     @param value The value to be checked.
   */
-  bool isBelow(float value) const;
+  bool isBelow(float value) const throw();
 
   /**
     Returns true if the value is outside the range specified by minimum and maximum.
 
     @param value The value to be checked.
   */
-  bool isOutside(float value) const;
+  bool isOutside(float value) const throw();
 
   /**
     Returns true if the value is within the range specified by minimum and maximum.
 
     @param value The value to be checked.
   */
-  bool isWithin(float value) const;
+  bool isWithin(float value) const throw();
 
   /**
     Returns the minimum value.
   */
-  float getMinimum() const;
+  float getMinimum() const throw();
 
   /**
     Returns the maximum value.
   */
-  float getMaximum() const;
+  float getMaximum() const throw();
 
   /**
     Sets the minimum value.
 
     @param minimum The desired minimum value.
   */
-  void setMinimum(float minimum);
+  void setMinimum(float minimum) throw();
 
   /**
     Sets the maximum value.
 
     @param maximum The desired maximum value.
   */
-  void setMaximum(float maximum);
+  void setMaximum(float maximum) throw();
 
   /**
-    Writes a string representation of this object to a stream. This method is intended to be used for debugging purposes.
+    Writes a string representation of this object to stream.
   */
-  void toStream(ostream& stream) const;
+  ostream& toString(ostream& stream) const;
 };
+
+TOSTRING(Range2D);
 
 #endif

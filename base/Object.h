@@ -1,14 +1,13 @@
 /***************************************************************************
-    begin       : Fri May 12 2000
     copyright   : (C) 2000 by René Møller Fonseca
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _OBJECT_H
-#define _OBJECT_H
+#ifndef _BASE_OBJECT_H
+#define _BASE_OBJECT_H
 
 #include <string>
-#include <ostream>
+#include <iostream>
 
 using std::string;
 using std::ostream;
@@ -45,9 +44,9 @@ public:
   virtual bool operator==(const Object& object);
 
   /**
-    Writes the object to standard out. This method is intended to be used for debugging purposes.
+    Writes a string representation of the object to a stream.
   */
-  virtual void debug() const;
+//  virtual ostream& toString(ostream& stream) const = 0;
 
   /**
     Destroys the object.
@@ -58,29 +57,29 @@ public:
 
 
 /**
-  This operator allocates memeory for an object on the heap.
+  This operator allocates memory for an object on the heap. Throws an exception if unable to allocate object.
 
   @param size The size of the object.
   @return The object.
 */
-void* operator new(size_t size);
+//void* operator new(size_t size) throw(MemoryException);
 
 /**
   This operator releases memeory used by an object.
 
   @param p The object to be released.
 */
-void operator delete(void* p);
+//void operator delete(void* p);
 
 
 
-/**
-  This routine writes an object to a stream.
+/*
+  This routine writes a string representation of the object to a stream.
 
   @param stream The stream the object should be written to.
   @param object The object to be written to the stream.
   @return The specified stream.
 */
-ostream& operator<<(ostream& stream, Object& object);
+#define TOSTRING(TYPE) ostream& operator<<(ostream& stream, const TYPE& object) {return object.toString(stream);}
 
 #endif

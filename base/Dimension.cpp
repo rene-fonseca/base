@@ -1,5 +1,4 @@
 /***************************************************************************
-    begin       : Fri May 12 2000
     copyright   : (C) 2000 by René Møller Fonseca
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
@@ -57,8 +56,7 @@ void Dimension::setWidth(unsigned int width) throw() {
 void Dimension::setHeight(unsigned int height) throw() {
   this->height = height;
 }
-/*
-string Dimension::toString() const {
-  stream << "(" << width << "," << height << ")";
+
+ostream& Dimension::operator<<(ostream& stream) const {
+  return stream << '(' << width << ',' << height << ')';
 }
-*/

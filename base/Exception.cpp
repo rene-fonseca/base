@@ -1,5 +1,4 @@
 /***************************************************************************
-    begin       : Fri May 12 2000
     copyright   : (C) 2000 by René Møller Fonseca
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
@@ -29,9 +28,8 @@ const string& Exception::getMessage() const {
   return *message;
 }
 
-void Exception::debug() const {
-  cout << "CLASS/Exception\n"
-       << "  message=" << message << "\n";
+ostream& Exception::toString(ostream& stream) const {
+  return stream << message;
 }
 
 Exception::~Exception() {

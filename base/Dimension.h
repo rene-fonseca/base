@@ -1,16 +1,17 @@
 /***************************************************************************
-    begin       : Fri May 12 2000
     copyright   : (C) 2000 by René Møller Fonseca
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DIMENSION_H
-#define _DIMENSION_H
+#ifndef _BASE_DIMENSION_H
+#define _BASE_DIMENSION_H
 
 #include "Object.h"
 
 /**
   Dimension.
+
+  Problems: overflow possible in getSize()
 
   @author René Møller Fonseca
   @version 1.0
@@ -97,9 +98,9 @@ public:
   void setHeight(unsigned int height) throw();
 
   /**
-    Returns a string representation of this object. This method is intended to be used for debugging purposes.
+    Writes a string representation of this object to stream.
   */
-//  string toString() const;
+  ostream& operator<<(ostream& stream) const;
 };
 
 #endif

@@ -10,7 +10,7 @@
 #include "Exception.h"
 
 /**
-  Exception used to specify that a value is out of the domain.
+  Exception used to specify that a variable has been assigned a value not in the variables domain.
 
   @author René Møller Fonseca
   @version 1.0

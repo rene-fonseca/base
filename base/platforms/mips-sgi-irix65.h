@@ -13,7 +13,6 @@
 */
 
 
-#if defined(_DK_SDU_MIP__BASE__IMPLEMENTATION)
 
 // Select additionally reentrant object
 #define _REENTRANT 1
@@ -21,4 +20,4 @@
 // Specifies that the UNIX 98 functionality and SGI extensions are utilized
 #define _SGI_SOURCE 1
 
-#endif
+#define _LANGUAGE_C_PLUS_PLUS 1

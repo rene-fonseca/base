@@ -4,18 +4,7 @@ DEFS =
 
 noinst_LTLIBRARIES = libmem.la
 
-sectiondir = $(includedir)/base/mem
-section_HEADERS = Buffer.h
-section_HEADERS += ReferenceCountedObjectPointer.h
-section_HEADERS += NullPointer.h
-section_HEADERS += ReferenceCountedObjectWrapper.h
-section_HEADERS += ReferenceCountedObject.h
-section_HEADERS += Heap.h
-section_HEADERS += OwnershipPointer.h
-section_HEADERS += Allocator.h
-section_HEADERS += ReferenceCountedAllocator.h
-section_HEADERS += AllocatorEnumeration.h
-section_HEADERS += CapacityAllocator.h
-section_HEADERS += ReferenceCountedCapacityAllocator.h
-
 libmem_la_SOURCES = NullPointer.cpp Heap.cpp
+
+sectiondir = $(includedir)/base/mem
+section_HEADERS = Buffer.h ReferenceCountedObjectPointer.h NullPointer.h ReferenceCountedObjectWrapper.h ReferenceCountedObject.h Heap.h OwnershipPointer.h Allocator.h ReferenceCountedAllocator.h AllocatorEnumeration.h CapacityAllocator.h ReferenceCountedCapacityAllocator.h

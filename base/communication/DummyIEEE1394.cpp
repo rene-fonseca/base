@@ -40,51 +40,35 @@ void DummyIEEE1394::open(const EUI64& adapter) throw(IEEE1394Exception) {
 void DummyIEEE1394::close() throw(IEEE1394Exception) {
 }
 
+unsigned int DummyIEEE1394::getLocalId() const throw() {
+  throw IEEE1394Exception(this);
+}
+
+unsigned int DummyIEEE1394::getNumberOfNodes() const throw() {
+  throw IEEE1394Exception(this);
+}
+
 IEEE1394Common::Standard DummyIEEE1394::getCompliance() const throw(IEEE1394Exception) {
   throw IEEE1394Exception(this);
 }
 
 unsigned int DummyIEEE1394::getStatus() const throw(IEEE1394Exception) {
-  return 0;
+  throw IEEE1394Exception(this);
 }
 
 unsigned int DummyIEEE1394::getFIFOSize() const throw(IEEE1394Exception) {
-  return 1024;
+  throw IEEE1394Exception(this);
 }
 
-uint64 DummyIEEE1394::getPresentNodes() const throw(IEEE1394Exception) {
-  return 0;
-}
-  
-uint64 DummyIEEE1394::getLinkOnNodes() const throw(IEEE1394Exception) {
-  return 0;
+void DummyIEEE1394::read(unsigned short node, uint64 address, char* buffer, unsigned int size) throw(IEEE1394Exception) {
+  throw IEEE1394Exception(this);
 }
 
-uint64 DummyIEEE1394::getContenders() const throw(IEEE1394Exception) {
-  return 0;
-}
-  
-unsigned int DummyIEEE1394::getSpeedOfNode(unsigned int node) const throw(OutOfDomain, IEEE1394Exception) {
-  return 100;
-}
-  
-unsigned int DummyIEEE1394::getMaximumSpeedToNode(unsigned int node) const throw(OutOfDomain, IEEE1394Exception) {
-  return 100;
-}
-  
-unsigned int DummyIEEE1394::getBroadcastSpeed() const throw(IEEE1394Exception) {
-  return 100;
+void DummyIEEE1394::write(unsigned short node, uint64 address, const char* buffer, unsigned int size) throw(IEEE1394Exception) {
+  throw IEEE1394Exception(this);
 }
 
-unsigned int DummyIEEE1394::read(unsigned short node, uint64 address, char* buffer, unsigned int size) const throw(OutOfDomain, IOException) {
-  throw IOException(this);
-}
-
-unsigned int DummyIEEE1394::write(unsigned short node, uint64 address, const char* buffer, unsigned int size) throw(OutOfDomain, IOException) {
-  throw IOException(this);
-}
-
-unsigned int DummyIEEE1394::read(unsigned short node, uint64 address, uint32* buffer, unsigned int size, uint32 value) const throw(OutOfDomain, IEEE1394Exception) {
+unsigned int DummyIEEE1394::read(unsigned short node, uint64 address, uint32* buffer, unsigned int size, uint32 value) throw(IEEE1394Exception) {
   throw IEEE1394Exception(this);
 }
 

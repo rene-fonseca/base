@@ -43,7 +43,7 @@ public:
     @short User exception
     @ingroup exceptions security
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
+    @version 1.1
   */
 
   class UserException : public Exception {

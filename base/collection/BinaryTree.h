@@ -97,7 +97,7 @@ class InfixOrderEnumerator : public Enumerator<TRAITS> {
 private:
 
   /** The states of the infix order traversal state machine */
-  typedef enum {TRAVERSE_SUBTREE, RETURN_LEFT, RETURN_RIGHT} Traverse;
+  enum Traverse {TRAVERSE_SUBTREE, RETURN_LEFT, RETURN_RIGHT};
   /** The root of the binary tree. */
   Pointer root;
   /** The current position in the enumeration. */

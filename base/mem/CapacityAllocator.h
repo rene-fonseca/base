@@ -108,6 +108,7 @@ public:
   */
   inline CapacityAllocator(unsigned int size, unsigned int _granularity) throw(OutOfRange, MemoryException)
     : capacity(0), granularity(_granularity) {
+    ASSERT(granularity >= MINIMUM_GRANULARITY);
     assert(granularity >= MINIMUM_GRANULARITY, OutOfRange());
     setSize(size);
   }

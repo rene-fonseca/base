@@ -47,10 +47,10 @@ public:
   /**
     Returns the value of the integer string representation.
 
-    @param str The string representation.
+    @param string The string representation.
     @param withoutSign Effectively prevents signs from being parsed. Default is to allow a single sign.
   */
-  static long long parse(const String& str, bool withoutSign = false) throw(InvalidFormat);
+  static long long parse(const String& string, bool withoutSign = false) throw(InvalidFormat);
   
   /**
     Initializes the long integer as zero.
@@ -67,9 +67,9 @@ public:
   /**
     Initializes long integer from string.
     
-    @param str The string.
+    @param string The string.
   */
-  inline LongInteger(const String& str) throw(InvalidFormat) : value(parse(str)) {}
+  inline LongInteger(const String& string) throw(InvalidFormat) : value(parse(string)) {}
   
   /**
     Initializes integer by copying from other integer.

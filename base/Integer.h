@@ -47,10 +47,10 @@ public:
   /**
     Returns the value of the integer string representation.
 
-    @param str The string representation.
+    @param string The string representation.
     @param withoutSign Effectively prevents signs from being parsed. Default is to allow a single sign.
   */
-  static int parse(const String& str, bool withoutSign = false) throw(InvalidFormat);
+  static int parse(const String& string, bool withoutSign = false) throw(InvalidFormat);
   
   /**
     Initializes the integer as zero.
@@ -67,9 +67,9 @@ public:
   /**
     Initializes integer from string.
 
-    @param str The string.
+    @param string The string.
   */
-  inline Integer(const String& str) throw(InvalidFormat) : value(parse(str)) {}
+  inline Integer(const String& string) throw(InvalidFormat) : value(parse(string)) {}
 
   /**
     Copy constructor. Initializes a new Integer from other Integer object.

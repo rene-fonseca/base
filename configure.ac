@@ -12,11 +12,11 @@ AC_CANONICAL_SYSTEM()
 dnl perform program name transformation
 AC_ARG_PROGRAM()
 
-AM_INIT_AUTOMAKE(base-framework, 1.0)
+AM_INIT_AUTOMAKE(base-framework, 1.0.0)
 
 dnl AC_CHECK_COMPILERS()
 AC_PROG_CXX()
-dnl AC_CHECK_PROGS(CXX, $CCC c++ g++ gcc CC cxx cc++ cl, gcc)
+dnl AC_CHECK_PROGS(CXX, ${CCC} c++ g++ gcc CC cxx cc++ cl, gcc)
 dnl AC_ENABLE_SHARED(yes)
 dnl AC_ENABLE_STATIC(yes)
 AC_LIBTOOL_WIN32_DLL()
@@ -25,12 +25,12 @@ AC_PROG_LIBTOOL()
 
 
 ac_base_config=configuration.tmp
-rm -f $ac_base_config
+rm -f ${ac_base_config}
 
 dnl AC_BASE_DEFINE(symbol name, value)
 AC_DEFUN(AC_BASE_DEFINE, [dnl
 ifelse([$2], , ac_base_temp="_DK_SDU_MIP__BASE__$1", ac_base_temp="_DK_SDU_MIP__BASE__$1 $2")
-cat >> $ac_base_config << EOF
+cat >> ${ac_base_config} << EOF
 [#define] ${ac_base_temp}
 EOF
 ])
@@ -65,7 +65,7 @@ fi
 
 dnl AC_BASE_MKYESNO(variable)
 AC_DEFUN(AC_BASE_MKYESNO, [dnl
-if test "$ac_base_status" = "0"; then $1=yes; else $1=no; fi dnl
+if test "${ac_base_status}" = "0"; then $1=yes; else $1=no; fi dnl
 ])
 
 dnl AC_BASE_YES(variable, yes action)
@@ -95,7 +95,7 @@ for ac_base_temp in $2; do
     break
   fi
 done
-AC_BASE_NOTEQUAL($ac_base_arg_valid, yes, AC_MSG_ERROR($3))
+AC_BASE_NOTEQUAL(${ac_base_arg_valid}, yes, AC_MSG_ERROR($3))
 $1=[$]enableval
 ])
 
@@ -161,7 +161,7 @@ AC_ARG_ENABLE(
   AC_BASE_CHECK_ARG(ac_base_flavour, unix win32, The flavour flag must be either 'unix' or 'win32'.))
 
 ac_base_platform=
-case "$ac_cv_target" in
+case "${ac_cv_target}" in
 i[[3456]]86-pc-cygwin)
   ac_base_platform="i386-pc-cygwin.h"
 ;;
@@ -188,8 +188,18 @@ i[[3456]]86-*-mingw32)
 ;;
 esac
 
-rm -f base/platforms/platform.h
-$LN_S $ac_base_platform base/platforms/platform.h
+if (test -f base/features.h) then
+  dnl We are building directly in the source tree
+
+  rm -f base/platforms/platform.h
+  ${LN_S} ${ac_base_platform} base/platforms/platform.h
+else
+  dnl We are building in a separate directory tree
+
+  mkdir -p base/platforms
+  rm -f base/platforms/platform.h
+  ${LN_S} ../../${srcdir}/base/platforms/${ac_base_platform} base/platforms/platform.h
+fi
 
 
 
@@ -321,7 +331,7 @@ dnl Checks for libraries.
 dnl AC_BASE_CHECK(check message, action, result variable[, extra variable])
 AC_DEFUN(AC_BASE_CHECK, [dnl
 ac_base_temp="$1"
-AC_MSG_CHECKING($ac_base_temp)
+AC_MSG_CHECKING(${ac_base_temp})
 $2
 ifelse([$4], , AC_MSG_RESULT([$]$3), [dnl
 dnl if test "[$]$3" = yes; then
@@ -342,7 +352,7 @@ for ac_base_temp in $1; do
     break
   fi
 done
-AC_BASE_YESNO(ac_temp_cached, [echo $ECHO_N "(cached) $ECHO_C" >&AC_FD_MSG], $2)
+AC_BASE_YESNO(ac_temp_cached, [echo ${ECHO_N} "(cached) ${ECHO_C}" >&AC_FD_MSG], $2)
 ])
 
 dnl AC_BASE_ATTEMPT(result variable, value variable, value list, action setting result)
@@ -356,17 +366,17 @@ test "[$]$1" != yes && $2=
 
 
 
-base_src_temp="config/temp"
-base_obj_temp="config/temp.o"
-base_app_temp="config/temp${ac_exeext}"
-base_cleanup="rm -f config/temp*"
-base_run="./$base_app_temp"
+base_src_temp="test_source"
+base_obj_temp="test_object.o"
+base_app_temp="test_app${ac_exeext}"
+base_cleanup="rm -f ${base_src_temp} ${base_obj_temp} ${base_app_temp}"
+base_run="./${base_app_temp}"
 
 dnl C++ specific
 base_cxx_ext=cpp
-base_cxx_preprocess='${CXXCPP} -I. $CPPFLAGS'
-base_cxx_compile='${CXX} -o $base_obj_temp -c -I. $CPPFLAGS  $CXXFLAGS $base_cxx_src $base_cxx_opts'
-base_cxx_link='${CXX} -o $base_app_temp -I. $CPPFLAGS $CXXFLAGS $base_cxx_src $LDFLAGS $base_cxx_opts $LIBS $BASE_LIBS'
+base_cxx_preprocess='${CXXCPP} -I. -I${srcdir} ${CPPFLAGS}'
+base_cxx_compile='${CXX} -o ${base_obj_temp} -c -I. -I${srcdir} ${CPPFLAGS} ${CXXFLAGS} ${srcdir}/config/${base_cxx_src} ${base_cxx_opts}'
+base_cxx_link='${CXX} -o ${base_app_temp} -I. -I${srcdir} ${CPPFLAGS} ${CXXFLAGS} ${srcdir}/config/${base_cxx_src} ${base_cxx_opts} ${LDFLAGS} ${LIBS} ${BASE_LIBS}'
 
 dnl AC_BASE_TRIM(string)
 AC_DEFUN(AC_BASE_TRIM, [`echo $1`])
@@ -379,7 +389,7 @@ AC_DEFUN(AC_BASE_TRY_CMD, [ { ac_base_temp='$1'; AC_BASE_TRY_EXEC(ac_base_temp);
 
 dnl AC_BASE_TRY_CXX_COMPILE(result variable, source file, additional options)
 AC_DEFUN(AC_BASE_TRY_CXX_COMPILE, [dnl
-if test ! -r [$2]; then
+if (test ! -r ${srcdir}/config/[$2]); then
   AC_MSG_ERROR(The source file cannot be read.)
 fi
 base_cxx_src=[$2]
@@ -390,7 +400,7 @@ AC_BASE_MKYESNO([$1])
 
 dnl AC_BASE_TRY_CXX_LINK(result variable, source file, additional options)
 AC_DEFUN(AC_BASE_TRY_CXX_LINK, [dnl
-if test ! -r [$2]; then
+if (test ! -r ${srcdir}/config/[$2]); then
   AC_MSG_ERROR(The source file cannot be read.)
 fi
 base_cxx_src=[$2]
@@ -406,7 +416,7 @@ AC_BASE_YES(
   base_cv_cxx_cross,
   ifelse([$4], , AC_MSG_ERROR(C++ compiler is a cross compiler), AC_MSG_ERROR([$4]))dnl
 )
-if test ! -r [$2]; then
+if (test ! -r ${srcdir}/config/[$2]); then
   AC_MSG_ERROR(The source file cannot be read.)
 fi
 base_cxx_src=[$2]
@@ -426,7 +436,7 @@ AC_BASE_YES(
   base_cv_cxx_cross,
   ifelse([$4], , AC_MSG_ERROR(C++ compiler is a cross compiler), AC_MSG_ERROR([$4]))dnl
 )
-if test ! -r [$2]; then
+if (test ! -r ${srcdir}/config/[$2]); then
   AC_MSG_ERROR(The source file cannot be read.)
 fi
 base_cxx_src=[$2]
@@ -436,7 +446,7 @@ AC_BASE_MKYESNO(ac_base_temp)
 AC_BASE_YESNO(
   ac_base_temp,
   AC_BASE_TRY_EXEC(base_run)
-  [$1]=$ac_base_status,
+  [$1]=${ac_base_status},
   AC_MSG_ERROR(Unable to compile and link testing application.))
 ])
 
@@ -446,7 +456,7 @@ AC_BASE_CHECK(
   whether API function $1 is available,
   AC_BASE_CACHE(
     base_cv_function_$1,
-    AC_BASE_TRY_CXX_LINK(base_cv_function_$1, config/$1.c)
+    AC_BASE_TRY_CXX_LINK(base_cv_function_$1, $1.c)
   ),
   base_cv_function_$1)
 AC_BASE_YES(base_cv_function_$1, AC_BASE_DEFINE_FUNCTION($1))
@@ -455,29 +465,29 @@ AC_BASE_YES(base_cv_function_$1, AC_BASE_DEFINE_FUNCTION($1))
 
 
 AC_BASE_CHECK(
-  whether C++ compiler (AC_BASE_TRIM($CXX $CXXFLAGS $CPPFLAGS)) works,
-  AC_BASE_TRY_CXX_LINK(base_cxx_compiler_works, config/cross++.cpp),
+  whether C++ compiler (AC_BASE_TRIM(${CXX} ${CPPFLAGS} ${CXXFLAGS})) works,
+  AC_BASE_TRY_CXX_LINK(base_cxx_compiler_works, cross++.cpp),
   base_cxx_compiler_works)
 
 dnl Additional libraries to test
 base_additional_attempts=
-AC_BASE_EQUAL($ac_base_flavour, unix, AC_BASE_APPEND(base_additional_attempts, -lpthread))
+AC_BASE_EQUAL(${ac_base_flavour}, unix, AC_BASE_APPEND(base_additional_attempts, -lpthread))
 
 AC_BASE_CHECK(
-  whether C++ compiler (AC_BASE_TRIM($CXX $CXXFLAGS $CPPFLAGS $LDFLAGS $LIBS $BASE_LIBS)) is a cross compiler,
+  whether C++ compiler (AC_BASE_TRIM(${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} ${LIBS} ${BASE_LIBS})) is a cross compiler,
   AC_BASE_CACHE(
     base_cv_cxx_cross base_cv_cxx_libs,
     AC_BASE_ATTEMPT(
       base_cxx_not_cross,
       base_cv_cxx_libs,
-      "" [$base_additional_attempts],
-      AC_BASE_TRY_CXX_RUN(base_cxx_not_cross, config/cross++.cpp, $base_cv_cxx_libs)dnl
+      "" [${base_additional_attempts}],
+      AC_BASE_TRY_CXX_RUN(base_cxx_not_cross, cross++.cpp, ${base_cv_cxx_libs})dnl
     )dnl
     AC_BASE_NOT(base_cv_cxx_cross, base_cxx_not_cross)dnl
   ),
   base_cv_cxx_cross,
   base_cv_cxx_libs)
-AC_BASE_ADDLIB($base_cv_cxx_libs)
+AC_BASE_ADDLIB(${base_cv_cxx_libs})
 
 AC_BASE_CHECK(
   whether Standard Template Library is working,
@@ -486,39 +496,39 @@ AC_BASE_CHECK(
     AC_BASE_ATTEMPT(
       base_cv_stl_available,
       base_cv_stl_libs,
-      "" $base_additional_attempts,
-      AC_BASE_TRY_CXX_RUN(base_cv_stl_available, config/stdc++.cpp, $base_cv_stl_libs)dnl
+      "" ${base_additional_attempts},
+      AC_BASE_TRY_CXX_RUN(base_cv_stl_available, stdc++.cpp, ${base_cv_stl_libs})dnl
     )
   ),
   base_cv_stl_available,
   base_cv_stl_libs)
-AC_BASE_ADDLIB($base_cv_stl_libs)
+AC_BASE_ADDLIB(${base_cv_stl_libs})
 
 
 
 dnl Explicit features.
 
-if test "$base_explicit_demangle" = v3mv; then
+if test "${base_explicit_demangle}" = v3mv; then
   AC_BASE_DEFINE(DEMANGLE_V3MV)
-elif test "$base_explicit_demangle" = gccv3; then
+elif test "${base_explicit_demangle}" = gccv3; then
   AC_BASE_DEFINE(DEMANGLE_GCCV3)
   AC_BASE_ADDLIB(-liberty)
-elif test "$base_explicit_demangle" = gccv2; then
+elif test "${base_explicit_demangle}" = gccv2; then
   AC_BASE_DEFINE(DEMANGLE_GCCV2)
   AC_BASE_ADDLIB(-liberty)
-elif test "$base_explicit_demangle" = sunwspro; then
+elif test "${base_explicit_demangle}" = sunwspro; then
   AC_BASE_DEFINE(DEMANGLE_SUNWSPRO)
   AC_BASE_ADDLIB(-ldemangle)
-elif test "$base_explicit_demangle" = mipspro; then
+elif test "${base_explicit_demangle}" = mipspro; then
   AC_BASE_DEFINE(DEMANGLE_MIPSPRO)
   AC_BASE_ADDLIB(-lmangle)
 fi
 
-if test "$base_explicit_threads" = auto; then
-  AC_BASE_EQUAL($ac_base_flavour, unix, base_explicit_threads=posix)
+if test "${base_explicit_threads}" = auto; then
+  AC_BASE_EQUAL(${ac_base_flavour}, unix, base_explicit_threads=posix)
 fi
 
-if test "$base_explicit_xml" = xmlsoft; then
+if test "${base_explicit_xml}" = xmlsoft; then
   AC_BASE_DEFINE(XML_XMLSOFT_ORG)
   AC_BASE_ADDLIB(-lxml -lz)
 fi
@@ -529,7 +539,7 @@ AC_BASE_CHECK(
   whether char is unsigned,
   AC_BASE_CACHE(
     base_cv_unsigned_char,
-    AC_BASE_TRY_CXX_RUN(base_cv_unsigned_char, config/unsigned_char.cpp)dnl
+    AC_BASE_TRY_CXX_RUN(base_cv_unsigned_char, unsigned_char.cpp)dnl
   ),
   base_cv_unsigned_char)
 AC_BASE_YES(base_cv_unsigned_char, AC_BASE_DEFINE(UNSIGNED_CHAR))
@@ -538,55 +548,55 @@ AC_BASE_CHECK(
   size of char,
   AC_BASE_CACHE(
     base_cv_char_size,
-    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_char_size, config/char_size.cpp)dnl
+    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_char_size, char_size.cpp)dnl
   ),
   base_cv_char_size)
-AC_BASE_DEFINE(CHAR_SIZE, $base_cv_char_size)
+AC_BASE_DEFINE(CHAR_SIZE, ${base_cv_char_size})
 
 AC_BASE_CHECK(
   size of short,
   AC_BASE_CACHE(
     base_cv_short_size,
-    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_short_size, config/short_size.cpp)dnl
+    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_short_size, short_size.cpp)dnl
   ),
   base_cv_short_size)
-AC_BASE_DEFINE(SHORT_SIZE, $base_cv_short_size)
+AC_BASE_DEFINE(SHORT_SIZE, ${base_cv_short_size})
 
 AC_BASE_CHECK(
   size of int,
   AC_BASE_CACHE(
     base_cv_int_size,
-    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_int_size, config/int_size.cpp)dnl
+    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_int_size, int_size.cpp)dnl
   ),
   base_cv_int_size)
-AC_BASE_DEFINE(INT_SIZE, $base_cv_int_size)
+AC_BASE_DEFINE(INT_SIZE, ${base_cv_int_size})
 
 AC_BASE_CHECK(
   size of long,
   AC_BASE_CACHE(
     base_cv_long_size,
-    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_long_size, config/long_size.cpp)dnl
+    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_long_size, long_size.cpp)dnl
   ),
   base_cv_long_size)
-AC_BASE_DEFINE(LONG_SIZE, $base_cv_long_size)
+AC_BASE_DEFINE(LONG_SIZE, ${base_cv_long_size})
 
 AC_BASE_CHECK(
   size of long long,
   AC_BASE_CACHE(
     base_cv_long_long_size,
-    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_long_long_size, config/long_long_size.cpp)dnl
+    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_long_long_size, long_long_size.cpp)dnl
   ),
   base_cv_long_long_size)
-AC_BASE_DEFINE(LONG_LONG_SIZE, $base_cv_long_long_size)
+AC_BASE_DEFINE(LONG_LONG_SIZE, ${base_cv_long_long_size})
 
 AC_BASE_CHECK(
   size of pointer,
   AC_BASE_CACHE(
     base_cv_pointer_size,
-    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_pointer_size, config/pointer_size.cpp)dnl
+    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_pointer_size, pointer_size.cpp)dnl
   ),
   base_cv_pointer_size)
-AC_BASE_DEFINE(POINTER_SIZE, $base_cv_pointer_size)
+AC_BASE_DEFINE(POINTER_SIZE, ${base_cv_pointer_size})
 
 
 
@@ -605,30 +615,30 @@ AC_DEFUN(AC_BASE_VALUE2BYTEORDER, [dnl
 ])
 
 AC_BASE_COMPARE(
-  $base_explicit_byte_order, auto,
+  ${base_explicit_byte_order}, auto,
   AC_BASE_CHECK(
     byte order of architecture,
     AC_BASE_CACHE(
       base_cv_byte_order base_cv_byte_order_msg,
-      AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, config/byteorder.c, -I., Autodetection of byte order does not work with cross compiler. Please specify byte order explicitly using --enable-byte-order.)dnl
-      AC_BASE_VALUE2BYTEORDER(base_cv_byte_order, base_cv_byte_order_msg, $ac_base_temp)dnl
+      AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, byteorder.c, , Autodetection of byte order does not work with cross compiler. Please specify byte order explicitly using --enable-byte-order.)dnl
+      AC_BASE_VALUE2BYTEORDER(base_cv_byte_order, base_cv_byte_order_msg, ${ac_base_temp})dnl
     ),
     base_cv_byte_order_msg),
-  base_cv_byte_order=$base_explicit_byte_order)
-AC_BASE_DEFINE(BYTE_ORDER, $base_cv_byte_order)
+  base_cv_byte_order=${base_explicit_byte_order})
+AC_BASE_DEFINE(BYTE_ORDER, ${base_cv_byte_order})
 
 AC_BASE_COMPARE(
-  $base_explicit_word_order, auto,
+  ${base_explicit_word_order}, auto,
   AC_BASE_CHECK(
     word order of architecture/operating system/compiler,
     AC_BASE_CACHE(
       base_cv_word_order,
-      AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, config/float_word_order.cpp, -I., Autodection of word order does not work with cross compiler.)
-      AC_BASE_VALUE2BYTEORDER(base_cv_word_order, base_cv_word_order_msg, $ac_base_temp)
+      AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, float_word_order.cpp, , Autodection of word order does not work with cross compiler.)
+      AC_BASE_VALUE2BYTEORDER(base_cv_word_order, base_cv_word_order_msg, ${ac_base_temp})
     ),
     base_cv_word_order_msg),
-  base_cv_word_order=$base_explicit_word_order)
-AC_BASE_DEFINE(FLOAT_WORD_ORDER, $base_cv_word_order)
+  base_cv_word_order=${base_explicit_word_order})
+AC_BASE_DEFINE(FLOAT_WORD_ORDER, ${base_cv_word_order})
 
 
 
@@ -658,31 +668,31 @@ AC_BASE_CHECK(
   representation of float,
   AC_BASE_CACHE(
     base_cv_float base_cv_float_msg,
-    AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, config/float.cpp, -I.)dnl
-    AC_BASE_VALUE2FLOAT(base_cv_float, base_cv_float_msg, $ac_base_temp)dnl
+    AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, float.cpp, )dnl
+    AC_BASE_VALUE2FLOAT(base_cv_float, base_cv_float_msg, ${ac_base_temp})dnl
   ),
   base_cv_float_msg)
-AC_BASE_DEFINE(FLOAT, $base_cv_float)
+AC_BASE_DEFINE(FLOAT, ${base_cv_float})
 
 AC_BASE_CHECK(
   representation of double,
   AC_BASE_CACHE(
     base_cv_double base_cv_doublestr,
-    AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, config/double.cpp, -I.)dnl
-    AC_BASE_VALUE2FLOAT(base_cv_double, base_cv_doublestr, $ac_base_temp)dnl
+    AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, double.cpp, )dnl
+    AC_BASE_VALUE2FLOAT(base_cv_double, base_cv_doublestr, ${ac_base_temp})dnl
   ),
   base_cv_doublestr)
-AC_BASE_DEFINE(DOUBLE, $base_cv_double)
+AC_BASE_DEFINE(DOUBLE, ${base_cv_double})
 
 AC_BASE_CHECK(
   representation of long double,
   AC_BASE_CACHE(
     base_cv_long_double base_cv_long_doublestr,
-    AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, config/long_double.cpp, -I.)dnl
-    AC_BASE_VALUE2FLOAT(base_cv_long_double, base_cv_long_doublestr, $ac_base_temp)dnl
+    AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, long_double.cpp, )dnl
+    AC_BASE_VALUE2FLOAT(base_cv_long_double, base_cv_long_doublestr, ${ac_base_temp})dnl
   ),
   base_cv_long_doublestr)
-AC_BASE_DEFINE(LONG_DOUBLE, $base_cv_long_double)
+AC_BASE_DEFINE(LONG_DOUBLE, ${base_cv_long_double})
 
 
 
@@ -692,7 +702,7 @@ AC_BASE_CHECK(
   whether bool is supported by the compiler,
   AC_BASE_CACHE(
     base_cv_bool,
-    AC_BASE_TRY_CXX_COMPILE(base_cv_bool, config/bool.cpp)dnl
+    AC_BASE_TRY_CXX_COMPILE(base_cv_bool, bool.cpp)dnl
   ),
   base_cv_bool)
 AC_BASE_YES(base_cv_bool, AC_BASE_DEFINE(CPP_BOOL))
@@ -701,7 +711,7 @@ AC_BASE_CHECK(
   whether const qualifier is supported by the compiler,
   AC_BASE_CACHE(
     base_cv_const,
-    AC_BASE_TRY_CXX_COMPILE(base_cv_const, config/const.cpp)dnl
+    AC_BASE_TRY_CXX_COMPILE(base_cv_const, const.cpp)dnl
   ),
   base_cv_const)
 AC_BASE_YES(base_cv_const, AC_BASE_DEFINE(CPP_CONST))
@@ -710,7 +720,7 @@ AC_BASE_CHECK(
   whether restrict qualifier is supported by the compiler,
   AC_BASE_CACHE(
     base_cv_restrict,
-    AC_BASE_TRY_CXX_COMPILE(base_cv_restrict, config/restrict.cpp)dnl
+    AC_BASE_TRY_CXX_COMPILE(base_cv_restrict, restrict.cpp)dnl
   ),
   base_cv_restrict)
 AC_BASE_YES(base_cv_restrict, AC_BASE_DEFINE(CPP_RESTRICT))
@@ -719,7 +729,7 @@ AC_BASE_CHECK(
   whether inline is supported by the compiler,
   AC_BASE_CACHE(
     base_cv_inline,
-    AC_BASE_TRY_CXX_COMPILE(base_cv_inline, config/inline.cpp)dnl
+    AC_BASE_TRY_CXX_COMPILE(base_cv_inline, inline.cpp)dnl
   ),
   base_cv_inline)
 AC_BASE_YES(base_cv_inline, AC_BASE_DEFINE(CPP_INLINE))
@@ -728,7 +738,7 @@ AC_BASE_CHECK(
   whether static const with init is supported inside class def,
   AC_BASE_CACHE(
     base_cv_static_const,
-    AC_BASE_TRY_CXX_COMPILE(base_cv_static_const, config/static_const.cpp)dnl
+    AC_BASE_TRY_CXX_COMPILE(base_cv_static_const, static_const.cpp)dnl
   ),
   base_cv_static_const)
 AC_BASE_YES(base_cv_static_const, AC_BASE_DEFINE(CPP_STATIC_CONST))
@@ -737,7 +747,7 @@ AC_BASE_CHECK(
   whether anonymous struct is supported by the compiler,
   AC_BASE_CACHE(
     base_cv_anonymous_struct,
-    AC_BASE_TRY_CXX_COMPILE(base_cv_anonymous_struct, config/anonymous_struct.cpp)dnl
+    AC_BASE_TRY_CXX_COMPILE(base_cv_anonymous_struct, anonymous_struct.cpp)dnl
   ),
   base_cv_anonymous_struct)
 AC_BASE_YES(base_cv_anonymous_struct, AC_BASE_DEFINE(CPP_ANONYMOUS))
@@ -746,12 +756,12 @@ AC_BASE_YES(base_cv_anonymous_struct, AC_BASE_DEFINE(CPP_ANONYMOUS))
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 
-if test "$ac_base_flavour" = unix; then
+if test "${ac_base_flavour}" = unix; then
 AC_BASE_CHECK(
   whether the type socklen_t is available,
   AC_BASE_CACHE(
     base_cv_type_socklen_t,
-    AC_BASE_TRY_CXX_LINK(base_cv_type_socklen_t, config/socklen_t.c)dnl
+    AC_BASE_TRY_CXX_LINK(base_cv_type_socklen_t, socklen_t.c)dnl
   ),
   base_cv_type_socklen_t)
 AC_BASE_YES(base_cv_type_socklen_t, AC_BASE_DEFINE(SOCKLEN_T))
@@ -762,9 +772,9 @@ fi dnl end of unix
 dnl Checks for library functions.
 
 dnl Handle network support
-case "$ac_base_flavour" in
+case "${ac_base_flavour}" in
 unix)
-  if test "$base_explicit_inet_ipv6" = auto; then
+  if test "${base_explicit_inet_ipv6}" = auto; then
     AC_BASE_CHECK(
       whether IPv6 is supported by the operating system,
       AC_BASE_CACHE(
@@ -773,17 +783,17 @@ unix)
           base_cv_inet_ipv6,
           base_cv_inet_ipv6_libs,
           "" -lsocket "-lsocket -lnsl",
-          AC_BASE_TRY_CXX_RUN(base_cv_inet_ipv6, config/ipv6.c, $base_cv_inet_ipv6_libs, Autodetection of IPv6 support does not work with cross compiler.)dnl
+          AC_BASE_TRY_CXX_RUN(base_cv_inet_ipv6, ipv6.c, ${base_cv_inet_ipv6_libs}, Autodetection of IPv6 support does not work with cross compiler.)dnl
         )
       ),
       base_cv_inet_ipv6,
       base_cv_inet_ipv6_libs)
-    base_explicit_inet_ipv6=$base_cv_inet_ipv6
+    base_explicit_inet_ipv6=${base_cv_inet_ipv6}
   fi
   AC_BASE_YES(
     base_explicit_inet_ipv6,
     AC_BASE_DEFINE(INET_IPV6)
-    AC_BASE_ADDLIB($base_cv_inet_ipv6_libs))
+    AC_BASE_ADDLIB(${base_cv_inet_ipv6_libs}))
 ;;
 win32)
   BASE_ADDITIONAL_LIBADD="${BASE_ADDITIONAL_LIBADD}${BASE_ADDITIONAL_LIBADD:+ }"'-lws2_32'
@@ -793,7 +803,7 @@ esac
 
 
 dnl Handle sound support
-case "$ac_base_flavour" in
+case "${ac_base_flavour}" in
 unix)
 ;;
 win32)
@@ -803,23 +813,23 @@ esac
 
 
 
-if test "$ac_base_flavour" = unix; then
-if test $base_explicit_large_file_system = auto; then
+if test "${ac_base_flavour}" = unix; then
+if test ${base_explicit_large_file_system} = auto; then
   AC_BASE_CHECK(
     whether Large File System is supported by the operating system,
     AC_BASE_CACHE(
       base_cv_large_file_system,
-      AC_BASE_TRY_CXX_LINK(base_cv_large_file_system, config/largefile.c, , Autodetection of Large File System does not work with cross compiler.)
+      AC_BASE_TRY_CXX_LINK(base_cv_large_file_system, largefile.c, , Autodetection of Large File System does not work with cross compiler.)
     ),
     base_cv_large_file_system)
-  base_explicit_large_file_system=$base_cv_large_file_system
+  base_explicit_large_file_system=${base_cv_large_file_system}
 fi
 AC_BASE_YES(base_explicit_large_file_system, AC_BASE_DEFINE(LARGE_FILE_SYSTEM))
 fi dnl end of unix
 
 
 
-AC_BASE_EQUAL($base_explicit_threads, posix,
+AC_BASE_EQUAL(${base_explicit_threads}, posix,
 dnl Check POSIX thread support
 
 AC_BASE_CHECK(
@@ -830,13 +840,13 @@ AC_BASE_CHECK(
       base_cv_pthread,
       base_cv_pthread_libs,
       "" -lpthread,
-      AC_BASE_TRY_CXX_RUN(base_cv_pthread, config/pthread.c, $base_cv_pthread_libs, Autodetection of POSIX thread support does not work with cross compiler.)dnl
+      AC_BASE_TRY_CXX_RUN(base_cv_pthread, pthread.c, ${base_cv_pthread_libs}, Autodetection of POSIX thread support does not work with cross compiler.)dnl
     )
   ),
   base_cv_pthread,
   base_cv_pthread_libs)
 AC_BASE_NO(base_cv_pthread, AC_MSG_ERROR(The compiler does not support POSIX threads))
-AC_BASE_ADDLIB($base_cv_pthread_libs)
+AC_BASE_ADDLIB(${base_cv_pthread_libs})
 
 AC_BASE_CHECK(
   whether pthread_yield is provided by the POSIX thread library,
@@ -846,7 +856,7 @@ AC_BASE_CHECK(
       base_cv_pthread_yield,
       base_cv_pthread_yield_libs,
       "" -lpthread,
-      AC_BASE_TRY_CXX_LINK(base_cv_pthread_yield, config/pthread_yield.c, $base_cv_pthread_yield_libs)dnl
+      AC_BASE_TRY_CXX_LINK(base_cv_pthread_yield, pthread_yield.c, ${base_cv_pthread_yield_libs})dnl
     )
   ),
   base_cv_pthread_yield,
@@ -854,7 +864,7 @@ AC_BASE_CHECK(
 AC_BASE_YES(
   base_cv_pthread_yield,
   AC_BASE_DEFINE(PTHREAD_YIELD)
-  AC_BASE_ADDLIB($base_cv_pthread_yield_libs))
+  AC_BASE_ADDLIB(${base_cv_pthread_yield_libs}))
 
 AC_BASE_CHECK(
   whether POSIX semaphore is supported,
@@ -864,7 +874,7 @@ AC_BASE_CHECK(
       base_cv_pthread_semaphore,
       base_cv_pthread_semaphore_libs,
       "" -lpthread -lrt,
-      AC_BASE_TRY_CXX_LINK(base_cv_pthread_semaphore, config/pthread_semaphore.c, $base_cv_pthread_semaphore_libs)dnl
+      AC_BASE_TRY_CXX_LINK(base_cv_pthread_semaphore, pthread_semaphore.c, ${base_cv_pthread_semaphore_libs})dnl
     )
   ),
   base_cv_pthread_semaphore,
@@ -872,7 +882,7 @@ AC_BASE_CHECK(
 AC_BASE_YES(
   base_cv_pthread_semaphore,
   AC_BASE_DEFINE(PTHREAD_SEMAPHORE)
-  AC_BASE_ADDLIB($base_cv_pthread_semaphore_libs))
+  AC_BASE_ADDLIB(${base_cv_pthread_semaphore_libs}))
 
 AC_BASE_CHECK(
   whether POSIX read-write lock is supported,
@@ -882,43 +892,43 @@ AC_BASE_CHECK(
       base_cv_pthread_rwlock,
       base_cv_pthread_rwlock_libs,
       "" -lpthread,
-      AC_BASE_TRY_CXX_LINK(base_cv_pthread_rwlock, config/pthread_rwlock.c, $base_cv_pthread_rwlock_libs)dnl
+      AC_BASE_TRY_CXX_LINK(base_cv_pthread_rwlock, pthread_rwlock.c, ${base_cv_pthread_rwlock_libs})dnl
     )
   ),
   base_cv_pthread_rwlock,
   base_cv_pthread_rwlock_libs)
 AC_BASE_YES(base_cv_pthread_rwlock,
   AC_BASE_DEFINE(PTHREAD_RWLOCK)
-  AC_BASE_ADDLIB($base_cv_pthread_rwlock_libs))
+  AC_BASE_ADDLIB(${base_cv_pthread_rwlock_libs}))
 
 ) dnl end of posix thread support
 
 
 
-AC_BASE_EQUAL($base_explicit_regexp, auto,
+AC_BASE_EQUAL(${base_explicit_regexp}, auto,
   AC_BASE_CHECK(
     whether POSIX Regular Expression interface is available,
     AC_BASE_CACHE(
       base_cv_regex_available,
-      AC_BASE_TRY_CXX_RUN(base_cv_regex_available, config/regex.c)dnl
+      AC_BASE_TRY_CXX_RUN(base_cv_regex_available, regex.c)dnl
     ),
     base_cv_regex_available)
   AC_BASE_YES(base_cv_regex_available, AC_BASE_DEFINE(REGEXP_POSIX)))
 
-AC_BASE_EQUAL($base_explicit_regexp, posix, AC_BASE_DEFINE(REGEXP_POSIX))
+AC_BASE_EQUAL(${base_explicit_regexp}, posix, AC_BASE_DEFINE(REGEXP_POSIX))
 
-AC_BASE_EQUAL($base_explicit_regexp, pcre,
+AC_BASE_EQUAL(${base_explicit_regexp}, pcre,
   AC_BASE_DEFINE(REGEXP_PCRE)
   AC_BASE_ADDLIB(-lpcre))
 
 
 
-AC_BASE_EQUAL($base_explicit_wide, auto,
+AC_BASE_EQUAL(${base_explicit_wide}, auto,
   AC_BASE_CHECK(
     whether wide-character interface is available,
     AC_BASE_CACHE(
       base_cv_wide_available,
-      AC_BASE_TRY_CXX_LINK(base_cv_wide_available, config/wide.c)dnl
+      AC_BASE_TRY_CXX_LINK(base_cv_wide_available, wide.c)dnl
     ),
     base_cv_wide_available)
   AC_BASE_YES(base_cv_wide_available, AC_BASE_DEFINE(WIDE)))
@@ -939,7 +949,7 @@ AC_BASE_CHECK_CFUNCTION(mbsrtowcs)
 
 
 dnl Add VERSION resource to the dynamic library on Windows platforms (i.e. cygwin or mingw targets)
-case "$ac_cv_target" in
+case "${ac_cv_target}" in
 *-*-cygwin|*-*-mingw32)
   dnl The -Wl option is used to circumvent libtool
   BASE_ADDITIONAL_LIBADD="${BASE_ADDITIONAL_LIBADD}${BASE_ADDITIONAL_LIBADD:+ }"'-Wl,winrcver.o'
@@ -950,24 +960,35 @@ esac
 
 
 dnl Define some describing symbols
-AC_BASE_DEFINE(CONFIGURE, [\"]$ac_configure_args[\"])
-AC_BASE_DEFINE(BUILD_DATE, [\"]$ac_base_build_date[\"])
-AC_BASE_DEFINE(BUILD_USER, [\"]$ac_base_build_user[\"])
-AC_BASE_DEFINE(BUILD_HOST, [\"]$ac_base_build_host[\"])
-AC_BASE_DEFINE(BUILD_SYSTEM, [\"]$ac_cv_build[\"])
-AC_BASE_DEFINE(TARGET_SYSTEM, [\"]$ac_cv_target[\"])
+AC_BASE_DEFINE(CONFIGURE, [\"]${ac_configure_args}[\"])
+AC_BASE_DEFINE(BUILD_DATE, [\"]${ac_base_build_date}[\"])
+AC_BASE_DEFINE(BUILD_USER, [\"]${ac_base_build_user}[\"])
+AC_BASE_DEFINE(BUILD_HOST, [\"]${ac_base_build_host}[\"])
+AC_BASE_DEFINE(BUILD_SYSTEM, [\"]${ac_cv_build}[\"])
+AC_BASE_DEFINE(TARGET_SYSTEM, [\"]${ac_cv_target}[\"])
+
+dnl Tell the compiler where it should look for the generated and static framework headers
+if (test -f base/features.h) then
+  dnl We are building directly in the source tree
+  CPPFLAGS='-I${top_srcdir}'"${CPPFLAGS:+ }${CPPFLAGS}"
+else
+  dnl We are building in a separate directory tree
+  dnl Tell the compiler where it should look for the generated and static framework headers
+  CPPFLAGS='-I${top_builddir} -I${top_srcdir}'"${CPPFLAGS:+ }${CPPFLAGS}"
+fi
 
 AC_SUBST(BASE_LIBS)
 AC_SUBST(BASE_ADDITIONAL_LIBADD)
 AC_SUBST(BASE_ADDITIONAL_LDFLAGS)
 AC_SUBST(BASE_ADDITIONAL_DEPENDENCIES)
 
-dnl The default include paths are not used
-CPPFLAGS='-I${top_srcdir}'"${CPPFLAGS:+ }${CPPFLAGS}"
+dnl Remove temporary files
+${base_cleanup}
 
 dnl Store the symbols
 ac_base_header=base/configuration.h
 echo "updating configuration..."
-mv $ac_base_config $ac_base_header
+mkdir -p base
+mv ${ac_base_config} ${ac_base_header}
 
 AC_OUTPUT(Makefile config/Makefile base/Makefile base/docs/Makefile base/docs/en/Makefile base/Makefile base/platforms/Makefile base/communication/Makefile base/concurrency/Makefile base/mathematics/Makefile base/io/Makefile base/io/async/Makefile base/string/Makefile base/mem/Makefile base/net/Makefile base/collection/Makefile base/filesystem/Makefile base/iterator/Makefile base/dl/Makefile base/xml/Makefile base/security/Makefile base/sound/Makefile)

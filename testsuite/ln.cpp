@@ -50,7 +50,7 @@ public:
       nameSpecified = true;
       break;
     default:
-      fout << MESSAGE("ln target [name]") << ENDL;
+      fout << getFormalName() << MESSAGE(" target [name]") << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
@@ -69,12 +69,12 @@ public:
       ferr << MESSAGE("Error: ") << MESSAGE("Name already exists.") << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
-    }    
+    }
     
     try {
       FileSystem::makeLink(target, name);
-    } catch (Exception& e) {
-      ferr << MESSAGE("Error: ") << e.getMessage() << ENDL;
+    } catch (FileSystemException& e) {
+      ferr << MESSAGE("Error: ") << MESSAGE("Unable to create link: ") << e.getMessage() << ENDL;
       setExitCode(EXIT_CODE_ERROR);
     }
   }

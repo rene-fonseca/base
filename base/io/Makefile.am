@@ -18,6 +18,7 @@ SUBDIRS = async
 noinst_LTLIBRARIES = libio.la
 
 libio_la_SOURCES = \
+  BrokenStream.cpp \
   Handle.cpp \
   FileDescriptor.cpp \
   TimedOut.cpp \
@@ -51,6 +52,7 @@ libio_la_SOURCES = \
 
 sectiondir = $(includedir)/base/io
 section_HEADERS = \
+  BrokenStream.h \
   Handle.h \
   InputStream.h \
   PrimitiveOutputStream.h \

@@ -24,12 +24,12 @@
 #include <base/NotImplemented.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-  #include <time.h>
+#  include <windows.h>
+#  include <time.h>
 #else // unix
-  #include <sys/time.h>
-  #include <time.h>
-  #include <unistd.h>
+#  include <sys/time.h>
+#  include <time.h>
+#  include <unistd.h>
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -833,7 +833,7 @@ String Date::format(const String& format, bool local) const throw(InvalidFormat,
         break;
       case 'h': // same as %b
         stream << Locale::POSIX.getShortNameOfMonth(dateTime.month); // use locale
-        break;        
+        break;
       case 'H':
         stream << setWidth(2);
         if (flags & DEFAULT) {stream << ZEROPAD;}
@@ -1012,7 +1012,7 @@ WideString Date::format(const WideString& format, bool local) const throw(Invali
   return WideString(Cast::pointer<const wchar_t*>(buffer->getElements()), result);
 #endif
 #else
-  #warning WideString Date::format(const WideString& format, bool local) const throw(MemoryException) not available
+#  warning WideString Date::format(const WideString& format, bool local) const throw(MemoryException) not available
   return WideString();
 #endif
 }

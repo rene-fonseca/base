@@ -831,7 +831,12 @@ void OpenGL::pickMatrix(GLdouble x, GLdouble y, GLdouble width, GLdouble height,
   glMultMatrixd(Cast::pointer<const GLdouble*>(&matrix));
 }
 
-Vector3D<double> OpenGL::unProject(const Vector3D<double>& window, const Matrix4x4<double>& model, const Matrix4x4<double>& projection, const GLint viewport[4]) throw(OpenGLException) {
+Vector3D<double> OpenGL::unProject(
+  const Vector3D<double>& window,
+  const Matrix4x4<double>& model,
+  const Matrix4x4<double>& projection,
+  const GLint viewport[4]) throw(OpenGLException) {
+  
   Matrix4x4<double> A = projection * model;
   Matrix4x4<double> matrix;
   matrix.inverse(A);
@@ -852,7 +857,13 @@ Vector3D<double> OpenGL::unProject(const Vector3D<double>& window, const Matrix4
   );
 }
 
-void OpenGL::cylinder(GLdouble baseRadius, GLdouble topRadius, GLdouble height, unsigned int slices, unsigned int stacks) throw() {
+void OpenGL::cylinder(
+  GLdouble baseRadius,
+  GLdouble topRadius,
+  GLdouble height,
+  unsigned int slices,
+  unsigned int stacks) throw() {
+  
   const GLdouble radiusDelta = (topRadius - baseRadius)/stacks;
   const GLdouble zDelta = height/stacks;
   const GLdouble thetaDelta = 2.0 * constant::PI/slices;
@@ -882,7 +893,12 @@ void OpenGL::cylinder(GLdouble baseRadius, GLdouble topRadius, GLdouble height, 
   }
 }
 
-void OpenGL::torus(GLdouble innerRadius, GLdouble outerRadius, unsigned int numberOfRings, unsigned int numberOfSides) throw() {
+void OpenGL::torus(
+  GLdouble innerRadius,
+  GLdouble outerRadius,
+  unsigned int numberOfRings,
+  unsigned int numberOfSides) throw() {
+  
   // see http://mathworld.wolfram.com/Torus.html
   // x = (c + a cos v) cos u
   // y = (c + a cos v) sin u
@@ -1027,6 +1043,7 @@ void OpenGL::sphere(double radius, unsigned int slices, unsigned int stacks) thr
 }
 
 // TAG: need Dimension3D
+// TAG: rename to cube?
 void OpenGL::box(double width, double length, double height, unsigned int flags) throw() {
   // OpenGL::Flag POINTS
   // OpenGL::Flag LINES

@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
+#include <base/platforms/features.h>
 #include <base/filesystem/FolderInfo.h>
 #include <base/concurrency/Thread.h>
 
@@ -37,7 +37,7 @@ FolderInfo::FolderInfo(const String& path) throw(FileSystemException) : path(pat
   WIN32_FIND_DATA buffer;
   HANDLE handle = FindFirstFile((path + "\\*").getElements(), &buffer);
   if ((handle == INVALID_HANDLE_VALUE) || !(buffer.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-    throw FileSystemException("Not a folder");
+    throw FileSystemException("Not a folder", this);
   }
 
   access = *pointer_cast<const long long*>(&buffer.ftLastAccessTime) - fileTimeOffset; // TAG: overflow problem
@@ -48,12 +48,12 @@ FolderInfo::FolderInfo(const String& path) throw(FileSystemException) : path(pat
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 buffer;
     if (stat64(path.getElements(), &buffer) || (!S_ISDIR(buffer.st_mode))) {
-      throw FileSystemException("Not a folder");
+      throw FileSystemException("Not a folder", this);
     }
   #else
     struct stat buffer;
     if (stat(path.getElements(), &buffer) || (!S_ISDIR(buffer.st_mode))) {
-      throw FileSystemException("Not a folder");
+      throw FileSystemException("Not a folder", this);
     }
   #endif
   access = buffer.st_atime;
@@ -75,7 +75,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   handle = FindFirstFile((path + "\\*").getElements(), &entry);
   if (handle == INVALID_HANDLE_VALUE) {
     if (GetLastError() != ERROR_NO_MORE_FILES) {
-      throw FileSystemException("Unable to read entries of folder");
+      throw FileSystemException("Unable to read entries of folder", this);
     }
   } else {
     while (true) {
@@ -85,12 +85,12 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
           break;
         }
         FindClose(handle); // avoid that resource leak
-        throw FileSystemException("Unable to read entries of folder");
+        throw FileSystemException("Unable to read entries of folder", this);
       }
     }
 
     if (!FindClose(handle)) {
-      throw FileSystemException("Unable to close folder");
+      throw FileSystemException("Unable to close folder", this);
     }
   }
 #else // unix
@@ -100,7 +100,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
     DIR* directory;
 
     if ((directory = ::opendir(path.getElements())) == 0) {
-      throw FileSystemException("Unable to read entries of folder");
+      throw FileSystemException("Unable to read entries of folder", this);
     }
 
     while (true) {
@@ -113,7 +113,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
           break;
         }
         ::closedir(directory);
-        throw FileSystemException("Unable to read entries of folder");
+        throw FileSystemException("Unable to read entries of folder", this);
       }
       if (!entry) { // only required for Linux
         break;
@@ -122,13 +122,36 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
     }
 
     if (::closedir(directory) != 0) {
-      throw FileSystemException("Unable to close folder");
+      throw FileSystemException("Unable to close folder", this);
+    }
+  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+    // TAG: should detect is readdir_r is available (_DK_SDU_MIP__BASE__READDIR_R)
+    #warning using non-reentrant api - readdir
+    DIR* directory;
+    if ((directory = ::opendir(path.getElements())) == 0) {
+      throw FileSystemException("Unable to read entries of folder", this);
+    }
+
+    while (true) {
+      int status;
+      errno = 0;
+      struct dirent* entry = ::readdir(directory);
+      if (entry == 0) {
+        if (errno == 0) { // stop if last entry has been read
+          break;
+        }
+        ::closedir(directory);
+        throw FileSystemException("Unable to read entries of folder", this);
+      }
+      result.append(String(entry->d_name));
+    }
+    if (::closedir(directory) != 0) {
+      throw FileSystemException("Unable to close folder", this);
     }
   #else
     DIR* directory;
-
     if ((directory = ::opendir(path.getElements())) == 0) {
-      throw FileSystemException("Unable to read entries of folder");
+      throw FileSystemException("Unable to read entries of folder", this);
     }
 
     while (true) {
@@ -141,7 +164,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
           break;
         }
         ::closedir(directory);
-        throw FileSystemException("Unable to read entries of folder");
+        throw FileSystemException("Unable to read entries of folder", this);
       }
       if (!entry) { // only required for Linux
         break;
@@ -150,7 +173,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
     }
 
     if (::closedir(directory) != 0) {
-      throw FileSystemException("Unable to close folder");
+      throw FileSystemException("Unable to close folder", this);
     }
   #endif
 #endif // flavor

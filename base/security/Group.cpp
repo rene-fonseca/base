@@ -265,14 +265,14 @@ Array<String> Group::getMembers() const throw(GroupException) {
 FormatOutputStream& operator<<(
   FormatOutputStream& stream, const Group& value) throw(IOException) {
   if (!value.isValid()) {
-    return stream << MESSAGE("<unknown>");
+    return stream << "<unknown>";
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   StringOutputStream s;
   PSID sid = (PSID)value.getId(); // must be valid
   
   // write prefix and revision number
-  s << MESSAGE("S-") << ((SID*)sid)->Revision << '-';
+  s << "S-" << ((SID*)sid)->Revision << '-';
   
   // write identifier authority
   PSID_IDENTIFIER_AUTHORITY identifier = ::GetSidIdentifierAuthority(sid);

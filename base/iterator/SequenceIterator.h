@@ -115,7 +115,14 @@ public:
   inline Pointer operator->() const throw() {
     return element;
   }
+
+  friend long operator-<>(SequenceIterator left, SequenceIterator right) throw();
 };
+
+template<class TYPE>
+inline long operator-(SequenceIterator<TYPE> left, SequenceIterator<TYPE> right) throw() {
+  return left.element - right.element;
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

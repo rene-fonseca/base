@@ -9,6 +9,7 @@
 #include <base/mem/Heap.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Functor.h>
+#include <base/iterator/SequenceIterator.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -82,6 +83,9 @@ private:
   /** The number of elements in the block. */
   unsigned int size;
 public:
+
+  typedef SequenceIterator<IteratorTraits<TYPE> > Iterator;
+  typedef SequenceIterator<ReadIteratorTraits<TYPE> > ReadIterator;
 
   /**
     Enumeration of all the elements of an Allocator.
@@ -164,6 +168,34 @@ public:
   */
   inline const TYPE* getElements() const throw() {
     return elements;
+  }
+
+  /**
+    Returns the first element of the allocator is a modifying iterator.
+  */
+  inline Iterator getBeginIterator() throw() {
+    return Iterator(elements);
+  }
+
+  /**
+    Returns the end of the allocator is a modifying iterator.
+  */
+  inline Iterator getEndIterator() throw() {
+    return Iterator(elements + size);
+  }
+
+  /**
+    Returns the first element of the allocator is a non-modifying iterator.
+  */
+  inline ReadIterator getBeginIterator() const throw() {
+    return ReadIterator(elements);
+  }
+
+  /**
+    Returns the end of the allocator is a non-modifying iterator.
+  */
+  inline ReadIterator getEndIterator() const throw() {
+    return ReadIterator(elements + size);
   }
 
   /**

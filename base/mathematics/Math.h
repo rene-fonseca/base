@@ -885,6 +885,36 @@ public:
   }
 
   /**
+    Returns the base-2 logarithm of the specified integer. The result is rounded
+    down.
+  */
+  static inline unsigned int ilog2(unsigned int value) throw() {
+    unsigned int result = sizeof(unsigned int) * 8;
+    for (unsigned int i = sizeof(unsigned int) * 8/2; i > 0; i >>= 1) {
+      if ((value >> (sizeof(unsigned int) * 8 - i)) == 0) {
+        result -= i;
+        value <<= i;
+      }
+    }
+    return result;
+  }
+  
+  /**
+    Returns the base-2 logarithm of the specified integer. The result is rounded
+    down.
+  */
+  static inline unsigned int ilog2(unsigned long value) throw() {
+    unsigned long result = sizeof(unsigned long) * 8;
+    for (unsigned int i = sizeof(unsigned long) * 8/2; i > 0; i >>= 1) {
+      if ((value >> (sizeof(unsigned long) * 8 - i)) == 0) {
+        result -= i;
+        value <<= i;
+      }
+    }
+    return result;
+  }
+
+  /**
     Returns the bit reversal of the specified 8 bit unsigned integer.
   */
   static inline uint8 getBitReversal(uint8 value) throw() {
@@ -910,6 +940,28 @@ public:
   */
   static inline uint64 getBitReversal(uint64 value) throw() {
     return merge(getBitReversal(getHighWordOf64(value)), getBitReversal(getLowWordOf64(value)));
+  }
+
+  /**
+    Rotates the bits of the specified value to the right.
+    
+    @param value The value to be rotated.
+    @param count The number of bit to rotate. The default is 1.
+  */
+  static inline unsigned int ror(unsigned int value, unsigned int count = 1) throw() {
+    count &= sizeof(unsigned int) * 8 - 1;
+    return (value >> count) | (value << (sizeof(unsigned int) * 8 - count));
+  }
+
+  /**
+    Rotates the bits of the specified value to the left.
+    
+    @param value The value to be rotated.
+    @param count The number of bit to rotate. The default is 1.
+  */
+  static inline unsigned int rol(unsigned int value, unsigned int count = 1) throw() {
+    count &= sizeof(unsigned int) * 8 - 1;
+    return (value << count) | (value >> (sizeof(unsigned int) * 8 - count));
   }
 };
 

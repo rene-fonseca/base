@@ -40,11 +40,20 @@ lendum-gcc-3.1: all
 lendum-gcc-3.1-release: all
 	CC=/usr/local/gcc-3.1/bin/gcc CFLAGS="-pipe -x c" CXX=/usr/local/gcc-3.1/bin/gcc CXXFLAGS="-pipe -x c++ -ansi -O3 -g2 -march=i686 -malign-double -fomit-frame-pointer -funroll-loops -fno-math-errno -fexpensive-optimizations -fmerge-all-constants -fno-keep-static-consts" LDFLAGS="-x none" ./configure --target=i686-pc-linux --prefix=/usr/local/base --with-base-include=.. --with-base-lib=../base
 
-falster-gcc-3.0.4: all
-	CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" ./configure --prefix=/tmp/fonseca/base --with-base-include=.. --with-base-lib=../base
+falster-gcc-3.0.4:
+	CC=/home/fonseca/gnu/gcc-3.0.4/bin/gcc CXX=/home/fonseca/gnu/gcc-3.0.4/bin/gcc CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" CPPFLAGS="-I/home/fonseca/src/base" configure --prefix=/tmp/fonseca/base --with-base-include=.. --with-base-lib=../base
 
-falster-gcc-3.0.4-release: all
-	CXXFLAGS="-pipe -x c++ -ansi -O3 -g3 -fomit-frame-pointer -funroll-loops -fno-math-errno -fexpensive-optimizations -fmerge-all-constants -fno-keep-static-consts" LDFLAGS="-x none" ./configure --prefix=/tmp/fonseca/base --with-base-include=.. --with-base-lib=../base
+falster-gcc-3.0.4-release:
+	CC=/home/fonseca/gnu/gcc-3.0.4/bin/gcc CXX=/home/fonseca/gnu/gcc-3.0.4/bin/gcc CXXFLAGS="-pipe -x c++ -ansi -O3 -g3 -fomit-frame-pointer -funroll-loops -fno-math-errno -fexpensive-optimizations -fno-keep-static-consts" CPPFLAGS="-I/home/fonseca/src/base" LDFLAGS="-x none" configure --prefix=/tmp/fonseca/base --with-base-include=.. --with-base-lib=../base
+
+falster-gcc-3.1:
+	CC=/home/fonseca/gnu/gcc-3.1/bin/gcc CXX=/home/fonseca/gnu/gcc-3.1/bin/gcc CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" CPPFLAGS="-I/home/fonseca/src/base" configure --prefix=/tmp/fonseca/base --with-base-include=.. --with-base-lib=../base
+
+falster-gcc-3.1-release:
+	CC=/home/fonseca/gnu/gcc-3.1/bin/gcc CXX=/home/fonseca/gnu/gcc-3.1/bin/gcc CXXFLAGS="-pipe -x c++ -ansi -O3 -g3 -fomit-frame-pointer -funroll-loops -fno-math-errno -fexpensive-optimizations" CPPFLAGS="-I/home/fonseca/src/base" LDFLAGS="-x none" configure --prefix=/tmp/fonseca/base --with-base-include=.. --with-base-lib=../base
+
+falster-gcc-3.1-64bit-release:
+	CC=/home/fonseca/gnu/gcc-3.1/bin/gcc CFLAGS="-pipe -x c -m64" CXX=/home/fonseca/gnu/gcc-3.1/bin/gcc CXXFLAGS="-pipe -x c++ -ansi -O3 -g2 -mcpu=ultrasparc -m64 -fomit-frame-pointer -funroll-loops -fno-math-errno -fexpensive-optimizations" CPPFLAGS="-I/home/fonseca/src/base" LDFLAGS="-x none -L/home/fonseca/gnu/gcc-3.1/lib/sparcv9" configure --target=sparcv9-sun-solaris --prefix=/tmp/fonseca/base --with-base-include=.. --with-base-lib=../base
 
 fyn-gcc-3.0.4: all
 	CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" ./configure --prefix=/tmp/fonseca/base --with-base-include=.. --with-base-lib=../base
@@ -72,3 +81,6 @@ klampenborg-gcc-3.1:
 
 klampenborg-gcc-3.1-release:
 	CC=/usr/local/gcc-3.1/bin/gcc CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX=/usr/local/gcc-3.1/bin/g++ CPPFLAGS="-I/d/projects/base/base -I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward" CXXFLAGS="-pipe -mno-cygwin -mthreads -O3 -g3 -x c++ -ansi -march=i686 -malign-double -fomit-frame-pointer -funroll-loops -fno-math-errno -fexpensive-optimizations -fmerge-all-constants -fno-keep-static-consts" LDFLAGS="-x none" configure --build=i686-pc-mingw32 --prefix=/usr/local/base --with-base-include=.. --with-base-lib=../base
+
+falster-gcc-3.1-mingw32-release:
+	CFLAGS="-pipe -x c" CPPFLAGS="-I/home/fonseca/src/mingw" CXXFLAGS="-pipe -O3 -g3 -x c++ -ansi -march=i686 -malign-double -fomit-frame-pointer -funroll-loops -fno-math-errno -fexpensive-optimizations -fmerge-all-constants -fno-keep-static-consts" LDFLAGS="-x none" configure --build=sparc-sun-solaris --host=i386-pc-mingw32 --prefix=/tmp/fonseca/usr --with-base-include=/home/fonseca/src/base --with-base-lib=/home/fonseca/src/mingw/base

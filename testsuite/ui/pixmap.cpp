@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,8 +24,11 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  PixmapApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("Pixmap"), numberOfArguments, arguments, environment) {
+  PixmapApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("Pixmap", numberOfArguments, arguments, environment) {
   }
 
   class MyPixmap : public Pixmap {
@@ -37,10 +40,11 @@ public:
   };
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
 
     MyPixmap myPixmap(Dimension(256, 256), 0);

@@ -113,42 +113,41 @@ public:
   void testDemangling() throw() {
     foo::bar<int, unsigned int>::myFunction<long long>(foo(), foo::bar<int, unsigned int>(), Hello(), World(), World(), Hello(), 0);
 
-    testDemangling(MESSAGE("N3gip7ConvertINS_10ArrayImageIfEENS1_INS_8RGBPixelIhEEEENS_10RGBToFloatEEE"),
-                          MESSAGE("gip::Convert<gip::ArrayImage<float>, gip::ArrayImage<gip::RGBPixel<unsigned char> >, gip::RGBToFloat>"));
+    testDemangling("N3gip7ConvertINS_10ArrayImageIfEENS1_INS_8RGBPixelIhEEEENS_10RGBToFloatEEE", "gip::Convert<gip::ArrayImage<float>, gip::ArrayImage<gip::RGBPixel<unsigned char> >, gip::RGBToFloat>");
 
     // member type
-    testDemangling(MESSAGE("10myFunctionM5HelloFixE"), MESSAGE("myFunction(int (Hello::*)(long long))"));
-    testDemangling(MESSAGE("10myFunctionM5Hellol"), MESSAGE("myFunction(long Hello::*)"));
-    testDemangling(MESSAGE("N7MyClassC1E"), MESSAGE("MyClass::MyClass"));
-    testDemangling(MESSAGE("7MyClassPRrK7MyClass"), MESSAGE("MyClass(MyClass restrict const&*)"));
+    testDemangling("10myFunctionM5HelloFixE", "myFunction(int (Hello::*)(long long))");
+    testDemangling("10myFunctionM5Hellol", "myFunction(long Hello::*)");
+    testDemangling("N7MyClassC1E", "MyClass::MyClass");
+    testDemangling("7MyClassPRrK7MyClass", "MyClass(MyClass restrict const&*)");
 
-    testDemangling(MESSAGE("rm1XS_"), MESSAGE("operator%(X, X)"));
-    testDemangling(MESSAGE("plR1XS0_"), MESSAGE("operator+(X&, X&)"));
-    testDemangling(MESSAGE("lsRK1XS1_"), MESSAGE("operator<<(X const&, X const&)"));
-    testDemangling(MESSAGE("N3FooIA4_iE3barE"), MESSAGE("Foo<int[4]>::bar"));
-    testDemangling(MESSAGE("1fIiEvi"), MESSAGE("void f<int>(int)"));
+    testDemangling("rm1XS_", "operator%(X, X)");
+    testDemangling("plR1XS0_", "operator+(X&, X&)");
+    testDemangling("lsRK1XS1_", "operator<<(X const&, X const&)");
+    testDemangling("N3FooIA4_iE3barE", "Foo<int[4]>::bar");
+    testDemangling("1fIiEvi", "void f<int>(int)");
 
-    testDemangling(MESSAGE("5firstI3DuoEvS0_"), MESSAGE("void first<Duo>(Duo)"));
-    testDemangling(MESSAGE("5firstI3DuoEvT_"), MESSAGE("void first<Duo>(Duo)"));
-    testDemangling(MESSAGE("3fooIiFidEiEvv"), MESSAGE("void foo<int, int (*)(double), int>()")); // changed from 3fooIiPFidEiEvv
-    testDemangling(MESSAGE("N1N1fE"), MESSAGE("N::f"));
-    testDemangling(MESSAGE("N6System5Sound4beepEv"), MESSAGE("System::Sound::beep()"));
-    testDemangling(MESSAGE("N5Arena5levelE"), MESSAGE("Arena::level"));
-    testDemangling(MESSAGE("N5StackIiiE5levelE"), MESSAGE("Stack<int, int>::level"));
-    testDemangling(MESSAGE("1fI1XEvPVN1AIT_E1TE"), MESSAGE("void f<X>(A<X>::T volatile*)"));
-    //testDemangling(MESSAGE("ngILi42EEvN1AIXplT_Li2EEE1TE"), MESSAGE("void operator-<42>(A<42+2>::T)"));
-    testDemangling(MESSAGE("4makeI7FactoryiET_IT0_Ev"), MESSAGE("Factory<int> make<Factory, int>()"));
-    testDemangling(MESSAGE("3foo5Hello5WorldS0_S_"), MESSAGE("foo(Hello, World, World, Hello)"));
-    testDemangling(MESSAGE("3fooPM2ABi"), MESSAGE("foo(int AB::**)"));
-    testDemangling(MESSAGE("lsRSoRKSs"), MESSAGE("operator<<(std::ostream&, std::string const&)"));
+    testDemangling("5firstI3DuoEvS0_", "void first<Duo>(Duo)");
+    testDemangling("5firstI3DuoEvT_", "void first<Duo>(Duo)");
+    testDemangling("3fooIiFidEiEvv", "void foo<int, int (*)(double), int>()"); // changed from 3fooIiPFidEiEvv
+    testDemangling("N1N1fE", "N::f");
+    testDemangling("N6System5Sound4beepEv", "System::Sound::beep()");
+    testDemangling("N5Arena5levelE", "Arena::level");
+    testDemangling("N5StackIiiE5levelE", "Stack<int, int>::level");
+    testDemangling("1fI1XEvPVN1AIT_E1TE", "void f<X>(A<X>::T volatile*)");
+    //testDemangling("ngILi42EEvN1AIXplT_Li2EEE1TE", "void operator-<42>(A<42+2>::T)");
+    testDemangling("4makeI7FactoryiET_IT0_Ev", "Factory<int> make<Factory, int>()");
+    testDemangling("3foo5Hello5WorldS0_S_", "foo(Hello, World, World, Hello)");
+    testDemangling("3fooPM2ABi", "foo(int AB::**)");
+    testDemangling("lsRSoRKSs", "operator<<(std::ostream&, std::string const&)");
 
-    testDemangling(MESSAGE("TI7a_class"), MESSAGE("typeinfo for a_class"));
-    testDemangling(MESSAGE("NSt6vectorIS_IiSaIiEESaIS1_EEC1ERKS2_"), MESSAGE("std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >::vector(std::allocator<std::vector<int, std::allocator<int> > > const&)"));
-    testDemangling(MESSAGE("N1N1TIiiE2mfES0_IddE"), MESSAGE("N::T<int, int>::mf(N::T<double, double>)"));
-    testDemangling(MESSAGE("3foo3bar"), MESSAGE("foo(bar)"));
-    testDemangling(MESSAGE("3foov"), MESSAGE("foo()"));
-    testDemangling(MESSAGE("NSt3_In4wardE"), MESSAGE("std::_In::ward"));
-    testDemangling(MESSAGE("St5state"), MESSAGE("std::state"));
+    testDemangling("TI7a_class", "typeinfo for a_class");
+    testDemangling("NSt6vectorIS_IiSaIiEESaIS1_EEC1ERKS2_", "std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >::vector(std::allocator<std::vector<int, std::allocator<int> > > const&)");
+    testDemangling("N1N1TIiiE2mfES0_IddE", "N::T<int, int>::mf(N::T<double, double>)");
+    testDemangling("3foo3bar", "foo(bar)");
+    testDemangling("3foov", "foo()");
+    testDemangling("NSt3_In4wardE", "std::_In::ward");
+    testDemangling("St5state", "std::state");
 
     fout << "Demangling of String: "
          << TypeInfo::getTypename<String>() << ENDL;

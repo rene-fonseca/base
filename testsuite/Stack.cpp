@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,50 +24,51 @@ private:
 public:
 
   StackApplication(int argc, const char* argv[], const char* env[]) throw()
-    : Application(MESSAGE("Stack"), argc, argv, env) {
+    : Application("Stack", argc, argv, env) {
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
-    fout << MESSAGE("Initializing Stack<String>") << ENDL;
+    fout << "Initializing Stack<String>" << ENDL;
     Stack<String> stack;
     
-    fout << MESSAGE("Size: ") << stack.getSize() << ENDL;
-    fout << MESSAGE("Content: ") << stack << ENDL;
+    fout << "Size: " << stack.getSize() << ENDL;
+    fout << "Content: " << stack << ENDL;
 
-    fout << MESSAGE("Pushing values onto stack") << ENDL;
-    stack.push(MESSAGE("This"));
-    stack.push(MESSAGE("is"));
-    stack.push(MESSAGE("a"));
-    stack.push(MESSAGE("message"));
+    fout << "Pushing values onto stack" << ENDL;
+    stack.push("This");
+    stack.push("is");
+    stack.push("a");
+    stack.push("message");
     
-    fout << MESSAGE("Size: ") << stack.getSize() << ENDL;
-    fout << MESSAGE("Content: ") << stack << ENDL;
+    fout << "Size: " << stack.getSize() << ENDL;
+    fout << "Content: " << stack << ENDL;
 
     while (!stack.isEmpty()) {
-      fout << MESSAGE("Popped value: ") << stack.pop() << ENDL;
+      fout << "Popped value: " << stack.pop() << ENDL;
     }
 
-    fout << MESSAGE("Size: ") << stack.getSize() << ENDL;
-    fout << MESSAGE("Content: ") << stack << ENDL;
+    fout << "Size: " << stack.getSize() << ENDL;
+    fout << "Content: " << stack << ENDL;
 
-    fout << MESSAGE("Pop on empty stack (exception OutOfRange expected)") << ENDL;
+    fout << "Pop on empty stack (exception OutOfRange expected)" << ENDL;
     try {
       stack.pop();
     } catch (OutOfRange& e) {
-      fout << MESSAGE("Exception caught: ") << e << ENDL;
+      fout << "Exception caught: " << e << ENDL;
     }
     
-    fout << MESSAGE("Removing all values") << ENDL;
+    fout << "Removing all values" << ENDL;
     stack.removeAll();
     
-    fout << MESSAGE("Size: ") << stack.getSize() << ENDL;
-    fout << MESSAGE("Content: ") << stack << ENDL;
+    fout << "Size: " << stack.getSize() << ENDL;
+    fout << "Content: " << stack << ENDL;
   }
 };
 

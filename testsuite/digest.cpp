@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -181,7 +181,7 @@ public:
     try {
       type = FileSystem::getType(path);
     } catch (FileSystemException& e) {
-      ferr << MESSAGE("Error: ") << MESSAGE("File or folder does not exist") << ENDL;
+      ferr << "Error: " << "File or folder does not exist" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
@@ -207,21 +207,22 @@ public:
         }
       }
     } else {
-      ferr << MESSAGE("Error: ") << MESSAGE("Invalid filesystem entry") << ENDL;
+      ferr << "Error: " << "Invalid filesystem entry" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
     }
   }
 
   void usage() throw() {
-    fout << MESSAGE("Usage: ") << getFormalName()
-         << MESSAGE(" [ADLER32|CRC32|MD5SUM|SHA1|SHA256|SHA384|SHA512] file") << ENDL;
+    fout << "Usage: " << getFormalName()
+         << " [ADLER32|CRC32|MD5SUM|SHA1|SHA256|SHA384|SHA512] file" << ENDL;
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     Array<String> arguments = getArguments();

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -45,8 +45,11 @@ private:
   String destination;
 public:
   
-  CopyApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("cp"), numberOfArguments, arguments, environment) {
+  CopyApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("cp", numberOfArguments, arguments, environment) {
     command = COMMAND_ERROR;
     force = false;
     progress = false;
@@ -62,16 +65,16 @@ public:
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
       String argument = *enu.next();
-      if (argument == MESSAGE("--help")) {
+      if (argument == "--help") {
         command = COMMAND_HELP;
         return;
-      } else if (argument == MESSAGE("--force")) {
+      } else if (argument == "--force") {
         force = true;
-      } else if (argument == MESSAGE("--progress")) {
+      } else if (argument == "--progress") {
         progress = true;
-      } else if (argument == MESSAGE("--silent")) {
+      } else if (argument == "--silent") {
         silent = true;
-      } else if (argument == MESSAGE("--version")) {
+      } else if (argument == "--version") {
         command = COMMAND_VERSION;
         return;
       } else {
@@ -82,7 +85,7 @@ public:
           destination = argument;
           destinationSpecified = true;
         } else {
-          ferr << MESSAGE("Error: ") << MESSAGE("Invalid argument") << ENDL;
+          ferr << "Error: " << "Invalid argument" << ENDL;
           setExitCode(EXIT_CODE_ERROR);
           return;
         }
@@ -90,19 +93,19 @@ public:
     }
     
     if ((!sourceSpecified) && (!destinationSpecified)) {
-      ferr << MESSAGE("Error: ") << MESSAGE("Source and destination must be specified") << ENDL;
+      ferr << "Error: " << "Source and destination must be specified" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
     
     if (!sourceSpecified) {
-      ferr << MESSAGE("Error: ") << MESSAGE("Source must be specified") << ENDL;
+      ferr << "Error: " << "Source must be specified" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
     
     if (!destinationSpecified) {
-      ferr << MESSAGE("Error: ") << MESSAGE("Destination must be specified") << ENDL;
+      ferr << "Error: " << "Destination must be specified" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
@@ -113,27 +116,28 @@ public:
   }
   
   void version() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
   }
   
   void help() throw() {
     version();
-    fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [options] source destination") << EOL
+    fout << "Usage: " << getFormalName() << " [options] source destination" << EOL
          << EOL
-         << MESSAGE("Options:") << EOL
-         << indent(2) << MESSAGE("--help      this message") << EOL
-         << indent(2) << MESSAGE("--version   dump the version") << EOL
+         << "Options:" << EOL
+         << indent(2) << "--help      this message" << EOL
+         << indent(2) << "--version   dump the version" << EOL
          << EOL
-         << indent(2) << MESSAGE("--force     force copying") << EOL
-         << indent(2) << MESSAGE("--link      make link") << EOL
-         << indent(2) << MESSAGE("--preserve  preserve attributes") << EOL
-         << indent(2) << MESSAGE("--progress  show progress while copying") << EOL
-         << indent(2) << MESSAGE("--recursive copy folders recursively") << EOL
-         << indent(2) << MESSAGE("--silent    do not output") << EOL
+         << indent(2) << "--force     force copying" << EOL
+         << indent(2) << "--link      make link" << EOL
+         << indent(2) << "--preserve  preserve attributes" << EOL
+         << indent(2) << "--progress  show progress while copying" << EOL
+         << indent(2) << "--recursive copy folders recursively" << EOL
+         << indent(2) << "--silent    do not output" << EOL
          << ENDL;
   }
   
@@ -150,9 +154,9 @@ public:
     StringOutputStream stream;
     stream << position << '/' << size << ' '
            << '(' << percent << '%' << ')' << ' '
-           << MESSAGE("rate:") << rate/1024 << MESSAGE("kb/s") << ' ';
+           << "rate:" << rate/1024 << "kb/s" << ' ';
     
-    stream << MESSAGE("remaining:");
+    stream << "remaining:";
     if (remainingTime < 60) {
       stream << remainingTime << 's';
     } else if (remainingTime < 60*60) {
@@ -162,7 +166,7 @@ public:
     }
     stream << ' ';
     
-    stream << MESSAGE("elapsed:");
+    stream << "elapsed:";
     elapsedTime /= 1000000;
     if (elapsedTime < 60) {
       stream << elapsedTime << 's';
@@ -178,19 +182,19 @@ public:
   
   void copy() throw() {
     if (!FileSystem::fileExists(source)) {
-      ferr << MESSAGE("Error: ") << MESSAGE("Source does not exist") << ENDL;
+      ferr << "Error: " << "Source does not exist" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
 
     if (!force && FileSystem::fileExists(destination)) {
-      ferr << MESSAGE("Error: ") << MESSAGE("Destination already exists") << ENDL;
+      ferr << "Error: " << "Destination already exists" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
     
     if (!silent) {
-      fout << MESSAGE("copying: ") << source << MESSAGE(" -> ") << destination << ENDL;
+      fout << "copying: " << source << " -> " << destination << ENDL;
     }
     
     try {
@@ -227,7 +231,10 @@ public:
               }
             }
             reader.seek(position);
-            destinationFile.write(Cast::pointer<const char*>(reader.getBytes()), reader.getSize());
+            destinationFile.write(
+              Cast::pointer<const char*>(reader.getBytes()),
+              reader.getSize()
+            );
             position += reader.getSize();
           }
           
@@ -236,21 +243,21 @@ public:
             fout << setWidth(previousLength) << temp << '\r' << ENDL;
           }
         } catch (FileSystemException& e) {
-          ferr << source << MESSAGE(": ") << e << ENDL; // ignore exception
+          ferr << source << ": " << e << ENDL; // ignore exception
           setExitCode(EXIT_CODE_ERROR);
           return;
         }
       } else if (type & FileSystem::FOLDER) {
-        ferr << MESSAGE("Error: ") << MESSAGE("Folder not supported") << ENDL;
+        ferr << "Error: " << "Folder not supported" << ENDL;
         setExitCode(EXIT_CODE_ERROR);
         return;
       } else { // unknown entry type
-        ferr << MESSAGE("Error: ") << MESSAGE("Unknown entry") << ENDL;
+        ferr << "Error: " << "Unknown entry" << ENDL;
         setExitCode(EXIT_CODE_ERROR);
         return;
       }
     } catch (IOException& e) {
-      ferr << source << MESSAGE(": ") << e << ENDL; // ignore exception
+      ferr << source << ": " << e << ENDL; // ignore exception
       setExitCode(EXIT_CODE_ERROR);
       return;
     }

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -231,7 +231,7 @@ public:
 //          << "name=" << quote(name) << ", "
 //          << "element=" << quote(element) << ", "
 //          << "type=" << type << ", "
-//          << "defaultType=" << defaultType << MESSAGE(", ")
+//          << "defaultType=" << defaultType << ", "
 //          << "enumeration={";
 //     Array<String>::ReadEnumerator enu = enumeration.getReadEnumerator();
 //     while (enu.hasNext()) {
@@ -350,7 +350,7 @@ public:
     WideString wide(value);
     
     StringOutputStream stream;
-    stream << MESSAGE("\"");
+    stream << "\"";
     
     WideString::ReadIterator i = wide.getBeginReadIterator();
     WideString::ReadIterator end = wide.getEndReadIterator();
@@ -359,34 +359,34 @@ public:
       if (*i <= 127) { // DEL
         switch (*i) {
         case '\n':
-          stream << MESSAGE("\\n");
+          stream << "\\n";
           break;
         case '\r':
-          stream << MESSAGE("\\r");
+          stream << "\\r";
           break;
         case '\t':
-          stream << MESSAGE("\\t");
+          stream << "\\t";
           break;
         case '\\':
-          stream << MESSAGE("\\\\");
+          stream << "\\\\";
           break;
         case '"':
-          stream << MESSAGE("\\\"");
+          stream << "\\\"";
           break;
         default:
           if (ASCIITraits::isControl(*i)) {
-            stream << MESSAGE("&#") << *i << MESSAGE(";");
+            stream << "&#" << *i << ";";
           } else {
             stream << static_cast<char>(*i);
           }
         }
       } else {
-        stream << MESSAGE("&#") << *i << MESSAGE(";");
+        stream << "&#" << *i << ";";
       }
       ++i;
     }
     
-    stream << MESSAGE("\"") << FLUSH;
+    stream << "\"" << FLUSH;
     return stream.getString();
   }
 
@@ -415,28 +415,28 @@ public:
 
   void startEntity(const String& name) throw() {
     fout << indent(i)
-         << MESSAGE("startEntity(")
-         << MESSAGE("name=") << quote(name) << ')' << EOL;
+         << "startEntity("
+         << "name=" << quote(name) << ')' << EOL;
     i++;
   }
 
   void endEntity(const String& name) throw() {
     i--;
     fout << indent(i)
-         << MESSAGE("endEntity(")
+         << "endEntity("
          << "name=" << quote(name) << ')' << EOL;
   }
 
   void startCDATA() throw() {
     fout << indent(i)
-         << MESSAGE("startCDATA()") << EOL;
+         << "startCDATA()" << EOL;
     i++;
   }
   
   void endCDATA() throw() {
     i--;
     fout << indent(i)
-         << MESSAGE("endCDATA()") << EOL;
+         << "endCDATA()" << EOL;
   }
   
   void notationDecl(
@@ -475,7 +475,7 @@ public:
          << "name=" << quote(name) << ", "
          << "element=" << quote(element) << ", "
          << "type=" << type << ", "
-         << "defaultType=" << defaultType << MESSAGE(", ")
+         << "defaultType=" << defaultType << ", "
          << "enumeration={";
     Array<String>::ReadEnumerator enu = enumeration.getReadEnumerator();
     while (enu.hasNext()) {
@@ -519,14 +519,14 @@ public:
   void startDocument() throw() {
     i = 0;
     fout << indent(i)
-         << MESSAGE("startDocument()") << EOL;
+         << "startDocument()" << EOL;
     i++;
   }
   
   void endDocument() throw() {
     i--;
     fout << indent(i)
-         << MESSAGE("endDocument()") << EOL;
+         << "endDocument()" << EOL;
   }
   
   void startElement(
@@ -535,7 +535,7 @@ public:
     const String& qName,
     const Attributes& attributes) throw() {
     fout << indent(i)
-         << MESSAGE("startElement(")
+         << "startElement("
          << "namespaceURI=" << namespaceURI << ',' << SP
          << "localName=" << localName << ',' << SP
          << "qName=" << qName << ',' << SP
@@ -688,7 +688,7 @@ public:
          << "name=" << name << ", "
          << "element=" << element << ", "
          << "type=" << type << ", "
-         << "defaultType=" << defaultType << MESSAGE(", ")
+         << "defaultType=" << defaultType << ", "
          << "enumeration={";
     Array<String>::ReadEnumerator enu = enumeration.getReadEnumerator();
     while (enu.hasNext()) {
@@ -711,24 +711,23 @@ public:
   void internalEntityDecl(
     const String& name,
     const String& text) throw() {
-    fout << MESSAGE("<!ENTITY ") << name << ' '
-         << '"' << text << '"' << '>' << EOL;
+    fout << "<!ENTITY " << name << ' ' << '"' << text << '"' << '>' << EOL;
   }
   
   void externalEntityDecl(
     const String& name,
     const String& publicId,
     const String& systemId) throw() {
-    fout << MESSAGE("<!ENTITY ") << name << ' ';
+    fout << "<!ENTITY " << name << ' ';
     if (publicId.isProper() && systemId.isProper()) {
-      fout << MESSAGE("PUBLIC")
+      fout << "PUBLIC"
            << ' ' << '"' << publicId << '"'
            << ' ' << '"' << systemId << '"';
     } else if (publicId.isProper()) {
-      fout << MESSAGE("PUBLIC")
+      fout << "PUBLIC"
            << ' ' << '"' << publicId << '"';
     } else {
-      fout << MESSAGE("SYSTEM")
+      fout << "SYSTEM"
            << ' ' << '"' << systemId << '"';      
     }
     fout << '>' << EOL;
@@ -736,10 +735,10 @@ public:
   
   void startDocument() throw() {
     fout << "<?xml"
-         << ' ' << MESSAGE("version") << '=' << "\"" << "1.0" << "\""
-         << ' ' << MESSAGE("encoding") << '=' << "\"" << "UTF-8" << "\"";
+         << ' ' << "version" << '=' << "\"" << "1.0" << "\""
+         << ' ' << "encoding" << '=' << "\"" << "UTF-8" << "\"";
     if (reader->isStandalone()) {
-      fout << ' ' << MESSAGE("standalone=\"yes\"");
+      fout << ' ' << "standalone=\"yes\"";
     }
     fout << "?>" << EOL;
   }
@@ -752,7 +751,7 @@ public:
     const String& localName,
     const String& qName,
     const Attributes& attributes) throw() {
-    fout << MESSAGE("<") << qName;
+    fout << "<" << qName;
     unsigned int size = attributes.getSize();
     for (unsigned int index = 0; index < size; index++) {
       Attributes::Attribute attribute = attributes[index];
@@ -1121,7 +1120,7 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[]) throw()
-    : Application(MESSAGE("sax"), numberOfArguments, arguments, environment) {
+    : Application("sax", numberOfArguments, arguments, environment) {
     command = COMMAND_BUILD_DOM;
     debug = false;
   }
@@ -1138,22 +1137,22 @@ public:
   
   void error(const SAXParseException& exception) throw(SAXException) {
     fout << FLUSH;
-    ferr << MESSAGE("Error: ") << exception.getMessage()
-         << MESSAGE(" at ")
+    ferr << "Error: " << exception.getMessage()
+         << " at "
          << SAXApplication::getLocationString(exception) << ENDL;
   }
   
   void fatalError(const SAXParseException& exception) throw(SAXException) {
     fout << FLUSH;
-    ferr << MESSAGE("Fatal error: ") << exception.getMessage()
-         << MESSAGE(" at ")
+    ferr << "Fatal error: " << exception.getMessage()
+         << " at "
          << SAXApplication::getLocationString(exception) << ENDL;
   }
 
   void warning(const SAXParseException& exception) throw(SAXException) {
     fout << FLUSH;
-    ferr << MESSAGE("Warning: ") << exception.getMessage()
-         << MESSAGE(" at ")
+    ferr << "Warning: " << exception.getMessage()
+         << " at "
          << SAXApplication::getLocationString(exception) << ENDL;
   }
 
@@ -1211,16 +1210,16 @@ public:
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ")
+    fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     Array<String> arguments = getArguments();
     if (arguments.getSize() != 1) {
-      fout << getFormalName() << MESSAGE(" uri") << ENDL;
+      fout << getFormalName() << " uri" << ENDL;
       return; // stop
     }
     
@@ -1281,22 +1280,22 @@ public:
           (beforeTimes.system + beforeTimes.user);
         elapsedTime.roundToMicrosecond();
         
-        fout << MESSAGE("Elapsed real time (H:M:S.microseconds): ")
+        fout << "Elapsed real time (H:M:S.microseconds): "
              << timer << EOL
-             << MESSAGE("Elapsed processing time (H:M:S.microseconds): ")
+             << "Elapsed processing time (H:M:S.microseconds): "
              << elapsedTime.getHours() << ':'
              << elapsedTime.getNMinutes() << ':'
              << elapsedTime.getNSeconds() << '.'
              << setWidth(6) << ZEROPAD << elapsedTime.getNMicroseconds() << EOL
-             << MESSAGE("Elements: ")
+             << "Elements: "
              << counter->getNumberOfElements() << EOL
-             << MESSAGE("Attributes: ")
+             << "Attributes: "
              << counter->getNumberOfAttributes() << EOL
-             << MESSAGE("Characters: ")
+             << "Characters: "
              << counter->getNumberOfCharacters() << EOL
-             << MESSAGE("Ignorable whitespaces: ")
+             << "Ignorable whitespaces: "
              << counter->getNumberOfIgnorableWhitespaces() << EOL
-             << MESSAGE("Processing instructions: ")
+             << "Processing instructions: "
              << counter->getNumberOfProcessingInstructions() << EOL
              << ENDL;
         delete counter;
@@ -1323,7 +1322,7 @@ public:
           document = getBuiltinDocument();
         }
 
-        fout << MESSAGE("Saving document...") << ENDL;
+        fout << "Saving document..." << ENDL;
         document.save("sax.xml");
         
         DOMToSAX* parser = new DOMToSAX();

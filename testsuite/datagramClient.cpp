@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,11 +35,11 @@ public:
   }
 
   void client(String host, String service) {
-    fout << MESSAGE("Server: ") << host << ENDL;
+    fout << "Server: " << host << ENDL;
 
     InetAddress address; // the address of the remote host
     {
-      fout << MESSAGE("Server addresses:") << ENDL;
+      fout << "Server addresses:" << ENDL;
       List<InetAddress> addresses = InetAddress::getAddressesByName(host);
       List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
       unsigned int index = 0;
@@ -47,9 +47,9 @@ public:
         const InetAddress* temp = enu.next();
         if (index == 0) { // use the first address
           address = *temp;
-          fout << indent(2) << MESSAGE("address ") << index++ << MESSAGE(": ") << *temp << MESSAGE(" (USING THIS)") << ENDL;
+          fout << indent(2) << "address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
         } else {
-          fout << indent(2) << MESSAGE("address ") << index++ << MESSAGE(": ") << *temp << ENDL;
+          fout << indent(2) << "address " << index++ << ": " << *temp << ENDL;
         }
       }
     }
@@ -65,25 +65,25 @@ public:
       try {
         InetService s(service);
         port = s.getPort();
-        fout << MESSAGE("Service: name=") << s.getName()
-             << indent(2) << MESSAGE("port=") << s.getPort()
-             << indent(2) << MESSAGE("protocol=") << s.getProtocol() << ENDL;
+        fout << "Service: name=" << s.getName()
+             << indent(2) << "port=" << s.getPort()
+             << indent(2) << "protocol=" << s.getProtocol() << ENDL;
       } catch (ServiceNotFound& e) {
-        fout << MESSAGE("Warning: ") << e.getMessage() << ENDL;
-        fout << MESSAGE("Service: port=") << port << ENDL;
+        fout << "Warning: " << e.getMessage() << ENDL;
+        fout << "Service: port=" << port << ENDL;
       }
     }
 
-    fout << MESSAGE("Initializing socket...") << ENDL;
+    fout << "Initializing socket..." << ENDL;
     Socket socket;
 
-    fout << MESSAGE("Creating datagram socket...") << ENDL;
+    fout << "Creating datagram socket..." << ENDL;
     socket.create(Socket::DATAGRAM);
 
-    fout << MESSAGE("Requesting permission to send broadcast messages...") << ENDL;
+    fout << "Requesting permission to send broadcast messages..." << ENDL;
     socket.setBroadcast(true);
 
-    fout << MESSAGE("Sending datagram...") << ENDL;
+    fout << "Sending datagram..." << ENDL;
     char sendBuffer[] = "DATAGRAM FROM CLIENT";
     unsigned int bytesSent = socket.sendTo(sendBuffer, sizeof(sendBuffer), address, port);
 
@@ -91,20 +91,21 @@ public:
     InetAddress remoteAddress;
     unsigned short remotePort;
 
-    fout << MESSAGE("Waiting for datagram...") << ENDL;
+    fout << "Waiting for datagram..." << ENDL;
     unsigned int bytesReceived = socket.receiveFrom(receiveBuffer, sizeof(receiveBuffer), remoteAddress, remotePort);
-    fout << MESSAGE("Datagram of ") << bytesReceived << MESSAGE(" bytes received from ") << InetEndPoint(remoteAddress, remotePort) << ENDL;
-    fout << MESSAGE(">: ") << receiveBuffer << ENDL;
+    fout << "Datagram of " << bytesReceived << " bytes received from " << InetEndPoint(remoteAddress, remotePort) << ENDL;
+    fout << ">: " << receiveBuffer << ENDL;
 
-    fout << MESSAGE("Closing socket...") << ENDL;
+    fout << "Closing socket..." << ENDL;
     socket.close();
   }
 
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     String host = InetAddress::getLocalHost(); // default host
@@ -123,7 +124,7 @@ public:
       service = arguments[2]; // the service
       break;
     default:
-      fout << MESSAGE("datagramClient [host] [service]") << ENDL;
+      fout << "datagramClient [host] [service]" << ENDL;
       return;
     }
 

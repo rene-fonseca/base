@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -42,8 +42,11 @@ private:
   Array<String> paths;
 public:
   
-  FileTypeApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("filetype"), numberOfArguments, arguments, environment) {
+  FileTypeApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("filetype", numberOfArguments, arguments, environment) {
     command = COMMAND_ERROR;
     force = false;
     followLink = false;
@@ -55,16 +58,16 @@ public:
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
       String argument = *enu.next();
-      if (argument == MESSAGE("--help")) {
+      if (argument == "--help") {
         command = COMMAND_HELP;
         return;
-      } else if (argument == MESSAGE("--follow")) {
+      } else if (argument == "--follow") {
         followLink = true;
-      } else if (argument == MESSAGE("--force")) {
+      } else if (argument == "--force") {
         force = true;
-      } else if (argument == MESSAGE("--recursive")) {
+      } else if (argument == "--recursive") {
         recursive = true;
-      } else if (argument == MESSAGE("--version")) {
+      } else if (argument == "--version") {
         command = COMMAND_VERSION;
         return;
       } else {
@@ -73,7 +76,7 @@ public:
     }
     
     if (paths.getSize() == 0) {
-      ferr << MESSAGE("Error: ") << MESSAGE("Path(s) must be specified") << ENDL;
+      ferr << "Error: " << "Path(s) must be specified" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }   
@@ -84,23 +87,24 @@ public:
   }
   
   void version() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
   }
   
   void help() throw() {
     version();
-    fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [options] paths...") << EOL
+    fout << "Usage: " << getFormalName() << " [options] paths..." << EOL
          << EOL
-         << MESSAGE("--help      this message") << EOL
-         << MESSAGE("--version   dump the version") << EOL
+         << "--help      this message" << EOL
+         << "--version   dump the version" << EOL
          << EOL
-         << MESSAGE("--follow    follow links") << EOL
-         << MESSAGE("--force     continue on errors") << EOL
-         << MESSAGE("--recursive traverse folders recursively") << EOL
+         << "--follow    follow links" << EOL
+         << "--force     continue on errors" << EOL
+         << "--recursive traverse folders recursively" << EOL
          << ENDL;
   }
 
@@ -113,37 +117,37 @@ public:
     
     fout << path << ':' << ' ';
     if (type & FileSystem::BLOCK) {
-      fout << MESSAGE("BLOCK");
+      fout << "BLOCK";
     }
     if (type & FileSystem::CHARACTER) {
-      fout << MESSAGE("CHARACTER");
+      fout << "CHARACTER";
     }
     if (type & FileSystem::DEVICE) {
-      fout << MESSAGE("DEVICE");
+      fout << "DEVICE";
     }
     if (type & FileSystem::FIFO) {
-      fout << MESSAGE("FIFO");
+      fout << "FIFO";
     }
     if (type & FileSystem::FOLDER) {
-      fout << MESSAGE("FOLDER");
+      fout << "FOLDER";
     }
     if (type & FileSystem::LINK) {
-      fout << MESSAGE("LINK");
+      fout << "LINK";
     }
     if (type & FileSystem::MESSAGE_QUEUE) {
-      fout << MESSAGE("MESSAGE QUEUE");
+      fout << "MESSAGE QUEUE";
     }
     if (type & FileSystem::REGULAR) {
-      fout << MESSAGE("REGULAR");
+      fout << "REGULAR";
     }
     if (type & FileSystem::SOCKET) {
-      fout << MESSAGE("SOCKET");
+      fout << "SOCKET";
     }
     if (type & FileSystem::SEMPAHORE) {
-      fout << MESSAGE("SEMAPHORE");
+      fout << "SEMAPHORE";
     }
     if (type & FileSystem::SHARED_MEMORY) {
-      fout << MESSAGE("SHARED MEMORY");
+      fout << "SHARED MEMORY";
     }
     fout << ENDL;
   }
@@ -154,7 +158,7 @@ public:
     Array<String>::ReadEnumerator enu = entries.getReadEnumerator();
     while (enu.hasNext()) {
       const String entry = *enu.next();
-      if ((entry == MESSAGE(".")) || (entry == MESSAGE(".."))) {
+      if ((entry == ".") || (entry == "..")) {
         continue;
       }
       
@@ -168,11 +172,11 @@ public:
         }
       } catch (FileSystemException& e) {
         if (force) {
-          fout << fullPath << ':' << ' ' << MESSAGE("unable to get examine") << ENDL;
+          fout << fullPath << ':' << ' ' << "unable to get examine" << ENDL;
           continue;
         }
         
-        ferr << entry << MESSAGE(": ") << e << ENDL;
+        ferr << entry << ": " << e << ENDL;
         setExitCode(EXIT_CODE_ERROR);
         throw;
       }
@@ -187,10 +191,10 @@ public:
       
       if (!FileSystem::entryExists(path)) {
         if (force) {
-          fout << path << ':' << ' ' << MESSAGE("does not exist") << ENDL;
+          fout << path << ':' << ' ' << "does not exist" << ENDL;
           continue;
         }
-        ferr << MESSAGE("Error: ") << MESSAGE("Entry does not exist: ") << path << ENDL;
+        ferr << "Error: " << "Entry does not exist: " << path << ENDL;
         setExitCode(EXIT_CODE_ERROR);
         return;
       }
@@ -203,10 +207,10 @@ public:
         }
       } catch (FileSystemException& e) {
         if (force) {
-          fout << path << ':' << ' ' << MESSAGE("unable to examine") << ENDL;
+          fout << path << ':' << ' ' << "unable to examine" << ENDL;
           continue;
         }
-        ferr << path << MESSAGE(": ") << e << ENDL; // ignore exception
+        ferr << path << ": " << e << ENDL; // ignore exception
         setExitCode(EXIT_CODE_ERROR);
         return;
       }

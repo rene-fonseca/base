@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,14 +17,17 @@
 
 using namespace dk::sdu::mip::base;
 
-MyLinkerModule::MyLinkerModule(const String& identity, const String& name, const String& version) throw()
+MyLinkerModule::MyLinkerModule(
+  const String& identity,
+  const String& name,
+  const String& version) throw()
   : LinkerModule(identity, name, version) {
-  fout << MESSAGE("Initializing MyLinkerModule...") << ENDL;
+  fout << "Initializing MyLinkerModule..." << ENDL;
 }
 
 void MyLinkerModule::myFunction() throw() {
   for (unsigned int count = 0; count < 16; ++count) {
-    fout << MESSAGE("Written by MyLinkerModule: ") << count << ENDL;
+    fout << "Written by MyLinkerModule: " << count << ENDL;
     Thread::sleep(1);
   }
 }

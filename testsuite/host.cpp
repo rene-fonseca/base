@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,23 +32,26 @@ private:
   Array<String> hosts;
 public:
   
-  HostApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("host"), numberOfArguments, arguments, environment) {
+  HostApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("host", numberOfArguments, arguments, environment) {
   }
   
   void version() throw() {
-    fout << getFormalName() << MESSAGE(" version ")
+    fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
   }
 
   void help() throw() {
     version();
-    fout << MESSAGE("Usage: ") << getFormalName()
-         << MESSAGE(" [--help] [--version] host(s)") << ENDL;
+    fout << "Usage: " << getFormalName()
+         << " [--help] [--version] host(s)" << ENDL;
   }
   
   void host() throw() {
@@ -62,7 +65,7 @@ public:
         try {
           address = InetAddress::getAddressByName(host);
         } catch (HostNotFound& e) {
-          ferr << MESSAGE("Error: ") << MESSAGE("Unable to resolve host") << ENDL;
+          ferr << "Error: " << "Unable to resolve host" << ENDL;
           setExitCode(EXIT_CODE_ERROR);
           return;
         }
@@ -113,7 +116,7 @@ public:
       break;
     case COMMAND_HOST:
       if (hosts.getSize() == 0) {
-        ferr << MESSAGE("Error: ") << MESSAGE("Host(s) must be specified") << ENDL;
+        ferr << "Error: " << "Host(s) must be specified" << ENDL;
         setExitCode(EXIT_CODE_ERROR);
         return;
       }

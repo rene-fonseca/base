@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,24 +28,24 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[]) throw()
-    : Application(MESSAGE("validate"),
+    : Application("validate",
       numberOfArguments,
       arguments,
       environment) {
   }
 
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ")
+    fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     Array<String> arguments = getArguments();
   
     if (arguments.getSize() != 1) {
-      fout << getFormalName() << MESSAGE(" uri") << ENDL;
+      fout << getFormalName() << " uri" << ENDL;
       return; // stop
     }
     
@@ -60,15 +60,15 @@ public:
     try {
       Document document = dom.createFromURI(sourceURI, mode);
     } catch (DOMException& e) {
-      fout << MESSAGE("Error: ") << e << ENDL;
+      fout << "Error: " << e << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
 
     if (true) {
-      fout << MESSAGE("Document is valid") << ENDL;
+      fout << "Document is valid" << ENDL;
     } else {
-      fout << MESSAGE("Document is well-formed") << ENDL;
+      fout << "Document is well-formed" << ENDL;
     }
   }
 };

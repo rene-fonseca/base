@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,16 +30,19 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ClientApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("client"), numberOfArguments, arguments, environment) {
+  ClientApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("client", numberOfArguments, arguments, environment) {
   }
 
   void client(String host, String service) {
-    fout << MESSAGE("Server: ") << host << ENDL;
+    fout << "Server: " << host << ENDL;
 
     InetAddress address; // the address of the remote host
     {
-      fout << MESSAGE("Server addresses:") << ENDL;
+      fout << "Server addresses:" << ENDL;
       List<InetAddress> addresses = InetAddress::getAddressesByName(host);
       List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
       unsigned int index = 0;
@@ -47,64 +50,65 @@ public:
         const InetAddress* temp = enu.next();
         if (index == 0) { // use the first address
           address = *temp;
-          fout << MESSAGE("  address ") << index++ << MESSAGE(": ") << *temp << MESSAGE(" (USING THIS)") << ENDL;
+          fout << "  address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
         } else {
-          fout << MESSAGE("  address ") << index++ << MESSAGE(": ") << *temp << ENDL;
+          fout << "  address " << index++ << ": " << *temp << ENDL;
         }
       }
     }
 
     InetEndPoint endPoint(address, service);
-    fout << MESSAGE("End point: address=") << endPoint.getAddress() << MESSAGE(" port=") << endPoint.getPort() << ENDL;
+    fout << "End point: address=" << endPoint.getAddress() << " port=" << endPoint.getPort() << ENDL;
 
-    fout << MESSAGE("Initializing socket...") << ENDL;
+    fout << "Initializing socket..." << ENDL;
     StreamSocket socket;
 
-    fout << MESSAGE("Connecting socket...") << ENDL;
+    fout << "Connecting socket..." << ENDL;
     socket.connect(endPoint.getAddress(), endPoint.getPort());
 
-    fout << MESSAGE("socket: remote address=") << socket.getAddress() << MESSAGE(" remote port=") << socket.getPort() << ENDL;
+    fout << "socket: remote address=" << socket.getAddress() << " remote port=" << socket.getPort() << ENDL;
 
-    fout << MESSAGE("Talking with server...") << ENDL;
+    fout << "Talking with server..." << ENDL;
 
     {
       FormatOutputStream outstream(socket); // must be destroyed before socket is closed
       FormatInputStream instream(socket);
 
-      fout << MESSAGE("Press enter to continue") << ENDL;
+      fout << "Press enter to continue" << ENDL;
       fin.wait();
       fin.skip(1);
 
-      fout << MESSAGE("Sending request") << ENDL;
-      outstream << MESSAGE("Hi, I'm the client") << ENDL;
+      fout << "Sending request" << ENDL;
+      outstream << "Hi, I'm the client" << ENDL;
 
-      fout << MESSAGE("Waiting for response") << FLUSH;
+      fout << "Waiting for response" << FLUSH;
       while (!instream.wait(1000000)) {
         fout << '.' << FLUSH;
       }
       fout << ENDL;
 
-      fout << MESSAGE("Processing response") << ENDL;
-      fout << MESSAGE(">: ");
+      fout << "Processing response" << ENDL;
+      fout << ">: ";
       while (instream.available()) { // read response
         char ch;
         instream >> ch;
         fout << ch;
       }
 
-      fout << MESSAGE("Sending termination request") << ENDL;
-      outstream << MESSAGE("Thank you and have a nice day") << ENDL;
+      fout << "Sending termination request" << ENDL;
+      outstream << "Thank you and have a nice day" << ENDL;
     }
 
-    fout << MESSAGE("Closing socket") << ENDL;
+    fout << "Closing socket" << ENDL;
     socket.close();
   }
 
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     String host = InetAddress::getLocalHost(); // default host
@@ -124,7 +128,7 @@ public:
       service = arguments[1]; // the service
       break;
     default:
-      fout << MESSAGE("client [host] [service]") << ENDL;
+      fout << "client [host] [service]" << ENDL;
       return;
     }
     client(host, service);

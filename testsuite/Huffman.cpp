@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,8 +37,11 @@ public:
     COMMAND_RANDOM
   };
   
-  HuffmanApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("Huffman"), numberOfArguments, arguments, environment) {
+  HuffmanApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("Huffman", numberOfArguments, arguments, environment) {
   }
 
   void compress(const String& source, const String& destination) throw(IOException) {
@@ -86,10 +89,11 @@ public:
 
   void simple(const String& destination) throw(IOException) {
     StringOutputStream stream;
-    stream << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-           << MESSAGE("The Base Framework (Test Suite)") << EOL
-           << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-           << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    stream << getFormalName() << " version "
+           << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+           << "The Base Framework (Test Suite)" << EOL
+           << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+           << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
            << FLUSH;
     String message = stream.getString();
     FileOutputStream fos(destination, File::CREATE|File::TRUNCATE);
@@ -98,10 +102,11 @@ public:
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
 
     Command command = COMMAND_ERROR;
@@ -138,18 +143,18 @@ public:
     try {
       switch (command) {
       case COMMAND_ERROR:
-        ferr << MESSAGE("Error: Invalid argument(s).") << EOL
-             << MESSAGE("For help run: ") << getFormalName() << MESSAGE(" --help") << EOL
+        ferr << "Error: Invalid argument(s)." << EOL
+             << "For help run: " << getFormalName() << " --help" << EOL
              << ENDL;
         setExitCode(EXIT_CODE_ERROR);
         break;
       case COMMAND_HELP:
-        fout << MESSAGE("Options") << EOL
-             << MESSAGE("  --compress source destination") << EOL
-             << MESSAGE("  --uncompress source destination") << EOL
-             << MESSAGE("  --simple destination") << EOL
-             << MESSAGE("  --random destination") << EOL
-             << MESSAGE("  --help") << EOL
+        fout << "Options" << EOL
+             << "  --compress source destination" << EOL
+             << "  --uncompress source destination" << EOL
+             << "  --simple destination" << EOL
+             << "  --random destination" << EOL
+             << "  --help" << EOL
              << ENDL;
         break;
       case COMMAND_SIMPLE:

@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,44 +26,45 @@ private:
 public:
 
   QueueApplication(int argc, const char* argv[], const char* env[]) throw()
-    : Application(MESSAGE("Queue"), argc, argv, env) {
+    : Application("Queue", argc, argv, env) {
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
 
-    fout << MESSAGE("Initializing queue") << ENDL;
+    fout << "Initializing queue" << ENDL;
 
     Queue<int> qi;
 
-    fout << MESSAGE("Pushing values (1, 2, 3, 4, and 5)") << ENDL;
+    fout << "Pushing values (1, 2, 3, 4, and 5)" << ENDL;
     qi.push(1);
     qi.push(2);
     qi.push(3);
     qi.push(4);
     qi.push(5);
 
-    fout << MESSAGE("getSize() (5): ") << qi.getSize() << ENDL;
-    fout << MESSAGE("isEmpty() (false): ") << qi.isEmpty() << ENDL;
+    fout << "getSize() (5): " << qi.getSize() << ENDL;
+    fout << "isEmpty() (false): " << qi.isEmpty() << ENDL;
 
     try {
-      fout << MESSAGE("pop(): ") << qi.pop() << ENDL;
-      fout << MESSAGE("pop(): ") << qi.pop() << ENDL;
-      fout << MESSAGE("pop(): ") << qi.pop() << ENDL;
-      fout << MESSAGE("pop(): ") << qi.pop() << ENDL;
-      fout << MESSAGE("pop(): ") << qi.pop() << ENDL;
-      fout << MESSAGE("pop(): ") << qi.pop() << ENDL;
+      fout << "pop(): " << qi.pop() << ENDL;
+      fout << "pop(): " << qi.pop() << ENDL;
+      fout << "pop(): " << qi.pop() << ENDL;
+      fout << "pop(): " << qi.pop() << ENDL;
+      fout << "pop(): " << qi.pop() << ENDL;
+      fout << "pop(): " << qi.pop() << ENDL;
     } catch (Exception& e) {
-      ferr << TypeInfo::getTypename(e) << MESSAGE(": ") << e.getMessage() << ENDL;
+      ferr << TypeInfo::getTypename(e) << ": " << e.getMessage() << ENDL;
     }
-    fout << MESSAGE("InvalidNode exception is expected") << ENDL;
+    fout << "InvalidNode exception is expected" << ENDL;
 
-    fout << MESSAGE("getSize() (0): ") << qi.getSize() << ENDL;
-    fout << MESSAGE("isEmpty() (true): ") << qi.isEmpty() << ENDL;
+    fout << "getSize() (0): " << qi.getSize() << ENDL;
+    fout << "isEmpty() (true): " << qi.isEmpty() << ENDL;
   }
 };
 

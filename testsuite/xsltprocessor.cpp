@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,24 +33,24 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[]) throw()
-    : Application(MESSAGE("xsltprocessor"),
+    : Application("xsltprocessor",
       numberOfArguments,
       arguments,
       environment) {
   }
 
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ")
+    fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     Array<String> arguments = getArguments();
   
     if (arguments.getSize() != 3) {
-      fout << getFormalName() << MESSAGE(" source destination") << ENDL;
+      fout << getFormalName() << " source destination" << ENDL;
       return; // stop
     }
 
@@ -59,7 +59,7 @@ public:
     
     Allocator<char> buffer;
     {
-       fout << MESSAGE("Reading XML file into buffer...") << ENDL;
+       fout << "Reading XML file into buffer..." << ENDL;
        File file(sourceName, File::READ, File::EXCLUSIVE);
        buffer.setSize(file.getSize());
        file.read(buffer.getElements(), file.getSize());
@@ -67,28 +67,28 @@ public:
 
     DOMImplementation dom;
     
-    fout << MESSAGE("Reading document") << ENDL;
+    fout << "Reading document" << ENDL;
     Document source = dom.createFromURI(sourceName);
     source.save(sourceName + ".saved");
     
-    fout << MESSAGE("Reading stylesheet...") << ENDL;
+    fout << "Reading stylesheet..." << ENDL;
     Document xslDocument = dom.createFromURI(destinationName);
     xslDocument.save(destinationName + ".saved");
     
     Stylesheet stylesheet(xslDocument);
 
-    fout << MESSAGE("Stylesheet") << EOL
-         << indent(2) << MESSAGE("output method: ")
+    fout << "Stylesheet" << EOL
+         << indent(2) << "output method: "
          << stylesheet.getOutputMethod() << EOL
-         << indent(2) << MESSAGE("namespace: ")
+         << indent(2) << "namespace: "
          << stylesheet.getNamespace() << EOL
-         << indent(2) << MESSAGE("version: ")
+         << indent(2) << "version: "
          << stylesheet.getVersion() << EOL
-         << indent(2) << MESSAGE("encoding: ")
+         << indent(2) << "encoding: "
          << stylesheet.getEncoding() << EOL
          << ENDL;
 
-//     fout << MESSAGE("Excluded prefixes: ")
+//     fout << "Excluded prefixes: "
 //          << stylesheet.getExcludedPrefixes() << ENDL;
     
     Transformer transformer;
@@ -98,10 +98,10 @@ public:
     );
     transformer.setStylesheet(stylesheet);
     
-    fout << MESSAGE("Transforming document...") << ENDL;
+    fout << "Transforming document..." << ENDL;
     Document result = transformer.transform(source);
     
-    fout << MESSAGE("Saving result document...") << ENDL;
+    fout << "Saving result document..." << ENDL;
     transformer.save(arguments[2], result);
   }
 };

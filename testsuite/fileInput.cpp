@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,8 +34,11 @@ private:
   static const unsigned int BLOCK_SIZE = 4096 * 4;
 public:
   
-  FileInputApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("fileInput"), numberOfArguments, arguments, environment) {
+  FileInputApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("fileInput", numberOfArguments, arguments, environment) {
   }
 
   class Job {
@@ -57,9 +60,9 @@ public:
     checksum.push(Cast::pointer<const uint8*>(string.getElements()), string.getLength());
     checksum.pushEnd();
 
-    fout << MESSAGE("Total number of bytes: ") << checksum.getTotalSize() << EOL
-         << MESSAGE("Original message: ") << string << EOL
-         << MESSAGE("MD5 Message digest (hex): ") << checksum.getValue() << EOL
+    fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
+         << "Original message: " << string << EOL
+         << "MD5 Message digest (hex): " << checksum.getValue() << EOL
          << ENDL;
   }
 
@@ -68,9 +71,9 @@ public:
     checksum.push(Cast::pointer<const uint8*>(string.getElements()), string.getLength());
     checksum.pushEnd();
 
-    fout << MESSAGE("Total number of bytes: ") << checksum.getTotalSize() << EOL
-         << MESSAGE("Original message: ") << string << EOL
-         << MESSAGE("SHA-1 Message digest (hex): ") << checksum.getValue() << EOL
+    fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
+         << "Original message: " << string << EOL
+         << "SHA-1 Message digest (hex): " << checksum.getValue() << EOL
          << ENDL;
   }
   
@@ -79,9 +82,9 @@ public:
     checksum.push(Cast::pointer<const uint8*>(string.getElements()), string.getLength());
     checksum.pushEnd();
 
-    fout << MESSAGE("Total number of bytes: ") << checksum.getTotalSize() << EOL
-         << MESSAGE("Original message: ") << string << EOL
-         << MESSAGE("SHA-256 Message digest (hex): ") << checksum.getValue() << EOL
+    fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
+         << "Original message: " << string << EOL
+         << "SHA-256 Message digest (hex): " << checksum.getValue() << EOL
          << ENDL;
   }
 
@@ -90,9 +93,9 @@ public:
     checksum.push(Cast::pointer<const uint8*>(string.getElements()), string.getLength());
     checksum.pushEnd();
 
-    fout << MESSAGE("Total number of bytes: ") << checksum.getTotalSize() << EOL
-         << MESSAGE("Original message: ") << string << EOL
-         << MESSAGE("SHA-384 Message digest (hex): ") << checksum.getValue() << EOL
+    fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
+         << "Original message: " << string << EOL
+         << "SHA-384 Message digest (hex): " << checksum.getValue() << EOL
          << ENDL;
   }
   
@@ -101,9 +104,9 @@ public:
     checksum.push(Cast::pointer<const uint8*>(string.getElements()), string.getLength());
     checksum.pushEnd();
 
-    fout << MESSAGE("Total number of bytes: ") << checksum.getTotalSize() << EOL
-         << MESSAGE("Original message: ") << string << EOL
-         << MESSAGE("SHA-512 Message digest (hex): ") << checksum.getValue() << EOL
+    fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
+         << "Original message: " << string << EOL
+         << "SHA-512 Message digest (hex): " << checksum.getValue() << EOL
          << ENDL;
   }
 
@@ -133,7 +136,7 @@ public:
   }
 
   void jobMD5Sum(const String& filePath) {
-    fout << MESSAGE("Calculating MD5 checksum");
+    fout << "Calculating MD5 checksum";
     FileInputStream file(filePath, 0);
 
     uint8 buffer[BLOCK_SIZE];
@@ -146,13 +149,13 @@ public:
     sum.pushEnd();
     fout << ENDL;
 
-    fout << MESSAGE("Total number of bytes: ") << sum.getTotalSize() << EOL
-         << MESSAGE("Message digest (hex): ") << sum.getValue() << EOL
-         << MESSAGE("Message digest (Base64): ") << sum.getBase64() << ENDL;
+    fout << "Total number of bytes: " << sum.getTotalSize() << EOL
+         << "Message digest (hex): " << sum.getValue() << EOL
+         << "Message digest (Base64): " << sum.getBase64() << ENDL;
   }
 
   void jobSHA1(const String& filePath) {
-    fout << MESSAGE("Calculating SHA-1 message digest...");
+    fout << "Calculating SHA-1 message digest...";
     FileInputStream file(filePath, 0);
 
     uint8 buffer[BLOCK_SIZE];
@@ -165,13 +168,13 @@ public:
     sum.pushEnd();
     fout << ENDL;
 
-    fout << MESSAGE("Total number of bytes: ") << sum.getTotalSize() << EOL
-         << MESSAGE("Message digest (hex): ") << sum.getValue() << EOL
-         << MESSAGE("Message digest (Base64): ") << sum.getBase64() << ENDL;
+    fout << "Total number of bytes: " << sum.getTotalSize() << EOL
+         << "Message digest (hex): " << sum.getValue() << EOL
+         << "Message digest (Base64): " << sum.getBase64() << ENDL;
   }
   
   void jobSHA256(const String& filePath) {
-    fout << MESSAGE("Calculating SHA-256 message digest...");
+    fout << "Calculating SHA-256 message digest...";
     FileInputStream file(filePath, 0);
 
     uint8 buffer[BLOCK_SIZE];
@@ -184,13 +187,13 @@ public:
     sum.pushEnd();
     fout << ENDL;
     
-    fout << MESSAGE("Total number of bytes: ") << sum.getTotalSize() << EOL
-         << MESSAGE("Message digest (hex): ") << sum.getValue() << EOL
-         << MESSAGE("Message digest (Base64): ") << sum.getBase64() << ENDL;
+    fout << "Total number of bytes: " << sum.getTotalSize() << EOL
+         << "Message digest (hex): " << sum.getValue() << EOL
+         << "Message digest (Base64): " << sum.getBase64() << ENDL;
   }
   
   void jobSHA384(const String& filePath) {
-    fout << MESSAGE("Calculating SHA-384 message digest...");
+    fout << "Calculating SHA-384 message digest...";
     FileInputStream file(filePath, 0);
 
     uint8 buffer[BLOCK_SIZE];
@@ -203,13 +206,13 @@ public:
     sum.pushEnd();
     fout << ENDL;
     
-    fout << MESSAGE("Total number of bytes: ") << sum.getTotalSize() << EOL
-         << MESSAGE("Message digest (hex): ") << sum.getValue() << EOL
-         << MESSAGE("Message digest (Base64): ") << sum.getBase64() << ENDL;
+    fout << "Total number of bytes: " << sum.getTotalSize() << EOL
+         << "Message digest (hex): " << sum.getValue() << EOL
+         << "Message digest (Base64): " << sum.getBase64() << ENDL;
   }
 
   void jobSHA512(const String& filePath) {
-    fout << MESSAGE("Calculating SHA-512 message digest...");
+    fout << "Calculating SHA-512 message digest...";
     FileInputStream file(filePath, 0);
 
     uint8 buffer[BLOCK_SIZE];
@@ -222,13 +225,13 @@ public:
     sum.pushEnd();
     fout << ENDL;
     
-    fout << MESSAGE("Total number of bytes: ") << sum.getTotalSize() << EOL
-         << MESSAGE("Message digest (hex): ") << sum.getValue() << EOL
-         << MESSAGE("Message digest (Base64): ") << sum.getBase64() << ENDL;
+    fout << "Total number of bytes: " << sum.getTotalSize() << EOL
+         << "Message digest (hex): " << sum.getValue() << EOL
+         << "Message digest (Base64): " << sum.getBase64() << ENDL;
   }
   
   void jobDump(const String& filePath) {
-    fout << MESSAGE("Dumping contents of file") << ENDL;
+    fout << "Dumping contents of file" << ENDL;
     FileInputStream file(filePath, 0);
     FormatInputStream stream(file);
 
@@ -268,15 +271,16 @@ public:
   }
 
   void usage() throw() {
-    fout << MESSAGE("Usage: ") << getFormalName()
-         << MESSAGE(" MD5SUM|SHA1|SHA256|SHA384|SHA512|DUMP file") << ENDL;
+    fout << "Usage: " << getFormalName()
+         << " MD5SUM|SHA1|SHA256|SHA384|SHA512|DUMP file" << ENDL;
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     Array<String> arguments = getArguments();

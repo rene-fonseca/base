@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,8 +39,11 @@ private:
   Array<String> paths;
 public:
   
-  SpaceApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("du"), numberOfArguments, arguments, environment) {
+  SpaceApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("du", numberOfArguments, arguments, environment) {
     showFiles = false;
     showFolders = false;
     summarize = false;
@@ -53,22 +56,22 @@ public:
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
       String argument = *enu.next();
-      if (argument == MESSAGE("--help")) {
+      if (argument == "--help") {
         command = COMMAND_HELP;
         return;
-      } else if (argument == MESSAGE("--summarize")) {
+      } else if (argument == "--summarize") {
         summarize = true;
-      } else if (argument == MESSAGE("--bytes")) {
+      } else if (argument == "--bytes") {
         blockSize = 1;
-      } else if (argument == MESSAGE("--kilobytes")) {
+      } else if (argument == "--kilobytes") {
         blockSize = 1024;
-      } else if (argument == MESSAGE("--megabytes")) {
+      } else if (argument == "--megabytes") {
         blockSize = 1024 * 1024;
-      } else if (argument == MESSAGE("--files")) {
+      } else if (argument == "--files") {
         showFiles = true;
-      } else if (argument == MESSAGE("--folders")) {
+      } else if (argument == "--folders") {
         showFolders = true;
-      } else if (argument == MESSAGE("--version")) {
+      } else if (argument == "--version") {
         command = COMMAND_VERSION;
         return;
       } else {
@@ -78,26 +81,27 @@ public:
   }
   
   void version() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
   }
   
   void help() throw() {
     version();
-    fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [options] path(s)") << EOL
+    fout << "Usage: " << getFormalName() << " [options] path(s)" << EOL
          << EOL
-         << MESSAGE("--help      this message") << EOL
-         << MESSAGE("--version   dump the version") << EOL
+         << "--help      this message" << EOL
+         << "--version   dump the version" << EOL
          << EOL
-         << MESSAGE("--bytes     selects output in bytes") << EOL
-         << MESSAGE("--kilobytes selects output in kilobytes (kb)") << EOL
-         << MESSAGE("--megabytes selects output in megabytes (Mb)") << EOL
-         << MESSAGE("--files     show total number of files") << EOL
-         << MESSAGE("--folders   show total number of folders") << EOL
-         << MESSAGE("--summarize only produce summary") << EOL
+         << "--bytes     selects output in bytes" << EOL
+         << "--kilobytes selects output in kilobytes (kb)" << EOL
+         << "--megabytes selects output in megabytes (Mb)" << EOL
+         << "--files     show total number of files" << EOL
+         << "--folders   show total number of folders" << EOL
+         << "--summarize only produce summary" << EOL
          << ENDL;
   }
 
@@ -140,7 +144,7 @@ public:
     
     while (enu.hasNext()) {
       const String entry = *enu.next();
-      if ((entry == MESSAGE(".")) || (entry == MESSAGE(".."))) {
+      if ((entry == ".") || (entry == "..")) {
         continue;
       }
       String path = FileSystem::getPath(folderPath, entry);
@@ -172,7 +176,7 @@ public:
   
   void sum() throw() {
     if (paths.getSize() == 0) {
-      paths.append(MESSAGE("."));
+      paths.append(".");
     }
     Array<String>::ReadEnumerator enu = paths.getReadEnumerator();
     
@@ -180,7 +184,7 @@ public:
       String path = *enu.next();
       
       if (!FileSystem::folderExists(path)) {
-        ferr << MESSAGE("Error: ") << MESSAGE("Not a folder: ") << path << ENDL;
+        ferr << "Error: " << "Not a folder: " << path << ENDL;
         setExitCode(EXIT_CODE_ERROR);
         return;
       }
@@ -188,7 +192,7 @@ public:
       try {
         traverse(path);
       } catch (FileSystemException& e) {
-        ferr << MESSAGE("Error: ") << e.getMessage() << ENDL;
+        ferr << "Error: " << e.getMessage() << ENDL;
         setExitCode(EXIT_CODE_ERROR);
       }
     }

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,8 +37,11 @@ private:
   };
 public:
   
-  InetApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("inet"), numberOfArguments, arguments, environment) {
+  InetApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("inet", numberOfArguments, arguments, environment) {
   }
   
   void onTermination() throw() {
@@ -47,9 +50,11 @@ public:
   void inet() throw() {
     try {
       if (false) {
-        HashTable<String, unsigned int> names = InetInterface::getInterfaceNames();
-        HashTable<String, unsigned int>::ReadEnumerator enu = names.getReadEnumerator();
-        fout << MESSAGE("Interfaces:") << ENDL;
+        HashTable<String, unsigned int> names =
+          InetInterface::getInterfaceNames();
+        HashTable<String, unsigned int>::ReadEnumerator enu =
+          names.getReadEnumerator();
+        fout << "Interfaces:" << ENDL;
         while (enu.hasNext()) {
           const HashTable<String, unsigned int>::HashTableAssociation* node = enu.next();
           fout << indent(2) << *node->getKey() << ' ' << *node->getValue() << EOL;
@@ -83,13 +88,13 @@ public:
         }
         
         fout << interface.getName() << ' ' << interface.getIndex() << EOL
-             << indent(2) << MESSAGE("flags:") << temp << EOL
-             << indent(2) << MESSAGE("address: ") << interface.getAddress() << EOL
-             << indent(2) << MESSAGE("netmask: ") << interface.getNetmask() << EOL
-             << indent(2) << MESSAGE("broadcast: ") << interface.getBroadcast() << EOL
-             << indent(2) << MESSAGE("destination: ") << interface.getDestination() << EOL
-             << indent(2) << MESSAGE("metric: ") << interface.getMetric() << EOL
-             << indent(2) << MESSAGE("ethernet (EUI-64): ") << interface.getEthernetAddress() << EOL
+             << indent(2) << "flags:" << temp << EOL
+             << indent(2) << "address: " << interface.getAddress() << EOL
+             << indent(2) << "netmask: " << interface.getNetmask() << EOL
+             << indent(2) << "broadcast: " << interface.getBroadcast() << EOL
+             << indent(2) << "destination: " << interface.getDestination() << EOL
+             << indent(2) << "metric: " << interface.getMetric() << EOL
+             << indent(2) << "ethernet (EUI-64): " << interface.getEthernetAddress() << EOL
              << ENDL;
       }
     } catch (...) {
@@ -98,13 +103,13 @@ public:
   }
   
   void help() throw() {
-    fout << getFormalName() << MESSAGE(" version ")
+    fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
-    fout << getFormalName() << MESSAGE(" [--help]") << ENDL;
+    fout << getFormalName() << " [--help]" << ENDL;
   }
   
   void main() throw() {

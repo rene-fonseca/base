@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,8 +24,11 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  DumpApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("dump"), numberOfArguments, arguments, environment) {
+  DumpApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("dump", numberOfArguments, arguments, environment) {
   }
 
   void main() throw() {
@@ -33,22 +36,23 @@ public:
     
     if (arguments.getSize() == 1) {
       if (arguments[0] == "--help") {
-        fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-             << MESSAGE("Base Framework (Test Suite)") << EOL
-             << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-             << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+        fout << getFormalName() << " version "
+             << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+             << "Base Framework (Test Suite)" << EOL
+             << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+             << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
              << EOL
-             << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" file") << EOL
+             << "Usage: " << getFormalName() << " file" << EOL
              << EOL
-             << MESSAGE("Options") << EOL
-             << MESSAGE("  --help       Shows this message") << EOL
-             << MESSAGE("  --version    Displays version information") << EOL
+             << "Options" << EOL
+             << "  --help       Shows this message" << EOL
+             << "  --version    Displays version information" << EOL
              << ENDL;
       } else if (arguments[0] == "--version") {
-        fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-             << MESSAGE("Base Framework (Test Suite)") << EOL
-             << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-             << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+        fout << getFormalName() << " version " << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+             << "Base Framework (Test Suite)" << EOL
+             << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+             << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
              << ENDL;
       } else {
         try {
@@ -74,13 +78,14 @@ public:
         }
       }
     } else {
-      fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-           << MESSAGE("Base Framework (Test Suite)") << EOL
-           << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-           << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+      fout << getFormalName() << " version "
+           << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+           << "Base Framework (Test Suite)" << EOL
+           << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+           << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
            << EOL
-           << MESSAGE("Error: Invalid argument(s).") << EOL
-           << MESSAGE("For help: ") << getFormalName() << MESSAGE(" --help") << EOL
+           << "Error: Invalid argument(s)." << EOL
+           << "For help: " << getFormalName() << " --help" << EOL
            << ENDL;
       setExitCode(EXIT_CODE_ERROR);
     }

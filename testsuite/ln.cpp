@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,15 +24,19 @@ private:
   static const unsigned int MINOR_VERSION = 1;  
 public:
   
-  LinkApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("ln"), numberOfArguments, arguments, environment) {
+  LinkApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("ln", numberOfArguments, arguments, environment) {
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     String target;
@@ -50,13 +54,13 @@ public:
       nameSpecified = true;
       break;
     default:
-      fout << getFormalName() << MESSAGE(" target [name]") << ENDL;
+      fout << getFormalName() << " target [name]" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
     
     if (!FileSystem::supportsLinks()) {
-      ferr << MESSAGE("Error: ") << MESSAGE("Symbolic links not supported.") << ENDL;
+      ferr << "Error: " << "Symbolic links not supported." << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
@@ -66,7 +70,7 @@ public:
     }
     
     if (FileSystem::entryExists(name)) {
-      ferr << MESSAGE("Error: ") << MESSAGE("Name already exists.") << ENDL;
+      ferr << "Error: " << "Name already exists." << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
@@ -74,7 +78,7 @@ public:
     try {
       FileSystem::makeLink(target, name);
     } catch (FileSystemException& e) {
-      ferr << MESSAGE("Error: ") << MESSAGE("Unable to create link: ") << e.getMessage() << ENDL;
+      ferr << "Error: " << "Unable to create link: " << e.getMessage() << ENDL;
       setExitCode(EXIT_CODE_ERROR);
     }
   }

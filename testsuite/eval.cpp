@@ -261,19 +261,19 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[]) throw()
-    : Application(MESSAGE("eval"), numberOfArguments, arguments, environment) {
+    : Application("eval", numberOfArguments, arguments, environment) {
     simple = false;
     parsed = false;
   }
   
   void dumpConstants() throw() {
     if (simple) {
-      fout << MESSAGE("Constants:");
+      fout << "Constants:";
       for (unsigned int i = 0; i < getArraySize(CONSTANTS); ++i) {
         fout << ' ' << CONSTANTS[i].name;
       }
     } else {
-      fout << MESSAGE("Constants:") << EOL;
+      fout << "Constants:" << EOL;
       for (unsigned int i = 0; i < getArraySize(CONSTANTS); ++i) {
         fout << indent(2) << CONSTANTS[i].name << EOL;
       }
@@ -283,26 +283,26 @@ public:
   
   void dumpFunctions() throw() {
     if (simple) {
-      fout << MESSAGE("Functions:");
+      fout << "Functions:";
       for (unsigned int i = 0; i < getArraySize(NO_ARGUMENT_FUNCTIONS); ++i) {
-        fout << ' ' << NO_ARGUMENT_FUNCTIONS[i].name << MESSAGE("()") ;
+        fout << ' ' << NO_ARGUMENT_FUNCTIONS[i].name << "()";
       }
       for (unsigned int i = 0; i < getArraySize(SINGLE_ARGUMENT_FUNCTIONS); ++i) {
-        fout << ' ' << SINGLE_ARGUMENT_FUNCTIONS[i].name << MESSAGE("(x)");
+        fout << ' ' << SINGLE_ARGUMENT_FUNCTIONS[i].name << "(x)";
       }
       for (unsigned int i = 0; i < getArraySize(DOUBLE_ARGUMENT_FUNCTIONS); ++i) {
-        fout << ' ' << DOUBLE_ARGUMENT_FUNCTIONS[i].name << MESSAGE("(x, y)");
+        fout << ' ' << DOUBLE_ARGUMENT_FUNCTIONS[i].name << "(x, y)";
       }
     } else {
-      fout << MESSAGE("Functions:") << EOL;
+      fout << "Functions:" << EOL;
       for (unsigned int i = 0; i < getArraySize(NO_ARGUMENT_FUNCTIONS); ++i) {
-        fout << indent(2) << NO_ARGUMENT_FUNCTIONS[i].name << MESSAGE("()") << EOL;
+        fout << indent(2) << NO_ARGUMENT_FUNCTIONS[i].name << "()" << EOL;
       }
       for (unsigned int i = 0; i < getArraySize(SINGLE_ARGUMENT_FUNCTIONS); ++i) {
-        fout << indent(2) << SINGLE_ARGUMENT_FUNCTIONS[i].name << MESSAGE("(x)") << EOL;
+        fout << indent(2) << SINGLE_ARGUMENT_FUNCTIONS[i].name << "(x)" << EOL;
       }
       for (unsigned int i = 0; i < getArraySize(DOUBLE_ARGUMENT_FUNCTIONS); ++i) {
-        fout << indent(2) << DOUBLE_ARGUMENT_FUNCTIONS[i].name << MESSAGE("(x, y)") << EOL;
+        fout << indent(2) << DOUBLE_ARGUMENT_FUNCTIONS[i].name << "(x, y)" << EOL;
       }
     }
     fout << ENDL;
@@ -344,21 +344,21 @@ public:
     try {
       parser.parse();
     } catch (ExpressionException& e) {
-      ferr << MESSAGE("Error: ") << e.getMessage()
-           << MESSAGE(" at index ") << e.getIndex() << ENDL;
+      ferr << "Error: " << e.getMessage()
+           << " at index " << e.getIndex() << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
     
     if (parsed) {
-      fout << MESSAGE("Parsed expression: ") << parser.getString() << ENDL;
+      fout << "Parsed expression: " << parser.getString() << ENDL;
     }
 
     if (parser.hasUnknowns()) {
       HashTable<String, MyExpressionEvaluator::Node> unknowns = parser.getUnknowns();
       HashTable<String, MyExpressionEvaluator::Node>::ReadEnumerator enu =
         unknowns.getReadEnumerator();
-      fout << MESSAGE("The expression contains the following unknowns:");
+      fout << "The expression contains the following unknowns:";
       while (enu.hasNext()) {
         fout << ' ' << *enu.next()->getKey();
       }
@@ -366,31 +366,31 @@ public:
     } else {
       MyExpressionEvaluator evaluator;
       evaluator.setExpression(parser.getExpression());
-      fout << MESSAGE("Result: ") << evaluator.evaluate() << ENDL;
+      fout << "Result: " << evaluator.evaluate() << ENDL;
     }
   }
 
   void version() throw() {
-    fout << getFormalName() << MESSAGE(" version ")
+    fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
   }
   
   void help() throw() {
     version();
-    fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [OPTIONS] expression") << EOL
+    fout << "Usage: " << getFormalName() << " [OPTIONS] expression" << EOL
          << EOL
-         << MESSAGE("Options:") << EOL
-         << indent(2) << MESSAGE("--help      this message") << EOL
-         << indent(2) << MESSAGE("--version   dump the version") << EOL
+         << "Options:" << EOL
+         << indent(2) << "--help      this message" << EOL
+         << indent(2) << "--version   dump the version" << EOL
          << EOL
-         << indent(2) << MESSAGE("--constants show the available constants") << EOL
-         << indent(2) << MESSAGE("--functions show the available functions") << EOL
-         << indent(2) << MESSAGE("--simple    simple list form") << EOL
-         << indent(2) << MESSAGE("--parsed    show the parsed expression") << EOL
+         << indent(2) << "--constants show the available constants" << EOL
+         << indent(2) << "--functions show the available functions" << EOL
+         << indent(2) << "--simple    simple list form" << EOL
+         << indent(2) << "--parsed    show the parsed expression" << EOL
          << ENDL;
   }
   
@@ -417,7 +417,7 @@ public:
         parsed = true;
       } else {
         if (expressionSpecified) {
-          ferr << MESSAGE("Error: ") << MESSAGE("Expression already specified") << ENDL;
+          ferr << "Error: " << "Expression already specified" << ENDL;
           setExitCode(EXIT_CODE_ERROR);
           return;
         }
@@ -441,7 +441,7 @@ public:
       break;
     case COMMAND_EVALUATE:
       if (!expressionSpecified) {
-        ferr << MESSAGE("Error: ") << MESSAGE("Expression not specified") << ENDL;
+        ferr << "Error: " << "Expression not specified" << ENDL;
         setExitCode(EXIT_CODE_ERROR);
         return;
       }

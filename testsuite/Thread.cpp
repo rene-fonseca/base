@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,7 +35,7 @@ public:
   void run() throw() {
     {
       ExclusiveSynchronize<SpinLock> exclusiveSyncrhonize(lock);
-      fout << MESSAGE("Written by MyThread object") << ENDL;
+      fout << "Written by MyThread object" << ENDL;
     }
 
     while (count--) {
@@ -61,10 +61,11 @@ public:
   }
 
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     MyThread myThreadA('A', 4096);
@@ -73,11 +74,11 @@ public:
     Thread myContextA(&myThreadA);
     Thread myContextB(&myThreadB);
 
-    fout << MESSAGE("Starting threads...") << ENDL;
+    fout << "Starting threads..." << ENDL;
     myContextA.start();
     myContextB.start();
 
-    fout << MESSAGE("Waiting for threads to complete...") << ENDL;
+    fout << "Waiting for threads to complete..." << ENDL;
     myContextA.join();
     myContextB.join();
   }

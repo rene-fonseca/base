@@ -75,17 +75,18 @@ public:
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
 
-    fout << MESSAGE("Representation of 'float': ")
+    fout << "Representation of 'float': "
          << getRepresentationAsString<FloatingPoint::FloatRepresentation>() << EOL
-         << MESSAGE("Representation of 'double': ")
+         << "Representation of 'double': "
          << getRepresentationAsString<FloatingPoint::DoubleRepresentation>() << EOL
-         << MESSAGE("Representation of 'long double': ")
+         << "Representation of 'long double': "
          << getRepresentationAsString<FloatingPoint::LongDoubleRepresentation>() << ENDL;
     
     fout << setWidth(22) << SCIENTIFIC << 1.0096670247046187e-1 << ' ' << FLUSH

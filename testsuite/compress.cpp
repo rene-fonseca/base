@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -59,8 +59,11 @@ private:
   String destinationFile;
 public:
   
-  CompressApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("compress"), numberOfArguments, arguments, environment) {
+  CompressApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("compress", numberOfArguments, arguments, environment) {
     debug = false;
     command = COMMAND_ERROR;
     method = METHOD_BZIP2;
@@ -74,7 +77,7 @@ public:
   }
   
   void error(const String& message) throw() {
-    ferr << MESSAGE("Error: ") << message << ENDL;
+    ferr << "Error: " << message << ENDL;
     setExitCode(EXIT_CODE_ERROR);
     command = COMMAND_ERROR;
   }
@@ -87,25 +90,25 @@ public:
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
       String argument = *enu.next();
-      if (argument == MESSAGE("--help")) {
+      if (argument == "--help") {
         command = COMMAND_HELP;
         return;
-      } else if (argument == MESSAGE("--compress")) {
+      } else if (argument == "--compress") {
         command = COMMAND_COMPRESS;
-      } else if (argument == MESSAGE("--decompress")) {
+      } else if (argument == "--decompress") {
         command = COMMAND_DECOMPRESS;
-      } else if (argument == MESSAGE("--force")) {
+      } else if (argument == "--force") {
         force = true;
-      } else if (argument == MESSAGE("--progress")) {
+      } else if (argument == "--progress") {
         progress = true;
-      } else if (argument == MESSAGE("--verbose")) {
+      } else if (argument == "--verbose") {
         debug = true;
-      } else if (argument == MESSAGE("--version")) {
+      } else if (argument == "--version") {
         command = COMMAND_VERSION;
         return;
-      } else if (argument == MESSAGE("--level")) {
+      } else if (argument == "--level") {
         if (!enu.hasNext()) {
-          error(MESSAGE("Compression level is missing"));
+          error("Compression level is missing");
           return;
         }
         try {
@@ -114,21 +117,21 @@ public:
           level = 0; // force error
         }
         if ((level < 1) || (level > 9)) {
-          error(MESSAGE("Invalid compression level"));
+          error("Invalid compression level");
           return;
         }
-      } else if (argument == MESSAGE("--method")) {
+      } else if (argument == "--method") {
         if (!enu.hasNext()) {
-          error(MESSAGE("Compression method is missing"));
+          error("Compression method is missing");
           return;
         }
         String argument = *enu.next();
-        if (argument == MESSAGE("BZIP2")) {
+        if (argument == "BZIP2") {
           method = METHOD_BZIP2;
-        } else if (argument == MESSAGE("ZLIB")) {
+        } else if (argument == "ZLIB") {
           method = METHOD_ZLIB;
         } else {
-          error(MESSAGE("Invalid compression method (BZIP2 or ZLIB)"));
+          error("Invalid compression method (BZIP2 or ZLIB)");
           return;
         }        
       } else {
@@ -139,49 +142,50 @@ public:
           destinationFile = argument;
           destinationSpecified = true;
         } else {
-          error(MESSAGE("Invalid argument"));
+          error("Invalid argument");
           return;
         }
       }
     }
     
     if ((!sourceSpecified) && (!destinationSpecified)) {
-      error(MESSAGE("Source and destination must be specified"));
+      error("Source and destination must be specified");
       return;
     }
     
     if (!sourceSpecified) {
-      error(MESSAGE("Source must be specified"));
+      error("Source must be specified");
       return;
     }
     
     if (!destinationSpecified) {
-      error(MESSAGE("Destination must be specified"));
+      error("Destination must be specified");
       return;
     }
   }
   
   void version() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
   }
   
   void help() throw() {
     version();
-    fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" [options] source destination") << EOL
+    fout << "Usage: " << getFormalName() << " [options] source destination" << EOL
          << EOL
-         << MESSAGE("Options:") << EOL
-         << indent(2) << MESSAGE("--help          this message") << EOL
-         << indent(2) << MESSAGE("--version       shows the version") << EOL
+         << "Options:" << EOL
+         << indent(2) << "--help          this message" << EOL
+         << indent(2) << "--version       shows the version" << EOL
          << EOL
-         << indent(2) << MESSAGE("--compress      source destination") << EOL
-         << indent(2) << MESSAGE("--decompress    source destination") << EOL
-         << indent(2) << MESSAGE("--method        selects between BZIP2 and ZLIB") << EOL
-         << indent(2) << MESSAGE("--progress      show progress") << EOL
-         << indent(2) << MESSAGE("--level [1-9]   selects the compression level [1-9]") << EOL
+         << indent(2) << "--compress      source destination" << EOL
+         << indent(2) << "--decompress    source destination" << EOL
+         << indent(2) << "--method        selects between BZIP2 and ZLIB" << EOL
+         << indent(2) << "--progress      show progress" << EOL
+         << indent(2) << "--level [1-9]   selects the compression level [1-9]" << EOL
          << ENDL;
   }
 
@@ -194,13 +198,13 @@ public:
     long long expectedSize = (position < size) ? static_cast<long long>(size * ratio) : compressedSize;
     
     StringOutputStream stream;
-    stream << position << '/' << size << ' '
-           << '(' << percent << '%' << ')' << ' '
-           << MESSAGE("> ") << compressedSize << '/' << expectedSize << ' '
-           << '(' << setPrecision(1) << 100*ratio << '%' << ')' << ' '
-           << MESSAGE("ra:") << rate/1024 << MESSAGE("kb/s") << ' ';
+    stream << position << '/' << size << SP
+           << '(' << percent << '%' << ')' << SP
+           << "> " << compressedSize << '/' << expectedSize << SP
+           << '(' << setPrecision(1) << 100*ratio << '%' << ')' << SP
+           << "ra:" << rate/1024 << "kb/s" << SP;
     
-    stream << MESSAGE("re:");
+    stream << "re:";
     if (remainingTime < 60) {
       stream << remainingTime << 's';
     } else if (remainingTime < 60*60) {
@@ -210,7 +214,7 @@ public:
     }
     stream << ' ';
     
-    stream << MESSAGE("el:");
+    stream << "el:";
     elapsedTime /= 1000000;
     if (elapsedTime < 60) {
       stream << elapsedTime << 's';
@@ -229,7 +233,7 @@ public:
     Allocator<uint8> outputBuffer(BUFFER_SIZE);
 
     if (!force && FileSystem::fileExists(destination)) {
-      error(MESSAGE("Destination already exists"));
+      error("Destination already exists");
       return;
     }
     
@@ -272,9 +276,9 @@ public:
       );
       
       if (debug) {
-        fout << MESSAGE("DEBUG: read")
-             << MESSAGE(" position:") << position
-             << MESSAGE(" size:") << bytesRead
+        fout << "DEBUG: read"
+             << " position:" << position
+             << " size:" << bytesRead
              << ENDL;
       }
       
@@ -283,12 +287,15 @@ public:
       unsigned int offset = 0;
       while (offset < bytesToCompress) {
         unsigned int pushed =
-          deflater->push(inputBuffer.getElements() + offset, bytesToCompress - offset);
+          deflater->push(
+            inputBuffer.getElements() + offset,
+            bytesToCompress - offset
+          );
         if (debug) {
-          fout << MESSAGE("DEBUG: push")
-               << MESSAGE(" offset:") << offset
-               << MESSAGE(" size:") << bytesToCompress - offset
-               << MESSAGE(" pushed:") << pushed
+          fout << "DEBUG: push"
+               << " offset:" << offset
+               << " size:" << bytesToCompress - offset
+               << " pushed:" << pushed
                << ENDL;
         }
         offset += pushed;
@@ -298,19 +305,22 @@ public:
             outputBuffer.getSize()
           );
           if (debug) {
-            fout << MESSAGE("DEBUG: pull")
-                 << MESSAGE(" size:") << outputBuffer.getSize()
-                 << MESSAGE(" pulled:") << compressedBytes
+            fout << "DEBUG: pull"
+                 << " size:" << outputBuffer.getSize()
+                 << " pulled:" << compressedBytes
                  << ENDL;
           }
           if (compressedBytes == 0) {
             break;
           }
-          fos.write(Cast::pointer<const char*>(outputBuffer.getElements()), compressedBytes);
+          fos.write(
+            Cast::pointer<const char*>(outputBuffer.getElements()),
+            compressedBytes
+          );
           if (debug) {
-            fout << MESSAGE("DEBUG: write")
-                 << MESSAGE(" position:") << compressedSize
-                 << MESSAGE(" size:") << compressedBytes
+            fout << "DEBUG: write"
+                 << " position:" << compressedSize
+                 << " size:" << compressedBytes
                  << ENDL;
           }
           compressedSize += compressedBytes;
@@ -340,16 +350,19 @@ public:
         outputBuffer.getSize()
       );
       if (debug) {
-        fout << MESSAGE("DEBUG: pull")
-             << MESSAGE(" size:") << outputBuffer.getSize()
-             << MESSAGE(" pulled:") << compressedBytes
+        fout << "DEBUG: pull"
+             << " size:" << outputBuffer.getSize()
+             << " pulled:" << compressedBytes
              << ENDL;
       }
-      fos.write(Cast::pointer<const char*>(outputBuffer.getElements()), compressedBytes);
+      fos.write(
+        Cast::pointer<const char*>(outputBuffer.getElements()),
+        compressedBytes
+      );
       if (debug) {
-        fout << MESSAGE("DEBUG: write")
-             << MESSAGE(" position:") << compressedSize
-             << MESSAGE(" size:") << compressedBytes
+        fout << "DEBUG: write"
+             << " position:" << compressedSize
+             << " size:" << compressedBytes
              << ENDL;
       }
       compressedSize += compressedBytes;
@@ -369,7 +382,7 @@ public:
     Allocator<uint8> outputBuffer(BUFFER_SIZE);
 
     if (!force && FileSystem::fileExists(destination)) {
-      error(MESSAGE("Destination already exists"));
+      error("Destination already exists");
       return;
     }
     
@@ -398,8 +411,14 @@ public:
     Timer updateTimer;
     
     if (progress) {
-      String temp = getProgress(position, size, decompressedSize, timer.getLiveMicroseconds());
-      fout << setWidth(previousLength) << temp << '\r' << (debug ? ENDL : FLUSH);
+      String temp = getProgress(
+        position,
+        size,
+        decompressedSize,
+        timer.getLiveMicroseconds()
+      );
+      fout << setWidth(previousLength)
+           << temp << '\r' << (debug ? ENDL : FLUSH);
       previousLength = temp.getLength();
     }
     
@@ -412,9 +431,9 @@ public:
       );
       
       if (debug) {
-        fout << MESSAGE("DEBUG: read")
-             << MESSAGE(" position:") << position
-             << MESSAGE(" size:") << bytesRead
+        fout << "DEBUG: read"
+             << " position:" << position
+             << " size:" << bytesRead
              << ENDL;
       }
       
@@ -422,12 +441,15 @@ public:
       
       unsigned int offset = 0;
       while (offset < bytesToDecompress) {
-        unsigned int pushed = inflater->push(inputBuffer.getElements() + offset, bytesToDecompress - offset);
+        unsigned int pushed = inflater->push(
+          inputBuffer.getElements() + offset,
+          bytesToDecompress - offset
+        );
         if (debug) {
-          fout << MESSAGE("DEBUG: push")
-               << MESSAGE(" offset:") << offset
-               << MESSAGE(" size:") << bytesToDecompress - offset
-               << MESSAGE(" pushed:") << pushed
+          fout << "DEBUG: push"
+               << " offset:" << offset
+               << " size:" << bytesToDecompress - offset
+               << " pushed:" << pushed
                << ENDL;
         }
         offset += pushed;
@@ -438,21 +460,24 @@ public:
           );
           
           if (debug) {
-            fout << MESSAGE("DEBUG: pull")
-                 << MESSAGE(" size:") << outputBuffer.getSize()
-                 << MESSAGE(" pulled:") << decompressedBytes
+            fout << "DEBUG: pull"
+                 << " size:" << outputBuffer.getSize()
+                 << " pulled:" << decompressedBytes
                  << ENDL;
           }
           
           if (decompressedBytes == 0) {
             break;
           }
-          fos.write(Cast::pointer<const char*>(outputBuffer.getElements()), decompressedBytes);
+          fos.write(
+            Cast::pointer<const char*>(outputBuffer.getElements()),
+            decompressedBytes
+          );
 
           if (debug) {
-            fout << MESSAGE("DEBUG: write")
-                 << MESSAGE(" position:") << decompressedSize
-                 << MESSAGE(" size:") << decompressedBytes
+            fout << "DEBUG: write"
+                 << " position:" << decompressedSize
+                 << " size:" << decompressedBytes
                  << ENDL;
           }
           
@@ -461,20 +486,26 @@ public:
             break;
           }
         }
-        
+  
         if (isTerminated()) {
           return;
         }
         
         if (progress && (updateTimer.getLiveMicroseconds() >= UPDATE_TIME)) {
           updateTimer.start();
-          String temp = getProgress(position, size, decompressedSize, timer.getLiveMicroseconds());
-          fout << setWidth(previousLength) << temp << '\r' << (debug ? ENDL : FLUSH);
+          String temp = getProgress(
+            position,
+            size,
+            decompressedSize,
+            timer.getLiveMicroseconds()
+          );
+          fout << setWidth(previousLength) << temp << '\r'
+               << (debug ? ENDL : FLUSH);
           previousLength = temp.getLength();
         }
       }
     }
-    
+
     inflater->pushEnd(); // ok if eof already has been reached
     
     while (!inflater->atEnd()) {
@@ -484,18 +515,21 @@ public:
       );
       
       if (debug) {
-        fout << MESSAGE("DEBUG: pull")
-             << MESSAGE(" size:") << outputBuffer.getSize()
-             << MESSAGE(" pulled:") << decompressedBytes
+        fout << "DEBUG: pull"
+             << " size:" << outputBuffer.getSize()
+             << " pulled:" << decompressedBytes
              << ENDL;
       }
       
-      fos.write(Cast::pointer<const char*>(outputBuffer.getElements()), decompressedBytes);
+      fos.write(
+        Cast::pointer<const char*>(outputBuffer.getElements()),
+        decompressedBytes
+      );
       
       if (debug) {
-        fout << MESSAGE("DEBUG: write")
-             << MESSAGE(" position:") << decompressedSize
-             << MESSAGE(" size:") << decompressedBytes
+        fout << "DEBUG: write"
+             << " position:" << decompressedSize
+             << " size:" << decompressedBytes
              << ENDL;
       }
       
@@ -510,7 +544,12 @@ public:
     }
     
     if (progress) {
-      String temp = getProgress(size, size, decompressedSize, timer.getLiveMicroseconds());
+      String temp = getProgress(
+        size,
+        size,
+        decompressedSize,
+        timer.getLiveMicroseconds()
+      );
       fout << setWidth(previousLength) << temp << '\r' << ENDL;
     }
   }

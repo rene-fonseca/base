@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -122,21 +122,21 @@ private:
 public:
   
   EchoServiceApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("echod"), numberOfArguments, arguments, environment) {
+    : Application("echod", numberOfArguments, arguments, environment) {
   }
   
   void help() throw() {
-    fout << getFormalName() << MESSAGE(" version ")
+    fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
-    fout << getFormalName() << MESSAGE(" [--help] [--port PORT]") << ENDL;
+    fout << getFormalName() << " [--help] [--port PORT]" << ENDL;
   }
   
   bool accept(const InetEndPoint& endPoint) throw() {
-    // fout << MESSAGE("Incoming connection: ") << endPoint << ENDL;
+    // fout << "Incoming connection: " << endPoint << ENDL;
     return true;
   }
   
@@ -173,7 +173,7 @@ public:
         }
       }
     } catch (IOException& e) {
-      ferr << MESSAGE("Error: ") << e.getMessage() << ENDL;
+      ferr << "Error: " << e.getMessage() << ENDL;
       setExitCode(EXIT_CODE_ERROR);
     }
     
@@ -203,7 +203,7 @@ public:
           try {
             UnsignedInteger value(temp);
             if (value > 0xffff) {
-              ferr << MESSAGE("Error: ") << MESSAGE("Invalid port") << ENDL;
+              ferr << "Error: " << "Invalid port" << ENDL;
               setExitCode(EXIT_CODE_ERROR);
               return;
             }
@@ -213,13 +213,13 @@ public:
               InetService service(temp);
               port = service.getPort();
             } catch (ServiceNotFound& e) {
-              ferr << MESSAGE("Error: ") << e.getMessage() << ENDL;
+              ferr << "Error: " << e.getMessage() << ENDL;
               setExitCode(EXIT_CODE_ERROR);
               return;
             }
           }
         } else {
-          ferr << MESSAGE("Error: ") << MESSAGE("Invalid argument") << ENDL;
+          ferr << "Error: " << "Invalid argument" << ENDL;
           setExitCode(EXIT_CODE_ERROR);
           return;
         }

@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,7 +40,7 @@ public:
   }
 
   void run() throw(IOException) {
-    fout << id << MESSAGE(": ") << MESSAGE("Thread is up and running") << ENDL;
+    fout << id << ": " << "Thread is up and running" << ENDL;
 
     while (true) {
       semaphore.wait(); // wait for job
@@ -51,39 +51,39 @@ public:
       }
       StreamSocket socket = *job; // dereference for convenience
 
-      fout << id << MESSAGE(": ") << MESSAGE("Communicating with...") << ENDL;
-      fout << id << MESSAGE(": ") << MESSAGE("  address=") << socket.getAddress() << MESSAGE(" port=") << socket.getPort() << ENDL;
+      fout << id << ": " << "Communicating with..." << ENDL;
+      fout << id << ": " << "  address=" << socket.getAddress() << " port=" << socket.getPort() << ENDL;
 
       {
         FormatOutputStream outstream(socket); // must be destroyed before socket is closed
         FormatInputStream instream(socket);
 
-        fout << id << MESSAGE(": ") << MESSAGE("Waiting for request") << FLUSH;
+        fout << id << ": " << "Waiting for request" << FLUSH;
         while (!instream.wait(1000000)) {
           fout << '.' << FLUSH;
         }
         fout << ENDL;
 
-        fout << id << MESSAGE(": ") << MESSAGE("Processing request") << ENDL;
-        fout << id << MESSAGE(": ") << MESSAGE(">: ");
+        fout << id << ": " << "Processing request" << ENDL;
+        fout << id << ": " << ">: ";
         while (instream.available()) {
           char ch;
           instream >> ch;
           fout << ch;
         }
 
-        fout << id << MESSAGE(": ") << MESSAGE("Sending acknowledge") << ENDL;
-        outstream << MESSAGE("Hi, I'm a multithreaded server and this is my response. ")
-                  << MESSAGE("This connection has been assigned to context ") << id << '.' << ENDL;
+        fout << id << ": " << "Sending acknowledge" << ENDL;
+        outstream << "Hi, I'm a multithreaded server and this is my response. "
+                  << "This connection has been assigned to context " << id << '.' << ENDL;
 
-        fout << id << MESSAGE(": ") << MESSAGE("Waiting for termination request") << FLUSH;
+        fout << id << ": " << "Waiting for termination request" << FLUSH;
         while (!instream.wait(1000000)) {
           fout << '.' << FLUSH;
         }
         fout << ENDL;
 
-        fout << id << MESSAGE(": ") << MESSAGE("Processing terminating request") << ENDL;
-        fout << id << MESSAGE(": ") << MESSAGE(">: ");
+        fout << id << ": " << "Processing terminating request" << ENDL;
+        fout << id << ": " << ">: ";
         while (instream.available()) {
           char ch;
           instream >> ch;
@@ -91,11 +91,11 @@ public:
         }
       }
 
-      fout << id << MESSAGE(": ") << MESSAGE("Closing connection...") << ENDL;
+      fout << id << ": " << "Closing connection..." << ENDL;
       socket.close();
     }
 
-    fout << id << MESSAGE(": ") << MESSAGE("Thread has been terminated") << ENDL;
+    fout << id << ": " << "Thread has been terminated" << ENDL;
   }
 };
 
@@ -132,25 +132,25 @@ private:
 public:
 
   MTServerApplication(int argc, const char* argv[], const char* env[]) throw()
-    : Application(MESSAGE("mtServer"), argc, argv, env) {
+    : Application("mtServer", argc, argv, env) {
   }
   
   void server(String desiredAddress, String desiredService) {
-    fout << MESSAGE("Hostname: ") << InetAddress::getLocalHost() << ENDL;
+    fout << "Hostname: " << InetAddress::getLocalHost() << ENDL;
 
     {
       List<InetInterface> interfaces = InetInterface::getInterfaces();
       List<InetInterface>::ReadEnumerator enu = interfaces.getReadEnumerator();
-      fout << MESSAGE("Available interfaces:") << ENDL;
+      fout << "Available interfaces:" << ENDL;
       while (enu.hasNext()) {
         const InetInterface* i = enu.next();
-        fout << MESSAGE("  interface: index=") << i->getIndex() << MESSAGE(" name=") << i->getName() << ENDL;
+        fout << "  interface: index=" << i->getIndex() << " name=" << i->getName() << ENDL;
       }
     }
 
     InetAddress address; // the address to bind the server socket to
     if (desiredAddress == "") { // should we find an address
-      fout << MESSAGE("Local addresses:") << ENDL;
+      fout << "Local addresses:" << ENDL;
       List<InetAddress> addresses = InetAddress::getAddressesByName(InetAddress::getLocalHost());
       List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
       unsigned int index = 0;
@@ -158,9 +158,9 @@ public:
         const InetAddress* temp = enu.next();
         if (index == 0) { // use the first address
           address = *temp;
-          fout << MESSAGE("  address ") << index++ << MESSAGE(": ") << *temp << MESSAGE(" (USING THIS)") << ENDL;
+          fout << "  address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
         } else {
-          fout << MESSAGE("  address ") << index++ << MESSAGE(": ") << *temp << ENDL;
+          fout << "  address " << index++ << ": " << *temp << ENDL;
         }
       }
     } else {
@@ -178,16 +178,16 @@ public:
       try {
         InetService service(desiredService);
         port = service.getPort();
-        fout << MESSAGE("Service: name=") << service.getName()
-             << MESSAGE("  port=") << service.getPort()
-             << MESSAGE("  protocol=") << service.getProtocol() << ENDL;
+        fout << "Service: name=" << service.getName()
+             << "  port=" << service.getPort()
+             << "  protocol=" << service.getProtocol() << ENDL;
       } catch (ServiceNotFound& e) {
-        fout << MESSAGE("Warning: ") << e.getMessage() << ENDL;
-        fout << MESSAGE("Service: port=") << port << ENDL;
+        fout << "Warning: " << e.getMessage() << ENDL;
+        fout << "Service: port=" << port << ENDL;
       }
     }
 
-    fout << MESSAGE("Initializing thread pool") << ENDL;
+    fout << "Initializing thread pool" << ENDL;
     List<ContextBinder*> threadPool;
     for (unsigned int i = 0; i < 4; ++i) {
       ContextBinder* temp = new ContextBinder(i);
@@ -195,26 +195,26 @@ public:
       temp->start();
     }
 
-    fout << MESSAGE("Initializing server socket...") << ENDL;
+    fout << "Initializing server socket..." << ENDL;
     ServerSocket serverSocket(address, port, 1);
 
-    fout << MESSAGE("Server address...") << ENDL;
-    fout << MESSAGE("  address=") << serverSocket.getLocalAddress() << MESSAGE(" port=") << serverSocket.getLocalPort() << ENDL;
+    fout << "Server address..." << ENDL;
+    fout << "  address=" << serverSocket.getLocalAddress() << " port=" << serverSocket.getLocalPort() << ENDL;
 
     unsigned int count = 10; // total number of connections to accept
     while (count--) {
-      fout << MESSAGE("Waiting for connection...") << ENDL;
+      fout << "Waiting for connection..." << ENDL;
       StreamSocket socket(serverSocket.accept());
-      fout << MESSAGE("Connection established with: address=") << socket.getAddress() << MESSAGE(" port=") << socket.getPort() << ENDL;
+      fout << "Connection established with: address=" << socket.getAddress() << " port=" << socket.getPort() << ENDL;
 
       jobs.push(new StreamSocket(socket)); // add job to queue
       semaphore.post(); // notify one thread
     }
 
-    fout << MESSAGE("Closing server socket...") << ENDL;
+    fout << "Closing server socket..." << ENDL;
     serverSocket.close();
 
-    fout << MESSAGE("Releasing thread pool") << ENDL;
+    fout << "Releasing thread pool" << ENDL;
     for (unsigned int i = 0; i < threadPool.getSize(); ++i) {
       jobs.push(0); // queue dummy job to terminate context
       semaphore.post(); // notify
@@ -226,10 +226,11 @@ public:
   }
 
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
 
     String address; // default address
@@ -249,7 +250,7 @@ public:
       service = arguments[2]; // the service
       break;
     default:
-      fout << MESSAGE("mtServer [address] [service]") << ENDL;
+      fout << "mtServer [address] [service]" << ENDL;
       return;
     }
 

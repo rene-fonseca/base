@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -63,49 +63,57 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ReferenceCountingApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("referenceCounting"), numberOfArguments, arguments, environment) {
+  ReferenceCountingApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application(
+        "referenceCounting",
+        numberOfArguments,
+        arguments,
+        environment
+    ) {
   }
 
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ")
+    fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
-    fout << MESSAGE("Initializing reference counted object pointers") << ENDL;
+    fout << "Initializing reference counted object pointers" << ENDL;
     Reference<Base> base; // ok
     Reference<Child> child; // ok
     Reference<OtherChild> otherChild; // ok
 
-    fout << MESSAGE("Checking whether base is valid (expecting false): ")
+    fout << "Checking whether base is valid (expecting false): "
          << base.isValid() << EOL;
 
     const Reference<Child> constChild; // ok
 
-    fout << MESSAGE("Checking whether base is multi referenced (expecting false): ") << base.isMultiReferenced() << EOL;
+    fout << "Checking whether base is multi referenced (expecting false): " << base.isMultiReferenced() << EOL;
 
     base.copyOnWrite();
 
 
 
-    fout << MESSAGE("Initializing Allocator") << ENDL;
+    fout << "Initializing Allocator" << ENDL;
     Allocator<int> a1;
 
-    fout << MESSAGE("Initializing ReferenceCountedAllocator") << ENDL;
+    fout << "Initializing ReferenceCountedAllocator" << ENDL;
     ReferenceCountedAllocator<int> a2;
 
-    fout << MESSAGE("Initializing ReferenceCountedAllocator (on heap)") << ENDL;
+    fout << "Initializing ReferenceCountedAllocator (on heap)" << ENDL;
     ReferenceCountedAllocator<int>* a3 = new ReferenceCountedAllocator<int>();
     delete a3;
 
-    fout << MESSAGE("Explicit initialization of automation pointer") << ENDL;
+    fout << "Explicit initialization of automation pointer" << ENDL;
     Reference<ReferenceCountedAllocator<int> > a4 =
       new ReferenceCountedAllocator<int>();
 
-    fout << MESSAGE("Assignment of automation pointer") << ENDL;
+    fout << "Assignment of automation pointer" << ENDL;
     a4 = new ReferenceCountedAllocator<int>();
 /*
   Reference<AAA> aaa1 = new AAA(); // test exclicit

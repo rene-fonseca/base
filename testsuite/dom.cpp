@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,10 +34,7 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[]) throw()
-    : Application(MESSAGE("dom"),
-      numberOfArguments,
-      arguments,
-      environment) {
+    : Application("dom", numberOfArguments, arguments, environment) {
   }
   
   void dumpTree(const Node& node) throw() {
@@ -86,12 +83,10 @@ public:
       fout << Text(node).getData();
       break;
     case Node::CDATA_SECTION_NODE:
-      fout << MESSAGE("<![CDATA[")
-           << CDATASection(node).getData()
-           << MESSAGE("]]>");
+      fout << "<![CDATA[" << CDATASection(node).getData() << "]]>";
       break;
     case Node::ENTITY_REFERENCE_NODE:
-      fout << MESSAGE("&") << node.getName() << MESSAGE(";");
+      fout << "&" << node.getName() << ";";
       break;
     case Node::ENTITY_NODE:
       {
@@ -115,25 +110,24 @@ public:
     case Node::PROCESSING_INSTRUCTION_NODE:
       {
         ProcessingInstruction pi = node;
-        fout << MESSAGE("<?")
-             << pi.getTarget() << ' ' << pi.getData() << MESSAGE("?>") << EOL;
+        fout << "<?" << pi.getTarget() << ' ' << pi.getData() << "?>" << EOL;
       }
       break;
     case Node::COMMENT_NODE:
-      fout << MESSAGE("<!--") << Comment(node).getData() << MESSAGE("-->");
+      fout << "<!--" << Comment(node).getData() << "-->";
       break;
     case Node::DOCUMENT_NODE:
-      fout << MESSAGE("<?xml");
+      fout << "<?xml";
       if (true) {
-        fout << MESSAGE(" version=") << MESSAGE("\"1.0\"");
+        fout << " version=" << "\"1.0\"";
       }
       if (true) {
-        fout << MESSAGE(" encoding=") << MESSAGE("\"UTF-8\"");
+        fout << " encoding=" << "\"UTF-8\"";
       }
       if (true) {
-        fout << MESSAGE(" standalone=") << MESSAGE("\"yes\"");
+        fout << " standalone=" << "\"yes\"";
       }
-      fout << MESSAGE("?>") << EOL;
+      fout << "?>" << EOL;
       for (
         Node child = node.getFirstChild();
         child.isValid();
@@ -164,18 +158,18 @@ public:
 
       {
         DocumentType dtd = node;
-        fout << MESSAGE("<!DOCTYPE ") << dtd.getName();
+        fout << "<!DOCTYPE " << dtd.getName();
         
         String publicId = dtd.getPublicId();
         String systemId = dtd.getSystemId();
         
         if (publicId.isProper()) {
-          fout << MESSAGE(" PUBLIC \"") << publicId << MESSAGE("\"");
+          fout << " PUBLIC \"" << publicId << "\"";
         }
         if (systemId.isProper()) {
-          fout << MESSAGE(" \"") << systemId << MESSAGE("\"");
+          fout << " \"" << systemId << "\"";
         }
-        fout << MESSAGE(" [");
+        fout << " [";
         
         // entities
         for (
@@ -185,7 +179,7 @@ public:
           dumpTree(child);
         }
         
-        fout << MESSAGE("]>") << EOL;
+        fout << "]>" << EOL;
       }
       break;
     case Node::DOCUMENT_FRAGMENT_NODE:
@@ -194,7 +188,7 @@ public:
     case Node::NOTATION_NODE:
       {
         Notation notation = node;
-        fout << MESSAGE("<!NOTATION "); // TAG: << notation.getNotationName();
+        fout << "<!NOTATION "; // TAG: << notation.getNotationName();
         
         String publicId = notation.getPublicId();
         String systemId = notation.getSystemId();
@@ -215,17 +209,17 @@ public:
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ")
+    fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     Array<String> arguments = getArguments();
   
     if (arguments.getSize() != 2) {
-      fout << getFormalName() << MESSAGE(" source destination") << ENDL;
+      fout << getFormalName() << " source destination" << ENDL;
       return; // stop
     }
 
@@ -280,20 +274,20 @@ public:
       document.save(destinationName);
     } else {
       try {
-        fout << MESSAGE("Reading document...") << ENDL;
+        fout << "Reading document..." << ENDL;
         Document document = dom.createFromURI(sourceName);
 
-        fout << MESSAGE("Validating document...") << ENDL;
+        fout << "Validating document..." << ENDL;
         if (document.validate()) {
-          fout << MESSAGE("Document is valid") << ENDL;
+          fout << "Document is valid" << ENDL;
         } else {
-          fout << MESSAGE("Document is not valid") << ENDL;
+          fout << "Document is not valid" << ENDL;
         }
         
-        fout << MESSAGE("Saving result document...") << ENDL;
+        fout << "Saving result document..." << ENDL;
         document.save(destinationName);
       } catch(DOMException& e) {
-        ferr << MESSAGE("Internal error: ") << e << ENDL;
+        ferr << "Internal error: " << e << ENDL;
         setExitCode(EXIT_CODE_ERROR);
       }
     }

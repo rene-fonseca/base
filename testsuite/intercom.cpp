@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -140,7 +140,10 @@ public:
         guard.exclusiveLock();
         Allocator<short>* buffer = recordingQueue.pop();
         guard.releaseLock();
-        unsigned int bytesRead = soundInputStream.read(buffer->getElements(), buffer->getByteSize());
+        unsigned int bytesRead = soundInputStream.read(
+          buffer->getElements(),
+          buffer->getByteSize()
+        );
         guard.exclusiveLock();
         if (loopback) {
           playingQueue.push(buffer);
@@ -153,7 +156,7 @@ public:
       }
     }
     soundInputStream.pause();
-    fout << MESSAGE("Recording thread terminating") << ENDL;
+    fout << "Recording thread terminating" << ENDL;
   }
 
   void play() throw() {
@@ -168,7 +171,10 @@ public:
         guard.exclusiveLock();
         Allocator<short>* buffer = playingQueue.pop();
         guard.releaseLock();
-        unsigned int bytesWritten = soundOutputStream.write(buffer->getElements(), buffer->getByteSize());
+        unsigned int bytesWritten = soundOutputStream.write(
+          buffer->getElements(),
+          buffer->getByteSize()
+        );
         guard.exclusiveLock();
         if (loopback) {
           recordingQueue.push(buffer);
@@ -181,7 +187,7 @@ public:
       }
     }
     soundOutputStream.reset();
-    fout << MESSAGE("Playing thread terminating") << ENDL;
+    fout << "Playing thread terminating" << ENDL;
   }
 
   void write() throw() {
@@ -203,7 +209,7 @@ public:
             buffer->getByteSize()
           );
         } catch (IOException& e) {
-          fout << MESSAGE("IOException: ") << e.getMessage() << ENDL;
+          fout << "IOException: " << e.getMessage() << ENDL;
           Application::getApplication()->terminate();
           break;
         }
@@ -214,7 +220,7 @@ public:
       }
     }
     streamSocket.shutdownOutputStream();
-    fout << MESSAGE("Writing thread terminating") << ENDL;
+    fout << "Writing thread terminating" << ENDL;
   }
 
   void read() throw() {
@@ -236,11 +242,11 @@ public:
             buffer->getByteSize()
           );
         } catch (EndOfFile& e) {
-          fout << MESSAGE("Connection terminated by remote host") << ENDL;
+          fout << "Connection terminated by remote host" << ENDL;
           Application::getApplication()->terminate();
           break;
         } catch (IOException& e) {
-          fout << MESSAGE("IO error: ") << e.getMessage() << ENDL;
+          fout << "IO error: " << e.getMessage() << ENDL;
           Application::getApplication()->terminate();
           break;
         }
@@ -250,7 +256,7 @@ public:
         guard.releaseLock();
       }
     }
-    fout << MESSAGE("Reading thread terminating") << ENDL;
+    fout << "Reading thread terminating" << ENDL;
   }
 
   bool hostAllowed(const InetAddress& host) throw() {
@@ -259,23 +265,27 @@ public:
   }
 
   void server() throw() {
-    fout << MESSAGE("Initializing server socket: ") << endPoint << ENDL;
+    fout << "Initializing server socket: " << endPoint << ENDL;
     ServerSocket serverSocket(endPoint.getAddress(), endPoint.getPort(), 1);
 
-    fout << MESSAGE("Waiting for client...") << ENDL;
+    fout << "Waiting for client..." << ENDL;
     streamSocket = serverSocket.accept();
-    fout << MESSAGE("Connection from: ") << InetEndPoint(streamSocket.getAddress(), streamSocket.getPort()) << ENDL;
+    fout << "Connection from: "
+         << InetEndPoint(streamSocket.getAddress(), streamSocket.getPort())
+         << ENDL;
     assert(hostAllowed(streamSocket.getAddress()), OutOfDomain());
   }
 
   void client() throw() {
-    fout << MESSAGE("Connecting to server: ") << endPoint << ENDL;
+    fout << "Connecting to server: " << endPoint << ENDL;
     streamSocket.connect(endPoint.getAddress(), endPoint.getPort());
-    fout << MESSAGE("Connected to: ") << InetEndPoint(streamSocket.getAddress(), streamSocket.getPort())<< ENDL;
+    fout << "Connected to: "
+         << InetEndPoint(streamSocket.getAddress(), streamSocket.getPort())
+         << ENDL;
   }
   
   void run() throw() {
-    fout << MESSAGE("Allocating buffers...") << ENDL;
+    fout << "Allocating buffers..." << ENDL;
     for (unsigned int i = 0; i < 16; ++i) {
       recordingQueue.push(new Allocator<short>(16*256)); //(sampleRate/16+4095)/4096)*4096)
       recordingSemaphore.post();
@@ -285,7 +295,7 @@ public:
       readingSemaphore.post();
     }
 
-    fout << MESSAGE("Creating threads...") << ENDL;
+    fout << "Creating threads..." << ENDL;
     Thread recorderThread(&recorder);
     Thread playerThread(&player);
     Thread readerThread(&reader);
@@ -299,13 +309,13 @@ public:
       }
     }
 
-    fout << MESSAGE("Starting threads...") << ENDL;
+    fout << "Starting threads..." << ENDL;
     recorderThread.start();
     playerThread.start();
     readerThread.start();
     writerThread.start();
 
-    fout << MESSAGE("Waiting...") << ENDL;
+    fout << "Waiting..." << ENDL;
     Timer timer;
 
     for (unsigned int i = 0; i < 30*(1000/500); ++i) {
@@ -314,27 +324,29 @@ public:
       }
       Thread::millisleep(maximum<int>((i+1)*500 - timer.getLiveMicroseconds()/1000, 0));
       if (!loopback) {
-        fout << MESSAGE("Time: ") << setPrecision(3) << timer.getLiveMicroseconds()/1000000. << MESSAGE(" - ")
-             << MESSAGE("Recording queue: ") << recordingQueue.getSize() << MESSAGE(" - ")
-             << MESSAGE("Playing queue: ") << playingQueue.getSize() << MESSAGE(" - ")
-             << MESSAGE("Reading queue: ") << readingQueue.getSize() << MESSAGE(" - ")
-             << MESSAGE("Writing queue: ") << writingQueue.getSize() << CR
+        fout << "Time: " << setPrecision(3)
+             << timer.getLiveMicroseconds()/1000000. << " - "
+             << "Recording queue: " << recordingQueue.getSize() << " - "
+             << "Playing queue: " << playingQueue.getSize() << " - "
+             << "Reading queue: " << readingQueue.getSize() << " - "
+             << "Writing queue: " << writingQueue.getSize() << CR
              << FLUSH;
       } else {
-        fout << MESSAGE("Time: ") << setPrecision(3) << timer.getLiveMicroseconds()/1000000. << MESSAGE(" - ")
-             << MESSAGE("Recording queue: ") << recordingQueue.getSize() << MESSAGE(" - ")
-             << MESSAGE("Playing queue: ") << playingQueue.getSize() << CR
+        fout << "Time: " << setPrecision(3)
+             << timer.getLiveMicroseconds()/1000000. << " - "
+             << "Recording queue: " << recordingQueue.getSize() << " - "
+             << "Playing queue: " << playingQueue.getSize() << CR
              << FLUSH;
       }
     }
     fout << ENDL;
 
     if (!Application::getApplication()->isTerminated()) {
-      fout << MESSAGE("Voluntary termination") << ENDL;
+      fout << "Voluntary termination" << ENDL;
       Application::getApplication()->terminate();
     }
 
-    fout << MESSAGE("Waiting for threads to terminate...") << ENDL;
+    fout << "Waiting for threads to terminate..." << ENDL;
     recorderThread.terminate();
     recordingSemaphore.post();
     recorderThread.join();
@@ -349,7 +361,7 @@ public:
     writingSemaphore.post();
     writerThread.join();
 
-    fout << MESSAGE("Releasing buffers...") << ENDL;
+    fout << "Releasing buffers..." << ENDL;
     while (!recordingQueue.isEmpty()) {
       delete recordingQueue.pop();
     }
@@ -363,7 +375,7 @@ public:
       delete writingQueue.pop();
     }
 
-    fout << MESSAGE("Completed") << ENDL;
+    fout << "Completed" << ENDL;
   }
   
   ~IntercomServlet() throw() {
@@ -390,8 +402,11 @@ public:
   static const unsigned int DEFAULT_CHANNELS = 1;
   static const unsigned int DEFAULT_SAMPLE_RATE = 44100;
   
-  IntercomApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("intercom"), numberOfArguments, arguments, environment) {
+  IntercomApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("intercom", numberOfArguments, arguments, environment) {
     loopback = false;
     isServer = true;
     port = DEFAULT_PORT;
@@ -454,10 +469,11 @@ public:
   }
 
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     handleArguments();
@@ -465,16 +481,16 @@ public:
     //ASSERT(SoundInputDevice::getNumberOfDevices() > 0);
     //ASSERT(SoundOutputDevice::getNumberOfDevices() > 0);
     
-    //fout << MESSAGE("Number of input devices: ") << SoundInputDevice::getNumberOfDevices() << ENDL;
-    //fout << MESSAGE("Number of output devices: ") << SoundOutputDevice::getNumberOfDevices() << ENDL;
+    //fout << "Number of input devices: " << SoundInputDevice::getNumberOfDevices() << ENDL;
+    //fout << "Number of output devices: " << SoundOutputDevice::getNumberOfDevices() << ENDL;
     /*
     if (!SoundInputDevice::isFormatSupported(channels, samplingRate)) {
-      ferr << MESSAGE("Input device does not support sound format") << ENDL;
+      ferr << "Input device does not support sound format" << ENDL;
       return 1;
     }
 
     if (!SoundOutputDevice::isFormatSupported(channels, samplingRate)) {
-      ferr << MESSAGE("Output device does not support sound format") << ENDL;
+      ferr << "Output device does not support sound format" << ENDL;
       return 1;
     }
     */
@@ -483,7 +499,8 @@ public:
       endPoint.setAddress(InetAddress());
       endPoint.setPort(port);
     } else {
-      List<InetAddress>::ReadEnumerator enu = InetAddress::getAddressesByName(host).getReadEnumerator();
+      List<InetAddress>::ReadEnumerator enu =
+        InetAddress::getAddressesByName(host).getReadEnumerator();
       endPoint.setAddress(*enu.next());
       endPoint.setPort(port);
     }

@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,8 +26,11 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  TimeApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("time"), numberOfArguments, arguments, environment) {
+  TimeApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("time", numberOfArguments, arguments, environment) {
   }
 
   static String getTimeAsString(uint64 nanoseconds) throw() {
@@ -44,16 +47,17 @@ public:
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
 
     const Array<String> arguments = getArguments();
 
     if (arguments.getSize() == 0) {
-      fout << MESSAGE("Usage: ") << getFormalName() << MESSAGE(" command") << ENDL;
+      fout << "Usage: " << getFormalName() << " command" << ENDL;
       return;
     }
     
@@ -93,11 +97,11 @@ public:
     Process::Times times = child.getTimes();
     child.getTimes();
     fout << EOL
-         << MESSAGE("Real: ") << setPrecision(3)
+         << "Real: " << setPrecision(3)
          << getTimeAsString(timer.getMicroseconds() * 1000ULL) << EOL
-         << MESSAGE("User: ") << setPrecision(3)
+         << "User: " << setPrecision(3)
          << getTimeAsString(times.user) << EOL
-         << MESSAGE("System: ") << setPrecision(3)
+         << "System: " << setPrecision(3)
          << getTimeAsString(times.system) << EOL
          << ENDL;
   }

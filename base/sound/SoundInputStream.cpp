@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/sound/SoundInputStream.h>
 #include <base/UnexpectedFailure.h>
 #include <base/io/IOException.h>

@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/string/String.h>
 #include <base/Functor.h>
 #include <base/mem/DynamicMemory.h>

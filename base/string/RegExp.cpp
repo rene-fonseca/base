@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
+#include <base/platforms/features.h>
 #include <base/string/RegExp.h>
 
 #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)

@@ -329,8 +329,8 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException) : path(_path)
   }
   
   size = status.st_size;
-  owner = User((const void*)(ptrdiff_t)status.st_uid);
-  group = Group((const void*)(ptrdiff_t)status.st_gid);
+  owner = User((const void*)(MemoryDiff)status.st_uid);
+  group = Group((const void*)(MemoryDiff)status.st_gid);
   access = status.st_atime;
   modification = status.st_mtime;
   change = status.st_ctime;

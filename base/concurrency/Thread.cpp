@@ -14,7 +14,17 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/String.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+// TAG: exception handling - we need something like static void Exception::initialize() to allow for
+// TAG: need symbol _DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT
+#if (__GNUC__ == 3)
+  #define _DK_SDU_MIP__BASE__EXCEPTION_V3MV
+#endif
+
+#if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
+  #include <base/platforms/compiler/v3mv/exception.h> // includes private features
+#endif
+
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 #else // pthread
   #include <pthread.h>
@@ -23,7 +33,11 @@
   #include <sys/time.h>
   #include <unistd.h>
   #include <errno.h>
-  #include <time.h> // get nanosleep prototype
+  #if defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP)
+    #include <time.h> // get nanosleep prototype
+  #else // fall back on pselect and finally select
+    #include <sys/select.h>
+  #endif
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -43,6 +57,9 @@ Thread::ThreadLocal::~ThreadLocal() throw() {
 
 
 void* Thread::entry(Thread* thread) throw() {
+#if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV) && !defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT)
+  const abi::__cxa_eh_globals* abi::__cxa_get_globals(); // this allows us to use __cxa_get_globals_fast
+#endif
   try {
     thread->state = ALIVE;
     ThreadLocal threadLocal(thread);
@@ -67,11 +84,11 @@ void* Thread::entry(Thread* thread) throw() {
 void Thread::exit() throw() {
   ASSERT(getThread()->state == ALIVE);
   getThread()->state = EXIT;
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::ExitThread(0); // will properly create resource leaks
 #else // pthread
   pthread_exit(0); // will properly create resource leaks
-#endif
+#endif // flavor
 }
 
 Thread* Thread::getThread() throw() {
@@ -84,78 +101,159 @@ Allocator<char>* Thread::getLocalStorage() throw() {
 
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
   assert(nanoseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ::Sleep(nanoseconds/1000);
-#elif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // unix
-  struct timespec interval;
-  interval.tv_sec = nanoseconds / 1000000000;
-  interval.tv_nsec = nanoseconds % 1000000000;
-  while (::nanosleep(&interval, &interval) == -1) {
-    if (errno != EINTR) {
-      break;
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  ::Sleep((nanoseconds+999999)/1000000); // round up
+  // TAG: use select (but test if better)
+#else // unix
+  #if defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP)
+    struct timespec interval;
+    interval.tv_sec = nanoseconds/1000000000;
+    interval.tv_nsec = nanoseconds % 1000000000;
+    if (::nanosleep(&interval, &interval) == -1) {
+      ASSERT(errno == EINTR); // interrupted by signal
+//      return interval.tv_nsec;
     }
-  }
-#else
-  #warning Thread::nanosleep not implemented
-#endif
+  #elif defined(_DK_SDU_MIP__BASE__HAVE_PSELECT)
+    struct timespec interval;
+    interval.tv_sec = nanoseconds/1000000000;
+    interval.tv_nsec = nanoseconds % 1000000000;
+    int result = ::pselect(0, 0, 0, 0, &interval, 0);
+    if (result != 0) {
+      ASSERT(errno == EINTR); // interrupted by signal
+//      return 0; // TAG: calculate remaining time
+    }
+    // [EINVAL] is not possible since pselect must support min. 31 days
+  #else
+    struct timeval interval;
+    interval.tv_sec = (nanoseconds+999)/1000000000;
+    interval.tv_usec = (nanoseconds+999)/1000; // round up
+    int result = ::select(0, 0, 0, 0, &interval);
+    if (result != 0) {
+      ASSERT(errno == EINTR); // interrupted by signal
+//      return 0; // TAG: calculate remaining time
+    }
+    // [EINVAL] is not possible since select must support min. 31 days
+  #endif
+//    return 0;
+#endif // flavor
 }
 
 void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
   assert(microseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ::Sleep(microseconds/1000);
-#elif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // unix
-  struct timespec interval;
-  interval.tv_sec = microseconds / 1000000;
-  interval.tv_nsec = (microseconds % 1000000) * 1000;
-  while (::nanosleep(&interval, &interval) == -1) {
-    if (errno != EINTR) {
-      break;
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  ::Sleep((microseconds+999)/1000); // round up
+#else // unix
+  #if defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP)
+    struct timespec interval;
+    interval.tv_sec = microseconds/1000000;
+    interval.tv_nsec = (microseconds % 1000000) * 1000;
+    if (::nanosleep(&interval, &interval) == -1) {
+      ASSERT(errno == EINTR); // interrupted by signal
+//      return interval.tv_nsec;
     }
-  }
-#else
-  #warning Thread::microsleep not implemented
+  #elif defined(_DK_SDU_MIP__BASE__HAVE_PSELECT)
+    struct timespec interval;
+    interval.tv_sec = microseconds/1000000;
+    interval.tv_nsec = (microseconds % 1000000) * 1000;
+    int result = ::pselect(0, 0, 0, 0, &interval, 0);
+    if (result != 0) {
+      ASSERT(errno == EINTR); // interrupted by signal
+//      return 0; // TAG: calculate remaining time
+    }
+    // [EINVAL] is not possible since pselect must support min. 31 days
+  #else
+    struct timeval interval;
+    interval.tv_sec = microseconds/1000000;
+    interval.tv_usec = microseconds;
+    int result = ::select(0, 0, 0, 0, &interval);
+    if (result != 0) {
+      ASSERT(errno == EINTR); // interrupted by signal
+//      return 0; // TAG: calculate remaining time
+    }
+    // [EINVAL] is not possible since select must support min. 31 days
+  #endif
+//    return 0;
 #endif
 }
 
 void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
   assert(milliseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::Sleep(milliseconds);
-#elif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // unix
-  struct timespec interval;
-  interval.tv_sec = milliseconds / 1000;
-  interval.tv_nsec = (milliseconds % 1000) * 1000000;
-  while (::nanosleep(&interval, &interval) == -1) {
-    if (errno != EINTR) {
-      break;
+#else // unix
+  #if defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP)
+    struct timespec interval;
+    interval.tv_sec = milliseconds/1000;
+    interval.tv_nsec = (milliseconds % 1000) * 1000000;
+    if (::nanosleep(&interval, &interval) == -1) {
+      ASSERT(errno == EINTR); // interrupted by signal
+//      return interval.tv_sec * 1000 + interval.tv_nsec/1000000;
     }
-  }
-#else
-  #warning Thread::millisleep not implemented
+  #elif defined(_DK_SDU_MIP__BASE__HAVE_PSELECT)
+    struct timespec interval;
+    interval.tv_sec = milliseconds/1000;
+    interval.tv_nsec = (milliseconds % 1000) * 1000000;
+    int result = ::pselect(0, 0, 0, 0, &interval, 0);
+    if (result != 0) {
+      ASSERT(errno == EINTR); // interrupted by signal
+//      return 0; // TAG: calculate remaining time
+    }
+    // [EINVAL] is not possible since pselect must support min. 31 days
+  #else
+    struct timeval interval;
+    interval.tv_sec = milliseconds/1000;
+    interval.tv_usec = (milliseconds % 1000) * 1000;
+    int result = ::select(0, 0, 0, 0, &interval);
+    if (result != 0) {
+      ASSERT(errno == EINTR); // interrupted by signal
+//      return 0; // TAG: calculate remaining time
+    }
+    // [EINVAL] is not possible since select must support min. 31 days
+  #endif
+//    return 0;
 #endif
 }
 
 void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
   assert(seconds < 1000000, OutOfDomain(Type::getType<Thread>()));
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::Sleep(seconds * 1000);
-#elif defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP) // unix
-  struct timespec interval;
-  interval.tv_sec = seconds;
-  interval.tv_nsec = 0;
-  while (::nanosleep(&interval, &interval) == -1) {
-    if (errno != EINTR) {
-      break;
+#else // unix
+  #if defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP)
+    struct timespec interval;
+    interval.tv_sec = seconds;
+    interval.tv_nsec = 0;
+    if (::nanosleep(&interval, &interval) == -1) {
+      ASSERT(errno == EINTR); // interrupted by signal
+//      return interval.tv_sec;
     }
-  }
-#else
-  #warning Thread::sleep not implemented
+  #elif defined(_DK_SDU_MIP__BASE__HAVE_PSELECT)
+    struct timespec interval;
+    interval.tv_sec = seconds;
+    interval.tv_nsec = 0;
+    int result = ::pselect(0, 0, 0, 0, &interval, 0);
+    if (result != 0) {
+      ASSERT(errno == EINTR); // interrupted by signal
+//      return 0; // TAG: calculate remaining time
+    }
+    // [EINVAL] is not possible since pselect must support min. 31 days
+  #else
+    struct timeval interval;
+    interval.tv_sec = seconds;
+    interval.tv_usec = 0;
+    int result = ::select(0, 0, 0, 0, &interval);
+    if (result != 0) {
+      ASSERT(errno == EINTR); // interrupted by signal
+//      return 0; // TAG: calculate remaining time
+    }
+    // [EINVAL] is not possible since select must support min. 31 days
+  #endif
+//  return 0;
 #endif
 }
 
 void Thread::yield() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::SwitchToThread(); // no errors
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_YIELD)
   pthread_yield(); // ignore errors
@@ -179,12 +277,15 @@ Thread::Thread(Thread* _parent) throw()
     runnable(0),
     terminated(false),
     state(ALIVE) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ASSERT(sizeof(DWORD) <= sizeof(identifier));
-  identifier = ::GetCurrentThreadId();
+#if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV) && !defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT)
+  const abi::__cxa_eh_globals* abi::__cxa_get_globals(); // this allows us to use __cxa_get_globals_fast
+#endif
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  ASSERT(sizeof(DWORD) <= sizeof(Identifier));
+  identifier = (Identifier)::GetCurrentThreadId();
 #else // pthread
-  ASSERT(sizeof(pthread_t) <= sizeof(identifier));
-  identifier = pthread_self();
+  ASSERT(sizeof(pthread_t) <= sizeof(Identifier));
+  identifier = (Identifier)::pthread_self();
 #endif
 }
 
@@ -242,12 +343,12 @@ bool Thread::isParent() const throw() {
 }
 
 bool Thread::isSelf() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ASSERT(sizeof(DWORD) <= sizeof(identifier));
-  return ::GetCurrentThreadId() == identifier;
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  ASSERT(sizeof(DWORD) <= sizeof(Identifier));
+  return ::GetCurrentThreadId() == (DWORD)identifier;
 #else // pthread
-  ASSERT(sizeof(pthread_t) <= sizeof(identifier));
-  return pthread_self() == identifier;
+  ASSERT(sizeof(pthread_t) <= sizeof(Identifier));
+  return ::pthread_self() == (pthread_t)identifier;
 #endif
 }
 
@@ -264,18 +365,18 @@ void Thread::start() throw(ThreadException) {
   // TAG: don't forget the thread priority
   assert(state == NOTSTARTED, ThreadException(this));
   state = STARTING;
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ASSERT(sizeof(DWORD) <= sizeof(identifier));
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  ASSERT(sizeof(DWORD) <= sizeof(Identifier));
   HANDLE handle;
   DWORD id;
   if ((handle = ::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)entry, this, 0, &id)) == 0) {
     throw ResourceException("Unable to create thread", this);
   }
-  identifier = id;
+  identifier = (Identifier)id;
   ::CloseHandle(handle); // detach
   // TAG: does this always work or must this be postponed until entry function
 #else // pthread
-  ASSERT(sizeof(pthread_t) <= sizeof(identifier));
+  ASSERT(sizeof(pthread_t) <= sizeof(Identifier));
   pthread_attr_t attributes;
   pthread_attr_init(&attributes);
   pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_DETACHED);
@@ -285,7 +386,7 @@ void Thread::start() throw(ThreadException) {
     pthread_attr_destroy(&attributes);
     throw ResourceException("Unable to create thread", this);
   }
-  identifier = id;
+  identifier = (Identifier)id;
   pthread_attr_destroy(&attributes);
 #endif
 }

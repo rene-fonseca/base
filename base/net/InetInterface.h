@@ -20,7 +20,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class InetInterface : Object {
+class InetInterface : public Object {
 private:
 
   /** Specifies the index of the network interface. */
@@ -55,7 +55,7 @@ public:
   /**
     Returns the name of the network interface.
   */
-  const String<> getName() const throw();
+  String<> getName() const throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

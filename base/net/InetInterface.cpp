@@ -75,7 +75,7 @@ unsigned int InetInterface::getIndex() const throw() {
   return index;
 }
 
-const String<> InetInterface::getName() const throw() {
+String<> InetInterface::getName() const throw() {
   return name;
 }
 

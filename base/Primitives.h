@@ -83,22 +83,14 @@ struct nothing {
 
 
 
-#if (_DK_SDU_MIP__BASE__POINTER_SIZE == _DK_SDU_MIP__BASE__INT_SIZE)
-  /** The resulting integral type of pointer subtraction. */
-  typedef int MemoryDiff;
-  /** The integral type used to represent any memory offset and any size of memory block. */
-  typedef unsigned int MemorySize;
-#elif (_DK_SDU_MIP__BASE__POINTER_SIZE == _DK_SDU_MIP__BASE__LONG_SIZE)
-  /** The result type of pointer subtraction. */
-  typedef long MemoryDiff;
-  /** The integral type used to represent any memory offset and any size of memory block. */
-  typedef unsigned long MemorySize;
-#elif (_DK_SDU_MIP__BASE__POINTER_SIZE == _DK_SDU_MIP__BASE__LONG_LONG_SIZE)
-  /** The result type of pointer subtraction. */
-  typedef int64 MemoryDiff;
-  /** The integral type used to represent any memory offset and any size of memory block. */
-  typedef uint64 MemorySize;
-#endif
+// TAG: typeof is a GCC extension
+/** The resulting integral type of pointer subtraction. */
+typedef typeof(static_cast<char*>(0) - static_cast<char*>(0)) MemoryDiff;
+/**
+  The integral type used to represent any memory offset and any size of memory
+  block.
+*/
+typedef typeof(sizeof(void*)) MemorySize;
 
 
 

@@ -5,8 +5,9 @@ AM_CONFIG_HEADER(config.h)
 
 AM_INIT_AUTOMAKE(ellert,0.55)
 
-AC_DEFINE(_REENTRANT)
-AC_DEFINE(_GNU_SOURCE)
+AC_DEFINE(_GNU_SOURCE, 1, Specifies that the UNIX 98 functionality and GNU extensions are utilized)
+AC_DEFINE(_XOPEN_SOURCE, 500, Specifies that the UNIX 98 functionality is utilized)
+AC_DEFINE(_REENTRANT, 1, Select additionally reentrant object)
 
 
 

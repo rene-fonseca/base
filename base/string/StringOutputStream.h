@@ -12,7 +12,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class StringOutputStreamWrapper : public OutputStream {
+class StringOutputStreamWrapper : public virtual Object, public virtual OutputStream {
 private:
 
   /** The string holding the stream data. */
@@ -54,6 +54,7 @@ public:
   A string output stream is a format output stream that directs the stream data
   into a string.
 
+  @short String output stream.
   @author René Møller Fonseca
   @version 1.0
 */

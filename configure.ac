@@ -11,7 +11,7 @@ dnl
 dnl    For the licensing terms refer to the file 'LICENSE'.
 dnl ***************************************************************************
 
-dnl Process this file with autoconf to produce a configure script
+dnl process this file with autoconf to produce a configure script
 
 AC_INIT(Makefile.am)
 AC_CONFIG_SRCDIR(base/features.h)
@@ -33,17 +33,17 @@ AC_ARG_PROGRAM()
 
 AM_INIT_AUTOMAKE(base-framework, 0.9.1)
 
-dnl Arguments
-ac_base_arguments=${ac_configure_args}
+dnl arguments
+ac_base_arguments=$ac_configure_args
 
-dnl Extract general arguments
+dnl extract general arguments
 dnl TAG: may remove too many arguments
 ac_base_general_arguments=`echo " ${ac_base_arguments}" | \
   sed -e "s/ --\(enable\|disable\)\(-[[a-z]]\+\)\+\(=[[^ =]]*\)\?//g" \
       -e "s/ [[a-zA-Z]][[a-zA-Z_-]]*='[[^ ']]*'//g" \
       -e "s/ [[a-zA-Z]][[a-zA-Z_-]]*=[[^ ']]*//g" \
       -e "s/ '[[^'=]]\+=[[^']]*'//g"`
-BASE_MODULE_ARGUMENTS=${ac_base_general_arguments}
+BASE_MODULE_ARGUMENTS=$ac_base_general_arguments
 
 dnl AC_CHECK_COMPILERS()
 dnl AC_EXEEXT() dnl TAG: required before 2.50
@@ -58,27 +58,52 @@ AC_PROG_LIBTOOL()
 
 
 
-dnl Configuration
+dnl constants and default values
+base_symbol_prefix=_DK_SDU_MIP__BASE__
+base_cv_flavor=UNIX
+
+dnl specifies the generic order of libraries for the Unix flavor (some libraries may not be present)
+ac_base_system_lib_order="-lsocket -lnsl -lrt -lpthread -ldl -lm -lc"
+
+# components
+base_cv_component_aio=no
+base_cv_component_ieee1394=no
+base_cv_component_lfs=no
+base_cv_component_socket=no
+base_cv_component_inet_ipv6=no
+base_cv_component_sound=no
+
+
+
+dnl configuration
 ac_base_public_config=public.tmp
-echo "/* This is an automatically generated file. Do NOT edit. */" > ${ac_base_public_config}
+echo "/* This is an automatically generated file. Do NOT edit. */" > $ac_base_public_config
 ac_base_private_config=private.tmp
-echo "/* This is an automatically generated file. Do NOT edit. */" > ${ac_base_private_config}
+echo "/* This is an automatically generated file. Do NOT edit. */" > $ac_base_private_config
 
 
 
 dnl AC_BASE_DEFINE(symbol name, value)
 AC_DEFUN(AC_BASE_DEFINE, [dnl
-ifelse([$2], , ac_base_temp="_DK_SDU_MIP__BASE__$1", ac_base_temp="_DK_SDU_MIP__BASE__$1 $2")
-cat >> ${ac_base_public_config} << EOF
-[#define] ${ac_base_temp}
+ifelse([$2], , ac_base_temp="${base_symbol_prefix}$1", ac_base_temp="${base_symbol_prefix}$1 $2")
+cat >> $ac_base_public_config << EOF
+[#define] $ac_base_temp
 EOF
 ])
 
 dnl AC_BASE_DEFINE_PRIVATE(symbol name, value)
 AC_DEFUN(AC_BASE_DEFINE_PRIVATE, [dnl
-ifelse([$2], , ac_base_temp="_DK_SDU_MIP__BASE__$1", ac_base_temp="_DK_SDU_MIP__BASE__$1 $2")
-cat >> ${ac_base_private_config} << EOF
-[#define] ${ac_base_temp}
+ifelse([$2], , ac_base_temp="${base_symbol_prefix}$1", ac_base_temp="${base_symbol_prefix}$1 $2")
+cat >> $ac_base_private_config << EOF
+[#define] $ac_base_temp
+EOF
+])
+
+dnl AC_BASE_DEFINE_FEATURE(symbol name, value)
+AC_DEFUN(AC_BASE_DEFINE_FEATURE, [dnl
+ifelse([$2], , ac_base_temp="$1", ac_base_temp="$1 $2")
+cat >> $ac_base_private_config << EOF
+[#define] $ac_base_temp
 EOF
 ])
 
@@ -117,7 +142,7 @@ fi
 
 dnl AC_BASE_MKYESNO(variable)
 AC_DEFUN(AC_BASE_MKYESNO, [dnl
-if test "${ac_base_status}" = "0"; then $1=yes; else $1=no; fi dnl
+if test x$ac_base_status = x0; then $1=yes; else $1=no; fi dnl
 ])
 
 dnl AC_BASE_YES(variable, yes action)
@@ -165,9 +190,6 @@ AC_DEFUN(AC_BASE_APPEND, [dnl
 $1="[$]{$1}[$]{$1:+ }$2"
 ])
 
-dnl Specifies the required order of libraries (some libraries may not be present)
-ac_base_system_lib_order="-lrt -lpthread -ldl -lm -lc"
-
 dnl AC_BASE_ADDLIB(library list) e.g. AC_BASE_ADDLIB(-lxml -ldl)
 dnl AC_DEFUN(AC_BASE_ADDLIB, [dnl
 dnl for ac_base_temp in [$1]; do
@@ -207,68 +229,71 @@ BASE_LIBS="[$]{ac_base_unknown_libs}[$]{ac_base_unknown_libs:+ }[$]{ac_base_syst
 
 
 
-ac_base_flavor=unix
+ac_base_static=yes
 AC_ARG_ENABLE(
-  flavor,[
-  --enable-flavor=[unix|win32]
-      This feature explicitly specifies the target flavor. This is only
-      required if the particular platform supports more than one flavor. The
-      default is 'unix'.],
-  AC_BASE_CHECK_ARG(ac_base_flavor, unix win32, The flavor flag must be either 'unix' or 'win32'.))
+  static,[
+  --enable-static=[yes|no]
+      This option specifies whether ot not the static target configuration
+      should be utilized if available. This option is enabled by default.
+      The target configuration is probed if either no static configuration
+      is available or this option is disabled. Probing is not possible when
+      cross compiling the framework.],
+  AC_BASE_CHECK_ARG(ac_base_static, yes no, The static option must be either 'yes' or 'no'.))
 
-ac_base_platform=
-case "${ac_cv_target}" in
-i[[3456]]86-pc-cygwin)
-  ac_base_platform="i386-pc-cygwin.h"
-;;
-i[[3456]]86-pc-linux*)
-  ac_base_platform="i386-pc-gnu-linux.h"
-  AC_BASE_ADDLIB(-ldl)
-;;
-ia64-pc-linux*)
-  ac_base_platform="ia64-pc-gnu-linux.h"
-;;
-mips-sgi-irix6.5)
-  dnl minor architecture?
-  ac_base_platform="mips-sgi-irix65.h"
-  AC_BASE_ADDLIB(-ldl)
-;;
-sparc*-sun-solaris*)
-  dnl minor architecture?
-  ac_base_platform="sparc-sun-solaris.h"
-  AC_BASE_ADDLIB(-ldl)
-;;
-i[[3456]]86-*-mingw32)
-  ac_base_flavor=win32
-  ac_base_platform="i386-pc-winnt4.h"
-  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-lpsapi -lnetapi32'
-;;
+
+ac_base_target=$ac_cv_target
+case $ac_base_target in
+i[[3456]]86-*-cygwin) ac_base_target=i386-unknown-cygwin;;
+i[[3456]]86-*-linux*) ac_base_target=i386-unknown-linux-gnu;;
+ia64-*-linux*) ac_base_target=ia64-unknown-linux-gnu;;
+mips-sgi-irix6.5) ac_base_target=mips-sgi-irix65;;
+sparc*-sun-solaris2.7) ac_base_target=sparc-sun-solaris2.7;;
+sparc*-sun-solaris2.8) ac_base_target=sparc-sun-solaris2.8;;
+sparc*-sun-solaris2.9) ac_base_target=sparc-sun-solaris2.9;;
+sparc*-sun-solaris2.8-64bit) ac_base_target=sparc-sun-solaris2.8-64bit;;
+i[[3456]]86-*-mingw32) ac_base_target=i386-unknown-mingw32;;
 *)
-  AC_MSG_WARN(This target platform is not directly supported by the framework. Please refer to the section describing how to manually configure the framework.)
+  if test -f ${top_srcdir:-.}/static/$ac_base_target; then : ; else
+#    search for static config (do not use - only suggest reconfiguration)
+#    case $ac_base_target in *-pc-*) ac_base_target="*-unknown-*";; esac
+#    case $ac_base_target in *-*-linux*) ac_base_target="$ac_base_target-linux-gnu";; esac
+#    case $ac_base_target in *-*-solaris*) ac_base_target="$ac_base_target-linux-gnu";; esac
+    if test -f ${top_srcdir:-.}/static/$ac_base_target; then : ; else
+      AC_MSG_WARN(This target platform is not directly supported by the framework. Please refer to the section describing how to manually configure the framework.)
+    fi
+  fi
 ;;
 esac
 
-if (test -f base/features.h) then
-  dnl We are building directly in the source tree
 
-  rm -f base/platforms/platform.h
-  ${LN_S} ${ac_base_platform} base/platforms/platform.h
-else
-  dnl We are building in a separate directory tree
 
-  mkdir -p base/platforms
-  rm -f base/platforms/platform.h
-  case "${srcdir}" in
-  /*)
-    dnl srcdir is an absolute path
-    ${LN_S} ${srcdir}/base/platforms/${ac_base_platform} base/platforms/platform.h
-  ;;
-  *)
-    dnl srcdir is a relative path
-    ${LN_S} ../../${srcdir}/base/platforms/${ac_base_platform} base/platforms/platform.h
-  ;;
-  esac
+ac_base_static_loaded=no
+if test x$ac_base_static = xyes && test -f ${top_srcdir:-.}/static/$ac_base_target; then
+  echo loading static target configuration...
+  rm -f static.tmp
+  ${top_srcdir:-.}/static/static.sh ${top_srcdir:-.}/static/$ac_base_target > static.tmp 2>&1
+  . static.tmp
+  ac_base_static_loaded=yes
 fi
+
+# make sure static configuration has been loaded if cross compiling
+if test x$base_cv_cxx_cross = xyes; then
+  if test x$ac_base_static_loaded != xyes; then
+    if test x$ac_base_static = xyes; then
+      AC_MSG_ERROR(This target currently does not support cross compilation. You could try with a generic target configuration.)
+    else
+      AC_MSG_ERROR(Static target configuration must be enabled when cross compiling.)
+    fi
+  fi
+fi
+
+
+
+AC_BASE_DEFINE(FLAVOR, $base_symbol_prefix$base_cv_flavor)
+AC_BASE_DEFINE(OS, $base_symbol_prefix$base_cv_os)
+AC_BASE_DEFINE(OS_MINOR, $base_cv_os_minor)
+AC_BASE_DEFINE(ARCH, $base_symbol_prefix$base_cv_arch)
+AC_BASE_DEFINE(ARCH_MINOR, $base_symbol_prefix$base_cv_arch_minor)
 
 
 
@@ -310,7 +335,7 @@ AC_ARG_ENABLE(
       code is excluded by default. Experimental code should only be enabled by
       the framework developers.],
   AC_BASE_CHECK_ARG(base_explicit_experimental, yes no, Invalid argument used with the experimental option.))
-AM_CONDITIONAL(EXPERIMENTAL, test x${base_explicit_experimental} = xyes)
+AM_CONDITIONAL(EXPERIMENTAL, test x$base_explicit_experimental = xyes)
 AC_BASE_DEFINE(EXPERIMENTAL)
 
 base_explicit_extensions=no
@@ -320,7 +345,7 @@ AC_ARG_ENABLE(
       Specifies whether of not the extensions should be included. The
       extensions are not included by default.],
   AC_BASE_CHECK_ARG(base_explicit_extensions, yes no, Invalid argument used with the extensions option.))
-AM_CONDITIONAL(EXTENSIONS, test x${base_explicit_extensions} = xyes)
+AM_CONDITIONAL(EXTENSIONS, test x$base_explicit_extensions = xyes)
 AC_BASE_DEFINE(EXTENSIONS)
 
 base_explicit_namespace=yes
@@ -439,24 +464,28 @@ AC_ARG_ENABLE(
       the library.],
   AC_BASE_CHECK_ARG(base_explicit_ieee1394))
 
-case "${base_explicit_ieee1394}" in
+case $base_explicit_ieee1394 in
 yes)
+  base_cv_component_ieee1394=yes
 ;;
 no)
-AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL, DummyIEEE1394Impl)
-AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL_HEADER, [\"]base/communication/DummyIEEE1394Impl.h[\"])
+  base_cv_component_ieee1394=no
+  AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL, DummyIEEE1394Impl)
+  AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL_HEADER, [\"]base/communication/DummyIEEE1394Impl.h[\"])
 ;;
 *.h)
-temp=${base_explicit_ieee1394/%.h/}
-AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL, ${temp/*\//})
-AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL_HEADER, [\"]${base_explicit_ieee1394}[\"])
+  base_cv_component_ieee1394=yes
+  ac_base_temp=${base_explicit_ieee1394/%.h/}
+  AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL, ${ac_base_temp/*\//})
+  AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL_HEADER, [\"]${base_explicit_ieee1394}[\"])
 ;;
 [[A-Z]]*)
-AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL, ${base_explicit_ieee1394})
-AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL_HEADER, [\"]base/communication/${base_explicit_ieee1394}.h[\"])
+  base_cv_component_ieee1394=yes
+  AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL, $base_explicit_ieee1394)
+  AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL_HEADER, [\"]base/communication/${base_explicit_ieee1394}.h[\"])
 ;;
 *)
-AC_MSG_ERROR(Invalid value for IEEE 1394 implementation (@<:@A-Z@:>@@<:@A-Za-z0-9_@:>@* or relative path of header).)
+  AC_MSG_ERROR(Invalid value for IEEE 1394 implementation (@<:@A-Z@:>@@<:@A-Za-z0-9_@:>@* or relative path of header).)
 ;;
 esac
 
@@ -477,10 +506,10 @@ AC_ARG_ENABLE(
 
 dnl Checks for libraries.
 
-dnl AC_BASE_CHECK(check message, action, result variable[, extra variable])
+dnl AC_BASE_CHECK(check message, action, result variable [, extra variable])
 AC_DEFUN(AC_BASE_CHECK, [dnl
 ac_base_temp="$1"
-AC_MSG_CHECKING(${ac_base_temp})
+AC_MSG_CHECKING($ac_base_temp)
 $2
 ifelse([$4], , AC_MSG_RESULT([$]$3), [dnl
 dnl if test "[$]$3" = yes; then
@@ -501,7 +530,7 @@ for ac_base_temp in $1; do
     break
   fi
 done
-AC_BASE_YESNO(ac_temp_cached, [echo ${ECHO_N} "(cached) ${ECHO_C}" >&AC_FD_MSG], $2)
+AC_BASE_YESNO(ac_temp_cached, [echo ${ECHO_N} "(static) ${ECHO_C}" >&AC_FD_MSG], $2)
 ])
 
 dnl AC_BASE_ATTEMPT(result variable, value variable, value list, action setting result)
@@ -516,16 +545,16 @@ test "[$]$1" != yes && $2=
 
 
 base_src_temp="test_source"
-base_obj_temp="test_object${ac_cv_objext}"
-base_app_temp="test_app${ac_cv_exeext}"
-base_cleanup="rm -f ${base_src_temp} ${base_obj_temp} ${base_app_temp}"
-base_run="./${base_app_temp}"
+base_obj_temp="test_object$ac_cv_objext"
+base_app_temp="test_app$ac_cv_exeext"
+base_cleanup="rm -f $base_src_temp $base_obj_temp $base_app_temp"
+base_run="./$base_app_temp"
 
 dnl C++ specific
 base_cxx_ext=cpp
-base_cxx_preprocess='${CXXCPP} -I. -I${srcdir} ${CPPFLAGS}'
-base_cxx_compile='${CXX} -o ${base_obj_temp} -c -I. -I${srcdir} ${CPPFLAGS} ${CXXFLAGS} ${srcdir}/config/${base_cxx_src} ${base_cxx_opts}'
-base_cxx_link='${CXX} -o ${base_app_temp} -I. -I${srcdir} ${CPPFLAGS} ${CXXFLAGS} ${srcdir}/config/${base_cxx_src} ${base_cxx_opts} ${LDFLAGS} ${LIBS} ${BASE_LIBS}'
+base_cxx_preprocess='$CXXCPP -I. -I$srcdir $CPPFLAGS'
+base_cxx_compile='$CXX -o $base_obj_temp -c -I. -I$srcdir $CPPFLAGS $CXXFLAGS $srcdir/config/$base_cxx_src $base_cxx_opts'
+base_cxx_link='$CXX -o $base_app_temp -I. -I$srcdir $CPPFLAGS $CXXFLAGS $srcdir/config/$base_cxx_src $base_cxx_opts $LDFLAGS $LIBS $BASE_LIBS'
 
 dnl AC_BASE_TRIM(string)
 AC_DEFUN(AC_BASE_TRIM, [`echo $1`])
@@ -538,7 +567,7 @@ AC_DEFUN(AC_BASE_TRY_CMD, [ { ac_base_temp='$1'; AC_BASE_TRY_EXEC(ac_base_temp);
 
 dnl AC_BASE_TRY_CXX_COMPILE(result variable, source file, additional options)
 AC_DEFUN(AC_BASE_TRY_CXX_COMPILE, [dnl
-if (test ! -r ${srcdir}/config/[$2]); then
+if (test ! -r $srcdir/config/[$2]); then
   AC_MSG_ERROR(The source file cannot be read.)
 fi
 base_cxx_src=[$2]
@@ -549,7 +578,7 @@ AC_BASE_MKYESNO([$1])
 
 dnl AC_BASE_TRY_CXX_LINK(result variable, source file, additional options)
 AC_DEFUN(AC_BASE_TRY_CXX_LINK, [dnl
-if (test ! -r ${srcdir}/config/[$2]); then
+if (test ! -r $srcdir/config/[$2]); then
   AC_MSG_ERROR(The source file cannot be read.)
 fi
 base_cxx_src=[$2]
@@ -565,7 +594,7 @@ AC_BASE_YES(
   base_cv_cxx_cross,
   ifelse([$4], , AC_MSG_ERROR(C++ compiler is a cross compiler), AC_MSG_ERROR([$4]))dnl
 )
-if (test ! -r ${srcdir}/config/[$2]); then
+if (test ! -r $srcdir/config/[$2]); then
   AC_MSG_ERROR(The source file cannot be read.)
 fi
 base_cxx_src=[$2]
@@ -585,7 +614,7 @@ AC_BASE_YES(
   base_cv_cxx_cross,
   ifelse([$4], , AC_MSG_ERROR(C++ compiler is a cross compiler), AC_MSG_ERROR([$4]))dnl
 )
-if (test ! -r ${srcdir}/config/[$2]); then
+if (test ! -r $srcdir/config/[$2]); then
   AC_MSG_ERROR(The source file cannot be read.)
 fi
 base_cxx_src=[$2]
@@ -595,7 +624,7 @@ AC_BASE_MKYESNO(ac_base_temp)
 AC_BASE_YESNO(
   ac_base_temp,
   AC_BASE_TRY_EXEC(base_run)
-  [$1]=${ac_base_status},
+  [$1]=$ac_base_status,
   AC_MSG_ERROR(Unable to compile and link testing application.))
 ])
 
@@ -628,16 +657,16 @@ AC_BASE_YES(base_cv_function_$1, AC_BASE_DEFINE_FUNCTION_PRIVATE($1))
 
 
 AC_BASE_CHECK(
-  whether C++ compiler (AC_BASE_TRIM(${CXX} ${CPPFLAGS} ${CXXFLAGS})) works,
+  whether C++ compiler (AC_BASE_TRIM($CXX $CPPFLAGS $CXXFLAGS)) works,
   AC_BASE_TRY_CXX_LINK(base_cxx_compiler_works, cross++.cpp),
   base_cxx_compiler_works)
 
 dnl Additional libraries to test
 base_additional_attempts=
-AC_BASE_EQUAL(${ac_base_flavor}, unix, AC_BASE_APPEND(base_additional_attempts, -lpthread))
+AC_BASE_EQUAL($base_cv_flavor, UNIX, AC_BASE_APPEND(base_additional_attempts, -lpthread))
 
 AC_BASE_CHECK(
-  whether C++ compiler (AC_BASE_TRIM(${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} ${LIBS} ${BASE_LIBS})) is a cross compiler,
+  whether C++ compiler (AC_BASE_TRIM($CXX $CPPFLAGS $CXXFLAGS $LDFLAGS $LIBS $BASE_LIBS)) is a cross compiler,
   AC_BASE_CACHE(
     base_cv_cxx_cross base_cv_cxx_libs,
     AC_BASE_ATTEMPT(
@@ -732,8 +761,8 @@ if test "x$ac_base_cxx_name" = "x"; then
 fi
 
 # make generic version
-if test "x$ac_base_cxx_version" = "x"; then
-  if test "x$ac_base_cxx_micro" = "x"; then
+if test x$ac_base_cxx_version = x; then
+  if test x$ac_base_cxx_micro = x; then
     ac_base_cxx_version="$ac_base_cxx_major.$ac_base_cxx_minor"
   else
     ac_base_cxx_version="$ac_base_cxx_major.$ac_base_cxx_minor.$ac_base_cxx_micro"
@@ -749,38 +778,38 @@ dnl Explicit features.
 
 AC_MSG_CHECKING(ABI)
 base_abi=
-case "${ac_base_cxx_vendor}/${ac_base_cxx_name}" in
+case "$ac_base_cxx_vendor/$ac_base_cxx_name" in
 "gnu.org/GNU Compiler Collection")
-  if test "x$ac_base_cxx_major" = "x3"; then
-    AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_V3MV)
+  if test x$ac_base_cxx_major = x3; then
+    AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_V3MV)
     base_abi=v3mv
-  elif test "x$ac_base_cxx_major" = "x2"; then
-    AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_GCCV2)
+  elif test x$ac_base_cxx_major = x2; then
+    AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_GCCV2)
     base_abi=gccv2
   fi
 ;;
 "sun.com/SUN WorkShop")
-  AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_SUNWSPRO)
+  AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_SUNWSPRO)
   base_abi=sunwspro
 ;;
 "sgi.com/MIPSpro Compilers")
-  AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_MIPSPRO)
+  AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_MIPSPRO)
   base_abi=mipspro
 ;;
 "intel.com/Intel Compiler")
-  AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_INTEL)
+  AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_INTEL)
   base_abi=intel
 ;;
 "borland.com/Borland Compiler")
-  AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_BORLAND)
+  AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_BORLAND)
   base_abi=borland
 ;;
 "microsoft.com/Microsoft Optimizing Compiler")
-  AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__ABI_MSC)
+  AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}ABI_MSC)
   base_abi=intel
 ;;
 *)
-  AC_BASE_DEFINE_PRIVATE(ABI, _DK_SDU_MIP__BASE__UNSPECIFIED)
+  AC_BASE_DEFINE_PRIVATE(ABI, ${base_symbol_prefix}UNSPECIFIED)
 ;;
 esac
 AC_MSG_RESULT([$base_abi])
@@ -788,267 +817,57 @@ AC_MSG_RESULT([$base_abi])
 
 
 AC_MSG_CHECKING(selected demangling scheme)
-if test "${base_explicit_demangle}" = auto; then
-  base_demangle=${base_abi}
+if test x$base_explicit_demangle = xauto; then
+  base_demangle=$base_abi
 else
-  base_demangle=${base_explicit_demangle}
+  base_demangle=$base_explicit_demangle
 fi
 
-case "${base_demangle}" in
-"v3mv")
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_V3MV)
+case $base_demangle in
+v3mv)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, ${base_symbol_prefix}DEMANGLE_V3MV)
 ;;
-"gccv3")
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_GCCV3)
+gccv3)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, ${base_symbol_prefix}DEMANGLE_GCCV3)
   AC_BASE_ADDLIB(-liberty)
 ;;
-"gccv2")
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_GCCV2)
+gccv2)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, ${base_symbol_prefix}DEMANGLE_GCCV2)
   AC_BASE_ADDLIB(-liberty)
 ;;
-"mipspro")
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_MIPSPRO)
+mipspro)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, ${base_symbol_prefix}DEMANGLE_MIPSPRO)
   AC_BASE_ADDLIB(-lmangle)
 ;;
-"sunwspro")
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_SUNWSPRO)
+sunwspro)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, ${base_symbol_prefix}DEMANGLE_SUNWSPRO)
   AC_BASE_ADDLIB(-ldemangle)
 ;;
-"intel")
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_INTEL)
+intel)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, ${base_symbol_prefix}DEMANGLE_INTEL)
 ;;
-"borland")
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_BORLAND)
+borland)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, ${base_symbol_prefix}DEMANGLE_BORLAND)
 ;;
-"msc")
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__DEMANGLE_MSC)
+msc)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, ${base_symbol_prefix}DEMANGLE_MSC)
 ;;
 *)
-  AC_BASE_DEFINE_PRIVATE(DEMANGLE, _DK_SDU_MIP__BASE__UNSPECIFIED)
+  AC_BASE_DEFINE_PRIVATE(DEMANGLE, ${base_symbol_prefix}UNSPECIFIED)
 ;;
 esac
 AC_MSG_RESULT([$base_demangle])
 
 
 
-if test "${base_explicit_threads}" = auto; then
-  AC_BASE_EQUAL(${ac_base_flavor}, unix, base_explicit_threads=posix)
+if test x$base_explicit_threads = xauto; then
+  AC_BASE_EQUAL($base_cv_flavor, UNIX, base_explicit_threads=posix)
 fi
 
-if test "${base_explicit_xml}" = xmlsoft; then
+if test x$base_explicit_xml = xxmlsoft; then
   AC_BASE_DEFINE_PRIVATE(XML_XMLSOFT_ORG)
   AC_BASE_ADDLIB(-lxml -lz)
 fi
-
-dnl Cross compiler
-
-dnl x86 => prmitives
-
-AC_BASE_YES(
-  base_cv_cxx_cross,
-    
-  base_cv_unsigned_char=no
-  base_cv_char_size=1
-  base_cv_short_size=2
-  base_cv_int_size=4
-  base_cv_long_size=4
-  base_cv_long_long_size=8
-  base_cv_pointer_size=4
-  base_cv_wchar_t_size=2
-  base_cv_byte_order=_DK_SDU_MIP__BASE__LITTLE_ENDIAN
-  base_cv_byte_order_msg="little endian"
-  base_cv_word_order=_DK_SDU_MIP__BASE__LITTLE_ENDIAN
-  base_cv_word_order_msg="little endian"
-  base_cv_float=_DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION
-  base_cv_float_msg="ieee 754 single"
-  base_cv_double=_DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION
-  base_cv_double_msg="ieee 754 double"
-  base_cv_long_double=_DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96
-  base_cv_long_double_msg="ieee extended 96"
-
-  base_cv_cpp_bool=yes
-  base_cv_cpp_const=yes
-  base_cv_cpp_inline=yes
-  base_cv_cpp_static_const=yes
-  base_cv_cpp_anonymous_struct=yes
-  base_cv_cpp_specification=yes
-  base_explicit_wide=yes
-  base_cv_function_memchr=yes
-  base_cv_function_memcmp=yes
-  base_cv_function_memcpy=yes
-  base_cv_function_memmove=yes
-  base_cv_function_memset=yes
-)
-
-dnl Check primitives.
-
-AC_BASE_CHECK(
-  whether char is unsigned,
-  AC_BASE_CACHE(
-    base_cv_unsigned_char,
-    AC_BASE_TRY_CXX_RUN(base_cv_unsigned_char, unsigned_char.cpp)dnl
-  ),
-  base_cv_unsigned_char)
-AC_BASE_YES(base_cv_unsigned_char, AC_BASE_DEFINE(UNSIGNED_CHAR))
-
-AC_BASE_CHECK(
-  size of char,
-  AC_BASE_CACHE(
-    base_cv_char_size,
-    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_char_size, char_size.cpp)dnl
-  ),
-  base_cv_char_size)
-AC_BASE_DEFINE(CHAR_SIZE, ${base_cv_char_size})
-
-AC_BASE_CHECK(
-  size of short,
-  AC_BASE_CACHE(
-    base_cv_short_size,
-    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_short_size, short_size.cpp)dnl
-  ),
-  base_cv_short_size)
-AC_BASE_DEFINE(SHORT_SIZE, ${base_cv_short_size})
-
-AC_BASE_CHECK(
-  size of int,
-  AC_BASE_CACHE(
-    base_cv_int_size,
-    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_int_size, int_size.cpp)dnl
-  ),
-  base_cv_int_size)
-AC_BASE_DEFINE(INT_SIZE, ${base_cv_int_size})
-
-AC_BASE_CHECK(
-  size of long,
-  AC_BASE_CACHE(
-    base_cv_long_size,
-    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_long_size, long_size.cpp)dnl
-  ),
-  base_cv_long_size)
-AC_BASE_DEFINE(LONG_SIZE, ${base_cv_long_size})
-
-AC_BASE_CHECK(
-  size of long long,
-  AC_BASE_CACHE(
-    base_cv_long_long_size,
-    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_long_long_size, long_long_size.cpp)dnl
-  ),
-  base_cv_long_long_size)
-AC_BASE_DEFINE(LONG_LONG_SIZE, ${base_cv_long_long_size})
-
-AC_BASE_CHECK(
-  size of pointer,
-  AC_BASE_CACHE(
-    base_cv_pointer_size,
-    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_pointer_size, pointer_size.cpp)dnl
-  ),
-  base_cv_pointer_size)
-AC_BASE_DEFINE(POINTER_SIZE, ${base_cv_pointer_size})
-
-dnl AC_BASE_CHECK(
-dnl   size of wchar_t,
-dnl   AC_BASE_CACHE(
-dnl     base_cv_wchar_t_size,
-dnl     AC_BASE_TRY_CXX_RUNSTATUS(base_cv_wchar_t_size, wchar_t_size.cpp)dnl
-dnl   ),
-dnl   base_cv_wchar_t_size)
-dnl AC_BASE_DEFINE(WCHAR_T_SIZE, ${base_cv_wchar_t_size})
-
-
-
-dnl AC_BASE_VALUE2BYTEORDER(var result symbol, var to receive result message of check, value)
-AC_DEFUN(AC_BASE_VALUE2BYTEORDER, [dnl
-  if test "[$3]" = 1; then
-    [$2]="big endian"
-    [$1]="_DK_SDU_MIP__BASE__BIG_ENDIAN"
-  elif test "[$3]" = 2; then
-    [$2]="little endian"
-    [$1]="_DK_SDU_MIP__BASE__LITTLE_ENDIAN"
-  else
-    [$2]="unspecified"
-    [$1]="_DK_SDU_MIP__BASE__UNSPECIFIED"
-  fi
-])
-
-AC_BASE_COMPARE(
-  ${base_explicit_byte_order}, auto,
-  AC_BASE_CHECK(
-    byte order of architecture,
-    AC_BASE_CACHE(
-      base_cv_byte_order base_cv_byte_order_msg,
-      AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, byteorder.c, , Auto-detection of byte order does not work with cross compiler. Please specify byte order explicitly using --enable-byte-order.)dnl
-      AC_BASE_VALUE2BYTEORDER(base_cv_byte_order, base_cv_byte_order_msg, ${ac_base_temp})dnl
-    ),
-    base_cv_byte_order_msg),
-  base_cv_byte_order=${base_explicit_byte_order})
-AC_BASE_DEFINE(BYTE_ORDER, ${base_cv_byte_order})
-
-AC_BASE_COMPARE(
-  ${base_explicit_word_order}, auto,
-  AC_BASE_CHECK(
-    word order of architecture/operating system/compiler,
-    AC_BASE_CACHE(
-      base_cv_word_order,
-      AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, float_word_order.cpp, , Auto-dection of word order does not work with cross compiler.)
-      AC_BASE_VALUE2BYTEORDER(base_cv_word_order, base_cv_word_order_msg, ${ac_base_temp})
-    ),
-    base_cv_word_order_msg),
-  base_cv_word_order=${base_explicit_word_order})
-AC_BASE_DEFINE(FLOAT_WORD_ORDER, ${base_cv_word_order})
-
-
-
-AC_DEFUN(AC_BASE_VALUE2FLOAT, [dnl
-  if test "[$3]" = 1; then
-    [$2]="ieee 754 single"
-    [$1]="_DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION"
-  elif test "[$3]" = 2; then
-    [$2]="ieee 754 double"
-    [$1]="_DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION"
-  elif test "[$3]" = 3; then
-    [$2]="ieee extended 96"
-    [$1]="_DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96"
-  elif test "[$3]" = 4; then
-    [$2]="ieee extended 128"
-    [$1]="_DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128"
-  elif test "[$3]" = 5; then
-    [$2]="ieee quadruple"
-    [$1]="_DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION"
-  else
-    [$2]="unspecified"
-    [$1]="_DK_SDU_MIP__BASE__UNSPECIFIED"
-  fi
-])
-
-AC_BASE_CHECK(
-  representation of float,
-  AC_BASE_CACHE(
-    base_cv_float base_cv_float_msg,
-    AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, float.cpp, )dnl
-    AC_BASE_VALUE2FLOAT(base_cv_float, base_cv_float_msg, ${ac_base_temp})dnl
-  ),
-  base_cv_float_msg)
-AC_BASE_DEFINE(FLOAT, ${base_cv_float})
-
-AC_BASE_CHECK(
-  representation of double,
-  AC_BASE_CACHE(
-    base_cv_double base_cv_double_msg,
-    AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, double.cpp, )dnl
-    AC_BASE_VALUE2FLOAT(base_cv_double, base_cv_double_msg, ${ac_base_temp})dnl
-  ),
-  base_cv_double_msg)
-AC_BASE_DEFINE(DOUBLE, ${base_cv_double})
-
-AC_BASE_CHECK(
-  representation of long double,
-  AC_BASE_CACHE(
-    base_cv_long_double base_cv_long_double_msg,
-    AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, long_double.cpp, )dnl
-    AC_BASE_VALUE2FLOAT(base_cv_long_double, base_cv_long_double_msg, ${ac_base_temp})dnl
-  ),
-  base_cv_long_double_msg)
-AC_BASE_DEFINE(LONG_DOUBLE, ${base_cv_long_double})
 
 
 
@@ -1119,9 +938,214 @@ AC_BASE_YES(base_cv_cpp_specification, AC_BASE_DEFINE(CPP_SPECIFICATION))
 
 
 
+dnl Check primitives.
+
+AC_BASE_CHECK(
+  whether char is unsigned,
+  AC_BASE_CACHE(
+    base_cv_unsigned_char,
+    AC_BASE_TRY_CXX_RUN(base_cv_unsigned_char, unsigned_char.cpp)dnl
+  ),
+  base_cv_unsigned_char)
+AC_BASE_YES(base_cv_unsigned_char, AC_BASE_DEFINE(UNSIGNED_CHAR))
+
+AC_BASE_CHECK(
+  size of char,
+  AC_BASE_CACHE(
+    base_cv_char_size,
+    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_char_size, char_size.cpp)dnl
+  ),
+  base_cv_char_size)
+AC_BASE_DEFINE(CHAR_SIZE, $base_cv_char_size)
+
+AC_BASE_CHECK(
+  size of short,
+  AC_BASE_CACHE(
+    base_cv_short_size,
+    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_short_size, short_size.cpp)dnl
+  ),
+  base_cv_short_size)
+AC_BASE_DEFINE(SHORT_SIZE, $base_cv_short_size)
+
+AC_BASE_CHECK(
+  size of int,
+  AC_BASE_CACHE(
+    base_cv_int_size,
+    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_int_size, int_size.cpp)dnl
+  ),
+  base_cv_int_size)
+AC_BASE_DEFINE(INT_SIZE, $base_cv_int_size)
+
+AC_BASE_CHECK(
+  size of long,
+  AC_BASE_CACHE(
+    base_cv_long_size,
+    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_long_size, long_size.cpp)dnl
+  ),
+  base_cv_long_size)
+AC_BASE_DEFINE(LONG_SIZE, $base_cv_long_size)
+
+AC_BASE_CHECK(
+  size of long long,
+  AC_BASE_CACHE(
+    base_cv_long_long_size,
+    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_long_long_size, long_long_size.cpp)dnl
+  ),
+  base_cv_long_long_size)
+AC_BASE_DEFINE(LONG_LONG_SIZE, $base_cv_long_long_size)
+
+AC_BASE_CHECK(
+  size of pointer,
+  AC_BASE_CACHE(
+    base_cv_pointer_size,
+    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_pointer_size, pointer_size.cpp)dnl
+  ),
+  base_cv_pointer_size)
+AC_BASE_DEFINE(POINTER_SIZE, $base_cv_pointer_size)
+
+AC_BASE_CHECK(
+  size of wchar,
+  AC_BASE_CACHE(
+    base_cv_wchar_size,
+    AC_BASE_TRY_CXX_RUNSTATUS(base_cv_wchar_size, wchar_size.cpp)dnl
+   ),
+   base_cv_wchar_size)
+AC_BASE_DEFINE(WCHAR_SIZE, $base_cv_wchar_size)
+
+
+
+
+dnl AC_BASE_VALUE2BYTEORDER(result variable, value)
+AC_DEFUN(AC_BASE_VALUE2BYTEORDER, [dnl
+  if test "x[$2]" = x1; then
+    [$1]="BIG_ENDIAN"
+  elif test "x[$2]" = x2; then
+    [$1]="LITTLE_ENDIAN"
+  else
+    [$1]="UNSPECIFIED"
+  fi
+])
+
+dnl AC_BASE_BYTEORDER2MSG(result variable, value)
+AC_DEFUN(AC_BASE_BYTEORDER2MSG, [dnl
+  if test "x[$]$2" = xBIG_ENDIAN; then
+    [$1]="big endian"
+  elif test "x[$]$2" = xLITTLE_ENDIAN; then
+    [$1]="little endian"
+  else
+    [$1]="unspecified"
+  fi
+])
+
+if test x$base_cv_byte_order != x; then
+  AC_BASE_BYTEORDER2MSG(base_cv_byte_order_msg, base_cv_byte_order)
+fi
+AC_BASE_COMPARE(
+  ${base_explicit_byte_order}, auto,
+  AC_BASE_CHECK(
+    byte order of architecture,
+    AC_BASE_CACHE(
+      base_cv_byte_order,
+      AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, byteorder.c, , Auto-detection of byte order does not work with cross compiler. Please specify byte order explicitly using --enable-byte-order.)dnl
+      AC_BASE_VALUE2BYTEORDER(base_cv_byte_order, ${ac_base_temp})dnl
+      AC_BASE_BYTEORDER2MSG(base_cv_byte_order_msg, base_cv_byte_order)dnl
+    ),
+    base_cv_byte_order_msg),
+  base_cv_byte_order=${base_explicit_byte_order})
+AC_BASE_DEFINE(BYTE_ORDER, ${base_symbol_prefix}${base_cv_byte_order})
+
+if test x$base_cv_word_order != x; then
+  AC_BASE_BYTEORDER2MSG(base_cv_word_order_msg, base_cv_word_order)
+fi
+AC_BASE_COMPARE(
+  ${base_explicit_word_order}, auto,
+  AC_BASE_CHECK(
+    word order of architecture,
+    AC_BASE_CACHE(
+      base_cv_word_order,
+      AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, float_word_order.cpp, , Auto-dection of word order does not work with cross compiler.)dnl
+      AC_BASE_VALUE2BYTEORDER(base_cv_word_order, ${ac_base_temp})dnl
+      AC_BASE_BYTEORDER2MSG(base_cv_word_order_msg, base_cv_word_order)dnl
+    ),
+    base_cv_word_order_msg),
+  base_cv_word_order=${base_explicit_word_order})
+AC_BASE_DEFINE(FLOAT_WORD_ORDER, ${base_symbol_prefix}${base_cv_word_order})
+
+
+
+AC_DEFUN(AC_BASE_VALUE2FLOATING, [dnl
+  if test "x[$2]" = x1; then
+    [$1]="IEEE_754_SINGLE_PRECISION"
+  elif test "x[$2]" = x2; then
+    [$1]="IEEE_754_DOUBLE_PRECISION"
+  elif test "x[$2]" = x3; then
+    [$1]="IEEE_EXTENDED_DOUBLE_PRECISION_96"
+  elif test "x[$2]" = x4; then
+    [$1]="IEEE_EXTENDED_DOUBLE_PRECISION_128"
+  elif test "x[$2]" = x5; then
+    [$1]="IEEE_QUADRUPLE_PRECISION"
+  else
+    [$1]="UNSPECIFIED"
+  fi
+])
+
+AC_DEFUN(AC_BASE_FLOATING2MSG, [dnl
+  if test "x[$]$2" = xIEEE_754_SINGLE_PRECISION; then
+    [$1]="ieee 754 single"
+  elif test "x[$]$2" = xIEEE_754_DOUBLE_PRECISION; then
+    [$1]="ieee 754 double"
+  elif test "x[$]$2" = xIEEE_EXTENDED_DOUBLE_PRECISION_96; then
+    [$1]="ieee extended 96"
+  elif test "x[$]$2" = xIEEE_EXTENDED_DOUBLE_PRECISION_128; then
+    [$1]="ieee extended 128"
+  elif test "x[$]$2" = xIEEE_QUADRUPLE_PRECISION; then
+    [$1]="ieee quadruple"
+  else
+    [$1]="unspecified"
+  fi
+])
+
+AC_BASE_FLOATING2MSG(base_cv_float_msg, base_cv_float)
+AC_BASE_CHECK(
+  representation of float,
+  AC_BASE_CACHE(
+    base_cv_float,
+    AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, float.cpp, )dnl
+    AC_BASE_VALUE2FLOATING(base_cv_float, ${ac_base_temp})dnl
+    AC_BASE_FLOATING2MSG(base_cv_float_msg, base_cv_float)dnl
+  ),
+  base_cv_float_msg)
+AC_BASE_DEFINE(FLOAT, ${base_symbol_prefix}${base_cv_float})
+
+AC_BASE_FLOATING2MSG(base_cv_double_msg, base_cv_double)
+AC_BASE_CHECK(
+  representation of double,
+  AC_BASE_CACHE(
+    base_cv_double,
+    AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, double.cpp, )dnl
+    AC_BASE_VALUE2FLOATING(base_cv_double, ${ac_base_temp})dnl
+    AC_BASE_FLOATING2MSG(base_cv_double_msg, base_cv_double)dnl
+  ),
+  base_cv_double_msg)
+AC_BASE_DEFINE(DOUBLE, ${base_symbol_prefix}${base_cv_double})
+
+AC_BASE_FLOATING2MSG(base_cv_long_double_msg, base_cv_long_double)
+AC_BASE_CHECK(
+  representation of long double,
+  AC_BASE_CACHE(
+    base_cv_long_double,
+    AC_BASE_TRY_CXX_RUNSTATUS(ac_base_temp, long_double.cpp, )dnl
+    AC_BASE_VALUE2FLOATING(base_cv_long_double, ${ac_base_temp})dnl
+    AC_BASE_FLOATING2MSG(base_cv_long_double_msg, base_cv_long_double)dnl
+  ),
+  base_cv_long_double_msg)
+AC_BASE_DEFINE(LONG_DOUBLE, ${base_symbol_prefix}${base_cv_long_double})
+
+
+
 dnl Checks for typedefs, structures, and compiler characteristics.
 
-if test "${ac_base_flavor}" = unix; then
+if test x$base_cv_flavor = xUNIX; then
 AC_BASE_CHECK(
   whether the type socklen_t is available,
   AC_BASE_CACHE(
@@ -1134,155 +1158,106 @@ fi dnl end of unix
 
 
 
-dnl Checks for library functions.
+dnl checks for library functions.
 
-dnl Handle network support
-case "${ac_base_flavor}" in
-unix)
-  if test "${base_explicit_inet_ipv6}" = auto; then
+dnl network support
+base_cv_component_socket=yes
+
+case $base_cv_flavor in
+UNIX)
+  if test x$base_explicit_inet_ipv6 = xauto; then
     AC_BASE_CHECK(
-      whether IPv6 is supported by the operating system,
+      whether IPv6 is supported,
       AC_BASE_CACHE(
-        base_cv_inet_ipv6 base_cv_inet_ipv6_libs,
-        AC_BASE_ATTEMPT(
-          base_cv_inet_ipv6,
-          base_cv_inet_ipv6_libs,
-          "" -lsocket "-lsocket -lnsl",
-          AC_BASE_TRY_CXX_RUN(base_cv_inet_ipv6, ipv6.c, ${base_cv_inet_ipv6_libs}, Auto-detection of IPv6 support does not work with cross compiler.)dnl
-        )
+        base_cv_api_inet_ipv6,
+        AC_BASE_TRY_CXX_LINK(base_cv_api_inet_ipv6, ipv6.c)dnl
       ),
-      base_cv_inet_ipv6,
-      base_cv_inet_ipv6_libs)
-    base_explicit_inet_ipv6=${base_cv_inet_ipv6}
+      base_cv_api_inet_ipv6)
   fi
-  AC_BASE_YES(
-    base_explicit_inet_ipv6,
-    AC_BASE_DEFINE_PRIVATE(INET_IPV6)
-    AC_BASE_ADDLIB(${base_cv_inet_ipv6_libs}))
 ;;
-win32)
-  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-lws2_32'
+*)
+  base_cv_api_inet_ipv6=$base_explicit_inet_ipv6
 ;;
 esac
+AC_BASE_YES(base_cv_api_inet_ipv6, AC_BASE_DEFINE_PRIVATE(INET_IPV6))
 
 
 
-dnl Handle sound support
-case "${ac_base_flavor}" in
-unix)
-;;
-win32)
-  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-lwinmm'
-;;
-esac
+# sound support
+base_cv_component_sound=yes
 
 
 
-if test "${ac_base_flavor}" = unix; then
-if test ${base_explicit_large_file_system} = auto; then
+if test x$base_cv_flavor = xUNIX; then
+
+if test x$base_explicit_large_file_system = xauto; then
   AC_BASE_CHECK(
     whether Large File System is supported by the operating system,
     AC_BASE_CACHE(
-      base_cv_large_file_system,
-      AC_BASE_TRY_CXX_LINK(base_cv_large_file_system, largefile.c, , Auto-detection of Large File System does not work with cross compiler.)
+      base_cv_api_lfs,
+      AC_BASE_TRY_CXX_LINK(base_cv_api_lfs, largefile.c, , Auto-detection of Large File System does not work with cross compiler.)
     ),
-    base_cv_large_file_system)
-  base_explicit_large_file_system=${base_cv_large_file_system}
+    base_cv_api_lfs)
+else
+  base_cv_api_lfs=base_explicit_large_file_system
 fi
-AC_BASE_YES(base_explicit_large_file_system, AC_BASE_DEFINE_PRIVATE(LARGE_FILE_SYSTEM))
+AC_BASE_YES(base_cv_api_lfs, AC_BASE_DEFINE_PRIVATE(LARGE_FILE_SYSTEM))
+base_cv_component_lfs=$base_cv_api_lfs
 
 
 
-if test ${base_explicit_aio} = auto; then
+if test x$base_explicit_aio = xauto; then
   AC_BASE_CHECK(
     whether asynchronous io is supported by the operating system,
     AC_BASE_CACHE(
-      base_cv_aio,
-      AC_BASE_TRY_CXX_COMPILE(base_cv_aio, aio.c, , Auto-detection of asynchronous io does not work with cross compiler.)
+      base_cv_api_aio,
+      AC_BASE_TRY_CXX_COMPILE(base_cv_api_aio, aio.c, , Auto-detection of asynchronous io does not work with cross compiler.)
     ),
-    base_cv_aio)
-  base_explicit_aio=${base_cv_aio}
+    base_cv_api_aio)
+else
+  base_cv_api_aio=$base_explicit_aio
 fi
 AC_BASE_YES(
-  base_explicit_aio,
+  base_cv_api_aio,
   AC_BASE_DEFINE_PRIVATE(AIO)
-  AC_BASE_ADDLIB(-lrt))
+  AC_BASE_ADDLIB(-lrt)) dnl TAG: FIXME
+base_cv_component_aio=$base_cv_api_aio
 
 fi dnl end of unix
 
 
 
 AC_BASE_EQUAL(${base_explicit_threads}, posix,
-dnl Check POSIX thread support
+dnl check POSIX thread support
 
 AC_BASE_CHECK(
-  whether POSIX thread API is supported,
+  whether POSIX thread is supported,
   AC_BASE_CACHE(
-    base_cv_pthread base_cv_pthread_libs,
-    AC_BASE_ATTEMPT(
-      base_cv_pthread,
-      base_cv_pthread_libs,
-      "" -lpthread,
-      AC_BASE_TRY_CXX_RUN(base_cv_pthread, pthread.c, ${base_cv_pthread_libs}, Auto-detection of POSIX thread support does not work with cross compiler.)dnl
-    )
+    base_cv_api_pthread,
+    AC_BASE_TRY_CXX_LINK(base_cv_api_pthread, pthread.c)dnl
   ),
-  base_cv_pthread,
-  base_cv_pthread_libs)
-AC_BASE_NO(base_cv_pthread, AC_MSG_ERROR(The compiler does not support POSIX threads))
-AC_BASE_ADDLIB(${base_cv_pthread_libs})
+  base_cv_api_pthread)
+AC_BASE_YES(base_cv_api_pthread, AC_BASE_DEFINE_PRIVATE(PTHREAD))
 
-AC_BASE_CHECK(
-  whether pthread_yield is provided by the POSIX thread library,
-  AC_BASE_CACHE(
-    base_cv_pthread_yield base_cv_pthread_yield_libs,
-    AC_BASE_ATTEMPT(
-      base_cv_pthread_yield,
-      base_cv_pthread_yield_libs,
-      "" -lpthread,
-      AC_BASE_TRY_CXX_LINK(base_cv_pthread_yield, pthread_yield.c, ${base_cv_pthread_yield_libs})dnl
-    )
-  ),
-  base_cv_pthread_yield,
-  base_cv_pthread_yield_libs)
-AC_BASE_YES(
-  base_cv_pthread_yield,
-  AC_BASE_DEFINE_PRIVATE(PTHREAD_YIELD)
-  AC_BASE_ADDLIB(${base_cv_pthread_yield_libs}))
+AC_BASE_CHECK_CFUNCTION_PRIVATE(pthread_yield)
 
 AC_BASE_CHECK(
   whether POSIX semaphore is supported,
   AC_BASE_CACHE(
-    base_cv_pthread_semaphore base_cv_pthread_semaphore_libs,
-    AC_BASE_ATTEMPT(
-      base_cv_pthread_semaphore,
-      base_cv_pthread_semaphore_libs,
-      "" -lpthread -lrt,
-      AC_BASE_TRY_CXX_LINK(base_cv_pthread_semaphore, pthread_semaphore.c, ${base_cv_pthread_semaphore_libs})dnl
-    )
+    base_cv_api_pthread_semaphore,
+    AC_BASE_TRY_CXX_LINK(base_cv_api_pthread_semaphore, pthread_semaphore.c)dnl
   ),
-  base_cv_pthread_semaphore,
-  base_cv_pthread_semaphore_libs)
-AC_BASE_YES(
-  base_cv_pthread_semaphore,
-  AC_BASE_DEFINE_PRIVATE(PTHREAD_SEMAPHORE)
-  AC_BASE_ADDLIB(${base_cv_pthread_semaphore_libs}))
+  base_cv_api_pthread_semaphore)
+AC_BASE_YES(base_cv_api_pthread_semaphore, AC_BASE_DEFINE_PRIVATE(PTHREAD_SEMAPHORE))
 
 AC_BASE_CHECK(
-  whether POSIX read-write lock is supported,
+  whether POSIX optimal read-write lock is supported,
   AC_BASE_CACHE(
-    base_cv_pthread_rwlock base_cv_pthread_rwlock_libs,
-    AC_BASE_ATTEMPT(
-      base_cv_pthread_rwlock,
-      base_cv_pthread_rwlock_libs,
-      "" -lpthread,
-      AC_BASE_TRY_CXX_LINK(base_cv_pthread_rwlock, pthread_rwlock.c, ${base_cv_pthread_rwlock_libs})dnl
-    )
+    base_cv_api_pthread_rwlock,
+    AC_BASE_TRY_CXX_LINK(base_cv_api_pthread_rwlock, pthread_rwlock.c)dnl
   ),
-  base_cv_pthread_rwlock,
-  base_cv_pthread_rwlock_libs)
-AC_BASE_YES(base_cv_pthread_rwlock,
-  AC_BASE_DEFINE_PRIVATE(PTHREAD_RWLOCK)
-  AC_BASE_ADDLIB(${base_cv_pthread_rwlock_libs}))
+  base_cv_api_pthread_semaphore)
+AC_BASE_YES(base_cv_api_pthread_rwlock, AC_BASE_DEFINE_PRIVATE(PTHREAD_RWLOCK))
 
 ) dnl end of posix thread support
 
@@ -1292,11 +1267,11 @@ AC_BASE_EQUAL(${base_explicit_regexp}, auto,
   AC_BASE_CHECK(
     whether POSIX Regular Expression interface is available,
     AC_BASE_CACHE(
-      base_cv_regex_available,
-      AC_BASE_TRY_CXX_RUN(base_cv_regex_available, regex.c)dnl
+      base_cv_api_regex,
+      AC_BASE_TRY_CXX_RUN(base_cv_api_regex, regex.c)dnl
     ),
-    base_cv_regex_available)
-  AC_BASE_YES(base_cv_regex_available, AC_BASE_DEFINE_PRIVATE(REGEXP_POSIX)))
+    base_cv_api_regex)
+  AC_BASE_YES(base_cv_api_regex, AC_BASE_DEFINE_PRIVATE(REGEXP_POSIX)))
 
 AC_BASE_EQUAL(${base_explicit_regexp}, posix, AC_BASE_DEFINE_PRIVATE(REGEXP_POSIX))
 
@@ -1310,44 +1285,44 @@ AC_BASE_EQUAL(${base_explicit_wide}, auto,
   AC_BASE_CHECK(
     whether wide-character interface is available,
     AC_BASE_CACHE(
-      base_cv_wide_available,
-      AC_BASE_TRY_CXX_LINK(base_cv_wide_available, wide.c)dnl
+      base_cv_api_wide,
+      AC_BASE_TRY_CXX_LINK(base_cv_api_wide, wide.c)dnl
     ),
-    base_cv_wide_available)
-  AC_BASE_YES(base_cv_wide_available, AC_BASE_DEFINE(WIDE)))
-AC_BASE_YES(base_explicit_wide, AC_BASE_DEFINE(WIDE))
+    base_cv_api_wide)
+  AC_BASE_YES(base_cv_api_wide, AC_BASE_DEFINE_PRIVATE(WIDE)))
+AC_BASE_YES(base_explicit_wide, AC_BASE_DEFINE_PRIVATE(WIDE))
 
 
 
-dnl Detect whether some functions are available
+dnl detect whether some functions are available
 AC_BASE_CHECK_CFUNCTION(memchr)
 AC_BASE_CHECK_CFUNCTION(memcmp)
 AC_BASE_CHECK_CFUNCTION(memcpy)
 AC_BASE_CHECK_CFUNCTION(memmove)
 AC_BASE_CHECK_CFUNCTION(memset)
 
-if test "x${ac_base_flavor}" = "xunix"; then
-AC_BASE_CHECK_CFUNCTION_PRIVATE(pselect)
-AC_BASE_CHECK_CFUNCTION_PRIVATE(readdir_r)
-AC_BASE_CHECK_CFUNCTION_PRIVATE(nanosleep)
-AC_BASE_CHECK_CFUNCTION_PRIVATE(mbrtowc)
-AC_BASE_CHECK_CFUNCTION_PRIVATE(mbsrtowcs)
+if test x$base_cv_flavor = xUNIX; then
+  AC_BASE_CHECK_CFUNCTION_PRIVATE(pselect)
+  AC_BASE_CHECK_CFUNCTION_PRIVATE(readdir_r)
+  AC_BASE_CHECK_CFUNCTION_PRIVATE(nanosleep)
+  AC_BASE_CHECK_CFUNCTION_PRIVATE(mbrtowc)
+  AC_BASE_CHECK_CFUNCTION_PRIVATE(mbsrtowcs)
 fi
 
 
 
-dnl Add VERSION resource to the dynamic library on Windows platforms (i.e. cygwin or mingw targets)
-case "${ac_cv_target}" in
+dnl add VERSION resource to the dynamic library on Windows platforms (i.e. cygwin or mingw targets)
+dnl the -Wl option is used to circumvent libtool
+case $base_cv_target in
 *-*-cygwin|*-*-mingw32)
-  dnl The -Wl option is used to circumvent libtool
   BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-Wl,win32rc.o'
   BASE_DEPENDENCIES="${BASE_DEPENDENCIES}${BASE_DEPENDENCIES:+ }"'win32rc.o'
-  ;;
+;;
 esac
 
 
 
-dnl Define some describing symbols
+dnl define some describing symbols
 AC_BASE_DEFINE_PRIVATE(CONFIGURE, [\"]${ac_configure_args}[\"])
 AC_BASE_DEFINE_PRIVATE(BUILD_DATE, [\"]${ac_base_build_date}[\"])
 AC_BASE_DEFINE_PRIVATE(BUILD_USER, [\"]${ac_base_build_user}[\"])
@@ -1355,46 +1330,93 @@ AC_BASE_DEFINE_PRIVATE(BUILD_HOST, [\"]${ac_base_build_host}[\"])
 AC_BASE_DEFINE_PRIVATE(BUILD_SYSTEM, [\"]${ac_cv_build}[\"])
 AC_BASE_DEFINE_PRIVATE(TARGET_SYSTEM, [\"]${ac_cv_target}[\"])
 
-dnl Tell the compiler where it should look for the generated and static framework headers
+dnl tell the compiler where it should look for the generated and static framework headers
 if (test -f base/features.h) then
-  dnl We are building directly in the source tree
+  dnl we are building directly in the source tree
   BASE_INCLUDES='-I${top_srcdir}'"${BASE_INCLUDES:+ }${BASE_INCLUDES}"
 else
-  dnl We are building in a separate directory tree
-  dnl Tell the compiler where it should look for the generated and static framework headers
+  dnl we are building in a separate directory tree
+  dnl tell the compiler where it should look for the generated and static framework headers
   BASE_INCLUDES='-I${top_builddir} -I${top_srcdir}'"${BASE_INCLUDES:+ }${BASE_INCLUDES}"
 fi
 
 
 
-dnl Remove temporary files
-${base_cleanup}
+dnl add required libraries
+for entry in $base_cv_libraries; do
+  case $entry in
+  *:*)
+    library=${entry/*:}
+    component=${entry/:*}
+    if test x$component = "x-"; then
+      continue;
+    fi
+    ac_base_temp=base_cv_component_$component
+    if test x${!ac_base_temp} != xyes; then
+      continue;
+    fi
+  ;;
+  *)
+    library=$entry
+  ;;
+  esac
+  AC_BASE_ADDLIB("-l$library")
+done
+
+# TAG: make sure the same lib is given only once (use the last one)
+
+dnl add libc feature enabling defines
+for entry in $base_cv_features; do
+  case $entry in
+  *:*)
+    feature=${entry/*:}
+    component=${entry/:*}
+    ac_base_temp=base_cv_component_$component
+    if test x${!ac_base_temp} != xyes; then
+      continue;
+    fi
+  ;;
+  *)
+    feature=$entry
+  ;;
+  esac
+  
+  case $feature in
+  *=*) AC_BASE_DEFINE_FEATURE(${feature/=*}, ${feature/*=});;
+  *) AC_BASE_DEFINE_FEATURE(${feature});;
+  esac
+done
 
 
 
-dnl Configure test suite
+dnl remove temporary files
+$base_cleanup
+
+
+
+dnl configure test suite
 ac_base_testsuite=no
-if test "${base_explicit_testsuite}" = auto; then
-  if (test -d ${srcdir}/testsuite); then
+if test x$base_explicit_testsuite = xauto; then
+  if (test -d $srcdir/testsuite); then
     ac_base_testsuite=yes
   else
     ac_base_testsuite=no
   fi
-elif test "${base_explicit_testsuite}" = yes; then
-  if (test -d ${srcdir}/testsuite); then
+elif test x$base_explicit_testsuite = xyes; then
+  if (test -d $srcdir/testsuite); then
     ac_base_testsuite=yes
   else
     AC_MSG_ERROR("The test suite is not available.")
   fi
 fi
 
-if test ${ac_base_testsuite} = yes; then
+if test x$ac_base_testsuite = xyes; then
   BASE_MODULES="${BASE_MODULES}${BASE_MODULES:+ }testsuite"
 fi
 
 
 
-dnl We rename some variables to avoid automake reporting them as being unused
+dnl we rename some variables to avoid automake reporting them as being unused
 INCLUDES_BASE=${BASE_INCLUDES}
 AC_SUBST(INCLUDES_BASE)
 LIBS_BASE=${BASE_LIBS}
@@ -1412,7 +1434,7 @@ AC_SUBST(MODULE_ARGUMENTS_BASE)
 
 
 
-dnl Store information for uninstalled project
+dnl store information for uninstalled project
 echo "DATETIME: `date --iso-8601=seconds`" > base-framework.dsc
 echo "VERSION: 0.9.1" >> base-framework.dsc
 echo "SRCDIR: ${srcdir}" >> base-framework.dsc
@@ -1428,31 +1450,97 @@ echo "STATIC LIBS: " >> base-framework.dsc
 
 
 
-dnl Store the public configuration
+dnl store probed and/or static configuration
+echo "dumping probed (final) target configuration..."
+
+# functions
+functions="mbrtowc mbsrtowcs memchr memcmp memcpy memmove memset nanosleep pselect pthread_yield readdir_r yield"
+
+available_functions=
+for function in $functions; do
+  ac_base_temp=base_cv_function_$function
+  if test x${!ac_base_temp} = xyes; then
+    available_functions=${available_functions}${available_functions:+ }$function
+  fi
+done
+
+# apis
+apis="aio inet_ipv6 lfs pthread pthread_rwlock pthread_semaphore regexp wide"
+
+available_api=
+for api in $apis; do
+  ac_base_temp=base_cv_api_$api
+  if test x${!ac_base_temp} = xyes; then
+    available_apis=${available_apis}${available_apis:+ }$api
+  fi
+done
+
+cat > "${ac_base_target-target}.probed" << EOF
+flavor=$base_cv_flavor
+
+# architecture
+arch=$base_cv_arch
+arch_minor=$base_cv_arch_minor
+
+# primitive type
+unsigned_char=$base_cv_unsigned_char
+
+# size of primitive
+char_size=$base_cv_char_size
+short_size=$base_cv_short_size
+int_size=$base_cv_int_size
+long_size=$base_cv_long_size
+long_long_size=$base_cv_long_long_size
+wchar_size=$base_cv_wchar_size
+pointer_size=$base_cv_pointer_size
+
+# byte order
+byte_order=$base_cv_byte_order
+word_order=$base_cv_word_order
+
+# floating-point representation
+float=$base_cv_float
+double=$base_cv_double
+long_double=$base_cv_long_double
+
+# os
+os=$base_cv_os
+os_minor=$base_cv_os_minor
+
+# functions
+functions="$available_functions"
+
+# apis
+apis="$available_apis"
+EOF
+
+
+
+dnl store the public configuration
 ac_base_header=base/configuration.h
-if test -f ${ac_base_header} && diff -q ${ac_base_public_config} ${ac_base_header} >&AC_FD_CC 2>&AC_FD_CC; then
+if test -f $ac_base_header && diff -q $ac_base_public_config $ac_base_header >&AC_FD_CC 2>&AC_FD_CC; then
   echo "public configuration is already up-to-date..."
 else
   echo "updating public configuration..."
   mkdir -p base
-  mv ${ac_base_public_config} ${ac_base_header}
+  mv $ac_base_public_config $ac_base_header
 fi
 
 
 
-dnl Store the private configuration
+dnl store the private configuration
 ac_base_header=base/platforms/configuration.h
-if test -f ${ac_base_header} && diff -q ${ac_base_private_config} ${ac_base_header} >&AC_FD_CC 2>&AC_FD_CC; then
+if test -f $ac_base_header && diff -q $ac_base_private_config $ac_base_header >&AC_FD_CC 2>&AC_FD_CC; then
   echo "private configuration is already up-to-date..."
 else
-  if grep -v _DK_SDU_MIP__BASE__BUILD_DATE ${ac_base_private_config} > private.new.tmp 2>&AC_FD_CC &&
-     grep -v _DK_SDU_MIP__BASE__BUILD_DATE ${ac_base_header} > private.old.tmp 2>&AC_FD_CC &&
+  if grep -v ${base_symbol_prefix}BUILD_DATE $ac_base_private_config > private.new.tmp 2>&AC_FD_CC &&
+     grep -v ${base_symbol_prefix}BUILD_DATE $ac_base_header > private.old.tmp 2>&AC_FD_CC &&
      diff -q private.new.tmp private.old.tmp >&AC_FD_CC 2>&AC_FD_CC; then
     echo "private configuration not updated because only DATE would change"
   else
     echo "updating private configuration header..."
     mkdir -p base/platforms
-    mv ${ac_base_private_config} ${ac_base_header}
+    mv $ac_base_private_config $ac_base_header
   fi
   test -f private.new.tmp && rm private.new.tmp
   test -f private.old.tmp && rm private.old.tmp
@@ -1460,7 +1548,7 @@ fi
 
 
 
-dnl Generate make files
+dnl generate make files
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(config/Makefile)
 

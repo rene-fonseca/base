@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Iterator used to traverse elements of a sequence (not to be confused with the
   Array collection).
 
-  @short Iterator of elements of a sequence.
+  @short Iterator of elements of a sequence
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version  1.0
 */
@@ -119,12 +119,6 @@ public:
     return *this;
   }
 
-  inline SequenceIterator operator+(Distance distance) throw() {
-    SequenceIterator result(*this);
-    result += distance;
-    return result;
-  }
-
   /**
     Returns true if the iterators are equal.
   */
@@ -173,6 +167,13 @@ public:
   inline Pointer getValue() const throw() {
     return element;
   }
+
+  /**
+    Returns the element at the specified index from this element.
+  */
+  inline Reference operator[](int index) const throw() {
+    return element[index];
+  }
 };
 
 template<class LTRAITS, class RTRAITS>
@@ -181,17 +182,15 @@ inline long operator-(const SequenceIterator<LTRAITS>& left, const SequenceItera
 }
 
 template<class TYPE>
-inline SequenceIterator<TYPE> operator-(SequenceIterator<TYPE> left, int right) throw() {
-  SequenceIterator<TYPE> temp = left;
-  temp -= right;
-  return temp;
+inline SequenceIterator<TYPE> operator-(const SequenceIterator<TYPE>& left, int right) throw() {
+  SequenceIterator<TYPE> temp(left);
+  return temp -= right;
 }
 
 template<class TYPE>
-inline SequenceIterator<TYPE> operator+(SequenceIterator<TYPE> left, int right) throw() {
-  SequenceIterator<TYPE> temp = left;
-  temp += right;
-  return temp;
+inline SequenceIterator<TYPE> operator+(const SequenceIterator<TYPE>& left, int right) throw() {
+  SequenceIterator<TYPE> temp(left);
+  return temp += right;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

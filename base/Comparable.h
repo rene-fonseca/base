@@ -22,7 +22,7 @@ public:
     @param object Object to be compared.
     @return True if the object are equal.
   */
-  virtual bool operator==(const Comparable& comparable) const {return (this == &comparable);};
+  virtual bool operator==(const Comparable& comparable) const {return (this == &comparable);}
 };
 
 #endif

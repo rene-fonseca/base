@@ -6,11 +6,12 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__ARRAY_H
 #define _DK_SDU_MIP__BASE_MEM__ARRAY_H
 
-#include "base/Object.h"
-#include "base/collection/Enumeration.h"
-#include "base/MemoryException.h"
-#include "ReferenceCountedObject.h"
-#include "base/string/FormatOutputStream.h"
+#include <base/Object.h>
+#include <base/collection/Enumeration.h>
+#include <base/MemoryException.h>
+#include <base/mem/Allocator.h>
+#include <base/mem/ReferenceCountedObject.h>
+#include <base/string/FormatOutputStream.h>
 #include <string.h>
 
 /**
@@ -48,11 +49,9 @@ template<class TYPE> class ArrayEnumeration;
 */
 
 template<class TYPE>
-class Array : public ReferenceCountedObject {
+class Array : public ReferenceCountedObject, private Allocator {
 protected:
 
-  /** The elements of the array. */
-  TYPE* elements;
   /** The number of elements in the array. */
   unsigned int size;
 private:
@@ -67,26 +66,26 @@ public:
 
     @param size Specifies the initial size of the array. Default is 0.
   */
-  explicit Array(unsigned int size = 0) throw(MemoryException);
+  inline explicit Array(unsigned int size = 0) throw(MemoryException) : Allocator(size * sizeof(TYPE)) {}
 
   /**
     Initializes the array by copying the from the specified array. Throws
     'MemoryException' if unable to allocate the required memory.
   */
-  Array(const Array& copy) throw(MemoryException);
+  Array(const Array& copy) throw(MemoryException) : Allocator(copy), size(copy.size) {}
 
   /**
     Returns the elements of the array.
   */
   inline TYPE* getElements() throw() {
-    return elements;
+    return (TYPE*)Allocator::getMemory();
   }
 
   /**
     Returns the elements of the array.
   */
   inline const TYPE* getElements() const throw() {
-    return elements;
+    return (TYPE*)Allocator::getMemory();
   }
 
   /**
@@ -103,7 +102,12 @@ public:
 
     @param size The desired size.
   */
-  void setSize(unsigned int size) throw(MemoryException);
+  inline void setSize(unsigned int size) throw(MemoryException) {
+    if (size != this->size) {
+      this->size = size;
+      Allocator::setSize(size * sizeof(TYPE));
+    }
+  }
 
   /**
     Returns an enumeration of all the elements in this array.
@@ -118,11 +122,6 @@ public:
   inline ArrayEnumeration<const TYPE> getReadOnlyEnumeration() const throw() {
     return ArrayEnumeration<const TYPE>(*this);
   }
-
-  /**
-    Destroys the array.
-  */
-  ~Array() throw();
 };
 
 
@@ -179,8 +178,18 @@ public:
     current += first;
   }
 
-  ArrayEnumeration(const ArrayEnumeration& copy) throw();
-  ArrayEnumeration& operator=(const ArrayEnumeration& eq) throw();
+  /**
+    Initializes enumeration from other enumeration.
+  */
+  inline ArrayEnumeration(const ArrayEnumeration& copy) throw() : current(copy.current), end(copy.end) {}
+
+  /**
+    Assignment of enumeration by enumeration.
+  */
+/*  ArrayEnumeration& operator=(const ArrayEnumeration& eq) throw() {
+    current = eq.current;
+    end = eq.end;
+  }*/
 
   /**
     Returns true if not all the elements have been enumerated.
@@ -244,8 +253,12 @@ public:
     current += first;
   }
 
-  ArrayEnumeration(const ArrayEnumeration& copy) throw();
-  ArrayEnumeration& operator=(const ArrayEnumeration& eq) throw();
+  /**
+    Initializes enumeration from other enumeration.
+  */
+  inline ArrayEnumeration(const ArrayEnumeration& copy) throw() : current(copy.current), end(copy.end) {}
+
+//  ArrayEnumeration& operator=(const ArrayEnumeration& eq) throw();
 
   /**
     Returns true if not all the elements have been enumerated.

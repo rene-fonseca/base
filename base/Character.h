@@ -15,56 +15,68 @@
   @version 1.0
 */
 
-class Character : public Object, public Copyable {
+class Character : public Object {
 protected:
 
   /** The value. */
-  char val;
+  char value;
 public:
 
   /**
     Initializes the character as '\0'.
   */
-  inline Character() throw() : val('\0') {}
+  inline Character() throw() : value('\0') {}
 
   /**
     Initializes the character. Implicit initialization with native type allowed.
 
     @param value The desired value.
   */
-  inline Character(char value) throw() : val(value) {}
+  inline Character(char value) throw() : value(value) {}
 
   /**
     Initializes character from other character object.
   */
-  inline Character(const Character& copy) throw() : val(copy.val) {}
+  inline Character(const Character& copy) throw() : value(copy.value) {}
 
   /**
     Assignment of character to this object.
   */
-  inline Character& operator=(const Character eq) throw() {val = eq.val;}
+  inline Character& operator=(const Character& eq) throw() {
+    value = eq.value;
+    return *this;
+  }
 
   /**
     Assignment of native type to this object.
   */
-  inline Character& operator=(char eq) throw() {val = eq;}
+  inline Character& operator=(char value) throw() {
+    this->value = value;
+    return *this;
+  }
 
   /**
     Gets the value of the character.
   */
-  inline char getValue() const throw() {return val;}
+  inline char getValue() const throw() {
+    return value;
+  }
 
   /**
     Sets the value of the character.
 
     @param value The desired value.
   */
-  inline void setValue(char value) throw() {val = value;}
+  inline void setValue(char value) throw() {
+    this->value = value;
+  }
 
   /**
     Casts character to native type.
   */
-  inline operator char() const throw() {return val;}
+  inline operator char() const throw() {
+    return value;
+  }
 };
 
 #endif

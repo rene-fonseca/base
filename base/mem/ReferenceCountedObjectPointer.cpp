@@ -3,7 +3,8 @@
     email                : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "ReferenceCountedObjectPointer.h"
+#include <base/mem/ReferenceCountedObjectPointer.h>
+
 /*
 class AAA : public ReferenceCountedObject {
 public:

@@ -15,7 +15,7 @@
   @version 1.0
 */
 
-class LongInteger : public Object, public Copyable {
+class LongInteger : public Object {
 public:
 
   /** True if the integer type is signed. */
@@ -27,47 +27,56 @@ public:
 protected:
 
   /** The value. */
-  long long val;
+  long long value;
 public:
 
   /**
     Initializes the long integer as zero.
   */
-  inline LongInteger() throw() : val(0) {}
+  inline LongInteger() throw() : value(0) {}
 
   /**
     Initializes the long integer with the specified value. Implicit initialization allowed.
 
     @param value The desired value.
   */
-  inline LongInteger(long long value) throw() : val(value) {}
+  inline LongInteger(long long value) throw() : value(value) {}
 
   /**
-    Copy constructor. Initializes a new LongInteger from other LongInteger object.
+    Initializes integer by copying from other integer.
   */
-  LongInteger(const LongInteger& copy) throw(); // use default copy object policy
+  inline LongInteger(const LongInteger& copy) throw() : value(copy.value) {}
 
   /**
-    Assignment operator.
+    Assignment of integer to this integer.
   */
-  const LongInteger& operator=(long long value) const throw(); // use default assignment object policy
+  inline LongInteger& operator=(const LongInteger& eq) throw() {
+    value = eq.value;
+    return *this;
+  }
 
   /**
     Gets the value of the integer.
   */
-  inline long long getValue() const throw() {return val;}
+  inline long long getValue() const throw() {
+    return value;
+  }
 
   /**
     Sets the value of the integer.
 
     @param value The desired value.
   */
-  inline void setValue(long long value) throw() {val = value;}
+  inline void setValue(long long value) throw() {
+    this->value = value;
+  }
 
   /**
     Casts integer to native type.
   */
-  inline operator long long() const throw() {return val;}
+  inline operator long long() const throw() {
+    return value;
+  }
 };
 
 #endif

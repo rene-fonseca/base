@@ -99,7 +99,7 @@ bool Vector2D<TYPE>::isParallel(const Vector2D& value) const throw() {
 
 template<class TYPE>
 Vector2D<TYPE> Vector2D<TYPE>::plus() const throw() {
-  return Vector2D();
+  return Vector2D(*this);
 }
 
 template<class TYPE>

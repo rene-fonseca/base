@@ -20,11 +20,13 @@
 
 class FormatOutputStream : public BufferedOutputStream {
 public:
+
   /** Digits of all bases. */
-  static const char DIGITS[] = "0123456789abcdef";
+  static const char DIGITS[]; // = "0123456789abcdef";
   /** Actions changing the format stream. */
   typedef enum {BIN, OCT, DEC, HEX, ZEROPAD, NOZEROPAD, PREFIX, NOPREFIX, EOL, FLUSH} Action;
 protected:
+
   unsigned int defaultWidth;
   unsigned int defaultBase;
   unsigned int defaultFlags;

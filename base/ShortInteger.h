@@ -16,7 +16,7 @@
   @version 1.0
 */
 
-class ShortInteger : public Object, public Copyable {
+class ShortInteger : public Object {
 public:
 
   /** True if the integer type is signed. */
@@ -28,47 +28,56 @@ public:
 protected:
 
   /** The value. */
-  int val;
+  short int value;
 public:
 
   /**
     Initializes the short integer as zero.
   */
-  inline ShortInteger() throw() : val(0) {};
+  inline ShortInteger() throw() : value(0) {}
 
   /**
     Initializes the short integer with the specified value. Implicit initialization allowed.
 
     @param value The desired value.
   */
-  inline ShortInteger(short int value) throw() : val(value) {};
+  inline ShortInteger(short int value) throw() : value(value) {}
 
   /**
     Copy constructor. Initializes a new ShortInteger from other ShortInteger object.
   */
-  ShortInteger(const ShortInteger& copy) throw(); // use default copy object policy
+  inline ShortInteger(const ShortInteger& copy) throw() : value(copy.value) {}
 
   /**
     Assignment operator.
   */
-  ShortInteger& operator=(short int value) const throw(); // use default assignment object policy
+  inline ShortInteger& operator=(const ShortInteger& eq) throw() {
+    value = eq.value;
+    return *this;
+  }
 
   /**
     Gets the value of the integer.
   */
-  inline short int getValue() const throw() {return val;};
+  inline short int getValue() const throw() {
+    return value;
+  }
 
   /**
     Sets the value of the integer.
 
     @param value The desired value.
   */
-  inline void setValue(short int value) throw() {val = value;};
+  inline void setValue(short int value) throw() {
+    this->value = value;
+  }
 
   /**
     Casts integer to native type.
   */
-  inline operator short int() const throw() {return val;};
+  inline operator short int() const throw() {
+    return value;
+  }
 };
 
 #endif

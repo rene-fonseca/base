@@ -20,7 +20,7 @@
   @version 1.0
 */
 
-class Integer : public Object, public Copyable {
+class Integer : public Object {
 public:
 
   /** True if the integer type is signed. */
@@ -32,47 +32,64 @@ public:
 protected:
 
   /** The value. */
-  int val;
+  int value;
 public:
 
   /**
     Initializes the integer as zero.
   */
-  inline Integer() throw() : val(0) {}
+  inline Integer() throw() : value(0) {}
 
   /**
     Initializes the integer with the specified value. Implicit initialization allowed.
 
     @param value The desired value.
   */
-  inline Integer(int value) throw() : val(value) {}
+  inline Integer(int value) throw() : value(value) {}
 
   /**
     Copy constructor. Initializes a new Integer from other Integer object.
   */
-  Integer(const Integer& copy) throw(); // use default copy object policy
+  inline Integer(const Integer& copy) throw() : value(copy.value) {}
 
   /**
-    Assignment operator.
+    Assignment of integer to this integer.
   */
-  Integer& operator=(int value) const throw(); // use default assignment object policy
+  inline Integer& operator=(const Integer& eq) throw() {
+    value = eq.value;
+    return *this;
+  }
+
+  /**
+    Assignment of native type to this integer.
+  */
+  inline Integer& operator=(int value) throw() {
+    this->value = value;
+    return *this;
+  }
 
   /**
     Gets the value of the integer.
   */
-  inline int getValue() const throw() {return val;}
+  inline int getValue() const throw() {
+    return value;
+  }
 
   /**
     Sets the value of the integer.
 
     @param value The desired value.
   */
-  inline void setValue(int value) throw() {val = value;}
+  inline void setValue(int value) throw() {
+    this->value = value;
+  }
 
   /**
     Casts integer to native type.
   */
-  inline operator int() const throw() {return val;}
+  inline operator int() const throw() {
+    return value;
+  }
 };
 
 #endif

@@ -7,8 +7,6 @@
 #define _DK_SDU_MIP__BASE__OBJECT_H
 
 #include "config.h"
-#include <base/Copyable.h>
-#include <base/Comparable.h>
 
 /**
   The base class of all non-abstract classes. Objects are not copyable as default.
@@ -21,15 +19,15 @@ class Object {
 private:
 
   /* Disable the default copy constructor. */
-  Object(const Object& object);
+  inline Object(const Object& copy) {}
   /* Disable the default assignment operator. */
-  Object& operator=(const Object& object);
+  inline Object& operator=(const Object& eq) {return *this;}
 public:
 
   /**
     Initializes object.
   */
-  Object() throw();
+  inline Object() throw() {}
 
   /**
     Destroys the object. Ensure envocation of correct destructor when using polymorphism.

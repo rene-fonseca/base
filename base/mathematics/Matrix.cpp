@@ -805,11 +805,3 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& v
   stream << ']';
   return stream;
 }
-
-int main() {
-  Matrix<double> a(Dimension(1, 1));
-  Matrix<double> b(Dimension(1, 1));
-  Matrix<double> c(a);
-  c = a * b * 4. / b;
-  return 0;
-}

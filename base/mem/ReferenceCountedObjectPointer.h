@@ -53,7 +53,7 @@ public:
   /**
     Returns the pointer value of this automation pointer.
   */
-  inline Pointer getValue() const throw() {return ptr;};
+  inline Pointer getValue() const throw() {return ptr;}
 
   /**
     Sets the pointer value of this automation pointer.
@@ -81,14 +81,14 @@ public:
   /**
     Returns true if the pointer value is NULL.
   */
-  inline bool isNULL() const throw() {return !ptr;};
+  inline bool isNULL() const throw() {return !ptr;}
 
   /**
     Destroys this automation pointer.
   */
   inline ~ReferenceCountedObjectFriend() {
     if (ptr) { // skip if NULL pointer
-      if (--ptr->references) { // remove reference
+      if (--ptr->references == 0) { // remove reference
         delete ptr; // could throw exception if object is destroyed unsuccessfully
         ptr = 0;
       }
@@ -125,18 +125,18 @@ public:
 
     @param value The desired value. Default is NULL.
   */
-  inline ReferenceCountedObjectPointer(Pointer value = 0) : ReferenceCountedObjectFriend(value) {};
+  inline ReferenceCountedObjectPointer(Pointer value = 0) : ReferenceCountedObjectFriend(value) {}
 
   /**
     Initialization of automation pointer from other automation pointer.
   */
-  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer& copy) : ReferenceCountedObjectFriend(copy) {};
+  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer& copy) : ReferenceCountedObjectFriend(copy) {}
 
   /**
     Initialization of automation pointer from other automation pointer using compile time polymorphism.
   */
   template<class POLY>
-  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer<POLY>& copy) : ReferenceCountedObjectFriend(down_cast<Pointer>(copy.getValue())) {};
+  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer<POLY>& copy) : ReferenceCountedObjectFriend(down_cast<Pointer>(copy.getValue())) {}
 
   /**
     Assignment of automation pointer to this automation pointer.
@@ -163,18 +163,24 @@ public:
   /**
     Returns the pointer value of this automation pointer.
   */
-  inline Pointer getValue() const throw() {return static_cast<Pointer>(const_cast<ReferenceCountedObject*>(ReferenceCountedObjectFriend::getValue()));};
+  inline Pointer getValue() const throw() {
+    return static_cast<Pointer>(const_cast<ReferenceCountedObject*>(ReferenceCountedObjectFriend::getValue()));
+  }
 
   /**
     Returns true if the reference counted object is referenced by more than
     one pointer. False, is returned if the pointer value is NULL.
   */
-  inline bool isMultiReferenced() const throw();
+  inline bool isMultiReferenced() const throw() {
+    return ReferenceCountedObjectFriend::isMultiReferenced();
+  }
 
   /**
     Returns true if the pointer value is NULL.
   */
-  inline bool isNULL() const throw();
+  inline bool isNULL() const throw() {
+    return ReferenceCountedObjectFriend::isNULL();
+  }
 
   /**
     Returns the reference counted object.

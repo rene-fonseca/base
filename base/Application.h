@@ -58,12 +58,22 @@ private:
   bool hangingup;
   /** Synchronization object. */
   SpinLock lock;
+
+  /** Common initialization method used by constructors. */
+  void initialize() throw();
 public:
 
   /**
     Returns the application object.
   */
   inline static const Application* getApplication() throw() {return application;}
+
+  /**
+    Initializes application with no arguments and no environment variables.
+
+    @param name The formal name.
+  */
+  Application(const String& name) throw(SingletonException);
 
   /**
     Initializes application.
@@ -83,11 +93,11 @@ public:
     </pre>
 
     @param name The formal name.
-    @param argc The argc argument of the entry function main.
-    @param argv The argv argument of the entry function main.
-    @param envp The envp argument of the entry function main. This argument is not required.
+    @param numberOfArguments The "argc" argument of the entry function main.
+    @param arguments The "argv" argument of the entry function main.
+    @param environment The "envp" argument of the entry function main. This argument is not required.
   */
-  Application(const String& name, int argc, const char* argv[], const char *envp[] = 0) throw(SingletonException, OutOfDomain);
+  Application(const String& name, int numberOfArguments, const char* arguments[], const char* environment[] = 0) throw(SingletonException, OutOfDomain);
 
   /**
     Returns the formal name of the application.

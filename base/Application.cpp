@@ -91,7 +91,7 @@ public:
 
 Application* Application::application = 0; // initialize application as uninitialized
 
-Application::Application(const String& name, int argc, const char* argv[], const char* envp[]) throw(SingletonException, OutOfDomain) : formalName(name), terminated(false), hangingup(false) {
+void Application::initialize() throw() {
   static unsigned int singleton = 0;
   assert(singleton == 0, SingletonException("Application has been instantiated"));
   ++singleton;
@@ -116,18 +116,31 @@ Application::Application(const String& name, int argc, const char* argv[], const
   // install exception handlers
   std::set_terminate(ApplicationImpl::terminationExceptionHandler);
   std::set_unexpected(ApplicationImpl::unexpectedExceptionHandler);
+}
 
-  assert((argc > 0) && (argv), OutOfDomain());
-  path = argv[0];
-  for (unsigned int i = 1; i < argc; ++i) {
-    arguments.append(argv[i]);
+Application::Application(const String& name) throw(SingletonException) :
+  formalName(name), terminated(false), hangingup(false) {
+  initialize();
+  application = this;
+}
+
+Application::Application(const String& name, int numberOfArguments, const char* arguments[], const char* environment[]) throw(SingletonException, OutOfDomain) :
+  formalName(name), terminated(false), hangingup(false) {
+  initialize();
+
+  assert((numberOfArguments > 0) && (arguments), OutOfDomain());
+  path = arguments[0];
+  for (unsigned int i = 1; i < numberOfArguments; ++i) {
+    this->arguments.append(arguments[i]);
   }
 
-  for (; *envp != 0; ++envp) {
-    String temp(*envp);
-    int index = temp.indexOf('=');
-    if (index != -1) { // ignore the environment string if it doesn't contain '='
-      environment[temp.substring(0, index - 1)] = temp.substring(index + 1);
+  if (environment) {
+    for (; *environment != 0; ++environment) {
+      String temp(*environment);
+      int index = temp.indexOf('=');
+      if (index != -1) { // ignore the environment string if it doesn't contain '='
+	this->environment[temp.substring(0, index - 1)] = temp.substring(index + 1);
+      }
     }
   }
 

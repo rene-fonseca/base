@@ -4,349 +4,289 @@
  ***************************************************************************/
 
 #include "Matrix.h"
+#include "base/Functor.h"
 
 template Matrix<float>;
 template Matrix<double>;
+template Matrix<long double>;
 
-template<class TYPE> void Matrix<TYPE>::adjustDimension(unsigned int rows, unsigned int columns) {
-  unsigned int newSize = rows * columns;
-
-  if (size != newSize) {
-    delete[] elements;
-    elements = new TYPE[newSize];
-  }
-
-  this->rows = rows;
-  this->columns = columns;
-  size = newSize;
-  dimension.assign(rows, columns);
-}
-
-template<class TYPE> Matrix<TYPE>::Matrix() throw() {
-  dimension.assign(0, 0);
-  rows = dimension.getWidth();
-  columns = dimension.getHeight();
-  size = dimension.getSize();
-
-  elements = new TYPE[size];
-}
-
-template<class TYPE> Matrix<TYPE>::Matrix(const Dimension& dimension) throw(OutOfDomain) {
-  if (dimension.getSize() == 0) {
+template<class TYPE>
+ Matrix<TYPE>::Matrix(const Dimension& dimension) throw(OutOfDomain) {
+  if (dimension.getSize() < 1) {
     throw OutOfDomain();
   }
-
-  this->dimension = dimension;
-  rows = dimension.getWidth();
-  columns = dimension.getHeight();
-  size = dimension.getSize();
-
-  elements = new TYPE[size];
+  setSize(dimension.getHeight(), dimension.getWidth());
 }
 
-template<class TYPE> Matrix<TYPE>::Matrix(TYPE elements[], const Dimension& dimension) throw(OutOfDomain) {
-  if (dimension.getSize() == 0) {
+template<class TYPE>
+Matrix<TYPE>::Matrix(const TYPE elements[], const Dimension& dimension) throw(OutOfDomain) {
+  if (dimension.getSize() < 1) {
     throw OutOfDomain();
   }
+  setSize(dimension.getHeight(), dimension.getWidth());
+  copyArray<TYPE>(getElements(), elements, getSize());
+}
 
-  this->dimension = dimension;
-  rows = dimension.getWidth();
-  columns = dimension.getHeight();
-  size = dimension.getSize();
-
-  elements = new TYPE[size];
-
-  /* Copy elements. */
-  for (unsigned int i = 0; i < size; i++) {
-    this->elements[i] = elements[i];
+template<class TYPE>
+Matrix<TYPE>::Matrix(Enumeration<TYPE>& diagonal, const Dimension& dimension) throw(OutOfDomain) {
+  if (dimension.getSize() < 1) {
+    throw OutOfDomain();
+  }
+  setSize(dimension.getHeight(), dimension.getWidth());
+  identity();
+  unsigned int i = 0;
+  while (diagonal.hasNext()) {
+    setAt(i, i, *diagonal.next());
+    ++i;
   }
 }
 
-template<class TYPE> Matrix<TYPE>::Matrix(const Matrix& matrix) throw() {
-  this->dimension = matrix.dimension;
-  rows = dimension.getWidth();
-  columns = dimension.getHeight();
-  size = dimension.getSize();
 
-  elements = new TYPE[size];
 
-  /* Copy elements. */
-  for (unsigned int i = 0; i < size; i++) {
-    this->elements[i] = matrix.elements[i];
-  }
+template<class TYPE>
+TYPE Matrix<TYPE>::getAt(unsigned int row, unsigned int column) const throw(OutOfRange) {
+  validateElement(row, column);
+  return getReadOnlyElements()[row * getColumns() + column];
 }
 
-template<class TYPE> Matrix<TYPE>::Matrix(const Vector<TYPE>& diagonal) throw() {
-  this->dimension = Dimension(diagonal.getLength(), diagonal.getLength());
-  rows = dimension.getWidth();
-  columns = dimension.getHeight();
-  size = dimension.getSize();
-
-  elements = new TYPE[size];
-
-  SimpleRandomIterator<TYPE> dest; // = getIteratorOfRowByColumn();
-  while (dest.hasNext()) {
-    *dest = 0;
-    ++dest;
-  }
-
-//  RandomIterator<TYPE>* src = diagonal.getIterator();
-//  ReadOnlyRandomIterator<TYPE>* src = diagonal.getReadOnlyIterator();
-  float* src = NULL;
-  dest = getIteratorOfDiagonal();
-  while (dest.hasNext()) {
-    *dest = *src;
-    ++src;
-    ++dest;
-  }
+template<class TYPE>
+void Matrix<TYPE>::setAt(unsigned int row, unsigned int column, const TYPE& value) throw(OutOfRange) {
+  validateElement(row, column);
+  getElements()[row * getColumns() + column] = value;
 }
 
-template<class TYPE> RandomIterator<TYPE> Matrix<TYPE>::getIteratorOfRow(unsigned int row) throw(OutOfBounds) {
-  validateRow();
-  return SimpleRandomIterator<TYPE>(elements[getIndexOfElement(row, 0)], columns);
-}
 
-template<class TYPE> ReadOnlyRandomIterator<TYPE> Matrix<TYPE>::getIteratorOfRow(unsigned int row) const throw(OutOfBounds) {
-  validateRow();
-  return SimpleRandomIterator<TYPE, ReadOnlyIteratorTraits<TYPE> >(elements[getIndexOfElement(row, 0)], columns);
-}
 
-template<class TYPE> RandomIterator<TYPE> Matrix<TYPE>::getIteratorOfColumn(unsigned int column) throw(OutOfBounds) {
-  validateColumn();
-  return EquidistantRandomIterator<TYPE>(elements[getIndexOfElement(0, column)], rows, columns);
-}
-
-template<class TYPE> ReadOnlyRandomIterator<TYPE> Matrix<TYPE>::getIteratorOfColumn(unsigned int column) const throw(OutOfBounds) {
-  validateColumn();
-  return EquidistantRandomIterator<TYPE, ReadOnlyIteratorTraits<TYPE> >(elements[getIndexOfElement(0, column)], rows, columns);
-}
-
-template<class TYPE> RandomIterator<TYPE> Matrix<TYPE>::getIteratorOfDiagonal() throw() {
-  return EquidistantRandomIterator<TYPE>(elements[getIndexOfElement(0, 0)], minimum(rows, columns), columns + 1);
-}
-
-template<class TYPE> ReadOnlyRandomIterator<TYPE> Matrix<TYPE>::getIteratorOfDiagonal() const throw() {
-  return EquidistantRandomIterator<TYPE, ReadOnlyIteratorTraits<TYPE> >(elements[getIndexOfElement(0, 0)], minimum(rows, columns), columns + 1);
-}
-
-template<class TYPE> RandomIterator<TYPE> Matrix<TYPE>::getIteratorOfRowByColumn() throw() {
-  return SimpleRandomIterator<TYPE>(elements[getIndexOfElement(0, 0)], size);
-}
-
-template<class TYPE> ReadOnlyRandomIterator<TYPE> Matrix<TYPE>::getIteratorOfRowByColumn() const throw() {
-  return SimpleRandomIterator<TYPE, ReadOnlyIteratorTraits<TYPE> >(elements[getIndexOfElement(0, 0)], size);
-}
-
-template<class TYPE> Dimension Matrix<TYPE>::getDimension() const throw() {
-  return Dimension(dimension);
-}
-
-template<class TYPE> TYPE& Matrix<TYPE>::at(unsigned int row, unsigned int column) throw(OutOfBounds) {
-  validateElement();
-  return elements[row * columns + column];
-}
-
-template<class TYPE> bool Matrix<TYPE>::operator==(const Matrix& matrix) throw(IncompatibleMatrices) {
-  if (dimension != matrix.dimension) {
-    throw IncompatibleMatrices();
-  }
-
-  TYPE* a = elements;
-  TYPE* b = matrix.elements;
-  unsigned int count = size;
-
-  while (count--) {
-    if (*(a++) != *(b++)) { /* Check if elements are different - problem if real numbers */
-      return false;
-    }
-  }
-  return true;
-}
-
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::operator=(const TYPE& value) throw() {
-  TYPE* a = elements;
-  unsigned int count = size;
-
-  while (count--) {
-    *(a++) = value;
-  }
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::clear() throw() {
+  fill(getElements(), getSize(), TYPE(0));
   return *this;
 }
 
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::operator=(const Matrix& matrix) throw() {
-  if (matrix.size != size) {
-    delete[] elements;
-
-    elements = new TYPE[matrix.size];
-  }
-  *dimension = *matrix.dimension;
-  rows = dimension->getWidth();
-  columns = dimension->getHeight();
-  size = dimension->getSize();
-
-  TYPE* a = elements;
-  TYPE* b = matrix.elements;
-  unsigned int count = size;
-
-  while (count--) {
-    *(a++) = *(b++);
-  }
-  return *this;
-}
-
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::operator+() throw() {
-  return *this;
-}
-
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::operator+=(const Matrix& matrix) throw(IncompatibleMatrices) {
-  if (dimension == matrix.dimension) {
-    throw IncompatibleMatrices();
-  }
-
-  TYPE* a = elements;
-  TYPE* b = matrix.elements;
-  unsigned int count = size;
-
-  while (count--) {
-    *(a++) += *(b++);
-  }
-  return *this;
-}
-
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::operator-() throw() {
-  TYPE* a = elements;
-  unsigned int count = size;
-
-  while (count--) {
-    *a = -(*a);
-    a++;
-  }
-
-  return *this;
-}
-
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::operator-=(const Matrix& matrix) throw(IncompatibleMatrices) {
-  if (dimension == matrix.dimension) {
-    throw IncompatibleMatrices();
-  }
-
-  TYPE* a = elements;
-  TYPE* b = matrix.elements;
-  unsigned int count = size;
-
-  while (count--) {
-    *(a++) -= *(b++);
-  }
-  return *this;
-}
-
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::operator*=(const TYPE& value) throw() {
-  TYPE* a = elements;
-  unsigned int count = size;
-
-  while (count--) {
-    *(a++) *= value;
-  }
-  return *this;
-}
-
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::operator/=(const TYPE& value) throw() {
-  TYPE* a = elements;
-  unsigned int count = size;
-
-  while (count--) {
-    *(a++) /= value;
-  }
-  return *this;
-}
-
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::identity() throw(NotSquare) {
-  if (!isSquare()) {
-    throw NotSquare();
-  }
-
-  TYPE* element = elements;
-
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::identity() throw() {
+  TYPE* element = getElements();
   for (unsigned int row = 0; row < rows; row++) {
     for (unsigned int column = 0; column < columns; column++) {
-      *(element++) = (row == column) ? 1 : 0;
+      *element = (row == column) ? 1 : 0;
+      ++element;
     }
   }
   return *this;
 }
 
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::add(const Matrix& a, const Matrix& b) throw(IncompatibleMatrices) {
-  if ((dimension != a.dimension) || (dimension != b.dimension)) {
-    throw IncompatibleMatrices();
-  }
+template<class TYPE>
+Matrix<TYPE> Matrix<TYPE>::plus() const throw() {
+  return Matrix(*this);
+}
 
-  TYPE* result = elements;
-  TYPE* A = a.elements;
-  TYPE* B = b.elements;
-  unsigned int count = size;
+template<class TYPE>
+Matrix<TYPE> Matrix<TYPE>::minus() const throw() {
+  return Matrix(getDimension()).negate(*this);
+}
 
-  while (count--) {
-    *(result++) = *(A++) + *(B++);
-  }
+template<class TYPE>
+Matrix<TYPE> Matrix<TYPE>::transpose() const throw() {
+  return Matrix(getDimension()).transpose(*this);
+}
+
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::negate() throw() {
+  transform(getElements(), getSize(), Negate<TYPE>());
   return *this;
 }
 
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::subtract(const Matrix& a, const Matrix& b) throw(IncompatibleMatrices) {
-  if ((dimension != a.dimension) || (dimension != b.dimension)) {
-    throw IncompatibleMatrices();
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::add(const Matrix<TYPE>& value) throw(IncompatibleOperands) {
+  if (!areCompatible(value)) {
+    throw IncompatibleOperands();
   }
-
-  TYPE* result = elements;
-  TYPE* A = a.elements;
-  TYPE* B = b.elements;
-  unsigned int count = size;
-
-  while (count--) {
-    *(result++) = *(A++) - *(B++);
-  }
+  transformByBinary(getElements(), getReadOnlyElements(), getSize(), Add<TYPE>());
   return *this;
 }
 
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::multiply(const Matrix<TYPE>& a, const Matrix<TYPE>& b) throw(IncompatibleMatrices) {
-  if ((a.columns != b.rows) || (rows != a.rows) || (columns != b.columns)) {
-    throw IncompatibleMatrices();
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::subtract(const Matrix<TYPE>& value) throw(IncompatibleOperands) {
+  if (!areCompatible(value)) {
+    throw IncompatibleOperands();
   }
+  transformByBinary(getElements(), getReadOnlyElements(), getSize(), Subtract<TYPE>());
+  return *this;
+}
 
-  unsigned int length = b.rows; /* If A=[k,l] and B=[l,m] then common = l */
-  unsigned int size = b.size;
-  TYPE* result = elements;
-  TYPE* A = a.elements; /* a[0,0] */
-  TYPE* B = b.elements; /* b[0,0] */
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::multiply(const TYPE& value) throw() {
+  transform(getElements(), getSize(), bind2Second(Multiply<TYPE>(), value));
+  return *this;
+}
+
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::divide(const TYPE& value) throw() {
+  transform(getElements(), getSize(), bind2Second(Divide<TYPE>(), value));
+  return *this;
+}
+
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::negate(const Matrix<TYPE>& value) throw() {
+  setDimension(value);
+  transformByUnary(getElements(), value.getReadOnlyElements(), getSize(), Negate<TYPE>());
+  return *this;
+}
+
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::add(const Matrix& left, const Matrix& right) throw(IncompatibleOperands) {
+  if (!left.areCompatible(right)) {
+    throw IncompatibleOperands();
+  }
+  setDimension(left);
+  transformByBinary(getElements(), left.getReadOnlyElements(), right.getReadOnlyElements(), getSize(), Add<TYPE>());
+  return *this;
+}
+
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::subtract(const Matrix& left, const Matrix& right) throw(IncompatibleOperands) {
+  if (!left.areCompatible(right)) {
+    throw IncompatibleOperands();
+  }
+  setDimension(left);
+  transformByBinary(getElements(), left.getReadOnlyElements(), right.getReadOnlyElements(), getSize(), Add<TYPE>());
+  return *this;
+}
+
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::multiply(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(IncompatibleOperands) {
+  if (left.columns != right.rows) {
+    throw IncompatibleOperands();
+  }
+  setSize(left.rows, right.columns);
+
+  unsigned int length = right.rows; // If A=[k,l] and B=[l,m] then common = l
+  unsigned int size = right.getSize();
+  TYPE* result = getElements();
+  const TYPE* A = left.getReadOnlyElements(); // a[0,0]
+  const TYPE* B = right.getReadOnlyElements(); // b[0,0]
   TYPE sum;
 
   unsigned int k = rows;
-  while (k-- > 0) { /* Rows of result matrix */
+  while (k-- > 0) { // Rows of result matrix
 
     unsigned int m = columns;
-    while (m-- > 0) { /* Columns of result matrix */
+    while (m-- > 0) { // Columns of result matrix
 
       sum = 0;
       unsigned int l = length;
       while (l-- > 0) {
         sum += *A * *B;
-        A++; /* Go to next column [r,c]=[r,c+1] */
-        B += columns; /* Go to next row [r,c]=[r+1,c] */
+        A++; // Go to next column [r,c]=[r,c+1]
+        B += columns; // Go to next row [r,c]=[r+1,c]
       }
-      *(result++) = sum;
+      *result = sum;
+      ++result;
 
-      A -= length; /* Go to first column of current row */
-      B -= size; /* Go to first row of current column */
-      B++; /* Go to the next column of the current row */
+      A -= length; // Go to first column of current row
+      B -= size; // Go to first row of current column
+      B++; // Go to the next column of the current row
 
     }
 
-    A += length; /* Go to the first column of the next row */
-    B -= length; /* Go to b[0,0] */
+    A += length; // Go to the first column of the next row
+    B -= length; // Go to b[0,0]
 
   }
   return *this;
 }
 
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::multiply(const Matrix<TYPE>& left, const TYPE& right) throw() {
+  setDimension(left);
+  transformByUnary(getElements(), left.getReadOnlyElements(), getSize(), bind2Second(Multiply<TYPE>(), right));
+  return *this;
+}
+
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::multiply(const TYPE& left, const Matrix<TYPE>& right) throw() {
+  setDimension(right);
+  transformByUnary(getElements(), right.getReadOnlyElements(), getSize(), bind2First(Multiply<TYPE>(), left));
+  return *this;
+}
+
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::divide(const Matrix<TYPE>& left, const TYPE& right) throw() {
+  setDimension(left);
+  transformByUnary(getElements(), left.getReadOnlyElements(), getSize(), bind2Second(Divide<TYPE>(), right));
+  return *this;
+}
+
+template<class TYPE>
+Matrix<TYPE>& Matrix<TYPE>::transpose(const Matrix& value) throw() {
+  setSize(value.columns, value.rows);
+
+  TYPE* dest = getElements();
+  const TYPE* src = value.getReadOnlyElements();
+  unsigned int size = elements->getSize();
+
+  unsigned int r = rows;
+  while (r-- > 0) {
+    unsigned int c = columns;
+    while (c-- > 0) { // Copy column to row
+      *dest = *src;
+      ++dest;
+      src += rows; // Go to the next row
+    }
+    src -= size;
+    ++src; // Go to next column
+  }
+  return *this;
+}
+
+template<class TYPE>
+bool Matrix<TYPE>::operator==(const Matrix& value) const throw(IncompatibleOperands) {
+  if (!areCompatible(value)) {
+    throw IncompatibleOperands();
+  }
+  return equal(getReadOnlyElements(), value.getReadOnlyElements(), getSize());
+}
+
+template<class TYPE>
+Matrix<TYPE> operator*(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException) {
+  return Matrix<TYPE>().multiply(left, right);
+}
+
+template<class TYPE>
+Matrix<TYPE> operator*(const Matrix<TYPE>& left, const TYPE& right) throw(MemoryException) {
+  return Matrix<TYPE>().multiply(left, right);
+}
+
+template<class TYPE>
+Matrix<TYPE> operator*(const TYPE& left, const Matrix<TYPE>& right) throw(MemoryException) {
+  return Matrix<TYPE>().multiply(left, right);
+}
+
+template<class TYPE>
+Matrix<TYPE> operator/(const Matrix<TYPE>& left, const TYPE& right) throw(MemoryException) {
+  return Matrix<TYPE>().divide(left, right);
+}
+
+template<class TYPE>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value) {
+  const TYPE* element = getReadOnlyElements();
+  stream << '[';
+  for (unsigned int row = 0; row < value.rows; ++row) {
+    stream << '[';
+    for (unsigned int column = 0; column < value.columns; ++column) {
+      stream << *element;
+      ++element;
+      if (column < (columns - 1)) {
+        stream << ',';
+      }
+    }
+    stream << ']';
+  }
+  stream << ']';
+  return stream;
+}
+
+/*
 template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::multiply(const Matrix<TYPE>& a, const Vector<TYPE>& b) throw(MatrixException) {
   if ((a.columns != b.length) || (rows != a.rows) || (columns != 1)) {
     throw MatrixException();
@@ -354,23 +294,23 @@ template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::multiply(const Matrix<TYPE>& a,
 
   unsigned int length = b.length;
   TYPE* result = elements;
-  TYPE* A = a.elements; /* a[0,0] */
-  TYPE* B = b.elements; /* The first element */
+  TYPE* A = a.elements; // a[0,0]
+  TYPE* B = b.elements; // The first element
   TYPE sum;
 
   unsigned int k = rows;
-  while (k-- > 0) { /* Rows of result matrix */
+  while (k-- > 0) { // Rows of result matrix
 
     sum = 0;
     l = length;
     while (l-- > 0) {
       sum += *A * *B;
-      A++; /* Go to next column [r,c]=[r,c+1] */
-      B++; /* Go to next row */
+      A++; // Go to next column [r,c]=[r,c+1]
+      B++; // Go to next row
     }
     *(result++) = sum;
 
-    B -= length; /* Go to first element */
+    B -= length; // Go to first element
   }
   return *this;
 }
@@ -382,114 +322,33 @@ template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::multiply(const Vector<TYPE>& a,
 
   unsigned int length = a.length;
   TYPE* result = elements;
-  TYPE* A = a.elements; /* The first element */
-  TYPE* B = b.elements; /* b[0,0] */
+  TYPE* A = a.elements; // The first element
+  TYPE* B = b.elements; // b[0,0]
   TYPE sum;
 
   unsigned int m = columns;
-  while (m-- > 0) { /* Columns of result matrix */
+  while (m-- > 0) { // Columns of result matrix
 
     sum = 0;
     l = length;
     while (l-- > 0) {
       sum += *A * *B;
-      A++; /* Go to next element */
-      B += columns; /* Go to next row [r,c]=[r+1,c] */
+      A++; // Go to next element
+      B += columns; // Go to next row [r,c]=[r+1,c]
     }
     *(result++) = sum;
 
-    A -= length; /* Go to first element */
-    B -= size; /* Go to first row of current column */
-    B++; /* Go to the next column of the current row */
+    A -= length; // Go to first element
+    B -= size; // Go to first row of current column
+    B++; // Go to the next column of the current row
   }
   return *this;
 }
-
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::multiply(const Vector<TYPE>& a, const Vector<TYPE>& b) throw(MatrixException) {
-  if ((rows != a.length) || (columns != b.length)) {
-    throw MatrixException();
-  }
-
-  TYPE* result = elements;
-  TYPE* A = a.elements; /* a[0,0] */
-  TYPE* B = b.elements; /* The first element */
-
-  unsigned int k = rows;
-  while (k-- > 0) { /* Rows of result matrix */
-
-    unsigned int l = columns;
-    while (l-- > 0) { /* Columns of result matrix */
-      *(result++) = *A * *B;
-      B++; /* Go to next element */
-    }
-
-    A++; /* Go to next element */
-    B -= length; /* Go to first element */
-  }
-
-  return *this;
-}
-
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::operator*(const TYPE& value) throw() {
-  Matrix<TYPE> result = Matrix(this);
-  result *= value;
-  return result;
-}
-
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::operator*(const Matrix& matrix) throw() {
-  Matrix<TYPE> result = Matrix(Dimension(rows, matrix.columns));
-  result.multiply(this, matrix);
-  return result;
-}
-
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::transpose(const Matrix& matrix) throw() {
-  if ((rows != matrix.columns) || (columns != matrix.rows)) {
-    adjustDimension(matrix.columns, matrix.rows);
-  }
-
-  TYPE* a = elements;
-  TYPE* b = matrix.elements;
-
-  unsigned int r = rows;
-  while (r-- > 0) {
-    unsigned int c = columns;
-    while (c-- > 0) { /* Copy column of b to row of a */
-      *(a++) = *b;
-      b += rows; /* Go to the next row */
-    }
-    b -= size;
-    b++; /* Go to next column */
-  }
-  return *this;
-}
-
-template<class TYPE> Matrix<TYPE>& Matrix<TYPE>::transpose() const throw() {
-  Matrix<TYPE> matrix = Matrix<TYPE>(Dimension(columns, rows));
-  matrix.transpose(*this);
-  return matrix;
-}
-
-template<class TYPE> Matrix<TYPE>::~Matrix() throw() {
-  delete[] elements;
-}
-
-template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value) {
-//  TYPE* element = elements;
-
-  stream << "[";
-/*  for (unsigned int row = 0; row < rows; row++) {
-
-    stream << "[";
-    for (unsigned int column = 0; column < columns; column++) {
-      stream << *(element++);
-      if (column < (columns - 1)) {
-        stream << ";";
-      }
-    }
-    stream << "]";
-
-  }*/
-  stream << "]";
-  return stream;
+*/
+int main() {
+  Matrix<double> a;
+  Matrix<double> b;
+  Matrix<double> c(a);
+  c = a * b * 4.;
+  return 0;
 }

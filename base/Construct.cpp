@@ -8,5 +8,5 @@
 Construct::Construct() {
 }
 
-Construct::Construct(const char* str) : Exception(str) {
+Construct::Construct(const char* message) : Exception(message) {
 }

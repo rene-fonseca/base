@@ -8,5 +8,5 @@
 OutOfRange::OutOfRange() {
 }
 
-OutOfRange::OutOfRange(const char* str) : Exception(str) {
+OutOfRange::OutOfRange(const char* message) : Exception(message) {
 }

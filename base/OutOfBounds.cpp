@@ -8,5 +8,5 @@
 OutOfBounds::OutOfBounds() {
 }
 
-OutOfBounds::OutOfBounds(const char* str) : Exception(str) {
+OutOfBounds::OutOfBounds(const char* message) : Exception(message) {
 }

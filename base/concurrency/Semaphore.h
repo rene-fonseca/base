@@ -45,7 +45,8 @@ private:
 public:
 
   /** Group of exceptions thrown directly by the Semaphore class. */
-  class SemaphoreException : public Exception {};
+  class SemaphoreException : public Exception {
+  };
 
   /**
     Initializes the semaphore object.

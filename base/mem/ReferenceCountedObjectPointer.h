@@ -71,11 +71,17 @@ public:
   }
 
   /**
-    Returns true if the reference counted object only has one reference.
+    Returns true if the reference counted object is referenced by more than
+    one pointer. If the pointer value is NULL, false is returned.
   */
-  inline bool singleReference() throw() {
-    return (!ptr) || (ptr->references <= 1); // false if NULL pointer
+  inline bool isMultiReferenced() const throw() {
+    return (ptr) && (ptr->references > 1); // false if NULL pointer
   }
+
+  /**
+    Returns true if the pointer value is NULL.
+  */
+  inline bool isNULL() const throw() {return !ptr;};
 
   /**
     Destroys this automation pointer.
@@ -133,7 +139,7 @@ public:
   inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer<POLY>& copy) : ReferenceCountedObjectFriend(down_cast<Pointer>(copy.getValue())) {};
 
   /**
-    Assignment of automation pointer to this automation pointer using compile time polymorphism.
+    Assignment of automation pointer to this automation pointer.
   */
   inline ReferenceCountedObjectPointer& operator=(const ReferenceCountedObjectPointer& eq) {
     if (&eq != this) { // protect against self assignment
@@ -143,7 +149,7 @@ public:
   }
 
   /**
-    Assignment of automation pointer to this automation pointer.
+    Assignment of automation pointer to this automation pointer using compile time polymorphism.
   */
   template<class POLY>
   inline ReferenceCountedObjectPointer& operator=(const ReferenceCountedObjectPointer<POLY>& eq) {
@@ -158,6 +164,17 @@ public:
     Returns the pointer value of this automation pointer.
   */
   inline Pointer getValue() const throw() {return static_cast<Pointer>(const_cast<ReferenceCountedObject*>(ReferenceCountedObjectFriend::getValue()));};
+
+  /**
+    Returns true if the reference counted object is referenced by more than
+    one pointer. False, is returned if the pointer value is NULL.
+  */
+  inline bool isMultiReferenced() const throw();
+
+  /**
+    Returns true if the pointer value is NULL.
+  */
+  inline bool isNULL() const throw();
 
   /**
     Returns the reference counted object.

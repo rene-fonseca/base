@@ -8,5 +8,5 @@
 NullPointer::NullPointer() {
 }
 
-NullPointer::NullPointer(const char* str) : MemoryException(str) {
+NullPointer::NullPointer(const char* message) : MemoryException(message) {
 }

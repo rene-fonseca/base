@@ -8,5 +8,5 @@
 Underflow::Underflow() {
 }
 
-Underflow::Underflow(const char* str) : Exception(str) {
+Underflow::Underflow(const char* message) : Exception(message) {
 }

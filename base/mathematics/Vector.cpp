@@ -4,249 +4,196 @@
  ***************************************************************************/
 
 #include "Vector.h"
+#include "base/Functor.h"
 #include <math.h>
 
 template Vector<float>;
 template Vector<double>;
+template Vector<long double>;
 
-template<class TYPE> Vector<TYPE>::Vector(unsigned int length) throw() {
-  this->length = length;
-  elements = new TYPE[length];
-}
+template<class TYPE>
+class DotProduct : public BinaryOperation<TYPE, TYPE, TYPE> {
+protected:
+  TYPE result;
+public:
+  inline DotProduct() throw() : result(0) {};
+  inline void operator()(const TYPE& left, const TYPE& right) throw() {result += left * right;};
+  inline TYPE getResult() const throw() {return result;};
+};
 
-template<class TYPE> Vector<TYPE>::Vector(const TYPE elements[], unsigned int length) throw() {
-  this->length = length;
-  elements = new TYPE[length];
-
-  /* Copy the elements. */
-  for (unsigned int i = 0; i < length; i++) {
-    this->elements[i] = elements[i];
+template<class TYPE>
+Vector<TYPE>::Vector(unsigned int size) throw(OutOfDomain) {
+  if (size < 1) {
+    throw OutOfDomain();
   }
+  setSize(size);
 }
 
-template<class TYPE> Vector<TYPE>::Vector(const Vector& vector) throw() {
-  this->length = vector.length;
-  elements = new TYPE[length];
-
-  /* Copy the elements. */
-  for (unsigned int i = 0; i < length; i++) {
-    this->elements[i] = vector.elements[i];
+template<class TYPE>
+Vector<TYPE>::Vector(const TYPE elements[], unsigned int size) throw(OutOfDomain) {
+  if (size < 1) {
+    throw OutOfDomain();
   }
+  setSize(size);
+  copyArray<TYPE>(getElements(), elements, getSize());
 }
 
-template<class TYPE> TYPE* Vector<TYPE>::getElements() const throw() {
-  return elements;
+template<class TYPE>
+Vector<TYPE>& Vector<TYPE>::operator=(const Vector& eq) throw(MemoryException) {
+  if (&eq != this) { // protect against self assignment
+    elements = eq.elements;
+  }
+  return *this;
 }
 
-template<class TYPE> unsigned int Vector<TYPE>::getLength() const throw() {
-  return length;
+template<class TYPE>
+ArrayEnumeration<TYPE> Vector<TYPE>::getEnumeration() throw() {
+  return ArrayEnumeration<TYPE>(*elements);
 }
 
-template<class TYPE> TYPE& Vector<TYPE>::operator[](unsigned int index) const throw(OutOfRange) {
-  if (index >= length) {
+template<class TYPE>
+ArrayEnumeration<const TYPE> Vector<TYPE>::getEnumeration() const throw() {
+  return ArrayEnumeration<const TYPE>(*elements);
+}
+
+template<class TYPE>
+TYPE Vector<TYPE>::getAt(unsigned int index) const throw(OutOfRange) {
+  if (index >= getSize()) {
     throw OutOfRange();
   }
-  return elements[index];
+  return getReadOnlyElements()[index];
 }
 
-template<class TYPE> TYPE& Vector<TYPE>::getAt(unsigned int index) const throw(OutOfRange) {
-  if (index >= length) {
+template<class TYPE>
+void Vector<TYPE>::setAt(unsigned int index, const TYPE& value) throw(OutOfRange) {
+  if (index >= getSize()) {
     throw OutOfRange();
   }
-  return elements[index];
+  getElements()[index] = value;
 }
 
-template<class TYPE> void Vector<TYPE>::setAt(unsigned int index, const TYPE& value) throw(OutOfRange) {
-  if (index >= length) {
+template<class TYPE>
+TYPE Vector<TYPE>::operator[](unsigned int index) const throw(OutOfRange) {
+  if (index >= getSize()) {
     throw OutOfRange();
   }
-  elements[index] = value;
+  return getReadOnlyElements()[index];
 }
 
-template<class TYPE> Vector<TYPE>& Vector<TYPE>::operator=(const Vector& vector) throw(IncompatibleVectors) {
-  if (length != vector.length) {
+template<class TYPE>
+Vector<TYPE>& Vector<TYPE>::clear() throw() {
+  fill(getElements(), getSize(), TYPE(0));
+  return *this;
+}
+
+template<class TYPE>
+Vector<TYPE> Vector<TYPE>::plus() const throw() {
+  return Vector(*this);
+}
+
+template<class TYPE>
+Vector<TYPE> Vector<TYPE>::minus() const throw() {
+  return Vector(getSize()).negate(*this);
+}
+
+template<class TYPE>
+Vector<TYPE>& Vector<TYPE>::negate() throw() {
+  transform(getElements(), getSize(), Negate<TYPE>());
+  return *this;
+}
+
+template<class TYPE>
+Vector<TYPE>& Vector<TYPE>::add(const Vector<TYPE>& value) throw(IncompatibleVectors) {
+  if (value.getSize() != getSize()) {
     throw IncompatibleVectors();
   }
-
-  TYPE* a = elements;
-  TYPE* b = vector.elements;
-  unsigned int count = length;
-
-  while (count-- > 0) {
-    *(a++) = *(b++);
-  }
+  transformByBinary<TYPE>(getElements(), value.getReadOnlyElements(), getSize(), Add<TYPE>());
   return *this;
 }
 
-template<class TYPE> Vector<TYPE>& Vector<TYPE>::operator=(const TYPE& value) throw() {
-  TYPE* result = elements;
-  unsigned int count = length;
-
-  while (count-- > 0) {
-    *(result++) = value;
-  }
-  return *this;
-}
-
-template<class TYPE> Vector<TYPE>& Vector<TYPE>::add(const Vector<TYPE>& vector) throw(IncompatibleVectors) {
-  if (length != vector.length) {
+template<class TYPE>
+Vector<TYPE>& Vector<TYPE>::subtract(const Vector<TYPE>& value) throw(IncompatibleVectors) {
+  if (value.getSize() != getSize()) {
     throw IncompatibleVectors();
   }
-
-  TYPE* a = elements;
-  TYPE* b = vector.elements;
-  unsigned int count = length;
-
-  while (count-- > 0) {
-    *(a++) += *(b++);
-  }
+  transformByBinary<TYPE>(getElements(), value.getReadOnlyElements(), getSize(), Subtract<TYPE>());
   return *this;
 }
 
-template<class TYPE> Vector<TYPE>& Vector<TYPE>::operator+=(const Vector<TYPE>& vector) throw(IncompatibleVectors) {
-  if (length != vector.length) {
+template<class TYPE>
+Vector<TYPE>& Vector<TYPE>::multiply(const TYPE& value) throw() {
+  transform(getElements(), getSize(), bind2Second(Multiply<TYPE>(), value));
+  return *this;
+}
+
+template<class TYPE> Vector<TYPE>& Vector<TYPE>::divide(const TYPE& value) throw() {
+  transform(getElements(), getSize(), bind2Second(Divide<TYPE>(), value));
+  return *this;
+}
+
+template<class TYPE>
+Vector<TYPE>& Vector<TYPE>::negate(const Vector<TYPE>& value) throw() {
+//  setDimension(value);
+  transformByUnary(getElements(), value.getReadOnlyElements(), getSize(), Negate<TYPE>());
+  return *this;
+}
+
+template<class TYPE>
+TYPE Vector<TYPE>::dotdot() const throw() {
+  DotProduct<TYPE> dotProduct;
+  forEachDoBinary(getReadOnlyElements(), getSize(), dotProduct);
+  return dotProduct.getResult();
+}
+
+template<class TYPE>
+TYPE Vector<TYPE>::norm() const throw() {
+  DotProduct<TYPE> dotProduct;
+  forEachDoBinary(getReadOnlyElements(), getSize(), dotProduct);
+  return sqrt(dotProduct.getResult());
+}
+
+template<class TYPE>
+bool Vector<TYPE>::operator==(const Vector& value) const throw(IncompatibleVectors) {
+  if (value.getSize() != getSize()) {
     throw IncompatibleVectors();
   }
-
-  TYPE* a = elements;
-  TYPE* b = vector.elements;
-  unsigned int count = length;
-
-  while (count-- > 0) {
-    *(a++) += *(b++);
-  }
-  return *this;
+  return equal(getReadOnlyElements(), value.getReadOnlyElements(), getSize());
 }
 
-template<class TYPE> Vector<TYPE>& Vector<TYPE>::operator+=(const TYPE& value) throw() {
-  TYPE* a = elements;
-  unsigned int count = length;
-
-  while (count-- > 0) {
-    *(a++) += value;
-  }
-  return *this;
+template<class TYPE>
+Vector<TYPE> operator*(const Vector<TYPE>& left, const TYPE& right) throw(MemoryException) {
+  return Vector<TYPE>(left).multiply(right);
 }
 
-template<class TYPE> Vector<TYPE>& Vector<TYPE>::subtract(const Vector<TYPE>& vector) throw(IncompatibleVectors) {
-  if (length != vector.length) {
-    throw IncompatibleVectors();
-  }
-
-  TYPE* a = elements;
-  TYPE* b = vector.elements;
-  unsigned int count = length;
-
-  while (count-- > 0) {
-    *(a++) -= *(b++);
-  }
-  return *this;
+template<class TYPE>
+Vector<TYPE> operator*(const TYPE& left, const Vector<TYPE>& right) throw(MemoryException) {
+  return Vector<TYPE>(right).multiply(left);
 }
 
-template<class TYPE> Vector<TYPE>& Vector<TYPE>::operator-=(const Vector<TYPE>& vector) throw(IncompatibleVectors) {
-  if (length != vector.length) {
-    throw IncompatibleVectors();
-  }
-
-  TYPE* a = elements;
-  TYPE* b = vector.elements;
-  unsigned int count = length;
-
-  while (count-- > 0) {
-    *(a++) -= *(b++);
-  }
-  return *this;
+template<class TYPE>
+Vector<TYPE> operator/(const Vector<TYPE>& left, const TYPE& right) throw(MemoryException) {
+  return Vector<TYPE>(left).divide(right);
 }
 
-template<class TYPE> Vector<TYPE>& Vector<TYPE>::operator-=(const TYPE& value) throw() {
-  TYPE* a = elements;
-  unsigned int count = length;
-
-  while (count-- > 0) {
-    *(a++) -= value;
+template<class TYPE>
+TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw() {
+  if (left.getSize() != right.getSize()) {
+    throw Vector<TYPE>::IncompatibleVectors();
   }
-  return *this;
-}
-
-template<class TYPE> Vector<TYPE>& Vector<TYPE>::operator*=(const TYPE& value) throw() {
-  TYPE* a = elements;
-  unsigned int count = length;
-
-  while (count-- > 0) {
-    *(a++) *= value;
-  }
-  return *this;
-}
-
-template<class TYPE> Vector<TYPE>* Vector<TYPE>::operator*(const TYPE& value) throw() {
-  Vector<TYPE>* result = new Vector(length);
-  TYPE* source = elements;
-  TYPE* destination = result->elements;
-  unsigned int count = length;
-
-  while (count--) {
-    *(destination++) = *(source++) * value;
-  }
-
-  return result;
-}
-
-template<class TYPE> bool Vector<TYPE>::operator==(const Vector& vector) const throw(IncompatibleVectors) {
-  if (length != vector.length) {
-    throw IncompatibleVectors();
-  }
-
-  TYPE* a = elements;
-  TYPE* b = vector.elements;
-  unsigned int count = length;
-
-  while (count-- > 0) {
-    if (*(a++) != *(b++)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-template<class TYPE> TYPE Vector<TYPE>::dot(const Vector<TYPE>& vector) const throw(IncompatibleVectors) {
-  if (length != vector.length) {
-    throw IncompatibleVectors();
-  }
-
-  TYPE result = 0;
-  TYPE* a = elements;
-  TYPE* b = vector.elements;
-  unsigned int count = length;
-
-  while (count-- > 0) {
-    result += *(a++) * *(b++);
-  }
-
-  return result;
-}
-
-template<class TYPE> TYPE Vector<TYPE>::norm() const throw() {
-  TYPE result = 0;
-  TYPE* element = elements;
-  unsigned int count = length;
-
-  while (count-- > 0) {
-    result += *element * *element;
-    element++;
-  }
-
-  return sqrt(result);
-}
-
-template<class TYPE> Vector<TYPE>::~Vector() throw() {
-  delete[] elements;
+  DotProduct<TYPE> dotProduct;
+  forEach(left.getReadOnlyElements(), right.getReadOnlyElements(), left.getSize(), dotProduct);
+  return dotProduct.getResult();
 }
 
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value) {
   stream << '(';
-  // dump elements here
-  stream << ')';
+  const TYPE* element = value.getReadOnlyElements();
+  unsigned int count = value.getSize();
+  while (--count) { // vector has a size greater than 0 - do for all except last element
+    stream << *element << ',';
+    ++element;
+  }
+  stream << *element << ')'; // dump the last element of the vector
   return stream;
 }

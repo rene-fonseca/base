@@ -7,91 +7,116 @@
 #define _DK_SDU_MIP__BASE_MATH__VECTOR_H
 
 #include "base/Object.h"
+#include "base/OutOfDomain.h"
 #include "base/OutOfRange.h"
 #include "base/string/FormatOutputStream.h"
 #include "base/mem/ReferenceCountedObjectPointer.h"
+#include "base/mem/Array.h"
 
 /**
-  Vector.
+  Vector implementation.
 
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.10
 */
 
 template<class TYPE> class Vector : public Object {
+protected:
+
+  /**
+    The elements of the vector stored in an array. Guarantied to be non-empty
+    when vector object has been initialized.
+  */
+  ReferenceCountedObjectPointer<Array<TYPE> > elements;
+
+  /**
+    Returns the elements of the vector for modification.
+  */
+  inline TYPE* getElements() throw(MemoryException) {
+    if (elements.isMultiReferenced()) { // do we have the elements for our self
+      elements = new Array<TYPE>(*elements); // make copy of the elements
+    }
+    return elements->getElements();
+  }
+
+  /**
+    Returns the elements of the vector for read-only.
+  */
+  inline const TYPE* getReadOnlyElements() const throw() {
+    return elements->getElements();
+  }
+
+  /**
+    Sets the size of the vector. Only invocated by constructors.
+  */
+  inline void setSize(unsigned int size) throw(MemoryException) {
+    elements = new Array<TYPE>(size);
+  }
 public:
 
-  typedef TYPE* Iterator;
-  typedef const TYPE* ReadOnlyIterator;
-
-protected:
-
-  /** Type of element buffer for the Vector class. */
-  class VectorBuffer : public ReferenceCountedObject {
-  };
-
-  ReferenceCountedObjectPointer<VectorBuffer> internal;
-
-protected:
-
-  /** The elements of the vector. */
-  TYPE* elements;
-  /** The number of elements in the vector. */
-  unsigned int length;
+  /** Gets the size of the vector. */
+  inline unsigned int getSize() const throw() {return elements->getSize();};
 public:
 
   /** Exception thrown by the Vector class. */
   class VectorException : public Exception {
   };
+
   /** Thrown if an operation is given incompatible vectors to work on. */
   class IncompatibleVectors : public VectorException {
   };
 
   /**
-    Initializes the vector. The elements are not set to zero.
+    Initializes vector of the specified size. The elements are not initialized.
 
-    @param length The number of elements in the vector.
+    @param size The number of elements in the vector. Must be non zero.
   */
-  explicit Vector(unsigned int length) throw();
+  explicit Vector(unsigned int size) throw(OutOfDomain);
 
   /**
-    Initialize object.
+    Initializes vector from array.
 
-    @param elements The desired elements of the vector.
-    @param length The number of elements in the vector.
+    @param elements The desired elements.
+    @param size The number of elements in the array.
   */
-  Vector(const TYPE elements[], unsigned int length) throw();
+  Vector(const TYPE elements[], unsigned int size) throw(OutOfDomain);
 
   /**
-    Initialize object.
+    Initializes vector from other vector.
 
-    @param vector The vector to be copied.
+    @param copy The vector to be copied.
   */
-  Vector(const Vector& vector) throw();
-
-  /**
-    Returns the elements of the vector.
-  */
-  TYPE* getElements() const throw();
+  inline Vector(const Vector& copy) throw() : elements(copy.elements) {};
 
   /**
-    Returns the number of elements in the vector.
+    Assigns vector to this vector.
+
+    @param eq The vector containing the desired elements.
   */
-  unsigned int getLength() const throw();
+  Vector& operator=(const Vector& eq) throw(MemoryException);
+
+
+
+  // Elements access section
+
+
+
+  /**
+    Returns an enumeration of all the elements in the vector.
+  */
+  ArrayEnumeration<TYPE> getEnumeration() throw();
+
+  /**
+    Returns a read-only enumeration of all the elements in the vector.
+  */
+  ArrayEnumeration<const TYPE> getEnumeration() const throw();
 
   /**
     Returns the element at the specified index.
 
     @param index The index of the desired element.
   */
-  TYPE& operator[](unsigned int index) const throw(OutOfRange);
-
-  /**
-    Returns the element at the specified index.
-
-    @param index The index of the desired element.
-  */
-  TYPE& getAt(unsigned int index) const throw(OutOfRange);
+  TYPE getAt(unsigned int index) const throw(OutOfRange);
 
   /**
     Sets the element at the specified index.
@@ -102,75 +127,82 @@ public:
   void setAt(unsigned int index, const TYPE& value) throw(OutOfRange);
 
   /**
-    Initializes the elements of the vector using another vector.
+    Returns the element at the specified index.
 
-    @param vector The vector containing the desired elements.
+    @param index The index of the desired element.
   */
-  Vector& operator=(const Vector& vector) throw(IncompatibleVectors);
+  TYPE operator[](unsigned int index) const throw(OutOfRange);
+
+
 
   /**
-    Initializes the elements of the vector.
-
-    @param value The desired value of the elements.
+    Unary plus.
   */
-  Vector& operator=(const TYPE& value) throw();
+  Vector plus() const throw();
 
   /**
-    Adds the specified vector.
-
-    @param vector The vector to be added.
+    Unary minus.
   */
-  Vector& add(const Vector& vector) throw(IncompatibleVectors);
+  Vector minus() const throw();
 
   /**
-    Adds the specified vector.
-
-    @param vector The vector to be added.
+    Sets this vector to the zero vector.
   */
-  Vector& operator+=(const Vector& vector) throw(IncompatibleVectors);
+  Vector& clear() throw();
 
   /**
-    Adds the specified value to the elements of the vector.
-
-    @param value The value to be added.
+    Negates this vector.
   */
-  Vector& operator+=(const TYPE& value) throw();
+  Vector& negate() throw();
 
   /**
-    Subtracts the specified vector.
+    Adds the specified vector to this vector.
+
+    @param value The vector to be added.
+  */
+  Vector& add(const Vector& value) throw(IncompatibleVectors);
+
+  /**
+    Subtracts the specified vector from this vector.
 
     @param vector The vector to be subtracted.
   */
-  Vector& subtract(const Vector& vector) throw(IncompatibleVectors);
+  Vector& subtract(const Vector& value) throw(IncompatibleVectors);
 
   /**
-    Subtracts the specified vector.
+    Multiplies this vector with the specified value.
 
-    @param vector The vector to be subtracted.
-
+    @param value The multiplicator.
   */
-  Vector& operator-=(const Vector& vector) throw(IncompatibleVectors);
+  Vector& multiply(const TYPE& value) throw();
 
   /**
-    Subtracts the specified value to the elements of the vector.
+    Divides this vector with the specified value.
 
-    @param value The value to be subtracted.
+    @param value The divisor.
   */
-  Vector& operator-=(const TYPE& value) throw();
+  Vector& divide(const TYPE& value) throw();
 
   /**
-    Multiplies the specified value to the elements of the vector.
-
-    @param value The value to be multiplied.
+    Negates the specified vector and stores the result in this vector.
   */
-  Vector& operator*=(const TYPE& value) throw();
+  Vector& negate(const Vector& value) throw();
 
   /**
-    Returns the product.
-
-    @param value The value to be multiplied.
+    Returns the dot product of this vector with itself.
   */
-  Vector* operator*(const TYPE& value) throw();
+  TYPE dotdot() const throw();
+
+  /**
+    Returns the norm of this vector.
+  */
+  TYPE norm() const throw();
+
+
+
+  // Operator section
+
+
 
   /**
     Returns true if the vectors are equal.
@@ -180,32 +212,103 @@ public:
   bool operator==(const Vector& vector) const throw(IncompatibleVectors);
 
   /**
-    Returns the dot product of vectors.
+    Adds the specified vector from this vector.
 
-    @param vector Vector to be used in the calculation.
+    @param value The value to be added.
   */
-  TYPE dot(const Vector& vector) const throw(IncompatibleVectors);
+  inline Vector& operator+=(const Vector& value) throw(IncompatibleVectors) {return add(value);}
 
   /**
-    Returns the norm of the vector.
+    Subtracts the specified vector from this vector.
+
+    @param value The value to be subtracted.
   */
-  TYPE norm() const throw();
+  inline Vector& operator-=(const Vector& value) throw(IncompatibleVectors) {return subtract(value);};
 
   /**
-    Destroys the vector.
-  */
-  ~Vector() throw();
+    Multiplies this vector with the specified value.
 
+    @param value The multiplicator.
+  */
+  inline Vector& operator*=(const TYPE& value) throw() {return multiply(value);};
+
+  /**
+    Divides this vector with the specified value.
+
+    @param value The divisor.
+  */
+  inline Vector& operator/=(const TYPE& value) throw() {return divide(value);};
+
+  /**
+    Unary plus.
+  */
+  inline Vector operator+() const throw() {return plus();}
+
+  /**
+    Unary minus.
+  */
+  inline Vector operator-() const throw() {return minus();}
+
+
+
+  // Friend section
+
+
+
+  /**
+    Returns the product of the vector and the value.
+  */
+  friend Vector operator* <>(const Vector& left, const TYPE& right) throw(MemoryException);
+
+  /**
+    Returns the product of the vector and the value.
+  */
+  friend Vector operator* <>(const TYPE& left, const Vector& right) throw(MemoryException);
+
+  /**
+    Returns the result of the vector divided by the value.
+  */
+  friend Vector operator/ <>(const Vector& left, const TYPE& right) throw(MemoryException);
+
+  /**
+    Returns the dot product of the two vectors.
+  */
+  friend TYPE dot<>(const Vector<TYPE>& left, const Vector<TYPE>& right) throw();
+
+  /**
+    Writes a string representation of a vector object to a format stream.
+  */
   friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Vector<TYPE>& value);
 };
 
 /**
-  Writes a string representation of a Vector to a format stream.
+  Returns the product of the vector and the value.
+*/
+template<class TYPE>
+Vector<TYPE> operator*(const Vector<TYPE>& left, const TYPE& right) throw(MemoryException);
+
+/**
+  Returns the product of the vector and the value.
+*/
+template<class TYPE>
+Vector<TYPE> operator*(const TYPE& left, const Vector<TYPE>& right) throw(MemoryException);
+
+/**
+  Returns the result of the vector divided by the value.
+*/
+template<class TYPE>
+Vector<TYPE> operator/(const Vector<TYPE>& left, const TYPE& right) throw(MemoryException);
+
+/**
+  Returns the dot product of the two vectors.
+*/
+template<class TYPE>
+TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw();
+
+/**
+  Writes a string representation of a vector object to a format stream.
 */
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value);
-
-typedef Vector<float> VectorOfFloat;
-typedef Vector<double> VectorOfDouble;
 
 #endif

@@ -32,7 +32,7 @@ public:
   inline Object() throw() {};
 
   /**
-    Destroys the object. Ensure envocation of correct destructor when using polymophism.
+    Destroys the object. Ensure envocation of correct destructor when using polymorphism.
   */
   virtual ~Object() throw() = 0;
 };

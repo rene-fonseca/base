@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "OutOfDomain.h"
+#include "IncompatibleOperands.h"
 
-OutOfDomain::OutOfDomain() {
+IncompatibleOperands::IncompatibleOperands() {
 }
 
-OutOfDomain::OutOfDomain(const char* message) : Exception(message) {
+IncompatibleOperands::IncompatibleOperands(const char* message) : Exception(message) {
 }

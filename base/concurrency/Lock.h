@@ -7,7 +7,8 @@
 #define _DK_SDU_MIP__BASE_THREAD__LOCK_H
 
 /**
-  The locking interface.
+  This interface is implemented by classes used to synchronize contexts of
+  execution by locking/unlocking.
 
   @author René Møller Fonseca
   @version 1.0

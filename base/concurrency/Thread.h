@@ -18,14 +18,12 @@
 class Runnable;
 
 /** Scheduling policy type. */
-typedef enum {
-  INHERITED,
-  FIFO,
-  REALTIME,
-  OTHER
-} SchedulingPolicy;
+typedef enum {INHERITED, FIFO, REALTIME, OTHER} SchedulingPolicy;
 
 /** Thread termination state type. */
+typedef enum {ALIVE, NORMAL, EXIT, EXCEPTION, CANCEL, INTERNAL} ThreadTermination;
+
+/*
 typedef enum {
   ALIVE, // thread is still running
   NORMAL, // thread has exited normally
@@ -34,6 +32,7 @@ typedef enum {
   CANCEL, // thread was cancelled
   INTERNAL // thread was exited due to internal exception - please forgive me
 } ThreadTermination;
+*/
 
   /**
     Thread (a single flow of control) implementation using Posix Threads. Do NOT call any pthread functions directly.

@@ -8,5 +8,5 @@
 MemoryException::MemoryException() {
 }
 
-MemoryException::MemoryException(const char* str) : ResourceException(str) {
+MemoryException::MemoryException(const char* message) : ResourceException(message) {
 }

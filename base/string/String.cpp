@@ -13,9 +13,6 @@ template String<Unsafe>;
 #define NOTFOUND -1
 #define CAPACITY(desired) ((desired+GRANULARITY-1)/GRANULARITY*GRANULARITY)
 
-template<class TYPE> inline TYPE min(TYPE a, TYPE b) {return (a <= b) ? a : b;};
-template<class TYPE> inline TYPE max(TYPE a, TYPE b) {return (a >= b) ? a : b;};
-
 template<class LOCK>
 int String<LOCK>::getLengthOfString(const char* str) const throw() {
   const char* terminator = (const char*)memchr(str, TERMINATOR, MAXIMUM_LENGTH); // find terminator

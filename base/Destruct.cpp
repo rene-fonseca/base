@@ -8,5 +8,5 @@
 Destruct::Destruct() {
 }
 
-Destruct::Destruct(const char* str) : Exception(str) {
+Destruct::Destruct(const char* message) : Exception(message) {
 }

@@ -16,7 +16,6 @@
 
 #include <base/security/User.h>
 #include <base/string/String.h>
-#include <base/Exception.h> // TAG: need other exception
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -25,8 +24,8 @@ class Group;
 /**
   User.
 
-  @ingroup security
   @short User
+  @ingroup security
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -34,8 +33,49 @@ class Group;
 class User : public Object {
 private:
 
+  /** The identifier of the user. */
   unsigned long long id;
 public:
+
+  /**
+    This exception is raised by the User class to indicate a non-existent user.
+
+    @short User exception
+    @ingroup exceptions security
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    @version 1.0
+  */
+
+  class UserException : public Exception {
+  public:
+
+    /**
+      Initializes the exception object with no message.
+    */
+    inline UserException() throw() {}
+
+    /**
+      Initializes the exception object.
+
+      @param message The message.
+    */
+    inline UserException(const char* message) throw() : Exception(message) {}
+
+    /**
+      Initializes the exception object without an associated message.
+
+      @param type The identity of the type.
+    */
+    inline UserException(Type type) throw() : Exception(type) {}
+
+    /**
+      Initializes the exception object.
+
+      @param message An NULL-terminated string (ASCII).
+      @param type The identity of the type.
+    */
+    inline UserException(const char* message, Type type) throw() : Exception(message, type) {}
+  };
 
   /**
     Returns the user associated with the current process.
@@ -43,9 +83,9 @@ public:
   static User getCurrentUser() throw();
 
   /**
-    Initializes user by id.
+    Initializes user by id. Raises 
   */
-  User(unsigned long long id) throw();
+  User(unsigned long long id) throw(OutOfDomain);
 
   /**
     Initializes user from other user.
@@ -55,27 +95,29 @@ public:
   /**
     Initializes user by name.
   */
-  User(const String& name) throw(Exception);
+  User(const String& name) throw(UserException);
 
   /**
     Returns the short name of the account.
   */
-  String getName() const throw(Exception);
+  String getName() const throw(UserException);
 
   /**
     Returns the full name of the account.
   */
-  String getFullName() const throw(Exception);
+  String getFullName() const throw(UserException);
 
   /**
     Returns the path of the home folder.
   */
-  String getHomeFolder() const throw();
+  String getHomeFolder() const throw(UserException);
 
   /**
     Returns true if the user is a member of the specified group.
+
+    @return false if the group doesn't exist.
   */
-  bool isMemberOf(const Group& group) throw(Exception);
+  bool isMemberOf(const Group& group) throw(UserException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

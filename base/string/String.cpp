@@ -71,6 +71,17 @@ String& String::operator=(const char* string) throw(StringException, MemoryExcep
   return *this;
 }
 
+bool String::isASCII() const throw() {
+  const Character* i = getBuffer();
+  const Character* end = i + getLength();
+  while (i < end) {
+    if (!ASCIITraits::isASCII(*i++)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void String::ensureCapacity(unsigned int capacity) throw(MemoryException) {
   elements->ensureCapacity(capacity); // no need to do copyOnWrite
 }

@@ -285,6 +285,11 @@ public:
   inline bool isProper() const throw() {return elements->getSize() > 1;}
 
   /**
+    Returns true if the string is an ASCII string.
+  */
+  bool isASCII() const throw();
+  
+  /**
     Returns the capacity of the string.
   */
   inline unsigned int getCapacity() const throw() {return elements->getCapacity();}

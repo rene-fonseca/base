@@ -1,6 +1,15 @@
 /***************************************************************************
-    begin                : |DATE|
-    copyright            : (C) |YEAR| by |AUTHOR|
-    email                : |EMAIL|
+    copyright   : (C) |YEAR| by |AUTHOR|
+    email       : |EMAIL|
  ***************************************************************************/
 
+#ifndef _DK_SDU_MIP__BASE__...
+#define _DK_SDU_MIP__BASE__...
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+
+#endif

@@ -45,7 +45,8 @@ public:
   static const unsigned int BROADCAST = 63;
   
   typedef BigEndian<uint32> Quadlet;
-  
+
+  /** Control and status register (CSR). */
   enum CSRRegister {
     STATE_CLEAR = 0x000,
     STATE_SET = 0x004,
@@ -67,6 +68,42 @@ public:
     TOPOLOGY_MAP = 0x1000,
     SPEED_MAP = 0x2000
   };
+
+  /** Control and status key type (see CSR Architecture). */
+  enum CSRKeyType {
+    IMMEDIATE = 0x00,
+    OFFSET = 0x01,
+    LEAF = 0x02,
+    DIRECTORY = 0x03
+  };
+  
+  /** Control and status key value (see CSR Architecture). */
+  enum CSRKeyValue {
+    TEXTUAL = 0x01,
+    BUS_DEPENDENT_INFORMATION = 0x02,
+    MODULE_VENDOR_ID = 0x03,
+    MODULE_HARDWARE_VERSION = 0x04,
+    SPECIFICATION_ID = 0x05,
+    MODULE_SOFTWARE_VERSION = 0x06,
+    MODULE_DEPENDENT_INFORMATION = 0x07,
+    NODE_VENDOR_ID = 0x08,
+    NODE_HARDWARE_VERSION = 0x09,
+    NODE_SPECIFICATION_ID = 0x0a,
+    NODE_SOFTWARE_VERSION = 0x0b,
+    NODE_CAPABILITIES = 0x0c,
+    NODE_UNIQUE_ID = 0x0d,
+    NODE_UNITS_EXTENT = 0x0e,
+    NODE_MEMORY_EXTENT = 0x0f,
+    NODE_DEPENDENT_INFORMATION = 0x10,
+    UNIT_DIRECTORY = 0x11,
+    UNIT_SPECIFICATION_ID = 0x12,
+    UNIT_SOFTWARE_VERSION = 0x13,
+    UNIT_DEPENDENT_INFORMATION = 0x14
+  };
+
+  static inline unsigned char makeCSRkey(CSRKeyType type, CSRKeyValue value) throw() {
+    return (static_cast<unsigned char>(type) << 6) | static_cast<unsigned char>(value);
+  }
   
   /**
     This exception is raised on bus resets. The reset must be acknowledged
@@ -84,9 +121,17 @@ public:
 
   /** Exception causes. */
   enum ExceptionCause {
-    NO_GENERAL_CONFIGURATION_ROM = 1,
+    NODE_NOT_PRESENT = 1,
+    NO_GENERAL_CONFIGURATION_ROM,
     INVALID_BUS_INFORMATION_BLOCK,
-    INVALID_ROOT_DIRECTORY_BLOCK
+    INVALID_ROOT_DIRECTORY_BLOCK,
+    INVALID_DEVICE_INDEPENDENT_BLOCK,
+    INVALID_DEVICE_DEPENDENT_BLOCK,
+    REQUEST_NOT_READY,
+    REQUEST_NOT_PENDING,
+    UNABLE_TO_READ,
+    UNABLE_TO_WRITE,
+    LAST_CAUSE
   };
   
   /** Capability flags of nodes. */
@@ -173,11 +218,6 @@ public:
     return adapterId;
   }
   
-  /**
-    Returns the product id of the adapter.
-  */
-  virtual unsigned int getProductId() const throw(IEEE1394Exception) = 0;
-
   /**
     Returns the IEEE 1394 standard of the adapter.
   */
@@ -1243,6 +1283,34 @@ public:
     }
     
     /**
+      Returns true if request is valid.
+    */
+    inline bool isValid() const throw() {
+      return context.isValid();
+    }
+    
+    /**
+      Returns true if the request is pending for completion.
+    */
+    inline bool isPending() const throw() {
+      return context->isPending();
+    }
+    
+    /**
+      Returns the current status of the request.
+    */
+    inline IsochronousRequestStatus getStatus() const throw() {
+      return context->getStatus();
+    }
+    
+    /**
+      Resets the request. Raises IEEE1394Exception is request is pending.
+    */
+    inline void reset() throw(IEEE1394Exception) {
+      context->reset();
+    }
+
+    /**
       Returns the type of the request.
     */
     inline IsochronousRequestType getType() const throw() {
@@ -1679,6 +1747,34 @@ public:
     }
     
     /**
+      Returns true if request is valid.
+    */
+    inline bool isValid() const throw() {
+      return context.isValid();
+    }
+    
+    /**
+      Returns true if the request is pending for completion.
+    */
+    inline bool isPending() const throw() {
+      return context->isPending();
+    }
+    
+    /**
+      Returns the current status of the request.
+    */
+    inline IsochronousRequestStatus getStatus() const throw() {
+      return context->getStatus();
+    }
+    
+    /**
+      Resets the request. Raises IEEE1394Exception is request is pending.
+    */
+    inline void reset() throw(IEEE1394Exception) {
+      context->reset();
+    }
+
+    /**
       Returns the type of the request.
     */
     inline IsochronousRequestType getType() const throw() {
@@ -1959,6 +2055,12 @@ public:
   public:
 
     /**
+      Initialize channel as closed.
+    */
+    inline IsochronousReadChannel() throw() : readChannel(new IsochronousReadChannelImpl()) {
+    }
+    
+    /**
       Initialize channel from other channel.
     */
     inline IsochronousReadChannel(const IsochronousReadChannel& copy) throw()
@@ -2085,7 +2187,13 @@ public:
   public:
 
     /**
-      Initialize channel from other channel.
+      Initializes channel as closed.
+    */
+    inline IsochronousWriteChannel() throw() : writeChannel(new IsochronousWriteChannelImpl()) {
+    }
+
+    /**
+      Initializes channel from other channel.
     */
     inline IsochronousWriteChannel(const IsochronousWriteChannel& copy) throw()
       : writeChannel(copy.writeChannel) {

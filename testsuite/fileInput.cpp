@@ -39,7 +39,7 @@ int entry() {
 }
 
 int main(int argc, const char* argv[], const char *envp[]) {
-  Application app(argc, argv, envp);
+  Application app("fileInput", argc, argv, envp);
   try {
     return entry();
   } catch(Exception& e) {

@@ -22,6 +22,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
 class DOMImplementationImpl {
 public:
   
@@ -57,6 +58,7 @@ public:
     ((String*)context)->append(buffer);
   }
 };
+#endif
 
 bool DOMImplementation::hasFeature(
   const String& name, const String& version) throw() {

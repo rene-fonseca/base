@@ -319,6 +319,7 @@ Node::ShadowDocument Node::getOwnerDocument() throw() {
 #endif
 }
 
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
 class NodeImpl {
 public:
 
@@ -495,6 +496,7 @@ public:
     ASSERT(isUnlinked(_node));
   }
 };
+#endif
 
 Node Node::appendChild(Node _child) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
@@ -782,6 +784,7 @@ bool Node::isAncestor(const Node& _child) const throw() {
 
 // TAG: should cloneNode() be const?
 Node Node::cloneNode(bool deep) throw(DOMException) {
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   
   switch (node->type) {
@@ -806,6 +809,9 @@ Node Node::cloneNode(bool deep) throw(DOMException) {
     assert(result, DOMException(this));
     return result;
   }
+#else
+  throw DOMException(this);
+#endif
 }
 
 Node::~Node() throw() {

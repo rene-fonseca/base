@@ -478,6 +478,7 @@ public:
 #endif
 };
 
+#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
 xmlSAXHandler XMLDefaultReaderImpl::SAX_HANDLER = {
   XMLDefaultReaderImpl::internalSubset, // internalSubset
   0, // isStandalone
@@ -508,6 +509,7 @@ xmlSAXHandler XMLDefaultReaderImpl::SAX_HANDLER = {
   0, // externalSubset
   1 // initialized
 };
+#endif
 
 
 

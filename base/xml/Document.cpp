@@ -104,6 +104,8 @@ Attribute Document::createAttribute(
   );
   assert(node, DOMException(this));
   return node;
+#else
+  throw DOMException(this);
 #endif
 }
 
@@ -512,7 +514,7 @@ void Document::destroy() throw(DOMException) {
     context = 0;
   }
 #else
-  return false;
+  throw DOMException(this);
 #endif
 }
 

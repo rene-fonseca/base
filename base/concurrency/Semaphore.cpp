@@ -17,22 +17,37 @@
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
 
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K)
-    struct SemaphoreInformation { // semaphore query information
-      UINT value;
-      UINT maximum;
-    };
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || \
+    (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K) || \
+    (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WXP)
+namespace ntapi {
+  
+  typedef long NTSTATUS;
+  typedef long KPRIORITY;
 
-    typedef long NTSTATUS;
+  inline bool succeeded(long status) throw() {
+    return status >= 0;
+  }
 
-    extern "C" NTSTATUS WINAPI NtQuerySemaphore(
-      HANDLE handle,
-      UINT informationClass,
-      SemaphoreInformation* semaphoreInformation,
-      UINT size,
-      PUINT resultSize
-    );
-  #endif
+  inline bool failed(long status) throw() {
+    return status < 0;
+  }
+  
+  enum {SEMAPHORE_QUERY_INFORMATION_CLASS = 0};
+
+  struct SemaphoreInformation { // semaphore query information
+    unsigned int value;
+    unsigned int maximum;
+  };
+
+  typedef NTSTATUS (__stdcall *PNtQuerySemaphore)(HANDLE, unsigned int /*INFOCLASS*/, SemaphoreInformation*, unsigned long, unsigned long*);
+
+  template<class API>
+  inline API getAddress(const char* identifier) throw() {
+    return (API)::GetProcAddress(::GetModuleHandle("ntdll"), identifier);
+  }
+};
+#endif
 
 #else // unix
   #include <errno.h>
@@ -129,17 +144,27 @@ Semaphore::Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceExceptio
 
 int Semaphore::getValue() const throw(SemaphoreException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K)
-    SemaphoreInformation information;
-    UINT resultSize;
-    if (::NtQuerySemaphore((HANDLE)semaphore,
-                           SemaphoreImpl::QUERY_INFORMATION,
-                           &information,
-                           sizeof(information),
-                           &resultSize) < 0) {
-      throw SemaphoreException(this);
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || \
+      (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K) || \
+      (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WXP)
+    static ntapi::PNtQuerySemaphore NtQuerySemaphore = 0; // 0~unsupported if resolved
+    static bool isResolved = false;
+    if (!isResolved) {
+      ntapi::PNtQuerySemaphore NtQuerySemaphore =
+        ntapi::getAddress<ntapi::PNtQuerySemaphore>("NtQuerySemaphore");
+      isResolved = true;
     }
-    return information.value;
+    if (NtQuerySemaphore) {
+      ntapi::SemaphoreInformation information;
+      if (ntapi::succeeded(NtQuerySemaphore((HANDLE)semaphore,
+                                            ntapi::SEMAPHORE_QUERY_INFORMATION_CLASS,
+                                            &information,
+                                            sizeof(information),
+                                            0))) {
+        return information.value;
+      }
+    }
+    return -1; // not supported
   #else // win32 does not support this functionality
     #warning Semaphore::getValue() is not supported
     return -1; // not supported

@@ -30,6 +30,7 @@
 #include <base/io/File.h>
 #include <base/io/Pipe.h>
 #include <base/net/Socket.h>
+#include <base/string/Locale.h>
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/sound/SoundDevice.h>
@@ -111,7 +112,7 @@ namespace internal {
 Application* Application::application(0); // initialize application as uninitialized
 
 const String String::DEFAULT_STRING(MESSAGE(""));
-const WideString WideString::DEFAULT_STRING(MESSAGE(""));
+const WideString WideString::DEFAULT_STRING(WIDEMESSAGE(""));
 
 namespace internal {
   
@@ -190,6 +191,7 @@ public:
 };
 
 Initialization initialization;
+const Locale Locale::POSIX;
 
 FileDescriptorInputStream standardInputStream(FileDescriptor::getStandardInput());
 FormatInputStream fin(standardInputStream);

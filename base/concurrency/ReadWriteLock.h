@@ -40,8 +40,29 @@ protected:
   void* representation;
 public:
 
-  /** Exception thrown directly by the ReadWriteLock class. */
+  /**
+    Exception thrown directly by the ReadWriteLock class.
+
+    @ingroup exceptions
+  */
   class ReadWriteLockException : public Exception {
+  public:
+
+    /**
+      Initializes the exception object with no message.
+    */
+    ReadWriteLockException() throw() {}
+
+    /**
+      Initializes the exception object.
+
+      @param message The message.
+    */
+    ReadWriteLockException(const char* message) throw() {}
+
+    ReadWriteLockException(Type type) throw() : Exception(type) {}
+
+    ReadWriteLockException(const char* message, Type type) throw() : Exception(message, type) {}
   };
 
   /**

@@ -219,7 +219,7 @@ public:
   unsigned int getReadTimeout() const throw(CommunicationsException);
 
   /**
-    Returns the the maximum write timeout period.
+    Returns the maximum write timeout period.
   */
   unsigned int getWriteTimeout() const throw(CommunicationsException);
 

@@ -20,8 +20,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-// TAG: wrong name of file
-
 class ServerSocket;
 
 /**
@@ -34,43 +32,46 @@ class ServerSocket;
   @version 1.0
 */
 
-class StreamSocket : protected Socket, public virtual InputStream, public virtual OutputStream {
+class StreamSocket : protected Socket,
+                     public virtual InputStream,
+                     public virtual OutputStream {
 public:
 
   /**
     Creates an unconnected stream socket.
   */
-  StreamSocket() throw(IOException);
+  StreamSocket() throw(NetworkException);
 
   /**
     Creates a stream socket and connects it to the specified port at the
     specified IP address.
 
-    @param addr The IP address of the host to connect to.
+    @param address The IP address of the host to connect to.
     @param port The port to connect to on the host.
   */
-  StreamSocket(const InetAddress& addr, unsigned short port) throw(IOException);
+  StreamSocket(
+    const InetAddress& address, unsigned short port) throw(NetworkException);
 
   /**
     Creates a stream socket and connects it to the specified port at the
     specified IP address and also binds the socket to the local address and
     local port.
 
-    @param addr The IP address of the host to connect to.
+    @param address The IP address of the host to connect to.
     @param port The port to connect to on the host.
-    @param localAddr The local IP address the socket should be bound to.
+    @param localAddress The local IP address the socket should be bound to.
     @param localPort The local port the socket should be bound to.
   */
   StreamSocket(
-    const InetAddress& addr,
+    const InetAddress& address,
     unsigned short port,
-    InetAddress& localAddr,
-    unsigned short localPort) throw(IOException);
+    InetAddress& localAddress,
+    unsigned short localPort) throw(NetworkException);
   
   /**
     Accept connect from
   */
-  StreamSocket(ServerSocket& socket) throw(IOException);
+  StreamSocket(ServerSocket& socket) throw(NetworkException);
 
   /**
     Initialization of socket from other socket.
@@ -81,35 +82,30 @@ public:
   /**
     Associates a local name (address and port) with this socket.
 
-    @param addr The IP address the socket should be bound to.
+    @param address The IP address the socket should be bound to.
     @param port The port the socket should be bound to.
   */
-  inline void bind(const InetAddress& addr, unsigned short port) throw(IOException) {
-    Socket::bind(addr, port);
+  inline void bind(
+    const InetAddress& address, unsigned short port) throw(NetworkException) {
+    Socket::bind(address, port);
   }
 
   /**
     Closes this socket.
   */
-  inline void close() throw(IOException) {
+  inline void close() throw(NetworkException) {
     Socket::close();
   }
 
   /**
     Connects this socket to the specified address and port.
 
-    @param addr The IP address to connect to.
+    @param address The IP address to connect to.
     @param port The port to connect to.
   */
-  inline void connect(const InetAddress& addr, unsigned short port) throw(IOException) {
-    Socket::connect(addr, port);
-  }
-
-  /**
-    Returns the IP address to which the socket is connected.
-  */
-  inline const InetAddress& getAddress() const throw() {
-    return Socket::getAddress();
+  inline void connect(
+    const InetAddress& address, unsigned short port) throw(NetworkException) {
+    Socket::connect(address, port);
   }
 
   /**
@@ -117,8 +113,15 @@ public:
     function can be used after a succesful connect to determine the locally
     assigned address and port if unspecified.
   */
-  inline void getName() throw() {
+  inline void getName() throw(NetworkException) {
     return Socket::getName();
+  }
+  
+  /**
+    Returns the IP address to which the socket is connected.
+  */
+  inline const InetAddress& getAddress() const throw() {
+    return Socket::getAddress();
   }
 
   /**
@@ -145,49 +148,49 @@ public:
   /**
     Disables the input stream for this socket.
   */
-  inline void shutdownInputStream() throw(IOException) {
+  inline void shutdownInputStream() throw(NetworkException) {
     Socket::shutdownInputStream();
   }
 
   /**
     Disables the output stream for this socket.
   */
-  inline void shutdownOutputStream() throw(IOException) {
+  inline void shutdownOutputStream() throw(NetworkException) {
     Socket::shutdownOutputStream();
   }
 
   /**
     Returns the error state of the socket.
   */
-  inline int getErrorState() const throw(IOException) {
+  inline int getErrorState() const throw(NetworkException) {
     return Socket::getErrorState();
   }
   
   /**
     Returns true if 'bind' allows local addresses to be reused.
   */
-  inline bool getReuseAddress() const throw(IOException) {
+  inline bool getReuseAddress() const throw(NetworkException) {
     return Socket::getReuseAddress();
   }
 
   /**
     Sets the local address reuse flag of this socket.
   */
-  inline void setReuseAddress(bool value) throw(IOException) {
+  inline void setReuseAddress(bool value) throw(NetworkException) {
     Socket::setReuseAddress(value);
   }
 
   /**
     Returns true if connection is kept alive.
   */
-  inline bool getKeepAlive() const throw(IOException) {
+  inline bool getKeepAlive() const throw(NetworkException) {
     return Socket::getKeepAlive();
   }
 
   /**
     Sets the keep alive flag of this socket.
   */
-  inline void setKeepAlive(bool value) throw(IOException) {
+  inline void setKeepAlive(bool value) throw(NetworkException) {
     Socket::setKeepAlive(value);
   }
 
@@ -196,86 +199,87 @@ public:
 
     @return -1 if linger is disabled.
   */
-  inline int getLinger() const throw() {
+  inline int getLinger() const throw(NetworkException) {
     return Socket::getLinger();
   }
 
   /**
     Sets the linger interval. Negative time disables the linger.
   */
-  inline void setLinger(int seconds) throw(IOException) {
+  inline void setLinger(int seconds) throw(NetworkException) {
     Socket::setLinger(seconds);
   }
 
   /**
     Gets the size of the receive buffer.
   */
-  inline int getReceiveBufferSize() const {
+  inline int getReceiveBufferSize() const throw(NetworkException) {
     return Socket::getReceiveBufferSize();
   }
 
   /**
     Sets the size of the receive buffer.
   */
-  inline void setReceiveBufferSize(int size) throw(IOException) {
+  inline void setReceiveBufferSize(int size) throw(NetworkException) {
     Socket::setReceiveBufferSize(size);
   }
 
   /**
     Gets the size of the send buffer.
   */
-  inline int getSendBufferSize() const throw(IOException) {
+  inline int getSendBufferSize() const throw(NetworkException) {
     return Socket::getSendBufferSize();
   }
 
   /**
     Sets the size of the send buffer.
   */
-  inline void setSendBufferSize(int size) throw(IOException) {
+  inline void setSendBufferSize(int size) throw(NetworkException) {
     Socket::setSendBufferSize(size);
   }
 
   /**
     Returns true of the Nagle's algorithm is disabled.
   */
-  inline bool getTcpNoDelay() const throw(IOException) {
+  inline bool getTcpNoDelay() const throw(NetworkException) {
     return Socket::getTcpNoDelay();
   }
 
   /**
     Disables/enables the Nagle's algorithm.
   */
-  inline void setTcpNoDelay(bool value) throw(IOException) {
+  inline void setTcpNoDelay(bool value) throw(NetworkException) {
     Socket::setTcpNoDelay(value);
   }
   
   /**
     Returns the current time to live (TTL) value.
   */
-  inline unsigned int getTimeToLive() const throw(IOException) {
+  inline unsigned int getTimeToLive() const throw(NetworkException) {
     return Socket::getTimeToLive();
   }
   
   /**
     Sets the time to live (TTL) value.
   */
-  inline void setTimeToLive(unsigned int value) throw(IOException) {
+  inline void setTimeToLive(unsigned int value) throw(NetworkException) {
     Socket::setTimeToLive(value);
   }
   
   /**
     Sets the blocking mode of the socket.
   */
-  inline void setNonBlocking(bool value) throw(IOException) {
+  inline void setNonBlocking(bool value) throw(NetworkException) {
     Socket::setNonBlocking(value);
   }
 
   /**
-    Returns the number of bytes that can be read or skipped over without blocking.
-
+    Returns the number of bytes that can be read or skipped over without
+    blocking.
+    
     @return Available number of bytes in stream.
   */
-  inline unsigned int available() const throw(IOException) {
+  inline unsigned int available() const throw(NetworkException) {
     return Socket::available();
   }
 
@@ -287,7 +291,10 @@ public:
     @param size The size of the buffer.
     @return The actual number of bytes read.
   */
-  inline unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException) {
+  inline unsigned int read(
+    char* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(NetworkException) {
     return Socket::read(buffer, size, nonblocking);
   }
 
@@ -298,14 +305,17 @@ public:
     @param size The number of bytes to be written.
     @return The actual number of bytes written.
   */
-  inline unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException) {
+  inline unsigned int write(
+    const char* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(NetworkException) {
     return Socket::write(buffer, size, nonblocking);
   }
 
   /**
     Blocking wait for input to become available.
   */
-  inline void wait() const throw(IOException) {
+  inline void wait() const throw(NetworkException) {
     Socket::wait();
   }
 
@@ -315,7 +325,7 @@ public:
     @param timeout The timeout periode in microseconds.
     @return True, if data is available. False, if the timeout periode expired.
   */
-  inline bool wait(unsigned int timeout) const throw(IOException) {
+  inline bool wait(unsigned int timeout) const throw(NetworkException) {
     return Socket::wait(timeout);
   }
 
@@ -329,14 +339,14 @@ public:
   /**
     Skips the specified number of bytes.
   */
-  inline unsigned int skip(unsigned int count) throw(IOException) {
+  inline unsigned int skip(unsigned int count) throw(NetworkException) {
     return 0;
   }
 
   /**
     Forces any buffered bytes to be written out.
   */
-  inline void flush() throw(IOException) {
+  inline void flush() throw(NetworkException) {
     Socket::flush();
   }
 };

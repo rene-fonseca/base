@@ -29,7 +29,7 @@ namespace base {
   }
   
   // import data types
-  using com::borland::compiler;
+  using namespace com::borland::compiler;
   
 } // end of namespace base
 

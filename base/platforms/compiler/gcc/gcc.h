@@ -122,7 +122,7 @@ namespace base {
   } // end of namespace org
   
   // import GCC data types
-  using org::gnu::compiler;
+  using namespace org::gnu::compiler;
   
 } // end of namespace base
 

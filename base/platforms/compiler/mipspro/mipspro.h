@@ -30,7 +30,7 @@ namespace base {
   }
 
   // import data types
-  using com::sgi2::mipspro;
+  using namespace com::sgi2::mipspro;
   
 } // end of namespace base
 

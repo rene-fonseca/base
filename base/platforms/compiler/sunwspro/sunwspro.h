@@ -30,7 +30,7 @@ namespace base {
   }
   
   // import data types
-  using com::sun2::sunwspro;
+  using namespace com::sun2::sunwspro;
   
 } // end of namespace base
 

@@ -35,9 +35,10 @@ class OpenGLContext : public WindowImpl {
 private:
 
   Empty prefixInitialization;
+  /** Version of the OpenGL window management (e.g. 0x010300). */
+  unsigned int version;
   /** Opaque handle to OpenGL rendering context. */
   void* renderingContext;
-  void* drawable;
   /** The number of overlay planes. */
   unsigned int numberOfOverlayPlanes;
   /** The number of underlay planes. */
@@ -56,17 +57,27 @@ public:
 
   /** OpenGL implementation. */
   OpenGL openGL;
-  
+
+  /** OpenGL support flags. */
   enum Flag {
-    COLOR_INDEX = 1 << 0,
-    DOUBLE_BUFFERED = 1 << 1,
-    ACCUMULATOR = 1 << 2,
-    ALPHA = 1 << 3,
-    DEPTH = 1 << 4,
-    STENCIL = 1 << 5,
-    MULTI_SAMPLE = 1 << 6,
-    STEREO = 1 << 7,
-    LUMINANCE = 1 << 8
+    COLOR_INDEX = 1, /**< Color index. */
+    DOUBLE_BUFFERED = COLOR_INDEX << 1, /**< Request double buffered. */
+    ACCUMULATOR = DOUBLE_BUFFERED << 1, /**< Accumulator. */
+    ALPHA = ACCUMULATOR << 1, /**< Request alpha/transparency support. */
+    DEPTH = ALPHA << 1, /**< Depth buffer support. */
+    STENCIL = DEPTH << 1, /**< Stencil buffer support. */
+    AUX = STENCIL << 1, /**< Auxiliary buffer support. */
+    MULTI_SAMPLE = AUX << 1, /**< Multi sample support. */
+    STEREO = MULTI_SAMPLE << 1, /**< Stereo support. */
+    LUMINANCE = STEREO << 1, /**< Luminance support. */
+    RGB = LUMINANCE << 1,
+    RGB15 = RGB << 1,
+    RGB16 = RGB15 << 1,
+    RGB24 = RGB16 << 1,
+    RGBA32 = RGB24 << 1,
+    OVERLAY = RGBA32 << 1,
+    UNDERLAY = OVERLAY << 1,
+    DIRECT = UNDERLAY << 1 /**< Direct rendering support. */
   };
   
   uint8 colorBits;
@@ -90,7 +101,37 @@ public:
   /**
     Initializes a new OpenGL context.
   */
-  OpenGLContext(const String& title, const Position& position, const Dimension& dimension, unsigned int flags) throw(OpenGLException, UserInterfaceException);
+  OpenGLContext(const Position& position, const Dimension& dimension, unsigned int flags) throw(OpenGLException, UserInterfaceException);
+
+  /**
+    Returns the vendor of the client.
+  */
+  String getGLClientVendor() const throw(UserInterfaceException);
+
+  /**
+    Returns the release of the client.
+  */
+  String getGLClientRelease() const throw(UserInterfaceException);
+
+  /**
+    Returns the client extensions.
+  */
+  String getGLClientExtensions() const throw(UserInterfaceException);
+
+  /**
+    Returns the vendor of the server.
+  */
+  String getGLServerVendor() const throw(UserInterfaceException);
+
+  /**
+    Returns the release of the server.
+  */
+  String getGLServerRelease() const throw(UserInterfaceException);
+
+  /**
+    Returns the server extensions.
+  */
+  String getGLServerExtensions() const throw(UserInterfaceException);
   
   /**
     Returns the number of overlay planes.
@@ -117,6 +158,21 @@ public:
   // inline bool isHasAccumulatorBuffer() const throw();
   // inline bool isHasDepthBuffer() const throw();
   // inline bool isHasStencilBuffer() const throw();
+
+  /**
+    Returns true if context is a direct rendering context.
+  */
+  bool isDirect() const throw(OpenGLException);
+  
+  /**
+    Returns true if the executing thread has an associated OpenGL context.
+  */
+  bool hasCurrent() const throw(OpenGLException);
+  
+  /**
+    Returns true if the OpenGL context is the current context of the executing thread.
+  */
+  bool isCurrent() const throw(OpenGLException);
   
   /**
     Selects this OpenGL context as the current context of the executing thread.

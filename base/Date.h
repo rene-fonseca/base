@@ -35,7 +35,10 @@ class FormatOutputStream;
 class Date {
 private:
 
-  /** Seconds elapsed since epoch (i.e. 00:00:00 on January 1, 1970, Coordinated Universal Time (UTC)). */
+  /**
+    Seconds elapsed since epoch (i.e. 00:00:00 on January 1, 1970, Coordinated
+    Universal Time (UTC)).
+  */
   int date; // TAG: need 64bit accuracy - long long
 public:
 
@@ -92,7 +95,8 @@ public:
     @param redundancy Specifies whether or not to update all fields. The
     default is to update all fields.
     
-    @return The year carrier. Only non-zero if the year falls outside the range [-9999;9999].
+    @return The year carrier. Only non-zero if the year falls outside the range
+    [-9999;9999].
   */
   static int normalize(DateTime& dateTime, bool redundancy = true) throw();
   
@@ -154,7 +158,8 @@ public:
     @param second The second.
     @param minute The minute.
     @param hour The hour.
-    @param local Specifies that the time is given in local time. The default is UTC time.
+    @param local Specifies that the time is given in local time. The default is
+    UTC time.
   */
   static Date getTime(int second, int minute, int hour, bool local = false) throw(DateException);
   
@@ -165,7 +170,8 @@ public:
     @param day The day of the month.
     @param month The month of the year.
     @param year The year.
-    @param local Specifies that the time is given in local time. The default is UTC time.
+    @param local Specifies that the time is given in local time. The default is
+    UTC time.
   */
   static Date getDate(int day, int month, int year, bool local = false) throw(DateException);
 
@@ -179,7 +185,8 @@ public:
     @param day The day of the month.
     @param month The month of the year.
     @param year The year.
-    @param local Specifies that the time is given in local time. The default is UTC time.
+    @param local Specifies that the time is given in local time. The default is
+    UTC time.
   */
   static Date getDate(int second, int minute, int hour, int day, int month, int year, bool local = false) throw(DateException);
   
@@ -197,8 +204,8 @@ public:
   /**
     Initializes the date with the specified date.
 
-    @param date The number of seconds elapsed since 00:00:00 on January 1, 1970,
-    Coordinated Universal Time (UTC).
+    @param date The number of seconds elapsed since 00:00:00 on January 1,
+    1970, Coordinated Universal Time (UTC).
   */
   Date(int date) throw();
 
@@ -222,7 +229,8 @@ public:
   }
 
   /**
-    Returns the seconds elapsed since 00:00:00 on January 1, 1970, Coordinated Universal Time (UTC).
+    Returns the seconds elapsed since 00:00:00 on January 1, 1970, Coordinated
+    Universal Time (UTC).
   */
   inline int getValue() const throw() {
     return date;
@@ -333,8 +341,8 @@ public:
     Returns the date/time as a string.
 
     @param format The desired format of the resulting string.
-    @param local When true, specifies that the time should be presented in local
-    time otherwise UTC is assumed. The Default is true (local).
+    @param local When true, specifies that the time should be presented in
+    local time otherwise UTC is assumed. The Default is true (local).
   */
   String format(const String& format, bool local = true) const throw(InvalidFormat, MemoryException);
   
@@ -342,8 +350,8 @@ public:
     Returns the date/time as a string.
 
     @param format The desired format of the resulting string.
-    @param local When true, specifies that the time should be presented in local
-    time otherwise UTC is assumed. The Default is true (local).
+    @param local When true, specifies that the time should be presented in
+    local time otherwise UTC is assumed. The Default is true (local).
   */
   WideString format(const WideString& format, bool local = true) const throw(InvalidFormat, MemoryException);
 };

@@ -82,6 +82,36 @@ public:
   }
 
   /**
+    Reduces the width and height to the minimum values of this and the specified
+    dimension.
+    
+    @param dimension The other dimension.
+  */
+  inline void reduce(const Dimension& dimension) throw() {
+    if (dimension.getWidth() < width) {
+      width = dimension.getWidth();
+    }
+    if (dimension.getHeight() < height) {
+      height = dimension.getHeight();
+    }
+  }
+  
+  /**
+    Expands the width and height to the maximum value of this and the specified
+    dimension.
+    
+    @param dimension The other dimension.
+  */
+  inline void expand(const Dimension& dimension) throw() {
+    if (dimension.getWidth() > width) {
+      width = dimension.getWidth();
+    }
+    if (dimension.getHeight() > height) {
+      height = dimension.getHeight();
+    }
+  }
+  
+  /**
     Returns true if the dimensions are equal.
 
     @param dimension The dimension to be compared.

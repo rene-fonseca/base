@@ -2,7 +2,7 @@
 #    The Base Framework
 #    A framework for developing platform independent applications
 #
-#    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+#    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 #
 #    This framework is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -58,6 +58,7 @@ libbase_la_SOURCES = \
   FloatingPoint.cpp \
   Integer.cpp \
   Interface.cpp \
+  InvalidException.cpp \
   UnsignedInteger.cpp \
   LongDouble.cpp \
   LongInteger.cpp \
@@ -86,6 +87,7 @@ libbase_la_SOURCES = \
   NotImplemented.cpp \
   NotSupported.cpp \
   UnexpectedFailure.cpp \
+  ValidifiedResult.cpp \
   Version.cpp \
   OperatingSystem.cpp \
   SystemInformation.cpp \
@@ -109,6 +111,9 @@ section_HEADERS = \
   Object.h \
   Character.h \
   Range2D.h \
+  GetFunctionResult.h \
+  GetMethodResult.h \
+  IsSame.h \
   ShortInteger.h \
   Iterator.h \
   Trace.h \
@@ -117,6 +122,7 @@ section_HEADERS = \
   BidirectionalIterator.h \
   Integer.h \
   Interface.h \
+  InvalidException.h \
   UnsignedInteger.h \
   LongDouble.h \
   LongInteger.h \
@@ -142,6 +148,8 @@ section_HEADERS = \
   Timer.h \
   Type.h \
   TypeInfo.h \
+  TypeOf.h \
+  Unspecified.h \
   ByteOrder.h \
   Application.h \
   SingletonException.h \
@@ -151,6 +159,7 @@ section_HEADERS = \
   NotImplemented.h \
   NotSupported.h \
   UnexpectedFailure.h \
+  ValidifiedResult.h \
   Version.h \
   OperatingSystem.h \
   SystemInformation.h \

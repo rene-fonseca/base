@@ -20,7 +20,8 @@
 #include <base/MemoryException.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/mem/ReferenceCountedObject.h>
-#include <base/concurrency/Synchronize.h>
+#include <base/concurrency/ExclusiveSynchronize.h>
+#include <base/concurrency/SharedSynchronize.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -150,7 +151,7 @@ public:
     Returns the number of elements in the queue.
   */
   inline unsigned int getSize() const throw() {
-    SynchronizeShared();
+    SharedSynchronize<LOCK> sharedSynchronize(*this);
     return elements->getSize();
   }
 
@@ -158,7 +159,7 @@ public:
     Returns true if the queue is empty.
   */
   inline bool isEmpty() const throw() {
-    SynchronizeShared();
+    SharedSynchronize<LOCK> sharedSynchronize(*this);
     return elements->isEmpty();
   }
 
@@ -168,7 +169,7 @@ public:
     @param value The value to be added to the queue.
   */
   void push(const TYPE& value) throw(MemoryException) {
-    SynchronizeExclusively();
+    ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
     elements.copyOnWrite();
     elements->push(value);
   }
@@ -178,7 +179,7 @@ public:
     queue is empty.
   */
   Value pop() throw(InvalidNode) {
-    SynchronizeExclusively();
+    ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
     elements.copyOnWrite();
     return elements->pop();
   }

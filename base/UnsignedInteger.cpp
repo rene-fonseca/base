@@ -16,11 +16,15 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-unsigned int UnsignedInteger::parse(const String& str, unsigned int accept) throw(InvalidFormat) {
+unsigned int UnsignedInteger::parse(const String& string, unsigned int accept) throw(InvalidFormat) {
   unsigned int base = 10; // default integer base
-  String::ReadIterator i = str.getBeginReadIterator();
-  const String::ReadIterator end = str.getEndReadIterator();
+  String::ReadIterator i = string.getBeginReadIterator();
+  const String::ReadIterator end = string.getEndReadIterator();
 
+  while ((i < end) && (*i == ' ')) {
+    ++i; // eat space
+  }
+  
   assert(i < end, InvalidFormat("Not an integer", Type::getType<UnsignedInteger>())); // do not accept empty strings
 
   switch (accept) {
@@ -77,7 +81,10 @@ unsigned int UnsignedInteger::parse(const String& str, unsigned int accept) thro
   unsigned int lowLimit = MAXIMUM%base;
   unsigned int temp = 0;
   while (i < end) {
-    char ch = *i++;
+    char ch = *i;
+    if (!ASCIITraits::isHexDigit(ch)) {
+      break;
+    }
     unsigned char digitValue = ASCIITraits::digitToValue(ch); // unspecified for non-digit
     assert(
       ASCIITraits::isHexDigit(ch) &&
@@ -86,7 +93,15 @@ unsigned int UnsignedInteger::parse(const String& str, unsigned int accept) thro
       InvalidFormat("Not an integer", Type::getType<UnsignedInteger>())
     );
     temp = temp * base + digitValue;
+    ++i;
   }
+
+  while ((i < end) && (*i == ' ')) { // rest must be spaces
+    ++i;
+  }
+  
+  assert(i == end, InvalidFormat("Not an integer", Type::getType<UnsignedInteger>()));
+  
   return temp;
 }
 

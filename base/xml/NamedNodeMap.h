@@ -59,7 +59,8 @@ public:
   /**
     Initializes node map from node map.
   */
-  inline NamedNodeMap(const NamedNodeMap& copy) throw() : context(copy.context) {
+  inline NamedNodeMap(const NamedNodeMap& copy) throw()
+    : context(copy.context) {
   }
   
   /**

@@ -112,21 +112,6 @@ Process Process::getParentProcess() throw() {
 #endif
 }
 
-unsigned long Process::getNumberOfProcessers() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  SYSTEM_INFO systemInfo;
-  ::GetSystemInfo(&systemInfo);
-  return systemInfo.dwNumberOfProcessors;
-#else // unix
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
-  unsigned long result = sysconf(_SC_NPROC_ONLN);  
-#else
-  unsigned long result = sysconf(_SC_NPROCESSORS_ONLN);
-#endif
-  return result;
-#endif // flavor
-}
-
 Process Process::fork() throw(NotSupported, ProcessException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   throw NotSupported(Type::getType<Process>());

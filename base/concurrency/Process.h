@@ -88,12 +88,31 @@ public:
   static Process getParentProcess() throw();
   
   /**
-    Returns the number of processors in the system. It is legal for the
-    operating system to lie about the true number of processors.
-
+    Returns the number of configured processors in the system. It is legal for
+    the operating system to lie about the true number of processors.
+    
     @return Returns 0 if the value cannot be determined.
   */
-  static unsigned long getNumberOfProcessers() throw();
+  static inline unsigned long getNumberOfConfiguredProcessors() throw() {
+    return OperatingSystem::getVariable(OperatingSystem::NUM_OF_CONFIGURED_PROCESSORS);
+  }
+  
+  /**
+    Returns the number of online processors in the system. It is legal for the
+    operating system to lie about the true number of processors.
+    
+    @return Returns 0 if the value cannot be determined.
+  */
+  static inline unsigned long getNumberOfOnlineProcessors() throw() {
+    return OperatingSystem::getVariable(OperatingSystem::NUM_OF_ONLINE_PROCESSORS);
+  }
+  
+  /**
+    Returns true if the system supports job control.
+  */
+  static inline bool supportsJobControl() throw() {
+    return OperatingSystem::getVariable(OperatingSystem::SUPPORTS_JOB_CONTROL) != 0;
+  }
   
   /**
     Forks a child process.

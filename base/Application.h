@@ -11,19 +11,22 @@
 #include <base/collection/Array.h>
 #include <base/collection/Map.h>
 #include <base/OutOfDomain.h>
+#include <base/SingletonException.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This is a singleton object for the context of the application.
+  This is a singleton object for the context of this application.
 
-  @short Application.
+  @short Application context wrapper.
   @author René Møller Fonseca
 */
 
 class Application : public Object {
 private:
 
+  /** The application object. */
+  static Application* application;
   /** The path used to start the application. */
   String path;
   /** Container for the arguments passed to the application. */
@@ -33,12 +36,24 @@ private:
 public:
 
   /**
+    Returns the application object.
+  */
+  inline static const Application* getApplication() throw() {return application;}
+
+  /**
     Initializes application.
 
+    Example:
     <pre>
-    int main(int argc, const char* argv[], const char* envp[]) {
+    int main(int argc, const char* argv[], const char *envp[]) {
       Application app(argc, argv, envp);
-      ...
+      try {
+        return entry();
+      } catch(Exception& e) {
+        return Application::getApplication()->exceptionHandler(e);
+      } catch(...) {
+        return Application::getApplication()->exceptionHandler();
+      }
     }
     </pre>
 
@@ -46,7 +61,7 @@ public:
     @param argv The argv argument of the entry function main.
     @param envp The envp argument of the entry function main. This argument is not required.
   */
-  Application(int argc, const char* argv[], const char *envp[] = 0) throw(OutOfDomain);
+  Application(int argc, const char* argv[], const char *envp[] = 0) throw(SingletonException, OutOfDomain);
 
   /**
     Returns the name/path of the application.
@@ -61,12 +76,19 @@ public:
   /**
     Returns the environment variables.
   */
-  inline const Map<String, String> getEnvironment() const throw() {return environment;}
+  inline const Map<String, String>& getEnvironment() const throw() {return environment;}
 
   /**
-    Destroys the application.
+    Handler of uncaught exceptions. By default this handler writes the exception
+    to stderr and returns error code 1.
   */
-  ~Application() throw();
+  virtual int exceptionHandler(Exception& e) const throw();
+
+  /**
+    Handler of uncaught unknown exceptions. By default this handler writes an
+    error message to stderr and returns error code 1.
+  */
+  virtual int exceptionHandler() const throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

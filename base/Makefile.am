@@ -24,7 +24,7 @@ section_HEADERS = configuration.h features.h Dimension.h Exception.h FloatingPoi
 
 libbase_la_LIBADD = collection/libcollection.la communication/libcommunication.la concurrency/libconcurrency.la filesystem/libfilesystem.la io/libio.la io/async/libaio.la iterator/libiterator.la mathematics/libmathematics.la mem/libmem.la net/libnet.la platforms/libplatform.la string/libstring.la dl/libdl.la xml/libxml.la security/libsecurity.la sound/libsound.la @BASE_LIBADD@ @BASE_LIBS@
 
-libbase_la_LDFLAGS = -avoid-version -module -no-undefined -version-info 1:0:0 @BASE_LDFLAGS@
+libbase_la_LDFLAGS = -no-undefined -version-info 0:0:0 @BASE_LDFLAGS@
 
 libbase_la_DEPENDENCIES = collection/libcollection.la communication/libcommunication.la concurrency/libconcurrency.la filesystem/libfilesystem.la io/libio.la io/async/libaio.la iterator/libiterator.la mathematics/libmathematics.la mem/libmem.la net/libnet.la platforms/libplatform.la string/libstring.la dl/libdl.la xml/libxml.la security/libsecurity.la sound/libsound.la @BASE_DEPENDENCIES@
 

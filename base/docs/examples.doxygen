@@ -1,0 +1,99 @@
+/**
+  @example testsuite/digest.cpp
+*/
+
+/**
+  @example testsuite/echod.cpp
+*/
+
+/**
+  @example testsuite/ping.cpp
+*/
+
+/**
+  @example testsuite/server.cpp
+*/
+
+/**
+  @example testsuite/client.cpp
+*/
+
+/**
+  @example testsuite/ftp.cpp
+*/
+
+/**
+  @example testsuite/http.cpp
+*/
+
+/**
+  @example testsuite/eval.cpp
+*/
+
+/**
+  @example testsuite/Quota.cpp
+*/
+
+/**
+  @example testsuite/du.cpp
+*/
+
+/**
+  @example testsuite/ln.cpp
+*/
+
+/**
+  @example testsuite/ls.cpp
+*/
+
+/**
+  @example testsuite/rm.cpp
+*/
+
+/**
+  @example testsuite/Process.cpp
+*/
+
+/**
+  @example testsuite/Thread.cpp
+*/
+
+/**
+  @example testsuite/IEEE1394.cpp
+*/
+
+/**
+  @example testsuite/Array.cpp
+*/
+
+/**
+  @example testsuite/BitSet.cpp
+*/
+
+/**
+  @example testsuite/List.cpp
+*/
+
+/**
+  @example testsuite/Map.cpp
+*/
+
+/**
+  @example testsuite/Set.cpp
+*/
+
+/**
+  @example testsuite/Stack.cpp
+*/
+
+/**
+  @example testsuite/HashSet.cpp
+*/
+
+/**
+  @example testsuite/HashTable.cpp
+*/
+
+/**
+  @example testsuite/Version.cpp
+*/

@@ -31,18 +31,33 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class Overflow : public Exception {
 public:
-
+  
   /**
     Initializes the exception object with no message.
   */
   Overflow() throw();
-
+  
   /**
     Initializes the exception object.
 
     @param message The message.
   */
   Overflow(const char* message) throw();
+  
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
+  Overflow(Type type) throw() : Exception(type) {}
+  
+  /**
+    Initializes the exception object.
+    
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
+  Overflow(const char* message, Type type) throw() {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

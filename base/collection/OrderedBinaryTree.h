@@ -92,12 +92,15 @@ public:
     Node* node = BinaryTree<TYPE>::getRoot();
 
     while (node) {
-      if (value < *node->getValue()) {
+      switch (compare(value, *node->getValue())) {
+      case -1:
         node = node->getLeft();
-      } else if (value > *node->getValue()) {
-        node = node->getRight();
-      } else {
+        break;
+      case 0:
         return node;
+      case 1:
+        node = node->getRight();
+        break;
       }
     }
     return 0; // not found
@@ -114,15 +117,50 @@ public:
     const Node* node = BinaryTree<TYPE>::getRoot();
 
     while (node) {
-      if (value < *node->getValue()) {
+      switch (compare(value, *node->getValue())) {
+      case -1:
         node = node->getLeft();
-      } else if (value > *node->getValue()) {
-        node = node->getRight();
-      } else {
+        break;
+      case 0:
         return node;
+      case 1:
+        node = node->getRight();
+        break;
       }
     }
     return 0; // not found
+  }
+
+  /**
+    Returns the first/smallest value of this tree.
+
+    @return 0 if the tree is empty.
+  */
+  Node* getFirst() throw() {
+    Node* node = BinaryTree<TYPE>::getRoot();
+    Node* previous = 0; // not found
+
+    while (node) {
+      previous = node;
+      node = node->getLeft();
+    }
+    return previous;
+  }
+
+  /**
+    Returns the last/highest value of this tree.
+
+    @return 0 if the tree is empty.
+  */
+  Node* getLast() throw() {
+    Node* node = BinaryTree<TYPE>::getRoot();
+    Node* previous = 0; // not found
+
+    while (node) {
+      previous = node;
+      node = node->getRight();
+    }
+    return previous;
   }
 
   /**
@@ -140,22 +178,24 @@ public:
     }
 
     while (true) {
-      if (value < *node->getValue()) {
+      switch (compare(value, *node->getValue())) {
+      case -1:
         if (node->getLeft()) {
           node = node->getLeft();
         } else { // attach left child node
           node->setLeft(new Node(node, 0, 0, value));
           return 0;
         }
-      } else if (value > *node->getValue()) {
+        break;
+      case 0:
+        return node->getValue(); // node with this value already exists
+      case 1:
         if (node->getRight()) {
           node = node->getRight();
         } else { // attach right child node
           node->setRight(new Node(node, 0, 0, value));
           return 0;
         }
-      } else {
-        return node->getValue(); // node with this value already exists
       }
     }
   }

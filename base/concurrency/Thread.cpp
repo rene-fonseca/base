@@ -28,50 +28,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
-
-// pthread_t is an arithmetic type according to The Single UNIX Specification, Version 2
-ASSERTION(sizeof(Thread::Identifier) >= sizeof(pthread_t));
-
-#endif
-
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-
-ASSERTION(sizeof(Thread::Identifier) >= sizeof(DWORD));
-
-// win32 - structured exception handler
-LONG __stdcall exceptionFilter(EXCEPTION_POINTERS* exception) {
-  // LONG result = EXCEPTION_CONTINUE_SEARCH;
-  // return result;
-  char errorMessage[sizeof("System exception 0x################ at 0x################")]; // worst case
-  char* dest = errorMessage;
-  copy<char>(dest, "System exception 0x", sizeof("System exception 0x") - 1);
-  dest += sizeof("System exception 0x") - 1;
-
-  DWORD exceptionCode = exception->ExceptionRecord->ExceptionCode;
-  for (unsigned int i = 0; i < (sizeof(DWORD) * 2); ++i) {
-    dest[sizeof(DWORD)*2 - 1 - i] = ASCIITraits::valueToDigit(exceptionCode & 0x0f);
-    exceptionCode >>= 4; // bits per digit
-  }
-  dest += sizeof(DWORD) * 2;
-
-  copy<char>(dest, " at 0x", sizeof(" at 0x") - 1);
-  dest += sizeof(" at 0x") - 1;
-  unsigned long exceptionAddress = reinterpret_cast<unsigned long>(exception->ExceptionRecord->ExceptionAddress);
-  for (unsigned int i = 0; i < (sizeof(unsigned long) * 2); ++i) {
-    dest[sizeof(unsigned long)*2 - 1 - i] = ASCIITraits::valueToDigit(exceptionAddress & 0x0f);
-    exceptionAddress >>= 4; // bits per digit
-  }
-  dest += sizeof(unsigned long) * 2;
-
-  *dest = 0; // terminate string
-  Trace::message(errorMessage);
-  return EXCEPTION_EXECUTE_HANDLER; // terminate process
-  // return originalExceptionFilter(exception);
-}
-
-#endif
-
 ThreadKey<Thread> Thread::ThreadLocal::thread; // thread object
 ThreadKey<Allocator<char> > Thread::ThreadLocal::storage; // thread local storage
 
@@ -83,41 +39,6 @@ Thread::ThreadLocal::ThreadLocal(Thread* _thread) throw(MemoryException) {
 Thread::ThreadLocal::~ThreadLocal() throw() {
   delete getStorage(); // free thread local storage
 }
-
-// this class is used to make a Thread object for the current context
-class ThreadImpl {
-private:
-
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  // the original unhandled exception filter
-  LPTOP_LEVEL_EXCEPTION_FILTER originalExceptionFilter;
-#endif
-  
-  Thread thread;
-  Thread::ThreadLocal threadLocal;
-public:
-
-  // initialize thread object for the current context
-  ThreadImpl() throw() : thread(static_cast<Thread*>(0)), threadLocal(&thread) { // no parent for main thread
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-    originalExceptionFilter = ::SetUnhandledExceptionFilter(exceptionFilter);
-    //::SetErrorMode(SEM_NOGPFAULTERRORBOX);
-#endif // win32
-  }
-  
-  ~ThreadImpl() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-    // restore the original unhandled exception filter
-    ::SetUnhandledExceptionFilter(originalExceptionFilter);
-#endif // win32
-  }
-};
-
-namespace {
-  
-  // setup main thread object
-  ThreadImpl mainThread; // use this variable through 'threadLocal'
-};
 
 
 
@@ -138,6 +59,7 @@ void* Thread::entry(Thread* thread) throw() {
   } catch(...) {
     thread->state = INTERNAL; // hopefully we will never end up here
   }
+  // TAG: set kernel and user time
   thread->terminationEvent.signal(); // do not access state here after
   return 0;
 }

@@ -76,7 +76,7 @@ void InetEndPoint::setPort(unsigned short value) throw() {
   port = value;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const InetEndPoint& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const InetEndPoint& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);
   return stream << value.getAddress() << ':' << value.getPort();
 }

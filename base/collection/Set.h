@@ -49,7 +49,8 @@ public:
     ENU enu;
   public:
 
-    inline SetEnumerator(ENU e) : enu(e) {}
+    inline SetEnumerator(ENU _enu) : enu(_enu) {
+    }
 
     inline bool hasNext() const throw() {
       return enu.hasNext();
@@ -72,7 +73,8 @@ public:
 //    OrderedBinaryTree<KEY>::ReadEnumerator enu;
 //  public:
 //
-//    inline ReadEnumerator(OrderedBinaryTree<KEY>::ReadEnumerator e) : enu(e) {}
+//    inline ReadEnumerator(OrderedBinaryTree<KEY>::ReadEnumerator _enu) : enu(_enu) {
+//    }
 //
 //    inline bool hasNext() const throw() {
 //      return enu.hasNext();
@@ -87,7 +89,8 @@ public:
 //  class Enumerator : public OrderedBinaryTree<KEY>::Enumerator {
 //  public:
 //
-//    Enumerator(OrderedBinaryTree<KEY>::Enumerator enu) : OrderedBinaryTree<KEY>::Enumerator(enu) {}
+//    Enumerator(OrderedBinaryTree<KEY>::Enumerator enu) : OrderedBinaryTree<KEY>::Enumerator(enu) {
+//    }
 //
 //    KEY* next() throw(EndOfEnumeration) {
 //      return OrderedBinaryTree<KEY>::Enumerator::next()->getValue();
@@ -98,7 +101,8 @@ public:
 //  class ReadEnumerator : public OrderedBinaryTree<KEY>::ReadEnumerator {
 //  public:
 //
-//    ReadEnumerator(OrderedBinaryTree<KEY>::ReadEnumerator enu) : OrderedBinaryTree<KEY>::ReadEnumerator(enu) {}
+//    ReadEnumerator(OrderedBinaryTree<KEY>::ReadEnumerator enu) : OrderedBinaryTree<KEY>::ReadEnumerator(enu) {
+//    }
 //
 //    const KEY* next() throw(EndOfEnumeration) {
 //      return OrderedBinaryTree<KEY>::ReadEnumerator::next()->getValue();
@@ -125,7 +129,8 @@ public:
 //      @param set The set being enumerated.
 //    */
 //    inline Enumeration(Set& set) throw() :
-//      OrderedBinaryTree<KEY>::Enumeration(set.elements) {}
+//      OrderedBinaryTree<KEY>::Enumeration(set.elements) {
+//    }
 //  };
 //
 //  /**
@@ -144,29 +149,36 @@ public:
 //      @param set The set being enumerated.
 //    */
 //    inline ReadOnlyEnumeration(const Set& set) throw() :
-//      OrderedBinaryTree<KEY>::ReadOnlyEnumeration(set.elements) {}
+//      OrderedBinaryTree<KEY>::ReadOnlyEnumeration(set.elements) {
+//    }
 //  };
 public:
 
   /**
     Initializes an empty set.
   */
-  Set() throw() : size(0) {}
+  Set() throw() : size(0) {
+  }
 
   /**
     Initializes set from other set.
   */
-  Set(const Set& copy) throw(MemoryException) : elements(copy.elements) {}
+  Set(const Set& copy) throw(MemoryException) : elements(copy.elements) {
+  }
 
   /**
     Returns the number of elements in the collection.
   */
-  inline unsigned int getSize() const throw() {return size;}
+  inline unsigned int getSize() const throw() {
+    return size;
+  }
 
   /**
     Returns true if the collection is empty.
   */
-  inline bool isEmpty() const throw() {return size != 0;}
+  inline bool isEmpty() const throw() {
+    return size != 0;
+  }
 
   /**
     Returns a modifying enumerator of the ordered binary tree.
@@ -204,7 +216,7 @@ public:
   }
 
   /**
-    Removes the specified key from this set. Throws 'InvalidNode' if the key
+    Removes the specified key from this set. Raises InvalidNode if the key
     doesn't exist in the set.
 
     @param key The value to be removed from the set.
@@ -224,7 +236,7 @@ public:
 };
 
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Set<TYPE>& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Set<TYPE>& value)  throw(IOException) {
   typename Set<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {

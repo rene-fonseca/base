@@ -42,47 +42,62 @@ public:
   /**
     Initializes a linked node.
 
-    @param n The next node in the container.
-    @param p The previous node in the container.
-    @param v The value to be associated with the node.
+    @param next The next node in the container.
+    @param previous The previous node in the container.
+    @param value The value to be associated with the node.
   */
-  inline DoubleLinkedNode(DoubleLinkedNode* n, DoubleLinkedNode* p, const TYPE& v) :
-    next(n), previous(p), value(v) {}
+  inline DoubleLinkedNode(DoubleLinkedNode* _next, DoubleLinkedNode* _previous, const TYPE& _value)
+    : next(_next), previous(_previous), value(_value) {
+  }
 
   /**
     Returns the next node.
   */
-  inline DoubleLinkedNode* getNext() const throw() {return next;}
+  inline DoubleLinkedNode* getNext() const throw() {
+    return next;
+  }
 
   /**
     Sets the next node.
   */
-  inline void setNext(DoubleLinkedNode* next) throw() {this->next = next;}
+  inline void setNext(DoubleLinkedNode* next) throw() {
+    this->next = next;
+  }
 
   /**
     Returns the previous node.
   */
-  inline DoubleLinkedNode* getPrevious() const throw() {return previous;}
+  inline DoubleLinkedNode* getPrevious() const throw() {
+    return previous;
+  }
 
   /**
     Sets the previous node.
   */
-  inline void setPrevious(DoubleLinkedNode* previous) throw() {this->previous = previous;}
+  inline void setPrevious(DoubleLinkedNode* previous) throw() {
+    this->previous = previous;
+  }
 
   /**
     Returns the value of the node.
   */
-  inline TYPE* getValue() throw() {return &value;}
+  inline TYPE* getValue() throw() {
+    return &value;
+  }
 
   /**
     Returns the value of the node.
   */
-  inline const TYPE* getValue() const throw() {return &value;}
+  inline const TYPE* getValue() const throw() {
+    return &value;
+  }
 
   /**
     Sets the value of the node.
   */
-  inline void setValue(TYPE value) throw() {this->value = value;}
+  inline void setValue(TYPE value) throw() {
+    this->value = value;
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

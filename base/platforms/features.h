@@ -11,14 +11,14 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__PLATFORMS_FEATURES_H
-#define _DK_SDU_MIP__BASE__PLATFORMS_FEATURES_H
+#ifndef _DK_SDU_MIP__BASE_PLATFORMS__FEATURES_H
+#define _DK_SDU_MIP__BASE_PLATFORMS__FEATURES_H
 
 #include <base/platforms/symbols.h> // must be first
 #include <base/platforms/configuration.h>
 
 #if defined(_DK_SDU_MIP__BASE__DEBUG)
-  #define DEBUG // enable ASSERT and ASSERTION
+#  define DEBUG // enable ASSERT and ASSERTION
 #endif
 
 #include <base/features.h>
@@ -27,23 +27,23 @@
 #define _DK_SDU_MIP__BASE__INTERNAL_ACCESS
 
 #if (_DK_SDU_MIP__BASE__ABI == _DK_SDU_MIP__BASE__ABI_V3MV)
-  #define _DK_SDU_MIP__BASE__EXCEPTION_V3MV
+#  define _DK_SDU_MIP__BASE__EXCEPTION_V3MV
 #endif
 
 #if !defined(TRACE) && !defined(TRACE_MEMBER) // allow macros to be overridden
 #if defined(_DK_SDU_MIP__BASE__TRACE)
-  #include <base/Trace.h>
+#  include <base/Trace.h>
+ 
+#  define TRACE(text) {Trace::message(text);}
 
-  #define TRACE(text) {Trace::message(text);}
-
-  #if defined(_DK_SDU_MIP__BASE__COMPILER_FUNCTION)
-    #define TRACE_MEMBER() {Trace::member(this, _DK_SDU_MIP__BASE__COMPILER_FUNCTION);}
-  #else
-    #define TRACE_MEMBER() {Trace::member(this, __func__);} // __func__ is ISO C99
-  #endif
+#  if defined(_DK_SDU_MIP__BASE__COMPILER_FUNCTION)
+#    define TRACE_MEMBER() {Trace::member(this, _DK_SDU_MIP__BASE__COMPILER_FUNCTION);}
+#  else
+#    define TRACE_MEMBER() {Trace::member(this, __func__);} // __func__ is ISO C99
+#  endif
 #else
-  #define TRACE(text)
-  #define TRACE_MEMBER()
+#  define TRACE(text)
+#  define TRACE_MEMBER()
 #endif
 #endif
 

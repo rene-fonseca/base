@@ -68,9 +68,9 @@ void Range2D::setMaximum(double maximum) throw() {
   this->maximum = maximum;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);
-  return stream << '(' << value.minimum << ',' << value.maximum << ')';
+  return stream << '(' << value.getMinimum() << ',' << value.getMaximum() << ')';
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

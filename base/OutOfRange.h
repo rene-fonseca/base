@@ -45,7 +45,8 @@ public:
     
     @param type The identity of the type.
   */
-  OutOfRange(Type type) throw() : Exception(type) {}
+  inline OutOfRange(Type type) throw() : Exception(type) {
+  }
 
   /**
     Initializes the exception object.

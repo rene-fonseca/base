@@ -44,19 +44,24 @@ public:
 
     @param value The initial value of the iterator.
   */
-  explicit inline SequenceIterator(Pointer value) throw() : element(value) {}
+  explicit inline SequenceIterator(Pointer value) throw() : element(value) {
+  }
 
   /**
     Initializes iterator from other iterator.
   */
-  inline SequenceIterator(const SequenceIterator& copy) throw() : element(copy.element) {}
+  inline SequenceIterator(const SequenceIterator& copy) throw()
+    : element(copy.element) {
+  }
 
   /**
     Initializes iterator from other iterator.
   */
   template<class POLY>
-  inline SequenceIterator(const SequenceIterator<POLY>& copy) throw() : element(copy.getValue()) {}
-
+  inline SequenceIterator(const SequenceIterator<POLY>& copy) throw()
+    : element(copy.getValue()) {
+  }
+  
   /**
     Initializes iterator from other iterator.
   */

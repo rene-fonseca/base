@@ -140,7 +140,8 @@ public:
   /**
     Initializes complex number as (0, 0).
   */
-  inline Complex() throw() : real(0), imaginary(0) {}
+  inline Complex() throw() : real(0), imaginary(0) {
+  }
 
   /**
     Initializes complex number with the specified real part. The imaginary part
@@ -161,7 +162,9 @@ public:
   /**
     Initializes complex number of other complex number.
   */
-  inline Complex(const Complex& copy) throw() : real(copy.real), imaginary(copy.imaginary) {}
+  inline Complex(const Complex& copy) throw()
+    : real(copy.real), imaginary(copy.imaginary) {
+  }
 
   /**
     Assignment of complex number by complex number.
@@ -251,22 +254,30 @@ public:
   /**
     Returns the real part of the complex number.
   */
-  inline long double getReal() const throw() {return real;}
+  inline long double getReal() const throw() {
+    return real;
+  }
 
   /**
     Returns the imaginary part of the complex number.
   */
-  inline long double getImaginary() const throw() {return imaginary;}
+  inline long double getImaginary() const throw() {
+    return imaginary;
+  }
 
   /**
     Sets the real part of the complex number.
   */
-  inline void setReal(const long double& value) throw() {real = value;}
+  inline void setReal(const long double& value) throw() {
+    real = value;
+  }
 
   /**
     Sets the imaginary part of the complex number.
   */
-  inline void setImaginary(const long double& value) throw() {imaginary = value;}
+  inline void setImaginary(const long double& value) throw() {
+    imaginary = value;
+  }
 
   /**
     Returns the square of the modulus of the complex number.
@@ -406,45 +417,59 @@ public:
 
     @param value The value to be added.
   */
-  inline Complex& operator+=(const Complex& value) throw() {return add(value);}
+  inline Complex& operator+=(const Complex& value) throw() {
+    return add(value);
+  }
 
   /**
     Subtracts the specified complex from this number.
 
     @param value The value to be subtracted.
   */
-  inline Complex& operator-=(const Complex& value) throw() {return subtract(value);}
+  inline Complex& operator-=(const Complex& value) throw() {
+    return subtract(value);
+  }
 
   /**
     Multiplies this number with the specified value.
 
     @param value The multiplicator.
   */
-  inline Complex& operator*=(const Complex& value) throw() {return multiply(value);}
+  inline Complex& operator*=(const Complex& value) throw() {
+    return multiply(value);
+  }
 
   /**
     Multiplies this number with the specified value.
 
     @param value The multiplicator.
   */
-  inline Complex& operator*=(long double value) throw() {return multiply(value);}
+  inline Complex& operator*=(long double value) throw() {
+    return multiply(value);
+  }
 
   /**
     Divides this number with the specified value.
 
     @param value The divisor.
   */
-  inline Complex& operator/=(long double value) throw() {return divide(value);}
+  inline Complex& operator/=(long double value) throw() {
+    return divide(value);
+  }
 
   /**
     Unary plus.
   */
-  inline Complex operator+() const throw() {return plus();}
+  inline Complex operator+() const throw() {
+    return plus();
+  }
 
   /**
     Unary minus.
   */
-  inline Complex operator-() const throw() {return minus();}
+  inline Complex operator-() const throw() {
+    return minus();
+  }
 
 
 
@@ -479,9 +504,12 @@ public:
   friend Complex operator/(const Complex& left, long double right) throw();
 };
 
-inline Complex::Complex(long double r) throw() : real(r) {}
+inline Complex::Complex(long double _real) throw() : real(_real) {
+}
 
-inline Complex::Complex(long double r, long double i) throw() : real(r), imaginary(i) {}
+inline Complex::Complex(long double _real, long double _imaginary) throw()
+  : real(_real), imaginary(_imaginary) {
+}
 
 inline Complex operator+(const Complex& left, const Complex& right) throw() {
   return Complex(left.real + right.real, left.imaginary + right.imaginary);
@@ -518,7 +546,7 @@ inline Complex operator/(const Complex& left, long double right) throw() {
 /**
   Writes a string representation of the complex number to a format stream "(real; imaginary)".
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value) throw(IOException);
 
 template<>
 class Relocateable<Complex> {

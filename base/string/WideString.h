@@ -52,10 +52,16 @@ public:
   inline WideStringLiteral(unsigned int _length, const wchar* _message) throw()
     : length(_length), message(_message) {
   }
+  
   /** Cast to the usual message type. */
-  inline operator const wchar*() const throw() {return message;}
+  inline operator const wchar*() const throw() {
+    return message;
+  }
+  
   /** Returns the length of the string. */
-  inline unsigned int getLength() const throw() {return length;}
+  inline unsigned int getLength() const throw() {
+    return length;
+  }
 };
 
 /** This macro generates a WideStringLiteral object from a string literal. */
@@ -714,7 +720,8 @@ public:
   /**
     Initializes string from other string.
   */
-  inline WideString(const WideString& copy) throw() : elements(copy.elements) {}
+  inline WideString(const WideString& copy) throw() : elements(copy.elements) {
+  }
   
   /**
     Initialized wide string from multibyte string.
@@ -737,17 +744,23 @@ public:
   /**
     Returns the number of characters in the string.
   */
-  inline unsigned int getLength() const throw() {return elements->getSize() - 1;}
+  inline unsigned int getLength() const throw() {
+    return elements->getSize() - 1;
+  }
 
   /**
     Returns true if the string contains no characters.
   */
-  inline bool isEmpty() const throw() {return elements->getSize() == 1;}
+  inline bool isEmpty() const throw() {
+    return elements->getSize() == 1;
+  }
 
   /**
     Returns true if the string contains characters.
   */
-  inline bool isProper() const throw() {return elements->getSize() > 1;}
+  inline bool isProper() const throw() {
+    return elements->getSize() > 1;
+  }
 
   /**
     Returns true if the string is an ASCII string.
@@ -757,7 +770,9 @@ public:
   /**
     Returns the capacity of the string.
   */
-  inline unsigned int getCapacity() const throw() {return elements->getCapacity();}  
+  inline unsigned int getCapacity() const throw() {
+    return elements->getCapacity();
+  }  
   
   /**
     Ensures that the capacity of the buffer is at least equal to the specified
@@ -783,9 +798,9 @@ public:
   */
   void setGranularity(unsigned int granularity) throw();
 
-// ****************************************************************************
+// *************************************************************************
 //   TRAVERSE SECTION
-// ****************************************************************************
+// *************************************************************************
 
   /**
     Returns the first element of the string as a modifying iterator.
@@ -829,20 +844,20 @@ public:
     return elements->getReadEnumerator();
   }
 
-// ****************************************************************************
+// *************************************************************************
 //   CHARACTER SECTION
-// ****************************************************************************
+// *************************************************************************
 
   /**
-    Returns the character at the specified index in this string. Throws
-    'OutOfRange' if index exceeds the length of the string.
+    Returns the character at the specified index in this string. Raises
+    OutOfRange if index exceeds the length of the string.
   */
   Character getAt(unsigned int index) const throw(OutOfRange);
 
   /**
     Sets the character at the specified index of this string. If the new
     character is the string terminator ('\0') then the string is cut off from
-    the specified index. Throws 'OutOfRange' if index exceeds the length of
+    the specified index. Raises OutOfRange if index exceeds the length of
     the string.
 
     @param index The index of the character to set.
@@ -851,24 +866,24 @@ public:
   void setAt(unsigned int index, Character value) throw(OutOfRange);
 
   /**
-    Returns a reference to character at the specified index. Throws
-    'OutOfRange' if index exceeds the length of the string.
+    Returns a reference to character at the specified index. Raises
+    OutOfRange if index exceeds the length of the string.
   */
   Reference operator[](unsigned int index) throw(OutOfRange) {
     return Reference(*this, index);
   }
 
   /**
-    Returns the character at the specified index. Throws 'OutOfRange' if index
+    Returns the character at the specified index. Raises OutOfRange if index
     exceeds the length of the string.
   */
   inline char operator[](unsigned int index) const throw(OutOfRange) {
     return getAt(index);
   }
 
-// ****************************************************************************
+// *************************************************************************
 //   SUBSTRING SECTION
-// ****************************************************************************
+// *************************************************************************
 
   /**
     Removes the characters in a substring of this string.
@@ -890,21 +905,27 @@ public:
 
     @param index Specifies the character to be removed.
   */
-  inline WideString& removeCharacter(unsigned int index) throw(MemoryException) {return remove(index, index);}
+  inline WideString& removeCharacter(unsigned int index) throw(MemoryException) {
+    return remove(index, index);
+  }
 
   /**
     Appends the character to this string.
 
     @param ch The character to be appended.
   */
-  inline WideString& append(Character ch) throw(WideStringException, MemoryException) {return insert(getLength(), ch);}
+  inline WideString& append(Character ch) throw(WideStringException, MemoryException) {
+    return insert(getLength(), ch);
+  }
 
   /**
     Appends the string to this string.
 
     @param string The string to be appended.
   */
-  inline WideString& append(const WideString& string) throw(WideStringException, MemoryException) {return insert(getLength(), string);}
+  inline WideString& append(const WideString& string) throw(WideStringException, MemoryException) {
+    return insert(getLength(), string);
+  }
 
   /**
     Appends the string literal to this string.
@@ -934,14 +955,18 @@ public:
 
     @param ch The character to be prepended.
   */
-  inline WideString& prepend(Character ch) throw(WideStringException, MemoryException) {return insert(0, ch);}
+  inline WideString& prepend(Character ch) throw(WideStringException, MemoryException) {
+    return insert(0, ch);
+  }
 
   /**
     Prepends the string to this string.
 
     @param string The string to be prepended.
   */
-  inline WideString& prepend(const WideString& string) throw(WideStringException, MemoryException) {return insert(0, string);}
+  inline WideString& prepend(const WideString& string) throw(WideStringException, MemoryException) {
+    return insert(0, string);
+  }
 
   /**
     Inserts the character into this string.
@@ -1010,14 +1035,18 @@ public:
 
     @param start Specifies the start of the substring.
   */
-  inline WideString substring(unsigned int start) const throw(MemoryException) {return substring(start, getLength());}
+  inline WideString substring(unsigned int start) const throw(MemoryException) {
+    return substring(start, getLength());
+  }
 
   /**
     Appends the string to this string.
 
     @param suffix The string to be appended.
   */
-  inline WideString& operator+=(const WideString& suffix) throw(MemoryException) {return append(suffix);}
+  inline WideString& operator+=(const WideString& suffix) throw(MemoryException) {
+    return append(suffix);
+  }
 
   /**
     WideString reduction operator. Removes suffix from this string if and only if
@@ -1028,9 +1057,9 @@ public:
   */
   WideString& operator-=(const WideString& suffix) throw(MemoryException);
   
-// ****************************************************************************
+// *************************************************************************
 //   UNARY SECTION
-// ****************************************************************************
+// *************************************************************************
 
   /**
     The character sequence contained in this string is replaced by the reverse sequence.
@@ -1047,9 +1076,9 @@ public:
   */
   WideString& toUpperCase() throw();
 
-// ****************************************************************************
+// *************************************************************************
 //   COMPARE SECTION
-// ****************************************************************************
+// *************************************************************************
 
   /**
     Compare this string with another string.
@@ -1126,41 +1155,55 @@ public:
   /**
     Equality operator.
   */
-  inline bool operator==(const WideString& string) const throw() {return compareTo(string) == 0;}
+  inline bool operator==(const WideString& string) const throw() {
+    return compareTo(string) == 0;
+  }
 
   /**
     Equality operator.
   */
-  inline bool operator==(const WideStringLiteral& string) const throw() {return compareTo(string) == 0;}
+  inline bool operator==(const WideStringLiteral& string) const throw() {
+    return compareTo(string) == 0;
+  }
 
   /**
     Inequality operator.
   */
-  inline bool operator!=(const WideString& string) const throw() {return compareTo(string) != 0;}
+  inline bool operator!=(const WideString& string) const throw() {
+    return compareTo(string) != 0;
+  }
 
   /**
     Less than operator.
   */
-  inline bool operator<(const WideString& string) const throw() {return compareTo(string) < 0;}
+  inline bool operator<(const WideString& string) const throw() {
+    return compareTo(string) < 0;
+  }
 
   /**
     Less than or equal operator.
   */
-  inline bool operator<=(const WideString& string) const throw() {return compareTo(string) <= 0;}
+  inline bool operator<=(const WideString& string) const throw() {
+    return compareTo(string) <= 0;
+  }
 
   /**
     Greater than or equal operator.
   */
-  inline bool operator>=(const WideString& string) const throw() {return compareTo(string) >= 0;}
+  inline bool operator>=(const WideString& string) const throw() {
+    return compareTo(string) >= 0;
+  }
 
   /**
     Greater than operator.
   */
-  inline bool operator>(const WideString& string) const throw() {return compareTo(string) > 0;}
+  inline bool operator>(const WideString& string) const throw() {
+    return compareTo(string) > 0;
+  }
 
-// ****************************************************************************
+// *************************************************************************
 //   FIND SECTION
-// ****************************************************************************
+// *************************************************************************
 
   /**
     Returns the index of the first character that matches the specified
@@ -1196,7 +1239,9 @@ public:
     Returns the index of the last character that matches the specified character
     starting from the end of the string.
   */
-  inline int lastIndexOf(Character ch) const throw() {return lastIndexOf(ch, getLength());}
+  inline int lastIndexOf(Character ch) const throw() {
+    return lastIndexOf(ch, getLength());
+  }
 
   /**
     Returns the index of the last substring that matches the specified string
@@ -1216,7 +1261,9 @@ public:
 
     @return Index of the last match if any otherwide -1. Also returns -1 if the substring is empty.
   */
-  inline int lastIndexOf(const WideString& string) const throw() {return lastIndexOf(string, getLength());}
+  inline int lastIndexOf(const WideString& string) const throw() {
+    return lastIndexOf(string, getLength());
+  }
 
   /**
     Returns the number of occurances of the specified character in this string.
@@ -1236,9 +1283,9 @@ public:
   */
   unsigned int count(const WideString& string, unsigned int start = 0) const throw();
 
-// ****************************************************************************
+// *************************************************************************
 //   END SECTION
-// ****************************************************************************
+// *************************************************************************
 
   /**
     Returns a multibyte string from this wide string.
@@ -1269,9 +1316,9 @@ public:
   */
   bool isTitleCased() const throw();
   
-// ****************************************************************************
+// *************************************************************************
 //   FRIEND SECTION
-// ****************************************************************************
+// *************************************************************************
 
   /**
     Writes string to format stream.

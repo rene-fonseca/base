@@ -35,12 +35,15 @@ private:
   ReferenceCountedObjectPointer<AsynchronousReadContext> context;
 public:
 
-  inline AsynchronousReadOperation(AsynchronousReadContext* _context) throw() : context(_context) {}
+  inline AsynchronousReadOperation(AsynchronousReadContext* _context) throw()
+    : context(_context) {
+  }
 
   /**
     Initializes invalid object.
   */
-  inline AsynchronousReadOperation() throw() : context(0) {}
+  inline AsynchronousReadOperation() throw() : context(0) {
+  }
 
   /*
     Initialization by copying from other object.

@@ -411,7 +411,7 @@ void InetAddress::setAddress(const byte* addr, Family family) throw() {
   }
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) throw(IOException) {
   // TAG: do not write directly to stream: use internal stream first
   if (value.family == InetAddress::IP_VERSION_6) {
     unsigned int type = value.getType();

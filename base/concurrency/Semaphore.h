@@ -16,7 +16,7 @@
 
 #include <base/Object.h>
 #include <base/Exception.h>
-#include <base/ResourceException.h>
+#include <base/concurrency/LockException.h>
 #include <base/OutOfDomain.h>
 #include <base/Overflow.h>
 #include <base/Primitives.h>
@@ -50,27 +50,31 @@ public:
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.1
   */
-  class SemaphoreException : public Exception {
+  class SemaphoreException : public LockException {
   public:
     
     /**
       Initializes the exception object with no message.
     */
-    SemaphoreException() throw() {}
+    inline SemaphoreException() throw() {
+    }
 
     /**
       Initializes the exception object.
       
       @param message The message.
     */
-    SemaphoreException(const char* message) throw() {}
+    inline SemaphoreException(const char* message) throw()
+      : LockException(message) {
+    }
 
     /**
       Initializes the exception object without an associated message.
       
       @param type The identity of the type.
     */
-    SemaphoreException(Type type) throw() : Exception(type) {}
+    inline SemaphoreException(Type type) throw() : LockException(type) {
+    }
   
     /**
       Initializes the exception object.
@@ -78,7 +82,9 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    SemaphoreException(const char* message, Type type) throw() : Exception(message, type) {}
+    inline SemaphoreException(const char* message, Type type) throw()
+      : LockException(message, type) {
+    }
   };
 
   /**
@@ -89,12 +95,12 @@ public:
   static unsigned int getMaximum() throw();
   
   /**
-    Initializes the semaphore object. Throws OutOfDomain if the value exceeds
+    Initializes the semaphore object. Raises OutOfDomain if the value exceeds
     the maximum value.
 
     @param value The initial value. The default is 0.
   */
-  Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceException);
+  Semaphore(unsigned int value = 0) throw(OutOfDomain, SemaphoreException);
 
   /**
     Returns the current value of the semaphore. Warning: this method may not be

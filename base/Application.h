@@ -101,7 +101,9 @@ public:
   /**
     Returns the application object.
   */
-  static inline Application* getApplication() throw() {return application;}
+  static inline Application* getApplication() throw() {
+    return application;
+  }
   
   template<class APPLICATION>
   static inline int stub(int numberOfArguments, const char* arguments[], const char* environment[]) throw() {
@@ -140,22 +142,30 @@ public:
   /**
     Returns the formal name of the application.
   */
-  inline const String& getFormalName() const throw() {return formalName;}
+  inline const String& getFormalName() const throw() {
+    return formalName;
+  }
 
   /**
     Returns the name/path of the application (argument 0).
   */
-  inline const String& getName() const throw() {return path;}
+  inline const String& getName() const throw() {
+    return path;
+  }
 
   /**
     Returns the arguments passed to the application.
   */
-  inline const Array<String>& getArguments() const throw() {return arguments;}
+  inline const Array<String>& getArguments() const throw() {
+    return arguments;
+  }
 
   /**
     Returns the environment variables.
   */
-  inline const Map<String, String>& getEnvironment() const throw() {return environment;}
+  inline const Map<String, String>& getEnvironment() const throw() {
+    return environment;
+  }
 
   /**
     Handler of uncaught exceptions. By default this handler writes the exception
@@ -204,7 +214,9 @@ public:
   /**
     Returns true if the application has been signaled to terminate.
   */
-  inline bool isTerminated() const throw() {return terminated;}
+  inline bool isTerminated() const throw() {
+    return terminated;
+  }
 
   /**
     Invoked on application termination. Exits the application immediately by

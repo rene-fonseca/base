@@ -17,7 +17,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 const Complex Complex::I(0, 1);
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);
   return stream << '(' << value.getReal() << ';' << value.getImaginary() << ')';
 }

@@ -44,7 +44,9 @@ public:
   */
   FileInputStream(const String& name, bool exclusive = true) throw(FileNotFound);
 
-  inline bool atEnd() const throw(FileException) {return end;}
+  inline bool atEnd() const throw(FileException) {
+    return end;
+  }
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.

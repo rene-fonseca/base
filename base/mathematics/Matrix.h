@@ -30,6 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Matrix implementation.
 
+  @short Matrix
   @ingroup mathematics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.10
@@ -44,28 +45,42 @@ public:
     Reference to an element within a matrix.
   */
   class ElementReference {
-  private:
     friend class RowReference;
+  private:
+    
     Matrix& matrix; // use reference to avoid 'copy on write'
     unsigned int row;
     unsigned int column;
 
-    ElementReference(Matrix& _matrix, unsigned int _row, unsigned int _column) throw() : matrix(_matrix), row(_row), column(_column) {}
+    inline ElementReference(Matrix& _matrix, unsigned int _row, unsigned int _column) throw()
+      : matrix(_matrix),
+        row(_row),
+        column(_column) {
+    }
   public:
 
-    inline ElementReference& operator=(bool value) throw(OutOfRange) {matrix.setAt(row, column, value); return *this;}
-    inline operator TYPE() const throw(OutOfRange) {return matrix.getAt(row, column);}
+    inline ElementReference& operator=(bool value) throw(OutOfRange) {
+      matrix.setAt(row, column, value); return *this;
+    }
+    
+    inline operator TYPE() const throw(OutOfRange) {
+      return matrix.getAt(row, column);
+    }
   };
 
   /**
     Reference to a row within a matrix.
   */
   class RowReference {
-  private:
     friend class Matrix;
+  private:
+    
     Matrix& matrix; // use reference to avoid 'copy on write'
     unsigned int row;
-    inline RowReference(Matrix& _matrix, unsigned int _row) throw() : matrix(_matrix), row(_row) {}
+    inline RowReference(Matrix& _matrix, unsigned int _row) throw()
+      : matrix(_matrix),
+        row(_row) {
+    }
   public:
 
     inline ElementReference operator[](unsigned int column) throw(OutOfRange) {
@@ -92,8 +107,9 @@ public:
 //
 //        @param matrix The matrix being enumerated.
 //      */
-//      Enumeration(Matrix& matrix) throw() :
-//        AllocatorEnumeration<TYPE, TYPE&, TYPE*>(matrix.getElements(), matrix.getElements() + matrix.getSize()) {}
+//      Enumeration(Matrix& matrix) throw()
+//        : AllocatorEnumeration<TYPE, TYPE&, TYPE*>(matrix.getElements(), matrix.getElements() + matrix.getSize()) {
+//      }
 //    };
 //
 //    /**
@@ -107,8 +123,9 @@ public:
 //
 //        @param matrix The matrix being enumerated.
 //      */
-//      ReadOnlyEnumeration(const Matrix& matrix) throw() :
-//        AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(matrix.getElements(), matrix.getElements() + matrix.getSize()) {}
+//      ReadOnlyEnumeration(const Matrix& matrix) throw()
+//        : AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(matrix.getElements(), matrix.getElements() + matrix.getSize()) {
+//      }
 //    };
   }; // end of Row namespace
 
@@ -168,7 +185,8 @@ protected:
   inline void setSize(unsigned int rows, unsigned int columns) throw(MemoryException) {
     this->rows = rows;
     this->columns = columns;
-    if ((!elements.isValid()) || (elements.isMultiReferenced())) { // do we have the elements for our self
+    // do we have the elements for our self
+    if ((!elements.isValid()) || (elements.isMultiReferenced())) {
       elements = new ReferenceCountedAllocator<TYPE>(rows * columns);
     } else {
       elements->setSize(rows * columns);
@@ -189,21 +207,27 @@ protected:
     return elements->getSize();
   }
 
-  /** Throws OutOfRange if element coordinate (row, column) is invalid. */
+  /**
+    Raises OutOfRange if element coordinate (row, column) is invalid.
+  */
   inline void validateElement(unsigned int row, unsigned int column) const throw(OutOfRange) {
     if ((row >= rows) || (column >= columns)) {
       throw OutOfRange();
     }
   }
 
-  /** Throws OutOfRange if row is invalid. */
+  /**
+    Raises OutOfRange if row is invalid.
+  */
   inline void validateRow(unsigned int row) const throw(OutOfRange) {
     if (row >= rows) {
       throw OutOfRange();
     }
   }
 
-  /** Throws OutOfRange if column is invalid. */
+  /**
+    Raises OutOfRange if column is invalid.
+  */
   inline void validateColumn(unsigned int column) const throw(OutOfRange) {
     if (column >= columns) {
       throw OutOfRange();
@@ -214,7 +238,6 @@ protected:
   inline unsigned int getIndexOfElement(unsigned int row, unsigned int column) const throw() {
     return row * columns + column;
   }
-
 public:
 
   /** Exception raised by the Matrix class. */
@@ -236,7 +259,9 @@ public:
   /**
     Initializes a matrix with no elements.
   */
-//  inline Matrix() throw() : elements(NULL), rows(0), columns(0) {}
+  inline Matrix() throw() : elements(0), rows(0), columns(0) {
+    setSize(0, 0);
+  }
 
   /**
     Initializes matrix with the specified dimension.
@@ -256,7 +281,7 @@ public:
 
   /**
     Initializes matrix as a diagonal matrix with the diagonal elements
-    provided by the specified enumerator. Throws 'OutOfDomain' if enumeration
+    provided by the specified enumerator. Raises OutOfDomain if enumeration
     is empty.
 
     @param diagonal The enumerator containing the desired diagonal elements.
@@ -269,7 +294,9 @@ public:
 
     @param matrix The matrix to be copied.
   */
-  inline Matrix(const Matrix& copy) throw() : elements(copy.elements), rows(copy.rows), columns(copy.columns) {}
+  inline Matrix(const Matrix& copy) throw()
+    : elements(copy.elements), rows(copy.rows), columns(copy.columns) {
+  }
 
   /**
     Assigns matrix to this matrix.
@@ -287,17 +314,23 @@ public:
   /**
     Returns the dimension of the matrix.
   */
-  inline Dimension getDimension() const throw() {return Dimension(rows, columns);}
+  inline Dimension getDimension() const throw() {
+    return Dimension(rows, columns);
+  }
 
   /**
     Returns the number of rows of this matrix.
   */
-  inline unsigned int getRows() const throw() {return rows;}
+  inline unsigned int getRows() const throw() {
+    return rows;
+  }
 
   /**
     Returns the number of columns of this matrix.
   */
-  inline unsigned int getColumns() const throw() {return columns;}
+  inline unsigned int getColumns() const throw() {
+    return columns;
+  }
 
 
 
@@ -308,12 +341,16 @@ public:
   /**
     Returns true if the matrix is empty (i.e. has no elements).
   */
-//  inline bool isEmpty() const throw() {return (rows == 0) || (columns == 0);}
-
+  inline bool isEmpty() const throw() {
+    return (rows == 0) || (columns == 0);
+  }
+  
   /**
     Returns true if the matrix is a square matrix.
   */
-  inline bool isSquare() const throw() {return (rows == columns);}
+  inline bool isSquare() const throw() {
+    return (rows == columns);
+  }
 
   /**
     Returns true if the matrices are equal.
@@ -655,45 +692,59 @@ public:
 
     @param value Matrix to be compared.
   */
-  inline bool operator==(const Matrix& value) const throw() {return isEqual(value);}
+  inline bool operator==(const Matrix& value) const throw() {
+    return isEqual(value);
+  }
 
   /**
     Adds the specified matrix from this matrix.
 
     @param value The value to be added.
   */
-  inline Matrix& operator+=(const Matrix& value) throw(IncompatibleOperands, MemoryException) {return add(value);}
+  inline Matrix& operator+=(const Matrix& value) throw(IncompatibleOperands, MemoryException) {
+    return add(value);
+  }
 
   /**
     Subtracts the specified matrix from this matrix.
 
     @param value The value to be subtracted.
   */
-  inline Matrix& operator-=(const Matrix& value) throw(IncompatibleOperands, MemoryException) {return subtract(value);}
+  inline Matrix& operator-=(const Matrix& value) throw(IncompatibleOperands, MemoryException) {
+    return subtract(value);
+  }
 
   /**
     Multiplies this matrix with the specified value.
 
     @param value The multiplicator.
   */
-  inline Matrix& operator*=(const TYPE& value) throw(MemoryException) {return multiply(value);}
+  inline Matrix& operator*=(const TYPE& value) throw(MemoryException) {
+    return multiply(value);
+  }
 
   /**
     Divides this matrix with the specified value.
 
     @param value The divisor.
   */
-  inline Matrix& operator/=(const TYPE& value) throw(MemoryException) {return divide(value);}
+  inline Matrix& operator/=(const TYPE& value) throw(MemoryException) {
+    return divide(value);
+  }
 
   /**
     Unary plus.
   */
-  inline Matrix operator+() const throw(MemoryException) {return plus();}
+  inline Matrix operator+() const throw(MemoryException) {
+    return plus();
+  }
 
   /**
     Unary minus.
   */
-  inline Matrix operator-() const throw(MemoryException) {return minus();}
+  inline Matrix operator-() const throw(MemoryException) {
+    return minus();
+  }
 
 
 
@@ -734,7 +785,7 @@ public:
   /**
     Writes a string representation of a matrix object to a format stream.
   */
-  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Matrix& value);
+  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Matrix& value) throw(IOException);
 };
 
 template<class TYPE>
@@ -768,7 +819,7 @@ Matrix<TYPE> operator/(const TYPE& left, const Matrix<TYPE>& right) throw(Memory
   Writes a string representation of a matrix object to a format stream.
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

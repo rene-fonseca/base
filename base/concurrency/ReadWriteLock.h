@@ -88,8 +88,8 @@ public:
   };
 
   /**
-    Initializes a read-write lock in the unlocked state. Throws
-    'ResourceException' if unable to initialize the object.
+    Initializes a read-write lock in the unlocked state. Raises
+    ResourceException if unable to initialize the object.
   */
   ReadWriteLock() throw(ResourceException);
 
@@ -98,13 +98,13 @@ public:
     calling thread acquires the lock if no other thread (reader or writer)
     currently holds the lock. Otherwise, the thread blocks until the lock can
     be acquired. Results are undefined if the calling thread holds the
-    read-write lock. Throws 'ReadWriteLockException' on failure.
+    read-write lock. Raises ReadWriteLockException on failure.
   */
   void exclusiveLock() const throw(ReadWriteLockException);
 
   /**
-    Attempts to acquire an exclusive lock on the read-write lock. Throws the
-    exception 'ReadWriteLockException' on failure.
+    Attempts to acquire an exclusive lock on the read-write lock. Raises the
+    exception ReadWriteLockException on failure.
 
     @return True if the exclusive lock was successfully acquired.
   */
@@ -113,14 +113,14 @@ public:
   /**
     Acquires a shared lock (read-lock) on the read-write lock. The calling
     thread blocks until the lock can be acquired. Results are undefined if the
-    calling thread already holds a lock. Throws the exception
-    'ReadWriteLockException' on failure.
+    calling thread already holds a lock. Raises the exception
+    ReadWriteLockException on failure.
   */
   void sharedLock() const throw(ReadWriteLockException);
 
   /**
-    Attempts to acquire a shared lock on the read-write lock. Throws the
-    exception 'ReadWriteLockException' on failure.
+    Attempts to acquire a shared lock on the read-write lock. Raises the
+    exception ReadWriteLockException on failure.
 
     @return True if the shared lock was successfully acquired.
   */
@@ -128,14 +128,14 @@ public:
 
   /**
     This method unlocks the read-write lock. Results are undefines if the
-    calling thread does not hold the lock. Throws the exception
-    'ReadWriteLockException' on failure.
+    calling thread does not hold the lock. Raises the exception
+    ReadWriteLockException on failure.
   */
   void releaseLock() const throw(ReadWriteLockException);
 
   /**
     Destroys the read-write lock object. The lock must be in the unlocked
-    state prior to destruction.Throws 'ReadWriteLockException' on failure. 
+    state prior to destruction. Raises ReadWriteLockException on failure. 
   */
   ~ReadWriteLock() throw(ReadWriteLockException);
 };

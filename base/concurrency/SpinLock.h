@@ -38,7 +38,8 @@ public:
   /**
     Initializes spin lock to unlocked state.
   */
-  inline SpinLock() throw() : value(0) {}
+  inline SpinLock() throw() : value(0) {
+  }
 
   /**
     Acquires an exclusive lock.

@@ -33,21 +33,24 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  StringException() throw() : Exception() {}
+  inline StringException() throw() : Exception() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  StringException(const char* message) throw() : Exception(message) {}  
+  inline StringException(const char* message) throw() : Exception(message) {
+  }
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  StringException(Type type) throw() : Exception(type) {}
+  inline StringException(Type type) throw() : Exception(type) {
+  }
   
   /**
     Initializes the exception object.
@@ -55,7 +58,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  StringException(const char* message, Type type) throw() : Exception(message, type) {}
+  inline StringException(const char* message, Type type) throw()
+    : Exception(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

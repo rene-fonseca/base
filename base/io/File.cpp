@@ -111,9 +111,11 @@ File::FileHandle::~FileHandle() throw(FileException) {
   }
 }
 
-File::File() throw() : fd(File::FileHandle::invalid) {}
+File::File() throw() : fd(File::FileHandle::invalid) {
+}
 
-File::File(const String& path, Access access, unsigned int options) throw(AccessDenied, FileNotFound) : fd(File::FileHandle::invalid) {
+File::File(const String& path, Access access, unsigned int options) throw(AccessDenied, FileNotFound)
+  : fd(File::FileHandle::invalid) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   DWORD creationFlags;
   switch (options & (CREATE | TRUNCATE)) {
@@ -1408,7 +1410,7 @@ AsynchronousReadOperation File::read(char* buffer, unsigned int bytesToRead, uns
   assert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncReadFileContext(getHandle(), buffer, bytesToRead, offset, listener);
 #else // unix
-  // TAG: fixme
+  return AsynchronousReadOperation(); // TAG: fixme
 #endif // flavor
 }
 
@@ -1417,7 +1419,7 @@ AsynchronousWriteOperation File::write(const char* buffer, unsigned int bytesToW
   assert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncWriteFileContext(getHandle(), buffer, bytesToWrite, offset, listener);
 #else // unix
-  // TAG: fixme
+  return AsynchronousWriteOperation(); // TAG: fixme
 #endif // flavor
 }
 

@@ -33,21 +33,23 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  PipeException() throw() {}
+  inline PipeException() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  PipeException(const char* message) throw() : IOException(message) {}
+  inline PipeException(const char* message) throw() : IOException(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  PipeException(Type type) throw() : IOException(type) {
+  inline PipeException(Type type) throw() : IOException(type) {
   }
   
   /**
@@ -56,7 +58,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  PipeException(const char* message, Type type) throw() : IOException(message, type) {
+  inline PipeException(const char* message, Type type) throw()
+    : IOException(message, type) {
   }
 };
 

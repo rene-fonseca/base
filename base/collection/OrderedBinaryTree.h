@@ -63,7 +63,8 @@ public:
 //      @param tree The ordered binary tree being enumerated.
 //    */
 //    inline Enumeration(OrderedBinaryTree& tree) throw() :
-//      InfixOrderEnumeration<Value, Value&, Value*, Node*>(tree.getRoot()) {}
+//      InfixOrderEnumeration<Value, Value&, Value*, Node*>(tree.getRoot()) {
+//    }
 //  };
 //
 //  /**
@@ -82,13 +83,15 @@ public:
 //      @param tree The ordered binary tree being enumerated.
 //    */
 //    inline ReadOnlyEnumeration(const OrderedBinaryTree& tree) throw() :
-//      InfixOrderEnumeration<Value, const Value&, const Value*, const Node*>(tree.getRoot()) {}
+//      InfixOrderEnumeration<Value, const Value&, const Value*, const Node*>(tree.getRoot()) {
+//    }
 //  };
 
   /**
     Initializes an empty ordered binary tree.
   */
-  OrderedBinaryTree() throw() {}
+  OrderedBinaryTree() throw() {
+  }
 
   /**
     Initializes binary tree from other binary tree.
@@ -233,7 +236,7 @@ public:
   }
 
   /**
-    Removes the specified node from the binary tree. Throws 'InvalidNode' if
+    Removes the specified node from the binary tree. Raises InvalidNode if
     the node is invalid.
 
     @param node The node to be removed.

@@ -41,36 +41,48 @@ public:
   /**
     Initializes a linked node.
 
-    @param n The next node in the container.
-    @param v The value to be associated with the node.
+    @param _next The next node in the container.
+    @param _value The value to be associated with the node.
   */
-  inline SingleLinkedNode(SingleLinkedNode* n, const TYPE& v) :
-    next(n), value(v) {}
+  inline SingleLinkedNode(SingleLinkedNode* _next, const TYPE& _value)
+    : next(_next),
+      value(_value) {
+  }
 
   /**
     Returns the next node.
   */
-  inline SingleLinkedNode* getNext() const throw() {return next;}
+  inline SingleLinkedNode* getNext() const throw() {
+    return next;
+  }
 
   /**
     Sets the next node.
   */
-  inline void setNext(SingleLinkedNode* next) throw() {this->next = next;}
+  inline void setNext(SingleLinkedNode* next) throw() {
+    this->next = next;
+  }
 
   /**
     Returns the value of the node.
   */
-  inline TYPE* getValue() throw() {return &value;}
+  inline TYPE* getValue() throw() {
+    return &value;
+  }
 
   /**
     Returns the value of the node.
   */
-  inline const TYPE* getValue() const throw() {return &value;}
+  inline const TYPE* getValue() const throw() {
+    return &value;
+  }
 
   /**
     Sets the value of the node.
   */
-  inline void setValue(TYPE value) throw() {this->value = value;}
+  inline void setValue(TYPE value) throw() {
+    this->value = value;
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

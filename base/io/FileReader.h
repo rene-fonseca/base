@@ -92,7 +92,7 @@ public:
 
   /**
     Ensures that the specified number of bytes are mapped without changing the
-    current position. Throws IOException if requested number of bytes cannot be
+    current position. Raises IOException if requested number of bytes cannot be
     mapped.
 
     @param size The number of bytes to peek at.
@@ -116,7 +116,7 @@ public:
 
   /**
     Sets the current position indexed from the beginning of the file. Used this
-    method if you want to skip a large number of bytes. Throws IOException if
+    method if you want to skip a large number of bytes. Raises IOException if
     the postion exceeds the end of the file.
 
     @param position The desired postion.
@@ -164,7 +164,9 @@ public:
 //  /**
 //    Returns the sequence.
 //  */
-//  inline const TYPE* getElements() const throw() {return elements;}
+//  inline const TYPE* getElements() const throw() {
+//    return elements;
+//  }
 //};
 //
 ///**
@@ -229,7 +231,9 @@ public:
 //  /**
 //    Returns the first byte of the mapping.
 //  */
-//  inline const byte* getBytes() const throw() {return begin;}
+//  inline const byte* getBytes() const throw() {
+//    return begin;
+//  }
 //
 //  /**
 //    Returns the current position of the window.
@@ -275,7 +279,7 @@ public:
 //  ReadIterator ensure(const FileRegion& region) throw(IOException);
 //
 //  /**
-//    Ensures that the specified region is in the window. Throws IOException if
+//    Ensures that the specified region is in the window. Raises IOException if
 //    the specified region cannot be completely mapped. The size of the window is
 //    adjusted according to the specified region and the internal granularity.
 //

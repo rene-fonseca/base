@@ -42,16 +42,28 @@ public:
     Reference to a single bit within a BitSet.
   */
   class Reference {
-  private:
     friend class BitSet;
+  private:
+    
     BitSet& bitset; // use reference to avoid 'copy on write'
     unsigned int index;
     Reference(const Reference& copy); // prohibit default copy initialization
     Reference& operator=(const Reference& eq); // prohibit default assignment
-    inline Reference(BitSet& b, unsigned int i) : bitset(b), index(i) {}
+
+    inline Reference(BitSet& _bitset, unsigned int _index)
+      : bitset(_bitset),
+        index(_index) {
+    }
   public:
-    inline Reference& operator=(bool value) throw(OutOfRange) {bitset.setAt(index, value); return *this;}
-    inline operator bool() throw(OutOfRange) {return bitset.getAt(index);}
+    
+    inline Reference& operator=(bool value) throw(OutOfRange) {
+      bitset.setAt(index, value);
+      return *this;
+    }
+    
+    inline operator bool() throw(OutOfRange) {
+      return bitset.getAt(index);
+    }
   };
 private:
 
@@ -137,7 +149,9 @@ public:
   /**
     Initializes bit set from other bit set.
   */
-  BitSet(const BitSet& copy) throw(MemoryException) : elements(copy.elements), size(copy.size) {}
+  BitSet(const BitSet& copy) throw(MemoryException)
+    : elements(copy.elements), size(copy.size) {
+  }
 
   /**
     Assignment of bit set to bit set.
@@ -147,22 +161,28 @@ public:
   /**
     Returns the number of bit in the bit set.
   */
-  inline unsigned int getSize() const throw() {return size;}
+  inline unsigned int getSize() const throw() {
+    return size;
+  }
 
   /**
     Returns true if the bit set is empty.
   */
-  inline bool isEmpty() const throw() {return size == 0;}
+  inline bool isEmpty() const throw() {
+    return size == 0;
+  }
 
   /**
-    Returns the bit state at the specified index. Throws 'OutOfRange' if the index is invalid.
+    Returns the bit state at the specified index. Raises OutOfRange if the index
+    is invalid.
 
     @param index The index of the element.
   */
   bool getAt(unsigned int index) const throw(OutOfRange);
 
   /**
-    Sets the bit state at the specified index. Throws 'OutOfRange' if the index is invalid.
+    Sets the bit state at the specified index. Raises OutOfRange if the index is
+    invalid.
 
     @param index The index of the element.
     @param value The desired value.
@@ -175,7 +195,8 @@ public:
   BitSet& set() throw();
 
   /**
-    Sets (sets to true) the state at the specified index. Throws 'OutOfRange' if the index is invalid.
+    Sets (sets to true) the state at the specified index. Raises OutOfRange if
+    the index is invalid.
   */
   BitSet& set(unsigned int index) throw(OutOfRange);
 
@@ -185,7 +206,8 @@ public:
   BitSet& reset() throw();
 
   /**
-    Resets (sets to false) the state at the specified index. Throws 'OutOfRange' if the index is invalid.
+    Resets (sets to false) the state at the specified index. Raises OutOfRange
+    if the index is invalid.
   */
   BitSet& reset(unsigned int index) throw(OutOfRange);
 
@@ -195,7 +217,8 @@ public:
   BitSet& flip() throw();
 
   /**
-    Inverts the state at the specified index. Throws 'OutOfRange' if the index is invalid.
+    Inverts the state at the specified index. Raises OutOfRange if the index is
+    invalid.
   */
   BitSet& flip(unsigned int index) throw(OutOfRange);
 
@@ -250,7 +273,8 @@ public:
   }
 
   /**
-    Returns reference to the bit at the specified index. Throws 'OutOfRange' if the index is invalid.
+    Returns reference to the bit at the specified index. Raises OutOfRange if
+    the index is invalid.
 
     @param index The index of the element.
   */
@@ -259,7 +283,8 @@ public:
   }
 
   /**
-    Returns the bit at the specified index. Throws 'OutOfRange' if the index is invalid.
+    Returns the bit at the specified index. Raises OutOfRange if the index is
+    invalid.
 
     @param index The index of the element.
   */
@@ -272,13 +297,13 @@ public:
   */
   void removeAll() throw();
 
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value);
+  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value) throw(IOException);
 };
 
 /**
   Writes a string representation of a bit set to a format stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -54,11 +54,19 @@ public:
   */
   class ThreadPoolException : public Exception {
   public:
-
-    ThreadPoolException() throw() : Exception() {}
-    ThreadPoolException(const char* message) throw() : Exception(message) {}
-    ThreadPoolException(Type type) throw() : Exception(type) {}
-    ThreadPoolException(const char* message, Type type) throw() : Exception(message, type) {}
+    
+    inline ThreadPoolException() throw() : Exception() {
+    }
+    
+    inline ThreadPoolException(const char* message) throw() : Exception(message) {
+    }
+    
+    inline ThreadPoolException(Type type) throw() : Exception(type) {
+    }
+    
+    inline ThreadPoolException(const char* message, Type type) throw()
+      : Exception(message, type) {
+    }
   };
 private:
 
@@ -82,7 +90,8 @@ private:
 
       @param pool The thread pool.
     */
-    inline Wrapper(ThreadPool* pool) throw() : pool(pool) {}
+    inline Wrapper(ThreadPool* _pool) throw() : pool(_pool) {
+    }
 
     /**
       Run the object.
@@ -140,7 +149,7 @@ public:
 
   /**
     Sets the desired number of threads of the pool. Blocks until accomplished.
-    Throws 'ThreadPoolException' is the pool has been terminated.
+    Raises ThreadPoolException is the pool has been terminated.
   */
   void setThreads(unsigned int value) throw(ThreadPoolException);
 

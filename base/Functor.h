@@ -515,42 +515,60 @@ inline Binder2Second<BINOPR> bind2Second(const BINOPR& operation, const typename
 template<class TYPE>
 class Add : BinaryOperation<TYPE, TYPE, TYPE> {
 public:
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {return left + right;}
+  
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left + right;
+  }
 };
 
 /** Arithmetic subtraction. */
 template<class TYPE>
 class Subtract : BinaryOperation<TYPE, TYPE, TYPE> {
 public:
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {return left - right;}
+  
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left - right;
+  }
 };
 
 /** Arithmetic multiplication. */
 template<class TYPE>
 class Multiply : BinaryOperation<TYPE, TYPE, TYPE> {
 public:
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {return left * right;}
+  
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left * right;
+  }
 };
 
 /** Arithmetic division. */
 template<class TYPE>
 class Divide : BinaryOperation<TYPE, TYPE, TYPE> {
 public:
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {return left/right;}
+  
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left/right;
+  }
 };
 
 /** Arithmetic negation. */
 template<class TYPE>
 class Negate : UnaryOperation<TYPE, TYPE> {
 public:
-  inline TYPE operator()(const TYPE& left) const throw() {return -left;}
+  
+  inline TYPE operator()(const TYPE& left) const throw() {
+    return -left;
+  }
 };
 
 /** Returns the absolute value of the specified argument. */
 template<class TYPE>
 class Absolute : UnaryOperation<TYPE, TYPE> {
 public:
-  inline TYPE operator()(const TYPE& left) const {return absolute(left);}
+  
+  inline TYPE operator()(const TYPE& left) const {
+    return absolute(left);
+  }
 };
 
 
@@ -559,63 +577,90 @@ public:
 template<class TYPE>
 class Equal : public BinaryOperation<TYPE, TYPE, bool> {
 public:
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {return left == right;}
+  
+  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left == right;
+  }
 };
 
 /** Inequality operator. */
 template<class TYPE>
 class NotEqual : public BinaryOperation<TYPE, TYPE, bool> {
 public:
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {return left != right;}
+  
+  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left != right;
+  }
 };
 
 /** Greater than operator. */
 template<class TYPE>
 class Greater : public BinaryOperation<TYPE, TYPE, bool> {
 public:
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {return left > right;}
+  
+  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left > right;
+  }
 };
 
 /** Less than operator. */
 template<class TYPE>
 class Less : public BinaryOperation<TYPE, TYPE, bool> {
 public:
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {return left < right;}
+  
+  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left < right;
+  }
 };
 
 /** Greater than or equal operator. */
 template<class TYPE>
 class GreaterOrEqual : public BinaryOperation<TYPE, TYPE, bool> {
 public:
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {return left >= right;}
+  
+  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left >= right;
+  }
 };
 
 /** Less than or equal operator. */
 template<class TYPE>
 class LessOrEqual : public BinaryOperation<TYPE, TYPE, bool> {
 public:
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {return left <= right;}
+  
+  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left <= right;
+  }
 };
 
 /** Logical and. */
 template<class TYPE>
 class LogicalAnd : public BinaryOperation<TYPE, TYPE, bool> {
 public:
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {return left && right;}
+  
+  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left && right;
+  }
 };
 
 /** Logical or. */
 template<class TYPE>
 class LogicalOr : public BinaryOperation<TYPE, TYPE, bool> {
 public:
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {return left || right;}
+  
+  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left || right;
+  }
 };
 
 /** Logical not. */
 template<class TYPE>
 class LogicalNot : public UnaryOperation<TYPE, bool> {
 public:
-  inline bool operator()(const TYPE& left) const throw() {return !left;}
+  
+  inline bool operator()(const TYPE& left) const throw() {
+    return !left;
+  }
 };
 
 
@@ -624,21 +669,30 @@ public:
 template<class TYPE>
 class BitwiseAnd : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {return left & right;}
+  
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left & right;
+  }
 };
 
 /** Bitwise or. */
 template<class TYPE>
 class BitwiseOr : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {return left | right;}
+  
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left | right;
+  }
 };
 
 /** Bitwise exclusive or. */
 template<class TYPE>
 class BitwiseExclusiveOr : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {return left ^ right;}
+  
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left ^ right;
+  }
 };
 
 
@@ -647,62 +701,115 @@ public:
 template<class TYPE>
 class Same : public UnaryOperation<TYPE, TYPE> {
 public:
-  inline TYPE operator()(const TYPE& value) const throw() {return value;}
+  
+  inline TYPE operator()(const TYPE& value) const throw() {
+    return value;
+  }
 };
 
 /** Sums elements in a sequence. */
 template<class TYPE, class RESULT = TYPE>
 class Sum : public UnaryOperation<TYPE, RESULT> {
 protected:
+  
   RESULT result;
 public:
-  inline Sum() throw() : result(0) {}
-  inline void operator()(const TYPE& value) throw() {result += value;}
-  inline RESULT getResult() const throw() {return result;}
+  
+  inline Sum() throw() : result(0) {
+  }
+  
+  inline void operator()(const TYPE& value) throw() {
+    result += value;
+  }
+  
+  inline RESULT getResult() const throw() {
+    return result;
+  }
 };
 
 /** Sums the square of elements in a sequence. */
 template<class TYPE, class RESULT = TYPE>
 class SquareSum : public UnaryOperation<TYPE, RESULT> {
 protected:
+  
   RESULT result;
 public:
-  inline SquareSum() throw() : result(0) {}
-  inline void operator()(const TYPE& value) throw() {result += value * value;}
-  inline RESULT getResult() const throw() {return result;}
+  
+  inline SquareSum() throw() : result(0) {
+  }
+
+  inline void operator()(const TYPE& value) throw() {
+    result += value * value;
+  }
+  
+  inline RESULT getResult() const throw() {
+    return result;
+  }
 };
 
 /** Sums the product of elements in two sequences. */
 template<class TYPE, class RESULT = TYPE>
 class DotProduct : public BinaryOperation<TYPE, TYPE, RESULT> {
 protected:
+  
   RESULT result;
 public:
-  inline DotProduct() throw() : result(0) {}
-  inline void operator()(const TYPE& left, const TYPE& right) throw() {result += left * right;}
-  inline RESULT getResult() const throw() {return result;}
+  
+  inline DotProduct() throw() : result(0) {
+  }
+  
+  inline void operator()(const TYPE& left, const TYPE& right) throw() {
+    result += left * right;
+  }
+  
+  inline RESULT getResult() const throw() {
+    return result;
+  }
 };
 
 /** The minimum value in a sequence. */
 template<class TYPE>
 class Minimum : public UnaryOperation<TYPE, TYPE> {
 protected:
+
   TYPE result;
 public:
-  inline Minimum(const TYPE& value = 0) throw() : result(value) {}
-  inline void operator()(const TYPE& value) throw() {if (value < result) {result = value;}}
-  inline TYPE getResult() const throw() {return result;}
+
+  inline Minimum(const TYPE& value = 0) throw()
+    : result(value) {
+  }
+  
+  inline void operator()(const TYPE& value) throw() {
+    if (value < result) {
+      result = value;
+    }
+  }
+
+  inline TYPE getResult() const throw() {
+    return result;
+  }
 };
 
 /** The maximum value in a sequence. */
 template<class TYPE>
 class Maximum : public UnaryOperation<TYPE, TYPE> {
 protected:
+
   TYPE result;
 public:
-  inline Maximum(const TYPE& value = 0) throw() : result(value) {}
-  inline void operator()(const TYPE& value) throw() {if (value > result) {result = value;}}
-  inline TYPE getResult() const throw() {return result;}
+  
+  inline Maximum(const TYPE& value = 0) throw() : result(value) {
+  }
+  
+  inline void operator()(const TYPE& value) throw() {
+    if (value > result) {
+      result = value;
+    }
+  }
+  
+  inline TYPE getResult() const throw() {
+    return result;
+  }
 };
 
 
@@ -790,8 +897,12 @@ inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) {
       MyLock lock;
     public:
 
-      MySuffix(MyLock l) : lock(l) {}
-      inline operator()() {lock->lock();}
+      MySuffix(MyLock l) : lock(l) {
+      }
+      
+      inline operator()() {
+        lock->lock();
+      }
     };
 
     class MySuffix {
@@ -800,8 +911,12 @@ inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) {
       MyLock lock;
     public:
 
-      MySuffix(MyLock l) : lock(l) {}
-      inline void operator()() {lock->unlock();}
+      MySuffix(MyLock l) : lock(l) {
+      }
+      
+      inline void operator()() {
+        lock->unlock();
+      }
     };
 
     void myFunction() {

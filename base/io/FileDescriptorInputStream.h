@@ -58,7 +58,9 @@ public:
   /**
     Returns true if the end of the file descriptor has been reached.
   */
-  inline bool atEnd() const throw(IOException) {return end;}
+  inline bool atEnd() const throw(IOException) {
+    return end;
+  }
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.

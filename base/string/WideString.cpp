@@ -273,6 +273,7 @@ StringLiteral WideString::toString(MultibyteEncoding encoding) throw() {
   case UTF32BE:
     return MESSAGE("UTF-32BE");
   case UTF32LE:
+  default: // avoid warning
     return MESSAGE("UTF-32LE");
   }
 }

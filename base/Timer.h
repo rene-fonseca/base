@@ -84,11 +84,16 @@ private:
   Timer timer;
 public:
 
-  inline TimeScope() throw() {}
+  inline TimeScope() throw() {
+  }
 
-  inline void start() throw() {timer.start();}
+  inline void start() throw() {
+    timer.start();
+  }
 
-  inline void stop() throw() {timer.stop();}
+  inline void stop() throw() {
+    timer.stop();
+  }
 
   void dump() const throw(IOException);
 

@@ -33,21 +33,23 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  FileException() throw() {}
+  inline FileException() throw() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  FileException(const char* message) throw() : IOException(message) {}
+  inline FileException(const char* message) throw() : IOException(message) {
+  }
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  FileException(Type type) throw() : IOException(type) {
+  inline FileException(Type type) throw() : IOException(type) {
   }
   
   /**
@@ -56,7 +58,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  FileException(const char* message, Type type) throw() : IOException(message, type) {
+  inline FileException(const char* message, Type type) throw()
+    : IOException(message, type) {
   }
 };
 

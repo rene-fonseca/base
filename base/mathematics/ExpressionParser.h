@@ -60,14 +60,44 @@ namespace eval {
     bool popable;
     bool function;
   public:
-    Operation(unsigned int i, unsigned int a, unsigned int p, Glue g, bool b, bool po, bool f) throw() : id(i), arguments(a), precedence(p), glue(g), builtin(b), popable(po), function(f) {}
-    unsigned int getArguments() const throw() {return arguments;}
-    unsigned int getPrecedence() const throw() {return precedence;}
-    Glue getGlue() const throw() {return glue;}
-    bool isBuiltin() const throw() {return builtin;}
-    bool isPopable() const throw() {return popable;}
-    bool isFunction() const throw() {return function;}
-    unsigned int getId() const throw() {return id;}
+    
+    inline Operation(unsigned int i, unsigned int a, unsigned int p, Glue g, bool b, bool po, bool f) throw()
+      : id(i),
+        arguments(a),
+        precedence(p),
+        glue(g),
+        builtin(b),
+        popable(po),
+        function(f) {
+    }
+
+    unsigned int getArguments() const throw() {
+      return arguments;
+    }
+    
+    unsigned int getPrecedence() const throw() {
+      return precedence;
+    }
+    
+    Glue getGlue() const throw() {
+      return glue;
+    }
+    
+    bool isBuiltin() const throw() {
+      return builtin;
+    }
+    
+    bool isPopable() const throw() {
+      return popable;
+    }
+
+    bool isFunction() const throw() {
+      return function;
+    }
+
+    unsigned int getId() const throw() {
+      return id;
+    }
   };
 
 };
@@ -174,7 +204,7 @@ public:
 
   /**
     Returns the evaluation node associated with the specified identifier.
-    Throws 'InvalidKey' if the identifier has not been registered.
+    Raises InvalidKey if the identifier has not been registered.
 
     @param name The identifier to be looked up.
   */

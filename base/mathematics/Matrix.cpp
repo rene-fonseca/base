@@ -12,8 +12,8 @@
  ***************************************************************************/
 
 #include <base/mathematics/Matrix.h>
+#include <base/mathematics/Math.h>
 #include <base/Functor.h>
-#include <math.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -22,19 +22,31 @@ template Matrix<double>;
 template<class TYPE>
 class MultiplySubtract : public BinaryOperation<TYPE, TYPE, TYPE> {
 protected:
+  
   TYPE value;
 public:
-  inline MultiplySubtract(const TYPE& v) throw() : value(v) {}
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {return left - value * right;}
+  
+  inline MultiplySubtract(const TYPE& _value) throw() : value(_value) {
+  }
+  
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+    return left - value * right;
+  }
 };
 
 template<class TYPE>
 class ZeroAdjust : public UnaryOperation<TYPE, TYPE> {
 protected:
+  
   TYPE zero;
 public:
-  inline ZeroAdjust(const TYPE& z) : zero(z) {}
-  inline TYPE operator()(const TYPE& value) const throw() {return (value > zero) ? value : TYPE(0);}
+  
+  inline ZeroAdjust(const TYPE& _zero) : zero(_zero) {
+  }
+  
+  inline TYPE operator()(const TYPE& value) const throw() {
+    return (value > zero) ? value : TYPE(0);
+  }
 };
 
 template<class TYPE>
@@ -183,7 +195,7 @@ template<class TYPE>
 TYPE Matrix<TYPE>::getNorm() const throw() {
   SquareSum<TYPE> squareSum;
   forEach(getReadOnlyElements(), getSize(), squareSum);
-  return sqrt(squareSum.getResult());
+  return Math::sqrt(squareSum.getResult());
 }
 
 template<class TYPE>
@@ -755,7 +767,7 @@ Matrix<TYPE> operator/(const TYPE& left, const Matrix<TYPE>& right) throw(Memory
 }
 
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);
   const TYPE* element = getReadOnlyElements();
   stream << '[';

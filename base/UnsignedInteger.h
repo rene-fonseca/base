@@ -64,7 +64,8 @@ public:
   /**
     Initializes the integer as zero.
   */
-  inline UnsignedInteger() throw() : value(0) {}
+  inline UnsignedInteger() throw() : value(0) {
+  }
 
   /**
     Initializes the integer with the specified value. Implicit initialization allowed.
@@ -85,7 +86,9 @@ public:
   /**
     Copy constructor. Initializes a new Integer from other Integer object.
   */
-  inline UnsignedInteger(const UnsignedInteger& copy) throw() : value(copy.value) {}
+  inline UnsignedInteger(const UnsignedInteger& copy) throw()
+    : value(copy.value) {
+  }
 
   /**
     Assignment of integer to this integer.
@@ -106,22 +109,29 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline unsigned int getValue() const throw() {return value;}
+  inline unsigned int getValue() const throw() {
+    return value;
+  }
 
   /**
     Sets the value of the integer.
 
     @param value The desired value.
   */
-  inline void setValue(unsigned int value) throw() {this->value = value;}
+  inline void setValue(unsigned int value) throw() {
+    this->value = value;
+  }
 
   /**
     Casts integer to native type.
   */
-  inline operator unsigned int() const throw() {return value;}
+  inline operator unsigned int() const throw() {
+    return value;
+  }
 };
 
-inline UnsignedInteger::UnsignedInteger(unsigned int v) throw() : value(v) {}
+inline UnsignedInteger::UnsignedInteger(unsigned int _value) throw() : value(_value) {
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

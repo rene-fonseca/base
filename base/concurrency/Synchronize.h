@@ -167,17 +167,20 @@ public:
     @param obj The synchronize able object to be synchronized.
     @param exclusive Specifies if the lock should be exclusive (write-lock) or shared (read-lock). Default is exclusive.
   */
-  inline explicit Synchronize(const Synchronizeable<Unsafe>& o, bool exclusive = true) throw() {}
+  inline explicit Synchronize(const Synchronizeable<Unsafe>& o, bool exclusive = true) throw() {
+  }
 
   /**
     Forces the lock to be released.
   */
-  inline void release() throw() {}
+  inline void release() throw() {
+  }
 
   /**
     Releases the lock if not already released and destroys the synchronization object.
   */
-  inline ~Synchronize() throw() {}
+  inline ~Synchronize() throw() {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -41,15 +41,32 @@ public:
   class Callback : public virtual Object {
   public:
 
-    virtual void startDocument() {}
-    virtual void endDocument() {}
-    virtual void startElement(const String& n, const XMLPropertyHash& p) {}
-    virtual void endElement(const String& n) {}
-    virtual void characters(const String& s) {}
-    virtual void comment(const String& s) {}
-    virtual void warning(const String& s) {}
-    virtual void error(const String& s) {}
-    virtual void fatalError(const String& s) {}
+    virtual void startDocument() {
+    }
+    
+    virtual void endDocument() {
+    }
+    
+    virtual void startElement(const String& n, const XMLPropertyHash& p) {
+    }
+    
+    virtual void endElement(const String& n) {
+    }
+    
+    virtual void characters(const String& s) {
+    }
+    
+    virtual void comment(const String& s) {
+    }
+    
+    virtual void warning(const String& s) {
+    }
+    
+    virtual void error(const String& s) {
+    }
+    
+    virtual void fatalError(const String& s) {
+    }
   };
 
 private:

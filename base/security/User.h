@@ -57,21 +57,24 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline UserException() throw() {}
+    inline UserException() throw() {
+    }
 
     /**
       Initializes the exception object.
 
       @param message The message.
     */
-    inline UserException(const char* message) throw() : Exception(message) {}
+    inline UserException(const char* message) throw() : Exception(message) {
+    }
 
     /**
       Initializes the exception object without an associated message.
 
       @param type The identity of the type.
     */
-    inline UserException(Type type) throw() : Exception(type) {}
+    inline UserException(Type type) throw() : Exception(type) {
+    }
 
     /**
       Initializes the exception object.
@@ -79,7 +82,9 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    inline UserException(const char* message, Type type) throw() : Exception(message, type) {}
+    inline UserException(const char* message, Type type) throw()
+      : Exception(message, type) {
+    }
   };
   
   /**

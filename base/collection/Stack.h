@@ -44,13 +44,34 @@ protected:
     StackNode* previous;
     TYPE value;
   public:
-    inline StackNode(StackNode* n, StackNode* p, const TYPE& v) throw() : next(n), previous(p), value(v) {}
-    inline StackNode* getNext() const throw() {return next;}
-    inline void setNext(StackNode* value) throw() {next = value;}
-    inline StackNode* getPrevious() const throw() {return previous;}
-    inline void setPrevious(StackNode* value) throw() {previous = value;}
-    inline TYPE* getValue() throw() {return &value;}
-    inline const TYPE* getValue() const throw() {return &value;}
+
+    inline StackNode(StackNode* n, StackNode* p, const TYPE& v) throw()
+      : next(n), previous(p), value(v) {
+    }
+
+    inline StackNode* getNext() const throw() {
+      return next;
+    }
+
+    inline void setNext(StackNode* value) throw() {
+      next = value;
+    }
+
+    inline StackNode* getPrevious() const throw() {
+      return previous;
+    }
+
+    inline void setPrevious(StackNode* value) throw() {
+      previous = value;
+    }
+
+    inline TYPE* getValue() throw() {
+      return &value;
+    }
+
+    inline const TYPE* getValue() const throw() {
+      return &value;
+    }
   };
 
 
@@ -75,7 +96,8 @@ protected:
     /**
       Initialize an empty stack.
     */
-    inline StackImpl() throw() : top(0), bottom(0) {}
+    inline StackImpl() throw() : top(0), bottom(0) {
+    }
 
     /**
       Initialize stack from other stack.
@@ -91,16 +113,20 @@ protected:
     /**
       Returns the number of elements on the stack.
     */
-    inline unsigned int getSize() const throw() {return size;}
+    inline unsigned int getSize() const throw() {
+      return size;
+    }
 
     /**
       Returns true if the stack is empty.
     */
-    inline bool isEmpty() const throw() {return size == 0;}
+    inline bool isEmpty() const throw() {
+      return size == 0;
+    }
 
     /**
-      Returns the element at the specified index from the top. Throws
-      'OutOfRange' if index is invalid.
+      Returns the element at the specified index from the top. Raises
+      OutOfRange if index is invalid.
 
       @param index Index of the element. Default is 0 corresponding to the top.
     */
@@ -135,7 +161,7 @@ protected:
     }
 
     /*
-      Pops the top element from the stack. Throws 'OutOfRange' if the stack is
+      Pops the top element from the stack. Raises OutOfRange if the stack is
       empty.
 
       @return The value of the top element.
@@ -156,7 +182,7 @@ protected:
     }
 
     /**
-      Pops the specified number of elements from the stack. Throws 'OutOfRange'
+      Pops the specified number of elements from the stack. Raises OutOfRange
       if the stack does not contain the specified number of elements.
 
       @param count The number of elements to pop of the stack.
@@ -218,12 +244,14 @@ public:
   /**
     Initializes an empty stack.
   */
-  Stack() throw() : elements(0) {}
+  Stack() throw() : elements(0) {
+  }
 
   /**
     Initializes stack from other stack.
   */
-  Stack(const Stack& copy) throw(MemoryException) : elements(copy.elements) {}
+  Stack(const Stack& copy) throw(MemoryException) : elements(copy.elements) {
+  }
 
   /**
     Returns the number of elements on the stack.
@@ -240,8 +268,8 @@ public:
   }
 
   /**
-    Returns the element at the specified index from the top. Throws
-    'OutOfRange' if index is invalid.
+    Returns the element at the specified index from the top. Raises
+    OutOfRange if index is invalid.
 
     @param index Index of the element. Default is 0 corresponding to the top.
   */
@@ -258,7 +286,7 @@ public:
   }
 
   /**
-    Pops the top element from the stack. Throws 'OutOfRange' if the stack is
+    Pops the top element from the stack. Raises OutOfRange if the stack is
     empty.
 
     @return The value of the top element.
@@ -269,7 +297,7 @@ public:
   }
 
   /**
-    Pops the specified number of elements from the stack. Throws 'OutOfRange'
+    Pops the specified number of elements from the stack. Raises OutOfRange
     if the stack does not contain the specified number of elements.
 
     @param count The number of elements to pop of the stack.

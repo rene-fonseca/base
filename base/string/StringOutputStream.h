@@ -64,7 +64,8 @@ protected:
   StringOutputStreamWrapper stream;
 public:
 
-  inline StringOutputStreamImpl() throw() {}
+  inline StringOutputStreamImpl() throw() {
+  }
 };
 
 

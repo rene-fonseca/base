@@ -62,34 +62,75 @@ private:
 
     /** Invalid socket. */
     static SocketImpl* invalid;
+    
     /** Initializes the socket with the specified handle. */
     SocketImpl(OperatingSystem::Handle handle) throw();
+    
     /** Returns the local address. */
-    inline const InetAddress& getLocalAddress() const throw() {return localAddress;}
+    inline const InetAddress& getLocalAddress() const throw() {
+      return localAddress;
+    }
+    
     /** Sets the local address. */
-    inline void setLocalAddress(const InetAddress& value) throw() {localAddress = value;}
+    inline void setLocalAddress(const InetAddress& value) throw() {
+      localAddress = value;
+    }
+    
     /** Returns the local port. */
-    inline unsigned short getLocalPort() const throw() {return localPort;}
+    inline unsigned short getLocalPort() const throw() {
+      return localPort;
+    }
+    
     /** Sets the local port. */
-    inline void setLocalPort(unsigned short port) throw() {localPort = port;}
+    inline void setLocalPort(unsigned short port) throw() {
+      localPort = port;
+    }
+    
     /** Returns the remote address. */
-    inline const InetAddress& getRemoteAddress() const throw() {return remoteAddress;}
+    inline const InetAddress& getRemoteAddress() const throw() {
+      return remoteAddress;
+    }
+    
     /** Sets the remote address. */
-    inline void setRemoteAddress(const InetAddress& value) throw() {remoteAddress = value;}
+    inline void setRemoteAddress(const InetAddress& value) throw() {
+      remoteAddress = value;
+    }
+    
     /** Returns the remote port. */
-    inline unsigned short getRemotePort() const throw() {return remotePort;}
+    inline unsigned short getRemotePort() const throw() {
+      return remotePort;
+    }
+    
     /** Sets the remote port. */
-    inline void setRemotePort(unsigned short port) throw() {remotePort = port;}
+    inline void setRemotePort(unsigned short port) throw() {
+      remotePort = port;
+    }
+    
     /** Returns true if socket has been created. */
-    inline bool isCreated() const throw() {return getHandle() != OperatingSystem::INVALID_HANDLE;}
+    inline bool isCreated() const throw() {
+      return getHandle() != OperatingSystem::INVALID_HANDLE;
+    }
+    
     /** Returns true if socket is connected. */
-    inline bool isConnected() const throw() {return getRemotePort() != 0;}
+    inline bool isConnected() const throw() {
+      return getRemotePort() != 0;
+    }
+    
     /** Returns true if socket is bound. */
-    inline bool isBound() const throw() {return getLocalPort() != 0;}
+    inline bool isBound() const throw() {
+      return getLocalPort() != 0;
+    }
+    
     /** Returns true if the end has been reached. */
-    inline bool atEnd() const throw() {return end;}
+    inline bool atEnd() const throw() {
+      return end;
+    }
+    
     /** Specifies that the end has been reached. */
-    inline void onEnd() throw() {end = true;}
+    inline void onEnd() throw() {
+      end = true;
+    }
+    
     /** Releases the resources use by the socket. */
     ~SocketImpl() throw(IOException);
   };
@@ -99,9 +140,13 @@ protected:
   ReferenceCountedObjectPointer<SocketImpl> socket;
 
   /** Returns the handle. */
-  inline OperatingSystem::Handle getHandle() const throw() {return socket->getHandle();}
+  inline OperatingSystem::Handle getHandle() const throw() {
+    return socket->getHandle();
+  }
+  
   /** Get boolean socket option. */
   bool getBooleanOption(int option) const throw(IOException);
+
   /** Set boolean socket option. */
   void setBooleanOption(int option, bool value) throw(IOException);
 public:
@@ -114,7 +159,8 @@ public:
   /**
     Initialization of socket from other socket.
   */
-  inline Socket(const Socket& copy) throw() : socket(copy.socket) {}
+  inline Socket(const Socket& copy) throw() : socket(copy.socket) {
+  }
 
   /**
     Assignment of socket to socket.
@@ -367,13 +413,13 @@ public:
   /**
     Writes a string representation of a Socket object to a format stream.
   */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value);
+  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) throw(IOException);
 };
 
 /**
   Writes a string representation of a Socket object to a format stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -57,19 +57,25 @@ public:
     Returns the unread bytes of the internal buffer as sequence. The size of
     the sequence is returned by getNumberOfBytes() or peek().
   */
-  inline const char* getElements() const throw() {return buffer.getElements() + position;}
+  inline const char* getElements() const throw() {
+    return buffer.getElements() + position;
+  }
 
   /**
     Returns the number of bytes currently available in the internal buffer.
     This is not the same as available() which also includes buffered bytes of
     the linked input stream.
   */
-  inline unsigned int getNumberOfBytes() const throw() {return count - position;}
+  inline unsigned int getNumberOfBytes() const throw() {
+    return count - position;
+  }
 
   /**
     Returns true if the internal buffer is empty.
   */
-  inline bool isEmpty() const throw() {return position >= count;}
+  inline bool isEmpty() const throw() {
+    return position >= count;
+  }
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.

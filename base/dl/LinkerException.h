@@ -29,12 +29,12 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class LinkerException : public Exception {
 public:
-
+  
   /**
     Initializes the exception object with no message.
   */
   LinkerException() throw();
-
+  
   /**
     Initializes the exception object.
 
@@ -47,7 +47,8 @@ public:
     
     @param type The identity of the type.
   */
-  LinkerException(Type type) throw() : Exception(type) {}
+  inline LinkerException(Type type) throw() : Exception(type) {
+  }
   
   /**
     Initializes the exception object.
@@ -55,7 +56,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  LinkerException(const char* message, Type type) throw() : Exception(message, type) {}
+  inline LinkerException(const char* message, Type type) throw()
+    : Exception(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

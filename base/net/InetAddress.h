@@ -125,22 +125,28 @@ public:
   /**
     Returns the family of the address.
   */
-  inline Family getFamily() const throw() {return family;}
+  inline Family getFamily() const throw() {
+    return family;
+  }
 
   /**
     Returns the IP address in binary format in network byte order.
   */
-  inline const byte* getAddress() const throw() {return address.octets;}
+  inline const byte* getAddress() const throw() {
+    return address.octets;
+  }
 
   /**
     Returns the IP address in binary format in network byte order (this is only
     valid if either isIPv4Mapped() or isIPv4Compatible() returns true).
   */
-  inline const byte* getIPv4Address() const throw() {return &address.octets[12];}
+  inline const byte* getIPv4Address() const throw() {
+    return &address.octets[12];
+  }
 
   /**
-    Returns the domain/host name associated with this IP address. Throws
-    'HostNotFound' if the host cannot be resolved.
+    Returns the domain/host name associated with this IP address. Raises
+    HostNotFound if the host cannot be resolved.
 
     @param fullyQualified Specifies that the fully-qualified domain name should be returned for local hosts. Default is false.
   */
@@ -223,13 +229,13 @@ public:
   /**
     Writes a string representation of the address to a stream.
   */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value);
+  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) throw(IOException);
 };
 
 /**
   Writes a string representation of the InetAddress object to a format stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -547,7 +547,7 @@ unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDoma
       --id;
       try {
         uint32 temp = getQuadlet(makeNodeId(id, busId), IEEE1394::NODE_IDS);
-        if (temp == (makeNodeId(id, IEEE1394::LOCAL_BUS) << 16)) {
+        if (temp == static_cast<uint32>(makeNodeId(id, IEEE1394::LOCAL_BUS) << 16)) {
           return makeNodeId(id, busId);
         }
       } catch (IEEE1394Exception& e) {

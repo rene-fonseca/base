@@ -35,19 +35,22 @@ public:
   /**
     Initializes the character as '\0'.
   */
-  inline Character() throw() : value('\0') {}
+  inline Character() throw() : value('\0') {
+  }
 
   /**
     Initializes the character. Implicit initialization with native type allowed.
 
     @param value The desired value.
   */
-  inline Character(char value) throw() : value(value) {}
+  inline Character(char _value) throw() : value(_value) {
+  }
 
   /**
     Initializes character from other character object.
   */
-  inline Character(const Character& copy) throw() : value(copy.value) {}
+  inline Character(const Character& copy) throw() : value(copy.value) {
+  }
 
   /**
     Assignment of character to this object.

@@ -54,8 +54,11 @@ public:
 
     /** Invalid handle. */
     static Handle* invalid;
+
     /** Initializes descriptor. */
-    inline explicit Descriptor(OperatingSystem::Handle handle) throw() : Handle(handle) {}
+    inline explicit Descriptor(OperatingSystem::Handle handle) throw() : Handle(handle) {
+    }
+    
     /** Releases the resources taken up by the descriptor. */
     ~Descriptor() throw(IOException);
   };

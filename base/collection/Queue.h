@@ -65,7 +65,8 @@ protected:
     /**
       Initializes an empty queue.
     */
-    QueueImpl() throw() : first(0), last(0), size(0) {}
+    QueueImpl() throw() : first(0), last(0), size(0) {
+    }
 
     /**
       Initializes queue from other queue.
@@ -81,12 +82,16 @@ protected:
     /**
       Returns the number of elements of the queue.
     */
-    inline unsigned int getSize() const throw() {return size;}
+    inline unsigned int getSize() const throw() {
+      return size;
+    }
 
     /**
       Returns true if the queue is empty.
     */
-    inline bool isEmpty() const throw() {return !size;}
+    inline bool isEmpty() const throw() {
+      return !size;
+    }
 
     /**
       Adds the value to the end of the queue.
@@ -141,12 +146,14 @@ public:
   /**
     Initializes an empty queue.
   */
-  Queue() throw() : elements(new QueueImpl()) {}
+  Queue() throw() : elements(new QueueImpl()) {
+  }
 
   /**
     Initializes queue from other queue.
   */
-  Queue(const Queue& copy) throw(MemoryException) : elements(copy.elements) {}
+  Queue(const Queue& copy) throw(MemoryException) : elements(copy.elements) {
+  }
 
   /**
     Returns the number of elements in the queue.
@@ -176,7 +183,7 @@ public:
   }
 
   /**
-    Removes the element at the front of the queue. Throws 'InvalidNode' if the
+    Removes the element at the front of the queue. Raises InvalidNode if the
     queue is empty.
   */
   Value pop() throw(InvalidNode) {

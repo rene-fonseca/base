@@ -169,12 +169,18 @@ public:
   
   class Manipulator {
   public:
+
     typedef FormatOutputStream& (FormatOutputStream::*Method)(unsigned int);
   private:
+    
     Method method;
     const unsigned int value;
   public:
-    inline Manipulator(Method _method, unsigned int _value) throw() : method(_method), value(_value) {}
+    
+    inline Manipulator(Method _method, unsigned int _value) throw()
+      : method(_method), value(_value) {
+    }
+    
     inline FormatOutputStream& operator()(FormatOutputStream& stream) {
       return (stream.*method)(value);
     }
@@ -182,12 +188,18 @@ public:
   
   class StringManipulator {
   public:
+
     typedef FormatOutputStream& (FormatOutputStream::*Method)(const String&);
   private:
+    
     Method method;
     const String value;
   public:
-    inline StringManipulator(Method _method, const String& _value) throw() : method(_method), value(_value) {}
+    
+    inline StringManipulator(Method _method, const String& _value) throw()
+      : method(_method), value(_value) {
+    }
+    
     inline FormatOutputStream& operator()(FormatOutputStream& stream) {
       return (stream.*method)(value);
     }
@@ -195,9 +207,13 @@ public:
 
   class GetContext {
   private:
+
     Context& context;
   public:
-    inline GetContext(Context& _context) throw() : context(_context) {}
+    
+    inline GetContext(Context& _context) throw() : context(_context) {
+    }
+    
     inline FormatOutputStream& operator()(FormatOutputStream& stream) throw() {
       return stream.getContext(context);
     }
@@ -205,9 +221,13 @@ public:
   
   class SetContext {
   private:
+
     const Context& context;
   public:
-    inline SetContext(const Context& _context) throw() : context(_context) {}
+
+    inline SetContext(const Context& _context) throw() : context(_context) {
+    }
+    
     inline FormatOutputStream& operator()(FormatOutputStream& stream) throw() {
       return stream.setContext(context);
     }
@@ -372,27 +392,37 @@ public:
   /**
     Returns the flags for the next field.
   */
-  inline unsigned int getFlags() const throw() {return context.flags;}
+  inline unsigned int getFlags() const throw() {
+    return context.flags;
+  }
   
   /**
     Returns the current integer base.
   */
-  inline Symbols::Base getBase() const throw() {return context.integerBase;}
+  inline Symbols::Base getBase() const throw() {
+    return context.integerBase;
+  }
   
   /**
     Returns the current floating-point base.
   */
-  inline Symbols::Base getRealBase() const throw() {return context.realBase;}
+  inline Symbols::Base getRealBase() const throw() {
+    return context.realBase;
+  }
   
   /**
     Returns the current field width.
   */
-  inline unsigned int getWidth() const throw() {return context.width;}
+  inline unsigned int getWidth() const throw() {
+    return context.width;
+  }
   
   /**
     Returns the current precision.
   */
-  inline unsigned int getPrecision() const throw() {return context.precision;}
+  inline unsigned int getPrecision() const throw() {
+    return context.precision;
+  }
   
   /**
     Send action to stream.
@@ -649,11 +679,11 @@ inline FormatOutputStream::StringManipulator setDateFormat(const String& format)
 
 
 
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::Manipulator manipulator) {
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::Manipulator manipulator) throw(IOException) {
   return manipulator(stream);
 }
 
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::StringManipulator manipulator) {
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::StringManipulator manipulator) throw(IOException) {
   return manipulator(stream);
 }
 

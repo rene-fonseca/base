@@ -55,7 +55,8 @@ public:
   /**
     Initializes the short integer as zero.
   */
-  inline ShortInteger() throw() : value(0) {}
+  inline ShortInteger() throw() : value(0) {
+  }
   
   /**
     Initializes the short integer with the specified value. Implicit initialization allowed.
@@ -69,12 +70,15 @@ public:
 
     @param string The string.
   */
-  inline ShortInteger(const String& string) throw(InvalidFormat) : value(parse(string)) {}
+  inline ShortInteger(const String& string) throw(InvalidFormat)
+    : value(parse(string)) {
+  }
   
   /**
     Copy constructor. Initializes a new ShortInteger from other ShortInteger object.
   */
-  inline ShortInteger(const ShortInteger& copy) throw() : value(copy.value) {}
+  inline ShortInteger(const ShortInteger& copy) throw() : value(copy.value) {
+  }
 
   /**
     Assignment operator.
@@ -108,7 +112,8 @@ public:
   }
 };
 
-inline ShortInteger::ShortInteger(short _value) throw() : value(_value) {}
+inline ShortInteger::ShortInteger(short _value) throw() : value(_value) {
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

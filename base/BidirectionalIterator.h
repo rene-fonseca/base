@@ -37,7 +37,8 @@ public:
   virtual Pointer previous() throw() = 0;
 
   /**
-    Skips a specified number of elements. Throws OutOfBounds if the end is exceeded.
+    Skips a specified number of elements. Raises OutOfBounds if the end is
+    exceeded.
 
     @param distance The desired number of elements skip.
   */

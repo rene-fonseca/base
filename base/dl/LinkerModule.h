@@ -41,7 +41,9 @@ public:
   /**
     Returns the linker module object.
   */
-  inline static const LinkerModule* getLinkerModule() throw() {return linkerModule;}
+  inline static const LinkerModule* getLinkerModule() throw() {
+    return linkerModule;
+  }
 
   /**
     Initializes module.

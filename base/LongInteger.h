@@ -55,7 +55,8 @@ public:
   /**
     Initializes the long integer as zero.
   */
-  inline LongInteger() throw() : value(0) {}
+  inline LongInteger() throw() : value(0) {
+  }
   
   /**
     Initializes the long integer with the specified value. Implicit initialization allowed.
@@ -69,12 +70,15 @@ public:
     
     @param string The string.
   */
-  inline LongInteger(const String& string) throw(InvalidFormat) : value(parse(string)) {}
+  inline LongInteger(const String& string) throw(InvalidFormat)
+    : value(parse(string)) {
+  }
   
   /**
     Initializes integer by copying from other integer.
   */
-  inline LongInteger(const LongInteger& copy) throw() : value(copy.value) {}
+  inline LongInteger(const LongInteger& copy) throw() : value(copy.value) {
+  }
   
   /**
     Assignment of integer to this integer.
@@ -108,7 +112,8 @@ public:
   }
 };
 
-inline LongInteger::LongInteger(long long _value) throw() : value(_value) {}
+inline LongInteger::LongInteger(long long _value) throw() : value(_value) {
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

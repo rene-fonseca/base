@@ -67,7 +67,8 @@ public:
   /**
     Initializes the integer as zero.
   */
-  inline UnsignedLongInteger() throw() : value(0) {}
+  inline UnsignedLongInteger() throw() : value(0) {
+  }
 
   /**
     Initializes the integer with the specified value. Implicit initialization allowed.
@@ -88,7 +89,9 @@ public:
   /**
     Copy constructor. Initializes a new Integer from other Integer object.
   */
-  inline UnsignedLongInteger(const UnsignedLongInteger& copy) throw() : value(copy.value) {}
+  inline UnsignedLongInteger(const UnsignedLongInteger& copy) throw()
+    : value(copy.value) {
+  }
 
   /**
     Assignment of integer to this integer.
@@ -109,22 +112,30 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline unsigned long long getValue() const throw() {return value;}
+  inline unsigned long long getValue() const throw() {
+    return value;
+  }
 
   /**
     Sets the value of the integer.
 
     @param value The desired value.
   */
-  inline void setValue(unsigned long long value) throw() {this->value = value;}
+  inline void setValue(unsigned long long value) throw() {
+    this->value = value;
+  }
 
   /**
     Casts integer to native type.
   */
-  inline operator unsigned long long() const throw() {return value;}
+  inline operator unsigned long long() const throw() {
+    return value;
+  }
 };
 
-inline UnsignedLongInteger::UnsignedLongInteger(unsigned long long v) throw() : value(v) {}
+inline UnsignedLongInteger::UnsignedLongInteger(unsigned long long _value) throw()
+  : value(_value) {
+}
 
 /**
   Reads an unsigned long long from the specified format input stream.

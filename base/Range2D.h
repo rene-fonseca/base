@@ -122,17 +122,12 @@ public:
     @param maximum The desired maximum value.
   */
   void setMaximum(double maximum) throw();
-
-  /**
-    Writes a string representation of a Range2D object to a format stream. The format is "(minimum,maximum)".
-  */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value);
 };
 
 /**
-  Writes a string representation of a Range2D object to a format stream.
+  Writes a string representation of a Range2D object to a format stream. The format is "(minimum, maximum)".
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -45,17 +45,22 @@ public:
   /**
     Initializes an invalid handle.
   */
-  inline Handle() throw() : handle(OperatingSystem::INVALID_HANDLE) {}
+  inline Handle() throw() : handle(OperatingSystem::INVALID_HANDLE) {
+  }
 
   /**
     Initializes handle using the specified value.
   */
-  explicit inline Handle(OperatingSystem::Handle _handle) throw() : handle(_handle) {}
+  explicit inline Handle(OperatingSystem::Handle _handle) throw()
+    : handle(_handle) {
+  }
 
   /**
     Returns the handle.
   */
-  inline OperatingSystem::Handle getHandle() const throw() {return handle;}
+  inline OperatingSystem::Handle getHandle() const throw() {
+    return handle;
+  }
 
   /**
     Returns true if the handle is valid.

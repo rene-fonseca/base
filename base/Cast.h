@@ -19,7 +19,8 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 template<bool ASSERT>
-class CastAssert {};
+class CastAssert {
+};
 
 template<>
 class CastAssert<true> {
@@ -62,37 +63,52 @@ private:
   template<class RESULT>
   class Up<RESULT*> {
   public:
-    inline RESULT* operator()(RESULT* value) throw() {return value;}
+    
+    inline RESULT* operator()(RESULT* value) throw() {
+      return value;
+    }
   };
   
   template<class RESULT>
   class Up<const RESULT*> {
   public:
-    inline const RESULT* operator()(const RESULT* value) throw() {return value;}
+    
+    inline const RESULT* operator()(const RESULT* value) throw() {
+      return value;
+    }
   };
 
   template<class RESULT, class ORIGINAL>
   class ExplicitCast {
   public:
-    inline RESULT operator()(ORIGINAL value) throw() {return value;}
+    
+    inline RESULT operator()(ORIGINAL value) throw() {
+      return value;
+    }
   };
   
   template<class ORIGINAL>
   class ExplicitCast<void, ORIGINAL> {
   public:
-    inline void operator()(ORIGINAL value) throw() {}
+    
+    inline void operator()(ORIGINAL value) throw() {
+    }
   };
   
   template<class ORIGINAL>
   class ExplicitCast<const void, ORIGINAL> {
   public:
-    inline const void operator()(ORIGINAL value) throw() {}
+    
+    inline const void operator()(ORIGINAL value) throw() {
+    }
   };
   
   template<class ORIGINAL>
   class ExplicitCast<volatile const void, ORIGINAL> {
   public:
-    inline volatile const void operator()(ORIGINAL value) throw() {}
+    
+    inline volatile const void operator()(ORIGINAL value) throw() {
+    }
   };
 
   template<class RESULT, class ORIGINAL>
@@ -177,7 +193,8 @@ private:
   };
   
   template<class RESULT, class ORIGINAL>
-  class ReinterpretCast {};
+  class ReinterpretCast {
+  };
   
   template<class RESULT, class ORIGINAL>
   class ReinterpretCast<RESULT*, ORIGINAL*> {
@@ -210,7 +227,9 @@ public:
     Implicit cast to the specified type.
   */
   template<class RESULT>
-  static inline RESULT implicit(RESULT argument) throw() {return argument;}
+  static inline RESULT implicit(RESULT argument) throw() {
+    return argument;
+  }
   
   /**
     Returns the address of the specified object as a byte pointer (i.e. uint8*).

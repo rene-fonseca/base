@@ -45,7 +45,8 @@ public:
   /**
     Initializes a pair with default values.
   */
-  inline Pair() : first(), second() {}
+  inline Pair() : first(), second() {
+  }
 
   /**
     Initializes a pair with the specified values.
@@ -53,12 +54,13 @@ public:
     @param first The first value.
     @param second The second value.
   */
-  inline Pair(const First& first, const Second& second);
+  Pair(const First& first, const Second& second);
 
   /**
     Initializes a pair from other pair.
   */
-  inline Pair(const Pair& copy) : first(copy.first), second(copy.second) {}
+  inline Pair(const Pair& copy) : first(copy.first), second(copy.second) {
+  }
 
   /**
     Assignment of pair by pair.
@@ -74,22 +76,30 @@ public:
   /**
     Returns the first value.
   */
-  inline const First& getFirst() const {return first;}
+  inline const First& getFirst() const {
+    return first;
+  }
 
   /**
     Returns the second value.
   */
-  inline const Second& getSecond() const {return second;}
+  inline const Second& getSecond() const {
+    return second;
+  }
 
   /**
     Sets the first value.
   */
-  inline void setFirst(const First& value) {first = value;}
+  inline void setFirst(const First& value) {
+    first = value;
+  }
 
   /**
     Sets the second value.
   */
-  inline void setSecond(const Second& value) {second = value;}
+  inline void setSecond(const Second& value) {
+    second = value;
+  }
 
   /**
     Returns -1, 0, or 1 if this pair is less than, equal to, or greater than the specified pair.
@@ -102,12 +112,16 @@ public:
   /**
     Returns true if this pair is equal to the specified pair.
   */
-  inline bool operator==(const Pair& eq) const {return (first == eq.first) && (second == eq.second);}
+  inline bool operator==(const Pair& eq) const {
+    return (first == eq.first) && (second == eq.second);
+  }
 
   /**
     Returns true if this pair is less than the specified pair.
   */
-  inline bool operator<(const Pair& eq) const {return (first < eq.first) || (first == eq.first) && (second < eq.second);}
+  inline bool operator<(const Pair& eq) const {
+    return (first < eq.first) || (first == eq.first) && (second < eq.second);
+  }
 
   /**
     Compares the specified pairs with each other.

@@ -43,7 +43,8 @@ class Runnable;
     unsigned int count;
   public:
 
-    MyThread(unsigned int _count) throw() : count(_count) {}
+    MyThread(unsigned int _count) throw() : count(_count) {
+    }
     
     void run() throw() {
       while (count--) {
@@ -127,21 +128,24 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    ThreadException() throw() {}
+    inline ThreadException() throw() {
+    }
     
     /**
       Initializes the exception object.
       
       @param message The message.
     */
-    ThreadException(const char* message) throw() : Exception(message) {}
+    inline ThreadException(const char* message) throw() : Exception(message) {
+    }
     
     /**
       Initializes the exception object without an associated message.
       
       @param type The identity of the type.
     */
-    ThreadException(Type type) throw() : Exception(type) {}
+    inline ThreadException(Type type) throw() : Exception(type) {
+    }
     
     /**
       Initializes the exception object.
@@ -149,7 +153,9 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    ThreadException(const char* message, Type type) throw() : Exception(message, type) {}
+    inline ThreadException(const char* message, Type type) throw()
+      : Exception(message, type) {
+    }
   };
 
   /**
@@ -163,10 +169,18 @@ public:
   class Self : public ThreadException {
   public:
 
-    Self() throw() {}
-    Self(const char* message) throw() : ThreadException(message) {}
-    Self(Type type) throw() : ThreadException(type) {}
-    Self(const char* message, Type type) throw() : ThreadException(message, type) {}
+    inline Self() throw() {
+    }
+    
+    inline Self(const char* message) throw() : ThreadException(message) {
+    }
+    
+    inline Self(Type type) throw() : ThreadException(type) {
+    }
+    
+    inline Self(const char* message, Type type) throw()
+      : ThreadException(message, type) {
+    }
   };
 
   /**
@@ -236,7 +250,9 @@ protected:
   /**
     Returns the active object.
   */
-  inline Runnable* getRunnable() throw() {return runnable;}
+  inline Runnable* getRunnable() throw() {
+    return runnable;
+  }
 public:
 
   /**
@@ -328,12 +344,16 @@ public:
   /**
     Returns the thread that created this thread. Returns 0 for the main thread.
   */
-  inline Thread* getParent() const throw() {return parent;}
+  inline Thread* getParent() const throw() {
+    return parent;
+  }
 
   /**
     Returns the execution state of the thread.
   */
-  inline State getState() const throw() {return state;}
+  inline State getState() const throw() {
+    return state;
+  }
   
   /**
     Returns true if the thread is alive and kicking.
@@ -353,7 +373,9 @@ public:
   /**
     Returns true if the thread is the main thread.
   */
-  inline bool isMainThread() const throw() {return parent == 0;}
+  inline bool isMainThread() const throw() {
+    return parent == 0;
+  }
 
   /**
     Returns true if the executing thread is the only thread within the process.
@@ -379,7 +401,9 @@ public:
   /**
     Returns true if the thread has been asked to terminate.
   */
-  inline bool isTerminated() const throw() {return terminated;}
+  inline bool isTerminated() const throw() {
+    return terminated;
+  }
 
   /**
     Returns the current processing times (both user and system times).
@@ -420,11 +444,6 @@ public:
   */
   ~Thread() throw(ThreadException);
 };
-
-/**
-  Writes a string representation of a thread object to a format stream.
-*/
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

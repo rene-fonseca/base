@@ -23,8 +23,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-typedef wchar_t wchar; // TAG: move to Primitives.h
-
 /**
   Any value.
   

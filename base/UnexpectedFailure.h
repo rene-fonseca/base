@@ -47,7 +47,8 @@ public:
     
     @param type The identity of the type.
   */
-  UnexpectedFailure(Type type) throw() : Exception(type) {}
+  inline UnexpectedFailure(Type type) throw() : Exception(type) {
+  }
   
   /**
     Initializes the exception object.
@@ -55,7 +56,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  UnexpectedFailure(const char* message, Type type) throw() : Exception(message, type) {}
+  inline UnexpectedFailure(const char* message, Type type) throw()
+    : Exception(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -48,7 +48,7 @@ public:
   static void startElement(void* parser, const xmlChar* name, const xmlChar** atts) {
     XMLPropertyHash properties;
 
-    for(const xmlChar** current = atts; current && *current; ++current) {
+    for (const xmlChar** current = atts; current && *current; ++current) {
       String name(static_cast<const char*>(*current++));
       String value(static_cast<const char*>(*current));
       properties[name] = XMLProperty(name, value);
@@ -185,16 +185,25 @@ XMLParser::~XMLParser() throw() {
 
 #else // no xml support
 
-void XMLParser::prepare() throw(XMLException) {}
-void XMLParser::release() throw() {}
-XMLParser::XMLParser(Callback* cb = 0) throw(XMLException) : callback(cb), context(0) {}
+void XMLParser::prepare() throw(XMLException) {
+}
+
+void XMLParser::release() throw() {
+}
+
+XMLParser::XMLParser(Callback* cb = 0) throw(XMLException)
+  : callback(cb), context(0) {
+}
 
 void XMLParser::parse(const char* buffer, unsigned int size) throw(XMLException) {
   throw XMLException("XML not supported");
 }
 
-void XMLParser::terminate() throw() {}
-XMLParser::~XMLParser() throw() {}
+void XMLParser::terminate() throw() {
+}
+
+XMLParser::~XMLParser() throw() {
+}
 
 #endif
 

@@ -44,16 +44,27 @@ public:
     Reference to an element within a vector.
   */
   class Reference {
-  private:
     friend class Vector;
+  private:
+    
     Vector& vector; // use reference to avoid 'copy on write'
     unsigned int index;
     Reference(const Reference& copy); // prohibit default copy initialization
     Reference& operator=(const Reference& eq); // prohibit default assignment
-    Reference(Vector& _vector, unsigned int _index) throw() : vector(_vector), index(_index) {}
+    
+    inline Reference(Vector& _vector, unsigned int _index) throw()
+      : vector(_vector), index(_index) {
+    }
   public:
-    inline Reference& operator=(const TYPE& value) throw(OutOfRange) {vector.setAt(index, value); return *this;}
-    inline operator TYPE() const throw(OutOfRange) {return vector.getAt(index);}
+    
+    inline Reference& operator=(const TYPE& value) throw(OutOfRange) {
+      vector.setAt(index, value);
+      return *this;
+    }
+    
+    inline operator TYPE() const throw(OutOfRange) {
+      return vector.getAt(index);
+    }
   };
 
 //  /**
@@ -67,8 +78,9 @@ public:
 //
 //      @param vector The vector being enumerated.
 //    */
-//    Enumeration(Vector& vector) throw() :
-//      AllocatorEnumeration<TYPE, TYPE&, TYPE*>(vector.getElements(), vector.getElements() + vector.getSize()) {}
+//    Enumeration(Vector& vector) throw()
+//      : AllocatorEnumeration<TYPE, TYPE&, TYPE*>(vector.getElements(), vector.getElements() + vector.getSize()) {
+//    }
 //  };
 //
 //  /**
@@ -82,8 +94,9 @@ public:
 //
 //      @param vector The vector being enumerated.
 //    */
-//    ReadOnlyEnumeration(const Vector& vector) throw() :
-//      AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(vector.getElements(), vector.getElements() + vector.getSize()) {}
+//    ReadOnlyEnumeration(const Vector& vector) throw()
+//      : AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(vector.getElements(), vector.getElements() + vector.getSize()) {
+//    }
 //  };
 protected:
 
@@ -126,7 +139,9 @@ protected:
 public:
 
   /** Gets the size of the vector. */
-  inline unsigned int getSize() const throw() {return elements->getSize();};
+  inline unsigned int getSize() const throw() {
+    return elements->getSize();
+  }
 public:
 
   /** Exception raised by the Vector class. */
@@ -157,7 +172,8 @@ public:
 
     @param copy The vector to be copied.
   */
-  inline Vector(const Vector& copy) throw() : elements(copy.elements) {};
+  inline Vector(const Vector& copy) throw() : elements(copy.elements) {
+  }
 
   /**
     Assigns vector to this vector.
@@ -323,38 +339,50 @@ public:
 
     @param value The value to be added.
   */
-  inline Vector& operator+=(const Vector& value) throw(IncompatibleVectors) {return add(value);}
+  inline Vector& operator+=(const Vector& value) throw(IncompatibleVectors) {
+    return add(value);
+  }
 
   /**
     Subtracts the specified vector from this vector.
 
     @param value The value to be subtracted.
   */
-  inline Vector& operator-=(const Vector& value) throw(IncompatibleVectors) {return subtract(value);};
+  inline Vector& operator-=(const Vector& value) throw(IncompatibleVectors) {
+    return subtract(value);
+  }
 
   /**
     Multiplies this vector with the specified value.
 
     @param value The multiplicator.
   */
-  inline Vector& operator*=(const TYPE& value) throw() {return multiply(value);};
+  inline Vector& operator*=(const TYPE& value) throw() {
+    return multiply(value);
+  }
 
   /**
     Divides this vector with the specified value.
 
     @param value The divisor.
   */
-  inline Vector& operator/=(const TYPE& value) throw() {return divide(value);};
+  inline Vector& operator/=(const TYPE& value) throw() {
+    return divide(value);
+  }
 
   /**
     Unary plus.
   */
-  inline Vector operator+() const throw() {return plus();}
+  inline Vector operator+() const throw() {
+    return plus();
+  }
 
   /**
     Unary minus.
   */
-  inline Vector operator-() const throw() {return minus();}
+  inline Vector operator-() const throw() {
+    return minus();
+  }
 
 
 
@@ -385,7 +413,7 @@ public:
   /**
     Writes a string representation of a vector object to a format stream.
   */
-  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Vector<TYPE>& value);
+  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Vector<TYPE>& value) throw(IOException);
 };
 
 /**
@@ -416,7 +444,7 @@ TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw();
   Writes a string representation of a vector object to a format stream.
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

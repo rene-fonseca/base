@@ -112,7 +112,8 @@ public:
     @param guard The synchronize able object to be synchronized.
   */
   template<class POLY>
-  inline explicit SharedSynchronize(const POLY& guard) throw() {}
+  inline explicit SharedSynchronize(const POLY& guard) throw() {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -48,7 +48,8 @@ public:
     
     @param type The identity of the type.
   */
-  SingletonException(Type type) throw() : Exception(type) {}  
+  inline SingletonException(Type type) throw() : Exception(type) {
+  }  
   
   /**
     Initializes the exception object.
@@ -56,7 +57,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  SingletonException(const char* message, Type type) throw() : Exception(message, type) {}
+  inline SingletonException(const char* message, Type type) throw()
+    : Exception(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -13,8 +13,8 @@
 
 #include <base/platforms/features.h>
 #include <base/mathematics/Vector.h>
+#include <base/mathematics/Math.h>
 #include <base/Functor.h>
-#include <math.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -128,7 +128,7 @@ template<class TYPE>
 TYPE Vector<TYPE>::norm() const throw() {
   SquareSum<TYPE> squareSum;
   forEach(getReadOnlyElements(), getSize(), squareSum);
-  return sqrt(squareSum.getResult());
+  return Math::sqrt(squareSum.getResult());
 }
 
 template<class TYPE>
@@ -165,7 +165,7 @@ TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw() {
 }
 
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);
   stream << '(';
   const TYPE* element = value.getReadOnlyElements();

@@ -75,7 +75,7 @@ public:
 
   /**
     Updates the checksum corresponding to the specified data. May be called
-    multiple times. Throws OutOfRange if the total number of octets exceed the
+    multiple times. Raises OutOfRange if the total number of octets exceed the
     limit specified by MAXIMUM_SIZE.
 
     @param buffer The buffer holding the data.

@@ -48,7 +48,9 @@ private:
   public:
 
     /** Initializes file handle. */
-    inline SerialPortHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {}
+    inline SerialPortHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {
+    }
+    
     /** Releases the resources used by the file. */
     ~SerialPortHandle() throw(CommunicationsException);
   };

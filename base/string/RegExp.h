@@ -47,21 +47,24 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    RegExpException() throw() {}
+    inline RegExpException() throw() {
+    }
     
     /**
       Initializes the exception object.
       
       @param message The message.
     */
-    RegExpException(const char* message) throw() : Exception(message) {}
+    inline RegExpException(const char* message) throw() : Exception(message) {
+    }
     
     /**
       Initializes the exception object without an associated message.
       
       @param type The identity of the type.
     */
-    RegExpException(Type type) throw() : Exception(type) {}
+    inline RegExpException(Type type) throw() : Exception(type) {
+    }
     
     /**
       Initializes the exception object.
@@ -69,7 +72,9 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    RegExpException(const char* message, Type type) throw() : Exception(message, type) {}
+    inline RegExpException(const char* message, Type type) throw()
+      : Exception(message, type) {
+    }
   };
 
   /**
@@ -87,18 +92,23 @@ public:
     /**
       Initializes substring descriptor.
     */
-    inline Substring(unsigned int o, unsigned int e) throw() : offset(o), end(e) {}
+    inline Substring(unsigned int _offset, unsigned int _end) throw()
+      : offset(_offset), end(_end) {
+    }
   public:
 
     /**
       Initializes substring descriptor as invalid.
     */
-    inline Substring() throw() : offset(-1), end(-1) {}
+    inline Substring() throw() : offset(-1), end(-1) {
+    }
 
     /**
       Initializes substring descriptor from other substring descriptor.
     */
-    inline Substring(const Substring& copy) throw() : offset(copy.offset), end(copy.end) {}
+    inline Substring(const Substring& copy) throw()
+      : offset(copy.offset), end(copy.end) {
+    }
 
     /**
       Assignment of substring by substring.
@@ -112,24 +122,32 @@ public:
     /**
       Returns the offset of the substring.
     */
-    inline int getOffset() const throw() {return offset;}
+    inline int getOffset() const throw() {
+      return offset;
+    }
 
     /**
       Returns the length of the substring.
     */
-    inline int getLength() const throw() {return end - offset;}
+    inline int getLength() const throw() {
+      return end - offset;
+    }
 
     /**
       Returns true if the substring is empty.
     */
-    inline bool isEmpty() const throw() {return end - offset;}
+    inline bool isEmpty() const throw() {
+      return end - offset;
+    }
 
     /**
       Returns true if the substring is valid. Use this method on the substring
       returned by match(...) to check whether the string matched the regular
       expression.
     */
-    inline bool isValid() const throw() {return (offset >= 0) && (end >= 0);}
+    inline bool isValid() const throw() {
+      return (offset >= 0) && (end >= 0);
+    }
 
     /**
       Returns the substring of the specified string as described by this object.
@@ -177,24 +195,32 @@ public:
   /**
     Returns true if case sensitive.
   */
-  inline bool isCaseSensitive() const throw() {return caseSensitive;}
+  inline bool isCaseSensitive() const throw() {
+    return caseSensitive;
+  }
 
   /**
     Returns true if the regular expression is valid.
   */
-  inline bool isValid() const throw() {return compiled;}
+  inline bool isValid() const throw() {
+    return compiled;
+  }
 
   /**
     Returns the pattern.
   */
-  inline String getPattern() const throw() {return pattern;}
+  inline String getPattern() const throw() {
+    return pattern;
+  }
 
   /**
     Sets the case sensitivity mode.
 
     @param caseSensitive Specifies the case sensitivity. True selects case sensitive matching.
   */
-  inline void setCaseSensitivity(bool value) throw() {this->caseSensitive = caseSensitive;}
+  inline void setCaseSensitivity(bool value) throw() {
+    this->caseSensitive = caseSensitive;
+  }
 
   /**
     Sets the pattern of the regular expression.
@@ -202,7 +228,7 @@ public:
   void setPattern(const String& pattern) throw(MemoryException);
 
   /**
-    Matches the specified string with the regular expression. Throws OutOfRange
+    Matches the specified string with the regular expression. Raises OutOfRange
     if the start index exceeds the end of the string to be matched.
 
     @param value The string to be matched.
@@ -212,7 +238,7 @@ public:
   Substring match(const String& value, unsigned int start = 0) const throw(RegExpException, OutOfRange);
 
   /**
-    Matches the specified string with the regular expression. Throws OutOfRange
+    Matches the specified string with the regular expression. Raises OutOfRange
     if the start index exceeds the end of the string to be matched.
 
     @param value The string to be matched.
@@ -225,7 +251,9 @@ public:
   /**
     Destroys the regular expression.
   */
-  inline ~RegExp() throw() {release();}
+  inline ~RegExp() throw() {
+    release();
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

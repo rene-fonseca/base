@@ -30,9 +30,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class XMLException : public Exception {
 public:
 
-  inline XMLException() throw() {}
+  inline XMLException() throw() {
+  }
 
-  inline XMLException(const char* message) throw() : Exception(message) {}
+  inline XMLException(const char* message) throw() : Exception(message) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

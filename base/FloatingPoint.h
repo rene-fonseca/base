@@ -220,7 +220,8 @@ enum FloatingPointFlags {
   @param flags Flags specifying the number type (OUT).
 */
 template<typename TYPE>
-inline void analyseFloatingPoint(const TYPE& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw() {}
+inline void analyseFloatingPoint(const TYPE& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw() {
+}
 
 template<>
 void analyseFloatingPoint<IEEE_754_SinglePrecision>(const IEEE_754_SinglePrecision& value, unsigned int& precision, unsigned int* mantissa, int& exponent, unsigned int& flags) throw();

@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Three-dimensional vector.
   @ingroup mathematics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.01
+  @version 1.1
 */
 
 template<class TYPE>
@@ -417,7 +417,7 @@ inline Vector3D<TYPE> cross(const Vector3D<TYPE>& left, const Vector3D<TYPE>& ri
   Writes a string representation of a Vector3D object to a format stream. The format is "(x; y; z)".
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector3D<TYPE>& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector3D<TYPE>& value) throw(IOException) {
   return stream << '(' << value.getX() << ';' << value.getY() << ';' << value.getZ() << ')';
 }
 

@@ -94,22 +94,22 @@ unsigned int Semaphore::getMaximum() throw() {
   return SemaphoreImpl::MAXIMUM;
 }
 
-Semaphore::Semaphore(unsigned int value) throw(OutOfDomain, ResourceException) {
+Semaphore::Semaphore(unsigned int value) throw(OutOfDomain, SemaphoreException) {
   assert(value <= SemaphoreImpl::MAXIMUM, OutOfDomain(this));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!(semaphore = (SemaphoreImpl::Semaphore)::CreateSemaphore(0, value, SemaphoreImpl::MAXIMUM, 0))) {
-    throw ResourceException(this);
+    throw SemaphoreException(this);
   }
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   if (sizeof(sem_t) <= sizeof(void*)) {
     if (sem_init((sem_t*)&semaphore, 0, value)) {
-      throw ResourceException(this);
+      throw SemaphoreException(this);
     }
   } else {
     semaphore = new sem_t[1];
     if (sem_init((sem_t*)semaphore, 0, value)) {
       delete[] (sem_t*)semaphore;
-      throw ResourceException(this);
+      throw SemaphoreException(this);
     }
   }
 #else
@@ -119,24 +119,24 @@ Semaphore::Semaphore(unsigned int value) throw(OutOfDomain, ResourceException) {
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes)) {
     delete[] semaphore;
-    throw ResourceException(this);
+    throw SemaphoreException(this);
   }
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     delete[] semaphore;
-    throw ResourceException(this);
+    throw SemaphoreException(this);
   }
   if (pthread_mutex_init(&semaphore->mutex, &attributes)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     delete[] semaphore;
-    throw ResourceException(this);
+    throw SemaphoreException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 
   if (pthread_cond_init(&(semaphore->condition), 0)) {
     pthread_mutex_destroy(&(semaphore->mutex)); // lets just hope that this doesn't fail
     delete[] semaphore;
-    throw ResourceException(this);
+    throw SemaphoreException(this);
   }
   this->semaphore = semaphore;
 #endif

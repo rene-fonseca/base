@@ -17,7 +17,7 @@
 #include <base/Object.h>
 #include <base/OutOfDomain.h>
 #include <base/Overflow.h>
-#include <base/ResourceException.h>
+#include <base/concurrency/LockException.h>
 #include <base/OperatingSystem.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Event signaling mechanism
   @ingroup concurrency
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0.2
+  @version 1.2
 */
 
 class Event : public virtual Object {
@@ -46,27 +46,31 @@ public:
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
-  class EventException : public Exception {
+  class EventException : public LockException {
   public:
     
     /**
       Initializes the exception object with no message.
     */
-    EventException() throw() {}
+    inline EventException() throw() {
+    }
     
     /**
       Initializes the exception object.
       
       @param message The message.
     */
-    EventException(const char* message) throw() : Exception(message) {}
+    inline EventException(const char* message) throw()
+      : LockException(message) {
+    }
     
     /**
       Initializes the exception object without an associated message.
       
       @param type The identity of the type.
     */
-    EventException(Type type) throw() : Exception(type) {}
+    inline EventException(Type type) throw() : LockException(type) {
+    }
     
     /**
       Initializes the exception object.
@@ -74,13 +78,15 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    EventException(const char* message, Type type) throw() : Exception(message, type) {}
+    inline EventException(const char* message, Type type) throw()
+      : LockException(message, type) {
+    }
   };
 
   /**
     Initializes the event in the non-signaled state.
   */
-  explicit Event() throw(ResourceException);
+  explicit Event() throw(EventException);
 
   /**
     Returns true if this event is in the signaled state.
@@ -99,8 +105,8 @@ public:
 
   /**
     Waits for signal. The executing thread is suspended until event is
-    signaled. Will wait forever if the event is never signaled. Throws an
-    'Overflow' exception if the maximum number of waiting threads is exceeded.
+    signaled. Will wait forever if the event is never signaled. Raises an
+    Overflow exception if the maximum number of waiting threads is exceeded.
   */
   void wait() const throw(EventException);
 

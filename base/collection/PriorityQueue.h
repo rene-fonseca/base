@@ -54,12 +54,15 @@ public:
   /**
     Initializes an empty priority queue.
   */
-  PriorityQueue() throw() : elements(), size(0) {}
+  PriorityQueue() throw() : elements(), size(0) {
+  }
 
   /**
     Initializes a priority queue from other priority queue.
   */
-  PriorityQueue(const PriorityQueue& copy) throw(MemoryException) : elements(copy.elements), size(0) {}
+  PriorityQueue(const PriorityQueue& copy) throw(MemoryException)
+    : elements(copy.elements), size(0) {
+  }
 
   /**
     Returns the number of elements in the priority queue.
@@ -94,8 +97,8 @@ public:
   }
 
   /**
-    Removes the element at the front of the priority queue. Throws
-    'InvalidNode' if the priority queue is empty.
+    Removes the element at the front of the priority queue. Raises
+    InvalidNode if the priority queue is empty.
   */
   Value pop() throw(InvalidNode) {
     assert(size, InvalidNode("Priority queue is empty", this));

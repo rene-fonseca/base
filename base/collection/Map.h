@@ -16,7 +16,6 @@
 
 #include <base/collection/OrderedBinaryTree.h>
 #include <base/collection/Association.h>
-#include <base/Exception.h>
 #include <base/MemoryException.h>
 #include <base/collection/InvalidKey.h>
 #include <base/string/FormatOutputStream.h>
@@ -57,7 +56,8 @@ public:
 //    ENU enu;
 //  public:
 //
-//    inline MapEnumerator(ENU e) : enu(e) {}
+//    inline MapEnumerator(ENU e) : enu(e) {
+//    }
 //
 //    inline bool hasNext() const throw() {
 //      return enu.hasNext();
@@ -76,7 +76,9 @@ public:
     typename OrderedBinaryTree<Node>::ReadEnumerator enu;
   public:
 
-    inline ReadEnumerator(typename OrderedBinaryTree<Node>::ReadEnumerator e) : enu(e) {}
+    inline ReadEnumerator(typename OrderedBinaryTree<Node>::ReadEnumerator _enu)
+      : enu(_enu) {
+    }
 
     inline bool hasNext() const throw() {
       return enu.hasNext();
@@ -100,7 +102,9 @@ public:
     typename OrderedBinaryTree<Node>::Enumerator enu;
   public:
 
-    inline ValueEnumerator(typename OrderedBinaryTree<Node>::Enumerator e) : enu(e) {}
+    inline ValueEnumerator(typename OrderedBinaryTree<Node>::Enumerator _enu)
+      : enu(_enu) {
+    }
 
     inline bool hasNext() const throw() {
       return enu.hasNext();
@@ -132,7 +136,8 @@ public:
 //      @param map The map being enumerated.
 //    */
 //    inline Enumeration(Map& map) throw() :
-//      OrderedBinaryTree<Node>::Enumeration(map.elements) {}
+//      OrderedBinaryTree<Node>::Enumeration(map.elements) {
+//    }
 //  };
 
 //  /**
@@ -151,35 +156,50 @@ public:
 //      @param map The map being enumerated.
 //    */
 //    inline ReadOnlyEnumeration(const Map& map) throw() :
-//      OrderedBinaryTree<Node>::ReadOnlyEnumeration(map.elements) {}
+//      OrderedBinaryTree<Node>::ReadOnlyEnumeration(map.elements) {
+//    }
 //  };
 
   /**
     Reference to an element within a map.
   */
   class Reference {
-  private:
     friend class Map;
+  private:
+    
     Map& map;
     const Key key;
     Reference(const Reference& copy); // prohibit default copy initialization
     Reference& operator=(const Reference& eq); // prohibit default assignment
-    inline Reference(Map& _map, const Key& _key) : map(_map), key(_key) {}
+
+    inline Reference(Map& _map, const Key& _key) : map(_map), key(_key) {
+    }
   public:
-    inline Reference& operator=(Value value) throw(MemoryException) {map.add(key, value); return *this;}
-    inline operator Value() const throw(InvalidKey) {return map.getValue(key);}
+    
+    inline Reference& operator=(Value value) throw(MemoryException) {
+      map.add(key, value);
+      return *this;
+    }
+    
+    inline operator Value() const throw(InvalidKey) {
+      return map.getValue(key);
+    }
   };
 public:
 
   /**
     Initializes an empty map.
   */
-  Map() throw() : size(0) {}
+  Map() throw() : size(0) {
+  }
 
   /**
     Initializes map from other map.
   */
-  Map(const Map& copy) throw(MemoryException) : elements(copy.elements), size(copy.size) {}
+  Map(const Map& copy) throw(MemoryException)
+    : elements(copy.elements),
+      size(copy.size) {
+  }
 
   /**
     Assignment of map to map.
@@ -193,12 +213,16 @@ public:
   /**
     Returns the number of associations in the map.
   */
-  inline unsigned int getSize() const throw() {return size;}
+  inline unsigned int getSize() const throw() {
+    return size;
+  }
 
   /**
     Returns true if the map is empty.
   */
-  inline bool isEmpty() const throw() {return size == 0;}
+  inline bool isEmpty() const throw() {
+    return size == 0;
+  }
 
   /**
     Returns a modifying enumerator of the ordered binary tree.
@@ -224,7 +248,7 @@ public:
   }
 
   /**
-    Returns the value associated with the specified key. Throws 'InvalidKey'
+    Returns the value associated with the specified key. Raises InvalidKey
     if the specified key doesn't exist in this map.
 
     @param key The key of the value.
@@ -256,8 +280,8 @@ public:
   }
 
   /**
-    Removes the specified key and its associated value from this map. Throws
-    'InvalidKey' if the key doesn't exist in this map.
+    Removes the specified key and its associated value from this map. Raises
+    InvalidKey if the key doesn't exist in this map.
   */
   void remove(const Key& key) throw(InvalidKey) {
     elements.remove(elements.find(Association<Key, Value>(key)));
@@ -289,7 +313,7 @@ public:
 };
 
 template<class KEY, class VALUE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>& value) throw(IOException) {
   typename Map<KEY, VALUE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {

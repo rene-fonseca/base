@@ -71,22 +71,30 @@ public:
   /**
     Returns true if the node is a content node.
   */
-  inline bool isContent() const throw() {return content;}
+  inline bool isContent() const throw() {
+    return content;
+  }
 
   /**
     Returns true if the node has been initialized.
   */
-  inline bool isInitialized() const throw() {return initialized;}
+  inline bool isInitialized() const throw() {
+    return initialized;
+  }
 
   /**
     Returns the content id of the node.
   */
-  inline const String& getContent() const throw() {return contentId;}
+  inline const String& getContent() const throw() {
+    return contentId;
+  }
 
   /**
     Returns the name of the node.
   */
-  inline const String& getName() const throw() {return name;}
+  inline const String& getName() const throw() {
+    return name;
+  }
 
   /**
     Sets the content of the node.
@@ -96,7 +104,9 @@ public:
   /**
     Returns all the children nodes.
   */
-  inline const List<XMLNode>& XMLNode::getChildren() const throw() {return children;}
+  inline const List<XMLNode>& XMLNode::getChildren() const throw() {
+    return children;
+  }
 
   /**
     Adds a child the this node.
@@ -121,7 +131,9 @@ public:
   /**
     Returns the properties of the node.
   */
-  inline const List<XMLProperty>& getProperties() const throw() {return properties;}
+  inline const List<XMLProperty>& getProperties() const throw() {
+    return properties;
+  }
 
   /**
     Returns the specified attribute.
@@ -138,7 +150,8 @@ public:
   }
 
   /**
-    Adds the specified attrbute to this node. Throws XMLException if the attribute already exists.
+    Adds the specified attrbute to this node. Raises XMLException if the
+    attribute already exists.
 
     @param name The name of the property.
     @param value The value of the property.

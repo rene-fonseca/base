@@ -103,13 +103,13 @@ public:
   /**
     Writes a string representation of a InetService object to a format stream.
   */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const InetService& value);
+  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const InetService& value) throw(IOException);
 };
 
 /**
   Writes a string representation of a InetService object to a format stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const InetService& value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const InetService& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

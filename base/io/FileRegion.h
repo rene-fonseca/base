@@ -50,7 +50,9 @@ public:
   /**
     Initializes region from other region.
   */
-  inline FileRegion(const FileRegion& copy) throw() : offset(copy.offset), size(copy.size) {}
+  inline FileRegion(const FileRegion& copy) throw()
+    : offset(copy.offset), size(copy.size) {
+  }
 
   /**
     Assignment of region by region.
@@ -64,12 +66,16 @@ public:
   /**
     Returns the offset of the file region.
   */
-  inline long long getOffset() const throw() {return offset;}
+  inline long long getOffset() const throw() {
+    return offset;
+  }
 
   /**
     Returns the size of the file region.
   */
-  inline unsigned int getSize() const throw() {return size;}
+  inline unsigned int getSize() const throw() {
+    return size;
+  }
 
   /**
     Sets the offset of the file region.

@@ -48,7 +48,8 @@ public:
     
     @param type The identity of the type.
   */
-  DateException(Type type) throw() : Exception(type) {}
+  inline DateException(Type type) throw() : Exception(type) {
+  }
   
   /**
     Initializes the exception object.
@@ -56,7 +57,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  DateException(const char* message, Type type) throw() : Exception(message, type) {}
+  inline DateException(const char* message, Type type) throw()
+    : Exception(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

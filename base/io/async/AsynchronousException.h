@@ -47,7 +47,8 @@ public:
     
     @param type The identity of the type.
   */
-  AsynchronousException(Type type) throw() : IOException(type) {}
+  inline AsynchronousException(Type type) throw() : IOException(type) {
+  }
 
   /**
     Initializes the exception object.
@@ -55,7 +56,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */  
-  AsynchronousException(const char* message, Type type) throw() : IOException(message, type) {}
+  inline AsynchronousException(const char* message, Type type) throw()
+    : IOException(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

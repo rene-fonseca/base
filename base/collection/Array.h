@@ -65,8 +65,9 @@ public:
 //
 //      @param array The array being enumerated.
 //    */
-//    Enumeration(Array& array) throw() :
-//      AllocatorEnumeration<Value, Value&, Value*>(array.getElements(), array.getElements() + array.getSize()) {}
+//    Enumeration(Array& array) throw()
+//      : AllocatorEnumeration<Value, Value&, Value*>(array.getElements(), array.getElements() + array.getSize()) {
+//    }
 //  };
 //
 //  /**
@@ -80,8 +81,9 @@ public:
 //
 //      @param array The array being enumerated.
 //    */
-//    ReadOnlyEnumeration(const Array& array) throw() :
-//      AllocatorEnumeration<Value, const Value&, const Value*>(array.getElements(), array.getElements() + array.getSize()) {}
+//    ReadOnlyEnumeration(const Array& array) throw()
+//      : AllocatorEnumeration<Value, const Value&, const Value*>(array.getElements(), array.getElements() + array.getSize()) {
+//     }
 //  };
 
   /**
@@ -152,14 +154,19 @@ public:
   /**
     Initializes an empty array.
   */
-  Array() throw() : elements(new ReferenceCountedCapacityAllocator<Value>()), size(0) {}
+  Array() throw()
+    : elements(new ReferenceCountedCapacityAllocator<Value>()), size(0) {
+  }
 
   /**
     Initializes an empty array with the specified granularity.
 
     @param granularity The desired granularity.
   */
-  explicit Array(unsigned int granularity) throw() : elements(new ReferenceCountedCapacityAllocator<Value>(granularity)), size(0) {}
+  explicit Array(unsigned int granularity) throw()
+    : elements(new ReferenceCountedCapacityAllocator<Value>(granularity)),
+      size(0) {
+  }
 
   /**
     Initializes array with the specified number of elements.
@@ -176,7 +183,10 @@ public:
   /**
     Initializes array from other array.
   */
-  Array(const Array& copy) throw(MemoryException) : elements(copy.elements), size(copy.size) {}
+  Array(const Array& copy) throw(MemoryException)
+    : elements(copy.elements),
+      size(copy.size) {
+  }
 
   /**
     Assignment of array to array.
@@ -192,12 +202,16 @@ public:
   /**
     Returns the number fo elements in the array.
   */
-  inline unsigned int getSize() const throw() {return size;}
+  inline unsigned int getSize() const throw() {
+    return size;
+  }
 
   /**
     Returns true if the array is empty.
   */
-  inline bool isEmpty() const throw() {return size == 0;}
+  inline bool isEmpty() const throw() {
+    return size == 0;
+  }
 
   /**
     Returns the first element of the allocator as a modifying array.
@@ -266,7 +280,7 @@ public:
   }
 
   /**
-    Inserts the value at the specified position. Throws 'OutOfRange' if the
+    Inserts the value at the specified position. Raises OutOfRange if the
     specified index is invalid.
 
     @param index Specifies the insert position.
@@ -281,7 +295,8 @@ public:
   }
 
   /**
-    Remove the element specified by the index. Throws 'OutOfRange' if the index is invalid.
+    Remove the element specified by the index. Raises OutOfRange if the index is
+    invalid.
 
     @param index The index of the element to be removed.
   */
@@ -301,7 +316,8 @@ public:
   }
 
   /**
-    Returns the element at the specified index. Throws 'OutOfRange' if the index is invalid.
+    Returns the element at the specified index. Raises OutOfRange if the index
+    is invalid.
 
     @param index The index of the element.
   */
@@ -311,7 +327,8 @@ public:
   }
 
   /**
-    Sets the element at the specified index. Throws 'OutOfRange' if the index is invalid.
+    Sets the element at the specified index. Raises OutOfRange if the index is
+    invalid.
 
     @param index The index of the element.
     @param value The desired value.
@@ -322,7 +339,8 @@ public:
   }
 
   /**
-    Returns a reference to the element at the specified index. Throws 'OutOfRange' if the index is invalid.
+    Returns a reference to the element at the specified index. Raises OutOfRange
+    if the index is invalid.
 
     @param index The index of the element.
   */
@@ -331,7 +349,8 @@ public:
   }
 
   /**
-    Returns the element at the specified index. Throws 'OutOfRange' if the index is invalid.
+    Returns the element at the specified index. Raises OutOfRange if the index
+    is invalid.
 
     @param index The index of the element.
   */
@@ -346,7 +365,7 @@ public:
   Writes a string representation of an array to a format stream.
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Array<TYPE>& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Array<TYPE>& value) throw(IOException) {
   typename Array<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {

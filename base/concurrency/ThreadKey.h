@@ -52,10 +52,18 @@ public:
   class ThreadKeyException : public Exception {
   public:
     
-    ThreadKeyException() throw() : Exception() {}
-    ThreadKeyException(const char* message) throw() : Exception(message) {}
-    ThreadKeyException(Type type) throw() : Exception(type) {}
-    ThreadKeyException(const char* message, Type type) throw() : Exception(message, type) {}
+    inline ThreadKeyException() throw() : Exception() {
+    }
+    
+    inline ThreadKeyException(const char* message) throw() : Exception(message) {
+    }
+    
+    inline ThreadKeyException(Type type) throw() : Exception(type) {
+    }
+    
+    inline ThreadKeyException(const char* message, Type type) throw()
+      : Exception(message, type) {
+    }
   };
 
   /**
@@ -99,7 +107,8 @@ public:
   /**
     Initializes the key object.
   */
-  inline ThreadKey() throw(ResourceException) {}
+  inline ThreadKey() throw(ResourceException) {
+  }
 
   /**
     Returns the key.

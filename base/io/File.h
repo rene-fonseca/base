@@ -112,8 +112,11 @@ public:
 
     /** Invalid handle. */
     static Handle* invalid;
+    
     /** Initializes file handle. */
-    inline FileHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {}
+    inline FileHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {
+    }
+    
     /** Releases the resources used by the file. */
     ~FileHandle() throw(FileException);
   };
@@ -151,7 +154,8 @@ public:
   /**
     Initialize a new file object from other file object.
   */
-  File(const File& copy) throw() : fd(copy.fd) {}
+  File(const File& copy) throw() : fd(copy.fd) {
+  }
 
   /**
     Assignment of file object.
@@ -294,7 +298,7 @@ public:
   }
 
   /**
-    Throws EndOfFile if minimum number of bytes cannot be read without
+    Raises EndOfFile if minimum number of bytes cannot be read without
     exceeding the end of the file.
   */
   unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(FileException);

@@ -56,10 +56,18 @@ public:
   class ProcessException : public Exception {
   public:
     
-    inline ProcessException() throw() {}
-    inline ProcessException(const char* message) throw() : Exception(message) {}
-    inline ProcessException(Type type) throw() : Exception(type) {}
-    inline ProcessException(const char* message, Type type) throw() : Exception(message, type) {}
+    inline ProcessException() throw() {
+    }
+    
+    inline ProcessException(const char* message) throw() : Exception(message) {
+    }
+    
+    inline ProcessException(Type type) throw() : Exception(type) {
+    }
+    
+    inline ProcessException(const char* message, Type type) throw()
+      : Exception(message, type) {
+    }
   };
 
   // TAG: do we need a base class for this kind of class
@@ -147,8 +155,12 @@ private:
 
     /** Invalid handle. */
     static Handle* invalid;
+    
     /** Initializes process handle. */
-    inline ProcessHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {}
+    inline ProcessHandle(OperatingSystem::Handle handle) throw()
+      : Handle(handle) {
+    }
+    
     /** Releases the resources used by the process. */
     ~ProcessHandle() throw();
   };

@@ -202,7 +202,7 @@ void BitSet::removeAll() throw() {
   size = 0;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value) throw(IOException) {
   StringOutputStream buffer;
 
   const unsigned long* current = value.getElements() + value.getSize();

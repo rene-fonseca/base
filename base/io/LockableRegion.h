@@ -48,7 +48,9 @@ public:
   /**
     Returns the locked file region.
   */
-  inline FileRegion getRegion() const throw() {return region;}
+  inline FileRegion getRegion() const throw() {
+    return region;
+  }
 
   /**
     Lock the specified file region (the old region is unlocked first).

@@ -44,7 +44,8 @@ public:
   /**
     Initializes quaternion as origin (0, 0, 0, 0).
   */
-  inline Quaternion() throw() : x(0), y(0), z(0), w(0) {}
+  inline Quaternion() throw() : x(0), y(0), z(0), w(0) {
+  }
 
   /**
     Initializes quaternion from the specified coordinates.
@@ -61,7 +62,9 @@ public:
 
     @param copy The desired quaternion.
   */
-  inline Quaternion(const Quaternion& copy) throw() : x(copy.x), y(copy.y), z(copy.z), w(copy.w) {}
+  inline Quaternion(const Quaternion& copy) throw()
+    : x(copy.x), y(copy.y), z(copy.z), w(copy.w) {
+  }
 
   /**
     Assignment of quaternion to quaternion.
@@ -77,50 +80,66 @@ public:
   /**
     Returns the X coordinate of the quaternion.
   */
-  inline TYPE getX() const throw() {return x;}
+  inline TYPE getX() const throw() {
+    return x;
+  }
 
   /**
     Returns the Y coordinate of the quaternion.
   */
-  inline TYPE getY() const throw() {return y;}
+  inline TYPE getY() const throw() {
+    return y;
+  }
 
   /**
     Returns the Z coordinate of the quaternion.
   */
-  inline TYPE getZ() const throw() {return z;}
+  inline TYPE getZ() const throw() {
+    return z;
+  }
 
   /**
     Returns the W coordinate of the quaternion.
   */
-  inline TYPE getW() const throw() {return w;}
+  inline TYPE getW() const throw() {
+    return w;
+  }
   
   /**
     Sets the X coordinate of the quaternion.
 
     @param x The desired X coordinate.
   */
-  inline void setX(const TYPE& x) throw() {this->x = x;}
+  inline void setX(const TYPE& x) throw() {
+    this->x = x;
+  }
 
   /**
     Sets the Y coordinate of the quaternion.
 
     @param y The desired Y coordinate.
   */
-  inline void setY(const TYPE& y) throw() {this->y = y;}
+  inline void setY(const TYPE& y) throw() {
+    this->y = y;
+  }
 
   /**
     Sets the Z coordinate of the quaternion.
 
     @param z The desired Z coordinate.
   */
-  inline void setZ(const TYPE& z) throw() {this->z = z;}
+  inline void setZ(const TYPE& z) throw() {
+    this->z = z;
+  }
 
   /**
     Sets the W coordinate of the quaternion.
 
     @param w The desired W coordinate.
   */
-  inline void setW(const TYPE& w) throw() {this->w = w;}
+  inline void setW(const TYPE& w) throw() {
+    this->w = w;
+  }
 
   /**
     Sets values less than the specified value to zero.
@@ -241,42 +260,55 @@ public:
 
     @param value The value to be added.
   */
-  inline Quaternion& operator+=(const Quaternion& value) throw() {return add(value);}
+  inline Quaternion& operator+=(const Quaternion& value) throw() {
+    return add(value);
+  }
 
   /**
     Subtracts the specified quaternion from this quaternion.
 
     @param value The value to be subtracted.
   */
-  inline Quaternion& operator-=(const Quaternion& value) throw() {return subtract(value);}
+  inline Quaternion& operator-=(const Quaternion& value) throw() {
+    return subtract(value);
+  }
 
   /**
     Multiplies this quaternion with the specified value.
 
     @param value The multiplicator.
   */
-  inline Quaternion& operator*=(const TYPE& value) throw() {return multiply(value);}
+  inline Quaternion& operator*=(const TYPE& value) throw() {
+    return multiply(value);
+  }
 
   /**
     Divides this quaternion with the specified value.
 
     @param value The divisor.
   */
-  inline Quaternion& operator/=(const TYPE& value) throw() {return divide(value);}
+  inline Quaternion& operator/=(const TYPE& value) throw() {
+    return divide(value);
+  }
 
   /**
     Unary plus.
   */
-  inline Quaternion operator+() const throw() {return plus();}
+  inline Quaternion operator+() const throw() {
+    return plus();
+  }
 
   /**
     Unary minus.
   */
-  inline Quaternion operator-() const throw() {return minus();}
+  inline Quaternion operator-() const throw() {
+    return minus();
+  }
 };
 
 template<class TYPE>
-inline Quaternion<TYPE>::Quaternion(const TYPE& _x, const TYPE& _y, const TYPE& _z, const TYPE& _w) throw() : x(_x), y(_y), z(_z), w(_w) {
+inline Quaternion<TYPE>::Quaternion(const TYPE& _x, const TYPE& _y, const TYPE& _z, const TYPE& _w) throw()
+  : x(_x), y(_y), z(_z), w(_w) {
 }
 
 /**
@@ -320,11 +352,14 @@ inline Quaternion<TYPE> operator/(const Quaternion<TYPE>& left, const TYPE& righ
 }
 
 /**
-  Writes a string representation of a Quaternion object to a format stream. The format is "(x; y; z)".
+  Writes a string representation of a Quaternion object to a format stream. The format is "(x; y; z; w)".
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Quaternion<TYPE>& value) {
-  return stream << '(' << value.getX() << ';' << value.getY() << ';' << value.getZ() << ';' << value.getW() << ')';
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Quaternion<TYPE>& value) throw(IOException) {
+  return stream << '(' << value.getX() << ';'
+                << value.getY() << ';'
+                << value.getZ() << ';'
+                << value.getW() << ')';
 }
 
 template<class TYPE>

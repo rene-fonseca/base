@@ -68,7 +68,8 @@ namespace internal {
     ProcessPreinitialization processPreinitialization;
   public:
     
-    ProcessInitialization() throw() {}
+    ProcessInitialization() throw() {
+    }
   };
   
   ProcessInitialization processInitialization;

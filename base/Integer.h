@@ -55,7 +55,8 @@ public:
   /**
     Initializes the integer as zero.
   */
-  inline Integer() throw() : value(0) {}
+  inline Integer() throw() : value(0) {
+  }
 
   /**
     Initializes the integer with the specified value. Implicit initialization allowed.
@@ -69,12 +70,15 @@ public:
 
     @param string The string.
   */
-  inline Integer(const String& string) throw(InvalidFormat) : value(parse(string)) {}
+  inline Integer(const String& string) throw(InvalidFormat)
+    : value(parse(string)) {
+  }
 
   /**
     Copy constructor. Initializes a new Integer from other Integer object.
   */
-  inline Integer(const Integer& copy) throw() : value(copy.value) {}
+  inline Integer(const Integer& copy) throw() : value(copy.value) {
+  }
 
   /**
     Assignment of integer to this integer.
@@ -95,22 +99,30 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline int getValue() const throw() {return value;}
+  inline int getValue() const throw() {
+    return value;
+  }
 
   /**
     Sets the value of the integer.
 
     @param value The desired value.
   */
-  inline void setValue(int value) throw() {this->value = value;}
+  inline void setValue(int value) throw() {
+    this->value = value;
+  }
 
   /**
     Casts integer to native type.
   */
-  inline operator int() const throw() {return value;}
+  inline operator int() const throw() {
+    return value;
+  }
 };
 
-inline Integer::Integer(int _value) throw() : value(_value) {}
+inline Integer::Integer(int _value) throw()
+  : value(_value) {
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

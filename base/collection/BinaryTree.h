@@ -49,18 +49,22 @@ public:
   /**
     Initializes enumeration of binary tree specified by the node.
 
-    @param n The root node of the binary tree.
+    @param node The root node of the binary tree.
   */
-  PrefixOrderEnumerator(Pointer n) throw() : root(n), node(n), more(n != 0) {}
+  PrefixOrderEnumerator(Pointer _node) throw()
+    : root(_node), node(_node), more(_node != 0) {
+  }
 
   /**
     Returns true if there is more elements in this enumeration.
   */
-  inline bool hasNext() const throw() {return more;}
+  inline bool hasNext() const throw() {
+    return more;
+  }
 
   /**
-    Returns the current value and increments the position. Throws
-    'EndOfEnumeration' if the end has been reached.
+    Returns the current value and increments the position. Raises
+    EndOfEnumeration if the end has been reached.
   */
   Pointer next() throw(EndOfEnumeration) {
     assert(more, EndOfEnumeration());
@@ -121,18 +125,25 @@ public:
   /**
     Initializes enumeration of binary tree specified by the node.
 
-    @param n The root node of the binary tree.
+    @param node The root node of the binary tree.
   */
-  InfixOrderEnumerator(Pointer n) throw() : root(n), node(n), more(n != 0), traverse(TRAVERSE_SUBTREE) {}
+  InfixOrderEnumerator(Pointer _node) throw()
+    : root(_node),
+      node(_node),
+      more(_node != 0),
+      traverse(TRAVERSE_SUBTREE) {
+  }
 
   /**
     Returns true if there is more elements in this enumeration.
   */
-  inline bool hasNext() const throw() {return more;}
+  inline bool hasNext() const throw() {
+    return more;
+  }
 
   /**
-    Returns the current value and increments the position. Throws
-    'EndOfEnumeration' if the end has been reached.
+    Returns the current value and increments the position. Raises
+    EndOfEnumeration if the end has been reached.
   */
   Pointer next() throw(EndOfEnumeration) {
     if (!more) {
@@ -247,18 +258,22 @@ public:
   /**
     Initializes enumeration of binary tree specified by the node.
 
-    @param n The root node of the binary tree.
+    @param node The root node of the binary tree.
   */
-  PostfixOrderEnumerator(Pointer n) throw() : root(n), node(n), more(n != 0) {}
+  PostfixOrderEnumerator(Pointer _node) throw()
+    : root(_node), node(_node), more(_node != 0) {
+  }
 
   /**
     Returns true if there is more elements in this enumeration.
   */
-  inline bool hasNext() const throw() {return more;}
+  inline bool hasNext() const throw() {
+    return more;
+  }
 
   /**
-    Returns the current value and increments the position. Throws
-    'EndOfEnumeration' if the end has been reached.
+    Returns the current value and increments the position. Raises
+    EndOfEnumeration if the end has been reached.
   */
   Pointer next() throw(EndOfEnumeration) {
     if (!more) {
@@ -402,8 +417,9 @@ public:
 //
 //      @param tree The binary tree being enumerated.
 //    */
-//    inline Enumeration(BinaryTree& tree) throw() :
-//      PrefixOrderEnumeration<Value, Value&, Value*, Node*>(tree.getRoot()) {}
+//    inline Enumeration(BinaryTree& tree) throw()
+//      : PrefixOrderEnumeration<Value, Value&, Value*, Node*>(tree.getRoot()) {
+//    }
 //  };
 //
 //  /**
@@ -421,8 +437,9 @@ public:
 //
 //      @param tree The binary tree being enumerated.
 //    */
-//    inline ReadOnlyEnumeration(const BinaryTree& tree) throw() :
-//      PrefixOrderEnumeration<Value, const Value&, const Value*, const Node*>(tree.getRoot()) {}
+//    inline ReadOnlyEnumeration(const BinaryTree& tree) throw()
+//      : PrefixOrderEnumeration<Value, const Value&, const Value*, const Node*>(tree.getRoot()) {
+//    }
 //  };
 
   /**
@@ -479,35 +496,44 @@ public:
     /**
       Initialize an empty binary tree.
     */
-    explicit inline BinaryTreeImpl() throw() : root(0) {}
+    explicit inline BinaryTreeImpl() throw() : root(0) {
+    }
 
     /**
       Initialize a binary tree with the specified root node.
 
       @param node The root node of the tree.
     */
-    explicit inline BinaryTreeImpl(Node* node) throw() : root(node) {}
+    explicit inline BinaryTreeImpl(Node* node) throw() : root(node) {
+    }
 
     /**
       Initialize binary tree from other binary tree.
     */
-    BinaryTreeImpl(const BinaryTreeImpl& copy) throw(MemoryException) :
-      root(copySubtree(copy.root)) {}
+    BinaryTreeImpl(const BinaryTreeImpl& copy) throw(MemoryException)
+      : root(copySubtree(copy.root)) {
+    }
 
     /**
       Returns true if the binary tree is empty.
     */
-    inline bool isEmpty() const throw() {return root == 0;}
+    inline bool isEmpty() const throw() {
+      return root == 0;
+    }
 
     /**
       Returns the root node of the binary tree.
     */
-    inline Node* getRoot() throw() {return root;}
+    inline Node* getRoot() throw() {
+      return root;
+    }
 
     /**
       Sets the root of the binary tree.
     */
-    inline void setRoot(Node* node) throw() {root = node;}
+    inline void setRoot(Node* node) throw() {
+      root = node;
+    }
 
     /**
       Makes a left child node.
@@ -532,7 +558,7 @@ public:
     }
 
     /**
-      Rotates the specified subtree to the left. Throws 'InvalidNode' if the
+      Rotates the specified subtree to the left. Raises InvalidNode if the
       specified node cannot be rotated (i.e. the specified node does not have
       a right child node).
 
@@ -563,7 +589,7 @@ public:
     }
 
     /**
-      Rotates the specified subtree to the right. Throws 'InvalidNode' if the
+      Rotates the specified subtree to the right. Raises InvalidNode if the
       specified node cannot be rotated (i.e. the specified node does not have
       a left child node).
 
@@ -612,12 +638,14 @@ public:
   /**
     Initializes an empty binary tree.
   */
-  BinaryTree() throw() : elements(new BinaryTreeImpl()) {}
+  BinaryTree() throw() : elements(new BinaryTreeImpl()) {
+  }
 
   /**
     Initializes binary tree from other binary tree.
   */
-  BinaryTree(const BinaryTree& copy) throw() : elements(copy.elements) {}
+  BinaryTree(const BinaryTree& copy) throw() : elements(copy.elements) {
+  }
 
   /**
     Assignment of binary tree to binary tree.

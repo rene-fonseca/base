@@ -33,22 +33,24 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  WideStringException() throw() : Exception() {}
+  inline WideStringException() throw() : Exception() {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  WideStringException(const char* message) throw() : Exception(message) {}
-  
+  inline WideStringException(const char* message) throw() : Exception(message) {
+  }
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  WideStringException(Type type) throw() : Exception(type) {}
+  WideStringException(Type type) throw() : Exception(type) {
+  }
   
   /**
     Initializes the exception object.
@@ -56,7 +58,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  WideStringException(const char* message, Type type) throw() : Exception(message, type) {}
+  inline WideStringException(const char* message, Type type) throw()
+    : Exception(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -106,7 +106,8 @@ private:
 #endif
 public:
 
-  inline SocketAddress() throw() {}
+  inline SocketAddress() throw() {
+  }
 
   /** Initializes socket address. */
   SocketAddress(const InetAddress& addr, unsigned short port) throw(NetworkException) {
@@ -822,7 +823,7 @@ Socket::~Socket() throw(IOException) {
 //public:
 //};
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) throw(IOException) {
   stream << "Socket{";
   stream << "connected to=";
   if (value.socket->isConnected()) {

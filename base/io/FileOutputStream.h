@@ -82,7 +82,9 @@ public:
   /**
     Forces any buffered bytes to be written out.
   */
-  inline void flush() throw(IOException) {file.flush();}
+  inline void flush() throw(IOException) {
+    file.flush();
+  }
 
   inline unsigned int write(const char* buffer, unsigned int count, bool nonblocking = false) throw(IOException) {
     return file.write(buffer, count, nonblocking);

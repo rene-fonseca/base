@@ -191,7 +191,8 @@ public:
   /**
     Initializes the date as 00:00:00 on January 1, 1970.
   */
-  inline Date() throw() : date(0) {}
+  inline Date() throw() : date(0) {
+  }
   
   /**
     Initializes the date with the specified date.
@@ -209,17 +210,23 @@ public:
   /**
     Initialize date from other date.
   */
-  inline Date(const Date& copy) throw() : date(copy.date) {}
+  inline Date(const Date& copy) throw() : date(copy.date) {
+  }
 
   /**
     Assignment of date with date.
   */
-  inline Date& operator=(const Date& eq) throw() {date = eq.date; return *this;}
+  inline Date& operator=(const Date& eq) throw() {
+    date = eq.date;
+    return *this;
+  }
 
   /**
     Returns the seconds elapsed since 00:00:00 on January 1, 1970, Coordinated Universal Time (UTC).
   */
-  inline int getValue() const throw() {return date;}
+  inline int getValue() const throw() {
+    return date;
+  }
 
   /**
     Adds a bias (in seconds) to the date.
@@ -341,7 +348,8 @@ public:
   WideString format(const WideString& format, bool local = true) const throw(InvalidFormat, MemoryException);
 };
 
-inline Date::Date(int _date) throw() : date(_date) {}
+inline Date::Date(int _date) throw() : date(_date) {
+}
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Date& date) throw(InvalidFormat, IOException);
 

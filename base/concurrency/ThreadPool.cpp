@@ -21,7 +21,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 //class QueuedJobProvider : public JobProvider, public Queue<Job*> {
 //public:
 //
-//  QueueJobProvider() {}
+//  QueueJobProvider() {
+//  }
 //};
 
 void ThreadPool::Wrapper::run() throw() {

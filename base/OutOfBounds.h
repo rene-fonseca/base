@@ -45,7 +45,8 @@ public:
     
     @param type The identity of the type.
   */
-  OutOfBounds(Type type) throw() : Exception(type) {}
+  inline OutOfBounds(Type type) throw() : Exception(type) {
+  }
 
   /**
     Initializes the exception object.

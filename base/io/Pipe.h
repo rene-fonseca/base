@@ -43,8 +43,11 @@ public:
 
     /** Invalid handle. */
     static Handle* invalid;
+
     /** Initializes pipe handle. */
-    inline PipeHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {}
+    inline PipeHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {
+    }
+    
     /** Releases the resources used by the pipe. */
     ~PipeHandle() throw(PipeException);
   };
@@ -69,7 +72,8 @@ public:
   /**
     Initialization of pipe from other pipe.
   */
-  inline Pipe(const Pipe& copy) throw() : fd(copy.fd) {}
+  inline Pipe(const Pipe& copy) throw() : fd(copy.fd) {
+  }
 
   /**
     Assignment of pipe to pipe.

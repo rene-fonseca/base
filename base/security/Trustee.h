@@ -66,21 +66,24 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline TrusteeException() throw() {}
+    inline TrusteeException() throw() {
+    }
 
     /**
       Initializes the exception object.
 
       @param message The message.
     */
-    inline TrusteeException(const char* message) throw() : Exception(message) {}
+    inline TrusteeException(const char* message) throw() : Exception(message) {
+    }
 
     /**
       Initializes the exception object without an associated message.
 
       @param type The identity of the type.
     */
-    inline TrusteeException(Type type) throw() : Exception(type) {}
+    inline TrusteeException(Type type) throw() : Exception(type) {
+    }
 
     /**
       Initializes the exception object.
@@ -88,7 +91,9 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    inline TrusteeException(const char* message, Type type) throw() : Exception(message, type) {}
+    inline TrusteeException(const char* message, Type type) throw()
+      : Exception(message, type) {
+    }
   };
   
   /**

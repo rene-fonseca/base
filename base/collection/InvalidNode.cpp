@@ -15,10 +15,10 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-InvalidNode::InvalidNode() {
+InvalidNode::InvalidNode() throw() {
 }
 
-InvalidNode::InvalidNode(const char* message) : Exception(message) {
+InvalidNode::InvalidNode(const char* message) throw() : Exception(message) {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

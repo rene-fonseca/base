@@ -96,6 +96,13 @@ struct nothing {
 
 
 
+/** The largets signed integer supported by the architecture. */
+typedef MemoryDiff LargestInt; // TAG: could be different
+/** The largets unsigned integer supported by the architecture. */
+typedef MemorySize ULargestInt; // TAG: could be different
+
+
+
 /**
   Returns the number of elements in the specified built-in array.
 */
@@ -229,16 +236,24 @@ inline uint32 getLowWordOf64(uint64 value) throw() {
   Returns the address of the specified object as a byte pointer.
 */
 template<class TYPE>
-inline byte* getByteAddress(TYPE& value) throw() {return reinterpret_cast<byte*>(&value);}
+inline byte* getByteAddress(TYPE& value) throw() {
+  return reinterpret_cast<byte*>(&value);
+}
 
 template<class TYPE>
-inline const byte* getByteAddress(const TYPE& value) throw() {return reinterpret_cast<const byte*>(&value);}
+inline const byte* getByteAddress(const TYPE& value) throw() {
+  return reinterpret_cast<const byte*>(&value);
+}
 
 template<class TYPE>
-inline char* getCharAddress(TYPE& value) throw() {return reinterpret_cast<char*>(&value);}
+inline char* getCharAddress(TYPE& value) throw() {
+  return reinterpret_cast<char*>(&value);
+}
 
 template<class TYPE>
-inline const char* getCharAddress(const TYPE& value) throw() {return reinterpret_cast<const char*>(&value);}
+inline const char* getCharAddress(const TYPE& value) throw() {
+  return reinterpret_cast<const char*>(&value);
+}
 
 /**
   Returns true if the primitive variable is aligned properly.
@@ -289,8 +304,17 @@ namespace primitives {
   /**
     Specifies whether or not the type is void.
   */
-  template<class TYPE> class Void {public: enum {IS_VOID = false /**< True if type is void. */};};
-  template<> class Void<void> {public: enum {IS_VOID = true};};
+  template<class TYPE> class Void {
+  public:
+
+    enum {IS_VOID = false /**< True if type is void. */};
+  };
+  
+  template<> class Void<void> {
+  public:
+
+    enum {IS_VOID = true};
+  };
 
   /**
     Specifies whether or not the type is a cardinal type (this includes the 'bool' primitive).
@@ -308,20 +332,89 @@ namespace primitives {
     }
     </pre>
   */
-  template<class TYPE> class Cardinal {public: enum {IS_CARDINAL = false /**< True if type is a cardinal type. */};};
-  template<> class Cardinal<bool> {public: enum {IS_CARDINAL = true};};
-  template<> class Cardinal<char> {public: enum {IS_CARDINAL = true};};
-  template<> class Cardinal<signed char> {public: enum {IS_CARDINAL = true};};
-  template<> class Cardinal<unsigned char> {public: enum {IS_CARDINAL = true};};
-  template<> class Cardinal<wchar_t> {public: enum {IS_CARDINAL = true};};
-  template<> class Cardinal<short> {public: enum {IS_CARDINAL = true};};
-  template<> class Cardinal<unsigned short> {public: enum {IS_CARDINAL = true};};
-  template<> class Cardinal<int> {public: enum {IS_CARDINAL = true};};
-  template<> class Cardinal<unsigned int> {public: enum {IS_CARDINAL = true};};
-  template<> class Cardinal<long> {public: enum {IS_CARDINAL = true};};
-  template<> class Cardinal<unsigned long> {public: enum {IS_CARDINAL = true};};
-  template<> class Cardinal<long long> {public: enum {IS_CARDINAL = true};};
-  template<> class Cardinal<unsigned long long> {public: enum {IS_CARDINAL = true};};
+  template<class TYPE> class Cardinal {
+  public:
+    
+    enum {IS_CARDINAL = false /**< True if type is a cardinal type. */};
+  };
+  
+  template<> class Cardinal<bool> {
+  public:
+
+    enum {IS_CARDINAL = true};
+  };
+  
+  template<> class Cardinal<char> {
+  public:
+
+    enum {IS_CARDINAL = true};
+  };
+
+  template<> class Cardinal<signed char> {
+  public:
+
+    enum {IS_CARDINAL = true};
+  };
+
+  template<> class Cardinal<unsigned char> {
+  public:
+
+    enum {IS_CARDINAL = true};
+  };
+
+  template<> class Cardinal<wchar_t> {
+  public:
+
+    enum {IS_CARDINAL = true};
+  };
+  
+  template<> class Cardinal<short> {
+  public:
+
+    enum {IS_CARDINAL = true};
+  };
+  
+  template<> class Cardinal<unsigned short> {
+  public:
+
+    enum {IS_CARDINAL = true};
+  };
+  
+  template<> class Cardinal<int> {
+  public:
+
+    enum {IS_CARDINAL = true};
+  };
+  
+  template<> class Cardinal<unsigned int> {
+  public:
+
+    enum {IS_CARDINAL = true};
+  };
+  
+  template<> class Cardinal<long> {
+  public:
+
+    enum {IS_CARDINAL = true};
+  };
+  
+  template<> class Cardinal<unsigned long> {
+  public:
+
+    enum {IS_CARDINAL = true};
+  };
+  
+  template<> class Cardinal<long long> {
+  public:
+
+    enum {IS_CARDINAL = true};
+  };
+  
+  template<> class Cardinal<unsigned long long> {
+  public:
+
+    enum {IS_CARDINAL = true};
+  };
   // TAG: what about signed types
   
   /**
@@ -342,10 +435,29 @@ namespace primitives {
     }
     </pre>
   */
-  template<class TYPE> class FloatingPoint {public: enum {IS_FLOATING_POINT = false /**< True if type is a floating point type. */};};
-  template<> class FloatingPoint<float> {public: enum {IS_FLOATING_POINT = true};};
-  template<> class FloatingPoint<double> {public: enum {IS_FLOATING_POINT = true};};
-  template<> class FloatingPoint<long double> {public: enum {IS_FLOATING_POINT = true};};
+  template<class TYPE> class FloatingPoint {
+  public:
+
+    enum {IS_FLOATING_POINT = false /**< True if type is a floating point type. */};
+  };
+  
+  template<> class FloatingPoint<float> {
+  public:
+
+    enum {IS_FLOATING_POINT = true};
+  };
+  
+  template<> class FloatingPoint<double> {
+  public:
+    
+    enum {IS_FLOATING_POINT = true};
+  };
+  
+  template<> class FloatingPoint<long double> {
+  public:
+    
+    enum {IS_FLOATING_POINT = true};
+  };
 
   /**
     Specifies whether or not the given type is an arithmetic (i.e. cardinal or floating) type.

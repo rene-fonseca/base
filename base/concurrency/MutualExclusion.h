@@ -89,22 +89,22 @@ public:
   };
 
   /**
-    Initializes a mutual exclusion object in the unlocked state. Throws
-    'ResourceException' if unable to initialize the object.
+    Initializes a mutual exclusion object in the unlocked state. Raises
+    ResourceException if unable to initialize the object.
   */
   MutualExclusion() throw(ResourceException);
 
   /**
     Requests a lock on this mutual exclusion object. The calling thread is
     suspended if the mutex has been locked by another thread. Does nothing if
-    the calling thread already has a lock on the object. Throws
-    'MutualExclusionException' on undefined failure.
+    the calling thread already has a lock on the object. Raises
+    MutualExclusionException on undefined failure.
   */
   void exclusiveLock() const throw(MutualExclusionException);
 
   /**
-    Attempts to lock this mutual exclusion object. Throws
-    'MutualExclusionException' on failure.
+    Attempts to lock this mutual exclusion object. Raises
+    MutualExclusionException on failure.
 
     @return True if the mutual exclusion was locked successfully or already
     was locked by the calling thread.
@@ -114,16 +114,16 @@ public:
   /**
     Requests a lock on this mutual exclusion object. The calling thread is
     suspended if the mutex has been locked by another thread. Does nothing if
-    the calling thread already has a lock on the object. Throws
-    'MutualExclusionException' on undefined failure.
+    the calling thread already has a lock on the object. Raises
+    MutualExclusionException on undefined failure.
   */
   inline void sharedLock() const throw(MutualExclusionException) {
     exclusiveLock();
   }
 
   /**
-    Attempts to lock this mutual exclusion object. Throws
-    'MutualExclusionException' on failure.
+    Attempts to lock this mutual exclusion object. Raises
+    MutualExclusionException on failure.
 
     @return True if the mutual exclusion was locked successfully or already
     was locked by the calling thread.
@@ -135,14 +135,14 @@ public:
   /**
     This method unlocks this mutual exclusion object. The calling thread must
     have a lock on this mutual exlusion object prior to invocation otherwise
-    the behaviour is undefined. Throws 'MutualExclusionException' on
+    the behaviour is undefined. Raises MutualExclusionException on
     failure.
   */
   void releaseLock() const throw(MutualExclusionException);
 
   /**
     Destroys the mutual exclusion object. The mutual exclusion must be in the
-    unlocked state prior to destruction. Throws 'MutualExclusionException' on
+    unlocked state prior to destruction. Raises MutualExclusionException on
     failure.
   */
   ~MutualExclusion() throw(MutualExclusionException);

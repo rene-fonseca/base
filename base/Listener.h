@@ -63,17 +63,23 @@ public:
     @param sender The sender.
     @param member The end-point of the signal.
   */
-  inline Signal(const Sender* sender, Member member) throw() : sender(sender), member(member) {}
-
+  inline Signal(const Sender* _sender, Member _member) throw()
+    : sender(_sender), member(_member) {
+  }
+  
   /**
     Initialize signal from other signal.
   */
-  inline Signal(const Signal& copy) throw() : sender(copy.sender), member(copy.member) {}
+  inline Signal(const Signal& copy) throw()
+    : sender(copy.sender), member(copy.member) {
+  }
 
   /**
     Sends the signal.
   */
-  inline void operator()(Listener* listener) const {(listener->*member)(sender);}
+  inline void operator()(Listener* listener) const {
+    (listener->*member)(sender);
+  }
 };
 
 

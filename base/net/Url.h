@@ -69,21 +69,24 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline UrlException() throw() {}
+    inline UrlException() throw() {
+    }
 
     /**
       Initializes the exception object.
       
       @param message The message.
     */
-    inline UrlException(const char* message) throw() : InvalidFormat(message) {}
+    inline UrlException(const char* message) throw() : InvalidFormat(message) {
+    }
 
     /**
       Initializes the exception object without an associated message.
       
       @param type The identity of the type.
     */
-    inline UrlException(Type type) throw() : InvalidFormat(type) {}
+    inline UrlException(Type type) throw() : InvalidFormat(type) {
+    }
 
     /**
       Initializes the exception object.
@@ -91,7 +94,9 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    inline UrlException(const char* message, Type type) throw() : InvalidFormat(message, type) {}
+    inline UrlException(const char* message, Type type) throw()
+      : InvalidFormat(message, type) {
+    }
   };
 protected:
 

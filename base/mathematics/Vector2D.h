@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Two-dimensional vector.
   @ingroup mathematics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.01
+  @version 1.1
 */
 
 template<class TYPE>
@@ -41,7 +41,8 @@ public:
   /**
     Initializes vector as the origin (0,0).
   */
-  inline Vector2D() throw() : x(0), y(0) {}
+  inline Vector2D() throw() : x(0), y(0) {
+  }
 
   /**
     Initializes vector from the specified coordinates.
@@ -331,7 +332,9 @@ public:
 };
 
 template<class TYPE>
-inline Vector2D<TYPE>::Vector2D(const TYPE& _x, const TYPE& _y) throw() : x(_x), y(_y) {}
+inline Vector2D<TYPE>::Vector2D(const TYPE& _x, const TYPE& _y) throw()
+  : x(_x), y(_y) {
+}
 
 template<class TYPE>
 inline Vector2D<TYPE> operator+(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
@@ -378,7 +381,7 @@ inline TYPE determinant(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right)
   Writes a string representation of a Vector2D object to a format stream. The format is "(x; y)".
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector2D<TYPE>& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector2D<TYPE>& value) throw(IOException) {
   return stream << '(' << value.getX() << ';' << value.getY() << ')';
 }
 

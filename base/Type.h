@@ -34,7 +34,8 @@ private:
 
   const std::type_info* type;
 
-  class Uninitialized {};
+  class Uninitialized {
+  };
 
   inline Type(const std::type_info* _type) throw() : type(_type) {
     ASSERT(_type);
@@ -82,7 +83,8 @@ public:
   /**
     Initializes type object in an uninitialized state.
   */
-  inline Type() throw() : type(&typeid(Uninitialized)) {}
+  inline Type() throw() : type(&typeid(Uninitialized)) {
+  }
 
   /**
     Initializes type to the type of the specified object.
@@ -94,7 +96,8 @@ public:
   /**
     Initializes type object from other type object.
   */
-  inline Type(const Type& copy) throw() : type(copy.type) {}
+  inline Type(const Type& copy) throw() : type(copy.type) {
+  }
 
   /**
     Assignment of type object from other type object.

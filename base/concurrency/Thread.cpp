@@ -592,13 +592,4 @@ Thread::~Thread() throw(ThreadException) {
   }
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Thread& value) {
-  stream << '{'
-         << MESSAGE("alive=") << value.isAlive()
-         << MESSAGE("; terminated=") << value.isTerminated()
-         << MESSAGE("; state=") << value.getState()
-         << '}';
-  return stream;
-}
-
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -19,7 +19,8 @@ namespace {
 
   // TAG: this function prevents an empty archive (temporary fix)
   // TAG: binutils does not access empty archives on some platforms
-  void denyEmtpyArchive() throw() {}
+  void denyEmtpyArchive() throw() {
+  }
   
 };
 

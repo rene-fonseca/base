@@ -47,7 +47,9 @@ public:
 
     @param signal The signal to be send on request.
   */
-  EventDispatcher(const Signal<Sender, Listener>& signal) throw() : signal(signal) {}
+  EventDispatcher(const Signal<Sender, Listener>& _signal) throw()
+    : signal(_signal) {
+  }
 
   /*
     Registers the specified listener.

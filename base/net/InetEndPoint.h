@@ -86,12 +86,16 @@ public:
   /**
     Returns the address.
   */
-  inline const InetAddress& getAddress() const throw() {return address;}
+  inline const InetAddress& getAddress() const throw() {
+    return address;
+  }
 
   /**
     Returns the port.
   */
-  inline unsigned short getPort() const throw() {return port;}
+  inline unsigned short getPort() const throw() {
+    return port;
+  }
 
   /**
     Returns the port converted to service.
@@ -112,7 +116,7 @@ public:
 /**
   Writes a string representation of the InetEndPoint object to a format stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const InetEndPoint& value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const InetEndPoint& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -37,7 +37,8 @@ public:
   /**
     Initializes object.
   */
-  inline Object() throw() {}
+  inline Object() throw() {
+  }
 };
 
 template<>

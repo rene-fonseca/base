@@ -25,11 +25,21 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 template<class TYPE, class RESULT = TYPE>
 class AbsoluteSum : public UnaryOperation<TYPE, RESULT> {
 protected:
+  
   RESULT result;
 public:
-  inline AbsoluteSum() throw() : result(0) {}
-  inline void operator()(const TYPE& value) throw() {result += absolute(value);}
-  inline RESULT getResult() const throw() {return result;}
+  
+  inline AbsoluteSum() throw()
+    : result(0) {
+  }
+  
+  inline void operator()(const TYPE& value) throw() {
+    result += absolute(value);
+  }
+  
+  inline RESULT getResult() const throw() {
+    return result;
+  }
 };
 
 /**
@@ -52,7 +62,8 @@ public:
   /**
     Construct an unitialized matrix.
   */
-  inline Matrix4x4() throw() {}
+  inline Matrix4x4() throw() {
+  }
   
   /**
     Initializes matrix by copying from other matrix.
@@ -402,38 +413,50 @@ public:
 
     @param value The value to be added.
   */
-  inline Matrix4x4& operator+=(const Matrix4x4& value) throw() {return add(value);}
+  inline Matrix4x4& operator+=(const Matrix4x4& value) throw() {
+    return add(value);
+  }
 
   /**
     Subtracts the specified vector from this vector.
 
     @param value The value to be subtracted.
   */
-  inline Matrix4x4& operator-=(const Matrix4x4& value) throw() {return subtract(value);}
+  inline Matrix4x4& operator-=(const Matrix4x4& value) throw() {
+    return subtract(value);
+  }
 
   /**
     Multiplies this vector with the specified value.
 
     @param value The multiplicator.
   */
-  inline Matrix4x4& operator*=(const TYPE& value) throw() {return multiply(value);}
+  inline Matrix4x4& operator*=(const TYPE& value) throw() {
+    return multiply(value);
+  }
 
   /**
     Divides this vector with the specified value.
 
     @param value The divisor.
   */
-  inline Matrix4x4& operator/=(const TYPE& value) throw() {return divide(value);}
+  inline Matrix4x4& operator/=(const TYPE& value) throw() {
+    return divide(value);
+  }
 
   /**
     Unary plus.
   */
-  inline Matrix4x4 operator+() const throw() {return plus();}
+  inline Matrix4x4 operator+() const throw() {
+    return plus();
+  }
 
   /**
     Unary minus.
   */
-  inline Matrix4x4 operator-() const throw() {return minus();}
+  inline Matrix4x4 operator-() const throw() {
+    return minus();
+  }
 };
 
 /**
@@ -488,7 +511,7 @@ inline Matrix4x4<TYPE> operator/(const Matrix4x4<TYPE>& left, const TYPE& right)
   Writes a string representation of a Matrix4x4 object to a format stream.
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix4x4<TYPE>& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix4x4<TYPE>& value) throw(IOException) {
   const TYPE* src = value.getElements()--;
   stream << '[';
   for (unsigned int i = 4; i > 0; --i) {

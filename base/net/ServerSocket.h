@@ -81,7 +81,9 @@ public:
     function can be used after a succesful accept determine the locally
     assigned address and port if unspecified.
   */
-  inline void getName() throw() {Socket::getName();}
+  inline void getName() throw() {
+    Socket::getName();
+  }
 
   /**
     Returns the local IP address to which the socket is bound.

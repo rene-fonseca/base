@@ -32,10 +32,14 @@ namespace ByteOrder {
 #if (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN)
 
   template<class TYPE>
-  inline TYPE fromBigEndian(TYPE value) throw() {return value;}
+  inline TYPE fromBigEndian(TYPE value) throw() {
+    return value;
+  }
 
   template<class TYPE>
-  inline TYPE toBigEndian(TYPE value) throw() {return value;}
+  inline TYPE toBigEndian(TYPE value) throw() {
+    return value;
+  }
 
 #elif (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN)
 
@@ -106,9 +110,12 @@ namespace ByteOrder {
     uint8 a;
     uint8 b;
     
-    inline LittleEndian() throw() {}
+    inline LittleEndian() throw() {
+    }
     
-    inline LittleEndian(int16 value) throw() : b(value >> 8), a(value) {}
+    inline LittleEndian(int16 value) throw()
+      : b(value >> 8), a(value) {
+    }
     
     inline int16 operator=(int16 eq) throw() {
       b = eq >> 8;
@@ -116,7 +123,9 @@ namespace ByteOrder {
       return eq;
     }
     
-    inline operator int16() const throw() {return (static_cast<uint16>(b) << 8) + a;}
+    inline operator int16() const throw() {
+      return (static_cast<uint16>(b) << 8) + a;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
   
   /** 16 bit unsigned integer represented in little endian byte order. */
@@ -125,9 +134,12 @@ namespace ByteOrder {
     uint8 a;
     uint8 b;
     
-    inline LittleEndian() throw() {}
+    inline LittleEndian() throw() {
+    }
     
-    inline LittleEndian(uint16 value) throw() : b(value >> 8), a(value) {}
+    inline LittleEndian(uint16 value) throw()
+      : b(value >> 8), a(value) {
+    }
     
     inline uint16 operator=(uint16 eq) throw() {
       b = eq >> 8;
@@ -135,7 +147,9 @@ namespace ByteOrder {
       return eq;
     }
     
-    inline operator uint16() const throw() {return (static_cast<uint16>(b) << 8) + a;}
+    inline operator uint16() const throw() {
+      return (static_cast<uint16>(b) << 8) + a;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
 
   /** 32 bit signed integer represented in little endian byte order. */
@@ -146,9 +160,12 @@ namespace ByteOrder {
     uint8 c;
     uint8 d;
     
-    inline LittleEndian() throw() {}
+    inline LittleEndian() throw() {
+    }
     
-    inline LittleEndian(int32 value) throw() : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {}
+    inline LittleEndian(int32 value) throw()
+      : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {
+    }
     
     inline int32 operator=(int32 eq) throw() {
       d = eq >> 24;
@@ -158,7 +175,9 @@ namespace ByteOrder {
       return eq;
     }
     
-    inline operator int32() const throw() {return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;}
+    inline operator int32() const throw() {
+      return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
   
   /** 32 bit unsigned integer represented in little endian byte order. */
@@ -169,9 +188,12 @@ namespace ByteOrder {
     uint8 c;
     uint8 d;
     
-    inline LittleEndian() throw() {}
+    inline LittleEndian() throw() {
+    }
     
-    inline LittleEndian(uint32 value) throw() : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {}
+    inline LittleEndian(uint32 value) throw()
+      : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {
+    }
     
     inline uint32 operator=(uint32 eq) throw() {
       d = eq >> 24;
@@ -181,7 +203,9 @@ namespace ByteOrder {
       return eq;
     }
   
-    inline operator uint32() const throw() {return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;}
+    inline operator uint32() const throw() {
+      return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
   
   /** 64 bit signed integer represented in little endian byte order. */
@@ -190,9 +214,12 @@ namespace ByteOrder {
     LittleEndian<uint32> a;
     LittleEndian<uint32> b;
     
-    inline LittleEndian() throw() {}
+    inline LittleEndian() throw() {
+    }
   
-    inline LittleEndian(int64 value) throw() : b(value >> 32), a(value) {}
+    inline LittleEndian(int64 value) throw()
+      : b(value >> 32), a(value) {
+    }
     
     inline int64 operator=(int64 eq) throw() {
       b = eq >> 32;
@@ -200,7 +227,9 @@ namespace ByteOrder {
       return eq;
     }
     
-    inline operator int64() const throw() {return (static_cast<uint64>(b) << 8) + a;}
+    inline operator int64() const throw() {
+      return (static_cast<uint64>(b) << 8) + a;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
   
   /** 64 bit unsigned integer represented in little endian byte order. */
@@ -209,9 +238,12 @@ namespace ByteOrder {
     LittleEndian<uint32> a;
     LittleEndian<uint32> b;
     
-    inline LittleEndian() throw() {}
+    inline LittleEndian() throw() {
+    }
     
-    inline LittleEndian(uint64 value) throw() : b(value >> 32), a(value) {}
+    inline LittleEndian(uint64 value) throw()
+      : b(value >> 32), a(value) {
+    }
     
     inline uint64 operator=(uint64 eq) throw() {
       b = eq >> 32;
@@ -219,7 +251,9 @@ namespace ByteOrder {
       return eq;
     }
     
-    inline operator uint64() const throw() {return (static_cast<uint64>(b) << 32) + a;}
+    inline operator uint64() const throw() {
+      return (static_cast<uint64>(b) << 32) + a;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
 
   /**
@@ -235,16 +269,21 @@ namespace ByteOrder {
   struct BigEndian {
     TYPE value;
     
-    inline BigEndian() throw() {}
+    inline BigEndian() throw() {
+    }
     
-    inline BigEndian(TYPE _value) throw() : value(_value) {}
+    inline BigEndian(TYPE _value) throw()
+      : value(_value) {
+    }
     
     inline TYPE operator=(TYPE eq) throw() {
       value = eq;
       return eq;
     }
     
-    inline operator TYPE() const throw() {return value;}
+    inline operator TYPE() const throw() {
+      return value;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
   
 #endif
@@ -264,16 +303,21 @@ namespace ByteOrder {
   struct LittleEndian {
     TYPE value;
     
-    inline LittleEndian() throw() {}
+    inline LittleEndian() throw() {
+    }
     
-    inline LittleEndian(TYPE _value) throw() : value(_value) {}
+    inline LittleEndian(TYPE _value) throw()
+      : value(_value) {
+    }
     
     inline TYPE operator=(TYPE eq) throw() {
       value = eq;
       return eq;
     }
     
-    inline operator TYPE() const throw() {return value;}
+    inline operator TYPE() const throw() {
+      return value;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
   
   /**
@@ -295,9 +339,12 @@ namespace ByteOrder {
     uint8 b;
     uint8 a;
     
-    inline BigEndian() throw() {}
+    inline BigEndian() throw() {
+    }
     
-    inline BigEndian(int16 value) throw() : b(value >> 8), a(value) {}
+    inline BigEndian(int16 value) throw()
+      : b(value >> 8), a(value) {
+    }
     
     inline int16 operator=(int16 eq) throw() {
       b = eq >> 8;
@@ -305,7 +352,9 @@ namespace ByteOrder {
       return eq;
     }
     
-    inline operator int16() const throw() {return (static_cast<uint16>(b) << 8) + a;}
+    inline operator int16() const throw() {
+      return (static_cast<uint16>(b) << 8) + a;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
   
   /** 16 bit unsigned integer represented in big endian byte order. */
@@ -314,9 +363,12 @@ namespace ByteOrder {
     uint8 b;
     uint8 a;
 
-    inline BigEndian() throw() {}
+    inline BigEndian() throw() {
+    }
     
-    inline BigEndian(uint16 value) throw() : b(value >> 8), a(value) {}
+    inline BigEndian(uint16 value) throw()
+      : b(value >> 8), a(value) {
+    }
     
     inline uint16 operator=(uint16 eq) throw() {
       b = eq >> 8;
@@ -324,7 +376,9 @@ namespace ByteOrder {
       return eq;
     }
   
-    inline operator uint16() const throw() {return (static_cast<uint16>(b) << 8) + a;}
+    inline operator uint16() const throw() {
+      return (static_cast<uint16>(b) << 8) + a;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
 
   /** 32 bit signed integer represented in big endian byte order. */
@@ -335,9 +389,12 @@ namespace ByteOrder {
     uint8 b;
     uint8 a;
     
-    inline BigEndian() throw() {}
+    inline BigEndian() throw() {
+    }
     
-    inline BigEndian(int32 value) throw() : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {}
+    inline BigEndian(int32 value) throw()
+      : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {
+    }
     
     inline int32 operator=(int32 eq) throw() {
       d = eq >> 24;
@@ -347,7 +404,9 @@ namespace ByteOrder {
       return eq;
     }
     
-    inline operator int32() const throw() {return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;}
+    inline operator int32() const throw() {
+      return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
   
   /** 32 bit unsigned integer represented in big endian byte order. */
@@ -358,9 +417,12 @@ namespace ByteOrder {
     uint8 b;
     uint8 a;
     
-    inline BigEndian() throw() {}
+    inline BigEndian() throw() {
+    }
     
-    inline BigEndian(uint32 value) throw() : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {}
+    inline BigEndian(uint32 value) throw()
+      : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {
+    }
     
     inline uint32 operator=(uint32 eq) throw() {
       d = eq >> 24;
@@ -370,7 +432,9 @@ namespace ByteOrder {
       return eq;
     }
   
-    inline operator uint32() const throw() {return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;}
+    inline operator uint32() const throw() {
+      return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
   
   /** 64 bit signed integer represented in big endian byte order. */
@@ -379,9 +443,12 @@ namespace ByteOrder {
     BigEndian<uint32> b;
     BigEndian<uint32> a;
     
-    inline BigEndian() throw() {}
+    inline BigEndian() throw() {
+    }
   
-    inline BigEndian(int64 value) throw() : b(value >> 32), a(value) {}
+    inline BigEndian(int64 value) throw()
+      : b(value >> 32), a(value) {
+    }
     
     inline int64 operator=(int64 eq) throw() {
       b = eq >> 32;
@@ -389,7 +456,9 @@ namespace ByteOrder {
       return eq;
     }
     
-    inline operator int64() const throw() {return (static_cast<uint64>(b) << 8) + a;}
+    inline operator int64() const throw() {
+      return (static_cast<uint64>(b) << 8) + a;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
   
   /** 64 bit unsigned integer represented in big endian byte order. */
@@ -398,9 +467,12 @@ namespace ByteOrder {
     BigEndian<uint32> b;
     BigEndian<uint32> a;
     
-    inline BigEndian() throw() {}
+    inline BigEndian() throw() {
+    }
     
-    inline BigEndian(uint64 value) throw() : b(value >> 32), a(value) {}
+    inline BigEndian(uint64 value) throw()
+      : b(value >> 32), a(value) {
+    }
     
     inline uint64 operator=(uint64 eq) throw() {
       b = eq >> 32;
@@ -408,7 +480,9 @@ namespace ByteOrder {
       return eq;
     }
     
-    inline operator uint64() const throw() {return (static_cast<uint64>(b) << 32) + a;}
+    inline operator uint64() const throw() {
+      return (static_cast<uint64>(b) << 32) + a;
+    }
   } _DK_SDU_MIP__BASE__PACKED;
   
 #endif // little endian

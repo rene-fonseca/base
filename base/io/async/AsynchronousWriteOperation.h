@@ -36,12 +36,15 @@ private:
   ReferenceCountedObjectPointer<AsynchronousWriteContext> context;
 public:
 
-  inline AsynchronousWriteOperation(AsynchronousWriteContext* _context) throw() : context(_context) {}
+  inline AsynchronousWriteOperation(AsynchronousWriteContext* _context) throw()
+    : context(_context) {
+  }
 
   /**
     Initializes invalid object.
   */
-  inline AsynchronousWriteOperation() throw() : context(0) {}
+  inline AsynchronousWriteOperation() throw() : context(0) {
+  }
 
   /*
     Initialization by copying from other object.

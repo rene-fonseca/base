@@ -69,7 +69,7 @@ static void buildExternalTree(xmlDocPtr doc, XMLNode* n, xmlNodePtr p, bool root
   }
 
   List<XMLProperty> props = n->getProperties();
-//  for(curprop = props.begin(); curprop != props.end(); ++curprop) {
+//  for (curprop = props.begin(); curprop != props.end(); ++curprop) {
 //    xmlSetProp(node, static_cast<xmlChar*>((*curprop)->getName().getElements()), static_cast<xmlChar*>((*curprop)->getValue().getElements()));
 //  }
 

@@ -41,13 +41,21 @@ private:
 
     MappedFileImpl(const File& file, const FileRegion& region, bool writeable) throw(FileException);
 
-    inline void* getBytes() const throw() {return bytes;}
+    inline void* getBytes() const throw() {
+      return bytes;
+    }
 
-    inline File& getFile() throw() {return file;}
+    inline File& getFile() throw() {
+      return file;
+    }
 
-    inline const FileRegion& getRegion() const throw() {return region;}
+    inline const FileRegion& getRegion() const throw() {
+      return region;
+    }
 
-    inline bool isWriteable() throw() {return writeable;}
+    inline bool isWriteable() throw() {
+      return writeable;
+    }
 
     void synchronize() throw(FileException);
 
@@ -63,7 +71,9 @@ protected:
   /**
     Returns the handle of the specified file.
   */
-  inline static OperatingSystem::Handle getHandle(File& file) {return file.fd->getHandle();}
+  inline static OperatingSystem::Handle getHandle(File& file) {
+    return file.fd->getHandle();
+  }
 public:
 
   /**
@@ -83,7 +93,9 @@ public:
   /**
     Initializes mapping from other mapping.
   */
-  inline MappedFile(const MappedFile& copy) throw() : map(copy.map) {}
+  inline MappedFile(const MappedFile& copy) throw()
+    : map(copy.map) {
+  }
 
   /**
     Assignment of mapping by mapping.
@@ -94,17 +106,23 @@ public:
     Returns the mapped bytes. Do not use the mapping outside the requested
     mapping range.
   */
-  inline byte* getBytes() const throw() {return static_cast<byte*>(map->getBytes());}
+  inline byte* getBytes() const throw() {
+    return static_cast<byte*>(map->getBytes());
+  }
 
   /**
     Returns the mapped file region.
   */
-  inline const FileRegion& getRegion() const throw() {return map->getRegion();}
+  inline const FileRegion& getRegion() const throw() {
+    return map->getRegion();
+  }
 
   /**
     Flushes the mapping.
   */
-  inline void synchronize() throw(FileException) {map->synchronize();}
+  inline void synchronize() throw(FileException) {
+    map->synchronize();
+  }
 
   /**
     Maps the specified file region.

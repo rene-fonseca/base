@@ -47,7 +47,8 @@ public:
     
     @param type The identity of the type.
   */
-  inline InvalidEnumeration(Type type) throw() {}
+  inline InvalidEnumeration(Type type) throw() {
+  }
   
   /**
     Initializes the exception object.
@@ -55,7 +56,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline InvalidEnumeration(const char* message, Type type) throw() {}
+  inline InvalidEnumeration(const char* message, Type type) throw() {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -42,14 +42,16 @@ public:
   /**
     Initializes counter with zero.
   */
-  inline AtomicCounter() throw() : value(0) {}
+  inline AtomicCounter() throw() : value(0) {
+  }
 
   /**
     Initializes the counter.
 
     @param value The initial value.
   */
-  inline AtomicCounter(TYPE _value) throw() : value(_value) {}
+  inline AtomicCounter(TYPE _value) throw() : value(_value) {
+  }
 
   /**
     Returns the value of the counter.
@@ -114,9 +116,11 @@ private:
   SpinLock spinLock;
 public:
 
-  inline AtomicCounter() throw() : value(0) {}
+  inline AtomicCounter() throw() : value(0) {
+  }
 
-  inline AtomicCounter(int _value) throw() : value(_value) {}
+  inline AtomicCounter(int _value) throw() : value(_value) {
+  }
 
   inline operator int() const throw() {
     return value;

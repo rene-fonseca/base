@@ -42,8 +42,9 @@ public:
   typedef typename SequenceIterator<TRAITS>::Reference Reference;
   typedef InterleavedIterator<TRAITS> ElementIterator;
 
-  inline MatrixColumnIterator(Pointer value, const Dimension& _dimension) throw() :
-    SequenceIterator<TRAITS>(value), dimension(_dimension) {}
+  inline MatrixColumnIterator(Pointer value, const Dimension& _dimension) throw()
+    : SequenceIterator<TRAITS>(value), dimension(_dimension) {
+  }
 
   /**
     Prefix increment.

@@ -47,7 +47,8 @@ public:
     
     @param type The identity of the type.
   */
-  MemoryException(Type type) throw() : ResourceException(type) {}
+  inline MemoryException(Type type) throw() : ResourceException(type) {
+  }
   
   /**
     Initializes the exception object.
@@ -55,7 +56,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  MemoryException(const char* message, Type type) throw() : ResourceException(message, type) {}
+  inline MemoryException(const char* message, Type type) throw()
+    : ResourceException(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

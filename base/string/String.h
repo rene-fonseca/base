@@ -23,6 +23,7 @@
 #include <base/string/StringException.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Primitives.h>
+#include <base/collection/Hash.h>
 #include <ctype.h> // TAG: alien header
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -50,11 +51,19 @@ private:
 public:
 
   /** Initializes the literal. Automatically invocated by the macro MESSAGE. */
-  inline StringLiteral(unsigned int _length, const char* _literal) throw() : length(_length), literal(_literal) {}
+  inline StringLiteral(unsigned int _length, const char* _literal) throw()
+    : length(_length), literal(_literal) {
+  }
+  
   /** Cast to the usual literal type. */
-  inline operator const char*() const throw() {return literal;}
+  inline operator const char*() const throw() {
+    return literal;
+  }
+  
   /** Returns the length of the string literal. */
-  inline unsigned int getLength() const throw() {return length;}
+  inline unsigned int getLength() const throw() {
+    return length;
+  }
 };
 
 /** This macro returns a StringLiteral object from a string literal (e.g. MESSAGE("Hello, World")). */
@@ -78,43 +87,89 @@ public:
   static const char TERMINATOR = '\0';
 
   /** Returns true if the character an alphabetic character. */
-  static inline bool isAlpha(Character character) throw() {return isalpha(character);}
+  static inline bool isAlpha(Character character) throw() {
+    return isalpha(character);
+  }
+  
   /** Returns true if the character an alphabetic character or a digit. */
-  static inline bool isAlphaNum(Character character) throw() {return isalnum(character);}
+  static inline bool isAlphaNum(Character character) throw() {
+    return isalnum(character);
+  }
+
   /** Returns true if the character is lowercase. */
-  static inline bool isLower(Character character) throw() {return islower(character);}
+  static inline bool isLower(Character character) throw() {
+    return islower(character);
+  }
+  
   /** Returns true if the character is uppercase. */
-  static inline bool isUpper(Character character) throw() {return isupper(character);}
+  static inline bool isUpper(Character character) throw() {
+    return isupper(character);
+  }
+  
   /** Returns true if the character is a digit. */
-  static inline bool isDigit(Character character) throw() {return isdigit(character);}
+  static inline bool isDigit(Character character) throw() {
+    return isdigit(character);
+  }
+  
   /** Returns true if the character is a hex digit. */
-  static inline bool isHexDigit(Character character) throw() {return isxdigit(character);}
+  static inline bool isHexDigit(Character character) throw() {
+    return isxdigit(character);
+  }
+  
   /** Returns true if the character is a white space. */
-  static inline bool isSpace(Character character) throw() {return isspace(character);}
+  static inline bool isSpace(Character character) throw() {
+    return isspace(character);
+  }
+  
   /** Returns true if the character is a punctuation mark. */
-  static inline bool isPunctuation(Character character) throw() {return ispunct(character);}
+  static inline bool isPunctuation(Character character) throw() {
+    return ispunct(character);
+  }
+  
   /** Returns true if the character is printable. */
-  static inline bool isPrintable(Character character) throw() {return isprint(character);}
+  static inline bool isPrintable(Character character) throw() {
+    return isprint(character);
+  }
+  
   /** Returns true if the character is a visible character. */
-  static inline bool isGraph(Character character) throw() {return isgraph(character);}
+  static inline bool isGraph(Character character) throw() {
+    return isgraph(character);
+  }
+  
   /** Returns true if the character is a control character. */
-  static inline bool isControl(Character character) throw() {return iscntrl(character);}
+  static inline bool isControl(Character character) throw() {
+    return iscntrl(character);
+  }
+  
   /** Returns true if the character is an ASCII character. */
-  static inline bool isASCII(Character character) throw() {return  !(character & ~0177U);}
+  static inline bool isASCII(Character character) throw() {
+    return  !(character & ~0177U);
+  }
 
   /** Converts the character to lowercase. */
-  static inline Character toLower(Character character) throw() {return tolower(character);}
+  static inline Character toLower(Character character) throw() {
+    return tolower(character);
+  }
+  
   /** Converts the character to uppercase. */
-  static inline Character toUpper(Character character) throw() {return toupper(character);}
+  static inline Character toUpper(Character character) throw() {
+    return toupper(character);
+  }
 
   class ToLowerCase {
   public:
-    inline Character operator()(Character value) const throw() {return tolower(value);}
+    
+    inline Character operator()(Character value) const throw() {
+      return tolower(value);
+    }
   };
 
   class ToUpperCase {
   public:
-    inline Character operator()(Character value) const throw() {return toupper(value);}
+    
+    inline Character operator()(Character value) const throw() {
+      return toupper(value);
+    }
   };
 };
 
@@ -128,8 +183,6 @@ public:
 */
 
 class String : public virtual Object {
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
-  friend unsigned int hash<String>(const String& value) throw();
 public:
 
   typedef CharTraits Traits;
@@ -287,7 +340,8 @@ public:
   /**
     Initializes string from other string.
   */
-  inline String(const String& copy) throw() : elements(copy.elements) {}
+  inline String(const String& copy) throw() : elements(copy.elements) {
+  }
   
   /**
     Assignment of string to string.
@@ -310,17 +364,23 @@ public:
   /**
     Returns the number of characters in the string.
   */
-  inline unsigned int getLength() const throw() {return elements->getSize() - 1;}
+  inline unsigned int getLength() const throw() {
+    return elements->getSize() - 1;
+  }
 
   /**
     Returns true if the string does not contain characters.
   */
-  inline bool isEmpty() const throw() {return elements->getSize() == 1;}
+  inline bool isEmpty() const throw() {
+    return elements->getSize() == 1;
+  }
 
   /**
     Returns true if the string contains characters.
   */
-  inline bool isProper() const throw() {return elements->getSize() > 1;}
+  inline bool isProper() const throw() {
+    return elements->getSize() > 1;
+  }
 
   /**
     Returns true if the string is an ASCII string.
@@ -330,7 +390,9 @@ public:
   /**
     Returns the capacity of the string.
   */
-  inline unsigned int getCapacity() const throw() {return elements->getCapacity();}
+  inline unsigned int getCapacity() const throw() {
+    return elements->getCapacity();
+  }
 
   /**
     Ensures that the capacity of the buffer is at least equal to the specified
@@ -361,9 +423,9 @@ public:
   */
   void forceToLength(unsigned int length) throw(StringException, MemoryException);
 
-// *******************************************************************************************
+// *************************************************************************
 //   TRAVERSE SECTION
-// *******************************************************************************************
+// *************************************************************************
 
   /**
     Returns the first element of the string as a modifying iterator.
@@ -407,20 +469,20 @@ public:
     return elements->getReadEnumerator();
   }
 
-// *******************************************************************************************
+// *************************************************************************
 //   CHARACTER SECTION
-// *******************************************************************************************
+// *************************************************************************
 
   /**
-    Returns the character at the specified index in this string. Throws
-    'OutOfRange' if index exceeds the length of the string.
+    Returns the character at the specified index in this string. Raises
+    OutOfRange if index exceeds the length of the string.
   */
   char getAt(unsigned int index) const throw(OutOfRange);
 
   /**
     Sets the character at the specified index of this string. If the new
     character is the string terminator ('\0') then the string is cut off from
-    the specified index. Throws 'OutOfRange' if index exceeds the length of
+    the specified index. Raises OutOfRange if index exceeds the length of
     the string.
 
     @param index The index of the character to set.
@@ -429,24 +491,24 @@ public:
   void setAt(unsigned int index, char value) throw(OutOfRange);
 
   /**
-    Returns a reference to character at the specified index. Throws
-    'OutOfRange' if index exceeds the length of the string.
+    Returns a reference to character at the specified index. Raises
+    OutOfRange if index exceeds the length of the string.
   */
   Reference operator[](unsigned int index) throw(OutOfRange) {
     return Reference(*this, index);
   }
 
   /**
-    Returns the character at the specified index. Throws 'OutOfRange' if index
+    Returns the character at the specified index. Raises OutOfRange if index
     exceeds the length of the string.
   */
   inline char operator[](unsigned int index) const throw(OutOfRange) {
     return getAt(index);
   }
 
-// *******************************************************************************************
+// *************************************************************************
 //   SUBSTRING SECTION
-// *******************************************************************************************
+// *************************************************************************
 
   /**
     Removes the characters in a substring of this string.
@@ -468,28 +530,36 @@ public:
 
     @param index Specifies the character to be removed.
   */
-  inline String& removeCharacter(unsigned int index) throw(MemoryException) {return remove(index, index);}
+  inline String& removeCharacter(unsigned int index) throw(MemoryException) {
+    return remove(index, index);
+  }
 
   /**
     Appends the character to this string.
 
     @param ch The character to be appended.
   */
-  inline String& append(char ch) throw(StringException, MemoryException) {return insert(getLength(), ch);}
+  inline String& append(char ch) throw(StringException, MemoryException) {
+    return insert(getLength(), ch);
+  }
 
   /**
     Appends the string to this string.
 
     @param string The string to be appended.
   */
-  inline String& append(const String& string) throw(StringException, MemoryException) {return insert(getLength(), string);}
+  inline String& append(const String& string) throw(StringException, MemoryException) {
+    return insert(getLength(), string);
+  }
 
   /**
     Appends the NULL-terminated string to this string.
 
     @param string The string to be appended.
   */
-  inline String& append(const char* string) throw(StringException, MemoryException) {return insert(getLength(), string);}
+  inline String& append(const char* string) throw(StringException, MemoryException) {
+    return insert(getLength(), string);
+  }
 
   /**
     Appends the string literal to this string.
@@ -519,14 +589,18 @@ public:
 
     @param ch The character to be prepended.
   */
-  inline String& prepend(char ch) throw(StringException, MemoryException) {return insert(0, ch);}
+  inline String& prepend(char ch) throw(StringException, MemoryException) {
+    return insert(0, ch);
+  }
 
   /**
     Prepends the string to this string.
 
     @param string The string to be prepended.
   */
-  inline String& prepend(const String& string) throw(StringException, MemoryException) {return insert(0, string);}
+  inline String& prepend(const String& string) throw(StringException, MemoryException) {
+    return insert(0, string);
+  }
 
   /**
     Inserts the character into this string.
@@ -601,21 +675,27 @@ public:
 
     @param start Specifies the start of the substring.
   */
-  inline String substring(unsigned int start) const throw(MemoryException) {return substring(start, getLength());}
+  inline String substring(unsigned int start) const throw(MemoryException) {
+    return substring(start, getLength());
+  }
 
   /**
     Appends the string to this string.
 
     @param suffix The string to be appended.
   */
-  inline String& operator+=(const String& suffix) throw(MemoryException) {return append(suffix);}
+  inline String& operator+=(const String& suffix) throw(MemoryException) {
+    return append(suffix);
+  }
 
   /**
     Appends the character to this string.
 
     @param suffix The character to be appended.
   */
-  inline String& operator+=(Character suffix) throw(MemoryException) {return append(suffix);}
+  inline String& operator+=(Character suffix) throw(MemoryException) {
+    return append(suffix);
+  }
 
   /**
     String reduction operator. Removes suffix from this string if and only if
@@ -639,9 +719,9 @@ public:
   */
   //char* substring(char* buffer, unsigned int start, unsigned int end) const throw();
 
-// *******************************************************************************************
+// *************************************************************************
 //   UNARY SECTION
-// *******************************************************************************************
+// *************************************************************************
 
   /**
     The character sequence contained in this string is replaced by the reverse sequence.
@@ -658,9 +738,9 @@ public:
   */
   String& toUpperCase() throw();
 
-// *******************************************************************************************
+// *************************************************************************
 //   COMPARE SECTION
-// *******************************************************************************************
+// *************************************************************************
 
   /**
     Compares this string to another string.
@@ -733,71 +813,97 @@ public:
   /**
     Equality operator.
   */
-  inline bool operator==(const String& string) const throw() {return compareTo(string) == 0;}
+  inline bool operator==(const String& string) const throw() {
+    return compareTo(string) == 0;
+  }
   
   /**
     Equality operator.
   */
-  inline bool operator==(const StringLiteral& string) const throw() {return compareTo(string) == 0;}
+  inline bool operator==(const StringLiteral& string) const throw() {
+    return compareTo(string) == 0;
+  }
   
   /**
     Inequality operator.
   */
-  inline bool operator!=(const String& string) const throw() {return compareTo(string) != 0;}
+  inline bool operator!=(const String& string) const throw() {
+    return compareTo(string) != 0;
+  }
 
   /**
     Less than operator.
   */
-  inline bool operator<(const String& string) const throw() {return compareTo(string) < 0;}
+  inline bool operator<(const String& string) const throw() {
+    return compareTo(string) < 0;
+  }
 
   /**
     Less than or equal operator.
   */
-  inline bool operator<=(const String& string) const throw() {return compareTo(string) <= 0;}
+  inline bool operator<=(const String& string) const throw() {
+    return compareTo(string) <= 0;
+  }
 
   /**
     Greater than or equal operator.
   */
-  inline bool operator>=(const String& string) const throw() {return compareTo(string) >= 0;}
+  inline bool operator>=(const String& string) const throw() {
+    return compareTo(string) >= 0;
+  }
 
   /**
     Greater than operator.
   */
-  inline bool operator>(const String& string) const throw() {return compareTo(string) > 0;}
+  inline bool operator>(const String& string) const throw() {
+    return compareTo(string) > 0;
+  }
 
   /**
     Equality operator.
   */
-  inline bool operator==(const char* string) const throw() {return compareTo(string) == 0;}
+  inline bool operator==(const char* string) const throw() {
+    return compareTo(string) == 0;
+  }
 
   /**
     Inequality operator.
   */
-  inline bool operator!=(const char* string) const throw() {return compareTo(string) != 0;}
+  inline bool operator!=(const char* string) const throw() {
+    return compareTo(string) != 0;
+  }
 
   /**
     Less than operator.
   */
-  inline bool operator<(const char* string) const throw() {return compareTo(string) < 0;}
+  inline bool operator<(const char* string) const throw() {
+    return compareTo(string) < 0;
+  }
 
   /**
     Less than or equal operator.
   */
-  inline bool operator<=(const char* string) const throw() {return compareTo(string) <= 0;}
+  inline bool operator<=(const char* string) const throw() {
+    return compareTo(string) <= 0;
+  }
 
   /**
     Greater than or equal operator.
   */
-  inline bool operator>=(const char* string) const throw() {return compareTo(string) >= 0;}
+  inline bool operator>=(const char* string) const throw() {
+    return compareTo(string) >= 0;
+  }
 
   /**
     Greater than operator.
   */
-  inline bool operator>(const char* string) const throw() {return compareTo(string) > 0;}
+  inline bool operator>(const char* string) const throw() {
+    return compareTo(string) > 0;
+  }
 
-// *******************************************************************************************
+// *************************************************************************
 //   FIND SECTION
-// *******************************************************************************************
+// *************************************************************************
 
   /**
     Returns the index of the first character that matches the specified character after the start position.
@@ -825,7 +931,10 @@ public:
     @return Index of the last match if any otherwise -1.
   */
   int lastIndexOf(char ch, unsigned int start) const throw();
-  inline int lastIndexOf(char ch) const throw() {return lastIndexOf(ch, getLength());}
+  
+  inline int lastIndexOf(char ch) const throw() {
+    return lastIndexOf(ch, getLength());
+  }
 
   /**
     Returns the index of the last substring that matches the specified string before the start position.
@@ -835,7 +944,10 @@ public:
     @return Index of the last match if any otherwise -1. Also returns -1 if substring is empty.
   */
   int lastIndexOf(const String& string, unsigned int start) const throw();
-  inline int lastIndexOf(const String& string) const throw() {return lastIndexOf(string, getLength());}
+  
+  inline int lastIndexOf(const String& string) const throw() {
+    return lastIndexOf(string, getLength());
+  }
 
   /**
     Returns the number of occurances of the specified character in this string.
@@ -870,9 +982,9 @@ public:
   */
   Array<String> split(char separator, bool group = false) throw(MemoryException);
   
-// *******************************************************************************************
+// *************************************************************************
 //   END SECTION
-// *******************************************************************************************
+// *************************************************************************
 
   /**
     Returns NULL-terminated string for modifying access.
@@ -905,7 +1017,11 @@ int compare<String>(const String& left, const String& right) throw();
   Returns the hash of the string.
 */
 template<>
-unsigned int hash<String>(const String& value) throw();
+class Hash<String> {
+public:
+
+  unsigned long operator()(const String& value) throw();
+};
 
 /**
   Writes string to format stream.

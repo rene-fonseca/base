@@ -59,12 +59,16 @@ public:
   /**
     Returns true if the XML tree has been initialized.
   */
-  inline bool isInitialized() const throw() {return initialized;}
+  inline bool isInitialized() const throw() {
+    return initialized;
+  }
 
   /**
     Returns the root of the XML tree.
   */
-  inline XMLNode* getRoot() const throw() {return root;}
+  inline XMLNode* getRoot() const throw() {
+    return root;
+  }
 
   /**
     Sets the root of the XML tree.

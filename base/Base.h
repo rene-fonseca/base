@@ -20,11 +20,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 template<class TYPE> class ConstPointerHelper {
 public:
+  
   enum {IS_CONSTANT = false};
 };
 
 template<class TYPE> class ConstPointerHelper<const TYPE*> {
 public:
+  
   enum {IS_CONSTANT = true};
 };
 
@@ -36,25 +38,33 @@ template<class TYPE> inline bool isConstPointer() throw() {
   Returns the minimum value.
 */
 template<class TYPE>
-inline TYPE minimum(TYPE a, TYPE b) throw() {return (a <= b) ? a : b;}
+inline TYPE minimum(TYPE a, TYPE b) throw() {
+  return (a <= b) ? a : b;
+}
 
 /**
   Returns the minimum value among the 3 values.
 */
 template<class TYPE>
-inline TYPE minimum(TYPE a, TYPE b, TYPE c) throw() {return minimum<TYPE>(minimum<TYPE>(a, b), c);}
+inline TYPE minimum(TYPE a, TYPE b, TYPE c) throw() {
+  return minimum<TYPE>(minimum<TYPE>(a, b), c);
+}
 
 /**
   Returns the maximum value.
 */
 template<class TYPE>
-inline TYPE maximum(TYPE a, TYPE b) throw() {return (a >= b) ? a : b;}
+inline TYPE maximum(TYPE a, TYPE b) throw() {
+  return (a >= b) ? a : b;
+}
 
 /**
   Returns the maximum value among the 3 values.
 */
 template<class TYPE>
-inline TYPE maximum(TYPE a, TYPE b, TYPE c) throw() {return maximum<TYPE>(maximum<TYPE>(a, b), c);}
+inline TYPE maximum(TYPE a, TYPE b, TYPE c) throw() {
+  return maximum<TYPE>(maximum<TYPE>(a, b), c);
+}
 
 /**
   Returns -1, 0, and 1 if a is less than b, a is equal to b, and a is greater
@@ -73,12 +83,6 @@ inline int compare(const TYPE& a, const TYPE& b) throw() {
 }
 
 /**
-  Returns the hash value of the specified object.
-*/
-template<class TYPE>
-inline unsigned int hash(const TYPE& value) throw() {return 0;}
-
-/**
   Swaps the values.
 */
 template<class TYPE>
@@ -91,10 +95,12 @@ inline void swapper(TYPE& a, TYPE& b) throw() {
 /**
   Returns the absolute value of the specified argument.
 */
-template<class TYPE> inline TYPE absolute(const TYPE& value) {return (value >= TYPE(0)) ? value : -value;}
+template<class TYPE> inline TYPE absolute(const TYPE& value) {
+  return (value >= TYPE(0)) ? value : -value;
+}
 
 /**
-  Throws the specified exception if the assertion is false.
+  Raises the specified exception if the assertion is false.
 
   @param assertion The assertion.
   @param exception The exception.

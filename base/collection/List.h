@@ -46,14 +46,39 @@ protected:
   TYPE value;
 public:
 
-  inline ListNode(ListNode* n, ListNode* p, const TYPE& v) : next(n), previous(p), value(v) {}
-  inline ListNode* getNext() const throw() {return next;}
-  inline void setNext(ListNode* next) throw() {this->next = next;}
-  inline ListNode* getPrevious() const throw() {return previous;}
-  inline void setPrevious(ListNode* previous) throw() {this->previous = previous;}
-  inline TYPE* getValue() throw() {return &value;}
-  inline const TYPE* getValue() const throw() {return &value;}
-  inline void setValue(TYPE value) throw() {this->value = value;}
+  inline ListNode(ListNode* _next, ListNode* _previous, const TYPE& _value)
+    : next(_next),
+      previous(_previous),
+      value(_value) {
+  }
+  
+  inline ListNode* getNext() const throw() {
+    return next;
+  }
+  
+  inline void setNext(ListNode* next) throw() {
+    this->next = next;
+  }
+  
+  inline ListNode* getPrevious() const throw() {
+    return previous;
+  }
+
+  inline void setPrevious(ListNode* previous) throw() {
+    this->previous = previous;
+  }
+
+  inline TYPE* getValue() throw() {
+    return &value;
+  }
+
+  inline const TYPE* getValue() const throw() {
+    return &value;
+  }
+
+  inline void setValue(TYPE value) throw() {
+    this->value = value;
+  }
 };
 
 
@@ -65,9 +90,11 @@ public:
 //  ListNode<TYPE>* node;
 //public:
 //
-//  ListNodePointer(ListNode<TYPE>* node) : node(node) {}
+//  ListNodePointer(ListNode<TYPE>* node) : node(node) {
+//  }
 //
-//  ListNodePointer(const ListNodePointer& copy) : node(copy.node) {}
+//  ListNodePointer(const ListNodePointer& copy) : node(copy.node) {
+//  }
 //
 //  ListNodePointer& operator=(const ListNodePointer& eq) {
 //    node = eq.node;
@@ -138,12 +165,16 @@ public:
 
     @param begin Specifies the beginning of the enumeration.
   */
-  explicit inline ListEnumerator(ListNode<Value>* begin) throw() : current(begin) {}
+  explicit inline ListEnumerator(ListNode<Value>* begin) throw()
+    : current(begin) {
+  }
 
   /**
     Initializes enumeration from other enumeration.
   */
-  inline ListEnumerator(const ListEnumerator& copy) throw() : current(copy.current) {}
+  inline ListEnumerator(const ListEnumerator& copy) throw()
+    : current(copy.current) {
+  }
 
   /**
     Returns true if the enumeration still contains elements.
@@ -201,12 +232,16 @@ public:
 
     @param begin Specifies the beginning of the enumeration.
   */
-  explicit inline ListReadEnumerator(const ListNode<Value>* begin) throw() : current(begin) {}
+  explicit inline ListReadEnumerator(const ListNode<Value>* begin) throw()
+    : current(begin) {
+  }
 
   /**
     Initializes enumeration from other enumeration.
   */
-  inline ListReadEnumerator(const ListReadEnumerator& copy) throw() : current(copy.current) {}
+  inline ListReadEnumerator(const ListReadEnumerator& copy) throw()
+    : current(copy.current) {
+  }
 
   /**
     Returns true if the enumeration still contains elements.
@@ -288,8 +323,9 @@ public:
 //
 //      @param list The list being enumerated.
 //    */
-//    Enumeration(List& list) throw() :
-//      ListEnumeration<Value, Value&, Value*>(list.getFirst()) {}
+//    Enumeration(List& list) throw()
+//      : ListEnumeration<Value, Value&, Value*>(list.getFirst()) {
+//    }
 //  };
 //
 //  /**
@@ -303,8 +339,9 @@ public:
 //
 //      @param list The list being enumerated.
 //    */
-//    ReadOnlyEnumeration(const List& list) throw() :
-//      ListReadOnlyEnumeration<Value, const Value&, const Value*>(list.getFirst()) {}
+//    ReadOnlyEnumeration(const List& list) throw()
+//      : ListReadOnlyEnumeration<Value, const Value&, const Value*>(list.getFirst()) {
+//    }
 //  };
 protected:
 
@@ -363,7 +400,8 @@ protected:
     /**
       Initializes an empty list.
     */
-    ListImpl() throw() : first(0), last(0), size(0) {}
+    ListImpl() throw() : first(0), last(0), size(0) {
+    }
 
     /**
       Initializes list from other list.
@@ -379,7 +417,9 @@ protected:
     /**
       Returns the number of elements of the list.
     */
-    inline unsigned int getSize() const throw() {return size;}
+    inline unsigned int getSize() const throw() {
+      return size;
+    }
 
     /**
       Returns the first node of the list.
@@ -527,24 +567,31 @@ public:
   /**
     Initializes an empty list.
   */
-  List() throw() : elements(new ListImpl()) {}
+  List() throw() : elements(new ListImpl()) {
+  }
 
   /**
     Initializes list from other list.
   */
-  List(const List& copy) throw(MemoryException) : elements(copy.elements) {}
+  List(const List& copy) throw(MemoryException)
+    : elements(copy.elements) {
+  }
 
   // Node read-only
 
   /**
     Returns the number of elements in the list.
   */
-  inline unsigned int getSize() const throw() {return elements->getSize();}
+  inline unsigned int getSize() const throw() {
+    return elements->getSize();
+  }
 
   /**
     Returns true if the list is empty.
   */
-  inline bool isEmpty() const throw() {return elements->isEmpty();}
+  inline bool isEmpty() const throw() {
+    return elements->isEmpty();
+  }
 
   /**
     Returns a modifying enumerator of the list.
@@ -656,7 +703,7 @@ public:
       throw InvalidEnumeration();
     }
     ListNode* node = 0; //enu.node;
-    enu.next(); // throws exception if end has been reached
+    enu.next(); // raises exception if end has been reached
     remove(node);
   }*/
 };
@@ -665,7 +712,7 @@ public:
   Writes a string representation of a list to a format stream.
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const List<TYPE>& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const List<TYPE>& value) throw(IOException) {
   typename List<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {

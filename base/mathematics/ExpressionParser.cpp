@@ -66,18 +66,27 @@ namespace eval {
   // built-in unary operator
   class UnaryOperator : public Operation {
   public:
-    UnaryOperator(unsigned int i, unsigned int p, Glue g, bool po) throw() : Operation(i, 1, p, g, true, po, false) {}
+    
+    UnaryOperator(unsigned int i, unsigned int p, Glue g, bool po) throw()
+      : Operation(i, 1, p, g, true, po, false) {
+    }
   };
 
   // built-in binary operator
   class BinaryOperator : public Operation {
   public:
-    BinaryOperator(unsigned int i, unsigned int p, Glue g, bool po) throw() : Operation(i, 2, p, g, true, po, false) {}
+    
+    BinaryOperator(unsigned int i, unsigned int p, Glue g, bool po) throw()
+      : Operation(i, 2, p, g, true, po, false) {
+    }
   };
 
   class Function : public Operation {
   public:
-    Function(unsigned int i, unsigned int a) throw() : Operation(i, a, 100, RIGHT, false, false, true) {}
+    
+    Function(unsigned int i, unsigned int a) throw()
+      : Operation(i, a, 100, RIGHT, false, false, true) {
+    }
   };
 
   // built-in operations

@@ -45,7 +45,8 @@ public:
     
     @param type The identity of the type.
   */
-  OutOfDomain(Type type) throw() : Exception(type) {}
+  inline OutOfDomain(Type type) throw() : Exception(type) {
+  }
 
   /**
     Initializes the exception object.

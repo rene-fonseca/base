@@ -196,6 +196,125 @@ InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound
   throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
 }
 
+bool InetAddress::isIPv4(const String::ReadIterator begin, const String::ReadIterator end) throw() {
+  String::ReadIterator i = begin;
+  unsigned int words = 0; // get 4 decimal values
+  while ((words < 4) && (i != end) && ASCIITraits::isDigit(*i)) {
+    // overflow not possible with 3 digits [0;999]
+    unsigned int value = ASCIITraits::digitToValue(*i++);
+    if ((i < end) && ASCIITraits::isDigit(*i)) {
+      value = 10 * value + ASCIITraits::digitToValue(*i++);
+      if ((i < end) && ASCIITraits::isDigit(*i)) {
+        value = 10 * value + ASCIITraits::digitToValue(*i++);
+      }
+    }
+    if (value > 255) {
+      return false;
+    }
+    if (i == end) {
+      break;
+    }
+    if (!((i != end) && (*i++ == '.'))) {
+      return false;
+    }
+  }
+  if (words != 4) {
+    return false;
+  }
+  return i == end;
+}
+
+bool InetAddress::isIPv6(const String::ReadIterator begin, const String::ReadIterator end) throw() {
+  String::ReadIterator i = begin;
+  String::ReadIterator j = i;
+  String::ReadIterator endIPv6 = i; // end of address excluding IPv4 suffix
+  
+  while ((j != end) && (*j != '.')) {
+    if (*j == ':') {
+      endIPv6 = j;
+    }
+    ++j;
+  }
+  if (j == end) {
+    endIPv6 = end;
+  }
+  
+  const bool readIPv4 = j != end; // IPv4 suffix is present
+  unsigned int maxWords = readIPv4 ? 6 : 8; // maximum number of half-words to read
+  bool zeroCompression = false;
+  unsigned int words = 0;
+  
+  if ((i != endIPv6) && (*i == ':')) { // address begins with zero-compression
+    ++i;
+    if (!((i != endIPv6) && (*i == ':'))) {
+      return false;
+    }
+    ++i;
+    zeroCompression = true;
+    --maxWords;
+  }
+  // TAG: reading RFC 2373: zero compression fields of 0 words are prohibited
+  
+  while ((words < maxWords) && (i != endIPv6) && ASCIITraits::isHexDigit(*i)) {
+    ++i;
+    if ((i != endIPv6) && ASCIITraits::isHexDigit(*i)) {
+      ++i;
+      if ((i != endIPv6) && ASCIITraits::isHexDigit(*i)) {
+        ++i;
+        if ((i != endIPv6) && ASCIITraits::isHexDigit(*i)) {
+          ++i;
+        }
+      }
+    }
+    if (i == endIPv6) {
+      if (endIPv6 != end) {
+        ++i; // skip last colon
+      }
+      break;
+    }
+    // check for separator - yes last check must be (i != end)
+    if (!((*i++ == ':') && (i != end))) { // skip separator
+      return false;
+    }
+    if (!zeroCompression && (*i == ':')) { // check for zero-compression
+      ++i; // skip compression separator
+      zeroCompression = true;
+      --maxWords;
+    }
+  }
+  if (!((i == endIPv6) && (zeroCompression || (words == maxWords)))) {
+    return false;
+  }
+  
+  if (readIPv4) { // should we read an IPv4 address
+    unsigned int words = 0;
+    // get 4 decimal values
+    while ((words < 4) && (i < end) && ASCIITraits::isDigit(*i)) {
+      // overflow not possible with 3 digits [0;999]
+      unsigned int value = ASCIITraits::digitToValue(*i++);
+      if ((i < end) && ASCIITraits::isDigit(*i)) {
+        value = 10 * value + ASCIITraits::digitToValue(*i++);
+        if ((i < end) && ASCIITraits::isDigit(*i)) {
+          value = 10 * value + ASCIITraits::digitToValue(*i++);
+        }
+      }
+      if (value > 255) {
+        return false;
+      }
+      if (i == end) {
+        break;
+      }
+      if (!((i < end) && (*i++ == '.'))) {
+        return false;
+      }
+    }
+    if (words != 4) {
+      return false;
+    }
+  }
+  return i == end;
+}
+
 bool InetAddress::parse(const String& address) throw() {
   String::ReadIterator i = address.getBeginReadIterator();
   const String::ReadIterator end = address.getEndReadIterator();

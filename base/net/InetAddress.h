@@ -106,6 +106,16 @@ private:
 public:
 
   /**
+    Returns true if the specified string is an IPv4 address.
+  */
+  static bool isIPv4(const String::ReadIterator begin, const String::ReadIterator end) throw();
+
+  /**
+    Returns true if the specified string is an IPv6 address.
+  */
+  static bool isIPv6(const String::ReadIterator begin, const String::ReadIterator end) throw();
+
+  /**
     Returns the name of the local host.
   */
   static String getLocalHost() throw(NetworkException);
@@ -219,7 +229,14 @@ public:
     Returns true if the adresses are exactly equal.
   */
   bool operator==(const InetAddress& eq) const throw();
-
+  
+  /**
+    Returns true if the adresses are non-equal.
+  */
+  inline bool operator!=(const InetAddress& eq) const throw() {
+    return !operator==(eq);
+  }
+  
   /**
     Returns true if the addresses are synonymous.
   */

@@ -167,15 +167,15 @@ WideString& WideString::remove(unsigned int start, unsigned int end) throw(Memor
 }
 
 WideString& WideString::insert(unsigned int index, Character ch) throw(WideStringException, MemoryException) {
-  setLength(getLength() + 1);
+  int length = getLength();
+  setLength(length + 1);
   Character* buffer = getBuffer();
-  if (index >= getLength()) {
-    // insert section at end of string
-    buffer[getLength()] = ch;
+  if (index >= length) {
+    buffer[length] = ch; // insert section at end of string
   } else {
     // insert section in middle or beginning of string
     move(buffer + index + 1, buffer + index, 1);
-    buffer[getLength()] = ch;
+    buffer[length] = ch;
   }
   return *this;
 }

@@ -150,15 +150,15 @@ String& String::remove(unsigned int start, unsigned int end) throw(MemoryExcepti
 }
 
 String& String::insert(unsigned int index, char ch) throw(MemoryException) {
-  setLength(getLength() + 1);
+  int length = getLength();
+  setLength(length + 1);
   char* buffer = getMutableBuffer();
-  if (index >= getLength()) {
-    // insert section at end of string
-    buffer[getLength()] = ch;
+  if (index >= length) {
+    buffer[length] = ch; // insert section at end of string
   } else {
     // insert section in middle or beginning of string
     move(buffer + index + 1, buffer + index, 1);
-    buffer[getLength()] = ch;
+    buffer[length] = ch;
   }
   return *this;
 }

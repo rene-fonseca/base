@@ -35,9 +35,9 @@ public:
   /** True if the integer type is signed. */
   static const bool SIGNED = false;
   /** Specifies the minimum value. */
-  static const int MINIMUM = UnsignedInt::MINIMUM;
+  static const unsigned int MINIMUM = UnsignedInt::MINIMUM;
   /** Specifies the maximum value. */
-  static const int MAXIMUM = UnsignedInt::MAXIMUM;
+  static const unsigned int MAXIMUM = UnsignedInt::MAXIMUM;
 
   enum {
     BIN = 1, /**< Specifies binary integer base (2). */

@@ -20,7 +20,18 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-String getCurrentFolder() throw(FileSystemException) {
+String FileSystem::getPath(const String& base, const String& relative) throw() {
+#if defined(__win32__)
+  String result(base.getLength() + sizeof("\\") + relative.getLength());
+  result.append(base).append("\\").append(relative);
+#else // __unix__
+  String result(base.getLength() + sizeof("/") + relative.getLength());
+  result.append(base).append("/").append(relative);
+#endif
+  return result;
+}
+
+String FileSystem::getCurrentFolder() throw(FileSystemException) {
 #if defined(__win32__)
   Allocator<char>* buffer = Thread::getLocalStorage();
   if (GetCurrentDirectory(buffer->getSize(), buffer->getElements()) {
@@ -37,7 +48,7 @@ String getCurrentFolder() throw(FileSystemException) {
 #endif
 }
 
-void setCurrentFolder(const String& path) throw(FileSystemException) {
+void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException) {
 #if defined(__win32__)
   if (!SetCurrentDirectory(path) {
     throw FileSystemException("Unable to set current folder");

@@ -206,8 +206,8 @@ public:
     return ptr;
   }
 
-  /*
-    Destroys this automation pointer.
+  /**
+    Destroys the automation pointer.
   */
   inline ~ReferenceCountedObjectPointer() {
     if (ptr) { // skip if pointer is invalid

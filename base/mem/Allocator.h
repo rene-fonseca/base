@@ -24,9 +24,24 @@ inline void initialize(TYPE* element, unsigned int count) throw() {
   }
 }
 
+/** Initializes the elements of the sequence by copying elements from other sequence. */
+template<class TYPE>
+inline void initializeByCopy(TYPE* dest, const TYPE* src, unsigned int count) throw() {
+  if (isPrimitive<TYPE>()) {
+    copy<TYPE>(dest, src, count); // blocks do not overlap
+  } else {
+    const TYPE* end = dest + count;
+    while (dest != end) {
+      new(dest) TYPE(*src); // copy object
+      ++dest;
+      ++src;
+    }
+  }
+}
+
 /** Initializes the elements of the sequence by moving elements from other sequence. */
 template<class TYPE>
-inline void initializeAndDestroy(TYPE* dest, const TYPE* src, unsigned int count) throw() {
+inline void initializeByMove(TYPE* dest, const TYPE* src, unsigned int count) throw() {
   if (!isPrimitive<TYPE>()) {
     const TYPE* end = dest + count;
     while (dest != end) {
@@ -41,7 +56,7 @@ inline void initializeAndDestroy(TYPE* dest, const TYPE* src, unsigned int count
 /** Destroys the elements of the sequence. */
 template<class TYPE>
 inline void destroy(TYPE* element, unsigned int count) throw() {
-  if (!isPrimitive<TYPE>()) {
+  if (!isPrimitive<TYPE>()) { // must we destroy the elements
     const TYPE* end = element + count;
     --element;
     while (++element != end) {
@@ -111,25 +126,28 @@ public:
 
     @param size Specifies the initial size of the allocator.
   */
-  inline explicit Allocator(unsigned int size) throw(MemoryException) : elements(0), size(0) {
-    setSize(size);
+  explicit Allocator(unsigned int size) throw(MemoryException) :
+    elements(Heap::allocate<TYPE>(size)), size(size) {
+    initialize(elements, size); // default initialization of elements
   }
 
   /**
     Initializes allocator from other allocator.
   */
-  inline Allocator(const Allocator& cpy) throw(MemoryException) : elements(0), size(0) {
-    setSize(cpy.size);
-    copy<TYPE>(elements, cpy.elements, size); // blocks do not overlap
+  Allocator(const Allocator& cpy) throw(MemoryException) :
+    elements(Heap::allocate<TYPE>(size)), size(cpy.size) {
+    initializeByCopy(elements, cpy.elements, size); // initialization of elements by copying
   }
 
   /**
     Assignment of allocator by allocator.
   */
-  inline Allocator& operator=(const Allocator& eq) throw(MemoryException) {
+  Allocator& operator=(const Allocator& eq) throw(MemoryException) {
     if (&eq != this) { // protect against self assignment
-      setSize(eq.size);
-      copy<TYPE>(elements, copy.elements, size); // blocks do not overlap
+      destroy(elements, size);
+      size = eq.size;
+      elements = Heap::resize(elements, size);
+      initializeByCopy(elements, eq.elements, size); // initialization of elements by copying
     }
     return *this;
   }
@@ -183,7 +201,7 @@ public:
           elements = Heap::resize(elements, size);
         } else { // array is to be expanded
           TYPE* temp = Heap::allocate<TYPE>(size); // new array
-          initializeAndDestroy(temp, elements, this->size);
+          initializeByMove(temp, elements, this->size);
           Heap::release(elements); // free previous array
           elements = temp;
           initialize(elements + this->size, size - this->size); // default initialization of new objects
@@ -194,8 +212,9 @@ public:
     }
   }
 
-  inline ~Allocator() {
-    setSize(0); // free memory
+  ~Allocator() {
+    destroy(elements, size);
+    Heap::release(elements);
   }
 };
 

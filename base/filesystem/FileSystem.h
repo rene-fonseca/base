@@ -23,6 +23,14 @@ class FileSystem : public Object {
 public:
 
   /**
+    Returns the combined path of the specified base and relative path.
+
+    @param base The base path.
+    @param relative The relative path.
+  */
+  static String getPath(const String& base, const String& relative) throw();
+
+  /**
     Returns the path of the current folder.
   */
   static String getCurrentFolder() throw(FileSystemException);

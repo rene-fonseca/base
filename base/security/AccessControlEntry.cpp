@@ -22,6 +22,12 @@ AccessControlEntry::AccessControlEntry() throw()
   permissions.denied = 0;
 }
 
+AccessControlEntry::AccessControlEntry(const Trustee& _trustee, AccessMask allowed) throw()
+  : trustee(_trustee) {
+  permissions.allowed = allowed;
+  permissions.denied = 0;
+}
+
 AccessControlEntry::AccessControlEntry(const Trustee& _trustee, const Permissions& _permissions) throw()
   : trustee(_trustee), permissions(_permissions) {
 }

@@ -106,8 +106,6 @@ section_HEADERS = \
   RandomIterator.h \
   ForwardIterator.h \
   BidirectionalIterator.h \
-  Comparable.h \
-  Copyable.h \
   Integer.h \
   UnsignedInteger.h \
   LongInteger.h \

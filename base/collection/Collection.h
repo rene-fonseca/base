@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__COLLECTION_H
 #define _DK_SDU_MIP__BASE_COLLECTION__COLLECTION_H
 
-#include "Enumeration.h"
+#include "base/Object.h"
 
 /**
   Collection is the common interface implemented containers.
@@ -15,26 +15,27 @@
   @version 1.0
 */
 
-template<class TYPE>
-class Collection {
+class Collection : public Object {
+protected:
+
+  /** The number of elements in the collection. */
+  unsigned int size;
 public:
 
   /**
-    Removes all elements in the collection.
+    Initializes an empty collection.
   */
-  virtual void removeAll() = 0;
+  inline Collection() throw() : size(0) {}
 
   /**
     Returns the number of elements in the collection.
   */
-  virtual unsigned int getSize() = 0;
+  inline unsigned int getSize() const throw() {return size;}
 
   /**
     Returns true if the collection is empty.
   */
-  virtual bool isEmpty() = 0;
-
-//  virtual Enumeration* getEnumeration() = 0;
+  inline bool isEmpty() const throw() {return size != 0;}
 };
 
 #endif

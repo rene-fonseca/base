@@ -8,11 +8,11 @@
 template Map<void*, void*>;
 
 template<class KEY, class VALUE>
-Map<KEY, VALUE>::Map() throw() : first(NULL), size(0) {
+Map<KEY, VALUE>::Map() throw() : first(NULL) {
 }
 
 template<class KEY, class VALUE>
-Map<KEY, VALUE>::Map(const Map& copy) throw(MemoryException) : first(NULL), size(0) {
+Map<KEY, VALUE>::Map(const Map& copy) throw(MemoryException) : first(NULL) {
   MapNode* node = first;
   while (node) {
     add(node->getKey(), node->getValue());

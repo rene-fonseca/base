@@ -6,11 +6,11 @@
 #include "Stack.h"
 
 template<class TYPE>
-Stack<TYPE>::Stack() throw() : top(NULL), size(0) {
+Stack<TYPE>::Stack() throw() : top(NULL) {
 }
 
 template<class TYPE>
-Stack<TYPE>::Stack(const Stack& copy) throw(MemoryException) : top(NULL), size(0) {
+Stack<TYPE>::Stack(const Stack& copy) throw(MemoryException) : top(NULL) {
   StackNode* node = copy.top;
   while (node) {
     push(*node->getValue());
@@ -71,10 +71,10 @@ Stack<TYPE>::~Stack() throw() {
 
 
 
-Stack<void*>::Stack() throw() : top(NULL), size(0) {
+Stack<void*>::Stack() throw() : top(NULL) {
 }
 
-Stack<void*>::Stack(const Stack& copy) throw(MemoryException) : top(NULL), size(0) {
+Stack<void*>::Stack(const Stack& copy) throw(MemoryException) : top(NULL) {
   StackNode* node = copy.top;
   while (node) {
     push(*node->getValue());

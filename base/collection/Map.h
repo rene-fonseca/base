@@ -6,7 +6,6 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__MAP_H
 #define _DK_SDU_MIP__BASE_COLLECTION__MAP_H
 
-#include "base/Object.h"
 #include "Collection.h"
 #include "Enumeration.h"
 #include "base/Exception.h"
@@ -21,7 +20,7 @@
 */
 
 template<class KEY, class VALUE>
-class Map : public Object /*, public Collection*/ {
+class Map : public Collection {
 protected:
 
   /**
@@ -91,8 +90,6 @@ protected:
 
   /** The first node in the map. */
   MapNode* first;
-  /** The number of nodes in the map. */
-  unsigned int size;
 public:
 
   /**
@@ -104,16 +101,6 @@ public:
     Initializes map from other map.
   */
   Map(const Map& copy) throw(MemoryException);
-
-  /**
-    Returns the number of associations in this map.
-  */
-  inline unsigned int getSize() const throw() {return size;}
-
-  /**
-    Returns true if this map is empty (i.e. has no associations).
-  */
-  inline bool isEmpty() const throw() {return size == 0;}
 
   /**
     Returns an enumeration of all the associations in this map.

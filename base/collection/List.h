@@ -6,7 +6,6 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__LIST_H
 #define _DK_SDU_MIP__BASE_COLLECTION__LIST_H
 
-#include "base/Object.h"
 #include "Collection.h"
 #include "Enumeration.h"
 #include "base/MemoryException.h"
@@ -27,7 +26,7 @@
 */
 
 template<class TYPE>
-class List : public Object /*, public Collection*/ {
+class List : public Collection {
 protected:
 
   /**
@@ -79,8 +78,6 @@ protected:
   ListNode* first;
   /** The last node in the list. */
   ListNode* last;
-  /** The number of nodes in the list. */
-  unsigned int size;
 public:
 
   /**
@@ -98,16 +95,6 @@ public:
   // Node read-only
 
 
-
-  /**
-    Returns the number of elements in this list.
-  */
-  inline unsigned int getSize() const throw() {return size;}
-
-  /**
-    Returns true if the list is empty.
-  */
-  inline bool isEmpty() const throw() {return size != 0;}
 
   /**
     Returns the index of the specified node in this list.

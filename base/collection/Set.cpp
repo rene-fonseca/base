@@ -8,11 +8,11 @@
 template Set<void*>;
 
 template<class KEY>
-Set<KEY>::Set() throw() : first(NULL), size(0) {
+Set<KEY>::Set() throw() : first(NULL) {
 }
 
 template<class KEY>
-Set<KEY>::Set(const Set& copy) throw(MemoryException) : first(NULL), size(0) {
+Set<KEY>::Set(const Set& copy) throw(MemoryException) : first(NULL) {
   const SetNode* node = copy.first;
   while (node) {
     add(*node->getKey());

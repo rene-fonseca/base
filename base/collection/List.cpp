@@ -8,11 +8,11 @@
 template List<void*>;
 
 template<class TYPE>
-List<TYPE>::List() throw() : first(NULL), last(NULL), size(0) {
+List<TYPE>::List() throw() : first(NULL), last(NULL) {
 }
 
 template<class TYPE>
-List<TYPE>::List(const List& copy) throw(MemoryException) : first(NULL), last(NULL), size(0) {
+List<TYPE>::List(const List& copy) throw(MemoryException) : first(NULL), last(NULL) {
 //  append(copy.getEnumeration());
 }
 

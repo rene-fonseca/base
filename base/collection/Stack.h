@@ -6,7 +6,6 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__STACK_H
 #define _DK_SDU_MIP__BASE_COLLECTION__STACK_H
 
-#include "base/Object.h"
 #include "Collection.h"
 #include "base/OutOfRange.h"
 #include "base/MemoryException.h"
@@ -19,9 +18,12 @@
 */
 
 template<class TYPE>
-class Stack : public Object /*, public Collection*/ {
+class Stack : public Collection {
 protected:
 
+  /**
+    A node of a stack.
+  */
   class StackNode {
   protected:
     StackNode* next;
@@ -34,8 +36,6 @@ protected:
 
   /** The node on the top of the stack. */
   StackNode* top;
-  /** The number of nodes in the stack. */
-  unsigned int size;
 public:
 
   /**
@@ -47,16 +47,6 @@ public:
     Initializes stack from other stack.
   */
   Stack(const Stack& copy) throw(MemoryException);
-
-  /**
-    Returns the number of nodes on the stack.
-  */
-  inline unsigned int getSize() const throw() {return size;}
-
-  /**
-    Returns true if the stack is empty.
-  */
-  inline bool isEmpty() const throw() {return size == 0;}
 
   /**
     Returns the element at the specified index from the top. Throws
@@ -92,14 +82,14 @@ public:
 };
 
 
-
+/*
 template<class TYPE> class Stack<TYPE*>;
 template<> class Stack<void*>;
 
 
 
 template<>
-class Stack<void*> : public Object {
+class Stack<void*> : public Collection {
 protected:
 
   typedef void* TYPE;
@@ -120,8 +110,6 @@ public:
 
   Stack() throw();
   Stack(const Stack& copy) throw(MemoryException);
-  inline unsigned int getSize() const throw() {return size;}
-  inline bool isEmpty() const throw() {return size == 0;}
   void* peek(unsigned int index = 0) const throw(OutOfRange);
   void push(void* value) throw(MemoryException);
   void* pop() throw(OutOfRange);
@@ -146,5 +134,5 @@ public:
   inline TYPE pop() throw(OutOfRange) {return static_cast<TYPE>(Base::pop());}
   inline void pop(unsigned int count) throw(OutOfRange) {Base::pop(count);}
 };
-
+*/
 #endif

@@ -6,7 +6,6 @@
 #ifndef _DK_SDU_MIP__BASE_COLLECTION__SET_H
 #define _DK_SDU_MIP__BASE_COLLECTION__SET_H
 
-#include "base/Object.h"
 #include "Collection.h"
 #include "Enumeration.h"
 #include "InvalidKey.h"
@@ -20,7 +19,7 @@
 */
 
 template<class KEY>
-class Set : public Object /*, public Collection*/ {
+class Set : public Collection {
 protected:
 
   /**
@@ -65,8 +64,6 @@ protected:
 
   /** The first node in the set. */
   SetNode* first;
-  /** The number of nodes in the set. */
-  unsigned int size;
 public:
 
   /**
@@ -78,16 +75,6 @@ public:
     Initializes set from other set.
   */
   Set(const Set& copy) throw(MemoryException);
-
-  /**
-    Returns the number of keys in this set.
-  */
-  inline unsigned int getSize() const throw() {return size;}
-
-  /**
-    Returns true if this set is empty.
-  */
-  inline bool isEmpty() const throw() {return size == 0;}
 
   /**
     Returns true if the specified key is present is this set.

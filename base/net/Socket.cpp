@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/ByteOrder.h>
 #include <base/Functor.h>
 #include <base/io/EndOfFile.h>
@@ -31,7 +32,11 @@
   #include <fcntl.h>
   #include <errno.h>
   #include <sys/time.h> // defines timeval on Linux systems
-  #include <stropts.h> // defines FLUSH macros
+
+  #if (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__CYGWIN)
+    #include <stropts.h> // defines FLUSH macros
+  #endif
+
   #include <string.h> // memset (required on solaris)
   #include <limits.h> // defines SSIZE_MAX
   #include <arpa/inet.h>

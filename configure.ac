@@ -1249,7 +1249,7 @@ dnl Add VERSION resource to the dynamic library on Windows platforms (i.e. cygwi
 case "${ac_cv_target}" in
 *-*-cygwin|*-*-mingw32)
   dnl The -Wl option is used to circumvent libtool
-  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-lUB1394 -Wl,winrcver.o'
+  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-Wl,winrcver.o'
   BASE_DEPENDENCIES="${BASE_DEPENDENCIES}${BASE_DEPENDENCIES:+ }"'winrcver.o'
   ;;
 esac
@@ -1377,8 +1377,10 @@ AC_CONFIG_FILES(base/Makefile)
 AC_CONFIG_FILES(base/docs/Makefile)
 AC_CONFIG_FILES(base/docs/en/Makefile)
 AC_CONFIG_FILES(base/platforms/Makefile)
+AC_CONFIG_FILES(base/archive/Makefile)
 AC_CONFIG_FILES(base/collection/Makefile)
 AC_CONFIG_FILES(base/communication/Makefile)
+AC_CONFIG_FILES(base/compression/Makefile)
 AC_CONFIG_FILES(base/concurrency/Makefile)
 AC_CONFIG_FILES(base/extension/Makefile)
 AC_CONFIG_FILES(base/filesystem/Makefile)

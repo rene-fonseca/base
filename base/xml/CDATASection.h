@@ -53,12 +53,18 @@ public:
 
   inline CDATASection(Node node) throw(CastException)
     : Text(node) {
-    assert(node.getType() == CDATA_SECTION_NODE, CastException(this));
+    assert(
+      node.isInvalid() || (node.getType() == CDATA_SECTION_NODE),
+      CastException(this)
+    );
   }
   
   inline CDATASection(Text node) throw(CastException)
     : Text(node) {
-    assert(node.getType() == CDATA_SECTION_NODE, CastException(this));
+    assert(
+      node.isInvalid() || (node.getType() == CDATA_SECTION_NODE),
+      CastException(this)
+    );
   }
 };
 

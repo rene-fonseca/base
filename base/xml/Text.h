@@ -54,7 +54,7 @@ public:
     : CharacterData(node) {
     NodeType type = node.getType();
     assert(
-      (type == TEXT_NODE) || (type == CDATA_SECTION_NODE),
+      node.isInvalid() || (type == TEXT_NODE) || (type == CDATA_SECTION_NODE),
       CastException(this)
     );
   }

@@ -41,6 +41,7 @@ public:
     : Node(node) {
     NodeType type = node.getType();
     assert(
+      node.isInvalid() || 
       (type == COMMENT_NODE) ||
       (type == TEXT_NODE) ||
       (type == CDATA_SECTION_NODE),

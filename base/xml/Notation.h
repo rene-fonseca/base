@@ -45,7 +45,10 @@ protected:
 public:
   
   inline Notation(Node node) throw(CastException) : Node(node) {
-    assert(node.getType() == NOTATION_NODE, CastException(this));
+    assert(
+      node.isInvalid() || (node.getType() == NOTATION_NODE),
+      CastException(this)
+    );
   }
   
   /**

@@ -42,7 +42,10 @@ protected:
 public:
   
   inline Attribute(Node node) throw(CastException) : Node(node) {
-    assert(node.getType() == ATTRIBUTE_NODE, CastException(this));
+    assert(
+      node.isInvalid() || (node.getType() == ATTRIBUTE_NODE),
+      CastException(this)
+    );
   }
   
   /**

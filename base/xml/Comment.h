@@ -43,12 +43,18 @@ public:
   
   inline Comment(Node node) throw(CastException)
     : CharacterData(node) {
-    assert(node.getType() == COMMENT_NODE, CastException(this));
+    assert(
+      node.isInvalid() || (node.getType() == COMMENT_NODE),
+      CastException(this)
+    );
   }
   
   inline Comment(CharacterData node) throw(CastException)
     : CharacterData(node) {
-    assert(node.getType() == COMMENT_NODE, CastException(this));
+    assert(
+      node.isInvalid() || (node.getType() == COMMENT_NODE),
+      CastException(this)
+    );
   }
 };
 

@@ -41,7 +41,10 @@ protected:
 public:
 
   inline ProcessingInstruction(Node node) throw(CastException) : Node(node) {
-    assert(node.getType() == PROCESSING_INSTRUCTION_NODE, CastException(this));
+    assert(
+      node.isInvalid() || (node.getType() == PROCESSING_INSTRUCTION_NODE),
+      CastException(this)
+    );
   }
   
   /**

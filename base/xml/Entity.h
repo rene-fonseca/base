@@ -41,7 +41,10 @@ protected:
 public:
   
   inline Entity(Node node) throw(CastException) : Node(node) {
-    assert(node.getType() == ENTITY_NODE, CastException(this));
+    assert(
+      node.isInvalid() || (node.getType() == ENTITY_NODE),
+      CastException(this)
+    );
   }
   
   /**

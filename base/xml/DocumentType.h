@@ -51,7 +51,10 @@ public:
     Initializes the document type node from a node.
   */
   inline DocumentType(Node node) throw(CastException) : Node(node) {
-    assert(node.getType() == DOCUMENT_TYPE_NODE, CastException(this));
+    assert(
+      node.isInvalid() || (node.getType() == DOCUMENT_TYPE_NODE),
+      CastException(this)
+    );
   }
   
   /**

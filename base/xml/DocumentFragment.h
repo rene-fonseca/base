@@ -46,7 +46,10 @@ protected:
 public:
 
   inline DocumentFragment(Node node) throw(CastException) : Node(node) {
-    assert(node.getType() == DOCUMENT_FRAGMENT_NODE, CastException(this));
+    assert(
+      node.isInvalid() || (node.getType() == DOCUMENT_FRAGMENT_NODE),
+      CastException(this)
+    );
   }
 };
 

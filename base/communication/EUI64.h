@@ -17,6 +17,7 @@
 #include <base/OutOfDomain.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/InvalidFormat.h>
+#include <base/Primitives.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -34,13 +35,13 @@ class EUI64 {
 private:
   
   /** Unique 64 bit identifier. */
-  unsigned char id[8];
+  uint8 id[8];
 protected:
 
   /**
     Swaps the 4 bit nibbles of a 8 bit word.
   */
-  static inline unsigned char swapNibbles(unsigned char value) throw() {
+  static inline uint8 swapNibbles(uint8 value) throw() {
     return ((value & 0x0f) << 4) | ((value & 0xf0) >> 4);
   }
 public:
@@ -53,7 +54,7 @@ public:
   /**
     Initializes identifier from array.
   */
-  EUI64(const unsigned char value[8]) throw();
+  EUI64(const uint8 value[8]) throw();
 
   /**
     Initializes identifier from string.
@@ -122,33 +123,34 @@ public:
   /**
     Fills the specified array with the EUI-48 identifier.
   */
-  void getEUI48(unsigned char (&eui48)[6]) const throw();
+  void getEUI48(uint8* eui48) const throw();
 
   /**
     Sets the identifier by an EUI-48 identifier.
   */
-  void setEUI48(const unsigned char (&eui48)[6]) throw();
+  void setEUI48(const uint8* eui48) throw();
   
   /**
     Fills specified array with the MAC idenfier.
   */
-  void getMAC48(unsigned char (&mac)[6]) const throw();
+  void getMAC48(uint8* mac) const throw();
   
   /**
     Sets the identifier by an MAC-48 identifier.
   */
-  void setMAC48(const unsigned char (&mac)[6]) throw();
+  void setMAC48(const uint8* mac) throw();
   
   /**
     Returns the identifier.
   */
-  inline const unsigned char* getBytes() const throw() {
-    return reinterpret_cast<const unsigned char*>(&id);
+  inline const uint8* getBytes() const throw() {
+    return reinterpret_cast<const uint8*>(&id);
   }
 };
 
 /**
-  Writes the globally unique identifier (EUI-64) to the format output stream (e.g. 12:34:56-09:87:65:43:21).
+  Writes the globally unique identifier (EUI-64) to the format output stream
+  (e.g. 12:34:56-09:87:65:43:21).
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const EUI64& value) throw(IOException);
 

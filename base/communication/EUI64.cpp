@@ -27,8 +27,8 @@ EUI64::EUI64() throw() {
   id[7] = 0x00;
 }
 
-EUI64::EUI64(const unsigned char value[8]) throw() {
-  copy<unsigned char>(id, value, sizeof(id));
+EUI64::EUI64(const uint8 value[8]) throw() {
+  copy<uint8>(id, value, sizeof(id));
 }
 
 EUI64::EUI64(const String& value) throw(InvalidFormat) {
@@ -50,22 +50,22 @@ EUI64::EUI64(const String& value) throw(InvalidFormat) {
 }
 
 EUI64::EUI64(const EUI64& _copy) throw() {
-  copy<unsigned char>(id, _copy.id, sizeof(id));
+  copy<uint8>(id, _copy.id, sizeof(id));
 }
 
 EUI64& EUI64::operator=(const EUI64& eq) throw() {
   if (&eq != this) {
-    copy<unsigned char>(id, eq.id, sizeof(id));
+    copy<uint8>(id, eq.id, sizeof(id));
   }
   return *this;
 }
 
 bool EUI64::operator==(const EUI64& eq) const throw() {
-  return compare<unsigned char>(id, eq.id, sizeof(id)) == 0;
+  return compare<uint8>(id, eq.id, sizeof(id)) == 0;
 }
 
 bool EUI64::operator!=(const EUI64& eq) const throw() {
-  return compare<unsigned char>(id, eq.id, sizeof(id)) != 0;
+  return compare<uint8>(id, eq.id, sizeof(id)) != 0;
 }
 
 bool EUI64::isInvalid() const throw() {
@@ -97,7 +97,7 @@ void EUI64::setExtensionId(uint64 extensionId) throw(OutOfDomain) {
   id[7] = extensionId;
 }
 
-void EUI64::getEUI48(unsigned char (&eui48)[6]) const throw() {
+void EUI64::getEUI48(uint8* eui48) const throw() {
   eui48[0] = id[0];
   eui48[1] = id[1];
   eui48[2] = id[2];
@@ -106,7 +106,7 @@ void EUI64::getEUI48(unsigned char (&eui48)[6]) const throw() {
   eui48[5] = id[7];
 }
 
-void EUI64::setEUI48(const unsigned char (&eui48)[6]) throw() {
+void EUI64::setEUI48(const uint8* eui48) throw() {
   id[0] = eui48[0];
   id[1] = eui48[1];
   id[2] = eui48[2];
@@ -117,7 +117,7 @@ void EUI64::setEUI48(const unsigned char (&eui48)[6]) throw() {
   id[7] = eui48[5];
 }
 
-void EUI64::getMAC48(unsigned char (&mac)[6]) const throw() {
+void EUI64::getMAC48(uint8* mac) const throw() {
   mac[0] = swapNibbles(id[0]);
   mac[1] = swapNibbles(id[1]);
   mac[2] = swapNibbles(id[2]);
@@ -126,7 +126,7 @@ void EUI64::getMAC48(unsigned char (&mac)[6]) const throw() {
   mac[5] = swapNibbles(id[7]);
 }
 
-void EUI64::setMAC48(const unsigned char (&mac)[6]) throw() {
+void EUI64::setMAC48(const uint8* mac) throw() {
   id[0] = swapNibbles(mac[0]);
   id[1] = swapNibbles(mac[1]);
   id[2] = swapNibbles(mac[2]);
@@ -138,7 +138,7 @@ void EUI64::setMAC48(const unsigned char (&mac)[6]) throw() {
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const EUI64& value) throw(IOException) {
-  const unsigned char* id = value.getBytes();
+  const uint8* id = value.getBytes();
   StringOutputStream s;
   s << HEX << setWidth(2) << ZEROPAD << NOPREFIX << id[0] << ':'
     << HEX << setWidth(2) << ZEROPAD << NOPREFIX << id[1] << ':'

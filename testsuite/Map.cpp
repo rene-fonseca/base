@@ -25,8 +25,7 @@ int main() {
   Map<int, int>::ReadOnlyEnumeration enu(mii);
   int sum = 0;
   while (enu.hasNext()) {
-    const Map<int, int>::Node* node = enu.next()->getValue();
-    sum += node->getValue();
+    sum += enu.next()->getValue();
   }
   fout << "sum: " << sum << ENDL;
 

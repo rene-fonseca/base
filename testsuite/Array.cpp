@@ -4,6 +4,8 @@
  ***************************************************************************/
 
 #include <base/collection/Array.h>
+#include <base/collection/Functor.h>
+#include <base/Functor.h>
 
 using namespace base;
 
@@ -40,20 +42,13 @@ int main() {
   fout << "ai: " << ai << ENDL;
 
   fout << "Modifying enumeration of elements (multiply values by 2)" << ENDL;
-  Array<int>::Enumeration enu(ai);
-  unsigned int position = 0;
-  while (enu.hasNext()) {
-    *enu.next() *= 2;
-  }
+  transform(ai, bind2First(Multiply<int>(), 2));
   fout << "ai: " << ai << ENDL;
 
   fout << "Non-modifying enumerating elements of list (calculating sum)" << ENDL;
-  Array<int>::ReadOnlyEnumeration roenu(ai);
-  int sum = 0;
-  while (roenu.hasNext()) {
-    sum += *roenu.next();
-  }
-  fout << "sum: " << sum << ENDL;
+  Sum<int> sum;
+  forEach(ai, sum);
+  fout << "Sum: " << sum.getResult() << ENDL;
 
   fout << "Size: " << ai.getSize() << ENDL;
   fout << "Removing all the elements" << ENDL;

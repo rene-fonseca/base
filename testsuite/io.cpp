@@ -8,6 +8,7 @@
 #include <base/collection/List.h>
 #include <base/collection/Set.h>
 #include <base/collection/Map.h>
+#include <base/Date.h>
 
 using namespace base;
 
@@ -24,6 +25,7 @@ void test() {
   ferr << "Writing to ferr: " << "This is written to standard error" << ENDL;
 
   fout << "String<char>: " << String<>("This is a String object") << ENDL;
+  fout << "Date (now): " << Date::getNow() << ENDL;
 
   List<int> li;
   for (unsigned int i = 0; i < 10; i++) {

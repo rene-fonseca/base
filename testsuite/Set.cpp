@@ -4,6 +4,8 @@
  ***************************************************************************/
 
 #include <base/collection/Set.h>
+#include <base/collection/Functor.h>
+#include <base/Functor.h>
 
 using namespace base;
 
@@ -26,12 +28,9 @@ int main() {
   fout << "si: " << si << EOL;
 
   fout << "Non-modifying enumerating elements of set (calculating sum)" << ENDL;
-  Set<int>::ReadOnlyEnumeration enu(si);
-  int sum = 0;
-  while (enu.hasNext()) {
-    sum += *enu.next()->getValue();
-  }
-  fout << "sum: " << sum << EOL;
+  Sum<int> sum;
+  forEach(si, sum);
+  fout << "sum: " << sum.getResult() << ENDL;
 
   fout << "Checking whether 4 is in set: " << si.isKey(4) << ENDL;
   fout << "Checking whether 0 is in set: " << si.isKey(0) << ENDL;

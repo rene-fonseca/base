@@ -8,8 +8,23 @@
 #include <base/mem/CapacityAllocator.h>
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
 #include <base/string/String.h>
+#include <base/collection/Functor.h>
 
 using namespace base;
+
+/** Invert case of character. */
+class InvertCase : public UnaryOperation<char, char> {
+public:
+  inline char operator()(char value) const throw() {
+    if ((value >= 'A') && (value <= 'Z')) {
+      return value - 'A' + 'a';
+    } else if ((value >= 'a') && (value <= 'z')) {
+      return value - 'a' + 'A';
+    } else {
+      return value;
+    }
+  }
+};
 
 int main() {
   fout << "Testing String implementation..." << EOL << ENDL;
@@ -75,6 +90,10 @@ int main() {
   String<> str2 = "Hello, World!";
   fout << "Length of str2: " << str2.length() << ENDL;
   fout << "Value of str2: " << str2 << ENDL;
+
+  fout << "Inverting case of characters" << ENDL;
+  transform(str2, InvertCase());
+  fout << "str2: " << str2 << ENDL;
 
   fout << "Concatenation: " << String<>("first") + String<>("SECOND") << ENDL;
 

@@ -4,6 +4,8 @@
  ***************************************************************************/
 
 #include <base/collection/List.h>
+#include <base/collection/Functor.h>
+#include <base/Functor.h>
 
 using namespace base;
 
@@ -37,17 +39,13 @@ int main() {
   fout << "Size of list: " << li.getSize() << ENDL;
 
   fout << "Modifying enumerating elements of list (multiplying by 2)" << ENDL;
-  List<int>::Enumeration enu(li);
-  while (enu.hasNext()) {
-    *enu.next() *= 2;
-  }
+  transform(li, bind2First(Multiply<int>(), 2));
+  fout << "li: " << li << ENDL;
 
   fout << "Non-modifying enumerating elements of list (calculating sum)" << ENDL;
-  List<int>::ReadOnlyEnumeration roenu(li);
-  int sum = 0;
-  while (roenu.hasNext()) {
-    sum += *roenu.next();
-  }
+  Sum<int> sum;
+  forEach(li, sum);
+  fout << "Sum: " << sum.getResult() << ENDL;
 
   fout << "Size: " << li.getSize() << ENDL;
   fout << "Removing all the elements" << ENDL;

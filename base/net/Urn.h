@@ -44,6 +44,11 @@ private:
   /** The namespace specific string. */
   String nss;
 public:
+
+  /**
+    Returns true if the specified string is a valid urn.
+  */
+  static bool isUrn(const String& urn) throw();
   
   /**
     Initializes urn as invalid.

@@ -16,6 +16,83 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+bool Urn::isUrn(const String& urn) throw() {
+  String::ReadIterator i = urn.getBeginReadIterator();
+  String::ReadIterator end = urn.getEndReadIterator();
+  
+  // check prefix
+  if (!(((end - i) >= 4) &&
+        (ASCIITraits::toLower(*i++) == 'u') &&
+        (ASCIITraits::toLower(*i++) == 'r') &&
+        (ASCIITraits::toLower(*i++) == 'n') &&
+        (*i++ == ':'))) {
+    return false;
+  }
+  
+  // check nid
+  if (((end - i) >= 4) &&
+      (ASCIITraits::toLower(i[0]) == 'u') &&
+      (ASCIITraits::toLower(i[1]) == 'r') &&
+      (ASCIITraits::toLower(i[2]) == 'n') &&
+      (i[3] == ':')) {
+    return false;
+  }
+  
+  if ((i == end) || !ASCIITraits::isAlphaNum(*i++)) {
+    return false;
+  }
+  
+  for (
+    unsigned int j = 31;
+    (j > 0) && (i != end) && ((ASCIITraits::isAlphaNum(*i)) || (*i == '-'));
+    --j, ++i
+  );
+  
+  if ((i == end) || (*i++ != ':')) {
+    return false;
+  }
+
+  // check nss  
+  String::ReadIterator j = i;
+  while (i != end) {
+    if (ASCIITraits::isAlphaNum(*i)) {
+      ++i;
+      continue;
+    }
+    switch (*i) {
+    case '(':
+    case ')':
+    case '+':
+    case ',':
+    case '-':
+    case '.':
+    case ':':
+    case '=':
+    case '@':
+    case ';':
+    case '$':
+    case '_':
+    case '!':
+    case '*':
+    case '\'':
+      ++i;
+      break;
+    case '%': // reserved
+      if (!(((end - i) >= 2) &&
+            (ASCIITraits::isHexDigit(i[0])) &&
+            (ASCIITraits::isHexDigit(i[1])))) {
+        return false;
+      }
+      ++i;
+      ++i;
+      break;
+    default:
+      return false;
+    }
+  };
+  return i != j;
+}
+
 Urn::Urn() throw() {
 }
 

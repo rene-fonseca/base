@@ -142,7 +142,7 @@ public:
   bool isClosed() const throw();
 
   /**
-    Returns the ACL of the file.
+    Returns the Access Control List (ACL) of the file.
   */
   AccessControlList getACL() const throw(FileException);
 
@@ -165,11 +165,6 @@ public:
     Returns the permissions of the file.
   */
   unsigned int getMode() const throw(FileException);
-  
-  /**
-    Return Access Control List (ACL).
-  */
-  AccessControlList getACL() const throw(FileException);
   
   /**
     Returns the size of the file in bytes.

@@ -5,12 +5,12 @@
 
 #include <base/net/InetInterface.h>
 
-#if defined(HAVE_IPV6)
+#if defined(HAVE_INET_IPV6)
   #include <net/if.h>
 #endif
 
 List<InetInterface>& getInetInterfaces() throw(NetworkException) {
-#if defined(HAVE_IPV6)
+#if defined(HAVE_INET_IPV6)
   List<InetInterface> interfaces;
   struct if_nameindex* ni;
   if ((ni = if_nameindex()) == NULL) { // MT-safe

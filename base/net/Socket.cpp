@@ -29,11 +29,11 @@
 class SocketAddress {
 private:
 
-#ifdef HAVE_IPV6
+#ifdef HAVE_INET_IPV6
   struct sockaddr_in6 sa;
 #else
   struct sockaddr_in sa;
-#endif // HAVE_IPV6
+#endif // HAVE_INET_IPV6
 public:
 
   /**
@@ -41,7 +41,7 @@ public:
   */
   SocketAddress(InetAddress addr, unsigned short port) {
     fill<char>((char*)&sa, sizeof(sa), 0);
-#ifdef HAVE_IPV6
+#ifdef HAVE_INET_IPV6
 #ifdef SIN6_LEN
     sa.sin6_len = sizeof(sa);
 #endif // SIN6_LEN
@@ -52,7 +52,7 @@ public:
     sa.sin_family = AF_INET;
     sa.sin_port = htons(port);
     copy<char>((char*)&sa.sin_addr, addr.getAddress(), sizeof(struct in_addr));
-#endif // HAVE_IPV6
+#endif // HAVE_INET_IPV6
   }
 
   /**
@@ -101,11 +101,11 @@ bool Socket::accept(Socket& socket) throw(IOException) {
 
   // don't know if accept() fills 'sa' with something different from sockaddr_in6 - do you know this
   int handle;
-#ifdef HAVE_IPV6
+#ifdef HAVE_INET_IPV6
   struct sockaddr_in6 sa;
 #else
   struct sockaddr_in sa;
-#endif // HAVE_IPV6
+#endif // HAVE_INET_IPV6
   socklen_t sl = sizeof(sa);
 
 #ifdef __win32__
@@ -122,13 +122,13 @@ bool Socket::accept(Socket& socket) throw(IOException) {
 #endif
 
   fd.setHandle(handle);
-#ifdef HAVE_IPV6
+#ifdef HAVE_INET_IPV6
   remoteAddress.setAddress((char*)&(sa.sin6_addr), InetAddress::IPv6);
   remotePort = ntohs(sa.sin6_port);
 #else
   remoteAddress.setAddress((char*)&(sa.sin_addr), InetAddress::IPv4);
   remotePort = ntohs(sa.sin_port);
-#endif // HAVE_IPV6
+#endif // HAVE_INET_IPV6
   return true;
 }
 
@@ -192,7 +192,7 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
 void Socket::create(bool stream) throw(IOException) {
   SynchronizeExclusively();
   int handle;
-#ifdef HAVE_IPV6
+#ifdef HAVE_INET_IPV6
   if (isCreated() || ((handle = ::socket(PF_INET6, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == INVALID_SOCKET)) {
     throw NetworkException("Unable to create socket");
   }

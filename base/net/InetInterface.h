@@ -44,6 +44,8 @@ private:
   unsigned int flags;
   /** Address. */
   InetAddress address;
+  /** Netmask. */
+  InetAddress netmask;
   /** Broadcast address. */
   InetAddress broadcast;
   /** Destination address. */
@@ -59,7 +61,8 @@ public:
     LOOPBACK = 2,
     POINT_TO_POINT = 4,
     BROADCAST = 8,
-    MULTICAST = 16
+    MULTICAST = 16,
+    DYNAMIC = 32
   };
 
   /**
@@ -138,6 +141,13 @@ public:
   */
   inline InetAddress getAddress() const throw() {
     return address;
+  }
+  
+  /**
+    Returns the network mask.
+  */
+  inline InetAddress getNetmask() const throw() {
+    return netmask;
   }
   
   /**

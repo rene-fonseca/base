@@ -28,6 +28,7 @@
 #  include <sys/types.h>
 #  include <sys/socket.h>
 #  include <net/if.h>
+#  include <netinet/in.h>
 #  include <sys/ioctl.h>
 #  include <unistd.h>
 #endif // flavor
@@ -44,12 +45,16 @@ namespace internal {
       switch (address.sa_family) {
       case AF_INET:
         return InetAddress(
-          Cast::getAddress(Cast::pointer<const struct sockaddr_in*>(&address)->sin_addr),
+          Cast::getAddress(
+            Cast::pointer<const struct sockaddr_in*>(&address)->sin_addr
+          ),
           InetAddress::IP_VERSION_4
         );
       case AF_INET6:
         return InetAddress(
-          Cast::getAddress(Cast::pointer<const struct sockaddr_in6*>(&address)->sin6_addr),
+          Cast::getAddress(
+            Cast::pointer<const struct sockaddr_in6*>(&address)->sin6_addr
+          ),
           InetAddress::IP_VERSION_6
         );
       default:
@@ -58,7 +63,9 @@ namespace internal {
 #else
       if (address.sa_family == AF_INET) {
         return InetAddress(
-          Cast::getAddress(Cast::pointer<const struct sockaddr_in*>(&address)->sin_addr),
+          Cast::getAddress(
+            Cast::pointer<const struct sockaddr_in*>(&address)->sin_addr
+          ),
           InetAddress::IP_VERSION_4
         );
       } else {
@@ -74,7 +81,10 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
 #if 0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct if_nameindex* ni;
   if ((ni = if_nameindex()) == 0) { // MT-safe
-    throw NetworkException("Unable to get interfaces", Type::getType<InetInterface>());
+    throw NetworkException(
+      "Unable to get interfaces",
+      Type::getType<InetInterface>()
+    );
   }
   try {
     interfaces.add(String(ni->if_name), ni->if_index);
@@ -97,11 +107,16 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
         0
       )) {
     close(handle);
-    throw NetworkException("Unable to get interfaces", Type::getType<InetInterface>());
+    throw NetworkException(
+      "Unable to get interfaces",
+      Type::getType<InetInterface>()
+    );
   }
   close(handle);
   const INTERFACE_INFO* interface =
-    Cast::pointer<const INTERFACE_INFO*>(Thread::getLocalStorage()->getElements());
+    Cast::pointer<const INTERFACE_INFO*>(
+      Thread::getLocalStorage()->getElements()
+    );
   const unsigned int numberOfInterfaces = bytesReturned/sizeof(interfaces[0]);
   for (unsigned int index = 0; index < numberOfInterfaces; ++index) {
     if (sa.sin_family != AF_INET) {
@@ -125,13 +140,23 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
     ifc.ifc_buf = Thread::getLocalStorage()->getElements();
     if (ioctl(handle, SIOCGIFCONF, &ifc)) {
       close(handle);
-      throw NetworkException("Unable to get interfaces", Type::getType<InetInterface>());
+      throw NetworkException(
+        "Unable to get interfaces",
+        Type::getType<InetInterface>()
+      );
     }
     struct ifreq* current = ifc.ifc_req;
     int offset = 0;
     while (offset < ifc.ifc_len) {
       if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
-        interfaces.add(String(current->ifr_name, IFNAMSIZ), current->ifr_index);
+        interfaces.add(
+          String(current->ifr_name, IFNAMSIZ),
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+          current->ifr_ifindex
+#else
+          current->ifr_index
+#endif
+        );
       }
       ++current;
       offset += sizeof(struct ifreq);
@@ -152,7 +177,10 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
   List<InetInterface> interfaces;
   struct if_nameindex* ni;
   if ((ni = if_nameindex()) == 0) { // MT-safe
-    throw NetworkException("Unable to get interfaces", Type::getType<InetInterface>());
+    throw NetworkException(
+      "Unable to get interfaces",
+      Type::getType<InetInterface>()
+    );
   }
   InetInterface interface;
   interface.index = ni->if_index;
@@ -175,11 +203,16 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
         0
       )) {
     close(handle);
-    throw NetworkException("Unable to get interfaces", Type::getType<InetInterface>());
+    throw NetworkException(
+      "Unable to get interfaces",
+      Type::getType<InetInterface>()
+    );
   }
   close(handle);
   const INTERFACE_INFO* interface =
-    Cast::pointer<const INTERFACE_INFO*>(Thread::getLocalStorage()->getElements());
+    Cast::pointer<const INTERFACE_INFO*>(
+      Thread::getLocalStorage()->getElements()
+    );
   const unsigned int numberOfInterfaces = bytesReturned/sizeof(interfaces[0]);
   List<InetInterface> interfaces;
   for (unsigned int index = 0; index < numberOfInterfaces; ++index) {
@@ -200,18 +233,29 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
 #elif 1 || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   List<InetInterface> interfaces;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-  int numberOfInterfaces;
-  if (ioctl(handle, SIOCGIFNUM, &numberOfInterfaces) != 0) {
-    close(handle);
-    throw NetworkException("Unable to get interfaces", Type::getType<InetInterface>());
-  }
+//   int numberOfInterfaces;
+// #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+//   const int command = SIOCGIFCOUNT;
+// #else
+//   const int command = SIOCGIFNUM;
+// #endif
+//   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
+//     close(handle);
+//     throw NetworkException(
+//       "Unable to get interfaces",
+//       Type::getType<InetInterface>()
+//     );
+//   }
   try {
     struct ifconf ifc;
     ifc.ifc_len = Thread::getLocalStorage()->getSize();
     ifc.ifc_buf = Thread::getLocalStorage()->getElements();
     if (ioctl(handle, SIOCGIFCONF, &ifc)) {
       close(handle);
-      throw NetworkException("Unable to get interfaces", Type::getType<InetInterface>());
+      throw NetworkException(
+        "Unable to get interfaces",
+        Type::getType<InetInterface>()
+      );
     }
     
     struct ifreq* current = ifc.ifc_req;
@@ -226,32 +270,54 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
         flags |= (current->ifr_flags & IFF_POINTOPOINT) ? InetInterface::POINT_TO_POINT : 0;
         flags |= (current->ifr_flags & IFF_BROADCAST) ? InetInterface::BROADCAST : 0;
         flags |= (current->ifr_flags & IFF_MULTICAST) ? InetInterface::MULTICAST : 0;
+#if defined(IFF_DYNAMIC)
+        flags |= (req.ifr_flags & IFF_DYNAMIC) ? InetInterface::DYNAMIC : 0;
+#endif
         interface.flags = flags;
       }
       if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+        interface.index = current->ifr_ifindex;
+#else
         interface.index = current->ifr_index;
+#endif
       }
       if (ioctl(handle, SIOCGIFADDR, current) == 0) {
-        interface.address = internal::InetInterface::getAddress(current->ifr_addr);
+        interface.address =
+          internal::InetInterface::getAddress(current->ifr_addr);
       }
-      if ((flags & InetInterface::BROADCAST) && (ioctl(handle, SIOCGIFBRDADDR, current) == 0)) {
-        interface.broadcast = internal::InetInterface::getAddress(current->ifr_broadaddr);
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+      if (ioctl(handle, SIOCGIFNETMASK, current) == 0) {
+        interface.netmask =
+          internal::InetInterface::getAddress(current->ifr_netmask);
       }
-      if ((flags & InetInterface::POINT_TO_POINT) && (ioctl(handle, SIOCGIFDSTADDR, current) == 0)) {
-        interface.destination = internal::InetInterface::getAddress(current->ifr_dstaddr);
+#endif
+      if ((flags & InetInterface::BROADCAST) &&
+          (ioctl(handle, SIOCGIFBRDADDR, current) == 0)) {
+        interface.broadcast =
+          internal::InetInterface::getAddress(current->ifr_broadaddr);
+      }
+      if ((flags & InetInterface::POINT_TO_POINT) &&
+          (ioctl(handle, SIOCGIFDSTADDR, current) == 0)) {
+        interface.destination =
+          internal::InetInterface::getAddress(current->ifr_dstaddr);
       }
       if (ioctl(handle, SIOCGIFMETRIC, current) == 0) {
         interface.metric = current->ifr_metric;
       }
-      if (ioctl(handle, SIOCGENADDR, current) == 0) {
-        fout << HEX << (uint8)current->ifr_enaddr[0] << ' '
-             << HEX << (uint8)current->ifr_enaddr[1] << ' '
-             << HEX << (uint8)current->ifr_enaddr[2] << ' '
-             << HEX << (uint8)current->ifr_enaddr[3] << ' '
-             << HEX << (uint8)current->ifr_enaddr[4] << ' '
-             << HEX << (uint8)current->ifr_enaddr[5] << ' ' << ENDL;
-        interface.ethernet.setMAC48(Cast::pointer<const uint8*>(current->ifr_enaddr));
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+      if (ioctl(handle, SIOCGIFHWADDR, current) == 0) {
+        interface.ethernet.setMAC48(
+          Cast::getAddress(current->ifr_hwaddr.sa_data[0])
+        );
       }
+#else
+      if (ioctl(handle, SIOCGENADDR, current) == 0) {
+        interface.ethernet.setMAC48(
+          Cast::getAddress(current->ifr_enaddr)
+        );
+      }
+#endif
       interfaces.append(interface);
       ++current;
       offset += sizeof(struct ifreq);
@@ -275,17 +341,28 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
   return index;
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-  int numberOfInterfaces;
-  if (ioctl(handle, SIOCGIFNUM, &numberOfInterfaces) != 0) {
-    close(handle);
-    throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
-  }
+//   int numberOfInterfaces;
+// #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+//   const int command = SIOCGIFCOUNT;
+// #else
+//   const int command = SIOCGIFNUM;
+// #endif
+//   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
+//     close(handle);
+//     throw NetworkException(
+//       "Unable to resolve interface",
+//       Type::getType<InetInterface>()
+//     );
+//   }
   struct ifconf ifc;
   ifc.ifc_len = Thread::getLocalStorage()->getSize();
   ifc.ifc_buf = Thread::getLocalStorage()->getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
-    throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+    throw NetworkException(
+      "Unable to resolve interface",
+      Type::getType<InetInterface>()
+    );
   }
   const struct ifreq* current = ifc.ifc_req;
   int offset = 0;
@@ -293,7 +370,11 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
     if (String(current->ifr_name, IFNAMSIZ) == name) {
       if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
         close(handle);
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+        return req.ifr_ifindex;
+#else
         return req.ifr_index;
+#endif
       }
       break;
     }
@@ -301,23 +382,37 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
     offset += sizeof(*current);
   }
   close(handle);
-  throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+  throw NetworkException(
+    "Unable to resolve interface",
+    Type::getType<InetInterface>()
+  );
 #endif
 }
 
 unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(NetworkException) {
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-  int numberOfInterfaces;
-  if (ioctl(handle, SIOCGIFNUM, &numberOfInterfaces) != 0) {
-    close(handle);
-    throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
-  }
+//   int numberOfInterfaces;
+// #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+//   const int command = SIOCGIFCOUNT;
+// #else
+//   const int command = SIOCGIFNUM;
+// #endif
+//   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
+//     close(handle);
+//     throw NetworkException(
+//       "Unable to resolve interface",
+//       Type::getType<InetInterface>()
+//     );
+//   }
   struct ifconf ifc;
   ifc.ifc_len = Thread::getLocalStorage()->getSize();
   ifc.ifc_buf = Thread::getLocalStorage()->getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
-    throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+    throw NetworkException(
+      "Unable to resolve interface",
+      Type::getType<InetInterface>()
+    );
   }
   const struct ifreq* current = ifc.ifc_req;
   int offset = 0;
@@ -326,7 +421,11 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
       if (internal::InetInterface::getAddress(current->ifr_addr) == address) {
         if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
           close(handle);
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+          return current->ifr_ifindex;
+#else
           return current->ifr_index;
+#endif
         }
         break;
       }
@@ -335,7 +434,10 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
     offset += sizeof(*current);
   }
   close(handle);
-  throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+  throw NetworkException(
+    "Unable to resolve interface",
+    Type::getType<InetInterface>()
+  );
 }
 
 String InetInterface::getName(unsigned int index) throw(NetworkException) {
@@ -343,28 +445,46 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
   char name[IFNAMSIZ];
   assert(
     if_indextoname(index, name) != 0,
-    NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
+    NetworkException(
+      "Unable to resolve interface",
+      Type::getType<InetInterface>()
+    )
   );
   return String(name, IFNAMSIZ);
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-  int numberOfInterfaces;
-  if (ioctl(handle, SIOCGIFNUM, &numberOfInterfaces) != 0) {
-    close(handle);
-    throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
-  }
+//   int numberOfInterfaces;
+// #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+//   const int command = SIOCGIFCOUNT;
+// #else
+//   const int command = SIOCGIFNUM;
+// #endif
+//   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
+//     close(handle);
+//     throw NetworkException(
+//       "Unable to resolve interface",
+//       Type::getType<InetInterface>()
+//     );
+//   }
   struct ifconf ifc;
   ifc.ifc_len = Thread::getLocalStorage()->getSize();
   ifc.ifc_buf = Thread::getLocalStorage()->getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
-    throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+    throw NetworkException(
+      "Unable to resolve interface",
+      Type::getType<InetInterface>()
+    );
   }
   const struct ifreq* current = ifc.ifc_req;
   int offset = 0;
   while (offset < ifc.ifc_len) {
     if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+      if (current->ifr_ifindex == index) {
+#else
       if (current->ifr_index == index) {
+#endif
         close(handle);
         return String(name, IFNAMSIZ);
       }
@@ -382,34 +502,55 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   assert(
     if_indextoname(index, req.ifr_name) != 0,
-    NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
+    NetworkException(
+      "Unable to resolve interface",
+      Type::getType<InetInterface>()
+    )
   );
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   if (ioctl(handle, SIOCGIFADDR, &req) != 0) {
     close(handle);
-    throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+    throw NetworkException(
+      "Unable to resolve interface",
+      Type::getType<InetInterface>()
+    );
   }
   close(handle);
   return internal::InetInterface::getAddress(req.ifr_addr);
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-  int numberOfInterfaces;
-  if (ioctl(handle, SIOCGIFNUM, &numberOfInterfaces) != 0) {
-    close(handle);
-    throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
-  }
+//   int numberOfInterfaces;
+// #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+//   const int command = SIOCGIFCOUNT;
+// #else
+//   const int command = SIOCGIFNUM;
+// #endif
+//   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
+//     close(handle);
+//     throw NetworkException(
+//       "Unable to resolve interface",
+//       Type::getType<InetInterface>()
+//     );
+//   }
   struct ifconf ifc;
   ifc.ifc_len = Thread::getLocalStorage()->getSize();
   ifc.ifc_buf = Thread::getLocalStorage()->getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
-    throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+    throw NetworkException(
+      "Unable to resolve interface",
+      Type::getType<InetInterface>()
+    );
   }
   const struct ifreq* current = ifc.ifc_req;
   int offset = 0;
   while (offset < ifc.ifc_len) {
     if (ioctl(handle, SIOCGIFADDR, current) == 0) {
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+      if (current->ifr_ifindex == index) {
+#else
       if (current->ifr_index == index) {
+#endif
         close(handle);
         return internal::InetInterface::getAddress(req.ifr_addr);
       }
@@ -418,7 +559,10 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
     offset += sizeof(*current);
   }
   close(handle);
-  throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+  throw NetworkException(
+    "Unable to resolve interface",
+    Type::getType<InetInterface>()
+  );
 #endif
 }
 
@@ -439,25 +583,45 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
     flags |= (req.ifr_flags & IFF_POINTOPOINT) ? InetInterface::POINT_TO_POINT : 0;
     flags |= (req.ifr_flags & IFF_BROADCAST) ? InetInterface::BROADCAST : 0;
     flags |= (req.ifr_flags & IFF_MULTICAST) ? InetInterface::MULTICAST : 0;
+#if defined(IFF_DYNAMIC)
+    flags |= (req.ifr_flags & IFF_DYNAMIC) ? InetInterface::DYNAMIC : 0;
+#endif
   }
   if (ioctl(handle, SIOCGIFINDEX, &req) == 0) {
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+    index = req.ifr_ifindex;
+#else
     index = req.ifr_index;
+#endif
   }
   if (ioctl(handle, SIOCGIFADDR, &req) == 0) {
     address = internal::InetInterface::getAddress(req.ifr_addr);
   }
-  if ((flags & InetInterface::BROADCAST) && (ioctl(handle, SIOCGIFBRDADDR, &req) == 0)) {
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  if (ioctl(handle, SIOCGIFNETMASK, &req) == 0) {
+    netmask = internal::InetInterface::getAddress(req.ifr_netmask);
+  }
+#endif
+  if ((flags & InetInterface::BROADCAST) &&
+      (ioctl(handle, SIOCGIFBRDADDR, &req) == 0)) {
     broadcast = internal::InetInterface::getAddress(req.ifr_broadaddr);
   }
-  if ((flags & InetInterface::POINT_TO_POINT) && (ioctl(handle, SIOCGIFDSTADDR, &req) == 0)) {
+  if ((flags & InetInterface::POINT_TO_POINT) &&
+      (ioctl(handle, SIOCGIFDSTADDR, &req) == 0)) {
     destination = internal::InetInterface::getAddress(req.ifr_dstaddr);
   }
   if (ioctl(handle, SIOCGIFMETRIC, &req) == 0) {
     metric = req.ifr_metric;
   }
-  if (ioctl(handle, SIOCGENADDR, &req) == 0) {
-    ethernet.setMAC48(Cast::pointer<const uint8*>(req.ifr_enaddr));
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  if (ioctl(handle, SIOCGIFHWADDR, &req) == 0) {
+    ethernet.setMAC48(Cast::getAddress(req.ifr_hwaddr));
   }
+#else
+  if (ioctl(handle, SIOCGENADDR, &req) == 0) {
+    ethernet.setMAC48(Cast::getAddress(req.ifr_enaddr));
+  }
+#endif
   close(handle);
 }
 
@@ -466,9 +630,11 @@ InetInterface::InetInterface(const InetInterface& copy) throw()
     name(copy.name),
     flags(copy.flags),
     address(copy.address),
+    netmask(copy.netmask),
     broadcast(copy.broadcast),
     destination(copy.destination),
-    metric(copy.metric) {
+    metric(copy.metric),
+    ethernet(copy.ethernet) {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

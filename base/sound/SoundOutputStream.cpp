@@ -227,7 +227,6 @@ void SoundOutputStream::wait() throw() {
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     assert(::ioctl(handle, SNDCTL_DSP_SYNC, 0) == 0, UnexpectedFailure());
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
-    #error NOTIMPLEMENTED
   #endif // os
 #endif // flavour
 }

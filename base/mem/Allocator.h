@@ -8,76 +8,26 @@
 
 #include <base/MemoryException.h>
 #include <base/mem/AllocatorEnumeration.h>
+#include <base/Functor.h>
 
 /**
   This class encapsulates the implementation used by the Allocator class. Do not use directly.
 
   @see Allocator
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.01
 */
 
 class AllocatorImpl {
-protected:
-
-  /** The allocated memory block. */
-  void* allocated;
-  /** The size of the allocated memory block in bytes. */
-  unsigned int size;
 public:
 
   /**
-    Initializes an empty allocator.
-  */
-  explicit AllocatorImpl() throw();
-
-  /**
-    Initializes an allocator.
-
-    @param size The size in bytes of the allocated memory block.
-  */
-  explicit AllocatorImpl(unsigned int size) throw(MemoryException);
-
-  /**
-    Initializes allocator from other allocator.
-  */
-  AllocatorImpl(const AllocatorImpl& copy) throw(MemoryException);
-
-  /**
-    Assignment of allocator by allocator.
-  */
-  AllocatorImpl& operator=(const AllocatorImpl& eq) throw(MemoryException);
-
-  /**
-    Returns the allocated memory.
-  */
-  inline void* getElements() throw() {
-    return allocated;
-  }
-
-  /**
-    Returns the allocated memory.
-  */
-  inline const void* getElements() const throw() {
-    return allocated;
-  }
-
-  /**
-    Returns the size of the allocated memory.
-  */
-  inline unsigned int getSize() const throw() {
-    return size;
-  }
-
-  /**
     Sets the size of the allocated memory.
-  */
-  void setSize(unsigned int size) throw(MemoryException);
 
-  /**
-    Destroys the allocator.
+    @param elements Pointer to the elements.
+    @param size The size of the memory block in bytes.
   */
-  ~AllocatorImpl() throw();
+  void* setSize(void* elements, unsigned int size) throw(MemoryException);
 };
 
 
@@ -86,11 +36,17 @@ public:
   Allocator of resizeable memory block.
 
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.01
 */
 
 template<class TYPE>
 class Allocator : private AllocatorImpl {
+private:
+
+  /** The allocated memory block. */
+  TYPE* elements;
+  /** The number of elements in the block. */
+  unsigned int size;
 public:
 
   /**
@@ -122,16 +78,12 @@ public:
     ReadOnlyEnumeration(const Allocator& allocator) throw() :
       AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
   };
-private:
-
-  /** The size of the memory block using the size of TYPE. */
-  unsigned int elements;
 public:
 
   /**
     Initializes an empty allocator.
   */
-  inline explicit Allocator() throw() : elements(0) {}
+  inline explicit Allocator() throw() : elements(0), size(0) {}
 
   /**
     Initializes an allocator of the specified size without initializing the
@@ -140,22 +92,25 @@ public:
 
     @param size Specifies the initial size of the allocator.
   */
-  inline explicit Allocator(unsigned int size) throw(MemoryException) :
-    AllocatorImpl(size * sizeof(TYPE)), elements(size) {}
+  inline explicit Allocator(unsigned int size) throw(MemoryException) : elements(0), size(0) {
+    setSize(size);
+  }
 
   /**
     Initializes allocator from other allocator.
   */
-  inline Allocator(const Allocator& copy) throw(MemoryException) :
-    AllocatorImpl(copy), elements(copy.elements) {}
+  inline Allocator(const Allocator& cpy) throw(MemoryException) : elements(0), size(0) {
+    setSize(cpy.size);
+    copy<TYPE>(elements, cpy.elements, size); // blocks do not overlap
+  }
 
   /**
     Assignment of allocator by allocator.
   */
   inline Allocator& operator=(const Allocator& eq) throw(MemoryException) {
     if (&eq != this) { // protect against self assignment
-      AllocatorImpl::operator=(eq);
-      elements = eq.elements;
+      setSize(eq.size);
+      copy<TYPE>(elements, copy.elements, size); // blocks do not overlap
     }
     return *this;
   }
@@ -164,31 +119,42 @@ public:
     Returns the elements of the allocator for modifying access.
   */
   inline TYPE* getElements() throw() {
-    return static_cast<TYPE*>(AllocatorImpl::getElements());
+    return elements;
   }
 
   /**
     Returns the elements of the allocator for non-modifying access.
   */
   inline const TYPE* getElements() const throw() {
-    return static_cast<const TYPE*>(AllocatorImpl::getElements());
+    return elements;
   }
 
   /**
     Returns the number of elements of the allocator.
   */
   inline unsigned int getSize() const throw() {
-    return elements;
+    return size;
+  }
+
+  /**
+    Returns true if no elements are allocated.
+  */
+  inline bool isEmpty() const throw() {
+    return size == 0;
   }
 
   /**
     Sets the size of the allocated memory.
   */
   inline void setSize(unsigned int size) throw(MemoryException) {
-    if (size != elements) {
-      elements = size;
-      AllocatorImpl::setSize(size * sizeof(TYPE));
+    if (size != this->size) {
+      this->size = size;
+      elements = static_cast<TYPE*>(AllocatorImpl::setSize(elements, size * sizeof(TYPE)));
     }
+  }
+
+  inline ~Allocator() {
+    setSize(0); // free memory
   }
 };
 

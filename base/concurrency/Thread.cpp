@@ -268,11 +268,12 @@ void Thread::start() throw(ThreadException) {
   ::CloseHandle(handle); // detach
   // TAG: does this always work or must this be postponed until entry function
 #else // pthread
+  ASSERT(sizeof(pthread_t) <= sizeof(identifier));
   pthread_attr_t attributes;
   pthread_attr_init(&attributes);
   pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_DETACHED);
   pthread_attr_setinheritsched(&attributes, PTHREAD_INHERIT_SCHED);
-  if (pthread_create(&identifier, &attributes, (void*(*)(void*))&entry, (void*)this)) {
+  if (pthread_create(pointer_cast<pthread_t*>(&identifier), &attributes, (void*(*)(void*))&entry, (void*)this)) {
     pthread_attr_destroy(&attributes);
     throw ResourceException("Unable to create thread", this);
   }

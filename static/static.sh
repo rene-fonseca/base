@@ -113,6 +113,7 @@ base_cv_function_pselect=no
 base_cv_function_pthread_yield=no
 base_cv_function_readdir_r=no
 base_cv_function_yield=no
+base_cv_function_sigaction=no
 
 case ${function_mbrtowc+S}${function_mbrtowc-U} in
 Syes|Sno) base_cv_function_mbrtowc=$function_mbrtowc;; U);; *) exit 1;; esac
@@ -138,6 +139,8 @@ case ${function_readdir_r+S}${function_readdir_r-U} in
 Syes|Sno) base_cv_function_readdir_r=$function_readdir_r;; U);; *) exit 1;; esac
 case ${function_yield+S}${function_yield-U} in
 Syes|Sno) base_cv_function_yield=$function_yield;; U);; *) exit 1;; esac
+case ${function_sigaction+S}${function_sigaction-U} in
+Syes|Sno) base_cv_function_sigaction=$function_sigaction;; U);; *) exit 1;; esac
 
 for function in ${functions-""}; do
   case $function in
@@ -153,6 +156,7 @@ for function in ${functions-""}; do
   pthread_yield) base_cv_function_pthread_yield=yes;;
   readdir_r) base_cv_function_readdir_r=yes;;
   yield) base_cv_function_yield=yes;;
+  sigaction) base_cv_function_sigaction=yes;;
   esac
 done
 
@@ -168,7 +172,7 @@ echo base_cv_function_pselect=$base_cv_function_pselect
 echo base_cv_function_pthread_yield=$base_cv_function_pthread_yield
 echo base_cv_function_readdir_r=$base_cv_function_readdir_r
 echo base_cv_function_yield=$base_cv_function_yield
-
+echo base_cv_function_sigaction=$base_cv_function_sigaction
 
 
 # symbols/types: SOCKLEN_T

@@ -26,7 +26,7 @@ os=GNULINUX
 features="_GNU_SOURCE=1 lfs:_LARGEFILE64_SOURCE=1"
 
 # functions
-functions="memchr memcmp memcpy memmove memset nanosleep pselect readdir_r mbrtowc mbsrtowcs pthread_yield poll"
+functions="memchr memcmp memcpy memmove memset nanosleep pselect readdir_r mbrtowc mbsrtowcs pthread_yield poll sigaction"
 
 # api
 apis="aio inet_ipv6 lfs pthread pthread_semaphore pthread_rwlock regexp wide"

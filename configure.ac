@@ -506,6 +506,20 @@ AC_ARG_ENABLE(
       default is no.],
   AC_BASE_CHECK_ARG(base_explicit_regexp, auto pcre posix no, Invalid argument used with the regexp flag.))
 
+base_explicit_bz2=yes
+AC_ARG_ENABLE(
+  bz2,[
+  --enable-bz2=[yes|no]
+      Specifies that bz2 support should be included. The default is yes.],
+  AC_BASE_CHECK_ARG(base_explicit_bz2, yes no, Invalid argument used with the bz2 flag.))
+
+base_explicit_zlib=yes
+AC_ARG_ENABLE(
+  zlib,[
+  --enable-zlib=[yes|no]
+      Specifies that zlib support should be included. The default is yes.],
+  AC_BASE_CHECK_ARG(base_explicit_zlib, yes no, Invalid argument used with the zlib flag.))
+
 base_explicit_xml=no
 AC_ARG_ENABLE(
   xml,[
@@ -1365,6 +1379,18 @@ AC_BASE_EQUAL(${base_explicit_regexp}, posix, AC_BASE_DEFINE_PRIVATE(REGEXP_POSI
 AC_BASE_EQUAL(${base_explicit_regexp}, pcre,
   AC_BASE_DEFINE_PRIVATE(REGEXP_PCRE)
   AC_BASE_ADDLIB(-lpcre))
+
+
+
+AC_BASE_EQUAL(${base_explicit_bz2}, yes,
+  AC_BASE_DEFINE_PRIVATE(BZ2)
+  AC_BASE_ADDLIB(-lbz2))
+
+
+
+AC_BASE_EQUAL(${base_explicit_zlib}, yes,
+  AC_BASE_DEFINE_PRIVATE(ZLIB)
+  AC_BASE_ADDLIB(-lz))
 
 
 

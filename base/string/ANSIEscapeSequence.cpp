@@ -32,7 +32,7 @@ void ANSIEscapeSequence::forward(unsigned int count) throw(IOException) {
 }
 
 void ANSIEscapeSequence::backward(unsigned int count = 1) throw(IOException) {
-  stream<< '\033' << '[' << DEC << count << "D"; // TAG: use buffer
+  stream << '\033' << '[' << DEC << count << 'D'; // TAG: use buffer
 }
 
 void ANSIEscapeSequence::setAttributes(unsigned int flags) throw(IOException) {

@@ -939,10 +939,10 @@ String Date::format(const String& format, bool local) const throw(InvalidFormat,
         // week of year with Monday as first day of week 00-53
         break;
       case 'x': // locales date representation
-        stream << "<locales date repre>"; // fixme
+        stream << MESSAGE("<locales date repre>"); // fixme
         break;
       case 'X': // locales time representation
-        stream << "<locales time repre>"; // fixme
+        stream << MESSAGE("<locales time repre>"); // fixme
         break;
       case 'y':
         stream << setWidth(2);

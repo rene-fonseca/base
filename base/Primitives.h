@@ -571,6 +571,22 @@ public:
   static const long double MINIMUM = -MAXIMUM;
 };
 
+/**
+  Returns the maximum value of the type of the specified primitive object.
+*/
+template<class TYPE>
+inline TYPE getMaximum(TYPE value) throw() {
+  return PrimitiveTraits<TYPE>::MAXIMUM;
+}
+
+/**
+  Returns the minimum value of the type of the specified primitive object.
+*/
+template<class TYPE>
+inline TYPE getMinimum(TYPE value) throw() {
+  return PrimitiveTraits<TYPE>::MINIMUM;
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

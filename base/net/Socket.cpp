@@ -1167,20 +1167,15 @@ void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
     );
   }
 #  else
-  InetAddress i = interface;
   InetAddress g = group;
-  assert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
+  assert(g.convertToIPv4(), NetworkException(this));
   struct ip_mreq mreq;
   copy<uint8>(
     Cast::getAddress(mreq.imr_multiaddr.s_addr),
     g.getIPv4Address(),
     sizeof(mreq.imr_multiaddr.s_addr)
   );
-  copy<uint8>(
-    Cast::getAddress(mreq.imr_interface.s_addr),
-    i.getIPv4Address(),
-    sizeof(mreq.imr_interface.s_addr)
-  );
+  clear(mreq.imr_interface.s_addr); // unspecified
   internal::SocketImpl::setOption(
     (int)socket->getHandle(),
     IPPROTO_IP,

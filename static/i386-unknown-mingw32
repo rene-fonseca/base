@@ -35,4 +35,4 @@ functions="memchr memcmp memcpy memmove memset mbrtowc mbsrtowcs"
 apis="lfs wide"
 
 # libraries
-libraries="sound:winmm socket:ws2_32 psapi netapi32 kernel32"
+libraries="sound:winmm socket:ws2_32 psapi gdi32 netapi32 kernel32"

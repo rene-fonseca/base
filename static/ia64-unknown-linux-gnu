@@ -38,4 +38,4 @@ functions="memchr memcmp memcpy memmove memset nanosleep pselect readdir_r mbrto
 apis="inet_ipv6 lfs pthread pthread_semaphore pthread_rwlock regexp wide"
 
 # libraries
-libraries="rt pthread:pthread dl -:m -:c"
+libraries="X11 rt pthread:pthread dl -:m -:c"

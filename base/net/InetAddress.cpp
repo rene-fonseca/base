@@ -322,11 +322,11 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 }
 
 bool InetAddress::operator==(const InetAddress& eq) throw() {
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  return IN6_ARE_ADDR_EQUAL(pointer_cast<struct in6_addr*>(&address), reinterpret_cast<struct in6_addr*>(&eq.address));
-#else
+//#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
+//  return (address.words[0] == eq.address.words[0]) && (address.words[1] == eq.address.words[1]) && (address.words[2] == eq.address.words[2]) && (address.words[3] == eq.address.words[3]);
+//#else
   return address.words == eq.address.words;
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+//#endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 
 bool InetAddress::isUnspecified() const throw() {

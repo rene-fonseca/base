@@ -11,6 +11,20 @@
 #include <errno.h>
 #include <string.h>
 
+void getSocketOption(int handle, int option, void* buffer, socklen_t* len) throw(IOException) {
+  // getsockopt is MT-safe
+  if (::getsockopt(handle, SOL_SOCKET, option, buffer, len) != 0) {
+    throw IOException("Unable to get socket option");
+  }
+}
+
+void setSocketOption(int handle, int option, const void* buffer, socklen_t len) throw(IOException) {
+  // setsockopt is MT-safe
+  if (::setsockopt(handle, SOL_SOCKET, option, buffer, len) != 0) {
+    throw IOException("Unable to set socket option");
+  }
+}
+
 inline void initIPv6SocketAddress(struct sockaddr_in6& socketAddress, const InetAddress& addr, unsigned short port) throw() {
   memset(&socketAddress, 0, sizeof(socketAddress)); // clear structure
 #ifdef SIN6_LEN
@@ -43,7 +57,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
   struct sockaddr_in6 sa;
   socklen_t sl = sizeof(sa);
 
-  if ((handle = ::accept(socket.getHandle(), (struct sockaddr*)&sa, &sl)) != 0) {
+  if ((handle = ::accept(socket.fd.getHandle(), (struct sockaddr*)&sa, &sl)) != 0) {
     switch (errno) {
     case EAGAIN: // EWOULDBLOCK
       return false;
@@ -53,7 +67,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
     }
   }
 
-  setHandle(handle);
+  fd.setHandle(handle);
   remoteAddress.setAddress((char*)&(sa.sin6_addr), InetAddress::IPv6);
   remotePort = ntohs(sa.sin6_port);
   return true;
@@ -65,7 +79,7 @@ void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOExceptio
   struct sockaddr_in6 socketAddress;
   initIPv6SocketAddress(socketAddress, addr, port);
 
-  if (::bind(getHandle(), (struct sockaddr*)&socketAddress, sizeof(socketAddress)) != 0) {
+  if (::bind(fd.getHandle(), (struct sockaddr*)&socketAddress, sizeof(socketAddress)) != 0) {
     SynchronizeRelease();
     throw NetworkException("Unable to assign name to socket");
   }
@@ -77,11 +91,11 @@ void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOExceptio
 void Socket::close() throw(IOException) {
   SynchronizeExclusively();
 
-  if (::close(getHandle()) != 0) {
+  if (::close(fd.getHandle()) != 0) {
     SynchronizeRelease();
     throw NetworkException("Unable to close socket");
   }
-  setHandle(-1); // invalidate socket handle
+  fd.setHandle(-1); // invalidate socket handle
   remotePort = 0; // make unconnected
   localPort = 0; // make unbound
 }
@@ -92,7 +106,7 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
   struct sockaddr_in6 socketAddress;
   initIPv6SocketAddress(socketAddress, addr, port);
 
-  if (::connect(getHandle(), (struct sockaddr*)&socketAddress, sizeof(socketAddress)) != 0) {
+  if (::connect(fd.getHandle(), (struct sockaddr*)&socketAddress, sizeof(socketAddress)) != 0) {
     switch (errno) {
     case ECONNREFUSED:
 //      throw ConnectionRefused("Connection refused");
@@ -114,7 +128,7 @@ void Socket::create(bool stream) throw(IOException) {
     SynchronizeRelease();
     throw NetworkException("Unable to create socket");
   }
-  setHandle(handle);
+  fd.setHandle(handle);
 }
 
 void Socket::listen(unsigned int backlog) throw(IOException) {
@@ -122,12 +136,12 @@ void Socket::listen(unsigned int backlog) throw(IOException) {
   if (backlog > INT_MAX) { // does backlog fit in 'int' type
     backlog = INT_MAX; // silently reduce the backlog argument
   }
-  if (::listen(getHandle(), backlog) != 0) { // may also silently limit backlog
+  if (::listen(fd.getHandle(), backlog) != 0) { // may also silently limit backlog
     throw NetworkException("Unable to set queue limit for incomming connections");
   }
 }
 
-InetAddress Socket::getAddress() const throw() {
+const InetAddress& Socket::getAddress() const throw() {
   SynchronizeShared();
   return remoteAddress;
 }
@@ -136,7 +150,7 @@ unsigned short Socket::getPort() const throw() {
   return remotePort;
 }
 
-InetAddress Socket::getLocalAddress() const throw() {
+const InetAddress& Socket::getLocalAddress() const throw() {
   SynchronizeShared();
   return localAddress;
 }
@@ -145,59 +159,45 @@ unsigned short Socket::getLocalPort() const throw() {
   return localPort;
 }
 
-InputStream Socket::getInputStream() {
+FileDescriptorInputStream& Socket::getInputStream() const throw() {
   SynchronizeExclusively();
-  return inputStream;
+//  return inputStream;
 }
 
 void Socket::shutdownInputStream() throw(IOException) {
   SynchronizeExclusively();
-  if (::shutdown(getHandle(), 0)) { // disallow further receives
+  if (::shutdown(fd.getHandle(), 0)) { // disallow further receives
     SynchronizeRelease();
-    throw IOException()
+    throw IOException();
   }
 }
 
-OutputStream Socket::getOutputStream() {
+FileDescriptorOutputStream& Socket::getOutputStream() const throw() {
   SynchronizeExclusively();
-  return outputStream;
+//  return &outputStream;
 }
 
 void Socket::shutdownOutputStream() throw(IOException) {
   SynchronizeExclusively();
-  if (::shutdown(getHandle(), 1)) { // disallow further sends
+  if (::shutdown(fd.getHandle(), 1)) { // disallow further sends
     SynchronizeRelease();
-    throw IOException()
+    throw IOException();
   }
 }
 
 Socket::~Socket() throw(IOException) {
 }
 
-void Socket::getOption(int option, void* buffer, socklen_t* len) const throw(IOException) {
-  // getsockopt is MT-safe
-  if (::getsockopt(getHandle(), SOL_SOCKET, option, buffer, len) != 0) {
-    throw IOException("Unable to get socket option");
-  }
-}
-
-void Socket::setOption(int option, const void* buffer, socklen_t len) throw(IOException) {
-  // setsockopt is MT-safe
-  if (::setsockopt(getHandle(), SOL_SOCKET, option, buffer, len) != 0) {
-    throw IOException("Unable to set socket option");
-  }
-}
-
 bool Socket::getBooleanOption(int option) const throw(IOException) {
   int buffer;
   socklen_t len = sizeof(buffer);
-  getOption(option, &buffer, &len);
+  getSocketOption(fd.getHandle(), option, &buffer, &len);
   return buffer != 0;
 }
 
 void Socket::setBooleanOption(int option, bool value) throw(IOException) {
   int buffer = value;
-  setOption(option, &buffer, sizeof(buffer));
+  setSocketOption(fd.getHandle(), option, &buffer, sizeof(buffer));
 }
 
 bool Socket::getReuseAddress() const throw(IOException) {
@@ -227,7 +227,7 @@ void Socket::setBroadcast(bool value) throw(IOException) {
 int Socket::getLinger() const throw(IOException) {
   struct linger buffer;
   socklen_t len = sizeof(buffer);
-  getOption(SO_LINGER, &buffer, &len);
+  getSocketOption(fd.getHandle(), SO_LINGER, &buffer, &len);
   return (buffer.l_onoff != 0) ? buffer.l_linger : -1;
 }
 
@@ -239,31 +239,31 @@ void Socket::setLinger(int seconds) throw(IOException) {
     buffer.l_onoff = 1; // enable linger
     buffer.l_linger = seconds;
   }
-  setOption(SO_LINGER, &buffer, sizeof(buffer));
+  setSocketOption(fd.getHandle(), SO_LINGER, &buffer, sizeof(buffer));
 }
 
 int Socket::getReceiveBufferSize() const throw(IOException) {
   int buffer;
   socklen_t len = sizeof(buffer);
-  getOption(SO_RCVBUF, &buffer, &len);
+  getSocketOption(fd.getHandle(), SO_RCVBUF, &buffer, &len);
   return buffer;
 }
 
 void Socket::setReceiveBufferSize(int size) const throw(IOException) {
   int buffer = size;
-  setOption(SO_RCVBUF, &buffer, sizeof(buffer));
+  setSocketOption(fd.getHandle(), SO_RCVBUF, &buffer, sizeof(buffer));
 }
 
 int Socket::getSendBufferSize() const throw(IOException) {
   int buffer;
   socklen_t len = sizeof(buffer);
-  getOption(SO_SNDBUF, &buffer, &len);
+  getSocketOption(fd.getHandle(), SO_SNDBUF, &buffer, &len);
   return buffer;
 }
 
 void Socket::setSendBufferSize(int size) throw(IOException) {
   int buffer = size;
-  setOption(SO_SNDBUF, &buffer, sizeof(buffer));
+  setSocketOption(fd.getHandle(), SO_SNDBUF, &buffer, sizeof(buffer));
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) {
@@ -282,4 +282,9 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) 
   }
   stream << "}";
   return stream;
+}
+
+int main() {
+  Socket a();
+  return 0;
 }

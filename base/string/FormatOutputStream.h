@@ -9,6 +9,7 @@
 #include "base/Object.h"
 #include "base/io/BufferedOutputStream.h"
 #include "base/io/BindException.h"
+//#include "base/io/FileDescriptorOutputStream.h"
 
 /**
   Format output stream.
@@ -54,6 +55,9 @@ public:
   void addIntegerField(const char* buf, unsigned int size, bool isSigned) throw(IOException);
   void addDoubleField(const char* early, unsigned int earlySize, const char* late, unsigned int lateSize, bool isSigned) throw(IOException);
 };
+
+extern FormatOutputStream fout;
+extern FormatOutputStream ferr;
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, char value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, const char* value);

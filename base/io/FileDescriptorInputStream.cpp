@@ -36,7 +36,7 @@ FileDescriptorInputStream& FileDescriptorInputStream::operator=(FileDescriptorIn
   return *this;
 }
 
-unsigned int FileDescriptorInputStream::available() throw(IOException) {
+unsigned int FileDescriptorInputStream::available() const throw(IOException) {
   // pipes: returns current bytes in buffer
   // files: returns the total size in bytes
   struct stat status;
@@ -103,4 +103,9 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorI
                 << "eof=" << value.eof << ";"
                 << "handle=" << value.fd->getHandle()
                 << "}";
+}
+
+int main() {
+  FileDescriptorInputStream a(0);
+  return 0;
 }

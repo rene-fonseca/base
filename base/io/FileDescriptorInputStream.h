@@ -16,7 +16,7 @@
   @version 1.0
 */
 
-class FileDescriptorInputStream : public InputStream, public virtual FileDescriptor {
+class FileDescriptorInputStream : public virtual InputStream, public virtual FileDescriptor {
 private:
 
   /** Specifies that the end of the stream has been reached. */
@@ -48,14 +48,14 @@ public:
   /**
     Returns true if the end of the file descriptor has been reached.
   */
-  inline bool atEOF() const throw() {return eof;}
+  inline bool atEnd() const throw(IOException) {return eof;}
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.
 
     @return Available number of bytes in stream.
   */
-  unsigned int available() throw(IOException);
+  unsigned int available() const throw(IOException);
 
   /**
     Fills the buffer with bytes from the stream. Blocks if asked to read more bytes than available.

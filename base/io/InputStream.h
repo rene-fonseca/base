@@ -15,7 +15,7 @@
   @version 1.0
 */
 
-class InputStream : public Stream {
+class InputStream : public virtual Stream {
 public:
 
   /**

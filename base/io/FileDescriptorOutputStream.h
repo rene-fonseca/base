@@ -18,7 +18,7 @@
   @version 1.0
 */
 
-class FileDescriptorOutputStream : public OutputStream, public virtual FileDescriptor {
+class FileDescriptorOutputStream : public virtual OutputStream, public virtual FileDescriptor {
 public:
 
   /**

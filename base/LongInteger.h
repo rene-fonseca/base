@@ -7,7 +7,6 @@
 #define _DK_SDU_MIP__BASE__LONG_INTEGER_H
 
 #include "Object.h"
-#include <limits.h>
 
 /**
   Signed and long integer (64 bits or more).
@@ -22,9 +21,9 @@ public:
   /** True if the integer type is signed. */
   static const bool SIGNED = true;
   /** Specifies the maximum value. */
-  static const long long MAXIMUM = LLONG_MAX;
+  static const long long MAXIMUM = 9223372036854775807LL;
   /** Specifies the minimum value. */
-  static const long long MINIMUM = LLONG_MIN;
+  static const long long MINIMUM = (-9223372036854775807LL - 1LL);
 protected:
 
   /** The value. */
@@ -41,7 +40,7 @@ public:
 
     @param value The desired value.
   */
-  inline LongInteger(long long value) throw() : val(value) {};
+  inline LongInteger(long long value) throw() : val(value) {}
 
   /**
     Copy constructor. Initializes a new LongInteger from other LongInteger object.
@@ -56,19 +55,19 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline long long getValue() const throw() {return val;};
+  inline long long getValue() const throw() {return val;}
 
   /**
     Sets the value of the integer.
 
     @param value The desired value.
   */
-  inline void setValue(long long value) throw() {val = value;};
+  inline void setValue(long long value) throw() {val = value;}
 
   /**
     Casts integer to native type.
   */
-  inline operator long long() const throw() {return val;};
+  inline operator long long() const throw() {return val;}
 };
 
 #endif

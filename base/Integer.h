@@ -70,21 +70,9 @@ public:
   inline void setValue(int value) throw() {val = value;};
 
   /**
-    Sets the integer from a string (as unsigned decimal). Throws FormatException if string contains an invalid integer.
-  */
-  void fromString(const String& str) throw(InvalidFormat, OutOfRange);
-
-  /**
-    Convert integer to string.
-  */
-  inline StringOutputStream& operator<<(StringOutputStream& stream) const {return stream << val;};
-
-  /**
     Casts integer to native type.
   */
   inline operator int() const throw() {return val;};
 };
-
-StringOutputStream& operator<<(StringOutputStream& stream, int value);
 
 #endif

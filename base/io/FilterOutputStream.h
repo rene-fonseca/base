@@ -16,7 +16,7 @@
   @version 1.0
 */
 
-class FilterOutputStream : public OutputStream {
+class FilterOutputStream : public virtual Object, public virtual OutputStream {
 protected:
 
   /** Output stream to be filtered. */

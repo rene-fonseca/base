@@ -3,4 +3,15 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "Integer.h"
+#include "ServerSocket.h"
+
+ServerSocket::ServerSocket() throw(IOException) :
+  Socket() {
+}
+
+ServerSocket::ServerSocket(const InetAddress& addr, unsigned short port) throw(IOException) :
+  Socket() {
+}
+
+ServerSocket::~ServerSocket() {
+}

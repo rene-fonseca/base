@@ -6,6 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_NET__SOCKET_H
 #define _DK_SDU_MIP__BASE_NET__SOCKET_H
 
+#include "base/Object.h"
 #include "base/concurrency/Synchronize.h"
 #include "base/io/FileDescriptor.h"
 #include "base/io/FileDescriptorInputStream.h"
@@ -21,8 +22,10 @@
   @version 1.0
 */
 
-class Socket : public FileDescriptor, public Synchronizeable<> {
+class Socket : public virtual Object, public Synchronizeable<DefaultLock> {
 private:
+
+  typedef DefaultLock LOCK;
 
   /** Specifies the remote address to which the socket is connected. */
   InetAddress remoteAddress;
@@ -33,20 +36,17 @@ private:
   /** Specifies the local port (in host byte order) to which the socket is bound (unbound if 0). */
   unsigned short localPort;
 
+  FileDescriptor fd;
   FileDescriptorInputStream inputStream;
   FileDescriptorOutputStream outputStream;
 protected:
 
   /** Returns true if socket has been created. */
-  inline bool isCreated() const throw() {return getHandle() != -1;}; // read atomically
+  inline bool isCreated() const throw() {return fd.getHandle() != -1;}; // read atomically
   /** Returns true if socket is connected. */
   inline bool isConnected() const throw() {return remotePort != 0;}; // read atomically
   /** Returns true if socket is bound. */
   inline bool isBound() const throw() {return localPort != 0;}; // read atomically
-  /** Get socket option. */
-  void getOption(int option, void* buffer, socklen_t* len) const throw(IOException);
-  /** Set socket option. */
-  void setOption(int option, const void* buffer, socklen_t len) throw(IOException);
   /** Get boolean socket option. */
   bool getBooleanOption(int option) const throw(IOException);
   /** Set boolean socket option. */
@@ -54,7 +54,7 @@ protected:
 public:
 
   /**
-    Initializes socket object.
+    Initializes unconnected socket object.
   */
   Socket() throw();
 
@@ -65,11 +65,6 @@ public:
     @return True if connection has been accepted. False, if connection could not be accepted without blocking.
   */
   bool accept(Socket& socket) throw(IOException);
-
-  /**
-    Returns the number of bytes that can be read from this socket without blocking.
-  */
-  unsigned int available() const throw(IOException);
 
   /**
     Binds the socket to the address and port.
@@ -134,12 +129,12 @@ public:
   /**
     Returns the input stream of socket.
   */
-  InputStream getInputStream();
+  FileDescriptorInputStream& getInputStream() const throw();
 
   /**
     Returns the output stream of socket.
   */
-  OutputStream getOutputStream();
+  FileDescriptorOutputStream& getOutputStream() const throw();
 
   /**
     Disables the input stream for this socket.
@@ -217,11 +212,14 @@ public:
   */
   void setSendBufferSize(int size) throw(IOException);
 
+  /**
+    Writes a string representation of a Socket object to a format stream.
+  */
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value);
 };
 
 /**
-  Writes a string representation of a socket to a stream.
+  Writes a string representation of a Socket object to a format stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value);
 

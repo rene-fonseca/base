@@ -15,7 +15,7 @@
   @version 1.0
 */
 
-class OutputStream : public Stream {
+class OutputStream : public virtual Stream {
 public:
 
   /**

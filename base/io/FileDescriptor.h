@@ -17,7 +17,7 @@
   @version 1.0
 */
 
-class FileDescriptor : public Stream {
+class FileDescriptor : public virtual Object, public virtual Stream {
 protected:
 
   /** Reference counted handle to file descriptor. */
@@ -40,26 +40,6 @@ protected:
 
   /** Reference counted handle to file descriptor. */
   ReferenceCountedObjectPointer<Descriptor> fd;
-
-  /**
-    Gets the flags of the file descriptor.
-  */
-  int getFlags() const throw(IOException);
-
-  /**
-    Sets the flags of the file descriptor.
-  */
-  void setFlags(int flags) throw(IOException);
-
-  /**
-    Gets the handle of the file descriptor.
-  */
-  int getHandle() const throw();
-
-  /**
-    Sets the handle of the file descriptor.
-  */
-  void setHandle(int handle) throw();
 public:
 
   /**
@@ -83,6 +63,26 @@ public:
     Closes the file descriptor.
   */
   void close() throw(IOException);
+
+  /**
+    Gets the flags of the file descriptor.
+  */
+  int getFlags() const throw(IOException);
+
+  /**
+    Sets the flags of the file descriptor.
+  */
+  void setFlags(int flags) throw(IOException);
+
+  /**
+    Gets the handle of the file descriptor.
+  */
+  int getHandle() const throw();
+
+  /**
+    Sets the handle of the file descriptor.
+  */
+  void setHandle(int handle) throw();
 
   /**
     Sets the non-blocking flag of the file descriptor.

@@ -16,7 +16,7 @@
   @version 1.0
 */
 
-class FilterInputStream : public InputStream {
+class FilterInputStream : public virtual Object, public virtual InputStream {
 protected:
 
   /** Input stream to be filtered. */

@@ -16,7 +16,7 @@
   @version 1.0
 */
 
-class Stream : Object {
+class Stream {
 public:
 
   /**

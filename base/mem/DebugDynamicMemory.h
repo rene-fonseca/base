@@ -14,7 +14,6 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__DEBUG_DYNAMIC_MEMORY_H
 #define _DK_SDU_MIP__BASE_MEM__DEBUG_DYNAMIC_MEMORY_H
 
-#include <base/features.h>
 #include <base/mem/DynamicMemory.h>
 #include <base/mem/MemoryCorruption.h>
 #include <base/concurrency/SpinLock.h>

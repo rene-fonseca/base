@@ -49,6 +49,12 @@ public:
   unsigned int getMicroVersion() const throw();
 
   /**
+    Returns the release of the framework as a string. The format of the string
+    is unspecified.
+  */
+  String getRelease() const throw();
+
+  /**
     Returns the version of the framework as a string. The format of the string
     is 'major.minor.micro suffix' where suffix could be anything.
   */

@@ -19,7 +19,7 @@ ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
 
 void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
 #if defined(__win32__)
-  TYPE* result = (TYPE*)TlsGetValue(key);
+  void* result = TlsGetValue(key);
   if (!result && (GetLastError() != NO_ERROR)) {
     throw ThreadKeyException(__func__);
   }

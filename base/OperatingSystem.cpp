@@ -20,23 +20,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (defined(_DK_SDU_MIP__BASE__DEBUG) && (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32))
-
-class CheckCondition {
-public:
-
-  CheckCondition(bool condition, const char* message) throw() {
-    assert(condition, Exception(message));
-  }
-};
-
-#if defined(_DK_SDU_MIP__BASE__DEBUG)
-namespace { // anonymous namespace
-
-  CheckCondition check(sizeof(OperatingSystem::Handle) == sizeof(HANDLE), "Type mismatch");
-};
-#endif // debug
-
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  ASSERTION(sizeof(OperatingSystem::Handle) == sizeof(HANDLE));
 #endif
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

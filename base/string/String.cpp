@@ -27,7 +27,9 @@ String::String(unsigned int capacity) throw(MemoryException) : elements(0) {
   elements->ensureCapacity(capacity + 1);
 }
 
-String::String(const StringLiteral& string) throw(StringException, MemoryException) : elements(0) {
+String::String(
+  const StringLiteral& string) throw(StringException, MemoryException)
+  : elements(0) {
   unsigned int length = string.getLength();
   // assert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
   elements =
@@ -35,19 +37,36 @@ String::String(const StringLiteral& string) throw(StringException, MemoryExcepti
   copy<char>(elements->getElements(), string, length); // no overlap
 }
 
-String::String(const char* string) throw(StringException, MemoryException) : elements(0) {
-  int numberOfCharacters = getLengthOfMustBeTerminated(string);
-  elements = new ReferenceCountedCapacityAllocator<char>(numberOfCharacters + 1, GRANULARITY);
-  copy(elements->getElements(), string, numberOfCharacters); // no overlap
+String::String(const char* string) throw(StringException, MemoryException)
+  : elements(0) {
+  if (string) {
+    int numberOfCharacters = getLengthOfMustBeTerminated(string);
+    elements = new ReferenceCountedCapacityAllocator<char>(
+      numberOfCharacters + 1,
+      GRANULARITY
+    );
+    copy(elements->getElements(), string, numberOfCharacters); // no overlap
+  } else {
+    elements = DEFAULT_STRING.elements;
+  }
 }
 
-String::String(const char* string, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException) : elements(0) {
-  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
-  assert(string, StringException(this)); // make sure string is proper
-  const char* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
-  int numberOfCharacters = terminator ? (terminator - string) : maximum;
-  elements = new ReferenceCountedCapacityAllocator<char>(numberOfCharacters + 1, GRANULARITY);
-  copy(elements->getElements(), string, numberOfCharacters); // no overlap
+String::String(
+  const char* string,
+  unsigned int maximum) throw(OutOfDomain, StringException, MemoryException)
+  : elements(0) {
+  if (string) {
+    assert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this)); // maximum length exceeded
+    const char* terminator = find(string, maximum, Traits::TERMINATOR); // find terminator
+    int numberOfCharacters = terminator ? (terminator - string) : maximum;
+    elements = new ReferenceCountedCapacityAllocator<char>(
+      numberOfCharacters + 1,
+      GRANULARITY
+    );
+    copy(elements->getElements(), string, numberOfCharacters); // no overlap
+  } else {
+    elements = DEFAULT_STRING.elements;
+  }
 }
 
 String& String::operator=(const StringLiteral& string) throw(StringException, MemoryException) {
@@ -59,9 +78,13 @@ String& String::operator=(const StringLiteral& string) throw(StringException, Me
 }
 
 String& String::operator=(const char* string) throw(StringException, MemoryException) {
-  int numberOfCharacters = getLengthOfMustBeTerminated(string);
-  elements = new ReferenceCountedCapacityAllocator<char>(numberOfCharacters + 1, GRANULARITY);
-  copy(elements->getElements(), string, numberOfCharacters); // no overlap
+  if (string) {
+    int numberOfCharacters = getLengthOfMustBeTerminated(string);
+    elements = new ReferenceCountedCapacityAllocator<char>(numberOfCharacters + 1, GRANULARITY);
+    copy(elements->getElements(), string, numberOfCharacters); // no overlap
+  } else {
+    elements = DEFAULT_STRING.elements;
+  }
   return *this;
 }
 

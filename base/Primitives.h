@@ -108,6 +108,94 @@ typedef MemorySize ULargestInt; // TAG: could be different
 
 
 /**
+  This class binds together a string literal and its length. Use the macro
+  MESSAGE to generate an object of this class for a given string literal (e.g.
+  MESSAGE("Hello World")). Do not call the constructor directly.
+
+  @short String literal
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.2
+*/
+class StringLiteral {
+private:
+
+  /** The number of characters occupied by the message without the terminator. */
+  unsigned int length;
+  /** NULL-terminated literal. */
+  const char* literal;
+public:
+  
+  /**
+    Initializes string literal. Always use MESSAGE to construct objects.
+  */
+  inline StringLiteral(unsigned int _length, const char* _literal) throw()
+    : length(_length), literal(_literal) {
+  }
+  
+  /** Cast to the usual literal type. */
+  inline operator const char*() const throw() {
+    return literal;
+  }
+  
+  /** Returns the length of the string literal. */
+  inline unsigned int getLength() const throw() {
+    return length;
+  }
+};
+
+/**
+  This macro returns a StringLiteral object from a string literal (e.g.
+  MESSAGE("Hello, World")).
+*/
+#define MESSAGE(literal) StringLiteral(sizeof(literal) - 1, literal)
+
+
+
+/**
+  This class binds together a wide string literal and its length. Use the macro
+  WIDEMESSAGE to construct an object of this class for a given wide string
+  literal (e.g. WIDEMESSAGE("Hello World")). Do not call the constructor
+  manually.
+  
+  @short Wide string literal.
+  @ingroup string
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.2
+*/
+class WideStringLiteral {
+private:
+  
+  /** The number of characters occupied by the message without the terminator. */
+  const unsigned int length;
+  /** NULL-terminated message. */
+  const wchar* message;
+public:
+  
+  /**
+    Initializes string literal. Always use WIDEMESSAGE to construct objects.
+  */
+  inline WideStringLiteral(unsigned int _length, const wchar* _message) throw()
+    : length(_length), message(_message) {
+  }
+  
+  /** Cast to the usual message type. */
+  inline operator const wchar*() const throw() {
+    return message;
+  }
+  
+  /** Returns the length of the string. */
+  inline unsigned int getLength() const throw() {
+    return length;
+  }
+};
+
+/** This macro constructs a WideStringLiteral object from the given string literal. */
+#define WIDEMESSAGE(message) \
+  WideStringLiteral(sizeof(L ## message)/sizeof(wchar) - 1, L ## message)
+
+
+
+/**
   Returns the number of elements in the specified built-in array.
 */
 template<class TYPE, MemorySize SIZE>

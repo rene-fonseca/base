@@ -19,10 +19,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This exception is thrown by ExpressionParser on registration of identifiers
+  This exception is raised by ExpressionParser on registration of identifiers
   that result in an ambiguity.
 
-  @short Ambiguous registration exception
+  @short Ambiguous registration exception.
   @ingroup exceptions mathematics
   @see ExpressionParser
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>

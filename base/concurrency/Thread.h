@@ -114,7 +114,7 @@ public:
   static const unsigned int THREAD_LOCAL_STORAGE = 4096;
   
   /**
-    Group of exceptions thrown directly by the Thread class.
+    Group of exceptions raised directly by the Thread class.
     
     @short Thread exception
     @ingroup concurrency exceptions
@@ -153,7 +153,7 @@ public:
   };
 
   /**
-    Thrown if thread tries to manage itself when disallowed.
+    Raised if thread tries to manage itself when disallowed.
 
     @short Exception raised by Thread.
     @ingroup concurrency exceptions

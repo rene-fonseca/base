@@ -47,8 +47,9 @@ class ThreadPool : public Synchronizeable<MutualExclusion> {
 public:
 
   /**
-    Exception thrown directly by the ThreadPool class.
+    Exception raised directly by the ThreadPool class.
 
+    @short Thread pool exception.
     @ingroup exceptions
   */
   class ThreadPoolException : public Exception {

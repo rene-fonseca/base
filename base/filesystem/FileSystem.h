@@ -255,6 +255,8 @@ public:
     @param options The file options. The default is SECURE.
   */
   static File getTempFile(unsigned int options = SECURE) throw(IOException);
+  
+  // static unsigned long getVariable(const String& path, Variable variable) throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -19,9 +19,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Thrown if unable to bind streams together.
+  Raised if unable to bind streams together.
 
-  @short Bind exception
+  @short Bind exception.
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

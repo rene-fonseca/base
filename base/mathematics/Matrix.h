@@ -217,19 +217,19 @@ protected:
 
 public:
 
-  /** Exception thrown by the Matrix class. */
+  /** Exception raised by the Matrix class. */
   class MatrixException : public Exception {
   };
 
-  /** Thrown if an operation is given incompatible matrices to work on. */
+  /** Raised if an operation is given incompatible matrices to work on. */
   class IncompatibleMatrices : public IncompatibleOperands {
   };
 
-  /** Thrown by some operations if matrix is non-square. */
+  /** Raised by some operations if matrix is non-square. */
   class NotSquare : public MatrixException {
   };
 
-  /** Thrown by some operations if matrix is singular. */
+  /** Raised by some operations if matrix is singular. */
   class Singular : public MatrixException {
   };
 
@@ -372,8 +372,8 @@ public:
   /**
     Returns the minor of this matrix.
 
-    @param row The row to be thrown away.
-    @param column The column to be thrown away.
+    @param row The row to be discarded.
+    @param column The column to be discarded.
   */
   Matrix getMinor(unsigned int row, unsigned int column) const throw(OutOfRange, NotSquare, MemoryException);
 

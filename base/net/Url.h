@@ -54,7 +54,7 @@ private:
 public:
   
   /**
-    This exception is thrown by the Url class on violations of the RFC 1738
+    This exception is raised by the Url class on violations of the RFC 1738
     standard.
 
     @short URL exception
@@ -202,7 +202,7 @@ public:
     Sets the scheme (a.k.a. protocol). The scheme is composed of letters
     ('a'-'z'), digits ('0'-'9'), and the characters plus ('+'), period ('.'),
     and hyphen ('-'). Upper case letters are also allowed but are converted
-    into lower case. The exception URLException is thrown if the set of allowed
+    into lower case. The exception URLException is raised if the set of allowed
     characters is violated.
   */
   virtual void setScheme(const String& value) throw(UrlException, MemoryException);

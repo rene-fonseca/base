@@ -19,9 +19,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This exception is thrown on convertion error from or to multibyte characters.
+  This exception is raised on convertion errors from or to multibyte characters.
 
-  @short Multibyte character conversion exception
+  @short Multibyte character conversion exception.
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

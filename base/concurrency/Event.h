@@ -52,7 +52,7 @@ private:
 public:
   
   /**
-    Exception thrown by the Event class.
+    Exception raised by the Event class.
     
     @short Event exception
     @ingroup concurrency exceptions
@@ -125,7 +125,7 @@ public:
 
     @param microseconds The desired time out interval in microseconds. The
     value must be in the range from 0 to 999999. The exception 'OutOfDomain'
-    is thrown if this range is violated.
+    is raised if this range is violated.
 
     @return True, if the event was signaled before the time-out interval
     expired.

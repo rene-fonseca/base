@@ -42,7 +42,7 @@ protected:
 public:
 
   /**
-    Exception thrown directly by the MutualExclusion class.
+    Exception raised directly by the MutualExclusion class.
     
     @short Mutual exclusion exception
     @ingroup concurrency exceptions

@@ -19,9 +19,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This exception is thrown on wide string specific exceptions.
+  This exception is raised on wide string specific exceptions.
 
-  @short Wide string exception
+  @short Wide string exception.
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

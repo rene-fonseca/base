@@ -103,7 +103,7 @@ RegExp::Substring RegExp::match(const String& value, unsigned int start) const t
     }
     return Substring(offsets[0], offsets[1]);
   #else // no regexp support
-    return Substring(); // never here - RegExpException is thrown first
+    return Substring(); // never here - RegExpException is raised first
   #endif
 }
 
@@ -141,7 +141,7 @@ RegExp::Substring RegExp::match(const String& value, Array<Substring>& result, u
     }
     return Substring(offsets[0], offsets[1]);
   #else // no regexp support
-    return Substring(); // never here - RegExpException is thrown first 'cause compiled is 0
+    return Substring(); // never here - RegExpException is raised first 'cause compiled is 0
   #endif
 }
 

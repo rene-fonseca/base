@@ -129,11 +129,11 @@ public:
   inline unsigned int getSize() const throw() {return elements->getSize();};
 public:
 
-  /** Exception thrown by the Vector class. */
+  /** Exception raised by the Vector class. */
   class VectorException : public Exception {
   };
 
-  /** Thrown if an operation is given incompatible vectors to work on. */
+  /** Raised if an operation is given incompatible vectors to work on. */
   class IncompatibleVectors : public VectorException {
   };
 

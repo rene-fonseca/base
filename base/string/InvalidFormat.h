@@ -19,8 +19,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Invalid format exception is thrown when a string does not comply with a given format.
+  Invalid format exception is raised when a string does not comply with a given
+  format.
 
+  @short Invalid formation exception.
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

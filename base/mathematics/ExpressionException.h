@@ -19,7 +19,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This exception is thrown by ExpressionParser on errors in an expression
+  This exception is raised by ExpressionParser on errors in an expression
   representation.
 
   @see ExpressionParser

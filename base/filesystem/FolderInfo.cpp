@@ -327,7 +327,6 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
 #if defined(S_ISUID) && defined(S_ISGID) && defined(S_ISVTX)
   }
 #endif
-
   owner = User((const void*)(MemoryDiff)status.st_uid);
   group = Group((const void*)(MemoryDiff)status.st_gid);
   access = status.st_atime;

@@ -46,9 +46,9 @@ private:
 public:
 
   /**
-    Exception thrown directly by the ThreadKey class.
-
-    @short Thread key exception
+    Exception raised directly by the ThreadKey class.
+    
+    @short Thread key exception.
     @ingroup concurrency exceptions
     @author Rene Moeller Fonseca
     @version 1.0

@@ -42,7 +42,7 @@ private:
 public:
 
   /**
-    Exception thrown directly by the Semaphore class on improper use.
+    Exception raised directly by the Semaphore class on improper use.
     
     @short Semaphore exception
     @ingroup concurrency exceptions

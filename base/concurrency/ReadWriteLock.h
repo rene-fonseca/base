@@ -42,7 +42,7 @@ protected:
 public:
 
   /**
-    Exception thrown directly by the ReadWriteLock class.
+    Exception raised directly by the ReadWriteLock class.
 
     @short Read-write synchronization object exception
     @ingroup concurrency exceptions

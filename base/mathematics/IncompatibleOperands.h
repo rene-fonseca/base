@@ -19,7 +19,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This exception is thrown when specified operands are incompatible with each
+  This exception is raised when specified operands are incompatible with each
   other.
 
   @ingroup exceptions mathematics

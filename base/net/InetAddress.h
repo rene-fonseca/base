@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   and IPv6 addresses). IPv6 addresses can be represented on platforms without
   builtin IPv6 support. However, using an IPv6 address on platforms without
   direct support requires implicit conversion to an IPv4 address. If such a
-  conversion isn't possible a NetworkException is thrown.
+  conversion isn't possible a NetworkException is raised.
 
   @short Internet Protocol address
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>

@@ -19,9 +19,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  IO exception thrown on errors due to denied access.
+  IO exception raised on errors due to denied access.
 
-  @short Access denied exception
+  @short Access denied exception.
   @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

@@ -15,7 +15,7 @@ include $(top_srcdir)/common.am
 
 noinst_LTLIBRARIES = libarchive.la
 
-libarchive_la_SOURCES =
+libarchive_la_SOURCES = archive.cpp
 
 sectiondir = $(includedir)/base/archive
 section_HEADERS =

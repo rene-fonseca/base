@@ -26,7 +26,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  QuotaApplication(int numberOfArguments, const char* arguments[], const char* environment[])
+  QuotaApplication(
+    int numberOfArguments, const char* arguments[], const char* environment[])
     : Application(MESSAGE("Quota"), numberOfArguments, arguments, environment) {
   }
   
@@ -36,14 +37,18 @@ public:
          << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
          << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
-    Trustee truestee(User::getCurrentUser());
     
-    fout << MESSAGE("User: ") << User::getCurrentUser().getName() << ENDL;
+    User user = User::getCurrentUser();
+    String home = user.getHomeFolder();
+    
+    fout << MESSAGE("User: ") << user.getName() << ENDL;
+    fout << MESSAGE("Home: ") << home << ENDL;
     
     FileSystem::Quota quota;
     try {
-      quota = FileSystem::getQuota(MESSAGE("/dev/hda1"), truestee /*User::getCurrentUser()*/);
-    } catch (FileSystemException&) {
+      quota = FileSystem::getQuota(home, user);
+    } catch (FileSystemException& e) {
+      ferr << MESSAGE("Error: ") << e << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }

@@ -82,9 +82,14 @@ public:
   }
 
   /**
+    Reads one word from the stream.
+  */
+  String getWord() throw(IOException);
+
+  /**
     Reads one line from the stream.
   */
-  String getLine() throw(InvalidFormat, IOException);
+  String getLine() throw(IOException);
 
   /**
     Fills the specified buffer with bytes from the stream. Blocks if asked to read more bytes than available.

@@ -61,7 +61,30 @@ void FormatInputStream::appendToString(String& result, ReadIterator end) throw(I
   }
 }
 
-String FormatInputStream::getLine() throw(InvalidFormat, IOException) {
+String FormatInputStream::getWord() throw(IOException) {
+  // TAG: slow implementation - better approach is iterators
+  String result;
+  char ch;
+  do { // skip spaces
+    if (tail == head) {
+      assert(overwriteFromSource(), EndOfFile());
+    }
+    ch = *tail++;
+  } while (String::Traits::isSpace(ch));
+  while (!String::Traits::isSpace(ch)) {
+    result += ch;
+    if (tail == head) {
+      if (overwriteFromSource()) {
+        break;
+      }
+    }
+    ch = *tail++;
+  }
+  return result;
+}
+
+String FormatInputStream::getLine() throw(IOException) {
+  // TAG: better approach is iterators
   String result;
   while (true) { // find new line (i.e. any of the substrings "\n", "\r", "\n\r", or "\r\n")
     ReadIterator i = tail;

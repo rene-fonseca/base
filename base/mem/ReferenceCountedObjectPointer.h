@@ -6,178 +6,175 @@
 #ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_POINTER_H
 #define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_POINTER_H
 
-#include "NullPointer.h"
 #include "ReferenceCountedObject.h"
+#include "NullPointer.h"
+#include "base/Base.h"
 
 /**
-  Automation pointer to Reference Counted Object. This pointer automatically deletes a Reference Counted Object when the number of reference reaches zero. Do not construct more than one automation pointer from the 'normal' pointer.
+  This class is only introduced to give the general
+  ReferenceCountedObjectPointer template class access to the
+  ReferenceCountedObject. You should not used this class directly.
 
+  @see ReferenceCountedObjectPointer
   @author René Møller Fonseca
-  @version 1.0
+  @version 1.02
 */
 
-  template<class TYPE>
-  class ReferenceCountedObjectPointer {
-  public:
+class ReferenceCountedObjectFriend {
+private:
 
-    /** Type of object. */
-    typedef TYPE Value;
-    /** Pointer to objcet. */
-    typedef TYPE* Pointer;
-    /** Reference to object. */
-    typedef TYPE& Reference;
-  private:
+  /** Type of pointer to reference counted object. */
+  typedef const ReferenceCountedObject* Pointer;
+  /** Pointer to shared reference counted object. */
+  Pointer ptr; // protect pointer value from the evil programmers
+public:
 
-    /** Pointer to shared Reference Counted Object. */
-    Pointer ptr;
-    /** Sets the pointer. */
-    inline void setValue(Pointer value) {
-      if (ptr) {
-        if (ptr->removeReferenceToObject()) {
-          delete ptr; // could throw exception if RCO is destroyed unsuccessfully
-        }
-      }
-      ptr = value;
-      if (ptr) {
-        ptr->addReferenceToObject();
-      }
+  /**
+    Initializes automation pointer with the specified pointer value.
+    Implicit initialization is allowed.
+
+    @param value The desired value. Default is NULL.
+  */
+  inline ReferenceCountedObjectFriend(Pointer value = NULL) : ptr(value) {
+    if (ptr) {
+      ++ptr->references; // add reference
     }
-  public:
+  }
 
-    /**
-      Initializes the pointer. NULL-pointer is default.
-
-      @param value The desired value.
-    */
-    explicit inline ReferenceCountedObjectPointer(Pointer value = NULL) : ptr(value) {
-      if (ptr) {
-        ptr->addReferenceToObject();
-      }
+  /**
+    Initialization of automation pointer from other automation pointer.
+  */
+  inline ReferenceCountedObjectFriend(const ReferenceCountedObjectFriend& copy) : ptr(copy.ptr) {
+    if (ptr) {
+      ++ptr->references; // add reference
     }
+  }
 
-    /**
-      Copy constructor.
-    */
-    inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer& copy) : ptr(copy.ptr) {
-      if (ptr) {
-        ptr->addReferenceToObject();
+  /**
+    Returns the pointer value of this automation pointer.
+  */
+  inline Pointer getValue() const throw() {return ptr;};
+
+  /**
+    Sets the pointer value of this automation pointer.
+  */
+  inline void setValue(Pointer value) {
+    if (ptr) { // skip if NULL pointer
+      if (--ptr->references) { // remove reference
+        delete ptr; // could throw exception if RCO is destroyed unsuccessfully
       }
     }
-
-    /**
-      Assignment operator.
-    */
-    inline ReferenceCountedObjectPointer& operator=(const ReferenceCountedObjectPointer& obj) {
-      if (&obj != this) { // protect against self assignment
-        setValue(obj.getValue());
-      }
-      return *this;
+    ptr = value;
+    if (ptr) { // skip if NULL pointer
+      ++ptr->references; // add reference
     }
+  }
 
-    /**
-      Assignment operator.
-    */
-    template<class POLY>
-    inline ReferenceCountedObjectPointer& operator=(const ReferenceCountedObjectPointer<POLY>& obj) {
-      if (obj.getValue() != getValue()) { // protect against self assignment
-        setValue(obj.getValue());
-      }
-      return *this;
-    }
+  /**
+    Returns true if the reference counted object only has one reference.
+  */
+  inline bool singleReference() throw() {
+    return (!ptr) || (ptr->references <= 1); // false if NULL pointer
+  }
 
-    /**
-      Assignment operator.
-    */
-    inline ReferenceCountedObjectPointer& operator=(Pointer value) {
-      if (value != getValue()) {
-        setValue(value);
-      }
-      return *this;
-    }
-
-    /**
-      Forces a copy to be made of the reference counted object if the object is referenced more than once.
-    */
-    inline void ensureSingleReference() {
-      if (ptr) {
-        if (ptr->getReferencesToObject() > 1) {
-          setValue(new TYPE(*ptr));
-        }
+  /**
+    Destroys this automation pointer.
+  */
+  inline ~ReferenceCountedObjectFriend() {
+    if (ptr) { // skip if NULL pointer
+      if (--ptr->references) { // remove reference
+        delete ptr; // could throw exception if object is destroyed unsuccessfully
+        ptr = NULL;
       }
     }
+  }
+};
 
-    /**
-      Returns pointer to mutable object.
-    */
-    inline Pointer getValue() throw() {
-      return ptr;
-    }
 
-    /**
-      Returns pointer to constant object.
-    */
-    inline const Pointer getValue() const throw() {
-      return ptr;
-    }
 
-    /**
-      Returns mutable object.
-    */
-    inline Reference operator*() throw(NullPointer) {
-      if (!ptr) {
-        throw NullPointer();
-      }
-      return *ptr;
-    }
+/**
+  Automation pointer for reference counted objects. This class is responsible
+  for counting the total number of references to an object. The pointer
+  automatically deletes a reference counted object when the number of
+  references reaches zero.
 
-    /**
-      Returns constant object.
-    */
-    inline const Reference operator*() const throw(NullPointer) {
-      if (!ptr) {
-        throw NullPointer();
-      }
-      return *ptr;
-    }
+  @short Automation pointer that counts the number of references to an object.
+  @see ReferenceCountedObject
+  @author René Møller Fonseca
+  @version 1.02
+*/
 
-    /**
-      Returns mutable object.
-    */
-    inline Pointer operator->() throw() {
-      return ptr;
-    }
+template<class TYPE>
+class ReferenceCountedObjectPointer : private ReferenceCountedObjectFriend {
+public:
 
-    /**
-      Returns constant object.
-    */
-    inline const Pointer operator->() const throw() {
-      return ptr;
-    }
+  /** Type of pointer to reference counted objcet. */
+  typedef TYPE* Pointer;
+  /** Type of reference to reference counted object. */
+  typedef TYPE& Reference;
 
-    /**
-      Type cast to Pointer.
-    */
-    inline operator Pointer() throw() {
-      return ptr;
-    }
+  /**
+    Initializes automation pointer with the specified pointer value. Object
+    may be implicitly initialized.
 
-    /**
-      Type cast to const Pointer.
-    */
-    inline operator const Pointer() const throw() {
-      return ptr;
-    }
+    @param value The desired value. Default is NULL.
+  */
+  inline ReferenceCountedObjectPointer(Pointer value = NULL) : ReferenceCountedObjectFriend(value) {};
 
-    /**
-      Destroys the pointer.
-    */
-    inline ~ReferenceCountedObjectPointer() {
-      if (ptr) { // skip NULL-pointer
-        if (ptr->removeReferenceToObject()) { // should we destroy the object
-          delete ptr; // could throw exception if object is destroyed unsuccessfully
-        }
-      }
+  /**
+    Initialization of automation pointer from other automation pointer.
+  */
+  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer& copy) : ReferenceCountedObjectFriend(copy) {};
+
+  /**
+    Initialization of automation pointer from other automation pointer using compile time polymorphism.
+  */
+  template<class POLY>
+  inline ReferenceCountedObjectPointer(const ReferenceCountedObjectPointer<POLY>& copy) : ReferenceCountedObjectFriend(down_cast<Pointer>(copy.getValue())) {};
+
+  /**
+    Assignment of automation pointer to this automation pointer using compile time polymorphism.
+  */
+  inline ReferenceCountedObjectPointer& operator=(const ReferenceCountedObjectPointer& eq) {
+    if (&eq != this) { // protect against self assignment
+      setValue(eq.getValue());
     }
-  };
+    return *this;
+  }
+
+  /**
+    Assignment of automation pointer to this automation pointer.
+  */
+  template<class POLY>
+  inline ReferenceCountedObjectPointer& operator=(const ReferenceCountedObjectPointer<POLY>& eq) {
+    Pointer p = down_cast<Pointer>(eq.getValue());
+    if (p != getValue()) { // protect against self assignment
+      setValue(p);
+    }
+    return *this;
+  }
+
+  /**
+    Returns the pointer value of this automation pointer.
+  */
+  inline Pointer getValue() const throw() {return static_cast<Pointer>(const_cast<ReferenceCountedObject*>(ReferenceCountedObjectFriend::getValue()));};
+
+  /**
+    Returns the reference counted object.
+  */
+  inline Reference operator*() const throw(NullPointer) {
+    if (!getValue()) {
+      throw NullPointer();
+    }
+    return *getValue();
+  }
+
+  /**
+    Returns the reference counted object.
+  */
+  inline Pointer operator->() const throw() {
+    return getValue();
+  }
+};
 
 #endif

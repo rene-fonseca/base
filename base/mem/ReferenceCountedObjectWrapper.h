@@ -10,58 +10,61 @@
 #include "NullPointer.h"
 
 /**
-  This is a wrapper for a Reference Counted Object. Use this class if you need to reference count an object that is not itself a Reference Counted Object. Allocate objects on the heap not the stack.
+  This is a wrapper for a Reference Counted Object. Use this class if you need
+  to reference count an object of a class that is not a subclass of
+  ReferenceCountedObject. Allocate objects on the heap not the stack.
 
   @author René Møller Fonseca
   @version 1.0
 */
 
-  template<class TYPE>
-  class ReferenceCountedObjectWrapper : public ReferenceCountedObject {
-  public:
+template<class TYPE>
+class ReferenceCountedObjectWrapper : public ReferenceCountedObject {
+public:
 
-    /** Type of object. */
-    typedef TYPE Value;
-    /** Pointer to objcet. */
-    typedef TYPE* Pointer;
-    /** Reference to object. */
-    typedef TYPE& Reference;
-  private:
+  /** Pointer to objcet. */
+  typedef TYPE* Pointer;
+  /** Reference to object. */
+  typedef TYPE& Reference;
+private:
 
-    /** Ordinary object. */
-    Pointer obj;
-  public:
+  /** Ordinary object. */
+  Pointer obj;
+public:
 
-    /**
-      Initializes the wrapper.
+  /**
+    Initializes the wrapper.
 
-      @param value The object to be reference counted.
-    */
-    inline ReferenceCountedObjectWrapper(Pointer value) : obj(value) {}
+    @param value The object to be reference counted.
+  */
+  inline ReferenceCountedObjectWrapper(Pointer value) : obj(value) {}
 
-    inline Pointer operator->() throw() {return obj;}
+  /**
+    Returns the object.
+  */
+  inline Pointer operator->() throw() {return obj;}
 
-    inline Reference operator*() throw(NullPointer) {
-      if (!obj) {
-        throw NullPointer();
-      }
-      return *obj;
+  /**
+    Returns the object.
+  */
+  inline Reference operator*() throw(NullPointer) {
+    if (!obj) {
+      throw NullPointer();
     }
+    return *obj;
+  }
 
-    /** Type cast to Pointer. */
-    inline operator Pointer() {
-      return obj;
-    }
+  /**
+    Type cast to Pointer.
+  */
+  inline operator Pointer() const {
+    return obj;
+  }
 
-    /** Type cast to const Pointer. */
-    inline operator const Pointer() const {
-      return obj;
-    }
-
-    /**
-      Destroys the wrapper.
-    */
-    inline ~ReferenceCountedObjectWrapper() {delete obj;}
-  };
+  /**
+    Destroys the wrapper.
+  */
+  inline ~ReferenceCountedObjectWrapper() {delete obj;}
+};
 
 #endif

@@ -7602,7 +7602,7 @@ ${base_cleanup}
     base_cv_float="_DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128"
   elif test "$ac_base_temp" = 5; then
     base_cv_floatstr="ieee quadruple"
-    base_cv_float="_DK_SDU_MIP__BASE__IEEE_QUARUPLE_PRECISION"
+    base_cv_float="_DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION"
   else
     base_cv_floatstr="unspecified"
     base_cv_float="_DK_SDU_MIP__BASE__UNSPECIFIED"
@@ -7668,7 +7668,7 @@ ${base_cleanup}
     base_cv_double="_DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128"
   elif test "$ac_base_temp" = 5; then
     base_cv_doublestr="ieee quadruple"
-    base_cv_double="_DK_SDU_MIP__BASE__IEEE_QUARUPLE_PRECISION"
+    base_cv_double="_DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION"
   else
     base_cv_doublestr="unspecified"
     base_cv_double="_DK_SDU_MIP__BASE__UNSPECIFIED"
@@ -7734,7 +7734,7 @@ ${base_cleanup}
     base_cv_long_double="_DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128"
   elif test "$ac_base_temp" = 5; then
     base_cv_long_doublestr="ieee quadruple"
-    base_cv_long_double="_DK_SDU_MIP__BASE__IEEE_QUARUPLE_PRECISION"
+    base_cv_long_double="_DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION"
   else
     base_cv_long_doublestr="unspecified"
     base_cv_long_double="_DK_SDU_MIP__BASE__UNSPECIFIED"

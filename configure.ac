@@ -226,7 +226,7 @@ mips-sgi-irix6.5)
   ac_base_platform="mips-sgi-irix65.h"
   AC_BASE_ADDLIB(-ldl)
 ;;
-sparc-sun-solaris*)
+sparc*-sun-solaris*)
   dnl minor architecture?
   ac_base_platform="sparc-sun-solaris.h"
   AC_BASE_ADDLIB(-ldl)
@@ -237,7 +237,7 @@ i[[3456]]86-*-mingw32)
   BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-lpsapi -lnetapi32'
 ;;
 *)
-  AC_MSG_ERROR(This target platform is not directly supported by the framework. Please refer to the section describing how to manually configure the framework.)
+  AC_MSG_WARN(This target platform is not directly supported by the framework. Please refer to the section describing how to manually configure the framework.)
 ;;
 esac
 

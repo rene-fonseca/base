@@ -18,15 +18,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 RMIException::RMIException() throw() : Exception() {
 }
 
-RMIException::RMIExcepion(const char* message) throw() : Exception(message) {
+RMIException::RMIException(const char* message) throw() : Exception(message) {
 }
 
-RMIException::RMIExcepion(Type type) throw() : Exception(type) {
+RMIException::RMIException(Type type) throw() : Exception(type) {
 }
 
-RMIException::RMIExcepion(const char* message, Type type) throw() : Exception(message, type) {
+RMIException::RMIException(const char* message, Type type) throw() : Exception(message, type) {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

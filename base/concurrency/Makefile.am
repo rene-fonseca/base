@@ -27,6 +27,7 @@ libconcurrency_la_SOURCES = \
   ReadWriteLock.cpp \
   Semaphore.cpp \
   SharedSynchronize.cpp \
+  SingleExclusiveSynchronize.cpp \
   SpinLock.cpp \
   Synchronize.cpp \
   Synchronizeable.cpp \
@@ -48,6 +49,7 @@ section_HEADERS = \
   Runnable.h \
   Semaphore.h \
   SharedSynchronize.h \
+  SingleExclusiveSynchronize.h \
   SpinLock.h \
   Synchronize.h \
   Synchronizeable.h \

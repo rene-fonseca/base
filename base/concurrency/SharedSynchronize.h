@@ -91,7 +91,7 @@ public:
 
 
 
-/**
+/*
   Optimized version of SharedSynchronize intended for single threaded
   applications.
 

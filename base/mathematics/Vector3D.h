@@ -323,7 +323,7 @@ public:
 };
 
 template<class TYPE>
-inline Vector3D<TYPE>::Vector3D(const TYPE& xx, const TYPE& yy, const TYPE& zz) throw() : x(zz), y(yy), z(zz) {
+inline Vector3D<TYPE>::Vector3D(const TYPE& xx, const TYPE& yy, const TYPE& zz) throw() : x(xx), y(yy), z(zz) {
 }
 
 /**

@@ -105,7 +105,7 @@ void SharedMemory::SharedMemoryImpl::unlock() throw(MemoryException) {
 
 void SharedMemory::SharedMemoryImpl::setProtection(unsigned int access) throw(MemoryException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  DWORD protection;
+  DWORD protection = 0;
   if (access == 0) {
     protection = PAGE_NOACCESS;
   } else if (access & SharedMemory::READ == SharedMemory::READ) {
@@ -180,7 +180,7 @@ SharedMemory::SharedMemoryImpl::~SharedMemoryImpl() throw() {
 // see http://www.engelschall.com/sw/mm
 
 unsigned int SharedMemory::getGranularity() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEM_INFO info;
   ::GetSystemInfo(&info);
   return info.dwAllocationGranularity;
@@ -229,6 +229,7 @@ SharedMemory::SharedMemory(const SharedMemory& copy) throw() : sharedMemory(copy
 
 SharedMemory& SharedMemory::operator=(const SharedMemory& eq) throw() {
   sharedMemory = eq.sharedMemory;
+  return *this;
 }
 
 void SharedMemory::lock() throw(MemoryException) {

@@ -17,15 +17,15 @@
 #include <base/OperatingSystem.h>
 #include <base/Base.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#include <windows.h>
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  include <windows.h>
 #else // unix
-#include <stdlib.h>
+#  include <stdlib.h>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 namespace internal {
   namespace specific {
     extern OperatingSystem::Handle processHeap;
@@ -40,12 +40,12 @@ void* DebugDynamicMemory::allocate(unsigned int size) throw() {
   }
 
   unsigned int* result;
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   result = static_cast<unsigned int*>(::HeapAlloc(internal::specific::processHeap, 0, newSize));
 #else // unix
   result = static_cast<unsigned int*>(malloc(newSize)); // unspecified behavior if size is 0
 #endif // flavor  
-  //assert(result % sizeof(unsigned int) == 0, MemoryCorruption());
+  //assert(result % sizeof(unsigned int) == 0, MemoryCorruption(Type::getType<DebugDynamicMemory>()));
 
   Descriptor* descriptor = Cast::pointer<Descriptor*>(result);
   descriptor->magic = 0; //&allocate;
@@ -60,7 +60,7 @@ void* DebugDynamicMemory::allocate(unsigned int size) throw() {
     unsigned int* dest = prefix;
     const unsigned int* end = user;
     for (; dest < end; ++dest) {
-      *dest = Cast::pointer<char*>(dest) - static_cast<char*>(0);
+      *dest = Cast::getOffset(dest);
     }
   }
   
@@ -68,11 +68,11 @@ void* DebugDynamicMemory::allocate(unsigned int size) throw() {
   {
     unsigned int* dest = user + size/sizeof(unsigned int);
     if ((size % sizeof(unsigned int)) != 0) {
-      *dest = Cast::pointer<char*>(dest) - static_cast<char*>(0);
+      *dest = Cast::getOffset(dest);
     }
     const unsigned int* end = dest + SUFFIX_WORDS;
     for (; dest < end; ++dest) {
-      *dest = Cast::pointer<char*>(dest) - static_cast<char*>(0);
+      *dest = Cast::getOffset(dest);
     }
   }
 
@@ -89,7 +89,10 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
   }
   
   // check alignment
-  assert((Cast::pointer<char*>(memory) - static_cast<char*>(0)) % sizeof(unsigned int) == 0, MemoryCorruption());
+  assert(
+    (Cast::getOffset(memory) % sizeof(unsigned int)) == 0,
+    MemoryCorruption(Type::getType<DebugDynamicMemory>())
+  );
   unsigned int* prefix = static_cast<unsigned int*>(memory) - PREFIX_WORDS;
 
   // check prefix words
@@ -97,7 +100,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
     const unsigned int* src = prefix;
     const unsigned int* end = src + PREFIX_WORDS;
     for (; src < end; ++src) {
-      if (*src != (Cast::pointer<const char*>(src) - static_cast<const char*>(0))) {
+      if (*src != (Cast::getOffset(src))) {
         throw MemoryCorruption(Type::getType<DebugDynamicMemory>());
       }
     }
@@ -108,12 +111,15 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
   
   // check descriptor
   {
-    assert(descriptor->magic == 0/*&allocate*/, MemoryCorruption());
+    assert(
+      descriptor->magic == 0/*&allocate*/,
+      MemoryCorruption(Type::getType<DebugDynamicMemory>())
+    );
     spinLock.exclusiveLock(); // prevent multiple deletions
     unsigned int allocated = descriptor->allocated;
     descriptor->allocated = false;
     spinLock.releaseLock();
-    assert(allocated, MemoryCorruption());
+    assert(allocated, MemoryCorruption(Type::getType<DebugDynamicMemory>()));
     size = descriptor->size;
   }
   
@@ -125,12 +131,15 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
       for (unsigned int i = 0; i < (size % sizeof(unsigned int)); ++i) {
         Cast::pointer<char*>(&mask)[i] = 0; // filter out dont cares
       }
-      assert((*src & mask) == ((Cast::pointer<const char*>(src) - static_cast<const char*>(0)) & mask), MemoryCorruption());
+      assert(
+        (*src & mask) == (Cast::getOffset(src) & mask),
+        MemoryCorruption(Type::getType<DebugDynamicMemory>())
+      );
       ++src;
     }
     const unsigned int* end = src + SUFFIX_WORDS;
     for (; src < end; ++src) {
-      if (*src != (Cast::pointer<const char*>(src) - static_cast<const char*>(0))) {
+      if (*src != Cast::getOffset(src)) {
         throw MemoryCorruption(Type::getType<DebugDynamicMemory>());
       }
     }
@@ -140,7 +149,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
   --currentAllocations;
   spinLock.releaseLock();
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return ::HeapFree(internal::specific::processHeap, 0, memory);
 #else // unix
   ::free(memory); // works with 0 pointer

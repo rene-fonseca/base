@@ -198,7 +198,10 @@ public:
         Allocator<short>* buffer = writingQueue.pop();
         guard.releaseLock();
         try {
-          streamSocket.write(pointer_cast<const char*>(buffer->getElements()), buffer->getByteSize());
+          streamSocket.write(
+            Cast::pointer<const char*>(buffer->getElements()),
+            buffer->getByteSize()
+          );
         } catch (IOException& e) {
           fout << MESSAGE("IOException: ") << e.getMessage() << ENDL;
           Application::getApplication()->terminate();
@@ -228,7 +231,10 @@ public:
         Allocator<short>* buffer = readingQueue.pop();
         guard.releaseLock();
         try {
-          unsigned int bytesRead = streamSocket.read(pointer_cast<char*>(buffer->getElements()), buffer->getByteSize());
+          unsigned int bytesRead = streamSocket.read(
+            Cast::pointer<char*>(buffer->getElements()),
+            buffer->getByteSize()
+          );
         } catch (EndOfFile& e) {
           fout << MESSAGE("Connection terminated by remote host") << ENDL;
           Application::getApplication()->terminate();

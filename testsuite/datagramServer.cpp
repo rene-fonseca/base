@@ -99,10 +99,10 @@ public:
 
     const Array<String> arguments = getArguments();  
     switch (arguments.getSize()) {
-    case 1:
+    case 0:
       // use defaults
       break;
-    case 2:
+    case 1:
       service = arguments[1]; // the service
       break;
     default:

@@ -228,13 +228,13 @@ public:
     const Array<String> arguments = getArguments();
   
     switch (arguments.getSize()) {
-    case 1:
+    case 0:
       // use defaults
       break;
-    case 2:
+    case 1:
       address = arguments[1]; // the address
       break;
-    case 3:
+    case 2:
       address = arguments[1]; // the address
       service = arguments[2]; // the service
       break;

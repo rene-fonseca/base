@@ -160,6 +160,22 @@ template<class TYPE>
 inline const char* getCharAddress(const TYPE& value) throw() {return reinterpret_cast<const char*>(&value);}
 
 /**
+  Returns true if the primitive variable is aligned properly.
+*/
+template<class TYPE>
+bool inline isAligned(const TYPE& value) throw() {
+  unsigned int alignment;
+  if (sizeof(value) <= 4) {
+    alignment = 4;
+  } else if (sizeof(value) <= 8) {
+    alignment = 8;
+  } else {
+    alignment = 16;
+  }
+  return (reinterpret_cast<const char*>(&value) - static_cast<const char*>(0)) & (alignment - 1) == 0;
+}
+
+/**
   This namespace is a wrapper for information concerning the primitive (built-in) types.
   
   @short Primitive type information

@@ -59,7 +59,7 @@ public:
   */
   inline Matrix4x4(const Matrix4x4& cpy) throw() {
     // no need to protect against self-assignment (possible overlap)
-    copy<TYPE>(elements, cpy.elements, 16);
+    copy<TYPE>(Cast::pointer<TYPE*>(elements), Cast::pointer<const TYPE*>(cpy.elements), 16);
   }
 
   /**
@@ -67,7 +67,7 @@ public:
   */
   inline Matrix4x4& operator=(const Matrix4x4& eq) throw() {
     // no need to protect against self-assignment (possible overlap)
-    copy<TYPE>(elements, eq.elements, 16);
+    copy<TYPE>(Cast::pointer<TYPE*>(elements), Cast::pointer<const TYPE*>(eq.elements), 16);
     return *this;
   }
 
@@ -275,14 +275,29 @@ public:
   }
 
   /**
+    Multiplies the matrix with the specified quaternion.
+  */
+  Quaternion<TYPE> multiply(const Quaternion<TYPE>& value) throw() {
+    return Quaternion<TYPE>(
+      elements[0][0] * value.getX() + elements[0][1] * value.getY() + elements[0][2] * value.getZ() + elements[0][3] * value.getW(),
+      elements[1][0] * value.getX() + elements[1][1] * value.getY() + elements[1][2] * value.getZ() + elements[1][3] * value.getW(),
+      elements[2][0] * value.getX() + elements[2][1] * value.getY() + elements[2][2] * value.getZ() + elements[2][3] * value.getW(),
+      elements[3][0] * value.getX() + elements[3][1] * value.getY() + elements[3][2] * value.getZ() + elements[3][3] * value.getW()
+    );
+  }
+
+  /**
     Multiplies the matrix elements with the specified matrix.
   */
   Matrix4x4 multiply(const Matrix4x4& value) throw() {
     Matrix4x4 result;
-    TYPE* dest = result.elements;
+    TYPE* dest = Cast::pointer<TYPE*>(result.elements);
     for (int r = 3; r >= 0; --r) {
       for (int c = 3; c >= 0; --c) {
-        *dest-- = elements[r][0] * value.elements[0][c] + elements[r][1] * value.elements[1][c] + elements[r][2] * value.elements[2][c] + elements[r][3] * value.elements[3][c];
+        *dest-- = elements[r][0] * value.elements[0][c] +
+          elements[r][1] * value.elements[1][c] +
+          elements[r][2] * value.elements[2][c] +
+          elements[r][3] * value.elements[3][c];
       }
     }
     return result;
@@ -492,8 +507,8 @@ Matrix4x4<TYPE> getXRotation(TYPE angle) throw() {
   TYPE* dest = result.getElements();
   const TYPE zero(0);
   const TYPE one(1);
-  const TYPE ca = cos(angle);
-  const TYPE sa = sin(angle);
+  const TYPE ca = Math::cos(angle);
+  const TYPE sa = Math::sin(angle);
   
   *dest++ = one;
   *dest++ = zero;
@@ -526,8 +541,8 @@ Matrix4x4<TYPE> getYRotation(TYPE angle) throw() {
   TYPE* dest = result.getElements();
   const TYPE zero(0);
   const TYPE one(1);
-  const TYPE ca = cos(angle);
-  const TYPE sa = sin(angle);
+  const TYPE ca = Math::cos(angle);
+  const TYPE sa = Math::sin(angle);
   
   *dest++ = ca;
   *dest++ = zero;
@@ -560,8 +575,8 @@ Matrix4x4<TYPE> getZRotation(TYPE angle) throw() {
   TYPE* dest = result.getElements();
   const TYPE zero(0);
   const TYPE one(1);
-  const TYPE ca = cos(angle);
-  const TYPE sa = sin(angle);
+  const TYPE ca = Math::cos(angle);
+  const TYPE sa = Math::sin(angle);
   
   *dest++ = ca;
   *dest++ = -sa;
@@ -590,12 +605,12 @@ Matrix4x4<TYPE> getZRotation(TYPE angle) throw() {
 */
 template<class TYPE>
 Matrix4x4<TYPE> getXYZRotation(const Vector3D<TYPE> rotation) throw() {
-  const TYPE cx = cos(rotation.getX());
-  const TYPE sx = sin(rotation.getX());
-  const TYPE cy = cos(rotation.getY());
-  const TYPE sy = sin(rotation.getY());
-  const TYPE cz = cos(rotation.getZ());
-  const TYPE sz = sin(rotation.getZ());
+  const TYPE cx = Math::cos(rotation.getX());
+  const TYPE sx = Math::sin(rotation.getX());
+  const TYPE cy = Math::cos(rotation.getY());
+  const TYPE sy = Math::sin(rotation.getY());
+  const TYPE cz = Math::cos(rotation.getZ());
+  const TYPE sz = Math::sin(rotation.getZ());
   const TYPE cxsy = cx * sy;
   const TYPE sxsy = sx * sy;
 
@@ -664,6 +679,14 @@ Matrix4x4<TYPE> getQRotation(const Quaternion<TYPE>& quaternion) throw() {
   *dest++ = TYPE(1);
   
   return result;
+}
+
+/**
+  Returns the product of the matrix and quaternion.
+*/
+template<class TYPE>
+inline Quaternion<TYPE> operator*(const Matrix4x4<TYPE>& left, const Quaternion<TYPE>& right) throw() {
+  return Matrix4x4<TYPE>(left).multiply(right);
 }
 
 template<class TYPE>

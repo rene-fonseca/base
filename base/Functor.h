@@ -15,71 +15,28 @@
 #define _DK_SDU_MIP__BASE__FUNCTOR_H
 
 #include <base/Base.h>
-#include <new>
-#include <typeinfo>
+#include <base/Primitives.h>
 #include <string.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-// Type checking functions
-
-
-
-#if defined(bool)
-  #undef bool // FIXME
-#endif
-
 /**
-  Returns true if the type is void. Do NOT add specializations for this function.
-*/
-template<class TYPE> inline bool isVoid() throw() {return false;}
-template<> inline bool isVoid<void>() throw() {return true;}
-
-/**
-  Returns true if the type is an integer type. Do NOT add specializations for this function.
-*/
-template<class TYPE> inline bool isInteger() throw() {return false;}
-template<> inline bool isInteger<bool>() throw() {return true;}
-template<> inline bool isInteger<char>() throw() {return true;}
-template<> inline bool isInteger<signed char>() throw() {return true;}
-template<> inline bool isInteger<unsigned char>() throw() {return true;}
-template<> inline bool isInteger<wchar_t>() throw() {return true;}
-template<> inline bool isInteger<int>() throw() {return true;}
-template<> inline bool isInteger<unsigned int>() throw() {return true;}
-template<> inline bool isInteger<long>() throw() {return true;}
-template<> inline bool isInteger<unsigned long>() throw() {return true;}
-template<> inline bool isInteger<long long>() throw() {return true;}
-template<> inline bool isInteger<unsigned long long>() throw() {return true;}
-
-/**
-  Returns true if the type is a float, double, or long double. Do NOT add specializations for this function.
-*/
-template<class TYPE> inline bool isFloating() throw() {return false;}
-template<> inline bool isFloating<float>() throw() {return true;}
-template<> inline bool isFloating<double>() throw() {return true;}
-template<> inline bool isFloating<long double>() throw() {return true;}
-
-/**
-  Returns true if the type is an arithmetic (integer or floating) type. Do NOT add specializations for this function.
-*/
-template<class TYPE> inline bool isArithmetic() throw() {return isInteger<TYPE>() || isFloating<TYPE>();}
-
-/**
-  Returns true if the type is a primitive (built-in) type. Do NOT add specializations for this function.
-  @see isRelocateable
-*/
-template<class TYPE> inline bool isPrimitive() throw() {return isVoid<TYPE>() || isArithmetic<TYPE>();}
-
-/**
-  Returns true if objects of the specified type are relocateable (i.e. objects
-  may be moved directly from one memory location to another). This function
-  most only return true if the objects of the specified type are not required
-  to be initialized and destroyed. If this function returns false the objects
-  have to be copy constructed (new location) and then destoyed (old location).
-  This function is primarily used by allocators to avoid operations on their
+  Specifies whether or not the type is relocateable (i.e. objects may be moved
+  directly from one memory location to another without corrupting the object
+  state). Additionally, a relocateable object must not require to be initialized
+  or destroyed to function properly. The relocateable property of an object is
+  only intended to be used when really required due to performance
+  considerations. If this function returns false objects have to be copy
+  constructed at the new location and then destoyed at the old location. This
+  function is primarily used by allocators to avoid these operations on their
   elements. Be very careful when adding your own specializations.
 */
-template<class TYPE> inline bool isRelocateable() throw() {return isPrimitive<TYPE>();}
+template<class TYPE>
+class Relocateable {
+public:
+  
+  static const bool IS_RELOCATEABLE = primitives::Arithmetic<TYPE>::IS_ARITHMETIC;
+};
 
 
 
@@ -93,7 +50,7 @@ template<class TYPE> inline bool isRelocateable() throw() {return isPrimitive<TY
 template<class TYPE>
 inline bool equal(const TYPE* left, const TYPE* right, unsigned int count) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCMP)
-  if (isPrimitive<TYPE>()) {
+  if (primitives::Arithmetic<TYPE>::IS_ARITHMETIC) {
     return memcmp(left, right, count * sizeof(TYPE)) == 0;
   } else {
 #endif
@@ -283,8 +240,9 @@ inline void transform(TYPE* element, unsigned int count, const UNOPR& function) 
   }
 }
 
+/** The sequences are expected not to overlap. */
 template<class TYPE, class UNOPR>
-inline void transformByUnary(TYPE* result, const TYPE* left, unsigned int count, const UNOPR& function) throw() {
+inline void transformByUnary(/*restrict*/ TYPE* result, /*restrict*/ const TYPE* left, unsigned int count, const UNOPR& function) throw() {
   while (count) {
     *result = function(*left);
     ++result;
@@ -293,8 +251,9 @@ inline void transformByUnary(TYPE* result, const TYPE* left, unsigned int count,
   }
 }
 
+/** The sequences are expected not to overlap. */
 template<class TYPE, class BINOPR>
-inline void transformByBinary(TYPE* left, const TYPE* right, unsigned int count, const BINOPR& function) throw() {
+inline void transformByBinary(/*restrict*/ TYPE* left, /*restrict*/ const TYPE* right, unsigned int count, const BINOPR& function) throw() {
   while (count) {
     *left = function(*left, *right);
     ++left;
@@ -303,8 +262,9 @@ inline void transformByBinary(TYPE* left, const TYPE* right, unsigned int count,
   }
 }
 
+/** The sequences are expected not to overlap. */
 template<class TYPE, class BINOPR>
-inline void transformByBinary(TYPE* result, const TYPE* left, const TYPE* right, unsigned int count, const BINOPR& function) throw() {
+inline void transformByBinary(/*restrict*/ TYPE* result, /*restrict*/ const TYPE* left, /*restrict*/ const TYPE* right, unsigned int count, const BINOPR& function) throw() {
   while (count) {
     *result = function(*left, *right);
     ++result;
@@ -314,33 +274,69 @@ inline void transformByBinary(TYPE* result, const TYPE* left, const TYPE* right,
   }
 }
 
-/** Copies element by element from one sequence to another sequence (use this if the sequences aren't overlaping each other). */
+/**
+  Copies element by element from one sequence to another sequence. This function
+  expects the sequences to be non-overlapping. Relocateable objects are copied
+  by copying their memory images directly (i.e. the copy constructor is
+  circumvented). The size of the memory block must not exceed (2^(bits in
+  unsigned int) - 1) bytes. The sequences should be aligned prior to invocation.
+
+  @see move
+*/
 template<class TYPE>
-inline void copy(TYPE* dest, const TYPE* src, unsigned int count) throw() {
+inline void copy(/*restrict*/ TYPE* dest, /*restrict*/ const TYPE* src, unsigned int count) throw() {
+  if (Relocateable<TYPE>::IS_RELOCATEABLE) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCPY)
-  if (isPrimitive<TYPE>()) {
     memcpy(dest, src, count * sizeof(TYPE));
-  } else {
+#else
+    // TAG: should I align the first long word
+    unsigned long long bytesToCopy = count * sizeof(TYPE);
+    long* d = pointer_cast<long*>(dest);
+    const long* s = pointer_cast<const long*>(src);
+    {
+      const TYPE* end = d + bytesToCopy/sizeof(long);
+      while (d < end) {
+        *d = *s;
+        ++d;
+        ++s;
+      }
+    }
+    {
+      long* dc = pointer_cast<char*>(d);
+      const long* sc = pointer_cast<char*>(s);
+      const TYPE* end = dc + bytesToCopy % sizeof(long);
+      while (dc < end) {
+        *dc = *sc;
+        ++dc;
+        ++sc;
+      }
+    }
 #endif
+  } else {
     const TYPE* end = dest + count;
     while (dest < end) {
       *dest = *src;
       ++dest;
       ++src;
     }
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCPY)
   }
-#endif
 }
 
 /** Moves element by element from one sequence to another sequence (use this if the sequences may overlap). */
 template<class TYPE>
 inline void move(TYPE* dest, const TYPE* src, unsigned int count) throw() {
+  if (Relocateable<TYPE>::IS_RELOCATEABLE) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMMOVE)
-  if (isPrimitive<TYPE>()) {
     memmove(dest, src, count * sizeof(TYPE));
-  } else {
+#else
+    // TAG: should I align the first long word
+    unsigned long long bytesToMove = count * sizeof(TYPE);
+    long* d = pointer_cast<long*>(dest);
+    const long* s = pointer_cast<long*>(src);
+    move<long>(d, c, bytesToMove/sizeof(long));
+    move<char>(d + bytesToMove/sizeof(long), c + bytesToMove/sizeof(long), bytesToMove % sizeof(long));
 #endif
+  } else {
     if (dest < src) {
       const TYPE* end = dest + count;
       while (dest < end) {
@@ -358,14 +354,12 @@ inline void move(TYPE* dest, const TYPE* src, unsigned int count) throw() {
         *dest = *src;
       }
     }
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMMOVE)
   }
-#endif
 }
 
-/** Swaps the elements of of two sequences. */
+/** Swaps the elements of of two sequences. The sequences are expected not to overlap. */
 template<class TYPE>
-inline void swap(TYPE* left, TYPE* right, unsigned int count) throw() {
+inline void swap(/*restrict*/ TYPE* left, /*restrict*/ TYPE* right, unsigned int count) throw() {
   const TYPE* end = left + count;
   while (left < end) {
     swapper(*left, *right);

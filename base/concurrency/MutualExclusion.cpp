@@ -41,7 +41,7 @@ void MutualExclusion::lock() const throw(Exception) {
     throw Exception("Unable to acquire lock on MutualExclusion");
   }
 #else
-  int result pthread_mutex_lock(&mutex);
+  int result = pthread_mutex_lock(&mutex);
   if (result == 0) {
     return;
   } else if (result == EDEADLK) {

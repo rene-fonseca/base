@@ -18,7 +18,7 @@ AC_CONFIG_SRCDIR(base/features.h)
 
 dnl TAG: protect against absolute path in srcdir
 
-ac_base_build_date=`date -u +"%D %T UTC"`
+ac_base_build_date=`date --iso-8601=seconds`
 ac_base_build_user=`whoami`
 ac_base_build_host=`uname -n`
 
@@ -294,6 +294,27 @@ AC_ARG_ENABLE(
       framework. This feature is disabled by default.],
   AC_BASE_CHECK_ARG(base_explicit_trace, yes no, The trace flag must be either 'yes' or 'no'.))
 AC_BASE_YES(base_explicit_trace, AC_BASE_DEFINE(TRACE))
+
+base_explicit_experimental=no
+AC_ARG_ENABLE(
+  experimental,[
+  --enable-experimental=[yes|no]
+      Specifies whether or not to include experimental components. Experimental
+      code is excluded by default. Experimental code should only be enabled by
+      the framework developers.],
+  AC_BASE_CHECK_ARG(base_explicit_experimental, yes no, Invalid argument used with the experimental option.))
+AM_CONDITIONAL(EXPERIMENTAL, test x${base_explicit_experimental} = xyes)
+AC_BASE_DEFINE(EXPERIMENTAL)
+
+base_explicit_extensions=no
+AC_ARG_ENABLE(
+  extensions,[
+  --enable-extensions=[yes|no]
+      Specifies whether of not the extensions should be included. The
+      extensions are not included by default.],
+  AC_BASE_CHECK_ARG(base_explicit_extensions, yes no, Invalid argument used with the extensions option.))
+AM_CONDITIONAL(EXTENSIONS, test x${base_explicit_extensions} = xyes)
+AC_BASE_DEFINE(EXTENSIONS)
 
 base_explicit_namespace=yes
 AC_ARG_ENABLE(
@@ -610,7 +631,7 @@ AC_BASE_ADDLIB(${base_cv_stl_libs})
 
 
 
-dnl Lets play name that c++ compiler
+dnl Lets play "name that c++ compiler"
 
 if test "x$ac_base_cxx_name" = "x"; then
   # Check if GNU Compiler Collection
@@ -649,6 +670,22 @@ if test "x$ac_base_cxx_name" = "x"; then
     ac_base_cxx_minor=`$CXX -V 2>&1 | sed "s/.*Version.*[[0-9]]\+\.\([[0-9]]\+\).*/\1/"`
     ac_base_cxx_name="Intel Compiler"
     ac_base_cxx_vendor="intel.com"
+  fi
+fi
+
+if test "x$ac_base_cxx_name" = "x"; then
+  # Check if Borland Compiler
+  if AC_BASE_TRY_CMD($CXX -V 2>&1 | grep -e "Borland.*C++"); then
+    ac_base_cxx_name="Borland Compiler"
+    ac_base_cxx_vendor="borland.com"
+  fi
+fi
+
+if test "x$ac_base_cxx_name" = "x"; then
+  # Check if Microsoft Compiler
+  if AC_BASE_TRY_CMD($CXX -V 2>&1 | grep -e "Microsoft.*Compiler"); then
+    ac_base_cxx_name="Microsoft Optimizing Compiler"
+    ac_base_cxx_vendor="microsoft.com"
   fi
 fi
 
@@ -1212,7 +1249,7 @@ dnl Add VERSION resource to the dynamic library on Windows platforms (i.e. cygwi
 case "${ac_cv_target}" in
 *-*-cygwin|*-*-mingw32)
   dnl The -Wl option is used to circumvent libtool
-  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-Wl,winrcver.o'
+  BASE_LIBADD="${BASE_LIBADD}${BASE_LIBADD:+ }"'-lUB1394 -Wl,winrcver.o'
   BASE_DEPENDENCIES="${BASE_DEPENDENCIES}${BASE_DEPENDENCIES:+ }"'winrcver.o'
   ;;
 esac
@@ -1284,12 +1321,28 @@ AC_SUBST(MODULE_ARGUMENTS_BASE)
 
 
 
+dnl Store information for uninstalled project
+echo "DATETIME: `date --iso-8601=seconds`" > base-framework.dsc
+echo "VERSION: 0.9.1" >> base-framework.dsc
+echo "SRCDIR: ${srcdir}" >> base-framework.dsc
+echo "INCLUDES: . ${srcdir}" >> base-framework.dsc
+echo "CC: ${CC}" >> base-framework.dsc
+echo "CFLAGS: ${CFLAGS}" >> base-framework.dsc
+echo "CXX: ${CXX}" >> base-framework.dsc
+echo "CXXFLAGS: ${CXXFLAGS}" >> base-framework.dsc
+echo "LDFLAGS: ${LDFLAGS}" >> base-framework.dsc
+echo "LIBDIR: base" >> base-framework.dsc
+echo "LIBS: -lbase" >> base-framework.dsc
+echo "STATIC LIBS: " >> base-framework.dsc
+
+
+
 dnl Store the public configuration
 ac_base_header=base/configuration.h
 if test -f ${ac_base_header} && diff -q ${ac_base_public_config} ${ac_base_header} >&AC_FD_CC 2>&AC_FD_CC; then
-  echo "public configuration header is already up-to-date..."
+  echo "public configuration is already up-to-date..."
 else
-  echo "updating public configuration header..."
+  echo "updating public configuration..."
   mkdir -p base
   mv ${ac_base_public_config} ${ac_base_header}
 fi
@@ -1299,11 +1352,19 @@ fi
 dnl Store the private configuration
 ac_base_header=base/platforms/configuration.h
 if test -f ${ac_base_header} && diff -q ${ac_base_private_config} ${ac_base_header} >&AC_FD_CC 2>&AC_FD_CC; then
-  echo "private configuration header is already up-to-date..."
+  echo "private configuration is already up-to-date..."
 else
-  echo "updating private configuration header..."
-  mkdir -p base/platforms
-  mv ${ac_base_private_config} ${ac_base_header}
+  if grep -v _DK_SDU_MIP__BASE__BUILD_DATE ${ac_base_private_config} > private.new.tmp 2>&AC_FD_CC &&
+     grep -v _DK_SDU_MIP__BASE__BUILD_DATE ${ac_base_header} > private.old.tmp 2>&AC_FD_CC &&
+     diff -q private.new.tmp private.old.tmp >&AC_FD_CC 2>&AC_FD_CC; then
+    echo "private configuration not updated because only DATE would change"
+  else
+    echo "updating private configuration header..."
+    mkdir -p base/platforms
+    mv ${ac_base_private_config} ${ac_base_header}
+  fi
+  test -f private.new.tmp && rm private.new.tmp
+  test -f private.old.tmp && rm private.old.tmp
 fi
 
 
@@ -1311,6 +1372,7 @@ fi
 dnl Generate make files
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(config/Makefile)
+
 AC_CONFIG_FILES(base/Makefile)
 AC_CONFIG_FILES(base/docs/Makefile)
 AC_CONFIG_FILES(base/docs/en/Makefile)
@@ -1318,6 +1380,7 @@ AC_CONFIG_FILES(base/platforms/Makefile)
 AC_CONFIG_FILES(base/collection/Makefile)
 AC_CONFIG_FILES(base/communication/Makefile)
 AC_CONFIG_FILES(base/concurrency/Makefile)
+AC_CONFIG_FILES(base/extension/Makefile)
 AC_CONFIG_FILES(base/filesystem/Makefile)
 AC_CONFIG_FILES(base/iterator/Makefile)
 AC_CONFIG_FILES(base/dl/Makefile)
@@ -1326,6 +1389,7 @@ AC_CONFIG_FILES(base/io/async/Makefile)
 AC_CONFIG_FILES(base/mathematics/Makefile)
 AC_CONFIG_FILES(base/mem/Makefile)
 AC_CONFIG_FILES(base/net/Makefile)
+AC_CONFIG_FILES(base/rmi/Makefile)
 AC_CONFIG_FILES(base/security/Makefile)
 AC_CONFIG_FILES(base/sound/Makefile)
 AC_CONFIG_FILES(base/string/Makefile)

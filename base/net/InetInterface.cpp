@@ -44,10 +44,12 @@ namespace internal {
   class InetInterface {
   public:
 
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     struct ASTAT {
       ADAPTER_STATUS status;
       NAME_BUFFER nameBuffer[NCBNAMSZ];
     };
+#endif
     
     static inline InetAddress getAddress(const struct sockaddr& address) throw() {
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)

@@ -415,14 +415,12 @@ inline void fill<uint8>(uint8* dest, unsigned int count, uint8 value) throw() {
 template<class TYPE>
 inline void clear(TYPE& value) throw() {
   long* p = Cast::pointer<long*>(&value);
-  for (unsigned int i = 0; i < sizeof(TYPE)/sizeof(long); ++i) {
+  for (int i = 0; i < sizeof(TYPE)/sizeof(long); ++i) {
     *p++ = 0;
   }
   uint8* q = Cast::pointer<uint8*>(p);
-  if (sizeof(TYPE)%sizeof(long) != 0) {
-    for (unsigned int i = 0; i < sizeof(TYPE)%sizeof(long); ++i) {
-      *q++ = 0;
-    }
+  for (int i = 0; i < sizeof(TYPE)%sizeof(long); ++i) {
+    *q++ = 0;
   }
 }
 

@@ -276,7 +276,7 @@ Application::Application(const String& name, int numberOfArguments, const char* 
   assert((numberOfArguments > 0) && (arguments), OutOfDomain(this));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   char buffer[MAX_PATH + 1]; // what if path starts with "\\?\"
-  DWORD length = ::GetModuleName(0, buffer, sizeof(buffer));
+  DWORD length = ::GetModuleFileName(0, buffer, sizeof(buffer));
   ASSERT(length > 0);
   path = String(buffer, length);
 #else

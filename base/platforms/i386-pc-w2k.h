@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#define _DK_SDU_MIP__BASE__FLAVOUR _DK_SDU_MIP__BASE__WIN32
+#define _DK_SDU_MIP__BASE__FLAVOR _DK_SDU_MIP__BASE__WIN32
 #define _DK_SDU_MIP__BASE__OS _DK_SDU_MIP__BASE__W2K
 #define _DK_SDU_MIP__BASE__ARCH _DK_SDU_MIP__BASE__X86
 #define _DK_SDU_MIP__BASE__ARCH_MINOR _DK_SDU_MIP__BASE__386

@@ -17,8 +17,8 @@
 
   The following symbols must be defined by <base/platforms/platform.h>:
 
-    // Specifies the flavour
-    _DK_SDU_MIP__BASE__FLAVOUR
+    // Specifies the flavor
+    _DK_SDU_MIP__BASE__FLAVOR
 
     // Specifies the operating-system
     _DK_SDU_MIP__BASE__OS
@@ -46,7 +46,7 @@
 
 #define _DK_SDU_MIP__BASE__UNSPECIFIED 0
 
-// Supported flavours
+// Supported flavors
 #define _DK_SDU_MIP__BASE__UNIX 1 // selects The Single UNIX Specification 2
 #define _DK_SDU_MIP__BASE__WIN32 2 // selects WIN32 api
 

@@ -14,7 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_PLATFORMS_WIN32__ASYNC_WRITE_STREAM_CONTEXT_H
 #define _DK_SDU_MIP__BASE_PLATFORMS_WIN32__ASYNC_WRITE_STREAM_CONTEXT_H
 
-#if !(_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if !(_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #error inclusion of platform specific header file
 #endif
 

@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#define _DK_SDU_MIP__BASE__FLAVOUR _DK_SDU_MIP__BASE__UNIX
+#define _DK_SDU_MIP__BASE__FLAVOR _DK_SDU_MIP__BASE__UNIX
 #define _DK_SDU_MIP__BASE__OS _DK_SDU_MIP__BASE__IRIX65
 #define _DK_SDU_MIP__BASE__ARCH _DK_SDU_MIP__BASE__MIPS
 #define _DK_SDU_MIP__BASE__ARCH_MINOR _DK_SDU_MIP__BASE__UNSPECIFIED

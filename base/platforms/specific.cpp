@@ -11,11 +11,11 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
+#include <base/platforms/features.h>
 
 // include platform specific source files
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <base/platforms/win32/AsyncReadFileContext.cpp>
   #include <base/platforms/win32/AsyncReadStreamContext.cpp>
   #include <base/platforms/win32/AsyncWriteFileContext.cpp>

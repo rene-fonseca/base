@@ -22,7 +22,7 @@ Integer::Integer(String<> str) throw(InvalidFormat) {
   long long temp = 0;
 
   while (index < length) {
-    char ch = str[index];
+    char ch = str[index++];
 
     if ((ch < '0') || (ch > '9')) {
       throw InvalidFormat("Not an Integer");
@@ -30,7 +30,7 @@ Integer::Integer(String<> str) throw(InvalidFormat) {
 
     temp = temp * 10 + (ch - '0') % 10;
 
-    if ((sign && (temp > Integer::MAXIMUM)) || (!sign && (temp > Integer::MINIMUM))) {
+    if ((sign && (-temp < Integer::MINIMUM)) || (!sign && (temp > Integer::MAXIMUM))) {
       throw InvalidFormat("Not an Integer");
     }
   }

@@ -24,11 +24,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if ((key = ::TlsAlloc()) == TLS_OUT_OF_INDEXES) {
-    throw ResourceException();
+    throw ResourceException(this);
   }
 #else // unix
-  if (pthread_key_create(&key, NULL)) {
-    throw ResourceException();
+  if (pthread_key_create(&key, 0)) {
+    throw ResourceException(this);
   }
 #endif // flavour
 }
@@ -37,7 +37,7 @@ void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   void* result = ::TlsGetValue(key);
   if (!result && (::GetLastError() != NO_ERROR)) {
-    throw ThreadKeyException();
+    throw ThreadKeyException(this);
   }
   return result;
 #else
@@ -48,11 +48,11 @@ void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
 void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!::TlsSetValue(key, value)) {
-    throw ThreadKeyException();
+    throw ThreadKeyException(this);
   }
 #else
   if (pthread_setspecific(key, value)) {
-    throw ThreadKeyException();
+    throw ThreadKeyException(this);
   }
 #endif // flavour
 }
@@ -60,11 +60,11 @@ void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
 ThreadKeyImpl::~ThreadKeyImpl() throw(ThreadKeyException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!::TlsFree(key)) {
-    throw ThreadKeyException();
+    throw ThreadKeyException(this);
   }
 #else
   if (pthread_key_delete(key)) { // key should always be valid at this point
-    throw ThreadKeyException();
+    throw ThreadKeyException(this);
   }
 #endif // flavour
 }

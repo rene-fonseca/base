@@ -21,5 +21,5 @@ int main() {
   // TAG: should check float, double, and long double
   int floatWordOrder;
   checkFloat<long double>(floatWordOrder);
-  return floatWordOrder;
+  return (floatWordOrder == _DK_SDU_MIP__BASE__BIG_ENDIAN) ? 0 : 1;
 }

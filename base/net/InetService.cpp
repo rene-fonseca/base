@@ -26,11 +26,11 @@ unsigned short InetService::getByName(const String& name, const String& protocol
   struct servent* sp;
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   sp = getservbyname(name.getElements(), protocol.getElements()); // MT-safe
-#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__SOLARIS)
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   sp = getservbyname_r(name.getElements(), protocol.getElements(), &result, buffer, sizeof(buffer));
-#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   getservbyname_r(name.getElements(), protocol.getElements(), &result, buffer, sizeof(buffer), &sp);
@@ -45,11 +45,11 @@ String InetService::getByPort(unsigned short port, const String& protocol) throw
   struct servent* sp;
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   sp = getservbyport(htons(port), protocol.getElements()); // MT-safe
-#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__SOLARIS)
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   sp = getservbyport_r(htons(port), protocol.getElements(), &result, buffer, sizeof(buffer));
-#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   getservbyport_r(htons(port), protocol.getElements(), &result, buffer, sizeof(buffer), &sp);

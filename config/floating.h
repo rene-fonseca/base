@@ -168,19 +168,19 @@ struct IEEE_QuadruplePrecision_BE {
   static const int BIAS = 0x3fff;
   static const unsigned int SIGNIFICANT = 113;
 
-  unsigned int mantissa0 : 32;
-  unsigned int mantissa1 : 32;
-  unsigned int mantissa2 : 32;
-  unsigned int mantissa3 : 16;
-  unsigned int exponent : 15;
   unsigned int negative : 1;
+  unsigned int exponent : 15;
+  unsigned int mantissa3 : 16;
+  unsigned int mantissa2 : 32;
+  unsigned int mantissa1 : 32;
+  unsigned int mantissa0 : 32;
 };
 
 struct IEEE_QuadruplePrecision_FWOBE {
   static const bool HAS_IMPLIED_ONE = true;
   static const int BIAS = 0x3fff;
   static const unsigned int SIGNIFICANT = 113;
-
+  // TAG: fix here
   unsigned int mantissa0 : 32;
   unsigned int mantissa1 : 32;
   unsigned int mantissa2 : 32;
@@ -425,7 +425,9 @@ bool isIEEE_QuadruplePrecision() {
     (!temp.fields.negative) &&
     (temp.fields.exponent == REPRESENTATION::BIAS) &&
     (temp.fields.mantissa0 == 0) &&
-    (temp.fields.mantissa1 == 0)
+    (temp.fields.mantissa1 == 0) &&
+    (temp.fields.mantissa2 == 0) &&
+    (temp.fields.mantissa3 == 0)
   )) {
     return false;
   }
@@ -436,7 +438,9 @@ bool isIEEE_QuadruplePrecision() {
     (!temp.fields.negative) &&
     (temp.fields.exponent == 32767) &&
     (temp.fields.mantissa0 == 0) &&
-    (temp.fields.mantissa1 == 0)
+    (temp.fields.mantissa1 == 0) &&
+    (temp.fields.mantissa2 == 0) &&
+    (temp.fields.mantissa3 == 0)
   )) {
     return false;
   }
@@ -447,7 +451,9 @@ bool isIEEE_QuadruplePrecision() {
     (temp.fields.negative) &&
     (temp.fields.exponent == 32767) &&
     (temp.fields.mantissa0 == 0) &&
-    (temp.fields.mantissa1 == 0)
+    (temp.fields.mantissa1 == 0) &&
+    (temp.fields.mantissa2 == 0) &&
+    (temp.fields.mantissa3 == 0)
   )) {
     return false;
   }
@@ -457,7 +463,9 @@ bool isIEEE_QuadruplePrecision() {
     (!temp.fields.negative) &&
     (temp.fields.exponent == 0) &&
     (temp.fields.mantissa0 == 0) &&
-    (temp.fields.mantissa1 == 0)
+    (temp.fields.mantissa1 == 0) &&
+    (temp.fields.mantissa2 == 0) &&
+    (temp.fields.mantissa3 == 0)
   )) {
     return false;
   }

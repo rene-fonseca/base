@@ -94,14 +94,14 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 
   struct addrinfo* i = ai;
   while (i) {
-    char* addr;
+    byte* addr;
     switch (i->ai_family) {
     case PF_INET:
-      addr = (char*)&((struct sockaddr_in*)(i->ai_addr))->sin_addr;
+      addr = (byte*)&((struct sockaddr_in*)(i->ai_addr))->sin_addr;
       result.append(InetAddress(addr, IP_VERSION_4));
       break;
     case PF_INET6:
-      addr = (char*)&((struct sockaddr_in6*)(i->ai_addr))->sin6_addr;
+      addr = (byte*)&((struct sockaddr_in6*)(i->ai_addr))->sin6_addr;
       result.append(InetAddress(addr, IP_VERSION_6));
       break;
 //    default:
@@ -119,14 +119,14 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
       throw HostNotFound("Unable to lookup host by name");
     }
-  #elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__SOLARIS)
+  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
     if (!(hp = gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &error))) {
       throw HostNotFound("Unable to lookup host by name");
     }
-  #elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
+  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
@@ -296,14 +296,14 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
     if (!(hp = gethostbyaddr((const char*)&address, sizeof(address), AF_INET))) { // MT-safe
       throw HostNotFound("Unable to resolve IP address");
     }
-  #elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__SOLARIS)
+  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error;
     if (!(hp = gethostbyaddr_r((const char*)&address, sizeof(address), AF_INET, &result, buffer, sizeof(buffer), &error))) {
       throw HostNotFound("Unable to resolve IP address");
     }
-  #elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
+  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error;

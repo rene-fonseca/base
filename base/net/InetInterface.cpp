@@ -40,7 +40,7 @@ List<InetInterface> InetInterface::getInetInterfaces() throw(NetworkException) {
   interfaces.append(InetInterface(ni->if_index, ni->if_name));
   if_freenameindex(ni); // MT-safe
   return interfaces;
-#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__GNULINUX)
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   List<InetInterface> interfaces;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   try {

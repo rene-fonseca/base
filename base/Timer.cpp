@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /*
   // if optimized for PENTIUM (may not be allowed by system)
-  
+
   unsigned int low;
   unsigned int high;
   asm (
@@ -34,6 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   );
   return (static_cast<uint64>(high) << 32) | low;
 */
+
 Timer::Timer() throw() : stopTime(0) {
   start();
 }
@@ -114,7 +115,7 @@ FormatOutputStream& operator<<(
 }
 
 void TimeScope::dump() const throw(IOException) {
-  fout << MESSAGE("Elapsed time (H:M:S.microseconds): ") << timer << ENDL;
+  fout << "Elapsed time (H:M:S.microseconds): " << timer << ENDL;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

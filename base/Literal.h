@@ -32,21 +32,22 @@ private:
   /** The length of the literal. */
   const MemorySize length;
 public:
-
+  
   /**
     Initializes the literal.
   */
-  inline Literal(const char* _literal, MemorySize _length) throw()
-    : literal(_literal), length(_length) {
+  template<MemorySize SIZE>
+  inline Literal(const char (&value)[SIZE]) throw()
+    : literal(value), length(SIZE - 1) {
   }
-
+  
   /**
     Returns the literal.
   */
-  inline operator const char*() const throw() {
+  inline const char* getValue() const throw() {
     return literal;
   }
-
+  
   /**
     Returns the length of the literal.
   */
@@ -54,16 +55,6 @@ public:
     return length;
   }
 };
-
-/**
-  Returns a Literal object for the specified literal.
-  
-  @relates Literal
-*/
-template<MemorySize SIZE>
-inline Literal literal(const char (&value)[SIZE]) throw() {
-  return Literal(value, SIZE - 1);
-}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

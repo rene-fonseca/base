@@ -40,27 +40,27 @@ public:
       try {
         throw;
       } catch (Exception& e) {
-        stream << MESSAGE("Internal error: uncaught exception '")
-               << TypeInfo::getTypename(e) << MESSAGE("' was raised");
+        stream << "Internal error: uncaught exception '"
+               << TypeInfo::getTypename(e) << "' was raised";
         if (e.getType().isInitialized()) {
-          stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
+          stream << " by '" << TypeInfo::getTypename(e.getType()) << '\'';
         }
         const unsigned int cause = e.getCause();
         const unsigned int nativeError = e.getError();
         const char* message = e.getMessage();
         if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
-          stream << MESSAGE(" with");
+          stream << " with";
         }
         if (message) {
-          stream << MESSAGE(" message '") << message << '\'';
+          stream << " message '" << message << '\'';
         }
         if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
-          stream << MESSAGE(" and");
+          stream << " and";
         }
         if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
-          stream << MESSAGE(" cause ") << cause;
+          stream << " cause " << cause;
         } else if (nativeError != 0) {
-          stream << MESSAGE(" due to native error ") << nativeError;
+          stream << " due to native error " << nativeError;
           unsigned int error = OperatingSystem::getErrorCode(nativeError);
           if (error != OperatingSystem::UNSPECIFIED_ERROR) {
             stream << ' ' << '(' << OperatingSystem::getErrorMessage(error) << ')';
@@ -68,11 +68,12 @@ public:
         }
         stream << '.' << FLUSH;
       } catch (...) {
-        stream << MESSAGE("Internal error: uncaught and unsupported exception '")
-               << TypeInfo::getTypename(exceptionType) << MESSAGE("' was raised.") << FLUSH;
+        stream << "Internal error: uncaught and unsupported exception '"
+               << TypeInfo::getTypename(exceptionType)
+               << "' was raised." << FLUSH;
       }
     } else {
-      stream << MESSAGE("Internal error: explicit termination.") << FLUSH;
+      stream << "Internal error: explicit termination." << FLUSH;
     }
     ferr << stream.getString() << ENDL; // TAG: use appropriate error stream
 #if defined(_DK_SDU_MIP__BASE__DEBUG)
@@ -89,41 +90,42 @@ public:
       try {
         throw;
       } catch (Exception& e) {
-        stream << MESSAGE("Internal error: exception '")
-               << TypeInfo::getTypename(e) << MESSAGE("' was raised");
+        stream << "Internal error: exception '"
+               << TypeInfo::getTypename(e) << "' was raised";
         if (e.getType().isInitialized()) {
-          stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
+          stream << " by '" << TypeInfo::getTypename(e.getType()) << '\'';
         }
         const unsigned int cause = e.getCause();
         const unsigned int nativeError = e.getError();
         const char* message = e.getMessage();
         if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
-          stream << MESSAGE(" with");
+          stream << " with";
         }
         if (message) {
-          stream << MESSAGE(" message '") << message << '\'';
+          stream << " message '" << message << '\'';
         }
         if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
-          stream << MESSAGE(" and");
+          stream << " and";
         }
         if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
-          stream << MESSAGE(" cause ") << cause;
+          stream << " cause " << cause;
         } else if (nativeError != 0) {
-          stream << MESSAGE(" due to native error ") << nativeError;
+          stream << " due to native error " << nativeError;
           unsigned int error = OperatingSystem::getErrorCode(nativeError);
           if (error != OperatingSystem::UNSPECIFIED_ERROR) {
             stream << ' ' << '(' << OperatingSystem::getErrorMessage(error) << ')'
-                   << MESSAGE(" and");
+                   << " and";
           }
         }
-        stream << MESSAGE(" in violation with exception specification.") << FLUSH;
+        stream << " in violation with exception specification." << FLUSH;
       } catch (...) {
-        stream << MESSAGE("Internal error: unsupported exception '")
+        stream << "Internal error: unsupported exception '"
                << TypeInfo::getTypename(exceptionType)
-               << MESSAGE("' was raised in violation with exception specification.") << FLUSH;
+               << "' was raised in violation with exception specification."
+               << FLUSH;
       }
     } else {
-      stream << MESSAGE("Internal error: explicit invocation of unexpected.") << FLUSH;
+      stream << "Internal error: explicit invocation of unexpected." << FLUSH;
     }
 #if defined(_DK_SDU_MIP__BASE__DEBUG)
     Trace::message(stream.getString().getElements());
@@ -140,7 +142,8 @@ public:
 #if 0 // disabled
   // TAG: we should destroy window in destructor
   StringOutputStream stream;
-  stream << MESSAGE("messageHandler: message=") << message << MESSAGE(" primary=") << primaryParameter << MESSAGE(" second=") << secondaryParameter << FLUSH;
+  stream << "messageHandler: message=" << message << " primary="
+         << primaryParameter << " second=" << secondaryParameter << FLUSH;
   Trace::message(stream.getString().getElements());
   if (::InSendMessage()) {
     ::ReplyMessage(0);
@@ -176,10 +179,10 @@ public:
     isWindows2000OrLater ? ((HWND)-3) : ((HWND)0), // no parent or owner window - (HWND(-3)) ~ HWND_MESSAGE
     ((HWND)0), // no parent or owner window
                                         //isWindows2000OrLater ? ((HWND)-3) : ((HWND)0), // (HWND(-3)) ~ HWND_MESSAGE
-                                        DWORD dispatchResult;
+  DWORD dispatchResult;
   LRESULT result2 = ::SendMessageTimeout(
     messageWindow,
-    10000+WM_QUIT,
+    10000 + WM_QUIT,
     Application::EXIT_CODE_EXTERNAL,
     0,
     SMTO_NORMAL,
@@ -207,7 +210,8 @@ public:
   static LRESULT CALLBACK messageHandler(HWND window, UINT message, WPARAM primaryParameter, LPARAM secondaryParameter) throw() {
     // TAG: we should destroy window in destructor
     StringOutputStream stream;
-    //stream << MESSAGE("messageHandler: message=") << message << MESSAGE(" primary=") << primaryParameter << MESSAGE(" second=") << secondaryParameter << FLUSH;
+    //stream << "messageHandler: message=" << message << " primary="
+    //       << primaryParameter << " second=" << secondaryParameter << FLUSH;
     //Trace::message(stream.getString().getElements());
     switch (message) {
     case WM_QUIT:
@@ -229,7 +233,7 @@ public:
     switch (signal) {      
     case SIGHUP: // hangup
       if (Thread::getThread()->isMainThread()) {
-        SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Hangup signal."));
+        SystemLogger::write(SystemLogger::INFORMATION, "Hangup signal.");
         if (Application::application) {
           Application::application->hangup();
         }
@@ -237,7 +241,7 @@ public:
       break;
     case SIGQUIT: // quit signal from keyboard
       if (Thread::getThread()->isMainThread()) {
-        SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Quit signal."));
+        SystemLogger::write(SystemLogger::INFORMATION, "Quit signal.");
         if (Application::application) {
           Application::application->terminate();
         }
@@ -245,31 +249,34 @@ public:
       break;
     case SIGINT: // interrrupt from keyboard
       if (Thread::getThread()->isMainThread()) {
-        SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Interrupt signal."));
+        SystemLogger::write(SystemLogger::INFORMATION, "Interrupt signal.");
         if (Application::application) {
           Application::application->terminate();
         }
       }
       break;
     case SIGSEGV:
-      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Segmentation fault."));
+      SystemLogger::write(SystemLogger::INFORMATION, "Segmentation fault.");
       throw MemoryException("Invalid memory access");
     case SIGILL:
-      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Invalid instruction."));
+      SystemLogger::write(SystemLogger::INFORMATION, "Invalid instruction.");
       throw Exception("Invalid instruction");
     case SIGFPE:
-      SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Floating point exception."));
+      SystemLogger::write(
+        SystemLogger::INFORMATION,
+        "Floating point exception."
+      );
       throw Exception("Floating point exception");
     case SIGABRT: // abort
       if (Thread::getThread()->isMainThread()) {
-        SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Abort signal."));
+        SystemLogger::write(SystemLogger::INFORMATION, "Abort signal.");
       }
       break;
     case SIGPIPE: // broken pipe
       break;
     case SIGTERM: // terminate
       if (Thread::getThread()->isMainThread()) {
-        SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Terminate signal."));
+        SystemLogger::write(SystemLogger::INFORMATION, "Terminate signal.");
         if (Application::application) {
           Application::application->terminate();
         }
@@ -280,7 +287,7 @@ public:
 #if defined(SIGPWR)
     case SIGPWR: // power fail or restart
       if (Thread::getThread()->isMainThread()) {
-        SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Power signal."));
+        SystemLogger::write(SystemLogger::INFORMATION, "Power signal.");
         if (Application::application) {
           Application::application->terminate();
         }
@@ -426,7 +433,7 @@ int Application::exceptionHandler(const Exception& e) throw() {
 }
 
 int Application::exceptionHandler() throw() {
-  ferr << MESSAGE("Internal error: unspecified exception.") << ENDL;
+  ferr << "Internal error: unspecified exception." << ENDL;
   setExitCode(Application::EXIT_CODE_ERROR);
   return Application::EXIT_CODE_ERROR;
 }

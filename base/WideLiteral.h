@@ -32,18 +32,19 @@ private:
   /** The length of the literal. */
   const MemorySize length;
 public:
-
+  
   /**
     Initializes the literal.
   */
-  inline WideLiteral(const wchar* _literal, MemorySize _length) throw()
-    : literal(_literal), length(_length) {
+  template<MemorySize SIZE>
+  inline WideLiteral(const char (&value)[SIZE]) throw()
+    : literal(value), length(SIZE - 1) {
   }
-
+  
   /**
     Returns the literal.
   */
-  inline operator const wchar*() const throw() {
+  inline const wchar* getValue() const throw() {
     return literal;
   }
 
@@ -54,16 +55,6 @@ public:
     return length;
   }
 };
-
-/**
-  Returns a WideLiteral object for the specified literal.
-  
-  @relates WideLiteral
-*/
-template<MemorySize SIZE>
-inline WideLiteral literal(const wchar (&value)[SIZE]) throw() {
-  return WideLiteral(value, SIZE - 1);
-}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

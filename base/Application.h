@@ -34,7 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   public:
   
     MyApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-      : Application(MESSAGE("MyApplication"), numberOfArguments, arguments, environment) {
+      : Application("MyApplication", numberOfArguments, arguments, environment) {
     }
 
     void main() throw() {

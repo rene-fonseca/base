@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -246,7 +246,8 @@ void Daemon::uninstall() throw(DaemonException) {
 void Daemon::install() {
   TCHAR path[512];
   if (::GetModuleFileName(0, path, 512) == 0) {
-    ferr << MESSAGE("Unable to install service as ") << Application::getApplication()->getFormalName() << ENDL;
+    ferr << "Unable to install service as "
+         << Application::getApplication()->getFormalName() << ENDL;
     return;
   }
 
@@ -270,14 +271,15 @@ void Daemon::install() {
     );
 
     if (service) {
-      fout << MESSAGE("Service has been installed as ") << Application::getApplication()->getFormalName() << ENDL;
+      fout << "Service has been installed as "
+           << Application::getApplication()->getFormalName() << ENDL;
       ::CloseServiceHandle(service);
     } else {
-      ferr << MESSAGE("Failed to install service") << ENDL;
+      ferr << "Failed to install service" << ENDL;
     }
     ::CloseServiceHandle(manager);
   } else {
-    ferr << MESSAGE("Unable to open service control manager") << ENDL;
+    ferr << "Unable to open service control manager" << ENDL;
   }
 }
 

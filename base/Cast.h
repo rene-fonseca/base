@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -168,7 +168,8 @@ private:
   class PointerCast<volatile const RESULT*, volatile const ORIGINAL*> {
   public:
     
-    static inline volatile const RESULT* cast(volatile const ORIGINAL* value) throw() {
+    static inline volatile const RESULT* cast(
+      volatile const ORIGINAL* value) throw() {
       union {
         volatile const ORIGINAL* original;
         volatile const RESULT* result;
@@ -232,6 +233,21 @@ private:
       return temp.result;
     }
   };
+  
+  template<class TYPE>
+  class GetPointerCast {
+  };
+  
+  template<class TYPE>
+  class GetPointerCast<TYPE*> {
+  public:
+    
+    static inline TYPE* cast(MemorySize value) throw() {
+      return static_cast<TYPE*>(
+        static_cast<void*>(static_cast<char*>(0) + value)
+      );
+    }
+  };
 public:
 
   /**
@@ -243,7 +259,8 @@ public:
   }
   
   /**
-    Returns the address of the specified object as a byte pointer (i.e. uint8*).
+    Returns the address of the specified object as a byte pointer
+    (i.e. uint8*).
   */
   template<class TYPE>
   static inline uint8* getAddress(TYPE& value) throw() {
@@ -251,7 +268,8 @@ public:
   }
   
   /**
-    Returns the address of the specified object as a byte pointer (i.e. uint8*).
+    Returns the address of the specified object as a byte pointer
+    (i.e. uint8*).
   */
   template<class TYPE>
   static inline const uint8* getAddress(const TYPE& value) throw() {
@@ -259,7 +277,8 @@ public:
   }
   
   /**
-    Returns the address of the specified object as a byte pointer (i.e. uint8*).
+    Returns the address of the specified object as a byte pointer
+    (i.e. uint8*).
   */
   template<class TYPE>
   static inline volatile uint8* getAddress(volatile TYPE& value) throw() {
@@ -267,10 +286,12 @@ public:
   }
 
   /**
-    Returns the address of the specified object as a byte pointer (i.e. uint8*).
+    Returns the address of the specified object as a byte pointer
+    (i.e. uint8*).
   */
   template<class TYPE>
-  static inline volatile const uint8* getAddress(volatile const TYPE& value) throw() {
+  static inline volatile const uint8* getAddress(
+    volatile const TYPE& value) throw() {
     return reinterpret_cast<volatile const uint8*>(&value);
   }
 
@@ -283,7 +304,8 @@ public:
   }
   
   /**
-    Returns the address of the specified object as a byte pointer (i.e. uint8*).
+    Returns the address of the specified object as a byte pointer
+    (i.e. uint8*).
   */
   template<class TYPE>
   static inline const uint8* getAddress(const TYPE value[]) throw() {
@@ -291,7 +313,8 @@ public:
   }
   
   /**
-    Returns the address of the specified object as a byte pointer (i.e. uint8*).
+    Returns the address of the specified object as a byte pointer
+    (i.e. uint8*).
   */
   template<class TYPE>
   static inline volatile uint8* getAddress(volatile TYPE value[]) throw() {
@@ -299,10 +322,12 @@ public:
   }
   
   /**
-    Returns the address of the specified object as a byte pointer (i.e. uint8*).
+    Returns the address of the specified object as a byte pointer
+    (i.e. uint8*).
   */
   template<class TYPE>
-  static inline volatile const uint8* getAddress(volatile const TYPE value[]) throw() {
+  static inline volatile const uint8* getAddress(
+    volatile const TYPE value[]) throw() {
     return reinterpret_cast<volatile const uint8*>(value);
   }
   
@@ -334,7 +359,8 @@ public:
     Returns the address of the specified object as a char pointer.
   */
   template<class TYPE>
-  static inline volatile const char* getCharAddress(volatile const TYPE& value) throw() {
+  static inline volatile const char* getCharAddress(
+    volatile const TYPE& value) throw() {
     return reinterpret_cast<volatile const char*>(&value);
   }
 
@@ -372,7 +398,8 @@ public:
   }
 
   /**
-    Returns the memory offset of the specified pointer. Any qualifiers are lost in the process!
+    Returns the memory offset of the specified pointer. Any qualifiers are lost
+    in the process!
   */
   static inline MemorySize getOffset(const volatile void* value) throw() {
     return static_cast<const volatile char*>(value) -
@@ -382,10 +409,11 @@ public:
   /**
     Returns the pointer value corresponding to the specified memory offset.
   */
-  static inline void* getPointer(MemorySize value) throw() {
-    return static_cast<char*>(0) + value;
+  template<class TYPE>
+  static inline TYPE getPointer(MemorySize value) throw() {
+    return GetPointerCast<TYPE>::cast(value);
   }
-
+  
   /**
     This cast function is used to up cast pointers (i.e. you can explicitly
     specify the desired pointer type). This function only works if there exists
@@ -440,8 +468,8 @@ public:
   };
 
   /**
-    Casts the argument to the specified type. The argument and result types must
-    have the exact same memory size.
+    Casts the argument to the specified type. The argument and result types
+    must have the exact same memory size.
     
     @see container
   */

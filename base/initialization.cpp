@@ -36,6 +36,7 @@
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/sound/SoundDevice.h>
+#include <base/Literal.h>
 #include <stdlib.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -56,7 +57,8 @@ private:
 public:
   
   ThreadImpl() throw()
-    : thread(static_cast<Thread*>(0)), threadLocal(&thread) { // no parent for main thread
+    : thread(static_cast<Thread*>(0)),
+      threadLocal(&thread) { // no parent for main thread
   }
 };
 
@@ -93,13 +95,16 @@ public:
       
       unsigned long value = DebugDynamicMemory::currentAllocations;
       for (unsigned int i = 0; i < (sizeof(unsigned long) * 2); ++i) {
-        dest[sizeof(unsigned long)*2 - 1 - i] = ASCIITraits::valueToDigit(value & 0x0f);
+        dest[sizeof(unsigned long)*2 - 1 - i] =
+          ASCIITraits::valueToDigit(value & 0x0f);
         value >>= 4; // bits per digit
       }
       dest += sizeof(unsigned long) * 2;
-      
-      copy<char>(dest, " allocations have not been released for DebugDynamicMemory", sizeof(" allocations have not been released for DebugDynamicMemory") - 1);
-      dest += sizeof(" allocations have not been released for DebugDynamicMemory") - 1;
+
+      static const Literal
+        literal(" allocations have not been released for DebugDynamicMemory");
+      copy<char>(dest, literal.getValue(), literal.getLength());
+      dest += literal.getLength();
       *dest = 0; // terminate string
       Trace::message(message);
     }
@@ -121,7 +126,7 @@ namespace internal {
     Trace::message("Exception was raised during application initialization or cleanup.");
     SystemLogger::write(
       SystemLogger::ERROR,
-      MESSAGE("Exception was raised during application initialization or cleanup.")
+      "Exception was raised during application initialization or cleanup."
     );
     // ferr has not been initialized
     exit(Application::EXIT_CODE_INITIALIZATION);
@@ -132,28 +137,28 @@ namespace internal {
     try {
       throw;
     } catch (Exception& e) {
-      stream << MESSAGE("Internal error: exception '")
-             << TypeInfo::getTypename(e) << MESSAGE("' was raised");
+      stream << "Internal error: exception '"
+             << TypeInfo::getTypename(e) << "' was raised";
       if (e.getType().isInitialized()) {
-        stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
+        stream << " by '" << TypeInfo::getTypename(e.getType()) << '\'';
       }
       const char* message = e.getMessage();
       unsigned int cause = e.getCause();
       if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
-        stream << MESSAGE(" with");
+        stream << " with";
       }
       if (message) {
-        stream << MESSAGE(" message '") << message << '\'';
+        stream << " message '" << message << '\'';
       }
       if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
-        stream << MESSAGE(" and");
+        stream << " and";
       }
       if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
-        stream << MESSAGE(" cause ") << HEX << setWidth(10) << ZEROPAD << cause;
+        stream << " cause " << HEX << setWidth(10) << ZEROPAD << cause;
       }
-      stream << MESSAGE(" in violation with exception specification during application initialization or cleanup.") << FLUSH;
+      stream << " in violation with exception specification during application initialization or cleanup." << FLUSH;
     } catch (...) {
-      stream << MESSAGE("Internal error: unsupported exception was raised in violation with exception specification during application initialization or cleanup.") << FLUSH;
+      stream << "Internal error: unsupported exception was raised in violation with exception specification during application initialization or cleanup." << FLUSH;
     }
     Trace::message(stream.getString().getElements());
     SystemLogger::write(SystemLogger::ERROR, stream.getString());
@@ -212,13 +217,19 @@ public:
 Initialization initialization;
 const Locale Locale::POSIX;
 
-FileDescriptorInputStream standardInputStream(FileDescriptor::getStandardInput());
+FileDescriptorInputStream standardInputStream(
+  FileDescriptor::getStandardInput()
+);
 FormatInputStream fin(standardInputStream);
 
-FileDescriptorOutputStream standardOutputStream(FileDescriptor::getStandardOutput());
+FileDescriptorOutputStream standardOutputStream(
+  FileDescriptor::getStandardOutput()
+);
 FormatOutputStream fout(standardOutputStream);
 
-FileDescriptorOutputStream standardErrorStream(FileDescriptor::getStandardError());
+FileDescriptorOutputStream standardErrorStream(
+  FileDescriptor::getStandardError()
+);
 FormatOutputStream ferr(standardErrorStream);
 
 SoundDevice SoundDevice::soundDevice;

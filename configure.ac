@@ -366,7 +366,7 @@ dnl C++ specific
 base_cxx_ext=cpp
 base_cxx_preprocess='${CXXCPP} -I. $CPPFLAGS'
 base_cxx_compile='${CXX} -o $base_obj_temp -c -I. $CPPFLAGS  $CXXFLAGS $base_cxx_src $base_cxx_opts'
-base_cxx_link='${CXX} -o $base_app_temp -I. $CPPFLAGS $CXXFLAGS $LDFLAGS $base_cxx_src $base_cxx_opts $LIBS $BASE_LIBS'
+base_cxx_link='${CXX} -o $base_app_temp -I. $CPPFLAGS $CXXFLAGS $base_cxx_src $LDFLAGS $base_cxx_opts $LIBS $BASE_LIBS'
 
 dnl AC_BASE_TRIM(string)
 AC_DEFUN(AC_BASE_TRIM, [`echo $1`])

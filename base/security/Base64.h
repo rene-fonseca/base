@@ -73,7 +73,7 @@ public:
   };
   
   /** Lookup table for mapping digits into values. */
-  static const char VALUES[256];
+  static const signed char VALUES[256];
   /** Digits of the Base64 encoding. */
   static const char DIGITS[64];
   /** The special character used to denote unused digits. */

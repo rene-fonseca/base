@@ -30,16 +30,21 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class FileOutputStream : public virtual Object, public OutputStream {
 public:
 
-  /** The flags. */
-  enum {
-    CREATE = 0x01, /**< Specifies that the file should be created if it doesn't exist. */
-    TRUNCATE = 0x02, /**< Specifies that the file should be truncated if it already exists. */
-    APPEND = 0x04, /**< Specifies that data should be appended to the file. */
-    NONBLOCK = 0x08, /**< Specifies that the file should be opened in non-blocking mode. */
-    SYNC = 0x10 /**< Specifies that the file should be opened in synchronous mode. */
+  /** File initialization flags. */
+  enum Options {
+    CREATE = File::CREATE, /**< Specifies that the file should be created if it doesn't exist. */
+    TRUNCATE = File::TRUNCATE, /**< Specifies that the file should be truncated if it already exists. */
+    EXCLUSIVE = File::EXCLUSIVE, /**< Specifies that the file should be opened in exclusive mode. */
+    ASYNCHRONOUS = File::ASYNCHRONOUS, /**< Specifies that the file should be opened for asynchronous IO (disables the synchronous IO interface). */
+    APPEND = File::APPEND /**< Specifies that data should be appended to the file. */
   };
+
+  // TAG: fix flags
+  // NONBLOCK = 0x08, /**< Specifies that the file should be opened in non-blocking mode. */
+  // SYNC = 0x10 /**< Specifies that the file should be opened in synchronous mode. */
+
   /** Permissions. */
-  enum {
+  enum Permissions {
     RWXU = 0x700, /**< Read, write, and execute permissions for the owner of the file. */
     RUSR = 0x400, /**< Read permission for the owner of the file. */
     WUSR = 0x200, /**< Write permission for the owner of the file. */

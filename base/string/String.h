@@ -684,7 +684,7 @@ inline String operator+(const String& left, const String& right) throw(MemoryExc
 */
 inline String operator-(const String& left, const String& right) throw(MemoryException) {
   if (left.endsWith(right)) {
-    return left.substring(0, left.getLength() - right.getLength()); // return copy of left without suffix
+    return left.substring(0, left.getLength() - right.getLength() - 1); // return copy of left without suffix
   } else {
     return String(left); // return copy of left
   }

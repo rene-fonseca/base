@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE_IO__FILE_REGION_H
 
 #include <base/Object.h>
+#include <base/OutOfDomain.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -23,12 +24,15 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short A region of a file.
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.1
 */
 
 class FileRegion : public Object {
 private:
 
+  /** Specifies the maximum permit able byte offset of any part of the file region. */
+  static const long long LIMIT = PrimitiveTraits<long long>::MAXIMUM;
+  
   /** The offset of the region from the beginning of the file. */
   long long offset;
   /** The size of the region (in bytes). */
@@ -41,7 +45,7 @@ public:
     @param offset The offset (from the beginning of the file) of the region.
     @param size The size (in bytes) of the region.
   */
-  FileRegion(long long offset, unsigned int size) throw();
+  FileRegion(long long offset, unsigned int size) throw(OutOfDomain);
 
   /**
     Initializes region from other region.
@@ -70,12 +74,25 @@ public:
   /**
     Sets the offset of the file region.
   */
-  inline void setOffset(long long offset) throw() {this->offset = offset;}
+  inline void setOffset(long long offset) throw(OutOfDomain) {
+    assert(offset < LIMIT - size, OutOfDomain(this));
+    this->offset = offset;
+  }
 
   /**
     Sets the size of the file region.
   */
-  inline void setSize(unsigned int size) throw() {this->size = size;}
+  inline void setSize(unsigned int size) throw(OutOfDomain) {
+    assert(offset < LIMIT - size, OutOfDomain(this));
+    this->size = size;
+  }
+  
+  /**
+    Returns the end of the region.
+  */
+  inline long long getEnd() const throw() {
+    return offset + size;
+  }
 
   /**
     Returns true if the specified region is contained in this region.
@@ -86,7 +103,10 @@ public:
   }
 };
 
-inline FileRegion::FileRegion(long long o, unsigned int s) throw() : offset(o), size(s) {}
+inline FileRegion::FileRegion(long long _offset, unsigned int _size) throw(OutOfDomain)
+  : offset(_offset), size(_size) {
+  assert(offset < LIMIT - size, OutOfDomain(this));
+}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

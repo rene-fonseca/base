@@ -124,7 +124,7 @@ ExpressionParser::ExpressionParser(const String<>& e, ExpressionProvider& p) thr
 void ExpressionParser::pop() throw(ExpressionException) {
   Operation opr = stack.pop();
   if (operands >= opr.getArguments()) {
-    nodes.add(makeNodeFromOperation(opr));
+    nodes.append(makeNodeFromOperation(opr));
     operands = operands - opr.getArguments() + 1;
   } else {
     throw ExpressionException(index, "Operand expected");
@@ -168,12 +168,12 @@ void ExpressionParser::readIdentifier() throw(ExpressionException) {
     Node node = provider.getNode(identifier);
     switch (node.type) {
     case VARIABLE:
-      nodes.add(node);
+      nodes.append(node);
       ++operands;
       unary = false;
       break;
     case CONSTANT:
-      nodes.add(node);
+      nodes.append(node);
       ++operands;
       unary = false;
       break;
@@ -262,7 +262,7 @@ void ExpressionParser::readValue() throw(ExpressionException) {
     throw ExpressionException(begin, "Not a number");
   }
 
-  nodes.add(makeValueNode(value));
+  nodes.append(makeValueNode(value));
   ++operands;
   unary = false;
 }
@@ -344,7 +344,7 @@ void ExpressionParser::parse() throw(ExpressionException) {
               throw ExpressionException(index, "Operand(s) missing from subexpression");
             }
             operands = operands - opr.getArguments() + 1;
-            nodes.add(makeNodeFromOperation(opr));
+            nodes.append(makeNodeFromOperation(opr));
           } else { // must be opening parenthesis
             // nothing should be added to the nodes list
           }

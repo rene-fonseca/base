@@ -9,8 +9,8 @@
 #include <base/Object.h>
 #include <base/concurrency/Synchronize.h>
 #include <base/OutOfRange.h>
-#include <base/mem/Array.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/ReferenceCountedAllocator.h>
 #include <base/string/FormatOutputStream.h>
 #include <limits.h>
 
@@ -84,10 +84,10 @@ private:
   };
 
   /**
-    Reference counted buffer holding NULL-terminated string. Guarantied to
-    be non-empty when string has been initialized.
+    Reference counted buffer holding NULL-terminated string. The array is
+    guarantied to be non-empty when the string has been initialized.
   */
-  ReferenceCountedObjectPointer<Array<char> > elements;
+  ReferenceCountedObjectPointer<ReferenceCountedAllocator<char> > elements;
 
   /**
     Length of the string.
@@ -99,9 +99,7 @@ protected:
     Returns a modifiable buffer. Forces copy of internal buffer if shared by multiple strings.
   */
   inline char* getMutableBuffer() throw(MemoryException) {
-    if (elements.isMultiReferenced()) { // do we have the elements for our self
-      elements = new Array<char>(*elements); // make copy of the elements
-    }
+    elements.copyOnWrite();
     return elements->getElements();
   }
 
@@ -628,6 +626,8 @@ String<LOCK> operator-(const String<LOCK>& left, const String<LOCK>& right) thro
   Writes string to format stream.
 */
 template<class LOCK>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const String<LOCK>& value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const String<LOCK>& value) {
+  return value.operator<<(stream);
+}
 
 #endif

@@ -79,11 +79,6 @@ public:
   void setNonBlocking(bool value) throw(IOException);
 
   /**
-    Destroys the file descriptor.
-  */
-  ~FileDescriptorInputStream();
-
-  /**
     Writes a string representation of a FileDescriptorInputStream object to a format stream.
   */
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptorInputStream& value);

@@ -30,7 +30,7 @@ public:
   /**
     Returns all of the Internet Protocol network interfaces of the host.
   */
-  static List<InetInterface> getInetInterfaces(NetworkException);
+  static List<InetInterface> getInetInterfaces() throw(NetworkException);
 
   /**
     Initializes the network interface .

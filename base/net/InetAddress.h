@@ -45,7 +45,7 @@ public:
 
     @param name The name of the host (e.g. 'www.mip.sdu.dk').
   */
-  static List<InetAddress> getAddressesByName(const String<>& name) throw(HostNotFound);
+  static List<InetAddress*> getAddressesByName(const String<>& name) throw(HostNotFound);
 
   /**
     Initializes the address as unspecified address.

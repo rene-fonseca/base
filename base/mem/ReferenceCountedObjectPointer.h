@@ -107,17 +107,19 @@ public:
   @short Automation pointer that counts the number of references to an object.
   @see ReferenceCountedObject
   @author René Møller Fonseca
-  @version 1.02
+  @version 1.03
 */
 
 template<class TYPE>
 class ReferenceCountedObjectPointer : private ReferenceCountedObjectFriend {
 public:
 
-  /** Type of pointer to reference counted objcet. */
-  typedef TYPE* Pointer;
-  /** Type of reference to reference counted object. */
+  /** The type of the reference counted object. */
+  typedef TYPE Value;
+  /** The type of reference to the reference counted object. */
   typedef TYPE& Reference;
+  /** The type of pointer to the reference counted objcet. */
+  typedef TYPE* Pointer;
 
   /**
     Initializes automation pointer with the specified pointer value. Object
@@ -173,6 +175,16 @@ public:
   */
   inline bool isMultiReferenced() const throw() {
     return ReferenceCountedObjectFriend::isMultiReferenced();
+  }
+
+  /**
+    Makes a new copy of the reference counted object if referenced by more than
+    one pointer.
+  */
+  inline void copyOnWrite() throw() {
+    if (isMultiReferenced()) { // do we have the object for our self
+      setValue(new Value(*getValue())); // make a copy of the object
+    }
   }
 
   /**

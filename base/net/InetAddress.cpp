@@ -26,8 +26,8 @@ String<> InetAddress::getLocalHost() {
   return String<>(name);
 }
 
-List<InetAddress> InetAddress::getAddressesByName(const String<>& name) throw(HostNotFound) {
-  List<InetAddress> result;
+List<InetAddress*> InetAddress::getAddressesByName(const String<>& name) throw(HostNotFound) {
+  List<InetAddress*> result;
 
 #if defined(HAVE_INET_IPV6)
   struct addrinfo hint;
@@ -45,11 +45,11 @@ List<InetAddress> InetAddress::getAddressesByName(const String<>& name) throw(Ho
     switch (i->ai_family) {
     case PF_INET:
       addr = (char*)&((struct sockaddr_in*)(i->ai_addr))->sin_addr;
-      result.add(InetAddress(addr, IPv4));
+      result.append(new InetAddress(addr, IPv4));
       break;
     case PF_INET6:
       addr = (char*)&((struct sockaddr_in6*)(i->ai_addr))->sin6_addr;
-      result.add(InetAddress(addr, IPv6));
+      result.append(new InetAddress(addr, IPv6));
       break;
     default:
       throw NetworkException("Unsupported family");
@@ -83,7 +83,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String<>& name) throw(Ho
   #endif
 
   for (char** p = hp->h_addr_list; *p != 0; p++) {
-    result.add(InetAddress(*p, IPv4));
+    result.append(new InetAddress(*p, IPv4));
   }
 #endif // HAVE_INET_IPV6
   return result;

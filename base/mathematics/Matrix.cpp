@@ -8,9 +8,7 @@
 #include <base/Functor.h>
 #include <math.h>
 
-template Matrix<float>;
 template Matrix<double>;
-template Matrix<long double>;
 
 template<class TYPE>
 class MultiplySubtract : public BinaryOperation<TYPE, TYPE, TYPE> {
@@ -48,7 +46,7 @@ Matrix<TYPE>::Matrix(const TYPE elements[], const Dimension& dimension) throw(Ou
 }
 
 template<class TYPE>
-Matrix<TYPE>::Matrix(Enumeration<TYPE>& diagonal, const Dimension& dimension) throw(OutOfDomain) {
+Matrix<TYPE>::Matrix(Enumeration<TYPE, TYPE&, TYPE*>& diagonal, const Dimension& dimension) throw(OutOfDomain) {
   if (dimension.getSize() < 1) {
     throw OutOfDomain();
   }

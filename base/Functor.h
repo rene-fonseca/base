@@ -105,7 +105,7 @@ inline void forEachDoBinary(const TYPE* left, unsigned int count, BINOPR& functi
 /**
   Find the first occurance of a value in a sequence (non-modifying operation).
 
-  @return A pointer to the value if it is present in the sequence otherwise NULL.
+  @return A pointer to the value if it is present in the sequence otherwise 0.
 */
 template<class TYPE>
 inline const TYPE* find(const TYPE* left, unsigned int count, const TYPE& value) {
@@ -116,13 +116,13 @@ inline const TYPE* find(const TYPE* left, unsigned int count, const TYPE& value)
     ++left;
     --count;
   }
-  return NULL;
+  return 0; // not found
 }
 
 /**
   Finds the first match of a predicate in a sequence.
 
-  @return Pointer to the value if found else NULL.
+  @return Pointer to the value if found else 0.
 */
 template<class TYPE, class UNOPR>
 inline const TYPE* find(const TYPE* left, unsigned int count, const UNOPR& predicate) {
@@ -133,7 +133,7 @@ inline const TYPE* find(const TYPE* left, unsigned int count, const UNOPR& predi
     ++left;
     --count;
   }
-  return NULL;
+  return 0; // not found
 }
 
 

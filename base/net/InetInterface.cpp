@@ -12,14 +12,14 @@
   #include <net/if.h>
 #endif
 
-List<InetInterface>& getInetInterfaces() throw(NetworkException) {
+List<InetInterface> InetInterface::getInetInterfaces() throw(NetworkException) {
 #if defined(HAVE_INET_IPV6)
   List<InetInterface> interfaces;
   struct if_nameindex* ni;
   if ((ni = if_nameindex()) == NULL) { // MT-safe
     throw NetworkException("Unable to get interfaces");
   }
-  interfaces.add(InetInterface(ni->if_index, ni->if_name));
+  interfaces.append(InetInterface(ni->if_index, ni->if_name));
   if_freenameindex(ni); // MT-safe
   return interfaces;
 #else

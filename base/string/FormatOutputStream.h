@@ -11,6 +11,35 @@
 #include <base/io/BindException.h>
 //#include <base/io/FileDescriptorOutputStream.h>
 
+/*
+struct DateFormatSet {
+  char separator;
+};
+
+struct NumberFormatSet {
+  char point;
+};
+
+struct CollectionFormatSet {
+  char begin;
+  char end;
+  char separator;
+};
+
+class CollectionFormatSet2 {
+private:
+public:
+  FormatSet(C)
+  operator const CollectionFormatSet& throw() {return set;}
+};
+
+CollectionFormatSet defaultFormatSet {
+  '{'
+  '}'
+  ';'
+};
+*/
+
 /**
   Format output stream.
 

@@ -11,7 +11,8 @@
 #include <base/OutOfRange.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
-#include <base/mem/Array.h>
+#include <base/mem/ReferenceCountedAllocator.h>
+#include <base/mem/AllocatorEnumeration.h>
 
 /**
   Vector implementation.
@@ -21,21 +22,59 @@
 */
 
 template<class TYPE> class Vector : public Object {
+public:
+
+  /**
+    Enumeration of all the elements of a vector.
+  */
+  class Enumeration : public AllocatorEnumeration<TYPE, TYPE&, TYPE*> {
+  public:
+
+    /**
+      Initializes an enumeration of all the elements of the specified vector.
+
+      @param vector The vector being enumerated.
+    */
+    Enumeration(Vector& vector) throw() :
+      AllocatorEnumeration<TYPE, TYPE&, TYPE*>(vector.getElements(), vector.getElements() + vector.getSize()) {}
+  };
+
+  /**
+    Non-modifying enumeration of all the elements of a vector.
+  */
+  class ReadOnlyEnumeration : public AllocatorEnumeration<TYPE, const TYPE&, const TYPE*> {
+  public:
+
+    /**
+      Initializes a non-modifying enumeration of all the elements of the specified vector.
+
+      @param vector The vector being enumerated.
+    */
+    ReadOnlyEnumeration(const Vector& vector) throw() :
+      AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(vector.getElements(), vector.getElements() + vector.getSize()) {}
+  };
 protected:
 
   /**
-    The elements of the vector stored in an array. Guarantied to be non-empty
-    when vector object has been initialized.
+    The elements of the vector stored in an array. The array is guarantied to
+    be non-empty when the vector object has been initialized.
   */
-  ReferenceCountedObjectPointer<Array<TYPE> > elements;
+  ReferenceCountedObjectPointer<ReferenceCountedAllocator<TYPE> > elements;
 
   /**
     Returns the elements of the vector for modification.
   */
   inline TYPE* getElements() throw(MemoryException) {
     if (elements.isMultiReferenced()) { // do we have the elements for our self
-      elements = new Array<TYPE>(*elements); // make copy of the elements
+      elements = new ReferenceCountedAllocator<TYPE>(*elements); // make copy of the elements
     }
+    return elements->getElements();
+  }
+
+  /**
+    Returns the elements of the vector for read-only.
+  */
+  inline const TYPE* getElements() const throw() {
     return elements->getElements();
   }
 
@@ -50,7 +89,7 @@ protected:
     Sets the size of the vector. Only invocated by constructors.
   */
   inline void setSize(unsigned int size) throw(MemoryException) {
-    elements = new Array<TYPE>(size);
+    elements = new ReferenceCountedAllocator<TYPE>(size);
   }
 public:
 
@@ -74,7 +113,7 @@ public:
   explicit Vector(unsigned int size) throw(OutOfDomain);
 
   /**
-    Initializes vector from array.
+    Initializes vector from the specified array.
 
     @param elements The desired elements.
     @param size The number of elements in the array.
@@ -100,16 +139,6 @@ public:
   // Elements access section
 
 
-
-  /**
-    Returns an enumeration of all the elements in the vector.
-  */
-  ArrayEnumeration<TYPE> getEnumeration() throw();
-
-  /**
-    Returns a read-only enumeration of all the elements in the vector.
-  */
-  ArrayEnumeration<const TYPE> getEnumeration() const throw();
 
   /**
     Returns the element at the specified index.

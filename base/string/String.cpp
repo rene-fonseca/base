@@ -66,7 +66,7 @@ template<class LOCK>
 void String<LOCK>::createString(const char* buffer, unsigned int length, unsigned int capacity) throw(MemoryException) {
   capacity = maximum(capacity, length + sizeof(TERMINATOR));
   capacity = maximum(capacity, DEFAULT_CAPACITY);
-  this->elements = new Array<char>(capacity); // no granularity
+  this->elements = new ReferenceCountedAllocator<char>(capacity); // no granularity
   len = length;
   memcpy(this->elements->getElements(), buffer, len);
   this->elements->getElements()[len] = TERMINATOR; // terminate
@@ -127,7 +127,7 @@ void String<LOCK>::ensureCapacity(unsigned int capacity) throw(MemoryException) 
   capacity = CAPACITY(capacity);
   if ((capacity > getCapacity()) && (capacity > minimum)) {
     if (this->elements.isMultiReferenced()) { // do we have the elements for our self
-      this->elements = new Array<char>(*this->elements); // make copy of the elements
+      this->elements = new ReferenceCountedAllocator<char>(*this->elements); // make copy of the elements
     }
     this->elements->setSize(capacity);
   }
@@ -138,7 +138,7 @@ void String<LOCK>::optimizeCapacity() throw(MemoryException) {
   unsigned int minimum = CAPACITY(length() + sizeof(TERMINATOR));
   if (getCapacity() > minimum) { // can we reduce the capacity
     if (this->elements.isMultiReferenced()) { // do we have the elements for our self
-      this->elements = new Array<char>(*this->elements); // make copy of the elements
+      this->elements = new ReferenceCountedAllocator<char>(*this->elements); // make copy of the elements
     }
     this->elements->setSize(minimum);
   }
@@ -577,9 +577,4 @@ String<LOCK> operator-(const String<LOCK>& left, const String<LOCK>& right) thro
   } else {
     return String<LOCK>(left); // return copy of left
   }
-}
-
-template<class LOCK>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const String<LOCK>& value) {
-  return value.operator<<(stream);
 }

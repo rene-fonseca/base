@@ -7,33 +7,48 @@
 #include <stdlib.h>
 #include <string.h>
 
-Allocator::Allocator(unsigned int size) throw(MemoryException) {
+AllocatorImpl::AllocatorImpl() throw() : size(0), allocated(0) {
+}
+
+AllocatorImpl::AllocatorImpl(unsigned int size) throw(MemoryException) {
   this->size = size;
-  memory = (char*)malloc(size);
-  if ((memory == NULL) && (size != 0)) { // was memory allocated
+  allocated = malloc(size);
+  if ((!allocated) && (size != 0)) { // was memory allocated
     throw MemoryException();
   }
 }
 
-Allocator::Allocator(const Allocator& copy) throw(MemoryException) : size(copy.size) {
-  memory = (char*)malloc(size);
-  if ((memory == NULL) && (size != 0)) { // was memory allocated
+AllocatorImpl::AllocatorImpl(const AllocatorImpl& copy) throw(MemoryException) : size(copy.size) {
+  allocated = malloc(size);
+  if ((!allocated) && (size != 0)) { // was memory allocated
     throw MemoryException();
   }
-  memcpy(memory, copy.memory, size);
+  memcpy(allocated, copy.allocated, size); // memory blocks do not overlap
 }
 
-void Allocator::setSize(unsigned int size) throw(MemoryException) {
-  if (size != this->size) { // do we really have to
-    this->size = size;
-    char* result = (char*)realloc(memory, size);
-    if ((result == NULL) && (size > 0)) { // was memory allocated
+AllocatorImpl& AllocatorImpl::operator=(const AllocatorImpl& eq) throw(MemoryException) {
+  if (&eq != this) {
+    size = eq.size;
+    allocated = malloc(size);
+    if ((!allocated) && (size != 0)) { // was memory allocated
       throw MemoryException();
     }
-    memory = result;
+    memcpy(allocated, eq.allocated, size); // memory blocks do not overlap
+  }
+  return *this;
+}
+
+void AllocatorImpl::setSize(unsigned int size) throw(MemoryException) {
+  if (size != this->size) { // do we really have to
+    this->size = size;
+    void* result = realloc(allocated, size);
+    if ((!result) && (size != 0)) { // was memory allocated
+      throw MemoryException();
+    }
+    allocated = result;
   }
 }
 
-Allocator::~Allocator() throw() {
-  free(memory);
+AllocatorImpl::~AllocatorImpl() throw() {
+  free(allocated);
 }

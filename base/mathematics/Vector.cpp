@@ -8,10 +8,6 @@
 #include <base/Functor.h>
 #include <math.h>
 
-template Vector<float>;
-template Vector<double>;
-template Vector<long double>;
-
 template<class TYPE>
 Vector<TYPE>::Vector(unsigned int size) throw(OutOfDomain) {
   if (size < 1) {
@@ -35,16 +31,6 @@ Vector<TYPE>& Vector<TYPE>::operator=(const Vector& eq) throw(MemoryException) {
     elements = eq.elements;
   }
   return *this;
-}
-
-template<class TYPE>
-ArrayEnumeration<TYPE> Vector<TYPE>::getEnumeration() throw() {
-  return ArrayEnumeration<TYPE>(*elements);
-}
-
-template<class TYPE>
-ArrayEnumeration<const TYPE> Vector<TYPE>::getEnumeration() const throw() {
-  return ArrayEnumeration<const TYPE>(*elements);
 }
 
 template<class TYPE>

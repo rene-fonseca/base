@@ -13,7 +13,8 @@
 #include <base/mathematics/IncompatibleOperands.h>
 #include <base/mathematics/Vector.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
-#include <base/mem/Array.h>
+#include <base/mem/ReferenceCountedAllocator.h>
+#include <base/mem/AllocatorEnumeration.h>
 #include <base/string/FormatOutputStream.h>
 
 /**
@@ -26,11 +27,45 @@
 template<class TYPE> class Matrix : public Object {
 protected:
 
+  class Row {
+  public:
+
+    /**
+      Enumeration of all the elements of a matrix.
+    */
+    class Enumeration : public AllocatorEnumeration<TYPE, TYPE&, TYPE*> {
+    public:
+
+      /**
+        Initializes an enumeration of all the elements of the specified matrix.
+
+        @param matrix The matrix being enumerated.
+      */
+      Enumeration(Matrix& matrix) throw() :
+        AllocatorEnumeration<TYPE, TYPE&, TYPE*>(matrix.getElements(), matrix.getElements() + matrix.getSize()) {}
+    };
+
+    /**
+      Non-modifying enumeration of all the elements of a matrix.
+    */
+    class ReadOnlyEnumeration : public AllocatorEnumeration<TYPE, const TYPE&, const TYPE*> {
+    public:
+
+      /**
+        Initializes a non-modifying enumeration of all the elements of the specified matrix.
+
+        @param matrix The matrix being enumerated.
+      */
+      ReadOnlyEnumeration(const Matrix& matrix) throw() :
+        AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(matrix.getElements(), matrix.getElements() + matrix.getSize()) {}
+    };
+  };
+
   /**
-    The elements of the matrix stored in an array. Guarantied to be non-empty
-    when matrix object has been initialized.
+    The elements of the matrix stored in an array. The array is guarantied to
+    be non-empty when the matrix object has been initialized.
   */
-  ReferenceCountedObjectPointer<Array<TYPE> > elements;
+  ReferenceCountedObjectPointer<ReferenceCountedAllocator<TYPE> > elements;
 
   /** The number of rows in the matrix. */
   unsigned int rows;
@@ -42,7 +77,14 @@ protected:
   */
   inline TYPE* getMutableElements() throw(MemoryException) {
     if (elements.isMultiReferenced()) { // do we have the elements for our self
-      elements = new Array<TYPE>(*elements); // make copy of the elements
+      elements = new ReferenceCountedAllocator<TYPE>(*elements); // make copy of the elements
+    }
+    return elements->getElements();
+  }
+
+  inline TYPE* getElements() throw(MemoryException) {
+    if (elements.isMultiReferenced()) { // do we have the elements for our self
+      elements = new ReferenceCountedAllocator<TYPE>(*elements); // make copy of the elements
     }
     return elements->getElements();
   }
@@ -51,6 +93,10 @@ protected:
     Returns the elements of the matrix for read-only.
   */
   inline const TYPE* getReadOnlyElements() const throw() {
+    return elements->getElements();
+  }
+
+  inline const TYPE* getElements() const throw() {
     return elements->getElements();
   }
 
@@ -68,7 +114,7 @@ protected:
     this->rows = rows;
     this->columns = columns;
     if ((elements.isNULL()) || (elements.isMultiReferenced())) { // do we have the elements for our self
-      elements = new Array<TYPE>(rows * columns);
+      elements = new ReferenceCountedAllocator<TYPE>(rows * columns);
     } else {
       elements->setSize(rows * columns);
     }
@@ -161,7 +207,7 @@ public:
     @param diagonal The enumerator containing the desired diagonal elements.
     @param dimension The desired dimension of the matrix.
   */
-  Matrix(Enumeration<TYPE>& diagonal, const Dimension& dimension) throw(OutOfDomain);
+  Matrix(Enumeration<TYPE, TYPE&, TYPE*>& diagonal, const Dimension& dimension) throw(OutOfDomain);
 
   /**
     Initializes matrix from other matrix.
@@ -307,38 +353,38 @@ public:
 
     @param row The desired row to enumerate.
   */
-  ArrayEnumeration<TYPE> getRowEnumeration(unsigned int row) throw(OutOfRange);
+//  ArrayEnumeration<TYPE> getRowEnumeration(unsigned int row) throw(OutOfRange);
 
   /**
     Returns a read-only enumeration of all the elements in the specified row.
 
     @param row The desired row to enumerate.
   */
-  ArrayEnumeration<const TYPE> getRowEnumeration(unsigned int row) const throw(OutOfRange);
+//  ArrayEnumeration<const TYPE> getRowEnumeration(unsigned int row) const throw(OutOfRange);
 
   /**
     Returns an enumeration of all the elements in the specified column.
 
     @param column The desired column to enumerate.
   */
-  ArrayEnumeration<TYPE> getColumnEnumeration(unsigned int column) throw(OutOfRange);
+//  ArrayEnumeration<TYPE> getColumnEnumeration(unsigned int column) throw(OutOfRange);
 
   /**
     Returns a read-only enumeration of all the elements in the specified column.
 
     @param column The desired column to enumerate.
   */
-  ArrayEnumeration<const TYPE> getColumnEnumeration(unsigned int column) const throw(OutOfRange);
+//  ArrayEnumeration<const TYPE> getColumnEnumeration(unsigned int column) const throw(OutOfRange);
 
   /**
     Returns an enumeration of all the elements of the diagonal.
   */
-  ArrayEnumeration<TYPE> getDiagonalEnumeration() throw(OutOfRange);
+//  ArrayEnumeration<TYPE> getDiagonalEnumeration() throw(OutOfRange);
 
   /**
     Returns a read-only enumeration of all the elements of the diagonal.
   */
-  ArrayEnumeration<const TYPE> getDiagonalEnumeration() const throw(OutOfRange);
+//  ArrayEnumeration<const TYPE> getDiagonalEnumeration() const throw(OutOfRange);
 
   /**
     Returns the element at the specified position.

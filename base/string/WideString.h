@@ -66,19 +66,19 @@ private:
   /** The number of bytes occupied by the message without the terminator. */
   const unsigned int length;
   /** NULL-terminated message. */
-  const wchar_t* message;
+  const wchar* message;
 public:
 
   /** Initializes message. Automatically invocated by the macro WIDEMESSAGE. */
-  inline WideStringLiteral(unsigned int l, const wchar_t* m) throw() : length(l), message(m) {}
+  inline WideStringLiteral(unsigned int l, const wchar* m) throw() : length(l), message(m) {}
   /** Cast to the usual message type. */
-  inline operator const wchar_t*() const throw() {return message;}
+  inline operator const wchar*() const throw() {return message;}
   /** Returns the length of the string. */
   inline unsigned int getLength() const throw() {return length;}
 };
 
 /** This macro generates a WideStringLiteral object from a string literal. */
-#define WIDEMESSAGE(msg) WideStringLiteral(sizeof(L ## msg)/sizeof(wchar_t) - 1, L ## msg)
+#define WIDEMESSAGE(msg) WideStringLiteral(sizeof(L ## msg)/sizeof(wchar) - 1, L ## msg)
 
 
 
@@ -93,9 +93,9 @@ class WideTraits {
 public:
 
   /** The type of a single character. */
-  typedef wchar_t Character;
-  /** Specifies the terminator for null-terminated strings. */
-  static const wchar_t TERMINATOR = L'\0';
+  typedef wchar Character;
+  /** Specifies the terminator for NULL-terminated strings. */
+  static const wchar TERMINATOR = L'\0';
 
   /** Returns true if the character an alphabetic character. */
   static inline bool isAlpha(Character character) throw() {return iswalpha(character);}
@@ -163,7 +163,7 @@ public:
 
   /** Specifies the granularity of the capacity. Guaranteed to be greater than 0. */
   static const unsigned int GRANULARITY = 16;
-  /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. Unresolved problem: size of int depends on architecture. */
+  /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. */
   static const unsigned int MAXIMUM_LENGTH = ((PrimitiveTraits<int>::MAXIMUM/sizeof(Character) - 1)/GRANULARITY)*GRANULARITY;
 
   /** The type of the modifying string iterator. */
@@ -174,6 +174,24 @@ public:
   typedef ReferenceCountedCapacityAllocator<Character>::Enumerator Enumerator;
   /** The type of the non-modifying string enumerator. */
   typedef ReferenceCountedCapacityAllocator<Character>::ReadEnumerator ReadEnumerator;
+
+  /** Multibyte encoding. */
+  enum MultibyteEncoding {
+    UTF7, /**< Unicode transformation format (UTF-7). */
+    UTF8, /**< Unicode transformation format (UTF-8). */
+    UTF16, /**< Unicode transformation format (UTF-16). */
+    UTF16BE, /**< Unicode transformation format (UTF-16) with big endian byte order. */
+    UTF16LE, /**< Unicode transformation format (UTF-16) with little endian byte order. */
+    UTF32, /**< Unicode transformation format (UTF-32). */
+    UTF32BE, /**< Unicode transformation format (UTF-32) with big endian byte order. */
+    UTF32LE /**< Unicode transformation format (UTF-32) with little endian byte order. */
+  };
+
+  /** Wide character encoding. */
+  enum WideEncoding {
+    UCS2, /**< UCS-2 encoding. */
+    UCS4 /**< UCS-4 encoding. */
+  };
 private:
 
   /** The default wide string. This is used to avoid multiple allocations of empty string buffers. */
@@ -189,21 +207,21 @@ private:
     unsigned int index;
     Reference(const Reference& copy); // prohibit default copy initialization
     Reference& operator=(const Reference& eq); // prohibit default assignment
-    inline Reference(WideString& s, unsigned int i) : string(s), index(i) {}
+    inline Reference(WideString& _string, unsigned int _index) : string(_string), index(_index) {}
   public:
     inline Reference& operator=(char value) throw(OutOfRange) {string.setAt(index, value); return *this;}
     inline operator Character() const throw(OutOfRange) {return string.getAt(index);}
   };
 
   /**
-    Reference counted buffer holding the character array (possible
-    NULL-terminated). The array is guarantied to be non-empty when the string
-    has been initialized.
+    Reference counted buffer holding the character sequence (the sequence is not
+    guarantied to be NULL-terminated). However, the attribute is guarantied to
+    point to a valid buffer even for empty strings.
   */
   ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<Character> > elements;
 
   /**
-    Compare the null-terminated strings ignoring the case.
+    Compare the NULL-terminated strings ignoring the case.
   */
   static int compareToIgnoreCase(const Character* left, const Character* right) throw();
 protected:
@@ -237,7 +255,7 @@ public:
   /**
     Returns a multibyte string from a NULL-terminated wide-string.
   */
-  static String getMultibyteString(const wchar_t* string) throw(NullPointer, MultibyteException, WideStringException);
+  static String getMultibyteString(const wchar* string) throw(NullPointer, MultibyteException, WideStringException);
 
   /**
     Initializes an empty string.
@@ -254,7 +272,7 @@ public:
   /**
     Initializes the string from a string literal. The string literal is not copied into internal buffer. Implicit initialization is allowed.
 
-    @param str String literal generated by the macro WIDEMESSAGE (e.g. WIDEMESSAGE("My string"))
+    @param string String literal generated by the macro WIDEMESSAGE (e.g. WIDEMESSAGE("My string"))
   */
   WideString(const WideStringLiteral& string) throw(WideStringException, MemoryException);
 
@@ -268,20 +286,28 @@ public:
 
   /**
     Initializes the string from a NULL-terminated string. If the length of the
-    specified string (str) exceeds the maximum length (n) only the first n
+    specified string exceeds the maximum length (n) only the first n
     characters are used.
 
-    @param str NULL-terminated string. If NULL, the string is initialized with
+    @param string NULL-terminated string. If NULL, the string is initialized with
     no characters in it.
     @param maximum Specifies the maximum length.
   */
   WideString(const Character* string, unsigned int maximum) throw(OutOfDomain, MemoryException);
 
   /**
-    Initializes string from a null-terminated multi byte character string.
+    Initializes string from a NULL-terminated multibyte character string.
+
+    @param string The NULL-terminated string.
   */
   WideString(const char* string) throw(MultibyteException, MemoryException);
 
+  /**
+    Initializes string from a NULL-terminated multibyte string.
+
+    @param string The NULL-terminated string.
+    @param maxmimum The maximum length of the string.
+  */
   WideString(const char* string, unsigned int maximum) throw(OutOfDomain, MultibyteException, MemoryException);
 
   /**
@@ -322,6 +348,11 @@ public:
   */
   inline bool isProper() const throw() {return elements->getSize() > 1;}
 
+  /**
+    Returns true if the string is an ASCII string.
+  */
+  inline bool isASCII() const throw();
+  
   /**
     Returns the capacity of the string.
   */
@@ -470,32 +501,32 @@ public:
   /**
     Appends the string to this string.
 
-    @param str The string to be appended.
+    @param string The string to be appended.
   */
-  inline WideString& append(const WideString& str) throw(WideStringException, MemoryException) {return insert(getLength(), str);}
+  inline WideString& append(const WideString& string) throw(WideStringException, MemoryException) {return insert(getLength(), string);}
 
   /**
     Appends the string literal to this string.
 
-    @param str The string to be appended.
+    @param string The string to be appended.
   */
-  WideString& append(const WideStringLiteral& str) throw(WideStringException, MemoryException);
+  WideString& append(const WideStringLiteral& string) throw(WideStringException, MemoryException);
 
   /**
     Appends the string literal to this string.
 
-    @param str The string to be appended.
+    @param string The string to be appended.
     @param maximum The maximum length of the to be appended string.
   */
-  WideString& append(const WideStringLiteral& str, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException);
+  WideString& append(const WideStringLiteral& string, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException);
 
   /**
     Appends the NULL-terminated string to this string.
 
-    @param str The string to be appended.
+    @param string The string to be appended.
     @param maximum The maximum length of the to be appended string.
   */
-  WideString& append(const Character* str, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException);
+  WideString& append(const Character* string, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException);
 
   /**
     Prepends the character to this string.
@@ -507,9 +538,9 @@ public:
   /**
     Prepends the string to this string.
 
-    @param str The string to be prepended.
+    @param string The string to be prepended.
   */
-  inline WideString& prepend(const WideString& str) throw(WideStringException, MemoryException) {return insert(0, str);}
+  inline WideString& prepend(const WideString& string) throw(WideStringException, MemoryException) {return insert(0, string);}
 
   /**
     Inserts the character into this string.
@@ -527,9 +558,9 @@ public:
     @param index Specifies the position to insert the string. If the index
     exceeds the end of this string the string is inserted at the end.
 
-    @param str The string to be inserted.
+    @param string The string to be inserted.
   */
-  WideString& insert(unsigned int index, const WideString& str) throw(WideStringException, MemoryException);
+  WideString& insert(unsigned int index, const WideString& string) throw(WideStringException, MemoryException);
 
   /**
     Inserts NULL-terminated string into this string.
@@ -537,9 +568,9 @@ public:
     @param index Specifies the position to insert the string. If the index
     exceeds the end of this string the string is inserted at the end.
 
-    @param str The NULL-terminated string to be inserted.
+    @param string The NULL-terminated string to be inserted.
   */
-  WideString& insert(unsigned int index, const WideStringLiteral& str) throw(WideStringException, MemoryException);
+  WideString& insert(unsigned int index, const WideStringLiteral& string) throw(WideStringException, MemoryException);
 
   /**
     Replaces the characters in a substring of this string with the characters
@@ -547,9 +578,9 @@ public:
 
     @param start The start of the substring.
     @param end The end of the substring.
-    @param str The string to replace with.
+    @param string The string to replace with.
   */
-  WideString& replace(unsigned int start, unsigned int end, const WideString& str) throw(WideStringException, MemoryException);
+  WideString& replace(unsigned int start, unsigned int end, const WideString& string) throw(WideStringException, MemoryException);
 
   /**
     Replaces all occurances of the specified substring with another string in
@@ -635,34 +666,34 @@ public:
   /**
     Compare this string with another string.
 
-    @param str The string to compare this string with.
+    @param string The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
   */
-  int compareTo(const WideString& str) const throw();
+  int compareTo(const WideString& string) const throw();
 
   /**
-    Compare this string with null-terminated string.
+    Compare this string with NULL-terminated string.
 
-    @param str The string to compare this string with.
+    @param string The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
   */
-  int compareTo(const Character* str) const throw(WideStringException);
+  int compareTo(const Character* string) const throw(WideStringException);
 
   /**
     Compares this string with other string ignoring the case of the characters.
 
-    @param str The string to compare this string with.
+    @param string The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
   */
-  int compareToIgnoreCase(const WideString& str) const throw();
+  int compareToIgnoreCase(const WideString& string) const throw();
 
   /**
-    Compares this string with null-terminated string ignoring the case of the characters.
+    Compares this string with NULL-terminated string ignoring the case of the characters.
 
-    @param str The string to compare this string with.
+    @param string The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
   */
-  int compareToIgnoreCase(const Character* str) const throw(WideStringException);
+  int compareToIgnoreCase(const Character* string) const throw(WideStringException);
 
   /**
     Returns true if this string starts with the specified prefix.
@@ -695,39 +726,40 @@ public:
   /**
     Equality operator.
   */
-  inline bool operator==(const WideString& str) const throw() {return compareTo(str) == 0;}
+  inline bool operator==(const WideString& string) const throw() {return compareTo(string) == 0;}
 
   /**
     Inequality operator.
   */
-  inline bool operator!=(const WideString& str) const throw() {return compareTo(str) != 0;}
+  inline bool operator!=(const WideString& string) const throw() {return compareTo(string) != 0;}
 
   /**
     Less than operator.
   */
-  inline bool operator<(const WideString& str) const throw() {return compareTo(str) < 0;}
+  inline bool operator<(const WideString& string) const throw() {return compareTo(string) < 0;}
 
   /**
     Less than or equal operator.
   */
-  inline bool operator<=(const WideString& str) const throw() {return compareTo(str) <= 0;}
+  inline bool operator<=(const WideString& string) const throw() {return compareTo(string) <= 0;}
 
   /**
     Greater than or equal operator.
   */
-  inline bool operator>=(const WideString& str) const throw() {return compareTo(str) >= 0;}
+  inline bool operator>=(const WideString& string) const throw() {return compareTo(string) >= 0;}
 
   /**
     Greater than operator.
   */
-  inline bool operator>(const WideString& str) const throw() {return compareTo(str) > 0;}
+  inline bool operator>(const WideString& string) const throw() {return compareTo(string) > 0;}
 
 // ****************************************************************************
 //   FIND SECTION
 // ****************************************************************************
 
   /**
-    Returns the index of the first character that matches the specified character after the start position.
+    Returns the index of the first character that matches the specified
+    character after the start position.
 
     @param ch The character to find.
     @param start Specifies the start position of the search. Default is 0.
@@ -736,33 +768,50 @@ public:
   int indexOf(Character ch, unsigned int start = 0) const throw();
 
   /**
-    Returns the index of the first substring that matches the specified string after the start position.
+    Returns the index of the first substring that matches the specified string
+    after the start position.
 
-    @param str The substring to find.
+    @param string The substring to find.
     @param start Specifies the start position of the search. Default is 0.
     @return Index of the first match if any otherwise -1. Also returns -1 if substring is empty.
   */
-  int indexOf(const WideString& str, unsigned int start = 0) const throw();
+  int indexOf(const WideString& string, unsigned int start = 0) const throw();
 
   /**
-    Returns the index of the last character that matches the specified character before the start position.
+    Returns the index of the last character that matches the specified character
+    before the start position.
 
     @param ch The character to find.
     @param start Specifies the start position of the search. Default is end of string.
     @return Index of the last match if any otherwise -1.
   */
   int lastIndexOf(Character ch, unsigned int start) const throw();
+
+  /**
+    Returns the index of the last character that matches the specified character
+    starting from the end of the string.
+  */
   inline int lastIndexOf(Character ch) const throw() {return lastIndexOf(ch, getLength());}
 
   /**
-    Returns the index of the last substring that matches the specified string before the start position.
+    Returns the index of the last substring that matches the specified string
+    before the start position.
 
-    @param str The substring to find.
+    @param string The substring to find.
     @param start Specifies the start position of the search. Default is end of string.
-    @return Index of the last match if any otherwise -1. Also returns -1 if substring is empty.
+    @return Index of the last match if any otherwise -1. Also returns -1 if the substring is empty.
   */
-  int lastIndexOf(const WideString& str, unsigned int start) const throw();
-  inline int lastIndexOf(const WideString& str) const throw() {return lastIndexOf(str, getLength());}
+  int lastIndexOf(const WideString& string, unsigned int start) const throw();
+
+  /**
+    Returns the index of the last string that matches the specified string
+    starting from the end of the string.
+
+    @param string The substring to find.
+
+    @return Index of the last match if any otherwide -1. Also returns -1 if the substring is empty.
+  */
+  inline int lastIndexOf(const WideString& string) const throw() {return lastIndexOf(string, getLength());}
 
   /**
     Returns the number of occurances of the specified character in this string.
@@ -776,11 +825,11 @@ public:
   /**
     Counts the number of occurances of the specified substring in this string.
 
-    @param str The substring to be counted.
+    @param string The substring to be counted.
     @param start The start position. Default is 0.
     @return The number of occurances of the substring.
   */
-  unsigned int count(const WideString& str, unsigned int start = 0) const throw();
+  unsigned int count(const WideString& string, unsigned int start = 0) const throw();
 
 // ****************************************************************************
 //   END SECTION
@@ -792,7 +841,7 @@ public:
   String getMultibyteString() const throw(MultibyteException, MemoryException);
   
   /**
-    Returns null-terminated wide string.
+    Returns NULL-terminated wide string.
   */
   inline const Character* getElements() const throw() {
     Character* result = elements->getElements(); // no need to copy on write

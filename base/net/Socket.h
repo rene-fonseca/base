@@ -62,8 +62,6 @@ private:
     InetAddress localAddress;
     /** Specifies the local port (in host byte order) to which the socket is bound (unbound if 0). */
     unsigned short localPort;
-    /** Specifies whether the end of the stream has been reached. */
-    bool end;
   public:
 
     /** Invalid socket. */
@@ -125,16 +123,6 @@ private:
     /** Returns true if socket is bound. */
     inline bool isBound() const throw() {
       return getLocalPort() != 0;
-    }
-    
-    /** Returns true if the end has been reached. */
-    inline bool atEnd() const throw() {
-      return end;
-    }
-    
-    /** Specifies that the end has been reached. */
-    inline void onEnd() throw() {
-      end = true;
     }
     
     /** Releases the resources use by the socket. */
@@ -389,12 +377,7 @@ public:
   */
   inline bool isValid() const throw() {
     return socket->isValid();
-  }
-  
-  /**
-    Returns true if the end has been reached.
-  */
-  bool atEnd() const throw();
+  }  
 
   /**
     Forces any buffered bytes to be written out.
@@ -403,10 +386,12 @@ public:
 
   /**
     Fills the buffer with bytes from the socket input stream. Blocks if asked
-    to read more bytes than available.
-
+    to read more bytes than available. Raises EndOfFile if end of stream has
+    been reached.
+    
     @param buffer The buffer.
     @param size The size of the buffer.
+    @param nonblocking Select nonblocking mode.
     @return The actual number of bytes read.
   */
   unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
@@ -416,6 +401,7 @@ public:
 
     @param buffer The buffer containing the bytes to be written.
     @param size The number of bytes to be written.
+    @param nonblocking Select nonblocking mode.
     @return The actual number of bytes written.
   */
   unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
@@ -467,17 +453,7 @@ public:
     Releases the socket.
   */
   ~Socket() throw(IOException);
-  
-  /**
-    Writes a string representation of a Socket object to a format stream.
-  */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) throw(IOException);
 };
-
-/**
-  Writes a string representation of a Socket object to a format stream.
-*/
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

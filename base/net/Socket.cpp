@@ -15,6 +15,7 @@
 #include <base/ByteOrder.h>
 #include <base/Functor.h>
 #include <base/io/EndOfFile.h>
+#include <base/io/BrokenStream.h>
 #include <base/net/Socket.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 #include <base/concurrency/SharedSynchronize.h>
@@ -251,7 +252,7 @@ namespace internal {
 
 
 Socket::SocketImpl::SocketImpl(OperatingSystem::Handle _handle) throw()
-  : Handle(_handle), remotePort(0), localPort(0), end(false) {
+  : Handle(_handle), remotePort(0), localPort(0) {
 }
 
 Socket::SocketImpl::~SocketImpl() throw(IOException) {
@@ -379,7 +380,8 @@ void Socket::create(bool stream) throw(IOException) {
 
 void Socket::listen(unsigned int backlog) throw(IOException) {
   SharedSynchronize<Guard>(*this);
-  backlog = minimum<int>(backlog, PrimitiveTraits<int>::MAXIMUM); // silently reduce the backlog argument
+  // silently reduce the backlog argument
+  backlog = minimum<unsigned int>(backlog, PrimitiveTraits<int>::MAXIMUM);
   if (::listen((int)getHandle(), backlog)) { // may also silently limit backlog
     throw NetworkException("Unable to set queue limit for incomming connections", this);
   }
@@ -798,41 +800,43 @@ unsigned int Socket::pending() const throw(IOException) {
 }
 #endif
 
-bool Socket::atEnd() const throw() {
-  SharedSynchronize<Guard>(*this);
-  return socket->atEnd();
-}
-
 void Socket::flush() throw(IOException) {
 }
 
 unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(IOException) {
   SharedSynchronize<Guard>(*this);
-
-  // TAG: currently always blocks
-  assert(!socket->atEnd(), EndOfFile());
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-    int result = ::recv((int)socket->getHandle(), buffer, minimum<int>(bytesToRead, PrimitiveTraits<int>::MAXIMUM), 0);
+    int result = ::recv(
+      (int)socket->getHandle(),
+      buffer,
+      minimum<unsigned int>(bytesToRead, PrimitiveTraits<int>::MAXIMUM),
+      0
+    );
     if (result < 0) { // has an error occured
       switch (::WSAGetLastError()) {
       case WSAEINTR: // interrupted by signal before any data was read
         continue; // try again
-      case WSAEWOULDBLOCK: // no data available (only in non-blocking mode)
-//        return bytesRead; // try later
+      case WSAEWOULDBLOCK: // no data available (only in nonblocking mode)
+        return bytesRead; // try later
       default:
         throw IOException("Unable to read from socket", this);
       }
     }
 #else // unix
-    int result = ::recv((int)socket->getHandle(), buffer, minimum<unsigned int>(bytesToRead, SSIZE_MAX), 0);
+    int result = ::recv(
+      (int)socket->getHandle(),
+      buffer,
+      minimum<unsigned int>(bytesToRead, SSIZE_MAX),
+      0
+    );
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
       case EINTR: // interrupted by signal before any data was read
         continue; // try again
-      case EAGAIN: // no data available (only in non-blocking mode)
-//        return bytesRead; // try later
+      case EAGAIN: // no data available (only in nonblocking mode)
+        return bytesRead; // try later
       default:
         throw IOException("Unable to read from socket", this);
       }
@@ -845,7 +849,9 @@ unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocki
       break;
     }
     if (result == 0) { // has end been reached
-      socket->onEnd(); // remember end of file
+      if (bytesRead) {
+        break;
+      }
       throw EndOfFile(this); // attempt to read beyond end of stream
     }
   }
@@ -853,33 +859,42 @@ unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocki
 }
 
 unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool nonblocking) throw(IOException) {
-  // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-    int result = ::send((int)socket->getHandle(), buffer, minimum<int>(bytesToWrite, PrimitiveTraits<int>::MAXIMUM), 0);
+    int result = ::send(
+      (int)socket->getHandle(),
+      buffer,
+      minimum<unsigned int>(bytesToWrite, PrimitiveTraits<int>::MAXIMUM),
+      0
+    );
     if (result < 0) { // has an error occured
       switch (::WSAGetLastError()) {
       case WSAEINTR: // interrupted by signal before any data was written
         continue; // try again
-      case WSAEWOULDBLOCK: // no data could be written without blocking (only in non-blocking mode)
-//      return 0; // try later
+      case WSAEWOULDBLOCK: // no data could be written without blocking (only in nonblocking mode)
+        return bytesWritten; // try later
       case WSAESHUTDOWN:
-        throw EndOfFile(this);
+        throw BrokenStream(this);
       default:
         throw IOException("Unable to write to socket", this);
       }
     }
 #else // unix
-    int result = ::send((int)socket->getHandle(), buffer, minimum<unsigned int>(bytesToWrite, SSIZE_MAX), 0);
+    int result = ::send(
+      (int)socket->getHandle(),
+      buffer,
+      minimum<unsigned int>(bytesToWrite, SSIZE_MAX),
+      0
+    );
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
       case EINTR: // interrupted by signal before any data was read
         continue; // try again
-      case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
-//      return 0; // try later
+      case EAGAIN: // no data could be written without blocking (only in nonblocking mode)
+        return bytesWritten; // try later
       case EPIPE:
-        throw EndOfFile(this);
+        throw BrokenStream(this);
       default:
         throw IOException("Unable to write to socket", this);
       }
@@ -888,6 +903,9 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
     bytesWritten += result;
     buffer += result;
     bytesToWrite -= result;
+    if (nonblocking) {
+      break;
+    }
   }
   return bytesWritten;
 }
@@ -944,7 +962,7 @@ void Socket::wait() const throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   fd_set rfds;
   FD_ZERO(&rfds);
-  FD_SET((int)getHandle(), &rfds);
+  FD_SET((SOCKET)getHandle(), &rfds);
   
   int result = ::select((int)getHandle() + 1, &rfds, 0, 0, 0);
   if (result == SOCKET_ERROR) {
@@ -967,7 +985,7 @@ bool Socket::wait(unsigned int microseconds) const throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   fd_set rfds;
   FD_ZERO(&rfds);
-  FD_SET((int)getHandle(), &rfds);
+  FD_SET((SOCKET)getHandle(), &rfds);
   
   struct timeval tv;
   tv.tv_sec = microseconds/1000000;
@@ -1120,23 +1138,5 @@ Socket::~Socket() throw(IOException) {
 //private:
 //public:
 //};
-
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) throw(IOException) {
-  stream << "Socket{";
-  stream << "connected to=";
-  if (value.socket->isConnected()) {
-    stream << "{address=" << value.getAddress() << ",port="<< value.getPort() << "}";
-  } else {
-    stream << "UNCONNECTED";
-  }
-  stream << "bound to=";
-  if (value.socket->isBound()) {
-    stream << "{address=" << value.getLocalAddress() << ",port="<< value.getLocalPort() << "}";
-  } else {
-    stream << "UNBOUND";
-  }
-  stream << "}";
-  return stream;
-}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

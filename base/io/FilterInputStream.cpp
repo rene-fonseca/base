@@ -18,10 +18,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 FilterInputStream::FilterInputStream(InputStream& i) throw(BindException) : in(i) {
 }
 
-bool FilterInputStream::atEnd() const throw(IOException) {
-  return in.atEnd();
-}
-
 unsigned int FilterInputStream::available() const throw(IOException) {
   return in.available();
 }

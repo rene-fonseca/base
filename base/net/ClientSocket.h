@@ -20,8 +20,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-// TAG: wrong name of file
-
 class ServerSocket;
 
 /**
@@ -324,14 +322,7 @@ public:
   */
   inline bool isValid() const throw() {
     return Socket::isValid();
-  }
-  
-  /**
-    Return true if the end of the stream has been reached.
-  */
-  inline bool atEnd() const throw(IOException) {
-    return Socket::atEnd();
-  }
+  }  
 
   /**
     Skips the specified number of bytes.

@@ -41,11 +41,14 @@ public:
   /**
     Creates a server stream socket and binds it to the specified port and IP address.
 
-    @param addr The IP address of the host to connect to.
+    @param address The IP address of the host to connect to.
     @param port The port to connect to on the host. If zero the socket is bound to a unique port.
     @param backlog The maxium length of the queue.
   */
-  ServerSocket(const InetAddress& addr, unsigned short port, unsigned int backlog) throw(IOException);
+  ServerSocket(
+    const InetAddress& address,
+    unsigned short port,
+    unsigned int backlog) throw(IOException);
 
   /**
     Accepts the first connection from the queue of pending connections on this

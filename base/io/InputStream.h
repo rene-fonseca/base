@@ -29,11 +29,6 @@ class InputStream : public virtual Stream {
 public:
 
   /**
-    Returns true if the end of the stream has been reached.
-  */
-  virtual bool atEnd() const throw(IOException) = 0;
-
-  /**
     Returns the number of bytes that can be read or skipped over without
     blocking under normal circumstances. The number of returned bytes may be
     less than the true number of bytes available. Attempting to read the number

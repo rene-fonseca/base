@@ -18,8 +18,8 @@ final: all
 lendum-gcc-2.96: all
 	CXX=gcc CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
 
-lendum-gcc-3.0: all
-	CXX=/usr/local/gcc-3.0/bin/g++ CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
+lendum-gcc-3.0.3: all
+	CXX=/usr/local/gcc-3.0.3/bin/gcc CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
 
 falster-gcc-3.0: all
 	CXXFLAGS="-O0 -g3" ./configure --prefix=/tmp/fonseca/base --with-base-include=../.. --with-base-lib=..

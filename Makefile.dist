@@ -33,10 +33,10 @@ final: all
 
 
 lendum-gcc-2.96: all
-	CXX=gcc CXXFLAGS="-O0 -g3" LDFLAGS="-lm" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=gccv2 --enable-regexp=pcre --enable-xml=gnomexml
+	CXX=gcc CXXFLAGS="-O0 -g3" LDFLAGS="-lm" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=gccv2 --enable-regexp=pcre --enable-xml=xmlsoft
 
-lendum-gcc-3.0: all
-	CXX=/usr/local/gcc-3.0/bin/g++ CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=gccv3 --enable-regexp=pcre --enable-xml=gnomexml
+lendum-gcc-3.0.3: all
+	CXX=/usr/local/gcc-3.0.3/bin/gcc CXXFLAGS="-O0 -g3" LDFLAGS=-L/usr/local/gcc-3.0.3/lib BASE_LIBS='-lsupc++ -lm' ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=gccv3 --enable-regexp=pcre --enable-xml=xmlsoft
 
 falster-gcc-2.97: all
 	CXXFLAGS="-O0 -g3" ./configure --prefix=/tmp/fonsece/base --enable-debug --enable-regexp=posix
@@ -44,5 +44,5 @@ falster-gcc-2.97: all
 falster-gcc-3.0: all
 	CXXFLAGS="-O0 -g3" ./configure --prefix=/tmp/fonsece/base --enable-debug --enable-demangle=gccv3 --enable-regexp=posix
 
-hoptrup: all
+klampenborg: all
 	CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --enable-debug --enable-regexp=no

@@ -17,12 +17,14 @@ noinst_LTLIBRARIES = libmem.la
 
 libmem_la_SOURCES = \
   Allocator.cpp \
+  CheckedPointer.cpp \
   DebugDynamicMemory.cpp \
   DynamicMemory.cpp \
   Heap.cpp \
   MemoryCorruption.cpp \
   MemoryDump.cpp \
   NullPointer.cpp \
+  ProtectedPointer.cpp \
   Reference.cpp \
   SharedMemory.cpp \
   VirtualMemory.cpp

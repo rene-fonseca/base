@@ -241,7 +241,7 @@ protected:
       }
 
       if (verbosity >= ALL) {
-        fout << ">> " << line << ENDL;
+        fout << MESSAGE(">> ") << line << ENDL;
       }
 
       ReplyCode replyCode;
@@ -253,7 +253,7 @@ protected:
           }
         } else if (line[3] == ' ') { // last line
           if ((verbosity >= SHORT) && (verbosity < ALL)) {
-            fout << ">> " << line << ENDL;
+            fout << MESSAGE(">> ") << line << ENDL;
           }
           if (!multipleLines || (multipleLines && (replyCode.code == terminationCode))) {
             response = line;
@@ -272,31 +272,32 @@ protected:
   /** Sends password to server. */
   void requestPassword(const String& password) throw(IOException) {
     if (verbosity >= DEBUG_EXTENDED) {
-      fout << "DEBUG: Sending command '" << CMD_PASSWORD << "' with value '" << password << '\'' << ENDL;
+      fout << MESSAGE("DEBUG: Sending command '") << CMD_PASSWORD
+           << MESSAGE("' with value '") << password << '\'' << ENDL;
     }
     responsePending = true;
     FormatOutputStream outstream(controlConnection);
-    outstream << CMD_PASSWORD << " " << password << "\r\n" << FLUSH;
+    outstream << CMD_PASSWORD << ' ' << password << MESSAGE("\r\n") << FLUSH;
   }
 
   /** Sends command to server without an argument. */
   void request(const String& command) throw(IOException) {
     if (verbosity >= DEBUG_EXTENDED) {
-      fout << "DEBUG: Sending command '" << command << "' with no value" << ENDL;
+      fout << MESSAGE("DEBUG: Sending command '") << command << MESSAGE("' with no value") << ENDL;
     }
     responsePending = true;
     FormatOutputStream outstream(controlConnection);
-    outstream << command << "\r\n" << FLUSH;
+    outstream << command << MESSAGE("\r\n") << FLUSH;
   }
 
   /** Sends command to server with an argument. */
   void request(const String& command, const String& value) throw(IOException) {
     if (verbosity >= DEBUG_EXTENDED) {
-      fout << "DEBUG: Sending command '" << command << "' with value '" << value << '\'' << ENDL;
+      fout << MESSAGE("DEBUG: Sending command '") << command << MESSAGE("' with value '") << value << '\'' << ENDL;
     }
     responsePending = true;
     FormatOutputStream outstream(controlConnection);
-    outstream << command << " " << value << "\r\n" << FLUSH;
+    outstream << command << ' ' << value << MESSAGE("\r\n") << FLUSH;
   }
 public:
 
@@ -351,8 +352,8 @@ public:
 
   void connect() throw(IOException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Establishing control connection to: "
-           << "address=" << endPoint.getAddress() << " port=" << endPoint.getPort() << ENDL;
+      fout << MESSAGE("DEBUG: Establishing control connection to: ")
+           << endPoint << ENDL;
     }
     controlConnection.connect(endPoint.getAddress(), endPoint.getPort());
     controlConnection.getName();
@@ -397,7 +398,7 @@ public:
 
   void getSystemType() throw(FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Getting system type..." << ENDL;
+      fout << MESSAGE("DEBUG: Getting system type...") << ENDL;
     }
     request(CMD_SYSTEM);
     getResponse();
@@ -405,7 +406,7 @@ public:
 
   void getStatus() throw(FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Getting status..." << ENDL;
+      fout << MESSAGE("DEBUG: Getting status...") << ENDL;
     }
     request(CMD_STATUS);
     getResponse();
@@ -413,7 +414,7 @@ public:
 
   void setType(Representation representation) throw(FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Setting type..." << ENDL;
+      fout << MESSAGE("DEBUG: Setting type...") << ENDL;
     }
     switch (representation) {
     case ASCII:
@@ -428,7 +429,7 @@ public:
 
   void setStructure(Structure structure) throw(FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Setting file structure..." << ENDL;
+      fout << MESSAGE("DEBUG: Setting file structure...") << ENDL;
     }
     switch (structure) {
     case FILE:
@@ -446,7 +447,7 @@ public:
 
   void setMode(Mode mode) throw(FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Setting mode..." << ENDL;
+      fout << MESSAGE("DEBUG: Setting mode...") << ENDL;
     }
     switch (mode) {
     case STREAM:
@@ -464,7 +465,7 @@ public:
 
   void getList() throw(FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: List..." << ENDL;
+      fout << MESSAGE("DEBUG: List...") << ENDL;
     }
     request(CMD_LIST);
     getResponse();
@@ -502,7 +503,7 @@ public:
         }
 
         if (verbosity >= DEBUG) {
-          fout << "-> " << line << ENDL;
+          fout << MESSAGE("-> ") << line << ENDL;
         }
       }
     }
@@ -522,10 +523,10 @@ public:
       file.write(buffer.getElements(), result);
 
       if (verbosity >= SHORT) {
-        fout << "  bytes read=" << bytesRead
-             << "  completed=" << static_cast<float>(bytesRead)/sizeOfFile*100 << "%"
-             << "  time=" << timer.getLiveMicroseconds()/1000000.
-             << "  rate=" << (1000000./1024. * static_cast<float>(bytesRead)/timer.getLiveMicroseconds()) << "kbs\r" << FLUSH;
+        fout << MESSAGE("bytes read=") << bytesRead << ' '
+             << MESSAGE("completed=") << static_cast<float>(bytesRead)/sizeOfFile*100 << '%' << ' '
+             << MESSAGE("time=") << timer.getLiveMicroseconds()/1000000. << ' '
+             << MESSAGE("rate=") << (1000000./1024. * static_cast<float>(bytesRead)/timer.getLiveMicroseconds()) << MESSAGE("kbs\r") << FLUSH;
       }
     }
     fout << ENDL;
@@ -533,7 +534,7 @@ public:
 
   void restart(const String& marker) throw(InvalidFormat, FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Restarting..." << ENDL;
+      fout << MESSAGE("DEBUG: Restarting...") << ENDL;
     }
     assert(isValidPrintableString(marker), InvalidFormat("Invalid marker"));
     request(CMD_RESTART, marker);
@@ -544,7 +545,7 @@ public:
 
   void renameFile(const String& from, const String& to) throw(InvalidFormat, FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Renaming file system object..." << ENDL;
+      fout << MESSAGE("DEBUG: Renaming file system object...") << ENDL;
     }
     assert(isValidString(from) && isValidString(to), InvalidFormat("Invalid path"));
     request(CMD_RENAME_FROM, from);
@@ -554,7 +555,7 @@ public:
 
   void deleteFile(const String& path) throw(InvalidFormat, FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Deleting file system object..." << ENDL;
+      fout << MESSAGE("DEBUG: Deleting file system object...") << ENDL;
     }
     assert(isValidString(path), InvalidFormat("Invalid path"));
     request(CMD_DELETE, path);
@@ -565,7 +566,7 @@ public:
 
   void getCurrentDirectory() throw(FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Getting current directory..." << ENDL;
+      fout << MESSAGE("DEBUG: Getting current directory...") << ENDL;
     }
     request(CMD_PWD);
     getResponse();
@@ -573,7 +574,7 @@ public:
 
   void changeDirectory(const String& path) throw(InvalidFormat, FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Changing working directory..." << ENDL;
+      fout << MESSAGE("DEBUG: Changing working directory...") << ENDL;
     }
     if (path == "..") {
       request(CMD_CDUP);
@@ -587,7 +588,7 @@ public:
 
   void makeDirectory(const String& path) throw(InvalidFormat, FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Creating new directory..." << ENDL;
+      fout << MESSAGE("DEBUG: Creating new directory...") << ENDL;
     }
     assert(isValidString(path), InvalidFormat("Invalid path"));
     request(CMD_MAKE_DIRECTORY);
@@ -596,7 +597,7 @@ public:
 
   void removeDirectory(const String& path) throw(InvalidFormat, FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Removing directory..." << ENDL;
+      fout << MESSAGE("DEBUG: Removing directory...") << ENDL;
     }
     assert(isValidString(path), InvalidFormat("Invalid path"));
     request(CMD_REMOVE_DIRECTORY);
@@ -616,7 +617,7 @@ public:
 
   void login(const String& username, const String& password) throw(InvalidFormat, FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Sending user and password..." << ENDL;
+      fout << MESSAGE("DEBUG: Sending user and password...") << ENDL;
     }
     switch (sendUser(username)) {
     case POSITIVE: // not expected but ok
@@ -636,7 +637,7 @@ public:
 
   void logout() throw(FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Requesting logout..." << ENDL;
+      fout << MESSAGE("DEBUG: Requesting logout...") << ENDL;
     }
     request(CMD_LOGOUT);
     getResponse();
@@ -644,7 +645,7 @@ public:
 
   void getDirectoryList() throw(FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Retrieving directory list..." << ENDL;
+      fout << MESSAGE("DEBUG: Retrieving directory list...") << ENDL;
     }
     request(CMD_LIST);
     getResponse(); // wait for completed
@@ -654,7 +655,7 @@ public:
 
   void retrieveFile(const String& filename) throw(FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Retrieving file..." << ENDL;
+      fout << MESSAGE("DEBUG: Retrieving file...") << ENDL;
     }
     request(CMD_RETRIEVE, filename);
     getResponse();
@@ -688,7 +689,7 @@ public:
 
   void abort() throw(FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Aborting..." << ENDL;
+      fout << MESSAGE("DEBUG: Aborting...") << ENDL;
     }
     request(CMD_ABORT);
     getResponse(); // wait for completed
@@ -696,7 +697,7 @@ public:
 
   void requestActiveTransfer() throw(FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Requesting active transfer mode..." << ENDL;
+      fout << MESSAGE("DEBUG: Requesting active transfer mode...") << ENDL;
     }
     serverDataConnection = ServerSocket(controlConnection.getLocalAddress(), 0, 1); // address must be IPv4
     serverDataConnection.getName();
@@ -713,18 +714,18 @@ public:
 
     request(CMD_LIST);
     dataConnection = serverDataConnection.accept();
-    fout << "Incomming connection from: " << dataConnection.getAddress() << ENDL;
+    fout << MESSAGE("Incoming connection from: ") << dataConnection.getAddress() << ENDL;
     getResponse(); // wait for completed
   }
 
   void waitForConnection() throw(FTPException) {
     dataConnection = serverDataConnection.accept();
-    fout << "Incomming connection from: " << dataConnection.getAddress() << ENDL;
+    fout << MESSAGE("Incoming connection from: ") << dataConnection.getAddress() << ENDL;
   }
 
   void requestPassiveTransfer() throw(FTPException) {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Requesting passive transfer mode..." << ENDL;
+      fout << MESSAGE("DEBUG: Requesting passive transfer mode...") << ENDL;
     }
     request(CMD_PASSIVE);
     getResponse();
@@ -749,7 +750,8 @@ public:
     unsigned short port = UnsignedInteger(portHigh).getValue() * 256 + UnsignedInteger(portLow).getValue(); // TAG: make UnsignedInteger class and use this here
 
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Establishing data connection to: " << address << ":" << port << ENDL;
+      fout << MESSAGE("DEBUG: Establishing data connection to: ")
+           << InetEndPoint(address, port) << ENDL;
     }
 
     InetEndPoint endPoint(address, port);
@@ -759,7 +761,7 @@ public:
 
   ~FileTransferProtocolClient() {
     if (verbosity >= DEBUG) {
-      fout << "DEBUG: Closing sockets..." << ENDL;
+      fout << MESSAGE("DEBUG: Closing sockets...") << ENDL;
     }
     dataConnection.close();
     controlConnection.close();

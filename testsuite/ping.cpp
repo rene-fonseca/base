@@ -128,7 +128,7 @@ public:
     unsigned long long totalTime = 0;
     
     Allocator<char> outgoing(dataSize);
-    Allocator<char> incomming(dataSize);
+    Allocator<char> incoming(dataSize);
     fill<char>(outgoing.getElements(), outgoing.getSize(), 0);
     
     while (!isTerminated() && ((packetsToTransmit == 0) || (packetsTransmitted < packetsToTransmit))) {
@@ -141,18 +141,18 @@ public:
       socket.wait(timeout); // minimum(250, timeout)
       // TAG: use timer to check for timeout
       unsigned int bytesAvailable = socket.available();
-      if (bytesAvailable < incomming.getSize()) {
+      if (bytesAvailable < incoming.getSize()) {
         fout << name << ' ' << '(' << address << ')' << ':' << MESSAGE(" request timed out") << ENDL;
       } else {
         timer.stop();
         minimumTime = minimum(minimumTime, timer.getMicroseconds());
         maximumTime = maximum(maximumTime, timer.getMicroseconds());
         totalTime += timer.getMicroseconds();
-        while (bytesAvailable >= incomming.getSize()) {
-          socket.read(incomming.getElements(), incomming.getSize());
-          if (compare(incomming.getElements(), outgoing.getElements(), dataSize) == 0) {
+        while (bytesAvailable >= incoming.getSize()) {
+          socket.read(incoming.getElements(), incoming.getSize());
+          if (compare(incoming.getElements(), outgoing.getElements(), dataSize) == 0) {
             ++packetsReceived;
-            fout << incomming.getSize() << MESSAGE(" bytes from ") << name << ' '
+            fout << incoming.getSize() << MESSAGE(" bytes from ") << name << ' '
                  << '(' << address << ')' << ':' << ' '
                  << MESSAGE("n=") << packetsReceived << ' '
                  << MESSAGE("time=") << getTimeAsString(timer.getMicroseconds())

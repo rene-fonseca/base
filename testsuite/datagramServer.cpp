@@ -33,7 +33,7 @@ public:
   }
 
   void server(const String& servicename) throw() {
-    fout << "Hostname: " << InetAddress::getLocalHost() << ENDL;
+    fout << MESSAGE("Hostname: ") << InetAddress::getLocalHost() << ENDL;
 
     InetAddress address("0.0.0.0");
 
@@ -48,28 +48,28 @@ public:
       try {
         InetService service(servicename);
         port = service.getPort();
-        fout << "Service: name=" << service.getName()
-             << "  port=" << service.getPort()
-             << "  protocol=" << service.getProtocol() << ENDL;
+        fout << MESSAGE("Service: name=") << service.getName()
+             << MESSAGE("  port=") << service.getPort()
+             << MESSAGE("  protocol=") << service.getProtocol() << ENDL;
       } catch (ServiceNotFound& e) {
-        fout << "Warning: " << e.getMessage() << ENDL;
-        fout << "Service: port=" << port << ENDL;
+        fout << MESSAGE("Warning: ") << e.getMessage() << ENDL;
+        fout << MESSAGE("Service: port=") << port << ENDL;
       }
     }
 
-    fout << "Initializing server socket..." << ENDL;
+    fout << MESSAGE("Initializing server socket...") << ENDL;
     Socket serverSocket;
 
-    fout << "Creating datagram socket..." << ENDL;
+    fout << MESSAGE("Creating datagram socket...") << ENDL;
     serverSocket.create(Socket::DATAGRAM);
 
-    fout << "Binding to address..." << ENDL;
+    fout << MESSAGE("Binding to address...") << ENDL;
     serverSocket.bind(address, port);
 
-    fout << "Server address..." << ENDL;
-    fout << "  address=" << serverSocket.getLocalAddress() << " port=" << serverSocket.getLocalPort() << ENDL;
+    fout << MESSAGE("Server address...") << ENDL;
+    fout << indent(2) << InetEndPoint(serverSocket.getLocalAddress(), serverSocket.getLocalPort()) << ENDL;
 
-    fout << "Requesting permission to send/receive broadcast messages..." << ENDL;
+    fout << MESSAGE("Requesting permission to send/receive broadcast messages...") << ENDL;
     serverSocket.setBroadcast(true);
 
     unsigned int datagrams = 10; // the number of connections to accept
@@ -79,17 +79,16 @@ public:
       InetAddress remoteAddress;
       unsigned short remotePort;
 
-      fout << "Waiting for datagram..." << ENDL;
+      fout << MESSAGE("Waiting for datagram...") << ENDL;
       unsigned int bytesReceived = serverSocket.receiveFrom(buffer, sizeof(buffer), remoteAddress, remotePort);
 
-      fout << "Datagram of " << bytesReceived << " bytes received from " << remoteAddress
-           << " on port " << remotePort << ENDL;
-      fout << ">: " << buffer << ENDL;
+      fout << MESSAGE("Datagram of ") << bytesReceived << MESSAGE(" bytes received from ") << InetEndPoint(remoteAddress, remotePort) << ENDL;
+      fout << MESSAGE(">: ") << buffer << ENDL;
 
-      fout << "Sending datagram back to client..." << ENDL;
+      fout << MESSAGE("Sending datagram back to client...") << ENDL;
       char response[] = "DATAGRAM FROM SERVER";
       unsigned int bytesSent = serverSocket.sendTo(response, sizeof(response), remoteAddress, remotePort);
-      fout << "bytesSent: " << bytesSent << ENDL;
+      fout << MESSAGE("bytesSent: ") << bytesSent << ENDL;
     }
 
     fout << MESSAGE("Closing server socket...") << ENDL;
@@ -111,10 +110,11 @@ public:
       // use defaults
       break;
     case 1:
-      service = arguments[1]; // the service
+      service = arguments[0]; // the service
       break;
     default:
-      fout << "datagramServer [service]" << ENDL;
+      fout << MESSAGE("Usage: ") << getFormalName()
+           << MESSAGE(" [service]") << ENDL;
       return; // stop
     }
     server(service);

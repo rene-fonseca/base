@@ -34,11 +34,11 @@ public:
   }
 
   void client(String host, String service) {
-    fout << "Server: " << host << ENDL;
+    fout << MESSAGE("Server: ") << host << ENDL;
 
     InetAddress address; // the address of the remote host
     {
-      fout << "Server addresses:" << ENDL;
+      fout << MESSAGE("Server addresses:") << ENDL;
       List<InetAddress> addresses = InetAddress::getAddressesByName(host);
       List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
       unsigned int index = 0;
@@ -46,9 +46,9 @@ public:
         const InetAddress* temp = enu.next();
         if (index == 0) { // use the first address
           address = *temp;
-          fout << indent(2) << "address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
+          fout << indent(2) << MESSAGE("address ") << index++ << MESSAGE(": ") << *temp << MESSAGE(" (USING THIS)") << ENDL;
         } else {
-          fout << indent(2) << "address " << index++ << ": " << *temp << ENDL;
+          fout << indent(2) << MESSAGE("address ") << index++ << MESSAGE(": ") << *temp << ENDL;
         }
       }
     }
@@ -64,25 +64,25 @@ public:
       try {
         InetService s(service);
         port = s.getPort();
-        fout << "Service: name=" << s.getName()
-             << indent(2) << "port=" << s.getPort()
-             << indent(2) << "protocol=" << s.getProtocol() << ENDL;
+        fout << MESSAGE("Service: name=") << s.getName()
+             << indent(2) << MESSAGE("port=") << s.getPort()
+             << indent(2) << MESSAGE("protocol=") << s.getProtocol() << ENDL;
       } catch (ServiceNotFound& e) {
-        fout << "Warning: " << e.getMessage() << ENDL;
-        fout << "Service: port=" << port << ENDL;
+        fout << MESSAGE("Warning: ") << e.getMessage() << ENDL;
+        fout << MESSAGE("Service: port=") << port << ENDL;
       }
     }
 
-    fout << "Initializing socket..." << ENDL;
+    fout << MESSAGE("Initializing socket...") << ENDL;
     Socket socket;
 
-    fout << "Creating datagram socket..." << ENDL;
+    fout << MESSAGE("Creating datagram socket...") << ENDL;
     socket.create(Socket::DATAGRAM);
 
-    fout << "Requesting permission to send broadcast messages..." << ENDL;
+    fout << MESSAGE("Requesting permission to send broadcast messages...") << ENDL;
     socket.setBroadcast(true);
 
-    fout << "Sending datagram..." << ENDL;
+    fout << MESSAGE("Sending datagram...") << ENDL;
     char sendBuffer[] = "DATAGRAM FROM CLIENT";
     unsigned int bytesSent = socket.sendTo(sendBuffer, sizeof(sendBuffer), address, port);
 
@@ -90,13 +90,12 @@ public:
     InetAddress remoteAddress;
     unsigned short remotePort;
 
-    fout << "Waiting for datagram..." << ENDL;
+    fout << MESSAGE("Waiting for datagram...") << ENDL;
     unsigned int bytesReceived = socket.receiveFrom(receiveBuffer, sizeof(receiveBuffer), remoteAddress, remotePort);
-    fout << "Datagram of " << bytesReceived << " bytes received from " << remoteAddress
-         << " on port " << remotePort << ENDL;
-    fout << ">: " << receiveBuffer << ENDL;
+    fout << MESSAGE("Datagram of ") << bytesReceived << MESSAGE(" bytes received from ") << InetEndPoint(remoteAddress, remotePort) << ENDL;
+    fout << MESSAGE(">: ") << receiveBuffer << ENDL;
 
-    fout << "Closing socket..." << ENDL;
+    fout << MESSAGE("Closing socket...") << ENDL;
     socket.close();
   }
 

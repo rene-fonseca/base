@@ -49,7 +49,7 @@ public:
         const XMLProperty* attribute = enu.next()->getValue();
         fout << '{' << attribute->getName() << ';' << attribute->getValue() << '}';
         if (enu.hasNext()) {
-          fout << ", ";
+          fout << MESSAGE(", ");
         }
       }
       fout << '}' << EOL;
@@ -99,7 +99,7 @@ public:
       ignore = false;
       if (name == String("title")) {
       } else if (name == String("chapter")) {
-        fout << "  " << chapter++ << ". ";
+        fout << MESSAGE("  ") << chapter++ << MESSAGE(". ");
       } else if (name == String("para")) {
       } else { // unknown entry
         ignore = true;

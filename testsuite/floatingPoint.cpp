@@ -102,7 +102,7 @@ public:
     
     for (unsigned int i = 0; i < 100; ++i) {
       fout << setWidth(2) << i
-           << setWidth(25) << SCIENTIFIC << i/931.0 << " " << FLUSH
+           << setWidth(25) << SCIENTIFIC << i/931.0 << ' ' << FLUSH
            << setWidth(10) << setPrecision(3) << SCIENTIFIC << i/931.0 << FLUSH
            << setWidth(12) << setPrecision(3) << ENGINEERING << i/931.0 << FLUSH
            << setWidth(8) << setPrecision(3) << FIXED << i/931.0 << FLUSH

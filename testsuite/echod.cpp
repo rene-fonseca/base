@@ -136,7 +136,7 @@ public:
   }
   
   bool accept(const InetEndPoint& endPoint) throw() {
-    // fout << MESSAGE("Incomming connection: ") << endPoint << ENDL;
+    // fout << MESSAGE("Incoming connection: ") << endPoint << ENDL;
     return true;
   }
   

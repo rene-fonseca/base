@@ -71,35 +71,35 @@ public:
          << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
     
-    fout << "Initializing reference counted object pointers" << ENDL;
+    fout << MESSAGE("Initializing reference counted object pointers") << ENDL;
     ReferenceCountedObjectPointer<Base> base; // ok
     ReferenceCountedObjectPointer<Child> child; // ok
     ReferenceCountedObjectPointer<OtherChild> otherChild; // ok
 
-    fout << "Checking whether base is valid (expecting false): " << base.isValid() << EOL;
+    fout << MESSAGE("Checking whether base is valid (expecting false): ") << base.isValid() << EOL;
 
     const ReferenceCountedObjectPointer<Child> constChild; // ok
 
-    fout << "Checking whether base is multi referenced (expecting false): " << base.isMultiReferenced() << EOL;
+    fout << MESSAGE("Checking whether base is multi referenced (expecting false): ") << base.isMultiReferenced() << EOL;
 
     base.copyOnWrite();
 
 
 
-    fout << "Initializing Allocator" << ENDL;
+    fout << MESSAGE("Initializing Allocator") << ENDL;
     Allocator<int> a1;
 
-    fout << "Initializing ReferenceCountedAllocator" << ENDL;
+    fout << MESSAGE("Initializing ReferenceCountedAllocator") << ENDL;
     ReferenceCountedAllocator<int> a2;
 
-    fout << "Initializing ReferenceCountedAllocator (on heap)" << ENDL;
+    fout << MESSAGE("Initializing ReferenceCountedAllocator (on heap)") << ENDL;
     ReferenceCountedAllocator<int>* a3 = new ReferenceCountedAllocator<int>();
     delete a3;
 
-    fout << "Explicit initialization of automation pointer" << ENDL;
+    fout << MESSAGE("Explicit initialization of automation pointer") << ENDL;
     ReferenceCountedObjectPointer<ReferenceCountedAllocator<int> > a4 = new ReferenceCountedAllocator<int>();
 
-    fout << "Assignment of automation pointer" << ENDL;
+    fout << MESSAGE("Assignment of automation pointer") << ENDL;
     a4 = new ReferenceCountedAllocator<int>();
 /*
   ReferenceCountedObjectPointer<AAA> aaa1 = new AAA(); // test exclicit

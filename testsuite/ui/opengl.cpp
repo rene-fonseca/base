@@ -54,8 +54,8 @@ public:
     RENDER_INTENSITY,
     RENDER_RGB_CLOUD,
     RESET_VIEW_PARAMETERS,
-    SHOW_OPENGL_INFORMATION, /** Show OpenGL specific information. */
-    HELP, /** Show help information. */
+    SHOW_OPENGL_INFORMATION, /**< Show OpenGL specific information. */
+    HELP, /**< Show help information. */
     ABOUT, /**< Show information about the application. */
     QUIT, /**< Quit the application. */
     

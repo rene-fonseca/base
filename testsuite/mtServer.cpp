@@ -51,39 +51,39 @@ public:
       }
       StreamSocket socket = *job; // dereference for convenience
 
-      fout << id << ": " << MESSAGE("Communicating with...") << ENDL;
-      fout << id << ": "<< MESSAGE("  address=") << socket.getAddress() << MESSAGE(" port=") << socket.getPort() << ENDL;
+      fout << id << MESSAGE(": ") << MESSAGE("Communicating with...") << ENDL;
+      fout << id << MESSAGE(": ") << MESSAGE("  address=") << socket.getAddress() << MESSAGE(" port=") << socket.getPort() << ENDL;
 
       {
         FormatOutputStream outstream(socket); // must be destroyed before socket is closed
         FormatInputStream instream(socket);
 
-        fout << id << ": " << MESSAGE("Waiting for request") << FLUSH;
+        fout << id << MESSAGE(": ") << MESSAGE("Waiting for request") << FLUSH;
         while (!instream.wait(1000000)) {
           fout << '.' << FLUSH;
         }
         fout << ENDL;
 
-        fout << id << ": " << MESSAGE("Processing request") << ENDL;
-        fout << id << ": " << ">: ";
+        fout << id << MESSAGE(": ") << MESSAGE("Processing request") << ENDL;
+        fout << id << MESSAGE(": ") << MESSAGE(">: ");
         while (instream.available()) {
           char ch;
           instream >> ch;
           fout << ch;
         }
 
-        fout << id << ": " << MESSAGE("Sending acknowledge") << ENDL;
+        fout << id << MESSAGE(": ") << MESSAGE("Sending acknowledge") << ENDL;
         outstream << MESSAGE("Hi, I'm a multithreaded server and this is my response. ")
                   << MESSAGE("This connection has been assigned to context ") << id << '.' << ENDL;
 
-        fout << id << ": " << MESSAGE("Waiting for termination request") << FLUSH;
+        fout << id << MESSAGE(": ") << MESSAGE("Waiting for termination request") << FLUSH;
         while (!instream.wait(1000000)) {
           fout << '.' << FLUSH;
         }
         fout << ENDL;
 
-        fout << id << ": " << MESSAGE("Processing terminating request") << ENDL;
-        fout << id << ": " << ">: ";
+        fout << id << MESSAGE(": ") << MESSAGE("Processing terminating request") << ENDL;
+        fout << id << MESSAGE(": ") << MESSAGE(">: ");
         while (instream.available()) {
           char ch;
           instream >> ch;
@@ -91,11 +91,11 @@ public:
         }
       }
 
-      fout << id << ": " << MESSAGE("Closing connection...") << ENDL;
+      fout << id << MESSAGE(": ") << MESSAGE("Closing connection...") << ENDL;
       socket.close();
     }
 
-    fout << id << ": " << MESSAGE("Thread has been terminated") << ENDL;
+    fout << id << MESSAGE(": ") << MESSAGE("Thread has been terminated") << ENDL;
   }
 };
 
@@ -158,9 +158,9 @@ public:
         const InetAddress* temp = enu.next();
         if (index == 0) { // use the first address
           address = *temp;
-          fout << MESSAGE("  address ") << index++ << ": " << *temp << MESSAGE(" (USING THIS)") << ENDL;
+          fout << MESSAGE("  address ") << index++ << MESSAGE(": ") << *temp << MESSAGE(" (USING THIS)") << ENDL;
         } else {
-          fout << MESSAGE("  address ") << index++ << ": " << *temp << ENDL;
+          fout << MESSAGE("  address ") << index++ << MESSAGE(": ") << *temp << ENDL;
         }
       }
     } else {

@@ -469,12 +469,12 @@ public:
     //fout << MESSAGE("Number of output devices: ") << SoundOutputDevice::getNumberOfDevices() << ENDL;
     /*
     if (!SoundInputDevice::isFormatSupported(channels, samplingRate)) {
-      ferr << "Input device does not support sound format" << ENDL;
+      ferr << MESSAGE("Input device does not support sound format") << ENDL;
       return 1;
     }
 
     if (!SoundOutputDevice::isFormatSupported(channels, samplingRate)) {
-      ferr << "Output device does not support sound format" << ENDL;
+      ferr << MESSAGE("Output device does not support sound format") << ENDL;
       return 1;
     }
     */

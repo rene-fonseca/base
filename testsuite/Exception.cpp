@@ -142,10 +142,10 @@ public:
     testDemangling(MESSAGE("NSt3_In4wardE"), MESSAGE("std::_In::ward"));
     testDemangling(MESSAGE("St5state"), MESSAGE("std::state"));
 
-    fout << "Demangling of String: " << TypeInfo::getTypename<String>() << ENDL;
-    fout << "Demangling of Semaphore::SemaphoreException: " << TypeInfo::getTypename<Semaphore::SemaphoreException>() << ENDL;
-    fout << "Demangling of Array<int>: " << TypeInfo::getTypename<Array<int> >() << ENDL;
-    fout << "Demangling of Map<String, long long>: " << TypeInfo::getTypename<Map<String, long long> >() << ENDL;
+    fout << MESSAGE("Demangling of String: ") << TypeInfo::getTypename<String>() << ENDL;
+    fout << MESSAGE("Demangling of Semaphore::SemaphoreException: ") << TypeInfo::getTypename<Semaphore::SemaphoreException>() << ENDL;
+    fout << MESSAGE("Demangling of Array<int>: ") << TypeInfo::getTypename<Array<int> >() << ENDL;
+    fout << MESSAGE("Demangling of Map<String, long long>: ") << TypeInfo::getTypename<Map<String, long long> >() << ENDL;
   }
 
   void main() throw() {

@@ -36,34 +36,34 @@ public:
          << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
 
-    fout << "Initializing queue" << ENDL;
+    fout << MESSAGE("Initializing queue") << ENDL;
 
     Queue<int> qi;
 
-    fout << "Pushing values (1, 2, 3, 4, and 5)" << ENDL;
+    fout << MESSAGE("Pushing values (1, 2, 3, 4, and 5)") << ENDL;
     qi.push(1);
     qi.push(2);
     qi.push(3);
     qi.push(4);
     qi.push(5);
 
-    fout << "getSize() (5): " << qi.getSize() << ENDL;
-    fout << "isEmpty() (false): " << qi.isEmpty() << ENDL;
+    fout << MESSAGE("getSize() (5): ") << qi.getSize() << ENDL;
+    fout << MESSAGE("isEmpty() (false): ") << qi.isEmpty() << ENDL;
 
     try {
-      fout << "pop(): " << qi.pop() << ENDL;
-      fout << "pop(): " << qi.pop() << ENDL;
-      fout << "pop(): " << qi.pop() << ENDL;
-      fout << "pop(): " << qi.pop() << ENDL;
-      fout << "pop(): " << qi.pop() << ENDL;
-      fout << "pop(): " << qi.pop() << ENDL;
+      fout << MESSAGE("pop(): ") << qi.pop() << ENDL;
+      fout << MESSAGE("pop(): ") << qi.pop() << ENDL;
+      fout << MESSAGE("pop(): ") << qi.pop() << ENDL;
+      fout << MESSAGE("pop(): ") << qi.pop() << ENDL;
+      fout << MESSAGE("pop(): ") << qi.pop() << ENDL;
+      fout << MESSAGE("pop(): ") << qi.pop() << ENDL;
     } catch (Exception& e) {
-      ferr << TypeInfo::getTypename(e) << ": " << e.getMessage() << ENDL;
+      ferr << TypeInfo::getTypename(e) << MESSAGE(": ") << e.getMessage() << ENDL;
     }
-    fout << "InvalidNode exception is expected" << ENDL;
+    fout << MESSAGE("InvalidNode exception is expected") << ENDL;
 
-    fout << "getSize() (0): " << qi.getSize() << ENDL;
-    fout << "isEmpty() (true): " << qi.isEmpty() << ENDL;
+    fout << MESSAGE("getSize() (0): ") << qi.getSize() << ENDL;
+    fout << MESSAGE("isEmpty() (true): ") << qi.isEmpty() << ENDL;
   }
 };
 

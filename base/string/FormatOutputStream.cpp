@@ -4,14 +4,20 @@
  ***************************************************************************/
 
 #include <base/string/FormatOutputStream.h>
+#include <base/io/FileDescriptorOutputStream.h>
 #include <string.h>
+
+FileDescriptorOutputStream standardOutputStream(FileDescriptor(1));
+FormatOutputStream fout(standardOutputStream);
+FileDescriptorOutputStream standardErrorStream(FileDescriptor(2));
+FormatOutputStream ferr(standardErrorStream);
 
 const char FormatOutputStream::DIGITS[] = "0123456789abcdef";
 
 FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) throw(BindException) :
   BufferedOutputStream(out, size) {
-  throw BindException();
 
+  autoFlush = true;
   defaultBase = DEC;
   defaultWidth = 0;
   defaultFlags = PREFIX;
@@ -48,10 +54,19 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
     {
       char ch = '\n';
       write(&ch, sizeof(ch)); // may throw IOException
+      if (autoFlush) {
+        flush();
+      }
     }
     break;
   case FLUSH:
     flush(); // may throw IOException
+    break;
+  case AUTOFLUSH:
+    autoFlush = true;
+    break;
+  case NOAUTOFLUSH:
+    autoFlush = false;
     break;
   }
   return *this;
@@ -61,6 +76,9 @@ void FormatOutputStream::prepareForField() {
   flags = defaultFlags;
   width = defaultWidth;
   base = defaultBase;
+  if (autoFlush) {
+    flush();
+  }
 }
 
 void FormatOutputStream::addCharacterField(const char* buf, unsigned int size) throw(IOException) {
@@ -85,7 +103,7 @@ void FormatOutputStream::addCharacterField(const char* buf, unsigned int size) t
 
 void FormatOutputStream::addIntegerField(const char* buf, unsigned int size, bool isSigned) throw(IOException) {
   static const char* prefixString[] = {"0b", "0", "", "0x"};
-  static const unsigned int prefixLength[] = {sizeof("0b"), sizeof("0"), sizeof(""), sizeof("0x")};
+  static const unsigned int prefixLength[] = {sizeof("0b")-1, sizeof("0")-1, sizeof("")-1, sizeof("0x")-1};
   static const unsigned int replicates = 32;
   static const char white[replicates + sizeof('\0')] = "                                ";
   static const char str0[replicates + sizeof('\0')] = "00000000000000000000000000000000";
@@ -103,7 +121,7 @@ void FormatOutputStream::addIntegerField(const char* buf, unsigned int size, boo
     requiredWidth += prefixLength[base];
   }
 
-  unsigned int pads = (requiredWidth <= width) ? 0 : (width - requiredWidth);
+  unsigned int pads = (requiredWidth >= width) ? 0 : (width - requiredWidth);
 
   if ((pads > 0) && !(flags & ZEROPAD)) { // write blanks if required
     while (true) {
@@ -117,7 +135,9 @@ void FormatOutputStream::addIntegerField(const char* buf, unsigned int size, boo
     }
   }
 
-  write("-", 1); // write sign
+  if (isSigned) {
+    write("-", 1); // write sign
+  }
 
   if (flags | PREFIX) { // is prefix requested
     write(prefixString[base], prefixLength[base]);
@@ -162,7 +182,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) {
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (stream.getBase()) {
-  case FormatOutputStream::BIN:
+  case BIN:
     {
       unsigned short int temp = (unsigned short int)value; // no sign
       do {
@@ -173,7 +193,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) {
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::OCT:
+  case OCT:
     {
       unsigned short int temp = (unsigned short int)value; // no sign
       do {
@@ -184,7 +204,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) {
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::DEC:
+  case DEC:
     {
       unsigned short int temp = (value >= 0) ? value : -value;
       do {
@@ -195,7 +215,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) {
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::HEX:
+  case HEX:
     {
       unsigned short int temp = (unsigned short int)value; // no sign
       do {
@@ -219,7 +239,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int va
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (stream.getBase()) {
-  case FormatOutputStream::BIN:
+  case BIN:
     {
       do {
         *dest = FormatOutputStream::DIGITS[value & 0x00000001]; // get digit
@@ -229,7 +249,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int va
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::OCT:
+  case OCT:
     {
       do {
         *dest = FormatOutputStream::DIGITS[value & 0x00000007]; // get digit
@@ -239,7 +259,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int va
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::DEC:
+  case DEC:
     {
       do {
         *dest = FormatOutputStream::DIGITS[value % 10]; // get digit
@@ -249,7 +269,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int va
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::HEX:
+  case HEX:
     {
       do {
         *dest = FormatOutputStream::DIGITS[value & 0x0000000f]; // get bits of digit
@@ -272,7 +292,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) {
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (stream.getBase()) {
-  case FormatOutputStream::BIN:
+  case BIN:
     {
       unsigned int temp = (unsigned int)value; // no sign
       do {
@@ -283,7 +303,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) {
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::OCT:
+  case OCT:
     {
       unsigned int temp = (unsigned int)value; // no sign
       do {
@@ -294,7 +314,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) {
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::DEC:
+  case DEC:
     {
       unsigned int temp = (value >= 0) ? value : -value;
       do {
@@ -305,7 +325,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, int value) {
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::HEX:
+  case HEX:
     {
       unsigned int temp = (unsigned int)value; // no sign
       do {
@@ -329,7 +349,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value) {
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (stream.getBase()) {
-  case FormatOutputStream::BIN:
+  case BIN:
     {
       do {
         *dest = FormatOutputStream::DIGITS[value & 0x00000001]; // get digit
@@ -339,7 +359,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value) {
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::OCT:
+  case OCT:
     {
       do {
         *dest = FormatOutputStream::DIGITS[value & 0x00000007]; // get digit
@@ -349,7 +369,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value) {
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::DEC:
+  case DEC:
     {
       do {
         *dest = FormatOutputStream::DIGITS[value % 10]; // get digit
@@ -359,7 +379,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value) {
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::HEX:
+  case HEX:
     {
       do {
         *dest = FormatOutputStream::DIGITS[value & 0x0000000f]; // get bits of digit
@@ -382,7 +402,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (stream.getBase()) {
-  case FormatOutputStream::BIN:
+  case BIN:
     {
       unsigned long long int temp = (unsigned long long int)value; // no sign
       do {
@@ -393,7 +413,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::OCT:
+  case OCT:
     {
       unsigned long long int temp = (unsigned long long int)value; // no sign
       do {
@@ -404,7 +424,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::DEC:
+  case DEC:
     {
       unsigned int temp = (value >= 0) ? value : -value;
       do {
@@ -415,7 +435,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value) 
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::HEX:
+  case HEX:
     {
       unsigned long long int temp = (unsigned long long int)value; // no sign
       do {
@@ -439,7 +459,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (stream.getBase()) {
-  case FormatOutputStream::BIN:
+  case BIN:
     {
       do {
         *dest = FormatOutputStream::DIGITS[value & 0x00000001]; // get digit
@@ -449,7 +469,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::OCT:
+  case OCT:
     {
       do {
         *dest = FormatOutputStream::DIGITS[value & 0x00000007]; // get digit
@@ -459,7 +479,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::DEC:
+  case DEC:
     {
       do {
         *dest = FormatOutputStream::DIGITS[value % 10]; // get digit
@@ -469,7 +489,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long in
       ++dest; // go to first valid char in buffer
       break;
     }
-  case FormatOutputStream::HEX:
+  case HEX:
     {
       do {
         *dest = FormatOutputStream::DIGITS[value & 0x0000000f]; // get bits of digit

@@ -73,12 +73,12 @@ void String<LOCK>::createString(const char* buffer, unsigned int length, unsigne
 }
 
 template<class LOCK>
-String<LOCK>::String(unsigned int capacity) throw(MemoryException) {
+String<LOCK>::String(unsigned int capacity) throw(MemoryException) : elements(new ReferenceCountedAllocator<char>()), len(0) {
   createString(0, 0, capacity);
 }
 
 template<class LOCK>
-String<LOCK>::String(const StringLiteral& str) throw(MemoryException) {
+String<LOCK>::String(const StringLiteral& str) throw(MemoryException) : elements(new ReferenceCountedAllocator<char>()), len(0) {
   unsigned int length = str.size - sizeof(TERMINATOR);
   if (length > MAXIMUM_LENGTH) { // maximum length exceeded
     throw MemoryException();
@@ -87,7 +87,7 @@ String<LOCK>::String(const StringLiteral& str) throw(MemoryException) {
 }
 
 template<class LOCK>
-String<LOCK>::String(const char* str) throw(MemoryException) {
+String<LOCK>::String(const char* str) throw(MemoryException) : elements(new ReferenceCountedAllocator<char>()), len(0) {
   if (str) { // is string proper (not empty)
     int length = getLengthOfString(str);
     if (length < 0) { // maximum length exceeded
@@ -100,7 +100,7 @@ String<LOCK>::String(const char* str) throw(MemoryException) {
 }
 
 template<class LOCK>
-String<LOCK>::String(const char* str, unsigned int maximum) throw(MemoryException) {
+String<LOCK>::String(const char* str, unsigned int maximum) throw(MemoryException) : elements(new ReferenceCountedAllocator<char>()), len(0) {
   if (str) { // is string proper
     int length = getLengthOfString(str);
     if (length < 0) { // maximum length exceeded
@@ -552,10 +552,6 @@ unsigned int String<LOCK>::count(const String& str, unsigned int start) const th
 template<class LOCK>
 String<LOCK> String<LOCK>::toString() const {
   return String(*this);
-}
-
-template<class LOCK>
-String<LOCK>::~String() throw() {
 }
 
 template<class LOCK>

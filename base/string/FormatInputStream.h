@@ -27,4 +27,10 @@ public:
   FormatInputStream(InputStream& in) throw(BindException);
 };
 
+/**
+  Format input stream linked to the standard input stream. This variable
+  corresponds to 'cin' from the Standard Template Library.
+*/
+//extern FormatInputStream fin;
+
 #endif

@@ -4,8 +4,12 @@
  ***************************************************************************/
 
 #include <base/string/FormatInputStream.h>
+#include <base/io/FileDescriptorInputStream.h>
 
-FormatInputStream::FormatInputStream(InputStream& in) throw(BindException) :
-  BufferedInputStream(in) {
-  throw BindException();
-}
+//FileDescriptorInputStream standardInputStream(FileDescriptor(0));
+//FormatInputStream fin(standardInputStream);
+//
+//FormatInputStream::FormatInputStream(InputStream& in) throw(BindException) :
+//  BufferedInputStream(in) {
+//  throw BindException();
+//}

@@ -9,7 +9,6 @@
 #include <base/Object.h>
 #include <base/io/BufferedOutputStream.h>
 #include <base/io/BindException.h>
-//#include <base/io/FileDescriptorOutputStream.h>
 
 /*
 struct DateFormatSet {
@@ -40,6 +39,9 @@ CollectionFormatSet defaultFormatSet {
 };
 */
 
+/** Actions used to modify a format output stream. */
+typedef enum {BIN, OCT, DEC, HEX, ZEROPAD, NOZEROPAD, PREFIX, NOPREFIX, EOL, FLUSH, AUTOFLUSH, NOAUTOFLUSH} Action;
+
 /**
   Format output stream.
 
@@ -52,9 +54,10 @@ public:
 
   /** Digits of all bases. */
   static const char DIGITS[]; // = "0123456789abcdef";
-  /** Actions changing the format stream. */
-  typedef enum {BIN, OCT, DEC, HEX, ZEROPAD, NOZEROPAD, PREFIX, NOPREFIX, EOL, FLUSH} Action;
 protected:
+
+  /** Specifies that the stream should be flushed automatically after each field. Enabled by default. */
+  bool autoFlush;
 
   unsigned int defaultWidth;
   unsigned int defaultBase;
@@ -73,21 +76,64 @@ public:
   */
   FormatOutputStream(OutputStream& out, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException);
 
-  inline FormatOutputStream& setWidth(unsigned int width) throw() {this->width = width; return *this;};
-  inline unsigned int getWidth() const throw() {return width;};
+  /**
+    Sets the default field width.
 
-  inline FormatOutputStream& setBase(unsigned int base) throw() {this->base = base; return *this;};
-  inline unsigned int getBase() const throw() {return base;};
+    @param width The desired width.
+  */
+  inline FormatOutputStream& setWidth(unsigned int width) throw() {this->width = width; return *this;}
 
+  /**
+    Returns the default field width.
+  */
+  inline unsigned int getWidth() const throw() {return width;}
+
+  /**
+    Sets the default base.
+  */
+  inline FormatOutputStream& setBase(unsigned int base) throw() {this->base = base; return *this;}
+
+  /**
+    Returns the default base.
+  */
+  inline unsigned int getBase() const throw() {return base;}
+
+  /**
+    Send action to stream.
+  */
   FormatOutputStream& operator<<(Action action) throw(IOException);
 
+  /**
+    Prepare stream for a new field.
+  */
   void prepareForField();
+
+  /**
+    Write a character to the stream.
+  */
   void addCharacterField(const char* buf, unsigned int size) throw(IOException);
+
+  /**
+    Write preformated integer to stream.
+  */
   void addIntegerField(const char* buf, unsigned int size, bool isSigned) throw(IOException);
+
+  /**
+    Write preformated double to stream.
+  */
   void addDoubleField(const char* early, unsigned int earlySize, const char* late, unsigned int lateSize, bool isSigned) throw(IOException);
 };
 
+/**
+  Format output stream linked to the standard output stream. This variable
+  corresponds to 'cout' from the Standard Template Library.
+*/
 extern FormatOutputStream fout;
+
+/**
+  Format output stream linked to the standard error stream. This variable
+  corresponds to 'cerr' from the Standard Template Library.
+*/
 extern FormatOutputStream ferr;
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, char value);

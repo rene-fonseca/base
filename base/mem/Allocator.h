@@ -18,61 +18,9 @@
 #include <base/mem/Heap.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/iterator/SequenceIterator.h>
+#include <new>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
-/** Initializes the elements of the sequence using the default constructor. */
-template<class TYPE>
-inline void initialize(TYPE* element, unsigned int count) throw() {
-  if (!isRelocateable<TYPE>()) {
-    const TYPE* end = element + count;
-    --element;
-    while (++element != end) {
-      new(element) TYPE();
-    }
-  }
-}
-
-/** Initializes the elements of the sequence by copying elements from other sequence. */
-template<class TYPE>
-inline void initializeByCopy(TYPE* dest, const TYPE* src, unsigned int count) throw() {
-  if (isRelocateable<TYPE>()) {
-    copy<TYPE>(dest, src, count); // blocks do not overlap
-  } else {
-    const TYPE* end = dest + count;
-    while (dest != end) {
-      new(dest) TYPE(*src); // copy object
-      ++dest;
-      ++src;
-    }
-  }
-}
-
-/** Initializes the elements of the sequence by moving elements from other sequence. */
-template<class TYPE>
-inline void initializeByMove(TYPE* dest, const TYPE* src, unsigned int count) throw() {
-  if (!isRelocateable<TYPE>()) {
-    const TYPE* end = dest + count;
-    while (dest != end) {
-      new(dest) TYPE(*src); // copy object
-      src->~TYPE(); // destroy old object
-      ++dest;
-      ++src;
-    }
-  }
-}
-
-/** Destroys the elements of the sequence. */
-template<class TYPE>
-inline void destroy(TYPE* element, unsigned int count) throw() {
-  if (!isRelocateable<TYPE>()) { // must we destroy the elements
-    const TYPE* end = element + count;
-    --element;
-    while (++element != end) {
-      element->~TYPE();
-    }
-  }
-}
 
 /**
   Allocator of resizeable memory block. The implementation is not MT-safe.
@@ -98,6 +46,66 @@ public:
   typedef AllocatorEnumerator<EnumeratorTraits<TYPE> > Enumerator;
   typedef AllocatorEnumerator<ReadEnumeratorTraits<TYPE> > ReadEnumerator;
 
+  /**
+    Initializes the elements of the sequence using the default constructor.
+    Relocatable objects are not initialized.
+  */
+  static inline void initialize(TYPE* element, unsigned int count) throw() {
+    if (!Relocateable<TYPE>::IS_RELOCATEABLE) {
+      const TYPE* end = element + count;
+      --element;
+      while (++element != end) {
+        new(element) TYPE();
+      }
+    }
+  }
+
+  /**
+    Initializes the elements of the sequence by copying elements from other
+    sequence. The memory image is copied directly for relocatable objects.
+  */
+  static inline void initializeByCopy(TYPE* dest, const TYPE* src, unsigned int count) throw() {
+    if (Relocateable<TYPE>::IS_RELOCATEABLE) {
+      copy<TYPE>(dest, src, count); // blocks do not overlap
+    } else {
+      const TYPE* end = dest + count;
+      while (dest != end) {
+        new(dest) TYPE(*src); // copy object
+        ++dest;
+        ++src;
+      }
+    }
+  }
+
+  /**
+    Initializes the elements of the sequence by moving elements from other
+    sequence. This does nothing for relocateable object.
+  */
+  static inline void initializeByMove(TYPE* dest, const TYPE* src, unsigned int count) throw() {
+    if (!Relocateable<TYPE>::IS_RELOCATEABLE) {
+      const TYPE* end = dest + count;
+      while (dest != end) {
+        new(dest) TYPE(*src); // copy object
+        src->~TYPE(); // destroy old object
+        ++dest;
+        ++src;
+      }
+    }
+  }
+
+  /**
+    Destroys the elements of the sequence. Does nothing for relocateable objects.
+  */
+  static inline void destroy(TYPE* element, unsigned int count) throw() {
+    if (!Relocateable<TYPE>::IS_RELOCATEABLE) { // must we destroy the elements
+      const TYPE* end = element + count;
+      --element;
+      while (++element != end) {
+        element->~TYPE();
+      }
+    }
+  }
+  
 //  /**
 //    Enumeration of all the elements of an Allocator.
 //  */
@@ -141,17 +149,17 @@ public:
 
     @param size Specifies the initial size of the allocator.
   */
-  explicit Allocator(unsigned int size) throw(MemoryException) :
-    elements(Heap::allocate<TYPE>(size)), size(size) {
+  explicit Allocator(unsigned int _size) throw(MemoryException)
+    : elements(Heap::allocate<TYPE>(_size)), size(_size) {
     initialize(elements, size); // default initialization of elements
   }
 
   /**
     Initializes allocator from other allocator.
   */
-  Allocator(const Allocator& cpy) throw(MemoryException) :
-    elements(Heap::allocate<TYPE>(size)), size(cpy.size) {
-    initializeByCopy(elements, cpy.elements, size); // initialization of elements by copying
+  Allocator(const Allocator& copy) throw(MemoryException)
+    : elements(Heap::allocate<TYPE>(copy.size)), size(copy.size) {
+    initializeByCopy(elements, copy.elements, size); // initialization of elements by copying
   }
 
   /**
@@ -256,7 +264,7 @@ public:
   */
   void setSize(unsigned int size) throw(MemoryException) {
     if (size != this->size) {
-      if (isRelocateable<TYPE>()) {
+      if (Relocateable<TYPE>::IS_RELOCATEABLE) {
         // no need to destroy or initialize elements
         elements = Heap::resize(elements, size);
       } else {

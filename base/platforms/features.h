@@ -23,6 +23,9 @@
 
 #include <base/features.h>
 
+// grants access to internal headers
+#define _DK_SDU_MIP__BASE__INTERNAL_ACCESS
+
 #if !defined(TRACE) && !defined(TRACE_MEMBER) // allow macros to be overridden
 #if defined(_DK_SDU_MIP__BASE__TRACE)
   #include <base/Trace.h>

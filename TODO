@@ -1,6 +1,0 @@
-Need thread local buffer with macros to guarantee minimum size of buffer.
-Add to Thread.h and Thread.cpp.
-
-Add delay when communication with Z8536 in IO_ADA08 class if required.
-
-Where is SSIZE_MAX defined. Need to include file in 'FileDestriptor.cpp'.

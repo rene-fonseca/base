@@ -6,8 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE__FEATURES_H
 #define _DK_SDU_MIP__BASE__FEATURES_H
 
-// Temporary fix. config.h should also be installed
-#include "../../config.h"
+#include <base/config.h>
 
 #if defined(_DK_SDU_MIP__BASE__NAMESPACE)
   #define _DK_SDU_MIP__BASE__ENTER_NAMESPACE namespace base {

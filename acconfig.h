@@ -1,6 +1,3 @@
-/* Define if the C++ compiler supports BOOL */
-#undef HAVE_BOOL
-
-#undef VERSION
-
-#undef PACKAGE
+/* Do NOT include this file directly. You should use features.h */
+@TOP@
+@BOTTOM@

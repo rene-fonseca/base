@@ -1,6 +1,6 @@
 ####### kdevelop will overwrite this part!!! (begin)##########
 ####### kdevelop will overwrite this part!!! (end)############
-DEFS = @DEFS@
+DEFS =
 bin_PROGRAMS = Array List Queue Set Map String io client server datagramClient datagramServer Thread referenceCounting fileInput mtServer filesystem
 
 Array_SOURCES = Array.cpp

@@ -16,58 +16,46 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-StringInputStream::StringInputStream(String& s) throw(BindException) : str(s) {
+StringInputStream::StringInputStream(String& _string) throw(BindException) : string(_string) {
   index = 0;
   eof = false;
   closed = false;
 }
 
 unsigned int StringInputStream::available() throw(IOException) {
-  if (closed) {
-    throw IOException();
-  }
-  return str.getLength() - index;
+  assert(!closed, IOException(this));
+  return string.getLength() - index;
 }
 
 void StringInputStream::close() throw(IOException) {
-  if (closed) {
-    throw IOException();
-  }
-  str = "";
+  assert(!closed, IOException(this));
+  string = String();
   closed = true;
 }
 
 unsigned int StringInputStream::read(char* buffer, unsigned int size) throw(IOException) {
-  if (closed) {
-    throw IOException();
-  }
-  if (index >= str.getLength()) {
-    if (eof) {
-      throw EndOfFile();
-    }
+  assert(!closed, IOException(this));
+  if (index >= string.getLength()) {
+    assert(!eof, EndOfFile(this));
     eof = true;
     return 0;
   }
-  if (size >= str.getLength() - index) {
-    size = str.getLength() - index;
+  if (size >= string.getLength() - index) {
+    size = string.getLength() - index;
   }
-  copy<char>(buffer, str.getElements(), size);
+  copy<char>(buffer, string.getElements(), size);
   return size;
 }
 
 unsigned int StringInputStream::skip(unsigned int count) throw(IOException) {
-  if (closed) {
-    throw IOException();
-  }
-  if (index >= str.getLength()) {
-    if (eof) {
-      throw EndOfFile();
-    }
+  assert(!closed, IOException(this));
+  if (index >= string.getLength()) {
+    assert(!eof, EndOfFile(this));
     eof = true;
     return 0;
   }
-  if (count >= str.getLength() - index) {
-    count = str.getLength() - index;
+  if (count >= string.getLength() - index) {
+    count = string.getLength() - index;
   }
   index += count;
   return count;

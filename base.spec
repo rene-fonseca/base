@@ -16,14 +16,14 @@
 #   used to build the package.
 #
 # TODO:
-#   devel package required runtime package
-#   need link /usr/lib/libbase.so.0 -> /usr/lib/libbase.so (what about static libraries)
+#   use libsupc++ with GCC 3.0 (static 'cause no package for RedHat 7.2)
+#   use libstdc++ with GCC 2.95
 
 Name: base-framework
 Version: 0.9.1
 Release: 1
 License: GPL
-Source: http://www.mip.sdu.dk/~fonseca/base/src/%{name}-%{version}.tar.gz
+Source: http://www.mip.sdu.dk/~fonseca/distribution/base-framework
 Url: http://www.mip.sdu.dk/~fonseca/base
 Vendor: Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 Packager: Rene Moeller Fonseca <fonseca@mip.sdu.dk>
@@ -35,6 +35,7 @@ BuildRoot: %{_builddir}/%{name}-%{version}-%{release}-root
 
 Summary: Runtime support provided by the Base framework
 Group: System Environment/Libraries
+Requires: libstdc++, pcre, libxml2, glibc
 %description
 This particular package provides the runtime support needed by applications
 which are rely on the Base framework. If you want to develop you own
@@ -46,7 +47,8 @@ which should accompany this package.
 %package devel
 Summary: Development support the Base framework
 Group: Development/Libraries
-Requires: %{name} = %{version}
+Requires: %{name} = %{version}, libstdc++-devel, pcre-devel, libxml2-devel, glibc-devel
+
 %description devel
 This package provides the files required for developing applications using the
 Base framework. The framework provides a common base, hence the name, for
@@ -84,17 +86,18 @@ make DESTDIR=%{buildroot} install-strip
 
 # the main package
 %files
-%attr(-,root,root) /usr/lib/libbase.so
+%attr(-,root,root) %{prefix}/lib/libbase.so*
 
 
 
 # development package
 %files devel
 # package all header files
-%attr(-,root,root) /usr/include
+%attr(-,root,root) %{prefix}/include
 # package all static libraries
-%attr(-,root,root) /usr/lib/libbase.a
-%attr(-,root,root) /usr/lib/libbase.la
+%attr(-,root,root) %{prefix}/lib/libbase.a
+# libtool libraries
+%attr(-,root,root) %{prefix}/lib/libbase.la
 
 
 
@@ -110,3 +113,4 @@ rm -rf %{_builddir}/%{name}
 %changelog
 * Sat Apr 20 2002 Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 - created a subpackage for development specific files
+- added external package dependencies

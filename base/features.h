@@ -20,7 +20,13 @@
 
 #define _DK_SDU_MIP__BASE__MAJOR_VERSION 0
 #define _DK_SDU_MIP__BASE__MINOR_VERSION 9
-#define _DK_SDU_MIP__BASE__VERSION "0.9"
+#define _DK_SDU_MIP__BASE__MICRO_VERSION 1
+#define _DK_SDU_MIP__BASE__VERSION "0.9.1"
+
+#define _DK_SDU_MIP__BASE__REQUIRE(major, minor, micro) \
+  ((major <= _DK_SDU_MIP__BASE__MAJOR_VERSION) && \
+  (minor <= _DK_SDU_MIP__BASE__MINOR_VERSION) && \
+  (micro <= _DK_SDU_MIP__BASE__MICRO_VERSION))
 
 #if !defined(_DK_SDU_MIP__BASE__CPP_BOOL)
   #error Compiler does not support the bool primitive
@@ -90,7 +96,7 @@ namespace base {
 #if defined(_DK_SDU_MIP__BASE__DEBUG)
   #define _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE) #VALUE
   #define _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(VALUE) _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE)
-  #define ASSERT(expression) {assert(expression, Exception("Assertion failure at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__)));}
+  #define ASSERT(expression) {if (!expression) {ferr << "Assertion failure of " #expression " at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__) << ENDL;}}
 #else
   #define ASSERT(expression)
 #endif

@@ -14,7 +14,7 @@
 DEFS =
 AUTOMAKE_OPTIONS = 1.4 foreign nostdinc dist-bzip2 dist-zip
 
-SUBDIRS = ui
+SUBDIRS = orb ui
 
 LIBS=-lbase
 
@@ -48,7 +48,10 @@ bin_PROGRAMS += HashSet
 bin_PROGRAMS += HashTable
 bin_PROGRAMS += Huffman
 bin_PROGRAMS += IEEE1394
+bin_PROGRAMS += echod
 bin_PROGRAMS += floatingPoint
+bin_PROGRAMS += ln
+bin_PROGRAMS += ping
 bin_PROGRAMS += Process
 bin_PROGRAMS += quota
 bin_PROGRAMS += time
@@ -81,12 +84,15 @@ dlapp_SOURCES = dlapp.cpp MyLinkerModule.cpp
 intercom_SOURCES = intercom.cpp
 SerialPort_SOURCES = SerialPort.cpp
 dump_SOURCES = dump.cpp
+echod_SOURCES = echod.cpp
 File_SOURCES = File.cpp
 floatingPoint_SOURCES = floatingPoint.cpp
 HashSet_SOURCES = HashSet.cpp
 HashTable_SOURCES = HashTable.cpp
 Huffman_SOURCES = Huffman.cpp
 IEEE1394_SOURCES = IEEE1394.cpp
+ln_SOURCES = ln.cpp
+ping_SOURCES = ping.cpp
 Process_SOURCES = Process.cpp
 quota_SOURCES = Quota.cpp
 time_SOURCES = time.cpp

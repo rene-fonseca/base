@@ -18,13 +18,13 @@
 #include <base/mem/NullPointer.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-  #include <string.h>
-  #include <stdio.h>
+#  include <windows.h>
+#  include <string.h>
+#  include <stdio.h>
 #else // unix
-  #include <string.h>
-  #include <stdio.h>
-  #include <syslog.h>
+#  include <string.h>
+#  include <stdio.h>
+#  include <syslog.h>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -52,14 +52,18 @@ void Trace::message(const char* message) throw() {
 
 void Trace::member(const void* pointer, const char* message) throw() {
   assert(message, NullPointer(Type::getType<Trace>()));
-  unsigned int length = strlen(message);
+  const char* src = message;
+  while (*src) {
+    ++src;
+  }
+  unsigned int length = src - message;
   char buffer[sizeof("0x1234567812345678 >> ") + length];
 #if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
   sprintf(buffer, "%08x >> %s", pointer, message); // sprintf must be MT-safe
 #elif (_DK_SDU_MIP__BASE__INT_SIZE == 8)
   sprintf(buffer, "%016x >> %s", pointer, message); // sprintf must be MT-safe
 #else
-  #error pointer type not supported
+#  error pointer type not supported
 #endif
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::OutputDebugString(buffer);

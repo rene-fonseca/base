@@ -396,13 +396,15 @@ public:
     
     template<class ARGUMENT>
     static inline RESULT& cast(ARGUMENT& value) throw() {
-      CastAssert<sizeof(RESULT) == sizeof(ARGUMENT)>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT;
+      if (CastAssert<sizeof(RESULT) == sizeof(ARGUMENT)>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT) {
+      }
       return *reinterpret_cast<RESULT*>(&value);
     }
     
     template<class ARGUMENT>
     static inline const RESULT& cast(const ARGUMENT& value) throw() {
-      CastAssert<sizeof(RESULT) == sizeof(ARGUMENT)>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT;
+      if (CastAssert<sizeof(RESULT) == sizeof(ARGUMENT)>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT) {
+      }
       return *reinterpret_cast<const RESULT*>(&value);
     }
   };

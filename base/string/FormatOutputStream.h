@@ -22,35 +22,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-/*
-struct DateFormatSet {
-  char separator;
-};
-
-struct NumberFormatSet {
-  char point;
-};
-
-struct CollectionFormatSet {
-  char begin;
-  char end;
-  char separator;
-};
-
-class CollectionFormatSet2 {
-private:
-public:
-  FormatSet(C)
-  operator const CollectionFormatSet& throw() {return set;}
-};
-
-CollectionFormatSet defaultFormatSet {
-  '{'
-  '}'
-  ';'
-};
-*/
-
 /**
   Actions used to modify a format output stream. Use BIN, OCT, DEC, and HEX to
   select an appropriate integer base. Use ZEROPAD and NOZEROPAD to

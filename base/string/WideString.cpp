@@ -27,9 +27,11 @@ void WideString::setLength(unsigned int length) throw(WideStringException) {
 }
 
 /* Default wide string buffer used to avoid multiple allocations of empty string buffers. */
-static const ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<WideString::Character> > DEFAULT_WIDE_STRING_BUFFER = new ReferenceCountedCapacityAllocator<WideString::Character>(1);
+const WideString WideString::DEFAULT_STRING(WIDEMESSAGE(""));
 
-WideString::WideString() throw() : elements(DEFAULT_WIDE_STRING_BUFFER) {
+//const ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<WideString::Character> > WideString::DEFAULT_BUFFER = new ReferenceCountedCapacityAllocator<WideString::Character>(1);
+
+WideString::WideString() throw() : elements(DEFAULT_STRING.elements) {
 }
 
 WideString::WideString(unsigned int capacity) throw(MemoryException) : elements(0) {
@@ -337,9 +339,11 @@ int WideString::compareTo(const Character* str) const throw() {
 
 int WideString::compareToIgnoreCase(const Character* left, const Character* right) throw() {
   while (*left && *right) { // continue until end of any string has been reached
-    int result = (*left - *right) || (Traits::toLower(*left) - Traits::toLower(*right));
-    if (result != 0) { // not equal
-      return result;
+    if (*left != *right) { // not equal
+      int result = Traits::toLower(*left) - Traits::toLower(*right);
+      if (result != 0) { // not equal
+        return result;
+      }
     }
     ++left;
     ++right;

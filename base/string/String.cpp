@@ -289,7 +289,7 @@ char* String::substring(char* buffer, unsigned int start, unsigned int end) cons
 String& String::toLowerCase() throw() {
   char* p = getMutableBuffer();
   while (*p != TERMINATOR) {
-    *p = tolower(*p);
+    *p = Traits::toLower(*p);
     ++p;
   }
   return *this;
@@ -298,7 +298,7 @@ String& String::toLowerCase() throw() {
 String& String::toUpperCase() throw() {
   char* p = getMutableBuffer();
   while (*p != TERMINATOR) {
-    *p = toupper(*p);
+    *p = Traits::toUpper(*p);
     ++p;
   }
   return *this;
@@ -312,17 +312,19 @@ int String::compareTo(const char* str) const throw() {
   return strcmp(getReadOnlyBuffer(), str);
 }
 
-int String::compareToIgnoreCase(const char* l, const char* r) throw() {
-  while (*l && *r) { // continue until end of any string has been reached
-    int result = tolower(*l) - tolower(*r);
-    if (result != 0) { // not equal
-      return result;
+int String::compareToIgnoreCase(const char* left, const char* right) throw() {
+  while (*left && *right) { // continue until end of any string has been reached
+    if (*left != *right) { // not equal
+      int result = Traits::toLower(*left) - Traits::toLower(*right);
+      if (result != 0) { // not equal
+        return result;
+      }
     }
-    ++l;
-    ++r;
+    ++left;
+    ++right;
   }
-  // possible cases: only end of 'l' (less than), only end of 'r' (greater than), end of both (equal)
-  return (tolower(*l) - tolower(*r));
+  // possible cases: only end of 'left' (less than), only end of 'right' (greater than), end of both (equal)
+  return (Traits::toLower(*left) - Traits::toLower(*right));
 }
 
 int String::compareToIgnoreCase(const String& str) const throw() {

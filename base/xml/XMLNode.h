@@ -133,7 +133,7 @@ public:
     Returns the specifies attribute.
   */
   inline const XMLProperty* getProperty(const String& name) const throw() {
-    return const_cast<XMLNode*>(this)->getProperty(name);
+    return const_cast<XMLNode*>(this)->getProperty(name); // TAG: fix this
   }
 
   /**

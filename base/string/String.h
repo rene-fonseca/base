@@ -285,14 +285,14 @@ public:
 //  /**
 //    Returns the first element of the string as a non-modifying iterator.
 //  */
-//  inline ReadIterator getBeginIterator() const throw() {
+//  inline ReadIterator getBeginReadIterator() const throw() {
 //    return elements->getBeginIterator();
 //  }
 //
 //  /**
 //    Returns the end of the string as a non-modifying iterator.
 //  */
-//  inline ReadIterator getEndIterator() const throw() {
+//  inline ReadIterator getEndReadIterator() const throw() {
 //    return elements->getEndIterator();
 //  }
 

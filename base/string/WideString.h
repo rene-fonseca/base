@@ -123,7 +123,7 @@ public:
   /** Specifies the granularity of the capacity. Guaranteed to be greater than 0. */
   static const unsigned int GRANULARITY = 16;
   /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. Unresolved problem: size of int depends on architecture. */
-  static const unsigned int MAXIMUM_LENGTH = ((INT_MAX - sizeof(Traits::TERMINATOR))/GRANULARITY)*GRANULARITY;
+  static const unsigned int MAXIMUM_LENGTH = ((INT_MAX/sizeof(Character) - 1)/GRANULARITY)*GRANULARITY;
 
   typedef ReferenceCountedCapacityAllocator<Character>::Iterator Iterator;
   typedef ReferenceCountedCapacityAllocator<Character>::ReadIterator ReadIterator;
@@ -132,7 +132,8 @@ public:
 private:
 
   /** Default wide string buffer used to avoid multiple allocations of empty string buffers. */
-  static const ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<Character> > DEFAULT_WIDE_STRING_BUFFER;
+//  static const ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<Character> > DEFAULT_BUFFER;
+  static const WideString DEFAULT_STRING;
 
   /**
     Reference to an element within a wide string.

@@ -55,7 +55,7 @@ int entry() {
   return 0;
 }
 
-int main(int argc, const char* argv[], const char *envp[]) {
+int main(int argc, const char* argv[], const char* envp[]) {
   Application app("daemon", argc, argv, envp);
   try {
     return entry();

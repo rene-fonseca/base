@@ -29,13 +29,24 @@ int main() {
 
   fout << "size: " << mii.getSize() << ENDL;
 
-  fout << "Non-modifying enumeration of map (calculate sum of values)" << ENDL;
-  Map<int, int>::ReadEnumerator enu = mii.getReadEnumerator();
-  int sum = 0;
-  while (enu.hasNext()) {
-    sum += *enu.next()->getValue();
+  {
+    fout << "Modifying enumeration of values of map (multiply by 3)" << ENDL;
+    Map<int, int>::ValueEnumerator enu = mii.getValueEnumerator();
+    while (enu.hasNext()) {
+      *enu.next() *= 3;
+    }
+    fout << "mii: " << mii << ENDL;
   }
-  fout << "sum: " << sum << ENDL;
+
+  {
+    fout << "Non-modifying enumeration of map (calculate sum of values)" << ENDL;
+    Map<int, int>::ReadEnumerator enu = mii.getReadEnumerator();
+    int sum = 0;
+    while (enu.hasNext()) {
+      sum += *enu.next()->getValue();
+    }
+    fout << "sum: " << sum << ENDL;
+  }
 
   fout << "Adding associations to map ((1,6), (2,5), (4,2), and (5,1))" << ENDL;
   mii.add(1, 6);

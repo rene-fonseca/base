@@ -96,7 +96,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& val
     
     if (options & MemoryDump::OFFSET) {
       stream << HEX << setWidth(value.offsetDigits) << NOPREFIX << ZEROPAD
-             << ((src - value.memory) + value.offset) << MESSAGE("  ");
+             << (((src - value.memory) + value.offset) & offsetMask) << MESSAGE("  ");
     } else if (options & MemoryDump::ADDRESS) {
       stream << HEX << setWidth(value.offsetDigits) << NOPREFIX << ZEROPAD
              << src << MESSAGE("  ");

@@ -3,10 +3,4 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "InvalidFormat.h"
-
-InvalidFormat::InvalidFormat() {
-}
-
-InvalidFormat::InvalidFormat(const char* message) : Exception(message) {
-}
+#include "Synchronize.h"

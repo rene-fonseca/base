@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "InvalidFormat.h"
+#include "HostNotFound.h"
 
-InvalidFormat::InvalidFormat() {
+HostNotFound::HostNotFound() {
 }
 
-InvalidFormat::InvalidFormat(const char* message) : Exception(message) {
+HostNotFound::HostNotFound(const char* message) : NetworkException(message) {
 }

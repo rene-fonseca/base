@@ -48,7 +48,7 @@
 
       @param value The desired value.
     */
-    explicit inline ReferenceCountedObjectPointer(Pointer value = NULL) throw() : ptr(value) {
+    explicit inline ReferenceCountedObjectPointer(Pointer value = NULL) : ptr(value) {
       if (ptr) {
         ptr->addReferenceToObject();
       }
@@ -92,6 +92,17 @@
         setValue(value);
       }
       return *this;
+    }
+
+    /**
+      Forces a copy to be made of the reference counted object if the object is referenced more than once.
+    */
+    inline void ensureSingleReference() {
+      if (ptr) {
+        if (ptr->getReferencesToObject() > 1) {
+          setValue(new TYPE(*ptr));
+        }
+      }
     }
 
     /**

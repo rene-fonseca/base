@@ -3,32 +3,32 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__INVALID_FORMAT_H
-#define _DK_SDU_MIP__BASE__INVALID_FORMAT_H
+#ifndef _DK_SDU_MIP__BASE_NET__HOST_NOT_FOUND_H
+#define _DK_SDU_MIP__BASE_NET__HOST_NOT_FOUND_H
 
-#include "base/Exception.h"
+#include "NetworkException.h"
 
 /**
-  Invalid format exception is thrown when a string does not comply with a given format.
+  Specifies that the host doesn't exist or couldn't be found.
 
   @author René Møller Fonseca
   @version 1.0
 */
 
-class InvalidFormat : public Exception {
+class HostNotFound : public NetworkException {
 public:
 
   /**
     Initializes the exception object with no message.
   */
-  InvalidFormat();
+  HostNotFound();
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  InvalidFormat(const char* message);
+  HostNotFound(const char* message);
 };
 
 #endif

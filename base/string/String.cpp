@@ -10,10 +10,13 @@
 #define NOTFOUND -1
 #define CAPACITY(desired) ((desired+GRANULARITY-1)/GRANULARITY*GRANULARITY)
 
+template<class TYPE> inline TYPE min(TYPE a, TYPE b) {return (a <= b) ? a : b;};
+template<class TYPE> inline TYPE max(TYPE a, TYPE b) {return (a >= b) ? a : b;};
+
 int String::getLengthOfString(const char* str) const throw() {
   const char* terminator = (const char*)memchr(str, TERMINATOR, MAXIMUM_LENGTH); // find terminator
   if (terminator == NULL) {
-    return -1; // string is not terminated
+    return -1; // string is not terminated or is too long
   }
   return terminator - str;
 }
@@ -34,55 +37,48 @@ void String::setLength(unsigned int length) throw(MemoryException) {
   }
 }
 
+void String::createString(const char* buffer, unsigned int length, unsigned int capacity) throw(MemoryException) {
+  capacity = max(capacity, length + sizeof(TERMINATOR));
+  capacity = max(capacity, DEFAULT_CAPACITY);
+  internal = new StringBuffer(CAPACITY(capacity));
+  len = length;
+  memcpy(internal->getBytes(), buffer, len);
+  internal->getBytes()[len] = TERMINATOR; // terminate
+}
+
+String::String(unsigned int capacity) throw(MemoryException) {
+  createString(NULL, 0, capacity);
+}
+
 String::String(const StringLiteral& str) throw(MemoryException) {
   unsigned int length = str.size - sizeof(TERMINATOR);
   if (length > MAXIMUM_LENGTH) { // maximum length exceeded
     throw MemoryException();
   }
-  internal = new StringBuffer((char*)str.message, str.size); // cast to mutable - but we remember that the buffer must not and cannot be changed
-  len = length;
-}
-
-String::String(unsigned int capacity) throw(MemoryException) {
-  if (capacity == 0) {
-    capacity = sizeof(TERMINATOR);
-  }
-  internal = new StringBuffer(CAPACITY(capacity));
-  len = 0; // empty string
-  internal->getBytes()[len] = TERMINATOR; // terminate
+  createString(str.message, length, DEFAULT_CAPACITY);
 }
 
 String::String(const char* str) throw(MemoryException) {
-  if (str == NULL) {
-    internal = new StringBuffer(CAPACITY(DEFAULT_CAPACITY));
-    len = 0; // empty string
-    internal->getBytes()[len] = TERMINATOR; // terminate
-  } else {
+  if (str != NULL) {
     int length = getLengthOfString(str);
     if (length < 0) { // maximum length exceeded
       throw MemoryException();
     }
-    len = length;
-    internal = new StringBuffer(CAPACITY(len));
-    memcpy(internal->getBytes(), str, len);
-    internal->getBytes()[len] = TERMINATOR; // terminate
+    createString(str, length, DEFAULT_CAPACITY);
+  } else {
+    createString(NULL, 0, DEFAULT_CAPACITY);
   }
 }
 
 String::String(const char* str, unsigned int maximum) throw(MemoryException) {
-  if (str == NULL) {
-    internal = new StringBuffer(CAPACITY(DEFAULT_CAPACITY));
-    len = 0; // empty string
-    internal->getBytes()[len] = TERMINATOR; // terminate
-  } else {
+  if (str != NULL) {
     int length = getLengthOfString(str);
     if (length < 0) { // maximum length exceeded
       throw MemoryException();
     }
-    len = ((unsigned int)length > maximum) ? maximum : length;
-    internal = new StringBuffer(CAPACITY(len));
-    memcpy(internal->getBytes(), str, len);
-    internal->getBytes()[len] = TERMINATOR; // terminate
+    createString(str, min((unsigned int)length, maximum), DEFAULT_CAPACITY);
+  } else {
+    createString(NULL, 0, DEFAULT_CAPACITY);
   }
 }
 
@@ -90,7 +86,7 @@ void String::ensureCapacity(unsigned int capacity) throw(MemoryException) {
   unsigned int minimum = CAPACITY(length() + sizeof(TERMINATOR));
   capacity = CAPACITY(capacity);
   if ((capacity > getCapacity()) && (capacity > minimum)) {
-    prepareForModification(); // we are about to modify the buffer
+    internal.ensureSingleReference(); // we are about to modify the buffer
     internal->setSize(capacity);
   }
 }
@@ -98,7 +94,7 @@ void String::ensureCapacity(unsigned int capacity) throw(MemoryException) {
 void String::optimizeCapacity() throw(MemoryException) {
   unsigned int minimum = CAPACITY(length() + sizeof(TERMINATOR));
   if (getCapacity() > minimum) { // can we reduce the capacity
-    prepareForModification(); // we are about to modify the buffer
+    internal.ensureSingleReference(); // we are about to modify the buffer
     internal->setSize(minimum);
   }
 }
@@ -119,6 +115,10 @@ void String::setChar(unsigned int index, char value) throw(OutOfRange) {
   } else {
     setLength(index);
   }
+}
+
+String::Character String::operator[](unsigned int index) throw(OutOfRange) {
+  return Character(*this, index); // index is checked by getChar() and setChar()
 }
 
 char String::operator[](unsigned int index) const throw(OutOfRange) {

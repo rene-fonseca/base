@@ -9,7 +9,7 @@
 #include "../Object.h"
 
 /**
-  A Reference Counted Object is used to count the number of references to itself. Beware, the ReferenceCountedObject does not do any validation checking. You should always use the template interface PReferenceCountedObject to access a ReferenceCountedObject.
+  A Reference Counted Object is used to count the number of references from ReferenceCountedObjectPointer objects to itself. Beware, the ReferenceCountedObject does not do any validation checking. You should always use the template interface ReferenceCountedObjectPointer to access a ReferenceCountedObject.
 
   @author René Møller Fonseca
   @version 1.0
@@ -26,6 +26,11 @@
       Initializes the object. Initially the object has zero references.
     */
     inline ReferenceCountedObject() throw() : references(0) {}
+
+    /**
+      Copy constructor. Creates a new object with zero references. This is an unusual behaviour for a copy constructor but makes sense since a new object cannot have any references.
+    */
+    inline ReferenceCountedObject(const ReferenceCountedObject& copy) throw() : references(0) {};
 
     /**
       Add one reference to the object.

@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "InvalidFormat.h"
+#include "NetworkException.h"
 
-InvalidFormat::InvalidFormat() {
+NetworkException::NetworkException() {
 }
 
-InvalidFormat::InvalidFormat(const char* message) : Exception(message) {
+NetworkException::NetworkException(const char* message) : Exception(message) {
 }

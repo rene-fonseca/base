@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/net/InetService.h>
 #include <base/ByteOrder.h>
 
@@ -63,7 +64,7 @@ String InetService::getByPort(unsigned short port, const String& protocol) throw
 
 InetService::InetService(const String& name, const String& protocol) throw(ServiceNotFound) {
   if ((port = getByName(name.getElements(), protocol.getElements())) == 0) {
-    throw ServiceNotFound("Unable to resolve service by name");
+    throw ServiceNotFound("Unable to resolve service by name", this);
   }
   this->name = name;
   this->protocol = protocol;
@@ -71,7 +72,7 @@ InetService::InetService(const String& name, const String& protocol) throw(Servi
 
 InetService::InetService(unsigned short port, const String& protocol) throw(ServiceNotFound) {
   if ((name = getByPort(port, protocol.getElements())) == "") {
-    throw ServiceNotFound("Unable to resolve service by port");
+    throw ServiceNotFound("Unable to resolve service by port", this);
   }
   this->port = port;
   this->protocol = protocol;
@@ -103,11 +104,8 @@ const String& InetService::getProtocol() const throw() {
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const InetService& value) {
-  return stream << "class/InetService{"
-                << "name=" << value.name << ","
-                << "port=" << value.port << ","
-                << "protocol=" << value.protocol
-                << "}";
+  FormatOutputStream::PushContext push(stream);
+  return stream << value.name << ' ' << value.port << '/' << value.protocol;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -21,33 +21,6 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  This exception is thrown by the Url class on violations of the RFC 1738
-  standard.
-
-  @short URL exception.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
-*/
-
-class UrlException : public InvalidFormat {
-public:
-
-  /**
-    Initializes the exception object with no message.
-  */
-  inline UrlException() {}
-
-  /**
-    Initializes the exception object.
-
-    @param message The message.
-  */
-  inline UrlException(const char* message) : InvalidFormat(message) {}
-};
-
-
-
-/**
   Implementation of Uniform Resource Locator (URL) as specified by RFC 1738.
   A compact string representation for a resource available via the Internet.
   This class is used to break down a url into its components. The components
@@ -78,6 +51,33 @@ private:
   String port;
   /** The path. */
   String path;
+public:
+  
+  /**
+    This exception is thrown by the Url class on violations of the RFC 1738
+    standard.
+
+    @short URL exception
+    @ingroup exceptions
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    @version 1.0
+  */
+
+  class UrlException : public InvalidFormat {
+  public:
+    
+    /**
+      Initializes the exception object with no message.
+    */
+    inline UrlException() throw() {}
+
+    /**
+      Initializes the exception object.
+      
+      @param message The message.
+    */
+    inline UrlException(const char* message) throw() : InvalidFormat(message) {}
+  };
 protected:
 
   /**

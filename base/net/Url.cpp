@@ -19,11 +19,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class UrlImpl {
 public:
 
-  typedef enum {
+  enum Encode {
     NEVER, // character is not required to be encoded
     RELAXED, // character must be encoded - however, decoding accepts unencoded character
     ALWAYS // character must always be encoded
-  } Encode;
+  };
 
   typedef Encode (*Encoding)(String::Character);
 
@@ -64,12 +64,12 @@ public:
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
-  static inline String encode(const String& str, Encoding encoding = defaultEncoding) throw(UrlException, MemoryException) {
+  static inline String encode(const String& str, Encoding encoding = defaultEncoding) throw(Url::UrlException, MemoryException) {
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
       String::Character ch = *i;
-      assert(ASCIITraits::isASCII(ch), UrlException("Invalid character"));
+      assert(ASCIITraits::isASCII(ch), Url::UrlException("Invalid character"));
       if (encoding(ch) != NEVER) {
         temp += '%';
         temp += ASCIITraits::valueToDigit(ch >> 4);
@@ -81,20 +81,20 @@ public:
     return temp;
   }
 
-  static String decode(const String& str, Encoding encoding, bool strict) throw(UrlException, MemoryException) {
+  static String decode(const String& str, Encoding encoding, bool strict) throw(Url::UrlException, MemoryException) {
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
       String::Character ch = *i;
       if (ch == '%') {
-        assert(end - i >= 2, UrlException("Invalid encoding")); // need two digits
+        assert(end - i >= 2, Url::UrlException("Invalid encoding")); // need two digits
         char high = *++i;
         char low = *++i;
-        assert(ASCIITraits::isHexDigit(high) && ASCIITraits::isHexDigit(low), UrlException("Invalid encoding"));
+        assert(ASCIITraits::isHexDigit(high) && ASCIITraits::isHexDigit(low), Url::UrlException("Invalid encoding"));
         ch = (ASCIITraits::digitToValue(high) << 4) + ASCIITraits::digitToValue(low); // replace with decoded char
       } else {
         Encode encode = encoding(ch);
-        assert(strict ? (encode == NEVER) : (encode <= RELAXED), UrlException("Part contains unencoded character"));
+        assert(strict ? (encode == NEVER) : (encode <= RELAXED), Url::UrlException("Part contains unencoded character"));
       }
       temp += ch;
     }

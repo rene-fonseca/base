@@ -23,6 +23,7 @@
 #include <base/net/InetAddress.h>
 #include <base/Functor.h>
 #include <base/ByteOrder.h>
+#include <base/mathematics/Constants.h>
 #include <math.h>
 
 using namespace base;
@@ -78,13 +79,12 @@ void test() {
   fout << "double [0, -0, 1, -1]: " << static_cast<double>(0) << " " << static_cast<double>(-1e-5000) << " " << static_cast<double>(1) << " " << static_cast<double>(-1) << ENDL;
   fout << "long double [0, -0, 1, -1]: " << 0l << " " << -1e-5000 << " " << 1l << " " << -1l << ENDL;
 
-  fout << base::FIXED << setPrecision(48) << 0.30102999566398119521373889472449l << ' '
-       << base::FIXED << 1.0 << ' '
-       << base::FIXED << 10.5 << ' '
-       << base::FIXED << 149.9 << ENDL;
+  fout << "log10(2): " << setPrecision(36) << constant::LOG102 << EOL
+       << "10.5: " << 10.5 << EOL
+       << "149.9: " << 149.9 << ENDL;
 
   for (int i = -12; i < 22; ++i) {
-    long double temp = 0.30102999566398119521373889472449l * i * i * i * exp(i * log(10.0l));
+    long double temp = constant::LOG102 * i * i * i * exp(i * constant::LN10);
     fout << setWidth(30) << SCIENTIFIC << NECESSARY << temp << " "
          << setWidth(10) << SCIENTIFIC << setPrecision(0) << temp << " "
          << setWidth(20) << ENGINEERING << setRadixPosition(5) << setPrecision(6) << temp << " "

@@ -363,9 +363,9 @@ base_run="./$base_app_temp"
 
 dnl C++ specific
 base_cxx_ext=cpp
-base_cxx_preprocess='${CXXCPP} $CPPFLAGS'
-base_cxx_compile='${CXX} -o $base_obj_temp -c $CXXFLAGS $CPPFLAGS $base_cxx_src $base_cxx_opts'
-base_cxx_link='${CXX} -o $base_app_temp $CXXFLAGS $CPPFLAGS $LDFLAGS $base_cxx_src $base_cxx_opts $LIBS'
+base_cxx_preprocess='${CXXCPP} -I. $CPPFLAGS'
+base_cxx_compile='${CXX} -o $base_obj_temp -c -I. $CPPFLAGS  $CXXFLAGS $base_cxx_src $base_cxx_opts'
+base_cxx_link='${CXX} -o $base_app_temp -I. $CPPFLAGS $CXXFLAGS $LDFLAGS $base_cxx_src $base_cxx_opts $LIBS'
 
 dnl AC_BASE_TRIM(string)
 AC_DEFUN(AC_BASE_TRIM, [`echo $1`])
@@ -935,12 +935,12 @@ AC_BASE_DEFINE(BUILD_HOST, [\"]$ac_base_build_host[\"])
 AC_BASE_DEFINE(BUILD_SYSTEM, [\"]$ac_cv_build[\"])
 AC_BASE_DEFINE(TARGET_SYSTEM, [\"]$ac_cv_target[\"])
 
-dnl The default include paths are not used
-CPPFLAGS='-I${top_srcdir}'"${CPPFLAGS:+ }${CPPFLAGS}"
-
 AC_SUBST(BASE_ADDITIONAL_LIBADD)
 AC_SUBST(BASE_ADDITIONAL_LDFLAGS)
 AC_SUBST(BASE_ADDITIONAL_DEPENDENCIES)
+
+dnl The default include paths are not used
+CPPFLAGS='-I${top_srcdir}'"${CPPFLAGS:+ }${CPPFLAGS}"
 
 dnl Store the symbols
 ac_base_header=base/configuration.h

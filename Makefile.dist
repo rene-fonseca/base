@@ -49,33 +49,26 @@ lendum-gcc-3.0.4: all
 	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" LDFLAGS="-x none" BASE_LIBS="`gcc -print-file-name=libgcc.a` `gcc -print-file-name=libsupc++.a` -lm" ./configure --target=i386-pc-linux --prefix=/usr/local/base --enable-testsuite --enable-debug --enable-regexp=pcre --enable-xml=xmlsoft
 
 lendum-gcc-3.0.4-profiling: all
-	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O3 -g0 -pg -march=i686 -malign-double -fomit-frame-pointer -funroll-loops" LDFLAGS="-x none" BASE_LIBS="`gcc -print-file-name=libgcc.a` `gcc -print-file-name=libsupc++.a` -lm" ./configure --target=i686-pc-linux --prefix=/usr/local/base --enable-testsuite --enable-demangle=v3mv --enable-regexp=pcre --enable-xml=xmlsoft
+	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O3 -g0 -pg -march=i686 -malign-double -fomit-frame-pointer -funroll-loops -fno-delete-null-pointer-checks -fno-math-errno -fexpensive-optimizations" LDFLAGS="-x none" BASE_LIBS="`gcc -print-file-name=libgcc.a` `gcc -print-file-name=libsupc++.a` -lm" ./configure --target=i686-pc-linux --prefix=/usr/local/base --enable-testsuite --enable-regexp=pcre --enable-xml=xmlsoft
 
 lendum-gcc-3.0.4-release: all
-	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O3 -g3 -march=i686 -malign-double -fomit-frame-pointer -funroll-loops" LDFLAGS="-x none" BASE_LIBS="`gcc -print-file-name=libgcc.a` `gcc -print-file-name=libsupc++.a` -lm" ./configure --target=i686-pc-linux --prefix=/usr/local/base --enable-testsuite --enable-debug --enable-regexp=pcre --enable-xml=xmlsoft
+	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O3 -g3 -march=i686 -malign-double -fomit-frame-pointer -funroll-loops -fno-delete-null-pointer-checks -fno-math-errno -fexpensive-optimizations" LDFLAGS="-x none" BASE_LIBS="`gcc -print-file-name=libgcc.a` `gcc -print-file-name=libsupc++.a` -lm" ./configure --target=i686-pc-linux --prefix=/usr/local/base --enable-testsuite --enable-debug --enable-regexp=pcre --enable-xml=xmlsoft
 
-# use -pipe?
-# --target=ultrasparc-sun-sunos??
 falster-gcc-3.0.4: all
-	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-x c++ -ansi -O0 -g3" LDFLAGS="-x none -L/usr/local/gcc-3.0.4/lib" BASE_LIBS="-lsupc++ -lm" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=posix
+	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" LDFLAGS="-x none -L/home/fonseca/gnu/gcc-3.0.4/lib" BASE_LIBS="-lsupc++ -lm" ./configure --target=sparc-sun-solaris --prefix=/usr/local/base --enable-debug --enable-regexp=posix
 
 falster-gcc-3.0.4-release: all
-	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-x c++ -ansi -O3 -g3 -mcpu=ultrasparc -fomit-frame-pointer -funroll-loops" LDFLAGS="-x none -L/usr/local/gcc-3.0.4/lib" BASE_LIBS="-lsupc++ -lm" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=posix
+	CC="/home/fonseca/gnu/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/home/fonseca/gnu/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O3 -g3 -mcpu=ultrasparc -fomit-frame-pointer -funroll-loops -fno-delete-null-pointer-checks -fno-math-errno -fexpensive-optimizations" LDFLAGS="-x none -L/home/fonseca/gnu/gcc-3.0.4/lib" BASE_LIBS="-lsupc++ -lm" ./configure --target=ultrasparc-sun-solaris --prefix=/usr/local/base --enable-debug --enable-regexp=posix
 
-falster-gcc-3.0.4-64bit-release: all
-	CC="/usr/local/gcc-3.0.4/bin/gcc" CFLAGS="-x c" CXX="/usr/local/gcc-3.0.4/bin/gcc" CXXFLAGS="-x c++ -ansi -O3 -g3 -mcpu=ultrasparc -m64 -fomit-frame-pointer -funroll-loops" LDFLAGS="-x none -L/usr/local/gcc-3.0.4/lib" BASE_LIBS="-lsupc++ -lm" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=posix
+falster-gcc-3.1-64bit-release: all
+	CC="/home/fonseca/gnu/gcc-3.1/bin/gcc" CFLAGS="-pipe -x c" CXX="/home/fonseca/gnu/gcc-3.1/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O3 -g3 -mcpu=ultrasparc -m64 -fomit-frame-pointer -funroll-loops -fno-delete-null-pointer-checks -fno-math-errno -fexpensive-optimizations" LDFLAGS="-x none -L/home/fonseca/gnu/gcc-3.1/lib" BASE_LIBS="-lsupc++ -lm" ./configure --target=ultrasparc-sun-solaris --prefix=/usr/local/base --enable-debug --enable-regexp=posix
 
-# --target=mips2-sgi-irix64???
 fyn-gcc-3.0.4: all
+	CC="/home/fonseca/gnu/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/home/fonseca/gnu/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O0 -g3" LDFLAGS="-x none -L/home/fonseca/gnu/gcc-3.0.4/lib" BASE_LIBS="-lsupc++ -lm" ./configure --prefix=/usr/local/base --enable-debug --enable-regexp=posix
 
 fyn-gcc-3.0.4-release: all
+	CC="/home/fonseca/gnu/gcc-3.0.4/bin/gcc" CFLAGS="-pipe -x c" CXX="/home/fonseca/gnu/gcc-3.0.4/bin/gcc" CXXFLAGS="-pipe -x c++ -ansi -O3 -g3 -fomit-frame-pointer -funroll-loops -fno-delete-null-pointer-checks -fno-math-errno -fexpensive-optimizations" LDFLAGS="-x none -L/home/fonseca/gnu/gcc-3.0.4/lib" BASE_LIBS="-lsupc++ -lm" ./configure --prefix=/usr/local/base --enable-debug --enable-regexp=posix
 
-# Builds the framework (both dynamic and static) for target mingw under the
-# Cygwin environment using the GNU Compiler Collection. The libtool-1.4.1
-# package provided by Robert Collins must be installed until libtool-1.5 is
-# released. The variable CC needs to be set properly because libtool uses the
-# value as the linker. The C++ compiler is set to gcc (specified by CXX) since
-# libstdc++ isn't required.
 klampenborg-gcc:
 	CC="gcc" CFLAGS="-pipe -mno-cygwin -mthreads -x c" CXX="gcc" CXXFLAGS="-pipe -mno-cygwin -mthreads -x c++ -ansi -O0 -g3" LDFLAGS="-x none" configure --target=i386-pc-mingw32 --prefix=/usr/local/base --disable-shared --enable-debug --disable-demangle --disable-regexp
 

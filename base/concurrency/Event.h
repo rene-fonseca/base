@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,10 +18,9 @@
 #include <base/OutOfDomain.h>
 #include <base/Overflow.h>
 #include <base/ResourceException.h>
+#include <base/OperatingSystem.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-#else // Unix
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
   #include <pthread.h>
 #endif
 
@@ -30,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Event.
 
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.01
 */
 
@@ -39,7 +38,7 @@ private:
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   /** Event handle. */
-  HANDLE event;
+  OperatingSystem::Handle event;
 #else
   /** Indicates that the event has been signaled. */
   bool signaled;

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Event::Event() throw(ResourceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if ((event = CreateEvent(NULL, true, false, NULL)) == NULL) {
+  if ((event = CreateEvent(0, true, false, 0)) == 0) {
     throw ResourceException("Unable to initialize event");
   }
 #else // pthread
@@ -46,7 +46,7 @@ Event::Event() throw(ResourceException) {
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 
-  if (pthread_cond_init(&condition, NULL)) {
+  if (pthread_cond_init(&condition, 0)) {
     throw ResourceException();
   }
 #endif

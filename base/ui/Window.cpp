@@ -81,8 +81,7 @@ Window::Window(unsigned int flags) throw(UserInterfaceException)
   int blackPixel = ::XBlackPixelOfScreen((Screen*)screenHandle);
   int whitePixel = ::XWhitePixelOfScreen((Screen*)screenHandle);
   
-   WRITE_SOURCE_LOCATION();
- drawableHandle = (void*)::XCreateSimpleWindow(
+  drawableHandle = (void*)::XCreateSimpleWindow(
     (Display*)displayHandle,
     DefaultRootWindow((Display*)displayHandle),
     1, // x
@@ -93,10 +92,9 @@ Window::Window(unsigned int flags) throw(UserInterfaceException)
     blackPixel, // border color
     blackPixel // background
   );
-   ::XFlush((Display*)displayHandle);
- // TAG: detect error and raise exception
-   WRITE_SOURCE_LOCATION();
- 
+  ::XFlush((Display*)displayHandle);
+  // TAG: detect error and raise exception
+  
   ::XSelectInput(
     (Display*)displayHandle,
     (::Window)drawableHandle,
@@ -112,17 +110,27 @@ Window::Window(unsigned int flags) throw(UserInterfaceException)
     LeaveWindowMask |
     PointerMotionMask
   );
-  WRITE_SOURCE_LOCATION();
-  graphicsContextHandle = (void*)::XCreateGC((Display*)displayHandle, (::Window)drawableHandle, 0, 0);
-  ::XSetForeground((Display*)displayHandle, (GC)graphicsContextHandle, whitePixel);
-  WRITE_SOURCE_LOCATION();
+  graphicsContextHandle = (void*)::XCreateGC(
+    (Display*)displayHandle,
+    (::Window)drawableHandle,
+    0,
+    0
+  );
+  ::XSetForeground(
+    (Display*)displayHandle,
+    (GC)graphicsContextHandle,
+    whitePixel
+  );
 #endif // flavor
   construct();
   invalidate();
   update();
 }
 
-Window::Window(const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException)
+Window::Window(
+  const Position& position,
+  const Dimension& dimension,
+  unsigned int flags) throw(UserInterfaceException)
   : GraphicsContext(position, dimension, flags) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   RECT rect;
@@ -206,8 +214,17 @@ Window::Window(const Position& position, const Dimension& dimension, unsigned in
     LeaveWindowMask |
     PointerMotionMask
   );
-  graphicsContextHandle = (void*)::XCreateGC((Display*)displayHandle, (::Window)drawableHandle, 0, 0);
-  ::XSetForeground((Display*)displayHandle, (GC)graphicsContextHandle, whitePixel);
+  graphicsContextHandle = (void*)::XCreateGC(
+    (Display*)displayHandle,
+    (::Window)drawableHandle,
+    0,
+    0
+  );
+  ::XSetForeground(
+    (Display*)displayHandle,
+    (GC)graphicsContextHandle,
+    whitePixel
+  );
 #endif // flavor
   construct();
   invalidate();

@@ -51,7 +51,10 @@ public:
     @param dimension The initial dimension.
     @param flags The flags.
   */
-  Window(const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException);
+  Window(
+    const Position& position,
+    const Dimension& dimension,
+    unsigned int flags) throw(UserInterfaceException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

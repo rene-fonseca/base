@@ -755,8 +755,34 @@ bool WindowImpl::loadModule(bool load) throw() {
       // TAG: need support for connection to any server (e.g. "localhost:0.0")
       Display* display = ::XOpenDisplay(0);
       if (display) {
-        windowImpl::protocolsAtom = ::XInternAtom((Display*)display, "WM_PROTOCOLS", True);
-        windowImpl::atoms[DESTROY_MESSAGE] = ::XInternAtom(display, "WM_DELETE_WINDOW", True);
+//         int numberOfVisuals;
+//         XVisualInfo temp;
+//         temp.depth = 24;
+//         XVisualInfo* info = XGetVisualInfo(display, VisualDepthMask, &temp, &numberOfVisuals);
+//         fout << numberOfVisuals << ENDL;
+
+//         for (unsigned int i = 0; i < numberOfVisuals; ++i) {
+//           fout << "screen:" << info[i].screen << EOL
+//                << "depth:" << info[i].depth << EOL
+//                << "red:" << info[i].red_mask << EOL
+//                << "green:" << info[i].green_mask << EOL
+//                << "blue:" << info[i].blue_mask << EOL
+//                << "map:" << info[i].colormap_size << EOL
+//                << "bits:" << info[i].bits_per_rgb << EOL
+//                << ENDL;
+//         }
+//         XFree(info);
+        
+        windowImpl::protocolsAtom = ::XInternAtom(
+          (Display*)display,
+          "WM_PROTOCOLS",
+          True
+        );
+        windowImpl::atoms[DESTROY_MESSAGE] = ::XInternAtom(
+          display,
+          "WM_DELETE_WINDOW",
+          True
+        );
         windowImpl::atoms[PING_MESSAGE] =
           ::XInternAtom(
             display,
@@ -796,7 +822,10 @@ bool WindowImpl::loadModule(bool load) throw() {
 
 WindowImpl::WindowImpl() throw(UserInterfaceException)
   : displayMode(MODE_WINDOW),
-    lastMousePosition(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM),
+    lastMousePosition(
+      PrimitiveTraits<int>::MINIMUM,
+      PrimitiveTraits<int>::MINIMUM
+    ),
     modifiers(0),
     autorepeat(true),
     scope(false),
@@ -809,7 +838,6 @@ WindowImpl::WindowImpl() throw(UserInterfaceException)
     maximumSize(0, 0),
     screenHandle(0),
     graphicsContextHandle(0) {
-  
   // TAG: keyboard state only for windows which accept focus
   fill<uint8>(keyboardState, getArraySize(keyboardState), 0);
   assert(
@@ -818,9 +846,15 @@ WindowImpl::WindowImpl() throw(UserInterfaceException)
   );
 }
 
-WindowImpl::WindowImpl(const Position& _position, const Dimension& _dimension, unsigned int _flags) throw(UserInterfaceException)
+WindowImpl::WindowImpl(
+  const Position& _position,
+  const Dimension& _dimension,
+  unsigned int _flags) throw(UserInterfaceException)
   : displayMode(MODE_WINDOW),
-    lastMousePosition(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM),
+    lastMousePosition(
+      PrimitiveTraits<int>::MINIMUM,
+      PrimitiveTraits<int>::MINIMUM
+    ),
     modifiers(0),
     autorepeat(true),
     scope(false),
@@ -837,7 +871,8 @@ WindowImpl::WindowImpl(const Position& _position, const Dimension& _dimension, u
     graphicsContextHandle(0) {
   
   fill<uint8>(keyboardState, getArraySize(keyboardState), 0);
-  lastMousePosition = Position(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM);
+  lastMousePosition =
+    Position(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM);
   assert(
     loadModule(true),
     UserInterfaceException("Unable to load module", this)
@@ -1823,7 +1858,8 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
         (event.xclient.data.l[0] == windowImpl::atoms[QUIT_MESSAGE])) {
       return;
     }
-    WindowImpl* window = windowImpl::getWindow((void*)((XAnyEvent*)&event)->window);
+    WindowImpl* window =
+      windowImpl::getWindow((void*)((XAnyEvent*)&event)->window);
     if (!window) {
       continue;
     }
@@ -1831,14 +1867,14 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
     switch (event.type) {
     case ClientMessage:
       if (event.xclient.data.l[0] == windowImpl::atoms[DESTROY_MESSAGE]) {
-        WRITE_SOURCE_LOCATION();
         window->onDestruction();
         window->destroy();
       }
       break;
     case ConfigureNotify:
       {
-        const XConfigureEvent* specificEvent = Cast::pointer<const XConfigureEvent*>(&event);
+        const XConfigureEvent* specificEvent =
+          Cast::pointer<const XConfigureEvent*>(&event);
         const Dimension dimension(specificEvent->width, specificEvent->height);
         if (dimension != window->dimension) {
           window->dimension = dimension;
@@ -1853,7 +1889,8 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
       break;
     case Expose:
       {
-        const XExposeEvent* specificEvent = Cast::pointer<const XExposeEvent*>(&event);
+        const XExposeEvent* specificEvent =
+          Cast::pointer<const XExposeEvent*>(&event);
         // Region(Position(specificEvent->x, specificEvent->y), Dimension(specificEvent->width, specificEvent->height));
         window->onDisplay();
       }
@@ -1867,22 +1904,33 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
     case ButtonPress:
     case ButtonRelease:
       {
-        const XButtonEvent* specificEvent = Cast::pointer<const XButtonEvent*>(&event);
+        const XButtonEvent* specificEvent =
+          Cast::pointer<const XButtonEvent*>(&event);
         const bool pressed = (event.type == ButtonPress);
         unsigned int state = 0;   
-        if ((specificEvent->button == Button1) && pressed || (specificEvent->button != Button1) && (specificEvent->state & Button1Mask)) {
+        if ((specificEvent->button == Button1) && pressed ||
+            (specificEvent->button != Button1) &&
+            (specificEvent->state & Button1Mask)) {
           state |= WindowImpl::Mouse::LEFT;
         }
-        if ((specificEvent->button == Button2) && pressed || (specificEvent->button != Button2) && (specificEvent->state & Button2Mask)) {
+        if ((specificEvent->button == Button2) && pressed ||
+            (specificEvent->button != Button2) &&
+            (specificEvent->state & Button2Mask)) {
           state |= WindowImpl::Mouse::MIDDLE;
         }
-        if ((specificEvent->button == Button3) && pressed || (specificEvent->button != Button3) && (specificEvent->state & Button3Mask)) {
+        if ((specificEvent->button == Button3) && pressed ||
+            (specificEvent->button != Button3) &&
+            (specificEvent->state & Button3Mask)) {
           state |= WindowImpl::Mouse::RIGHT;
         }
-        if ((specificEvent->button == Button4) && pressed || (specificEvent->button != Button4) && (specificEvent->state & Button4Mask)) {
+        if ((specificEvent->button == Button4) && pressed ||
+            (specificEvent->button != Button4) &&
+            (specificEvent->state & Button4Mask)) {
           state |= WindowImpl::Mouse::EXTRA;
         }
-        if ((specificEvent->button == Button5) && pressed || (specificEvent->button != Button5) && (specificEvent->state & Button5Mask)) {
+        if ((specificEvent->button == Button5) && pressed ||
+            (specificEvent->button != Button5) &&
+            (specificEvent->state & Button5Mask)) {
           state |= WindowImpl::Mouse::EXTRA2;
         }
         if (specificEvent->state & ControlMask) {
@@ -2334,7 +2382,8 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
     case VisibilityNotify:
       {
         // TAG: bug VisibilityUnobscured is prefixed with VisibilityPartiallyObscured for X-Win32
-        const XVisibilityEvent* specificEvent = Cast::pointer<const XVisibilityEvent*>(&event);
+        const XVisibilityEvent* specificEvent =
+          Cast::pointer<const XVisibilityEvent*>(&event);
         Visibility visibility;
         switch (specificEvent->state) {
         case VisibilityFullyObscured:
@@ -2351,11 +2400,13 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
           window->visibility = visibility;          
           window->onVisibility(visibility);
         }
+        window->onDisplay();
       }
       break;
     case GravityNotify:
       {
-        const XGravityEvent* specificEvent = Cast::pointer<const XGravityEvent*>(&event);
+        const XGravityEvent* specificEvent =
+          Cast::pointer<const XGravityEvent*>(&event);
         Position position(specificEvent->x, specificEvent->y);
         window->position = position;
         window->onMove(position);
@@ -2453,7 +2504,8 @@ Literal WindowImpl::getMouseButtonName(Mouse::Button button) throw() {
   }
 }
 
-bool WindowImpl::isResponding(unsigned int milliseconds) throw(UserInterfaceException) {
+bool WindowImpl::isResponding(
+  unsigned int milliseconds) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   DWORD_PTR result;
   LRESULT temp = ::SendMessageTimeout(

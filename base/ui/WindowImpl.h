@@ -89,7 +89,10 @@ private:
   unsigned int modifiers;
   /** The autopreat flag. */
   bool autorepeat;
-  /** Flag specifying whether the mouse is in the scope of the client area of the window. */
+  /**
+    Flag specifying whether the mouse is in the scope of the client area of the
+    window.
+  */
   bool scope;
   /** Flag specifying whether the window is active. */
   bool active;
@@ -355,7 +358,7 @@ public:
 #else // unix
   void flush() throw(UserInterfaceException);
 #endif // flavor
-
+  
   /**
     Asynchronous update request.
   */
@@ -384,7 +387,8 @@ public:
     @param position The position.
     @param menu The menu.
   */
-  void displayMenu(const Position& position, const Menu& menu) throw(UserInterfaceException);
+  void displayMenu(
+    const Position& position, const Menu& menu) throw(UserInterfaceException);
 
   /**
     Returns the autorepeat.
@@ -444,19 +448,23 @@ public:
   /**
     Sets the position and dimension of the window.
   */
-  void setRegion(const Position& position, const Dimension& dimension) throw(UserInterfaceException);
+  void setRegion(
+    const Position& position,
+    const Dimension& dimension) throw(UserInterfaceException);
   
   /**
     Sets the minimum size of the window.
   */
-  inline void setMinimumSize(const Dimension& dimension) throw(UserInterfaceException) {
+  inline void setMinimumSize(
+    const Dimension& dimension) throw(UserInterfaceException) {
     minimumSize = dimension;
   }
 
   /**
     Sets the maximum size of the window.
   */
-  inline void setMaximumSize(const Dimension& dimension) throw(UserInterfaceException) {
+  inline void setMaximumSize(
+    const Dimension& dimension) throw(UserInterfaceException) {
     maximumSize = dimension;
   }
   
@@ -477,7 +485,8 @@ public:
     
     @param position The position relative to this window.
   */
-  Position toGlobalPosition(const Position& position) const throw(UserInterfaceException);
+  Position toGlobalPosition(
+    const Position& position) const throw(UserInterfaceException);
   
   /**
     Returns the mouse position.
@@ -487,7 +496,8 @@ public:
   /**
     Sets the mouse position.
   */
-  void setCursorPosition(const Position& position) throw(UserInterfaceException);
+  void setCursorPosition(
+    const Position& position) throw(UserInterfaceException);
 
   /**
     Releases the mouse confinement.
@@ -505,7 +515,9 @@ public:
     @param position The offset of the confinement area.
     @param dimension The dimension of the confinement area.
   */
-  void setCursorConfinement(const Position& position, const Dimension& dimension) throw(UserInterfaceException);
+  void setCursorConfinement(
+    const Position& position,
+    const Dimension& dimension) throw(UserInterfaceException);
 
   /**
     Disable clipping.
@@ -524,7 +536,9 @@ public:
   /**
     Sets the clipping region.
   */
-  void setClipping(const Position& position, const Dimension& dimension) throw(UserInterfaceException);
+  void setClipping(
+    const Position& position,
+    const Dimension& dimension) throw(UserInterfaceException);
   
   /**
     Closes the window.
@@ -642,7 +656,8 @@ public:
   /**
     Returns the state of the specified key.
   */
-  unsigned int getKeyState(unsigned int code) const throw(UserInterfaceException);
+  unsigned int getKeyState(
+    unsigned int code) const throw(UserInterfaceException);
   
   /**
     Returns the keyboard modifiers.
@@ -681,12 +696,14 @@ public:
     @param position The position of the mouse pointer.
     @param buttons The current state of the mouse buttons.
   */
-  virtual void onMouseMove(const Position& position, unsigned int buttons) throw();
+  virtual void onMouseMove(
+    const Position& position, unsigned int buttons) throw();
 
   /**
     Invoked then the mouse pointer enters or exits the scope of the window.
 
-    @param scope Specified whether or not the pointer is in the scope of the window.
+    @param scope Specified whether or not the pointer is in the scope of the
+    window.
   */
   virtual void onMouseScope(bool scope) throw();
 
@@ -697,7 +714,11 @@ public:
     @param button The button that changed state.
     @param event The mouse button event.
   */
-  virtual void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) throw();
+  virtual void onMouseButton(
+    const Position& position,
+    Mouse::Button button,
+    Mouse::Event event,
+    unsigned int state) throw();
 
   /**
     Invoked when the mouse wheel state changes.
@@ -706,7 +727,8 @@ public:
     @param delta The amount of
     @param buttons The current state of the mouse buttons.
   */
-  virtual void onMouseWheel(const Position& position, int delta, unsigned int buttons) throw();
+  virtual void onMouseWheel(
+    const Position& position, int delta, unsigned int buttons) throw();
 
   /**
     Invoked when a key is pressed or released.
@@ -715,7 +737,8 @@ public:
     @param flags Flags describing the key event.
     @param modifiers The current state of the key modifiers (e.g. SHIFT).
   */
-  virtual void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw();
+  virtual void onKey(
+    unsigned int key, unsigned int flags, unsigned int modifiers) throw();
 
   /**
     Invoked continuously when no messages have been queued. The default
@@ -807,8 +830,9 @@ public:
   Dimension getDisplayDimension() throw();
 
   /**
-    Returns true if the window is reponsing within the specified timeout period.
-
+    Returns true if the window is reponsing within the specified timeout
+    period.
+    
     @param milliseconds The timeout period (silently reduced to 999999999).
   */
   bool isResponding(unsigned int milliseconds) throw(UserInterfaceException);

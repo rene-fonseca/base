@@ -13,7 +13,6 @@
 
 #include <base/platforms/features.h>
 #include <base/ui/Menu.h>
-#include <base/NotImplemented.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <windows.h>
@@ -44,7 +43,7 @@ Menu::Menu() throw(MenuException)
   this->handle = new MenuHandle((OperatingSystem::Handle)handle); // TAG: could raise exception
   assert(this->handle.isValid(), MenuException("Unable to create menu", this));
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
 #endif // flavor
 }
 
@@ -57,7 +56,8 @@ unsigned int Menu::getNumberOfItems() const throw(MenuException) {
   int result = ::GetMenuItemCount(menu);
   assert(result >= 0, MenuException(this));
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
+  return 0;
 #endif // flavor
 }
 
@@ -71,7 +71,8 @@ unsigned int Menu::getIdentifier(unsigned int index) const throw(MenuException) 
   assert(::GetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
   return info.wID;
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
+  return 0;
 #endif // flavor
 }
 
@@ -85,7 +86,8 @@ int Menu::getIndex(unsigned int identifier) const throw(MenuException) {
   int index = -1; // TAG: fixme
   return index;
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
+  return 0;
 #endif // flavor
 }
 
@@ -106,7 +108,7 @@ unsigned int Menu::getFlags(unsigned int index) const throw(MenuException) {
   flags |= info.hSubMenu ? Menu::MENU : 0;
   return flags;
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  return 0;
 #endif // flavor
 }
 
@@ -122,7 +124,8 @@ Menu Menu::getMenu(unsigned int index) throw(MenuException) {
   result.handle = new MenuHandle((OperatingSystem::Handle)info.hSubMenu);
   return result;
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
+  return Menu();
 #endif // flavor
 }
 
@@ -135,7 +138,7 @@ void Menu::setEnabled(unsigned int index, bool enabled) throw(MenuException) {
   info.fState = enabled ? MFS_ENABLED : MFS_DISABLED;
   assert(::SetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
 #endif // flavor
 }
 
@@ -148,7 +151,7 @@ void Menu::setChecked(unsigned int index, bool checked) throw(MenuException) {
   info.fState = checked ? MFS_CHECKED : MFS_UNCHECKED;
   assert(::SetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
 #endif // flavor
 }
 
@@ -161,7 +164,7 @@ void Menu::setHighlighted(unsigned int index, bool highlighted) throw(MenuExcept
   info.fState = highlighted ? MFS_HILITE : MFS_UNHILITE;
   assert(::SetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
 #endif // flavor
 }
 
@@ -176,7 +179,7 @@ void Menu::setName(unsigned int index, const String& name) throw(MenuException) 
   info.dwTypeData = (char*)temp;
   assert(::SetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+   // TAG: fixme 
 #endif // flavor
 }
 
@@ -189,7 +192,7 @@ void Menu::setSubmenu(unsigned int identifier, const Menu& menu) throw(MenuExcep
   info.hSubMenu = (HMENU)menu.getHandle(); // TAG: need  to get lock on menu
   assert(::SetMenuItemInfo(nativeMenu, identifier, FALSE, &info), MenuException(this));
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
 #endif // flavor
 }
 
@@ -202,7 +205,7 @@ void Menu::insertSeparator(unsigned int index) throw(MenuException) {
   info.fType = MFT_SEPARATOR;
   assert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
 #endif // flavor
 }
 
@@ -217,7 +220,7 @@ void Menu::appendSeparator() throw(MenuException) {
   info.fType = MFT_SEPARATOR;
   assert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
 #endif // flavor
 }
 
@@ -238,7 +241,7 @@ void Menu::insert(unsigned int index, const String& name, unsigned int identifie
   info.dwTypeData = (char*)temp;
   assert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
 #endif // flavor
 }
 
@@ -261,7 +264,7 @@ void Menu::append(const String& name, unsigned int identifier, unsigned int flag
   info.dwTypeData = (char*)temp;
   assert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
 #endif // flavor
 }
 
@@ -284,7 +287,7 @@ void Menu::appendMenu(const String& name, const Menu& menu, unsigned int flags) 
   info.dwTypeData = (char*)temp;
   assert(::InsertMenuItem(nativeMenu, index, TRUE, &info), MenuException(this));
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
 #endif // flavor
 }
 
@@ -293,7 +296,7 @@ void Menu::remove(unsigned int index) throw(MenuException) {
   HMENU menu = (HMENU)handle->getHandle();
   assert(::DeleteMenu(menu, index, MF_BYPOSITION), MenuException(this));
 #else // unix
-  throw NotImplemented(Type::getType<Menu>());
+  // TAG: fixme
 #endif // flavor
 }
 

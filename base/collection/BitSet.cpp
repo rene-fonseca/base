@@ -39,7 +39,7 @@ BitSet::BitSet() throw() : elements(new ReferenceCountedCapacityAllocator<unsign
 BitSet::BitSet(unsigned int s, bool value) throw() :
   elements(new ReferenceCountedCapacityAllocator<unsigned long>(getNumberOfElements(size))),
   size(s) {
-  fill<unsigned long>(getElements(), getNumberOfElements(size), value ? ~(unsigned long)0 : 0);
+  fill<unsigned long>(getElements(), getNumberOfElements(size), value ? ~0UL : 0);
   reinitialize();
 }
 
@@ -207,7 +207,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value) 
 
   const unsigned long* current = value.getElements() + value.getSize();
   unsigned long count = value.getSize();
-  unsigned long mask = ((unsigned long)1) << (value.getSize() % (sizeof(unsigned long) * 8)); // most significant first
+  unsigned long mask = 1UL << (value.getSize() % (sizeof(unsigned long) * 8)); // most significant first
 
   while (count) {
     unsigned long value = *current;
@@ -217,7 +217,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value) 
       mask >>= 1;
       --count;
     }
-    mask = ((unsigned long)1) << (sizeof(unsigned long) * 8 - 1); // most significant first
+    mask = 1UL << (sizeof(unsigned long) * 8 - 1); // most significant first
   }
 
   return stream << buffer.getString();

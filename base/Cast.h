@@ -110,7 +110,7 @@ private:
       union {
         ORIGINAL* original;
         RESULT* result;
-      } temp;
+      } _DK_SDU_MIP__BASE__PACKED temp;
       temp.original = value;
       return temp.result;
     }
@@ -123,7 +123,7 @@ private:
       union {
         const ORIGINAL* original;
         const RESULT* result;
-      } temp;
+      } _DK_SDU_MIP__BASE__PACKED temp;
       temp.original = value;
       return temp.result;
     }
@@ -136,9 +136,9 @@ private:
       union {
         volatile ORIGINAL* original;
         volatile RESULT* result;
-      };
-      original = value;
-      return result;
+      } _DK_SDU_MIP__BASE__PACKED temp;
+      temp.original = value;
+      return temp.result;
     }
   };
   
@@ -149,9 +149,9 @@ private:
       union {
         volatile const ORIGINAL* original;
         volatile const RESULT* result;
-      };
-      original = value;
-      return result;
+      } _DK_SDU_MIP__BASE__PACKED temp;
+      temp.original = value;
+      return temp.result;
     }
   };
   
@@ -170,9 +170,9 @@ private:
       union {
         ORIGINAL* original;
         RESULT* result;
-      };
-      original = value;
-      return result;
+      } _DK_SDU_MIP__BASE__PACKED temp;
+      temp.original = value;
+      return temp.result;
     }
   };
   
@@ -186,9 +186,9 @@ private:
       union {
         ORIGINAL* original;
         RESULT* result;
-      };
-      original = value;
-      return result;
+      } _DK_SDU_MIP__BASE__PACKED temp;
+      temp.original = value;
+      return temp.result;
     }
   };
   
@@ -199,9 +199,9 @@ private:
       union {
         const ORIGINAL* original;
         const RESULT* result;
-      };
-      original = value;
-      return result;
+      } _DK_SDU_MIP__BASE__PACKED temp;
+      temp.original = value;
+      return temp.result;
     }
   };
 public:
@@ -428,7 +428,7 @@ public:
       union {
         ARGUMENT argument;
         RESULT result; // make sure we do get an access violation in the cast
-      } temp;
+      } _DK_SDU_MIP__BASE__PACKED temp;
       temp.argument = value;
       return *reinterpret_cast<RESULT*>(&temp.argument); // partial garbage
     }
@@ -439,7 +439,7 @@ public:
       union {
         const ARGUMENT argument;
         const RESULT result; // make sure we do get an access violation in the cast
-      } temp;
+      } _DK_SDU_MIP__BASE__PACKED temp;
       temp.argument = value;
       return *reinterpret_cast<const RESULT*>(&temp.argument); // partial garbage
     }

@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Type identity
   @see TypeInfo
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0.1
+  @version 1.0.2
 */
 
 class Type {
@@ -126,7 +126,7 @@ public:
 
     @return True if both types are uninitialized.
   */
-  bool operator==(const Type& eq) const throw() {
+  inline bool operator==(const Type& eq) const throw() {
     return *type == *eq.type;
   }
 
@@ -135,7 +135,7 @@ public:
 
     @return False if both types are uninitialized.
   */
-  bool operator!=(const Type& eq) const throw() {
+  inline bool operator!=(const Type& eq) const throw() {
     return *type != *eq.type;
   }
 
@@ -146,7 +146,7 @@ public:
 
     @see TypeInfo
   */
-  const char* getLocalName() const throw() {
+  inline const char* getLocalName() const throw() {
     return type->name();
   }
 };

@@ -93,7 +93,7 @@ namespace alloc {
   */
   inline void operator delete(void* memory) throw(MemoryException) {
     if (!DynamicMemory::release(memory)) {
-      throw MemoryException(); // TAG: is this allowed
+      throw MemoryException();
     }
   }
   
@@ -117,7 +117,7 @@ namespace alloc {
   */
   inline void operator delete[](void* memory) throw(MemoryException) {
     if (!DynamicMemory::release(memory)) {
-      throw MemoryException(); // TAG: is this allowed
+      throw MemoryException();
     }
   }
 }; // end of namespace - alloc

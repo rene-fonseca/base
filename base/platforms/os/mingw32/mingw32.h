@@ -16,7 +16,6 @@
 
 #include <base/features.h>
 
-#undef _DK_SDU_MIP__BASE__COMPILER_ISOC_FLOORL
-#define _DK_SDU_MIP__BASE__COMPILER_ISOC_FLOORL isoc::floor
+#define _DK_SDU_MIP__BASE__REDIR_ISOC_FLOORL isoc::floor
 
 #endif

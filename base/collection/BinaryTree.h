@@ -609,7 +609,7 @@ public:
   */
   BinaryTree& operator=(const BinaryTree& eq) throw() {
     elements = eq.elements;
-    return this;
+    return *this;
   }
   
   /**

@@ -100,7 +100,8 @@ public:
     Assignment of ordered binary tree to ordered binary tree.
   */
   OrderedBinaryTree& operator=(const OrderedBinaryTree& eq) throw() {
-    return BinaryTree<TYPE>::operator=(eq);
+    BinaryTree<TYPE>::operator=(eq);
+    return *this;
   }
 
   /**

@@ -171,14 +171,14 @@ public:
   /**
     Returns the first element of the allocator as a non-modifying iterator.
   */
-  inline ReadIterator getBeginIterator() const throw() {
+  inline ReadIterator getBeginReadIterator() const throw() {
     return ReadIterator(getElements());
   }
 
   /**
     Returns the end of the allocator as a non-modifying iterator.
   */
-  inline ReadIterator getEndIterator() const throw() {
+  inline ReadIterator getEndReadIterator() const throw() {
     return ReadIterator(getElements() + getSize());
   }
 

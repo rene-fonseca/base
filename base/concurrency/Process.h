@@ -17,38 +17,52 @@
 #include <base/Object.h>
 #include <base/string/String.h>
 #include <base/Exception.h>
+#include <base/NotSupported.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-typedef Exception ProcessException;
-
 /**
-  Process.
+  Process manipulation class.
 
+  @short Process
   @ingroup concurrency
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
 class Process : public Object {
-public: 
+public:
 
+  /**
+    Exception raised by the Process class.
+
+    @ingroup exceptions concurrency
+  */
+  class ProcessException : public Exception {
+  public:
+    
+    ProcessException() throw() {}
+    ProcessException(const char* message) throw() : Exception(message) {}
+    ProcessException(Type type) throw() : Exception(type) {}
+    ProcessException(const char* message, Type type) throw() : Exception(message, type) {}
+  };
+  
   /**
     Returns this process.
   */
   static Process getProcess() throw();
-
+  
   /**
     Returns parent process.
   */
   static Process getParentProcess() throw();
-
+  
   /**
     Forks a child process.
 
     @return The parent returns the child process. The child returns a process with id 0.
   */
-  static Process fork() throw(Exception);
+  static Process fork() throw(NotSupported, ProcessException);
 
   /**
     Returns the priority of the process.
@@ -62,8 +76,10 @@ public:
  
   /**
     Executes the specified application.
+
+    @return The child process.
   */
-  static void execute(const String& app) throw();
+  static Process execute(const String& app) throw(ProcessException);
 private:
 
   /** The host local id of the process. */
@@ -93,14 +109,23 @@ public:
   unsigned int getId() throw();
 
   /**
-    Waits for the process to terminate.
+    Returns true if the process is alive.
   */
-  void wait() throw();
+  bool isAlive() const throw(ProcessException);
+  
+  /**
+    Waits for the process to terminate.
+
+    @return The exit code (Application::EXIT_CODE_INVALID if exit code is not available).
+  */
+  int wait() const throw(ProcessException);
 
   /**
-    Sends a signal to the process.
+    Requests the process to terminate.
+    
+    @param force Specifies whether to force the process to terminate. The default is false.
   */
-  void kill() throw();
+  void terminate(bool force = false) throw(ProcessException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

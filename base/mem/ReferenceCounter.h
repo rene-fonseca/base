@@ -206,7 +206,7 @@ public:
     Returns the reference counted object.
   */
   inline Reference operator*() const throw(NullPointer) {
-    assert(ptr, NullPointer());
+    assert(ptr, NullPointer(this));
     return *ptr;
   }
 

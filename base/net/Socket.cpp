@@ -1547,9 +1547,9 @@ unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocki
       case WSAEWOULDBLOCK: // no data available (only in nonblocking mode)
         return bytesRead; // try later
       default:
-        throw bindError(
+        throw bindCause(
           NetworkException("Unable to read from socket", this),
-          internal::SocketImpl::getNativeError()
+          internal::SocketImpl::getCause()
         );
       }
     }
@@ -1567,9 +1567,9 @@ unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocki
       case EAGAIN: // no data available (only in nonblocking mode)
         return bytesRead; // try later
       default:
-        throw bindError(
+        throw bindCause(
           NetworkException("Unable to read from socket", this),
-          internal::SocketImpl::getNativeError()
+          internal::SocketImpl::getCause()
         );
       }
     }
@@ -1609,9 +1609,9 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
       case WSAESHUTDOWN:
         throw BrokenStream(this);
       default:
-        throw bindError(
+        throw bindCause(
           NetworkException("Unable to write to socket", this),
-          internal::SocketImpl::getNativeError()
+          internal::SocketImpl::getCause()
         );
       }
     }
@@ -1631,9 +1631,9 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
       case EPIPE:
         throw BrokenStream(this);
       default:
-        throw bindError(
+        throw bindCause(
           NetworkException("Unable to write to socket", this),
-          internal::SocketImpl::getNativeError()
+          internal::SocketImpl::getCause()
         );
       }
     }
@@ -1653,9 +1653,9 @@ unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& a
   SocketAddress sa;
   socklen sl = sa.getSize();
   if ((result = ::recvfrom((int)socket->getHandle(),  buffer, size, 0, sa.getValue(), &sl)) == -1) {
-    throw bindError(
+    throw bindCause(
       NetworkException("Unable to receive from", this),
-      internal::SocketImpl::getNativeError()
+      internal::SocketImpl::getCause()
     );
   }
   address = sa.getAddress();
@@ -1667,9 +1667,9 @@ unsigned int Socket::sendTo(const char* buffer, unsigned int size, const InetAdd
   int result = 0;
   const SocketAddress sa(address, port);
   if ((result = ::sendto((int)socket->getHandle(), buffer, size, 0, sa.getValue(), sa.getSize())) == -1) {
-    throw bindError(
+    throw bindCause(
       NetworkException("Unable to send to", this),
-      internal::SocketImpl::getNativeError()
+      internal::SocketImpl::getCause()
     );
   }
   return result;

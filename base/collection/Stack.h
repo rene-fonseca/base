@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -106,7 +106,7 @@ protected:
     */
     inline TYPE peek(unsigned int index = 0) const throw(OutOfRange) {
       if (index >= getSize()) {
-        throw OutOfRange();
+        throw OutOfRange(this);
       }
       const StackNode* node = top;
       while (index) {
@@ -142,7 +142,7 @@ protected:
     */
     inline TYPE pop() throw(OutOfRange) {
       if (isEmpty()) {
-        throw OutOfRange();
+        throw OutOfRange(this);
       }
       StackNode* temp = top;
       top = top->getNext();
@@ -163,7 +163,7 @@ protected:
     */
     inline void pop(unsigned int count) throw(OutOfRange) {
       if (count > getSize()) {
-        throw OutOfRange();
+        throw OutOfRange(this);
       }
       while (count) {
         StackNode* temp = top;

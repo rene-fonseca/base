@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -83,7 +83,7 @@ RegExp::Substring RegExp::match(const String& value, unsigned int start) throw(R
     } else if (code == REG_NOMATCH) {
       return Substring();
     } else {
-      throw RegExpException(); // should never happen
+      throw RegExpException(this); // should never happen
     }
   #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
     int offsets[3]; // yes 3 is correct - pcre_exec uses offsets[2] for temp. storage
@@ -92,9 +92,9 @@ RegExp::Substring RegExp::match(const String& value, unsigned int start) throw(R
       if (code == PCRE_ERROR_NOMATCH) {
         return Substring();
       } else if (code == PCRE_ERROR_NOMEMORY) {
-        throw MemoryException();
+        throw MemoryException(this);
       } else {
-        throw RegExpException(); // should never happen
+        throw RegExpException(this); // should never happen
       }
     }
     return Substring(offsets[0], offsets[1]);
@@ -117,7 +117,7 @@ RegExp::Substring RegExp::match(const String& value, Array<Substring>& result, u
     } else if (code == REG_NOMATCH) {
       return Substring();
     } else {
-      throw RegExpException(); // should never happen
+      throw RegExpException(this); // should never happen
     }
   #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
     unsigned int size = result.getSize() * 3;
@@ -127,9 +127,9 @@ RegExp::Substring RegExp::match(const String& value, Array<Substring>& result, u
       if (code == PCRE_ERROR_NOMATCH) {
         return Substring();
       } else if (code == PCRE_ERROR_NOMEMORY) {
-        throw MemoryException();
+        throw MemoryException(this);
       } else {
-        throw RegExpException(); // should never happen
+        throw RegExpException(this); // should never happen
       }
     }
     for (int i = 1; i < code; ++i) {

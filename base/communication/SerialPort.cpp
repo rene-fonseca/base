@@ -113,7 +113,7 @@ SerialPort::SerialPort(const String& _name) throw(CommunicationsException) : nam
                                FILE_FLAG_OVERLAPPED, // overlapped I/O
                                0 // must be 0 for comm devices
   );
-  assert(handle != OperatingSystem::INVALID_HANDLE, CommunicationsException("Unable to open serial port"));
+  assert(handle != OperatingSystem::INVALID_HANDLE, CommunicationsException("Unable to open serial port", this));
   this->handle = new Handle(handle);
 #endif // flavour
 }
@@ -161,7 +161,7 @@ unsigned int SerialPort::getParity() const throw(CommunicationsException) {
   case SPACEPARITY:
     return Parity::SPACE;
   default:
-    throw UnexpectedFailure(); // we should never end up here
+    throw UnexpectedFailure(this); // we should never end up here
   }
 #endif // flavour
 }
@@ -178,7 +178,7 @@ unsigned int SerialPort::getStopBits() const throw(CommunicationsException) {
   case TWOSTOPBITS:
     return StopBits::TWO;
   default:
-    throw UnexpectedFailure(); // we should never end up here
+    throw UnexpectedFailure(this); // we should never end up here
   }
 #endif // flavour
 }
@@ -369,7 +369,7 @@ unsigned int SerialPort::read(char* buffer, unsigned int bytesToRead, bool nonbl
       if (::GetLastError() == ERROR_BROKEN_PIPE) {
         result = 0;
       } else {
-        throw IOException("Unable to read from object");
+        throw IOException("Unable to read from object", this);
       }
     }
 #else // unix
@@ -381,13 +381,13 @@ unsigned int SerialPort::read(char* buffer, unsigned int bytesToRead, bool nonbl
       case EAGAIN: // no data available (only in non-blocking mode)
 //        return bytesRead; // try later
       default:
-        throw IOException("Unable to read from object");
+        throw IOException("Unable to read from object", this);
       }
     }
 #endif // flavour
     if (result == 0) { // has end been reached
       if (bytesToRead > 0) {
-        throw EndOfFile(); // attempt to read beyond end of stream
+        throw EndOfFile(this); // attempt to read beyond end of stream
       }
     }
     bytesRead += result;
@@ -405,7 +405,7 @@ unsigned int SerialPort::write(const char* buffer, unsigned int bytesToWrite, bo
     DWORD result;
     BOOL success = ::WriteFile(handle->getHandle(), buffer, bytesToWrite, &result, 0);
     if (!success) {
-      throw IOException("Unable to write to object");
+      throw IOException("Unable to write to object", this);
     }
 #else // unix
     int result = ::write(handle->getHandle(), buffer, minimum<unsigned int>(bytesToWrite, SSIZE_MAX));
@@ -416,7 +416,7 @@ unsigned int SerialPort::write(const char* buffer, unsigned int bytesToWrite, bo
       case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
 //      return 0; // try later
       default:
-        throw IOException("Unable to write to object");
+        throw IOException("Unable to write to object", this);
       }
     }
 #endif // flavour

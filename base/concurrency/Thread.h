@@ -103,7 +103,7 @@ public:
     
     @short Thread exception
     @ingroup concurrency exceptions
-    @autthor Rene Moeller Fonseca
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class ThreadException : public Exception {

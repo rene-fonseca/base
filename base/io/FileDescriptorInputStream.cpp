@@ -102,7 +102,7 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException) {
 
 unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(IOException) {
   // TAG: currently always blocks
-  assert(!end, EndOfFile());
+  assert(!end, EndOfFile(this));
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
@@ -131,7 +131,7 @@ unsigned int FileDescriptorInputStream::read(char* buffer, unsigned int bytesToR
     if (result == 0) { // has end been reached
       end = true;
       if (bytesToRead > 0) {
-        throw EndOfFile(); // attempt to read beyond end of stream
+        throw EndOfFile(this); // attempt to read beyond end of stream
       }
     }
     bytesRead += result;

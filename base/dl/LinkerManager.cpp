@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,7 +29,7 @@ LinkerManager* LinkerManager::getManager() throw() {
 }
 
 LinkerManager::LinkerManager() throw(SingletonException) : registratedModule(0) {
-  assert(linkerManager == 0, SingletonException());
+  assert(linkerManager == 0, SingletonException(this));
   linkerManager = this;
 }
 

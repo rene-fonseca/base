@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,7 +20,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 template<class TYPE>
 Vector<TYPE>::Vector(unsigned int size) throw(OutOfDomain) {
   if (size < 1) {
-    throw OutOfDomain();
+    throw OutOfDomain(this);
   }
   setSize(size);
 }
@@ -28,7 +28,7 @@ Vector<TYPE>::Vector(unsigned int size) throw(OutOfDomain) {
 template<class TYPE>
 Vector<TYPE>::Vector(const TYPE elements[], unsigned int size) throw(OutOfDomain) {
   if (size < 1) {
-    throw OutOfDomain();
+    throw OutOfDomain(this);
   }
   setSize(size);
   copy<TYPE>(getElements(), elements, getSize());
@@ -45,7 +45,7 @@ Vector<TYPE>& Vector<TYPE>::operator=(const Vector& eq) throw(MemoryException) {
 template<class TYPE>
 TYPE Vector<TYPE>::getAt(unsigned int index) const throw(OutOfRange) {
   if (index >= getSize()) {
-    throw OutOfRange();
+    throw OutOfRange(this);
   }
   return getReadOnlyElements()[index];
 }
@@ -53,7 +53,7 @@ TYPE Vector<TYPE>::getAt(unsigned int index) const throw(OutOfRange) {
 template<class TYPE>
 void Vector<TYPE>::setAt(unsigned int index, const TYPE& value) throw(OutOfRange) {
   if (index >= getSize()) {
-    throw OutOfRange();
+    throw OutOfRange(this);
   }
   getElements()[index] = value;
 }
@@ -83,7 +83,7 @@ Vector<TYPE>& Vector<TYPE>::negate() throw() {
 template<class TYPE>
 Vector<TYPE>& Vector<TYPE>::add(const Vector<TYPE>& value) throw(IncompatibleVectors) {
   if (value.getSize() != getSize()) {
-    throw IncompatibleVectors();
+    throw IncompatibleVectors(this);
   }
   transformByBinary<TYPE>(getElements(), value.getReadOnlyElements(), getSize(), Add<TYPE>());
   return *this;
@@ -92,7 +92,7 @@ Vector<TYPE>& Vector<TYPE>::add(const Vector<TYPE>& value) throw(IncompatibleVec
 template<class TYPE>
 Vector<TYPE>& Vector<TYPE>::subtract(const Vector<TYPE>& value) throw(IncompatibleVectors) {
   if (value.getSize() != getSize()) {
-    throw IncompatibleVectors();
+    throw IncompatibleVectors(this);
   }
   transformByBinary<TYPE>(getElements(), value.getReadOnlyElements(), getSize(), Subtract<TYPE>());
   return *this;
@@ -133,7 +133,7 @@ TYPE Vector<TYPE>::norm() const throw() {
 template<class TYPE>
 bool Vector<TYPE>::operator==(const Vector& value) const throw(IncompatibleVectors) {
   if (value.getSize() != getSize()) {
-    throw IncompatibleVectors();
+    throw IncompatibleVectors(this);
   }
   return equal(getReadOnlyElements(), value.getReadOnlyElements(), getSize());
 }

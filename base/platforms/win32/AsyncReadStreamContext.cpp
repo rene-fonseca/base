@@ -60,14 +60,13 @@ namespace win32 {
         selfReference = 0; // release destruction lock (do NOT access state hereafter)
       } else {
         selfReference = 0; // release destruction lock (do NOT access state hereafter)
-        throw IOException();
+        throw IOException(this);
       }
     }
   }
 
   AsyncReadStreamContext::~AsyncReadStreamContext() throw(AsynchronousException) {
-    assert((flags & AsynchronousReadCompletion::COMPLETED) != 0, AsynchronousException());
-    Trace::message(__PRETTY_FUNCTION__);
+    assert((flags & AsynchronousReadCompletion::COMPLETED) != 0, AsynchronousException(this));
   }
   
 }; // win32 namespace

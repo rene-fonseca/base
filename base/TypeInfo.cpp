@@ -144,7 +144,7 @@ public:
       }
     } else if (specialName()) {
     } else {
-      throw InvalidFormat();
+      throw InvalidFormat(this);
     }
   }
 
@@ -266,7 +266,7 @@ public:
         } else if (operatorName()) {
         } else if (constructorAndDestructorName()) {
         } else {
-          throw InvalidFormat();
+          throw InvalidFormat(this);
         }
         if (templateArguments()) {
           addCandidate(begin);

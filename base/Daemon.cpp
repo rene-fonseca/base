@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -207,9 +207,9 @@ Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) 
 /*
 void Daemon::start(const Array<String>& arguments) throw(DaemonException) {
   SC_HANDLE manager = ::OpenSCManager(0, 0, 0);
-  assert(manager, DaemonException());
+  assert(manager, DaemonException(this));
   SC_HANDLE service = ::OpenService(manager, application->getFormalName(), SERVICE_START);
-  assert(service, DaemonException());
+  assert(service, DaemonException(this));
   const char* argumentBuffer[arguments.getSize()];
   for (unsigned int i = arguments.getSize(); i > 0;) {
     --i;
@@ -222,7 +222,7 @@ void Daemon::start(const Array<String>& arguments) throw(DaemonException) {
 
 void Daemon::stop() throw(DaemonException) {
   SC_HANDLE manager = ::OpenSCManager(0, 0, 0);
-  assert(manager, DaemonException());
+  assert(manager, DaemonException(this));
   SC_HANDLE service = ::OpenService(manager, 0, SERVICE_STOP);
   if (service) {
     SERVICE_STATUS status;
@@ -234,9 +234,9 @@ void Daemon::stop() throw(DaemonException) {
 
 void Daemon::uninstall() throw(DaemonException) {
   SC_HANDLE manager = ::OpenSCManager(0, 0, 0);
-  assert(manager, DaemonException());
+  assert(manager, DaemonException(this));
   SC_HANDLE service = ::OpenService(manager, 0, SERVICE_DELETE);
-  assert(service, DaemonException());
+  assert(service, DaemonException(this));
   ::DeleteService(service);
   ::CloseServiceHandle(service);
   ::CloseServiceHandle(manager);

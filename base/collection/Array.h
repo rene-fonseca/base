@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -261,7 +261,7 @@ public:
     @param value The value to be inserted.
   */
   void insert(unsigned int index, const Value& value) throw(OutOfRange, MemoryException) {
-    assert(index <= getSize(), OutOfRange());
+    assert(index <= getSize(), OutOfRange(this));
     setSize(getSize() + 1);
     Value* elements = getElements(); // size must be set before
     move(elements + index + 1, elements + index, getSize() - index);
@@ -274,7 +274,7 @@ public:
     @param index The index of the element to be removed.
   */
   void remove(unsigned int index) throw(OutOfRange) {
-    assert(index < getSize(), OutOfRange());
+    assert(index < getSize(), OutOfRange(this));
     Value* elements = getElements(); // size must be set after
     move(elements + index, elements + index + 1, getSize() - index - 1);
     setSize(getSize() - 1);
@@ -294,7 +294,7 @@ public:
     @param index The index of the element.
   */
   Value getAt(unsigned int index) const throw(OutOfRange) {
-    assert(index < getSize(), OutOfRange());
+    assert(index < getSize(), OutOfRange(this));
     return getElements()[index];
   }
 
@@ -305,7 +305,7 @@ public:
     @param value The desired value.
   */
   void setAt(unsigned int index, const Value& value) throw(OutOfRange) {
-    assert(index < getSize(), OutOfRange());
+    assert(index < getSize(), OutOfRange(this));
     getElements()[index] = value;
   }
 

@@ -57,13 +57,12 @@ namespace win32 {
     if (!result) {
       //DWORD lastError = ::GetLastError();
       selfReference = 0; // release destruction lock (do NOT access state hereafter)
-      throw IOException();
+      throw IOException(this);
     }
   }
 
   AsyncWriteFileContext::~AsyncWriteFileContext() throw(AsynchronousException) {
-    assert((flags & AsynchronousWriteCompletion::COMPLETED) != 0, AsynchronousException());
-    Trace::message(__PRETTY_FUNCTION__);
+    assert((flags & AsynchronousWriteCompletion::COMPLETED) != 0, AsynchronousException(this));
   }
   
 }; // win32 namespace

@@ -99,21 +99,21 @@ ExpressionProvider::ExpressionProvider() throw() {
 
 void ExpressionProvider::registerConstant(const char* name, unsigned int id) throw(AmbiguousRegistration) {
   if (identifiers.isKey(name)) {
-    throw AmbiguousRegistration();
+    throw AmbiguousRegistration(this);
   }
   identifiers[name] = makeConstantNode(id);
 }
 
 void ExpressionProvider::registerVariable(const char* name, unsigned int id) throw(AmbiguousRegistration) {
   if (identifiers.isKey(name)) {
-    throw AmbiguousRegistration();
+    throw AmbiguousRegistration(this);
   }
   identifiers[name] = makeVariableNode(id);
 }
 
 void ExpressionProvider::registerFunction(const char* name, unsigned int id, unsigned int arguments) throw(AmbiguousRegistration) {
   if (identifiers.isKey(name)) {
-    throw AmbiguousRegistration();
+    throw AmbiguousRegistration(this);
   }
   identifiers[name] = makeFunctionNode(id, arguments);
 }

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -52,12 +52,12 @@ BitSet& BitSet::operator=(const BitSet& eq) throw() {
 }
 
 bool BitSet::getAt(unsigned int index) const throw(OutOfRange) {
-  assert(index < size, OutOfRange());
+  assert(index < size, OutOfRange(this));
   return (getElements()[getElementIndex(index)]) & getBitMask(index);
 }
 
 void BitSet::setAt(unsigned int index, bool value) throw(OutOfRange) {
-  assert(index < size, OutOfRange());
+  assert(index < size, OutOfRange(this));
   if (value) {
     getElements()[getElementIndex(index)] |= getBitMask(index); // set
   } else {
@@ -72,7 +72,7 @@ BitSet& BitSet::set() throw() {
 }
 
 BitSet& BitSet::set(unsigned int index) throw(OutOfRange) {
-  assert(index < size, OutOfRange());
+  assert(index < size, OutOfRange(this));
   getElements()[getElementIndex(index)] |= getBitMask(index);
   return *this;
 }
@@ -84,7 +84,7 @@ BitSet& BitSet::reset() throw() {
 }
 
 BitSet& BitSet::reset(unsigned int index) throw(OutOfRange) {
-  assert(index < size, OutOfRange());
+  assert(index < size, OutOfRange(this));
   getElements()[getElementIndex(index)] &= ~getBitMask(index);
   return *this;
 }
@@ -100,7 +100,7 @@ BitSet& BitSet::flip() throw() {
 }
 
 BitSet& BitSet::flip(unsigned int index) throw(OutOfRange) {
-  assert(index < size, OutOfRange());
+  assert(index < size, OutOfRange(this));
   getElements()[getElementIndex(index)] ^= getBitMask(index);
   return *this;
 }

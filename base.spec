@@ -23,7 +23,7 @@ Name: base-framework
 Version: 0.9.1
 Release: 1
 License: GPL
-Source: %{name}-%{version}-%{release}.tar.bz2
+Source: %{name}-%{version}.tar.bz2
 Url: http://www.mip.sdu.dk/~fonseca/base
 Vendor: Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 Packager: Rene Moeller Fonseca <fonseca@mip.sdu.dk>

@@ -171,39 +171,44 @@ String FileSystem::getPath(const String& base, const String& relative) throw() {
 }
 
 String FileSystem::getComponent(const String& path, Component component) throw(FileSystemException) {
-  throw NotImplemented(Type::getType<FileSystem>());
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  int forward = path.lastIndexOf('/');
+  int backward = path.lastIndexOf('\\');
+  int separator = maximum(forward, backward);
 #else // unix
-  int separator = path.lastIndexOf('/');
+  int separator = path.lastIndexOf(SEPARATOR);
+#endif // flavor
   switch (component) {
   case FileSystem::FOLDER_PATH:
     if (separator > 0) {
       return path.substring(0, separator);
-    } else {
-      return String();
     }
+    break;
+  case FileSystem::FILENAME:
+    return path.substring(separator + 1);
   case FileSystem::NAME:
-    return String();
+    {
+      int dot = path.indexOf('.', separator + 1);
+      return path.substring(separator + 1, dot);
+    }
   case FileSystem::DOTEXTENSION:
     {
       int dot = path.indexOf('.', separator + 1);
       if (dot >= 0) {
         return path.substring(dot);
-      } else {
-        return String(); // extension not present
       }
     }
+    break;
   case FileSystem::EXTENSION:
     {
       int dot = path.indexOf('.', separator + 1);
       if (dot >= 0) {
         return path.substring(dot + 1);
-      } else {
-        return String(); // extension not present
       }
     }
+    break;
   }
-#endif
+  return String();
 }
 
 bool FileSystem::isAbsolutePath(const String& path) throw() {
@@ -224,9 +229,9 @@ bool FileSystem::isFolderPath(const String& path) throw() {
   }
   char lastChar = path[length - 1];
   return (lastChar == '/') || (lastChar == '\\');
-#else
+#else // unix
   return path.endsWith(MESSAGE("/"));
-#endif
+#endif // flavor
 }
 
 String FileSystem::toAbsolutePath(const String& base, const String& path) throw(FileSystemException) {
@@ -284,7 +289,7 @@ String FileSystem::toUrl(const String& path) throw(FileSystemException) {
   static const StringLiteral PREFIX = MESSAGE("file:///");
 #else // unix
   static const StringLiteral PREFIX = MESSAGE("file://");
-#endif
+#endif // flavor
   if (isAbsolutePath(path)) {
     throw FileSystemException(Type::getType<FileSystem>());
   }

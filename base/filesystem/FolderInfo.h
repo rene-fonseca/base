@@ -90,7 +90,12 @@ public:
   /**
     Initializes folder from other folder.
   */
-  FolderInfo(const FolderInfo& copy) throw() : path(copy.path), modification(copy.modification), access(copy.access), change(copy.change) {}
+  FolderInfo(const FolderInfo& copy) throw()
+    : path(copy.path),
+      modification(copy.modification),
+      access(copy.access),
+      change(copy.change) {
+  }
 
   /**
     Returns a folder object for the parent folder.

@@ -9,13 +9,13 @@
 #include <typeinfo>
 
 void readFile(String<>& filename) {
-  fout << "Initializing file input stream\n";
+  fout << "Initializing file input stream" << ENDL;
   FileInputStream file(filename, 0);
 
-  fout << "Binding file input stream to format input stream\n";
+  fout << "Binding file input stream to format input stream" << ENDL;
   FormatInputStream format(file);
 
-  fout << "getPath(): " << file.getPath() << EOL;
+  fout << "getPath(): " << file.getPath() << ENDL;
 
   while (format.available()) {
     char ch;
@@ -25,10 +25,10 @@ void readFile(String<>& filename) {
 }
 
 int main(int argc, char* argv[]) {
-  fout << "Testing implementation of the FileInputStream\n";
+  fout << "Testing implementation of the FileInputStream" << ENDL;
 
   if (argc != 2) {
-    fout << "fileInput filename\n";
+    fout << "fileInput filename" << ENDL;
     return 0; // stop
   }
   String<> filename = argv[1];
@@ -36,10 +36,10 @@ int main(int argc, char* argv[]) {
   try {
     readFile(filename);
   } catch(Exception& e) {
-    ferr << typeid(e).name() << ": " << e.getMessage() << EOL;
+    ferr << typeid(e).name() << ": " << e.getMessage() << ENDL;
     return 1;
   } catch(...) {
-    ferr << "Unknown exception" << EOL;
+    ferr << "Unknown exception" << ENDL;
     return 1;
   }
 

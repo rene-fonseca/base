@@ -43,9 +43,9 @@ public:
 
 
 void test() {
-  fout << "Testing reference counting...\n";
+  fout << "Testing reference counting..." << ENDL;
 
-  fout << "Initializing reference counted object pointers\n";
+  fout << "Initializing reference counted object pointers" << ENDL;
   ReferenceCountedObjectPointer<Base> base; // ok
   ReferenceCountedObjectPointer<Child> child; // ok
   ReferenceCountedObjectPointer<OtherChild> otherChild; // ok
@@ -60,20 +60,20 @@ void test() {
 
 
 
-  fout << "Initializing Allocator\n";
+  fout << "Initializing Allocator" << ENDL;
   Allocator<int> a1;
 
-  fout << "Initializing ReferenceCountedAllocator\n";
+  fout << "Initializing ReferenceCountedAllocator" << ENDL;
   ReferenceCountedAllocator<int> a2;
 
-  fout << "Initializing ReferenceCountedAllocator (on heap)\n";
+  fout << "Initializing ReferenceCountedAllocator (on heap)" << ENDL;
   ReferenceCountedAllocator<int>* a3 = new ReferenceCountedAllocator<int>();
   delete a3;
 
-  fout << "Explicit initialization of automation pointer\n";
+  fout << "Explicit initialization of automation pointer" << ENDL;
   ReferenceCountedObjectPointer<ReferenceCountedAllocator<int> > a4 = new ReferenceCountedAllocator<int>();
 
-  fout << "Assignment of automation pointer\n";
+  fout << "Assignment of automation pointer" << ENDL;
   a4 = new ReferenceCountedAllocator<int>();
 
 /*
@@ -135,12 +135,12 @@ int main() {
   try {
     test();
   } catch(Exception& e) {
-    ferr << "Exception: " << e.getMessage() << "\n";
+    ferr << "Exception: " << e.getMessage() << ENDL;
     return 1;
   } catch(...) {
-    ferr << "Unknown exception\n";
+    ferr << "Unknown exception" << ENDL;
     return 1;
   }
-  fout << "Completed\n";
+  fout << "Completed" << ENDL;
   return 0;
 }

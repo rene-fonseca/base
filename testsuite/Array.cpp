@@ -6,57 +6,57 @@
 #include <base/collection/Array.h>
 
 int main() {
-  fout << "Testing implementation of the Array class\n";
+  fout << "Testing implementation of the Array class" << ENDL;
 
-  fout << "Initializing array\n";
+  fout << "Initializing array" << ENDL;
 
   Array<int> ai;
 
-  fout << "Appending values (1, 2, 3, 4, and 5)\n";
+  fout << "Appending values (1, 2, 3, 4, and 5)" << ENDL;
   ai.append(1);
   ai.append(2);
   ai.append(3);
   ai.append(4);
   ai.append(5);
-  fout << "ai: " << ai << EOL;
+  fout << "ai: " << ai << ENDL;
 
-  fout << "Prepending (10, and 11)\n";
+  fout << "Prepending (10, and 11)" << ENDL;
   ai.prepend(10);
   ai.prepend(11);
-  fout << "ai: " << ai << EOL;
+  fout << "ai: " << ai << ENDL;
 
-  fout << "Inserting 21 at index 0\n";
+  fout << "Inserting 21 at index 0" << ENDL;
   ai.insert(0, 21);
-  fout << "Inserting 22 at index 4\n";
+  fout << "Inserting 22 at index 4" << ENDL;
   ai.insert(4, 22);
-  fout << "Inserting 23 at index 9\n";
+  fout << "Inserting 23 at index 9" << ENDL;
   ai.insert(9, 23);
-  fout << "ai: " << ai << EOL;
+  fout << "ai: " << ai << ENDL;
 
-  fout << "Removing element at index 2\n";
+  fout << "Removing element at index 2" << ENDL;
   ai.remove(2);
-  fout << "ai: " << ai << EOL;
+  fout << "ai: " << ai << ENDL;
 
-  fout << "Modifying enumeration of elements (multiply values by 2)\n";
+  fout << "Modifying enumeration of elements (multiply values by 2)" << ENDL;
   Array<int>::Enumeration enu(ai);
   unsigned int position = 0;
   while (enu.hasNext()) {
     *enu.next() *= 2;
   }
-  fout << "ai: " << ai << EOL;
+  fout << "ai: " << ai << ENDL;
 
-  fout << "Non-modifying enumerating elements of list (calculating sum)\n";
+  fout << "Non-modifying enumerating elements of list (calculating sum)" << ENDL;
   Array<int>::ReadOnlyEnumeration roenu(ai);
   int sum = 0;
   while (roenu.hasNext()) {
     sum += *roenu.next();
   }
-  fout << "sum: " << sum << EOL;
+  fout << "sum: " << sum << ENDL;
 
-  fout << "Size: " << ai.getSize() << "\n";
-  fout << "Removing all the elements\n";
+  fout << "Size: " << ai.getSize() << ENDL;
+  fout << "Removing all the elements" << ENDL;
   ai.removeAll();
-  fout << "Size: " << ai.getSize() << "\n";
+  fout << "Size: " << ai.getSize() << ENDL;
 
   return 0;
 }

@@ -8,36 +8,36 @@
 #include <typeinfo>
 
 int main() {
-  fout << "Testing implementation of the Queue class\n";
+  fout << "Testing implementation of the Queue class" << ENDL;
 
-  fout << "Initializing queue\n";
+  fout << "Initializing queue" << ENDL;
 
   Queue<int> qi;
 
-  fout << "Pushing values (1, 2, 3, 4, and 5)\n";
+  fout << "Pushing values (1, 2, 3, 4, and 5)" << ENDL;
   qi.push(1);
   qi.push(2);
   qi.push(3);
   qi.push(4);
   qi.push(5);
 
-  fout << "getSize() (5): " << qi.getSize() << EOL;
-  fout << "isEmpty() (false): " << qi.isEmpty() << EOL;
+  fout << "getSize() (5): " << qi.getSize() << ENDL;
+  fout << "isEmpty() (false): " << qi.isEmpty() << ENDL;
 
   try {
-    fout << "pop(): " << qi.pop() << EOL;
-    fout << "pop(): " << qi.pop() << EOL;
-    fout << "pop(): " << qi.pop() << EOL;
-    fout << "pop(): " << qi.pop() << EOL;
-    fout << "pop(): " << qi.pop() << EOL;
-    fout << "pop(): " << qi.pop() << EOL;
+    fout << "pop(): " << qi.pop() << ENDL;
+    fout << "pop(): " << qi.pop() << ENDL;
+    fout << "pop(): " << qi.pop() << ENDL;
+    fout << "pop(): " << qi.pop() << ENDL;
+    fout << "pop(): " << qi.pop() << ENDL;
+    fout << "pop(): " << qi.pop() << ENDL;
   } catch(Exception& e) {
-    ferr << typeid(e).name() << ": " << e.getMessage() << EOL;
+    ferr << typeid(e).name() << ": " << e.getMessage() << ENDL;
   }
-  fout << "InvalidNode exception is expected\n";
+  fout << "InvalidNode exception is expected" << ENDL;
 
-  fout << "getSize() (0): " << qi.getSize() << EOL;
-  fout << "isEmpty() (true): " << qi.isEmpty() << EOL;
+  fout << "getSize() (0): " << qi.getSize() << ENDL;
+  fout << "isEmpty() (true): " << qi.isEmpty() << ENDL;
 
   return 0;
 }

@@ -6,13 +6,13 @@
 #include <base/collection/Set.h>
 
 int main() {
-  fout << "Testing Set\n";
+  fout << "Testing Set" << ENDL;
 
-  fout << "Initializing set\n";
+  fout << "Initializing set" << ENDL;
   Set<int> si;
   fout << "si: " << si << EOL;
 
-  fout << "Adding elements to set (4, 7, 2, 3, 8, 6, 1, and 5)\n";
+  fout << "Adding elements to set (4, 7, 2, 3, 8, 6, 1, and 5)" << ENDL;
   si.add(4);
   si.add(7);
   si.add(2);
@@ -23,7 +23,7 @@ int main() {
   si.add(5);
   fout << "si: " << si << EOL;
 
-  fout << "Non-modifying enumerating elements of set (calculating sum)\n";
+  fout << "Non-modifying enumerating elements of set (calculating sum)" << ENDL;
   Set<int>::ReadOnlyEnumeration enu(si);
   int sum = 0;
   while (enu.hasNext()) {
@@ -31,13 +31,13 @@ int main() {
   }
   fout << "sum: " << sum << EOL;
 
-  fout << "Checking whether 4 is in set: " << si.isKey(4) << "\n";
-  fout << "Checking whether 0 is in set: " << si.isKey(0) << "\n";
+  fout << "Checking whether 4 is in set: " << si.isKey(4) << ENDL;
+  fout << "Checking whether 0 is in set: " << si.isKey(0) << ENDL;
 
-  fout << "Size: " << si.getSize() << "\n";
-  fout << "Removeing all elements from the set\n";
+  fout << "Size: " << si.getSize() << ENDL;
+  fout << "Removeing all elements from the set" << ENDL;
   si.removeAll();
-  fout << "Size: " << si.getSize() << "\n";
+  fout << "Size: " << si.getSize() << ENDL;
 
   return 0;
 }

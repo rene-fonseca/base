@@ -6,44 +6,44 @@
 #include <base/collection/Map.h>
 
 int main() {
-  fout << "Testing Map implementation\n";
+  fout << "Testing Map implementation" << ENDL;
 
-  fout << "Initializing map\n";
+  fout << "Initializing map" << ENDL;
   Map<int, int> mii;
 
-  fout << "Adding associations to map ((2,2), (4,3), and (3,4))\n";
+  fout << "Adding associations to map ((2,2), (4,3), and (3,4))" << ENDL;
   mii.add(2, 2);
   mii.add(4, 3);
   mii.add(3, 4);
-  fout << "mii: " << mii << EOL;
+  fout << "mii: " << mii << ENDL;
 
-  fout << "size: " << mii.getSize() << EOL;
+  fout << "size: " << mii.getSize() << ENDL;
 
-  fout << "Non-modifying enumeration of map (calculate sum of values)\n";
+  fout << "Non-modifying enumeration of map (calculate sum of values)" << ENDL;
   Map<int, int>::ReadOnlyEnumeration enu(mii);
   int sum = 0;
   while (enu.hasNext()) {
     const Map<int, int>::Node* node = enu.next()->getValue();
     sum += node->getValue();
   }
-  fout << "sum: " << sum << EOL;
+  fout << "sum: " << sum << ENDL;
 
-  fout << "Adding associations to map ((1,6), (2,5), (4,2), and (5,1))\n";
+  fout << "Adding associations to map ((1,6), (2,5), (4,2), and (5,1))" << ENDL;
   mii.add(1, 6);
   mii.add(2, 5);
   mii.add(4, 2);
   mii.add(5, 1);
-  fout << "mii: " << mii << EOL;
+  fout << "mii: " << mii << ENDL;
 
-  fout << "Removing associations from map (4 and 3)\n";
+  fout << "Removing associations from map (4 and 3)" << ENDL;
   mii.remove(4);
   mii.remove(3);
-  fout << "mii: " << mii << EOL;
+  fout << "mii: " << mii << ENDL;
 
-  fout << "Size: " << mii.getSize() << "\n";
-  fout << "Removing all associations from the map\n";
+  fout << "Size: " << mii.getSize() << ENDL;
+  fout << "Removing all associations from the map" << ENDL;
   mii.removeAll();
-  fout << "Size: " << mii.getSize() << "\n";
+  fout << "Size: " << mii.getSize() << ENDL;
 
   return 0;
 }

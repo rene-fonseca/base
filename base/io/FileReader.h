@@ -11,6 +11,12 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+/**
+  File reader utilizing the MappedFile class.
+
+  @author René Møller Fonseca
+  @version 1.0
+*/
 class FastFileReader : public Object {
 public:
 

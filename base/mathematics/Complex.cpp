@@ -11,13 +11,13 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/mathematics/Complex.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value) {
-  return stream << "(" << value.getReal() << ";" << value.getImaginary() << ")";
+  FormatOutputStream::PushContext push(stream);
+  return stream << '(' << value.getReal() << ';' << value.getImaginary() << ')';
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

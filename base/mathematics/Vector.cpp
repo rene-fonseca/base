@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/mathematics/Vector.h>
 #include <base/Functor.h>
 #include <math.h>
@@ -165,6 +166,7 @@ TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw() {
 
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value) {
+  FormatOutputStream::PushContext push(stream);
   stream << '(';
   const TYPE* element = value.getReadOnlyElements();
   unsigned int count = value.getSize();

@@ -756,6 +756,7 @@ Matrix<TYPE> operator/(const TYPE& left, const Matrix<TYPE>& right) throw(Memory
 
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value) {
+  FormatOutputStream::PushContext push(stream);
   const TYPE* element = getReadOnlyElements();
   stream << '[';
   for (unsigned int row = 0; row < value.rows; ++row) {

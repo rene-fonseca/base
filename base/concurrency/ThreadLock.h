@@ -35,11 +35,14 @@ protected:
 public:
 
   /** Group of exceptions thrown directly by the ThreadLock class. */
-  class ThreadLockException : public Exception {};
+  class ThreadLockException : public Exception {
+  };
   /** Thrown on failure to lock the read-write lock object. */
-  class Lock : public ThreadLockException {};
+  class Lock : public ThreadLockException {
+  };
   /** Thrown on failure to unlock the read-write lock object. */
-  class Unlock : public ThreadLockException {};
+  class Unlock : public ThreadLockException {
+  };
 
   /**
     Initializes a read-write lock in the unlocked state.

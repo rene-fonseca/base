@@ -45,15 +45,20 @@ typedef enum {
   public:
 
     /** Group of exceptions thrown directly by the Thread class. */
-    class ThreadException : public Exception {};
+    class ThreadException : public Exception {
+    };
     /** Thrown if thread was expected to be alive. */
-    class NotAlive : public ThreadException {};
+    class NotAlive : public ThreadException {
+    };
     /** Thrown if thread tries to manage itself when disallowed. */
-    class Self : public ThreadException {};
+    class Self : public ThreadException {
+    };
     /** Thrown if child thread tries to manage parent thread when disallowed. */
-    class Child : public ThreadException {};
+    class Child : public ThreadException {
+    };
     /** Allows objects that have been constructed on the stack to be destructed. */
-    class Exit : public ThreadException {};
+    class Exit : public ThreadException {
+    };
   private:
 
     /** The main thread. */

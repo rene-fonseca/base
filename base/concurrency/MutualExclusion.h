@@ -29,11 +29,14 @@ protected:
 public:
 
   /** Group of exceptions thrown directly by the MutualExclusion class. */
-  class MutualExclusionException : public Exception {};
+  class MutualExclusionException : public Exception {
+  };
   /** Thrown on failure to lock the MutualExclusion object. */
-  class Lock : public MutualExclusionException {};
+  class Lock : public MutualExclusionException {
+  };
   /** Thrown on failure to unlock the MutualExclusion object. */
-  class Unlock : public MutualExclusionException {};
+  class Unlock : public MutualExclusionException {
+  };
 
   /**
     Initializes the mutex object in unlocked state.

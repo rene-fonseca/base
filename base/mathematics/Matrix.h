@@ -71,13 +71,17 @@ protected:
 public:
 
   /** Exception thrown by the Matrix class. */
-  class MatrixException : public Exception {};
+  class MatrixException : public Exception {
+  };
   /** Thrown if an operation is given incompatible operands to work on. */
-  class IncompatibleOperands : public MatrixException {};
+  class IncompatibleOperands : public MatrixException {
+  };
   /** Thrown if an operation is given incompatible matrices to work on. */
-  class IncompatibleMatrices : public IncompatibleOperands {};
+  class IncompatibleMatrices : public IncompatibleOperands {
+  };
   /** Thrown if matrix is not square as required by an operation. */
-  class NotSquare : public MatrixException {};
+  class NotSquare : public MatrixException {
+  };
 
   /**
     Initializes a matrix with no elements.

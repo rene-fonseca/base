@@ -31,9 +31,11 @@ protected:
 public:
 
   /** Exception thrown by the Vector class. */
-  class VectorException : public Exception {};
+  class VectorException : public Exception {
+  };
   /** Thrown if an operation is given incompatible vectors to work on. */
-  class IncompatibleVectors : public VectorException {};
+  class IncompatibleVectors : public VectorException {
+  };
 
   /**
     Initializes the vector. The elements are not set to zero.

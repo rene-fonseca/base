@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -162,11 +162,14 @@ ProcessPreinitialization::ProcessPreinitialization() throw() {
   // only Windows NT 4.0 or later
   // TAG: check w2k and
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WXP)
-  bool compatible = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) && (versionInfo.dwMajorVersion >= 5) && (versionInfo.dwMinorVersion >= 1);
+  bool compatible = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
+    (versionInfo.dwMajorVersion >= 5) && (versionInfo.dwMinorVersion >= 1);
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K)
-  bool compatible = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) && (versionInfo.dwMajorVersion >= 5);
+  bool compatible = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
+    (versionInfo.dwMajorVersion >= 5);
 #else
-  bool compatible = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) && (versionInfo.dwMajorVersion >= 4);
+  bool compatible = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
+    (versionInfo.dwMajorVersion >= 4);
 #endif
   if (!compatible) {
     Trace::message("Operating system is not supported.");
@@ -203,7 +206,8 @@ ProcessPreinitialization::ProcessPreinitialization() throw() {
   }
   
   // install structured exception handler (nothing to do with c++ exception handling)
-  internal::specific::originalExceptionFilter = ::SetUnhandledExceptionFilter(internal::specific::exceptionFilter);
+  internal::specific::originalExceptionFilter =
+    ::SetUnhandledExceptionFilter(internal::specific::exceptionFilter);
   //::SetErrorMode(SEM_NOGPFAULTERRORBOX);    
 }
 

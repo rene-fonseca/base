@@ -10,6 +10,9 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+/** 8 bit unsigned integer. */
+typedef unsigned char byte;
+
 namespace LittleEndian {
 
 #if defined(_DK_SDU_MIP__BASE__BIG_ENDIAN)

@@ -6,32 +6,34 @@
 #ifndef _DK_SDU_MIP__BASE__ITERATOR_H
 #define _DK_SDU_MIP__BASE__ITERATOR_H
 
-#include <base/OutOfBounds.h>
-
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Defines the types of a writeable iterator.
+  Defines the types of a modifying (has write access to the elements) iterator.
 */
-template<class TYPE>
+template<class VALUE>
 class IteratorTraits {
 public:
-  typedef TYPE Value;
-  typedef unsigned int Distance; // should be signed for direction?
-  typedef TYPE* Pointer;
-  typedef TYPE& Reference;
+
+  typedef IteratorTraits Traits;
+  typedef VALUE Value;
+  typedef VALUE& Reference;
+  typedef VALUE* Pointer;
+  typedef unsigned int Distance;
 };
 
 /**
-  Defines the types of a read-only iterator.
+  Defines the types of a non-modifying iterator (may only read the values of the elements).
 */
-template<class TYPE>
-class ReadOnlyIteratorTraits {
+template<class VALUE>
+class ReadIteratorTraits {
 public:
-  typedef TYPE Value;
+
+  typedef ReadIteratorTraits Traits;
+  typedef VALUE Value;
+  typedef const VALUE& Reference;
+  typedef const VALUE* Pointer;
   typedef unsigned int Distance;
-  typedef const TYPE* Pointer;
-  typedef const TYPE& Reference;
 };
 
 /**
@@ -40,30 +42,22 @@ public:
   @author René Møller Fonseca
   @version 1.0
 */
-template<class TYPE, class IT = IteratorTraits<TYPE> >
+template<class TRAITS>
 class Iterator {
+private:
+
+  /** Used to ensure that the specified traits template argument isn't an iterator. */
+  typedef typename TRAITS::Traits ValidTraits;
 public:
 
   /** The type of the element. */
-  typedef typename IT::Value Value;
+  typedef typename TRAITS::Value Value;
   /** The type of the difference between elements. */
-  typedef typename IT::Distance Distance;
-  /** Type of '->'. */
-  typedef typename IT::Pointer Pointer;
-  /** Type of '*'. */
-  typedef typename IT::Reference Reference;
-
-  /**
-    Returns the element at the current position.
-  */
-//  virtual Pointer operator->() const throw() = 0;
-
-  /**
-    Returns the element at the current position.
-  */
-  virtual Reference getElement() const throw(OutOfBounds) = 0;
-
-//  inline Reference operator*() const throw(OutOfBounds) {return getElement();};
+  typedef typename TRAITS::Distance Distance;
+  /** The type of a reference to an element . */
+  typedef typename TRAITS::Reference Reference;
+  /** The type of a pointer to an element. */
+  typedef typename TRAITS::Pointer Pointer;
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

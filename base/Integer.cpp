@@ -10,7 +10,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 Integer::Integer(String str) throw(InvalidFormat) {
   unsigned int length = str.getLength();
   bool sign = false;
-  int index = 0;
+  unsigned int index = 0;
 
   if (length == 0) {
     throw InvalidFormat("Not an Integer");

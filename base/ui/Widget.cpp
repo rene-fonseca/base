@@ -121,4 +121,7 @@ Widget::Widget(Window& owner) throw(UserInterfaceException) {
   update();
 }
 
+Widget::~Widget() throw() {
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -117,6 +117,12 @@ public:
   void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw();
 
   void onDisplay() throw();
+
+  /**
+    Destroys the split.
+  */
+  inline ~Split() throw() {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -70,6 +70,12 @@ public:
   }
   
   void onDisplay() throw();
+
+  /**
+    Destroys the label.
+  */
+  inline ~Label() throw() {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -104,8 +104,8 @@ public:
   inline bool isWithin(const Position& position, const Dimension& dimension) const throw() {
     return (x >= position.x) &&
       (y >= position.y) &&
-      (x < (position.x + dimension.getWidth())) &&
-      (y < (position.y + dimension.getHeight()));
+      (x < static_cast<int>(position.x + dimension.getWidth())) &&
+      (y < static_cast<int>(position.y + dimension.getHeight()));
   }
 
   /**

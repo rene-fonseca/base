@@ -115,6 +115,12 @@ public:
     Invoked when the button must be updated.
   */
   void onDisplay() throw();
+
+  /**
+    Destroys the button.
+  */
+  inline ~Button() throw() {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

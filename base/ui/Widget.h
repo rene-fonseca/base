@@ -43,6 +43,11 @@ public:
     @param owner The owner of the widget.
   */
   Widget(Window& owner) throw(UserInterfaceException);
+
+  /**
+    Destroys the widget.
+  */
+  ~Widget() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

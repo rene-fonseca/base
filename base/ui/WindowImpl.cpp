@@ -286,7 +286,7 @@ LONG CALL_UI Backend<WindowImpl>::messageHandler(HWND handle, UINT message, WPAR
       // ::GetUpdateRect((HWND)window->drawableHandle, &rect, FALSE);
       
       PAINTSTRUCT ps;
-      HDC hdc = ::BeginPaint((HWND)window->drawableHandle, &ps);
+      /*HDC hdc =*/ ::BeginPaint((HWND)window->drawableHandle, &ps);
       // ps.rcPaint;
       window->onDisplay();
       ::EndPaint((HWND)window->drawableHandle, &ps);
@@ -795,22 +795,23 @@ bool WindowImpl::loadModule(bool load) throw() {
 }
 
 WindowImpl::WindowImpl() throw(UserInterfaceException)
-  : screenHandle(0),
-    graphicsContextHandle(0),
-    displayMode(MODE_WINDOW),
-    cursor(WindowImpl::ARROW), // keep in sync with window class
-    active(false),
-    scope(false),
-    autorepeat(true),
-    visibility(WindowImpl::INVISIBLE),
+  : displayMode(MODE_WINDOW),
+    lastMousePosition(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM),
     modifiers(0),
+    autorepeat(true),
+    scope(false),
+    active(false),
+    visibility(WindowImpl::INVISIBLE),
+    enabled(false),
+    cursor(WindowImpl::ARROW), // keep in sync with window class
     flags(0),
     minimumSize(0, 0),
-    maximumSize(0, 0) {
-
+    maximumSize(0, 0),
+    screenHandle(0),
+    graphicsContextHandle(0) {
+  
   // TAG: keyboard state only for windows which accept focus
   fill<uint8>(keyboardState, getArraySize(keyboardState), 0);
-  lastMousePosition = Position(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM);
   assert(
     loadModule(true),
     UserInterfaceException("Unable to load module", this)
@@ -818,20 +819,23 @@ WindowImpl::WindowImpl() throw(UserInterfaceException)
 }
 
 WindowImpl::WindowImpl(const Position& _position, const Dimension& _dimension, unsigned int _flags) throw(UserInterfaceException)
-  : screenHandle(0),
-    graphicsContextHandle(0),
-    displayMode(MODE_WINDOW),
-    cursor(WindowImpl::ARROW), // keep in sync with window class
-    active(false),
-    scope(false),
-    autorepeat(true),
-    visibility(WindowImpl::INVISIBLE),
+  : displayMode(MODE_WINDOW),
+    lastMousePosition(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM),
     modifiers(0),
+    autorepeat(true),
+    scope(false),
+    active(false),
+    visibility(WindowImpl::INVISIBLE),
+    enabled(false),
+    cursor(WindowImpl::ARROW), // keep in sync with window class
     position(_position),
     dimension(_dimension),
     flags(_flags),
     minimumSize(0, 0),
-    maximumSize(0, 0) {
+    maximumSize(0, 0),
+    screenHandle(0),
+    graphicsContextHandle(0) {
+  
   fill<uint8>(keyboardState, getArraySize(keyboardState), 0);
   lastMousePosition = Position(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM);
   assert(
@@ -1291,7 +1295,9 @@ void WindowImpl::disableClipping() throw(UserInterfaceException) {
 
 WindowImpl::Region WindowImpl::getClipping() const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  return Region(); // TAG: fixme
 #else // unix
+  return Region(); // TAG: fixme
 #endif // flavor
 }
 
@@ -1659,7 +1665,7 @@ void WindowImpl::onIdle() throw() {
 }
 
 bool WindowImpl::onClose() throw() {
-  return true; // allow to close window
+  return true; // allow window to be closed
 }
 
 void WindowImpl::onVisibility(Visibility visibility) throw() {
@@ -2370,6 +2376,8 @@ unsigned int WindowImpl::getMouseButtonIndex(Mouse::Button button) throw() {
     return 3;
   case Mouse::EXTRA2:
     return 4;
+  case Mouse::WHEEL:
+    return 5;
   }
 }
 
@@ -2386,6 +2394,8 @@ StringLiteral WindowImpl::getMouseButtonName(Mouse::Button button) throw() {
     return MESSAGE("EXTRA");
   case Mouse::EXTRA2:
     return MESSAGE("EXTRA2");
+  case Mouse::WHEEL:
+    return MESSAGE("WHEEL");
   }
 }
 

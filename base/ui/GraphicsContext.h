@@ -374,6 +374,11 @@ public:
   Bitmap getBitmap(
     const Position& position,
     const Dimension& dimension) throw(UserInterfaceException);
+
+  /**
+    Destroys the graphics context.
+  */
+  ~GraphicsContext() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

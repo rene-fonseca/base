@@ -157,9 +157,18 @@ public:
     Returns the gray value of the color (i.e. (red + green + blue + 1)/3).
   */
   inline unsigned int getGray() const throw() {
-    unsigned int gray = (static_cast<unsigned int>(value >> 16) +
-                         static_cast<unsigned int>(value >> 8) +
-                         static_cast<unsigned int>(value >> 0) + 1)/3;
+    return (static_cast<unsigned int>(value >> 16) +
+            static_cast<unsigned int>(value >> 8) +
+            static_cast<unsigned int>(value >> 0) + 1)/3;
+  }
+
+  /**
+    Sets the color as gray.
+  */
+  inline void setGray(uint8 value) throw() {
+    value = (static_cast<uint32>(value) << 16) |
+      (static_cast<uint32>(value) << 8) |
+      static_cast<uint32>(value);
   }
 
   /**

@@ -11,101 +11,202 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/concurrency/Semaphore.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
+
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K)
+    struct SemaphoreInformation { // semaphore query information
+      UINT value;
+      UINT maximum;
+    };
+
+    typedef long NTSTATUS;
+
+    extern "C" NTSTATUS WINAPI NtQuerySemaphore(
+      HANDLE handle,
+      UINT informationClass,
+      SemaphoreInformation* semaphoreInformation,
+      UINT size,
+      PUINT resultSize
+    );
+  #endif
+
 #else // unix
   #include <errno.h>
+  #if defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
+    #include <semaphore.h>
+    #include <limits.h>
+  #elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
+    #include <pthread.h>
+  #endif
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-Semaphore::Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceException) {
-  assert(value <= MAXIMUM, OutOfDomain(this));
+class SemaphoreImpl {
+public:
+  
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!(semaphore = ::CreateSemaphore(0, value, MAXIMUM, 0))) {
+  typedef OperatingSystem::Handle Semaphore;
+
+  enum {MAXIMUM = PrimitiveTraits<int>::MAXIMUM};
+  enum {QUERY_INFORMATION = 0}; // the query type for semaphore
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
+  typedef sem_t Semaphore;
+  
+  #if defined(SEM_VALUE_MAX)
+    enum {MAXIMUM = SEM_VALUE_MAX};
+  #elif defined(_POSIX_SEM_VALUE_MAX)
+    enum {MAXIMUM = _POSIX_SEM_VALUE_MAX};
+  #else
+    enum {MAXIMUM = 32767}; // minimum value specified by POSIX standard
+  #endif
+#else
+  struct Semaphore {
+    volatile int value;
+    pthread_cond_t condition;
+    pthread_mutex_t mutex;
+  };
+
+  enum {MAXIMUM = PrimitiveTraits<int>::MAXIMUM};
+#endif
+};
+
+unsigned int Semaphore::getMaximum() throw() {
+  return SemaphoreImpl::MAXIMUM;
+}
+
+Semaphore::Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceException) {
+  assert(value <= SemaphoreImpl::MAXIMUM, OutOfDomain(this));
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  if (!(semaphore = (SemaphoreImpl::Semaphore)::CreateSemaphore(0, value, SemaphoreImpl::MAXIMUM, 0))) {
     throw ResourceException(this);
   }
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
-  if (sem_init(&semaphore, 0, value)) {
-    throw ResourceException(this);
+  if (sizeof(sem_t) <= sizeof(void*)) {
+    if (sem_init((sem_t*)&semaphore, 0, value)) {
+      throw ResourceException(this);
+    }
+  } else {
+    semaphore = new sem_t[1];
+    if (sem_init((sem_t*)semaphore, 0, value)) {
+      delete[] (sem_t*)semaphore;
+      throw ResourceException(this);
+    }
   }
 #else
-  this->value = value;
-
+  SemaphoreImpl::Semaphore* semaphore = new SemaphoreImpl::Semaphore[1];
+  semaphore->value = value;
+  
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes)) {
+    delete[] semaphore;
     throw ResourceException(this);
   }
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
+    delete[] semaphore;
     throw ResourceException(this);
   }
-  if (pthread_mutex_init(&mutex, &attributes)) {
+  if (pthread_mutex_init(&semaphore->mutex, &attributes)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
+    delete[] semaphore;
     throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 
-  if (pthread_cond_init(&condition, 0)) {
+  if (pthread_cond_init(&semaphore->condition, 0)) {
+    pthread_mutex_destroy(&semaphore->mutex); // lets just hope that this doesn't fail
+    delete[] semaphore;
     throw ResourceException(this);
   }
+  this->semaphore = semaphore;
 #endif
 }
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
-unsigned int Semaphore::getValue() const throw(SemaphoreException) {
-#if defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
+int Semaphore::getValue() const throw(SemaphoreException) {
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K)
+    SemaphoreInformation information;
+    UINT resultSize;
+    if (::NtQuerySemaphore((HANDLE)semaphore,
+                           SemaphoreImpl::QUERY_INFORMATION,
+                           &information,
+                           sizeof(information),
+                           &resultSize) < 0) {
+      throw SemaphoreException(this);
+    }
+    return information.value;
+  #else // win32 does not support this functionality
+    #warning Semaphore::getValue() is not supported
+    return -1; // not supported
+  #endif
+#elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   int value;
-  if (sem_getvalue(&semaphore, &value)) { // value is not negative
-    throw SemaphoreException(this);
+  if (sizeof(sem_t) <= sizeof(void*)) {
+    if (::sem_getvalue((sem_t*)&semaphore, &value)) { // value is not negative
+      throw SemaphoreException(this);
+    }
+  } else {
+    if (::sem_getvalue((sem_t*)semaphore, &value)) { // value is not negative
+      throw SemaphoreException(this);
+    }
   }
   return value;
 #else // mutual exclusion
+  SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
   unsigned int result;
-  if (pthread_mutex_lock(&mutex)) {
+  if (pthread_mutex_lock(&sem->mutex)) {
     throw SemaphoreException(this);
   }
-  result = value;
-  if (pthread_mutex_unlock(&mutex)) {
+  result = sem->value;
+  if (pthread_mutex_unlock(&sem->mutex)) {
     throw SemaphoreException(this);
   }
   return result;
 #endif
 }
-#endif
 
 void Semaphore::post() throw(Overflow, SemaphoreException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!::ReleaseSemaphore(semaphore, 1, 0)) {
+  if (!::ReleaseSemaphore((HANDLE)semaphore, 1, 0)) {
     throw SemaphoreException(this);
   }
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
-  if (sem_post(&semaphore) == ERANGE) { // otherwise sem_post returns successfully
-    throw Overflow(this);
+  if (sizeof(sem_t) <= sizeof(void*)) {
+    if (sem_post((sem_t)&semaphore) == ERANGE) { // otherwise sem_post returns successfully
+      throw Overflow(this);
+    }
+  } else {
+    if (sem_post((sem_t*)semaphore) == ERANGE) { // otherwise sem_post returns successfully
+      throw Overflow(this);
+    }
   }
 #else
-  if (pthread_mutex_lock(&mutex)) {
+  SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
+  if (pthread_mutex_lock(&sem->mutex)) {
     throw SemaphoreException(this);
   }
-  if ((unsigned int)value == MAXIMUM) {
-    if (pthread_mutex_unlock(&mutex)) {
+  if ((unsigned int)sem->value == SemaphoreImpl::MAXIMUM) {
+    if (pthread_mutex_unlock(&sem->mutex)) {
       throw SemaphoreException(this);
     }
     throw Overflow(this);
   }
-  value++;
-  if (pthread_mutex_unlock(&mutex)) {
+  sem->value++;
+  if (pthread_mutex_unlock(&sem->mutex)) {
     throw SemaphoreException(this);
   }
-  pthread_cond_signal(&condition); // we only need to signal one thread
+  pthread_cond_signal(&sem->condition); // we only need to signal one thread
 #endif
 }
 
 void Semaphore::wait() const throw(SemaphoreException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (::WaitForSingleObject(semaphore, INFINITE) != WAIT_OBJECT_0) {
+  if (::WaitForSingleObject((HANDLE)semaphore, INFINITE) != WAIT_OBJECT_0) {
     throw SemaphoreException(this);
   }
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
@@ -113,14 +214,15 @@ void Semaphore::wait() const throw(SemaphoreException) {
     throw SemaphoreException(this);
   }
 #else
-  if (pthread_mutex_lock(&mutex)) {
+  SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
+  if (pthread_mutex_lock(&sem->mutex)) {
     throw SemaphoreException(this);
   }
-  while (value == 0) { // wait for resource to become available
-    pthread_cond_wait(&condition, &mutex);
+  while (sem->value == 0) { // wait for resource to become available
+    pthread_cond_wait(&sem->condition, &sem->mutex);
   }
-  --value;
-  if (pthread_mutex_unlock(&mutex)) {
+  sem->value--;
+  if (pthread_mutex_unlock(&sem->mutex)) {
     throw SemaphoreException(this);
   }
 #endif
@@ -128,18 +230,19 @@ void Semaphore::wait() const throw(SemaphoreException) {
 
 bool Semaphore::tryWait() const throw(SemaphoreException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return ::WaitForSingleObject(semaphore, 0) == WAIT_OBJECT_0;
+  return ::WaitForSingleObject((HANDLE)semaphore, 0) == WAIT_OBJECT_0;
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
   return sem_trywait(&semaphore) == 0; // did we decrement?
 #else
+  SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
   bool result;
-  if (pthread_mutex_lock(&mutex)) {
+  if (pthread_mutex_lock(&sem->mutex)) {
     throw SemaphoreException(this);
   }
-  if (result = value > 0) {
-    --value;
+  if (result = sem->value > 0) {
+    sem->value--;
   }
-  if (pthread_mutex_unlock(&mutex)) {
+  if (pthread_mutex_unlock(&sem->mutex)) {
     throw SemaphoreException(this);
   }
   return result;
@@ -148,18 +251,26 @@ bool Semaphore::tryWait() const throw(SemaphoreException) {
 
 Semaphore::~Semaphore() throw(SemaphoreException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!::CloseHandle(semaphore)) {
+  if (!::CloseHandle((HANDLE)semaphore)) {
     throw SemaphoreException(this);
   }
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
-  if (sem_destroy(&semaphore) != 0) {
-    throw SemaphoreException(this);
+  if (sizeof(sem_t) <= sizeof(semaphore)) {
+    if (sem_destroy((sem_t*)&semaphore) != 0) {
+      throw SemaphoreException(this);
+    }
+  } else {
+    if (sem_destroy((sem_t*)semaphore) != 0) {
+      throw SemaphoreException(this);
+    }
+    delete[] (SemaphoreImpl::Semaphore*)semaphore;
   }
 #else
-  if (pthread_cond_destroy(&condition)) {
+  if (pthread_cond_destroy(&((SemaphoreImpl::Semaphore*)semaphore)->condition)) {
     throw SemaphoreException(this);
   }
-  pthread_mutex_destroy(&mutex); // lets just hope that this doesn't fail
+  pthread_mutex_destroy(&((SemaphoreImpl::Semaphore*)semaphore)->mutex); // lets just hope that this doesn't fail
+  delete[] (SemaphoreImpl::Semaphore*)semaphore;
 #endif
 }
 

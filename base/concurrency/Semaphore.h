@@ -22,14 +22,6 @@
 #include <base/Primitives.h>
 #include <base/OperatingSystem.h>
 
-// TAG: fix alien header
-#if defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
-  #include <semaphore.h>
-  #include <limits.h>
-#elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
-  #include <pthread.h>
-#endif
-
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
@@ -43,29 +35,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class Semaphore : public virtual Object {
-public:
-
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  static const unsigned int MAXIMUM = PrimitiveTraits<int>::MAXIMUM;
-#elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
-  static const unsigned int MAXIMUM = _POSIX_SEM_VALUE_MAX;
-#else
-  static const unsigned int MAXIMUM = PrimitiveTraits<int>::MAXIMUM;
-#endif // flavor
 private:
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  OperatingSystem::Handle semaphore;
-#elif defined(_DK_SDU_MIP__BASE__PTHREAD_SEMAPHORE)
-  mutable sem_t semaphore;
-#else
-  /** The value of the semaphore. */
-  volatile int value;
-  /** Condition. */
-  pthread_cond_t condition;
-  /** Mutex. */
-  mutable pthread_mutex_t mutex;
-#endif
+  /** Internal semaphore state. */
+  void* semaphore;
 public:
 
   /**
@@ -75,7 +48,7 @@ public:
     @ingroup concurrency exceptions
     @see Semaphore
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
+    @version 1.1
   */
   class SemaphoreException : public Exception {
   public:
@@ -109,17 +82,27 @@ public:
   };
 
   /**
-    Initializes the semaphore object.
+    Returns the maximum value the semaphore may have. The maximum value is
+    guaranteed to be greater than or equal to 32767 and less then or equal to
+    Primitive<int>::MAXIMUM.
+  */
+  static unsigned int getMaximum() throw();
+  
+  /**
+    Initializes the semaphore object. Throws OutOfDomain if the value exceeds
+    the maximum value.
+
+    @param value The initial value. The default is 0.
   */
   Semaphore(unsigned int value = 0) throw(OutOfDomain, ResourceException);
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
   /**
-    Returns the current value of the semaphore. Warning this is a non-portable
-    method.
+    Returns the current value of the semaphore. Warning: this method may not be
+    supported on the particular platform.
+
+    @return -1 if not supported.
   */
-  unsigned int getValue() const throw(SemaphoreException);
-#endif
+  int getValue() const throw(SemaphoreException);
 
   /**
     Increments the semaphore and signals any thread waiting for a change. This

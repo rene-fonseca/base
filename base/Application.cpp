@@ -98,7 +98,7 @@ Application::Application(const String& name, int argc, const char* argv[], const
 
   // install signal handler
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!SetConsoleCtrlHandler(ApplicationImpl::signalHandler, TRUE)) {
+  if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)ApplicationImpl::signalHandler, TRUE)) {
     throw Exception("Unable to install signal handler");
   }
 #else // Unix

@@ -19,7 +19,7 @@
 #include <base/concurrency/ExclusiveSynchronize.h>
 #include <base/concurrency/SharedSynchronize.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <base/platforms/win32/AsyncReadStreamContext.h> // platform specific
   #include <base/platforms/win32/AsyncWriteStreamContext.h> // platform specific
   #include <winsock2.h>
@@ -88,8 +88,10 @@
   }
 #endif
 
-#if !defined(_DK_SDU_MIP__BASE__SOCKLEN_T)
-  typedef int socklen_t;
+#if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || !defined(_DK_SDU_MIP__BASE__SOCKLEN_T))
+  typedef int socklen;
+#else
+  typedef socklen_t socklen;
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -137,7 +139,7 @@ public:
   inline const struct sockaddr* getValue() const throw() {return Cast::pointer<const struct sockaddr*>(&sa);}
 
   /** Returns the size of the socket address structure. */
-  inline socklen_t getSize() const throw() {return sizeof(sa);}
+  inline unsigned int getSize() const throw() {return sizeof(sa);}
 
   /** Returns the address. */
   inline InetAddress getAddress() const throw() {
@@ -181,35 +183,38 @@ public:
 
   /** Sets the socket name from the specified socket. */
   inline void setSocket(int handle) throw() {
-    socklen_t length = getSize();
+    socklen length = getSize();
     ::getsockname(handle, getValue(), &length);
   }
 };
 
 
 
-void getSocketOption(int handle, int option, void* buffer, socklen_t* len) throw(IOException) {
+void getSocketOption(int handle, int option, void* buffer, unsigned int* length) throw(IOException) {
   // getsockopt is MT-safe
-  if (::getsockopt(handle, SOL_SOCKET, option, static_cast<char*>(buffer), len) != 0) {
+  socklen temp = *length;
+  if (::getsockopt(handle, SOL_SOCKET, option, static_cast<char*>(buffer), &temp) != 0) {
     throw IOException("Unable to get socket option");
   }
+  *length = temp;
 }
 
-void setSocketOption(int handle, int option, const void* buffer, socklen_t len) throw(IOException) {
+void setSocketOption(int handle, int option, const void* buffer, unsigned int length) throw(IOException) {
   // setsockopt is MT-safe
-  if (::setsockopt(handle, SOL_SOCKET, option, static_cast<const char*>(buffer), len) != 0) {
+  if (::setsockopt(handle, SOL_SOCKET, option, static_cast<const char*>(buffer), length) != 0) {
     throw IOException("Unable to set socket option");
   }
 }
 
 
 
-Socket::SocketImpl::SocketImpl(OperatingSystem::Handle _handle) throw() : Handle(_handle), remotePort(0), localPort(0), end(false) {
+Socket::SocketImpl::SocketImpl(OperatingSystem::Handle _handle) throw()
+  : Handle(_handle), remotePort(0), localPort(0), end(false) {
 }
 
 Socket::SocketImpl::~SocketImpl() throw(IOException) {
   if (isValid()) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     if (::closesocket((int)getHandle())) {
       throw NetworkException("Unable to close socket", this);
     }
@@ -234,9 +239,9 @@ bool Socket::accept(Socket& socket) throw(IOException) {
   }
 
   SocketAddress sa;
-  socklen_t sl = sa.getSize();
+  socklen sl = sa.getSize();
   OperatingSystem::Handle handle = (OperatingSystem::Handle)::accept((int)socket.getHandle(), sa.getValue(), &sl);
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (handle == OperatingSystem::INVALID_HANDLE) {
     switch (::WSAGetLastError()) {
     case WSAEWOULDBLOCK:
@@ -286,7 +291,7 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
   ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
   SocketAddress sa(addr, port);
   if (::connect((int)getHandle(), sa.getValue(), sa.getSize())) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     switch (::WSAGetLastError()) {
     case WSAECONNREFUSED:
       throw AccessDenied(this);
@@ -365,7 +370,7 @@ unsigned short Socket::getLocalPort() const throw() {
 
 void Socket::shutdownInputStream() throw(IOException) {
   SharedSynchronize<LOCK> sharedSynchronize(*this);
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (::shutdown((int)getHandle(), SD_RECEIVE)) { // disallow further receives
     throw IOException("Unable to shutdown socket for reading", this);
   }
@@ -378,7 +383,7 @@ void Socket::shutdownInputStream() throw(IOException) {
 
 void Socket::shutdownOutputStream() throw(IOException) {
   SharedSynchronize<LOCK> sharedSynchronize(*this);
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (::shutdown((int)getHandle(), SD_SEND)) { // disallow further sends
     throw IOException("Unable to shutdown socket for writing", this);
   }
@@ -392,8 +397,8 @@ void Socket::shutdownOutputStream() throw(IOException) {
 bool Socket::getBooleanOption(int option) const throw(IOException) {
   SharedSynchronize<LOCK> sharedSynchronize(*this);
   int buffer;
-  socklen_t len = sizeof(buffer);
-  getSocketOption((int)getHandle(), option, &buffer, &len);
+  unsigned int length = sizeof(buffer);
+  getSocketOption((int)getHandle(), option, &buffer, &length);
   return buffer != 0;
 }
 
@@ -430,8 +435,8 @@ void Socket::setBroadcast(bool value) throw(IOException) {
 int Socket::getLinger() const throw(IOException) {
   SharedSynchronize<LOCK> sharedSynchronize(*this);
   struct linger buffer;
-  socklen_t len = sizeof(buffer);
-  getSocketOption((int)getHandle(), SO_LINGER, &buffer, &len);
+  unsigned int length = sizeof(buffer);
+  getSocketOption((int)getHandle(), SO_LINGER, &buffer, &length);
   return (buffer.l_onoff != 0) ? buffer.l_linger : -1;
 }
 
@@ -449,8 +454,8 @@ void Socket::setLinger(int seconds) throw(IOException) {
 int Socket::getReceiveBufferSize() const throw(IOException) {
   SharedSynchronize<LOCK> sharedSynchronize(*this);
   int buffer;
-  socklen_t len = sizeof(buffer);
-  getSocketOption((int)getHandle(), SO_RCVBUF, &buffer, &len);
+  unsigned int length = sizeof(buffer);
+  getSocketOption((int)getHandle(), SO_RCVBUF, &buffer, &length);
   return buffer;
 }
 
@@ -463,8 +468,8 @@ void Socket::setReceiveBufferSize(int size) throw(IOException) {
 int Socket::getSendBufferSize() const throw(IOException) {
   SharedSynchronize<LOCK> sharedSynchronize(*this);
   int buffer;
-  socklen_t len = sizeof(buffer);
-  getSocketOption((int)getHandle(), SO_SNDBUF, &buffer, &len);
+  unsigned int length = sizeof(buffer);
+  getSocketOption((int)getHandle(), SO_SNDBUF, &buffer, &length);
   return buffer;
 }
 
@@ -476,7 +481,7 @@ void Socket::setSendBufferSize(int size) throw(IOException) {
 
 void Socket::setNonBlocking(bool value) throw(IOException) {
   SharedSynchronize<LOCK> sharedSynchronize(*this);
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int buffer = value; // set to zero to disable nonblocking
   if (ioctlsocket((int)getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
     throw IOException("Unable to set blocking mode", this);
@@ -506,7 +511,7 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
 
 unsigned int Socket::available() const throw(IOException) {
   SharedSynchronize<LOCK> sharedSynchronize(*this);
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int result;
   if (ioctlsocket((int)getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
     throw IOException("Unable to determine the amount of data pending in the input buffer", this);
@@ -537,7 +542,7 @@ unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocki
   assert(!socket->atEnd(), EndOfFile());
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     int result = ::recv((int)socket->getHandle(), buffer, minimum<int>(bytesToRead, PrimitiveTraits<int>::MAXIMUM), 0);
     if (result < 0) { // has an error occured
       switch (::WSAGetLastError()) {
@@ -580,7 +585,7 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     int result = ::send((int)socket->getHandle(), buffer, minimum<int>(bytesToWrite, PrimitiveTraits<int>::MAXIMUM), 0);
     if (result < 0) { // has an error occured
       switch (::WSAGetLastError()) {
@@ -615,7 +620,7 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
 unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(IOException) {
   int result = 0;
   SocketAddress sa;
-  socklen_t sl = sa.getSize();
+  socklen sl = sa.getSize();
   if ((result = ::recvfrom((int)getHandle(),  buffer, size, 0, sa.getValue(), &sl)) == -1) {
     throw IOException("Unable to receive from", this);
   }
@@ -635,21 +640,21 @@ unsigned int Socket::sendTo(const char* buffer, unsigned int size, const InetAdd
 }
 
 void Socket::asyncCancel() throw(AsynchronousException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::CancelIo(getHandle());
 #else // unix
 #endif // flavor
 }
 
 AsynchronousReadOperation Socket::read(char* buffer, unsigned int bytesToRead, AsynchronousReadEventListener* listener) throw(AsynchronousException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncReadStreamContext(getHandle(), buffer, bytesToRead, listener);
 #endif // flavor
 }
 
 AsynchronousWriteOperation Socket::write(const char* buffer, unsigned int bytesToWrite, AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncWriteStreamContext(getHandle(), buffer, bytesToWrite, listener);
 #endif // flavor

@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   SAX exception.
   
   @short SAX exception.
-  @ingroup exceptions
+  @ingroup exceptions xml
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

@@ -204,7 +204,7 @@ public:
     @param value The value to be inserted.
   */
   void insert(unsigned int index, const Value& value) throw(OutOfRange, MemoryException) {
-    assert(index < getSize(), OutOfRange());
+    assert(index <= getSize(), OutOfRange());
     setSize(getSize() + 1);
     Value* elements = getElements(); // size must be set before
     move(elements + index + 1, elements + index, getSize() - index);

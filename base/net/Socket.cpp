@@ -20,7 +20,7 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <winsock2.h>
-#else // Unix
+#else // unix
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <sys/socket.h>
@@ -32,13 +32,13 @@
   #include <stropts.h> // defines FLUSH macros
   #include <string.h> // memset (required on solaris)
   #include <limits.h> // defines SSIZE_MAX
-     #include <arpa/inet.h>
+  #include <arpa/inet.h>
 
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     #define BSD_COMP 1 // request BSD flags - don't known if this is ok to do
   #endif
   #include <sys/ioctl.h> // defines FIONREAD
-#endif
+#endif // flavour
 
 // do we need to repair bad header file
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) && defined(bind)
@@ -218,11 +218,11 @@ Socket::SocketImpl::~SocketImpl() throw(IOException) {
     if (::closesocket(getHandle())) {
       throw NetworkException("Unable to close socket");
     }
-#else // Unix
+#else // unix
     if (::close(getHandle())) {
       throw NetworkException("Unable to close socket");
     }
-#endif
+#endif // flavour
   }
 }
 
@@ -250,7 +250,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
       throw NetworkException("Unable to accept connection");
     }
   }
-#else // Unix
+#else // unix
   if (handle == -1) {
     switch (errno) {
     case EAGAIN: // EWOULDBLOCK
@@ -259,7 +259,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
       throw NetworkException("Unable to accept connection");
     }
   }
-#endif
+#endif // flavour
   this->socket = new SocketImpl(handle);
   this->socket->setRemoteAddress(sa.getAddress());
   this->socket->setRemotePort(sa.getPort());
@@ -300,7 +300,7 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
     default:
       throw NetworkException("Unable to connect to socket");
     }
-#else // Unix
+#else // unix
     switch (errno) {
     case ECONNREFUSED:
       throw AccessDenied();
@@ -309,7 +309,7 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
     default:
       throw NetworkException("Unable to connect to socket");
     }
-#endif
+#endif // flavour
   }
 //  sa.setSocket(getHandle());
 //  socket->setLocalAddress(sa.getAddress());
@@ -374,11 +374,11 @@ void Socket::shutdownInputStream() throw(IOException) {
   if (::shutdown(getHandle(), SD_RECEIVE)) { // disallow further receives
     throw IOException("Unable to shutdown socket for reading");
   }
-#else // Unix
+#else // unix
   if (::shutdown(getHandle(), 0)) { // disallow further receives
     throw IOException("Unable to shutdown socket for reading");
   }
-#endif
+#endif // flavour
 }
 
 void Socket::shutdownOutputStream() throw(IOException) {
@@ -387,11 +387,11 @@ void Socket::shutdownOutputStream() throw(IOException) {
   if (::shutdown(getHandle(), SD_SEND)) { // disallow further sends
     throw IOException("Unable to shutdown socket for writing");
   }
-#else // Unix
+#else // unix
   if (::shutdown(getHandle(), 1)) { // disallow further sends
     throw IOException("Unable to shutdown socket for writing");
   }
-#endif
+#endif // flavour
 }
 
 bool Socket::getBooleanOption(int option) const throw(IOException) {
@@ -486,7 +486,7 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
   if (ioctlsocket(getHandle(), FIONBIO, pointer_cast<u_long*>(&buffer))) {
     throw IOException("Unable to set blocking mode");
   }
-#else // Unix
+#else // unix
   int flags;
   if ((flags = fcntl(getHandle(), F_GETFL)) == -1) {
     throw IOException("Unable to get flags for socket");
@@ -506,7 +506,7 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
       }
     }
   }
-#endif
+#endif // flavour
 }
 
 unsigned int Socket::available() const throw(IOException) {
@@ -517,14 +517,14 @@ unsigned int Socket::available() const throw(IOException) {
     throw IOException("Unable to determine the amount of data pending in the input buffer");
   }
   return result;
-#else // Unix
+#else // unix
   // this implementation is not very portable?
   int result;
   if (ioctl(getHandle(), FIONREAD, &result)) {
     throw IOException("Unable to determine the amount of data pending in the input buffer");
   }
   return result;
-#endif
+#endif // flavour
 }
 
 bool Socket::atEnd() const throw() {
@@ -554,7 +554,7 @@ unsigned int Socket::read(char* buffer, unsigned int size, bool nonblocking) thr
         throw IOException("Unable to read from socket");
       }
     }
-#else // Unix
+#else // unix
     unsigned int bytesToRead = (size <= SSIZE_MAX) ? size : SSIZE_MAX;
     int result = ::recv(socket->getHandle(), buffer, bytesToRead, 0);
     if (result < 0) { // has an error occured
@@ -567,7 +567,7 @@ unsigned int Socket::read(char* buffer, unsigned int size, bool nonblocking) thr
         throw IOException("Unable to read from socket");
       }
     }
-#endif
+#endif // flavour
     bytesRead += result;
     if (nonblocking) { // accept whatever has been read in nonblocking mode
       break;
@@ -596,7 +596,7 @@ unsigned int Socket::write(const char* buffer, unsigned int size, bool nonblocki
         throw IOException("Unable to write to socket");
       }
     }
-#else // Unix
+#else // unix
     int result = ::send(socket->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX, 0);
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
@@ -608,7 +608,7 @@ unsigned int Socket::write(const char* buffer, unsigned int size, bool nonblocki
         throw IOException("Unable to write to socket");
       }
     }
-#endif
+#endif // flavour
     bytesWritten += result;
   }
   return bytesWritten;

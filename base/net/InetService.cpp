@@ -16,10 +16,10 @@
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   #include <winsock.h>
-#else // __unix__
+#else // unix
   #include <netdb.h>
   #include <netinet/in.h>
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

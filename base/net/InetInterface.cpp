@@ -20,13 +20,13 @@
   #include <sys/types.h>
   #include <sys/socket.h>
   #include <net/if.h>
-#else // Unix
+#else // unix
   #include <sys/types.h>
   #include <sys/socket.h>
   #include <net/if.h>
   #include <sys/ioctl.h>
   #include <unistd.h>
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

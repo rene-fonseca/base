@@ -20,7 +20,7 @@
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32) // temporary solution until arch independant types have been defined
   #include <winsock.h>
   typedef DWORD uint32_t;
-#else // Unix
+#else // unix
   #include <sys/types.h>
   #include <sys/socket.h>
   #include <sys/param.h> // may define MAXHOSTNAMELEN (linux, irix)
@@ -28,7 +28,7 @@
   #include <netdb.h> // may define MAXHOSTNAMELEN (solaris)
   #include <arpa/inet.h> // defines inet_ntop...
   #include <unistd.h> // defines gethostname
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -72,10 +72,10 @@ String InetAddress::getLocalHost() throw(NetworkException) {
   if (gethostname(name, buffer->getSize())) {
     throw NetworkException("Unable to get local host name");
   }
-#else // Unix
+#else // unix
   char name[MAXHOSTNAMELEN + 1]; // does MAXHOSTNAMELEN include terminator
   gethostname(name, sizeof(name));
-#endif
+#endif // flavour
   return String(name);
 }
 
@@ -112,7 +112,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
   }
 
   freeaddrinfo(ai); // release resources - MT-level is safe
-#else // use ordinary BSD sockets
+#else // use ordinary BSD sockets - IPv4
   struct hostent* hp;
 
   #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
@@ -289,7 +289,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
   }
 
   return String(hostname);
-#else // use ordinary BSD sockets
+#else // use ordinary BSD sockets - IPv4
   struct hostent* hp;
 
   #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)

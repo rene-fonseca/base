@@ -208,11 +208,20 @@ WideString& WideString::insert(unsigned int index, const WideStringLiteral& str)
   return *this;
 }
 
-WideString& WideString::append(const WideStringLiteral& str, unsigned int maximum) throw(WideStringException, MemoryException) {
+WideString& WideString::append(const WideStringLiteral& str) throw(WideStringException, MemoryException) {
   int length = getLength();
   setLength(length + str.getLength());
   Character* buffer = elements->getElements();
   copy<Character>(buffer + length, str, str.getLength());
+  return *this;
+}
+
+WideString& WideString::append(const WideStringLiteral& str, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException) {
+  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
+  int length = getLength();
+  setLength(length + minimum(str.getLength(), maximum));
+  Character* buffer = elements->getElements();
+  copy<Character>(buffer + length, str, minimum(str.getLength(), maximum));
   return *this;
 }
 

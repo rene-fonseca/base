@@ -438,19 +438,19 @@ public:
   inline WideString& append(const WideString& str) throw(WideStringException, MemoryException) {return insert(getLength(), str);}
 
   /**
-    Appends the NULL-terminated string to this string.
+    Appends the string literal to this string.
 
     @param str The string to be appended.
   */
-  inline WideString& append(const WideStringLiteral& str) throw(WideStringException, MemoryException) {return insert(getLength(), str);}
+  WideString& append(const WideStringLiteral& str) throw(WideStringException, MemoryException);
 
   /**
-    Appends the NULL-terminated string to this string.
+    Appends the string literal to this string.
 
     @param str The string to be appended.
     @param maximum The maximum length of the to be appended string.
   */
-  WideString& append(const WideStringLiteral& str, unsigned int maximum) throw(WideStringException, MemoryException);
+  WideString& append(const WideStringLiteral& str, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException);
 
   /**
     Appends the NULL-terminated string to this string.

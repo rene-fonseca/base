@@ -432,10 +432,17 @@ public:
   inline String& append(const char* str) throw(StringException, MemoryException) {return insert(getLength(), str);}
 
   /**
-    Appends the NULL-terminated string to this string.
+    Appends the string literal to this string.
 
     @param str The string to be appended.
-    @param maximum The maximum length of the to be appended string.
+  */
+  String& append(const StringLiteral& str) throw(StringException, MemoryException);
+
+  /**
+    Appends the string literal to this string.
+
+    @param str The string to be appended.
+    @param maximum The maximum length of the string to be appended.
   */
   String& append(const StringLiteral& str, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException);
 
@@ -443,7 +450,7 @@ public:
     Appends the NULL-terminated string to this string.
 
     @param str The string to be appended.
-    @param maximum The maximum length of the to be appended string.
+    @param maximum The maximum length of the string to be appended.
   */
   String& append(const char* str, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException);
 

@@ -178,12 +178,20 @@ String& String::insert(unsigned int index, const char* str) throw(StringExceptio
   return *this;
 }
 
-String& String::append(const StringLiteral& str, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException) {
-  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
+String& String::append(const StringLiteral& str) throw(StringException, MemoryException) {
   int length = getLength();
   setLength(length + str.getLength());
   Character* buffer = elements->getElements();
   copy<Character>(buffer + length, str, str.getLength());
+  return *this;
+}
+
+String& String::append(const StringLiteral& str, unsigned int maximum) throw(OutOfDomain, StringException, MemoryException) {
+  assert(maximum <= MAXIMUM_LENGTH, OutOfDomain()); // maximum length exceeded
+  int length = getLength();
+  setLength(length + minimum(str.getLength(), maximum));
+  Character* buffer = elements->getElements();
+  copy<Character>(buffer + length, str, minimum(str.getLength(), maximum));
   return *this;
 }
 

@@ -24,9 +24,14 @@
 #include <base/string/WideStringException.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Type.h>
-#include <wctype.h>
+
+#if defined(_DK_SDU_MIP__BASE__WIDE)
+  #include <wctype.h>
+#endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+#if defined(_DK_SDU_MIP__BASE__WIDE)
 
 /**
   This class binds together a wide string literal and its length. Use the macro
@@ -787,6 +792,8 @@ inline WideString operator-(const WideString& left, const WideString& right) thr
     return WideString(left); // return copy of left
   }
 }
+
+#endif // wide-character interface is available
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -19,6 +19,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if defined(_DK_SDU_MIP__BASE__WIDE)
+
 #if !defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
   #warning Assumes that mbstowcs is reentrant
 #endif
@@ -461,5 +463,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& val
   stream.addCharacterField(buffer.getElements(), result);
   return stream;
 }
+
+#endif // wide-character interface is available
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

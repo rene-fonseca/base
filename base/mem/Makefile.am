@@ -39,17 +39,18 @@ section_HEADERS = \
   DebugDynamicMemory.h \
   DynamicMemory.h \
   Heap.h \
+  Indirect.h \
   Lifetime.h \
   MemoryCorruption.h \
   MemoryDump.h \
   NullPointer.h \
+  OwnershipPointer.h \
   ProtectedPointer.h \
   Reference.h \
-  ReferenceCountedObjectWrapper.h \
-  ReferenceCounter.h \
-  ReferenceCountedObject.h \
-  OwnershipPointer.h \
   ReferenceCountedAllocator.h \
   ReferenceCountedCapacityAllocator.h \
+  ReferenceCountedObject.h \
+  ReferenceCountedObjectWrapper.h \
+  ReferenceCounter.h \
   SharedMemory.h \
   VirtualMemory.h

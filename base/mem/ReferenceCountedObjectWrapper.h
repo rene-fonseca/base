@@ -65,7 +65,7 @@ public:
   }
 
   /**
-    Type cast to Pointer.
+    Type cast to pointer.
   */
   inline operator TYPE*() const throw() {
     return object;
@@ -74,8 +74,10 @@ public:
   /**
     Destroys the wrapper.
   */
-  inline ~ReferenceCountedObjectWrapper() {
-    delete object;
+  inline ~ReferenceCountedObjectWrapper() /*throw(...)*/ {
+    if (object) {
+      delete object;
+    }
   }
 };
 

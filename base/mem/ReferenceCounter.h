@@ -83,7 +83,8 @@ public:
   /**
     Initialization of automation pointer from other automation pointer.
   */
-  inline ReferenceCounter(const ReferenceCounter& copy) : ptr(copy.ptr), references(copy.references) {
+  inline ReferenceCounter(const ReferenceCounter& copy) throw()
+    : ptr(copy.ptr), references(copy.references) {
     ++*references;
   }
 
@@ -92,7 +93,8 @@ public:
     compile time polymorphism.
   */
   template<class POLY>
-  inline ReferenceCounter(const ReferenceCounter<POLY>& copy) : ptr(copy.ptr), references(copy.references) {
+  inline ReferenceCounter(const ReferenceCounter<POLY>& copy) throw()
+    : ptr(copy.ptr), references(copy.references) {
     ++*references;
   }
 
@@ -115,7 +117,7 @@ public:
   /**
     Assignment of automation pointer to this automation pointer.
   */
-  inline ReferenceCounter& operator=(const ReferenceCounter& eq) {
+  inline ReferenceCounter& operator=(const ReferenceCounter& eq) /*throw(...)*/ {
     if (&eq != this) { // protect against self assignment
       if (!--*references) { // remove reference and possible destroy object
         if (ptr) { // skip if pointer is invalid
@@ -135,7 +137,7 @@ public:
     time polymorphism.
   */
   template<class POLY>
-  inline ReferenceCounter& operator=(const ReferenceCounter<POLY>& eq) {
+  inline ReferenceCounter& operator=(const ReferenceCounter<POLY>& eq) /*throw(...)*/ {
     ASSERT(&eq != this); // no need to protect against self assignment
     if (!--*references) { // remove reference and possible destroy object
       if (ptr) { // skip if pointer is invalid
@@ -161,7 +163,7 @@ public:
   /**
     Sets the pointer value of this automation pointer.
   */
-  inline void setValue(Pointer value) {
+  inline void setValue(Pointer value) /*throw(...)*/ {
     if (!--*references) { // remove reference and possible destroy object
       if (ptr) { // skip if pointer is invalid
         delete ptr; // could throw exception if RCO is destroyed unsuccessfully
@@ -224,7 +226,7 @@ public:
   /**
     Destroys the automation pointer.
   */
-  inline ~ReferenceCounter() {
+  inline ~ReferenceCounter() /*throw(...)*/ {
     if (!--*references) { // remove reference
       if (ptr) { // skip if pointer is invalid
         delete ptr; // could throw exception if RCO is destroyed unsuccessfully

@@ -21,6 +21,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <limits.h>
+#include <ctype.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -41,22 +42,51 @@ struct StringLiteral {
 /** This macro generates a StringLiteral object from a string literal. */
 #define MESSAGE(msg) StringLiteral(sizeof(msg), msg)
 
-/**
-  This structure binds together a wide string literal and its size. Use the macro WIDEMESSAGE to generate an object of this class for a given wide string literal (e.g. WIDEMESSAGE("Hello World")). Do not call the constructor manually.
-*/
-struct WideStringLiteral {
-  /** The number of bytes occupied by the message including a terminator. */
-  const unsigned int size;
-  /** NULL-terminated message. */
-  const wchar_t* message;
-  /** Initializes message. Automatically invocated by the macro WIDEMESSAGE. */
-  inline WideStringLiteral(unsigned int s, const wchar_t* m) : size(s), message(m) {}
-  /** Cast to the usual message type. */
-  inline operator const wchar_t*() const {return message;}
-};
 
-/** This macro generates a WideStringLiteral object from a string literal. */
-#define WIDEMESSAGE(msg) WideStringLiteral(sizeof(L ## msg), L ## msg)
+/**
+  Default character manipulators.
+
+  @author René Møller Fonseca
+  @version 1.0
+*/
+class CharTraits {
+public:
+
+  /** The type of a single character. */
+  typedef char Character;
+  /** Specifies the terminator for null-terminated strings. */
+  static const char TERMINATOR = '\0';
+
+  /** Returns true if the character an alphabetic character. */
+  static inline bool isAlpha(Character character) {return isalpha(character);}
+  /** Returns true if the character an alphabetic character or a digit. */
+  static inline bool isAlphaNum(Character character) {return isalnum(character);}
+  /** Returns true if the character is lowercase. */
+  static inline bool isLower(Character character) {return islower(character);}
+  /** Returns true if the character is uppercase. */
+  static inline bool isUpper(Character character) {return isupper(character);}
+  /** Returns true if the character is a digit. */
+  static inline bool isDigit(Character character) {return isdigit(character);}
+  /** Returns true if the character is a hex digit. */
+  static inline bool isHexDigit(Character character) {return isxdigit(character);}
+  /** Returns true if the character is a white space. */
+  static inline bool isSpace(Character character) {return isspace(character);}
+  /** Returns true if the character is a punctuation mark. */
+  static inline bool isPunctuation(Character character) {return ispunct(character);}
+  /** Returns true if the character is printable. */
+  static inline bool isPrintable(Character character) {return isprint(character);}
+  /** Returns true if the character is a visible character. */
+  static inline bool isGraph(Character character) {return isgraph(character);}
+  /** Returns true if the character is a control character. */
+  static inline bool isControl(Character character) {return iscntrl(character);}
+  /** Returns true if the character is an ASCII character. */
+  static inline bool isASCII(Character character) {return isascii(character);}
+
+  /** Converts the character to lowercase. */
+  static inline Character toLower(Character character) throw() {return tolower(character);}
+  /** Converts the character to uppercase. */
+  static inline Character toUpper(Character character) throw() {return toupper(character);}
+};
 
 /**
   String class. The first modifing operation on a string may force the internal
@@ -70,6 +100,8 @@ struct WideStringLiteral {
 class String : public virtual Object {
 public:
 
+  typedef CharTraits Traits;
+
   /** Specifies the string terminator. */
   static const char TERMINATOR = '\0';
   /** Specifies the granularity of the capacity. Guaranteed to be greater than 0. */
@@ -81,45 +113,10 @@ public:
   typedef ReferenceCountedCapacityAllocator<char>::ReadIterator ReadIterator;
   typedef ReferenceCountedCapacityAllocator<char>::Enumerator Enumerator;
   typedef ReferenceCountedCapacityAllocator<char>::ReadEnumerator ReadEnumerator;
-
-//  class Enumeration;
-//  friend class Enumeration;
-//  class ReadOnlyEnumeration;
-//  friend class ReadOnlyEnumeration;
-//
-//  /**
-//    Enumeration of all the elements of a string.
-//  */
-//  class Enumeration : public AllocatorEnumeration<char, char&, char*> {
-//  public:
-//
-//    /**
-//      Initializes an enumeration of all the elements of the specified string.
-//
-//      @param string The string being enumerated.
-//    */
-//    Enumeration(String& string) throw() :
-//      AllocatorEnumeration<char, char&, char*>(string.getMutableBuffer(), string.getMutableBuffer() + string.getLength()) {}
-//  };
-//
-//  /**
-//    Non-modifying enumeration of all the elements of a string.
-//  */
-//  class ReadOnlyEnumeration : public AllocatorEnumeration<char, const char&, const char*> {
-//  public:
-//
-//    /**
-//      Initializes a non-modifying enumeration of all the elements of the specified string.
-//
-//      @param string The string being enumerated.
-//    */
-//    ReadOnlyEnumeration(const String& string) throw() :
-//      AllocatorEnumeration<char, const char&, const char*>(string.getReadOnlyBuffer(), string.getReadOnlyBuffer() + string.getLength()) {}
-//  };
 private:
 
   /**
-    Reference to an element within a map.
+    Reference to an element within a string.
   */
   class Reference {
   private:

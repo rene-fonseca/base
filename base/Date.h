@@ -57,6 +57,30 @@ public:
     FRIDAY = 5,
     /** Index of Saturday. */
     SATURDAY = 6,
+    /** Normalized index for January. */
+    JANUARY = 0,
+    /** Normalized index for February. */
+    FEBRUARY = 1,
+    /** Normalized index for March. */
+    MARCH = 2,
+    /** Normalized index for April. */
+    APRIL = 3,
+    /** Normalized index for May. */
+    MAY = 4,
+    /** Normalized index for June. */
+    JUNE = 5,
+    /** Normalized index for July. */
+    JULY = 6,
+    /** Normalized index for August. */
+    AUGUST = 7,
+    /** Normalized index for September. */
+    SEPTEMBER = 8,
+    /** Normalized index for October. */
+    OCTOBER = 9,
+    /** Normalized index for November. */
+    NOVEMBER = 10,
+    /** Normalized index for December. */
+    DECEMBER = 11,
     /** The year of the epoch. */
     EPOCH_YEAR = 1970,
     /** The weekday of the first epoch day. */

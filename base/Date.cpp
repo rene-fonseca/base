@@ -212,10 +212,11 @@ int Date::normalize(DateTime& dateTime, bool redundancy) throw() {
 
     int y = year + 4800; // 'a' is subtracted above
     int m = month + 1 + MONTHS_PER_YEAR * a - 3;
-    // Julian day - Gregorian calendar
-    int JD = day + (153 * m + 2)/5 + 365 * y + y/4 - y/100 + y/400 - 32045;
+    // Gregorian calendar
+    int julianDay =
+      day + (153 * m + 2)/5 + 365 * y + y/4 - y/100 + y/400 - 32045;
 
-    int d4 = (JD + 31741 - (JD % 7)) % 146097 % 36524 % 1461;
+    int d4 = (julianDay + 31741 - (julianDay % 7)) % 146097 % 36524 % 1461;
     int L  = d4/1460;
     int d1 = ((d4 - L) % 365) + L;
     dateTime.week = d1/7 + 1;
@@ -242,12 +243,19 @@ int Date::getDayOfWeek(int day, int month, int year) throw() {
   dt.second = 0;
   dt.millisecond = 0;
   normalize(dt, false);
-  int a = (dt.month <= 1) ? 1 : 0;
-  year -= a;
-  return (dt.day + dt.year + dt.year/4 - dt.year/100 + dt.year/400 + 31 * (dt.month + 1 + MONTHS_PER_YEAR * a - 2)/MONTHS_PER_YEAR)%7;
+  
+  int a = (14 - (dt.month + 1))/MONTHS_PER_YEAR;
+  int y = dt.year - a;
+  int m = (dt.month + 1) + MONTHS_PER_YEAR * a - 2;
+  // Julian calendar: d = (5 + day + y + y/4 + (31*m)/12) mod 7
+  // Gregorian calendar: d = (day + y + y/4 - y/100 + y/400 + (31*m)/12) mod 7
+  return ((dt.day + 1) + y + y/4 - y/100 + y/400 +
+    (31 * m)/MONTHS_PER_YEAR)%DAYS_PER_WEEK;
+  // TAG: 0 for Sunday but should be 6 according to ISO...
 }
 
 int Date::getWeek(int day, int month, int year) throw() {
+  // week number as defined in ISO-8601
   DateTime dt;
   dt.year = year;
   dt.month = month;
@@ -257,16 +265,19 @@ int Date::getWeek(int day, int month, int year) throw() {
   dt.second = 0;
   dt.millisecond = 0;
   normalize(dt, false);
-  int a = (dt.month <= 1) ? 1 : 0; // (14 - dt.month)/MONTHS_PER_YEAR
-  int y = dt.year + 4800 - a;
-  int m = dt.month + 1 + MONTHS_PER_YEAR * a - 3;
-  // Julian day - Gregorian calendar
-  int JD = dt.day + (153 * m + 2)/5 + 365 * y + y/4 - y/100 + y/400 - 32045;
   
-  int d4 = (JD + 31741 - (JD % 7)) % 146097 % 36524 % 1461;
+  int a = (14 - (dt.month + 1))/MONTHS_PER_YEAR;
+  int y = dt.year + 4800 - a;
+  int m = (dt.month + 1) + MONTHS_PER_YEAR * a - 3;
+  // Gregorian calendar
+  int julianDay =
+    (dt.day + 1) + (153 * m + 2)/5 + 365 * y + y/4 - y/100 + y/400 - 32045;
+  
+  int d4 =
+    (julianDay + 31741 - (julianDay % DAYS_PER_WEEK)) % 146097 % 36524 % 1461;
   int L  = d4/1460;
   int d1 = ((d4 - L) % 365) + L;
-  return d1/7 + 1;
+  return d1/DAYS_PER_WEEK + 1;
 }
 
 int Date::getDayOfYear(int day, int month, int year) throw() {
@@ -753,10 +764,16 @@ int Date::getUTCYear() const throw() {
 #endif
 }
 
+// http://www.faqs.org/faqs/calendars/faq/part2
+
 Date Date::getDateByJulianDay(int julianDay) throw() {
+  // Gregorian calendar
   int a = julianDay + 32044;
   int b = (4 * a + 3)/146097;
   int c = a - (b * 146097)/4;
+
+  // For the Julian calendar: b = 0 and c = julianDay + 32082
+  
   int d = (4 * c + 3)/1461;
   int e = c - (1461 * d)/4;
   int m = (5 * e + 2)/153;
@@ -766,59 +783,79 @@ Date Date::getDateByJulianDay(int julianDay) throw() {
   return getDate(day, month, year);
 }
 
+// ISO-8601: monday first day of week
+
 int Date::getJulianDay() const throw() {
   DateTime dt;
   split(dt);
-  int a = (dt.month <= 1) ? 1 : 0; // (14 - dt.month)/MONTHS_PER_YEAR
+  // 10 BC => -9
+  int a = (14 - (dt.month + 1))/MONTHS_PER_YEAR;
   int y = dt.year + 4800 - a;
-  int m = dt.month + MONTHS_PER_YEAR * a - 3;
+  int m = (dt.month + 1) + MONTHS_PER_YEAR * a - 3;
   // Gregorian calendar
-  return dt.day + (153 * m + 2)/5 + 365 * y + y/4 - y/100 + y/400 - 32045;
+  return (dt.day + 1) +
+    (153 * m + 2)/5 + 365 * y + y/4 - y/100 + y/400 - 32045;
+  // Julian calendar
+  // return (dt.day + 1) + (153 * m + 2)/5 + 365 * y + y/4 - 32083;
 }
 
 void Date::split(DateTime& result, bool local) const throw() {
-  // if local then add timezone bias
-//   // milliseconds?
-//   int days = date/SECONDS_PER_DAY;
-//   int seconds = date%SECONDS_PER_DAY;
-//   if (seconds < 0) {
-//     seconds += SECONDS_PER_DAY;
-//     --days;
-//   }
-//   result.hour = seconds/SECONDS_PER_HOUR;
-//   seconds %= SECONDS_PER_HOUR;
-//   result.minute = seconds/SECONDS_PER_MINUTE;
-//   result.second = seconds%SECONDS_PER_MINUTE;
-
-//   int weekday = (EPOCH_WEEKDAY + days)%DAYS_PER_WEEK;
-//   if (weekday < 0) {
-//     weekday += DAYS_PER_WEEK;
-//   }
-//   result.weekday = weekday;
-
-// TAG: fixme - calc. week
+#if 0
+  result.microsecond = date%1000000;
+  int days = date/SECONDS_PER_DAY;
+  int seconds = date%SECONDS_PER_DAY;
+  if (seconds < 0) {
+    seconds += SECONDS_PER_DAY;
+    --days;
+  }
+  result.hour = seconds/SECONDS_PER_HOUR;
+  seconds %= SECONDS_PER_HOUR;
+  result.minute = seconds/SECONDS_PER_MINUTE;
+  result.second = seconds%SECONDS_PER_MINUTE;
   
-//   if (days >= 0) {
-//     int year = EPOCH_YEAR;
-//     while (true) { // TAG: need otimization
-//       bool leapYear = isLeapYear(year);
-//       int daysInYear = leapYear ? DAYS_PER_LEAP_YEAR : DAYS_PER_NONLEAP_YEAR;
-//       if (days < daysInYear) {
-//         break;
-//       }
-//       ++year;
-//       days -= daysInYear;
-//     }
-//   } else {
-//     do { // TAG: need otimization
-//       --year;
-//       bool leapYear = isLeapYear(year);
-//       int daysInYear = leapYear ? DAYS_PER_LEAP_YEAR : DAYS_PER_NONLEAP_YEAR;
-//       days += daysInYear;
-//     } while (days < 0);
-//   }
-//   result.year = year;
-//   result.dayOfYear = days;
+  int weekday = (EPOCH_WEEKDAY + days)%DAYS_PER_WEEK;
+  if (weekday < 0) {
+    weekday += DAYS_PER_WEEK;
+  }
+  result.weekday = weekday;
+
+  {
+    int a = (month <= 1) ? 1 : 0; // (14 - month)/MONTHS_PER_YEAR
+    int y = year + 4800 - a;
+    int m = month + 1 + MONTHS_PER_YEAR * a - 3;
+    // Gregorian calendar
+    int julianDay =
+      day + (153 * m + 2)/5 + 365 * y + y/4 - y/100 + y/400 - 32045;
+    
+    int d4 = (julianDay + 31741 - (julianDay % 7)) % 146097 % 36524 % 1461;
+    int L  = d4/1460;
+    int d1 = ((d4 - L) % 365) + L;
+    result.week = d1/7 + 1;
+  }
+  
+  if (days >= 0) {
+    int year = EPOCH_YEAR;
+    while (true) { // TAG: need otimization
+      bool leapYear = isLeapYear(year);
+      int daysInYear = leapYear ? DAYS_PER_LEAP_YEAR : DAYS_PER_NONLEAP_YEAR;
+      if (days < daysInYear) {
+        break;
+      }
+      ++year;
+      days -= daysInYear;
+    }
+  } else {
+    do { // TAG: need otimization
+      --year;
+      bool leapYear = isLeapYear(year);
+      int daysInYear = leapYear ? DAYS_PER_LEAP_YEAR : DAYS_PER_NONLEAP_YEAR;
+      days += daysInYear;
+    } while (days < 0);
+  }
+  result.year = year;
+  result.dayOfYear = days;
+#endif
+    // if local then add timezone bias
   
 //   bool leapYear = isLeapYear(year);
 //   const int daysBeforeMonth[MONTHS_PER_YEAR] = leapYear ? DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR : DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR;
@@ -1091,9 +1128,11 @@ String Date::format(
           int bias = +1234; // TAG: FIXME
           ASSERT((bias >= -(12*60 + 59)) && (bias <= (12*60 + 59))); // 
           if (bias > 0) {
-            stream << '+' << setWidth(2) << ZEROPAD << bias/60 << setWidth(2) << ZEROPAD << bias%60;
+            stream << '+' << setWidth(2) << ZEROPAD << bias/60
+                   << setWidth(2) << ZEROPAD << bias%60;
           } else {
-            stream << '-' << setWidth(2) << ZEROPAD << -bias/60 << setWidth(2) << ZEROPAD << -bias%60;
+            stream << '-' << setWidth(2) << ZEROPAD << -bias/60
+                   << setWidth(2) << ZEROPAD << -bias%60;
           }
         }
         break;

@@ -52,7 +52,11 @@ void Button::onMouseScope(bool scope) throw() {
   invalidate();
 }
 
-void Button::onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) throw() {
+void Button::onMouseButton(
+  const Position& position,
+  Mouse::Button button,
+  Mouse::Event event,
+  unsigned int state) throw() {
   if (button == Mouse::LEFT) {
     if (event == Mouse::PRESSED) {
       pressed = true;
@@ -79,7 +83,10 @@ void Button::onSelection() throw() {
   fout << "Button: Selection event" << ENDL;
 }
 
-void Button::onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
+void Button::onKey(
+  unsigned int key,
+  unsigned int flags,
+  unsigned int modifiers) throw() {
   if (flags & Key::PRESSED) {
     if (flags & Key::DEAD) {
       return;

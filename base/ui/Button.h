@@ -78,12 +78,17 @@ public:
   /**
     Invoked when a mouse button is pressed or released over the button.
   */
-  void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) throw();
+  void onMouseButton(
+    const Position& position,
+    Mouse::Button button,
+    Mouse::Event event,
+    unsigned int state) throw();
 
   /**
     Invoked on keyboard events.
   */
-  void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw();
+  void onKey(
+    unsigned int key, unsigned int flags, unsigned int modifiers) throw();
 
   /**
     Invoked when the button must be updated.

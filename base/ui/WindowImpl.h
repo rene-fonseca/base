@@ -626,6 +626,10 @@ public:
   */
   void raise() throw(UserInterfaceException);
   
+  // TAG: add methods
+  // bool hasFocus() const throw();
+  // void relinquishFocus() const throw(UserInterfaceException);
+  
   /**
     Acquire focus for this window.
   */

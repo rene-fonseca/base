@@ -459,7 +459,7 @@ public:
     
     @param upperLeft The upper left corner.
     @param lowerRight The lower right corner.
-    @param brush The brush use to fill the rectangle.
+    @param brush The brush used to fill the rectangle.
     @param flags The flags.
   */
   void rectangle(
@@ -473,7 +473,7 @@ public:
 
     @param position The upper left corner.
     @param dimension The dimension of the rectangle.
-    @param brush The brush use to fill the rectangle.
+    @param brush The brush used to fill the rectangle.
     @param flags The flags.
   */
   void rectangle(

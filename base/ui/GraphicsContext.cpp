@@ -352,12 +352,15 @@ void GraphicsContext::setPixel(
     UserInterfaceException(this)
   );
 #else // unix
-  ::XDrawPoint(
-    (Display*)displayHandle,
-    (::Window)drawableHandle,
-    (GC)graphicsContextHandle,
-    position.getX(),
-    position.getY()
+  assert(
+    ::XDrawPoint(
+      (Display*)displayHandle,
+      (::Window)drawableHandle,
+      (GC)graphicsContextHandle,
+      position.getX(),
+      position.getY()
+    ) == 0,
+    UserInterfaceException(this)
   );
 #endif // flavor
 }
@@ -397,7 +400,20 @@ void GraphicsContext::setPixels(
     );
   }
 #else // unix
-  // TAG: fixme
+  Array<Position>::ReadIterator i = positions.getBeginReadIterator();
+  const Array<Position>::ReadIterator end = positions.getEndReadIterator();
+  while (i != end) {
+    assert(
+      ::XDrawPoint(
+        (Display*)displayHandle,
+        (::Window)drawableHandle,
+        (GC)graphicsContextHandle,
+        i->getX(),
+        i->getY()
+      ) == 0,
+      UserInterfaceException(this)
+    );
+  }
 //   XPoint* points = 0;
 //   ::XDrawPoints(
 //     (Display*)displayHandle,
@@ -464,14 +480,17 @@ void GraphicsContext::line(
     UserInterfaceException(this)
   );
 #else // unix
-  ::XDrawLine(
-    (Display*)displayHandle,
-    (::Window)drawableHandle,
-    (GC)graphicsContextHandle,
-    upperLeft.getX(),
-    upperLeft.getY(),
-    lowerRight.getX(),
-    lowerRight.getY()
+  assert(
+    ::XDrawLine(
+      (Display*)displayHandle,
+      (::Window)drawableHandle,
+      (GC)graphicsContextHandle,
+      upperLeft.getX(),
+      upperLeft.getY(),
+      lowerRight.getX(),
+      lowerRight.getY()
+    ) == 0,
+    UserInterfaceException(this)
   );
 #endif // flavor  
 }
@@ -496,6 +515,9 @@ void GraphicsContext::line(
 // //   );
 // #endif // flavor  
 // }
+
+// void GraphicsContext::segments() throw(UserInterface);
+// XDrawSegments
 
 void GraphicsContext::arc(
   const Position& position,
@@ -573,27 +595,19 @@ void GraphicsContext::rectangle(
     UserInterfaceException(this)
   );
 #else // unix
-//   if (flags & GraphicsContext::FILLED) {
-//     ::XFillRectangle(
-//       (Display*)displayHandle,
-//       (::Window)drawableHandle,
-//       (GC)graphicsContextHandle,
-//       position.getX(),
-//       position.getY(),
-//       dimension.getWidth(),
-//       dimension.getHeight()
-//     );
-//   } else {
-//     ::XDrawRectangle(
-//       (Display*)displayHandle,
-//       (::Window)drawableHandle,
-//       (GC)graphicsContextHandle,
-//       position.getX(),
-//       position.getY(),
-//       dimension.getWidth(),
-//       dimension.getHeight()
-//     );
-//   }
+  // TAG: use current pen and brush
+  assert(
+    ::XDrawRectangle(
+      (Display*)displayHandle,
+      (::Window)drawableHandle,
+      (GC)graphicsContextHandle,
+      upperLeft.getX(),
+      upperLeft.getY(),
+      lowerRight.getX() - upperLeft.getX() + 1,
+      lowerRight.getY() - upperLeft.getY() + 1
+    ) == 0,
+    UserInterfaceException(this)
+  );
 #endif // flavor  
 }
 
@@ -657,7 +671,7 @@ void GraphicsContext::rectangle(
     UserInterfaceException(this)
   );
 #else // unix
-#endif // flavor  
+#endif // flavor
 }
 
 void GraphicsContext::rectangle(
@@ -914,23 +928,21 @@ void GraphicsContext::putBitmap(
   }
 #else // unix
   if (bitmap.handle.isValid()) {
-    fout << displayHandle << ENDL;
-    fout << bitmap.handle->getHandle() << ENDL;
-    WRITE_SOURCE_LOCATION();
-    int result = XPutImage(
-      (Display*)displayHandle,
-      (::Window)drawableHandle,
-      (GC)graphicsContextHandle,
-      (XImage*)bitmap.handle->getHandle(),
-      0, // x
-      0, // y
-      position.getX(),
-      position.getY(),
-      dimension.getWidth(),
-      dimension.getHeight()
+    assert(
+      !XPutImage(
+        (Display*)displayHandle,
+        (::Window)drawableHandle,
+        (GC)graphicsContextHandle,
+        (XImage*)bitmap.handle->getHandle(),
+        0, // x
+        0, // y
+        position.getX(),
+        position.getY(),
+        dimension.getWidth(),
+        dimension.getHeight()
+      ),
+      UserInterfaceException(this)
     );
-    fout << result << ENDL;
-    WRITE_SOURCE_LOCATION();
   }
 #endif // flavor  
 }

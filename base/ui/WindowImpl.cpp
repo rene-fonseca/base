@@ -322,31 +322,76 @@ LONG CALL_UI Backend<WindowImpl>::messageHandler(HWND handle, UINT message, WPAR
       }
       switch (message) {
       case WM_LBUTTONDOWN:
-        window->onMouseButton(position, WindowImpl::Mouse::LEFT, WindowImpl::Mouse::PRESSED, 0);
+        window->onMouseButton(
+          position,
+          WindowImpl::Mouse::LEFT,
+          WindowImpl::Mouse::PRESSED,
+          0
+        );
         return 0;
       case WM_LBUTTONUP:
-        window->onMouseButton(position, WindowImpl::Mouse::LEFT, WindowImpl::Mouse::RELEASED, 0);
+        window->onMouseButton(
+          position,
+          WindowImpl::Mouse::LEFT,
+          WindowImpl::Mouse::RELEASED,
+          0
+        );
         return 0;
       case WM_LBUTTONDBLCLK:
-        window->onMouseButton(position, WindowImpl::Mouse::LEFT, WindowImpl::Mouse::DOUBLE_CLICKED, 0);
+        window->onMouseButton(
+          position,
+          WindowImpl::Mouse::LEFT,
+          WindowImpl::Mouse::DOUBLE_CLICKED,
+          0
+        );
         return 0;
       case WM_MBUTTONDOWN:
-        window->onMouseButton(position, WindowImpl::Mouse::MIDDLE, WindowImpl::Mouse::PRESSED, 0);
+        window->onMouseButton(
+          position,
+          WindowImpl::Mouse::MIDDLE,
+          WindowImpl::Mouse::PRESSED,
+          0
+        );
         return 0;
       case WM_MBUTTONUP:
-        window->onMouseButton(position, WindowImpl::Mouse::MIDDLE, WindowImpl::Mouse::RELEASED, 0);
+        window->onMouseButton(
+          position,
+          WindowImpl::Mouse::MIDDLE,
+          WindowImpl::Mouse::RELEASED,
+          0
+        );
         return 0;
       case WM_MBUTTONDBLCLK:
-        window->onMouseButton(position, WindowImpl::Mouse::MIDDLE, WindowImpl::Mouse::DOUBLE_CLICKED, 0);
+        window->onMouseButton(
+          position,
+          WindowImpl::Mouse::MIDDLE,
+          WindowImpl::Mouse::DOUBLE_CLICKED,
+          0
+        );
         return 0;
       case WM_RBUTTONDOWN:
-        window->onMouseButton(position, WindowImpl::Mouse::RIGHT, WindowImpl::Mouse::PRESSED, 0);
+        window->onMouseButton(
+          position,
+          WindowImpl::Mouse::RIGHT,
+          WindowImpl::Mouse::PRESSED,
+          0
+        );
         return 0;
       case WM_RBUTTONUP:
-        window->onMouseButton(position, WindowImpl::Mouse::RIGHT, WindowImpl::Mouse::RELEASED, 0);
+        window->onMouseButton(
+          position,
+          WindowImpl::Mouse::RIGHT,
+          WindowImpl::Mouse::RELEASED,
+          0
+        );
         return 0;
       case WM_RBUTTONDBLCLK:
-        window->onMouseButton(position, WindowImpl::Mouse::RIGHT, WindowImpl::Mouse::DOUBLE_CLICKED, 0);
+        window->onMouseButton(
+          position,
+          WindowImpl::Mouse::RIGHT,
+          WindowImpl::Mouse::DOUBLE_CLICKED,
+          0
+        );
         return 0;
       }
     }
@@ -386,7 +431,10 @@ LONG CALL_UI Backend<WindowImpl>::messageHandler(HWND handle, UINT message, WPAR
         mouseEvent.dwFlags = TME_LEAVE;
         mouseEvent.hwndTrack = (HWND)window->drawableHandle;
         mouseEvent.dwHoverTime = 0;
-        assert(::TrackMouseEvent(&mouseEvent), UserInterfaceException(Type::getType<WindowImpl>()));
+        assert(
+          ::TrackMouseEvent(&mouseEvent),
+          UserInterfaceException(Type::getType<WindowImpl>())
+        );
         window->onMouseScope(true);
       }
       unsigned int buttons = 0;
@@ -405,7 +453,10 @@ LONG CALL_UI Backend<WindowImpl>::messageHandler(HWND handle, UINT message, WPAR
       if (wParam & MK_SHIFT) {
         buttons |= WindowImpl::Key::SHIFT;
       }
-      window->onMouseMove(Position((int16)LOWORD(lParam), (int16)HIWORD(lParam)), buttons);
+      window->onMouseMove(
+        Position((int16)LOWORD(lParam), (int16)HIWORD(lParam)),
+        buttons
+      );
       return 0;
     }
   case WM_ACTIVATE:
@@ -694,7 +745,12 @@ LONG CALL_UI Backend<WindowImpl>::messageHandler(HWND handle, UINT message, WPAR
   case WM_USER + WindowImpl::PING_MESSAGE:
     return true;
   }
-  return ::DefWindowProc((HWND)window->drawableHandle, message, wParam, lParam);
+  return ::DefWindowProc(
+    (HWND)window->drawableHandle,
+    message,
+    wParam,
+    lParam
+  );
 }
 #endif // flavor
 
@@ -994,7 +1050,8 @@ String WindowImpl::getIconTitle() const throw(UserInterfaceException) {
   return iconTitle;
 }
 
-void WindowImpl::setIconTitle(const String& iconTitle) throw(UserInterfaceException) {
+void WindowImpl::setIconTitle(
+  const String& iconTitle) throw(UserInterfaceException) {
   this->iconTitle = iconTitle;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: fixme
@@ -1012,7 +1069,8 @@ void WindowImpl::setIconTitle(const String& iconTitle) throw(UserInterfaceExcept
 #endif // flavor
 }
 
-void WindowImpl::setPosition(const Position& position) throw(UserInterfaceException) {
+void WindowImpl::setPosition(
+  const Position& position) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (position != this->position) {
     // TAG: take into account difference between upper left corner of window and client area
@@ -1041,7 +1099,8 @@ void WindowImpl::setPosition(const Position& position) throw(UserInterfaceExcept
 #endif // flavor
 }
 
-void WindowImpl::setDimension(const Dimension& dimension) throw(UserInterfaceException) {
+void WindowImpl::setDimension(
+  const Dimension& dimension) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (dimension != this->dimension) {
     assert(
@@ -1075,7 +1134,9 @@ void WindowImpl::setDimension(const Dimension& dimension) throw(UserInterfaceExc
 // #endif // flavor
 // }
 
-void WindowImpl::setRegion(const Position& position, const Dimension& dimension) throw(UserInterfaceException) {
+void WindowImpl::setRegion(
+  const Position& position,
+  const Dimension& dimension) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
     ::MoveWindow(
@@ -1756,6 +1817,20 @@ void WindowImpl::invalidate() throw(UserInterfaceException) {
     UserInterfaceException(this)
   );
 #else // unix
+  XExposeEvent event;
+  event.type = Expose;
+  event.x = 0;
+  event.y = 0;
+  event.width = dimension.getWidth();
+  event.height = dimension.getHeight();
+  event.count = 0;
+  Status status = XSendEvent(
+    (Display*)displayHandle,
+    (::Window)drawableHandle,
+    False, // propagate,
+    0, // mask,
+    (XEvent*)&event // send
+  );
 #endif // flavor
 }
 
@@ -1767,6 +1842,8 @@ void WindowImpl::update() throw(UserInterfaceException) {
     UserInterfaceException(this)
   );
 #else // unix
+  // TAG: fixme
+  invalidate();
 #endif // flavor
 }
 

@@ -150,13 +150,6 @@ Bitmap::Bitmap(
     4 * dimension.getWidth() // bytes per line
   );
   handle = new Handle(image);
-  WRITE_SOURCE_LOCATION();
-  fout << getDimension() << ENDL;
-    fout << display << ENDL;
-    fout << data << ENDL;
-    fout << image->data << ENDL;
-    fout << handle->getHandle() << ENDL;
-  
 #endif // flavor
 }
 

@@ -92,7 +92,10 @@ Widget::Widget(Window& owner) throw(UserInterfaceException) {
     blackPixel, // border color
     blackPixel // background
   );
-
+  if (!drawableHandle) {
+    throw UserInterfaceException("Unable to create widget", this);
+  }
+  
   ::XSelectInput(
     (Display*)displayHandle,
     (::Window)drawableHandle,
@@ -114,7 +117,11 @@ Widget::Widget(Window& owner) throw(UserInterfaceException) {
     0,
     0
   );
-  ::XSetForeground((Display*)displayHandle, (GC)graphicsContextHandle, whitePixel);
+  ::XSetForeground(
+    (Display*)displayHandle,
+    (GC)graphicsContextHandle,
+    whitePixel
+  );
 #endif // flavor
   construct();
   invalidate();

@@ -24,6 +24,7 @@
 #include <base/string/WideStringException.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Primitives.h>
+#include <base/string/String.h>
 
 #if defined(_DK_SDU_MIP__BASE__WIDE)
   #include <wctype.h> // TAG: alien header

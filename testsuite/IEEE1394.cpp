@@ -24,7 +24,9 @@
 
 using namespace base;
 
-class IEEE1394Application : public Application {
+class IEEE1394Application : public Application,
+                            public IEEE1394::IsochronousChannelListener,
+                            public IEEE1394::FunctionControlProtocolListener {
 private:
 
   static const unsigned int MAJOR_VERSION = 1;
@@ -36,6 +38,7 @@ public:
     COMMAND_DUMP_TOPOLOGY,
     COMMAND_DUMP_SPEEDS,
     COMMAND_DUMP_NODES,
+    COMMAND_FCP,
     COMMAND_ISOCHRONOUS,
     COMMAND_RESET,
     COMMAND_REGISTER_SPACE,
@@ -149,58 +152,76 @@ public:
       for (unsigned int id = 0; id < ieee1394.getNumberOfNodes(); ++id) {
         const unsigned short node = IEEE1394::makeNodeId(id);
         const unsigned int capabilities = ieee1394.getCapabilities(node);
-        fout << MESSAGE("Node: ") << id << EOL
-             << MESSAGE("  standard: ")
-             << STANDARDS[ieee1394.getCompliance(node)] << EOL;
+        fout << MESSAGE("Node: ") << id << EOL;
 
-        unsigned int vendor = ieee1394.getVendorId(node);
-        fout << MESSAGE("  vendor: ")
-             << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 16) & 0xff) << ':'
-             << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 8) & 0xff) << ':'
-             << HEX << setWidth(2) << ZEROPAD << NOPREFIX << (vendor & 0xff) << EOL;        
-        
-        String description = ieee1394.getDescription(node);
-        if (description.isProper()) {
-          fout << MESSAGE("  description: ") << description << EOL;
-        }
-        String keywords = ieee1394.getKeywords(node);
-        if (keywords.isProper()) {
-          fout << MESSAGE("  keywords: ") << keywords << EOL;
+        if (!ieee1394.isLinkLayerActive(id)) {
+          fout << MESSAGE("  link layer is not active") << EOL;
+          continue;
         }
         
+        try {
+          IEEE1394::Standard standard = ieee1394.getCompliance(node);
+          fout << MESSAGE("  standard: ") << STANDARDS[standard] << EOL;
+        } catch (IEEE1394Exception& e) {
+        }
+
         if (!ieee1394.getLocalIdentifier(id).isInvalid()) {
           fout << MESSAGE("  guid: ") << ieee1394.getLocalIdentifier(id) << EOL;
-        } else {
-          fout << MESSAGE("  guid: ") << MESSAGE("(not available)") << EOL;
+        }
+
+        try {
+          unsigned int vendor = ieee1394.getVendorId(node);
+          fout << MESSAGE("  vendor: ")
+               << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 16) & 0xff) << ':'
+               << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 8) & 0xff) << ':'
+               << HEX << setWidth(2) << ZEROPAD << NOPREFIX << (vendor & 0xff) << EOL;        
+        } catch (IEEE1394Exception& e) {
         }
         
-        fout << MESSAGE("  maximum asynchronous payload: ")
-             << ieee1394.getMaximumPayload(node) << EOL;
+        try {
+          String description = ieee1394.getDescription(node);
+          if (description.isProper()) {
+            fout << MESSAGE("  description: ") << description << EOL;
+          }
+          
+          String keywords = ieee1394.getKeywords(node);
+          if (keywords.isProper()) {
+            fout << MESSAGE("  keywords: ") << keywords << EOL;
+          }
+        } catch (IEEE1394Exception& e) {
+        }
         
-        fout << MESSAGE("  is link layer active: ") << ieee1394.isLinkLayerActive(id) << EOL
-             << MESSAGE("  is contender: ") << ieee1394.isContender(id) << EOL
+        try {
+          unsigned int max = ieee1394.getMaximumPayload(node);
+          fout << MESSAGE("  maximum asynchronous payload: ") << max << EOL;
+        } catch (IEEE1394Exception& e) {
+        }
+
+        fout << MESSAGE("  is contender: ") << ieee1394.isContender(id) << EOL
              << MESSAGE("  maximum physical speed: ")
              << SPEEDS[ieee1394.getMaximumSpeed(id)] << EOL
              << MESSAGE("  maximum link speed: ")
              << SPEEDS[ieee1394.getMaximumLinkSpeed(id)] << EOL;
 
-        fout << MESSAGE("  capabilities: ") << EOL;
-        if (capabilities & IEEE1394::ISOCHRONOUS_RESOURCE_MANAGER_CAPABLE) {
-          fout << MESSAGE("    isochronous resource manager") << EOL;
+        if (capabilities) {
+          fout << MESSAGE("  capabilities: ") << EOL;
+          if (capabilities & IEEE1394::ISOCHRONOUS_RESOURCE_MANAGER_CAPABLE) {
+            fout << MESSAGE("    isochronous resource manager") << EOL;
+          }
+          if (capabilities & IEEE1394::CYCLE_MASTER_CAPABLE) {
+            fout << MESSAGE("    cycle master") << EOL;
+          }
+          if (capabilities & IEEE1394::ISOCHRONOUS_TRANSACTION_CAPABLE) {
+            fout << MESSAGE("    isochronous transaction") << EOL;
+          }
+          if (capabilities & IEEE1394::BUS_MASTER_CAPABLE) {
+            fout << MESSAGE("    bus master") << EOL;
+          }
+          if (capabilities & IEEE1394::POWER_MANAGER_CAPABLE) {
+            fout << MESSAGE("    power manager") << EOL;
+          }
         }
-        if (capabilities & IEEE1394::CYCLE_MASTER_CAPABLE) {
-          fout << MESSAGE("    cycle master") << EOL;
-        }
-        if (capabilities & IEEE1394::ISOCHRONOUS_TRANSACTION_CAPABLE) {
-          fout << MESSAGE("    isochronous transaction") << EOL;
-        }
-        if (capabilities & IEEE1394::BUS_MASTER_CAPABLE) {
-          fout << MESSAGE("    bus master") << EOL;
-        }
-        if (capabilities & IEEE1394::POWER_MANAGER_CAPABLE) {
-          fout << MESSAGE("    power manager") << EOL;
-        }
-
+        
         if ((ieee1394.getIsochronousResourceManager() == id) ||
             (ieee1394.getBusManager() == id)) {
           fout << MESSAGE("  roles: ") << EOL;
@@ -308,6 +329,75 @@ public:
     }
   }
 
+  void onFCPRequest(unsigned short nodeId, const uint8* buffer, unsigned int size) throw() {
+    fout << MESSAGE("FCP request: ") << EOL
+         << MESSAGE("  source node: ") << IEEE1394::getAsString(nodeId) << EOL
+         << ENDL;
+    MemoryDump dump(buffer, size);
+    fout << dump << ENDL;
+  }
+
+  void onFCPResponse(unsigned short nodeId, const uint8* buffer, unsigned int size) throw() {
+    fout << MESSAGE("FCP response: ") << EOL
+         << MESSAGE("  source node: ") << IEEE1394::getAsString(nodeId) << EOL
+         << ENDL;
+    MemoryDump dump(buffer, size);
+    fout << dump << ENDL;
+  }
+  
+  bool onIsochronousPacket(const uint8* buffer, unsigned int size) throw() {
+    MemoryDump dump(buffer, size);
+    fout << dump << ENDL;
+    return false;
+  }
+
+  void fcp(const EUI64& guid) throw() {
+    try {
+      IEEE1394 ieee1394;
+      
+      EUI64 id = guid;
+      if (guid.isInvalid()) {
+        Array<EUI64> adapters = ieee1394.getAdapters();
+        if (adapters.getSize() == 0) {
+          ferr << MESSAGE("No adapters available") << ENDL;
+          setExitCode(Application::EXIT_CODE_ERROR);
+          return;
+        }
+        id = adapters[0];
+      }
+      
+      fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
+      ieee1394.open(id);
+
+      ieee1394.registerFCPListener(this);
+
+      static const char CMD[] = {1,2,3,4,5,6,7,8,9};
+      
+      ieee1394.write(
+        IEEE1394::makeNodeId(ieee1394.getLocalId()),
+        IEEE1394::CSR_BASE_ADDRESS + IEEE1394::FCP_COMMAND_FRAME,
+        CMD,
+        sizeof(CMD)
+      );
+
+      ieee1394.write(
+        IEEE1394::makeNodeId(ieee1394.getLocalId()),
+        IEEE1394::CSR_BASE_ADDRESS + IEEE1394::FCP_RESPONSE_FRAME,
+        CMD,
+        sizeof(CMD)
+      );
+
+      while (ieee1394.wait(1000)) {
+        ieee1394.dequeue();
+      }
+      ieee1394.unregisterFCPListener();
+    } catch (Exception& e) {
+      fout << ENDL;
+      ferr << MESSAGE("Exception: ") << e << ENDL;
+      setExitCode(Application::EXIT_CODE_ERROR);
+    }
+  }
+  
   void isochronousTransfer(const EUI64& guid, unsigned int channel) throw() {
     try {
       IEEE1394 ieee1394;
@@ -326,12 +416,9 @@ public:
       fout << MESSAGE("Opening IEEE 1394 adapter (") << id << ')' << ENDL;
       ieee1394.open(id);
 
-      char buffer[8192];
-      fout << MESSAGE("Isochronous read...") << ENDL;
-      ieee1394.readIsochronous(buffer, sizeof(buffer), channel);
-
-      MemoryDump dump(Cast::pointer<const uint8*>(buffer), sizeof(buffer));
-      fout << dump << ENDL;
+      //char buffer[(255 + 1) * sizeof(IEEE1394::Quadlet)];
+      fout << MESSAGE("Listening for isochronous packets on channel ") << channel << MESSAGE("...") << ENDL;
+      ieee1394.readIsochronous(channel, this);
     } catch (Exception& e) {
       fout << ENDL;
       ferr << MESSAGE("Exception: ") << e << ENDL;
@@ -409,7 +496,9 @@ public:
           guid = arguments[1];
         }
       } else if (arguments.getSize() >= 3) {
-        if (arguments[0] == "--iso") {
+        if (arguments[0] == "--fcp") { // --fcp nodeid data adapter
+          command = COMMAND_FCP;
+        } else if (arguments[0] == "--iso") {
           command = COMMAND_ISOCHRONOUS;
           guid = arguments[1];
           channel = UnsignedInteger::parse(arguments[2]);
@@ -534,6 +623,9 @@ public:
       break;
     case COMMAND_ISOCHRONOUS:
       isochronousTransfer(id, 1);
+      break;
+    case COMMAND_FCP:
+      fcp(id);
       break;
     case COMMAND_HELP:
       // TAG: more help

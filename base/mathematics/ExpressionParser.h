@@ -78,6 +78,7 @@ namespace eval {
   Arithmetic expression evaluator.
 
   @see ExpressionParser
+  @ingroup mathematics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -192,6 +193,7 @@ public:
 
   @see ExpressionProvider
   @see ExpressionEvaluator
+  @ingroup mathematics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

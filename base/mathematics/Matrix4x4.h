@@ -36,6 +36,7 @@ public:
   A 4 by 4 matrix with elements storage organized in row major and column minor.
 
   @short 4 by 4 matrix.
+  @ingroup mathematics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

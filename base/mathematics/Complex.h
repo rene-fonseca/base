@@ -109,6 +109,7 @@ namespace isoc {
   Complex number represented by real and imaginary parts.
 
   @short Complex number.
+  @ingroup mathematics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

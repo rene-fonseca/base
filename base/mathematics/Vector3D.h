@@ -24,6 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   A three-dimensional vector represented by X, Y, and Z coordinates.
 
   @short Three-dimensional vector.
+  @ingroup mathematics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.01
 */

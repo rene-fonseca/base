@@ -23,6 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   A two-dimensional vector represented by X and Y coordinates.
 
   @short Two-dimensional vector.
+  @ingroup mathematics
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.01
 */

@@ -23,7 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   that result in an ambiguity.
 
   @short Ambiguous registration exception
-  @ingroup exceptions  
+  @ingroup exceptions mathematics
   @see ExpressionParser
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -49,7 +49,7 @@ public:
     
     @param type The identity of the type.
   */
-  AmbiguousRegistration(Type type) throw() : Exception(type) {
+  inline AmbiguousRegistration(Type type) throw() : Exception(type) {
   }
   
   /**
@@ -58,7 +58,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  AmbiguousRegistration(const char* message, Type type) throw() : Exception(message, type) {
+  inline AmbiguousRegistration(const char* message, Type type) throw() : Exception(message, type) {
   }
 };
 

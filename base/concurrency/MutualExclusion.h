@@ -19,12 +19,6 @@
 #include <base/ResourceException.h>
 #include <base/concurrency/Lock.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-#else // pthread
-  #include <pthread.h>
-#endif // flavour
-
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
@@ -41,13 +35,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class MutualExclusion : public virtual Object, public virtual Lock {
 protected:
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  /** Internal mutex representation. */
-  mutable CRITICAL_SECTION lock;
-#else // pthread
-  /** Internal mutex representation. */
-  mutable pthread_mutex_t lock;
-#endif // flavour
+  /** Internal representation of mutex. */
+  void* mutex;
 public:
 
   /** Exception thrown directly by the MutualExclusion class. */
@@ -107,9 +96,9 @@ public:
   void releaseLock() const throw(MutualExclusionException);
 
   /**
-    Destroys the mutual exclusion object. The mutual exclusion must be
-    in the unlocked state prior to destruction. Throws
-    'ReadWriteLockException' on failure. 
+    Destroys the mutual exclusion object. The mutual exclusion must be in the
+    unlocked state prior to destruction. Throws 'MutualExclusionException' on
+    failure.
   */
   ~MutualExclusion() throw(MutualExclusionException);
 };

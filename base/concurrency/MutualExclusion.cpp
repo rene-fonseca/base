@@ -13,15 +13,19 @@
 
 #include <base/concurrency/MutualExclusion.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  #include <windows.h>
+#else // unix
+  #include <pthread.h>
   #include <errno.h>
-#endif
+#endif // flavour
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 MutualExclusion::MutualExclusion() throw(ResourceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  InitializeCriticalSection(&lock);
+  mutex = new CRITICAL_SECTION[1];
+  ::InitializeCriticalSection((CRITICAL_SECTION*)mutex);
 #else // pthread
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
@@ -31,7 +35,7 @@ MutualExclusion::MutualExclusion() throw(ResourceException) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     throw ResourceException();
   }
-  if (pthread_mutex_init(&lock, &attributes) != 0) {
+  if (pthread_mutex_init((pthread_mutex_t*)mutex, &attributes) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     throw ResourceException();
   }
@@ -41,9 +45,9 @@ MutualExclusion::MutualExclusion() throw(ResourceException) {
 
 void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  EnterCriticalSection(&lock);
+  ::EnterCriticalSection((CRITICAL_SECTION*)mutex);
 #else // pthread
-  int result = pthread_mutex_lock(&lock);
+  int result = pthread_mutex_lock((pthread_mutex_t*)mutex);
   if (result == 0) {
     return;
   } else if (result == EDEADLK) {
@@ -57,10 +61,10 @@ void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
 bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   BOOL result;
-  result = TryEnterCriticalSection(&lock);
+  result = ::TryEnterCriticalSection((CRITICAL_SECTION*)mutex);
   return result;
 #else // pthread
-  int result = pthread_mutex_trylock(&lock);
+  int result = pthread_mutex_trylock((pthread_mutex_t*)mutex);
   if (result == 0) {
     return true;
   } else if (result == EBUSY) {
@@ -73,9 +77,9 @@ bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
 
 void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  LeaveCriticalSection(&lock);
+  ::LeaveCriticalSection((CRITICAL_SECTION*)mutex);
 #else // pthread
-  if (pthread_mutex_unlock(&lock)) {
+  if (pthread_mutex_unlock((pthread_mutex_t*)mutex)) {
     throw MutualExclusionException();
   }
 #endif
@@ -83,11 +87,13 @@ void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
 
 MutualExclusion::~MutualExclusion() throw(MutualExclusionException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  DeleteCriticalSection(&lock);
+  ::DeleteCriticalSection((CRITICAL_SECTION*)mutex);
+  delete[] (CRITICAL_SECTION*)mutex;
 #else // pthread
-  if (pthread_mutex_destroy(&lock)) {
+  if (pthread_mutex_destroy((pthread_mutex_t*)mutex)) {
     throw MutualExclusionException();
   }
+  delete[] (pthread_mutex_t*)mutex;
 #endif
 }
 

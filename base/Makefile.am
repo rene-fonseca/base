@@ -92,6 +92,7 @@ section_HEADERS = \
   features.h \
   AnyValue.h \
   Architecture.h \
+  AutomationObject.h \
   Cast.h \
   CastException.h \
   Dimension.h \

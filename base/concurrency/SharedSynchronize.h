@@ -61,8 +61,10 @@ template<class GUARD>
 class SharedSynchronize {
 private:
 
+  /** The type of the guard. */
+  typedef GUARD Guard;
   /** The synchronize able object to be synchronized. */
-  const GUARD& guard;
+  const Guard& guard;
 
   SharedSynchronize(const SharedSynchronize& copy); // prohibit copy construction
   SharedSynchronize& operator=(const SharedSynchronize& eq); // prohibit assignment
@@ -73,7 +75,7 @@ public:
 
     @param guard The synchronize able object to be synchronized.
   */
-  explicit SharedSynchronize(const GUARD& guard) throw();
+  explicit SharedSynchronize(const Guard& guard) throw();
 
   /**
     Releases the lock if not already released and destroys the synchronization object.
@@ -84,7 +86,8 @@ public:
 };
 
 template<class GUARD>
-inline SharedSynchronize<GUARD>::SharedSynchronize(const GUARD& _guard) throw() : guard(_guard) {
+inline SharedSynchronize<GUARD>::SharedSynchronize(const GUARD& _guard) throw()
+  : guard(_guard) {
   guard.sharedLock();
 }
 

@@ -60,8 +60,10 @@ template<class GUARD>
 class ExclusiveSynchronize {
 private:
 
+  /** The type of the guard. */
+  typedef GUARD Guard;
   /** The synchronize able object to be synchronized. */
-  const GUARD& guard;
+  const Guard& guard;
 
   ExclusiveSynchronize(const ExclusiveSynchronize& copy); // prohibit copy construction
   ExclusiveSynchronize& operator=(const ExclusiveSynchronize& eq); // prohibit assignment
@@ -72,7 +74,7 @@ public:
 
     @param guard The synchronize able object to be synchronized.
   */
-  explicit ExclusiveSynchronize(const GUARD& guard) throw();
+  explicit ExclusiveSynchronize(const Guard& guard) throw();
 
   /**
     Releases the lock if not already released and destroys the synchronization object.
@@ -83,7 +85,8 @@ public:
 };
 
 template<class GUARD>
-inline ExclusiveSynchronize<GUARD>::ExclusiveSynchronize(const GUARD& _guard) throw() : guard(_guard) {
+inline ExclusiveSynchronize<GUARD>::ExclusiveSynchronize(const GUARD& _guard) throw()
+  : guard(_guard) {
   guard.exclusiveLock();
 }
 

@@ -72,22 +72,30 @@ void ThreadPool::run() throw() {
   }
 }
 
-ThreadPool::ThreadPool(JobProvider* provider) throw() :
-  runnable(this), provider(provider), desiredThreads(0), terminated(false), terminateOne(false) {
+ThreadPool::ThreadPool(JobProvider* _provider) throw() :
+  runnable(this),
+  provider(_provider),
+  desiredThreads(0),
+  terminated(false),
+  terminateOne(false) {
 }
 
-ThreadPool::ThreadPool(JobProvider* provider, unsigned int threads) throw() :
-  runnable(this), provider(provider), desiredThreads(0), terminated(false), terminateOne(false) {
+ThreadPool::ThreadPool(JobProvider* _provider, unsigned int threads) throw() :
+  runnable(this),
+  provider(_provider),
+  desiredThreads(0),
+  terminated(false),
+  terminateOne(false) {
   setThreads(threads);
 }
 
 unsigned int ThreadPool::getThreads() const throw() {
-  SharedSynchronize<LOCK> sharedSynchronize(*this);
+  SharedSynchronize<Guard>(*this);
   return desiredThreads;
 }
 
 void ThreadPool::setThreads(unsigned int value) throw(ThreadPoolException) {
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<Guard>(*this);
 
   if (terminated) {
     throw ThreadPoolException("Thread pool has been terminated", this);
@@ -132,14 +140,14 @@ void ThreadPool::setThreads(unsigned int value) throw(ThreadPoolException) {
 }
 
 void ThreadPool::terminate() throw() {
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<Guard>(*this);
   terminated = true;
   forEach(pool, invokeMember(&Thread::terminate));
 }
 
 void ThreadPool::join() throw() {
   // threads should not be signaled here
-  ExclusiveSynchronize<LOCK> exclusiveSynchronize(*this);
+  ExclusiveSynchronize<Guard>(*this);
   forEach(pool, invokeMember(&Thread::join));
 }
 

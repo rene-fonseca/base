@@ -46,6 +46,9 @@ public:
 class ThreadPool : public Synchronizeable<MutualExclusion> {
 public:
 
+  /** The type of the guard. */
+  typedef MutualExclusion Guard;
+  
   /**
     Exception raised directly by the ThreadPool class.
 

@@ -34,9 +34,12 @@ template<class TYPE>
 class AtomicCounter {
 private:
 
+  /** The type of the guard. */
+  typedef SpinLock Guard;
   /** The value of the counter. */
   TYPE value;
-  SpinLock spinLock;
+  /** The guard. */
+  Guard guard;
 public:
 
   /**
@@ -57,7 +60,7 @@ public:
     Returns the value of the counter.
   */
   inline operator TYPE() const throw() {
-    ExclusiveSynchronize<SpinLock> exclusiveSynchronize(spinLock);
+    ExclusiveSynchronize<Guard> _guard(guard);
     return value;
   }
 
@@ -65,7 +68,7 @@ public:
     Increments the counter.
   */
   inline TYPE operator++() throw() {
-    ExclusiveSynchronize<SpinLock> exclusiveSynchronize(spinLock);
+    ExclusiveSynchronize<Guard> _guard(guard);
     ++value;
     return value;
   }
@@ -74,7 +77,7 @@ public:
     Decrements the counter.
   */
   inline TYPE operator--() throw() {
-    ExclusiveSynchronize<SpinLock> exclusiveSynchronize(spinLock);
+    ExclusiveSynchronize<Guard> _guard(guard);
     --value;
     return value;
   }
@@ -83,7 +86,7 @@ public:
     Increment counter by value.
   */
   inline TYPE operator+=(TYPE value) throw() {
-    ExclusiveSynchronize<SpinLock> exclusiveSynchronize(spinLock);
+    ExclusiveSynchronize<Guard> _guard(guard);
     this->value += value;
     return value;
   }
@@ -92,7 +95,7 @@ public:
     Decrement counter by value.
   */
   inline TYPE operator-=(TYPE value) throw() {
-    ExclusiveSynchronize<SpinLock> exclusiveSynchronize(spinLock);
+    ExclusiveSynchronize<Guard> _guard(guard);
     this->value -= value;
     return value;
   }
@@ -101,7 +104,7 @@ public:
     Assign value to counter.
   */
   inline TYPE operator=(const TYPE& value) throw() {
-    ExclusiveSynchronize<SpinLock> exclusiveSynchronize(spinLock);
+    ExclusiveSynchronize<Guard> _guard(guard);
     this->value = value;
     return value;
   }
@@ -112,8 +115,12 @@ template<>
 class AtomicCounter<int> {
 private:
 
+  /** The type of the guard. */
+  typedef SpinLock Guard;
+  /** The value. */
   int value;
-  SpinLock spinLock;
+  /** The guard. */
+  Guard guard;
 public:
 
   inline AtomicCounter() throw() : value(0) {
@@ -141,7 +148,7 @@ public:
       : "r2" // clobbered
     );
 #else
-    ExclusiveSynchronize<SpinLock> exclusiveSynchronize(spinLock);
+    ExclusiveSynchronize<Guard> _guard(guard);
     ++value;
     return value;
 #endif // architecture
@@ -162,7 +169,7 @@ public:
       : "r2" // clobbered
     );
 #else
-    ExclusiveSynchronize<SpinLock> exclusiveSynchronize(spinLock);
+    ExclusiveSynchronize<Guard> _guard(guard);
     --value;
     return value;
 #endif // architecture
@@ -183,7 +190,7 @@ public:
       : "r2", "r14", "r15" // clobbered
     );
 #else
-    ExclusiveSynchronize<SpinLock> exclusiveSynchronize(spinLock);
+    ExclusiveSynchronize<Guard> _guard(guard);
     this->value += value;
     return value;
 #endif // architecture
@@ -204,7 +211,7 @@ public:
       : "r2", "r14", "r15" // clobbered
     );
 #else
-    ExclusiveSynchronize<SpinLock> exclusiveSynchronize(spinLock);
+    ExclusiveSynchronize<Guard> _guard(guard);
     this->value -= value;
     return value;
 #endif // architecture
@@ -225,7 +232,7 @@ public:
       : "r2", "r14", "r15" // clobbered
     );
 #else
-    ExclusiveSynchronize<SpinLock> exclusiveSynchronize(spinLock);
+    ExclusiveSynchronize<Guard> _guard(guard);
     this->value = value;
     return value;
 #endif

@@ -3,7 +3,7 @@
     email                : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <config.h>
+#include <base/features.h>
 #include <base/string/String.h>
 #include <base/Functor.h>
 #include <string.h>
@@ -11,7 +11,7 @@
 
 template String<DefaultLock>;
 template String<Unsafe>;
-
+/*
 #if !defined(HAVE_MEMCHR)
 inline const char* memchr(const char* src, int value, unsigned int count) {
   return find<char>(src, count, bind2Second(Equal<char>(), value));
@@ -32,7 +32,7 @@ inline char* memmove(char* dest, const char* src, unsigned int count) {
   return dest;
 }
 #endif
-
+*/
 #define NOTFOUND -1
 
 template<class LOCK>

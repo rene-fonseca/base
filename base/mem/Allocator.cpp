@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <config.h>
+#include <base/features.h>
 #include <base/mem/Allocator.h>
 
 #if defined(__win32__)

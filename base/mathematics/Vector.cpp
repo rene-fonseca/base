@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <config.h>
+#include <base/features.h>
 #include <base/mathematics/Vector.h>
 #include <base/Functor.h>
 #include <math.h>

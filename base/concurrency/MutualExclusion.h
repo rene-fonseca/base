@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_THREAD__MUTUAL_EXCLUSION_H
 #define _DK_SDU_MIP__BASE_THREAD__MUTUAL_EXCLUSION_H
 
-#include <config.h>
+#include <base/features.h>
 #include <base/Object.h>
 #include <base/Exception.h>
 #include <base/ResourceException.h>

@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <config.h>
+#include <base/features.h>
 #include <base/io/PrimitiveOutputStream.h>
 
 PrimitiveOutputStream::PrimitiveOutputStream(OutputStream& out) throw(BindException) :

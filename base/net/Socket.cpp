@@ -3,7 +3,7 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include <config.h>
+#include <base/features.h>
 #include <base/net/Socket.h>
 #include <base/Functor.h>
 #include <base/io/EndOfFile.h>

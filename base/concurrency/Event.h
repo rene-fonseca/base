@@ -6,7 +6,7 @@
 #ifndef _DK_SDU_MIP__BASE_THREAD__EVENT_H
 #define _DK_SDU_MIP__BASE_THREAD__EVENT_H
 
-#include <config.h>
+#include <base/features.h>
 #include <base/Object.h>
 #include <base/OutOfDomain.h>
 #include <base/Overflow.h>

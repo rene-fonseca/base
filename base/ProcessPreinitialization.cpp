@@ -18,6 +18,7 @@
 #include <base/string/ASCIITraits.h>
 #include <base/Trace.h>
 #include <base/concurrency/Thread.h>
+#include <base/Literal.h>
 #include <stdlib.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -35,19 +36,43 @@ namespace internal {
     
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 
+    extern "C" int main();
+    
+    // Thread::entry???
+    
+class Abi {
+public:
+
+  // TAG: should not be inlined - get parent of current frame
+  static void* getStackFrame() throw() {
+    void** frame = 0;
+#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
+    asm (
+      "movl %%ebp,%0;\n"
+      : "=m" (frame) // output
+    );
+    frame = (void**)*frame; // get parent frame
+#endif
+    return frame;
+  }
+};
+    
     // handle to the global process heap
     OperatingSystem::Handle processHeap;
     
     // the original unhandled exception filter
     LPTOP_LEVEL_EXCEPTION_FILTER originalExceptionFilter;
     
-    LONG _DK_SDU_MIP__BASE__CALL_PASCAL exceptionFilter(EXCEPTION_POINTERS* exception) {
-      char errorMessage[sizeof("System exception 0x################ (floating-point exception) at 0x################")]; // worst case
+    LONG _DK_SDU_MIP__BASE__CALL_PASCAL exceptionFilter(
+      EXCEPTION_POINTERS* exception) {
+      char errorMessage[sizeof("Internal error: System exception 0x################ (access violation) while reading from 0x################ at 0x################")]; // worst case
       char* dest = errorMessage;
-      copy<char>(dest, "System exception 0x", sizeof("System exception 0x") - 1);
-      dest += sizeof("System exception 0x") - 1;
       
-      DWORD exceptionCode = exception->ExceptionRecord->ExceptionCode;
+      const Literal literal("Internal error: System exception 0x");
+      copy<char>(dest, literal.getValue(), literal.getLength());
+      dest += literal.getLength();
+      
+      const DWORD exceptionCode = exception->ExceptionRecord->ExceptionCode;
 
       enum {
         DESCRIPTION_ACCESS_VIOLATION,
@@ -61,8 +86,9 @@ namespace internal {
         DESCRIPTION_INVALID_HANDLE,
         DESCRIPTION_NONE
       };
-
-      static const StringLiteral EXCEPTION_DESCRIPTIONS[] = { // make sure size of errorMessage is ok
+      
+      // make sure size of errorMessage is ok
+      static const StringLiteral EXCEPTION_DESCRIPTIONS[] = {
         MESSAGE("access violation"),
         MESSAGE("invalid page"),
         MESSAGE("guard page"),
@@ -120,9 +146,11 @@ namespace internal {
         description = DESCRIPTION_NONE;
       }
 
+      DWORD temp = exceptionCode;
       for (unsigned int i = 0; i < (sizeof(DWORD) * 2); ++i) {
-        dest[sizeof(DWORD) * 2 - 1 - i] = ASCIITraits::valueToDigit(exceptionCode & 0x0f);
-        exceptionCode >>= 4; // bits per digit
+        dest[sizeof(DWORD) * 2 - 1 - i] =
+          ASCIITraits::valueToDigit(temp & 0x0f);
+        temp >>= 4; // bits per digit
       }
       dest += sizeof(DWORD) * 2;
 
@@ -135,18 +163,161 @@ namespace internal {
         *dest++ = ')';
       }
       
+      if ((exceptionCode == EXCEPTION_ACCESS_VIOLATION) &&
+          (exception->ExceptionRecord->NumberParameters == 2)) {
+        MemorySize dataAddress =
+          exception->ExceptionRecord->ExceptionInformation[1];
+        if (exception->ExceptionRecord->ExceptionInformation[0] == 0) {
+          const Literal literal(" while reading from 0x");
+          copy<char>(dest, literal.getValue(), literal.getLength());
+          dest += literal.getLength();
+          for (unsigned int i = 0; i < (sizeof(MemorySize) * 2); ++i) {
+            dest[sizeof(MemorySize) * 2 - 1 - i] =
+              ASCIITraits::valueToDigit(dataAddress & 0x0f);
+            dataAddress >>= 4; // bits per digit
+          }
+          dest += sizeof(MemorySize) * 2;
+        } else if (exception->ExceptionRecord->ExceptionInformation[0] == 1) {
+          const Literal literal(" while writing to 0x");
+          copy<char>(dest, literal.getValue(), literal.getLength());
+          dest += literal.getLength();
+          for (unsigned int i = 0; i < (sizeof(MemorySize) * 2); ++i) {
+            dest[sizeof(MemorySize) * 2 - 1 - i] =
+              ASCIITraits::valueToDigit(dataAddress & 0x0f);
+            dataAddress >>= 4; // bits per digit
+          }
+          dest += sizeof(MemorySize) * 2;
+        }
+      }
+      
       copy<char>(dest, " at 0x", sizeof(" at 0x") - 1);
       dest += sizeof(" at 0x") - 1;
-      unsigned long exceptionAddress = reinterpret_cast<unsigned long>(exception->ExceptionRecord->ExceptionAddress);
-      for (unsigned int i = 0; i < (sizeof(unsigned long) * 2); ++i) {
-        dest[sizeof(unsigned long)*2 - 1 - i] = ASCIITraits::valueToDigit(exceptionAddress & 0x0f);
+      MemorySize exceptionAddress =
+        Cast::getOffset(exception->ExceptionRecord->ExceptionAddress);
+      for (unsigned int i = 0; i < (sizeof(MemorySize) * 2); ++i) {
+        dest[sizeof(MemorySize) * 2 - 1 - i] =
+          ASCIITraits::valueToDigit(exceptionAddress & 0x0f);
         exceptionAddress >>= 4; // bits per digit
       }
-      dest += sizeof(unsigned long) * 2;
+      dest += sizeof(MemorySize) * 2;
       *dest = 0; // terminate string
       
       Trace::message(errorMessage);
-      return EXCEPTION_EXECUTE_HANDLER; // terminate process (or call originalExceptionFilter(exception))
+      // TAG: use system log (for errorMessage only)
+      
+      const CONTEXT* context = exception->ContextRecord;
+#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
+      // TAG: move context dump to Architecture class?
+      // TAG: reimplement without dependency on FormatOutputStream?
+      ferr << NativeString(errorMessage) << EOL << ENDL;
+      
+      ferr << "eax:" << HEX << ZEROPAD << PREFIX << setWidth(10)
+           << context->Eax << indent(4)
+           << "ebx:" << HEX << ZEROPAD << PREFIX << setWidth(10)
+           << context->Ebx << indent(4)
+           << "ecx:" << HEX << ZEROPAD << PREFIX << setWidth(10)
+           << context->Ecx << indent(4)
+           << "edx:" << HEX << ZEROPAD << PREFIX << setWidth(10)
+           << context->Edx << EOL
+        
+           << "edi:" << HEX << ZEROPAD << PREFIX << setWidth(10)
+           << context->Edi << indent(4)
+           << "esi:" << HEX << ZEROPAD << PREFIX << setWidth(10)
+           << context->Esi << indent(4)
+           << "ebp:" << HEX << ZEROPAD << PREFIX << setWidth(10)
+           << context->Ebp << indent(4)
+           << "esp:" << HEX << ZEROPAD << PREFIX << setWidth(10)
+           << context->Esp << EOL
+        
+           << "eflags:" << HEX << ZEROPAD << PREFIX << setWidth(10)
+           << context->Edi << indent(1)
+           << "eip:" << HEX << ZEROPAD << PREFIX << setWidth(10)
+           << context->Eip << indent(4)
+           << "cs:" << HEX << ZEROPAD << PREFIX << setWidth(6)
+           << static_cast<uint16>(context->SegCs) << indent(9)
+           << "ss:" << HEX << ZEROPAD << PREFIX << setWidth(6)
+           << static_cast<uint16>(context->SegSs) << EOL
+        
+           << "ds:" << HEX << ZEROPAD << PREFIX << setWidth(6)
+           << static_cast<uint16>(context->SegDs) << indent(9)
+           << "es:" << HEX << ZEROPAD << PREFIX << setWidth(6)
+           << static_cast<uint16>(context->SegEs) << indent(9)
+           << "fs:" << HEX << ZEROPAD << PREFIX << setWidth(6)
+           << static_cast<uint16>(context->SegFs) << indent(9)
+           << "gs:" << HEX << ZEROPAD << PREFIX << setWidth(6)
+           << static_cast<uint16>(context->SegGs) << EOL
+           << EOL;
+
+      // TAG: what about fop
+      ferr << "fctrl:" << HEX << ZEROPAD << PREFIX << setWidth(6)
+           << static_cast<uint16>(context->FloatSave.ControlWord) << indent(6)
+           << "fstat:" << HEX << ZEROPAD << PREFIX << setWidth(6)
+           << static_cast<uint16>(context->FloatSave.StatusWord) << indent(6)
+           << "ftag:" << HEX << ZEROPAD << PREFIX << setWidth(6)
+           << static_cast<uint16>(context->FloatSave.TagWord) << EOL
+        
+           << "fiseg:" << HEX << ZEROPAD << PREFIX << setWidth(6)
+           << static_cast<uint16>(context->FloatSave.ErrorSelector)
+           << indent(6)
+           << "fioff:" << HEX << ZEROPAD << PREFIX << setWidth(10)
+           << context->FloatSave.ErrorOffset << indent(2)
+           << "foseg:" << HEX << ZEROPAD << PREFIX << setWidth(6)
+           << static_cast<uint16>(context->FloatSave.DataSelector)
+           << indent(6)
+           << "fooff:" << HEX << ZEROPAD << PREFIX << setWidth(10)
+           << context->FloatSave.DataOffset << EOL
+           << EOL;
+      
+      for (unsigned int i = 0; i < 8; ++i) {
+        ferr << "st(" << i << "):0x";
+        for (unsigned int j = 0; j < 10; ++j) {
+          ferr << HEX << ZEROPAD << NOPREFIX << setWidth(2)
+               << context->FloatSave.RegisterArea[i * 10 + 9 - j];
+        }
+        ferr << EOL;
+      }
+      ferr << EOL;
+
+      ferr << "stack content:" << EOL;
+      const uint32* stack =
+        Cast::getPointer<const uint32*>((context->Esp - 2 * 4 * 4) & ~3);
+      for (unsigned int i = 0; i < 5; ++i) { // 5 rows
+        ferr << ZEROPAD << setWidth(10) << stack << ':';
+        for (unsigned int j = 0; j < 4; ++j) { // 4 columns
+          ferr << SP << HEX << ZEROPAD << PREFIX << setWidth(10) << *stack++;
+        }
+        ferr << EOL;
+      }
+      ferr << ENDL;
+      
+      // TAG: dump stack frames
+//       ferr << "stack frames:" << EOL;
+//       void** frame = (void**)context->Ebp;
+//       // TAG: save entry method in thread local storage - Thread::entry
+//       void* entry = (void*)&main; // should be init with current frame in entry
+//       ferr << "entry: " << entry << ENDL;
+//       void* invoker = 0;
+//       unsigned int i = 0;
+//       while (invoker != entry) {
+//         invoker = *((void**)frame + 1);
+//         void** parentFrame = (void**)*frame;
+//         ferr << "i:" << i++ << FLUSH
+//              << indent(2) << "frame:" << (void*)frame << FLUSH
+//              << indent(2) << "invoker:" << invoker << FLUSH
+//              << indent(2) << "data:" << ((parentFrame-frame)-sizeof(invoker))
+//              << ENDL;
+//         frame = parentFrame;
+//       }
+      
+      // assembly:
+      // TAG: write current fucntion/method symbol
+#endif
+      // TAG: terminate process (or call originalExceptionFilter(exception))
+      TerminateProcess(
+        GetCurrentProcess(),
+        Application::EXIT_CODE_INTERNAL_ERROR
+      );
+      return EXCEPTION_EXECUTE_HANDLER;
     }
 #endif // flavor
   }; // end of namespace - specific

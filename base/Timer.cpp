@@ -58,43 +58,43 @@ void Timer::stop() throw() {
 #endif // flavor
 }
 
-long long Timer::getStartTime() const throw() {
+uint64 Timer::getStartTime() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   ::QueryPerformanceFrequency(&frequency); // ignore any error
-  return static_cast<long long>(startTime * 1000000./frequency.QuadPart);
+  return static_cast<uint64>(startTime * 1000000./frequency.QuadPart);
 #else // unix
   return startTime;
 #endif // flavor
 }
 
-long long Timer::getStopTime() const throw() {
+uint64 Timer::getStopTime() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   ::QueryPerformanceFrequency(&frequency); // ignore any error
-  return static_cast<long long>(stopTime * 1000000./frequency.QuadPart);
+  return static_cast<uint64>(stopTime * 1000000./frequency.QuadPart);
 #else // unix
   return stopTime;
 #endif // flavor
 }
 
-long long Timer::getMicroseconds() const throw() {
+uint64 Timer::getMicroseconds() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   ::QueryPerformanceFrequency(&frequency); // ignore any error
-  return static_cast<long long>((stopTime - startTime) * 1000000./frequency.QuadPart);
+  return static_cast<uint64>((stopTime - startTime) * 1000000./frequency.QuadPart);
 #else // unix
   return stopTime - startTime;
 #endif // flavor
 }
 
-long long Timer::getLiveMicroseconds() const throw() {
+uint64 Timer::getLiveMicroseconds() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   LARGE_INTEGER now;
   ::QueryPerformanceCounter(&now);
   LARGE_INTEGER frequency; // ticks per second
   ::QueryPerformanceFrequency(&frequency); // ignore any error
-  return static_cast<long long>((now.QuadPart - startTime) * 1000000./frequency.QuadPart);
+  return static_cast<uint64>((now.QuadPart - startTime) * 1000000./frequency.QuadPart);
 #else // unix
   struct timeval temp;
   gettimeofday(&temp, 0);
@@ -102,13 +102,15 @@ long long Timer::getLiveMicroseconds() const throw() {
 #endif // flavor
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Timer& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const Timer& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);
-  long long microseconds = value.getMicroseconds();
-  long long seconds = microseconds/1000000;
-  long long minutes = seconds/60;
-  long long hours = minutes/60;
-  return stream << hours << ':' << minutes%60 << ':' << seconds%60 << '.' << microseconds%1000000;
+  Timer::ElapsedTime time(value.getMicroseconds() * 1000);
+  time.roundToMicrosecond();
+  return stream << time.getHours() << ':'
+                << time.getNMinutes() << ':'
+                << time.getNSeconds() << '.'
+                << setWidth(6) << ZEROPAD << time.getNMicroseconds();
 }
 
 void TimeScope::dump() const throw(IOException) {

@@ -14,10 +14,10 @@
 #ifndef _DK_SDU_MIP__BASE__FEATURES_H
 #define _DK_SDU_MIP__BASE__FEATURES_H
 
-// order: const -> detect -> arch -> compiler -> os -> framework -> application
+// TAG: put this comment in documentation
+// order: const -> probed -> arch -> compiler -> os -> framework -> application
 
 #include <base/platforms/symbols.h>
-#include <base/platforms/platform.h>
 #include <base/configuration.h>
 #include <base/platforms/arch/architecture.h>
 #include <base/platforms/compiler/compiler.h>

@@ -12,7 +12,7 @@ AC_CANONICAL_SYSTEM()
 dnl perform program name transformation
 AC_ARG_PROGRAM()
 
-AM_INIT_AUTOMAKE(base, 0.9)
+AM_INIT_AUTOMAKE(base-framework, 1.0)
 
 dnl AC_CHECK_COMPILERS()
 AC_PROG_CXX()
@@ -959,4 +959,4 @@ ac_base_header=base/configuration.h
 echo "updating configuration..."
 mv $ac_base_config $ac_base_header
 
-AC_OUTPUT(Makefile base/Makefile base/docs/Makefile base/docs/en/Makefile base/Makefile base/concurrency/Makefile base/mathematics/Makefile base/io/Makefile base/string/Makefile base/mem/Makefile base/net/Makefile base/collection/Makefile base/filesystem/Makefile base/iterator/Makefile base/dl/Makefile base/xml/Makefile base/security/Makefile base/sound/Makefile)
+AC_OUTPUT(Makefile config/Makefile base/Makefile base/docs/Makefile base/docs/en/Makefile base/Makefile base/platforms/Makefile base/communication/Makefile base/concurrency/Makefile base/mathematics/Makefile base/io/Makefile base/string/Makefile base/mem/Makefile base/net/Makefile base/collection/Makefile base/filesystem/Makefile base/iterator/Makefile base/dl/Makefile base/xml/Makefile base/security/Makefile base/sound/Makefile)

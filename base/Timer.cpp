@@ -29,7 +29,7 @@ Timer::Timer() throw() : stopTime(0) {
 void Timer::start() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
-  QueryPerformanceCounter((LARGE_INTEGER*)&startTime);
+  QueryPerformanceCounter(pointer_cast<LARGE_INTEGER*>(&startTime));
 #else // __unix__
   struct timeval temp;
   gettimeofday(&temp, 0);
@@ -40,7 +40,7 @@ void Timer::start() throw() {
 void Timer::stop() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ASSERT(sizeof(LARGE_INTEGER) == sizeof(long long));
-  QueryPerformanceCounter((LARGE_INTEGER*)&stopTime);
+  QueryPerformanceCounter(pointer_cast<LARGE_INTEGER*>(&stopTime));
 #else // __unix__
   struct timeval temp;
   gettimeofday(&temp, 0);

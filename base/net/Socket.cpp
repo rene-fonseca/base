@@ -110,7 +110,7 @@ public:
 
   /** Initializes socket address. */
   SocketAddress(const InetAddress& addr, unsigned short port) throw(NetworkException) {
-    fill<char>((char*)&sa, sizeof(sa), 0);
+    fill<char>(getCharAddress(sa), sizeof(sa), 0);
   #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   #if defined(SIN6_LEN)
     sa.sin6_len = sizeof(sa);
@@ -120,23 +120,23 @@ public:
     if (addr.getFamily() == InetAddress::IP_VERSION_4) {
       InetAddress temp(addr);
       temp.convertToIPv6();
-      copy<byte>((byte*)&sa.sin6_addr, temp.getAddress(), sizeof(struct in6_addr));
+      copy<byte>(getByteAddress(sa.sin6_addr), temp.getAddress(), sizeof(struct in6_addr));
     } else {
-      copy<byte>((byte*)&sa.sin6_addr, addr.getAddress(), sizeof(struct in6_addr));
+      copy<byte>(getByteAddress(sa.sin6_addr), addr.getAddress(), sizeof(struct in6_addr));
     }
   #else // only IPv4 support
     assert((addr.getFamily() == InetAddress::IP_VERSION_4) || addr.isIPv4Mapped(), NetworkException("Address not supported"));
     sa.sin_family = AF_INET;
     sa.sin_port = ByteOrder::toBigEndian<unsigned short>(port);
-    copy<byte>((byte*)&(sa.sin_addr), addr.getIPv4Address(), sizeof(struct in_addr));
+    copy<byte>(getByteAddress(sa.sin_addr), addr.getIPv4Address(), sizeof(struct in_addr));
   #endif // _DK_SDU_MIP__BASE__INET_IPV6
   }
 
   /** Returns pointer to socket address. */
-  inline struct sockaddr* getValue() throw() {return (struct sockaddr*)&sa;}
+  inline struct sockaddr* getValue() throw() {return pointer_cast<struct sockaddr*>(&sa);}
 
   /** Returns pointer to socket address. */
-  inline const struct sockaddr* getValue() const throw() {return (const struct sockaddr*)&sa;}
+  inline const struct sockaddr* getValue() const throw() {return pointer_cast<const struct sockaddr*>(&sa);}
 
   /** Returns the size of the socket address structure. */
   inline socklen_t getSize() const throw() {return sizeof(sa);}
@@ -146,15 +146,15 @@ public:
   #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
     switch (sa.sin6_family) {
     case AF_INET:
-      return InetAddress((const byte*)&(((const struct sockaddr_in*)&sa)->sin_addr), InetAddress::IP_VERSION_4);
+      return InetAddress(getByteAddress(pointer_cast<const struct sockaddr_in*>(&sa)->sin_addr), InetAddress::IP_VERSION_4);
     case AF_INET6:
-      return InetAddress((const byte*)&(((const struct sockaddr_in6*)&sa)->sin6_addr), InetAddress::IP_VERSION_6);
+      return InetAddress(getByteAddress(pointer_cast<const struct sockaddr_in6*>(&sa)->sin6_addr), InetAddress::IP_VERSION_6);
     default:
       return InetAddress(); // TAG: or should I throw an exception or just ignore
     }
   #else
     if (sa.sin_family == AF_INET) {
-      return InetAddress((const byte*)&(((const struct sockaddr_in*)&sa)->sin_addr), InetAddress::IP_VERSION_4);
+      return InetAddress(getByteAddress(pointer_cast<const struct sockaddr_in*>(&sa)->sin_addr), InetAddress::IP_VERSION_4);
     } else {
       return InetAddress(); // TAG: or should I throw an exception or just ignore
     }
@@ -166,15 +166,15 @@ public:
   #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
     switch (sa.sin6_family) {
     case AF_INET:
-      return ByteOrder::fromBigEndian<unsigned short>(((const struct sockaddr_in*)&sa)->sin_port);
+      return ByteOrder::fromBigEndian<unsigned short>(pointer_cast<const struct sockaddr_in*>(&sa)->sin_port);
     case AF_INET6:
-      return ByteOrder::fromBigEndian<unsigned short>(((const struct sockaddr_in6*)&sa)->sin6_port);
+      return ByteOrder::fromBigEndian<unsigned short>(pointer_cast<const struct sockaddr_in6*>(&sa)->sin6_port);
     default:
       return 0; // TAG: or should I throw an exception
     }
   #else
     if (sa.sin_family == AF_INET) {
-      return ByteOrder::fromBigEndian<unsigned short>(((const struct sockaddr_in*)&sa)->sin_port);
+      return ByteOrder::fromBigEndian<unsigned short>(pointer_cast<const struct sockaddr_in*>(&sa)->sin_port);
     } else {
       return 0; // TAG: or should I throw an exception
     }
@@ -192,14 +192,14 @@ public:
 
 void getSocketOption(int handle, int option, void* buffer, socklen_t* len) throw(IOException) {
   // getsockopt is MT-safe
-  if (::getsockopt(handle, SOL_SOCKET, option, (char*)buffer, len) != 0) {
+  if (::getsockopt(handle, SOL_SOCKET, option, static_cast<char*>(buffer), len) != 0) {
     throw IOException("Unable to get socket option");
   }
 }
 
 void setSocketOption(int handle, int option, const void* buffer, socklen_t len) throw(IOException) {
   // setsockopt is MT-safe
-  if (::setsockopt(handle, SOL_SOCKET, option, (const char*)buffer, len) != 0) {
+  if (::setsockopt(handle, SOL_SOCKET, option, static_cast<const char*>(buffer), len) != 0) {
     throw IOException("Unable to set socket option");
   }
 }
@@ -483,7 +483,7 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
   SynchronizeShared();
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int buffer = value; // set to zero to disable nonblocking
-  if (ioctlsocket(getHandle(), FIONBIO, (u_long*)&buffer)) {
+  if (ioctlsocket(getHandle(), FIONBIO, pointer_cast<u_long*>(&buffer)) {
     throw IOException("Unable to set blocking mode");
   }
 #else // Unix
@@ -513,7 +513,7 @@ unsigned int Socket::available() const throw(IOException) {
   SynchronizeShared();
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int result;
-  if (ioctlsocket(getHandle(), FIONREAD, (u_long*)&result)) {
+  if (ioctlsocket(getHandle(), FIONREAD, pointer_cast<u_long*>(&result)) {
     throw IOException("Unable to determine the amount of data pending in the input buffer");
   }
   return result;

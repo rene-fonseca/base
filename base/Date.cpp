@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
+#include <base/Base.h>
 #include <base/Date.h>
 #include <base/concurrency/Thread.h>
 
@@ -34,7 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 inline Date FileTimeToDate(const FILETIME& time) {
   ASSERT(sizeof(FILETIME) == sizeof(long long));
-  return Date((*(long long*)(&time) - 116444736000000000LL)/10000000); // TAG: 0x0000001c1a021060LL
+  return Date((reinterpret_cast<long long>(time) - 116444736000000000LL)/10000000); // TAG: 0x0000001c1a021060LL
 }
 #endif
 
@@ -44,7 +44,7 @@ Date Date::getNow() throw(DateException) {
   GetSystemTimeAsFileTime(&buffer);
   return FileTimeToDate(buffer);
 #else // __unix__
-  return Date(::time(NULL));
+  return Date(::time(0));
 #endif
 }
 
@@ -103,7 +103,7 @@ int Date::getSecond() const throw() {
   return time.wSecond;
 #else // __unix__
   struct tm result;
-  localtime_r(&(time_t)date, &result);
+  localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_sec;
 #endif
 }
@@ -115,7 +115,7 @@ int Date::getMinute() const throw() {
   return time.wMinute;
 #else // __unix__
   struct tm result;
-  localtime_r(&(time_t)date, &result);
+  localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_min;
 #endif
 }
@@ -127,7 +127,7 @@ int Date::getHour() const throw() {
   return time.wHour;
 #else // __unix__
   struct tm result;
-  localtime_r(&(time_t)date, &result);
+  localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_hour;
 #endif
 }
@@ -139,7 +139,7 @@ int Date::getDay() const throw() {
   return time.wDay;
 #else // __unix__
   struct tm result;
-  localtime_r(&(time_t)date, &result);
+  localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_mday;
 #endif
 }
@@ -151,7 +151,7 @@ int Date::getDayOfWeek() const throw() {
   return time.wDayOfWeek;
 #else // __unix__
   struct tm result;
-  localtime_r(&(time_t)date, &result);
+  localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_wday;
 #endif
 }
@@ -164,7 +164,7 @@ int Date::getDayOfYear() const throw() {
   //  return time.wYear;
 #else // __unix__
   struct tm result;
-  localtime_r(&(time_t)date, &result);
+  localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_yday;
 #endif
 }
@@ -176,7 +176,7 @@ int Date::getMonth() const throw() {
   return time.wMonth;
 #else // __unix__
   struct tm result;
-  localtime_r(&(time_t)date, &result);
+  localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_mon;
 #endif
 }
@@ -188,7 +188,7 @@ int Date::getYear() const throw() {
   return time.wYear;
 #else // __unix__
   struct tm result;
-  localtime_r(&(time_t)date, &result);
+  localtime_r(&static_cast<time_t>(date), &result);
   return result.tm_year;
 #endif
 }
@@ -200,7 +200,7 @@ int Date::getUTCSecond() const throw() {
   return time.wSecond;
 #else // __unix__
   struct tm result;
-  gmtime_r(&(time_t)date, &result); // MT-safe
+  gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_sec;
 #endif
 }
@@ -212,7 +212,7 @@ int Date::getUTCMinute() const throw() {
   return time.wMinute;
 #else // __unix__
   struct tm result;
-  gmtime_r(&(time_t)date, &result); // MT-safe
+  gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_min;
 #endif
 }
@@ -224,7 +224,7 @@ int Date::getUTCHour() const throw() {
   return time.wHour;
 #else // __unix__
   struct tm result;
-  gmtime_r(&(time_t)date, &result); // MT-safe
+  gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_hour;
 #endif
 }
@@ -236,7 +236,7 @@ int Date::getUTCDay() const throw() {
   return time.wDay;
 #else // __unix__
   struct tm result;
-  gmtime_r(&(time_t)date, &result); // MT-safe
+  gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_mday;
 #endif
 }
@@ -248,7 +248,7 @@ int Date::getUTCDayOfWeek() const throw() {
   return time.wDayOfWeek;
 #else // __unix__
   struct tm result;
-  gmtime_r(&(time_t)date, &result); // MT-safe
+  gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_wday;
 #endif
 }
@@ -261,7 +261,7 @@ int Date::getUTCDayOfYear() const throw() {
   //  return time.wYear;
 #else // __unix__
   struct tm result;
-  gmtime_r(&(time_t)date, &result); // MT-safe
+  gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_yday;
 #endif
 }
@@ -273,7 +273,7 @@ int Date::getUTCMonth() const throw() {
   return time.wMonth;
 #else // __unix__
   struct tm result;
-  gmtime_r(&(time_t)date, &result); // MT-safe
+  gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_mon;
 #endif
 }
@@ -285,7 +285,7 @@ int Date::getUTCYear() const throw() {
   return time.wYear;
 #else // __unix__
   struct tm result;
-  gmtime_r(&(time_t)date, &result); // MT-safe
+  gmtime_r(&static_cast<time_t>(date), &result); // MT-safe
   return result.tm_year;
 #endif
 }
@@ -296,9 +296,9 @@ String Date::format(const String& format, bool local) const throw(MemoryExceptio
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct tm time;
   if (local) {
-    localtime_r(&(time_t)date, &time);
+    localtime_r(&static_cast<time_t>(date), &time);
   } else {
-    gmtime_r(&(time_t)date, &time); // MT-safe
+    gmtime_r(&static_cast<time_t>(date), &time); // MT-safe
   }
   size_t result = strftime(buffer->getElements(), buffer->getSize(), format.getElements(), &time);
   return String(buffer->getElements(), result);
@@ -312,12 +312,12 @@ WideString Date::format(const WideString& format, bool local) const throw(Memory
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct tm time;
   if (local) {
-    localtime_r(&(time_t)date, &time);
+    localtime_r(&static_cast<time_t>(date), &time);
   } else {
-    gmtime_r(&(time_t)date, &time); // MT-safe
+    gmtime_r(&static_cast<time_t>(date), &time); // MT-safe
   }
-  size_t result = wcsftime((const wchar_t*)buffer->getElements(), buffer->getSize()/sizeof(wchar_t), format.getElements(), &time);
-  return WideString((wchar_t*)buffer->getElements(), result);
+  size_t result = wcsftime(pointer_cast<wchar_t*>(buffer->getElements()), buffer->getSize()/sizeof(wchar_t), format.getElements(), &time);
+  return WideString(pointer_cast<const wchar_t*>(buffer->getElements()), result);
 #endif
 #else
   #warning WideString Date::format(const WideString& format, bool local) const throw(MemoryException) not available
@@ -332,7 +332,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Date& value) {
 #else // __unix__
   char buffer[256];
   int date = value.getValue();
-  return stream << ctime_r(&(time_t)date, buffer); // TAG: depends on specific API
+  return stream << ctime_r(&static_cast<time_t>(date), buffer); // TAG: depends on specific API
 #endif
 }
 

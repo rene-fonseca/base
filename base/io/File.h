@@ -266,7 +266,7 @@ public:
   */
   template<class TYPE>
   inline unsigned int read(TYPE& buffer) throw(FileException) {
-    return read((char*)&buffer, sizeof(TYPE));
+    return read(getCharAddress(buffer), sizeof(TYPE));
   }
 
   /**

@@ -77,7 +77,7 @@ public:
     return value;
   }
 
-  /**
+  /**<
     Increment counter by value.
   */
   inline TYPE operator+=(TYPE value) throw() {

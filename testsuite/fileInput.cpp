@@ -26,7 +26,7 @@ enum Job {TEST, MD5SUM, SHA, DUMP};
 
 void calculateMD5Checksum(const String& str) {
   MD5Sum checksum;
-  checksum.push((const byte*)str.getElements(), str.getLength());
+  checksum.push(pointer_cast<const byte*>(str.getElements()), str.getLength());
   checksum.pushEnd();
 
   fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
@@ -37,7 +37,7 @@ void calculateMD5Checksum(const String& str) {
 
 void calculateSHA1Checksum(const String& str) {
   SHA1 checksum;
-  checksum.push((const byte*)str.getElements(), str.getLength());
+  checksum.push(pointer_cast<const byte*>(str.getElements()), str.getLength());
   checksum.pushEnd();
 
   fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
@@ -69,7 +69,7 @@ void jobMD5Sum(const String& filePath) {
   byte buffer[4096];
   MD5Sum sum;
   unsigned int count;
-  while ((count = file.read((char*)&buffer[0], 4096, true)) > 0) {
+  while ((count = file.read(getCharAddress(buffer[0]), 4096, true)) > 0) {
     fout << '.' << FLUSH;
     sum.push(buffer, count);
   }
@@ -88,7 +88,7 @@ void jobSHA1(const String& filePath) {
   byte buffer[4096];
   SHA1 sum;
   unsigned int count;
-  while ((count = file.read((char*)&buffer[0], 4096, true)) > 0) {
+  while ((count = file.read(getCharAddress(buffer[0]), 4096, true)) > 0) {
     fout << '.' << FLUSH;
     sum.push(buffer, count);
   }

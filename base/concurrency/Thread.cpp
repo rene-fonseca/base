@@ -301,7 +301,7 @@ Thread::Thread(Runnable* runnable) throw(ResourceException) :
   }
 
   SECURITY_ATTRIBUTES sa;
-  fill<char>((char*)&sa, sizeof(SECURITY_ATTRIBUTES), 0);
+  fill<char>(pointer_cast<char*>(&sa), sizeof(SECURITY_ATTRIBUTES), 0);
   sa.nLength = sizeof(SECURITY_ATTRIBUTES); 
   sa.lpSecurityDescriptor = sd;
   sa.bInheritHandle = false;

@@ -49,35 +49,35 @@ public:
     XMLPropertyHash properties;
 
     for(const xmlChar** current = atts; current && *current; ++current) {
-      String name((const char*) *current++);
-      String value((const char*) *current);
+      String name(static_cast<const char*>(*current++));
+      String value(static_cast<const char*>(*current));
       properties[name] = XMLProperty(name, value);
     }
 
     XMLParser* p = static_cast<XMLParser*>(parser);
     if (p->callback) {
-      p->callback->startElement(String((const char*)name), properties);
+      p->callback->startElement(String(static_cast<const char*>(name)), properties);
     }
   };
 
   static void endElement(void* parser, const xmlChar* n) {
     XMLParser* p = static_cast<XMLParser*>(parser);
     if (p->callback) {
-      p->callback->endElement(String((const char*)n));
+      p->callback->endElement(String(static_cast<const char*>(n)));
     }
   };
 
   static void characters(void* parser, const xmlChar* s, int length) {
     XMLParser* p = static_cast<XMLParser*>(parser);
     if (p->callback) {
-      p->callback->characters(String((const char*)s, length));
+      p->callback->characters(String(static_cast<const char*>(s), length));
     }
   };
 
   static void comment(void* parser, const xmlChar* s) {
     XMLParser* p = static_cast<XMLParser*>(parser);
     if (p->callback) {
-      p->callback->comment((const char*)s);
+      p->callback->comment(static_cast<const char*>(s));
     }
   };
 

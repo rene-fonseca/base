@@ -42,9 +42,9 @@ FileInfo::FileInfo(const String& path) throw(FileSystemException) : path(path) {
   temp.HighPart = buffer.nFileSizeHigh;
   size = temp.QuadPart;
 
-  access = *(long long*)(&buffer.ftLastAccessTime) - fileTimeOffset; // TAG: overflow problem
-  modification = *(long long*)(&buffer.ftLastWriteTime) - fileTimeOffset; // TAG: overflow problem
-  change = *(long long*)(&buffer.ftCreationTime) - fileTimeOffset; // TAG: overflow problem
+  access = reinterpret_cast<long long>(buffer.ftLastAccessTime) - fileTimeOffset; // TAG: overflow problem
+  modification = reinterpret_cast<long long>(buffer.ftLastWriteTime) - fileTimeOffset; // TAG: overflow problem
+  change = reinterpret_cast<long long>(buffer.ftCreationTime) - fileTimeOffset; // TAG: overflow problem
   FindClose(handle);
 #else // Unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)

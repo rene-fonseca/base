@@ -116,8 +116,8 @@ MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeabl
 //  void* address = MapViewOfFile(
 //    handle,
 //    writeable ? FILE_MAP_WRITE : FILE_MAP_READ,
-//    ((LARGE_INTEGER*)&offset)->HighPart,
-//    ((LARGE_INTEGER*)&offset)->LowPart,
+//    (pointer_cast<LARGE_INTEGER*>(&offset))->HighPart,
+//    (pointer_cast<LARGE_INTEGER*>(&offset))->LowPart,
 //    size
 //  );
 //

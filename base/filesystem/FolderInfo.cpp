@@ -40,9 +40,9 @@ FolderInfo::FolderInfo(const String& path) throw(FileSystemException) : path(pat
     throw FileSystemException("Not a folder");
   }
 
-  access = *(long long*)(&buffer.ftLastAccessTime) - fileTimeOffset; // TAG: overflow problem
-  modification = *(long long*)(&buffer.ftLastWriteTime) - fileTimeOffset; // TAG: overflow problem
-  change = *(long long*)(&buffer.ftCreationTime) - fileTimeOffset; // TAG: overflow problem
+  access = reinterpret_cast<long long>(buffer.ftLastAccessTime) - fileTimeOffset; // TAG: overflow problem
+  modification = reinterpret_cast<long long>(buffer.ftLastWriteTime) - fileTimeOffset; // TAG: overflow problem
+  change = reinterpret_cast<long long>(buffer.ftCreationTime) - fileTimeOffset; // TAG: overflow problem
   FindClose(handle);
 #else // Unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
@@ -108,7 +108,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
       struct dirent64* entry;
 
       errno = 0;
-      if ((status = ::readdir64_r(directory, (struct dirent64*)buffer->getElements(), &entry)) != 0) {
+      if ((status = ::readdir64_r(directory, pointer_cast<struct dirent64*>(buffer->getElements()), &entry)) != 0) {
         if (errno == 0) { // stop if last entry has been read
           break;
         }
@@ -136,7 +136,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
       struct dirent* entry;
 
       errno = 0;
-      if ((status = ::readdir_r(directory, (struct dirent*)buffer->getElements(), &entry)) != 0) {
+      if ((status = ::readdir_r(directory, pointer_cast<struct dirent*>(buffer->getElements()), &entry)) != 0) {
         if (errno == 0) { // stop if last entry has been read
           break;
         }

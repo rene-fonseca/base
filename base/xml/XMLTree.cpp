@@ -33,19 +33,19 @@ static XMLNode* buildInternalTree(xmlNodePtr node) throw() {
   xmlNodePtr child;
   XMLNode* temp;
 
-  name = (node->name) ? (char*)node->name : String();
+  name = (node->name) ? static_cast<char*>(node->name) : String();
   temp = new XMLNode(name);
 
   for (xmlAttrPtr attr = node->properties; attr; attr = attr->next) {
-    name = (char*)attr->name;
+    name = static_cast<char*>(attr->name);
     content = String();
 //    if (attr->children) {
-//      content = (char*)attr->children->content;
+//      content = static_cast<char*>(attr->children->content);
 //    }
     temp->addProperty(name, content);
   }
 
-  temp->setContent(node->content ? (char*)node->content : String());
+  temp->setContent(node->content ? static_cast<char*>(node->content) : String());
 
   for (child = node->childs; child; child = child->next) {
     temp->addChild(buildInternalTree(child));
@@ -58,19 +58,19 @@ static void buildExternalTree(xmlDocPtr doc, XMLNode* n, xmlNodePtr p, bool root
   xmlNodePtr node;
 
   if (root) {
-    node = doc->root = xmlNewDocNode(doc, 0, (xmlChar*)n->getName().getElements(), (xmlChar*)n->getContent().getElements());
+    node = doc->root = xmlNewDocNode(doc, 0, static_cast<xmlChar*>(n->getName()).getElements(), static_cast<xmlChar*>(n->getContent().getElements()));
   } else {
-    node = xmlNewChild(p, 0, (xmlChar*)n->getName().getElements(),(xmlChar*)n->getContent().getElements());
+    node = xmlNewChild(p, 0, static_cast<xmlChar*>(n->getName().getElements()), static_cast<xmlChar*>(n->getContent().getElements()));
   }
 
   if (n->isContent()) {
     node->type = XML_TEXT_NODE;
-    xmlNodeSetContentLen(node, (const xmlChar*)n->getContent().getElements(), n->getContent().getLength());
+    xmlNodeSetContentLen(node, static_cast<const xmlChar*>(n->getContent().getElements()), n->getContent().getLength());
   }
 
   List<XMLProperty> props = n->getProperties();
 //  for(curprop = props.begin(); curprop != props.end(); ++curprop) {
-//    xmlSetProp(node, (xmlChar*)(*curprop)->getName().getElements(), (xmlChar*)(*curprop)->getValue().getElements());
+//    xmlSetProp(node, static_cast<xmlChar*>((*curprop)->getName().getElements()), static_cast<xmlChar*>((*curprop)->getValue().getElements()));
 //  }
 
   List<XMLNode> children = n->getChildren();
@@ -151,7 +151,7 @@ void XMLTree::release() throw() {
 
 bool XMLTree::read(const String& buffer) throw(MemoryException) {
   release();
-  xmlDocPtr doc = xmlParseMemory((char*)buffer.getElements(), buffer.getLength()); // TAG: wrong type of first arg - should be const
+  xmlDocPtr doc = xmlParseMemory(static_cast<char*>(buffer.getElements()), buffer.getLength()); // TAG: wrong type of first arg - should be const
 
   if (!doc) { // check for error
     return false;
@@ -170,10 +170,10 @@ bool XMLTree::write(String& buffer) const throw(MemoryException) {
   List<XMLNode> children;
 
   xmlKeepBlanksDefault(0);
-  doc = xmlNewDoc((xmlChar*)"1.0");
+  doc = xmlNewDoc(static_cast<xmlChar*>("1.0"));
   xmlSetDocCompressMode(doc, 0);
   XMLTreeImpl::buildExternalTree(doc, root, doc->root, true);
-  xmlDocDumpMemory(doc, (xmlChar**)&buf, &size);
+  xmlDocDumpMemory(doc, static_cast<xmlChar**>(&buf), &size);
   xmlFreeDoc(doc);
 
 //  retval = buf;

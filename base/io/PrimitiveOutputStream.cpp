@@ -13,6 +13,7 @@
 
 #include <base/io/PrimitiveOutputStream.h>
 #include <base/ByteOrder.h>
+#include <base/Type.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -21,56 +22,56 @@ PrimitiveOutputStream::PrimitiveOutputStream(OutputStream& out) throw(BindExcept
 }
 
 void PrimitiveOutputStream::writeBoolean(bool value) throw(IOException) {
-  write((char*)&value, sizeof(char));
+  write(getCharAddress(value), sizeof(char));
 }
 
 void PrimitiveOutputStream::writeChar(char value) throw(IOException) {
-  write((char*)&value, sizeof(char));
+  write(getCharAddress(value), sizeof(char));
 }
 
 void PrimitiveOutputStream::writeShortInteger(short value) throw(IOException) {
   short temp = ByteOrder::toBigEndian<unsigned short>(value);
-  write((char*)&temp, sizeof(temp));
+  write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeUnsignedShortInteger(unsigned short value) throw(IOException) {
   unsigned short temp = ByteOrder::toBigEndian<unsigned short>(value);
-  write((char*)&temp, sizeof(temp));
+  write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeInteger(int value) throw(IOException) {
   unsigned short temp = ByteOrder::toBigEndian<unsigned int>(value);
-  write((char*)&temp, sizeof(temp));
+  write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeUnsignedInteger(unsigned int value) throw(IOException) {
   unsigned int temp = ByteOrder::toBigEndian(value);
-  write((char*)&temp, sizeof(temp));
+  write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeLongInteger(long long value) throw(IOException) {
   unsigned long long temp = ByteOrder::toBigEndian<unsigned long long>(value);
-  write((char*)&temp, sizeof(temp));
+  write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeUnsignedLongInteger(unsigned long long value) throw(IOException) {
   unsigned short temp = ByteOrder::toBigEndian(value);
-  write((char*)&temp, sizeof(temp));
+  write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeFloat(float value) throw(IOException) {
   float temp; // convert to IEEE_FloatPrecision (big endian)
-  write((char*)&temp, sizeof(temp));
+  write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeDouble(double value) throw(IOException) {
   double temp; // convert to IEEE_DoublePrecision (big endian)
-  write((char*)&temp, sizeof(temp));
+  write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeLongDouble(long double value) throw(IOException) {
   long double temp; // convert to IEEE_QuadruplePrecision (big endian)
-  write((char*)&temp, sizeof(temp));
+  write(getCharAddress(temp), sizeof(temp));
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   <pre>
   String message = "abcdefghijklmnopqrstuvwxyz";
   MD5Sum checksum;
-  checksum.push((const byte*)message.getElements(), message.getLength());
+  checksum.push(pointer_cast<const byte*>(message.getElements()), message.getLength());
   checksum.pushEnd();
   fout << MESSAGE("message digest: ") << checksum.getValue() << ENDL;
   </pre>

@@ -31,7 +31,7 @@ StreamSocket::StreamSocket(const InetAddress& addr, unsigned short port, InetAdd
 }
 
 StreamSocket::StreamSocket(ServerSocket& socket) throw(IOException) {
-  accept(*(Socket*)&socket);
+  accept(*pointer_cast<Socket*>(&socket));
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

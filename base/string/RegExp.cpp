@@ -34,7 +34,7 @@ void RegExp::compile() throw(MemoryException) {
     if (result) { // succesful
       compiled = malloc(sizeof(regex_t));
       assert(compiled, MemoryException());
-      copy<char>((char*)compiled, (const char*)&preq, sizeof(regex_t));
+      copy<char>(pointer_cast<char*>(compiled), pointer_cast<const char*>(&preq), sizeof(regex_t));
     }
   #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
     int errorOffset;

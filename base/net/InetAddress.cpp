@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
+#include <base/Base.h>
 #include <base/net/InetAddress.h>
 #include <base/Functor.h>
 #include <base/concurrency/Thread.h>
@@ -84,7 +84,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct addrinfo hint;
-  fill<char>((char*)&hint, sizeof(hint), 0);
+  fill<char>(getCharAddress(hint), sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
 
   struct addrinfo* ai;
@@ -97,11 +97,11 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
     byte* addr;
     switch (i->ai_family) {
     case PF_INET:
-      addr = (byte*)&((struct sockaddr_in*)(i->ai_addr))->sin_addr;
+      addr = getByteAddress(pointer_cast<struct sockaddr_in*>(i->ai_addr)->sin_addr);
       result.append(InetAddress(addr, IP_VERSION_4));
       break;
     case PF_INET6:
-      addr = (byte*)&((struct sockaddr_in6*)(i->ai_addr))->sin6_addr;
+      addr = getByteAddress(pointer_cast<struct sockaddr_in6*>(i->ai_addr)->sin6_addr);
       result.append(InetAddress(addr, IP_VERSION_6));
       break;
 //    default:
@@ -141,7 +141,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
   #endif
 
   for (char** p = hp->h_addr_list; *p != 0; p++) {
-    result.append(InetAddress((const byte*)*p, IP_VERSION_4));
+    result.append(InetAddress(pointer_cast<const byte*>(*p), IP_VERSION_4));
   }
 #endif // _DK_SDU_MIP__BASE__INET_IPV6
   return result;
@@ -276,15 +276,15 @@ InetAddress& InetAddress::operator=(const InetAddress& eq) throw() {
 String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct sockaddr_in6 addr;
-  fill<char>((char*)&addr, sizeof(addr), 0);
+  fill<char>(getCharAddress(addr), sizeof(addr), 0);
 #if defined(SIN6_LEN)
   addr.sin6_len = sizeof(addr);
 #endif
   addr.sin6_family = AF_INET6;
-  copy<char>((char*)&addr.sin6_addr, (const char*)&address, sizeof(address));
+  copy<char>(getCharAddress(addr.sin6_addr), getCharAddress(address), sizeof(address));
   char hostname[NI_MAXHOST]; // includes space for terminator
 
-  if (getnameinfo((sockaddr*)&addr, sizeof(addr), hostname, sizeof(hostname), NULL, 0, NI_NAMEREQD | (fullyQualified ? 0 : NI_NOFQDN)) != 0) {
+  if (getnameinfo(pointer_cast<sockaddr*>(&addr), sizeof(addr), hostname, sizeof(hostname), 0, 0, NI_NAMEREQD | (fullyQualified ? 0 : NI_NOFQDN)) != 0) {
     throw HostNotFound("Unable to resolve IP address");
   }
 
@@ -293,26 +293,26 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
   struct hostent* hp;
 
   #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-    if (!(hp = gethostbyaddr((const char*)&address, sizeof(address), AF_INET))) { // MT-safe
+    if (!(hp = gethostbyaddr(getCharAddress(address), sizeof(address), AF_INET))) { // MT-safe
       throw HostNotFound("Unable to resolve IP address");
     }
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error;
-    if (!(hp = gethostbyaddr_r((const char*)&address, sizeof(address), AF_INET, &result, buffer, sizeof(buffer), &error))) {
+    if (!(hp = gethostbyaddr_r(getCharAddress(address), sizeof(address), AF_INET, &result, buffer, sizeof(buffer), &error))) {
       throw HostNotFound("Unable to resolve IP address");
     }
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error;
-    if (gethostbyaddr_r((const char*)&address, sizeof(address), AF_INET, &result, buffer, sizeof(buffer), &hp, &error)) {
+    if (gethostbyaddr_r(getCharAddress(address), sizeof(address), AF_INET, &result, buffer, sizeof(buffer), &hp, &error)) {
       throw HostNotFound("Unable to resolve IP address");
     }
   #else
     #warning gethostbyaddr is not MT-safe
-    if (!(hp = gethostbyaddr((const char*)&address, sizeof(address), AF_INET))) {
+    if (!(hp = gethostbyaddr(getCharAddress(address), sizeof(address), AF_INET))) {
       throw HostNotFound("Unable to resolve IP address");
     }
   #endif
@@ -323,7 +323,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 
 bool InetAddress::operator==(const InetAddress& eq) throw() {
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  return IN6_ARE_ADDR_EQUAL((struct in6_addr*)&address, (struct in6_addr*)&eq.address);
+  return IN6_ARE_ADDR_EQUAL(pointer_cast<struct in6_addr*>(&address), reinterpret_cast<struct in6_addr*>(&eq.address));
 #else
   return address.words == eq.address.words;
 #endif // _DK_SDU_MIP__BASE__INET_IPV6

@@ -228,7 +228,7 @@ inline const TYPE* find(const TYPE* element, unsigned int count, TYPE value) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCHR)
 template<>
 inline const char* find(const char* element, unsigned int count, char value) throw() {
-  return (const char*)memchr(element, value, count);
+  return static_cast<const char*>(memchr(element, value, count));
 }
 #endif
 

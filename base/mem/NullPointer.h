@@ -19,8 +19,9 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Thrown if NULL pointer was unexprected.
+  Raised if NULL pointer was unexprected/prohibited.
 
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -39,6 +40,10 @@ public:
     @param message The message.
   */
   NullPointer(const char* message);
+
+  NullPointer(Type type) throw() : MemoryException(type) {}
+
+  NullPointer(const char* message, Type type) throw() : MemoryException(message, type) {}  
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

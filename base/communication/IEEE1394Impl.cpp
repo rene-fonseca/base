@@ -16,7 +16,7 @@
 #if (!defined(_DK_SDU_MIP__BASE__IEEE_1394_IMPL))
 #  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
 #    define _DK_SDU_MIP__BASE__IEEE_1394_IMPL LinuxRawIEEE1394
-#    define _DK_SDU_MIP__BASE__IEEE_1394_IMPL_HEADER "base/communication/LinuxRawIEEE1394.h"
+#    define _DK_SDU_MIP__BASE__IEEE_1394_IMPL_HEADER "base/communication/LinuxRawIEEE1394.cpp"
 #  else
 #    define _DK_SDU_MIP__BASE__IEEE_1394_IMPL DummyIEEE1394
 #    define _DK_SDU_MIP__BASE__IEEE_1394_IMPL_HEADER "base/communication/DummyIEEE1394.h"

@@ -50,14 +50,14 @@ public:
     EPOCH_YEAR = 1970, /**< The year of the epoch. */
     EPOCH_WEEKDAY = THURSDAY, /**< The weekday of the first epoch day . */
     DAYS_PER_NONLEAP_YEAR = 365, /**< The number of days per non-leap year. */
-    DAYS_PER_LEAP_YEAR = DAYS_PER_NONLEAP_YEAR + 1, /** The number of days per leap year. */
+    DAYS_PER_LEAP_YEAR = DAYS_PER_NONLEAP_YEAR + 1, /**< The number of days per leap year. */
     DAYS_PER_400_YEARS = (300+4-1)*365 + (100-4+1)*366, /**< The number of days per 400 years. */
     DAYS_PER_WEEK = 7, /**< The number of days per week. */
-    MONTHS_PER_YEAR = 12, /** The number of months per year. */
+    MONTHS_PER_YEAR = 12, /**< The number of months per year. */
     HOURS_PER_DAY = 24, /**< The number of hours per day. */
     MINUTES_PER_HOUR = 60, /**< The number of minutes per hour. */
     MINUTES_PER_DAY = MINUTES_PER_HOUR * HOURS_PER_DAY, /**< The number of minutes per day. */
-    SECONDS_PER_MINUTE = 60, /** The number of seconds per minute. */
+    SECONDS_PER_MINUTE = 60, /**< The number of seconds per minute. */
     SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR, /**< The number of seconds per hour. */
     SECONDS_PER_DAY = SECONDS_PER_HOUR * HOURS_PER_DAY /**< The number of seconds per day. */
   };

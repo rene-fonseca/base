@@ -16,55 +16,85 @@
 #include <base/ShortInteger.h>
 #include <base/Integer.h>
 #include <base/LongInteger.h>
+#include <base/TypeInfo.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 AnyValue::AnyValue() throw() : representation(VOID) {
 }
 
-AnyValue::AnyValue(char value) throw() : representation(CHARACTER), character(value) {
+AnyValue::AnyValue(const Type& value) throw()
+  : representation(TYPE), type(value) {
 }
 
-AnyValue::AnyValue(wchar value) throw() : representation(WIDE_CHARACTER), wideCharacter(value) {
+AnyValue::AnyValue(char value) throw()
+  : representation(CHARACTER), character(value) {
 }
 
-AnyValue::AnyValue(bool value) throw() : representation(BOOLEAN), boolean(value) {
+AnyValue::AnyValue(wchar value) throw()
+  : representation(WIDE_CHARACTER), wideCharacter(value) {
 }
 
-AnyValue::AnyValue(short value) throw() : representation(INTEGER), shortInteger(value) {
+AnyValue::AnyValue(bool value) throw()
+  : representation(BOOLEAN), boolean(value) {
 }
 
-AnyValue::AnyValue(unsigned short value) throw() : representation(UNSIGNED_SHORT_INTEGER), unsignedShortInteger(value) {
+AnyValue::AnyValue(short value) throw()
+  : representation(INTEGER), shortInteger(value) {
 }
 
-AnyValue::AnyValue(int value) throw() : representation(INTEGER), integer(value) {
+AnyValue::AnyValue(unsigned short value) throw()
+  : representation(UNSIGNED_SHORT_INTEGER), unsignedShortInteger(value) {
 }
 
-AnyValue::AnyValue(unsigned int value) throw() : representation(UNSIGNED_INTEGER), unsignedInteger(value) {
+AnyValue::AnyValue(int value) throw()
+  : representation(INTEGER), integer(value) {
 }
 
-AnyValue::AnyValue(long value) throw() : representation(LONG_INTEGER), longInteger(value) {
+AnyValue::AnyValue(unsigned int value) throw()
+  : representation(UNSIGNED_INTEGER), unsignedInteger(value) {
 }
 
-AnyValue::AnyValue(unsigned long value) throw() : representation(UNSIGNED_LONG_INTEGER), unsignedLongInteger(value) {
+AnyValue::AnyValue(long value) throw()
+  : representation(LONG_INTEGER), longInteger(value) {
 }
 
-AnyValue::AnyValue(long long value) throw() : representation(LONG_LONG_INTEGER), longLongInteger(value) {
+AnyValue::AnyValue(unsigned long value) throw()
+  : representation(UNSIGNED_LONG_INTEGER), unsignedLongInteger(value) {
 }
 
-AnyValue::AnyValue(unsigned long long value) throw() : representation(UNSIGNED_LONG_LONG_INTEGER), unsignedLongLongInteger(value) {
+AnyValue::AnyValue(long long value) throw()
+  : representation(LONG_LONG_INTEGER), longLongInteger(value) {
 }
 
-AnyValue::AnyValue(const String& value) throw() : representation(STRING), string(value) {
+AnyValue::AnyValue(unsigned long long value) throw()
+  : representation(UNSIGNED_LONG_LONG_INTEGER), unsignedLongLongInteger(value) {
 }
 
-AnyValue::AnyValue(const WideString& value) throw() : representation(WIDE_STRING), wideString(value) {
+AnyValue::AnyValue(const String& value) throw()
+  : representation(STRING), string(value) {
+}
+
+AnyValue::AnyValue(const StringLiteral& value) throw()
+  : representation(STRING), string(value) {
+}
+
+AnyValue::AnyValue(const WideString& value) throw()
+  : representation(WIDE_STRING), wideString(value) {
+}
+
+AnyValue::AnyValue(const WideStringLiteral& value) throw()
+  : representation(WIDE_STRING), wideString(value) {
 }
 
 AnyValue::AnyValue(const AnyValue& copy) throw()
   : representation(copy.representation) {
+  
   switch (representation) {
   case VOID:
+    break;
+  case TYPE:
+    type = copy.type;
     break;
   case CHARACTER:
     character = copy.character;
@@ -128,6 +158,9 @@ AnyValue& AnyValue::operator=(const AnyValue& eq) throw() {
     switch (representation) {
     case VOID:
       break;
+    case TYPE:
+      type = eq.type;
+      break;
     case CHARACTER:
       character = eq.character;
       break;
@@ -172,10 +205,12 @@ AnyValue& AnyValue::operator=(const AnyValue& eq) throw() {
   return *this;
 }
 
-Type AnyValue::getType() const throw() {
+Type AnyValue::getRepresentationType() const throw() {
   switch (representation) {
   case VOID:
     return Type(); // uninitialized
+  case TYPE:
+    return Type::getType<Type>();
   case CHARACTER:
     return Type::getType<char>();
   case WIDE_CHARACTER:
@@ -254,6 +289,22 @@ bool AnyValue::isText() const throw() {
 }
 
 
+
+AnyValue& AnyValue::operator=(const Type& value) throw() {
+  switch (representation) {
+  case STRING:
+    string = String();
+    break;
+  case WIDE_STRING:
+    wideString = WideString();
+    break;
+  default:
+    break;
+  }
+  type = value;
+  representation = TYPE;
+  return *this;
+}
 
 AnyValue& AnyValue::operator=(char value) throw() {
   switch (representation) {
@@ -880,6 +931,8 @@ String AnyValue::getString() const throw() {
   switch (representation) {
   case VOID:
     return String();
+  case TYPE:
+    return TypeInfo::getTypename(type);
   case CHARACTER:
     return String(&character, 1);
   case WIDE_CHARACTER:
@@ -932,6 +985,8 @@ WideString AnyValue::getWideString() const throw() {
   switch (representation) {
   case VOID:
     return WideString();
+  case TYPE:
+    return TypeInfo::getTypename(type);
   case CHARACTER:
     return WideString(&character, 1);
   case WIDE_CHARACTER:
@@ -977,6 +1032,21 @@ WideString AnyValue::getWideString() const throw() {
 }
 
 
+
+void AnyValue::setType(const Type& value) throw() {
+  switch (representation) {
+  case STRING:
+    string = String();
+    break;
+  case WIDE_STRING:
+    wideString = WideString();
+    break;
+  default:
+    break;
+  }
+  type = value;
+  representation = TYPE;
+}
 
 void AnyValue::setChar(char value) throw() {
   switch (representation) {
@@ -1163,9 +1233,11 @@ void AnyValue::setWideString(const WideString& value) throw() {
   representation = WIDE_STRING;
 }
 
-
 FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value) throw(IOException) {
   switch (value.representation) {
+  case AnyValue::TYPE:
+    stream << TypeInfo::getTypename(value.type);
+    break;
   case AnyValue::CHARACTER:
     stream << value.character;
     break;

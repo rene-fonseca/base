@@ -32,15 +32,15 @@ namespace ByteOrder {
 
 #if (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN)
 
-  template<typename TYPE>
+  template<class TYPE>
   static inline TYPE fromBigEndian(TYPE value) throw() {return value;}
 
-  template<typename TYPE>
+  template<class TYPE>
   static inline TYPE toBigEndian(TYPE value) throw() {return value;}
 
 #elif (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN)
 
-  template<typename TYPE>
+  template<class TYPE>
   static inline TYPE fromBigEndian(TYPE value) throw() {return TYPE::_DK_SDU_MIP__BASE__INVALID;}
 
   template<>
@@ -59,7 +59,7 @@ namespace ByteOrder {
     return fromBigEndian<unsigned int>(value >> 32) | static_cast<unsigned long long>(fromBigEndian<unsigned int>(value & 0xffffffff)) << 32;
   }
 
-  template<typename TYPE>
+  template<class TYPE>
     static inline TYPE toBigEndian(TYPE value) throw() {return TYPE::_DK_SDU_MIP__BASE__INVALID;} // invalid invocation
 
   template<>
@@ -95,66 +95,134 @@ public:
 
 /** 16 bit signed integer represented in little endian byte order. */
 struct SignedShort {
-  char lowByte;
-  char highByte;
+  unsigned char lowByte;
+  unsigned char highByte;
+
+  inline SignedShort() throw() {}
+
+  inline SignedShort(short value) throw()
+    : lowByte(value), highByte(value >> 8) {
+  }
 
   inline short operator=(short eq) throw() {
-    lowByte = eq & 0xff;
+    lowByte = eq;
     highByte = eq >> 8;
     return eq;
   }
 
-  inline operator short() const throw() {return highByte << 8 + lowByte;}
+  inline operator short() const throw() {return (static_cast<unsigned short>(highByte) << 8) + lowByte;}
 } __attribute__ ((packed));
 
 /** 16 bit unsigned integer represented in little endian byte order. */
 struct UnsignedShort {
-  char lowByte;
-  char highByte;
+  unsigned char lowByte;
+  unsigned char highByte;
+
+  inline UnsignedShort() throw() {}
+
+  inline UnsignedShort(unsigned short value) throw()
+    : lowByte(value), highByte(value >> 8) {
+  }
 
   inline unsigned short operator=(unsigned short eq) throw() {
-    lowByte = eq & 0xff;
+    lowByte = eq;
     highByte = eq >> 8;
     return eq;
   }
 
-  inline operator unsigned short() const throw() {return highByte << 8 + lowByte;}
+  inline operator unsigned short() const throw() {(return static_cast<unsigned short>(highByte) << 8) + lowByte;}
 } __attribute__ ((packed));
 
 /** 32 bit signed integer represented in little endian byte order. */
 struct SignedInt {
-  char a;
-  char b;
-  char c;
-  char d;
+  unsigned char a;
+  unsigned char b;
+  unsigned char c;
+  unsigned char d;
+
+  inline SignedInt() throw() {}
+
+  inline SignedInt(int value) throw()
+    : a(value), b(value >> 8), c(value >> 16), d(value >> 24) {
+  }
 
   inline int operator=(int eq) throw() {
-    a = eq & 0xff;
-    b = (eq >> 8) & 0xff;
-    c = (eq >> 16) & 0xff;
+    a = eq;
+    b = eq >> 8;
+    c = eq >> 16;
     d = eq >> 24;
     return eq;
   }
 
-  inline operator int() const throw() {return ((d << 8 + c) << 8 + b) << 8 + a;}
+  inline operator int() const throw() {return (((static_cast<unsigned int>(d) << 8) + c << 8) + b << 8) + a;}
 } __attribute__ ((packed));
 
 /** 32 bit unsigned integer represented in little endian byte order. */
 struct UnsignedInt {
-  char a;
-  char b;
-  char c;
-  char d;
+  unsigned char a;
+  unsigned char b;
+  unsigned char c;
+  unsigned char d;
+
+  inline UnsignedInt() throw() {}
+
+  inline UnsignedInt(unsigned int value) throw()
+    : a(value), b(value >> 8), c(value >> 16), d(value >> 24) {
+  }
 
   inline unsigned int operator=(unsigned int eq) throw() {
-    a = eq & 0xff;
-    b = (eq >> 8) & 0xff;
-    c = (eq >> 16) & 0xff;
+    a = eq;
+    b = eq >> 8;
+    c = eq >> 16;
     d = eq >> 24;
     return eq;
   }
 
-  inline operator unsigned int() const throw() {return ((d << 8 + c) << 8 + b) << 8 + a;}
+  inline operator unsigned int() const throw() {return (((static_cast<unsigned int>(d) << 8) + c << 8) + b << 8) + a;}
+} __attribute__ ((packed));
+
+/** 64 bit signed integer represented in little endian byte order. */
+struct SignedLongLong {
+  UnsignedInt a;
+  UnsignedInt b;
+
+  inline SignedLongLong() throw() {}
+
+  inline SignedLongLong(long long value) throw()
+    : a(value), b(value >> 32) {
+  }
+
+  inline long long operator=(long long eq) throw() {
+    a = eq;
+    b = eq >> 32;
+    return eq;
+  }
+
+  inline operator long long() const throw() {
+    return (static_cast<unsigned long long>(b) << 32) + a;
+  }
+} __attribute__ ((packed));
+
+/** 64 bit unsigned integer represented in little endian byte order. */
+struct UnsignedLongLong {
+  UnsignedInt b;
+  UnsignedInt a;
+
+  inline UnsignedLongLong() throw() {}
+
+  inline UnsignedLongLong(unsigned long long value) throw()
+    : a(value), b(value >> 32) {
+  }
+
+  inline unsigned long long operator=(unsigned long long eq) throw() {
+    a = eq;
+    b = eq >> 32;
+    return eq;
+  }
+
+  inline operator unsigned long long() const throw() {
+    return (static_cast<unsigned long long>(b) << 32) + a;
+  }
 } __attribute__ ((packed));
 
 #else
@@ -167,6 +235,10 @@ typedef unsigned short UnsignedShort;
 typedef int SignedInt;
 /** 32 bit unsigned integer represented in little endian byte order. */
 typedef unsigned int UnsignedInt;
+/** 64 bit signed integer represented in little endian byte order. */
+typedef long long SignedLonglong;
+/** 64 bit unsigned integer represented in little endian byte order. */
+typedef unsigned long long UnsignedLongLong;
 
 #endif
 
@@ -196,71 +268,143 @@ typedef unsigned short UnsignedShort;
 typedef int SignedInt;
 /** 32 bit unsigned integer represented in big endian byte order. */
 typedef unsigned int UnsignedInt;
+/** 64 bit signed integer represented in little endian byte order. */
+typedef long long SignedLonglong;
+/** 64 bit unsigned integer represented in little endian byte order. */
+typedef unsigned long long UnsignedLongLong;
 
 #else
 
 /** 16 bit signed integer represented in big endian byte order. */
 struct SignedShort {
-  char highByte;
-  char lowByte;
+  unsigned char highByte;
+  unsigned char lowByte;
+
+  inline SignedShort() throw() {}
+
+  inline SignedShort(short value) throw()
+    : highByte(value >> 8), lowByte(value) {
+  }
 
   inline short operator=(short eq) throw() {
     highByte = eq >> 8;
-    lowByte = eq & 0xff;
+    lowByte = eq;
     return eq;
   }
 
-  inline operator short() const throw() {return highByte << 8 + lowByte;}
+  inline operator short() const throw() {return (static_cast<unsigned short>(highByte) << 8) + lowByte;}
 } __attribute__ ((packed));
 
 /** 16 bit unsigned integer represented in big endian byte order. */
 struct UnsignedShort {
-  char highByte;
-  char lowByte;
+  unsigned char highByte;
+  unsigned char lowByte;
 
+  inline UnsignedShort() throw() {}
+
+  inline UnsignedShort(unsigned short value) throw()
+    : highByte(value >> 8), lowByte(value) {
+  }
+  
   inline unsigned short operator=(unsigned short eq) throw() {
     highByte = eq >> 8;
-    lowByte = eq & 0xff;
+    lowByte = eq;
     return eq;
   }
 
-  inline operator unsigned short() const throw() {return highByte << 8 + lowByte;}
+  inline operator unsigned short() const throw() {return (static_cast<unsigned short>(highByte) << 8) + lowByte;}
 } __attribute__ ((packed));
 
 /** 32 bit signed integer represented in big endian byte order. */
 struct SignedInt {
-  char d;
-  char c;
-  char b;
-  char a;
+  unsigned char d;
+  unsigned char c;
+  unsigned char b;
+  unsigned char a;
+
+  inline SignedInt() throw() {}
+
+  inline SignedInt(int value) throw()
+    : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {
+  }
 
   inline int operator=(int eq) throw() {
     d = eq >> 24;
-    c = (eq >> 16) & 0xff;
-    b = (eq >> 8) & 0xff;
-    a = eq & 0xff;
+    c = eq >> 16;
+    b = eq >> 8;
+    a = eq;
     return eq;
   }
 
-  inline operator int() const throw() {return ((d << 8 + c) << 8 + b) << 8 + a;}
+  inline operator int() const throw() {return (((static_cast<unsigned int>(d) << 8) + c << 8) + b << 8) + a;}
 } __attribute__ ((packed));
 
 /** 32 bit unsigned integer represented in big endian byte order. */
 struct UnsignedInt {
-  char d;
-  char c;
-  char b;
-  char a;
+  unsigned char d;
+  unsigned char c;
+  unsigned char b;
+  unsigned char a;
+
+  inline UnsignedInt() throw() {}
+
+  inline UnsignedInt(int value) throw()
+    : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {
+  }
 
   inline unsigned int operator=(unsigned int eq) throw() {
     d = eq >> 24;
-    c = (eq >> 16) & 0xff;
-    b = (eq >> 8) & 0xff;
-    a = eq & 0xff;
+    c = eq >> 16;
+    b = eq >> 8;
+    a = eq;
     return eq;
   }
 
-  inline operator unsigned int() const throw() {return ((d << 8 + c) << 8 + b) << 8 + a;}
+  inline operator unsigned int() const throw() {return (((static_cast<unsigned int>(d) << 8) + c << 8) + b << 8) + a;}
+} __attribute__ ((packed));
+
+/** 64 bit signed integer represented in big endian byte order. */
+struct SignedLongLong {
+  UnsignedInt b;
+  UnsignedInt a;
+
+  inline SignedLongLong() throw() {}
+
+  inline SignedLongLong(long long value) throw()
+    : b(value >> 32), a(value) {
+  }
+
+  inline long long operator=(long long eq) throw() {
+    b = eq >> 32;
+    a = eq;
+    return eq;
+  }
+
+  inline operator long long() const throw() {
+    return (static_cast<unsigned long long>(b) << 32) + a;
+  }
+} __attribute__ ((packed));
+
+/** 64 bit unsigned integer represented in big endian byte order. */
+struct UnsignedLongLong {
+  UnsignedInt b;
+  UnsignedInt a;
+
+  inline UnsignedLongLong() throw() {}
+  
+  inline UnsignedLongLong(unsigned long long value) throw()
+    : b(value >> 32), a(value) {
+  }
+  
+  inline UnsignedLongLong& operator=(unsigned long long eq) throw() {
+    b = eq >> 32;
+    a = eq;
+    return *this;
+  }
+  
+  inline operator unsigned long long() const throw() {
+    return (static_cast<unsigned long long>(b) << 32) + a;
+  }
 } __attribute__ ((packed));
 
 #endif

@@ -182,13 +182,14 @@ Vector3D<TYPE> Vector3D<TYPE>::cross(const Vector3D& value) const throw() {
 
 template<class TYPE>
 TYPE Vector3D<TYPE>::getAngle(const Vector3D& value) const throw() {
-  TYPE temp = dot(value)/(sqrt(x * x + y * y) * sqrt(value.x * value.x + value.y * value.y));
+  // TAG: use return acos(temp);
+  TYPE temp = dot(value)/sqrt((x*x + y*y + z*z) * (value.x*value.x + value.y*value.y + value.z*value.z));
   return atan2(sqrt(1 - temp * temp), temp);
 }
 
 template<class TYPE>
 Vector3D<TYPE> Vector3D<TYPE>::getProjection(const Vector3D& value) const throw() {
-  return value * dot(value)/(value.x * value.x + value.y * value.y);
+  return value * dot(value)/(value.x * value.x + value.y * value.y + value.z * value.z);
 }
 
 template<class TYPE>

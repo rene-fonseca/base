@@ -39,7 +39,7 @@ public:
   /**
     Initializes socket address.
   */
-  SocketAddress(InetAddress addr, unsigned short port) {
+  SocketAddress(InetAddress addr, unsigned short port) throw() {
     fill<char>((char*)&sa, sizeof(sa), 0);
 #if defined(HAVE_INET_IPV6)
 #if defined(SIN6_LEN)
@@ -58,12 +58,12 @@ public:
   /**
     Returns pointer to socket address.
   */
-  const struct sockaddr* getValue() const {return (struct sockaddr*)&sa;}
+  const struct sockaddr* getValue() const throw() {return (struct sockaddr*)&sa;}
 
   /**
     Returns the size of the socket address structure.
   */
-  inline unsigned int getSize() const {return sizeof(sa);}
+  inline unsigned int getSize() const throw() {return sizeof(sa);}
 };
 
 
@@ -135,7 +135,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
 void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOException) {
   SynchronizeExclusively();
   const SocketAddress sa(addr, port);
-  if (::bind(fd.getHandle(), sa.getValue(), sa.getSize())) {
+  if (::bind(fd.getHandle(), (struct sockaddr*)sa.getValue(), sa.getSize())) {
     throw NetworkException("Unable to associate name with socket");
   }
   localAddress = addr;

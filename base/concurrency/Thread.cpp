@@ -6,8 +6,9 @@
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/MutualExclusion.h>
 
-#if !defined(__win32__)
-  #define D_POSIX_PTHREAD_SEMANTICS
+#if defined(__win32__)
+  #include <stdlib.h>
+#else
   #include <pthread.h>
   #include <signal.h>
   #include <time.h>

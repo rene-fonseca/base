@@ -8,6 +8,10 @@
 #include <base/Functor.h>
 #include <base/concurrency/Thread.h>
 
+#if defined(__win32__) // temporary solution until arch independant types have been defined
+  typedef DWORD uint32_t;
+#endif
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/param.h> // may define MAXHOSTNAMELEN (linux, irix)
@@ -108,9 +112,11 @@ InetAddress::InetAddress(const String<>& addr) throw(InvalidFormat) {
     throw InvalidFormat("Not a valid IP address");
   }
 #else
-  if (inet_pton(AF_INET, addr.getBytes(), &address) <= 0) { // try IPv4 format - MT-level is safe
+  struct in_addr temp;
+  if ((temp.s_addr = inet_addr(addr.getBytes())) == -1) { // MT-level is safe???
     throw InvalidFormat("Not a valid IPv4 address");
   }
+  ((uint32_t*)(&address))[0] = ((uint32_t*)(&temp))[0];
 #endif // HAVE_INET_IPV6
 }
 
@@ -163,7 +169,7 @@ String<> InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound)
     }
   #else
     #warning gethostbyaddr is not MT-safe
-    if (!(hp = gethostbyaddr(&address, sizeof(address), AF_INET))) {
+    if (!(hp = gethostbyaddr((const char*)&address, sizeof(address), AF_INET))) {
       throw HostNotFound("Unable to resolve IP address");
     }
   #endif

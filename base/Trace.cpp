@@ -13,7 +13,9 @@
 
 #include <base/platforms/features.h>
 #include <base/Trace.h>
-#include <base/NullPointer.h>
+#include <base/Base.h>
+#include <base/Type.h>
+#include <base/mem/NullPointer.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
@@ -43,9 +45,9 @@ void Trace::member(const void* pointer, const char* message) throw() {
   assert(message, NullPointer(Type::getType<Trace>()));
   unsigned int length = strlen(message);
   char buffer[sizeof("0x1234567812345678 >> ") + length];
-#if (sizeof(unsigned int) == 4)
+#if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
   sprintf(buffer, "%08x >> %s", pointer, message); // sprintf must be MT-safe
-#elif (sizeof(unsigned int) == 8)
+#elif (_DK_SDU_MIP__BASE__INT_SIZE == 8)
   sprintf(buffer, "%016x >> %s", pointer, message); // sprintf must be MT-safe
 #else
   #error pointer type not supported
@@ -59,7 +61,7 @@ void Trace::member(const void* pointer, const char* message) throw() {
 #endif // flavor
 }
 
-Trace::Trace() throw(const char* _msg) : msg(_msg) {
+Trace::Trace(const char* _msg) throw() : msg(_msg) {
   Trace::member(this, msg);
 }
 

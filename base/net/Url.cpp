@@ -11,7 +11,6 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/features.h>
 #include <base/net/Url.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -69,7 +68,7 @@ public:
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
       String::Character ch = *i;
-      assert(ASCIITraits::isASCII(ch), Url::UrlException("Invalid character"));
+      assert(ASCIITraits::isASCII(ch), Url::UrlException("Invalid character", Type::getType<UrlImpl>()));
       if (encoding(ch) != NEVER) {
         temp += '%';
         temp += ASCIITraits::valueToDigit(ch >> 4);
@@ -87,14 +86,14 @@ public:
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
       String::Character ch = *i;
       if (ch == '%') {
-        assert(end - i >= 2, Url::UrlException("Invalid encoding")); // need two digits
+        assert(end - i >= 2, Url::UrlException("Invalid encoding", Type::getType<UrlImpl>())); // need two digits
         char high = *++i;
         char low = *++i;
-        assert(ASCIITraits::isHexDigit(high) && ASCIITraits::isHexDigit(low), Url::UrlException("Invalid encoding"));
+        assert(ASCIITraits::isHexDigit(high) && ASCIITraits::isHexDigit(low), Url::UrlException("Invalid encoding", Type::getType<UrlImpl>()));
         ch = (ASCIITraits::digitToValue(high) << 4) + ASCIITraits::digitToValue(low); // replace with decoded char
       } else {
         Encode encode = encoding(ch);
-        assert(strict ? (encode == NEVER) : (encode <= RELAXED), Url::UrlException("Part contains unencoded character"));
+        assert(strict ? (encode == NEVER) : (encode <= RELAXED), Url::UrlException("Part contains unencoded character", Type::getType<UrlImpl>()));
       }
       temp += ch;
     }
@@ -155,7 +154,7 @@ String Url::validateScheme(const String& value) throw(UrlException, MemoryExcept
     } else if (ch == '.') {
     } else if (ch == '-') {
     } else {
-      throw UrlException("Invalid scheme");
+      throw UrlException("Invalid scheme", Type::getType<Url>());
     }
     temp += ch;
   }
@@ -166,7 +165,7 @@ String Url::validateUser(const String& str) throw(UrlException) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
     String::Character ch = *i;
-    assert(ASCIITraits::isASCII(ch), UrlException("Invalid character"));
+    assert(ASCIITraits::isASCII(ch), UrlException("Invalid character", Type::getType<Url>()));
   }
   return str;
 }
@@ -175,7 +174,7 @@ String Url::validatePassword(const String& str) throw(UrlException) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
     String::Character ch = *i;
-    assert(ASCIITraits::isASCII(ch), UrlException("Invalid character"));
+    assert(ASCIITraits::isASCII(ch), UrlException("Invalid character", Type::getType<Url>()));
   }
   return str;
 }
@@ -387,7 +386,7 @@ void Url::setPassword(const String& value) throw(UrlException, MemoryException) 
 void Url::setHost(const String& value) throw(UrlException) {
   assert(
     isHost(value.getBeginReadIterator(), value.getEndReadIterator()),
-    UrlException("Invalid host part")
+    UrlException("Invalid host part", this)
   );
   host = value;
 }
@@ -395,7 +394,7 @@ void Url::setHost(const String& value) throw(UrlException) {
 void Url::setPort(const String& value) throw(UrlException) {
   assert(
     isPort(value.getBeginReadIterator(), value.getEndReadIterator()),
-    UrlException("Invalid port part")
+    UrlException("Invalid port part", this)
   );
   port = value;
 }

@@ -11,11 +11,13 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/Base.h>
 #include <base/net/InetAddress.h>
 #include <base/Functor.h>
 #include <base/concurrency/Thread.h>
 #include <base/ByteOrder.h>
+#include <base/Type.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32) // temporary solution until arch independant types have been defined
   #include <winsock.h>
@@ -25,7 +27,7 @@
   #include <sys/socket.h>
   #include <sys/param.h> // may define MAXHOSTNAMELEN (linux, irix)
   #include <netinet/in.h> // define IP address
-  #include <netdb.h> // may define MAXHOSTNAMELEN (solaris)
+  #include <netdb.h> // gethostbyname, may define MAXHOSTNAMELEN (solaris)
   #include <arpa/inet.h> // defines inet_ntop...
   #include <unistd.h> // defines gethostname
 #endif // flavor
@@ -40,11 +42,13 @@ String InetAddress::getLocalHost() throw(NetworkException) {
   ASSERT(buffer->getSize() > 200);
   char* name = buffer->getElements();
   if (gethostname(name, buffer->getSize())) {
-    throw NetworkException("Unable to get local host name");
+    throw NetworkException("Unable to get local host name", Type::getType<InetAddress>());
   }
 #else // unix
   char name[MAXHOSTNAMELEN + 1]; // does MAXHOSTNAMELEN include terminator
-  gethostname(name, sizeof(name));
+  if (gethostname(name, sizeof(name))) {
+    throw NetworkException("Unable to get local host name", Type::getType<InetAddress>());
+  }
 #endif // flavor
   return String(name);
 }
@@ -58,8 +62,8 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
   hint.ai_family = PF_UNSPEC;
 
   struct addrinfo* ai;
-  if (getaddrinfo(name.getElements(), NULL, &hint, &ai) != 0) { // MT-level is safe
-    throw HostNotFound("Unable to lookup host by name");
+  if (getaddrinfo(name.getElements(), 0, &hint, &ai) != 0) { // MT-level is safe
+    throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
   }
 
   struct addrinfo* i = ai;
@@ -76,7 +80,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
       break;
 //    default:
 // just ignore the unsupported families
-//      throw NetworkException("Unsupported family");
+//      throw NetworkException("Unsupported family", Type::getType<InetAddress>());
     }
     i = i->ai_next; // go to the next info entry
   }
@@ -87,26 +91,26 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 
   #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
-      throw HostNotFound("Unable to lookup host by name");
+      throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
     if (!(hp = gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &error))) {
-      throw HostNotFound("Unable to lookup host by name");
+      throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
     if (gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &hp, &error)) {
-      throw HostNotFound("Unable to lookup host by name");
+      throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
   #else
     #warning gethostbyname is not MT-safe
-    if (!(hp = gethostbyname(name.getElements())) {
-      throw HostNotFound("Unable to lookup host by name");
+    if (!(hp = gethostbyname(name.getElements()))) {
+      throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
   #endif
 
@@ -225,11 +229,11 @@ InetAddress::InetAddress(const byte* addr, Family family) throw() {
 }
 
 InetAddress::InetAddress(const String& addr) throw(InvalidFormat) {
-  assert(parse(addr), InvalidFormat("Not an Internet address"));
+  assert(parse(addr), InvalidFormat("Not an Internet address", this));
 }
 
 InetAddress::InetAddress(const String& addr, Family family) throw(InvalidFormat) {
-  assert(parse(addr) && (this->family == family), InvalidFormat("Not an Internet address"));
+  assert(parse(addr) && (this->family == family), InvalidFormat("Not an Internet address", this));
 }
 
 InetAddress::InetAddress(const InetAddress& copy) throw() :
@@ -255,7 +259,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
   char hostname[NI_MAXHOST]; // includes space for terminator
 
   if (getnameinfo(pointer_cast<sockaddr*>(&addr), sizeof(addr), hostname, sizeof(hostname), 0, 0, NI_NAMEREQD | (fullyQualified ? 0 : NI_NOFQDN)) != 0) {
-    throw HostNotFound("Unable to resolve IP address");
+    throw HostNotFound("Unable to resolve IP address", this);
   }
 
   return String(hostname);
@@ -264,26 +268,26 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 
   #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     if (!(hp = gethostbyaddr(getCharAddress(address), sizeof(address), AF_INET))) { // MT-safe
-      throw HostNotFound("Unable to resolve IP address");
+      throw HostNotFound("Unable to resolve IP address", this);
     }
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error;
     if (!(hp = gethostbyaddr_r(getCharAddress(address), sizeof(address), AF_INET, &result, buffer, sizeof(buffer), &error))) {
-      throw HostNotFound("Unable to resolve IP address");
+      throw HostNotFound("Unable to resolve IP address", this);
     }
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error;
     if (gethostbyaddr_r(getCharAddress(address), sizeof(address), AF_INET, &result, buffer, sizeof(buffer), &hp, &error)) {
-      throw HostNotFound("Unable to resolve IP address");
+      throw HostNotFound("Unable to resolve IP address", this);
     }
   #else
     #warning gethostbyaddr is not MT-safe
     if (!(hp = gethostbyaddr(getCharAddress(address), sizeof(address), AF_INET))) {
-      throw HostNotFound("Unable to resolve IP address");
+      throw HostNotFound("Unable to resolve IP address", this);
     }
   #endif
 

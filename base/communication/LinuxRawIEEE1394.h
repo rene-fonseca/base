@@ -64,7 +64,7 @@ private:
     bool busy;
     Status status;
   };
-  
+
   /** Device handle. */
   OperatingSystem::Handle handle;
   /** The protocol (API). */

@@ -68,18 +68,22 @@ class File : public Object {
 public:
 
   /** File access. */
-  typedef enum {READ, WRITE, READWRITE} Access;
+  typedef enum {
+    READ, /**< Request read access. */
+    WRITE, /**< Request write access. */
+    READWRITE /**< Request read and write access. */
+  } Access;
   /** Type used to specify the relative offset. */
   typedef enum {
-    BEGIN, // position is relative to begining of file
-    CURRENT, // position is relative to current position of file
-    END // position is relative to end of file
+    BEGIN, /**< position is relative to begining of file */
+    CURRENT, /**< position is relative to current position of file */
+    END /**< position is relative to end of file */
   } Whence;
   /** File initialization options. */
-  enum {
-    CREATE = 1, /// Specifies that the file should be created if it doesn't exist
-    TRUNCATE = 2, /// Specifies that the file should be truncated if it already exists
-    EXCLUSIVE = 4 /// Specifies that the file should be opened in exclusive mode
+  enum Options {
+    CREATE = 1, /**< Specifies that the file should be created if it doesn't exist */
+    TRUNCATE = 2, /**< Specifies that the file should be truncated if it already exists */
+    EXCLUSIVE = 4 /**< Specifies that the file should be opened in exclusive mode */
   };
 private:
 

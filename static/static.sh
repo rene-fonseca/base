@@ -101,20 +101,18 @@ echo base_cv_features=\""$features"\"
 
 
 # functions
-default_available_functions=
-default_inavailable_functions="mbrtowc mbsrtowcs memchr memcmp memcpy memmove memset nanosleep pselect pthread_yield readdir_r yield"
-
-if test -n "$default_available_functions"; then
-  for function in $default_available_functions; do
-    export base_cv_function_$function=yes
-  done
-fi
-
-if test -n "$default_inavailable_functions"; then
-  for function in $default_inavailable_functions; do
-    export base_cv_function_$function=no
-  done
-fi
+base_cv_function_mbrtowc=no
+base_cv_function_mbsrtowcs=no
+base_cv_function_memchr=no
+base_cv_function_memcmp=no
+base_cv_function_memcpy=no
+base_cv_function_memmove=no
+base_cv_function_memset=no
+base_cv_function_nanosleep=no
+base_cv_function_pselect=no
+base_cv_function_pthread_yield=no
+base_cv_function_readdir_r=no
+base_cv_function_yield=no
 
 case ${function_mbrtowc+S}${function_mbrtowc-U} in
 Syes|Sno) base_cv_function_mbrtowc=$function_mbrtowc;; U);; *) exit 1;; esac
@@ -143,13 +141,18 @@ Syes|Sno) base_cv_function_yield=$function_yield;; U);; *) exit 1;; esac
 
 for function in ${functions-""}; do
   case $function in
-  [A-Za-z0-9_]*)
-    export base_cv_function_$function=yes
-  ;;
-  *)
-    echo Invalid function name 1>&2
-    exit 1
-  ;;
+  mbrtowc) base_cv_function_mbrtowc=yes;;
+  mbsrtowcs) base_cv_function_mbsrtowcs=yes;;
+  memchr) base_cv_function_memchr=yes;;
+  memcmp) base_cv_function_memcmp=yes;;
+  memcpy) base_cv_function_memcpy=yes;;
+  memmove) base_cv_function_memmove=yes;;
+  memset) base_cv_function_memset=yes;;
+  nanosleep) base_cv_function_nanosleep=yes;;
+  pselect) base_cv_function_pselect=yes;;
+  pthread_yield) base_cv_function_pthread_yield=yes;;
+  readdir_r) base_cv_function_readdir_r=yes;;
+  yield) base_cv_function_yield=yes;;
   esac
 done
 
@@ -171,16 +174,14 @@ echo base_cv_function_yield=$base_cv_function_yield
 # symbols/types: SOCKLEN_T
 
 # sub apis  
-default_available_apis=
-default_inavailable_apis="aio inet_ipv6 lfs pthread pthread_rwlock pthread_semaphore regexp wide"
-
-for api in $default_available_apis; do
-  export base_cv_api_$api=yes
-done
-
-for api in $default_inavailable_apis; do
-  export base_cv_api_$api=no
-done
+base_cv_api_aio=no
+base_cv_api_inet_ipv6=no
+base_cv_api_lfs=no
+base_cv_api_pthread=no
+base_cv_api_pthread_rwlock=no
+base_cv_api_pthread_semaphore=no
+base_cv_api_regexp=no
+base_cv_api_wide=no
 
 case ${api_aio+S}${api_aio-U} in
 Syes|Sno) base_cv_api_aio=$api_aio;; U);; *) exit 1;; esac
@@ -201,13 +202,14 @@ Syes|Sno) base_cv_api_wide=$api_wide;; U);; *) exit 1;; esac
 
 for api in ${apis-""}; do
   case $api in
-  [A-Za-z0-9_]*)
-    export base_cv_api_$api=yes
-  ;;
-  *)
-    echo Invalid api name 1>&2
-    exit 1
-  ;;
+  aio) base_cv_api_aio=yes;;
+  inet_ipv6) base_cv_api_inet_ipv6=yes;;
+  lfs) base_cv_api_lfs=yes;;
+  pthread) base_cv_api_pthread=yes;;
+  pthread_rwlock) base_cv_api_pthread_rwlock=yes;;
+  pthread_semaphore) base_cv_api_pthread_semaphore=yes;;
+  regexp) base_cv_api_regexp=yes;;
+  wide) base_cv_api_wide=yes;;
   esac
 done
 

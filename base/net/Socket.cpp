@@ -270,7 +270,6 @@ void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOExceptio
   SynchronizeExclusively();
   SocketAddress sa(addr, port);
   if (int rr = ::bind(getHandle(), sa.getValue(), sa.getSize())) {
-    ferr << "bind result: " << rr << "  errno:" << errno << ENDL;
     throw NetworkException("Unable to assign name to socket");
   }
 //  if ((addr.isUnspecified()) || (port == 0)) { // do we need to determine assigned name

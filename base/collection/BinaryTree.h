@@ -146,11 +146,12 @@ public:
         while (node->getLeft()) { // optimized version
           node = node->getLeft();
         }
-        traverse = RETURN_LEFT; // required
+        traverse = RETURN_LEFT;
 
 //        if (node->getLeft()) {
 //          node = node->getLeft();
 //          traverse = TRAVERSE_SUBTREE;
+        void;
 //        } else {
 //          traverse = RETURN_LEFT;
 //        }
@@ -166,7 +167,6 @@ public:
           traverse = TRAVERSE_SUBTREE;
           break;
         }
-
 //        if (result) { // stop if we already have found a result
 //          return result;
 //        }
@@ -175,6 +175,7 @@ public:
 //          node = node->getRight();
 //          traverse = TRAVERSE_SUBTREE;
 //        } else {
+        void;
 //          if (node == root) {
 //            more = false; // we have reached the end of the enumeration
 //            return result;
@@ -182,6 +183,7 @@ public:
 //          Pointer child = node;
 //          node = node->getParent();
 //          if (child == node->getLeft()) {
+        void;
 //            traverse = RETURN_LEFT;
 //          } else {
 //            traverse = RETURN_RIGHT;
@@ -207,6 +209,7 @@ public:
 //        }
 //        Pointer child = node;
 //        node = node->getParent();
+	void;
 //        if (child == node->getLeft()) {
 //          traverse = RETURN_LEFT;
 //        } else {

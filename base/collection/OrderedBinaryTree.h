@@ -21,6 +21,11 @@ template<class TYPE>
 class OrderedBinaryTree : protected BinaryTree<TYPE> {
 public:
 
+  class Enumeration;
+  friend class Enumeration;
+  class ReadOnlyEnumeration;
+  friend class ReadOnlyEnumeration;
+
   /**
     Enumeration of all the elements of an ordered binary tree.
 

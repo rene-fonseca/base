@@ -29,6 +29,11 @@ template<class TYPE>
 class Array : public Collection {
 public:
 
+  class Enumeration;
+  friend class Enumeration;
+  class ReadOnlyEnumeration;
+  friend class ReadOnlyEnumeration;
+
   /**
     Enumeration of all the elements of an array.
   */

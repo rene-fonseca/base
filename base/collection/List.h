@@ -258,6 +258,11 @@ public:
   /** The type of a node. */
   typedef ListNode<Value> Node;
 
+  class Enumeration;
+  friend class Enumeration;
+  class ReadOnlyEnumeration;
+  friend class ReadOnlyEnumeration;
+
   /**
     Enumeration of all the elements of an array.
   */

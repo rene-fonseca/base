@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Row iterator for matrix.
 
   @short Matrix row iterator
+  @ingroup iterators
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -32,6 +33,24 @@ public:
 
   typedef SequenceIterator<TRAITS> ElementIterator;
 
+  /**
+    Reference to an element within the iterator.
+  */
+  class Reference {
+    friend class MatrixRowIterator;
+  private:
+    ElementIterator iterator;
+    Reference(const Reference& copy); // prohibit default copy initialization
+    Reference& operator=(const Reference& eq); // prohibit default assignment
+    inline Reference(const ElementIterator& _iterator) : iterator(_iterator) {}
+  public:
+    inline Reference& operator=(ElementIterator::Value value) throw() {*iterator = value; return *this;}
+    inline operator ElementIterator() const throw() {return iterator;}
+    inline operator ElementIterator::Value() const throw() {return *iterator;}
+  };
+  
+  
+  
   inline MatrixRowIterator(Pointer element, unsigned int columns) throw()
     : InterleavedIterator<TRAITS>(element, columns) {
   }
@@ -94,9 +113,8 @@ public:
     return ElementIterator(element + step);
   }
 
-  inline ElementIterator operator[](unsigned int index) const throw() {
-    ASSERT(index < step);
-    return ElementIterator(element + index);
+  inline Reference operator[](unsigned int index) const throw() {
+    return Reference(ElementIterator(element + index));
   }
 };
 

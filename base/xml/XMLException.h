@@ -21,6 +21,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Exception thrown by the XML classes.
 
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -28,9 +29,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class XMLException : public Exception {
 public:
 
-  inline XMLException() {}
+  inline XMLException() throw() {}
 
-  inline XMLException(const char* message) : Exception(message) {}
+  inline XMLException(const char* message) throw() : Exception(message) {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

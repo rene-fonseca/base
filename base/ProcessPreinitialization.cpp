@@ -34,7 +34,7 @@ namespace internal {
   namespace specific {
     
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-    
+
     // handle to the global process heap
     OperatingSystem::Handle processHeap;
     
@@ -42,17 +42,98 @@ namespace internal {
     LPTOP_LEVEL_EXCEPTION_FILTER originalExceptionFilter;
     
     LONG __stdcall exceptionFilter(EXCEPTION_POINTERS* exception) {
-      char errorMessage[sizeof("System exception 0x################ at 0x################")]; // worst case
+      char errorMessage[sizeof("System exception 0x################ (floating-point exception) at 0x################")]; // worst case
       char* dest = errorMessage;
       copy<char>(dest, "System exception 0x", sizeof("System exception 0x") - 1);
       dest += sizeof("System exception 0x") - 1;
       
       DWORD exceptionCode = exception->ExceptionRecord->ExceptionCode;
+
+      enum {
+        DESCRIPTION_ACCESS_VIOLATION,
+        DESCRIPTION_INVALID_PAGE,
+        DESCRIPTION_GUARD_PAGE,
+        DESCRIPTION_MISALIGNMENT,
+        DESCRIPTION_STACK_OVERFLOW,
+        DESCRIPTION_DIVISION_BY_ZERO,
+        DESCRIPTION_FLOATING_POINT,
+        DESCRIPTION_ILLEGAL_INSTRUCTION,
+        DESCRIPTION_INVALID_HANDLE,
+        DESCRIPTION_NONE
+      };
+
+      static const StringLiteral EXCEPTION_DESCRIPTIONS[] = { // make sure size of errorMessage is ok
+        MESSAGE("access violation"),
+        MESSAGE("invalid page"),
+        MESSAGE("guard page"),
+        MESSAGE("misalignment"),
+        MESSAGE("stack overflow"),
+        MESSAGE("division by zero"),
+        MESSAGE("floating-point exception"),
+        MESSAGE("illegal instruction"),
+        MESSAGE("invalid handle"),
+        MESSAGE("")
+      };
+
+      unsigned int description;
+      switch (exceptionCode) {
+      case EXCEPTION_ACCESS_VIOLATION:
+        description = DESCRIPTION_ACCESS_VIOLATION;
+        break;
+      case EXCEPTION_IN_PAGE_ERROR:
+        description = DESCRIPTION_INVALID_PAGE;        
+        break;
+      case EXCEPTION_GUARD_PAGE:
+        description = DESCRIPTION_GUARD_PAGE;        
+        break;
+      case EXCEPTION_DATATYPE_MISALIGNMENT:
+        description = DESCRIPTION_MISALIGNMENT;
+        break;
+      case EXCEPTION_STACK_OVERFLOW:
+        description = DESCRIPTION_STACK_OVERFLOW;
+        break;
+      case EXCEPTION_INT_DIVIDE_BY_ZERO:
+        description = DESCRIPTION_DIVISION_BY_ZERO;
+        break;
+      case EXCEPTION_FLT_DENORMAL_OPERAND:
+      case EXCEPTION_FLT_INEXACT_RESULT:
+      case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+      case EXCEPTION_FLT_INVALID_OPERATION:
+      case EXCEPTION_FLT_OVERFLOW:
+      case EXCEPTION_FLT_STACK_CHECK:
+      case EXCEPTION_FLT_UNDERFLOW:
+        description = DESCRIPTION_FLOATING_POINT;
+        break;
+      case EXCEPTION_ILLEGAL_INSTRUCTION:
+      case EXCEPTION_PRIV_INSTRUCTION:
+        description = DESCRIPTION_ILLEGAL_INSTRUCTION;
+        break;
+      case EXCEPTION_INVALID_HANDLE:
+        description = DESCRIPTION_INVALID_HANDLE;
+        break;
+      case CONTROL_C_EXIT: // TAG: not an error
+        description = DESCRIPTION_NONE;        
+        break;
+      case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+      case EXCEPTION_INT_OVERFLOW:
+      default:
+        description = DESCRIPTION_NONE;
+      }
+
       for (unsigned int i = 0; i < (sizeof(DWORD) * 2); ++i) {
-        dest[sizeof(DWORD)*2 - 1 - i] = ASCIITraits::valueToDigit(exceptionCode & 0x0f);
+        dest[sizeof(DWORD) * 2 - 1 - i] = ASCIITraits::valueToDigit(exceptionCode & 0x0f);
         exceptionCode >>= 4; // bits per digit
       }
       dest += sizeof(DWORD) * 2;
+
+      const StringLiteral desc = EXCEPTION_DESCRIPTIONS[description];
+      if (desc.getLength()) {
+        *dest++ = ' ';
+        *dest++ = '(';
+        copy<char>(dest, desc, desc.getLength());
+        dest += desc.getLength();
+        *dest++ = ')';
+      }
       
       copy<char>(dest, " at 0x", sizeof(" at 0x") - 1);
       dest += sizeof(" at 0x") - 1;
@@ -63,6 +144,7 @@ namespace internal {
       }
       dest += sizeof(unsigned long) * 2;
       *dest = 0; // terminate string
+      
       Trace::message(errorMessage);
       return EXCEPTION_EXECUTE_HANDLER; // terminate process (or call originalExceptionFilter(exception))
     }

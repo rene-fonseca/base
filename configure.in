@@ -13,6 +13,8 @@ dnl The following variables have been set: $host, $host_cpu, $host_vendor, and $
 case "$host_os" in
 cygwin)
   AC_DEFINE(__win32__, 1, Specifies that the WIN32 API is available)
+
+  CPPFLAGS="${CPPFLAGS}${CPPFLAGS:+ }"'-I/usr/include/w32api'
 ;;
 linux-gnu)
   AC_DEFINE(_GNU_SOURCE, 1, Specifies that the UNIX 98 functionality and GNU extensions are utilized)

@@ -234,10 +234,7 @@ void Urn::setNSS(const String& value) throw(InvalidFormat) {
 }
 
 String Urn::getUrn() const throw(MemoryException) {
-  // String result;
-  // result.forceToLength(4 + nid.getLength() + 1 + nss.getLength());
   return MESSAGE("urn:") + nid + MESSAGE(":") + nss;
-  // return result;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

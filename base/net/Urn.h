@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Implementation of Uniform Resource Name (URN) as specified by RFC 2141.
   Uniform Resource Names (URNs) are intended to serve as persistent,
   location-independent, resource identifiers. The components of the urn are
-  stored internally in decoded format.
+  stored internally in escaped format.
   
   <pre>
   Urn urn("urn:NID:NSS")
@@ -113,12 +113,6 @@ public:
     Returns the URN in escaped format.
   */
   String getUrn() const throw(MemoryException);
-  
-  /**
-    Destroys the URN.
-  */
-  virtual inline ~Urn() throw() {
-  }
 };
 
 /**

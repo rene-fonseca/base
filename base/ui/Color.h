@@ -165,6 +165,13 @@ public:
   /**
     Returns the color as a value.
   */
+  inline uint32 getValue() const throw() {
+    return value;
+  }
+  
+  /**
+    Returns the color as a value.
+  */
   inline operator uint32() const throw() {
     return value;
   }

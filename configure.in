@@ -33,7 +33,15 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 AC_CACHE_CHECK(
   whether byte order of architecture is big endian,
   base_cv_byte_order_is_big_endian,
-  AC_TRY_RUN([int main() {union {char c[sizeof(int)]; int i;} u; u.i = 1; return u.c[0];}], base_cv_byte_order_is_big_endian=yes, base_cv_byte_order_is_big_endian=no, base_cv_byte_order_is_big_endian=no))
+  AC_TRY_RUN(
+    changequote(<<, >>)dnl
+    <<int main() {union {char c[[sizeof(int)]]; int i;} u; u.i = 1; return u.c[[0]];}>>,
+    changequote([, ])dnl
+    base_cv_byte_order_is_big_endian=yes,
+    base_cv_byte_order_is_big_endian=no,
+    base_cv_byte_order_is_big_endian=no
+  )
+)
 
 if test $base_cv_byte_order_is_big_endian = yes; then
   AC_DEFINE(HAVE_BIG_ENDIAN, 1, Specifies that the byte order of the architecture is big endian)
@@ -44,7 +52,8 @@ fi
 AC_CACHE_CHECK(
   whether IPv6 is supported by the operating system,
   base_cv_inet_ipv6,
-  AC_TRY_COMPILE([#include <netinet/in.h>], [struct in6_addr ia; struct sockaddr_in6 sa;], base_cv_inet_ipv6=yes, base_cv_inet_ipv6=no))
+  AC_TRY_COMPILE([#include <netinet/in.h>], [struct in6_addr ia; struct sockaddr_in6 sa;], base_cv_inet_ipv6=yes, base_cv_inet_ipv6=no)
+)
 
 if test $base_cv_inet_ipv6 = yes; then
   AC_DEFINE(HAVE_INET_IPV6, 1, Specifies that the interface extensions for IP version 6 are present)

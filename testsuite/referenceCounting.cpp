@@ -16,11 +16,12 @@
 #include <base/io/FileDescriptorOutputStream.h>
 #include <base/mem/Allocator.h>
 #include <base/mem/ReferenceCountedAllocator.h>
+#include <base/Application.h>
 
 using namespace base;
 
 /*
-  When debugging the this program the states of the objects should be visible.
+  When debugging this program the states of the objects should be visible.
 */
 
 class Base : public virtual ReferenceCountedObject {
@@ -147,7 +148,7 @@ initialization - should not compile
 };
 
 int main(int argc, const char* argv[], const char* env[]) {
-  RCApplication application(argc, argv, env);
+  ReferenceCountingApplication application(argc, argv, env);
   try {
     application.main();
   } catch(Exception& e) {

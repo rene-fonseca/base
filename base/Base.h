@@ -14,7 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE__BASE_H
 #define _DK_SDU_MIP__BASE__BASE_H
 
-#include <base/features.h>
+#include <base/Trace.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

@@ -17,14 +17,14 @@
 namespace base {
 
 #define _DK_SDU_MIP__BASE__COMPILER_VERSION __SUNPRO_CC
-#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE com::sun2::compiler
+#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE com::sun2::sunwspro
 
   namespace com {
     
     // TAG: "sun" is defined as symbol
     namespace sun2 {
 
-      namespace compiler {
+      namespace sunwspro {
       };
     };
   };

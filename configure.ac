@@ -140,15 +140,19 @@ if test "[$]$2" = no; then $1=yes; else $1=no; fi dnl
 
 dnl AC_BASE_CHECK_ARG(result variable, valid argument values, error message)
 AC_DEFUN(AC_BASE_CHECK_ARG, [dnl
-ac_base_arg_valid=no
+ac_base_arg_valid=yes
 for ac_base_temp in $2; do
-  if test "[$]ac_base_temp" = "[$]enableval"; then
+  ac_base_arg_valid=no
+  if test "x[$]{ac_base_temp}" = "x[$]{enableval}"; then
     ac_base_arg_valid=yes
     break
   fi
 done
-AC_BASE_NOTEQUAL(${ac_base_arg_valid}, yes, AC_MSG_ERROR($3))
-$1=[$]enableval
+if test "x[$]{ac_base_arg_valid}" = "xyes"; then
+  $1=[$]enableval
+else
+  AC_MSG_ERROR($3)
+fi
 ])
 
 dnl AC_BASE_PREPEND(variable, value)
@@ -349,8 +353,7 @@ AC_ARG_ENABLE(
       Specifies the thread API to be utilized. This feature is auto-detected
       by default. The auto-detection will fail if the compiler is a cross
       compiler. The option is only valid in Unix mode. The default is posix.],
-  AC_BASE_CHECK_ARG(base_explicit_threads, auto posix win32, The
-  threads flag must be either 'auto', 'posix', or 'win32'.))
+  AC_BASE_CHECK_ARG(base_explicit_threads, auto posix win32, The threads flag must be either 'auto', 'posix', or 'win32'.))
 
 base_explicit_wide=auto
 AC_ARG_ENABLE(
@@ -424,6 +427,38 @@ AC_ARG_ENABLE(
       Specifies that XML support should be included. 'xmlsoft' selects the
       Gnome XML Library. The default is no.],
   AC_BASE_CHECK_ARG(base_explicit_xml, xmlsoft no, Invalid argument used with the xml flag.))
+
+base_explicit_ieee1394=yes
+AC_ARG_ENABLE(
+  ieee1394,[
+  --enable-ieee1394=[*|yes|no]
+      Specifies the name of the default IEEE 1394 implementation. The built-in
+      implementation is utilized if this option is not specified (or enabled
+      without a name). Disabling the IEEE 1394 implementation forces the dummy
+      implementation to be utilized allowing IEEE 1394 applications to link with
+      the library.],
+  AC_BASE_CHECK_ARG(base_explicit_ieee1394))
+
+case "${base_explicit_ieee1394}" in
+yes)
+;;
+no)
+AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL, DummyIEEE1394Impl)
+AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL_HEADER, [\"]base/communication/DummyIEEE1394Impl.h[\"])
+;;
+*.h)
+temp=${base_explicit_ieee1394/%.h/}
+AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL, ${temp/*\//})
+AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL_HEADER, [\"]${base_explicit_ieee1394}[\"])
+;;
+[[A-Z]]*)
+AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL, ${base_explicit_ieee1394})
+AC_BASE_DEFINE_PRIVATE(IEEE_1394_IMPL_HEADER, [\"]base/communication/${base_explicit_ieee1394}.h[\"])
+;;
+*)
+AC_MSG_ERROR(Invalid value for IEEE 1394 implementation (@<:@A-Z@:>@@<:@A-Za-z0-9_@:>@* or relative path of header).)
+;;
+esac
 
 base_explicit_testsuite=no
 AC_ARG_ENABLE(
@@ -642,8 +677,9 @@ dnl Lets play "name that c++ compiler"
 if test "x$ac_base_cxx_name" = "x"; then
   # Check if GNU Compiler Collection
   if AC_BASE_TRY_CMD($CXX -v 2>&1 | grep -e "gcc.*version"); then
-    ac_base_cxx_major=`$CXX -dumpversion 2>&1 | sed "s/\([[0-9]]\)\+\.[[0-9]]\+.*/\1/"`
-    ac_base_cxx_minor=`$CXX -dumpversion 2>&1 | sed "s/[[0-9]]\+\.\([[0-9]]\+\).*/\1/"`
+    ac_base_cxx_version=`$CXX -dumpversion 2>&1`
+    ac_base_cxx_major=`echo $ac_base_cxx_version | sed "s/\([[0-9]]\)\+\.[[0-9]]\+.*/\1/"`
+    ac_base_cxx_minor=`echo $ac_base_cxx_version | sed "s/[[0-9]]\+\.\([[0-9]]\+\).*/\1/"`
     ac_base_cxx_name="GNU Compiler Collection"
     ac_base_cxx_vendor="gnu.org"
   fi
@@ -695,8 +731,17 @@ if test "x$ac_base_cxx_name" = "x"; then
   fi
 fi
 
+# make generic version
+if test "x$ac_base_cxx_version" = "x"; then
+  if test "x$ac_base_cxx_micro" = "x"; then
+    ac_base_cxx_version="$ac_base_cxx_major.$ac_base_cxx_minor"
+  else
+    ac_base_cxx_version="$ac_base_cxx_major.$ac_base_cxx_minor.$ac_base_cxx_micro"
+  fi
+fi
+
 AC_MSG_CHECKING(identity of C++ compiler)
-AC_MSG_RESULT([$ac_base_cxx_name $ac_base_cxx_major.$ac_base_cxx_minor ($ac_base_cxx_vendor)])
+AC_MSG_RESULT([$ac_base_cxx_name $ac_base_cxx_version ($ac_base_cxx_vendor)])
 
 
 
@@ -1281,7 +1326,7 @@ AC_BASE_CHECK_CFUNCTION(memcpy)
 AC_BASE_CHECK_CFUNCTION(memmove)
 AC_BASE_CHECK_CFUNCTION(memset)
 
-if test ${ac_base_flavor} = unix; then
+if test "x${ac_base_flavor}" = "xunix"; then
 AC_BASE_CHECK_CFUNCTION_PRIVATE(pselect)
 AC_BASE_CHECK_CFUNCTION_PRIVATE(readdir_r)
 AC_BASE_CHECK_CFUNCTION_PRIVATE(nanosleep)

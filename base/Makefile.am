@@ -14,20 +14,176 @@
 include $(top_srcdir)/common.am
 
 # the "platforms" directory must be built before all other sources
-SUBDIRS = docs platforms archive collection communication compression concurrency dl extension filesystem io iterator mathematics mem net rmi security sound string xml
+SUBDIRS = docs \
+          platforms \
+          archive \
+          collection \
+          communication \
+          compression \
+          concurrency \
+          dl \
+          extension \
+          filesystem \
+          io \
+          iterator \
+          mathematics \
+          mem \
+          net \
+          rmi \
+          security \
+          sound \
+          string \
+          xml \
+          opengl \
+          ui
 
 lib_LTLIBRARIES = libbase.la
 
-libbase_la_SOURCES = AnyValue.cpp Architecture.cpp Cast.cpp Character.cpp Construct.cpp Date.cpp DateException.cpp Destruct.cpp DeviceException.cpp Dimension.cpp Exception.cpp FloatingPoint.cpp Integer.cpp UnsignedInteger.cpp LongInteger.cpp UnsignedLongInteger.cpp MemoryException.cpp Object.cpp OutOfBounds.cpp OutOfDomain.cpp OutOfRange.cpp Overflow.cpp Primitives.cpp Range2D.cpp ResourceException.cpp ShortInteger.cpp Underflow.cpp Trace.cpp Timer.cpp Type.cpp TypeInfo.cpp Application.cpp SingletonException.cpp Daemon.cpp SystemLogger.cpp NotImplemented.cpp NotSupported.cpp UnexpectedFailure.cpp Version.cpp OperatingSystem.cpp SystemInformation.cpp ProcessPreinitialization.cpp initialization.cpp
+libbase_la_SOURCES = AnyValue.cpp \
+                     Architecture.cpp \
+                     Cast.cpp \
+                     Character.cpp \
+                     Construct.cpp \
+                     Date.cpp \
+                     DateException.cpp \
+                     Destruct.cpp \
+                     DeviceException.cpp \
+                     Dimension.cpp \
+                     Exception.cpp \
+                     FloatingPoint.cpp \
+                     Integer.cpp \
+                     UnsignedInteger.cpp \
+                     LongInteger.cpp \
+                     UnsignedLongInteger.cpp \
+                     MemoryException.cpp \
+                     Object.cpp \
+                     OutOfBounds.cpp \
+                     OutOfDomain.cpp \
+                     OutOfRange.cpp \
+                     Overflow.cpp \
+                     Primitives.cpp \
+                     Range2D.cpp \
+                     ResourceException.cpp \
+                     ShortInteger.cpp \
+                     Underflow.cpp \
+                     Trace.cpp \
+                     Timer.cpp \
+                     Type.cpp \
+                     TypeInfo.cpp \
+                     Application.cpp \
+                     SingletonException.cpp \
+                     Daemon.cpp \
+                     SystemLogger.cpp \
+                     NotImplemented.cpp \
+                     NotSupported.cpp \
+                     UnexpectedFailure.cpp \
+                     Version.cpp \
+                     OperatingSystem.cpp \
+                     SystemInformation.cpp \
+                     ProcessPreinitialization.cpp \
+                     initialization.cpp
 
 sectiondir = $(includedir)/base
-section_HEADERS = configuration.h features.h AnyValue.h Architecture.h Cast.h Dimension.h Exception.h FloatingPoint.h Object.h Character.h Range2D.h ShortInteger.h Iterator.h Trace.h RandomIterator.h ForwardIterator.h BidirectionalIterator.h Comparable.h Copyable.h Integer.h UnsignedInteger.h LongInteger.h UnsignedLongInteger.h Overflow.h Underflow.h OutOfRange.h OutOfBounds.h OutOfDomain.h Primitives.h ResourceException.h MemoryException.h DeviceException.h Construct.h Destruct.h Base.h Functor.h Date.h DateException.h Listener.h Timer.h Type.h TypeInfo.h ByteOrder.h Application.h SingletonException.h Daemon.h SystemLogger.h NotImplemented.h NotSupported.h UnexpectedFailure.h Version.h OperatingSystem.h SystemInformation.h ProcessPreinitialization.h
+section_HEADERS = configuration.h \
+                  features.h \
+                  AnyValue.h \
+                  Architecture.h \
+                  Cast.h \
+                  Dimension.h \
+                  Exception.h \
+                  FloatingPoint.h \
+                  Object.h \
+                  Character.h \
+                  Range2D.h \
+                  ShortInteger.h \
+                  Iterator.h \
+                  Trace.h \
+                  RandomIterator.h \
+                  ForwardIterator.h \
+                  BidirectionalIterator.h \
+                  Comparable.h \
+                  Copyable.h \
+                  Integer.h \
+                  UnsignedInteger.h \
+                  LongInteger.h \
+                  UnsignedLongInteger.h \
+                  Overflow.h \
+                  Underflow.h \
+                  OutOfRange.h \
+                  OutOfBounds.h \
+                  OutOfDomain.h \
+                  Primitives.h \
+                  ResourceException.h \
+                  MemoryException.h \
+                  DeviceException.h \
+                  Construct.h \
+                  Destruct.h \
+                  Base.h \
+                  Functor.h \
+                  Date.h \
+                  DateException.h \
+                  Listener.h \
+                  Timer.h \
+                  Type.h \
+                  TypeInfo.h \
+                  ByteOrder.h \
+                  Application.h \
+                  SingletonException.h \
+                  Daemon.h \
+                  SystemLogger.h \
+                  NotImplemented.h \
+                  NotSupported.h \
+                  UnexpectedFailure.h \
+                  Version.h \
+                  OperatingSystem.h \
+                  SystemInformation.h \
+                  ProcessPreinitialization.h
 
-libbase_la_LIBADD = archive/libarchive.la collection/libcollection.la communication/libcommunication.la compression/libcompression.la concurrency/libconcurrency.la filesystem/libfilesystem.la io/libio.la io/async/libaio.la iterator/libiterator.la mathematics/libmathematics.la mem/libmem.la net/libnet.la platforms/libplatform.la string/libstring.la dl/libdl.la xml/libxml.la rmi/librmi.la security/libsecurity.la sound/libsound.la @LIBADD_BASE@ @LIBS_BASE@
+libbase_la_LIBADD = archive/libarchive.la \
+                    collection/libcollection.la \
+                    communication/libcommunication.la \
+                    compression/libcompression.la \
+                    concurrency/libconcurrency.la \
+                    filesystem/libfilesystem.la \
+                    io/libio.la \
+                    io/async/libaio.la \
+                    iterator/libiterator.la \
+                    mathematics/libmathematics.la \
+                    mem/libmem.la \
+                    net/libnet.la \
+                    platforms/libplatform.la \
+                    string/libstring.la \
+                    dl/libdl.la \
+                    xml/libxml.la \
+                    rmi/librmi.la \
+                    security/libsecurity.la \
+                    sound/libsound.la \
+                    opengl/libopengl.la \
+                    ui/libui.la @LIBADD_BASE@ @LIBS_BASE@
 
 libbase_la_LDFLAGS = -no-undefined -version-info 0:0:0 @LDFLAGS_BASE@
 
-libbase_la_DEPENDENCIES = archive/libarchive.la collection/libcollection.la communication/libcommunication.la compression/libcompression.la concurrency/libconcurrency.la filesystem/libfilesystem.la io/libio.la io/async/libaio.la iterator/libiterator.la mathematics/libmathematics.la mem/libmem.la net/libnet.la platforms/libplatform.la string/libstring.la dl/libdl.la xml/libxml.la security/libsecurity.la sound/libsound.la @DEPENDENCIES_BASE@
+libbase_la_DEPENDENCIES = archive/libarchive.la \
+                          collection/libcollection.la \
+                          communication/libcommunication.la \
+                          compression/libcompression.la \
+                          concurrency/libconcurrency.la \
+                          filesystem/libfilesystem.la \
+                          io/libio.la \
+                          io/async/libaio.la \
+                          iterator/libiterator.la \
+                          mathematics/libmathematics.la \
+                          mem/libmem.la \
+                          net/libnet.la \
+                          platforms/libplatform.la \
+                          string/libstring.la \
+                          dl/libdl.la \
+                          xml/libxml.la \
+                          rmi/librmi.la \
+                          security/libsecurity.la \
+                          sound/libsound.la \
+                          opengl/libopengl.la \
+                          ui/libui.la @DEPENDENCIES_BASE@
 
 # Windows version resource
 win32rc.o: base.rc features.h

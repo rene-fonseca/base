@@ -25,9 +25,13 @@
 #include <base/io/FileDescriptor.h>
 #include <base/io/FileDescriptorInputStream.h>
 #include <base/io/FileDescriptorOutputStream.h>
+#include <base/io/File.h>
+#include <base/io/Pipe.h>
+#include <base/net/Socket.h>
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/sound/SoundDevice.h>
+#include <base/mem/ReferenceCountedObjectPointer.h>
 #include <stdlib.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -78,6 +82,7 @@ namespace internal {
   ProcessInitialization processInitialization;
 }; // end of namespace - internal
 
+SpinLock DebugDynamicMemory::spinLock;
 unsigned long DebugDynamicMemory::currentAllocations(0);
 
 class DebugDynamicMemoryImpl {
@@ -167,8 +172,30 @@ namespace internal {
   ThreadImpl threadImpl; // use this variable through 'threadLocal'
 }; // end of namespace internal
 
-Handle Handle::invalid;
-FileDescriptor::Descriptor FileDescriptor::invalid;
+Handle* FileDescriptor::Descriptor::invalid; // uninitialized
+Handle* File::FileHandle::invalid; // uninitialized
+Handle* Pipe::PipeHandle::invalid; // uninitialized
+Socket::SocketImpl* Socket::SocketImpl::invalid; // uninitialized
+
+class Initialization {
+private:
+
+  Handle invalidHandle;
+  Socket::SocketImpl invalidSocket;
+public:
+
+  Initialization() throw() : invalidSocket(OperatingSystem::INVALID_HANDLE) {
+    // having a global invalid handle safes us from allocating/deallocating many handles
+    ReferenceCountedObjectPointerImpl(invalidHandle).addReference(); // prevent destruction of object
+    ReferenceCountedObjectPointerImpl(invalidSocket).addReference(); // prevent destruction of object
+    FileDescriptor::Descriptor::invalid = &invalidHandle;
+    File::FileHandle::invalid = &invalidHandle;
+    Pipe::PipeHandle::invalid = &invalidHandle;
+    Socket::SocketImpl::invalid = &invalidSocket;
+  }
+};
+
+Initialization initialization;
 
 FileDescriptorInputStream standardInputStream(FileDescriptor::getStandardInput());
 FormatInputStream fin(standardInputStream);
@@ -179,10 +206,6 @@ FormatOutputStream fout(standardOutputStream);
 FileDescriptorOutputStream standardErrorStream(FileDescriptor::getStandardError());
 FormatOutputStream ferr(standardErrorStream);
 
-X xa;
-
 SoundDevice SoundDevice::soundDevice;
-
-X xb;
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -27,6 +27,7 @@ void moduleCleanUp() throw() {
   delete LinkerManager::getManager()->deregistrate();
 }
 
+/*
 extern "C" void _init() {
   moduleEntry();
 }
@@ -34,3 +35,4 @@ extern "C" void _init() {
 extern "C" void _fini() {
   moduleCleanUp();
 }
+*/

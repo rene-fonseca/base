@@ -90,7 +90,7 @@ AC_ARG_ENABLE(
   trace,[
   --enable-trace=[yes|no]
       Specifies that selected functions should dump tracing information to
-      standard output. This feature is disabled by default.],
+      standard error. This feature is disabled by default.],
   if test "$enableval" = no; then
     base_explicit_trace=no
   elif test "$enableval" = yes; then

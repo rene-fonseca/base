@@ -14,12 +14,14 @@
 #ifndef _DK_SDU_MIP__BASE_MATH__CONSTANTS_H
 #define _DK_SDU_MIP__BASE_MATH__CONSTANTS_H
 
+#include <base/features.h>
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   This namespace holds some offen used mathematical constants.
 
-  @short Mathematical constants
+  @short Commonly used mathematical constants
 */
 
 namespace constant {

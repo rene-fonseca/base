@@ -31,10 +31,15 @@ class ServerSocket : protected Socket {
 public:
 
   /**
+    Initializes an invalidated socket object (ie. unconnected and unbound).
+  */
+  inline ServerSocket() throw() {}
+
+  /**
     Creates a server stream socket and binds it to the specified port and IP address.
 
     @param addr The IP address of the host to connect to.
-    @param port The port to connect to on the host.
+    @param port The port to connect to on the host. If zero the socket is bound to a unique port.
     @param backlog The maxium length of the queue.
   */
   ServerSocket(const InetAddress& addr, unsigned short port, unsigned int backlog) throw(IOException);
@@ -52,6 +57,13 @@ public:
     Closes this socket.
   */
   inline void close() throw(IOException) {return Socket::close();}
+
+  /**
+    Caches the locally assigned address and port of the socket. This member
+    function can be used after a succesful accept determine the locally
+    assigned address and port if unspecified.
+  */
+  inline void getName() throw() {Socket::getName();}
 
   /**
     Returns the local IP address to which the socket is bound.

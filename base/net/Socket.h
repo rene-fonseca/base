@@ -64,13 +64,17 @@ private:
     /** Returns the socket handle. */
     inline int getHandle() const throw() {return handle;}
     /** Returns the local address. */
-    inline InetAddress* getLocalAddress() throw() {return &localAddress;}
+    inline const InetAddress& getLocalAddress() const throw() {return localAddress;}
+    /** Sets the local address. */
+    inline void setLocalAddress(const InetAddress& value) throw() {localAddress = value;}
     /** Returns the local port. */
     inline unsigned short getLocalPort() const throw() {return localPort;}
     /** Sets the local port. */
     inline void setLocalPort(unsigned short port) throw() {localPort = port;}
     /** Returns the remote address. */
-    inline InetAddress* getRemoteAddress() throw() {return &remoteAddress;}
+    inline const InetAddress& getRemoteAddress() const throw() {return remoteAddress;}
+    /** Sets the remote address. */
+    inline void setRemoteAddress(const InetAddress& value) throw() {remoteAddress = value;}
     /** Returns the remote port. */
     inline unsigned short getRemotePort() const throw() {return remotePort;}
     /** Sets the remote port. */
@@ -135,8 +139,8 @@ public:
   /**
     Associates a local name (address and port) with this socket.
 
-    @param addr The IP address the socket should be bound to.
-    @param port The port the socket should be bound to.
+    @param addr The IP address the socket should be bound to. If unspecified the assigned address may not be known until the socket has been connected with connect or accept.
+    @param port The port the socket should be bound to. If zero the socket is assigned to a unique port.
   */
   void bind(const InetAddress& addr, unsigned short port) throw(IOException);
 
@@ -160,6 +164,13 @@ public:
     datagram socket is created).
   */
   void create(bool stream) throw(IOException);
+
+  /**
+    Caches the locally assigned address and port of the socket. This member
+    function can be used after a succesful accept or connect to determine the
+    locally assigned address and port if unspecified.
+  */
+  void getName() throw();
 
   /**
     Returns the IP address to which the socket is connected.

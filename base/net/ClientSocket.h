@@ -96,6 +96,13 @@ public:
   inline const InetAddress& getAddress() const throw() {return Socket::getAddress();}
 
   /**
+    Caches the locally assigned address and port of the socket. This member
+    function can be used after a succesful connect to determine the locally
+    assigned address and port if unspecified.
+  */
+  inline void getName() throw() {return Socket::getName();}
+
+  /**
     Returns the remote port to which the socket is connected.
   */
   inline unsigned short getPort() const throw() {return Socket::getPort();}

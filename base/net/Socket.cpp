@@ -96,56 +96,84 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class SocketAddress {
 private:
 
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  struct sockaddr_in6 sa;
-#else
-  struct sockaddr_in sa;
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+  struct sockaddr sa;
 public:
 
-  /**
-    Initializes socket address.
-  */
-  SocketAddress(InetAddress addr, unsigned short port) throw() {
+  inline SocketAddress() throw() {}
+
+  /** Initializes socket address. */
+  SocketAddress(const InetAddress& addr, unsigned short port) throw() {
     fill<char>((char*)&sa, sizeof(sa), 0);
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-//    switch (addr.getFamily()) {
-//    case IPv4:
-//      sa.sin_family = AF_INET;
-//      sa.sin_port = htons(port);
-//   #error PROBLEM HERE address not in beginning or what??
-//      copy<char>((char*)&sa.sin_addr, addr.getAddress(), sizeof(struct in_addr));
-//      break;
-//    case IPv6:
-#if defined(SIN6_LEN)
-      sa.sin6_len = sizeof(sa);
-#endif // SIN6_LEN
-      sa.sin6_family = AF_INET6;
-      sa.sin6_port = htons(port);
-      copy<char>((char*)&sa.sin6_addr, addr.getAddress(), sizeof(struct in6_addr));
-//      break;
-//    }
-#else
-    sa.sin_family = AF_INET;
-    sa.sin_port = htons(port);
-    copy<char>((char*)&sa.sin_addr, addr.getAddress(), sizeof(struct in_addr));
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+  #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
+    struct sockaddr_in6& sa6 = *(struct sockaddr_in6*)&sa;
+    #if defined(SIN6_LEN)
+    sa6.sin6_len = sizeof(sa);
+    #endif // SIN6_LEN
+    sa6.sin6_family = AF_INET6;
+    sa6.sin6_port = htons(port);
+    copy<unsigned char>((unsigned char*)&sa6.sin6_addr, addr.getAddress(), sizeof(struct in6_addr));
+  #else
+    struct sockaddr_in& sa4 = *(struct sockaddr_in*)&sa;
+    sa4.sin_family = AF_INET;
+    sa4.sin_port = htons(port);
+    copy<unsigned char>((unsigned char*)&(sa4.sin_addr), addr.getAddress(), sizeof(struct in_addr));
+  #endif // _DK_SDU_MIP__BASE__INET_IPV6
   }
 
-  /**
-    Returns pointer to socket address.
-  */
-  struct sockaddr* getValue() throw() {return (struct sockaddr*)&sa;}
+  /** Returns pointer to socket address. */
+  inline struct sockaddr* getValue() throw() {return &sa;}
 
-  /**
-    Returns pointer to socket address.
-  */
-  const struct sockaddr* getValue() const throw() {return (struct sockaddr*)&sa;}
+  /** Returns pointer to socket address. */
+  inline const struct sockaddr* getValue() const throw() {return &sa;}
 
-  /**
-    Returns the size of the socket address structure.
-  */
-  inline unsigned int getSize() const throw() {return sizeof(sa);}
+  /** Returns the size of the socket address structure. */
+  inline socklen_t getSize() const throw() {return sizeof(sa);}
+
+  /** Returns the address. */
+  inline InetAddress getAddress() const throw() {
+  #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
+    switch (sa.sa_family) {
+    case AF_INET:
+      return InetAddress((const char*)&(((const struct sockaddr_in*)&sa)->sin_addr), InetAddress::IPv4);
+    case AF_INET6:
+      return InetAddress((const char*)&(((const struct sockaddr_in6*)&sa)->sin6_addr), InetAddress::IPv6);
+    default:
+      return InetAddress(); // TAG: or should I throw an exception
+    }
+  #else
+    if (sa.sa_family == AF_INET) {
+      return InetAddress((const char*)&(((const struct sockaddr_in*)&sa)->sin_addr), InetAddress::IPv4);
+    } else {
+      return InetAddress(); // TAG: or should I throw an exception
+    }
+  #endif
+  }
+
+  /** Returns the port. */
+  inline unsigned short getPort() const throw() {
+  #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
+    switch (sa.sa_family) {
+    case AF_INET:
+      return ntohs(((const struct sockaddr_in*)&sa)->sin_port);
+    case AF_INET6:
+      return ntohs(((const struct sockaddr_in6*)&sa)->sin6_port);
+    default:
+      return 0; // TAG: or should I throw an exception
+    }
+  #else
+    if (sa.sa_family == AF_INET) {
+      return ntohs(((const struct sockaddr_in*)&sa)->sin_port);
+    } else {
+      return 0; // TAG: or should I throw an exception
+    }
+  #endif
+  }
+
+  /** Sets the socket name from the specified socket. */
+  inline void setSocket(int handle) throw() {
+    socklen_t length = getSize();
+    ::getsockname(handle, getValue(), &length);
+  }
 };
 
 
@@ -198,15 +226,9 @@ bool Socket::accept(Socket& socket) throw(IOException) {
     throw NetworkException("Attempt to overwrite socket");
   }
 
-  // don't know if accept() fills 'sa' with something different from sockaddr_in6 - do you know this
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  struct sockaddr_in6 sa;
-#else
-  struct sockaddr_in sa;
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
-  socklen_t sl = sizeof(sa);
-
-  int handle = ::accept(socket.getHandle(), (struct sockaddr*)&sa, &sl);
+  SocketAddress sa;
+  socklen_t sl = sa.getSize();
+  int handle = ::accept(socket.getHandle(), sa.getValue(), &sl);
 #if defined(__win32__)
   if (handle == -1) {
     switch (WSAGetLastError()) {
@@ -226,15 +248,9 @@ bool Socket::accept(Socket& socket) throw(IOException) {
     }
   }
 #endif
-
   this->socket = new SocketImpl(handle);
-#if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  this->socket->getRemoteAddress()->setAddress((char*)&(sa.sin6_addr), InetAddress::IPv6);
-  this->socket->setRemotePort(ntohs(sa.sin6_port));
-#else
-  this->socket->getRemoteAddress()->setAddress((char*)&(sa.sin_addr), InetAddress::IPv4);
-  this->socket->setRemotePort(ntohs(sa.sin_port));
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+  this->socket->setRemoteAddress(sa.getAddress());
+  this->socket->setRemotePort(sa.getPort());
   return true;
 }
 
@@ -242,10 +258,16 @@ void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOExceptio
   SynchronizeExclusively();
   SocketAddress sa(addr, port);
   if (::bind(getHandle(), sa.getValue(), sa.getSize())) {
-    throw NetworkException("Unable to associate name with socket");
+    throw NetworkException("Unable to assign name to socket");
   }
-  *socket->getLocalAddress() = addr;
-  socket->setLocalPort(port);
+//  if ((addr.isUnspecified()) || (port == 0)) { // do we need to determine assigned name
+//    sa.setSocket(getHandle());
+//    socket->setLocalAddress(sa.getAddress());
+//    socket->setLocalPort(sa.getPort());
+//  } else {
+    socket->setLocalAddress(addr);
+    socket->setLocalPort(port);
+//  }
 }
 
 void Socket::close() throw(IOException) {
@@ -255,9 +277,7 @@ void Socket::close() throw(IOException) {
 
 void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOException) {
   SynchronizeExclusively();
-
   SocketAddress sa(addr, port);
-
   if (::connect(getHandle(), sa.getValue(), sa.getSize())) {
 #if defined(__win32__)
     switch (WSAGetLastError()) {
@@ -279,7 +299,10 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
     }
 #endif
   }
-  *socket->getRemoteAddress() = addr;
+//  sa.setSocket(getHandle());
+//  socket->setLocalAddress(sa.getAddress());
+//  socket->setLocalPort(sa.getPort());
+  socket->setRemoteAddress(addr);
   socket->setRemotePort(port);
 }
 
@@ -308,9 +331,17 @@ void Socket::listen(unsigned int backlog) throw(IOException) {
   }
 }
 
+void Socket::getName() throw() {
+  SynchronizeShared();
+  SocketAddress sa;
+  sa.setSocket(getHandle());
+  socket->setLocalAddress(sa.getAddress());
+  socket->setLocalPort(sa.getPort());
+}
+
 const InetAddress& Socket::getAddress() const throw() {
   SynchronizeShared();
-  return *socket->getRemoteAddress();
+  return socket->getRemoteAddress();
 }
 
 unsigned short Socket::getPort() const throw() {
@@ -319,7 +350,7 @@ unsigned short Socket::getPort() const throw() {
 
 const InetAddress& Socket::getLocalAddress() const throw() {
   SynchronizeShared();
-  return *socket->getLocalAddress();
+  return socket->getLocalAddress();
 }
 
 unsigned short Socket::getLocalPort() const throw() {
@@ -514,7 +545,8 @@ unsigned int Socket::read(char* buffer, unsigned int size, bool nonblocking) thr
       }
     }
 #else // __unix__
-    int result = ::recv(socket->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX, 0);
+    unsigned int bytesToRead = (size <= SSIZE_MAX) ? size : SSIZE_MAX;
+    int result = ::recv(socket->getHandle(), buffer, bytesToRead, 0);
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
       case EINTR: // interrupted by signal before any data was read
@@ -636,6 +668,129 @@ bool Socket::wait(unsigned int timeout) const throw(IOException) {
   }
   return result; // return true if data available
 }
+
+//class FileDescriptorEvent {
+//public:
+//
+//  /** File descriptor events. */
+//  enum {
+//    INPUT = 1, /* There is data to read */
+//    PRIORITYINPUT = 2, /* There is urgent data to read */
+//    OUTPUT = 4, /* Writing now will not block */
+//    ERROR = 8, /* Error condition */
+//    HUNGUP = 16, /* Hung up */
+//    INVALID = 32 /* Invalid request: fd not open */
+//  };
+//private:
+//
+//  int handle;
+//  unsigned int requestedEvents;
+//  unsigned int events;
+//public:
+//
+//  /**
+//    Initializes event.
+//
+//    @param handle The file descriptor.
+//    @param events The requested events.
+//  */
+//  FileDescriptorEvent(int handle, unsigned int events) throw(OutOfDomain) {
+//    assert(events & ~(INPUT | PRIORITYINPUT | OUTPUT), OutOfDomain());
+//    this->handle = handle;
+//    this->requestedEvents = events;
+//    this->events = 0;
+//  }
+//
+//  /**
+//  */
+//  inline int getFileDescriptor() const throw() {return poll.fd;}
+//
+//  /**
+//  */
+//  inline unsigned int getRequestedEvents() const throw() {return poll.events;}
+//
+//  /**
+//  */
+//  inline unsigned int getEvents() const throw() {return poll.revents;}
+//
+//  /**
+//    Resets the events.
+//  */
+//  inline void reset() throw() {events = 0;}
+//
+//  bool wait(Array<FileDescriptorEvent>& objects, int timeout) throw(IOException) {
+//    Allocator<struct pollfd> buffer(objects.getSize());
+//    struct pollfd* p = buffer.getElements();
+//    for (unsigned int i = 0; i < objects.getSize(); ++i) {
+//      p->fd = objects[i].getFileDescriptor();
+//      p->events = objects[i].getRequestedEvents();
+//      p->revents = 0;
+//      ++p;
+//    }
+//    int result = poll(buffer.getElements(), buffer.getSize(), timeout);
+//    if (result == 0) { // timeout
+//      return false;
+//    } else if (result < 0) { // error
+//      int err = errno;
+//      if (err == EINTR) {
+//        return false;
+//      }
+//      assert(true, IOException());
+//    } else {
+//      struct pollfd* p = buffer.getElements();
+//      for (unsigned int i = 0; i < objects.getSize(); ++i) {
+//        objects[i].requestedEvents = p->revents;
+//        ++p;
+//      }
+//      return true;
+//    }
+//  }
+//};
+//
+//class FDEventArrayImpl {
+//private:
+//
+//  Array<struct pollfd> buffer;
+//  unsigned int modified;
+//public:
+//
+//  FDEventArray() throw() {
+//  }
+//
+//  void registerHandle(int handle, unsigned int events) throw() {
+//    // find and add
+//  }
+//
+//  void deregisterHandle(int handle) throw() {
+//    // remove handle
+//  }
+//
+//  bool wait(int timeout) throw(IOException) {
+//    struct pollfd* elements = buffer.getElements();
+//    struct pollfd* p = elements;
+//    const struct pollfd* q = elements + buffer.getSize();
+//    for (; p < q; ++p) { // reset envets
+//      p->revents = 0;
+//    }
+//    int result = poll(elements, buffer.getSize(), timeout);
+//    if (result == 0) { // timeout
+//      return false;
+//    } else if (result < 0) { // error
+//      int err = errno;
+//      if (err == EINTR) {
+//        return false;
+//      }
+//      throw IOException();
+//    } else {
+//      return true;
+//    }
+//  }
+//};
+//
+//class FDEventArray : public Object {
+//private:
+//public:
+//};
 
 Socket::~Socket() {
   TRACE_MEMBER();

@@ -44,5 +44,16 @@ falster-gcc-2.97: all
 falster-gcc-3.0: all
 	CXXFLAGS="-O0 -g3" ./configure --prefix=/tmp/fonsece/base --enable-debug --enable-demangle=gccv3 --enable-regexp=posix
 
-klampenborg: all
-	CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --enable-debug --enable-regexp=no
+# Builds the framework (both dynamic and static) for target mingw under the
+# Cygwin environment using the GNU Compiler Collection. The libtool-1.4.1
+# package provided by Robert Collins must be installed until libtool-1.5 is
+# released. The variable CC needs to be set properly because libtool uses the
+# value as the linker. LTCC needs to be set explicitly because libtool has a
+# quote-eating disorder. The C++ compiler is set to gcc (specified by CXX)
+# since libstdc++ isn't required.
+klampenborg-gcc: all
+	CC="gcc -mno-cygwin -mthreads" LTCC='"gcc -mno-cygwin -mthreads"' CXX="gcc -mno-cygwin -mthreads" CXXFLAGS="-O0 -g3" ./configure --target=mingw32 --prefix=/usr/local/base --disable-shared --enable-debug --disable-demangle --disable-regexp
+
+#LTCC='"gcc -mno-cygwin -mthreads"'
+klampenborg-gcc-3.0.4: all
+	CC="gcc -mno-cygwin -mthreads -x c" CXX="gcc -mno-cygwin -mthreads -x c++" CPPFLAGS="-I/usr/include/mingw/g++-3/i386-pc-mingw32 -I/usr/include/mingw/g++-3/backward -I/usr/include/mingw/g++-3" CXXFLAGS="-O0 -g3" BASE_LIBS='-L/usr/local/gcc-3.0.3/lib/gcc-lib/i386-pc-mingw32/3.0.3 -lsupc++' ./configure --target=mingw32 --prefix=/usr/local/base --enable-demangle=v3mv --enable-debug --enable-regexp=no

@@ -982,7 +982,7 @@ AC_SUBST(CXXFLAGS)
 
 
 ac_base_header=base/configuration.h
-AC_MSG_NOTICE(updating configuration...)
+echo updating configuration...
 mv $ac_base_config $ac_base_header
 
 

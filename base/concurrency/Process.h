@@ -35,7 +35,15 @@ public:
 
   /** Value which specifies an invalid process id. */
   static const unsigned long INVALID = PrimitiveTraits<unsigned long>::MAXIMUM;
-  
+
+  /** Structure holding the user and system times. */
+  struct Times {
+    /** The user mode time. */
+    unsigned long long user;
+    /** The system mode time. */
+    unsigned long long system;
+  };
+
   /**
     Exception raised by the Process class.
 
@@ -131,6 +139,11 @@ public:
   bool isAlive() const throw(ProcessException);
   
   /**
+    Returns the name (path) of the process.
+  */
+  String getName() const throw(ProcessException);
+  
+  /**
     Waits for the process to terminate.
 
     @return The exit code (Application::EXIT_CODE_INVALID if exit code is not available).
@@ -143,6 +156,11 @@ public:
     @param force Specifies whether to force the process to terminate. The default is false.
   */
   void terminate(bool force = false) throw(ProcessException);
+
+  /**
+    Returns the current processing times (both user and system times).
+  */
+  static Times getTimes() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

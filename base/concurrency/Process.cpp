@@ -15,6 +15,7 @@
 #include <base/concurrency/Process.h>
 #include <base/Type.h>
 #include <base/Application.h>
+#include <base/NotImplemented.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
@@ -22,11 +23,12 @@
   #include <sys/types.h>
   #include <sys/wait.h>
   #include <sys/time.h>
-  #include <sys/resource.h> // getpriority
+  #include <sys/resource.h> // getpriority, getrusage
   #include <unistd.h>
   #include <signal.h>
   #include <errno.h>
   #include <stdlib.h>
+  #define _DK_SDU_MIP__BASE__HAVE_GETRUSAGE
 #endif
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
@@ -308,6 +310,20 @@ bool Process::isAlive() const throw(ProcessException) {
 #endif // flavor
 }
 
+String Process::getName() const throw(ProcessException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  HANDLE process = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, id);
+  assert(process, ProcessException(this));
+  char buffer[MAX_PATH + 1];
+  DWORD length = ::GetModuleFimeNameEx(process, 0, buffer, sizeof(buffer));
+  assert(length > 0, ProcessException(this));
+  ::CloseHandle(process);
+  return String(buffer, length - 1);
+#else // unix
+  throw NotImplemented(this);
+#endif
+}
+
 int Process::wait() const  throw(ProcessException) {
   // TAG: need timeout support
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -361,6 +377,31 @@ void Process::terminate(bool force) throw(ProcessException) {
     }
   }
 #endif // flavor
+}
+
+Process::Times Process::getTimes() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  Process::Times result;
+  ::GetProcessTimes(::GetCurrentProcess(), 0, 0, (FILETIME*)&result.system, (FILETIME*)&result.userTime);
+  return result;
+#else // unix
+  #if defined(_DK_SDU_MIP__BASE__HAVE_GETRUSAGE)
+    struct rusage usage;
+    ::getrusage(RUSAGE_SELF, &usage); // does not fail
+    Process::Times result;
+    result.user = usage.ru_utime.tv_sec * 1000000000ULL + usage.ru_utime.tv_usec * 1000ULL;
+    result.system = usage.ru_stime.tv_sec * 1000000000ULL + usage.ru_stime.tv_usec * 1000ULL;
+    return result;
+  #else
+    struct tms;
+    ::times(&tms);
+    unsigned long ticksPerSecond = ::sysconf(_SC_CLK_TCK);
+    Process::Times result;
+    result.user = tms.tms_utime * 1000000000ULL/ticksPerSecond;
+    result.system = tms.tms_stime * 1000000000ULL/ticksPerSecond;
+    return result;
+  #endif
+#endif
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -53,6 +53,7 @@ section_HEADERS = \
   Document.h \
   DocumentFragment.h \
   DocumentType.h \
+  DOMEvent.h \
   DOMException.h \
   DOMImplementation.h \
   Element.h \

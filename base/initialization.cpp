@@ -21,6 +21,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/String.h>
 #include <base/string/WideString.h>
+#include <base/mathematics/Random.h>
 #include <base/io/Handle.h>
 #include <base/io/FileDescriptor.h>
 #include <base/io/FileDescriptorInputStream.h>
@@ -172,6 +173,8 @@ namespace internal {
   ThreadImpl threadImpl; // use this variable through 'threadLocal'
 }; // end of namespace internal
 
+SpinLock Random::spinLock;
+
 Handle* FileDescriptor::Descriptor::invalid; // uninitialized
 Handle* File::FileHandle::invalid; // uninitialized
 Handle* Pipe::PipeHandle::invalid; // uninitialized
@@ -185,6 +188,8 @@ private:
 public:
 
   Initialization() throw() : invalidSocket(OperatingSystem::INVALID_HANDLE) {
+    Random::randomize(); // randomize global random number generator
+
     // having a global invalid handle safes us from allocating/deallocating many handles
     ReferenceCountedObjectPointerImpl(invalidHandle).addReference(); // prevent destruction of object
     ReferenceCountedObjectPointerImpl(invalidSocket).addReference(); // prevent destruction of object

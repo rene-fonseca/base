@@ -105,7 +105,7 @@ public:
     Button button;
     ProgressBar progressBar;
     Picture picture;
-    MyOpenGLWidget openGLWidget;
+    // MyOpenGLWidget openGLWidget;
 
     inline OpenGLWidget::Format makeFormat() throw() {
       OpenGLWidget::Format format;
@@ -139,8 +139,8 @@ public:
         split(*this),
         button(*this),
         progressBar(*this),
-        picture(*this),
-        openGLWidget(*this, makeFormat()) {
+        picture(*this)/*,
+                        openGLWidget(*this, makeFormat())*/ {
       
       setTitle(title);
       setIconTitle(title);
@@ -166,7 +166,7 @@ public:
       
       picture.setPosition(Position(128, 128));
       picture.setDimension(Dimension(128, 128));
-
+      
       Color data[128][128];
       for (unsigned int y = 0; y < 128; ++y) {
         for (unsigned int x = 0; x < 128; ++x) {
@@ -178,14 +178,16 @@ public:
       picture.setBitmap(bitmap);
       fout << "Bitmap: " << picture.getBitmap().getDimension() << ENDL;
       
-      openGLWidget.setPosition(Position(256, 32));
-      openGLWidget.setDimension(Dimension(128, 128));
+      // openGLWidget.setPosition(Position(256, 32));
+      // openGLWidget.setDimension(Dimension(128, 128));
     }
     
     void onDisplay() throw() {
       // setBrush();
       clear();
       line(Position(10, 60), Position(64, 20));
+      Bitmap bitmap = picture.getBitmap();
+      putBitmap(Position(10, 10), Dimension(128, 128), bitmap);
       flush();
     }
     
@@ -206,22 +208,22 @@ public:
     
     void onMouseMove(const Position& position, unsigned int state) throw() {
       static const Flag STATES[] = {
-        {Mouse::LEFT, MESSAGE("LEFT")},
-        {Mouse::MIDDLE, MESSAGE("MIDDLE")},
-        {Mouse::RIGHT, MESSAGE("RIGHT")},
-        {Mouse::WHEEL, MESSAGE("WHEEL")},
-        {Mouse::EXTRA, MESSAGE("EXTRA")},
-        {Mouse::EXTRA2, MESSAGE("EXTRA2")},
-        {Key::LEFT_CONTROL, MESSAGE("L-CTRL")},
-        {Key::RIGHT_CONTROL, MESSAGE("R-CTRL")},
-        {Key::LEFT_SHIFT, MESSAGE("L-SHFT")},
-        {Key::RIGHT_SHIFT, MESSAGE("R-SHFT")},
-        {Key::LEFT_ALT, MESSAGE("L-ALT")},
-        {Key::RIGHT_ALT, MESSAGE("R-ALT")},
-        {Key::NUM_LOCK_TOGGLED, MESSAGE("NUM")},
-        {Key::CAPS_LOCK_TOGGLED, MESSAGE("CAPS")},
-        {Key::SCROLL_LOCK_TOGGLED, MESSAGE("SCROLL")},
-        {Key::INSERT_TOGGLED, MESSAGE("INSERT")}
+        {Mouse::LEFT, Literal("LEFT")},
+        {Mouse::MIDDLE, Literal("MIDDLE")},
+        {Mouse::RIGHT, Literal("RIGHT")},
+        {Mouse::WHEEL, Literal("WHEEL")},
+        {Mouse::EXTRA, Literal("EXTRA")},
+        {Mouse::EXTRA2, Literal("EXTRA2")},
+        {Key::LEFT_CONTROL, Literal("L-CTRL")},
+        {Key::RIGHT_CONTROL, Literal("R-CTRL")},
+        {Key::LEFT_SHIFT, Literal("L-SHFT")},
+        {Key::RIGHT_SHIFT, Literal("R-SHFT")},
+        {Key::LEFT_ALT, Literal("L-ALT")},
+        {Key::RIGHT_ALT, Literal("R-ALT")},
+        {Key::NUM_LOCK_TOGGLED, Literal("NUM")},
+        {Key::CAPS_LOCK_TOGGLED, Literal("CAPS")},
+        {Key::SCROLL_LOCK_TOGGLED, Literal("SCROLL")},
+        {Key::INSERT_TOGGLED, Literal("INSERT")}
       };
       
       fout << "Event: mouse move " << position << ' ';
@@ -235,7 +237,7 @@ public:
 
     void onMouseScope(bool scope) throw() {
       fout << "Event: mouse scope "
-           << (scope ? MESSAGE("INSIDE SCOPE") : MESSAGE("OUT OF SCOPE")) << ENDL;
+           << (scope ? Literal("INSIDE SCOPE") : Literal("OUT OF SCOPE")) << ENDL;
     }
     
     void onMouseButton(
@@ -245,29 +247,29 @@ public:
       unsigned int state) throw() {
       
       static const Flag STATES[] = {
-        {Mouse::LEFT, MESSAGE("LEFT")},
-        {Mouse::MIDDLE, MESSAGE("MIDDLE")},
-        {Mouse::RIGHT, MESSAGE("RIGHT")},
-        {Mouse::WHEEL, MESSAGE("WHEEL")},
-        {Mouse::EXTRA, MESSAGE("EXTRA")},
-        {Mouse::EXTRA2, MESSAGE("EXTRA2")},
-        {Key::LEFT_CONTROL, MESSAGE("L-CTRL")},
-        {Key::RIGHT_CONTROL, MESSAGE("R-CTRL")},
-        {Key::LEFT_SHIFT, MESSAGE("L-SHFT")},
-        {Key::RIGHT_SHIFT, MESSAGE("R-SHFT")},
-        {Key::LEFT_ALT, MESSAGE("L-ALT")},
-        {Key::RIGHT_ALT, MESSAGE("R-ALT")},
-        {Key::NUM_LOCK_TOGGLED, MESSAGE("NUM")},
-        {Key::CAPS_LOCK_TOGGLED, MESSAGE("CAPS")},
-        {Key::SCROLL_LOCK_TOGGLED, MESSAGE("SCROLL")},
-        {Key::INSERT_TOGGLED, MESSAGE("INSERT")}
+        {Mouse::LEFT, Literal("LEFT")},
+        {Mouse::MIDDLE, Literal("MIDDLE")},
+        {Mouse::RIGHT, Literal("RIGHT")},
+        {Mouse::WHEEL, Literal("WHEEL")},
+        {Mouse::EXTRA, Literal("EXTRA")},
+        {Mouse::EXTRA2, Literal("EXTRA2")},
+        {Key::LEFT_CONTROL, Literal("L-CTRL")},
+        {Key::RIGHT_CONTROL, Literal("R-CTRL")},
+        {Key::LEFT_SHIFT, Literal("L-SHFT")},
+        {Key::RIGHT_SHIFT, Literal("R-SHFT")},
+        {Key::LEFT_ALT, Literal("L-ALT")},
+        {Key::RIGHT_ALT, Literal("R-ALT")},
+        {Key::NUM_LOCK_TOGGLED, Literal("NUM")},
+        {Key::CAPS_LOCK_TOGGLED, Literal("CAPS")},
+        {Key::SCROLL_LOCK_TOGGLED, Literal("SCROLL")},
+        {Key::INSERT_TOGGLED, Literal("INSERT")}
       };
       
       static const Literal EVENT_STRING[] = {
-        MESSAGE("PRESSED"),
-        MESSAGE("RELEASED"),
-        MESSAGE("DOUBLE CLICKED"),
-        MESSAGE("TURNED")
+        Literal("PRESSED"),
+        Literal("RELEASED"),
+        Literal("DOUBLE CLICKED"),
+        Literal("TURNED")
       };
       
       fout << "Event: mouse button " << getMouseButtonName(button) << SP;
@@ -352,9 +354,9 @@ public:
     
     void onVisibility(Visibility visibility) throw() {
       static const Literal VISIBILITY[] = {
-        MESSAGE("INVISIBLE"),
-        MESSAGE("PARTIALLY VISIBLE"),
-        MESSAGE("VISIBLE")
+        Literal("INVISIBLE"),
+        Literal("PARTIALLY VISIBLE"),
+        Literal("VISIBLE")
       };
       
       fout << "Event: visibility " << VISIBILITY[visibility] << ENDL;
@@ -363,7 +365,7 @@ public:
     void onFocus(Focus focus) throw() {
       update();
       fout << "Event: focus "
-           << ((focus == ACQUIRED_FOCUS) ? MESSAGE("ACQUIRED") : MESSAGE("LOST")) << ENDL;
+           << ((focus == ACQUIRED_FOCUS) ? Literal("ACQUIRED") : Literal("LOST")) << ENDL;
     }
     
     void onMenu(unsigned int identifier) throw() {

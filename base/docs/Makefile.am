@@ -3,3 +3,4 @@
 SUBDIRS = en 
 
 ####### kdevelop will overwrite this part!!! (end)############
+DEFS = @DEFS@

@@ -7,3 +7,4 @@ libnet_a_SOURCES = InetInterface.cpp ServiceNotFound.cpp InetService.cpp ClientS
 EXTRA_DIST = HostNotFound.cpp HostNotFound.h InetAddress.cpp InetAddress.h NetworkException.cpp NetworkException.h Socket.h Socket.cpp ServerSocket.h ServerSocket.cpp ClientSocket.h ClientSocket.cpp InetService.h InetService.cpp ServiceNotFound.h ServiceNotFound.cpp InetInterface.cpp InetInterface.h 
 
 ####### kdevelop will overwrite this part!!! (end)############
+DEFS = @DEFS@

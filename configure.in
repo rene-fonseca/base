@@ -484,7 +484,7 @@ AC_CHECK_FUNCS(memchr memcmp memmove)
 
 
 
-CPPFLAGS="$CPPFLAGS -I`pwd`/ellert"
+CPPFLAGS="${CPPFLAGS}${CPPFLAGS:+ }"'-I${top_srcdir} -I${top_srcdir}/ellert'
 
 
 

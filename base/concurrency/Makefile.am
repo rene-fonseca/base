@@ -7,3 +7,4 @@ libconcurrency_a_SOURCES = SpinLock.cpp ReadWriteLock.cpp Synchronizeable.cpp Sy
 EXTRA_DIST = AtomicCounter.cpp AtomicCounter.h Event.cpp Event.h MutualExclusion.cpp MutualExclusion.h Runnable.h Semaphore.cpp Semaphore.h Thread.cpp Thread.h ThreadKey.cpp ThreadKey.h Synchronize.h Synchronize.cpp Synchronizeable.h ReadWriteLock.h Lock.h Synchronizeable.cpp ReadWriteLock.cpp SpinLock.h SpinLock.cpp 
 
 ####### kdevelop will overwrite this part!!! (end)############
+DEFS = @DEFS@

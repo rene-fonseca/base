@@ -8,3 +8,4 @@ SUBDIRS = concurrency mathematics io string mem net collection
 EXTRA_DIST = Dimension.cpp Dimension.h Exception.cpp Exception.h Object.cpp Object.h Range2D.cpp Range2D.h Underflow.cpp Underflow.h Overflow.cpp Overflow.h Construct.cpp Construct.h Destruct.cpp Destruct.h DeviceException.cpp DeviceException.h MemoryException.cpp OutOfRange.cpp OutOfBounds.cpp OutOfDomain.cpp OutOfBounds.h MemoryException.h ResourceException.h ResourceException.cpp OutOfDomain.h OutOfRange.h Iterator.h ForwardIterator.h RandomIterator.h Integer.h Integer.cpp Character.cpp Character.h ShortInteger.h ShortInteger.cpp LongInteger.h LongInteger.cpp Functor.h Base.h 
 
 ####### kdevelop will overwrite this part!!! (end)############
+DEFS = @DEFS@

@@ -40,12 +40,14 @@ public:
       try {
         throw;
       } catch (Exception& e) {
-        stream << MESSAGE("Internal error: uncaught exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
+        stream << MESSAGE("Internal error: uncaught exception '")
+               << TypeInfo::getTypename(e) << MESSAGE("' was raised");
         if (e.getType().isInitialized()) {
           stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
         }
+        const unsigned int cause = e.getCause();
+        const unsigned int nativeError = e.getError();
         const char* message = e.getMessage();
-        unsigned int cause = e.getCause();
         if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
           stream << MESSAGE(" with");
         }
@@ -56,11 +58,22 @@ public:
           stream << MESSAGE(" and");
         }
         if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
-          stream << MESSAGE(" cause ") << HEX << setWidth(10) << ZEROPAD << cause;
+          stream << MESSAGE(" cause ")
+                 << HEX << setWidth(10) << ZEROPAD << PREFIX << cause;
+        } else if (nativeError != 0) {
+          stream << MESSAGE(" due to native error ")
+                 << HEX << setWidth(10) << ZEROPAD << PREFIX << nativeError;
+          if (!message && !nativeError) {
+            unsigned int error = OperatingSystem::getErrorCode(nativeError);
+            if (error != OperatingSystem::UNSPECIFIED_ERROR) {
+              stream << ' ' << '(' << OperatingSystem::getErrorMessage(error) << ')';
+            }
+          }
         }
         stream << '.' << FLUSH;
       } catch (...) {
-        stream << MESSAGE("Internal error: uncaught and unsupported exception '") << TypeInfo::getTypename(exceptionType) << MESSAGE("' was raised.") << FLUSH;
+        stream << MESSAGE("Internal error: uncaught and unsupported exception '")
+               << TypeInfo::getTypename(exceptionType) << MESSAGE("' was raised.") << FLUSH;
       }
     } else {
       stream << MESSAGE("Internal error: explicit termination.") << FLUSH;
@@ -72,7 +85,7 @@ public:
 #endif
     exit(Application::EXIT_CODE_INTERNAL_ERROR); // TAG: is abort() better
   }
-
+  
   static void unexpectedExceptionHandler() {
     StringOutputStream stream;
     const Type exceptionType = Exception::getExceptionType();
@@ -80,12 +93,14 @@ public:
       try {
         throw;
       } catch (Exception& e) {
-        stream << MESSAGE("Internal error: exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
+        stream << MESSAGE("Internal error: exception '")
+               << TypeInfo::getTypename(e) << MESSAGE("' was raised");
         if (e.getType().isInitialized()) {
           stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
         }
+        const unsigned int cause = e.getCause();
+        const unsigned int nativeError = e.getError();
         const char* message = e.getMessage();
-        unsigned int cause = e.getCause();
         if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
           stream << MESSAGE(" with");
         }
@@ -96,11 +111,23 @@ public:
           stream << MESSAGE(" and");
         }
         if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
-          stream << MESSAGE(" cause ") << HEX << setWidth(10) << ZEROPAD << cause;
+          stream << MESSAGE(" cause ")
+                 << HEX << setWidth(10) << ZEROPAD << PREFIX << cause;
+        } else if (nativeError != 0) {
+          stream << MESSAGE(" due to native error ")
+                 << HEX << setWidth(10) << ZEROPAD << PREFIX << nativeError;
+          if (!message && !nativeError) {
+            unsigned int error = OperatingSystem::getErrorCode(nativeError);
+            if (error != OperatingSystem::UNSPECIFIED_ERROR) {
+              stream << ' ' << '(' << OperatingSystem::getErrorMessage(error) << ')';
+            }
+          }
         }
         stream << MESSAGE(" in violation with exception specification.") << FLUSH;
       } catch (...) {
-        stream << MESSAGE("Internal error: unsupported exception '") << TypeInfo::getTypename(exceptionType) << MESSAGE("' was raised in violation with exception specification.") << FLUSH;
+        stream << MESSAGE("Internal error: unsupported exception '")
+               << TypeInfo::getTypename(exceptionType)
+               << MESSAGE("' was raised in violation with exception specification.") << FLUSH;
       }
     } else {
       stream << MESSAGE("Internal error: explicit invocation of unexpected.") << FLUSH;

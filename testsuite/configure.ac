@@ -61,6 +61,7 @@ if test "x${ac_base_lib}" != "x"; then
 fi
 
 AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(orb/Makefile)
 AC_CONFIG_FILES(ui/Makefile)
 
 AC_OUTPUT()

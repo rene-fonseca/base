@@ -15,9 +15,9 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);
-  return stream << '(' << value.width << ',' << value.height << ')';
+  return stream << '(' << value.getWidth() << ',' << value.getHeight() << ')';
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -21,6 +21,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Dimension represented by width and height.
 
+  @short Dimension
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
@@ -37,7 +38,9 @@ public:
   /**
     Initializes object with width and height set to zero.
   */
-  inline Dimension() throw() : width(0), height(0) {}
+  inline Dimension() throw()
+    : width(0), height(0) {
+  }
 
   /**
     Initializes object with the specified width and height.
@@ -52,7 +55,9 @@ public:
 
     @param dimension The desired dimension.
   */
-  inline Dimension(const Dimension& copy) throw() : width(copy.width), height(copy.height) {}
+  inline Dimension(const Dimension& copy) throw()
+    : width(copy.width), height(copy.height) {
+  }
 
   /**
     Assigns the dimension.
@@ -97,49 +102,58 @@ public:
   /**
     Returns true if the dimension is proper (i.e. both the width and height are non-zero).
   */
-  inline bool isProper() const throw() {return (width != 0) && (height != 0);}
+  inline bool isProper() const throw() {
+    return (width != 0) && (height != 0);
+  }
 
   /**
     Returns the width.
   */
-  inline unsigned int getWidth() const throw() {return width;}
+  inline unsigned int getWidth() const throw() {
+    return width;
+  }
 
   /**
     Returns the height.
   */
-  inline unsigned int getHeight() const throw() {return height;}
+  inline unsigned int getHeight() const throw() {
+    return height;
+  }
 
   /**
     Returns the size (width * height).
   */
-  inline unsigned long long getSize() const throw() {return width * height;}
+  inline unsigned long long getSize() const throw() {
+    return static_cast<unsigned long long>(width) * height;
+  }
 
   /**
     Sets the width.
 
     @param width The desired width.
   */
-  inline void setWidth(unsigned int value) throw() {width = value;}
+  inline void setWidth(unsigned int value) throw() {
+    width = value;
+  }
 
   /**
     Sets the height.
 
     @param value The desired height.
   */
-  inline void setHeight(unsigned int value) throw() {height = value;}
-
-  /**
-    Writes a string representation of a Dimension object to a format stream. The format is "(width, height)".
-  */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value);
+  inline void setHeight(unsigned int value) throw() {
+    height = value;
+  }
 };
 
-inline Dimension::Dimension(unsigned int _width, unsigned int _height) throw() : width(_width), height(_height) {}
+inline Dimension::Dimension(unsigned int _width, unsigned int _height) throw()
+  : width(_width), height(_height) {
+}
 
 /**
   Writes a string representation of a Dimension object to a format stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value) throw(IOException);
 
 template<>
 class Relocateable<Dimension> {

@@ -35,22 +35,22 @@ public:
   /**
     Initializes an empty allocator.
 
-    @param blockSize The desired blockSize.
+    @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline explicit ReferenceCountedCapacityAllocator(unsigned int blockSize) throw(OutOfRange) :
-    CapacityAllocator<TYPE>(blockSize) {}
+  inline explicit ReferenceCountedCapacityAllocator(unsigned int granularity) throw(OutOfRange) :
+    CapacityAllocator<TYPE>(granularity) {}
 
   /**
     Initializes an allocator of the specified size without initializing the
     elements. Throws 'MemoryException' if unable to allocate enough memory to
-    hold the requested number of elements. Throws 'OutOfRange' is blockSize is
-    less than MINIMUM_BLOCK_SIZE.
+    hold the requested number of elements. Throws 'OutOfRange' if granularity
+    is less than MINIMUM_GRANULARITY.
 
     @param size Specifies the initial size of the allocator.
-    @param blockSize Specifies the number of elements to allocate at a time.
+    @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline ReferenceCountedCapacityAllocator(unsigned int size, unsigned int blockSize) throw(OutOfRange, MemoryException) :
-    CapacityAllocator<TYPE>(size, blockSize) {}
+  inline ReferenceCountedCapacityAllocator(unsigned int size, unsigned int granularity) throw(OutOfRange, MemoryException) :
+    CapacityAllocator<TYPE>(size, granularity) {}
 
   /**
     Initializes the allocator by copying from the specified allocator. Throws

@@ -23,13 +23,13 @@ class CapacityAllocator : public Allocator<TYPE> {
 public:
 
   /** Specifies the minimum block size in number of elements. */
-  static const unsigned int MINIMUM_BLOCK_SIZE = 16;
+  static const unsigned int MINIMUM_GRANULARITY = 16;
 private:
 
   /** The number of elements in the block. */
   unsigned int capacity;
-  /** The block size. */
-  unsigned int blockSize;
+  /** The granularity of the allocated block memory. */
+  unsigned int granularity;
 public:
 
   /**
@@ -64,23 +64,28 @@ public:
 public:
 
   /**
-    Initializes an empty allocator.
+    Initializes an empty allocator. Throws 'OutOfRange' if granularity is less
+    than MINIMUM_GRANULARITY.
 
-    @param blockSize The desired blockSize.
+    @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline explicit CapacityAllocator(unsigned int blockSize) throw() : capacity(0), blockSize(blockSize) {}
+  inline explicit CapacityAllocator(unsigned int blockSize) throw() : capacity(0), granularity(granularity) {
+    if (granularity < MINIMUM_GRANULARITY) {
+      throw OutOfRange();
+    }
+  }
 
   /**
     Initializes an allocator of the specified size without initializing the
     elements. Throws 'MemoryException' if unable to allocate enough memory to
-    hold the requested number of elements. Throws 'OutOfRange' is blockSize is
-    less than MINIMUM_BLOCK_SIZE.
+    hold the requested number of elements. Throws 'OutOfRange' if granularity
+    is less than MINIMUM_GRANULARITY.
 
     @param size Specifies the initial size of the allocator.
-    @param blockSize Specifies the number of elements to allocate at a time.
+    @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline CapacityAllocator(unsigned int size, unsigned int blockSize) throw(OutOfRange, MemoryException) : capacity(0), blockSize(blockSize) {
-    if (blockSize < MINIMUM_BLOCK_SIZE) {
+  inline CapacityAllocator(unsigned int size, unsigned int granularity) throw(OutOfRange, MemoryException) : capacity(0), granularity(granularity) {
+    if (granularity < MINIMUM_GRANULARITY) {
       throw OutOfRange();
     }
     setSize(size);
@@ -89,11 +94,11 @@ public:
   /**
     Initializes allocator from other allocator.
   */
-  inline CapacityAllocator(const CapacityAllocator& cpy) throw(MemoryException) : capacity(0) {
-    setBlockSize(eq.getBlockSize());
+  inline CapacityAllocator(const CapacityAllocator& cpy) throw(MemoryException) : capacity(0), granularity(0) {
+    setGranularity(cpy.getGranularity());
     setSize(cpy.getSize());
       // we only want to copy the first 'capacity' number of elements!
-    copy<TYPE>(elements, copy.elements, size); // blocks do not overlap
+    copy<TYPE>(getElements(), cpy.getElements(), capacity); // blocks do not overlap
   }
 
   /**
@@ -101,10 +106,10 @@ public:
   */
   inline CapacityAllocator& operator=(const CapacityAllocator& eq) throw(MemoryException) {
     if (&eq != this) { // protect against self assignment
-      setBlockSize(eq.getBlockSize());
+      setGranularity(eq.getGranularity());
       setSize(eq.getSize());
       // we only want to copy the first 'capacity' number of elements!
-      copy<TYPE>(elements, copy.elements, size); // blocks do not overlap
+      copy<TYPE>(getElements(), copy.getElements(), capacity); // blocks do not overlap
     }
     return *this;
   }
@@ -117,10 +122,10 @@ public:
   }
 
   /**
-    Returns the block size.
+    Returns the granularity.
   */
-  inline unsigned int getBlockSize() const throw() {
-    return blockSize;
+  inline unsigned int getGranularity() const throw() {
+    return granularity;
   }
 
   /**
@@ -141,30 +146,47 @@ public:
   inline void setSize(unsigned int size) throw(MemoryException) {
     if (size != capacity) {
       capacity = size;
-      Allocator<TYPE>::setSize((capacity + blockSize - 1)/blockSize * blockSize);
+      Allocator<TYPE>::setSize((capacity + granularity - 1)/granularity * granularity);
     }
   }
 
   /**
     Sets the block size. This does, however, not influence the allocated amount
-    of memory until the 'size' is adjusted. Throws 'OutOfRange' is blockSize is
-    less than MINIMUM_BLOCK_SIZE.
+    of memory until the 'size' is adjusted. Throws 'OutOfRange' if granularity
+    is less than MINIMUM_GRANULARITY.
   */
-  inline void setBlockSize(unsigned int blockSize) throw(OutOfRange) {
-    if (blockSize != this->blockSize) {
-      if (blockSize < MINIMUM_BLOCK_SIZE) {
+  inline void setGranularity(unsigned int granularity) throw(OutOfRange) {
+    if (granularity != this->granularity) {
+      if (granularity < MINIMUM_GRANULARITY) {
         throw OutOfRange();
       }
-      this->blockSize = blockSize;
+      this->granularity = granularity;
     }
   }
 
   /**
-    Releases any memory that is not absolutely required (i.e. the block size is
-    ignored). This member function is normally used when we know that the
-    allocated memory is not going to be resized for a "long time".
+    Returns the capacity of the allocator.
   */
-  inline void optimize() throw() {
+  inline unsigned int getCapacity() const throw() {return Allocator<TYPE>::getSize();}
+
+  /**
+    Ensures that the capacity of the allocator is at least equal to the
+    specified minimum.
+
+    @param capacity Specifies the minimum capacity of the allocator.
+  */
+  inline void ensureCapacity(unsigned int capacity) throw(MemoryException) {
+    if (capacity > Allocator<TYPE>::getSize()) {
+      Allocator<TYPE>::setSize(capacity);
+    }
+  }
+
+  /**
+    Releases any unused capacity of that is not absolutely required (i.e. the
+    granularity is ignored). This member function is normally used when we know
+    that the allocated memory is not going to be resized for a "long time".
+  */
+  inline void optimizeCapacity() throw() {
     // internal knowledge: does not throw an exception 'cause we do not expand the buffer
     Allocator<TYPE>::setSize(capacity);
   }

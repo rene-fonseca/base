@@ -39,8 +39,10 @@ private:
   unsigned int options;
   /** Specifies the size of a word. */
   unsigned int wordSize;
+  /** The number of significat digits in the offset. */
+  unsigned int offsetDigits;
   /** Specifies the global offset. */
-  unsigned long long offset;
+  uint64 offset;
 public:
   
   enum Option {
@@ -76,16 +78,24 @@ public:
   /**
     Sets the global offset.
   */
-  void setGlobalOffset(unsigned long long offset) throw(OutOfDomain) {
+  void setOffsetDigits(unsigned int digits) throw(OutOfDomain) {
+    assert((digits >= 4) && (digits <= 16), OutOfDomain(this));
+    offsetDigits = digits;
+  }
+  
+  /**
+    Sets the global offset.
+  */
+  void setGlobalOffset(uint64 offset) throw(OutOfDomain) {
     assert(offset % 16 == 0, OutOfDomain(this));
     this->offset = offset;
   }
-
+  
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& value) throw(IOException);
 };
 
 inline MemoryDump::MemoryDump(const uint8* _memory, unsigned int _size, unsigned int _options) throw()
-  : memory(_memory), size(_size), options(_options), wordSize(1) {
+  : memory(_memory), size(_size), options(_options), wordSize(1), offsetDigits(8), offset(0) {
 }
 
 /**

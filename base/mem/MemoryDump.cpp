@@ -24,7 +24,13 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& val
   const unsigned int options = value.options;
   
   const uint8* src = value.memory;
-  
+  uint64 offsetMask = PrimitiveTraits<uint64>::MAXIMUM;
+  for (unsigned int i = 64/4; i > value.offsetDigits; --i) {
+    offsetMask >>= 4;
+  }
+  String underlineOffset = MESSAGE("----------------");
+  underlineOffset.forceToLength(value.offsetDigits);
+    
   unsigned int rows = (value.size + bytesPerRow - 1)/bytesPerRow;
   StringOutputStream s;
   
@@ -62,7 +68,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& val
         stream << EOL;
         
         if ((options & MemoryDump::OFFSET) || (options & MemoryDump::ADDRESS)) {
-          stream << MESSAGE("--------  ");
+          stream << underlineOffset << MESSAGE("  ");
         }
         
         switch (wordSize) {
@@ -87,16 +93,20 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& val
         stream << EOL;
       }
     }
-
+    
     if (options & MemoryDump::OFFSET) {
-      stream << HEX << setWidth(sizeof(unsigned int) * 2) << NOPREFIX << ZEROPAD << (src - value.memory) + value.offset
-             << MESSAGE("  ");
+      stream << HEX << setWidth(value.offsetDigits) << NOPREFIX << ZEROPAD
+             << ((src - value.memory) + value.offset) << MESSAGE("  ");
     } else if (options & MemoryDump::ADDRESS) {
-      stream << HEX << setWidth(sizeof(src) * 2) << NOPREFIX << ZEROPAD << src << MESSAGE("  ");
+      stream << HEX << setWidth(value.offsetDigits) << NOPREFIX << ZEROPAD
+             << src << MESSAGE("  ");
     }
 
     bool lastRow = ((row + 1) == rows);
     unsigned int bytes = lastRow ? (value.size % bytesPerRow) : bytesPerRow;
+    if (bytes == 0) {
+      bytes = bytesPerRow;
+    }
     unsigned int spaces = 0;
     
     switch (wordSize) {

@@ -58,11 +58,9 @@ public:
           stream << MESSAGE(" and");
         }
         if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
-          stream << MESSAGE(" cause ")
-                 << HEX << setWidth(10) << ZEROPAD << PREFIX << cause;
+          stream << MESSAGE(" cause ") << cause;
         } else if (nativeError != 0) {
-          stream << MESSAGE(" due to native error ")
-                 << HEX << setWidth(10) << ZEROPAD << PREFIX << nativeError;
+          stream << MESSAGE(" due to native error ") << nativeError;
           unsigned int error = OperatingSystem::getErrorCode(nativeError);
           if (error != OperatingSystem::UNSPECIFIED_ERROR) {
             stream << ' ' << '(' << OperatingSystem::getErrorMessage(error) << ')';
@@ -109,11 +107,9 @@ public:
           stream << MESSAGE(" and");
         }
         if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
-          stream << MESSAGE(" cause ")
-                 << HEX << setWidth(10) << ZEROPAD << PREFIX << cause;
+          stream << MESSAGE(" cause ") << cause;
         } else if (nativeError != 0) {
-          stream << MESSAGE(" due to native error ")
-                 << HEX << setWidth(10) << ZEROPAD << PREFIX << nativeError;
+          stream << MESSAGE(" due to native error ") << nativeError;
           unsigned int error = OperatingSystem::getErrorCode(nativeError);
           if (error != OperatingSystem::UNSPECIFIED_ERROR) {
             stream << ' ' << '(' << OperatingSystem::getErrorMessage(error) << ')'

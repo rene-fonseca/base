@@ -26,15 +26,15 @@ public:
 
   void main() throw() {
     fout << Application::getFormalName() << MESSAGE(" version 1.0") << EOL
-         << MESSAGE("Copyright (c) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << EOL
          << Version().getBanner() << ENDL;
   }
 
 };
 
-int main(int argc, const char* argv[], const char* envp[]) {
-  VersionApplication application(argc, argv, envp);
+int main(int argc, const char* argv[], const char* env[]) {
+  VersionApplication application(argc, argv, env);
   try {
     application.main();
   } catch(Exception& e) {
@@ -42,5 +42,5 @@ int main(int argc, const char* argv[], const char* envp[]) {
   } catch(...) {
     return Application::getApplication()->exceptionHandler();
   }
-  return Application::EXIT_CODE_NORMAL;
+  return Application::getApplication()->getExitCode();
 }

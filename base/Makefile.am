@@ -57,6 +57,7 @@ libbase_la_SOURCES = \
   Float.cpp \
   FloatingPoint.cpp \
   Integer.cpp \
+  Interface.cpp \
   UnsignedInteger.cpp \
   LongDouble.cpp \
   LongInteger.cpp \
@@ -69,6 +70,7 @@ libbase_la_SOURCES = \
   Overflow.cpp \
   Polymorphic.cpp \
   Primitives.cpp \
+  Property.cpp \
   Range2D.cpp \
   ResourceException.cpp \
   ShortInteger.cpp \
@@ -114,6 +116,7 @@ section_HEADERS = \
   ForwardIterator.h \
   BidirectionalIterator.h \
   Integer.h \
+  Interface.h \
   UnsignedInteger.h \
   LongDouble.h \
   LongInteger.h \
@@ -125,6 +128,7 @@ section_HEADERS = \
   OutOfDomain.h \
   Polymorphic.h \
   Primitives.h \
+  Property.h \
   ResourceException.h \
   MemoryException.h \
   DeviceException.h \

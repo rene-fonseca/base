@@ -92,6 +92,7 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
                          FILE_FLAG_BACKUP_SEMANTICS, // file attributes
                          0 // handle to template file
     );
+    // TAG: try software link if INVALID_HANDLE_VALUE
   }
   if (folder == INVALID_HANDLE_VALUE) {
     if (linkLevel > maximumLinkLevel) {
@@ -107,24 +108,129 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
   SECURITY_DESCRIPTOR* securityDescriptor;
   PSID ownerSID;
   PSID groupSID;
+  PACL acl;
   error |= ::GetSecurityInfo(folder,
                              SE_FILE_OBJECT,
-                             OWNER_SECURITY_INFORMATION|GROUP_SECURITY_INFORMATION,
+                             OWNER_SECURITY_INFORMATION|GROUP_SECURITY_INFORMATION|DACL_SECURITY_INFORMATION,
                              &ownerSID,
                              &groupSID,
-                             0,
+                             &acl,
                              0,
                              &securityDescriptor) != ERROR_SUCCESS;
   ::CloseHandle(folder);
-  if (!error) {
-    owner = User(ownerSID);
-    group = Group(groupSID);
+  assert(!error, FileSystemException("Not a folder", this));
+
+  owner = User((const void*)ownerSID);
+  const DWORD ownerSize = ::GetLengthSid((PSID)ownerSID);
+  group = Group((const void*)groupSID);
+  const DWORD groupSize = ::GetLengthSid((PSID)groupSID);
+  
+  static const char EVERYONE_SID[1 + 1 + 6 + 4] = {
+    1, // revision
+    1, // number of sub authorities
+    0, 0, 0, 0, 0, 1, // SECURITY_WORLD_SID_AUTHORITY
+    0, 0, 0, 0 // SECURITY_WORLD_RID
+  };
+  const DWORD everyoneSize = sizeof(EVERYONE_SID);
+  
+  ACCESS_MASK ownerAccessMask;
+  ACCESS_MASK groupAccessMask;
+  ACCESS_MASK everyoneAccessMask;
+  
+  TRUSTEE trustee;
+  trustee.pMultipleTrustee = 0;
+  trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
+  trustee.TrusteeForm = TRUSTEE_IS_SID;
+  trustee.TrusteeType = TRUSTEE_IS_UNKNOWN;
+  trustee.ptstrName = (char*)ownerSID;
+  ::GetEffectiveRightsFromAcl(acl, &trustee, &ownerAccessMask); // ERROR_SUCCESS expected
+  trustee.ptstrName = (char*)groupSID;
+  ::GetEffectiveRightsFromAcl(acl, &trustee, &groupAccessMask); // ERROR_SUCCESS expected
+  trustee.ptstrName = (char*)&EVERYONE_SID;
+  ::GetEffectiveRightsFromAcl(acl, &trustee, &everyoneAccessMask); // ERROR_SUCCESS expected
+  
+  ACL_SIZE_INFORMATION aclInfo;
+  if (::GetAclInformation(acl, &aclInfo, sizeof(aclInfo), AclSizeInformation) == 0) {
     ::LocalFree(securityDescriptor);
+    throw FileSystemException("Unable to get ACL", this);
   }
   
+  // avoid GetEffectiveRightsFromAcl: get groups of owner and implement required functionality
+  bool explicitOwner = false;
+  bool explicitGroup = false;
+  bool explicitEveryone = false;
+  
+  for (unsigned int i = 0; i < aclInfo.AceCount; ++i) {
+    ACE_HEADER* ace;
+    ::GetAce(acl, i, &ace);
+    PSID sid;
+    ACCESS_MASK mask;
+    switch (ace->AceType) {
+    case ACCESS_ALLOWED_ACE_TYPE:
+      mask = ((ACCESS_ALLOWED_ACE*)ace)->Mask;
+      sid = &((ACCESS_ALLOWED_ACE*)ace)->SidStart;
+      break;
+    case ACCESS_ALLOWED_OBJECT_ACE_TYPE:
+      mask = ((ACCESS_ALLOWED_OBJECT_ACE*)ace)->Mask;
+      sid = &((ACCESS_ALLOWED_OBJECT_ACE*)ace)->SidStart;
+      break;
+    default:
+      continue;
+    }
+    
+    const DWORD sidSize = ::GetLengthSid(sid);
+    
+    if ((sidSize == ownerSize) && (compare((const char*)sid, (const char*)ownerSID, sidSize) == 0)) {
+      explicitOwner = true;
+      ownerAccessMask &= mask; // leave explicit/inherited permissions
+    } else if ((sidSize == groupSize) && (compare((const char*)sid, (const char*)groupSID, sidSize) == 0)) {
+      explicitGroup = true;
+      groupAccessMask &= mask; // leave explicit/inherited permissions
+    } else if ((sidSize == everyoneSize) && (compare((const char*)sid, (const char*)EVERYONE_SID, sidSize) == 0)) {
+      explicitEveryone = true;
+      everyoneAccessMask &= mask; // leave explicit/inherited permissions
+    }
+  }
+  ::LocalFree(securityDescriptor);
+
+  if (explicitOwner) {
+    if (ownerAccessMask & (FILE_LIST_DIRECTORY|FILE_READ_ATTRIBUTES|FILE_READ_EA|READ_CONTROL)) { // READ_CONTROL should not be required
+      mode |= FolderInfo::RUSR;
+    }
+    if (ownerAccessMask & (FILE_ADD_FILE|FILE_ADD_SUBDIRECTORY|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|DELETE|WRITE_OWNER)) {
+      mode |= FolderInfo::WUSR;
+    }
+    if (ownerAccessMask & FILE_TRAVERSE) {
+      mode |= FolderInfo::XUSR;
+    }
+  }
+
+  if (explicitGroup) {
+    if (groupAccessMask & (FILE_LIST_DIRECTORY|FILE_READ_ATTRIBUTES|FILE_READ_EA|READ_CONTROL)) { // READ_CONTROL should not be required
+      mode |= FolderInfo::RGRP;
+    }
+    if (groupAccessMask & (FILE_ADD_FILE|FILE_ADD_SUBDIRECTORY|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|DELETE|WRITE_OWNER)) {
+      mode |= FolderInfo::WGRP;
+    }
+    if (groupAccessMask & FILE_TRAVERSE) {
+      mode |= FolderInfo::XGRP;
+    }
+  }
+
+  if (explicitEveryone) {
+    if (everyoneAccessMask & (FILE_LIST_DIRECTORY|FILE_READ_ATTRIBUTES|FILE_READ_EA|READ_CONTROL)) { // READ_CONTROL should not be required
+      mode |= FolderInfo::ROTH;
+    }
+    if (everyoneAccessMask & (FILE_ADD_FILE|FILE_ADD_SUBDIRECTORY|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|DELETE|WRITE_OWNER)) {
+      mode |= FolderInfo::WOTH;
+    }
+    if (everyoneAccessMask & FILE_TRAVERSE) {
+      mode |= FolderInfo::XOTH;
+    }
+  }
+
   static const long long fileTimeOffset = 116444736000000000ULL;
   path -= MESSAGE("\\");
-  mode = PrimitiveTraits<unsigned int>::MAXIMUM;
   access = (*pointer_cast<const long long*>(&information.ftLastAccessTime) - fileTimeOffset)/10000000;
   modification = (*pointer_cast<const long long*>(&information.ftLastWriteTime) - fileTimeOffset)/10000000;
   change = (*pointer_cast<const long long*>(&information.ftCreationTime) - fileTimeOffset)/10000000;

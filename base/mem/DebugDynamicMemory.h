@@ -37,7 +37,7 @@ class DebugDynamicMemory {
 private:
 
   /** Holds the current number of allocated memory blocks. */
-  static unsigned int currentAllocations;
+  static unsigned long currentAllocations;
   /** Global synchronization object. */
   static SpinLock spinLock;
 

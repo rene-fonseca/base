@@ -106,6 +106,10 @@ AccessControlList::Permissions AccessControlList::getEffectiveAccess(const Trust
   return effective;
 }
 
+Array<AccessControlEntry>::ReadEnumerator AccessControlList::getReadEnumerator() const throw() {
+  return acl.getReadEnumerator();
+}
+
 FormatOutputStream& operator<<(FormatOutputStream& stream, const AccessControlList& acl) throw(IOException) {
   StringOutputStream s;
   Array<AccessControlEntry>::ReadEnumerator enu = acl.getReadEnumerator();

@@ -19,41 +19,23 @@
 #include <base/NotImplemented.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-  #include <aclapi.h>
-  #include <lm.h>
+#  include <windows.h>
+#  include <aclapi.h>
+#  include <lm.h>
+
+#  if (!defined(SID_MAX_SUB_AUTHORITIES))
+#    define SID_MAX_SUB_AUTHORITIES 15
+#  endif
+#  if (!defined(SECURITY_MAX_SID_SIZE))
+#    define SECURITY_MAX_SID_SIZE (sizeof(SID) - sizeof(DWORD) + (SID_MAX_SUB_AUTHORITIES * sizeof(DWORD)))
+#  endif
 #else // unix
-  #include <sys/types.h>
-  #include <pwd.h>
-  #include <unistd.h>
+#  include <sys/types.h>
+#  include <pwd.h>
+#  include <unistd.h>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
-class UserImpl {
-public:
-
-  union AnyId {
-    void* opaque;
-    uid_t system;
-  };
-
-  static inline void* getOpaque(uid_t id) throw() {
-    UserImpl::AnyId anyId;
-    anyId.opaque = 0;
-    anyId.system= id;
-    return anyId.opaque;
-  }
-  
-  static inline uid_t getSystem(void* id) throw() {
-    UserImpl::AnyId anyId;
-    anyId.system = 0;
-    anyId.opaque = id;
-    return anyId.system;
-  }
-};
-#endif // unix
 
 User User::getCurrentUser() throw(UserException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -75,72 +57,58 @@ User User::getCurrentUser() throw(UserException) {
   ::LocalFree(securityDescriptor);
   return result;
 #else // unix
-  return User(UserImpl::getOpaque(::getuid()));
+  return User(Cast::container<unsigned long>(::getuid()));
 #endif // flavor
+}
+
+User::User(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  throw OutOfDomain("Invalid user id", this);
+#else
+  assert(integralId <= PrimitiveTraits<uid_t>::MAXIMUM, OutOfDomain("Invalid user id", this));
+#endif
 }
 
 User::User(const void* _id) throw(OutOfDomain) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert((_id != 0) && (::IsValidSid((PSID)_id) != 0), OutOfDomain("Invalid user id", this));
-  // check if user sid
-  DWORD size = ::GetLengthSid((PSID)_id);
-  id = new char[size];
-  copy<char>((char*)id, (const char*)_id, size);
+  if (_id == 0) {
+    integralId = getMaximum(integralId);
+    return;
+  }
+  assert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid user id", this));
+  unsigned int size = ::GetLengthSid((PSID)_id);
+  id = new ReferenceCountedAllocator<uint8>(size);
+  copy(id->getElements(), Cast::pointer<const uint8*>(_id), size);
+  integralId = 0;
 #else // unix
-  assert((unsigned long)_id <= PrimitiveTraits<uid_t>::MAXIMUM, OutOfDomain("Invalid user id", this));
-  id = (void*)_id; // we only cast away const 'cause we do not dereference the pointer
+  throw OutOfDomain("Invalid user id", this);
 #endif // flavor
 }
 
-User::User(const User& _copy) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (_copy.id == User::INVALID) {
-    id = _copy.id;
-    return;
-  }
-  DWORD size = ::GetLengthSid((PSID)_copy.id);
-  id = new char[size];
-  copy<char>((char*)id, (const char*)_copy.id, size);
-#else // unix
-  id = _copy.id;
-#endif // flavor
+User::User(const User& copy) throw() : integralId(copy.integralId), id(copy.id) {
 }
 
 User& User::operator=(const User& eq) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (&eq != this) { // protect against self assignment
-    if (id != User::INVALID) {
-      delete[] (char*)id;
-    }
-    if (eq.id == User::INVALID) {
-      id = eq.id;
-    } else {
-      DWORD size = ::GetLengthSid((PSID)eq.id);
-      id = new char[size];
-      copy<char>((char*)id, (const char*)eq.id, size);
-    }
-  }
-#else // unix
   id = eq.id;
-#endif // flavor  
+  integralId = eq.integralId;
   return *this;
 }
 
 bool User::operator==(const User& eq) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if ((id == User::INVALID) || (eq.id == User::INVALID)) {
-    return (id == User::INVALID) && (eq.id == User::INVALID);
+  if (!id.isValid() || (!eq.id.isValid())) {
+    return !id.isValid() && !eq.id.isValid();
   }
-  return ::EqualSid((PSID)id, (PSID)eq.id) != 0;
+  return ::EqualSid((PSID)id->getElements(), (PSID)eq.id->getElements()) != 0;
 #else // unix
-  return id == eq.id;
+  return integralId == eq.integralId;
 #endif
 }
 
 User::User(const String& name) throw(UserException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SID_NAME_USE sidType;
-  char sid[4096];
+  uint8 sid[SECURITY_MAX_SID_SIZE];
   DWORD size = sizeof(sid);
   assert(::LookupAccountName(0,
                              name.getElements(),
@@ -152,32 +120,33 @@ User::User(const String& name) throw(UserException) {
          UserException("Unable to lookup name", this)
   );
   assert(sidType == SidTypeUser, UserException("Not a user", this));
-  id = new char[size];
-  copy<char>((char*)id, sid, size);
+  id = new ReferenceCountedAllocator<uint8>(size);
+  copy(id->getElements(), sid, size);
+  integralId = 0;
 #else // unix
-  //long sysconf(_SC_GETPW_R_SIZE_MAX);
+  // long sysconf(_SC_GETPW_R_SIZE_MAX);
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
   int result = ::getpwnam_r(name.getElements(), &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result == 0, UserException(this));
-  id = UserImpl::getOpaque(entry->pw_uid);
+  integralId = Cast::container<unsigned long>(entry->pw_uid);
 #endif // flavor
 }
 
 // TAG: select full name domain/user with option: LOCAL prefix?, BUILTIN prefix (no)?
 String User::getName(bool fallback) const throw(UserException) {
-  if (id == User::INVALID) {
-    return MESSAGE("unknown");
+  if (!id.isValid()) {
+    return MESSAGE("<unknown>");
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SID_NAME_USE sidType;
-  char name[4096]; // TAG: what is the maximum size
+  char name[UNLEN+1];
   DWORD nameSize = sizeof(name);
-  char domainName[64]; // TAG: what is the maximum size
+  char domainName[DNLEN+1];
   DWORD domainNameSize = sizeof(domainName);
   if (::LookupAccountSid(0,
-                         (PSID)id, // must be valid
+                         (PSID)id->getElements(),
                          name,
                          &nameSize,
                          domainName,
@@ -197,7 +166,7 @@ String User::getName(bool fallback) const throw(UserException) {
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwuid_r(UserImpl::getSystem(id), &pw, buffer->getElements(), buffer->getSize(), &entry);
+  int result = ::getpwuid_r(Cast::extract<uid_t>(integralId), &pw, buffer->getElements(), buffer->getSize(), &entry);
   if (result != 0) {
     assert(fallback, UserException("Unable to lookup name", this));
     StringOutputStream s;
@@ -210,12 +179,13 @@ String User::getName(bool fallback) const throw(UserException) {
 
 String User::getHomeFolder() const throw(UserException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  assert(id.isValid(), UserException(this));
   throw NotImplemented(this);
-#else // unix
+#else // unix  
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwuid_r(UserImpl::getSystem(id), &pw, buffer->getElements(), buffer->getSize(), &entry);
+  int result = ::getpwuid_r(Cast::extract<uid_t>(integralId), &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result == 0, UserException(this));
   return String(entry->pw_dir);
 #endif // flavor
@@ -237,7 +207,7 @@ bool User::isAdmin() const throw(UserException) {
 //   }
 //   return isMember == TRUE;
 #else // unix
-  return id == 0; // root
+  return integralId == 0; // root
 #endif // flavor
 }
 
@@ -252,32 +222,27 @@ bool User::isMemberOf(const Group& group) throw(UserException) {
 Array<String> User::getGroups() throw(UserException) {
   Array<String> result;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  assert(id.isValid(), UserException(this));
   SID_NAME_USE sidType;
-  char name[4096]; // TAG: what is the maximum size
+  WCHAR name[UNLEN+1];
   DWORD nameSize = sizeof(name);
-  char domainName[64]; // TAG: what is the maximum size
+  WCHAR domainName[DNLEN+1];
   DWORD domainNameSize = sizeof(domainName);
-  assert(::LookupAccountSid(0,
-                            (PSID)id, // must be valid
-                            name,
-                            &nameSize,
-                            domainName,
-                            &domainNameSize,
-                            &sidType) == 0,
+  assert(::LookupAccountSidW(0,
+                             (PSID)id->getElements(), // must be valid
+                             name,
+                             &nameSize,
+                             domainName,
+                             &domainNameSize,
+                             &sidType) == 0,
          UserException("Unable to lookup name", this)
   );
-//   if (domainName[0] != 0) {
-//     return String(domainName) + MESSAGE("\\") + String(name);
-//   } else {
-//     return String(name); // TAG: does nameSize hold length of name
-//   }
-
-  WideString wideName(name);
+  
   GROUP_USERS_INFO_0* buffer = 0;
   DWORD numberOfEntries = 0;
   DWORD totalEntries = 0;
   NET_API_STATUS status = ::NetUserGetGroups(0,
-                                             wideName.getElements(),
+                                             name,
                                              0,
                                              (LPBYTE*)&buffer,
                                              MAX_PREFERRED_LENGTH,
@@ -294,28 +259,19 @@ Array<String> User::getGroups() throw(UserException) {
     ::NetApiBufferFree(buffer);
   }
 #else // unix
+  assert(isValid(), UserException(this));
   throw NotImplemented(this);
 #endif // flavor
   return result;
 }
 
-User::~User() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (id != User::INVALID) {
-    delete[] (char*)id;
-  }
-#else // unix
-#endif // flavor
-}
-
 FormatOutputStream& operator<<(FormatOutputStream& stream, const User& value) throw(IOException) {
-  const void* opaqueId = value.getId();
-  if (opaqueId == User::INVALID) {
-    return stream << MESSAGE("UNKNOWN");
+  if (!value.isValid()) {
+    return stream << MESSAGE("<unknown>");
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   StringOutputStream s;
-  PSID sid = (PSID)opaqueId; // must be valid
+  PSID sid = (PSID)value.getId(); // must be valid
   
   // write prefix and revision number
   s << MESSAGE("S-") << ((SID*)sid)->Revision << '-';
@@ -344,7 +300,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const User& value) th
   s << FLUSH;
   return stream << s.getString();
 #else
-  return stream << (unsigned long)opaqueId;
+  return stream << value.getIntegralId();
 #endif
 }
 

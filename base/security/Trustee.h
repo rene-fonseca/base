@@ -41,14 +41,14 @@ public:
     CLASS, /**< Trustee is a class. */
     EVERYONE /**< Everyone. */
   };
-private:
-
+private:  
+  
   /** Cached type of trustee. */
   mutable TrusteeType type;
   /** Identifier of the trustee represented as an integral. */
   unsigned long integralId;
   /** Opaque identifier of the trustee. */
-  ReferenceCountedObjectPointer<ReferenceCountedAllocator<char> > id;
+  ReferenceCountedObjectPointer<ReferenceCountedAllocator<uint8> > id;
 public:
   
   /**

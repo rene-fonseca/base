@@ -19,101 +19,63 @@
 #include <base/NotImplemented.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-  #include <lm.h>
+#  include <windows.h>
+#  include <lm.h>
 #else // unix
-  #include <sys/types.h>
-  #include <grp.h>
-  #include <pwd.h>
-  #include <unistd.h>
+#  include <sys/types.h>
+#  include <grp.h>
+#  include <pwd.h>
+#  include <unistd.h>
 #endif // flavor
 
 #if (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__CYGWIN)
-  #define _DK_SDU_MIP__BASE__HAVE_GETGRNAM_R
-  #define _DK_SDU_MIP__BASE__HAVE_GETGRGID_R
+#  define _DK_SDU_MIP__BASE__HAVE_GETGRNAM_R
+#  define _DK_SDU_MIP__BASE__HAVE_GETGRGID_R
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
-class GroupImpl {
-public:
-
-  union AnyId {
-    void* opaque;
-    gid_t system;
-  };
-
-  static inline void* getOpaque(gid_t id) throw() {
-    GroupImpl::AnyId anyId;
-    anyId.opaque = 0;
-    anyId.system= id;
-    return anyId.opaque;
-  }
-  
-  static inline gid_t getSystem(void* id) throw() {
-    GroupImpl::AnyId anyId;
-    anyId.system = 0;
-    anyId.opaque = id;
-    return anyId.system;
-  }
-};
-#endif // unix
+Group::Group(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  throw OutOfDomain("Invalid user id", this);
+#else // unix
+  assert(integralId <= PrimitiveTraits<uid_t>::MAXIMUM, OutOfDomain("Invalid group id", this));
+#endif // flavor
+}
 
 Group::Group(const void* _id) throw(OutOfDomain) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert((_id != 0) && (::IsValidSid((PSID)_id) != 0), OutOfDomain("Invalid group id", this));
-  DWORD size = ::GetLengthSid((PSID)_id);
-  id = new char[size];
-  copy<char>((char*)id, (const char*)_id, size);
+  if (_id == 0) {
+    integralId = getMaximum(integralId);
+    return;
+  }
+  assert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid group id", this));
+  unsigned int size = ::GetLengthSid((PSID)_id);
+  id = new ReferenceCountedAllocator<uint8>(size);
+  copy(id->getElements(), Cast::pointer<const uint8*>(_id), size);
+  integralId = 0;
 #else // unix
-  assert((unsigned long)_id <= PrimitiveTraits<gid_t>::MAXIMUM, OutOfDomain("Invalid group id", this));
-  id = (void*)_id; // we only cast away const 'cause we do not dereference the pointer
+  throw OutOfDomain("Invalid group id", this);
 #endif // flavor
 }
 
-Group::Group(const Group& _copy) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (_copy.id == Group::INVALID) {
-    id = _copy.id;
-    return;
-  }
-  DWORD size = ::GetLengthSid((PSID)_copy.id);
-  id = new char[size];
-  copy<char>((char*)id, (const char*)_copy.id, size);
-#else // unix
-  id = _copy.id;
-#endif // flavor
+Group::Group(const Group& copy) throw() : integralId(copy.integralId), id(copy.id) {
 }
 
 Group& Group::operator=(const Group& eq) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (&eq != this) { // protect against self assignment
-    if (id != Group::INVALID) {
-      delete[] (char*)id;
-    }
-    if (eq.id == Group::INVALID) {
-      id = eq.id;
-    } else {
-      DWORD size = ::GetLengthSid((PSID)eq.id);
-      id = new char[size];
-      copy<char>((char*)id, (const char*)eq.id, size);
-    }
-  }
-#else // unix
   id = eq.id;
-#endif // flavor  
+  integralId = eq.integralId;
   return *this;
 }
 
 bool Group::operator==(const Group& eq) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if ((id == Group::INVALID) || (eq.id == Group::INVALID)) {
-    return (id == Group::INVALID) && (eq.id == Group::INVALID);
+  if (!id.isValid() || (!eq.id.isValid())) {
+    return !id.isValid() && !eq.id.isValid();
   }
-  return ::EqualSid((PSID)id, (PSID)eq.id) != 0;
+  return ::EqualSid((PSID)id->getElements(), (PSID)eq.id->getElements()) != 0;
 #else // unix
-  return id == eq.id;
+  return integralId == eq.integralId;
 #endif
 }
 
@@ -128,13 +90,13 @@ Group::Group(const String& name) throw(GroupException) {
     struct group* entry;
     int result = ::getgrnam_r(name.getElements(), &grp, buffer->getElements(), buffer->getSize(), &entry);
     assert(result == 0, GroupException(this));
-    id = GroupImpl::getOpaque(entry->gr_gid);
+    integralId = Cast::container<unsigned long>(entry->gr_gid);
   #else
     #warning Group::Group(const String& name) uses non-reentrant getgrnam
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     struct group* entry = ::getgrnam(name.getElements());
     assert(entry != 0, GroupException(this));
-    id = GroupImpl::getOpaque(entry->gr_gid);
+    integralId = Cast::container<unsigned long>(entry->gr_gid);
   #endif
 #endif // flavor
 }
@@ -146,24 +108,24 @@ Group::Group(const User& user) throw(GroupException) {
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwuid_r(GroupImpl::getSystem(id), &pw, buffer->getElements(), buffer->getSize(), &entry);
+  int result = ::getpwuid_r(Cast::extract<uid_t>(user.getIntegralId()), &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result == 0, GroupException(this));
-  id = GroupImpl::getOpaque(entry->pw_gid);
+  integralId = Cast::container<unsigned long>(entry->pw_gid);
 #endif // flavor
 }
 
 String Group::getName() const throw(GroupException) {
-  if (id == User::INVALID) {
-    return MESSAGE("UNKNOWN");
+  if (!isValid()) {
+    return MESSAGE("<unknown>");
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SID_NAME_USE sidType;
-  char name[4096]; // TAG: what is the maximum size
+  char name[UNLEN+1]; // TAG: what is the maximum size
   DWORD nameSize = sizeof(name);
-  char domainName[64]; // TAG: what is the maximum size
+  char domainName[DNLEN+1]; // TAG: what is the maximum size
   DWORD domainNameSize = sizeof(domainName);
   assert(::LookupAccountSid(0,
-                            (PSID)id,
+                            (PSID)id->getElements(),
                             name,
                             &nameSize,
                             domainName,
@@ -182,12 +144,12 @@ String Group::getName() const throw(GroupException) {
     Allocator<char>* buffer = Thread::getLocalStorage();
     struct group grp;
     struct group* entry;
-    int result = ::getgrgid_r(GroupImpl::getSystem(id), &grp, buffer->getElements(), buffer->getSize(), &entry);
+    int result = ::getgrgid_r(Cast::extract<gid_t>(integralId), &grp, buffer->getElements(), buffer->getSize(), &entry);
     assert(result == 0, GroupException(this));
     return String(entry->gr_name);
   #else
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
-    struct group* entry = ::getgrgid(GroupImpl::getSystem(id));
+    struct group* entry = ::getgrgid(Cast::extract<gid_t>(integralId));
     assert(entry != 0, GroupException(this));
     return String(entry->gr_name);
   #endif
@@ -199,31 +161,25 @@ Array<String> Group::getMembers() const throw(GroupException) {
   Array<String> result;
 
   SID_NAME_USE sidType;
-  char name[4096]; // TAG: what is the maximum size
+  WCHAR name[GNLEN+1];
   DWORD nameSize = sizeof(name);
-  char domainName[64]; // TAG: what is the maximum size
+  WCHAR domainName[DNLEN+1];
   DWORD domainNameSize = sizeof(domainName);
-  assert(::LookupAccountSid(0,
-                            (PSID)id,
-                            name,
-                            &nameSize,
-                            domainName,
-                            &domainNameSize,
-                            &sidType) != 0,
+  assert(::LookupAccountSidW(0,
+                             (PSID)id->getElements(),
+                             name,
+                             &nameSize,
+                             domainName,
+                             &domainNameSize,
+                             &sidType) != 0,
          GroupException("Unable to lookup name", this)
   );
-//   if (domainName[0] != 0) {
-//     return String(domainName) + MESSAGE("\\") + String(name);
-//   } else {
-//     return String(name); // TAG: does nameSize hold length of name
-//   }
-
-  WideString wideName(name);
+  
   GROUP_USERS_INFO_0* buffer = 0;
   DWORD numberOfEntries = 0;
   DWORD totalEntries = 0;
   NET_API_STATUS status = ::NetGroupGetUsers(0, // use local machine
-                                             wideName.getElements(),
+                                             name,
                                              0,
                                              (LPBYTE*)&buffer,
                                              MAX_PREFERRED_LENGTH,
@@ -248,7 +204,7 @@ Array<String> Group::getMembers() const throw(GroupException) {
     Allocator<char>* buffer = Thread::getLocalStorage();
     struct group grp;
     struct group* entry;
-    int result = ::getgrgid_r(GroupImpl::getSystem(id), &grp, buffer->getElements(), buffer->getSize(), &entry);
+    int result = ::getgrgid_r(Cast::extract<gid_t>(integralId), &grp, buffer->getElements(), buffer->getSize(), &entry);
     assert(result == 0, GroupException(this));
     Array<String> members;
     char** memberName = entry->gr_mem;
@@ -258,7 +214,7 @@ Array<String> Group::getMembers() const throw(GroupException) {
     return members;
   #else
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
-    struct group* entry = ::getgrgid(GroupImpl::getSystem(id));
+    struct group* entry = ::getgrgid(Cast::extract<gid_t>(integralId));
     assert(entry != 0, GroupException(this));
     Array<String> members;
     char** memberName = entry->gr_mem;
@@ -270,23 +226,13 @@ Array<String> Group::getMembers() const throw(GroupException) {
 #endif // flavor
 }
 
-Group::~Group() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (id != Group::INVALID) {
-    delete[] (char*)id;
-  }
-#else // unix
-#endif // flavor
-}
-
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Group& value) throw(IOException) {
-  const void* opaqueId = value.getId();
-  if (opaqueId == Group::INVALID) {
-    return stream << MESSAGE("UNKNOWN");
+  if (!value.isValid()) {
+    return stream << MESSAGE("<unknown>");
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   StringOutputStream s;
-  PSID sid = (PSID)opaqueId; // must be valid
+  PSID sid = (PSID)value.getId(); // must be valid
   
   // write prefix and revision number
   s << MESSAGE("S-") << ((SID*)sid)->Revision << '-';
@@ -315,7 +261,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Group& value) t
   s << FLUSH;
   return stream << s.getString();
 #else
-  return stream << (unsigned long)opaqueId;
+  return stream << value.getIntegralId();
 #endif
 }
 

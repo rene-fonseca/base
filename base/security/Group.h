@@ -27,20 +27,19 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Group trustee.
   @ingroup security
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.1
+  @version 1.2
 */
 
 class Group : public Object {
   friend class Trustee;
 private:
 
+  /** Identifier of the group represented as an integral if possible. */
+  unsigned long integralId;
   /** Opaque identifier of the group. */
-  void* id;
+  ReferenceCountedObjectPointer<ReferenceCountedAllocator<uint8> > id;
 public:
-
-  /** The valid of an invalid identifier. */
-  static const void* const INVALID = static_cast<char*>(0) - 1;
-
+  
   /**
     This exception is raised by the Group class.
 
@@ -84,8 +83,16 @@ public:
   /**
     Initializes group as invalid.
   */
-  inline Group() throw() : id(static_cast<char*>(0) - 1) {}
+  inline Group() throw() : integralId(getMaximum(integralId)) {
+  }
   
+  /**
+    Initializes the group by id.
+
+    @param id The identifier of the group.
+  */
+  Group(unsigned long id) throw(OutOfDomain);
+
   /**
     Initializes the group by id.
 
@@ -133,15 +140,22 @@ public:
     Returns true if the group is initialized. This does not mean that the group
     exists.
   */
-  inline bool isInitialized() const throw() {
-    return id != INVALID;
+  inline bool isValid() const throw() {
+    return integralId != getMaximum(integralId);
   }
 
   /**
     Returns the id of the group.
   */
   inline const void* getId() const throw() {
-    return id;
+    return id.isValid() ? id->getElements() : 0;
+  }
+
+  /**
+    Returns the integral id of the group.
+  */
+  inline unsigned long getIntegralId() const throw() {
+    return integralId;
   }
   
   /**
@@ -153,11 +167,6 @@ public:
     Returns the members of the group.
   */
   Array<String> getMembers() const throw(GroupException);
-
-  /**
-    Destroys the group object.
-  */
-  ~Group() throw();
 };
 
 /**

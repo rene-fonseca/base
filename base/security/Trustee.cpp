@@ -18,55 +18,55 @@
 #include <base/NotImplemented.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #include <windows.h>
-  #include <aclapi.h>
+#  include <windows.h>
+#  include <aclapi.h>
+#  include <aclapi.h>
+#  include <lm.h>
+
+#  if (!defined(SID_MAX_SUB_AUTHORITIES))
+#    define SID_MAX_SUB_AUTHORITIES 15
+#  endif
+#  if (!defined(SECURITY_MAX_SID_SIZE))
+#    define SECURITY_MAX_SID_SIZE (sizeof(SID) - sizeof(DWORD) + (SID_MAX_SUB_AUTHORITIES * sizeof(DWORD)))
+#  endif
 #else // unix
-  #include <sys/types.h>
-  #include <grp.h>
-  #include <pwd.h>
-  #include <unistd.h>
+#  include <sys/types.h>
+#  include <grp.h>
+#  include <pwd.h>
+#  include <unistd.h>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Trustee::Trustee() throw()
   : type(UNSPECIFIED),
-    integralId(PrimitiveTraits<unsigned long>::MAXIMUM),
-    id(0) {
+    integralId(PrimitiveTraits<unsigned long>::MAXIMUM) {
 }
 
 Trustee::Trustee(User user) throw() : type(USER) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   integralId = 0;
-  if (user.id == User::INVALID) {
+  if (!user.isValid()) {
     type = UNSPECIFIED;
-    id = 0;
     return;
   }
-  DWORD size = ::GetLengthSid((PSID)user.id);
-  id = new ReferenceCountedAllocator<char>(size);
-  copy<char>((char*)id->getElements(), (const char*)user.id, size);
+  id = user.id;
 #else // unix
-  id = 0;
-  integralId = Cast::getOffset(user.getId());
-#endif // flavor 
+  integralId = user.getIntegralId();
+#endif // flavor
 }
 
 Trustee::Trustee(Group group) throw() : type(GROUP) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   integralId = 0;
-  if (group.id == Group::INVALID) {
+  if (!group.isValid()) {
     type = UNSPECIFIED;
-    id = 0;
     return;
   }
-  DWORD size = ::GetLengthSid((PSID)group.id);
-  id = new ReferenceCountedAllocator<char>(size);
-  copy<char>((char*)id->getElements(), (const char*)group.id, size);
+  id = group.id;
 #else // unix
-  id = 0;
-  integralId = Cast::getOffset(group.id);
-#endif // flavor 
+  integralId = group.getIntegralId();
+#endif // flavor
 }
 
 Trustee::Trustee(TrusteeType type, const void* _id) throw(OutOfDomain) {
@@ -77,10 +77,10 @@ Trustee::Trustee(TrusteeType type, const void* _id) throw(OutOfDomain) {
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid trustee", this));
-  DWORD size = ::GetLengthSid((PSID)_id);
+  unsigned int size = ::GetLengthSid((PSID)_id);
   integralId = 0;
-  id = new ReferenceCountedAllocator<char>(size);
-  copy<char>((char*)id->getElements(), (const char*)_id, size);
+  id = new ReferenceCountedAllocator<uint8>(size);
+  copy(id->getElements(), Cast::pointer<const uint8*>(_id), size);
 #else // unix
   assert(
     ((type == Trustee::USER) || (type == Trustee::GROUP) || (type == Trustee::EVERYONE)) &&
@@ -118,7 +118,7 @@ bool Trustee::operator==(const Trustee& eq) throw() {
 Trustee::Trustee(const String& name) throw(TrusteeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SID_NAME_USE sidType;
-  char sid[4096];
+  uint8 sid[SECURITY_MAX_SID_SIZE];
   DWORD size = sizeof(sid);
   assert(::LookupAccountName(0,
                              name.getElements(),
@@ -130,10 +130,10 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
          TrusteeException("Unable to lookup name", this)
   );
   assert(sidType != SidTypeInvalid, TrusteeException("Not a trustee", this));
-  DWORD sidSize = ::GetLengthSid((PSID)sid);
-  integralId = PrimitiveTraits<unsigned long>::MAXIMUM;
-  id = new ReferenceCountedAllocator<char>(sidSize);
-  copy<char>((char*)id->getElements(), (const char*)sid, sidSize);
+  unsigned int sidSize = ::GetLengthSid((PSID)sid);
+  integralId = getMaximum(integralId);
+  id = new ReferenceCountedAllocator<uint8>(sidSize);
+  copy(id->getElements(), Cast::pointer<const uint8*>(sid), sidSize);
 #else // unix
   id = 0;
   //long sysconf(_SC_GETPW_R_SIZE_MAX);
@@ -241,12 +241,12 @@ bool Trustee::isMemberOf(const Trustee& trustee) const throw(TrusteeException) {
 String Trustee::getName() const throw(TrusteeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!id.isValid()) {
-    return MESSAGE("unknown");
+    return MESSAGE("<unknown>");
   }
   SID_NAME_USE sidType;
-  char name[4096]; // TAG: what is the maximum size
+  char name[UNLEN+1];
   DWORD nameSize = sizeof(name);
-  char domainName[64]; // TAG: what is the maximum size
+  char domainName[DNLEN+1];
   DWORD domainNameSize = sizeof(domainName);
   assert(::LookupAccountSid(0, (PSID)id->getElements(), // must be valid
                             name, &nameSize,
@@ -297,7 +297,7 @@ String Trustee::getName() const throw(TrusteeException) {
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value) throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!value.id.isValid()) {
-    return stream << MESSAGE("unknown");
+    return stream << MESSAGE("<unknown>");
   }
   StringOutputStream s;
   PSID sid = (PSID)value.id->getElements(); // must be valid
@@ -331,7 +331,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value)
 #else
   unsigned long id = value.integralId;
   if (id == PrimitiveTraits<unsigned long>::MAXIMUM) {
-    return stream << MESSAGE("unknown");
+    return stream << MESSAGE("<unknown>");
   }
   StringOutputStream s;
   switch (value.getType()) {

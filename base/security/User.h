@@ -17,6 +17,7 @@
 #include <base/security/User.h>
 #include <base/string/String.h>
 #include <base/collection/Array.h>
+#include <base/mem/ReferenceCountedAllocator.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -28,20 +29,19 @@ class Group;
   @short User.
   @ingroup security
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.1
+  @version 1.2
 */
 
 class User : public Object {
   friend class Trustee;
 private:
   
+  /** Identifier of the user represented as an integral if possible. */
+  unsigned long integralId;
   /** Opaque identifier of the user. */
-  void* id;
+  ReferenceCountedObjectPointer<ReferenceCountedAllocator<uint8> > id;
 public:
   
-  /** The valid of an invalid identifier. */
-  static const void* const INVALID = static_cast<char*>(0) - 1;
-
   /**
     This exception is raised by the User class to indicate a non-existent user.
 
@@ -90,7 +90,14 @@ public:
   /**
     Initializes user as invalid.
   */
-  inline User() throw() : id(static_cast<char*>(0) - 1) {}
+  inline User() throw() : integralId(getMaximum(integralId)) {
+  }
+
+  /**
+    Initializes user by id. Raises OutOfDomain if the specified id is not
+    supported by the platform.
+  */  
+  User(unsigned long _id) throw(OutOfDomain);
   
   /**
     Initializes user by id. Raises OutOfDomain if the specified id is not
@@ -132,14 +139,21 @@ public:
     exists.
   */
   inline bool isValid() const throw() {
-    return id != INVALID;
+    return integralId != getMaximum(integralId);
   }
   
   /**
     Returns the id of the user.
   */
   inline const void* getId() const throw() {
-    return id;
+    return id.isValid() ? id->getElements() : 0;
+  }
+
+  /**
+    Returns the integral id of the user.
+  */
+  inline unsigned long getIntegralId() const throw() {
+    return integralId;
   }
   
   /**
@@ -177,11 +191,6 @@ public:
     Returns the groups to which the user belongs.
   */
   Array<String> getGroups() throw(UserException);
-  
-  /**
-    Destroys the user object.
-  */
-  ~User() throw();
 };
 
 /**

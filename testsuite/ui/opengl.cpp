@@ -278,15 +278,15 @@ public:
   }
 };
 
-class WindowApplication : public Application {
+class OpenGLApplication : public Application {
 private:
   
   static const unsigned int MAJOR_VERSION = 1;
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  WindowApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("Window"), numberOfArguments, arguments, environment) {
+  OpenGLApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+    : Application(MESSAGE("opengl"), numberOfArguments, arguments, environment) {
   }
   
   class MyOpenGLContext : public OpenGLContext {
@@ -345,11 +345,12 @@ public:
     
     MyOpenGLContext(const String& title, const Position& position, const Dimension& dimension) throw(UserInterfaceException)
       : OpenGLContext(
-        title,
         position,
         dimension,
         OpenGLContext::DOUBLE_BUFFERED|OpenGLContext::DEPTH
-      ) {      
+      ) {
+      setTitle(title);
+      setIconTitle(title);
       verbosity = Verbosity::DEFAULT;
         
       //         openFile.setFilters(encoderRegistry.getFilters());
@@ -365,7 +366,7 @@ public:
       //         }
         
       openGL.glPolygonMode(OpenGL::FRONT_AND_BACK, OpenGL::FILL);
-        
+      
       static const OpenGL::GLfloat lightDiffuse[] = {1.0, 0.5, 1.0, 1.0};
       static const OpenGL::GLfloat lightPosition[] = {10.0, 10.0, 10.0, 0.0};
 
@@ -374,18 +375,18 @@ public:
       // openGL.glMateriali(OpenGL::FRONT_AND_BACK, OpenGL::SHININESS, ?);
       // param: LIGHT_MODEL_AMBIENT, LIGHT_MODEL_LOCAL_VIEWER, LIGHT_MODEL_TWO_SIDE, LIGHT_MODEL_COLOR_CONTROL
       // openGL.glLightModel();
-        
-      openGL.glLightfv(OpenGL::LIGHT0, OpenGL::DIFFUSE, lightDiffuse);
-      openGL.glLightfv(OpenGL::LIGHT0, OpenGL::POSITION, lightPosition); // uses current model-view matrix
+
+      //openGL.glLightfv(OpenGL::LIGHT0, OpenGL::DIFFUSE, lightDiffuse);
+      //openGL.glLightfv(OpenGL::LIGHT0, OpenGL::POSITION, lightPosition); // uses current model-view matrix
       openGL.glEnable(OpenGL::LIGHT0);
 
       // FRONT, BACK, or FRONT_AND_BACK; EMISSION, AMBIENT, DIFFUSE, SPECULAR, or AMBIENT AND DIFFUSE
       // openGL.glColorMaterial(OpenGL::FRONT, OpenGL::AMBIENT);
-      openGL.glColorMaterial(OpenGL::FRONT_AND_BACK, OpenGL::DIFFUSE);
+          //openGL.glColorMaterial(OpenGL::FRONT_AND_BACK, OpenGL::DIFFUSE);
       openGL.glEnable(OpenGL::COLOR_MATERIAL);
-        
+
       //openGL.glEnable(OpenGL::MULTISAMPLE); // OpenGL 1.3
-        
+      
       openGL.glEnable(OpenGL::DEPTH_TEST);
       //openGL.glDepthFunc(OpenGL::LEQUAL);
       
@@ -398,7 +399,7 @@ public:
       setBlending(true);
       lighting = false;
       setLighting(true);
-        
+      
       scale = 20;
       xAngle = 0;
       yAngle = 0;
@@ -410,13 +411,15 @@ public:
       mouseMiddleButtonPressed = false;
       mouseRightButtonPressed = false;
 
-      makeSystem();
-      makeCone();
+     //makeSystem();
+     //makeCone();
       makeCube();
-      makeTorus();
+      //makeTorus();
+     WRITE_SOURCE_LOCATION();
     }
 
     void setQuality(Quality quality) throw() {
+      return; // TAG: fixme
       // TAG: need attribute
       switch (quality) {
       case QUALITY_WORST:
@@ -468,6 +471,7 @@ public:
     }
       
     void setShadingModel(ShadingModel::Model shadingModel) throw() {
+      return; // TAG: fixme unix
       if (shadingModel != this->shadingModel) {
         this->shadingModel = shadingModel;
         switch (shadingModel) {
@@ -480,8 +484,9 @@ public:
         }
       }
     }
-      
+    
     void setPolygonMode(PolygonMode::Mode polygonMode) throw() {
+      return; // TAG: fixme unix
       if (polygonMode != this->polygonMode) {
         this->polygonMode = polygonMode;
         switch (polygonMode) {
@@ -499,6 +504,7 @@ public:
     }
       
     void setBlending(bool blending) throw() {
+      return; // TAG: fixme unix
       if (blending != this->blending) {
         this->blending = blending;
         if (blending) {
@@ -512,6 +518,7 @@ public:
     }
       
     void setLighting(bool lighting) throw() {
+      return; // TAG: fixme unix
       if (lighting != this->lighting) {
         this->lighting = lighting;
         if (lighting) {
@@ -587,11 +594,20 @@ public:
       OpenGL::DisplayList displayList(openGL, OBJECT_CUBE);
       
       openGL.glColor4f(0.0, 1.0, 0.0, 0.75);
+      
       {
+        WRITE_SOURCE_LOCATION();
         OpenGL::Block block(openGL, OpenGL::QUAD_STRIP); // draw the sides of the cube
-        
+        WRITE_SOURCE_LOCATION();
+        static double X[3] = {3, 3, 3};
+        openGL.glVertex3dv(X);
+        WRITE_SOURCE_LOCATION();
+       
         // Normal A
         openGL.glNormal3f(0.0, 0.0, -1.0);
+        WRITE_SOURCE_LOCATION();
+        
+        openGL.glVertex3i(3, 3, -3); // vertex 1
         openGL.glVertex3i(3, 3, -3); // vertex 1
         openGL.glVertex3i(3, -3, -3); // vertex 2
         openGL.glVertex3i(-3, 3, -3); // vertex 3
@@ -633,7 +649,7 @@ public:
       openGL.glRotatef(rotation.getY(), 1.0, 0.0, 0.0);
       openGL.glRotatef(rotation.getZ(), 0.0, 0.0, 1.0);
       openGL.glScalef(view.getScale() * 0.005, view.getScale() * 0.005, view.getScale() * 0.005);
-      openGL.glCallList(OBJECT_TORUS);
+      openGL.glCallList(OBJECT_CUBE); // TAG: fixme TORUS
       
       openGL.glFlush();
       swap();
@@ -798,14 +814,10 @@ public:
       case Mouse::MIDDLE:
         mouseMiddleButtonPressed = event == Mouse::PRESSED;
         break;
-      case Mouse::RIGHT:
-        WRITE_SOURCE_LOCATION();
-        
+      case Mouse::RIGHT:        
         mouseRightButtonPressed = event == Mouse::PRESSED;
         if (event == Mouse::PRESSED) {
-        WRITE_SOURCE_LOCATION();
           displayMenu(position, menu);
-        WRITE_SOURCE_LOCATION();
         }
         break;
       }
@@ -1179,8 +1191,20 @@ public:
       Position(123, 312),
       Dimension(256, 128)
     );
+
+    fout << MESSAGE("OpenGL context information: ") << EOL
+         << indent(2) << MESSAGE("client vendor: ") << myOpenGLContext.getGLClientVendor() << EOL
+         << indent(2) << MESSAGE("client release: ") << myOpenGLContext.getGLClientRelease() << EOL
+         << indent(2) << MESSAGE("client extensions: ") << myOpenGLContext.getGLClientExtensions() << EOL
+         << indent(2) << MESSAGE("server vendor: ") << myOpenGLContext.getGLServerVendor() << EOL
+         << indent(2) << MESSAGE("server release: ") << myOpenGLContext.getGLServerRelease() << EOL
+         << indent(2) << MESSAGE("server extensions: ") << myOpenGLContext.getGLServerExtensions() << EOL
+         << indent(2) << MESSAGE("direct context: ") << myOpenGLContext.isDirect() << EOL
+         << ENDL;
+    
+    myOpenGLContext.raise();
     myOpenGLContext.dispatch();
   }
 };
 
-STUB(WindowApplication);
+STUB(OpenGLApplication);

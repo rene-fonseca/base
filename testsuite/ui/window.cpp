@@ -40,20 +40,22 @@ public:
   public:
 
     MyWindow(const String& title, const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException)
-      : Window(title, position, dimension, flags),
+      : Window(position, dimension, flags),
         label(*this),
         split(*this),
         button(*this) {
+      setTitle(title);
+      setIconTitle(title);
       label.setPosition(Position(16, 16));
       label.setDimension(Dimension(256, 32));
       label.setText(MESSAGE("This is a labal"));
-      split.setPosition(Position(8, 8));
-      split.setDimension(Dimension(128, 128));
-      split.setOffset(64, Split::FIRST);
-      button.setText(MESSAGE("Accept"));
-      button.setPosition(Position(8, 8));
-      button.setDimension(Dimension(128, 64));
-      button.setBackground(makeColor(0xa0, 0xa0, 0x30));
+//       split.setPosition(Position(8, 8));
+//       split.setDimension(Dimension(128, 128));
+//       split.setOffset(64, Split::FIRST);
+//       button.setText(MESSAGE("Accept"));
+//       button.setPosition(Position(8, 8));
+//       button.setDimension(Dimension(128, 64));
+//       button.setBackground(makeColor(0xa0, 0xa0, 0x30));
       //split.enable();
     }
     
@@ -236,6 +238,7 @@ public:
          << ENDL;
 
     MyWindow myWindow(MESSAGE("Hello, World"), Position(123, 312), Dimension(256, 128), 0);
+    myWindow.raise();
     myWindow.dispatch();
   }
 };

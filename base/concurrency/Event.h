@@ -38,7 +38,7 @@ public:
 
     @param maximum The maximum number of waiting thread. The default is one.
   */
-	Event(unsigned int maximum = 1) throw(Construct, ResourceException);
+  explicit Event(unsigned int maximum = 1) throw(Construct, ResourceException);
 
   /**
     Resets the event. Returns when all waiting threads.
@@ -65,7 +65,7 @@ public:
   /**
     Destroys the event.
   */
-	~Event() throw();
+  ~Event() throw();
 };
 
 #endif

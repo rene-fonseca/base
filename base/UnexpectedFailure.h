@@ -21,6 +21,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Exception thrown on unexpected errors (this is an internal error).
 
+  @short Exception thrown on unexpected conditions
+  @ingroup exceptions
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -40,8 +42,19 @@ public:
   */
   UnexpectedFailure(const char* message) throw();
 
+  /**
+    Initializes the exception object without an associated message.
+    
+    @param type The identity of the type.
+  */
   UnexpectedFailure(Type type) throw() : Exception(type) {}
   
+  /**
+    Initializes the exception object.
+
+    @param message An NULL-terminated string (ASCII).
+    @param type The identity of the type.
+  */
   UnexpectedFailure(const char* message, Type type) throw() : Exception(message, type) {}
 };
 

@@ -30,24 +30,24 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 #if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
   /** 16 bit signed integer. */
   typedef short int16;
-  /** 16 bit unsigned integer. */
+  /** 16 bit unsigned integer (a.k.a. doublet). */
   typedef unsigned short uint16;
 #endif
 
 #if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
   /** 32 bit signed integer. */
   typedef int int32;
-  /** 32 bit unsigned integer. */
+  /** 32 bit unsigned integer (a.k.a. quadlet). */
   typedef unsigned int uint32;
 #elif (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
   /** 32 bit signed integer. */
   typedef long int32;
-  /** 32 bit unsigned integer. */
+  /** 32 bit unsigned integer (a.k.a. quadlet). */
   typedef unsigned long uint32;
 #elif (_DK_SDI_MIP__BASE__LONG_LONG_SIZE == 4)
   /** 32 bit signed integer. */
   typedef long long int32;
-  /** 32 bit unsigned integer. */
+  /** 32 bit unsigned integer (a.k.a. quadlet). */
   typedef unsigned long long uint32;
 #endif
 
@@ -57,6 +57,16 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   /** 64 bit unsigned integer. */
   typedef unsigned long long uint64;
 #endif
+
+struct int128 {
+  uint64 a;
+  uint64 b;
+};
+
+struct uint128 {
+  uint64 a;
+  uint64 b;
+};
 
 /** A wide character. */
 typedef wchar_t wchar; // TAG: this will change to uint32 in the future
@@ -79,6 +89,61 @@ typedef wchar_t wchar; // TAG: this will change to uint32 in the future
   /** The integral type used to represent any memory offset and any size of memory block. */
   typedef uint64 MemorySize;
 #endif
+
+
+
+/**
+  Returns the number of elements in the specified built-in array.
+*/
+template<class TYPE, MemorySize SIZE>
+inline MemorySize getArraySize(TYPE (&)[SIZE]) throw() {
+  return SIZE;
+}
+
+/**
+  Returns the address of the specified variable.
+*/
+template<class TYPE>
+inline MemorySize getAddressOf(const TYPE& value) throw() {
+  return reinterpret_cast<const char*>(&value) - static_cast<const char*>(0);
+}
+
+/**
+  Returns a null pointer of the specified type.
+*/
+template<class TYPE>
+inline const TYPE* getNullPointerOf() throw() {
+  return static_cast<const TYPE*>(0);
+}
+
+/**
+  Returns the offset the specified field within the specified structure.
+*/
+template<class STRUCT, class FIELD>
+inline unsigned int getFieldOffset(const FIELD STRUCT::* field) throw() {
+  return reinterpret_cast<const char*>(&(static_cast<const STRUCT*>(0)->*field)) - static_cast<const char*>(0);
+}
+
+/**
+  Returns the offset of the field within the structure.
+
+  <pre>
+  namespace myNamespace {
+
+    struct MyStructure {
+      struct {
+        int subfield;
+      } field;
+    };
+  };
+  
+  void MyClass::myMethod() throw() {
+    MemorySize offset = OFFSETOF(myNamespace::MyStructure, field.subfield);
+    ...
+  }
+  </pre>
+*/
+#define OFFSETOF(STRUCT, FIELD) getAddressOf(getNullPointerOf<STRUCT>()->FIELD)
 
 
 

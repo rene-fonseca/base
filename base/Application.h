@@ -32,8 +32,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class Application : public Object {
-friend class ApplicationImpl;
-friend class DaemonImpl;
+  friend class ApplicationImpl;
+  friend class DaemonImpl;
 public:
 
   /** The normal exit code of the application (indicating no errors). */
@@ -52,6 +52,8 @@ private:
   Array<String> arguments;
   /** Container for the environment variables. */
   Map<String, String> environment;
+  /** The exit code. */
+  int exitCode;
   /** Specifies whether the application should be terminated. */
   bool terminated;
   /** Specifies whether the application should reload its configuration. */
@@ -146,6 +148,20 @@ public:
   */
   bool isHangingup() throw();
 
+  /**
+    Returns the exit code.
+  */
+  inline int getExitCode() const throw() {
+    return exitCode;
+  }
+  
+  /**
+    Sets the exit code (the default is EXIT_CODE_NORMAL).
+  */
+  inline void setExitCode(int value) throw() {
+    exitCode = value;
+  }
+  
   /**
     Returns true if the application has been signaled to terminate.
   */

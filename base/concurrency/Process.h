@@ -55,10 +55,10 @@ public:
   class ProcessException : public Exception {
   public:
     
-    ProcessException() throw() {}
-    ProcessException(const char* message) throw() : Exception(message) {}
-    ProcessException(Type type) throw() : Exception(type) {}
-    ProcessException(const char* message, Type type) throw() : Exception(message, type) {}
+    inline ProcessException() throw() {}
+    inline ProcessException(const char* message) throw() : Exception(message) {}
+    inline ProcessException(Type type) throw() : Exception(type) {}
+    inline ProcessException(const char* message, Type type) throw() : Exception(message, type) {}
   };
   
   /**
@@ -142,7 +142,7 @@ public:
   /**
     Returns the name (path) of the process.
   */
-  String getName() const throw(ProcessException);
+  String getName() const throw(NotSupported, ProcessException);
   
   /**
     Waits for the process to terminate.

@@ -12,7 +12,7 @@
  ***************************************************************************/
 
 /*
-  This program compiles/links/runs if the compiler supports the regex interface.
+  This program compiles/links/runs if the regex interface is available.
 */
 
 #include <sys/types.h>

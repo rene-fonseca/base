@@ -43,6 +43,8 @@ lib_LTLIBRARIES = libbase.la
 libbase_la_SOURCES = \
   AnyValue.cpp \
   Architecture.cpp \
+  ArgumentException.cpp \
+  ArgumentParser.cpp \
   Cast.cpp \
   CastException.cpp \
   Character.cpp \
@@ -100,6 +102,8 @@ section_HEADERS = \
   features.h \
   AnyValue.h \
   Architecture.h \
+  ArgumentException.h \
+  ArgumentParser.h \
   AutomationObject.h \
   Cast.h \
   CastException.h \

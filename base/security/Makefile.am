@@ -2,7 +2,7 @@
 #    The Base Framework
 #    A framework for developing platform independent applications
 #
-#    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+#    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 #
 #    This framework is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,6 +19,7 @@ libsecurity_la_SOURCES = \
   AccessControlEntry.cpp \
   AccessControlList.cpp \
   Adler32.cpp \
+  AdvancedStandardEncryption.cpp \
   Base64.cpp \
   CRC32.cpp \
   Group.cpp \
@@ -36,6 +37,7 @@ section_HEADERS = \
   AccessControlEntry.h \
   AccessControlList.h \
   Adler32.h \
+  AdvancedStandardEncryption.h \
   Base64.h \
   CRC32.h \
   Group.h \

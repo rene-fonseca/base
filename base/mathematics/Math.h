@@ -1020,6 +1020,7 @@ public:
         ++accumulator;
       }
     }
+    return accumulator;
   }
   
   /**

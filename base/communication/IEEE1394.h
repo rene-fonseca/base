@@ -363,7 +363,13 @@ protected:
     Loads the speed map from the bus manager.
   */
   void loadSpeedMap() throw(IEEE1394Exception);
-
+  
+  /**
+    Reload information from local bus.
+  */
+  void reload() throw(IEEE1394Exception);
+public:
+  
   /**
     Check if the bus has been reset.
   */
@@ -387,8 +393,6 @@ public:
   */
   unsigned short findRole(Role role, unsigned int busId = LOCAL_BUS) throw(OutOfDomain, IEEE1394Exception);
   
-  void reload() throw(IEEE1394Exception);
-
   /**
     Returns the number of nodes of the local bus.
   */
@@ -537,6 +541,13 @@ public:
   */
   inline void acknowledgeReset() throw() {
     ieee1394impl->acknowledgeReset();
+  }
+
+  /**
+    Resets the bus.
+  */
+  inline void resetBus() throw(IEEE1394Exception) {
+    ieee1394impl->resetBus();
   }
   
   /**

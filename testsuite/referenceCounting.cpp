@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/mem/Reference.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/io/FileDescriptorOutputStream.h>
 #include <base/mem/Allocator.h>
@@ -68,20 +68,22 @@ public:
   }
 
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+    fout << getFormalName() << MESSAGE(" version ")
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << MESSAGE("The Base Framework (Test Suite)") << EOL
          << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
          << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
          << ENDL;
     
     fout << MESSAGE("Initializing reference counted object pointers") << ENDL;
-    ReferenceCountedObjectPointer<Base> base; // ok
-    ReferenceCountedObjectPointer<Child> child; // ok
-    ReferenceCountedObjectPointer<OtherChild> otherChild; // ok
+    Reference<Base> base; // ok
+    Reference<Child> child; // ok
+    Reference<OtherChild> otherChild; // ok
 
-    fout << MESSAGE("Checking whether base is valid (expecting false): ") << base.isValid() << EOL;
+    fout << MESSAGE("Checking whether base is valid (expecting false): ")
+         << base.isValid() << EOL;
 
-    const ReferenceCountedObjectPointer<Child> constChild; // ok
+    const Reference<Child> constChild; // ok
 
     fout << MESSAGE("Checking whether base is multi referenced (expecting false): ") << base.isMultiReferenced() << EOL;
 
@@ -100,14 +102,15 @@ public:
     delete a3;
 
     fout << MESSAGE("Explicit initialization of automation pointer") << ENDL;
-    ReferenceCountedObjectPointer<ReferenceCountedAllocator<int> > a4 = new ReferenceCountedAllocator<int>();
+    Reference<ReferenceCountedAllocator<int> > a4 =
+      new ReferenceCountedAllocator<int>();
 
     fout << MESSAGE("Assignment of automation pointer") << ENDL;
     a4 = new ReferenceCountedAllocator<int>();
 /*
-  ReferenceCountedObjectPointer<AAA> aaa1 = new AAA(); // test exclicit
+  Reference<AAA> aaa1 = new AAA(); // test exclicit
 initialization
-//  ReferenceCountedObjectPointer<BBB> aaa2 = new AAA(); // test exclicit
+//  Reference<BBB> aaa2 = new AAA(); // test exclicit
 initialization - should not compile
 
   // test assignment
@@ -124,10 +127,10 @@ initialization - should not compile
 //  ccc = bbb; // should not compile
 
   // test copy construction
-  ReferenceCountedObjectPointer<AAA> cpy1(aaa); // ok
-  ReferenceCountedObjectPointer<BBB> cpy2(ccc); // poly - ok
-  ReferenceCountedObjectPointer<CCC> cpy3(ccc); // ok
-//  ReferenceCountedObjectPointer<BBB> cpy4(aaa); // should not compile
+  Reference<AAA> cpy1(aaa); // ok
+  Reference<BBB> cpy2(ccc); // poly - ok
+  Reference<CCC> cpy3(ccc); // ok
+//  Reference<BBB> cpy4(aaa); // should not compile
 
   // test type cast
   AAA* val1;

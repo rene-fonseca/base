@@ -427,7 +427,7 @@ public:
       CastAssert<sizeof(RESULT) >= sizeof(ARGUMENT)>::CONTAINER_FOOTPRINT_TOO_SMALL;
       union {
         ARGUMENT argument;
-        RESULT result; // make sure we do get an access violation in the cast
+        RESULT result; // make sure we do not get an access violation in the cast
       } _DK_SDU_MIP__BASE__PACKED temp;
       temp.argument = value;
       return *reinterpret_cast<RESULT*>(&temp.argument); // partial garbage
@@ -438,7 +438,7 @@ public:
       CastAssert<sizeof(RESULT) >= sizeof(ARGUMENT)>::CONTAINER_FOOTPRINT_TOO_SMALL;
       union {
         const ARGUMENT argument;
-        const RESULT result; // make sure we do get an access violation in the cast
+        const RESULT result; // make sure we do not get an access violation in the cast
       } _DK_SDU_MIP__BASE__PACKED temp;
       temp.argument = value;
       return *reinterpret_cast<const RESULT*>(&temp.argument); // partial garbage

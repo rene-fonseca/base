@@ -17,6 +17,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/Base.h>
 #include <base/Functor.h>
+#include <base/NotImplemented.h>
 #include <stdio.h>
 
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
@@ -43,10 +44,40 @@
   #include <string.h> // required by FD_SET on solaris
   #include <sys/mman.h>
 
+  #if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) || \
+       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX))
+    #include <sys/acl.h> // solaris and irix
+  #endif
+
   #undef assert
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+// TAG: GLIBC: st_size is not 64bit aligned
+struct packedStat64 { // temporary fix for unaligned st_size
+  __dev_t st_dev;
+  unsigned int __pad1;
+  __ino_t __st_ino;
+  __mode_t st_mode;
+  __nlink_t st_nlink;
+  __uid_t st_uid;
+  __gid_t st_gid;
+  __dev_t st_rdev;
+  unsigned int __pad2;
+  __off64_t st_size;
+  __blksize_t st_blksize;
+  __blkcnt64_t st_blocks;
+  __time_t st_atime;
+  unsigned long int __unused1;
+  __time_t st_mtime;
+  unsigned long int __unused2;
+  __time_t st_ctime;
+  unsigned long int __unused3;
+  __ino64_t st_ino;
+} __attribute__ ((packed));
+#endif // GNU Linux
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   inline Date FileTimeToDate(const FILETIME& time) {
@@ -226,6 +257,20 @@ bool File::isClosed() const throw() {
   return !fd->isValid();
 }
 
+AccessControlList File::getACL() const throw(FileException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  throw NotImplemented(this);
+#else // unix
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+  throw NotImplemented(this);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX)
+  throw NotImplemented(this);
+#else
+  throw NotImplemented(this);
+#endif
+#endif // flavor
+}
+
 long long File::getSize() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__W2K)
@@ -241,16 +286,14 @@ long long File::getSize() const throw(FileException) {
   return size.QuadPart;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+    int result = fstat64(fd->getHandle(), (struct stat64*)&status);
+  #else
     struct stat64 status;
-    if (::fstat64(fd->getHandle(), &status)) {
-      throw FileException("Unable to get file size", this);
-    }
-    fout << "size of status: " << sizeof(status) << ENDL;
-    fout << "offset of size: " << (char*)&status.st_size - (char*)&status << ENDL;
-    for (int i = 0; i < sizeof(status); ++i) {
-      fout << HEX << static_cast<unsigned int>(((const unsigned char*)(&status))[i]) << " ";
-    }
-    printf("File size = %ld\n", status.st_size); // TAG: fix problem on Linux
+    int result = fstat64(fd->getHandle(), &status);
+  #endif // GNU Linux
+    assert(result == 0, FileException("Unable to get file size", this));
     return status.st_size;
   #else
     struct stat status;
@@ -351,7 +394,7 @@ void File::flush() throw(FileException) {
 #endif
 }
 
-void File::lock(const FileRegion& region, bool exclusive = true) throw(FileException) {
+void File::lock(const FileRegion& region, bool exclusive) throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region", this));
   LARGE_INTEGER offset;
@@ -420,7 +463,7 @@ void File::lock(const FileRegion& region, bool exclusive = true) throw(FileExcep
 #endif
 }
 
-bool File::tryLock(const FileRegion& region, bool exclusive = true) throw(FileException) {
+bool File::tryLock(const FileRegion& region, bool exclusive) throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region", this));
   LARGE_INTEGER offset;
@@ -560,18 +603,19 @@ Date File::getLastModification() throw(FileException) {
   return FileTimeToDate(time);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    struct stat64 buffer;
-    if (fstat64(fd->getHandle(), &buffer)) {
-      throw FileException("Unable to get status", this);
-    }
-    return Date(buffer.st_mtime);
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+    int result = fstat64(fd->getHandle(), (struct stat64*)&status);
   #else
-    struct stat buffer;
-    if (::fstat(fd->getHandle(), &buffer)) {
-      throw FileException("Unable to get status", this);
-    }
-    return Date(buffer.st_mtime);
+    struct stat64 status;
+    int result = fstat64(fd->getHandle(), &status);
+  #endif // GNU Linux
+  #else
+    struct stat status;
+    int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
+    assert(result == 0, FileException("Unable to get status", this));
+    return Date(status.st_mtime);
 #endif
 }
 
@@ -584,18 +628,19 @@ Date File::getLastAccess() throw(FileException) {
   return FileTimeToDate(time);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    struct stat64 buffer;
-    if (::fstat64(fd->getHandle(), &buffer)) {
-      throw FileException("Unable to get status", this);
-    }
-    return Date(buffer.st_atime);
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+    int result = fstat64(fd->getHandle(), (struct stat64*)&status);
   #else
-    struct stat buffer;
-    if (::fstat(fd->getHandle(), &buffer)) {
-      throw FileException("Unable to get status", this);
-    }
-    return Date(buffer.st_atime);
+    struct stat64 status;
+    int result = fstat64(fd->getHandle(), &status);
+  #endif // GNU Linux
+  #else
+    struct stat status;
+    int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
+    assert(result == 0, FileException("Unable to get status", this));
+    return Date(status.st_atime);
 #endif
 }
 
@@ -608,18 +653,19 @@ Date File::getLastChange() throw(FileException) {
   return FileTimeToDate(time);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    struct stat64 buffer;
-    if (::fstat64(fd->getHandle(), &buffer)) {
-      throw FileException("Unable to get status", this);
-    }
-    return Date(buffer.st_ctime);
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+    int result = fstat64(fd->getHandle(), (struct stat64*)&status);
   #else
-    struct stat buffer;
-    if (::fstat(fd->getHandle(), &buffer)) {
-      throw FileException("Unable to get status", this);
-    }
-    return Date(buffer.st_ctime);
+    struct stat64 status;
+    int result = fstat64(fd->getHandle(), &status);
+  #endif // GNU Linux
+  #else
+    struct stat status;
+    int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
+    assert(result == 0, FileException("Unable to get status", this));
+    return Date(status.st_ctime);
 #endif
 }
 

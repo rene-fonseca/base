@@ -37,6 +37,31 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+// TAG: GLIBC: st_size is not 64bit aligned
+struct packedStat64 { // temporary fix for unaligned st_size
+  __dev_t st_dev;
+  unsigned int __pad1;
+  __ino_t __st_ino;
+  __mode_t st_mode;
+  __nlink_t st_nlink;
+  __uid_t st_uid;
+  __gid_t st_gid;
+  __dev_t st_rdev;
+  unsigned int __pad2;
+  __off64_t st_size;
+  __blksize_t st_blksize;
+  __blkcnt64_t st_blocks;
+  __time_t st_atime;
+  unsigned long int __unused1;
+  __time_t st_mtime;
+  unsigned long int __unused2;
+  __time_t st_ctime;
+  unsigned long int __unused3;
+  __ino64_t st_ino;
+} __attribute__ ((packed));
+#endif // GNU Linux
+
 Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // create two named pipes with unique names (one for input and one for output - may be the same handle)
@@ -125,18 +150,19 @@ unsigned int Pipe::available() const throw(PipeException) {
   return bytesAvailable;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+    int result = fstat64(fd->getHandle(), (struct stat64*)&status);
+  #else
     struct stat64 status;
-    if (::fstat64(fd->getHandle(), &status) != 0) {
-      throw PipeException("Unable to get available bytes", this);
-    }
-    return status.st_size;
+    int result = fstat64(fd->getHandle(), &status);
+  #endif // GNU Linux
   #else
     struct stat status;
-    if (::fstat(fd->getHandle(), &status) != 0) {
-      throw PipeException("Unable to get available bytes", this);
-    }
+    int result = ::fstat(fd->getHandle(), &status);
+  #endif // LFS
+    assert(result == 0, IOException("Unable to get available bytes", this));
     return status.st_size;
-  #endif
 #endif
 }
 

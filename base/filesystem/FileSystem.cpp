@@ -40,6 +40,31 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+// TAG: GLIBC: st_size is not 64bit aligned
+struct packedStat64 { // temporary fix for unaligned st_size
+  __dev_t st_dev;
+  unsigned int __pad1;
+  __ino_t __st_ino;
+  __mode_t st_mode;
+  __nlink_t st_nlink;
+  __uid_t st_uid;
+  __gid_t st_gid;
+  __dev_t st_rdev;
+  unsigned int __pad2;
+  __off64_t st_size;
+  __blksize_t st_blksize;
+  __blkcnt64_t st_blocks;
+  __time_t st_atime;
+  unsigned long int __unused1;
+  __time_t st_mtime;
+  unsigned long int __unused2;
+  __time_t st_ctime;
+  unsigned long int __unused3;
+  __ino64_t st_ino;
+} __attribute__ ((packed));
+#endif // GNU Linux
+
 unsigned int FileSystem::counter = 0;
 int FileSystem::cachedSupportsLinks = -1; // -1 not cached, 0 false, and 1 true
 
@@ -176,8 +201,13 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
   return flags;
 #else // unix
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  struct stat64 status;
-  int result = stat64(path.getElements(), &status);
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+    int result = stat64(path.getElements(), (struct stat64*)&status);
+  #else
+    struct stat64 status;
+    int result = stat64(path.getElements(), &status);
+  #endif // GNU Linux
 #else
   struct stat status;
   int result = stat(path.getElements(), &status);
@@ -227,8 +257,13 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
   // we ignore FILE_ATTRIBUTE_REPARSE_POINT
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    struct stat64 status;
-    int result = stat64(path.getElements(), &status);
+    #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+      struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+      int result = stat64(path.getElements(), (struct stat64*)&status);
+    #else
+      struct stat64 status;
+      int result = stat64(path.getElements(), &status);
+    #endif // GNU Linux
     switch (result) {
     case 0:
       if (S_ISREG(status.st_mode)) {
@@ -265,8 +300,13 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
   return ((result & FILE_ATTRIBUTE_DIRECTORY) != 0); // we ignore FILE_ATTRIBUTE_REPARSE_POINT
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    struct stat64 status;
-    int result = stat64(path.getElements(), &status);
+    #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+      struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+      int result = stat64(path.getElements(), (struct stat64*)&status);
+    #else
+      struct stat64 status;
+      int result = stat64(path.getElements(), &status);
+    #endif // GNU Linux
     switch (result) {
     case 0:
       if (S_ISDIR(status.st_mode)) {

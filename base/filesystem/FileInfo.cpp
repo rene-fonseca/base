@@ -131,24 +131,49 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException) : path(_path)
   links = information.nNumberOfLinks;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    struct stat64 buffer;
-    if (stat64(path.getElements(), &buffer) || (!S_ISREG(buffer.st_mode))) {
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+    struct packedStat64 { // temporary fix for unaligned st_size
+      __dev_t st_dev;
+      unsigned int __pad1;
+      __ino_t __st_ino;
+      __mode_t st_mode;
+      __nlink_t st_nlink;
+      __uid_t st_uid;
+      __gid_t st_gid;
+      __dev_t st_rdev;
+      unsigned int __pad2;
+      __off64_t st_size;
+      __blksize_t st_blksize;
+      __blkcnt64_t st_blocks;
+      __time_t st_atime;
+      unsigned long int __unused1;
+      __time_t st_mtime;
+      unsigned long int __unused2;
+      __time_t st_ctime;
+      unsigned long int __unused3;
+      __ino64_t st_ino;
+    } __attribute__ ((packed));
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+  #else
+    struct stat64 status;
+  #endif // GNU Linux
+    if (stat64(path.getElements(), (struct stat64*)&status) || (!S_ISREG(status.st_mode))) {
       throw FileSystemException("Not a file", this);
     }
   #else
-    struct stat buffer;
-    if (stat(path.getElements(), &buffer) || (!S_ISREG(buffer.st_mode))) {
+    struct stat status;
+    if (stat(path.getElements(), &status) || (!S_ISREG(status.st_mode))) {
       throw FileSystemException("Not a file", this);
     }
   #endif
-  size = buffer.st_size;
-  mode = buffer.st_mode;
-  owner = User((const void*)buffer.st_uid);
-  group = Group((const void*)buffer.st_gid);
-  access = buffer.st_atime;
-  modification = buffer.st_mtime;
-  change = buffer.st_ctime;
-  links = buffer.st_nlink;
+  size = status.st_size;
+  mode = status.st_mode;
+  owner = User((const void*)status.st_uid);
+  group = Group((const void*)status.st_gid);
+  access = status.st_atime;
+  modification = status.st_mtime;
+  change = status.st_ctime;
+  links = status.st_nlink;
 #endif // flavor
 }
 

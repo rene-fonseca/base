@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/io/BufferedInputStream.h>
+#include <base/string/FormatOutputStream.h>
 #include <base/Base.h>
 #include <base/Trace.h>
 

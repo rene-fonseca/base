@@ -1,0 +1,57 @@
+/***************************************************************************
+    The Base Framework
+    A framework for developing platform independent applications
+
+    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+
+    This framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    For the licensing terms refer to the file 'LICENSE'.
+ ***************************************************************************/
+
+#ifndef _DK_SDU_MIP__BASE_IO__PUSH_INTERFACE_H
+#define _DK_SDU_MIP__BASE_IO__PUSH_INTERFACE_H
+
+#include <base/io/IOException.h>
+#include <base/Primitives.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+/**
+  Low-level push interface for in-memory IO.
+  
+  @short Push interface
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.0
+*/
+
+class PushInterface {
+public:
+
+  /**
+    Forces any buffered bytes to be written out. This method is ignored by
+    unbuffered streams.
+  */
+  virtual void flush() /*throw(...)*/;
+  
+  /**
+    Pushes the specified number of bytes onto the stream.
+    
+    @param buffer The buffer containing the bytes to be pushed.
+    @param size The number of bytes to be pushed.
+    @return The number of bytes pushed.
+  */
+  virtual unsigned int push(const uint8* buffer, unsigned int size) /*throw(...)*/ = 0;
+  
+  /**
+    This method should be invoked when the end has been reached. This method may
+    be ignored by some implementations.
+  */
+  virtual void pushEnd() /*throw(...)*/;
+};
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+
+#endif

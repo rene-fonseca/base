@@ -18,6 +18,7 @@
 #include <base/OperatingSystem.h>
 #include <base/OutOfDomain.h>
 #include <base/NotSupported.h>
+#include <base/concurrency/Event.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -34,6 +35,8 @@ private:
 
   /** Handle to the sound input device. */
   OperatingSystem::Handle handle;
+  /** Event. */
+  Event event;
 
   class SoundInputStreamHelper;
 public:

@@ -14,8 +14,13 @@
 #include <base/sound/SoundInputStream.h>
 #include <base/UnexpectedFailure.h>
 #include <base/io/IOException.h>
+#include <base/string/FormatOutputStream.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  #define NO_STRICT
+  // I don't get it: in STRICT mode handles are of type int but in NO_STRICT
+  // mode the handles are of size void*. This is a problem on 64 bit platforms
+  // where int and void* may be of different sizes.
   #include <windows.h>
 #elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
   #include <sys/types.h> // open
@@ -48,23 +53,24 @@ public:
 };
 #endif // win32
 
-SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned channels) throw(OutOfDomain, NotSupported) {
+SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int channels) throw(OutOfDomain, NotSupported) {
   assert(channels > 0, OutOfDomain());
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   WAVEFORMATEX format;
   clear(format);
   format.wFormatTag = WAVE_FORMAT_PCM;
   format.nChannels = channels;
-  format.nSamplesPerSec = sampleRate;
+  format.nSamplesPerSec = samplingRate;
   format.wBitsPerSample = 16;
   format.nBlockAlign = channels * format.wBitsPerSample/8;
-  format.nAvgBytesPerSec = sampleRate * format.nBlockAlign;
+  format.nAvgBytesPerSec = samplingRate * format.nBlockAlign;
 
-  unsigned int result = ::waveInOpen(&handle, WAVE_MAPPER, &format, &SoundInputStreamHelper::callback, 0, CALLBACK_FUNCTION);
-  assert(result == MMSYSERR_NOERROR, NotSupported());
+  unsigned int result = ::waveInOpen((HWAVEIN*)&handle, WAVE_MAPPER, &format, (DWORD)event.getHandle(), 0, CALLBACK_EVENT);
+  assert(result == MMSYSERR_NOERROR, NotSupported("Cannot open device"));
+  event.reset();
 #else
   handle = ::open("/dev/audio", O_RDONLY);
-  assert(handle != -1, NotSupported());
+  assert(handle != OperatingSystem::INVALID_HANDLE, NotSupported());
 
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     int format = AFMT_S16_NE;
@@ -154,7 +160,7 @@ unsigned int SoundInputStream::getPosition() const throw() {
   MMTIME time;
   clear(time);
   time.wType = TIME_SAMPLES;
-  ::waveInGetPosition(handle, &time, sizeof(time));
+  ::waveInGetPosition((HWAVEIN)handle, &time, sizeof(time));
   assert(time.wType == TIME_SAMPLES, UnexpectedFailure());
   return time.u.sample;
 #else
@@ -170,7 +176,8 @@ unsigned int SoundInputStream::getPosition() const throw() {
 
 void SoundInputStream::resume() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ::waveInStart(handle);
+  ::waveInStart((HWAVEIN)handle);
+  event.reset();
 #else
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     reset();
@@ -186,7 +193,8 @@ void SoundInputStream::resume() throw() {
 
 void SoundInputStream::pause() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ::waveInStop(handle);
+  ::waveInStop((HWAVEIN)handle);
+  event.reset();
 #else
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
@@ -201,7 +209,7 @@ void SoundInputStream::pause() throw() {
 
 void SoundInputStream::reset() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ::waveInReset(handle);
+  ::waveInReset((HWAVEIN)handle);
 #else
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     assert(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0), UnexpectedFailure());
@@ -222,17 +230,18 @@ unsigned int SoundInputStream::read(void* buffer, unsigned int size) throw() {
   header.lpData = pointer_cast<LPSTR>(buffer);
   header.dwBufferLength = size;
 
-  unsigned int result = ::waveInPrepareHeader(handle, &header, sizeof(header));
+  unsigned int result = ::waveInPrepareHeader((HWAVEIN)handle, &header, sizeof(header));
   assert(result == MMSYSERR_NOERROR, UnexpectedFailure());
 
-  result = ::waveInAddBuffer(handle, &header, sizeof(header));
+  result = ::waveInAddBuffer((HWAVEIN)handle, &header, sizeof(header));
   assert(result == MMSYSERR_NOERROR, UnexpectedFailure());
 
-  // FIXME
   do {
+    event.wait();
+    event.reset();
   } while ((header.dwFlags & WHDR_DONE) == 0);
 
-  result = ::waveInUnprepareHeader(handle, &header, sizeof(header));
+  result = ::waveInUnprepareHeader((HWAVEIN)handle, &header, sizeof(header));
   assert(result == MMSYSERR_NOERROR, UnexpectedFailure());
 
   return header.dwBytesRecorded;
@@ -255,7 +264,7 @@ unsigned int SoundInputStream::read(void* buffer, unsigned int size) throw() {
 SoundInputStream::~SoundInputStream() throw() {
   reset();
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ::waveInClose(handle);
+  ::waveInClose((HWAVEIN)handle);
 #else
   ::close(handle);
 #endif

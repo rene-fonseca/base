@@ -14,8 +14,13 @@
 #include <base/sound/SoundOutputStream.h>
 #include <base/UnexpectedFailure.h>
 #include <base/io/IOException.h>
+#include <base/string/FormatOutputStream.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  #define NO_STRICT
+  // I don't get it: in STRICT mode handles are of type int but in NO_STRICT
+  // mode the handles are of size void*. This is a problem on 64 bit platforms
+  // where int and void* may be of different sizes.
   #include <windows.h>
 #elif (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__UNIX)
   #include <sys/types.h> // open
@@ -48,23 +53,24 @@ public:
 };
 #endif // win32
 
-SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned channels) throw(OutOfDomain, NotSupported) {
+SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int channels) throw(OutOfDomain, NotSupported) {
   assert(channels > 0, OutOfDomain());
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   WAVEFORMATEX format;
   clear(format);
   format.wFormatTag = WAVE_FORMAT_PCM;
   format.nChannels = channels;
-  format.nSamplesPerSec = sampleRate;
+  format.nSamplesPerSec = samplingRate;
   format.wBitsPerSample = 16;
   format.nBlockAlign = channels * format.wBitsPerSample/8;
-  format.nAvgBytesPerSec = sampleRate * format.nBlockAlign;
+  format.nAvgBytesPerSec = samplingRate * format.nBlockAlign;
 
-  unsigned int result = waveOutOpen(&handle, WAVE_MAPPER, &format, &SoundOutputStreamHelper::callback, 0, CALLBACK_FUNCTION);
+  unsigned int result = waveOutOpen((HWAVEOUT*)&handle, WAVE_MAPPER, &format, (DWORD)event.getHandle(), 0, CALLBACK_EVENT);
   assert(result == MMSYSERR_NOERROR, NotSupported());
+  event.reset();
 #else
   handle = ::open("/dev/audio", O_WRONLY);
-  assert(handle != -1, NotSupported());
+  assert(handle != OperatingSystem::INVALID_HANDLE, NotSupported());
 
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
@@ -128,7 +134,7 @@ unsigned int SoundOutputStream::getPosition() const throw() {
   MMTIME time;
   clear(time);
   time.wType = TIME_SAMPLES;
-  ::waveOutGetPosition(handle, &time, sizeof(time));
+  ::waveOutGetPosition((HWAVEOUT)handle, &time, sizeof(time));
   assert(time.wType == TIME_SAMPLES, UnexpectedFailure());
   return time.u.sample;
 #else
@@ -144,6 +150,7 @@ unsigned int SoundOutputStream::getPosition() const throw() {
 
 void SoundOutputStream::resume() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  event.reset();
 #else
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
@@ -154,7 +161,8 @@ void SoundOutputStream::resume() throw() {
 
 void SoundOutputStream::reset() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ::waveOutReset(handle);
+  ::waveOutReset((HWAVEOUT)handle);
+  event.reset();
 #else
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
     assert(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0), UnexpectedFailure()); // should never fail
@@ -171,16 +179,18 @@ void SoundOutputStream::wait() throw() {
   header.lpData = 0;
   header.dwBufferLength = 0;
 
-  unsigned int result = ::waveOutPrepareHeader(handle, &header, sizeof(header));
+  unsigned int result = ::waveOutPrepareHeader((HWAVEOUT)handle, &header, sizeof(header));
   assert(result == MMSYSERR_NOERROR, UnexpectedFailure());
 
-  result = ::waveOutWrite(handle, &header, sizeof(header));
+  result = ::waveOutWrite((HWAVEOUT)handle, &header, sizeof(header));
   assert(result == MMSYSERR_NOERROR, UnexpectedFailure());
 
   do {
+    event.wait();
+    event.reset();
   } while ((header.dwFlags & WHDR_DONE) == 0);
 
-  result = ::waveOutUnprepareHeader(handle, &header, sizeof(header));
+  result = ::waveOutUnprepareHeader((HWAVEOUT)handle, &header, sizeof(header));
   assert(result == MMSYSERR_NOERROR, UnexpectedFailure());
 #else
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__LINUX)
@@ -195,13 +205,13 @@ unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) thr
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   WAVEHDR header;
   clear(header);
-  header.lpData = pointer_cast<LPSTR>(buffer);
+  header.lpData = pointer_cast<char*>(const_cast<void*>(buffer)); // do not change buffer content
   header.dwBufferLength = size;
 
-  unsigned int result = ::waveOutPrepareHeader(handle, &header, sizeof(header));
+  unsigned int result = ::waveOutPrepareHeader((HWAVEOUT)handle, &header, sizeof(header));
   assert(result == MMSYSERR_NOERROR, UnexpectedFailure());
 
-  result = ::waveOutWrite(handle, &header, sizeof(header));
+  result = ::waveOutWrite((HWAVEOUT)handle, &header, sizeof(header));
   assert(result == MMSYSERR_NOERROR, UnexpectedFailure());
 
   do {
@@ -209,7 +219,7 @@ unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) thr
     event.reset();
   } while ((header.dwFlags & WHDR_DONE) == 0);
 
-  result = ::waveOutUnprepareHeader(handle, &header, sizeof(header));
+  result = ::waveOutUnprepareHeader((HWAVEOUT)handle, &header, sizeof(header));
   assert(result == MMSYSERR_NOERROR, UnexpectedFailure());
 
   return header.dwBytesRecorded;
@@ -232,7 +242,7 @@ unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) thr
 SoundOutputStream::~SoundOutputStream() throw() {
   reset();
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ::waveOutClose(handle);
+  ::waveOutClose((HWAVEOUT)handle);
 #else
   ::close(handle);
 #endif // flavour

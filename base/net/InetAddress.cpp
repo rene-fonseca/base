@@ -79,7 +79,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
   hint.ai_family = PF_UNSPEC;
 
   struct addrinfo* ai;
-  if (getaddrinfo((const char*)name, NULL, &hint, &ai) != 0) { // MT-level is safe
+  if (getaddrinfo(name.getElements(), NULL, &hint, &ai) != 0) { // MT-level is safe
     throw HostNotFound("Unable to lookup host by name");
   }
 
@@ -107,26 +107,26 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
   struct hostent* hp;
 
   #if defined(__win32__)
-    if (!(hp = gethostbyname((const char*)name))) { // MT-safe
+    if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
       throw HostNotFound("Unable to lookup host by name");
     }
   #elif defined(__sgi__) || defined(__solaris__)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
-    if (!(hp = gethostbyname_r((const char*)name, &h, buffer, sizeof(buffer), &error))) {
+    if (!(hp = gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &error))) {
       throw HostNotFound("Unable to lookup host by name");
     }
   #elif defined(__linux__)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
-    if (gethostbyname_r((const char*)name, &h, buffer, sizeof(buffer), &hp, &error)) {
+    if (gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &hp, &error)) {
       throw HostNotFound("Unable to lookup host by name");
     }
   #else
     #warning gethostbyname is not MT-safe
-    if (!(hp = gethostbyname((const char*)name))) {
+    if (!(hp = gethostbyname(name.getElements())) {
       throw HostNotFound("Unable to lookup host by name");
     }
   #endif
@@ -149,20 +149,20 @@ InetAddress::InetAddress(const char* addr, Family family) throw(NetworkException
 InetAddress::InetAddress(const String& addr) throw(InvalidFormat) {
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   struct in_addr temp;
-  if (inet_pton(AF_INET, addr.getBytes(), &temp) > 0) { // try IPv4 format - MT-level is safe
+  if (inet_pton(AF_INET, addr.getElements(), &temp) > 0) { // try IPv4 format - MT-level is safe
     // make IPv4-mapped IPv6 address (network byte order)
     ((uint32_t*)(&address))[0] = 0x00000000;
     ((uint32_t*)(&address))[1] = 0x00000000;
     ((uint32_t*)(&address))[2] = htonl(0x0000ffff);
     ((uint32_t*)(&address))[3] = ((uint32_t*)(&temp))[0]; // temp is in network byte order
-  } else if (inet_pton(AF_INET6, addr.getBytes(), &address) > 0) { // try IPv6 format - MT-level is safe
+  } else if (inet_pton(AF_INET6, addr.getElements(), &address) > 0) { // try IPv6 format - MT-level is safe
     // IPv6 address already copied to address field
   } else {
     throw InvalidFormat("Not a valid IP address");
   }
 #else
   struct in_addr temp;
-  if ((temp.s_addr = inet_addr(addr.getBytes())) == -1) { // MT-level is safe???
+  if ((temp.s_addr = inet_addr(addr.getElements())) == -1) { // MT-level is safe???
     throw InvalidFormat("Not a valid IPv4 address");
   }
   ((uint32_t*)(&address))[0] = ((uint32_t*)(&temp))[0];

@@ -50,11 +50,11 @@ String FileSystem::getCurrentFolder() throw(FileSystemException) {
 
 void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException) {
 #if defined(__win32__)
-  if (!SetCurrentDirectory(path)) {
+  if (!SetCurrentDirectory(path.getElements())) {
     throw FileSystemException("Unable to set current folder");
   }
 #else // __unix__
-  if (::chdir(path)) {
+  if (::chdir(path.getElements())) {
     throw FileSystemException("Unable to set current folder");
   }
 #endif
@@ -62,12 +62,12 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
 
 bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 #if defined(__win32__)
-  DWORD result = GetFileAttributes(path);
+  DWORD result = GetFileAttributes(path.getElements());
   return (result != (DWORD)(-1)) && (result & FILE_ATTRIBUTE_DIRECTORY == 0);
 #else
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
-    int result = stat64(path, &status);
+    int result = stat64(path.getElements(), &status);
     switch (result) {
     case 0:
       if (S_ISREG(status.st_mode)) {
@@ -81,7 +81,7 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
     }
   #else
     struct stat status;
-    int result = stat(path, &status);
+    int result = stat(path.getElements(), &status);
     switch (result) {
     case 0:
       if (S_ISREG(status.st_mode)) {
@@ -99,12 +99,12 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 
 bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
 #if defined(__win32__)
-  DWORD result = GetFileAttributes(path);
+  DWORD result = GetFileAttributes(path.getElements());
   return (result != (DWORD)(-1)) && (result & FILE_ATTRIBUTE_DIRECTORY != 0);
 #else
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
-    int result = stat64(path, &status);
+    int result = stat64(path.getElements(), &status);
     switch (result) {
     case 0:
       if (S_ISDIR(status.st_mode)) {
@@ -118,7 +118,7 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
     }
   #else
     struct stat status;
-    int result = stat(path, &status);
+    int result = stat(path.getElements(), &status);
     switch (result) {
     case 0:
       if (S_ISDIR(status.st_mode)) {
@@ -137,11 +137,11 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
 void FileSystem::removeFile(const String& path) throw(FileSystemException) {
 #if defined(__win32__)
 //  SetFileAttributes(file, FILE_ATTRIBUTE_NORMAL);
-  if (!DeleteFile(path)) {
+  if (!DeleteFile(path.getElements())) {
     throw FileSystemException("Unable to remove file");
   }
 #else // __unix__
-  if (unlink(path)) {
+  if (unlink(path.getElements())) {
     throw FileSystemException("Unable to remove file");
   }
 #endif
@@ -149,11 +149,11 @@ void FileSystem::removeFile(const String& path) throw(FileSystemException) {
 
 void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
 #if defined(__win32__)
-  if (!RemoveDirectory(path)) {
+  if (!RemoveDirectory(path.getElements())) {
     throw FileSystemException("Unable to remove folder");
   }
 #else // __unix__
-  if (rmdir(path)) {
+  if (rmdir(path.getElements())) {
     throw FileSystemException("Unable to remove file");
   }
 #endif
@@ -161,11 +161,11 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
 
 void FileSystem::makeFolder(const String& path) throw(FileSystemException) {
 #if defined(__win32__)
-  if (!CreateDirectory(path, NULL)) { // use default security descriptor
+  if (!CreateDirectory(path.getElements(), NULL)) { // use default security descriptor
     throw FileSystemException("Unable to make folder");
   }
 #else // __unix__
-  if (mkdir(path, 0)) {
+  if (mkdir(path.getElements(), 0)) {
     throw FileSystemException("Unable to make folder");
   }
 #endif

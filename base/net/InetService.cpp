@@ -17,18 +17,18 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 unsigned short InetService::getByName(const String& name, const String& protocol) throw() {
   struct servent* sp;
 #if defined(__win32__)
-  sp = getservbyname((const char*)name, (const char*)protocol); // MT-safe
+  sp = getservbyname(name.getElements(), protocol.getElements()); // MT-safe
 #elif defined(__sgi__) || defined(__solaris__)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
-  sp = getservbyname_r((const char*)name, (const char*)protocol, &result, buffer, sizeof(buffer));
+  sp = getservbyname_r(name.getElements(), protocol.getElements(), &result, buffer, sizeof(buffer));
 #elif defined(__linux__)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
-  getservbyname_r((const char*)name, (const char*)protocol, &result, buffer, sizeof(buffer), &sp);
+  getservbyname_r(name.getElements(), protocol.getElements(), &result, buffer, sizeof(buffer), &sp);
 #else
   #warning Using MT-unsafe getservbyname
-  sp = getservbyname((const char*)name, (const char*)protocol);
+  sp = getservbyname(name.getElements(), protocol.getElements());
 #endif
   return sp ? ntohs(sp->s_port) : 0;
 }
@@ -36,24 +36,24 @@ unsigned short InetService::getByName(const String& name, const String& protocol
 String InetService::getByPort(unsigned short port, const String& protocol) throw() {
   struct servent* sp;
 #if defined(__win32__)
-  sp = getservbyport(htons(port), (const char*)protocol); // MT-safe
+  sp = getservbyport(htons(port), protocol.getElements()); // MT-safe
 #elif defined(__sgi__) || defined(__solaris__)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
-  sp = getservbyport_r(htons(port), (const char*)protocol, &result, buffer, sizeof(buffer));
+  sp = getservbyport_r(htons(port), protocol.getElements(), &result, buffer, sizeof(buffer));
 #elif defined(__linux__)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
-  getservbyport_r(htons(port), (const char*)protocol, &result, buffer, sizeof(buffer), &sp);
+  getservbyport_r(htons(port), protocol.getElements(), &result, buffer, sizeof(buffer), &sp);
 #else
   #warning Using MT-unsafe getservbyport
-  sp = getservbyport(htons(port), (const char*)protocol);
+  sp = getservbyport(htons(port), protocol.getElements());
 #endif
   return sp ? String(sp->s_name) : String();
 }
 
 InetService::InetService(const String& name, const String& protocol) throw(ServiceNotFound) {
-  if ((port = getByName(name, protocol)) == 0) {
+  if ((port = getByName(name.getElements(), protocol.getElements())) == 0) {
     throw ServiceNotFound("Unable to resolve service by name");
   }
   this->name = name;
@@ -61,7 +61,7 @@ InetService::InetService(const String& name, const String& protocol) throw(Servi
 }
 
 InetService::InetService(unsigned short port, const String& protocol) throw(ServiceNotFound) {
-  if ((name = getByPort(port, protocol)) == "") {
+  if ((name = getByPort(port, protocol.getElements())) == "") {
     throw ServiceNotFound("Unable to resolve service by port");
   }
   this->port = port;

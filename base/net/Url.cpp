@@ -57,7 +57,7 @@ void Url::parse(const String& url) throw() {
     ++index;
   }
 
-  while ((last > index) && (url[last] == ' ')) { // ignore suffix spaces
+  while ((last > index) && (url[index] == ' ')) { // ignore suffix spaces
     --last;
   }
 

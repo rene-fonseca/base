@@ -50,19 +50,19 @@ static void buildExternalTree(xmlDocPtr doc, XMLNode* n, xmlNodePtr p, bool root
   xmlNodePtr node;
 
   if (root) {
-    node = doc->root = xmlNewDocNode(doc, 0, (xmlChar*)n->getName().getBytes(), (xmlChar*)n->getContent().getBytes());
+    node = doc->root = xmlNewDocNode(doc, 0, (xmlChar*)n->getName().getElements(), (xmlChar*)n->getContent().getElements());
   } else {
-    node = xmlNewChild(p, 0, (xmlChar*)n->getName().getBytes(),(xmlChar*)n->getContent().getBytes());
+    node = xmlNewChild(p, 0, (xmlChar*)n->getName().getElements(),(xmlChar*)n->getContent().getElements());
   }
 
   if (n->isContent()) {
     node->type = XML_TEXT_NODE;
-    xmlNodeSetContentLen(node, (const xmlChar*)n->getContent().getBytes(), n->getContent().getLength());
+    xmlNodeSetContentLen(node, (const xmlChar*)n->getContent().getElements(), n->getContent().getLength());
   }
 
   List<XMLProperty> props = n->getProperties();
 //  for(curprop = props.begin(); curprop != props.end(); ++curprop) {
-//    xmlSetProp(node, (xmlChar*)(*curprop)->getName().getBytes(), (xmlChar*)(*curprop)->getValue().getBytes());
+//    xmlSetProp(node, (xmlChar*)(*curprop)->getName().getElements(), (xmlChar*)(*curprop)->getValue().getElements());
 //  }
 
   List<XMLNode> children = n->getChildren();
@@ -143,7 +143,7 @@ void XMLTree::release() throw() {
 
 bool XMLTree::read(const String& buffer) throw(MemoryException) {
   release();
-  xmlDocPtr doc = xmlParseMemory((char*)buffer.getBytes(), buffer.getLength()); // TAG: wrong type of first arg - should be const
+  xmlDocPtr doc = xmlParseMemory((char*)buffer.getElements(), buffer.getLength()); // TAG: wrong type of first arg - should be const
 
   if (!doc) { // check for error
     return false;

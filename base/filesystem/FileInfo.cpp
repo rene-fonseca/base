@@ -24,7 +24,7 @@ FileInfo::FileInfo(const String& path) throw(FileSystemException) : path(path) {
   static const long long fileTimeOffset = 0x0000001c1a021060LL; // TAG: validate this
 
   WIN32_FIND_DATA buffer;
-  HANDLE handle = FindFirstFile(path, &buffer);
+  HANDLE handle = FindFirstFile(path.getElements(), &buffer);
   if ((handle == INVALID_HANDLE_VALUE) || (buffer.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
     throw FileSystemException("Not a file");
   }
@@ -41,12 +41,12 @@ FileInfo::FileInfo(const String& path) throw(FileSystemException) : path(path) {
 #else // __unix__
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 buffer;
-    if (stat64(path, &buffer) || (!S_ISREG(buffer.st_mode))) {
+    if (stat64(path.getElements(), &buffer) || (!S_ISREG(buffer.st_mode))) {
       throw FileSystemException("Not a file");
     }
   #else
     struct stat buffer;
-    if (stat(path, &buffer) || (!S_ISREG(buffer.st_mode))) {
+    if (stat(path.getElements(), &buffer) || (!S_ISREG(buffer.st_mode))) {
       throw FileSystemException("Not a file");
     }
   #endif

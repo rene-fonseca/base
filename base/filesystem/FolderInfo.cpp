@@ -27,7 +27,7 @@ FolderInfo::FolderInfo(const String& path) throw(FileSystemException) : path(pat
   static const long long fileTimeOffset = 0x0000001c1a021060LL; // TAG: validate this
 
   WIN32_FIND_DATA buffer;
-  HANDLE handle = FindFirstFile(path + "\\*", &buffer);
+  HANDLE handle = FindFirstFile(path.getElements() + "\\*", &buffer);
   if ((handle == INVALID_HANDLE_VALUE) || !(buffer.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
     throw FileSystemException("Not a folder");
   }
@@ -39,12 +39,12 @@ FolderInfo::FolderInfo(const String& path) throw(FileSystemException) : path(pat
 #else // __unix__
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 buffer;
-    if (stat64(path, &buffer) || (!S_ISDIR(buffer.st_mode))) {
+    if (stat64(path.getElements(), &buffer) || (!S_ISDIR(buffer.st_mode))) {
       throw FileSystemException("Not a folder");
     }
   #else
     struct stat buffer;
-    if (stat(path, &buffer) || (!S_ISDIR(buffer.st_mode))) {
+    if (stat(path.getElements(), &buffer) || (!S_ISDIR(buffer.st_mode))) {
       throw FileSystemException("Not a folder");
     }
   #endif
@@ -64,7 +64,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   HANDLE handle;
   WIN32_FIND_DATA entry;
 
-  handle = FindFirstFile(path + "\\*", &entry);
+  handle = FindFirstFile(path.getElements() + "\\*", &entry);
   if (handle == INVALID_HANDLE_VALUE) {
     if (GetLastError() != ERROR_NO_MORE_FILES) {
       throw FileSystemException("Unable to read entries of folder");
@@ -91,7 +91,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     DIR* directory;
 
-    if ((directory = ::opendir(path)) == 0) {
+    if ((directory = ::opendir(path.getElements())) == 0) {
       throw FileSystemException("Unable to read entries of folder");
     }
 
@@ -119,7 +119,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   #else
     DIR* directory;
 
-    if ((directory = ::opendir(path)) == 0) {
+    if ((directory = ::opendir(path.getElements())) == 0) {
       throw FileSystemException("Unable to read entries of folder");
     }
 

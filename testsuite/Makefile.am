@@ -14,6 +14,8 @@
 DEFS =
 AUTOMAKE_OPTIONS = 1.4 foreign nostdinc dist-bzip2 dist-zip
 
+SUBDIRS = ui
+
 LIBS=-lbase
 
 bin_PROGRAMS = Array

@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/Application.h>
 #include <base/TypeInfo.h>
 #include <base/SystemLogger.h>
@@ -19,7 +20,7 @@
 #include <base/UnexpectedFailure.h>
 #include <stdlib.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #include <windows.h>
   #undef ERROR // protect against the evil programmers
 #else // unix
@@ -34,10 +35,30 @@ public:
 
   static void terminationExceptionHandler() {
     StringOutputStream stream;
-    stream << MESSAGE("Internal error: exception handling abandoned.") << FLUSH;
+    const Type exceptionType = Exception::getExceptionType();
+    if (exceptionType.isInitialized()) {
+      try {
+        throw;
+      } catch(Exception& e) {
+        stream << MESSAGE("Internal error: uncaught exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
+        if (e.getType().isInitialized()) {
+          stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
+        }
+        if (e.getMessage()) {
+          stream << MESSAGE(" with message '") << e.getMessage() << '\'';
+        }
+        stream << FLUSH;
+      } catch(...) {
+        stream << MESSAGE("Internal error: uncaugth and unsupported exception '") << TypeInfo::getTypename(exceptionType) << MESSAGE("' was raised.") << FLUSH;
+      }
+    } else {
+      stream << MESSAGE("Internal error: explicit termination.") << FLUSH;
+    }
+    ferr << stream.getString() << ENDL; // TAG: use appropriate error stream
+#if defined(_DK_SDU_MIP__BASE__DEBUG)
+    // TAG: need runtime debug mode support (e.g. bool Trace::debug or with level support)
     Trace::message(stream.getString().getElements());
-    // TAG: only if ferr is valid
-    ferr << stream.getString() << ENDL;
+#endif
     exit(Application::EXIT_CODE_ERROR); // TAG: is abort() better
   }
 
@@ -57,7 +78,9 @@ public:
     } catch(...) {
       stream << MESSAGE("Internal error: unsupported exception was raised in violation with exception specification.") << FLUSH;
     }
+#if defined(_DK_SDU_MIP__BASE__DEBUG)
     Trace::message(stream.getString().getElements());
+#endif
     // TAG: either use SystemLogger or ferr but not both
     SystemLogger::write(SystemLogger::ERROR, stream.getString().getElements());
     // TAG: only if ferr is valid
@@ -66,7 +89,7 @@ public:
   }
 
   /* The application signal handler. */
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 
   static BOOL WINAPI signalHandler(DWORD signal) throw() {
     switch (signal) {
@@ -146,6 +169,7 @@ public:
       break;
     case SIGCHLD: // child state changed
       break;
+#if defined(SIGPWR)
     case SIGPWR: // power fail or restart
       if (Thread::getThread()->isMainThread()) {
         SystemLogger::write(SystemLogger::INFORMATION, MESSAGE("Power signal."));
@@ -154,6 +178,7 @@ public:
         }
       }
       break;
+#endif
     }
   }
 
@@ -169,7 +194,7 @@ void Application::initialize() throw() {
   ++singleton;
 
   // install signal handler
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!::SetConsoleCtrlHandler((PHANDLER_ROUTINE)ApplicationImpl::signalHandler, TRUE)) {
     throw UnexpectedFailure("Unable to install signal handler", this);
   }
@@ -301,7 +326,7 @@ namespace internal {
 };
 
 Application::~Application() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 //   if (::DestroyWindow(windowHandle) == 0) {
 //     // failed but we do not care
 //   }

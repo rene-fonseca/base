@@ -61,7 +61,7 @@ String Version::getBanner() const throw() {
 // entry point of library when run as an ordinary application
 extern "C" void libbase_entry() {
   // exit without segmentation fault
-  volatile asm(
+  /*volatile*/ asm(
       "movl   $1,%eax\n\t" // system call number (sys_exit)
       "movl   $1,%ebx\n\t" // exit code
       "int    $0x80\n\n" // call kernel

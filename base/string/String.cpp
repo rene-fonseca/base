@@ -217,32 +217,38 @@ String<LOCK>& String<LOCK>::insert(unsigned int index, char ch) throw(MemoryExce
 template<class LOCK>
 String<LOCK>& String<LOCK>::insert(unsigned int index, const String& str) throw(MemoryException) {
 // problem if insert string into itself - memcpy.... -> memmove
-  setLength(getLength() + str.getLength());
+  int length = getLength();
+  int strlength = str.getLength();
+  setLength(length + strlength);
   char* buffer = getMutableBuffer();
-  if (index >= getLength()) {
+  if (index >= length) {
     // insert section at end of string
-    memcpy(buffer + getLength(), str.getReadOnlyBuffer(), str.getLength());
+    memcpy(buffer + length, str.getReadOnlyBuffer(), strlength);
   } else {
     // insert section in middle or beginning of string
-    memmove(buffer + index + str.getLength(), buffer + index, str.getLength());
-    memcpy(buffer + index, str.getReadOnlyBuffer(), str.getLength());
+    memmove(buffer + index + strlength, buffer + index, strlength);
+    memcpy(buffer + index, str.getReadOnlyBuffer(), strlength);
   }
   return *this;
 }
 
 template<class LOCK>
 String<LOCK>& String<LOCK>::insert(unsigned int index, const char* str) throw(MemoryException) {
-/*
-  setLength(getLength() + str.getLength());
+  int length = getLength();
+  int strlength = getLengthOfString(str);
+  if (strlength < 0) { // maximum length exceeded
+    throw MemoryException();
+  }
+  setLength(length + strlength);
   char* buffer = getMutableBuffer();
-  if (index >= getLength()) {
+  if (index >= length) {
     // insert section at end of string
-    memcpy(buffer + getLength(), str.getReadOnlyBuffer(), str.getLength());
+    memcpy(buffer + length, str, strlength);
   } else {
     // insert section in middle or beginning of string
-    memmove(buffer + index + str.getLength(), buffer + index, str.getLength());
-    memcpy(buffer + index, str.getReadOnlyBuffer(), str.getLength());
-  }*/
+    memmove(buffer + index + strlength, buffer + index, strlength);
+    memcpy(buffer + index, str, strlength);
+  }
   return *this;
 }
 
@@ -414,7 +420,7 @@ int String<LOCK>::indexOf(char ch, unsigned int start) const throw() {
   }
   const char* buffer = getReadOnlyBuffer();
   const char* p = &buffer[start]; // go to start location
-  while (*p || (*p != ch)) { // until terminator or found
+  while ((*p != TERMINATOR) && (*p != ch)) { // until terminator or found
     ++p;
   }
   if (*p == ch) {
@@ -426,35 +432,37 @@ int String<LOCK>::indexOf(char ch, unsigned int start) const throw() {
 
 template<class LOCK>
 int String<LOCK>::indexOf(const String& str, unsigned int start) const throw() {
-  if ((start >= getLength()) || (str.isEmpty()) || (str.getLength() > getLength())) {
+  int length = getLength();
+  int sublength = str.getLength();
+
+  if ((start >= length) || (sublength == 0) || (sublength > length)) {
     return NOTFOUND;
   }
 
   const char* substring = str.getReadOnlyBuffer();
   const char* buffer = getReadOnlyBuffer();
   const char* begin = &buffer[start]; // beginning of current substring
-  const char* last = &begin[str.getLength() - 1]; // end of current substring - last >= begin >= buffer
+  const char* last = &begin[sublength - 1]; // end of current substring - last >= begin >= buffer
 
-  // calculate hash of strings
+  // calculate hash of prefix of strings
   unsigned int hash = 0;
   unsigned int mask = 1;
   unsigned int match = 0;
   const char* p = substring;
   const char* q = begin;
-  unsigned int count = str.getLength();
-  while (count--) {
+  while (q <= last) {
     hash = (128 * hash + *p++) % 16647143;
     match = (128 * match + *q++) % 16647143;
-    if (count > 0) {
+    if (q <= last) {
       mask = (128 * mask) % 16647143;
     }
   }
 
   // look for substring
-  count = getLength() - str.getLength() + 1; // number of characters left - minimum is 1
+  unsigned int count = length - sublength + 1; // number of characters left - minimum is 1
   while (true) {
     if (match == hash) { // possible substring found
-      if (memcmp(begin, substring, str.getLength()) == 0) {
+      if (memcmp(begin, substring, sublength) == 0) {
         return begin - buffer; // return index of substring
       }
     }
@@ -462,9 +470,8 @@ int String<LOCK>::indexOf(const String& str, unsigned int start) const throw() {
       break;
     }
     match = (match + 128 * 16647143 - mask * *begin) % 16647143;
-	  match = (match * 128 + *last) % 16647143;
+    match = (match * 128 + *(++last)) % 16647143;
     ++begin;
-    ++last;
   }
 
   return NOTFOUND;

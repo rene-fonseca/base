@@ -642,7 +642,7 @@ if test "x$ac_base_cxx_name" = "x"; then
   fi
 fi
 
-AC_MSG_CHECKING(identity of c++ compiler)
+AC_MSG_CHECKING(identity of C++ compiler)
 AC_MSG_RESULT([$ac_base_cxx_name $ac_base_cxx_major.$ac_base_cxx_minor ($ac_base_cxx_vendor)])
 
 
@@ -1118,8 +1118,8 @@ AC_BASE_EQUAL(${base_explicit_wide}, auto,
       AC_BASE_TRY_CXX_LINK(base_cv_wide_available, wide.c)dnl
     ),
     base_cv_wide_available)
-  AC_BASE_YES(base_cv_wide_available, AC_BASE_DEFINE_PRIVATE(WIDE)))
-AC_BASE_YES(base_explicit_wide, AC_BASE_DEFINE_PRIVATE(WIDE))
+  AC_BASE_YES(base_cv_wide_available, AC_BASE_DEFINE(WIDE)))
+AC_BASE_YES(base_explicit_wide, AC_BASE_DEFINE(WIDE))
 
 
 

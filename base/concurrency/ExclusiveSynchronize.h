@@ -70,7 +70,7 @@ public:
   /**
     Initializes the synchronization object.
 
-    @param obj The synchronize able object to be synchronized.
+    @param guard The synchronize able object to be synchronized.
   */
   explicit ExclusiveSynchronize(const GUARD& guard) throw();
 
@@ -83,7 +83,7 @@ public:
 };
 
 template<class GUARD>
-inline ExclusiveSynchronize<GUARD>::ExclusiveSynchronize(const GUARD& g) throw() : guard(g) {
+inline ExclusiveSynchronize<GUARD>::ExclusiveSynchronize(const GUARD& _guard) throw() : guard(_guard) {
   guard.exclusiveLock();
 }
 
@@ -108,14 +108,10 @@ public:
   /**
     Initializes the synchronization object.
 
-    @param obj The synchronize able object to be synchronized.
+    @param guard The synchronize able object to be synchronized.
   */
-  inline explicit ExclusiveSynchronize(const Unsafe& guard) throw() {}
-
-  /**
-    Releases the lock if not already released and destroys the synchronization object.
-  */
-  inline ~ExclusiveSynchronize() throw() {}
+  template<class POLY>
+  inline explicit ExclusiveSynchronize(const POLY& guard) throw() {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

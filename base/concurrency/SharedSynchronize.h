@@ -71,7 +71,7 @@ public:
   /**
     Initializes the synchronization object.
 
-    @param obj The synchronize able object to be synchronized.
+    @param guard The synchronize able object to be synchronized.
   */
   explicit SharedSynchronize(const GUARD& guard) throw();
 
@@ -84,7 +84,7 @@ public:
 };
 
 template<class GUARD>
-inline SharedSynchronize<GUARD>::SharedSynchronize(const GUARD& g) throw() : guard(g) {
+inline SharedSynchronize<GUARD>::SharedSynchronize(const GUARD& _guard) throw() : guard(_guard) {
   guard.sharedLock();
 }
 
@@ -109,14 +109,10 @@ public:
   /**
     Initializes the synchronization object.
 
-    @param obj The synchronize able object to be synchronized.
+    @param guard The synchronize able object to be synchronized.
   */
-  inline explicit SharedSynchronize(const Unsafe& guard) throw() {}
-
-  /**
-    Releases the lock if not already released and destroys the synchronization object.
-  */
-  inline ~SharedSynchronize() throw() {}
+  template<class POLY>
+  inline explicit SharedSynchronize(const POLY& guard) throw() {}
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -977,19 +977,32 @@ void WindowImpl::setIconTitle(const String& iconTitle) throw(UserInterfaceExcept
 
 void WindowImpl::setPosition(const Position& position) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  RECT rect;
-  ::GetWindowRect((HWND)drawableHandle, &rect);
-  assert(
-    ::MoveWindow(
-      (HWND)drawableHandle,
-      position.getX(),
-      position.getY(),
-      rect.right - rect.left + 1,
-      rect.bottom - rect.top + 1,
-      true // repaint
-    ),
-    UserInterfaceException(this)
-  );
+//   RECT rect;
+//   ::GetWindowRect((HWND)drawableHandle, &rect);
+//   assert(
+//     ::MoveWindow(
+//       (HWND)drawableHandle,
+//       position.getX(),
+//       position.getY(),
+//       rect.right - rect.left + 1,
+//       rect.bottom - rect.top + 1,
+//       true // repaint
+//     ),
+//     UserInterfaceException(this)
+//   );
+  if (position != this->position) {
+    assert(
+      ::MoveWindow(
+        (HWND)drawableHandle,
+        position.getX(),
+        position.getY(),
+        dimension.getWidth(),
+        dimension.getHeight(),
+        true // repaint
+      ),
+      UserInterfaceException(this)
+    );
+  }
 #else // unix
   XWindowChanges changes;
   changes.x = position.getX();
@@ -1005,19 +1018,32 @@ void WindowImpl::setPosition(const Position& position) throw(UserInterfaceExcept
 
 void WindowImpl::setDimension(const Dimension& dimension) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  RECT rect;
-  ::GetWindowRect((HWND)drawableHandle, &rect);
-  assert(
-    ::MoveWindow(
-      (HWND)drawableHandle,
-      rect.left,
-      rect.top,
-      dimension.getWidth(),
-      dimension.getHeight(),
-      true // repaint
-    ),
-    UserInterfaceException(this)
-  );
+  if (dimension != this->dimension) {
+    assert(
+      ::MoveWindow(
+        (HWND)drawableHandle,
+        position.getX(),
+        position.getY(),
+        dimension.getWidth(),
+        dimension.getHeight(),
+        true // repaint
+      ),
+      UserInterfaceException(this)
+    );
+  }
+//   RECT rect;
+//   ::GetWindowRect((HWND)drawableHandle, &rect);
+//   assert(
+//     ::MoveWindow(
+//       (HWND)drawableHandle,
+//       rect.left,
+//       rect.top,
+//       dimension.getWidth(),
+//       dimension.getHeight(),
+//       true // repaint
+//     ),
+//     UserInterfaceException(this)
+//   );
 #else // unix
   XWindowChanges changes;
   changes.width = dimension.getWidth();
@@ -1030,6 +1056,12 @@ void WindowImpl::setDimension(const Dimension& dimension) throw(UserInterfaceExc
   );
 #endif // flavor
 }
+
+// Region WindowImpl::getRegion() const throw(UserInterfaceException) {
+// #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+// #else // unix
+// #endif // flavor
+// }
 
 void WindowImpl::setRegion(const Position& position, const Dimension& dimension) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -1738,6 +1770,25 @@ bool WindowImpl::wait(unsigned int milliseconds) throw(UserInterfaceException) {
   return ::MsgWaitForMultipleObjects(0, 0, FALSE, INFINITE, QS_ALLEVENTS) != WAIT_TIMEOUT;
 #else // unix
   // TAG: wait with timeout
+#endif // flavor
+}
+
+bool WindowImpl::openDispatch() throw(UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  MSG msg;
+  while (::PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+    if (msg.message == WM_QUIT) {
+      return false;
+    } else {
+      // if (!::TranslateAccelerator(drawableHandle, table, &msg)) {
+      ::TranslateMessage(&msg);
+      ::DispatchMessage(&msg);
+      // }
+    }
+  }
+  return true;
+#else // unix
+  return true;
 #endif // flavor
 }
 

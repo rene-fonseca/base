@@ -124,6 +124,7 @@ section_HEADERS = \
   Interface.h \
   InvalidException.h \
   UnsignedInteger.h \
+  Literal.h \
   LongDouble.h \
   LongInteger.h \
   UnsignedLongInteger.h \
@@ -161,6 +162,7 @@ section_HEADERS = \
   UnexpectedFailure.h \
   ValidifiedResult.h \
   Version.h \
+  WideLiteral.h \
   OperatingSystem.h \
   SystemInformation.h \
   ProcessPreinitialization.h

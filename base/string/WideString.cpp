@@ -67,7 +67,7 @@ WideString::WideString(const char* string) throw(MultibyteException, MemoryExcep
     const char* current = string;
     size_t result = mbsrtowcs(0, &current, 0, &state);
 #else
-    size_t result = mbstowcs(0, &current, 0);
+    size_t result = mbstowcs(0, string, 0);
 #endif
     assert(result != size_t(-1), MultibyteException());
     assert(result <= MAXIMUM_LENGTH, MemoryException()); // maximum length exceeded
@@ -81,7 +81,7 @@ WideString::WideString(const char* string) throw(MultibyteException, MemoryExcep
     const char* current = string;
     size_t result = mbsrtowcs(elements->getElements(), &current, numberOfCharacters, &state);
 #else
-    size_t result = mbstowcs(elements->getElements(), &current, numberOfCharacters);
+    size_t result = mbstowcs(elements->getElements(), string, numberOfCharacters);
 #endif
   }
 }
@@ -96,7 +96,7 @@ WideString::WideString(const char* string, unsigned int maximum) throw(OutOfDoma
     const char* current = string;
     size_t result = mbsrtowcs(0, &current, maximum, &state);
 #else
-    size_t result = mbstowcs(0, &current, maximum);
+    size_t result = mbstowcs(0, string, maximum);
 #endif
     assert(result != size_t(-1), MultibyteException());
     assert(result <= MAXIMUM_LENGTH, MemoryException()); // maximum length exceeded
@@ -110,7 +110,7 @@ WideString::WideString(const char* string, unsigned int maximum) throw(OutOfDoma
     const char* current = string;
     size_t result = mbsrtowcs(elements->getElements(), &current, numberOfCharacters, &state);
 #else
-    size_t result = mbstowcs(elements->getElements(), &current, numberOfCharacters);
+    size_t result = mbstowcs(elements->getElements(), string, numberOfCharacters);
 #endif
   }
 }

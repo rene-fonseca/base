@@ -34,7 +34,6 @@ inline char* memmove(char* dest, const char* src, unsigned int count) {
 #endif
 
 #define NOTFOUND -1
-#define CAPACITY(desired) ((desired+GRANULARITY-1)/GRANULARITY*GRANULARITY)
 
 template<class LOCK>
 int String<LOCK>::getLengthOfString(const char* str) const throw() {
@@ -47,39 +46,31 @@ int String<LOCK>::getLengthOfString(const char* str) const throw() {
 
 template<class LOCK>
 void String<LOCK>::setLength(unsigned int length) throw(MemoryException) {
-  if (length != len) {
+  if (length != this->length()) {
     if (length > MAXIMUM_LENGTH) {
-      throw MemoryException();
+      throw MemoryException(); // choose better exception
     }
     char* buffer = getMutableBuffer(); // we are about to modify the buffer
-    len = length;
-    unsigned int requiredCapacity = CAPACITY(len + sizeof(TERMINATOR));
-    if ((requiredCapacity > getCapacity())) { // do we have to expand capacity
-      this->elements->setSize(requiredCapacity); // ok lets expand the buffer
-    }
-    // need something to reduce the buffer - must not conflict with ensuredCapacity
-    buffer[len] = TERMINATOR; // terminate string
+    elements->setSize(length + 1);
+    buffer[length] = TERMINATOR; // terminate string
   }
 }
 
 template<class LOCK>
 void String<LOCK>::createString(const char* buffer, unsigned int length, unsigned int capacity) throw(MemoryException) {
-  capacity = maximum(capacity, length + sizeof(TERMINATOR));
-  capacity = maximum(capacity, DEFAULT_CAPACITY);
-  this->elements = new ReferenceCountedAllocator<char>(capacity); // no granularity
-  len = length;
-  memcpy(this->elements->getElements(), buffer, len);
-  this->elements->getElements()[len] = TERMINATOR; // terminate
+  this->elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY); // no granularity
+  memcpy(this->elements->getElements(), buffer, this->length());
+  this->elements->getElements()[this->length()] = TERMINATOR; // terminate
 }
 
 template<class LOCK>
-String<LOCK>::String(unsigned int capacity) throw(MemoryException) : elements(new ReferenceCountedAllocator<char>()), len(0) {
+String<LOCK>::String(unsigned int capacity) throw(MemoryException) : elements(0) {
   createString(0, 0, capacity);
 }
 
 template<class LOCK>
-String<LOCK>::String(const StringLiteral& str) throw(MemoryException) : elements(new ReferenceCountedAllocator<char>()), len(0) {
-  unsigned int length = str.size - sizeof(TERMINATOR);
+String<LOCK>::String(const StringLiteral& str) throw(MemoryException) : elements(0) {
+  unsigned int length = str.size - 1;
   if (length > MAXIMUM_LENGTH) { // maximum length exceeded
     throw MemoryException();
   }
@@ -87,7 +78,7 @@ String<LOCK>::String(const StringLiteral& str) throw(MemoryException) : elements
 }
 
 template<class LOCK>
-String<LOCK>::String(const char* str) throw(MemoryException) : elements(new ReferenceCountedAllocator<char>()), len(0) {
+String<LOCK>::String(const char* str) throw(MemoryException) : elements(0) {
   if (str) { // is string proper (not empty)
     int length = getLengthOfString(str);
     if (length < 0) { // maximum length exceeded
@@ -100,7 +91,7 @@ String<LOCK>::String(const char* str) throw(MemoryException) : elements(new Refe
 }
 
 template<class LOCK>
-String<LOCK>::String(const char* str, unsigned int maximum) throw(MemoryException) : elements(new ReferenceCountedAllocator<char>()), len(0) {
+String<LOCK>::String(const char* str, unsigned int maximum) throw(MemoryException) : elements(0) {
   if (str) { // is string proper
     int length = getLengthOfString(str);
     if (length < 0) { // maximum length exceeded
@@ -116,32 +107,20 @@ template<class LOCK>
 String<LOCK>& String<LOCK>::operator=(const String& eq) throw() {
   if (&eq != this) { // protect against self assignment
     this->elements = eq.elements;
-    len = eq.len;
   }
   return *this;
 }
 
 template<class LOCK>
 void String<LOCK>::ensureCapacity(unsigned int capacity) throw(MemoryException) {
-  unsigned int minimum = CAPACITY(length() + sizeof(TERMINATOR));
-  capacity = CAPACITY(capacity);
-  if ((capacity > getCapacity()) && (capacity > minimum)) {
-    if (this->elements.isMultiReferenced()) { // do we have the elements for our self
-      this->elements = new ReferenceCountedAllocator<char>(*this->elements); // make copy of the elements
-    }
-    this->elements->setSize(capacity);
-  }
+  // no need to do copyOnWrite - or should we?
+  elements->ensureCapacity(capacity);
 }
 
 template<class LOCK>
-void String<LOCK>::optimizeCapacity() throw(MemoryException) {
-  unsigned int minimum = CAPACITY(length() + sizeof(TERMINATOR));
-  if (getCapacity() > minimum) { // can we reduce the capacity
-    if (this->elements.isMultiReferenced()) { // do we have the elements for our self
-      this->elements = new ReferenceCountedAllocator<char>(*this->elements); // make copy of the elements
-    }
-    this->elements->setSize(minimum);
-  }
+void String<LOCK>::optimizeCapacity() throw() {
+  // no need to do copyOnWrite - or should we?
+  elements->optimizeCapacity();
 }
 
 template<class LOCK>
@@ -559,18 +538,4 @@ FormatOutputStream& String<LOCK>::operator<<(FormatOutputStream& stream) const {
   SynchronizeShared();
   stream.addCharacterField(getReadOnlyBuffer(), length());
   return stream;
-}
-
-template<class LOCK>
-String<LOCK> operator+(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException) {
-  return String<LOCK>(left.length() + right.length()).append(left).append(right);
-}
-
-template<class LOCK>
-String<LOCK> operator-(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException) {
-  if (left.endsWith(right)) {
-    return left.substring(0, left.length() - right.length()); // return copy of left without suffix
-  } else {
-    return String<LOCK>(left); // return copy of left
-  }
 }

@@ -10,7 +10,7 @@
 #include <base/concurrency/Synchronize.h>
 #include <base/OutOfRange.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
-#include <base/mem/ReferenceCountedAllocator.h>
+#include <base/mem/ReferenceCountedCapacityAllocator.h>
 #include <base/string/FormatOutputStream.h>
 #include <limits.h>
 
@@ -87,12 +87,7 @@ private:
     Reference counted buffer holding NULL-terminated string. The array is
     guarantied to be non-empty when the string has been initialized.
   */
-  ReferenceCountedObjectPointer<ReferenceCountedAllocator<char> > elements;
-
-  /**
-    Length of the string.
-  */
-  unsigned int len;
+  ReferenceCountedObjectPointer<ReferenceCountedCapacityAllocator<char> > elements;
 protected:
 
   /**
@@ -161,9 +156,9 @@ public:
   String(const char* str, unsigned int maximum) throw(MemoryException);
 
   /**
-    Copy constructor.
+    Initializes string from other string.
   */
-  inline String(const String& copy) throw() : elements(copy.elements), len(copy.len) {}
+  inline String(const String& copy) throw() : elements(copy.elements) {}
 
   /**
     Assignment of string.
@@ -173,17 +168,17 @@ public:
   /**
     Returns the number of characters in the string.
   */
-  inline unsigned int length() const throw() {return len;}
+  inline unsigned int length() const throw() {return elements->getSize() - 1;}
 
   /**
     Returns true if the string contains no characters.
   */
-  inline bool isEmpty() const throw() {return length() == 0;}
+  inline bool isEmpty() const throw() {return elements->isEmpty();}
 
   /**
     Returns the capacity of the string.
   */
-  inline unsigned int getCapacity() const throw() {return elements->getSize();}
+  inline unsigned int getCapacity() const throw() {return elements->getCapacity();}
 
   /**
     Ensures that the capacity of the buffer is at least equal to the specified minimum.
@@ -195,7 +190,7 @@ public:
   /**
     Releases any unused capacity of the string.
   */
-  void optimizeCapacity() throw(MemoryException);
+  void optimizeCapacity() throw();
 
 // *******************************************************************************************
 //   CHARACTER SECTION
@@ -623,6 +618,20 @@ String<LOCK> operator-(const String<LOCK>& left, const String<LOCK>& right) thro
 template<class LOCK>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const String<LOCK>& value) {
   return value.operator<<(stream);
+}
+
+template<class LOCK>
+String<LOCK> operator+(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException) {
+  return String<LOCK>(left.length() + right.length()).append(left).append(right);
+}
+
+template<class LOCK>
+String<LOCK> operator-(const String<LOCK>& left, const String<LOCK>& right) throw(MemoryException) {
+  if (left.endsWith(right)) {
+    return left.substring(0, left.length() - right.length()); // return copy of left without suffix
+  } else {
+    return String<LOCK>(left); // return copy of left
+  }
 }
 
 #endif

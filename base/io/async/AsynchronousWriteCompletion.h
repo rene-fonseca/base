@@ -21,8 +21,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   This class describes the completion status of an asynchronous write operation.
 
+  @short Asynchronous write operation completion
   @see AsynchronousWriteEventListener
-  @author Rene Moeller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

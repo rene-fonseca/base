@@ -216,6 +216,59 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, short int value) {
   return stream;
 }
 
+FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int value) {
+  char buffer[sizeof(unsigned short int) * 8];
+  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+
+  switch (stream.getBase()) {
+  case FormatOutputStream::BIN:
+    {
+      do {
+        *dest = FormatOutputStream::DIGITS[value & 0x00000001]; // get digit
+        value >>= 1; // bits per digit
+        --dest;
+      } while(value > 0);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case FormatOutputStream::OCT:
+    {
+      do {
+        *dest = FormatOutputStream::DIGITS[value & 0x00000007]; // get digit
+        value >>= 3; // bits per digit
+        --dest;
+      } while(value > 0);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case FormatOutputStream::DEC:
+    {
+      do {
+        *dest = FormatOutputStream::DIGITS[value % 10]; // get digit
+        value /= 10;
+        --dest;
+      } while(value > 0);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case FormatOutputStream::HEX:
+    {
+      do {
+        *dest = FormatOutputStream::DIGITS[value & 0x0000000f]; // get bits of digit
+        value >>= 4; // bits per digit
+        --dest;
+      } while(value > 0);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  default:
+    return stream; // do not do anything if base is unknown
+  }
+
+  stream.addIntegerField(dest, sizeof(buffer) - (dest - buffer), false);
+  return stream;
+}
+
 FormatOutputStream& operator<<(FormatOutputStream& stream, int value) {
   char buffer[sizeof(int) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position

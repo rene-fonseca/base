@@ -124,7 +124,7 @@ const char* InetAddress::getBytes() const throw() {
   return (char*)&address;
 }
 
-FormatOutputStream& InetAddress::operator<<(FormatOutputStream& stream) const {
+FormatOutputStream& InetAddress::toStream(FormatOutputStream& stream) const {
   char buffer[INET6_ADDRSTRLEN]; // longest string is ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255
   if (isV4Mapped()) {
     inet_ntop(AF_INET, &((uint32_t*)(&address))[3], (char*)&buffer, sizeof(buffer)); // MT-level is safe

@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#include "EndOfFile.h"
+#include "ServiceNotFound.h"
 
-EndOfFile::EndOfFile() {
+ServiceNotFound::ServiceNotFound() {
 }
 
-EndOfFile::EndOfFile(const char* message) : IOException(message) {
+ServiceNotFound::ServiceNotFound(const char* message) : NetworkException(message) {
 }

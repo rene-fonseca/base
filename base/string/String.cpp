@@ -82,6 +82,14 @@ String::String(const char* str, unsigned int maximum) throw(MemoryException) {
   }
 }
 
+String& String::operator=(const String& eq) throw() {
+  if (&eq != this) { // protect against self assignment
+    internal = eq.internal;
+    len = eq.len;
+  }
+  return *this;
+}
+
 void String::ensureCapacity(unsigned int capacity) throw(MemoryException) {
   unsigned int minimum = CAPACITY(length() + sizeof(TERMINATOR));
   capacity = CAPACITY(capacity);
@@ -273,23 +281,31 @@ int String::compareTo(const String& str) const throw() {
     int result = memcmp(getReadOnlyBuffer(), str.getReadOnlyBuffer(), str.length());
     return (result != 0) ? result : getReadOnlyBuffer()[str.length()];
   }
-//  return strcmp(getReadOnlyBuffer(), str.getReadOnlyBuffer());
 }
 
-int String::compareToIgnoreCase(const String& str) const throw() {
-//  return strcasecmp(getReadOnlyBuffer(), str.getReadOnlyBuffer());
-  const char* p = getReadOnlyBuffer();
-  const char* q = str.getReadOnlyBuffer();
-  while (*p && *q) { // continue until end of any string has been reached
-    int result = tolower(*p) - tolower(*q);
+int String::compareTo(const char* str) const throw() {
+  return strcmp(getReadOnlyBuffer(), str);
+}
+
+int String::compareToIgnoreCase(const char* l, const char* r) throw() {
+  while (*l && *r) { // continue until end of any string has been reached
+    int result = tolower(*l) - tolower(*r);
     if (result != 0) { // not equal
       return result;
     }
-    ++p;
-    ++q;
+    ++l;
+    ++r;
   }
-  // possible cases: only end of p (less than), only end of q (greater than), end of both (equal)
-  return (tolower(*p) - tolower(*q));
+  // possible cases: only end of 'l' (less than), only end of 'r' (greater than), end of both (equal)
+  return (tolower(*l) - tolower(*r));
+}
+
+int String::compareToIgnoreCase(const String& str) const throw() {
+  return compareToIgnoreCase(getReadOnlyBuffer(), str.getReadOnlyBuffer());
+}
+
+int String::compareToIgnoreCase(const char* str) const throw() {
+  return compareToIgnoreCase(getReadOnlyBuffer(), str);
 }
 
 bool String::startsWith(const String& prefix) const throw() {

@@ -125,12 +125,16 @@ public:
   /**
     Writes a string representation of the address to a stream.
   */
-  FormatOutputStream& operator<<(FormatOutputStream& stream) const;
+  FormatOutputStream& toStream(FormatOutputStream& stream) const;
 
   /**
     Destroys the address.
   */
   ~InetAddress() throw();
 };
+
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) {
+  return value.toStream(stream);
+}
 
 #endif

@@ -1,4 +1,9 @@
 # KDE Config File
+[ellert/base/net/InetService.cpp]
+install_location=
+dist=true
+install=false
+type=SOURCE
 [ellert/base/io/FileNotFound.h]
 install_location=
 dist=true
@@ -29,8 +34,13 @@ install_location=
 dist=true
 install=false
 type=SOURCE
+[ellert/base/net/InetService.h]
+install_location=
+dist=true
+install=false
+type=HEADER
 [ellert/base/net/Makefile.am]
-files=ellert/base/net/HostNotFound.cpp,ellert/base/net/HostNotFound.h,ellert/base/net/InetAddress.cpp,ellert/base/net/InetAddress.h,ellert/base/net/NetworkException.cpp,ellert/base/net/NetworkException.h,ellert/base/net/Socket.h,ellert/base/net/Socket.cpp,
+files=ellert/base/net/HostNotFound.cpp,ellert/base/net/HostNotFound.h,ellert/base/net/InetAddress.cpp,ellert/base/net/InetAddress.h,ellert/base/net/NetworkException.cpp,ellert/base/net/NetworkException.h,ellert/base/net/Socket.h,ellert/base/net/Socket.cpp,ellert/base/net/ServerSocket.h,ellert/base/net/ServerSocket.cpp,ellert/base/net/ClientSocket.h,ellert/base/net/ClientSocket.cpp,ellert/base/net/InetService.h,ellert/base/net/InetService.cpp,ellert/base/net/ServiceNotFound.h,ellert/base/net/ServiceNotFound.cpp,
 sub_dirs=
 type=static_library
 [ellert/base/ResourceException.h]
@@ -58,6 +68,11 @@ install_location=
 dist=true
 install=false
 type=HEADER
+[ellert/base/net/ClientSocket.cpp]
+install_location=
+dist=true
+install=false
+type=SOURCE
 [ellert/base/io/Streams.h]
 install_location=
 dist=true
@@ -115,6 +130,11 @@ install_location=
 dist=true
 install=false
 type=HEADER
+[ellert/base/net/ServerSocket.h]
+install_location=
+dist=true
+install=false
+type=HEADER
 [ellert/base/concurrency/Synchronize.cpp]
 install_location=
 dist=true
@@ -147,9 +167,9 @@ install=false
 type=HEADER
 [Config for BinMakefileAm]
 ldflags=
-addcxxflags=-DDEBUG_VEHICLE -DDEBUG_IO -I/home/fonseca/src/ellert/ellert -I/usr/include
+addcxxflags=-D_REENTRANT -DDEBUG_VEHICLE -DDEBUG_IO -I/home/fonseca/src/ellert/ellert -I/usr/include
 ldadd=-lpthread
-cxxflags=-O2 -g3 -Wall
+cxxflags= -O2 -g3 -Wall
 bin_program=ellert
 [ellert/base/io/FileOutputStream.cpp]
 install_location=
@@ -272,6 +292,11 @@ dist=true
 install=false
 type=SOURCE
 [ellert/base/LongInteger.h]
+install_location=
+dist=true
+install=false
+type=HEADER
+[ellert/base/net/ServiceNotFound.h]
 install_location=
 dist=true
 install=false
@@ -696,6 +721,11 @@ install_location=
 dist=true
 install=false
 type=DATA
+[ellert/base/net/ServiceNotFound.cpp]
+install_location=
+dist=true
+install=false
+type=SOURCE
 [ellert/base/mem/ReferenceCountedObject.h]
 install_location=
 dist=true
@@ -857,7 +887,7 @@ dist=true
 install=false
 type=SOURCE
 [General]
-make_options=-j1
+make_options= -j1
 makefiles=Makefile.am,ellert/Makefile.am,ellert/docs/Makefile.am,ellert/docs/en/Makefile.am,ellert/base/Makefile.am,ellert/vehicle/Makefile.am,ellert/base/concurrency/Makefile.am,ellert/base/mathematics/Makefile.am,ellert/io/Makefile.am,ellert/base/io/Makefile.am,ellert/base/string/Makefile.am,ellert/base/mem/Makefile.am,ellert/base/net/Makefile.am,
 version_control=CVS
 author=René Møller Fonseca
@@ -978,6 +1008,11 @@ install_location=
 dist=true
 install=false
 type=SOURCE
+[ellert/base/net/ClientSocket.h]
+install_location=
+dist=true
+install=false
+type=HEADER
 [ellert/base/ResourceException.cpp]
 install_location=
 dist=true
@@ -1117,6 +1152,11 @@ dist=true
 install=false
 type=SOURCE
 [ellert/base/io/FilterInputStream.cpp]
+install_location=
+dist=true
+install=false
+type=SOURCE
+[ellert/base/net/ServerSocket.cpp]
 install_location=
 dist=true
 install=false

@@ -58,8 +58,11 @@ public:
 FormatOutputStream& operator<<(FormatOutputStream& stream, char value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, const char* value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, short int value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned short int value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, int value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned int value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, long long int value);
+FormatOutputStream& operator<<(FormatOutputStream& stream, unsigned long long int value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, float value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, double value);
 FormatOutputStream& operator<<(FormatOutputStream& stream, long double value);

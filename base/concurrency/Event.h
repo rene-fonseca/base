@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_EVENT_H
-#define _DK_SDU_MIP_BASE_EVENT_H
+#ifndef _DK_SDU_MIP__BASE_THREAD__EVENT_H
+#define _DK_SDU_MIP__BASE_THREAD__EVENT_H
 
 #include "MutualExclusion.h"
 #include "base/Construct.h"

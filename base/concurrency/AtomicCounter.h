@@ -3,10 +3,10 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_ATOMIC_COUNTER_H
-#define _DK_SDU_MIP_BASE_ATOMIC_COUNTER_H
+#ifndef _DK_SDU_MIP__BASE_THREAD__ATOMIC_COUNTER_H
+#define _DK_SDU_MIP__BASE_THREAD__ATOMIC_COUNTER_H
 
-#include "ThreadLock.h"
+#include "Synchronize.h"
 
 /**
   MT-safe counter.
@@ -16,7 +16,7 @@
 */
 
 template<class TYPE>
-class AtomicCounter : private ThreadLock {
+class AtomicCounter : protected ThreadLock {
 private:
 
   /** The value of the counter. */

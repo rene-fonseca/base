@@ -104,6 +104,8 @@ protected:
   void setLength(unsigned int length) throw(MemoryException);
   /** Used by constructors to create StringBuffer. */
   void createString(const char* buffer, unsigned int length, unsigned int capacity) throw(MemoryException);
+  /** Compare two null-terminated strings. */
+  static int compareToIgnoreCase(const char* l, const char* r) throw();
 public:
 
   /**
@@ -138,7 +140,12 @@ public:
   /**
     Copy constructor.
   */
-  inline String(const String& copy) throw(MemoryException) : internal(copy.internal), len(copy.len) {};
+  inline String(const String& copy) throw() : internal(copy.internal), len(copy.len) {};
+
+  /**
+    Assignment of string.
+  */
+  String& operator=(const String& eq) throw();
 
   /**
     Returns the number of characters in the string.
@@ -351,12 +358,28 @@ public:
   int compareTo(const String& str) const throw();
 
   /**
+    Compare this string with null-terminated string.
+
+    @param str The string to compare this string with.
+    @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
+  */
+  int compareTo(const char* str) const throw();
+
+  /**
     Compares this string with other string ignoring the case of the characters.
 
     @param str The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
   */
   int compareToIgnoreCase(const String& str) const throw();
+
+  /**
+    Compares this string with null-terminated string ignoring the case of the characters.
+
+    @param str The string to compare this string with.
+    @return Integer less than, equal to, or greater than zero if this string is found, respectively, to be less than, equal to, or greater than the specified string.
+  */
+  int compareToIgnoreCase(const char* str) const throw();
 
   /**
     Returns true if this string starts with prefix.
@@ -401,6 +424,36 @@ public:
     Greater than operator.
   */
   inline bool operator>(const String& str) const throw() {return compareTo(str) > 0;};
+
+  /**
+    Equality operator.
+  */
+  inline bool operator==(const char* str) const throw() {return compareTo(str) == 0;};
+
+  /**
+    Inequality operator.
+  */
+  inline bool operator!=(const char* str) const throw() {return compareTo(str) != 0;};
+
+  /**
+    Less than operator.
+  */
+  inline bool operator<(const char* str) const throw() {return compareTo(str) < 0;};
+
+  /**
+    Less than or equal operator.
+  */
+  inline bool operator<=(const char* str) const throw() {return compareTo(str) <= 0;};
+
+  /**
+    Greater than or equal operator.
+  */
+  inline bool operator>=(const char* str) const throw() {return compareTo(str) >= 0;};
+
+  /**
+    Greater than operator.
+  */
+  inline bool operator>(const char* str) const throw() {return compareTo(str) > 0;};
 
 // *******************************************************************************************
 //   FIND SECTION
@@ -475,6 +528,11 @@ public:
     Returns null-terminated string.
   */
   inline const char* getBytes() const {return getReadOnlyBuffer();};
+
+  /**
+    Cast string to null-terminated string.
+  */
+  operator const char*() const {return getReadOnlyBuffer();};
 
   /**
     Destroys the string.

@@ -12,58 +12,42 @@ AtomicCounter<TYPE>::AtomicCounter(TYPE value) throw() {
 
 template<class TYPE>
 TYPE AtomicCounter<TYPE>::operator()() const throw() {
-  TYPE result;
-  ThreadLock::readLock();
-    result = value;
-  ThreadLock::unlock();
-  return result;
+  SynchronizeShared();
+  return value;
 }
 
 template<class TYPE>
 TYPE AtomicCounter<TYPE>::operator++() throw() {
-  TYPE result;
-  ThreadLock::writeLock();
-    ++value;
-    result = value;
-  ThreadLock::unlock();
-  return result;
+  SynchronizeExclusively();
+  ++value;
+  return value;
 }
 
 template<class TYPE>
 TYPE AtomicCounter<TYPE>::operator--() throw() {
-  TYPE result;
-  ThreadLock::writeLock();
-    --value;
-    result = value;
-  ThreadLock::unlock();
-  return result;
+  SynchronizeExclusively();
+  --value;
+  return value;
 }
 
 template<class TYPE>
 TYPE AtomicCounter<TYPE>::operator+=(TYPE value) throw() {
-  TYPE result;
-  ThreadLock::writeLock();
-    this->value += value;
-    result = value;
-  ThreadLock::unlock();
-  return result;
+  SynchronizeExclusively();
+  this->value += value;
+  return value;
 }
 
 template<class TYPE>
 TYPE AtomicCounter<TYPE>::operator-=(TYPE value) throw() {
-  TYPE result;
-  ThreadLock::writeLock();
-    this->value -= value;
-    result = value;
-  ThreadLock::unlock();
-  return result;
+  SynchronizeExclusively();
+  this->value -= value;
+  return value;
 }
 
 template<class TYPE>
 TYPE AtomicCounter<TYPE>::operator=(TYPE value) throw() {
-  ThreadLock::writeLock();
-    this->value = value;
-  ThreadLock::unlock();
+  SynchronizeExclusively();
+  this->value = value;
   return value;
 }
 

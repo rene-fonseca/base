@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_RUNNABLE_H
-#define _DK_SDU_MIP_BASE_RUNNABLE_H
+#ifndef _DK_SDU_MIP__BASE_THREAD__RUNNABLE_H
+#define _DK_SDU_MIP__BASE_THREAD__RUNNABLE_H
 
 #include "Thread.h"
 

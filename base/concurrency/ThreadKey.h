@@ -3,8 +3,8 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP_BASE_THREAD_KEY_H
-#define _DK_SDU_MIP_BASE_THREAD_KEY_H
+#ifndef _DK_SDU_MIP__BASE_THREAD__THREAD_KEY_H
+#define _DK_SDU_MIP__BASE_THREAD__THREAD_KEY_H
 
 #include "base/Exception.h"
 #include "base/ResourceException.h"

@@ -9,9 +9,9 @@
 #include "ThreadLock.h"
 
 /** Exclusively synchronization of this scope of this synchronizable class (the variable _sync is reserved for this purpose). */
-#define SynchronizeExclusively() Synchronize _sync(*this, true)
+#define SynchronizeExclusively() Synchronize _sync(this, true)
 /** Shared synchronization of this scope of this synchronizeable class (the variable _sync is reserved for this purpose). */
-#define SynchronizeShared() Synchronize _sync(*this, false)
+#define SynchronizeShared() Synchronize _sync(this, false)
 
 /** Exclusively synchronization of this scope using the specified lock (the variable _sync is reserved for this purpose). */
 #define SynchronizeExclusivelyWith(lock) Synchronize _sync(lock, true)
@@ -22,7 +22,7 @@
 #define SynchronizeRelease() (_sync.release())
 
 /**
-  This is a stack based synchronization wrapper of the ThreadLock class. A Synchronize object will acquire and release an exclusive (or a shared lock) on the provided thread lock object when it is, respectively, created and destroyed. If required, the exclusive lock can be explicitly released by calling the method release().
+  This is a stack based synchronization wrapper of the ThreadLock class. A Synchronize object will acquire and release an exclusive (or a shared lock) on the provided thread lock object when it is, respectively, created and destroyed. If required, the lock can be explicitly released by calling the method release(). This is required before throwing an exception.
 
   @author René Møller Fonseca
   @version 1.0
@@ -32,7 +32,7 @@ class Synchronize : public Object {
 private:
 
   /** The lock object to synchronize with. */
-  ThreadLock& l;
+  const ThreadLock* l;
 
   Synchronize(const Synchronize& copy); // disable copy constructor
   Synchronize& operator=(const Synchronize& eq); // disable assignment
@@ -44,11 +44,11 @@ public:
     @param lock The lock to synchronize with.
     @param exclusive Specifies if the lock should be exclusive (write-lock) or shared (read-lock). Default is exclusive.
   */
-  inline explicit Synchronize(ThreadLock& lock, bool exclusive = true) throw() : l(lock) {
+  inline explicit Synchronize(const ThreadLock* lock, bool exclusive = true) throw() : l(lock) {
     if (exclusive) {
-      l.writeLock();
+      l->writeLock();
     } else {
-      l.readLock();
+      l->readLock();
     }
   }
 
@@ -56,7 +56,7 @@ public:
     Forces the lock to be released.
   */
   inline void release() throw() {
-    l.unlock();
+    l->unlock();
   }
 
   /**

@@ -21,8 +21,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   This exception specifies that the service could not be resolved.
 
-  @short INET Service exception
-  @ingroup exceptions
+  @short Internet Protocol service exception
+  @ingroup exceptions net
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

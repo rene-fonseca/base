@@ -236,9 +236,9 @@ Socket::Socket() throw() : socket(SocketImpl::invalid) {
 }
 
 bool Socket::accept(Socket& socket) throw(IOException) {
-  // ExclusiveSynchronize<LOCK>(*this);
+  // ExclusiveSynchronize<Guard>(*this);
 
-  if (this->socket->isCreated()) {
+  if (this->socket->isValid()) {
     throw NetworkException("Attempt to overwrite socket", this);
   }
 
@@ -271,7 +271,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
 }
 
 void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOException) {
-  ExclusiveSynchronize<LOCK>(*this);
+  ExclusiveSynchronize<Guard>(*this);
   SocketAddress sa(addr, port);
   if (::bind((int)getHandle(), sa.getValue(), sa.getSize())) {
     throw NetworkException("Unable to assign name to socket", this);
@@ -287,12 +287,12 @@ void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOExceptio
 }
 
 void Socket::close() throw(IOException) {
-  ExclusiveSynchronize<LOCK>(*this);
+  ExclusiveSynchronize<Guard>(*this);
   socket = SocketImpl::invalid;
 }
 
 void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOException) {
-  ExclusiveSynchronize<LOCK>(*this);
+  ExclusiveSynchronize<Guard>(*this);
   SocketAddress sa(addr, port);
   if (::connect((int)getHandle(), sa.getValue(), sa.getSize())) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -323,14 +323,16 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
 }
 
 void Socket::create(bool stream) throw(IOException) {
-  ExclusiveSynchronize<LOCK>(*this);
+  ExclusiveSynchronize<Guard>(*this);
   OperatingSystem::Handle handle;
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
-  if (socket->isCreated() || ((handle = (OperatingSystem::Handle)::socket(PF_INET6, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == OperatingSystem::INVALID_HANDLE)) {
+  if (socket->isValid() ||
+      ((handle = (OperatingSystem::Handle)::socket(PF_INET6, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == OperatingSystem::INVALID_HANDLE)) {
     throw NetworkException("Unable to create socket", this);
   }
 #else
-  if (socket->isCreated() || ((handle = (OperatingSystem::Handle)::socket(PF_INET, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == OperatingSystem::INVALID_HANDLE)) {
+  if (socket->isValid() ||
+      ((handle = (OperatingSystem::Handle)::socket(PF_INET, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == OperatingSystem::INVALID_HANDLE)) {
     throw NetworkException("Unable to create socket", this);
   }
 #endif
@@ -338,7 +340,7 @@ void Socket::create(bool stream) throw(IOException) {
 }
 
 void Socket::listen(unsigned int backlog) throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   backlog = minimum<int>(backlog, PrimitiveTraits<int>::MAXIMUM); // silently reduce the backlog argument
   if (::listen((int)getHandle(), backlog)) { // may also silently limit backlog
     throw NetworkException("Unable to set queue limit for incomming connections", this);
@@ -346,7 +348,7 @@ void Socket::listen(unsigned int backlog) throw(IOException) {
 }
 
 void Socket::getName() throw() {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   SocketAddress sa;
   sa.setSocket((int)getHandle());
   socket->setLocalAddress(sa.getAddress());
@@ -354,7 +356,7 @@ void Socket::getName() throw() {
 }
 
 const InetAddress& Socket::getAddress() const throw() {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   return socket->getRemoteAddress();
 }
 
@@ -363,17 +365,17 @@ unsigned short Socket::getPort() const throw() {
 }
 
 const InetAddress& Socket::getLocalAddress() const throw() {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   return socket->getLocalAddress();
 }
 
 unsigned short Socket::getLocalPort() const throw() {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   return socket->getLocalPort();
 }
 
 void Socket::shutdownInputStream() throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (::shutdown((int)getHandle(), SD_RECEIVE)) { // disallow further receives
     throw IOException("Unable to shutdown socket for reading", this);
@@ -386,7 +388,7 @@ void Socket::shutdownInputStream() throw(IOException) {
 }
 
 void Socket::shutdownOutputStream() throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (::shutdown((int)getHandle(), SD_SEND)) { // disallow further sends
     throw IOException("Unable to shutdown socket for writing", this);
@@ -399,7 +401,7 @@ void Socket::shutdownOutputStream() throw(IOException) {
 }
 
 bool Socket::getBooleanOption(int option) const throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   int buffer;
   unsigned int length = sizeof(buffer);
   getSocketOption((int)getHandle(), option, &buffer, &length);
@@ -407,7 +409,7 @@ bool Socket::getBooleanOption(int option) const throw(IOException) {
 }
 
 void Socket::setBooleanOption(int option, bool value) throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   int buffer = value;
   setSocketOption((int)getHandle(), option, &buffer, sizeof(buffer));
 }
@@ -437,7 +439,7 @@ void Socket::setBroadcast(bool value) throw(IOException) {
 }
 
 int Socket::getLinger() const throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   struct linger buffer;
   unsigned int length = sizeof(buffer);
   getSocketOption((int)getHandle(), SO_LINGER, &buffer, &length);
@@ -456,7 +458,7 @@ void Socket::setLinger(int seconds) throw(IOException) {
 }
 
 int Socket::getReceiveBufferSize() const throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   int buffer;
   unsigned int length = sizeof(buffer);
   getSocketOption((int)getHandle(), SO_RCVBUF, &buffer, &length);
@@ -464,13 +466,13 @@ int Socket::getReceiveBufferSize() const throw(IOException) {
 }
 
 void Socket::setReceiveBufferSize(int size) throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   int buffer = size;
   setSocketOption((int)getHandle(), SO_RCVBUF, &buffer, sizeof(buffer));
 }
 
 int Socket::getSendBufferSize() const throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   int buffer;
   unsigned int length = sizeof(buffer);
   getSocketOption((int)getHandle(), SO_SNDBUF, &buffer, &length);
@@ -478,13 +480,13 @@ int Socket::getSendBufferSize() const throw(IOException) {
 }
 
 void Socket::setSendBufferSize(int size) throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   int buffer = size;
   setSocketOption((int)getHandle(), SO_SNDBUF, &buffer, sizeof(buffer));
 }
 
 void Socket::setNonBlocking(bool value) throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int buffer = value; // set to zero to disable nonblocking
   if (ioctlsocket((int)getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
@@ -514,7 +516,7 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
 }
 
 unsigned int Socket::available() const throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int result;
   if (ioctlsocket((int)getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
@@ -532,7 +534,7 @@ unsigned int Socket::available() const throw(IOException) {
 }
 
 bool Socket::atEnd() const throw() {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   return socket->atEnd();
 }
 
@@ -540,7 +542,7 @@ void Socket::flush() throw(IOException) {
 }
 
 unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
 
   // TAG: currently always blocks
   assert(!socket->atEnd(), EndOfFile());
@@ -638,7 +640,7 @@ unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& a
 }
 
 unsigned int Socket::sendTo(const char* buffer, unsigned int size, const InetAddress& address, unsigned short port) throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   int result = 0;
   const SocketAddress sa(address, port);
   if ((result = ::sendto((int)getHandle(), buffer, size, 0, sa.getValue(), sa.getSize())) == -1) {
@@ -669,7 +671,7 @@ AsynchronousWriteOperation Socket::write(const char* buffer, unsigned int bytesT
 }
 
 void Socket::wait() const throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET((int)getHandle(), &rfds);
@@ -681,7 +683,7 @@ void Socket::wait() const throw(IOException) {
 }
 
 bool Socket::wait(unsigned int microseconds) const throw(IOException) {
-  SharedSynchronize<LOCK>(*this);
+  SharedSynchronize<Guard>(*this);
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET((int)getHandle(), &rfds);

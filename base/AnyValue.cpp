@@ -486,19 +486,7 @@ AnyValue& AnyValue::operator=(const String& value) throw() {
   switch (representation) {
   case WIDE_STRING:
     wideString = WideString();
-  case VOID:
-  case CHARACTER:
-  case WIDE_CHARACTER:
-  case BOOLEAN:
-  case SHORT_INTEGER:
-  case UNSIGNED_SHORT_INTEGER:
-  case INTEGER:
-  case UNSIGNED_INTEGER:
-  case LONG_INTEGER:
-  case UNSIGNED_LONG_INTEGER:
-  case LONG_LONG_INTEGER:
-  case UNSIGNED_LONG_LONG_INTEGER:
-  case STRING:
+  default:
     string = value;
   }
   representation = STRING;
@@ -509,19 +497,7 @@ AnyValue& AnyValue::operator=(const WideString& value) throw() {
   switch (representation) {
   case STRING:
     string = String();
-  case VOID:
-  case CHARACTER:
-  case WIDE_CHARACTER:
-  case BOOLEAN:
-  case SHORT_INTEGER:
-  case UNSIGNED_SHORT_INTEGER:
-  case INTEGER:
-  case UNSIGNED_INTEGER:
-  case LONG_INTEGER:
-  case UNSIGNED_LONG_INTEGER:
-  case LONG_LONG_INTEGER:
-  case UNSIGNED_LONG_LONG_INTEGER:
-  case WIDE_STRING:
+  default:
     wideString = value;
   }
   representation = WIDE_STRING;

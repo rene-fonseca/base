@@ -19,41 +19,42 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 InetEndPoint::InetEndPoint() throw() : port(0) {
 }
 
-InetEndPoint::InetEndPoint(const InetAddress& address, unsigned short port) throw() :
-  address(address), port(port) {
+InetEndPoint::InetEndPoint(const InetAddress& _address, unsigned short _port) throw()
+  : address(_address), port(_port) {
 }
 
-InetEndPoint::InetEndPoint(const InetAddress& address, const InetService& service) throw() :
-  address(address), port(service.getPort()) {
+InetEndPoint::InetEndPoint(const InetAddress& _address, const InetService& service) throw()
+  : address(_address), port(service.getPort()) {
 }
 
-InetEndPoint::InetEndPoint(const InetAddress& address, const String& service) throw(ServiceNotFound) :
-  address(address), port(0) {
+InetEndPoint::InetEndPoint(const InetAddress& _address, const String& service) throw(ServiceNotFound)
+  : address(_address), port(0) {
   try {
     Integer integer(service);
     if ((integer < 0) || (integer > 0xffff)) {
       throw ServiceNotFound("Port is out of range", this);
     }
     port = integer;
-  } catch(InvalidFormat& e) {
+  } catch (InvalidFormat& e) {
     port = InetService(service).getPort();
   }
 }
 
-InetEndPoint::InetEndPoint(const String& host, const String& service) throw(ServiceNotFound) :
-  address(host), port(0) {
+InetEndPoint::InetEndPoint(const String& host, const String& service) throw(ServiceNotFound)
+  : address(host), port(0) {
   try {
     Integer integer(service);
     if ((integer < 0) || (integer > 0xffff)) {
       throw ServiceNotFound("Port is out of range", this);
     }
     port = integer;
-  } catch(InvalidFormat& e) {
+  } catch (InvalidFormat& e) {
     port = InetService(service).getPort();
   }
 }
 
-InetEndPoint::InetEndPoint(const InetEndPoint& copy) throw() : address(copy.address), port(copy.port) {
+InetEndPoint::InetEndPoint(const InetEndPoint& copy) throw()
+  : address(copy.address), port(copy.port) {
 }
 
 InetEndPoint& InetEndPoint::operator=(const InetEndPoint& eq) throw() {

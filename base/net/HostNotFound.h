@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Specifies that the host doesn't exist or couldn't be found.
 
   @short Host not found exception
-  @ingroup exceptions
+  @ingroup exceptions net
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

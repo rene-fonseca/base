@@ -31,7 +31,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   direct support requires implicit conversion to an IPv4 address. If such a
   conversion isn't possible a NetworkException is raised.
 
-  @short Internet Protocol address
+  @short Internet Protocol address.
+  @ingroup net
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */
@@ -63,11 +64,11 @@ private:
   Family family;
   /** Internal structure holding the IP address in network byte order. */
   union Address {
-    unsigned int words[4]; // enough for IPv6 and IPv4 addresses
-    unsigned short halfWords[8];
-    byte octets[16];
-  } address;
-
+    uint32 words[4]; // enough for IPv6 and IPv4 addresses
+    uint16 halfWords[8];
+    uint8 octets[16];
+  } _DK_SDU_MIP__BASE__PACKED address;
+  
   /** Parses the specified string as an Internet address (both IPv4 and IPv6). */
   bool parse(const String& addr) throw();
 public:
@@ -85,6 +86,13 @@ public:
   static List<InetAddress> getAddressesByName(const String& name) throw(HostNotFound);
 
   /**
+    Returns the first IP address find for the specified host name.
+
+    @param name The name of the host (e.g. 'www.mip.sdu.dk').
+  */
+  static InetAddress getAddressByName(const String& name) throw(HostNotFound);
+  
+  /**
     Initializes the address as unspecified IPv4 address (matches any address).
   */
   InetAddress() throw();
@@ -92,25 +100,25 @@ public:
   /**
     Initializes the address as from the specified binary address.
 
-    @param addr The Internet address in network byte order.
+    @param address The Internet address in network byte order.
     @param family Specifies the family of the binary address (IPv4 or IPv6).
   */
-  InetAddress(const byte* addr, Family family) throw();
+  InetAddress(const uint8* address, Family family) throw();
 
   /**
     Initializes the address from the specified string. Implicit initialization is allowed.
 
-    @param addr The internet address (e.g. '172.30.33.14' or '::ffff:172.30.33.14').
+    @param address The internet address (e.g. '172.30.33.14' or '::ffff:172.30.33.14').
   */
-  InetAddress(const String& addr) throw(InvalidFormat);
+  InetAddress(const String& address) throw(InvalidFormat);
 
   /**
     Initializes the address from the specified string.
 
-    @param addr The internet address (e.g. '172.30.33.14' or '::ffff:172.30.33.14').
+    @param address The internet address (e.g. '172.30.33.14' or '::ffff:172.30.33.14').
     @param family Specifies the family to accept.
   */
-  InetAddress(const String& addr, Family family) throw(InvalidFormat);
+  InetAddress(const String& address, Family family) throw(InvalidFormat);
 
   /**
     Copy constructor.
@@ -132,7 +140,14 @@ public:
   /**
     Returns the IP address in binary format in network byte order.
   */
-  inline const byte* getAddress() const throw() {
+  inline const uint32* getWords() const throw() {
+    return address.words;
+  }
+  
+  /**
+    Returns the IP address in binary format in network byte order.
+  */
+  inline const uint8* getAddress() const throw() {
     return address.octets;
   }
 
@@ -140,7 +155,7 @@ public:
     Returns the IP address in binary format in network byte order (this is only
     valid if either isIPv4Mapped() or isIPv4Compatible() returns true).
   */
-  inline const byte* getIPv4Address() const throw() {
+  inline const uint8* getIPv4Address() const throw() {
     return &address.octets[12];
   }
 
@@ -148,7 +163,8 @@ public:
     Returns the domain/host name associated with this IP address. Raises
     HostNotFound if the host cannot be resolved.
 
-    @param fullyQualified Specifies that the fully-qualified domain name should be returned for local hosts. Default is false.
+    @param fullyQualified Specifies that the fully-qualified domain name should
+    be returned for local hosts. Default is false.
   */
   String getHostName(bool fullyQualified = false) const throw(HostNotFound);
 
@@ -205,26 +221,29 @@ public:
   unsigned int getType() const throw();
 
   /**
-    Converts an IPv4 address to an IPv4-mapped IPv6 address (IPv6 addresses are not modified).
+    Converts an IPv4 address to an IPv4-mapped IPv6 address (IPv6 addresses are
+    not modified).
 
     @return Always returns true.
   */
   bool convertToIPv6() throw();
 
   /**
-    Converts an IPv4-mapped IPv6 address to an IPv4 address (IPv4 addresses are not modified).
+    Converts an IPv4-mapped IPv6 address to an IPv4 address (IPv4 addresses are
+    not modified).
 
-    @return Returns true on success (fails if address isn't an IPv4-mapped IPv6 address or an IPv4 address).
+    @return Returns true on success (fails if address isn't an IPv4-mapped IPv6
+    address or an IPv4 address).
   */
   bool convertToIPv4() throw();
 
   /**
     Sets the address.
 
-    @param addr The Internet address in network byte order.
+    @param address The Internet address in network byte order.
     @param family Specifies the family of the binary address (IPv4 or IPv6).
   */
-  void setAddress(const byte* addr, Family family) throw();
+  void setAddress(const uint8* address, Family family) throw();
 
   /**
     Writes a string representation of the address to a stream.
@@ -236,6 +255,20 @@ public:
   Writes a string representation of the InetAddress object to a format stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) throw(IOException);
+
+class Hash<InetAddress> {
+public:
+  
+  inline unsigned long operator()(const InetAddress& value) throw() {
+    unsigned long result = 3929; // TAG: need better hash function
+    const uint32* words = value.getWords();
+    result = 595123 * result + words[0];
+    result = 595123 * result + words[1];
+    result = 595123 * result + words[2];
+    result = 595123 * result + words[3];
+    return result;
+  }
+};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

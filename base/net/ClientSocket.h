@@ -61,8 +61,12 @@ public:
     @param localAddr The local IP address the socket should be bound to.
     @param localPort The local port the socket should be bound to.
   */
-  StreamSocket(const InetAddress& addr, unsigned short port, InetAddress& localAddr, unsigned short localPort) throw(IOException);
-
+  StreamSocket(
+    const InetAddress& addr,
+    unsigned short port,
+    InetAddress& localAddr,
+    unsigned short localPort) throw(IOException);
+  
   /**
     Accept connect from
   */
@@ -280,6 +284,13 @@ public:
     return Socket::wait(timeout);
   }
 
+  /**
+    Returns true if the socket is valid.
+  */
+  inline bool isValid() const throw() {
+    return Socket::isValid();
+  }
+  
   /**
     Return true if the end of the stream has been reached.
   */

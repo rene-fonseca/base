@@ -23,6 +23,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Internet end point (i.e. both internet address and port number).
 
+  @short Internet end point.
+  @ingroup net
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -117,6 +119,14 @@ public:
   Writes a string representation of the InetEndPoint object to a format stream.
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const InetEndPoint& value) throw(IOException);
+
+class Hash<InetEndPoint> {
+public:
+  
+  inline unsigned long operator()(const InetEndPoint& value) throw() {
+    return Hash<InetAddress>()(value.getAddress()) * 31 + value.getPort();
+  }
+};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -22,9 +22,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Indicates a network exception.
 
   @short Network IO exception
-  @ingroup exceptions  
+  @ingroup exceptions net
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.01
+  @version 1.0.1
 */
 
 class NetworkException : public IOException {

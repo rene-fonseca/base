@@ -20,7 +20,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Implementation of the SHA-1 message-digest algorithm (see FIPS PUB 180-1).
+  Implementation of the SHA-1 message-digest algorithm (see FIPS PUB 180-2).
   This class takes a message of arbitrary length and produces a 128-bit
   "fingerprint"/"message digest" of the message. According to the RFC it is
   computationally infeasible to produce two messages having the same message
@@ -34,14 +34,14 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   <pre>
   String message = "abcdefghijklmnopqrstuvwxyz";
   SHA1 checksum;
-  checksum.push(Cast::pointer<const byte*>(message.getElements()), message.getLength());
+  checksum.push(Cast::pointer<const uint8*>(message.getElements()), message.getLength());
   checksum.pushEnd();
   fout << MESSAGE("message digest: ") << checksum.getValue() << ENDL;
   </pre>
 
   @short SHA-1 message-digest.
   @ingroup security
-  @see MD5Sum
+  @see MD5Sum SHA256 SHA384 SHA512
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -52,20 +52,46 @@ public:
   /** Internal block size in bytes. */
   static const unsigned int BLOCK_SIZE = 64;
   /** Specifies the maximum length (in bytes) of the original message. */
-  static const unsigned long long MAXIMUM_SIZE = (1ULL << (64 - 3)) - 1;
+  static const uint64 MAXIMUM_SIZE = (1ULL << (64 - 3)) - 1;
+  /** The message schedule size. */
+  static const unsigned int MESSAGE_SCHEDULE = 80;
 private:
-
+  
   /** Message digest buffer. */
-  unsigned int messageDigest[5];
+  uint32 messageDigest[5];
   /** The total number of bytes pushed. */
-  unsigned long long totalSize;
+  uint64 totalSize;
   /** Temporary container for incomplete 16 word block. */
-  byte buffer[BLOCK_SIZE];
+  uint8 buffer[BLOCK_SIZE];
   /** The number of bytes in the buffer. */
   unsigned int bytesInBuffer;
-
+  
   /** Push one block (16 words). */
-  void pushBlock(const byte* block) throw();
+  void pushBlock(const uint8* block) throw();
+  
+  static inline uint32 rotate(uint32 value, unsigned int bits) throw() {
+    return (value << bits) | (value >> (32 - bits));
+  }
+  
+  static inline void translate1(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) throw() {
+    e += rotate(a, 5) + ((b & c) | (~b & d)) + word + 0x5a827999;
+    b = rotate(b, 30);
+  }
+
+  static inline void translate2(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) throw() {
+    e += rotate(a, 5) + (b ^ c ^ d) + word + 0x6ed9eba1;
+    b = rotate(b, 30);
+  }
+
+  static inline void translate3(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) throw() {
+    e += rotate(a, 5) + ((b & c) | (b & d) | (c & d)) + word + 0x8f1bbcdc;
+    b = rotate(b, 30);
+  }
+
+  static inline void translate4(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) throw() {
+    e += rotate(a, 5) + (b ^ c ^ d) + word + 0xca62c1d6;
+    b = rotate(b, 30);
+  }
 public:
 
   /**
@@ -81,7 +107,7 @@ public:
     @param buffer The buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  void push(const byte* buffer, unsigned int size) throw(OutOfRange);
+  void push(const uint8* buffer, unsigned int size) throw(OutOfRange);
 
   /**
     This function should be invoked when the entire message has been pushed.
@@ -92,7 +118,7 @@ public:
   /**
     Returns the total size of the original message.
   */
-  unsigned long long getTotalSize() const throw();
+  uint64 getTotalSize() const throw();
 
   /**
     Returns the message digest encoded in hex. This is only valid after

@@ -30,21 +30,27 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
+  @defgroup net Network
+*/
+
+/**
   This class implements a socket. A socket is an endpoint for communication
   between two hosts on a network. MT-level is safe.
 
-  @short Socket
+  @short Socket.
   @see StreamSocket ServerSocket
+  @ingroup net
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
 
 class Socket : public virtual Object, public virtual AsynchronousInputStream, public virtual AsynchronousOutputStream, public Synchronizeable<Unsafe> {
-private:
   friend class Initialization;
+private:
 
-  typedef Unsafe LOCK;
-
+  /** The type of the guard. */
+  typedef Unsafe Guard;
+  
   class SocketImpl : public Handle {
   private:
 
@@ -106,8 +112,8 @@ private:
       remotePort = port;
     }
     
-    /** Returns true if socket has been created. */
-    inline bool isCreated() const throw() {
+    /** Returns true if the socket is valid. */
+    inline bool isValid() const throw() {
       return getHandle() != OperatingSystem::INVALID_HANDLE;
     }
     
@@ -333,6 +339,13 @@ public:
   */
   unsigned int available() const throw(IOException);
 
+  /**
+    Returns true if the socket is valid.
+  */
+  inline bool isValid() const throw() {
+    return socket->isValid();
+  }
+  
   /**
     Returns true if the end has been reached.
   */

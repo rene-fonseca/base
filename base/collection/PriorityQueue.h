@@ -98,9 +98,7 @@ public:
     'InvalidNode' if the priority queue is empty.
   */
   Value pop() throw(InvalidNode) {
-    if (!size) {
-      throw InvalidNode("Priority queue is empty");
-    }
+    assert(size, InvalidNode("Priority queue is empty", this));
 
     OrderedBinaryTree<Node>::Node* node = elements.getLast();
     Queue<Value>* queue = node->getValue()->getValue();

@@ -45,6 +45,8 @@ private:
   static unsigned int counter;
 public:
 
+  /** Specifies the folder level separator. */
+  static const char SEPARATOR = '/'; // TAG: fixme
   /** Specifies the maximum length of a path. */
   static const unsigned int MAXIMUM_PATH_LENGTH;
 
@@ -148,22 +150,27 @@ public:
     @param component The desired component (DIRECTORY, NAME, or EXTENSION).
   */
   static String getComponent(const String& path, Component component) throw(FileSystemException);
+
+  /**
+    Returns true if the specifies path is an absolute path.
+  */
+  static bool isAbsolutePath(const String& path) throw();
   
   /**
     Converts the path to an absolute path.
 
-    @param base The 
+    @param base The base path.
     @param path The path to be converted.
   */
   static String toAbsolutePath(const String& base, const String& path) throw(FileSystemException);
   
   /**
     Returns a URL from the specified path. The URL has the following format:
-    "file:///C://WINNT" or "file:///usr/local".
+    "file:///C:/WINNT" or "file:///usr/local".
     
-    @param path The path to convert to a URL.
+    @param path The path to convert to a URL (MUST be absolute).
   */
-  static String toUrl(const String& path) throw();
+  static String toUrl(const String& path) throw(FileSystemException);
   
   /**
     Returns the path of the current folder.

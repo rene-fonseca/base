@@ -130,12 +130,81 @@ String FileSystem::getComponent(const String& path, Component component) throw(F
 #endif
 }
 
-String FileSystem::toAbsolutePath(const String& base, const String& path) throw(FileSystemException) {
-  throw NotImplemented(Type::getType<FileSystem>());
+bool FileSystem::isAbsolutePath(const String& path) throw() {
+  String::ReadIterator i = path.getBeginReadIterator();
+  String::ReadIterator end = path.getEndReadIterator();
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  return ((i < end) && ASCIITraits::isAlpha(*i++) && (i < end) && (*i++ == ':') && (i < end) && (*i == SEPARATOR));
+#else // unix
+  return (i < end) && (*i == SEPARATOR);
+#endif // flavor
 }
 
-String FileSystem::toUrl(const String& path) throw() {
-  throw NotImplemented(Type::getType<FileSystem>());
+String FileSystem::toAbsolutePath(const String& base, const String& path) throw(FileSystemException) {
+  if (!base.isProper() || isAbsolutePath(path)) {
+    return path;
+  }
+  String result = base;
+  result.append(SEPARATOR);
+  result.append(path);
+  
+  // remove duplicate separators
+  String::Iterator i = result.getBeginIterator();
+  bool previousIsSeparator = /*(i < end) &&*/ (*i == SEPARATOR); // content of comment not required
+  ++i;
+  String::Iterator j = i;
+  String::Iterator end = result.getEndIterator();
+  while (i < end) {
+    if (*i == SEPARATOR) {
+      if (previousIsSeparator) {
+        ++i; // skip separator
+        continue;
+      }
+      previousIsSeparator = true;
+    } else {
+      previousIsSeparator = false;
+    }
+    *j++ = *i++;
+  }
+  result.forceToLength(j - result.getBeginIterator());
+  return result;
+}
+
+String FileSystem::toUrl(const String& path) throw(FileSystemException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  static const StringLiteral PREFIX = MESSAGE("file:///");
+#else // unix
+  static const StringLiteral PREFIX = MESSAGE("file://");
+#endif
+  if (isAbsolutePath(path)) {
+    throw FileSystemException(Type::getType<FileSystem>());
+  }
+  String result = PREFIX + path; // e.g. "file:///C:/"
+  if (SEPARATOR != '/') {
+    // replace all separators with "/" and replace duplicate separators (but leave prefix)
+    String::Iterator i = result.getBeginIterator();
+    i += PREFIX.getLength(); // skip prefix
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+    *i++ = ASCIITraits::toUpper(*i); // make device uppercase
+    ++i; // skip semicolon
+#endif // flavor
+    String::Iterator j = i;
+    String::Iterator end = result.getEndIterator();
+    bool previousIsSeparator = false;
+    while (i < end) {
+      if (*i == SEPARATOR) {
+        ++i;
+        if (!previousIsSeparator) {
+          previousIsSeparator = true;
+          *j++ = '/';
+        }
+      } else {
+        previousIsSeparator = false;
+        *j++ = *i++;
+      }
+    }
+  }
+  return result;
 }
 
 String FileSystem::getCurrentFolder() throw(FileSystemException) {

@@ -135,6 +135,8 @@ unsigned int SerialPort::getBaudRate() const throw(CommunicationsException) {
   DCB dcb;
   assert(::GetCommState(handle->getHandle(), &dcb) != 0, CommunicationsException());
   return dcb.BaudRate;
+#else // unix
+  return 0; // TAG: fixme
 #endif // flavor
 }
 
@@ -143,6 +145,8 @@ unsigned int SerialPort::getDataBits() const throw(CommunicationsException) {
   DCB dcb;
   assert(::GetCommState(handle->getHandle(), &dcb) != 0, CommunicationsException());
   return dcb.ByteSize;
+#else // unix
+  return 0; // TAG: fixme
 #endif // flavor
 }
 
@@ -164,6 +168,8 @@ unsigned int SerialPort::getParity() const throw(CommunicationsException) {
   default:
     throw UnexpectedFailure(this); // we should never end up here
   }
+#else // unix
+  return Parity::NO; // TAG: fixme
 #endif // flavor
 }
 
@@ -181,6 +187,8 @@ unsigned int SerialPort::getStopBits() const throw(CommunicationsException) {
   default:
     throw UnexpectedFailure(this); // we should never end up here
   }
+#else // unix
+  return 0; // TAG: fixme
 #endif // flavor
 }
 

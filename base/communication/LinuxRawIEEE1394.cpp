@@ -369,7 +369,7 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
       assert(
         (tcode == IEEE1394Impl::TCODE_ISOCHRONOUS_DATA_BLOCK) &&
         isochronousChannels[channel].listener &&
-        (size < isochronousChannels[channel].buffer.getSize()),
+        (size <= isochronousChannels[channel].buffer.getSize()),
         UnexpectedFailure("Invalid isochronous packet", this)
       );
       isochronousChannels[channel].listener->onIsochronousPacket(

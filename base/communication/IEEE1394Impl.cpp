@@ -31,4 +31,7 @@ IEEE1394Impl* IEEE1394Impl::getDefault() throw() {
   return new _DK_SDU_MIP__BASE__IEEE_1394_IMPL();
 }
 
+IEEE1394Impl::~IEEE1394Impl() throw(IEEE1394Exception) {
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

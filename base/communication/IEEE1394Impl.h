@@ -141,7 +141,9 @@ public:
     @param maxPacketsPerRequest The maximum number of packets per request.
     @param subchannel Mask specifying the subchannel to reserve for this channel.
   */
-  virtual IsochronousWriteChannel getWriteChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) = 0;
+  virtual IsochronousWriteChannel getWriteChannel(
+    unsigned int maxPacketsPerRequest,
+    uint64 subchannels) throw(IEEE1394Exception) = 0;
 
   /**
     Starts an isochronous packet listener.
@@ -150,7 +152,10 @@ public:
     @param maximumPayload The maximum payload of a packet.
     @param listener The listener to be notified on incomming packets.
   */
-  virtual void readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) = 0;
+  virtual void readIsochronous(
+    unsigned int channel,
+    unsigned int maximumPayload,
+    IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) = 0;
 
   virtual bool wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) = 0;
   
@@ -159,6 +164,11 @@ public:
   virtual void registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception) = 0;
   
   virtual void unregisterFCPListener() throw(IEEE1394Exception) = 0;
+
+  /**
+    Destroys the IEEE 1394 implementation.
+  */
+  virtual ~IEEE1394Impl() throw(IEEE1394Exception);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

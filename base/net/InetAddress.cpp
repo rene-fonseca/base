@@ -335,7 +335,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
   } else {
     inet_ntop(AF_INET6, &value.address, buffer->getElements(), buffer->getSize()); // MT-level is safe
   }
-  return stream << buffer;
+  return stream << buffer->getElements();
 #else
   // longest possible string is "255.255.255.255"
   return stream << inet_ntoa(*(struct in_addr*)&value.address); // Uses static buffer

@@ -40,34 +40,34 @@ public:
   /**
     @short XML parser call back interface.
   */
-  class Callback : public virtual Object {
+  class Callback {
   public:
 
-    virtual void startDocument() {
+    virtual void startDocument() throw() {
     }
     
-    virtual void endDocument() {
+    virtual void endDocument() throw() {
     }
     
-    virtual void startElement(const String& n, const XMLPropertyHash& p) {
+    virtual void startElement(const String& n, const XMLPropertyHash& p) throw() {
     }
     
-    virtual void endElement(const String& n) {
+    virtual void endElement(const String& n) throw() {
     }
     
-    virtual void characters(const String& s) {
+    virtual void characters(const String& s) throw() {
     }
     
-    virtual void comment(const String& s) {
+    virtual void comment(const String& s) throw() {
     }
     
-    virtual void warning(const String& s) {
+    virtual void warning(const String& s) throw() {
     }
     
-    virtual void error(const String& s) {
+    virtual void error(const String& s) throw() {
     }
     
-    virtual void fatalError(const String& s) {
+    virtual void fatalError(const String& s) throw() {
     }
   };
 

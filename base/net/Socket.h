@@ -15,6 +15,8 @@
 #define _DK_SDU_MIP__BASE_NET__SOCKET_H
 
 #include <base/Object.h>
+#include <base/io/async/AsynchronousInputStream.h>
+#include <base/io/async/AsynchronousOutputStream.h>
 #include <base/concurrency/Synchronize.h>
 #include <base/io/AccessDenied.h>
 #include <base/io/TimedOut.h>
@@ -23,6 +25,7 @@
 #include <base/net/InetAddress.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/OperatingSystem.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -35,7 +38,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class Socket : public virtual Object, public Synchronizeable<Unsafe> {
+class Socket : public virtual Object, public virtual AsynchronousInputStream, public virtual AsynchronousOutputStream, public Synchronizeable<Unsafe> {
 private:
 
   typedef Unsafe LOCK;
@@ -44,7 +47,7 @@ private:
   private:
 
     /** Handle to the socket. */
-    int handle;
+    OperatingSystem::Handle handle;
     /** Specifies the remote address to which the socket is connected. */
     InetAddress remoteAddress;
     /** Specifies the remote port (in host byte order) to which the socket is connected (unconnected if 0). */
@@ -60,9 +63,9 @@ private:
     /** Initializes invalid socket. */
     SocketImpl() throw();
     /** Initializes the socket with the specified handle. */
-    SocketImpl(int handle) throw();
+    SocketImpl(OperatingSystem::Handle handle) throw();
     /** Returns the socket handle. */
-    inline int getHandle() const throw() {return handle;}
+    inline OperatingSystem::Handle getHandle() const throw() {return handle;}
     /** Returns the local address. */
     inline const InetAddress& getLocalAddress() const throw() {return localAddress;}
     /** Sets the local address. */
@@ -80,7 +83,7 @@ private:
     /** Sets the remote port. */
     inline void setRemotePort(unsigned short port) throw() {remotePort = port;}
     /** Returns true if socket has been created. */
-    inline bool isCreated() const throw() {return getHandle() != -1;}
+    inline bool isCreated() const throw() {return getHandle() != OperatingSystem::INVALID_HANDLE;}
     /** Returns true if socket is connected. */
     inline bool isConnected() const throw() {return getRemotePort() != 0;}
     /** Returns true if socket is bound. */
@@ -98,7 +101,7 @@ protected:
   ReferenceCountedObjectPointer<SocketImpl> socket;
 
   /** Returns the handle. */
-  inline int getHandle() const throw() {return socket->getHandle();}
+  inline OperatingSystem::Handle getHandle() const throw() {return socket->getHandle();}
   /** Get boolean socket option. */
   bool getBooleanOption(int option) const throw(IOException);
   /** Set boolean socket option. */
@@ -338,6 +341,12 @@ public:
   */
   unsigned int receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(IOException);
 
+  void asyncCancel() throw(AsynchronousException);
+  
+  AsynchronousReadOperation read(char* buffer, unsigned int bytesToRead, AsynchronousReadEventListener* listener) throw(AsynchronousException);
+
+  AsynchronousWriteOperation write(const char* buffer, unsigned int bytesToWrite, AsynchronousWriteEventListener* listener) throw(AsynchronousException);
+  
   /**
     Blocking wait for input to become available.
   */
@@ -346,15 +355,11 @@ public:
   /**
     Blocking wait for input to become available.
 
-    @param timeout The timeout periode in microseconds.
+    @param microseconds The timeout periode in microseconds.
+    
     @return True, if data is available. False, if the timeout periode expired.
   */
-  bool wait(unsigned int timeout) const throw(IOException);
-
-  /**
-    Destroy socket.
-  */
-  ~Socket();
+  bool wait(unsigned int microseconds) const throw(IOException);
 
   /**
     Writes a string representation of a Socket object to a format stream.

@@ -77,40 +77,45 @@ public:
   /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. Unresolved problem: size of int depends on architecture. */
   static const unsigned int MAXIMUM_LENGTH = ((INT_MAX - sizeof(TERMINATOR))/GRANULARITY)*GRANULARITY;
 
-  class Enumeration;
-  friend class Enumeration;
-  class ReadOnlyEnumeration;
-  friend class ReadOnlyEnumeration;
+  typedef ReferenceCountedCapacityAllocator<char>::Iterator Iterator;
+  typedef ReferenceCountedCapacityAllocator<char>::ReadIterator ReadIterator;
+  typedef ReferenceCountedCapacityAllocator<char>::Enumerator Enumerator;
+  typedef ReferenceCountedCapacityAllocator<char>::ReadEnumerator ReadEnumerator;
 
-  /**
-    Enumeration of all the elements of a string.
-  */
-  class Enumeration : public AllocatorEnumeration<char, char&, char*> {
-  public:
-
-    /**
-      Initializes an enumeration of all the elements of the specified string.
-
-      @param string The string being enumerated.
-    */
-    Enumeration(String& string) throw() :
-      AllocatorEnumeration<char, char&, char*>(string.getMutableBuffer(), string.getMutableBuffer() + string.getLength()) {}
-  };
-
-  /**
-    Non-modifying enumeration of all the elements of a string.
-  */
-  class ReadOnlyEnumeration : public AllocatorEnumeration<char, const char&, const char*> {
-  public:
-
-    /**
-      Initializes a non-modifying enumeration of all the elements of the specified string.
-
-      @param string The string being enumerated.
-    */
-    ReadOnlyEnumeration(const String& string) throw() :
-      AllocatorEnumeration<char, const char&, const char*>(string.getReadOnlyBuffer(), string.getReadOnlyBuffer() + string.getLength()) {}
-  };
+//  class Enumeration;
+//  friend class Enumeration;
+//  class ReadOnlyEnumeration;
+//  friend class ReadOnlyEnumeration;
+//
+//  /**
+//    Enumeration of all the elements of a string.
+//  */
+//  class Enumeration : public AllocatorEnumeration<char, char&, char*> {
+//  public:
+//
+//    /**
+//      Initializes an enumeration of all the elements of the specified string.
+//
+//      @param string The string being enumerated.
+//    */
+//    Enumeration(String& string) throw() :
+//      AllocatorEnumeration<char, char&, char*>(string.getMutableBuffer(), string.getMutableBuffer() + string.getLength()) {}
+//  };
+//
+//  /**
+//    Non-modifying enumeration of all the elements of a string.
+//  */
+//  class ReadOnlyEnumeration : public AllocatorEnumeration<char, const char&, const char*> {
+//  public:
+//
+//    /**
+//      Initializes a non-modifying enumeration of all the elements of the specified string.
+//
+//      @param string The string being enumerated.
+//    */
+//    ReadOnlyEnumeration(const String& string) throw() :
+//      AllocatorEnumeration<char, const char&, const char*>(string.getReadOnlyBuffer(), string.getReadOnlyBuffer() + string.getLength()) {}
+//  };
 private:
 
   /**
@@ -261,6 +266,52 @@ public:
     Sets the granularity.
   */
   void setGranularity(unsigned int granularity) throw();
+
+// *******************************************************************************************
+//   TRAVERSE SECTION
+// *******************************************************************************************
+
+  /**
+    Returns the first element of the string as a modifying iterator.
+  */
+  inline Iterator getBeginIterator() throw() {
+    return elements->getBeginIterator();
+  }
+
+  /**
+    Returns the end of the string as a modifying iterator.
+  */
+  inline Iterator getEndIterator() throw() {
+    return elements->getEndIterator();
+  }
+
+//  /**
+//    Returns the first element of the string as a non-modifying iterator.
+//  */
+//  inline ReadIterator getBeginIterator() const throw() {
+//    return elements->getBeginIterator();
+//  }
+//
+//  /**
+//    Returns the end of the string as a non-modifying iterator.
+//  */
+//  inline ReadIterator getEndIterator() const throw() {
+//    return elements->getEndIterator();
+//  }
+
+  /**
+    Returns a modifying enumerator of the string.
+  */
+  inline Enumerator getEnumerator() throw() {
+    return elements->getEnumerator();
+  }
+
+  /**
+    Returns a non-modifying enumerator of the string.
+  */
+  inline ReadEnumerator getReadEnumerator() const throw() {
+    return elements->getReadEnumerator();
+  }
 
 // *******************************************************************************************
 //   CHARACTER SECTION

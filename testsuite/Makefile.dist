@@ -15,3 +15,6 @@ normal: all
 
 final: all
 	CXXFLAGS="-O3" ./configure --prefix=/usr/local/base
+
+lendum: all
+	CXX=/usr/local/gcc-3.0/bin/g++ CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..

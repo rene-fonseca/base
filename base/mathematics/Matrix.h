@@ -75,39 +75,44 @@ public:
   class Row {
   public:
 
-    /**
-      Enumeration of all the elements of a matrix.
-    */
-    class Enumeration : public AllocatorEnumeration<TYPE, TYPE&, TYPE*> {
-    public:
+    typedef typename ReferenceCountedAllocator<TYPE>::Iterator Iterator;
+    typedef typename ReferenceCountedAllocator<TYPE>::ReadIterator ReadIterator;
+    typedef typename ReferenceCountedAllocator<TYPE>::Enumerator Enumerator;
+    typedef typename ReferenceCountedAllocator<TYPE>::ReadEnumerator ReadEnumerator;
 
-      /**
-        Initializes an enumeration of all the elements of the specified matrix.
+//    /**
+//      Enumeration of all the elements of a matrix.
+//    */
+//    class Enumeration : public AllocatorEnumeration<TYPE, TYPE&, TYPE*> {
+//    public:
+//
+//      /**
+//        Initializes an enumeration of all the elements of the specified matrix.
+//
+//        @param matrix The matrix being enumerated.
+//      */
+//      Enumeration(Matrix& matrix) throw() :
+//        AllocatorEnumeration<TYPE, TYPE&, TYPE*>(matrix.getElements(), matrix.getElements() + matrix.getSize()) {}
+//    };
+//
+//    /**
+//      Non-modifying enumeration of all the elements of a matrix.
+//    */
+//    class ReadOnlyEnumeration : public AllocatorEnumeration<TYPE, const TYPE&, const TYPE*> {
+//    public:
+//
+//      /**
+//        Initializes a non-modifying enumeration of all the elements of the specified matrix.
+//
+//        @param matrix The matrix being enumerated.
+//      */
+//      ReadOnlyEnumeration(const Matrix& matrix) throw() :
+//        AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(matrix.getElements(), matrix.getElements() + matrix.getSize()) {}
+//    };
+  }; // end of Row namespace
 
-        @param matrix The matrix being enumerated.
-      */
-      Enumeration(Matrix& matrix) throw() :
-        AllocatorEnumeration<TYPE, TYPE&, TYPE*>(matrix.getElements(), matrix.getElements() + matrix.getSize()) {}
-    };
-
-    /**
-      Non-modifying enumeration of all the elements of a matrix.
-    */
-    class ReadOnlyEnumeration : public AllocatorEnumeration<TYPE, const TYPE&, const TYPE*> {
-    public:
-
-      /**
-        Initializes a non-modifying enumeration of all the elements of the specified matrix.
-
-        @param matrix The matrix being enumerated.
-      */
-      ReadOnlyEnumeration(const Matrix& matrix) throw() :
-        AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(matrix.getElements(), matrix.getElements() + matrix.getSize()) {}
-    };
-  };
-
-  friend class Row::Enumeration;
-  friend class Row::ReadOnlyEnumeration;
+//  friend class Row::Enumerator;
+//  friend class Row::ReadOnlyEnumerator;
 protected:
 
   /**
@@ -256,7 +261,7 @@ public:
     @param diagonal The enumerator containing the desired diagonal elements.
     @param dimension The desired dimension of the matrix.
   */
-  Matrix(Enumeration<TYPE, TYPE&, TYPE*>& diagonal, const Dimension& dimension) throw(OutOfDomain);
+  Matrix(Enumerator<ReadEnumeratorTraits<TYPE> >& diagonal, const Dimension& dimension) throw(OutOfDomain);
 
   /**
     Initializes matrix from other matrix.

@@ -33,7 +33,7 @@ public:
 
   void startElement(const String& name, const XMLPropertyHash& attributes) {
     fout << "XML - startElement: " << name << " - {";
-    XMLPropertyHash::ReadOnlyEnumeration enu(attributes);
+    XMLPropertyHash::ReadEnumerator enu = attributes.getReadEnumerator();
     while (enu.hasNext()) {
       const XMLProperty* attribute = enu.next()->getValue();
       fout << "{" << attribute->getName() << ";" << attribute->getValue() << "}";

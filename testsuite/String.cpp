@@ -39,7 +39,7 @@ int main() {
 
   Allocator<char> a(1234);
   fout << "Size of Allocator<char> (a): " << a.getSize() << ENDL;
-  Allocator<char>::Enumeration enua(a);
+  Allocator<char>::ReadEnumerator enua = a.getReadEnumerator();
   unsigned int counta = 0;
   while (enua.hasNext()) {
     enua.next();
@@ -50,7 +50,7 @@ int main() {
 
   ReferenceCountedAllocator<char> ra(4321);
   fout << "Size of ReferenceCountedAllocator<char> (ra): " << ra.getSize() << ENDL;
-  ReferenceCountedAllocator<char>::Enumeration enura(ra);
+  ReferenceCountedAllocator<char>::ReadEnumerator enura = ra.getReadEnumerator();
   unsigned int countra = 0;
   while (enura.hasNext()) {
     enura.next();
@@ -63,7 +63,7 @@ int main() {
   fout << "CapacityAllocator<char>::getSize(): " << b.getSize() << ENDL;
   fout << "CapacityAllocator<char>::getGranularity(): " << b.getGranularity() << ENDL;
   fout << "CapacityAllocator<char>::getCapacity(): " << b.getCapacity() << ENDL;
-  CapacityAllocator<char>::Enumeration enub(b);
+  CapacityAllocator<char>::ReadEnumerator enub = b.getReadEnumerator();
   unsigned int countb = 0;
   while (enub.hasNext()) {
     enub.next();
@@ -78,7 +78,7 @@ int main() {
   fout << "ReferenceCountedCapacityAllocator<char>::getSize(): " << rb.getSize() << ENDL;
   fout << "ReferenceCountedCapacityAllocator<char>::getGranularity(): " << rb.getGranularity() << ENDL;
   fout << "ReferenceCountedCapacityAllocator<char>::getCapacity(): " << rb.getCapacity() << ENDL;
-  ReferenceCountedCapacityAllocator<char>::Enumeration enurb(rb);
+  ReferenceCountedCapacityAllocator<char>::ReadEnumerator enurb = rb.getReadEnumerator();
   unsigned int countrb = 0;
   while (enurb.hasNext()) {
     enurb.next();

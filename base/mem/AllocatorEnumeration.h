@@ -21,22 +21,16 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Enumeration of successive elements.
+  Enumerator used to traverse elements of a sequence (not to be confused with the
+  Array collection).
 
+  @short Enumerator of elements of a sequence.
   @author René Møller Fonseca
   @version 1.0
 */
 
-template<class TYPE, class REF, class PTR>
-class AllocatorEnumeration : public Enumeration<TYPE, REF, PTR> {
-public:
-
-  /** The type of the values being enumerated. */
-  typedef TYPE Value;
-  /** The type of a reference to a value. */
-  typedef REF Reference;
-  /** The type of a pointer to a value. */
-  typedef PTR Pointer;
+template<class TRAITS>
+class AllocatorEnumerator : public Enumerator<TRAITS> {
 private:
 
   /** The current position in the enumeration. */
@@ -51,13 +45,13 @@ public:
     @param begin Specifies the beginning of the enumeration.
     @param end Specifies the end of the enumeration.
   */
-  inline AllocatorEnumeration(Pointer begin, Pointer end) throw() : current(begin), end(end) {
+  inline AllocatorEnumerator(Pointer begin, Pointer end) throw() : current(begin), end(end) {
   }
 
   /**
     Initializes enumeration from other enumeration.
   */
-  inline AllocatorEnumeration(const AllocatorEnumeration& copy) throw() : current(copy.current), end(copy.end) {}
+  inline AllocatorEnumerator(const AllocatorEnumerator& copy) throw() : current(copy.current), end(copy.end) {}
 
   /**
     Returns true if the enumeration still contains elements.
@@ -70,23 +64,21 @@ public:
     Returns the next element and advances the position of this enumeration.
   */
   inline Pointer next() throw(EndOfEnumeration) {
-    if (current == end) {
-      throw EndOfEnumeration();
-    }
+    assert(current != end, EndOfEnumeration());
     return current++;
   }
 
   /**
-    Returns true if the enumerations are pointing to the same position.
+    Returns true if the enumerations are referencing the same element.
   */
-  inline bool operator==(const AllocatorEnumeration& eq) const throw() {
+  inline bool operator==(const AllocatorEnumerator& eq) const throw() {
     return current == eq.current;
   }
 
   /**
-    Returns true if the enumerations aren't pointing to the same position.
+    Returns true if the enumerations are not referencing the same element.
   */
-  inline bool operator!=(const AllocatorEnumeration& eq) const throw() {
+  inline bool operator!=(const AllocatorEnumerator& eq) const throw() {
     return current != eq.current;
   }
 };

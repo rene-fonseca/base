@@ -63,7 +63,7 @@ void XMLNode::removeChild(XMLNode* node) throw() {
 
 XMLProperty* XMLNode::getProperty(const String& name) throw() {
   // TAG: need to use hash value
-  List<XMLProperty>::Enumeration enu(properties);
+  List<XMLProperty>::Enumerator enu = properties.getEnumerator();
   while (enu.hasNext()) {
     XMLProperty* attribute = enu.next();
     if (attribute->getName() == name) {
@@ -74,7 +74,7 @@ XMLProperty* XMLNode::getProperty(const String& name) throw() {
 }
 
 void XMLNode::addProperty(const String& name, const String& value) throw() {
-  List<XMLProperty>::Enumeration enu(properties);
+  List<XMLProperty>::ReadEnumerator enu = properties.getReadEnumerator();
   while (enu.hasNext()) {
     assert(enu.next()->getName() != name, Exception("Attribute already exists"));
   }
@@ -82,7 +82,7 @@ void XMLNode::addProperty(const String& name, const String& value) throw() {
 }
 
 void XMLNode::removeProperty(const String& name) throw() {
-  List<XMLProperty>::Enumeration enu(properties);
+  List<XMLProperty>::Enumerator enu = properties.getEnumerator();
   while (enu.hasNext()) {
     if (enu.next()->getName() == name) {
       // remove node

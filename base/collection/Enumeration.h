@@ -19,23 +19,63 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Enumeration interface that is used to traverse individual elements of a
-  collection one by one.
+  Defines the types of a modifying (has write access to the elements) enumerator.
+*/
+template<class VALUE>
+class EnumeratorTraits {
+protected:
 
+  typedef EnumeratorTraits SelfEnumeratorTraits;
+public:
+
+  typedef VALUE Value;
+  typedef VALUE& Reference;
+  typedef VALUE* Pointer;
+  typedef unsigned int Distance;
+};
+
+/**
+  Defines the types of a non-modifying enumerator (may only read the values of the elements).
+*/
+template<class VALUE>
+class ReadEnumeratorTraits {
+protected:
+
+  typedef ReadEnumeratorTraits SelfEnumeratorTraits;
+public:
+
+  typedef VALUE Value;
+  typedef const VALUE& Reference;
+  typedef const VALUE* Pointer;
+  typedef unsigned int Distance;
+};
+
+/**
+  Enumeration interface used to traverse individual elements of a collection
+  one by one. If possible, the enumeration interface should be used in
+  preference to the iteration interface.
+
+  @short Enumeration interface
   @author René Møller Fonseca
   @version 1.0
 */
 
-template<class TYPE, class REF, class PTR>
-class Enumeration {
+template<class TRAITS>
+class Enumerator {
+private:
+
+  /** Used to ensure that the specified traits template argument is an enumerator. */
+  typedef typename TRAITS::SelfEnumeratorTraits ValidTraits;
 public:
 
-  /** The type of the values being enumerated. */
-  typedef TYPE Value;
-  /** The type of a reference to a value. */
-  typedef REF Reference;
-  /** The type of a pointer to a value. */
-  typedef PTR Pointer;
+  /** The type of the element. */
+  typedef typename TRAITS::Value Value;
+  /** The type of the difference between elements. */
+  typedef typename TRAITS::Distance Distance;
+  /** The type of a reference to an element . */
+  typedef typename TRAITS::Reference Reference;
+  /** The type of a pointer to an element. */
+  typedef typename TRAITS::Pointer Pointer;
 
   /**
     Returns true if the enumeration has more elements.

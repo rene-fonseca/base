@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__...
-#define _DK_SDU_MIP__BASE__...
+#ifndef _DK_SDU_MIP__BASE__..._H
+#define _DK_SDU_MIP__BASE__..._H
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

@@ -27,7 +27,7 @@ void server(String a, String servicename) {
 
   {
     List<InetInterface> interfaces = InetInterface::getInetInterfaces();
-    List<InetInterface>::ReadOnlyEnumeration enu(interfaces);
+    List<InetInterface>::ReadEnumerator enu = interfaces.getReadEnumerator();
     fout << "Available interfaces:" << ENDL;
     while (enu.hasNext()) {
       const InetInterface* i = enu.next();
@@ -39,7 +39,7 @@ void server(String a, String servicename) {
   if (a == "") { // should we find an address
     fout << "Local addresses:" << ENDL;
     List<InetAddress> addresses = InetAddress::getAddressesByName(InetAddress::getLocalHost());
-    List<InetAddress>::ReadOnlyEnumeration enu(addresses);
+    List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
     unsigned int index = 0;
     while (enu.hasNext()) {
       const InetAddress* temp = enu.next();

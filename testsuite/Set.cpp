@@ -35,6 +35,8 @@ int main() {
   si.add(5);
   fout << "si: " << si << EOL;
 
+  Set<int>::Enumerator enu = si.getEnumerator();
+
   fout << "Non-modifying enumerating elements of set (calculating sum)" << ENDL;
   Sum<int> sum;
   forEach(si, sum);

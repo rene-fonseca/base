@@ -36,48 +36,53 @@ public:
   /** The type of the node. */
   typedef typename BinaryTree<TYPE>::Node Node;
 
-  class Enumeration;
-  friend class Enumeration;
-  class ReadOnlyEnumeration;
-  friend class ReadOnlyEnumeration;
+  /** Modifying enumerator. */
+  typedef InfixOrderEnumerator<EnumeratorTraits<Node> > Enumerator;
+  /** Non-modifying enumerator. */
+  typedef InfixOrderEnumerator<ReadEnumeratorTraits<Node> > ReadEnumerator;
 
-  /**
-    Enumeration of all the elements of an ordered binary tree.
-
-    @author René Møller Fonseca
-    @version 1.0
-  */
-  class Enumeration : public InfixOrderEnumeration<Value, Value&, Value*, Node*> {
-  public:
-
-    /**
-      Initializes an enumeration of all the elements of the specified ordered
-      binary tree.
-
-      @param tree The ordered binary tree being enumerated.
-    */
-    inline Enumeration(OrderedBinaryTree& tree) throw() :
-      InfixOrderEnumeration<Value, Value&, Value*, Node*>(tree.getRoot()) {}
-  };
-
-  /**
-    Non-modifying enumeration of all the elements of an ordered binary tree.
-
-    @author René Møller Fonseca
-    @version 1.0
-  */
-  class ReadOnlyEnumeration : public InfixOrderEnumeration<Value, const Value&, const Value*, const Node*> {
-  public:
-
-    /**
-      Initializes a non-modifying enumeration of all the elements of the
-      specified ordered binary tree.
-
-      @param tree The ordered binary tree being enumerated.
-    */
-    inline ReadOnlyEnumeration(const OrderedBinaryTree& tree) throw() :
-      InfixOrderEnumeration<Value, const Value&, const Value*, const Node*>(tree.getRoot()) {}
-  };
+//  class Enumeration;
+//  friend class Enumeration;
+//  class ReadOnlyEnumeration;
+//  friend class ReadOnlyEnumeration;
+//
+//  /**
+//    Enumeration of all the elements of an ordered binary tree.
+//
+//    @author René Møller Fonseca
+//    @version 1.0
+//  */
+//  class Enumeration : public InfixOrderEnumeration<Value, Value&, Value*, Node*> {
+//  public:
+//
+//    /**
+//      Initializes an enumeration of all the elements of the specified ordered
+//      binary tree.
+//
+//      @param tree The ordered binary tree being enumerated.
+//    */
+//    inline Enumeration(OrderedBinaryTree& tree) throw() :
+//      InfixOrderEnumeration<Value, Value&, Value*, Node*>(tree.getRoot()) {}
+//  };
+//
+//  /**
+//    Non-modifying enumeration of all the elements of an ordered binary tree.
+//
+//    @author René Møller Fonseca
+//    @version 1.0
+//  */
+//  class ReadOnlyEnumeration : public InfixOrderEnumeration<Value, const Value&, const Value*, const Node*> {
+//  public:
+//
+//    /**
+//      Initializes a non-modifying enumeration of all the elements of the
+//      specified ordered binary tree.
+//
+//      @param tree The ordered binary tree being enumerated.
+//    */
+//    inline ReadOnlyEnumeration(const OrderedBinaryTree& tree) throw() :
+//      InfixOrderEnumeration<Value, const Value&, const Value*, const Node*>(tree.getRoot()) {}
+//  };
 
   /**
     Initializes an empty ordered binary tree.
@@ -88,6 +93,20 @@ public:
     Initializes binary tree from other binary tree.
   */
   OrderedBinaryTree(const OrderedBinaryTree& copy) throw() {}
+
+  /**
+    Returns a modifying enumerator of the ordered binary tree.
+  */
+  inline Enumerator getEnumerator() throw() {
+    return Enumerator(getRoot());
+  }
+
+  /**
+    Returns a non-modifying enumerator of the ordered binary tree.
+  */
+  inline ReadEnumerator getReadEnumerator() const throw() {
+    return ReadEnumerator(getRoot());
+  }
 
   /**
     Searches for the specified value in this tree.

@@ -151,7 +151,7 @@ ThreadPool::~ThreadPool() throw() {
   terminate();
   join();
 
-  Set<Thread*>::Enumeration enu(pool);
+  Set<Thread*>::Enumerator enu = pool.getEnumerator();
   while (enu.hasNext()) {
     delete *enu.next();
   }

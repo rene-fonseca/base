@@ -30,7 +30,7 @@ int main() {
   fout << "size: " << mii.getSize() << ENDL;
 
   fout << "Non-modifying enumeration of map (calculate sum of values)" << ENDL;
-  Map<int, int>::ReadOnlyEnumeration enu(mii);
+  Map<int, int>::ReadEnumerator enu = mii.getReadEnumerator();
   int sum = 0;
   while (enu.hasNext()) {
     sum += *enu.next()->getValue();

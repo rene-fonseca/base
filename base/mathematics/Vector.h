@@ -34,6 +34,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 template<class TYPE> class Vector : public Object {
 public:
 
+  typedef typename ReferenceCountedAllocator<TYPE>::Iterator Iterator;
+  typedef typename ReferenceCountedAllocator<TYPE>::ReadIterator ReadIterator;
+  typedef typename ReferenceCountedAllocator<TYPE>::Enumerator Enumerator;
+  typedef typename ReferenceCountedAllocator<TYPE>::ReadEnumerator ReadEnumerator;
+
   /**
     Reference to an element within a vector.
   */
@@ -50,35 +55,35 @@ public:
     inline operator TYPE() const throw(OutOfRange) {return vector.getAt(index);}
   };
 
-  /**
-    Enumeration of all the elements of a vector.
-  */
-  class Enumeration : public AllocatorEnumeration<TYPE, TYPE&, TYPE*> {
-  public:
-
-    /**
-      Initializes an enumeration of all the elements of the specified vector.
-
-      @param vector The vector being enumerated.
-    */
-    Enumeration(Vector& vector) throw() :
-      AllocatorEnumeration<TYPE, TYPE&, TYPE*>(vector.getElements(), vector.getElements() + vector.getSize()) {}
-  };
-
-  /**
-    Non-modifying enumeration of all the elements of a vector.
-  */
-  class ReadOnlyEnumeration : public AllocatorEnumeration<TYPE, const TYPE&, const TYPE*> {
-  public:
-
-    /**
-      Initializes a non-modifying enumeration of all the elements of the specified vector.
-
-      @param vector The vector being enumerated.
-    */
-    ReadOnlyEnumeration(const Vector& vector) throw() :
-      AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(vector.getElements(), vector.getElements() + vector.getSize()) {}
-  };
+//  /**
+//    Enumeration of all the elements of a vector.
+//  */
+//  class Enumeration : public AllocatorEnumeration<TYPE, TYPE&, TYPE*> {
+//  public:
+//
+//    /**
+//      Initializes an enumeration of all the elements of the specified vector.
+//
+//      @param vector The vector being enumerated.
+//    */
+//    Enumeration(Vector& vector) throw() :
+//      AllocatorEnumeration<TYPE, TYPE&, TYPE*>(vector.getElements(), vector.getElements() + vector.getSize()) {}
+//  };
+//
+//  /**
+//    Non-modifying enumeration of all the elements of a vector.
+//  */
+//  class ReadOnlyEnumeration : public AllocatorEnumeration<TYPE, const TYPE&, const TYPE*> {
+//  public:
+//
+//    /**
+//      Initializes a non-modifying enumeration of all the elements of the specified vector.
+//
+//      @param vector The vector being enumerated.
+//    */
+//    ReadOnlyEnumeration(const Vector& vector) throw() :
+//      AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(vector.getElements(), vector.getElements() + vector.getSize()) {}
+//  };
 protected:
 
   /**
@@ -159,6 +164,50 @@ public:
     @param eq The vector containing the desired elements.
   */
   Vector& operator=(const Vector& eq) throw(MemoryException);
+
+
+
+  /**
+    Returns the first element of the allocator as a modifying array.
+  */
+  inline Iterator getBeginIterator() throw() {
+    return elements->getBeginIterator();
+  }
+
+  /**
+    Returns the end of the allocator as a modifying array.
+  */
+  inline Iterator getEndIterator() throw() {
+    return elements->getEndIterator();
+  }
+
+  /**
+    Returns the first element of the allocator as a non-modifying array.
+  */
+  inline ReadIterator getBeginIterator() const throw() {
+    return elements->getBeginIterator();
+  }
+
+  /**
+    Returns the end of the allocator as a non-modifying array.
+  */
+  inline ReadIterator getEndIterator() const throw() {
+    return elements->getEndIterator();
+  }
+
+  /**
+    Returns a modifying enumerator of the array.
+  */
+  inline Enumerator getEnumerator() throw() {
+    return elements->getEnumerator();
+  }
+
+  /**
+    Returns a non-modifying enumerator of the array.
+  */
+  inline ReadEnumerator getReadEnumerator() const throw() {
+    return elements->getReadEnumerator();
+  }
 
 
 

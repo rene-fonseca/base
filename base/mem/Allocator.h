@@ -95,35 +95,38 @@ public:
   typedef SequenceIterator<IteratorTraits<TYPE> > Iterator;
   typedef SequenceIterator<ReadIteratorTraits<TYPE> > ReadIterator;
 
-  /**
-    Enumeration of all the elements of an Allocator.
-  */
-  class Enumeration : public AllocatorEnumeration<TYPE, TYPE&, TYPE*> {
-  public:
+  typedef AllocatorEnumerator<EnumeratorTraits<TYPE> > Enumerator;
+  typedef AllocatorEnumerator<ReadEnumeratorTraits<TYPE> > ReadEnumerator;
 
-    /**
-      Initializes an enumeration of all the elements of the specified Allocator.
-
-      @param allocator The Allocator being enumerated.
-    */
-    Enumeration(Allocator& allocator) throw() :
-      AllocatorEnumeration<TYPE, TYPE&, TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
-  };
-
-  /**
-    Non-modifying enumeration of all the elements of an Allocator.
-  */
-  class ReadOnlyEnumeration : public AllocatorEnumeration<TYPE, const TYPE&, const TYPE*> {
-  public:
-
-    /**
-      Initializes a non-modifying enumeration of all the elements of the specified Allocator.
-
-      @param allocator The Allocator being enumerated.
-    */
-    ReadOnlyEnumeration(const Allocator& allocator) throw() :
-      AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
-  };
+//  /**
+//    Enumeration of all the elements of an Allocator.
+//  */
+//  class Enumerator : public AllocatorEnumerator<EnumeratorTraits<TYPE> > {
+//  public:
+//
+//    /**
+//      Initializes an enumeration of all the elements of the specified Allocator.
+//
+//      @param allocator The Allocator being enumerated.
+//    */
+//    Enumerator(Allocator& allocator) throw() :
+//      AllocatorEnumerator<Traits>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
+//  };
+//
+//  /**
+//    Non-modifying enumeration of all the elements of an Allocator.
+//  */
+//  class ReadEnumerator : public AllocatorEnumerator<ReadEnumeratorTraits<TYPE> > {
+//  public:
+//
+//    /**
+//      Initializes a non-modifying enumeration of all the elements of the specified Allocator.
+//
+//      @param allocator The Allocator being enumerated.
+//    */
+//    ReadEnumerator(const Allocator& allocator) throw() :
+//      AllocatorEnumerator<Traits>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
+//  };
 public:
 
   /**
@@ -179,31 +182,45 @@ public:
   }
 
   /**
-    Returns the first element of the allocator is a modifying iterator.
+    Returns the first element of the allocator as a modifying iterator.
   */
   inline Iterator getBeginIterator() throw() {
-    return Iterator(elements);
+    return Iterator(getElements());
   }
 
   /**
-    Returns the end of the allocator is a modifying iterator.
+    Returns the end of the allocator as a modifying iterator.
   */
   inline Iterator getEndIterator() throw() {
-    return Iterator(elements + size);
+    return Iterator(getElements() + getSize());
   }
 
   /**
-    Returns the first element of the allocator is a non-modifying iterator.
+    Returns the first element of the allocator as a non-modifying iterator.
   */
   inline ReadIterator getBeginIterator() const throw() {
-    return ReadIterator(elements);
+    return ReadIterator(getElements());
   }
 
   /**
-    Returns the end of the allocator is a non-modifying iterator.
+    Returns the end of the allocator as a non-modifying iterator.
   */
   inline ReadIterator getEndIterator() const throw() {
-    return ReadIterator(elements + size);
+    return ReadIterator(getElements() + getSize());
+  }
+
+  /**
+    Returns a modifying enumerator of the allocator.
+  */
+  inline Enumerator getEnumerator() throw() {
+    return Enumerator(getElements(), getElements() + getSize());
+  }
+
+  /**
+    Returns a non-modifying enumerator of the allocator.
+  */
+  inline ReadEnumerator getReadEnumerator() const throw() {
+    return ReadEnumerator(getElements(), getElements() + getSize());
   }
 
   /**

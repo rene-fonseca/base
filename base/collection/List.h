@@ -118,16 +118,12 @@ public:
   @version 1.0
 */
 
-template<class TYPE, class REF, class PTR>
-class ListEnumeration : public Enumeration<TYPE, REF, PTR> {
-public:
-
-  /** The type of a pointer to a value. */
-  typedef PTR Pointer;
+template<class TRAITS>
+class ListEnumerator : public Enumerator<TRAITS> {
 protected:
 
   /** The current position in the enumeration. */
-  ListNode<TYPE>* current;
+  ListNode<Value>* current;
 public:
 
   /**
@@ -135,12 +131,12 @@ public:
 
     @param begin Specifies the beginning of the enumeration.
   */
-  explicit inline ListEnumeration(ListNode<TYPE>* begin) throw() : current(begin) {}
+  explicit inline ListEnumerator(ListNode<Value>* begin) throw() : current(begin) {}
 
   /**
     Initializes enumeration from other enumeration.
   */
-  inline ListEnumeration(const ListEnumeration& copy) throw() : current(copy.current) {}
+  inline ListEnumerator(const ListEnumerator& copy) throw() : current(copy.current) {}
 
   /**
     Returns true if the enumeration still contains elements.
@@ -153,9 +149,7 @@ public:
     Returns the next element and advances the position of this enumeration.
   */
   inline Pointer next() throw(EndOfEnumeration) {
-    if (current == 0) {
-      throw EndOfEnumeration();
-    }
+    assert(current != 0, EndOfEnumeration());
     Pointer temp = current->getValue();
     current = current->getNext();
     return temp;
@@ -164,14 +158,14 @@ public:
   /**
     Returns true if the enumerations are pointing to the same position.
   */
-  inline bool operator==(const ListEnumeration& eq) const throw() {
+  inline bool operator==(const ListEnumerator& eq) const throw() {
     return current == eq.current;
   }
 
   /**
     Returns true if the enumerations aren't pointing to the same position.
   */
-  inline bool operator!=(const ListEnumeration& eq) const throw() {
+  inline bool operator!=(const ListEnumerator& eq) const throw() {
     return current != eq.current;
   }
 };
@@ -183,16 +177,12 @@ public:
   @version 1.0
 */
 
-template<class TYPE, class REF, class PTR>
-class ListReadOnlyEnumeration : public Enumeration<TYPE, REF, PTR> {
-public:
-
-  /** The type of a pointer to a value. */
-  typedef PTR Pointer;
+template<class TRAITS>
+class ListReadEnumerator : public Enumerator<TRAITS> {
 protected:
 
   /** The current position in the enumeration. */
-  const ListNode<TYPE>* current;
+  const ListNode<Value>* current;
 public:
 
   /**
@@ -200,12 +190,12 @@ public:
 
     @param begin Specifies the beginning of the enumeration.
   */
-  explicit inline ListReadOnlyEnumeration(const ListNode<TYPE>* begin) throw() : current(begin) {}
+  explicit inline ListReadEnumerator(const ListNode<Value>* begin) throw() : current(begin) {}
 
   /**
     Initializes enumeration from other enumeration.
   */
-  inline ListReadOnlyEnumeration(const ListReadOnlyEnumeration& copy) throw() : current(copy.current) {}
+  inline ListReadEnumerator(const ListReadEnumerator& copy) throw() : current(copy.current) {}
 
   /**
     Returns true if the enumeration still contains elements.
@@ -218,9 +208,7 @@ public:
     Returns the next element and advances the position of this enumeration.
   */
   inline Pointer next() throw(EndOfEnumeration) {
-    if (current == 0) {
-      throw EndOfEnumeration();
-    }
+    assert(current != 0, EndOfEnumeration());
     Pointer temp = current->getValue();
     current = current->getNext();
     return temp;
@@ -229,14 +217,14 @@ public:
   /**
     Returns true if the enumerations are pointing to the same position.
   */
-  inline bool operator==(const ListReadOnlyEnumeration& eq) const throw() {
+  inline bool operator==(const ListReadEnumerator& eq) const throw() {
     return current == eq.current;
   }
 
   /**
     Returns true if the enumerations aren't pointing to the same position.
   */
-  inline bool operator!=(const ListReadOnlyEnumeration& eq) const throw() {
+  inline bool operator!=(const ListReadEnumerator& eq) const throw() {
     return current != eq.current;
   }
 };
@@ -268,40 +256,43 @@ public:
   /** The type of a node. */
   typedef ListNode<Value> Node;
 
-  class Enumeration;
-  friend class Enumeration;
-  class ReadOnlyEnumeration;
-  friend class ReadOnlyEnumeration;
+  typedef ListEnumerator<EnumeratorTraits<TYPE> > Enumerator;
+  typedef ListReadEnumerator<ReadEnumeratorTraits<TYPE> > ReadEnumerator;
 
-  /**
-    Enumeration of all the elements of an array.
-  */
-  class Enumeration : public ListEnumeration<Value, Value&, Value*> {
-  public:
-
-    /**
-      Initializes an enumeration of all the elements of the specified list.
-
-      @param list The list being enumerated.
-    */
-    Enumeration(List& list) throw() :
-      ListEnumeration<Value, Value&, Value*>(list.getFirst()) {}
-  };
-
-  /**
-    Non-modifying enumeration of all the elements of an array.
-  */
-  class ReadOnlyEnumeration : public ListReadOnlyEnumeration<Value, const Value&, const Value*> {
-  public:
-
-    /**
-      Initializes a non-modifying enumeration of all the elements of the specified list.
-
-      @param list The list being enumerated.
-    */
-    ReadOnlyEnumeration(const List& list) throw() :
-      ListReadOnlyEnumeration<Value, const Value&, const Value*>(list.getFirst()) {}
-  };
+//  class Enumeration;
+//  friend class Enumeration;
+//  class ReadOnlyEnumeration;
+//  friend class ReadOnlyEnumeration;
+//
+//  /**
+//    Enumeration of all the elements of an array.
+//  */
+//  class Enumeration : public ListEnumeration<Value, Value&, Value*> {
+//  public:
+//
+//    /**
+//      Initializes an enumeration of all the elements of the specified list.
+//
+//      @param list The list being enumerated.
+//    */
+//    Enumeration(List& list) throw() :
+//      ListEnumeration<Value, Value&, Value*>(list.getFirst()) {}
+//  };
+//
+//  /**
+//    Non-modifying enumeration of all the elements of an array.
+//  */
+//  class ReadOnlyEnumeration : public ListReadOnlyEnumeration<Value, const Value&, const Value*> {
+//  public:
+//
+//    /**
+//      Initializes a non-modifying enumeration of all the elements of the specified list.
+//
+//      @param list The list being enumerated.
+//    */
+//    ReadOnlyEnumeration(const List& list) throw() :
+//      ListReadOnlyEnumeration<Value, const Value&, const Value*>(list.getFirst()) {}
+//  };
 protected:
 
   /**
@@ -543,6 +534,20 @@ public:
   inline bool isEmpty() const throw() {return elements->isEmpty();}
 
   /**
+    Returns a modifying enumerator of the list.
+  */
+  inline Enumerator getEnumerator() throw() {
+    return Enumerator(getFirst());
+  }
+
+  /**
+    Returns a non-modifying enumerator of the list.
+  */
+  inline ReadEnumerator getReadEnumerator() const throw() {
+    return ReadEnumerator(getFirst());
+  }
+
+  /**
     Returns the index of the node with the specified value in this list.
 
     @return -1 if the node isn't in the list.
@@ -648,7 +653,7 @@ public:
 */
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const List<TYPE>& value) {
-  List<TYPE>::ReadOnlyEnumeration enu(value);
+  List<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << "{";
   while (enu.hasNext()) {
     stream << *enu.next();

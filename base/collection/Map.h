@@ -45,12 +45,32 @@ private:
   OrderedBinaryTree<Node> elements;
   /** The number of associations in the map. */
   unsigned int size;
-protected:
+public:
 
-//  class Enumeration;
-//  friend class Enumeration;
-  class ReadOnlyEnumeration;
-  friend class ReadOnlyEnumeration;
+  /** Enumerator of set. */
+  template<class TRAITS, class ENU>
+  class MapEnumerator : public Enumerator<TRAITS> {
+  private:
+
+    ENU enu;
+  public:
+
+    inline MapEnumerator(ENU e) : enu(e) {}
+
+    inline bool hasNext() const throw() {
+      return enu.hasNext();
+    }
+
+    inline Pointer next() throw(EndOfEnumeration) {
+      return enu.next()->getValue();
+    }
+  };
+
+  /** Modifying enumerator. */
+  typedef MapEnumerator<EnumeratorTraits<Node>, OrderedBinaryTree<Node>::Enumerator> Enumerator;
+  /** Non-modifying enumerator. */
+  typedef MapEnumerator<ReadEnumeratorTraits<Node>, OrderedBinaryTree<Node>::ReadEnumerator> ReadEnumerator;
+
 
   /**
     Enumeration of all the elements of a map.
@@ -70,24 +90,24 @@ protected:
 //      OrderedBinaryTree<Node>::Enumeration(map.elements) {}
 //  };
 
-  /**
-    Non-modifying enumeration of all the elements of a map.
-
-    @author René Møller Fonseca
-    @version 1.0
-  */
-  class ReadOnlyEnumeration : public OrderedBinaryTree<Node>::ReadOnlyEnumeration {
-  public:
-
-    /**
-      Initializes a non-modifying enumeration of all the elements of the
-      specified map.
-
-      @param map The map being enumerated.
-    */
-    inline ReadOnlyEnumeration(const Map& map) throw() :
-      OrderedBinaryTree<Node>::ReadOnlyEnumeration(map.elements) {}
-  };
+//  /**
+//    Non-modifying enumeration of all the elements of a map.
+//
+//    @author René Møller Fonseca
+//    @version 1.0
+//  */
+//  class ReadOnlyEnumeration : public OrderedBinaryTree<Node>::ReadOnlyEnumeration {
+//  public:
+//
+//    /**
+//      Initializes a non-modifying enumeration of all the elements of the
+//      specified map.
+//
+//      @param map The map being enumerated.
+//    */
+//    inline ReadOnlyEnumeration(const Map& map) throw() :
+//      OrderedBinaryTree<Node>::ReadOnlyEnumeration(map.elements) {}
+//  };
 
   /**
     Reference to an element within a map.
@@ -125,6 +145,20 @@ public:
     Returns true if the map is empty.
   */
   inline bool isEmpty() const throw() {return size == 0;}
+
+//  /**
+//    Returns a modifying enumerator of the ordered binary tree.
+//  */
+//  inline Enumerator getEnumerator() throw() {
+//    return elements.getEnumerator();
+//  }
+
+  /**
+    Returns a non-modifying enumerator of the ordered binary tree.
+  */
+  inline ReadEnumerator getReadEnumerator() const throw() {
+    return elements.getReadEnumerator();
+  }
 
   /**
     Returns true if the specified key is associated with a value in this map.
@@ -202,7 +236,7 @@ public:
 
 template<class KEY, class VALUE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>& value) {
-  Map<KEY, VALUE>::ReadOnlyEnumeration enu(value);
+  Map<KEY, VALUE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {
     stream << *enu.next();

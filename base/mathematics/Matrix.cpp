@@ -39,20 +39,20 @@ public:
 
 template<class TYPE>
 Matrix<TYPE>::Matrix(const Dimension& dimension) throw(OutOfDomain) {
-  assert(dimension.getSize() > 0, OutOfDomain());
+  assert(dimension.isProper(), OutOfDomain());
   setSize(dimension.getHeight(), dimension.getWidth());
 }
 
 template<class TYPE>
 Matrix<TYPE>::Matrix(const TYPE elements[], const Dimension& dimension) throw(OutOfDomain) {
-  assert(dimension.getSize() > 0, OutOfDomain());
+  assert(dimension.isProper(), OutOfDomain());
   setSize(dimension.getHeight(), dimension.getWidth());
   copy<TYPE>(getMutableElements(), elements, getSize());
 }
 
 template<class TYPE>
-Matrix<TYPE>::Matrix(Enumeration<TYPE, TYPE&, TYPE*>& diagonal, const Dimension& dimension) throw(OutOfDomain) {
-  assert(dimension.getSize() > 0, OutOfDomain());
+Matrix<TYPE>::Matrix(Enumerator<ReadEnumeratorTraits<TYPE> >& diagonal, const Dimension& dimension) throw(OutOfDomain) {
+  assert(dimension.isProper(), OutOfDomain());
   setSize(dimension.getHeight(), dimension.getWidth());
   identity();
   unsigned int i = 0;

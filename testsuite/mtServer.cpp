@@ -128,7 +128,7 @@ void server(String desiredAddress, String desiredService) {
 
   {
     List<InetInterface> interfaces = InetInterface::getInetInterfaces();
-    List<InetInterface>::ReadOnlyEnumeration enu(interfaces);
+    List<InetInterface>::ReadEnumerator enu = interfaces.getReadEnumerator();
     fout << "Available interfaces:" << ENDL;
     while (enu.hasNext()) {
       const InetInterface* i = enu.next();
@@ -140,7 +140,7 @@ void server(String desiredAddress, String desiredService) {
   if (desiredAddress == "") { // should we find an address
     fout << "Local addresses:" << ENDL;
     List<InetAddress> addresses = InetAddress::getAddressesByName(InetAddress::getLocalHost());
-    List<InetAddress>::ReadOnlyEnumeration enu(addresses);
+    List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
     unsigned int index = 0;
     while (enu.hasNext()) {
       const InetAddress* temp = enu.next();
@@ -207,7 +207,7 @@ void server(String desiredAddress, String desiredService) {
     jobs.push(0); // queue dummy job to terminate context
     semaphore.post(); // notify
   }
-  List<ContextBinder*>::Enumeration enu(threadPool);
+  List<ContextBinder*>::Enumerator enu = threadPool.getEnumerator();
   while (enu.hasNext()) {
     delete *enu.next();
   }

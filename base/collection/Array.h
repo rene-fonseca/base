@@ -42,40 +42,45 @@ public:
   /** The type of the values. */
   typedef TYPE Value;
 
-  class Enumeration;
-  friend class Enumeration;
-  class ReadOnlyEnumeration;
-  friend class ReadOnlyEnumeration;
+  typedef typename CapacityAllocator<TYPE>::Iterator Iterator;
+  typedef typename CapacityAllocator<TYPE>::ReadIterator ReadIterator;
+  typedef typename CapacityAllocator<TYPE>::Enumerator Enumerator;
+  typedef typename CapacityAllocator<TYPE>::ReadEnumerator ReadEnumerator;
 
-  /**
-    Enumeration of all the elements of an array.
-  */
-  class Enumeration : public AllocatorEnumeration<Value, Value&, Value*> {
-  public:
+//  class Enumeration;
+//  friend class Enumeration;
+//  class ReadOnlyEnumeration;
+//  friend class ReadOnlyEnumeration;
 
-    /**
-      Initializes an enumeration of all the elements of the specified array.
-
-      @param array The array being enumerated.
-    */
-    Enumeration(Array& array) throw() :
-      AllocatorEnumeration<Value, Value&, Value*>(array.getElements(), array.getElements() + array.getSize()) {}
-  };
-
-  /**
-    Non-modifying enumeration of all the elements of an array.
-  */
-  class ReadOnlyEnumeration : public AllocatorEnumeration<Value, const Value&, const Value*> {
-  public:
-
-    /**
-      Initializes a non-modifying enumeration of all the elements of the specified array.
-
-      @param array The array being enumerated.
-    */
-    ReadOnlyEnumeration(const Array& array) throw() :
-      AllocatorEnumeration<Value, const Value&, const Value*>(array.getElements(), array.getElements() + array.getSize()) {}
-  };
+//  /**
+//    Enumeration of all the elements of an array.
+//  */
+//  class Enumeration : public AllocatorEnumeration<Value, Value&, Value*> {
+//  public:
+//
+//    /**
+//      Initializes an enumeration of all the elements of the specified array.
+//
+//      @param array The array being enumerated.
+//    */
+//    Enumeration(Array& array) throw() :
+//      AllocatorEnumeration<Value, Value&, Value*>(array.getElements(), array.getElements() + array.getSize()) {}
+//  };
+//
+//  /**
+//    Non-modifying enumeration of all the elements of an array.
+//  */
+//  class ReadOnlyEnumeration : public AllocatorEnumeration<Value, const Value&, const Value*> {
+//  public:
+//
+//    /**
+//      Initializes a non-modifying enumeration of all the elements of the specified array.
+//
+//      @param array The array being enumerated.
+//    */
+//    ReadOnlyEnumeration(const Array& array) throw() :
+//      AllocatorEnumeration<Value, const Value&, const Value*>(array.getElements(), array.getElements() + array.getSize()) {}
+//  };
 
   /**
     Reference to an element within an array.
@@ -179,6 +184,48 @@ public:
     Returns true if the array is empty.
   */
   inline bool isEmpty() const throw() {return size == 0;}
+
+  /**
+    Returns the first element of the allocator as a modifying array.
+  */
+  inline Iterator getBeginIterator() throw() {
+    return elements->getBeginIterator();
+  }
+
+  /**
+    Returns the end of the allocator as a modifying array.
+  */
+  inline Iterator getEndIterator() throw() {
+    return elements->getEndIterator();
+  }
+
+  /**
+    Returns the first element of the allocator as a non-modifying array.
+  */
+  inline ReadIterator getBeginIterator() const throw() {
+    return elements->getBeginIterator();
+  }
+
+  /**
+    Returns the end of the allocator as a non-modifying array.
+  */
+  inline ReadIterator getEndIterator() const throw() {
+    return elements->getEndIterator();
+  }
+
+  /**
+    Returns a modifying enumerator of the array.
+  */
+  inline Enumerator getEnumerator() throw() {
+    return elements->getEnumerator();
+  }
+
+  /**
+    Returns a non-modifying enumerator of the array.
+  */
+  inline ReadEnumerator getReadEnumerator() const throw() {
+    return elements->getReadEnumerator();
+  }
 
   /**
     Appends the value to this array.
@@ -286,7 +333,7 @@ public:
 */
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Array<TYPE>& value) {
-  Array<TYPE>::ReadOnlyEnumeration enu(value);
+  Array<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << "{";
   while (enu.hasNext()) {
     stream << *enu.next();

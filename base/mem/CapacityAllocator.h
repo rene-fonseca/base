@@ -45,35 +45,40 @@ private:
   unsigned int granularity;
 public:
 
-  /**
-    Enumeration of all the elements of an Allocator.
-  */
-  class Enumeration : public AllocatorEnumeration<TYPE, TYPE&, TYPE*> {
-  public:
+  typedef typename Allocator<TYPE>::Iterator Iterator;
+  typedef typename Allocator<TYPE>::ReadIterator ReadIterator;
+  typedef typename Allocator<TYPE>::Enumerator Enumerator;
+  typedef typename Allocator<TYPE>::ReadEnumerator ReadEnumerator;
 
-    /**
-      Initializes an enumeration of all the elements of the specified Allocator.
-
-      @param allocator The Allocator being enumerated.
-    */
-    Enumeration(CapacityAllocator& allocator) throw() :
-      AllocatorEnumeration<TYPE, TYPE&, TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
-  };
-
-  /**
-    Non-modifying enumeration of all the elements of an Allocator.
-  */
-  class ReadOnlyEnumeration : public AllocatorEnumeration<TYPE, const TYPE&, const TYPE*> {
-  public:
-
-    /**
-      Initializes a non-modifying enumeration of all the elements of the specified Allocator.
-
-      @param allocator The Allocator being enumerated.
-    */
-    ReadOnlyEnumeration(const CapacityAllocator& allocator) throw() :
-      AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
-  };
+//  /**
+//    Enumeration of all the elements of an Allocator.
+//  */
+//  class Enumeration : public AllocatorEnumeration<TYPE, TYPE&, TYPE*> {
+//  public:
+//
+//    /**
+//      Initializes an enumeration of all the elements of the specified Allocator.
+//
+//      @param allocator The Allocator being enumerated.
+//    */
+//    Enumeration(CapacityAllocator& allocator) throw() :
+//      AllocatorEnumeration<TYPE, TYPE&, TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
+//  };
+//
+//  /**
+//    Non-modifying enumeration of all the elements of an Allocator.
+//  */
+//  class ReadOnlyEnumeration : public AllocatorEnumeration<TYPE, const TYPE&, const TYPE*> {
+//  public:
+//
+//    /**
+//      Initializes a non-modifying enumeration of all the elements of the specified Allocator.
+//
+//      @param allocator The Allocator being enumerated.
+//    */
+//    ReadOnlyEnumeration(const CapacityAllocator& allocator) throw() :
+//      AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
+//  };
 public:
 
   /**
@@ -151,6 +156,48 @@ public:
   */
   inline bool isEmpty() const throw() {
     return capacity == 0;
+  }
+
+  /**
+    Returns the first element of the allocator as a modifying iterator.
+  */
+  inline Iterator getBeginIterator() throw() {
+    return Iterator(getElements());
+  }
+
+  /**
+    Returns the end of the allocator as a modifying iterator.
+  */
+  inline Iterator getEndIterator() throw() {
+    return Iterator(getElements() + getSize());
+  }
+
+  /**
+    Returns the first element of the allocator as a non-modifying iterator.
+  */
+  inline ReadIterator getBeginIterator() const throw() {
+    return ReadIterator(getElements());
+  }
+
+  /**
+    Returns the end of the allocator as a non-modifying iterator.
+  */
+  inline ReadIterator getEndIterator() const throw() {
+    return ReadIterator(getElements() + getSize());
+  }
+
+  /**
+    Returns a modifying enumerator of the allocator.
+  */
+  inline Enumerator getEnumerator() throw() {
+    return Enumerator(getElements(), getElements() + getSize());
+  }
+
+  /**
+    Returns a non-modifying enumerator of the allocator.
+  */
+  inline ReadEnumerator getReadEnumerator() const throw() {
+    return ReadEnumerator(getElements(), getElements() + getSize());
   }
 
   /**

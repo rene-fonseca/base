@@ -30,7 +30,7 @@ void client(String host, String service) {
   {
     fout << "Server addresses:" << ENDL;
     List<InetAddress> addresses = InetAddress::getAddressesByName(host);
-    List<InetAddress>::ReadOnlyEnumeration enu(addresses);
+    List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
     unsigned int index = 0;
     while (enu.hasNext()) {
       const InetAddress* temp = enu.next();

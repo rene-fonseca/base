@@ -34,49 +34,113 @@ private:
   OrderedBinaryTree<KEY> elements;
   /** The number of elements in the set. */
   unsigned int size;
-protected:
+public:
 
-  class Enumeration;
-  friend class Enumeration;
-  class ReadOnlyEnumeration;
-  friend class ReadOnlyEnumeration;
+  /** Enumerator of set. */
+  template<class TRAITS, class ENU>
+  class SetEnumerator : public Enumerator<TRAITS> {
+  private:
 
-  /**
-    Enumeration of all the elements of a set.
-
-    @author René Møller Fonseca
-    @version 1.0
-  */
-  class Enumeration : public OrderedBinaryTree<KEY>::Enumeration {
+    ENU enu;
   public:
 
-    /**
-      Initializes an enumeration of all the elements of the specified set.
+    inline SetEnumerator(ENU e) : enu(e) {}
 
-      @param set The set being enumerated.
-    */
-    inline Enumeration(Set& set) throw() :
-      OrderedBinaryTree<KEY>::Enumeration(set.elements) {}
+    inline bool hasNext() const throw() {
+      return enu.hasNext();
+    }
+
+    inline Pointer next() throw(EndOfEnumeration) {
+      return enu.next()->getValue();
+    }
   };
 
-  /**
-    Non-modifying enumeration of all the elements of a set.
+  /** Modifying enumerator. */
+  typedef SetEnumerator<EnumeratorTraits<KEY>, OrderedBinaryTree<KEY>::Enumerator> Enumerator;
+  /** Non-modifying enumerator. */
+  typedef SetEnumerator<ReadEnumeratorTraits<KEY>, OrderedBinaryTree<KEY>::ReadEnumerator> ReadEnumerator;
 
-    @author René Møller Fonseca
-    @version 1.0
-  */
-  class ReadOnlyEnumeration : public OrderedBinaryTree<KEY>::ReadOnlyEnumeration {
-  public:
+//  /** Non-modifying enumerator. */
+//  class ReadEnumerator : public Enumerator<ReadEnumeratorTraits<KEY> > {
+//  private:
+//
+//    OrderedBinaryTree<KEY>::ReadEnumerator enu;
+//  public:
+//
+//    inline ReadEnumerator(OrderedBinaryTree<KEY>::ReadEnumerator e) : enu(e) {}
+//
+//    inline bool hasNext() const throw() {
+//      return enu.hasNext();
+//    }
+//
+//    inline const KEY* next() throw(EndOfEnumeration) {
+//      return enu.next()->getValue();
+//    }
+//  };
 
-    /**
-      Initializes a non-modifying enumeration of all the elements of the
-      specified set.
+//  /** Modifying enumerator. */
+//  class Enumerator : public OrderedBinaryTree<KEY>::Enumerator {
+//  public:
+//
+//    Enumerator(OrderedBinaryTree<KEY>::Enumerator enu) : OrderedBinaryTree<KEY>::Enumerator(enu) {}
+//
+//    KEY* next() throw(EndOfEnumeration) {
+//      return OrderedBinaryTree<KEY>::Enumerator::next()->getValue();
+//    }
+//  };
+//
+//  /** Non-modifying enumerator. */
+//  class ReadEnumerator : public OrderedBinaryTree<KEY>::ReadEnumerator {
+//  public:
+//
+//    ReadEnumerator(OrderedBinaryTree<KEY>::ReadEnumerator enu) : OrderedBinaryTree<KEY>::ReadEnumerator(enu) {}
+//
+//    const KEY* next() throw(EndOfEnumeration) {
+//      return OrderedBinaryTree<KEY>::ReadEnumerator::next()->getValue();
+//    }
+//  };
 
-      @param set The set being enumerated.
-    */
-    inline ReadOnlyEnumeration(const Set& set) throw() :
-      OrderedBinaryTree<KEY>::ReadOnlyEnumeration(set.elements) {}
-  };
+//  class Enumeration;
+//  friend class Enumeration;
+//  class ReadOnlyEnumeration;
+//  friend class ReadOnlyEnumeration;
+//
+//  /**
+//    Enumeration of all the elements of a set.
+//
+//    @author René Møller Fonseca
+//    @version 1.0
+//  */
+//  class Enumeration : public OrderedBinaryTree<KEY>::Enumeration {
+//  public:
+//
+//    /**
+//      Initializes an enumeration of all the elements of the specified set.
+//
+//      @param set The set being enumerated.
+//    */
+//    inline Enumeration(Set& set) throw() :
+//      OrderedBinaryTree<KEY>::Enumeration(set.elements) {}
+//  };
+//
+//  /**
+//    Non-modifying enumeration of all the elements of a set.
+//
+//    @author René Møller Fonseca
+//    @version 1.0
+//  */
+//  class ReadOnlyEnumeration : public OrderedBinaryTree<KEY>::ReadOnlyEnumeration {
+//  public:
+//
+//    /**
+//      Initializes a non-modifying enumeration of all the elements of the
+//      specified set.
+//
+//      @param set The set being enumerated.
+//    */
+//    inline ReadOnlyEnumeration(const Set& set) throw() :
+//      OrderedBinaryTree<KEY>::ReadOnlyEnumeration(set.elements) {}
+//  };
 public:
 
   /**
@@ -98,6 +162,20 @@ public:
     Returns true if the collection is empty.
   */
   inline bool isEmpty() const throw() {return size != 0;}
+
+  /**
+    Returns a modifying enumerator of the ordered binary tree.
+  */
+  inline Enumerator getEnumerator() throw() {
+    return Enumerator(elements.getEnumerator());
+  }
+
+  /**
+    Returns a non-modifying enumerator of the ordered binary tree.
+  */
+  inline ReadEnumerator getReadEnumerator() const throw() {
+    return ReadEnumerator(elements.getReadEnumerator());
+  }
 
   /**
     Returns true if the specified key is present is this set.
@@ -142,7 +220,7 @@ public:
 
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Set<TYPE>& value) {
-  Set<TYPE>::ReadOnlyEnumeration enu(value);
+  Set<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {
     stream << *enu.next();

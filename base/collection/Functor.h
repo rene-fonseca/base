@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 template<class COLLECTION, class UNOPR>
 void forEach(COLLECTION collection, UNOPR function) {
-  typename COLLECTION::ReadOnlyEnumeration enu(collection);
+  typename COLLECTION::ReadEnumerator enu = collection.getReadEnumerator();
   while (enu.hasNext()) {
     function(*enu.next());
   }
@@ -47,9 +47,9 @@ void forEach(COLLECTION collection, UNOPR function) {
 */
 template<class COLLECTION, class UNOPR>
 inline void transform(COLLECTION& collection, UNOPR function) throw() {
-  typename COLLECTION::Enumeration enu(collection);
+  typename COLLECTION::Enumerator enu = collection.getEnumerator();
   while (enu.hasNext()) {
-    typename COLLECTION::Enumeration::Pointer value = enu.next();
+    typename COLLECTION::Enumerator::Pointer value = enu.next();
     *value = function(*value);
   }
 }

@@ -27,6 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   and monitors. Please note that the lock/unlock mechanism is considered a
   non-modifying property of a class.
 
+  @ingroup concurrency
   @see Lock
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1

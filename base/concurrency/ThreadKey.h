@@ -27,6 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Implementation used by the ThreadKey class.
 
+  @ingroup concurrency
   @see ThreadKey
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
@@ -44,7 +45,11 @@ private:
 #endif
 public:
 
-  /** Exception thrown directly by the ThreadKey class. */
+  /**
+    Exception thrown directly by the ThreadKey class.
+
+    @ingroup exceptions
+  */
   class ThreadKeyException : public Exception {
   public:
     
@@ -80,6 +85,7 @@ public:
 /**
   This class allows global and static variables to hold thread-specific data.
 
+  @ingroup concurrency
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */

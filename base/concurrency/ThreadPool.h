@@ -37,6 +37,7 @@ public:
   Pool of threads used to run 'm' jobs using 'n' threads. The implementation is
   MT-safe.
 
+  @ingroup concurrency
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -46,13 +47,15 @@ public:
 
   /**
     Exception thrown directly by the ThreadPool class.
+
+    @ingroup exceptions
   */
   class ThreadPoolException : public Exception {
   public:
 
-    ThreadPoolException() {}
+    ThreadPoolException() throw() {}
 
-    ThreadPoolException(const char* message) : Exception(message) {}
+    ThreadPoolException(const char* message) throw() : Exception(message) {}
   };
 private:
 

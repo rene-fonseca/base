@@ -28,6 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   specialization in either case.
 
   @short Select no synchronization.
+  @ingroup concurrency
   @see Synchronizeable, Synchronize
 */
 class Unsafe {
@@ -47,6 +48,7 @@ typedef Unsafe DefaultLock;
   synchronization objects are those who implement the @ref Lock interface.
 
   @short Wrapper for a synchronization object.
+  @ingroup concurrency
   @see Synchronize Lock ReadWriteLock MutualExclusion Unsafe
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

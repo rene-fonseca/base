@@ -27,6 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   mutex for those that do not. Please note that the lock/unlock mechanism is
   considered a non-modifying property of a class.
 
+  @ingroup concurrency
   @see MutualExclusion Lock
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2

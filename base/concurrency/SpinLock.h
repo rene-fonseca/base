@@ -23,6 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   does not use any operating system resources. The SpinLock is fast. The CPU
   cannot do anything useful while waiting for a spin lock to be released.
 
+  @ingroup concurrency
   @see MutualExclusion
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

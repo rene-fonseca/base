@@ -20,7 +20,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Exception thrown on file object exceptions.
-
+  
+  @ingroup exceptions filesystem
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -31,7 +32,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  FileSystemException() throw() : Exception() {}
+  FileSystemException() throw() {}
 
   /**
     Initializes the exception object.

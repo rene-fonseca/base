@@ -25,6 +25,7 @@ typedef Exception ProcessException;
 /**
   Process.
 
+  @ingroup concurrency
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */

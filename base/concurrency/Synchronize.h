@@ -94,6 +94,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   </pre>
 
   @short A stack based wrapper of a synchronize able class.
+  @ingroup concurrency
   @see Synchronizeable
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

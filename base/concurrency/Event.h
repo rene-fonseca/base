@@ -27,8 +27,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Event.
+  This class provides support for threads to wait for signals.
 
+  @short Event signaling mechanism
+  @ingroup concurrency
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.01
 */
@@ -51,11 +53,13 @@ public:
 
   /**
     Exception thrown by the Event class.
+
+    @ingroup exceptions
   */
   class EventException : public Exception {
   public:
 
-    EventException() throw() : Exception() {}
+    EventException() throw() {}
 
     EventException(const char* message) throw() : Exception(message) {}
   };

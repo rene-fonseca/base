@@ -25,6 +25,7 @@ class Thread;
   Base class of active objects. An active object can be run by a thread object.
 
   @short Base class of active objects.
+  @ingroup concurrency
   @see Thread
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0

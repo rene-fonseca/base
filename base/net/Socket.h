@@ -285,7 +285,7 @@ public:
     @param size The size of the buffer.
     @return The actual number of bytes read.
   */
-  unsigned int read(char* buffer, unsigned int size) throw(IOException);
+  unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
 
   /**
     Writes bytes in buffer to stream.
@@ -294,7 +294,7 @@ public:
     @param size The number of bytes to be written.
     @return The actual number of bytes written.
   */
-  unsigned int write(const char* buffer, unsigned int size) throw(IOException);
+  unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException);
 
   /**
     Sends the contents of the buffer to the specified address using an unconnected socket.

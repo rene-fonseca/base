@@ -184,7 +184,7 @@ public:
     @param size The size of the buffer.
     @return The actual number of bytes read.
   */
-  inline unsigned int read(char* buffer, unsigned int size) throw(IOException) {return Socket::read(buffer, size);}
+  inline unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(IOException) {return Socket::read(buffer, size, nonblocking);}
 
   /**
     Writes bytes in buffer to stream.
@@ -193,7 +193,7 @@ public:
     @param size The number of bytes to be written.
     @return The actual number of bytes written.
   */
-  inline unsigned int write(const char* buffer, unsigned int size) throw(IOException) {return Socket::write(buffer, size);}
+  inline unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(IOException) {return Socket::write(buffer, size, nonblocking);}
 
   /**
     Blocking wait for input to become available.

@@ -486,80 +486,81 @@ bool Socket::atEnd() const throw() {
 void Socket::flush() throw(IOException) {
 }
 
-unsigned int Socket::read(char* buffer, unsigned int size) throw(IOException) {
+unsigned int Socket::read(char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
   SynchronizeShared();
-  if (socket->atEnd()) {
-    throw EndOfFile();
-  }
+
+  // TAG: currently always blocks
+  assert(!socket->atEnd(), EndOfFile());
+  unsigned int bytesRead = 0;
+  while (bytesRead < size) {
 #if defined(__win32__)
-  int result = ::recv(getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, 0);
-  if (result == 0) {
-    socket->onEnd(); // remember end of file
-    return 0; // early return
-  } else if (result < 0) { // has an error occured
-    switch (WSAGetLastError()) {
-    case WSAEINTR: // interrupted by signal before any data was read
-      return 0; // try later
-    case WSAEWOULDBLOCK: // no data available (only in non-blocking mode)
-      return 0; // try later
-    default:
-      throw IOException("Unable to read from socket");
+    int result = ::recv(fd->getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, 0);
+    if (result < 0) { // has an error occured
+      switch (WSAGetLastError()) {
+      case WSAEINTR: // interrupted by signal before any data was read
+        continue; // try again
+      case WSAEWOULDBLOCK: // no data available (only in non-blocking mode)
+//        return bytesRead; // try later
+      default:
+        throw IOException("Unable to read from socket");
+      }
     }
-  }
-  return result;
 #else // __unix__
-  int result = ::recv(socket->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX, 0);
-  if (result == 0) { // has end of file been reached
-    socket->onEnd(); // remember end of file
-    return 0; // return
-  } else if (result < 0) { // has an error occured
-    switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
-    case EINTR: // interrupted by signal before any data was read
-      return 0; // try later
-    case EAGAIN: // no data available (only in non-blocking mode)
-      return 0; // try later
-    default:
-      throw IOException("Unable to read from socket");
+    int result = ::recv(socket->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX, 0);
+    if (result < 0) { // has an error occured
+      switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
+      case EINTR: // interrupted by signal before any data was read
+        continue; // try again
+      case EAGAIN: // no data available (only in non-blocking mode)
+//        return bytesRead; // try later
+      default:
+        throw IOException("Unable to read from socket");
+      }
     }
-  }
-  return result;
 #endif
+    if (result == 0) { // has end been reached
+      socket->onEnd(); // remember end of file
+      if (bytesRead < size) {
+        throw EndOfFile(); // attempt to read beyond end of stream
+      }
+    }
+    bytesRead += result;
+  }
+  return bytesRead;
 }
 
-unsigned int Socket::write(const char* buffer, unsigned int size) throw(IOException) {
+unsigned int Socket::write(const char* buffer, unsigned int size, bool nonblocking) throw(IOException) {
+  // TAG: currently always blocks
+  unsigned int bytesWritten = 0;
+  while (bytesWritten < size) {
 #if defined(__win32__)
-  int result = ::send(getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, 0);
-  if (result == 0) {
-    // do not know if it is possible to end up here
-    return 0;
-  } else if (result == -1) { // has an error occured
-    switch (WSAGetLastError()) {
-    case WSAEINTR: // interrupted by signal before any data was written
-      return 0; // try later
-    case WSAEWOULDBLOCK: // no data could be written without blocking (only in non-blocking mode)
-      return 0; // try later
-    default:
-      throw IOException("Unable to write to socket");
+    int result = ::send(getHandle(), buffer, (size <= INT_MAX) ? size : INT_MAX, 0);
+    if (result < 0) { // has an error occured
+      switch (WSAGetLastError()) {
+      case WSAEINTR: // interrupted by signal before any data was written
+        continue; // try again
+      case WSAEWOULDBLOCK: // no data could be written without blocking (only in non-blocking mode)
+//      return 0; // try later
+      default:
+        throw IOException("Unable to write to socket");
+      }
     }
-  }
-  return result;
 #else // __unix__
-  int result = ::send(socket->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX, 0);
-  if (result == 0) { // has end of file been reached
-    // do not know if it is possible to end up here
-    return 0;
-  } else if (result < 0) { // has an error occured
-    switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
-    case EINTR: // interrupted by signal before any data was read
-      return 0; // try later
-    case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
-      return 0; // try later
-    default:
-      throw IOException("Unable to write to socket");
+    int result = ::send(socket->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX, 0);
+    if (result < 0) { // has an error occured
+      switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
+      case EINTR: // interrupted by signal before any data was read
+        continue; // try again
+      case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
+//      return 0; // try later
+      default:
+        throw IOException("Unable to write to socket");
+      }
     }
-  }
-  return result;
 #endif
+    bytesWritten += result;
+  }
+  return bytesWritten;
 }
 
 unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(IOException) {

@@ -160,44 +160,55 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
 
 unsigned int FileSystem::getType(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  // TAG: FILE_FLAG_POSIX_SEMANTICS
   HANDLE file = ::CreateFile(path.getElements(), // file name
                              0 | READ_CONTROL, // access mode
-			     FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
+                             FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
                              0, // security descriptor
                              OPEN_EXISTING, // how to create
-                             FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_POSIX_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, // file attributes
+                             FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, // file attributes
                              0); // handle to template file
   assert(file != INVALID_HANDLE_VALUE, FileSystemException(Type::getType<FileSystem>()));
   unsigned int flags = 0;
 
   BY_HANDLE_FILE_INFORMATION information;
-  ::CloseHandle(file); // TAG: FIXME
-  assert(::GetFileInformationByHandle(file, &information) != 0, FileSystemException(Type::getType<FileSystem>()));
+  bool error = ::GetFileInformationByHandle(file, &information) == 0;
+  if (error) {
+    ::CloseHandle(file);
+  }
+  assert(!error, FileSystemException(Type::getType<FileSystem>()));
+  
+  if (information.dwFileAttributes & FILE_ATTRIBUTE_DEVICE) {
+    flags |= FileSystem::DEVICE;
+  }
+  if (information.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+    flags |= FileSystem::FOLDER;
+  }
+  if (information.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
+    flags |= FileSystem::LINK;
+  }
+  if (information.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) {
+//    flags |= FileSystem::SYSTEM;
+  }
   
   switch (::GetFileType(file)) {
   case FILE_TYPE_UNKNOWN:
     flags |= 0;
     break;
   case FILE_TYPE_DISK:
-    flags |= FileSystem::DISK REGULAR or FOLDER
+    if (flags == 0) {
+      flags |= FileSystem::REGULAR;
+    }
     break;
   case FILE_TYPE_CHAR:
     flags |= FileSystem::CHARACTER;
     break;
   case FILE_TYPE_PIPE:
-    flags |= FileSystem::PIPE;
+    flags |= FileSystem::SOCKET; // TAG: what flag should we use
     break;
   }
+  ::CloseHandle(file);
   
-  if (result & FILE_ATTRIBUTE_DEVICE) {
-    flags |= FileSystem::DEVICE;
-  }
-  if (result & FILE_ATTRIBUTE_DIRECTORY) {
-    flags |= FileSystem::FOLDER;
-  }
-  if (result & FILE_ATTRIBUTE_REPARSE_POINT) {
-    flags |= FileSystem::LINK;
-  }
   return flags;
 #else // unix
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
@@ -235,16 +246,22 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
   if (S_ISSOCK(status.st_mode)) {
     flags |= FileSystem::SOCKET;
   }
-  
-  if (S_TYPEISMQ(&status)) {
-    flags |= FileSystem::MESSAGE_QUEUE;
-  }
-  if (S_TYPEISSEM(&status)) {
-    flags |= FileSystem::SEMPAHORE;
-  }
-  if (S_TYPEISSHM(&status)) {
-    flags |= FileSystem::SHARED_MEMORY;
-  }
+
+  #if defined(S_TYPEISMQ)
+    if (S_TYPEISMQ(&status)) {
+      flags |= FileSystem::MESSAGE_QUEUE;
+    }
+  #endif // S_TYPEISMQ
+  #if defined(S_TYPEISSEM)
+    if (S_TYPEISSEM(&status)) {
+      flags |= FileSystem::SEMPAHORE;
+    }
+  #endif // S_TYPEISEM
+  #if defined(S_TYPEISSHM)
+    if (S_TYPEISSHM(&status)) {
+      flags |= FileSystem::SHARED_MEMORY;
+    }
+  #endif // S_TYPEISSHM
   return flags;
 #endif // flavor
 }

@@ -40,7 +40,10 @@ lendum-gcc-2.96: all
 lendum-gcc-3.0: all
 	CXX=/usr/local/gcc-3.0/bin/g++ CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --enable-debug --enable-trace --enable-demangle=gccv3 --enable-regexp=pcre --enable-xml=gnomexml
 
-falster: all
+falster-gcc-2.97: all
+	CXXFLAGS="-O0 -g3" ./configure --prefix=/tmp/fonsece/base --enable-debug --enable-trace --enable-regexp=posix
+
+falster-gcc-3.0: all
 	CXXFLAGS="-O0 -g3" ./configure --prefix=/tmp/fonsece/base --enable-debug --enable-trace --enable-demangle=gccv3 --enable-regexp=posix
 
 hoptrup: all

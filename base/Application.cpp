@@ -64,19 +64,24 @@ public:
 
   static void unexpectedExceptionHandler() {
     StringOutputStream stream;
-    try {
-      throw;
-    } catch(Exception& e) {
-      stream << MESSAGE("Internal error: exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
-      if (e.getType().isInitialized()) {
-        stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
+    const Type exceptionType = Exception::getExceptionType();
+    if (exceptionType.isInitialized()) {
+      try {
+        throw;
+      } catch(Exception& e) {
+        stream << MESSAGE("Internal error: exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
+        if (e.getType().isInitialized()) {
+          stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
+        }
+        if (e.getMessage()) {
+          stream << MESSAGE(" with message '") << e.getMessage() << '\'';
+        }
+        stream << MESSAGE(" in violation with exception specification.") << FLUSH;
+      } catch(...) {
+        stream << MESSAGE("Internal error: unsupported exception '") << TypeInfo::getTypename(exceptionType) << MESSAGE("' was raised in violation with exception specification.") << FLUSH;
       }
-      if (e.getMessage()) {
-        stream << MESSAGE(" with message '") << e.getMessage() << '\'';
-      }
-      stream << MESSAGE(" in violation with exception specification.") << FLUSH;
-    } catch(...) {
-      stream << MESSAGE("Internal error: unsupported exception was raised in violation with exception specification.") << FLUSH;
+    } else {
+      stream << MESSAGE("Internal error: explicit invocation of unexpected.") << FLUSH;
     }
 #if defined(_DK_SDU_MIP__BASE__DEBUG)
     Trace::message(stream.getString().getElements());

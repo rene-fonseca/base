@@ -16,6 +16,8 @@
 
 #include <base/string/String.h>
 #include <base/mem/ReferenceCountedAllocator.h>
+#include <base/security/Group.h>
+#include <base/security/User.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -25,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Trustee
   @ingroup security
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-  @version 1.0
+  @version 1.2
 */
 
 class Trustee : public Object {
@@ -93,6 +95,16 @@ public:
     Initializes trustee as invalid.
   */
   Trustee() throw();
+
+  /**
+    Initializes trustee from user.
+  */
+  Trustee(User user) throw();
+
+  /**
+    Initializes trustee from group.
+  */
+  Trustee(Group group) throw();
   
   /**
     Initializes trustee by id. Raises OutOfDomain if the specified id is not

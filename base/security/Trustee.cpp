@@ -32,6 +32,38 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 Trustee::Trustee() throw() : type(UNSPECIFIED), integralId(PrimitiveTraits<unsigned long>::MAXIMUM), id(0) {
 }
 
+Trustee::Trustee(User user) throw() : type(USER) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  integralId = 0;
+  if (user.id == User::INVALID) {
+    id = user.id;
+    return;
+  }
+  DWORD size = ::GetLengthSid((PSID)user.id);
+  id = new ReferenceCountedAllocator<char>(size);
+  copy<char>((char*)id->getElements(), (const char*)user.id, size);
+#else // unix
+  id = 0;
+  integralId = Cast::getOffset(user.getId());
+#endif // flavor 
+}
+
+Trustee::Trustee(Group group) throw() : type(GROUP) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  integralId = 0;
+  if (group.id == Group::INVALID) {
+    id = group.id;
+    return;
+  }
+  DWORD size = ::GetLengthSid((PSID)group.id);
+  id = new ReferenceCountedAllocator<char>(size);
+  copy<char>((char*)id->getElements(), (const char*)group.id, size);
+#else // unix
+  id = 0;
+  integralId = Cast::getOffset(group.id);
+#endif // flavor 
+}
+
 Trustee::Trustee(TrusteeType type, const void* _id) throw(OutOfDomain) {
   if (_id == 0) {
     type = Trustee::UNSPECIFIED;

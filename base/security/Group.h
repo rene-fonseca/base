@@ -31,6 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 class Group : public Object {
+  friend class Trustee;
 private:
 
   /** Opaque identifier of the group. */

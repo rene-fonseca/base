@@ -32,6 +32,7 @@ class Group;
 */
 
 class User : public Object {
+  friend class Trustee;
 private:
   
   /** Opaque identifier of the user. */

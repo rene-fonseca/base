@@ -1,6 +1,14 @@
 /***************************************************************************
-    copyright   : (C) |YEAR| by |AUTHOR|
-    email       : |EMAIL|
+    The Base Framework
+    A framework for developing platform independent applications
+
+    Copyright (C) |YEAR| by |AUTHOR| <|EMAIL|>
+
+    This framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    For the licensing issues refer to the file 'LICENSE'.
  ***************************************************************************/
 
 #ifndef _DK_SDU_MIP__BASE__...

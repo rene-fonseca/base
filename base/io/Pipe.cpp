@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,7 +36,7 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   // create two anonymous pipes for duplex
 #else // __unix__
-  int handles[2];
+  OperatingSystem::Handle handles[2];
   if (::pipe(handles)) {
     throw PipeException("Unable to create pipe");
   }
@@ -53,7 +53,7 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
 Pipe::PipeImpl::~PipeImpl() throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (getHandle() != -1) {
-    if (::CloseHandle((HANDLE)getHandle())) {
+    if (::CloseHandle(getHandle())) {
       throw PipeException("Unable to close pipe");
     }
   }
@@ -79,7 +79,7 @@ void Pipe::close() throw(PipeException) {
 unsigned int Pipe::getBufferSize() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD result;
-  GetNamedPipeInfo((HANDLE)fd->getHandle(), NULL, &result, NULL, NULL);
+  GetNamedPipeInfo(fd->getHandle(), NULL, &result, NULL, NULL);
   return result;
 #else // __unix__
   return PIPE_BUF;
@@ -93,7 +93,7 @@ bool Pipe::atEnd() const throw(PipeException) {
 unsigned int Pipe::available() const throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   DWORD bytesAvailable;
-  if (!::PeekNamedPipe((HANDLE)fd->getHandle(), NULL, 0, NULL, &bytesAvailable, NULL)) {
+  if (!::PeekNamedPipe(fd->getHandle(), NULL, 0, NULL, &bytesAvailable, NULL)) {
     throw PipeException("Unable to get available bytes");
   }
   return bytesAvailable;
@@ -126,7 +126,7 @@ unsigned int Pipe::skip(unsigned int count) throw(PipeException) {
 
 void Pipe::flush() throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  if (!FlushFileBuffers((HANDLE)fd->getHandle())) {
+  if (!FlushFileBuffers(fd->getHandle())) {
     throw PipeException("Unable to flush pipe");
   }
 #else // __unix__
@@ -144,7 +144,7 @@ unsigned int Pipe::read(char* buffer, unsigned int size, bool nonblocking) throw
   while (bytesRead < size) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
-    BOOL success = ::ReadFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
+    BOOL success = ::ReadFile(fd->getHandle(), buffer, size, &result, NULL);
     if (!success) { // has error occured
       if (::GetLastError() == ERROR_BROKEN_PIPE) {
         result = 0;
@@ -182,7 +182,7 @@ unsigned int Pipe::write(const char* buffer, unsigned int size, bool nonblocking
   while (bytesWritten < size) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
-    BOOL success = ::WriteFile((HANDLE)fd->getHandle(), buffer, size, &result, NULL);
+    BOOL success = ::WriteFile(fd->getHandle(), buffer, size, &result, NULL);
     if (!success) {
       throw PipeException("Unable to write to pipe");
     }

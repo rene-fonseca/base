@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,6 +22,7 @@
 #include <base/string/String.h>
 #include <base/Date.h>
 #include <base/Type.h>
+#include <base/OperatingSystem.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -29,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Description of a file region represented by an offset (64 bit) and a size (32 bit).
 
   @short A region of a file.
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -101,7 +102,7 @@ class MappedFile;
 /**
   File.
 
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -133,12 +134,12 @@ private:
   class FileImpl : public ReferenceCountedObject {
   private:
 
-    int handle;
+    OperatingSystem::Handle handle;
   public:
 
     FileImpl() throw() : handle(-1) {}
     explicit FileImpl(int h) throw() : handle(h) {}
-    int getHandle() const throw() {return handle;}
+    OperatingSystem::Handle getHandle() const throw() {return handle;}
     ~FileImpl() throw(FileException);
   };
 
@@ -280,7 +281,7 @@ public:
 
 /**
   @short Locked file region.
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

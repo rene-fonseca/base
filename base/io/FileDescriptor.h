@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,13 +17,14 @@
 #include <base/io/Stream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
+#include <base/OperatingSystem.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   The FileDescriptor class serves as a general handle to a source or sink of bytes within the operatingsystem (e.g. file, socket and pipe). This class is normally not used directly by the application.
 
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -38,14 +39,14 @@ protected:
   /**
     Reference counted handle to file descriptor.
 
-    @author René Møller Fonseca
+    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class Descriptor : public ReferenceCountedObject {
   private:
 
     /** Handle to file descriptor. */
-    int handle;
+    OperatingSystem::Handle handle;
   public:
 
     /**
@@ -58,7 +59,7 @@ protected:
 
       @param handle The handle.
     */
-    inline explicit Descriptor(int h) throw() : handle(h) {}
+    inline explicit Descriptor(OperatingSystem::Handle h) throw() : handle(h) {}
 
     /**
       Initializes descriptor from other descriptor.
@@ -78,7 +79,7 @@ protected:
     /**
       Returns the handle.
     */
-    inline int getHandle() const throw() {return handle;}
+    inline OperatingSystem::Handle getHandle() const throw() {return handle;}
 
     /**
       Sets the non blocking flags.
@@ -107,7 +108,7 @@ public:
 
     @param handle Handle to file descriptor.
   */
-  FileDescriptor(int handle) throw();
+  FileDescriptor(OperatingSystem::Handle handle) throw();
 
   /**
     Copy constructor.
@@ -137,7 +138,7 @@ public:
   /**
     Gets the handle of the file descriptor.
   */
-  int getHandle() const throw();
+  OperatingSystem::Handle getHandle() const throw();
 
   /**
     Returns true if the handle is valid.
@@ -147,7 +148,7 @@ public:
   /**
     Sets the handle of the file descriptor.
   */
-  void setHandle(int handle) throw();
+  void setHandle(OperatingSystem::Handle handle) throw();
 
   /**
     Sets the non-blocking flag of the file descriptor.

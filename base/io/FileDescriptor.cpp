@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -88,7 +88,7 @@ FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
 FileDescriptor::FileDescriptor() throw() : fd(new Descriptor()) {
 }
 
-FileDescriptor::FileDescriptor(int handle) throw() : fd(new Descriptor(handle)) {
+FileDescriptor::FileDescriptor(OperatingSystem::Handle handle) throw() : fd(new Descriptor(handle)) {
 }
 
 FileDescriptor::FileDescriptor(const FileDescriptor& copy) throw() : fd(copy.fd) {
@@ -113,7 +113,7 @@ void FileDescriptor::setFlags(int flags) throw(IOException) {
   fd->setFlags(flags);
 }
 
-int FileDescriptor::getHandle() const throw() {
+OperatingSystem::Handle FileDescriptor::getHandle() const throw() {
   return fd->getHandle();
 }
 
@@ -121,7 +121,7 @@ bool FileDescriptor::isValid() const throw() {
   return fd->getHandle() != -1;
 }
 
-void FileDescriptor::setHandle(int handle) throw() {
+void FileDescriptor::setHandle(OperatingSystem::Handle handle) throw() {
   if (handle != fd->getHandle()) {
     fd = new Descriptor(handle);
   }
@@ -143,7 +143,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const FileDescriptor&
 
 FileDescriptor FileDescriptor::getStandardInput() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return FileDescriptor((int)GetStdHandle(STD_INPUT_HANDLE));
+  return FileDescriptor(GetStdHandle(STD_INPUT_HANDLE));
 #else // Unix
   return FileDescriptor(0);
 #endif
@@ -151,7 +151,7 @@ FileDescriptor FileDescriptor::getStandardInput() throw() {
 
 FileDescriptor FileDescriptor::getStandardOutput() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return FileDescriptor((int)GetStdHandle(STD_OUTPUT_HANDLE));
+  return FileDescriptor(GetStdHandle(STD_OUTPUT_HANDLE));
 #else // Unix
   return FileDescriptor(1);
 #endif
@@ -159,7 +159,7 @@ FileDescriptor FileDescriptor::getStandardOutput() throw() {
 
 FileDescriptor FileDescriptor::getStandardError() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  return FileDescriptor((int)GetStdHandle(STD_ERROR_HANDLE));
+  return FileDescriptor(GetStdHandle(STD_ERROR_HANDLE));
 #else // __unix__
   return FileDescriptor(2);
 #endif

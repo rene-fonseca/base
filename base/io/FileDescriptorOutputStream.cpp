@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -59,6 +59,7 @@ void FileDescriptorOutputStream::flush() throw(IOException) {
   }
   ::FlushFileBuffers((HANDLE)fd->getHandle()); // yes ignore any error
 #else // Unix
+  // TAG: this is a bug
   ::fsync(fd->getHandle());
 //  if (ioctl(fd->getHandle(), I_FLUSH, FLUSHRW) != 0) {
 //    throw IOException("Unable to flush stream");

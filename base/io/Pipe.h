@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000 by René Møller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,13 +22,14 @@
 #include <base/io/PipeException.h>
 #include <base/mem/ReferenceCountedObjectPointer.h>
 #include <base/collection/Pair.h>
+#include <base/OperatingSystem.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   This class implements an anonymous pipe. MT-level is safe.
 
-  @author René Møller Fonseca
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
 
@@ -39,13 +40,13 @@ public:
   private:
 
     /** Handle to the pipe. */
-    int handle;
+    OperatingSystem::Handle handle;
   public:
 
     /** Initializes invalid pipe. */
     inline PipeImpl() throw() : handle(-1) {}
     /** Initializes pipe by handle. */
-    PipeImpl(int handle) throw() : handle(handle) {}
+    PipeImpl(OperatingSystem::Handle handle) throw() : handle(handle) {}
     /** Returns the handle. */
     inline int getHandle() const throw() {return handle;}
     /** Releases the resources use by the pipe. */

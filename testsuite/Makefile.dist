@@ -23,3 +23,6 @@ lendum-gcc-3.0: all
 
 falster-gcc-3.0: all
 	CXXFLAGS="-O0 -g3" ./configure --prefix=/tmp/fonseca/base --with-base-include=../.. --with-base-lib=..
+
+klampenborg-gcc: all
+	CC="gcc -mno-cygwin -mthreads" LTCC='"gcc -mno-cygwin -mthreads"' CXX="gcc -mno-cygwin -mthreads" CXXFLAGS="-O0 -g3" LDFLAGS="-Wl,--enable-auto-import" ./configure --target=mingw32 --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..

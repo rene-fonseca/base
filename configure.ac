@@ -16,6 +16,7 @@ dnl process this file with autoconf to produce a configure script
 AC_INIT(Makefile.am)
 AC_CONFIG_SRCDIR(base/features.h)
 
+dnl TAG: fix export of dependencies to other libraries
 dnl TAG: protect against absolute path in srcdir
 
 ac_base_build_date=`date --iso-8601=seconds`
@@ -1716,5 +1717,8 @@ AC_CONFIG_FILES(base/security/Makefile)
 AC_CONFIG_FILES(base/sound/Makefile)
 AC_CONFIG_FILES(base/string/Makefile)
 AC_CONFIG_FILES(base/xml/Makefile)
+
+AC_CONFIG_FILES(base/opengl/Makefile)
+AC_CONFIG_FILES(base/ui/Makefile)
 
 AC_OUTPUT()

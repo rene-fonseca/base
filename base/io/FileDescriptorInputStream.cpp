@@ -57,7 +57,7 @@ struct packedStat64 { // temporary fix for unaligned st_size
   __time_t st_ctime;
   unsigned long int __unused3;
   __ino64_t st_ino;
-} __attribute__ ((packed));
+} _DK_SDU_MIP__BASE__PACKED;
 #endif // GNU Linux
 
 FileDescriptorInputStream::FileDescriptorInputStream() throw() :

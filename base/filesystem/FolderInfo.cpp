@@ -258,7 +258,7 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
       __time_t st_ctime;
       unsigned long int __unused3;
       __ino64_t st_ino;
-    } __attribute__ ((packed));
+    } _DK_SDU_MIP__BASE__PACKED;
     struct packedStat64 status; // TAG: GLIBC: st_size is not 64 bit aligned
   #else
     struct stat64 status;

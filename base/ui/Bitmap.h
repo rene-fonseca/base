@@ -17,6 +17,7 @@
 #include <base/Dimension.h>
 #include <base/mem/Reference.h>
 #include <base/ui/UserInterfaceException.h>
+#include <base/ui/Position.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -92,7 +93,11 @@ public:
     @param encoding The encoding of the pixels.
     @param data The bitmap data.
   */
-  Bitmap(const Dimension& dimension, Format format, Encoding encoding, const void* data) throw(UserInterfaceException);
+  Bitmap(
+    const Dimension& dimension,
+    Format format,
+    Encoding encoding,
+    const void* data) throw(UserInterfaceException);
 
   /**
     Initializes bitmap from other bitmap.
@@ -120,6 +125,19 @@ public:
     Returns the dimension of the bitmap.
   */
   Dimension getDimension() const throw(UserInterfaceException);
+
+  /**
+    Returns the value of the specified pixel.
+  */
+  uint32 getPixel(
+    const Position& position) const throw(UserInterfaceException);
+
+  /**
+    Sets the value of the specified pixel.
+  */
+  void setPixel(
+    const Position& position,
+    uint32 value) const throw(UserInterfaceException);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

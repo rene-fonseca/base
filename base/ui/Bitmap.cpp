@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/ui/Bitmap.h>
+#include <base/ui/WindowImpl.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <windows.h>
@@ -21,9 +22,20 @@
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
 #  include <X11/Xatom.h>
+#  include <stdlib.h>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+class Backend<WindowImpl> {
+public:
+
+  static inline void* getDisplayHandle() throw() {
+    return WindowImpl::displayHandle;
+  }
+};
+#endif
 
 Bitmap::Handle::~Handle() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -32,12 +44,16 @@ Bitmap::Handle::~Handle() throw() {
   }
 #else // unix
   if (handle) {
-    // TAG: fixme
+    XDestroyImage((XImage*)handle);
   }
 #endif // flavor
 }
 
-Bitmap::Bitmap(const Dimension& dimension, Format format, Encoding encoding, const void* data) throw(UserInterfaceException)
+Bitmap::Bitmap(
+  const Dimension& dimension,
+  Format format,
+  Encoding encoding,
+  const void* data) throw(UserInterfaceException)
   : handle(0) {
   if (!dimension.isProper()) {
     return;
@@ -45,13 +61,23 @@ Bitmap::Bitmap(const Dimension& dimension, Format format, Encoding encoding, con
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HDC h = ::GetDCEx(0, 0, 0); // TAG: destroy this?
   HDC deviceContextHandle = ::CreateCompatibleDC(h);
-  assert(deviceContextHandle, UserInterfaceException("Unable to create bitmap", this));
-  HBITMAP bitmapHandle = ::CreateCompatibleBitmap((HDC)h, dimension.getWidth(), dimension.getHeight());
+  assert(
+    deviceContextHandle,
+    UserInterfaceException("Unable to create bitmap", this)
+  );
+  HBITMAP bitmapHandle = ::CreateCompatibleBitmap(
+    (HDC)h,
+    dimension.getWidth(),
+    dimension.getHeight()
+  );
   if (!bitmapHandle) {
     ::DeleteDC((HDC)deviceContextHandle);
     throw UserInterfaceException("Unable to create bitmap", this);
   }
-  HGDIOBJ previous = ::SelectObject((HDC)deviceContextHandle, (HGDIOBJ)bitmapHandle);
+  HGDIOBJ previous = ::SelectObject(
+    (HDC)deviceContextHandle,
+    (HGDIOBJ)bitmapHandle
+  );
   if (!previous) {
     ::DeleteObject(bitmapHandle);
     ::DeleteDC(deviceContextHandle);
@@ -60,7 +86,10 @@ Bitmap::Bitmap(const Dimension& dimension, Format format, Encoding encoding, con
     ::DeleteObject(previous); // TAG: is this required
   }
   
-  assert((format == Bitmap::RGB) && (encoding == Bitmap::RGB_32), UserInterfaceException(this));
+  assert(
+    (format == Bitmap::RGB) && (encoding == Bitmap::RGB_32),
+    UserInterfaceException(this)
+  );
   
   BITMAPINFO info;
   info.bmiHeader.biSize = sizeof(info.bmiHeader);
@@ -89,24 +118,102 @@ Bitmap::Bitmap(const Dimension& dimension, Format format, Encoding encoding, con
   );
   handle = new Handle(deviceContextHandle);
 #else // unix
-  // TAG: fixme
+  assert( // TAG: what is the dimension limit
+    (dimension.getWidth() < 65536) && (dimension.getHeight() < 65536),
+    UserInterfaceException(this)
+  );
+  assert(
+    (format == Bitmap::RGB) && (encoding == Bitmap::RGB_32),
+    UserInterfaceException(this)
+  );
+  
+  Display* display = (Display*)Backend<WindowImpl>::getDisplayHandle();
+  Visual* visual = XDefaultVisual(
+    display,
+    XDefaultScreen(display)
+  );
+
+  // TAG: depth can be: 8 (1 byte), 16 (2 bytes), 24 (4 bytes)
+  
+  void* newData = malloc(4 * dimension.getSize());
+  copy<uint8>((uint8*)newData, (const uint8*)data, 4 * dimension.getSize());
+  XImage* image = XCreateImage(
+    display,
+    visual,
+    24, // depth
+    ZPixmap, // format - XYBitmap (1-bit), XYPixmap (R,G,B planes), or ZPixmap (RGB pixels)
+    0, // offset
+    (char*)newData, // data
+    dimension.getWidth(),
+    dimension.getHeight(),
+    8, // pad
+    4 * dimension.getWidth() // bytes per line
+  );
+  handle = new Handle(image);
+  WRITE_SOURCE_LOCATION();
+  fout << getDimension() << ENDL;
+    fout << display << ENDL;
+    fout << data << ENDL;
+    fout << image->data << ENDL;
+    fout << handle->getHandle() << ENDL;
+  
 #endif // flavor
 }
 
 #if 0
-void Bitmap::decode(const Dimension& dimension, Format format, Encoding encoding, const void* data) throw() {
+void Bitmap::decode(
+  const Dimension& dimension,
+  Format format,
+  Encoding encoding,
+  const void* data) throw() {
 }
 
 void Bitmap::encode(Format format, Encoding encoding, void* data) throw() {
 }
 #endif
 
+// TAG: use Color
+uint32 Bitmap::getPixel(
+  const Position& position) const throw(UserInterfaceException) {
+  assert(handle.isValid(), NullPointer(this));
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  return 0; // TAG: fixme
+#else // unix
+  unsigned long pixel = XGetPixel(
+    (XImage*)handle->getHandle(),
+    position.getX(),
+    position.getY()
+  );
+  return pixel;
+#endif // flavor
+}
+
+// TAG: use Color
+void Bitmap::setPixel(
+  const Position& position,
+  uint32 value) const throw(UserInterfaceException) {
+  assert(handle.isValid(), NullPointer(this));
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  // TAG: fixme
+#else // unix
+  XPutPixel(
+    (XImage*)handle->getHandle(),
+    position.getX(),
+    position.getY(),
+    value
+  );
+#endif // flavor
+}
+
 Dimension Bitmap::getDimension() const throw(UserInterfaceException) {
   if (!handle.isValid()) {
     return Dimension(0, 0);
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  HGDIOBJ bitmapHandle = ::GetCurrentObject((HDC)handle->getHandle(), OBJ_BITMAP);
+  HGDIOBJ bitmapHandle = ::GetCurrentObject(
+    (HDC)handle->getHandle(),
+    OBJ_BITMAP
+  );
   BITMAP info;
   ::GetObject(
     (HBITMAP)bitmapHandle,
@@ -115,8 +222,8 @@ Dimension Bitmap::getDimension() const throw(UserInterfaceException) {
   );
   return Dimension(info.bmWidth, info.bmHeight);
 #else // unix
-  return Dimension(0, 0);
-  // TAG: fixme
+  XImage* image = (XImage*)handle->getHandle();
+  return Dimension(image->width, image->height);
 #endif // flavor
 }
 

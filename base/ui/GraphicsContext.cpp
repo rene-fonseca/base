@@ -69,7 +69,8 @@ GraphicsContext::Pen::Pen(
 #endif // flavor
 }
 
-GraphicsContext::Brush::Brush(SystemColor color) throw(UserInterfaceException) {
+GraphicsContext::Brush::Brush(
+  SystemColor color) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   static const int NATIVE_COLORS[] = {
     COLOR_WINDOW, // WINDOW_BACKGROUND
@@ -381,7 +382,6 @@ void GraphicsContext::setPixels(
   const Array<Position>& positions,
   Color color,
   unsigned int flags) throw(UserInterfaceException) {
-// ::XInitImage, ::XCreateImage, XGetPixel, XPutPixel, XSubImage, XAddPixel, ::XDestroyImage
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   Array<Position>::ReadIterator i = positions.getBeginReadIterator();
   const Array<Position>::ReadIterator end = positions.getEndReadIterator();
@@ -913,18 +913,25 @@ void GraphicsContext::putBitmap(
     );
   }
 #else // unix
-//   ::XPutImage(
-//     (Display*)displayHandle,
-//     (Drawable)drawableHandle,
-//     (GC)graphicsContextHandle,
-//     bitmap.bitmapHandle,
-//     0,
-//     0,
-//     position.getX(),
-//     position.getY(),
-//     dimension.getWidth(),
-//     dimension.getHeight()
-//   );
+  if (bitmap.handle.isValid()) {
+    fout << displayHandle << ENDL;
+    fout << bitmap.handle->getHandle() << ENDL;
+    WRITE_SOURCE_LOCATION();
+    int result = XPutImage(
+      (Display*)displayHandle,
+      (::Window)drawableHandle,
+      (GC)graphicsContextHandle,
+      (XImage*)bitmap.handle->getHandle(),
+      0, // x
+      0, // y
+      position.getX(),
+      position.getY(),
+      dimension.getWidth(),
+      dimension.getHeight()
+    );
+    fout << result << ENDL;
+    WRITE_SOURCE_LOCATION();
+  }
 #endif // flavor  
 }
 
@@ -934,7 +941,11 @@ Bitmap GraphicsContext::getBitmap(
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HDC deviceContext = ::CreateCompatibleDC((HDC)graphicsContextHandle);
   assert(deviceContext, UserInterfaceException(this));
-  HBITMAP bitmap = ::CreateCompatibleBitmap((HDC)deviceContext, dimension.getWidth(), dimension.getHeight());
+  HBITMAP bitmap = ::CreateCompatibleBitmap(
+    (HDC)deviceContext,
+    dimension.getWidth(),
+    dimension.getHeight()
+  );
   if (!bitmap) {
     ::DeleteDC((HDC)deviceContext);
     throw UserInterfaceException(this);
@@ -951,17 +962,20 @@ Bitmap GraphicsContext::getBitmap(
   result.handle = new Bitmap::Handle(deviceContext);
   return result;
 #else // unix
-//   XImage* nativeBitmap = ::XGetImage(
-//     (Display*)displayHandle,
-//     (Drawable)drawableHandle,
-//     position.getX(),
-//     position.getY(),
-//     dimension.getWidth(),
-//     dimension.getHeight(),
-//     1, // TAG: fixme - depth of image (use depth of drawable?)
-//     XYPixmap
-//   );
-  return Bitmap();
+  XImage* image = ::XGetImage(
+    (Display*)displayHandle,
+    (::Window)drawableHandle,
+    position.getX(),
+    position.getY(),
+    dimension.getWidth(),
+    dimension.getHeight(),
+    1, // TAG: depth of image
+    ZPixmap
+  );
+  assert(image, UserInterfaceException(this));
+  Bitmap result;
+  result.handle = new Bitmap::Handle(image);
+  return result;
 #endif // flavor  
 }
 

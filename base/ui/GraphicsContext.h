@@ -131,7 +131,10 @@ public:
       @param color The desired color.
       @param width The desired width.
     */
-    Pen(PenStyle style, Color color, unsigned int width = 1) throw(UserInterfaceException);
+    Pen(
+      PenStyle style,
+      Color color,
+      unsigned int width = 1) throw(UserInterfaceException);
   };
 
   /**
@@ -208,7 +211,11 @@ public:
       @param weight The weight of the font.
       @param flags The flags.
     */
-    Font(const String& name, unsigned short height, FontWeight weight = NORMAL, unsigned int flags = 0) throw(UserInterfaceException);
+    Font(
+      const String& name,
+      unsigned short height,
+      FontWeight weight = NORMAL,
+      unsigned int flags = 0) throw(UserInterfaceException);
   };
   
   enum GraphicsFlag {
@@ -346,7 +353,9 @@ public:
   /**
     Clear the specified region.
   */
-  void clear(const Position& position, const Dimension& dimension) throw(UserInterfaceException);
+  void clear(
+    const Position& position,
+    const Dimension& dimension) throw(UserInterfaceException);
   
   /**
     Draws a point.
@@ -355,7 +364,10 @@ public:
     @param color The desired color.
     @param flags The flags.
   */
-  void setPixel(const Position& position, Color color, unsigned int flags = 0) throw(UserInterfaceException);
+  void setPixel(
+    const Position& position,
+    Color color,
+    unsigned int flags = 0) throw(UserInterfaceException);
 
   /**
     Returns the color of the pixel at the specified position.
@@ -371,7 +383,10 @@ public:
     @param color The desired color.
     @param flags The flags.
   */
-  void setPixels(const Array<Position>& positions, Color color, unsigned int flags = 0) throw(UserInterfaceException);
+  void setPixels(
+    const Array<Position>& positions,
+    Color color,
+    unsigned int flags = 0) throw(UserInterfaceException);
   
   /**
     Sets the current position.
@@ -381,12 +396,15 @@ public:
   void moveTo(const Position& position) throw(UserInterfaceException);
 
   /**
-    Draws a line from the current position to the specified position using the current pen.
+    Draws a line from the current position to the specified position using the
+    current pen.
 
     @param position The position.
     @param flags The flags.
   */
-  void lineTo(const Position& position, unsigned int flags = 0) throw(UserInterfaceException);
+  void lineTo(
+    const Position& position,
+    unsigned int flags = 0) throw(UserInterfaceException);
 
   /**
     Draws a line using the current pen.
@@ -395,7 +413,10 @@ public:
     @param lowerRight The lower right corner.
     @param flags The flags.
   */
-  void line(const Position& upperLeft, const Position& lowerRight, unsigned int flags = 0) throw(UserInterfaceException);
+  void line(
+    const Position& upperLeft,
+    const Position& lowerRight,
+    unsigned int flags = 0) throw(UserInterfaceException);
   
   /**
     Draws an arc.
@@ -416,7 +437,10 @@ public:
     @param lowerRight The lower right corner.
     @param flags The flags.
   */
-  void rectangle(const Position& upperLeft, const Position& b, unsigned int flags = 0) throw(UserInterfaceException);
+  void rectangle(
+    const Position& upperLeft,
+    const Position& b,
+    unsigned int flags = 0) throw(UserInterfaceException);
   
   /**
     Draws a rectangle using the current pen and brush.
@@ -425,7 +449,10 @@ public:
     @param dimension The dimension of the rectangle.
     @param flags The flags.
   */
-  void rectangle(const Position& position, const Dimension& dimension, unsigned int flags = 0) throw(UserInterfaceException);
+  void rectangle(
+    const Position& position,
+    const Dimension& dimension,
+    unsigned int flags = 0) throw(UserInterfaceException);
 
   /**
     Draws a rectangle with the specified brush.
@@ -435,7 +462,11 @@ public:
     @param brush The brush use to fill the rectangle.
     @param flags The flags.
   */
-  void rectangle(const Position& upperLeft, const Position& lowerRight, Brush brush, unsigned int flags = 0) throw(UserInterfaceException);
+  void rectangle(
+    const Position& upperLeft,
+    const Position& lowerRight,
+    Brush brush,
+    unsigned int flags = 0) throw(UserInterfaceException);
 
   /**
     Draws a rectangle with the specified brush.
@@ -445,34 +476,50 @@ public:
     @param brush The brush use to fill the rectangle.
     @param flags The flags.
   */
-  void rectangle(const Position& position, const Dimension& dimension, Brush brush, unsigned int flags = 0) throw(UserInterfaceException);
+  void rectangle(
+    const Position& position,
+    const Dimension& dimension,
+    Brush brush,
+    unsigned int flags = 0) throw(UserInterfaceException);
   
   /**
-    Draws an ellipse specified by the bounding rectangle using the current pen and brush.
+    Draws an ellipse specified by the bounding rectangle using the current pen
+    and brush.
     
     @param upperLeft The upper left corner.
     @param lowerRight The lower right corner.
     @param flags The flags.
   */
-  void ellipse(const Position& upperLeft, const Position& lowerRight, unsigned int flags = 0) throw(UserInterfaceException);
+  void ellipse(
+    const Position& upperLeft,
+    const Position& lowerRight,
+    unsigned int flags = 0) throw(UserInterfaceException);
 
   /**
-    Draws an ellipse specified by the bounding rectangle using the current pen and brush.
+    Draws an ellipse specified by the bounding rectangle using the current pen
+    and brush.
     
     @param position The upper left of the corner.
     @param dimension The dimension of the rectangle.
     @param flags The flags.
   */
-  void ellipse(const Position& position, const Dimension& dimension, unsigned int flags = 0) throw(UserInterfaceException);
+  void ellipse(
+    const Position& position,
+    const Dimension& dimension,
+    unsigned int flags = 0) throw(UserInterfaceException);
 
   /**
-    Draws a circle specified by the bounding rectangle using the current pen and brush.
+    Draws a circle specified by the bounding rectangle using the current pen
+    and brush.
     
     @param position The upper left of the corner.
     @param dimension The dimension of the rectangle.
     @param flags The flags.
   */
-  inline void circle(const Position& position, unsigned int dimension, unsigned int flags = 0) throw(UserInterfaceException) {
+  inline void circle(
+    const Position& position,
+    unsigned int dimension,
+    unsigned int flags = 0) throw(UserInterfaceException) {
     ellipse(position, Dimension(dimension, dimension), flags);
   }
   
@@ -500,7 +547,8 @@ public:
   /**
     Returns the dimension of the text.
   */
-  Dimension getDimensionOf(const String& text) const throw(UserInterfaceException);
+  Dimension getDimensionOf(
+    const String& text) const throw(UserInterfaceException);
 
   /**
     Draws text.

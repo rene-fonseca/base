@@ -32,43 +32,43 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Returns true if the type is void. Do NOT add specializations for this function.
 */
-template<class TYPE> inline bool isVoid() {return false;}
-template<> inline bool isVoid<void>() {return true;}
+template<class TYPE> inline bool isVoid() throw() {return false;}
+template<> inline bool isVoid<void>() throw() {return true;}
 
 /**
   Returns true if the type is an integer type. Do NOT add specializations for this function.
 */
-template<class TYPE> inline bool isInteger() {return false;}
-template<> inline bool isInteger<bool>() {return true;}
-template<> inline bool isInteger<char>() {return true;}
-template<> inline bool isInteger<signed char>() {return true;}
-template<> inline bool isInteger<unsigned char>() {return true;}
-template<> inline bool isInteger<wchar_t>() {return true;}
-template<> inline bool isInteger<int>() {return true;}
-template<> inline bool isInteger<unsigned int>() {return true;}
-template<> inline bool isInteger<long>() {return true;}
-template<> inline bool isInteger<unsigned long>() {return true;}
-template<> inline bool isInteger<long long>() {return true;}
-template<> inline bool isInteger<unsigned long long>() {return true;}
+template<class TYPE> inline bool isInteger() throw() {return false;}
+template<> inline bool isInteger<bool>() throw() {return true;}
+template<> inline bool isInteger<char>() throw() {return true;}
+template<> inline bool isInteger<signed char>() throw() {return true;}
+template<> inline bool isInteger<unsigned char>() throw() {return true;}
+template<> inline bool isInteger<wchar_t>() throw() {return true;}
+template<> inline bool isInteger<int>() throw() {return true;}
+template<> inline bool isInteger<unsigned int>() throw() {return true;}
+template<> inline bool isInteger<long>() throw() {return true;}
+template<> inline bool isInteger<unsigned long>() throw() {return true;}
+template<> inline bool isInteger<long long>() throw() {return true;}
+template<> inline bool isInteger<unsigned long long>() throw() {return true;}
 
 /**
   Returns true if the type is a float, double, or long double. Do NOT add specializations for this function.
 */
-template<class TYPE> inline bool isFloating() {return false;}
-template<> inline bool isFloating<float>() {return true;}
-template<> inline bool isFloating<double>() {return true;}
-template<> inline bool isFloating<long double>() {return true;}
+template<class TYPE> inline bool isFloating() throw() {return false;}
+template<> inline bool isFloating<float>() throw() {return true;}
+template<> inline bool isFloating<double>() throw() {return true;}
+template<> inline bool isFloating<long double>() throw() {return true;}
 
 /**
   Returns true if the type is an arithmetic (integer or floating) type. Do NOT add specializations for this function.
 */
-template<class TYPE> inline bool isArithmetic() {return isInteger<TYPE>() || isFloating<TYPE>();}
+template<class TYPE> inline bool isArithmetic() throw() {return isInteger<TYPE>() || isFloating<TYPE>();}
 
 /**
   Returns true if the type is a primitive (built-in) type. Do NOT add specializations for this function.
   @see isRelocateable
 */
-template<class TYPE> inline bool isPrimitive() {return isVoid<TYPE>() || isArithmetic<TYPE>();}
+template<class TYPE> inline bool isPrimitive() throw() {return isVoid<TYPE>() || isArithmetic<TYPE>();}
 
 /**
   Returns true if objects of the specified type are relocateable (i.e. objects
@@ -79,7 +79,7 @@ template<class TYPE> inline bool isPrimitive() {return isVoid<TYPE>() || isArith
   This function is primarily used by allocators to avoid operations on their
   elements. Be very careful when adding your own specializations.
 */
-template<class TYPE> inline bool isRelocateable() {return isPrimitive<TYPE>();}
+template<class TYPE> inline bool isRelocateable() throw() {return isPrimitive<TYPE>();}
 
 
 

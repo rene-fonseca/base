@@ -43,9 +43,9 @@ namespace nl {
   namespace stack {
 
     namespace doxygen {
-    };
-  };
-};
+    }
+  }
+}
 
 using namespace nl::stack::doxygen;
 

@@ -26,9 +26,9 @@ namespace com {
   namespace microsoft {
     
     namespace compiler {
-    };
-  };
-};
+    }
+  }
+}
 
 using namespace com::microsoft::compiler;
 

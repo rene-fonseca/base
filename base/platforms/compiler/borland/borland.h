@@ -24,13 +24,13 @@ namespace base {
     namespace borland {
       
       namespace compiler {
-      };
-    };
-  };
+      }
+    }
+  }
   
   // import data types
   using com::borland::compiler;
   
-}; // end of namespace base
+} // end of namespace base
 
 #endif

@@ -25,13 +25,13 @@ namespace base {
     namespace sgi2 {
       
       namespace mipspro {
-      };
-    };
-  };
+      }
+    }
+  }
 
   // import data types
   using com::sgi2::mipspro;
   
-}; // end of namespace base
+} // end of namespace base
 
 #endif

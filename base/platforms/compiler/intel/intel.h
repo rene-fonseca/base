@@ -24,13 +24,13 @@ namespace base {
     namespace intel {
       
       namespace compiler {
-      };
-    };
-  };
+      }
+    }
+  }
   
   // import data types
   using com::intel::compiler;
   
-}; // end of namespace base
+} // end of namespace base
 
 #endif

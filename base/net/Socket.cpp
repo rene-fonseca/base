@@ -13,8 +13,6 @@
 
 #include <base/ByteOrder.h>
 #include <base/Functor.h>
-#include <base/Trace.h>
-#include <base/features.h>
 #include <base/io/EndOfFile.h>
 #include <base/net/Socket.h>
 
@@ -89,10 +87,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-  ASSERTION(sizeof(OperatingSystem::Handle) == sizeof(SOCKET));
-#endif // flavour
-
 class SocketAddress { // Internet end point
 private:
 
@@ -107,7 +101,7 @@ public:
 
   /** Initializes socket address. */
   SocketAddress(const InetAddress& addr, unsigned short port) throw(NetworkException) {
-    fill<char>(getCharAddress(sa), sizeof(sa), 0);
+    clear(sa);
   #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   #if defined(SIN6_LEN)
     sa.sin6_len = sizeof(sa);
@@ -225,14 +219,14 @@ Socket::SocketImpl::~SocketImpl() throw(IOException) {
 
 
 
-Socket::Socket() throw() : socket(new SocketImpl()) {
+Socket::Socket() throw() : socket(new SocketImpl()) { // TAG: fixme
 }
 
 bool Socket::accept(Socket& socket) throw(IOException) {
   //  SynchronizeExclusively();
 
   if (this->socket->isCreated()) {
-    throw NetworkException("Attempt to overwrite socket");
+    throw NetworkException("Attempt to overwrite socket", this);
   }
 
   SocketAddress sa;
@@ -240,11 +234,11 @@ bool Socket::accept(Socket& socket) throw(IOException) {
   OperatingSystem::Handle handle = (OperatingSystem::Handle)::accept((int)socket.getHandle(), sa.getValue(), &sl);
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (handle == OperatingSystem::INVALID_HANDLE) {
-    switch (WSAGetLastError()) {
+    switch (::WSAGetLastError()) {
     case WSAEWOULDBLOCK:
       return false;
     default:
-      throw NetworkException("Unable to accept connection");
+      throw NetworkException("Unable to accept connection", this);
     }
   }
 #else // unix
@@ -253,7 +247,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
     case EAGAIN: // EWOULDBLOCK
       return false;
     default:
-      throw NetworkException("Unable to accept connection");
+      throw NetworkException("Unable to accept connection", this);
     }
   }
 #endif // flavour
@@ -267,7 +261,7 @@ void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOExceptio
   SynchronizeExclusively();
   SocketAddress sa(addr, port);
   if (int rr = ::bind((int)getHandle(), sa.getValue(), sa.getSize())) {
-    throw NetworkException("Unable to assign name to socket");
+    throw NetworkException("Unable to assign name to socket", this);
   }
 //  if ((addr.isUnspecified()) || (port == 0)) { // do we need to determine assigned name
 //    sa.setSocket((int)getHandle());
@@ -289,22 +283,22 @@ void Socket::connect(const InetAddress& addr, unsigned short port) throw(IOExcep
   SocketAddress sa(addr, port);
   if (::connect((int)getHandle(), sa.getValue(), sa.getSize())) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-    switch (WSAGetLastError()) {
+    switch (::WSAGetLastError()) {
     case WSAECONNREFUSED:
-      throw AccessDenied();
+      throw AccessDenied(this);
     case WSAETIMEDOUT:
-      throw TimedOut();
+      throw TimedOut(this);
     default:
-      throw NetworkException("Unable to connect to socket");
+      throw NetworkException("Unable to connect to socket", this);
     }
 #else // unix
     switch (errno) {
     case ECONNREFUSED:
-      throw AccessDenied();
+      throw AccessDenied(this);
     case ETIMEDOUT:
-      throw TimedOut();
+      throw TimedOut(this);
     default:
-      throw NetworkException("Unable to connect to socket");
+      throw NetworkException("Unable to connect to socket", this);
     }
 #endif // flavour
   }
@@ -320,11 +314,11 @@ void Socket::create(bool stream) throw(IOException) {
   OperatingSystem::Handle handle;
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
   if (socket->isCreated() || ((handle = (OperatingSystem::Handle)::socket(PF_INET6, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == OperatingSystem::INVALID_HANDLE)) {
-    throw NetworkException("Unable to create socket");
+    throw NetworkException("Unable to create socket", this);
   }
 #else
   if (socket->isCreated() || ((handle = (OperatingSystem::Handle)::socket(PF_INET, stream ? SOCK_STREAM : SOCK_DGRAM, 0)) == OperatingSystem::INVALID_HANDLE)) {
-    throw NetworkException("Unable to create socket");
+    throw NetworkException("Unable to create socket", this);
   }
 #endif
   socket = new SocketImpl(handle);
@@ -334,7 +328,7 @@ void Socket::listen(unsigned int backlog) throw(IOException) {
   SynchronizeShared();
   backlog = minimum<int>(backlog, Int::MAXIMUM); // silently reduce the backlog argument
   if (::listen((int)getHandle(), backlog)) { // may also silently limit backlog
-    throw NetworkException("Unable to set queue limit for incomming connections");
+    throw NetworkException("Unable to set queue limit for incomming connections", this);
   }
 }
 
@@ -369,11 +363,11 @@ void Socket::shutdownInputStream() throw(IOException) {
   SynchronizeShared();
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (::shutdown((int)getHandle(), SD_RECEIVE)) { // disallow further receives
-    throw IOException("Unable to shutdown socket for reading");
+    throw IOException("Unable to shutdown socket for reading", this);
   }
 #else // unix
   if (::shutdown((int)getHandle(), 0)) { // disallow further receives
-    throw IOException("Unable to shutdown socket for reading");
+    throw IOException("Unable to shutdown socket for reading", this);
   }
 #endif // flavour
 }
@@ -382,11 +376,11 @@ void Socket::shutdownOutputStream() throw(IOException) {
   SynchronizeShared();
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (::shutdown((int)getHandle(), SD_SEND)) { // disallow further sends
-    throw IOException("Unable to shutdown socket for writing");
+    throw IOException("Unable to shutdown socket for writing", this);
   }
 #else // unix
   if (::shutdown((int)getHandle(), 1)) { // disallow further sends
-    throw IOException("Unable to shutdown socket for writing");
+    throw IOException("Unable to shutdown socket for writing", this);
   }
 #endif // flavour
 }
@@ -481,25 +475,25 @@ void Socket::setNonBlocking(bool value) throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int buffer = value; // set to zero to disable nonblocking
   if (ioctlsocket((int)getHandle(), FIONBIO, pointer_cast<u_long*>(&buffer))) {
-    throw IOException("Unable to set blocking mode");
+    throw IOException("Unable to set blocking mode", this);
   }
 #else // unix
   int flags;
   if ((flags = fcntl((int)getHandle(), F_GETFL)) == -1) {
-    throw IOException("Unable to get flags for socket");
+    throw IOException("Unable to get flags for socket", this);
   }
   if (value) {
     if (flags & O_NONBLOCK == 0) { // do we need to set flag
       flags |= O_NONBLOCK;
       if (fcntl((int)getHandle(), F_SETFL, flags) != 0) {
-        throw IOException("Unable to set flags of socket");
+        throw IOException("Unable to set flags of socket", this);
       }
     }
   } else {
     if (flags & O_NONBLOCK != 0) { // do we need to clear flag
       flags &= ~O_NONBLOCK;
       if (fcntl((int)getHandle(), F_SETFL, flags) != 0) {
-        throw IOException("Unable to set flags of socket");
+        throw IOException("Unable to set flags of socket", this);
       }
     }
   }
@@ -511,14 +505,14 @@ unsigned int Socket::available() const throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int result;
   if (ioctlsocket((int)getHandle(), FIONREAD, pointer_cast<u_long*>(&result))) {
-    throw IOException("Unable to determine the amount of data pending in the input buffer");
+    throw IOException("Unable to determine the amount of data pending in the input buffer", this);
   }
   return result;
 #else // unix
   // this implementation is not very portable?
   int result;
   if (ioctl((int)getHandle(), FIONREAD, &result)) {
-    throw IOException("Unable to determine the amount of data pending in the input buffer");
+    throw IOException("Unable to determine the amount of data pending in the input buffer", this);
   }
   return result;
 #endif // flavour
@@ -542,13 +536,13 @@ unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocki
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     int result = ::recv((int)socket->getHandle(), buffer, minimum<int>(bytesToRead, Int::MAXIMUM), 0);
     if (result < 0) { // has an error occured
-      switch (WSAGetLastError()) {
+      switch (::WSAGetLastError()) {
       case WSAEINTR: // interrupted by signal before any data was read
         continue; // try again
       case WSAEWOULDBLOCK: // no data available (only in non-blocking mode)
 //        return bytesRead; // try later
       default:
-        throw IOException("Unable to read from socket");
+        throw IOException("Unable to read from socket", this);
       }
     }
 #else // unix
@@ -560,7 +554,7 @@ unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocki
       case EAGAIN: // no data available (only in non-blocking mode)
 //        return bytesRead; // try later
       default:
-        throw IOException("Unable to read from socket");
+        throw IOException("Unable to read from socket", this);
       }
     }
 #endif // flavour
@@ -572,7 +566,7 @@ unsigned int Socket::read(char* buffer, unsigned int bytesToRead, bool nonblocki
     }
     if (result == 0) { // has end been reached
       socket->onEnd(); // remember end of file
-      throw EndOfFile(); // attempt to read beyond end of stream
+      throw EndOfFile(this); // attempt to read beyond end of stream
     }
   }
   return bytesRead;
@@ -585,13 +579,13 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     int result = ::send((int)socket->getHandle(), buffer, minimum<int>(bytesToWrite, Int::MAXIMUM), 0);
     if (result < 0) { // has an error occured
-      switch (WSAGetLastError()) {
+      switch (::WSAGetLastError()) {
       case WSAEINTR: // interrupted by signal before any data was written
         continue; // try again
       case WSAEWOULDBLOCK: // no data could be written without blocking (only in non-blocking mode)
 //      return 0; // try later
       default:
-        throw IOException("Unable to write to socket");
+        throw IOException("Unable to write to socket", this);
       }
     }
 #else // unix
@@ -603,7 +597,7 @@ unsigned int Socket::write(const char* buffer, unsigned int bytesToWrite, bool n
       case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
 //      return 0; // try later
       default:
-        throw IOException("Unable to write to socket");
+        throw IOException("Unable to write to socket", this);
       }
     }
 #endif // flavour
@@ -619,7 +613,7 @@ unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& a
   SocketAddress sa;
   socklen_t sl = sa.getSize();
   if ((result = ::recvfrom((int)getHandle(),  buffer, size, 0, sa.getValue(), &sl)) == -1) {
-    throw IOException("Unable to receive from");
+    throw IOException("Unable to receive from", this);
   }
   address = sa.getAddress();
   port = sa.getPort();
@@ -631,7 +625,7 @@ unsigned int Socket::sendTo(const char* buffer, unsigned int size, const InetAdd
   int result = 0;
   const SocketAddress sa(address, port);
   if ((result = ::sendto((int)getHandle(), buffer, size, 0, sa.getValue(), sa.getSize())) == -1) {
-    throw IOException("Unable to send to");
+    throw IOException("Unable to send to", this);
   }
   return result;
 }
@@ -665,7 +659,7 @@ void Socket::wait() const throw(IOException) {
 
   int result = ::select((int)getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
-    throw IOException("Unable to wait for input");
+    throw IOException("Unable to wait for input", this);
   }
 }
 
@@ -681,7 +675,7 @@ bool Socket::wait(unsigned int microseconds) const throw(IOException) {
 
   int result = ::select((int)getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
-    throw IOException("Unable to wait for input");
+    throw IOException("Unable to wait for input", this);
   }
   return result != 0; // return true if data available
 }

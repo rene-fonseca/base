@@ -30,32 +30,38 @@ void PrimitiveOutputStream::writeChar(char value) throw(IOException) {
 }
 
 void PrimitiveOutputStream::writeShortInteger(short value) throw(IOException) {
-  BigEndian::SignedShort temp = value;
+  BigEndian::SignedShort temp;
+  temp = value;
   write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeUnsignedShortInteger(unsigned short value) throw(IOException) {
-  BigEndian::UnsignedShort temp = value;
+  BigEndian::UnsignedShort temp;
+  temp = value;
   write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeInteger(int value) throw(IOException) {
-  BigEndian::SignedInt temp = value;
+  BigEndian::SignedInt temp;
+  temp = value;
   write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeUnsignedInteger(unsigned int value) throw(IOException) {
-  BigEndian::UnsignedInt temp = value;
+  BigEndian::UnsignedInt temp;
+  temp = value;
   write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeLongInteger(long long value) throw(IOException) {
-  BigEndian::SignedLongLong temp = value;
+  BigEndian::SignedLongLong temp;
+  temp = value;
   write(getCharAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeUnsignedLongInteger(unsigned long long value) throw(IOException) {
-  BigEndian::UnsignedLongLong temp = value;
+  BigEndian::UnsignedLongLong temp;
+  temp = value;
   write(getCharAddress(temp), sizeof(temp));
 }
 

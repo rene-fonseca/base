@@ -448,7 +448,7 @@ public:
       Node* grandparent = 0;
       Node* parent = 0;
       Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || (child->getKey() != key))) {
+      while (child && ((child->getHash() != hash) || (*child->getKey() != key))) {
         grandparent = parent;
         parent = child;
         child = child->getNext();
@@ -477,7 +477,7 @@ public:
       const unsigned long hash = getHash(key);
       const Node* const* bucket = getBuckets() + (hash & mask);
       Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || child->getKey() != key)) {
+      while (child && ((child->getHash() != hash) || (*child->getKey() != key))) {
         child = child->getNext();
       }
       return child;
@@ -492,7 +492,7 @@ public:
       Node* grandparent = 0;
       Node* parent = 0;
       Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || (child->getKey() != key))) {
+      while (child && ((child->getHash() != hash) || (*child->getKey() != key))) {
         grandparent = parent;
         parent = child;
         child = child->getNext();
@@ -522,7 +522,7 @@ public:
       const unsigned long hash = getHash(key);
       const Node* const* bucket = getBuckets() + (hash & mask);
       Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || child->getKey() != key)) {
+      while (child && ((child->getHash() != hash) || (*child->getKey() != key))) {
         child = child->getNext();
       }
       assert(child, InvalidKey(this));

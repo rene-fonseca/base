@@ -15,8 +15,11 @@ include $(top_srcdir)/common.am
 
 noinst_LTLIBRARIES = libui.la
 
-libui_la_SOURCES = Button.cpp \
+libui_la_SOURCES = Bitmap.cpp \
+                   Button.cpp \
+                   Color.cpp \
                    Dialog.cpp \
+                   GraphicsContext.cpp \
                    OpenFileDialog.cpp \
                    Label.cpp \
                    Menu.cpp \
@@ -31,8 +34,11 @@ libui_la_SOURCES = Button.cpp \
                    WindowImpl.cpp
 
 sectiondir = $(includedir)/base/ui
-section_HEADERS = Button.h \
+section_HEADERS = Bitmap.h \
+                  Button.h \
+                  Color.h \
                   Dialog.h \
+                  GraphicsContext.h \
                   OpenFileDialog.h \
                   Label.h \
                   Menu.h \

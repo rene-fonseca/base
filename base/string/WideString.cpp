@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/string/WideString.h>
 #include <base/Functor.h>
 //#undef __STRICT_ANSI__
@@ -21,7 +22,91 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if defined(_DK_SDU_MIP__BASE__WIDE)
+#if !defined(_DK_SDU_MIP__BASE__WIDE)
+
+  inline int wcscmp(const wchar_t* ws1, const wchar_t* ws2) throw() {
+    while (*ws1 && *ws2) {
+      if (*ws1 < *ws2) {
+        return -1;
+      } else if (*ws2 > *ws2) {
+        return 1;
+      }
+      ++ws1;
+      ++ws2;
+    }
+    if (*ws1) {
+      return -1;
+    } else if (*ws2) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  inline int wcsncmp(const wchar_t* ws1, const wchar_t* ws2, size_t n) throw() {
+    while (*ws1 && *ws2 && n) {
+      if (*ws1 < *ws2) {
+        return -1;
+      } else if (*ws2 > *ws2) {
+        return 1;
+      }
+      ++ws1;
+      ++ws2;
+      --n;
+    }
+    if (n == 0) {
+      return 0;
+    }
+    if (*ws1) {
+      return -1;
+    } else if (*ws2) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  // WARNING: not-compliant with standard which requires returning a non-const
+  inline const wchar_t* wcschr(const wchar_t* ws, wchar_t wc) throw() {
+    while (*ws) {
+      if (*ws == wc) {
+        return ws; // return pointer to the first occurrence
+      }
+      ++ws;
+    }
+    return 0; // not found
+  }
+
+#if !defined(_DK_SDU_MIP__BASE__CPP_RESTRICT)
+  #define restrict
+#endif
+
+  // WARNING: not-compliant with standard which requires returning a non-const
+  inline const wchar_t* wcsstr(const wchar_t* restrict ws1, const wchar_t* restrict ws2) throw() {
+    if (*ws2) {
+      return ws1;
+    }
+    while (true) {
+      while (*ws2 && (*ws2 != *ws1)) { // skip to matching first character
+        ++ws2;
+      }
+      if (!*ws2) {
+        break;
+      }
+      const wchar_t* match = ws2;
+      const wchar_t* substr = ws1;
+      while (*substr && (*substr == *match)) {
+        ++substr;
+        ++match;
+      }
+      if (!*substr) {
+        return ws2;
+      }
+      ++ws2;
+    }
+    return 0; // not found
+  }
+#endif
 
 #if !defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
   #warning Assuming that mbstowcs is reentrant
@@ -490,7 +575,5 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& val
   stream.addCharacterField(buffer.getElements(), result);
   return stream;
 }
-
-#endif // wide-character interface is available
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

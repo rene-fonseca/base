@@ -26,12 +26,27 @@
 #include <base/Primitives.h>
 
 #if defined(_DK_SDU_MIP__BASE__WIDE)
-  #include <wctype.h>
+  #include <wctype.h> // TAG: alien header
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if defined(_DK_SDU_MIP__BASE__WIDE)
+#if !defined(_DK_SDU_MIP_BASE_WIDE)
+  typedef int wint_t;
+  inline int iswalnum(wint_t) throw() {return 0;}
+  inline int iswalpha(wint_t) throw() {return 0;}
+  inline int iswcntrl(wint_t) throw() {return 0;}
+  inline int iswdigit(wint_t) throw() {return 0;}
+  inline int iswgraph(wint_t) throw() {return 0;}
+  inline int iswlower(wint_t) throw() {return 0;}
+  inline int iswprint(wint_t) throw() {return 0;}
+  inline int iswpunct(wint_t) throw() {return 0;}
+  inline int iswspace(wint_t) throw() {return 0;}
+  inline int iswupper(wint_t) throw() {return 0;}
+  inline int iswxdigit(wint_t) throw() {return 0;}
+  inline wint_t towlower(wint_t character) throw() {return character;}
+  inline wint_t towupper(wint_t character) throw() {return character;}
+#endif
 
 /**
   This class binds together a wide string literal and its length. Use the macro
@@ -120,8 +135,6 @@ public:
     inline Character operator()(Character value) const throw() {return towupper(value);}
   };
 };
-
-
 
 /**
   Wide-character string implementation. The first modifying operation on a
@@ -326,9 +339,9 @@ public:
   */
   void setGranularity(unsigned int granularity) throw();
 
-// *******************************************************************************************
+// ****************************************************************************
 //   TRAVERSE SECTION
-// *******************************************************************************************
+// ****************************************************************************
 
   /**
     Returns the first element of the string as a modifying iterator.
@@ -372,9 +385,9 @@ public:
     return elements->getReadEnumerator();
   }
 
-// *******************************************************************************************
+// ****************************************************************************
 //   CHARACTER SECTION
-// *******************************************************************************************
+// ****************************************************************************
 
   /**
     Returns the character at the specified index in this string. Throws
@@ -409,9 +422,9 @@ public:
     return getAt(index);
   }
 
-// *******************************************************************************************
+// ****************************************************************************
 //   SUBSTRING SECTION
-// *******************************************************************************************
+// ****************************************************************************
 
   /**
     Removes the characters in a substring of this string.
@@ -584,9 +597,9 @@ public:
   */
   //Character* substring(Character* buffer, unsigned int start, unsigned int end) const throw();
 
-// *******************************************************************************************
+// ****************************************************************************
 //   UNARY SECTION
-// *******************************************************************************************
+// ****************************************************************************
 
   /**
     The character sequence contained in this string is replaced by the reverse sequence.
@@ -603,9 +616,9 @@ public:
   */
   WideString& toUpperCase() throw();
 
-// *******************************************************************************************
+// ****************************************************************************
 //   COMPARE SECTION
-// *******************************************************************************************
+// ****************************************************************************
 
   /**
     Compare this string with another string.
@@ -697,9 +710,9 @@ public:
   */
   inline bool operator>(const WideString& str) const throw() {return compareTo(str) > 0;}
 
-// *******************************************************************************************
+// ****************************************************************************
 //   FIND SECTION
-// *******************************************************************************************
+// ****************************************************************************
 
   /**
     Returns the index of the first character that matches the specified character after the start position.
@@ -757,9 +770,9 @@ public:
   */
   unsigned int count(const WideString& str, unsigned int start = 0) const throw();
 
-// *******************************************************************************************
+// ****************************************************************************
 //   END SECTION
-// *******************************************************************************************
+// ****************************************************************************
 
   /**
     Returns null-terminated wide string.
@@ -770,9 +783,9 @@ public:
     return result;
   }
 
-// *******************************************************************************************
+// ****************************************************************************
 //   FRIEND SECTION
-// *******************************************************************************************
+// ****************************************************************************
 
   /**
     Writes string to format stream.
@@ -805,8 +818,6 @@ inline WideString operator-(const WideString& left, const WideString& right) thr
     return WideString(left); // return copy of left
   }
 }
-
-#endif // wide-character interface is available
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

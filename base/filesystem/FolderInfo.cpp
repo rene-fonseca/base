@@ -30,7 +30,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_path) {
+FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_path), mode(0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   bool error = false;
   HANDLE folder = ::CreateFile(path.getElements(), // file name
@@ -100,7 +100,7 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
       throw FileSystemException("Not a folder", this);
     }
   }
-
+  
   BY_HANDLE_FILE_INFORMATION information;
   error |= ::GetFileInformationByHandle(folder, &information) == 0;
   
@@ -153,22 +153,50 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException) : path(_p
       unsigned long int __unused3;
       __ino64_t st_ino;
     } __attribute__ ((packed));
-    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
+    struct packedStat64 status; // TAG: GLIBC: st_size is not 64 bit aligned
   #else
     struct stat64 status;
   #endif // GNU Linux
-    if (stat64(path.getElements(), (struct stat64*)&status) || (!S_ISDIR(status.st_mode))) {
+    if (::stat64(path.getElements(), (struct stat64*)&status) || (!S_ISDIR(status.st_mode))) {
       throw FileSystemException("Not a folder", this);
     }
   #else
     struct stat status;
-    if (stat(path.getElements(), &status) || (!S_ISDIR(status.st_mode))) {
+    if (::stat(path.getElements(), &status) || (!S_ISDIR(status.st_mode))) {
       throw FileSystemException("Not a folder", this);
     }
   #endif
-  mode = status.st_mode;
-  owner = User((const void*)status.st_uid);
-  group = Group((const void*)status.st_gid);    
+    
+  if (status.st_mode & S_IRUSR) { // mode reset above
+    mode |= FolderInfo::RUSR;
+  }
+  if (status.st_mode & S_IWUSR) {
+    mode |= FolderInfo::WUSR;
+  }
+  if (status.st_mode & S_IXUSR) {
+    mode |= FolderInfo::XUSR;
+  }
+  if (status.st_mode & S_IRGRP) {
+    mode |= FolderInfo::RGRP;
+  }
+  if (status.st_mode & S_IWGRP) {
+    mode |= FolderInfo::WGRP;
+  }
+  if (status.st_mode & S_IXGRP) {
+    mode |= FolderInfo::XGRP;
+  }
+  if (status.st_mode & S_IROTH) {
+    mode |= FolderInfo::ROTH;
+  }
+  if (status.st_mode & S_IWOTH) {
+    mode |= FolderInfo::WOTH;
+  }
+  if (status.st_mode & S_IXOTH) {
+    mode |= FolderInfo::XOTH;
+  }
+
+  owner = User((const void*)(ptrdiff_t)status.st_uid);
+  group = Group((const void*)(ptrdiff_t)status.st_gid);
   access = status.st_atime;
   modification = status.st_mtime;
   change = status.st_ctime;

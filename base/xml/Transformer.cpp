@@ -16,12 +16,11 @@
 
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
 #  include <libxml/xmlmemory.h>
-#  include <libxml/debugXML.h>
-#  include <libxml/HTMLtree.h>
 #  include <libxml/xmlIO.h>
 #  include <libxml/DOCBparser.h>
 #  include <libxml/xinclude.h>
 #  include <libxml/catalog.h>
+#  include <libxml/tree.h>
 #  include <libxslt/xslt.h>
 #  include <libxslt/xsltInternals.h>
 #  include <libxslt/functions.h>
@@ -49,13 +48,13 @@ void Transformer::setParameter(
 
 // bool Transformer::getXInclude() const throw() {
 // #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
-//   return ::xsltGetXIncludeDefault() != 0;
+//   return xsltGetXIncludeDefault() != 0;
 // #endif
 // }
 
 // void Transformer::setXInclude(bool value) throw() {
 // #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
-//   return ::xsltSetXIncludeDefault(value ? 1 : 0);
+//   return xsltSetXIncludeDefault(value ? 1 : 0);
 // #endif
 // }
 
@@ -74,9 +73,9 @@ Document Transformer::transform(
   }
   *i++ = 0; // terminate
   
-	xmlDocPtr nativeResult = ::xsltApplyStylesheet(
-    Cast::pointer<xsltStylesheetPtr>(stylesheet.stylesheet->getContext()),
-    Cast::pointer<xmlDocPtr>(document.document->getContext()),
+  xmlDoc* nativeResult = xsltApplyStylesheet(
+    Cast::pointer<xsltStylesheet*>(stylesheet.stylesheet->getContext()),
+    Cast::pointer<xmlDoc*>(document.document->getContext()),
     temp.getElements()
   );
   assert(nativeResult, TransformerException(this));
@@ -89,14 +88,12 @@ Document Transformer::transform(
 }
 
 void Transformer::save(const String& filename, const Document& document) throw(DOMException, IOException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  //assert(temp, DOMException(this));
-  // int fd = file.getHandle();
-  // ::xsltSaveResultToFd(fd, ?, ?);
-  int bytesWritten = ::xsltSaveResultToFilename(
+#if 0 && defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+  xmlDoc* doc = (xmlDoc*)document.document->getContext();
+  int bytesWritten = xsltSaveResultToFilename(
     filename.getElements(),
-    Cast::pointer<xmlDocPtr>(document.document->getContext()),
-    Cast::pointer<xsltStylesheetPtr>(stylesheet.stylesheet->getContext()),
+    doc,
+    Cast::pointer<xsltStylesheet*>(stylesheet.stylesheet->getContext()),
     0
   );
   assert(bytesWritten >= 0, IOException(this));
@@ -114,7 +111,7 @@ void Transformer::setStylesheet(Stylesheet stylesheet) throw() {
 bool Transformer::functionAvailable(
   const String& ns, const String& name) throw(TransformerException) {
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
-//   return ::xsltXPathFunctionLookup(
+//   return xsltXPathFunctionLookup(
 //     0,
 //     name.getElements(),
 //     ns.getElements()

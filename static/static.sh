@@ -112,6 +112,31 @@ for function in $default_inavailable_functions; do
   export base_cv_function_$function=no
 done
 
+case ${function_mbrtowc+S}${function_mbrtowc}${function_mbrtowc-U} in
+Syes|Sno) base_cv_function_mbrtowc=$function_mbrtowc;; U);; *) exit 1;; esac
+case ${function_mbsrtowcs+S}${function_mbsrtowcs}${function_mbsrtowcs-U} in
+Syes|Sno) base_cv_function_mbsrtowcs=$function_mbsrtowcs;; U);; *) exit 1;; esac
+case ${function_memchr+S}${function_memchr}${function_memchr-U} in
+Syes|Sno) base_cv_function_memchr=$function_memchr;; U);; *) exit 1;; esac
+case ${function_memcmp+S}${function_memcmp}${function_memcmp-U} in
+Syes|Sno) base_cv_function_memcmp=$function_memcmp;; U);; *) exit 1;; esac
+case ${function_memcpy+S}${function_memcpy}${function_memcpy-U} in
+Syes|Sno) base_cv_function_memcpy=$function_memcpy;; U);; *) exit 1;; esac
+case ${function_memmove+S}${function_memmove}${function_memmove-U} in
+Syes|Sno) base_cv_function_memmove=$function_memmove;; U);; *) exit 1;; esac
+case ${function_memset+S}${function_memset}${function_memset-U} in
+Syes|Sno) base_cv_function_memset=$function_memset;; U);; *) exit 1;; esac
+case ${function_nanosleep+S}${function_nanosleep}${function_nanosleep-U} in
+Syes|Sno) base_cv_function_nanosleep=$function_nanosleep;; U);; *) exit 1;; esac
+case ${function_pselect+S}${function_pselect}${function_pselect-U} in
+Syes|Sno) base_cv_function_pselect=$function_pselect;; U);; *) exit 1;; esac
+case ${function_pthread_yield+S}${function_pthread_yield}${function_pthread_yield-U} in
+Syes|Sno) base_cv_function_pthread_yield=$function_pthread_yield;; U);; *) exit 1;; esac
+case ${function_readdir_r+S}${function_readdir_r}${function_readdir_r-U} in
+Syes|Sno) base_cv_function_readdir_r=$function_readdir_r;; U);; *) exit 1;; esac
+case ${function_yield+S}${function_yield}${function_yield-U} in
+Syes|Sno) base_cv_function_yield=$function_yield;; U);; *) exit 1;; esac
+
 for function in $functions; do
   case $function in
   [A-Za-z0-9_]*)
@@ -124,23 +149,20 @@ for function in $functions; do
   esac
 done
 
-all_functions="$default_available_functions $default_inavailable_functions"
-for function in $all_functions; do
-  variable=function_$function
-  if test "x${!variable-unset}" != xunset; then
-    case ${!variable} in
-    yes|no)
-      export base_cv_function_$function=${!variable}
-    ;;
-    *)
-      echo Invalid value of $variable x${!variable-unset} 1>&2
-      exit 1
-    ;;
-    esac
-  fi
-  variable=base_cv_function_$function
-  echo base_cv_function_$function=${!variable}
-done
+echo base_cv_function_mbrtowc=$base_cv_function_mbrtowc
+echo base_cv_function_mbsrtowcs=$base_cv_function_mbsrtowcs
+echo base_cv_function_memchr=$base_cv_function_memchr
+echo base_cv_function_memcmp=$base_cv_function_memcmp
+echo base_cv_function_memcpy=$base_cv_function_memcpy
+echo base_cv_function_memmove=$base_cv_function_memmove
+echo base_cv_function_memset=$base_cv_function_memset
+echo base_cv_function_nanosleep=$base_cv_function_nanosleep
+echo base_cv_function_pselect=$base_cv_function_pselect
+echo base_cv_function_pthread_yield=$base_cv_function_pthread_yield
+echo base_cv_function_readdir_r=$base_cv_function_readdir_r
+echo base_cv_function_yield=$base_cv_function_yield
+
+
 
 # symbols/types: SOCKLEN_T
 
@@ -156,6 +178,23 @@ for api in $default_inavailable_apis; do
   export base_cv_api_$api=no
 done
 
+case ${api_aio+S}${api_aio}${api_aio-U} in
+Syes|Sno) base_cv_api_aio=$api_aio;; U);; *) exit 1;; esac
+case ${api_inet_ipv6+S}${api_inet_ipv6}${api_inet_ipv6-U} in
+Syes|Sno) base_cv_api_inet_ipv6=$api_inet_ipv6;; U);; *) exit 1;; esac
+case ${api_lfs+S}${api_lfs}${api_lfs-U} in
+Syes|Sno) base_cv_api_lfs=$api_lfs;; U);; *) exit 1;; esac
+case ${api_pthread+S}${api_pthread}${api_pthread-U} in
+Syes|Sno) base_cv_api_pthread=$api_pthread;; U);; *) exit 1;; esac
+case ${api_pthread_rwlock+S}${api_pthread_rwlock}${api_pthread_rwlock-U} in
+Syes|Sno) base_cv_api_pthread_rwlock=$api_pthread_rwlock;; U);; *) exit 1;; esac
+case ${api_pthread_semaphore+S}${api_pthread_semaphore}${api_pthread_semaphore-U} in
+Syes|Sno) base_cv_api_pthread_semaphore=$api_pthread_semaphore;; U);; *) exit 1;; esac
+case ${api_regexp+S}${api_regexp}${api_regexp-U} in
+Syes|Sno) base_cv_api_regexp=$api_regexp;; U);; *) exit 1;; esac
+case ${api_wide+S}${api_wide}${api_wide-U} in
+Syes|Sno) base_cv_api_wide=$api_wide;; U);; *) exit 1;; esac
+
 for api in $apis; do
   case $api in
   [A-Za-z0-9_]*)
@@ -168,23 +207,16 @@ for api in $apis; do
   esac
 done
 
-all_apis="$default_available_apis $default_inavailable_apis"
-for api in $all_apis; do
-  variable=api_$api
-  if test "x${!variable-unset}" != xunset; then
-    case ${!variable} in
-    yes|no)
-      export base_cv_api_$api=${!variable}
-    ;;
-    *)
-      echo Invalid value of $variable x${!variable-unset} 1>&2
-      exit 1
-    ;;
-    esac
-  fi
-  variable=base_cv_api_$api
-  echo base_cv_api_$api=${!variable}
-done
+echo base_cv_api_aio=$base_cv_api_aio
+echo base_cv_api_inet_ipv6=$base_cv_api_inet_ipv6
+echo base_cv_api_lfs=$base_cv_api_lfs
+echo base_cv_api_pthread=$base_cv_api_pthread
+echo base_cv_api_pthread_rwlock=$base_cv_api_pthread_rwlock
+echo base_cv_api_pthread_semaphore=$base_cv_api_pthread_semaphore
+echo base_cv_api_regexp=$base_cv_api_regexp
+echo base_cv_api_wide=$base_cv_api_wide
+
+
 
 # TAG: need to check if valid syntax
 echo base_cv_libraries=\""$libraries"\"

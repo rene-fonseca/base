@@ -11,14 +11,19 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#ifndef _DK_SDU_MIP__BASE_PLATFORMS_ARCH_SSE3__SSE3_H
+#define _DK_SDU_MIP__BASE_PLATFORMS_ARCH_SSE3__SSE3_H
+
 namespace base {
   
-  namespace builtin {
+  namespace arch {
     
     namespace sse3 {
       
     }; // end of namespace sse3
     
-  }; // end of namespace builtin
+  }; // end of namespace arch
   
 }; // end of namespace base
+
+#endif

@@ -11,6 +11,9 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#ifndef _DK_SDU_MIP__BASE_PLATFORMS_ARCH_SSE2__SSE2_H
+#define _DK_SDU_MIP__BASE_PLATFORMS_ARCH_SSE2__SSE2_H
+
 // TAG: watch out for accuracy
 // FAST/APPROX must be enabled explicitly
 
@@ -57,9 +60,11 @@ namespace base {
         );
         return result;
       }
-    
+      
     }; // end of namespace sse2
-  
+    
   }; // end of namespace arch
- 
+  
 }; // end of namespace base
+
+#endif

@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  EndOfFile(Type type) throw() : IOException(type) {
+  inline EndOfFile(Type type) throw() : IOException(type) {
   }
   
   /**
@@ -57,7 +57,8 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  EndOfFile(const char* message, Type type) throw() : IOException(message, type) {
+  inline EndOfFile(const char* message, Type type) throw()
+    : IOException(message, type) {
   }
 };
 

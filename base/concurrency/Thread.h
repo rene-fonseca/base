@@ -26,6 +26,10 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+/**
+  @defgroup concurrency Concurrency
+*/
+
 class Runnable;
 
 /**
@@ -56,6 +60,7 @@ class Runnable;
   }
   </pre>
 
+  @ingroup concurrency
   @see Runnable
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
@@ -66,7 +71,7 @@ class Thread : public Object {
   friend class DaemonImpl;
 public:
 
-  /** Thread identifier type. */
+  /** Thread resource identifier type. */
   typedef unsigned long Identifier;
   
   /** Scheduling policy type. */
@@ -84,7 +89,7 @@ public:
     ALIVE, /**< Thread is running. */
     TERMINATED, /**< Thread has exited normally. */
     EXIT, /**< Thread was exited using Thread::exit(). */
-    EXCEPTION, /** Thread has exited due to uncaught exception. */
+    EXCEPTION, /**< Thread has exited due to uncaught exception. */
     CANCEL, /**< Thread was cancelled. */
     INTERNAL /**< Thread was exited due to internal exception - please forgive me. */
   };
@@ -92,20 +97,32 @@ public:
   /** Specifies the size of the thread local storage. */
   static const unsigned int THREAD_LOCAL_STORAGE = 4096;
 
-  /** Group of exceptions thrown directly by the Thread class. */
+  /**
+    Group of exceptions thrown directly by the Thread class.
+
+    @ingroup exceptions concurrency
+  */
   class ThreadException : public Exception {
   public:
 
-    ThreadException() throw() : Exception() {}
+    ThreadException() throw() {}
     ThreadException(const char* message) throw() : Exception(message) {}
+    ThreadException(Type type) throw() : Exception(type) {}
+    ThreadException(const char* message, Type type) throw() : Exception(message, type) {}
   };
 
-  /** Thrown if thread tries to manage itself when disallowed. */
+  /**
+    Thrown if thread tries to manage itself when disallowed.
+
+    @ingroup exceptions concurrency
+  */
   class Self : public ThreadException {
   public:
 
-    Self() throw() : ThreadException() {}
+    Self() throw() {}
     Self(const char* message) throw() : ThreadException(message) {}
+    Self(Type type) throw() : ThreadException(type) {}
+    Self(const char* message, Type type) throw() : ThreadException(message, type) {}
   };
 private:
 
@@ -117,8 +134,6 @@ private:
   volatile bool terminated;
   /** State. */
   volatile State state;
-  /** Handle to the thread. */
-  //OperatingSystem::Handle handle;
   /** Identifier for the thread. */
   Identifier identifier;
   /** Termination synchronization object. */

@@ -15,7 +15,37 @@ include $(top_srcdir)/common.am
 
 noinst_LTLIBRARIES = libcollection.la
 
-libcollection_la_SOURCES = EndOfEnumeration.cpp InvalidEnumeration.cpp InvalidKey.cpp InvalidNode.cpp BitSet.cpp
+libcollection_la_SOURCES = \
+  BitSet.cpp \
+  EndOfEnumeration.cpp \
+  HashTable.cpp \
+  InvalidEnumeration.cpp \
+  InvalidKey.cpp \
+  InvalidNode.cpp
 
 sectiondir = $(includedir)/base/collection
-section_HEADERS = Enumeration.h Collection.h List.h Stack.h Map.h Set.h InvalidKey.h Queue.h EndOfEnumeration.h Array.h BinaryTree.h OrderedBinaryTree.h InvalidNode.h InvalidEnumeration.h Functor.h BitSet.h Pair.h PriorityQueue.h DoubleLinkedNode.h SingleLinkedNode.h BinaryNode.h Association.h
+section_HEADERS = \
+  Array.h \
+  Association.h \
+  BinaryNode.h \
+  BinaryTree.h \
+  BitSet.h \
+  Collection.h \
+  DoubleLinkedNode.h \
+  EndOfEnumeration.h \
+  Enumeration.h \
+  Functor.h \
+  Hash.h \
+  HashTable.h \
+  InvalidEnumeration.h \
+  InvalidKey.h \
+  InvalidNode.h \
+  List.h \
+  Map.h \
+  OrderedBinaryTree.h \
+  Pair.h \
+  PriorityQueue.h \
+  Queue.h \
+  Set.h \
+  SingleLinkedNode.h \
+  Stack.h

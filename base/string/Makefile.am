@@ -15,7 +15,7 @@ include $(top_srcdir)/common.am
 
 noinst_LTLIBRARIES = libstring.la
 
-libstring_la_SOURCES = ASCIITraits.cpp StringInputStream.cpp StringOutputStream.cpp FormatInputStream.cpp FormatOutputStream.cpp InvalidFormat.cpp Locale.cpp String.cpp RegExp.cpp WideString.cpp
+libstring_la_SOURCES = ANSIEscapeSequence.cpp ASCIITraits.cpp StringInputStream.cpp StringOutputStream.cpp FormatInputStream.cpp FormatOutputStream.cpp InvalidFormat.cpp Locale.cpp String.cpp RegExp.cpp WideString.cpp
 
 sectiondir = $(includedir)/base/string
-section_HEADERS = ASCIITraits.h String.h StringException.h StringInputStream.h StringOutputStream.h InvalidFormat.h Locale.h FormatInputStream.h FormatOutputStream.h RegExp.h MultibyteException.h WideStringException.h WideString.h
+section_HEADERS = ANSIEscapeSequence.h ASCIITraits.h String.h StringException.h StringInputStream.h StringOutputStream.h InvalidFormat.h Locale.h FormatInputStream.h FormatOutputStream.h RegExp.h MultibyteException.h WideStringException.h WideString.h

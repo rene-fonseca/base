@@ -109,7 +109,7 @@ public:
   /**
     Maps the specified file region.
 
-    @region The file region to be mapped.
+    @param region The file region to be mapped.
   */
   inline void remap(const FileRegion& region) throw(FileException) {
     map = new MappedFileImpl(map->getFile(), region, map->isWriteable());

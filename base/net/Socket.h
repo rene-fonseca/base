@@ -29,6 +29,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+class MultipleSockets;
+
 /**
   @defgroup net Network
 */
@@ -84,8 +86,8 @@ private:
     /** Specifies the local address to which the socket is bound. */
     InetAddress localAddress;
     /**
-      Specifies the local port (in host byte order) to which the socket is bound
-      (unbound if 0).
+      Specifies the local port (in host byte order) to which the socket is
+      bound (unbound if 0).
     */
     unsigned short localPort;
   public:
@@ -94,7 +96,8 @@ private:
     static SocketImpl* invalid;
     
     /** Initializes the socket with the specified handle. */
-    SocketImpl(OperatingSystem::Handle handle, Domain domain, Kind kind) throw();
+    SocketImpl(
+      OperatingSystem::Handle handle, Domain domain, Kind kind) throw();
     
     /** Returns the protocol. */
     inline Domain getDomain() const throw() {
@@ -176,6 +179,13 @@ protected:
     OPTION_TCP_DEFER_ACCEPT
   };
   
+  /**
+    Returns the handle of the socket.
+  */
+  inline OperatingSystem::Handle getHandle() const throw() {
+    return socket->getHandle();
+  }
+  
   /** Get boolean socket option. */
   bool getBooleanOption(int option) const throw(NetworkException);
 
@@ -231,7 +241,8 @@ public:
     @param port The port the socket should be bound to. If zero the socket is
     assigned to a unique port.
   */
-  void bind(const InetAddress& address, unsigned short port) throw(NetworkException);
+  void bind(
+    const InetAddress& address, unsigned short port) throw(NetworkException);
 
   /**
     Closes this socket.
@@ -244,7 +255,8 @@ public:
     @param address The IP address to connect to.
     @param port The port to connect to.
   */
-  void connect(const InetAddress& address, unsigned  short port) throw(NetworkException);
+  void connect(
+    const InetAddress& address, unsigned  short port) throw(NetworkException);
 
   /**
     Creates either a stream or a datagram socket.
@@ -252,7 +264,8 @@ public:
     @param kind The socket type (e.g. STREAM).
     @param domain The domain (the default is DEFAULT_DOMAIN).
   */
-  void create(Kind kind, Domain domain = DEFAULT_DOMAIN) throw(NetworkException);
+  void create(
+    Kind kind, Domain domain = DEFAULT_DOMAIN) throw(NetworkException);
 
   /**
     Caches the locally assigned address and port of the socket. This member
@@ -456,7 +469,8 @@ public:
   /**
     Sets the default interface for outgoing multicast packets.
   */
-  void setMulticastInterface(const InetAddress& interface) throw(NetworkException);
+  void setMulticastInterface(
+    const InetAddress& interface) throw(NetworkException);
 
   /**
     Returns the maximum number of unicast hops (time to live).
@@ -476,12 +490,16 @@ public:
   /**
     Joins the specified multicast group on the specified interface.
   */
-  void joinGroup(const InetAddress& interface, const InetAddress& group) throw(NetworkException);
+  void joinGroup(
+    const InetAddress& interface,
+    const InetAddress& group) throw(NetworkException);
 
   /**
     Leaves the specified multicast group of the specified interface.
   */
-  void leaveGroup(const InetAddress& interface, const InetAddress& group) throw(NetworkException);
+  void leaveGroup(
+    const InetAddress& interface,
+    const InetAddress& group) throw(NetworkException);
 
   /**
     Returns the IPv6 packet restriction flag.
@@ -499,7 +517,8 @@ public:
   void setNonBlocking(bool value) throw(NetworkException);
 
   /**
-    Returns the number of bytes that can be read or skipped over without blocking.
+    Returns the number of bytes that can be read or skipped over without
+    blocking.
 
     @return Available number of bytes in stream.
   */
@@ -527,7 +546,10 @@ public:
     @param nonblocking Select nonblocking mode.
     @return The actual number of bytes read.
   */
-  unsigned int read(char* buffer, unsigned int size, bool nonblocking = false) throw(NetworkException);
+  unsigned int read(
+    char* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(NetworkException);
 
   /**
     Writes bytes in buffer to stream.
@@ -537,7 +559,10 @@ public:
     @param nonblocking Select nonblocking mode.
     @return The actual number of bytes written.
   */
-  unsigned int write(const char* buffer, unsigned int size, bool nonblocking = false) throw(NetworkException);
+  unsigned int write(
+    const char* buffer,
+    unsigned int size,
+    bool nonblocking = false) throw(NetworkException);
 
   /**
     Sends the contents of the buffer to the specified address using an
@@ -549,7 +574,11 @@ public:
     @param port The port of the remote host.
     @return The number of bytes sent.
   */
-  unsigned int sendTo(const char* buffer, unsigned int size, const InetAddress& address, unsigned short port) throw(NetworkException);
+  unsigned int sendTo(
+    const char* buffer,
+    unsigned int size,
+    const InetAddress& address,
+    unsigned short port) throw(NetworkException);
 
   /**
     Receives data from any address using an unconnected socket.
@@ -561,13 +590,23 @@ public:
 
     @return The number of bytes received.
   */
-  unsigned int receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(NetworkException);
+  unsigned int receiveFrom(
+    char* buffer,
+    unsigned int size,
+    InetAddress& address,
+    unsigned short& port) throw(NetworkException);
 
   void asyncCancel() throw(AsynchronousException);
   
-  AsynchronousReadOperation read(char* buffer, unsigned int bytesToRead, AsynchronousReadEventListener* listener) throw(AsynchronousException);
+  AsynchronousReadOperation read(
+    char* buffer,
+    unsigned int bytesToRead,
+    AsynchronousReadEventListener* listener) throw(AsynchronousException);
 
-  AsynchronousWriteOperation write(const char* buffer, unsigned int bytesToWrite, AsynchronousWriteEventListener* listener) throw(AsynchronousException);
+  AsynchronousWriteOperation write(
+    const char* buffer,
+    unsigned int bytesToWrite,
+    AsynchronousWriteEventListener* listener) throw(AsynchronousException);
   
   /**
     Blocking wait for input to become available.

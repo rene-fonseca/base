@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__PLATFORMS_SYMBOLS_H
-#define _DK_SDU_MIP__BASE__PLATFORMS_SYMBOLS_H
+#ifndef _DK_SDU_MIP__BASE_PLATFORMS__SYMBOLS_H
+#define _DK_SDU_MIP__BASE_PLATFORMS__SYMBOLS_H
 
 /*
   This header file defines the global symbols that are used to configure the
@@ -60,17 +60,21 @@
 #define _DK_SDU_MIP__BASE__CYGWIN 4 // only Unix
 #define _DK_SDU_MIP__BASE__WINNT4 5 // only WIN32
 #define _DK_SDU_MIP__BASE__W2K 6 // only WIN32
+#define _DK_SDU_MIP__BASE__WXP 7 // only WIN32
 
 // Major architecture groups
 #define _DK_SDU_MIP__BASE__X86 1
 #define _DK_SDU_MIP__BASE__SPARC 2
 #define _DK_SDU_MIP__BASE__MIPS 3
 #define _DK_SDU_MIP__BASE__ITANIUM 4
+#define _DK_SDU_MIP__BASE__ALPHA 5
+#define _DK_SDU_MIP__BASE__PPC 6
+#define _DK_SDU_MIP__BASE__RS 7
 
 // Architectures (minor)
-#define _DK_SDU_MIP__BASE__486 1 // only with x86
-#define _DK_SDU_MIP__BASE__586 2 // only with x86
-#define _DK_SDU_MIP__BASE__686 3 // only with x86
+#define _DK_SDU_MIP__BASE__486 1 // only with X86
+#define _DK_SDU_MIP__BASE__586 2 // only with X86
+#define _DK_SDU_MIP__BASE__686 3 // only with X86
 #define _DK_SDU_MIP__BASE__MIPSI 1 // only with MIPS
 #define _DK_SDU_MIP__BASE__MIPSII 2 // only with MIPS
 #define _DK_SDU_MIP__BASE__MIPSIII 3 // only with MIPS

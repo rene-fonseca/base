@@ -106,9 +106,73 @@ GraphicsContext::Brush::Brush(unsigned int color) throw(UserInterfaceException) 
 #endif // flavor
 }
 
-GraphicsContext::Font::Font(const String& name) throw(UserInterfaceException) {
+#if 0
+int CALLBACK EnumFontFamExProc(
+  ENUMLOGFONTEX* lpelfe, // logical-font data
+  NEWTEXTMETRICEX* lpntme, // physical-font data
+  DWORD fontType, // type of font
+  LPARAM lParam // application-defined data
+) {
+}
+#endif
+
+Array<String> GraphicsContext::Font::getFonts() throw(UserInterfaceException) {
+  Array<String> result;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  // TAG: fixme
+  LOGFONT logFont;
+//   logFont.lfHeight = 0;
+//   logFont.lfWidth = 0;
+//   logFont.lfEscapement = 0;
+//   logFont.lfOrientation = 0;
+//   logFont.lfWeight = 0;
+//   logFont.lfItalic = 0;
+//   logFont.lfUnderline = 0;
+//   logFont.lfStrikeOut = 0;
+//   logFont.lfCharSet = 0;
+//   logFont.lfOutPrecision = 0;
+//   logFont.lfClipPrecision = 0;
+//   logFont.lfQuality = ;
+//   logFont.lfPitchAndFamily;
+//   logFont.lfFaceName = 0;
+//   int ::EnumFontFamiliesEx(
+//     (HDC)::GetDCEx(0, 0, 0),
+//     &logfont,
+//     lpEnumFontFamExProc,
+//     &temp,
+//     0
+//   );
+#else // unix
+#endif // flavor
+  return result;
+}
+
+GraphicsContext::Font::Font(const String& name, unsigned short height, FontWeight weight, unsigned int flags) throw(UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  static int NATIVE_WEIGHTS[] = {
+    FW_THIN, // THIN
+    FW_LIGHT, // LIGHT
+    FW_NORMAL, // NORMAL
+    FW_BOLD, // BOLD
+    FW_HEAVY // HEAVY
+  };
+  HFONT font = ::CreateFont(
+    height, // height of font
+    0, // average character width
+    0, // angle of escapement
+    0, // base-line orientation angle
+    NATIVE_WEIGHTS[weight], // font weight
+    (flags & GraphicsContext::ITALIC) ? TRUE : FALSE, // italic
+    (flags & GraphicsContext::UNDERLINE) ? TRUE : FALSE, // underline
+    (flags & GraphicsContext::STRIKE_OUT) ? TRUE : FALSE, // strikeout
+    DEFAULT_CHARSET, // character set identifier
+    0, // output precision
+    CLIP_DEFAULT_PRECIS, // clipping precision
+    ANTIALIASED_QUALITY, // quality
+    DEFAULT_PITCH, // pitch and family
+    name.getElements() // typeface name
+  );
+  assert(font, UserInterfaceException(this));
+  setHandle(font);
 #else // unix
 //   fs = ::XCreateFontSet(
 //     (Display*)displayHandle,
@@ -124,7 +188,7 @@ GraphicsContext::Font::Font(const String& name) throw(UserInterfaceException) {
 void GraphicsContext::setPen(Pen pen) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   this->pen = pen; // put lock on pen
-  /*HGDIOBJ handle =*/ ::SelectObject(
+  ::SelectObject(
     (HDC)graphicsContextHandle,
     (HGDIOBJ)pen.getHandle()
   );
@@ -135,7 +199,7 @@ void GraphicsContext::setPen(Pen pen) throw(UserInterfaceException) {
 void GraphicsContext::setBrush(Brush brush) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   this->brush = brush; // put lock on brush
-  /*HGDIOBJ handle =*/ ::SelectObject(
+  ::SelectObject(
     (HDC)graphicsContextHandle,
     (HGDIOBJ)brush.getHandle()
   );
@@ -145,7 +209,7 @@ void GraphicsContext::setBrush(Brush brush) throw(UserInterfaceException) {
 
 void GraphicsContext::setFont(Font font) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  /*HGDIOBJ handle =*/ ::SelectObject(
+  ::SelectObject(
     (HDC)graphicsContextHandle,
     (HGDIOBJ)font.getHandle()
   );
@@ -325,19 +389,50 @@ void GraphicsContext::setPixels(const Array<Position>& positions, Color color, u
 #endif // flavor
 }
 
-void GraphicsContext::line(const Position& a, const Position& b, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::moveTo(const Position& position) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::MoveToEx(
-    (HDC)graphicsContextHandle,
-    a.getX(),
-    a.getY(),
-    0
+  assert(
+    ::MoveToEx(
+      (HDC)graphicsContextHandle,
+      position.getX(),
+      position.getY(),
+      0
+    ),
+    UserInterfaceException(this)
   );
+#else // unix
+  // TAG: fixme
+#endif // flavor  
+}
+
+void GraphicsContext::lineTo(const Position& position, unsigned int flags) throw(UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
     ::LineTo(
       (HDC)graphicsContextHandle,
-      b.getX(),
-      b.getY()
+      position.getX(),
+      position.getY()
+    ),
+    UserInterfaceException(this)
+  );
+#else // unix
+  // TAG: fixme
+#endif // flavor  
+}
+
+void GraphicsContext::line(const Position& upperLeft, const Position& lowerRight, unsigned int flags) throw(UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  POINT points[3];
+  points[0].x = upperLeft.getX();
+  points[0].y = upperLeft.getY();
+  points[1].x = lowerRight.getX();
+  points[1].y = lowerRight.getY();
+  points[2] = points[1];
+  assert(
+    ::Polyline(
+      (HDC)graphicsContextHandle,
+      points,
+      3
     ),
     UserInterfaceException(this)
   );
@@ -346,10 +441,10 @@ void GraphicsContext::line(const Position& a, const Position& b, unsigned int fl
     (Display*)displayHandle,
     (::Window)drawableHandle,
     (GC)graphicsContextHandle,
-    a.getX(),
-    a.getY(),
-    b.getX(),
-    b.getY()
+    upperLeft.getX(),
+    upperLeft.getY(),
+    lowerRight.getX(),
+    lowerRight.getY()
   );
 #endif // flavor  
 }
@@ -367,10 +462,10 @@ void GraphicsContext::line(const Position& a, const Position& b, unsigned int fl
 // //     (Display*)displayHandle,
 // //     (::Window)drawableHandle,
 // //     (GC)graphicsContextHandle,
-// //     a.getX(),
-// //     a.getY(),
-// //     b.getX(),
-// //     b.getY()
+// //     upperLeft.getX(),
+// //     upperLeft.getY(),
+// //     lowerRight.getX(),
+// //     lowerRight.getY()
 // //   );
 // #endif // flavor  
 // }
@@ -430,15 +525,15 @@ void GraphicsContext::arc(const Position& position, const Dimension& dimension, 
 // #endif // flavor
 // }
 
-void GraphicsContext::rectangle(const Position& a, const Position& b, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::rectangle(const Position& upperLeft, const Position& lowerRight, unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
     ::Rectangle(
       (HDC)graphicsContextHandle,
-      a.getX(),
-      a.getY(),
-      b.getX(),
-      b.getY()
+      upperLeft.getX(),
+      upperLeft.getY(),
+      lowerRight.getX(),
+      lowerRight.getY()
     ),
     UserInterfaceException(this)
   );
@@ -504,13 +599,32 @@ void GraphicsContext::rectangle(const Position& position, const Dimension& dimen
 #endif // flavor  
 }
 
-void GraphicsContext::rectangle(const Position& a, const Position& b, Brush brush, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::rectangle(const Position& upperLeft, const Position& lowerRight, Brush brush, unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   RECT rect;
-  rect.left = a.getX();
-  rect.top = a.getY();
-  rect.right = b.getX();
-  rect.bottom = b.getY();
+  rect.left = upperLeft.getX();
+  rect.top = upperLeft.getY();
+  rect.right = lowerRight.getX() + 1;
+  rect.bottom = lowerRight.getY() + 1;
+  assert(
+    ::FillRect(
+      (HDC)graphicsContextHandle,
+      &rect,
+      (HBRUSH)brush.getHandle()
+    ),
+    UserInterfaceException(this)
+  );
+#else // unix
+#endif // flavor  
+}
+
+void GraphicsContext::rectangle(const Position& position, const Dimension& dimension, Brush brush, unsigned int flags) throw(UserInterfaceException) {
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  RECT rect;
+  rect.left = position.getX();
+  rect.top = position.getY();
+  rect.right = rect.left + dimension.getWidth(); // do not subtract 1
+  rect.bottom = rect.top + dimension.getHeight(); // do not subtract 1
   assert(
     ::FillRect(
       (HDC)graphicsContextHandle,
@@ -558,15 +672,34 @@ void GraphicsContext::rectangle(const Array<Region>& rectangles, unsigned int fl
 }
 #endif
 
-void GraphicsContext::ellipse(const Position& a, const Position& b, unsigned int flags) throw(UserInterfaceException) {
+void GraphicsContext::ellipse(const Position& upperLeft, const Position& lowerRight, unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
     ::Ellipse(
       (HDC)graphicsContextHandle,
-      a.getX(),
-      a.getY(),
-      b.getX(),
-      b.getY()
+      upperLeft.getX(),
+      upperLeft.getY(),
+      lowerRight.getX(),
+      lowerRight.getY()
+    ),
+    UserInterfaceException(this)
+  );
+#else // unix
+#endif // flavor  
+}
+
+void GraphicsContext::ellipse(const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException) {
+  if (!dimension.isProper()) {
+    return;
+  }
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  assert(
+    ::Ellipse(
+      (HDC)graphicsContextHandle,
+      position.getX(),
+      position.getY(),
+      position.getX() + dimension.getWidth() - 1,
+      position.getY() + dimension.getHeight() - 1
     ),
     UserInterfaceException(this)
   );
@@ -575,17 +708,19 @@ void GraphicsContext::ellipse(const Position& a, const Position& b, unsigned int
 }
 
 void GraphicsContext::pie(
-  const Position& a, const Position& b,
-  const Position& radialA, const Position& radialB,
+  const Position& upperLeft,
+  const Position& lowerRight,
+  const Position& radialA,
+  const Position& radialB,
   unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(
     ::Pie(
       (HDC)graphicsContextHandle,
-      a.getX(),
-      a.getY(),
-      b.getX(),
-      b.getY(),
+      upperLeft.getX(),
+      upperLeft.getY(),
+      lowerRight.getX(),
+      lowerRight.getY(),
       radialA.getX(),
       radialA.getY(),
       radialB.getX(),

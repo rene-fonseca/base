@@ -161,6 +161,20 @@ public:
     Brush(unsigned int color) throw(UserInterfaceException);
   };
 
+  enum FontFlags {
+    ITALIC = 1, /**< Italic. */
+    UNDERLINE = 2, /**< Underline. */
+    STRIKE_OUT = 4 /**< Strike out. */
+  };
+
+  enum FontWeight {
+    THIN,
+    LIGHT,
+    NORMAL,
+    BOLD,
+    HEAVY
+  };
+  
   /**
     Font.
   */
@@ -174,8 +188,22 @@ public:
 
     inline Font() throw() : GraphicsContextObject(0) {
     }
+
+    /**
+      Returns the available fonts.
+    */
+    static Array<String> getFonts() throw(UserInterfaceException);
     
-    Font(const String& name) throw(UserInterfaceException);
+    // static Information getInformation() throw(UserInterfaceException);
+    
+    /**
+      Initializes the font.
+      
+      @param name The name of the font.
+      @param weight The weight of the font.
+      @param flags The flags.
+    */
+    Font(const String& name, unsigned short height, FontWeight weight = NORMAL, unsigned int flags = 0) throw(UserInterfaceException);
   };
   
   enum GraphicsFlag {
@@ -222,7 +250,7 @@ public:
     static const unsigned int BREAK_WORDS = 128;
     /**< Accept '&' as underline prefix. */
     static const unsigned int PREFIX = 256;
-  };  
+  };
 private:
 
   /** The current pen. */
@@ -341,12 +369,33 @@ public:
   void setPixels(const Array<Position>& positions, Color color, unsigned int flags = 0) throw(UserInterfaceException);
   
   /**
-    Draws a line.
+    Sets the current position.
+
+    @param position The position.
   */
-  void line(const Position& a, const Position& b, unsigned int flags = 0) throw(UserInterfaceException);
+  void moveTo(const Position& position) throw(UserInterfaceException);
+
+  /**
+    Draws a line from the current position to the specified position using the current pen.
+
+    @param position The position.
+    @param flags The flags.
+  */
+  void lineTo(const Position& position, unsigned int flags = 0) throw(UserInterfaceException);
+
+  /**
+    Draws a line using the current pen.
+
+    @param upperLeft The upper left corner.
+    @param lowerRight The lower right corner.
+    @param flags The flags.
+  */
+  void line(const Position& upperLeft, const Position& lowerRight, unsigned int flags = 0) throw(UserInterfaceException);
   
   /**
     Draws an arc.
+    
+    @param flags The flags.
   */
   void arc(
     const Position& position,
@@ -356,39 +405,84 @@ public:
     unsigned int flags = 0) throw(UserInterfaceException);
 
   /**
-    Draws a rectangle.
+    Draws a rectangle using the current pen and brush.
+    
+    @param upperLeft The upper left corner.
+    @param lowerRight The lower right corner.
+    @param flags The flags.
   */
-  void rectangle(const Position& a, const Position& b, unsigned int flags = 0) throw(UserInterfaceException);
+  void rectangle(const Position& upperLeft, const Position& b, unsigned int flags = 0) throw(UserInterfaceException);
   
   /**
-    Draws a rectangle.
+    Draws a rectangle using the current pen and brush.
+    
+    @param position The upper left corner.
+    @param dimension The dimension of the rectangle.
+    @param flags The flags.
   */
   void rectangle(const Position& position, const Dimension& dimension, unsigned int flags = 0) throw(UserInterfaceException);
 
   /**
     Draws a rectangle with the specified brush.
+    
+    @param upperLeft The upper left corner.
+    @param lowerRight The lower right corner.
+    @param brush The brush use to fill the rectangle.
+    @param flags The flags.
   */
-  void rectangle(const Position& a, const Position& b, Brush brush, unsigned int flags = 0) throw(UserInterfaceException);
+  void rectangle(const Position& upperLeft, const Position& lowerRight, Brush brush, unsigned int flags = 0) throw(UserInterfaceException);
+
+  /**
+    Draws a rectangle with the specified brush.
+
+    @param position The upper left corner.
+    @param dimension The dimension of the rectangle.
+    @param brush The brush use to fill the rectangle.
+    @param flags The flags.
+  */
+  void rectangle(const Position& position, const Dimension& dimension, Brush brush, unsigned int flags = 0) throw(UserInterfaceException);
   
   /**
-    Draws an ellipse.
-
-    @param a Corner.
-    @param b Corner.
+    Draws an ellipse specified by the bounding rectangle using the current pen and brush.
+    
+    @param upperLeft The upper left corner.
+    @param lowerRight The lower right corner.
+    @param flags The flags.
   */
-  void ellipse(const Position& a, const Position& b, unsigned int flags = 0) throw(UserInterfaceException);
+  void ellipse(const Position& upperLeft, const Position& lowerRight, unsigned int flags = 0) throw(UserInterfaceException);
 
+  /**
+    Draws an ellipse specified by the bounding rectangle using the current pen and brush.
+    
+    @param position The upper left of the corner.
+    @param dimension The dimension of the rectangle.
+    @param flags The flags.
+  */
+  void ellipse(const Position& position, const Dimension& dimension, unsigned int flags = 0) throw(UserInterfaceException);
+
+  /**
+    Draws a circle specified by the bounding rectangle using the current pen and brush.
+    
+    @param position The upper left of the corner.
+    @param dimension The dimension of the rectangle.
+    @param flags The flags.
+  */
+  inline void circle(const Position& position, unsigned int dimension, unsigned int flags = 0) throw(UserInterfaceException) {
+    ellipse(position, Dimension(dimension, dimension), flags);
+  }
+  
   /**
     Draw a pie.
 
-    @param a Corner.
-    @param b Corner.
+    @param upperLeft The upper left corner of the bounding rectangle.
+    @param lowerRight The lower right corner of the bounding rectangle.
     @param radialA End point of first radial.
     @param radialB End point of second radial.
+    @param flags The flags.
   */
   void pie(
-    const Position& a,
-    const Position& b,
+    const Position& upperLeft,
+    const Position& lowerRight,
     const Position& radialA,
     const Position& radialB,
     unsigned int flags) throw(UserInterfaceException);
@@ -400,6 +494,10 @@ public:
 
   /**
     Draws text.
+    
+    @param position The upper left of the corner.
+    @param dimension The dimension of the rectangle.
+    @param flags The flags.
   */
   void text(
     const Position& position,
@@ -409,6 +507,9 @@ public:
 
   /**
     Draws the specified image.
+    
+    @param position The upper left of the corner.
+    @param dimension The dimension of the rectangle.
   */
   void putBitmap(
     const Position& position,
@@ -417,6 +518,9 @@ public:
 
   /**
     Extracts the specified region as a bitmap.
+    
+    @param position The upper left of the corner.
+    @param dimension The dimension of the rectangle.
   */
   Bitmap getBitmap(
     const Position& position,

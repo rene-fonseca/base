@@ -23,8 +23,10 @@
 #endif
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  #include <base/platforms/win32/AsyncReadFileContext.h> // platform specific
+  #include <base/platforms/win32/AsyncWriteFileContext.h> // platform specific
   #include <windows.h>
-#else // __unix__
+#else // unix
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <sys/time.h>
@@ -40,12 +42,14 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+File::FileImpl invalidFile;
+
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   inline Date FileTimeToDate(const FILETIME& time) {
     ASSERT(sizeof(FILETIME) == sizeof(long long));
     return Date((*pointer_cast<const long long*>(&time) - 116444736000000000LL)/10000000); // TAG: 0x0000001c1a021060LL
   }
-#endif // win32
+#endif // flavour
 
 File::FileImpl::~FileImpl() throw(FileException) {
 // TAG: throw exception if region of file is still locked
@@ -54,13 +58,15 @@ File::FileImpl::~FileImpl() throw(FileException) {
     if (!CloseHandle(handle)) {
       throw FileException("Unable to close file");
     }
-  #else // __unix__
+  #else // unix
     if (::close(handle)) {
       throw FileException("Unable to close file");
     }
   #endif
   }
 }
+
+File::File() throw() : fd(&invalidFile) {}
 
 File::File(const String& path, Access access, unsigned int options) throw(FileNotFound) : fd(0) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
@@ -81,20 +87,20 @@ File::File(const String& path, Access access, unsigned int options) throw(FileNo
   }
 
   OperatingSystem::Handle handle;
-  handle = CreateFile(
+  handle = CreateFile( // TAG: check out FILE_FLAG_POSIX_SEMANTICS
     path.getElements(),
     (access == READ) ? GENERIC_READ : ((access == WRITE) ? GENERIC_WRITE : (GENERIC_READ | GENERIC_WRITE)),
     (options & EXCLUSIVE) ? 0 : (FILE_SHARE_READ | FILE_SHARE_WRITE),
     0,
     creationFlags,
-    FILE_ATTRIBUTE_NORMAL,
+    FILE_ATTRIBUTE_NORMAL | ((options & ASYNCHRONOUS) ? FILE_FLAG_OVERLAPPED : 0),
     0
   );
   if (handle == INVALID_HANDLE_VALUE) {
     throw FileNotFound("Unable to open file");
   }
   fd = new FileImpl(handle);
-#else // __unix__
+#else // unix
   // TAG: exclusive file locking problem for NFS
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
   int flags = O_LARGEFILE;
@@ -143,6 +149,10 @@ void File::close() throw(FileException) {
   fd = new FileImpl(); // invalidate
 }
 
+bool File::isClosed() const throw() {
+  return fd->getHandle() == OperatingSystem::INVALID_HANDLE;
+}
+
 long long File::getSize() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   ULARGE_INTEGER size;
@@ -155,7 +165,7 @@ long long File::getSize() const throw(FileException) {
 //    throw FileException("Unable to get file size");
 //  }
   return size.QuadPart;
-#else // __unix__
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     if (fstat64(fd->getHandle(), &status)) {
@@ -184,7 +194,7 @@ long long File::getPosition() const throw(FileException) {
 //    throw FileException("Unable to get file position");
 //  }
   return position.QuadPart;
-#else // __unix__
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     return lseek64(fd->getHandle(), 0, SEEK_CUR); // should never fail
   #else
@@ -205,7 +215,7 @@ void File::setPosition(long long position, Whence whence) throw(FileException) {
 //  if (!SetFilePointerEx(fd->getHandle(), position, 0, relativeTo[whence])) {
 //    throw FileException("Unable to set position");
 //  }
-#else // __unix__
+#else // unix
   static int relativeTo[] = {SEEK_SET, SEEK_CUR, SEEK_END};
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     lseek64(fd->getHandle(), position, relativeTo[whence]); // should never fail
@@ -223,7 +233,7 @@ void File::truncate(long long size) throw(FileException) {
   if (!SetEndOfFile(fd->getHandle())) {
     throw FileException("Unable to truncate");
   }
-#else // __unix__
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     if (ftruncate64(fd->getHandle(), size)) {
       throw FileException("Unable to truncate");
@@ -254,7 +264,7 @@ void File::flush() throw(FileException) {
   if (!FlushFileBuffers(fd->getHandle())) {
     throw FileException("Unable to flush");
   }
-#else // __unix__
+#else // unix
   if (fsync(fd->getHandle())) {
     throw FileException("Unable to flush");
   }
@@ -289,7 +299,7 @@ void File::lock(const FileRegion& region, bool exclusive = true) throw(FileExcep
   }
   WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for lock
   CloseHandle(overlapped.hEvent);
-#else // __unix__
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct flock64 lock;
     lock.l_type = exclusive ? F_WRLCK : F_RDLCK; // request exclusive or shared lock
@@ -358,7 +368,7 @@ bool File::tryLock(const FileRegion& region, bool exclusive = true) throw(FileEx
   DWORD result = WaitForSingleObject(overlapped.hEvent, 0); // return immediately
   CloseHandle(overlapped.hEvent);
   return result == WAIT_OBJECT_0; // was the region locked
-#else // __unix__
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct flock64 lock;
     lock.l_type = exclusive ? F_WRLCK : F_RDLCK; // request exclusive or shared lock
@@ -419,7 +429,7 @@ void File::unlock(const FileRegion& region) throw(FileException) {
   }
   WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for unlock
   CloseHandle(overlapped.hEvent);
-#else // __unix__
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region"));
     struct flock64 lock;
@@ -468,7 +478,7 @@ Date File::getLastModification() throw(FileException) {
     throw FileException("Unable to get file time");
   }
   return FileTimeToDate(time);
-#else // Unix
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 buffer;
     if (fstat64(fd->getHandle(), &buffer)) {
@@ -492,7 +502,7 @@ Date File::getLastAccess() throw(FileException) {
     throw FileException("Unable to get file time");
   }
   return FileTimeToDate(time);
-#else // Unix
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 buffer;
     if (fstat64(fd->getHandle(), &buffer)) {
@@ -516,7 +526,7 @@ Date File::getLastChange() throw(FileException) {
     throw FileException("Unable to get file time");
   }
   return FileTimeToDate(time);
-#else // Unix
+#else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 buffer;
     if (fstat64(fd->getHandle(), &buffer)) {
@@ -533,12 +543,12 @@ Date File::getLastChange() throw(FileException) {
 #endif
 }
 
-unsigned int File::read(char* buffer, unsigned int size, bool nonblocking) throw(FileException) {
+unsigned int File::read(char* buffer, unsigned int bytesToRead, bool nonblocking) throw(FileException) {
   unsigned int bytesRead = 0;
-  while (bytesRead < size) {
+  while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
-    BOOL success = ::ReadFile(fd->getHandle(), buffer, size, &result, 0);
+    BOOL success = ::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, 0);
     if (!success) { // has error occured
       if (GetLastError() == ERROR_LOCK_VIOLATION) { // TAG: I'm guessing this error code - please confirm
         if (nonblocking) {
@@ -556,10 +566,10 @@ unsigned int File::read(char* buffer, unsigned int size, bool nonblocking) throw
             overlapped.hEvent = CreateEvent(0, false, false, 0); // auto reset event
 
             if (overlapped.hEvent) { // was event created
-              if (LockFileEx(fd->getHandle(), 0, 0, size, 0, &overlapped)) { // acquire shared lock
+              if (LockFileEx(fd->getHandle(), 0, 0, bytesToRead, 0, &overlapped)) { // acquire shared lock
                 WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for lock
-                if (::ReadFile(fd->getHandle(), buffer, size, &result, 0)) {
-                  if (UnlockFileEx(fd->getHandle(), 0, size, 0, &overlapped)) { // // release shared lock
+                if (::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, 0)) {
+                  if (UnlockFileEx(fd->getHandle(), 0, bytesToRead, 0, &overlapped)) { // // release shared lock
                     WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for unlock
                     success = true;
                   }
@@ -574,10 +584,10 @@ unsigned int File::read(char* buffer, unsigned int size, bool nonblocking) throw
     if (!success) {
       throw FileException("Unable to read from file");
     }
-#else // __unix__
+#else // unix
     int result;
     do {
-      result = ::read(fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
+      result = ::read(fd->getHandle(), buffer, minimum<unsigned int>(bytesToRead, SSIZE_MAX));
       if (result < 0) { // has an error occured
         switch (errno) { // remember that errno is local to the thread
         case EINTR: // interrupted by signal before any data was read
@@ -592,6 +602,8 @@ unsigned int File::read(char* buffer, unsigned int size, bool nonblocking) throw
     } while (result < 0);
 #endif
     bytesRead += result;
+    buffer += result;
+    bytesToRead -= result;
     if (nonblocking) { // accept whatever has been read in nonblocking mode
       break;
     }
@@ -602,12 +614,12 @@ unsigned int File::read(char* buffer, unsigned int size, bool nonblocking) throw
   return bytesRead;
 }
 
-unsigned int File::write(const char* buffer, unsigned int size, bool nonblocking) throw(FileException) {
+unsigned int File::write(const char* buffer, unsigned int bytesToWrite, bool nonblocking) throw(FileException) {
   unsigned int bytesWritten = 0;
-  while (bytesWritten < size) {
+  while (bytesToWrite > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
     DWORD result;
-    BOOL success = ::WriteFile(fd->getHandle(), buffer, size, &result, 0);
+    BOOL success = ::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0);
     if (!success) {
       if (GetLastError() == ERROR_LOCK_VIOLATION) { // TAG: I'm guessing this error code - please confirm
         if (nonblocking) {
@@ -625,10 +637,10 @@ unsigned int File::write(const char* buffer, unsigned int size, bool nonblocking
             overlapped.hEvent = CreateEvent(0, false, false, 0); // auto reset event
 
             if (overlapped.hEvent) { // was event created
-              if (LockFileEx(fd->getHandle(), 0, 0, size, 0, &overlapped)) { // acquire shared lock
+              if (LockFileEx(fd->getHandle(), 0, 0, bytesToWrite, 0, &overlapped)) { // acquire shared lock
                 WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for lock
-                if (WriteFile(fd->getHandle(), buffer, size, &result, 0)) {
-                  if (UnlockFileEx(fd->getHandle(), 0, size, 0, &overlapped)) { // // release shared lock
+                if (WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0)) {
+                  if (UnlockFileEx(fd->getHandle(), 0, bytesToWrite, 0, &overlapped)) { // // release shared lock
                     WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for unlock
                     success = true;
                   }
@@ -643,10 +655,10 @@ unsigned int File::write(const char* buffer, unsigned int size, bool nonblocking
     if (!success) {
       throw FileException("Unable to write to file");
     }
-#else // __unix__
+#else // unix
     int result;
     do {
-      result = ::write(fd->getHandle(), buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
+      result = ::write(fd->getHandle(), buffer, minimum<unsigned int>(bytesToWrite, SSIZE_MAX));
       if (result < 0) { // has an error occured
         switch (errno) {
         case EINTR: // interrupted by signal before any data was written
@@ -668,24 +680,31 @@ unsigned int File::write(const char* buffer, unsigned int size, bool nonblocking
       }
     }
     bytesWritten += result;
+    buffer += result;
+    bytesToWrite -= result;
   }
   return bytesWritten;
 }
 
-
-
-LockableRegion::LockableRegion(const File& f, const FileRegion& r, bool exclusive) throw(FileException) : file(f), region(r) {
-  file.lock(region, exclusive);
+void File::asyncCancel() throw(AsynchronousException) {
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  ::CancelIo(getHandle());
+#else // unix
+#endif // flavour
 }
 
-void LockableRegion::lock(const FileRegion& region, bool exclusive) throw(FileException) {
-  file.unlock(this->region);
-  this->region = region;
-  file.lock(this->region, exclusive);
+AsynchronousReadOperation File::read(void* buffer, unsigned int bytesToRead, unsigned long long offset, AsynchronousReadEventListener* listener) throw(AsynchronousException) {
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  assert(listener, AsynchronousException()); // FIXME
+  return new win32::AsyncReadFileContext(getHandle(), buffer, bytesToRead, offset, listener);
+#endif // flavour
 }
 
-LockableRegion::~LockableRegion() throw(FileException) {
-  file.unlock(region);
+AsynchronousWriteOperation File::write(const void* buffer, unsigned int bytesToWrite, unsigned long long offset, AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  assert(listener, AsynchronousException()); // FIXME
+  return new win32::AsyncWriteFileContext(getHandle(), buffer, bytesToWrite, offset, listener);
+#endif // flavour
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

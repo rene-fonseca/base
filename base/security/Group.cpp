@@ -41,7 +41,7 @@ Group::Group(const void* _id) throw(OutOfDomain) {
   copy<char>((char*)id, (const char*)_id, size);
 #else // unix
   assert((unsigned long)id <= PrimitiveTraits<gid_t>::MAXIMUM, OutOfDomain("Invalid group id", this));
-  id = _id;
+  id = (void*)_id; // we only cast away const 'cause we do not dereference it
 #endif // flavor
 }
 
@@ -101,13 +101,13 @@ Group::Group(const String& name) throw(GroupException) {
     struct group* entry;
     int result = ::getgrnam_r(name.getElements(), &grp, buffer->getElements(), buffer->getSize(), &entry);
     assert(result == 0, GroupException(this));
-    id = entry->gr_gid;
+    id = (void*)entry->gr_gid;
   #else
     #warning Using non-reentrant getgrnam (CYGWIN)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     struct group* entry = ::getgrnam(name.getElements());
     assert(entry != 0, GroupException(this));
-    id = entry->gr_gid;
+    id = (void*)entry->gr_gid;
   #endif
 #endif // flavor
 }
@@ -119,9 +119,9 @@ Group::Group(const User& user) throw(GroupException) {
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwuid_r(id, &pw, buffer->getElements(), buffer->getSize(), &entry);
+  int result = ::getpwuid_r((gid_t)id, &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result, GroupException(this));
-  id = entry->pw_gid;
+  id = (void*)entry->pw_gid;
 #endif // flavor
 }
 
@@ -152,7 +152,7 @@ String Group::getName() const throw(GroupException) {
     Allocator<char>* buffer = Thread::getLocalStorage();
     struct group grp;
     struct group* entry;
-    int result = ::getgrgid_r(id, &grp, buffer->getElements(), buffer->getSize(), &entry);
+    int result = ::getgrgid_r((gid_t)id, &grp, buffer->getElements(), buffer->getSize(), &entry);
     assert(result == 0, GroupException(this));
     return String(entry->gr_name);
   #else
@@ -174,7 +174,7 @@ Array<String> Group::getMembers() const throw(GroupException) {
     Allocator<char>* buffer = Thread::getLocalStorage();
     struct group grp;
     struct group* entry;
-    int result = ::getgrgid_r(id, &grp, buffer->getElements(), buffer->getSize(), &entry);
+    int result = ::getgrgid_r((gid_t)id, &grp, buffer->getElements(), buffer->getSize(), &entry);
     assert(result == 0, GroupException(this));
     Array<String> members;
     char** memberName = entry->gr_mem;

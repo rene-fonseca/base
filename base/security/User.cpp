@@ -49,7 +49,7 @@ User User::getCurrentUser() throw(UserException) {
   return result;
 #else // unix
   uid_t uid = ::getuid();
-  return User(uid);
+  return User((void*)uid);
 #endif // flavor
 }
 
@@ -62,7 +62,7 @@ User::User(const void* _id) throw(OutOfDomain) {
   copy<char>((char*)id, (const char*)_id, size);
 #else // unix
   assert((unsigned long)id <= PrimitiveTraits<uid_t>::MAXIMUM, OutOfDomain("Invalid user id", this));
-  id = _id;
+  id = (void*)_id;
 #endif // flavor
 }
 
@@ -135,7 +135,7 @@ User::User(const String& name) throw(UserException) {
   struct passwd* entry;
   int result = ::getpwnam_r(name.getElements(), &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result, UserException(this));
-  id = (const void*)entry->pw_uid;
+  id = (void*)entry->pw_uid;
 #endif // flavor
 }
 
@@ -165,7 +165,7 @@ String User::getName() const throw(UserException) {
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwuid_r(id, &pw, buffer->getElements(), buffer->getSize(), &entry);
+  int result = ::getpwuid_r((uid_t)id, &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result, UserException("Unable to lookup name", this));
   return String(entry->pw_name);
 #endif // flavor
@@ -178,7 +178,7 @@ String User::getHomeFolder() const throw(UserException) {
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwuid_r(id, &pw, buffer->getElements(), buffer->getSize(), &entry);
+  int result = ::getpwuid_r((uid_t)id, &pw, buffer->getElements(), buffer->getSize(), &entry);
   assert(result, UserException(this));
   return String(entry->pw_dir);
 #endif // flavor

@@ -15,52 +15,59 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  #include <windows.h>
+  ASSERTION(sizeof(unsigned long) == sizeof(DWORD));
+#else // unix
+  #include <pthread.h>
+#endif // flavour
+
 ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if ((key = TlsAlloc()) == TLS_OUT_OF_INDEXES) {
     throw ResourceException();
   }
-#else // Unix
+#else // unix
   if (pthread_key_create(&key, NULL)) {
     throw ResourceException();
   }
-#endif
+#endif // flavour
 }
 
 void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   void* result = TlsGetValue(key);
   if (!result && (GetLastError() != NO_ERROR)) {
-    throw ThreadKeyException(__func__);
+    throw ThreadKeyException();
   }
   return result;
 #else
   return pthread_getspecific(key); // no errors are returned
-#endif
+#endif // flavour
 }
 
 void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!TlsSetValue(key, value)) {
-    throw ThreadKeyException(__func__);
+    throw ThreadKeyException();
   }
 #else
   if (pthread_setspecific(key, value)) {
-    throw ThreadKeyException(__func__);
+    throw ThreadKeyException();
   }
-#endif
+#endif // flavour
 }
 
 ThreadKeyImpl::~ThreadKeyImpl() throw(ThreadKeyException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!TlsFree(key)) {
-    throw ThreadKeyException(__func__);
+    throw ThreadKeyException();
   }
 #else
   if (pthread_key_delete(key)) { // key should always be valid at this point
-    throw ThreadKeyException(__func__);
+    throw ThreadKeyException();
   }
-#endif
+#endif // flavour
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

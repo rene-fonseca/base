@@ -18,9 +18,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if (!defined(_DK_SDU_MIP__BASE__COMPILER_PRIMITIVES))
 #if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
-  /** 8 bit unsigned integer (a.k.a. octet). */
-  typedef unsigned char byte;
   /** 8 bit signed integer. */
   typedef signed char int8;
   /** 8 bit unsigned integer (a.k.a. octet). */
@@ -56,6 +55,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   typedef long long int64;
   /** 64 bit unsigned integer. */
   typedef unsigned long long uint64;
+#endif
 #endif
 
 /* 128 bit signed integer. */

@@ -14,7 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE_RMI__INVOCATION_RESULT_H
 #define _DK_SDU_MIP__BASE_RMI__INVOCATION_RESULT_H
 
-#include <base/features.h>
+#include <base/Object.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -29,60 +29,62 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class InvocationResult : public Object {
 public:
-    
+  
   /** Invocation result flag. */
   enum Flags {
+    /** Indicates that the invocation failed. */
+    FAILED = 1,
     /** Specifies that an exception was raised at the server side. */
-    EXCEPTION_RAISED = 1
+    EXCEPTION_RAISED = 2
   };
 private:
-    
+  
   /** Flags. */
   unsigned int flags;
-  /** The error code of the invocation. */
-  unsigned int error;
+  /** The cause of the invocation failure. */
+  unsigned int cause;
 public:
-
+  
   /**
-    Initializes object.
+    Initializes the invocation result.
     
     @param flags The flags.
-    @param error The error code.
+    @param cause The cause.
   */
-  inline InvocationResult(unsigned int _flags, unsigned int _error) throw()
+  inline InvocationResult(unsigned int _flags, unsigned int _cause) throw()
     : flags(_flags),
-      error(_error) {
+      cause(_cause) {
   }
-    
+  
   /**
     Initialization of object from other object.
   */
   inline InvocationResult(const InvocationResult& copy) throw()
     : flags(copy.flags),
-      error(copy.error) {
+      cause(copy.cause) {
   }
-    
+  
   /**
     Assignment of object to object.
   */
   inline InvocationResult& operator=(const InvocationResult& eq) throw() {
     flags = eq.flags;
-    error = eq.error;
+    cause = eq.cause;
     return *this;
   }
-    
+  
   /**
     Returns the flags.
   */
   inline unsigned int getFlags() const throw() {
     return flags;
   }
-    
+  
   /**
-    Returns the error code.
+    Returns the cause.
   */
-  inline unsigned int getError() const throw() {
-    return error;
+  inline unsigned int getCause() const throw() {
+    return cause;
   }
 };
 

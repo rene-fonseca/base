@@ -24,36 +24,20 @@
 #define _DK_SDU_MIP__BASE__VERSION "0.9.1"
 #define _DK_SDU_MIP__BASE__RELEASE "1.0 prerelease 1"
 
+// TAG: temporary fix until all symbols have been replaced
+#define _DK_SDU_MIP__BASE__FLAVOUR _DK_SDU_MIP__BASE__FLAVOR
+
 #define _DK_SDU_MIP__BASE__REQUIRE(major, minor, micro) \
   ((major <= _DK_SDU_MIP__BASE__MAJOR_VERSION) && \
   (minor <= _DK_SDU_MIP__BASE__MINOR_VERSION) && \
   (micro <= _DK_SDU_MIP__BASE__MICRO_VERSION))
 
-#if !defined(_DK_SDU_MIP__BASE__CPP_BOOL)
-  #error Compiler does not support the bool primitive
-#endif
-
-#if !defined(_DK_SDU_MIP__BASE__CPP_CONST)
-  #error Compiler does not support the const keyword  
-#endif
-
 #if !defined(_DK_SDU_MIP__BASE__CPP_RESTRICT)
+  #define restrict
 #endif
 
 #if !defined(_DK_SDU_MIP__BASE__CPP_INLINE)
-  #error Compiler does not support inlining of functions
-#endif
-
-#if !defined(_DK_SDU_MIP__BASE__CPP_STATIC_CONST)
-  #error Static const with initializer inside class definition is not supported by compiler
-#endif
-
-#if !defined(_DK_SDU_MIP__BASE__CPP_ANONYMOUS)
-//  #error Anonymous structure (and union) is not supported by compiler
-#endif
-
-#if (_DK_SDU_MIP__BASE__LONG_SIZE < _DK_SDU_MIP__BASE__POINTER_SIZE)
-  #error Primitive long cannot hold result of pointer arithmetic
+  #define inline
 #endif
 
 #if (_DK_SDU_MIP__BASE__POINTER_SIZE == 4)
@@ -89,17 +73,21 @@ namespace base {
   #define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 #endif
 
-#include <base/Trace.h> // TAG: fixme
+// #if !defined(TRACE) && !defined(TRACE_MEMBER)
+// #if defined(_DK_SDU_MIP__BASE__TRACE)
+//   #include <base/Trace.h>
 
-#if defined(_DK_SDU_MIP__BASE__TRACE)
-  #define TRACE(text) {Trace::message(text);}
-  #define TRACE_MEMBER() {Trace::member(this, __PRETTY_FUNCTION__);}
-#else
-  #define TRACE(text)
-  #define TRACE_MEMBER()
-#endif
+//   #define TRACE(text) {Trace::message(text);}
+//   #define TRACE_MEMBER() {Trace::member(this, __PRETTY_FUNCTION__);}
+// #else
+//   #define TRACE(text)
+//   #define TRACE_MEMBER()
+// #endif
+// #endif
 
+#if !defined(ASSERT) && !defined(ASSERTION) // allow macros to be overridden
 #if defined(_DK_SDU_MIP__BASE__DEBUG)
+  #include <base/Trace.h>
   #define _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE) #VALUE
   #define _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(VALUE) _DK_SDU_MIP__BASE__STRINGIFICATION(VALUE)
   #define ASSERT(expression) {if (!(expression)) {Trace::message("Assertion failure of (" #expression ") at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFICATION(__LINE__));}}
@@ -107,6 +95,7 @@ namespace base {
 #else
   #define ASSERT(expression)
   #define ASSERTION(expression)
+#endif
 #endif
 
 #endif

@@ -73,7 +73,7 @@ SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int chann
   event.reset();
 #else
   SoundDevice::soundDevice.acquireReadAccess();
-  SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.lock);
+  SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
 
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)

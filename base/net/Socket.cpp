@@ -6,12 +6,12 @@
 #include <base/net/Socket.h>
 #include <base/Functor.h>
 
-#ifdef __win32__
+#if defined(__win32__)
   #include <winsock2.h>
 #else
   #include <sys/types.h>
   #include <sys/socket.h>
-  #include <netinet/in.h>
+  #include <netinet/in.h> // defines ntohs...
   #include <unistd.h>
   #include <errno.h>
   #include <string.h>

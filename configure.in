@@ -5,8 +5,18 @@ AM_CONFIG_HEADER(config.h)
 
 AM_INIT_AUTOMAKE(ellert,0.55)
 
-AC_DEFINE(_GNU_SOURCE, 1, Specifies that the UNIX 98 functionality and GNU extensions are utilized)
-AC_DEFINE(_XOPEN_SOURCE, 500, Specifies that the UNIX 98 functionality is utilized)
+AC_CANONICAL_HOST()
+dnl The following variables have been set: $host, $host_cpu, and $host_os
+
+case "$host_os" in
+linux-gnu) AC_DEFINE(_GNU_SOURCE, 1, Specifies that the UNIX 98 functionality and GNU extensions are utilized)
+;;
+sgi*) AC_DEFINE(_SGI_SOURCE, 1, Specifies that the UNIX 98 functionality and SGI extensions are utilized)
+;;
+*) AC_DEFINE(_XOPEN_SOURCE, 500, Specifies that the UNIX 98 functionality is utilized)
+;;
+esac
+
 AC_DEFINE(_REENTRANT, 1, Select additionally reentrant object)
 
 

@@ -24,11 +24,9 @@ protected:
 
   class StackNode {
   protected:
-
     StackNode* next;
     TYPE value;
   public:
-
     inline StackNode(StackNode* n, const TYPE& v) : next(n), value(v) {}
     inline StackNode* getNext() const throw() {return next;}
     inline TYPE* getValue() throw() {return &value;}
@@ -62,20 +60,22 @@ public:
 
   /**
     Returns the element at the specified index from the top. Throws
-    'OutOfRange' if index if
+    'OutOfRange' if index is invalid.
 
-    @param index Index of the element. Default is 0.
+    @param index Index of the element. Default is 0 corresponding to the top.
   */
   TYPE peek(unsigned int index = 0) const throw(OutOfRange);
 
   /**
     Pushes an element onto the stack.
   */
-  void push(TYPE& value) throw(MemoryException);
+  void push(TYPE value) throw(MemoryException);
 
   /**
-    Returns the top element of the stack and removes it. Throws 'OutOfRange'
-    if the stack is empty.
+    Pops the top element from the stack. Throws 'OutOfRange' if the stack is
+    empty.
+
+    @return The top element.
   */
   TYPE pop() throw(OutOfRange);
 
@@ -89,6 +89,62 @@ public:
     Destroys the stack.
   */
   ~Stack() throw();
+};
+
+
+
+template<class TYPE> class Stack<TYPE*>;
+template<> class Stack<void*>;
+
+
+
+template<>
+class Stack<void*> : public Object {
+protected:
+
+  typedef void* TYPE;
+
+  class StackNode {
+  protected:
+    StackNode* next;
+    TYPE value;
+  public:
+    inline StackNode(StackNode* n, const TYPE& v) : next(n), value(v) {}
+    inline StackNode* getNext() const throw() {return next;}
+    inline TYPE* getValue() throw() {return &value;}
+  };
+
+  StackNode* top;
+  unsigned int size;
+public:
+
+  Stack() throw();
+  Stack(const Stack& copy) throw(MemoryException);
+  inline unsigned int getSize() const throw() {return size;}
+  inline bool isEmpty() const throw() {return size == 0;}
+  void* peek(unsigned int index = 0) const throw(OutOfRange);
+  void push(void* value) throw(MemoryException);
+  void* pop() throw(OutOfRange);
+  void pop(unsigned int count) throw(OutOfRange);
+  ~Stack() throw();
+};
+
+
+
+template<class TYPE>
+class Stack<TYPE*> : private Stack<void*> {
+public:
+
+  typedef Stack<void*> Base;
+
+  inline Stack() throw() : Base() {}
+  inline Stack(const Stack& copy) throw(MemoryException) : Base(copy) {}
+  inline unsigned int getSize() const throw() {return Base::getSize();}
+  inline bool isEmpty() const throw() {return Base::isEmpty();}
+  inline TYPE peek(unsigned int index = 0) const throw(OutOfRange) {return static_cast<TYPE>(Base::peek(index));}
+  inline void push(TYPE value) throw(MemoryException) {Base::push(value);}
+  inline TYPE pop() throw(OutOfRange) {return static_cast<TYPE>(Base::pop());}
+  inline void pop(unsigned int count) throw(OutOfRange) {Base::pop(count);}
 };
 
 #endif

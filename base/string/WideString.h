@@ -24,7 +24,6 @@
 #include <base/string/WideStringException.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Primitives.h>
-#include <base/string/String.h>
 
 #if defined(_DK_SDU_MIP__BASE__WIDE)
   #include <wctype.h> // TAG: alien header
@@ -238,7 +237,7 @@ public:
   /**
     Returns a multibyte string from a NULL-terminated wide-string.
   */
-  static String getMultibyteString(const wchar_t* string) throw(NullPointer, WideStringException);
+  static String getMultibyteString(const wchar_t* string) throw(NullPointer, MultibyteException, WideStringException);
 
   /**
     Initializes an empty string.
@@ -289,7 +288,12 @@ public:
     Initializes string from other string.
   */
   inline WideString(const WideString& copy) throw() : elements(copy.elements) {}
-
+  
+  /**
+    Initialized wide string from multibyte string.
+  */
+  WideString(const String& string) throw(MultibyteException, MemoryException);
+  
   /**
     Assignment of string with string.
   */
@@ -321,8 +325,8 @@ public:
   /**
     Returns the capacity of the string.
   */
-  inline unsigned int getCapacity() const throw() {return elements->getCapacity();}
-
+  inline unsigned int getCapacity() const throw() {return elements->getCapacity();}  
+  
   /**
     Ensures that the capacity of the buffer is at least equal to the specified
     minimum. This applies to all shared strings.
@@ -782,6 +786,11 @@ public:
 //   END SECTION
 // ****************************************************************************
 
+  /**
+    Returns a multibyte string from this wide string.
+  */
+  String getMultibyteString() const throw(MultibyteException, MemoryException);
+  
   /**
     Returns null-terminated wide string.
   */

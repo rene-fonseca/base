@@ -125,7 +125,7 @@ namespace isoc {
   #warning Assuming that mbstowcs is reentrant
 #endif
 
-String WideString::getMultibyteString(const wchar_t* string) throw(NullPointer, WideStringException) {
+String WideString::getMultibyteString(const wchar_t* string) throw(NullPointer, MultibyteException, WideStringException) {
   assert(string, NullPointer(Type::getType<WideString>()));
   const Character* terminator = find(string, MAXIMUM_LENGTH, Traits::TERMINATOR); // find terminator
   assert(terminator, WideStringException(Type::getType<WideString>())); // maximum length exceeded
@@ -140,20 +140,25 @@ String WideString::getMultibyteString(const wchar_t* string) throw(NullPointer, 
                                               0, // default for unmappable chars
                                               0 // set when default char used
   );
-  ASSERT(multibyteLength > 0);
-  char multibyteBuffer[multibyteLength]; // TAG: use String capacity support
+  assert((numberOfCharacters == 0) || (multibyteLength > 0), MultibyteException(Type::getType<WideString>()));
+  String result;
+  result.forceToLength(multibyteLength);
   ::WideCharToMultiByte(CP_UTF8, // code page
                         0, // performance and mapping flags
                         string, // wide-character string
                         numberOfCharacters, // number of chars in string
-                        multibyteBuffer, // buffer for new string
+                        result.getElements(), // buffer for new string
                         multibyteLength, // size of buffer
                         0, // default for unmappable chars
                         0 // set when default char used
   );
-  return String(multibyteBuffer, multibyteLength); // TAG: use capacity support
+  return result;
 #else // unix
-  return String(); // TAG: FIXME
+  String result(MB_LEN_MAX * numberOfCharacters); // greedy implementation
+  size_t multibyteLength = ::wcstombs(result.getElements(), string, MB_LEN_MAX * numberOfCharacters + 1);
+  assert(multibyteLength >= 0, MultibyteException(Type::getType<WideString>()));
+  result.forceToLength(multibyteLength);
+  return result;
 #endif // flavor
 }
 
@@ -190,6 +195,42 @@ WideString::WideString(const Character* string, unsigned int maximum) throw(OutO
   int numberOfCharacters = terminator ? (terminator - string) : maximum;
   elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
   copy(elements->getElements(), string, numberOfCharacters); // no overlap
+}
+
+WideString::WideString(const String& string) throw(MultibyteException, MemoryException) {
+  const char* str = string.getElements();
+  int numberOfCharacters = 0;
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  numberOfCharacters = ::MultiByteToWideChar(CP_UTF8, 0, str, -1, 0, 0); // includes terminator
+  assert(numberOfCharacters > 0, MultibyteException(this));
+  --numberOfCharacters;
+  assert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
+  elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
+  ::MultiByteToWideChar(CP_UTF8, 0, str, -1, elements->getElements(), numberOfCharacters + 1); // includes terminator
+#else // unix
+#if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
+  mbstate_t state;
+  clear(state); // initial state
+  const char* current = str;
+  size_t result = mbsrtowcs(0, &current, 0, &state);
+#else
+  size_t result = mbstowcs(0, str, 0);
+#endif
+  assert(result != size_t(-1), MultibyteException(this));
+  assert(result <= MAXIMUM_LENGTH, MemoryException(this)); // maximum length exceeded
+  numberOfCharacters = result;
+  elements = new ReferenceCountedCapacityAllocator<Character>(numberOfCharacters + 1, GRANULARITY);
+  if (numberOfCharacters) {
+#if defined(_DK_SDU_MIP__BASE__HAVE_MBSRTOWCS)
+    mbstate_t state;
+    clear(state); // initial state
+    const char* current = str;
+    size_t result = mbsrtowcs(elements->getElements(), &current, numberOfCharacters, &state);
+#else
+    size_t result = mbstowcs(elements->getElements(), str, numberOfCharacters);
+#endif
+  }
+#endif // flavor
 }
 
 WideString::WideString(const char* string) throw(MultibyteException, MemoryException) : elements(0) {
@@ -619,6 +660,41 @@ unsigned int WideString::count(const WideString& str, unsigned int start) const 
   return count;
 }
 
+String WideString::getMultibyteString() const throw(MultibyteException, MemoryException) {
+  const int length = getLength();
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  const Character* buffer = getBuffer();
+  int multibyteLength = ::WideCharToMultiByte(CP_UTF8, // code page
+                                              0, // performance and mapping flags
+                                              buffer, // wide-character string
+                                              length, // number of chars in string
+                                              0, // buffer for new string
+                                              0, // size of buffer
+                                              0, // default for unmappable chars
+                                              0 // set when default char used
+  );
+  assert((length == 0) || (multibyteLength > 0), MultibyteException(this));
+  String result;
+  result.forceToLength(multibyteLength); // raises exception if maximum length exceeded
+  ::WideCharToMultiByte(CP_UTF8, // code page
+                        0, // performance and mapping flags
+                        buffer, // wide-character string
+                        length, // number of chars in string
+                        result.getElements(), // buffer for new string
+                        multibyteLength, // size of buffer
+                        0, // default for unmappable chars
+                        0 // set when default char used
+  );
+  return result;
+#else // unix
+  String result(MB_LEN_MAX * length); // greedy implementation
+  size_t multibyteLength = ::wcstombs(result.getElements(), getElements(), MB_LEN_MAX * length + 1);
+  assert(multibyteLength >= 0, MultibyteException(this));
+  result.forceToLength(multibyteLength);
+  return result;
+#endif // flavor
+}
+
 template<>
 int compare<WideString>(const WideString& left, const WideString& right) throw() {
   return isoc::wcscmp(left.getElements(), right.getElements());
@@ -626,13 +702,14 @@ int compare<WideString>(const WideString& left, const WideString& right) throw()
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value) throw(MultibyteException, IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  Allocator<char> buffer(MB_LEN_MAX * value.getLength()); // no terminator // TAG: what is the max. char length
-  int result = ::WideCharToMultiByte(CP_UTF8, 0, value.getElements(), value.getLength(), buffer.getElements(), buffer.getSize(), 0, 0);
-  ASSERT(result > 0); // no errors expected
+  const int length = value.getLength();
+  Allocator<char> buffer(MB_LEN_MAX * length); // no terminator // TAG: what is the max. char length
+  int result = ::WideCharToMultiByte(CP_UTF8, 0, value.getElements(), length, buffer.getElements(), buffer.getSize(), 0, 0);
+  ASSERT((length == 0) || (result > 0)); // no errors expected
   stream.addCharacterField(buffer.getElements(), result);
 #else // unix
   Allocator<char> buffer(MB_LEN_MAX * value.getLength() + 1); // remember terminator - greedy implementation
-  size_t result = wcstombs(buffer.getElements(), value.getElements(), buffer.getSize());
+  size_t result = ::wcstombs(buffer.getElements(), value.getElements(), buffer.getSize());
   assert(result != size_t(-1), MultibyteException());
   stream.addCharacterField(buffer.getElements(), result);
 #endif // flavor

@@ -74,30 +74,68 @@ public:
     STATUS_ERROR /**< An unspecified error. */
   };
 
+  /** The transfer speed. */
   enum Speed {
-    S100,
-    S200,
-    S400,
-    S800,
-    S1600,
-    S3200
+    S100, /**< The base rate. 100Mbps (98.304Mbps). */
+    S200, /**< 200Mbps (196.608Mbps). */
+    S400, /**< 400Mbps (393.216Mbps). */
+    S800, /**< 800Mbps (786.432Mbps). */
+    S1600, /**< 1600Mbps (1572.864Mbps). */
+    S3200 /**< 3200Mbps (3145.728Mbps). */
+  };
+
+  /** Acknowledge code. */
+  enum AcknowledgeCode {
+    ACK_RESERVED_0,
+    ACK_COMPLETE,
+    ACK_PENDING,
+    ACK_RESERVED_3,
+    ACK_BUSY_X,
+    ACK_BUSY_A,
+    ACK_BUSY_B,
+    ACK_RESERVED_7,
+    ACK_RESERVED_8,
+    ACK_RESERVED_9,
+    ACK_RESERVED_10,
+    ACK_RESERVED_11,
+    ACK_RESERVED_12,
+    ACK_DATA_ERROR,
+    ACK_TYPE_ERROR,
+    ACK_RESERVED_15
+  };
+  
+  /** Response code. */
+  enum ResponseCode {
+    RCODE_COMPLETE, /**< The command has been completed. */
+    RCODE_RESERVED_1,
+    RCODE_RESERVED_2,
+    RCODE_RESERVED_3,
+    RCODE_CONFLICT_ERROR, /**< Resource conflict. */
+    RCODE_DATA_ERROR, /**< Hardware error. */
+    RCODE_TYPE_ERROR, /**< Unsupported or invalid transaction. */
+    RCODE_ADDRESS_ERROR, /**< Invalid address. */
+    RCODE_RESERVED_8,
+    RCODE_RESERVED_9,
+    RCODE_RESERVED_10,
+    RCODE_RESERVED_11,
+    RCODE_RESERVED_12,
+    RCODE_RESERVED_13,
+    RCODE_RESERVED_14,
+    RCODE_RESERVED_15
   };
 
   /** Isochronous request options. */
   enum IsochronousRequestOption {
     SWAP_BYTE_ORDER = 1 /**< Activates byte order swapping on quadlet level. */
   };
-  
-  struct Descriptor {
-    unsigned int flags;
-    EUI64 guid;
-    Standard standard;
-  };
-  
+
+  /** The base size of a register. */
   typedef BigEndian<uint32> Quadlet;
   
   /** Broadcast id. */
   static const unsigned int BROADCAST = 63;
+  /** The id of the local bus. */
+  static const unsigned int LOCAL_BUS = 1023;
   /** Specifies the maximum number of retries. */
   static const unsigned int MAXIMUM_ATTEMPTS = 5;
 
@@ -107,8 +145,36 @@ public:
     @param physicalId The physical id [0; 63].
     @param busId The bus id. The default is the local bus (i.e. 0x3ff).
   */
-  static inline unsigned short makeNodeId(unsigned short physicalId, unsigned short busId = 0x3ff) throw() {
+  static inline unsigned short makeNodeId(unsigned int physicalId, unsigned int busId = 0x3ff) throw() {
     return ((busId & 0x3ff) << 6) | (physicalId & 0x3f);
+  }
+
+  /**
+    Returns the bus id of the specified node id.
+  */
+  static inline unsigned int getBusId(unsigned short node) throw() {
+    return node >> 6;
+  }
+
+  /**
+    Returns true if the bus id of the node id is the local bus.
+  */
+  static bool isLocalBus(unsigned short node) throw() {
+    return getBusId(node) == LOCAL_BUS;
+  }
+
+  /**
+    Returns the physical id of the specified node id.
+  */
+  static inline unsigned int getPhysicalId(unsigned short node) throw() {
+    return node & 0x3f;
+  }
+  
+  /**
+    Returns true if the physical id of the node id is the broadcast id.
+  */
+  static bool isBroadcast(unsigned short node) throw() {
+    return getPhysicalId(node) == BROADCAST;
   }
   
   /**

@@ -18,6 +18,8 @@
 #include <base/LongInteger.h>
 #include <base/TypeInfo.h>
 
+// TAG: need floating point support: float, double, and long double
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 AnyValue::AnyValue() throw() : representation(VOID) {

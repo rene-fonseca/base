@@ -16,6 +16,7 @@
 
 #include <base/mem/ReferenceCountedObject.h>
 #include <base/mem/NullPointer.h>
+#include <base/Functor.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

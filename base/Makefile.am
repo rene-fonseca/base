@@ -135,6 +135,7 @@ section_HEADERS = \
   SingletonException.h \
   Daemon.h \
   SystemLogger.h \
+  NotCopyable.h \
   NotImplemented.h \
   NotSupported.h \
   UnexpectedFailure.h \

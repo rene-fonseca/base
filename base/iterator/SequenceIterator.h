@@ -42,6 +42,34 @@ public:
   explicit inline SequenceIterator(Pointer value) throw() : element(value) {}
 
   /**
+    Initializes iterator from other iterator.
+  */
+  inline SequenceIterator(const SequenceIterator& copy) throw() : element(copy.element) {}
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  template<class POLY>
+  inline SequenceIterator(const SequenceIterator<POLY>& copy) throw() : element(copy.getValue()) {}
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  inline SequenceIterator& operator=(const SequenceIterator& eq) throw() {
+    element = eq.element;
+    return *this;
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  template<class POLY>
+  inline SequenceIterator& operator=(const SequenceIterator<POLY>& eq) throw() {
+    element = eq.getValue();
+    return *this;
+  }
+
+  /**
     Prefix increment.
   */
   inline SequenceIterator& operator++() throw() {
@@ -139,12 +167,17 @@ public:
     return element;
   }
 
-  friend long operator-<>(SequenceIterator left, SequenceIterator right) throw();
+  /**
+    Returns the pointer value of the iterator.
+  */
+  inline Pointer getValue() const throw() {
+    return element;
+  }
 };
 
-template<class TYPE>
-inline long operator-(SequenceIterator<TYPE> left, SequenceIterator<TYPE> right) throw() {
-  return left.element - right.element;
+template<class LTRAITS, class RTRAITS>
+inline long operator-(const SequenceIterator<LTRAITS>& left, const SequenceIterator<RTRAITS>& right) throw() {
+  return left.getValue() - right.getValue();
 }
 
 template<class TYPE>

@@ -3,9 +3,12 @@
     email       : fonseca@mip.sdu.dk
  ***************************************************************************/
 
+#include <config.h>
 #include <base/net/InetInterface.h>
 
 #if defined(HAVE_INET_IPV6)
+  #include <sys/types.h>
+  #include <sys/socket.h>
   #include <net/if.h>
 #endif
 

@@ -11,9 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/platforms/features.h>
 #include <base/platforms/win32/AsyncWriteStreamContext.h>
-#include <base/Trace.h>
 
 #if !(_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #error Inclusion of incompatible platform specific source file

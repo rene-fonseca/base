@@ -3,7 +3,7 @@ AC_INIT(Makefile.am)
 
 AM_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE(ellert, 0.55)
+AM_INIT_AUTOMAKE(ellert,0.9)
 
 AM_PROG_LIBTOOL()
 
@@ -387,6 +387,17 @@ dnl Checks for header files.
 dnl Checks for typedefs, structures, and compiler characteristics.
 
 AC_BASE_CHECK(
+  checking whether const is supported by the compiler,
+  AC_BASE_CACHE(
+    base_cv_const,
+    AC_BASE_TRY_CXX_COMPILE(base_cv_const, config/const.cpp, )
+  ),
+  base_cv_const)
+if test "$base_cv_const" != yes; then
+  AC_MSG_ERROR(The compiler does not support the const keyword)
+fi
+
+AC_BASE_CHECK(
   checking whether inline is supported by the compiler,
   AC_BASE_CACHE(
     base_cv_inline,
@@ -398,7 +409,7 @@ if test "$base_cv_inline" != yes; then
 fi
 
 AC_BASE_CHECK(
-  checking whether static const with initializer is supported by the compiler,
+  checking whether static const with initializer is supported,
   AC_BASE_CACHE(
     base_cv_static_const,
     AC_BASE_TRY_CXX_COMPILE(base_cv_static_const, config/static_const.c, )

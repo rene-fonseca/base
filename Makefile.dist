@@ -22,3 +22,6 @@ all:
 	automake
 	autoconf
 	rm -f config.cache
+
+qwerty:
+	for src in `find . -name 'Makefile.bam'` ; do dest=`echo $$src | sed 's/\.bam$$/\.am/'` ; cp $$src $$dest ; done

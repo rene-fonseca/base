@@ -33,16 +33,16 @@ final: all
 
 
 lendum-gcc-2.96: all
-	CC='gcc -pipe -x c' CXX='gcc -pipe -x c++' CXXFLAGS="-O0 -g3" LDFLAGS="-lm" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=gccv2 --enable-regexp=pcre --enable-xml=xmlsoft
+	CC="gcc -pipe" CFLAGS="-x c" CXX="gcc -pipe" CXXFLAGS="-x c++ -O0 -g3" LDFLAGS="-lm" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=gccv2 --enable-regexp=pcre --enable-xml=xmlsoft
 
 lendum-gcc-3.0.3: all
-	CC="/usr/local/gcc-3.0.3/bin/gcc -pipe -x c" CXX='/usr/local/gcc-3.0.3/bin/gcc -pipe -x c++' CXXFLAGS="-O0 -g3" LDFLAGS=-L/usr/local/gcc-3.0.3/lib BASE_LIBS='-lsupc++ -lm' ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=pcre --enable-xml=xmlsoft
+	CC="/usr/local/gcc-3.0.3/bin/gcc -pipe" CFLAGS="-x c" CXX="/usr/local/gcc-3.0.3/bin/gcc -pipe" CXXFLAGS="-x c++ -O0 -g3" LDFLAGS="-static-libgcc -L/usr/local/gcc-3.0.3/lib" BASE_LIBS="-lsupc++ -lm" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=pcre --enable-xml=xmlsoft
 
 lendum-gcc-3.0.4: all
-	CC="/usr/local/gcc-3.0.4/bin/gcc -pipe -x c" CXX='/usr/local/gcc-3.0.4/bin/gcc -pipe -x c++' CXXFLAGS="-O0 -g3" LDFLAGS=-L/usr/local/gcc-3.0.4/lib BASE_LIBS='-lsupc++ -lm' ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=pcre --enable-xml=xmlsoft
+	CC="/usr/local/gcc-3.0.4/bin/gcc -pipe" CFLAGS="-x c" CXX="/usr/local/gcc-3.0.4/bin/gcc -pipe" CXXFLAGS="-x c++ -O0 -g3" LDFLAGS="-static-libgcc -L/usr/local/gcc-3.0.4/lib" BASE_LIBS="-lsupc++ -lm" ./configure --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=pcre --enable-xml=xmlsoft
 
 lendum-gcc-3.0.4-release: all
-	CC="/usr/local/gcc-3.0.4/bin/gcc -pipe -x c" CXX='/usr/local/gcc-3.0.4/bin/gcc -pipe -x c++' CXXFLAGS="-O3 -g3 -mcpu=i686" LDFLAGS=-L/usr/local/gcc-3.0.4/lib BASE_LIBS='-lsupc++ -lm' ./configure --target=i686-pc-linux --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=pcre --enable-xml=xmlsoft
+	CC="/usr/local/gcc-3.0.4/bin/gcc -pipe" CFLAGS="-x c" CXX="/usr/local/gcc-3.0.4/bin/gcc -pipe" CXXFLAGS="-x c++ -O3 -g3 -mcpu=i686" LDFLAGS="-static-libgcc -L/usr/local/gcc-3.0.4/lib" BASE_LIBS="-lsupc++ -lm" ./configure --target=i686-pc-linux --prefix=/usr/local/base --enable-debug --enable-demangle=v3mv --enable-regexp=pcre --enable-xml=xmlsoft
 
 # use -pipe?
 # --target=ultrasparc-sun-sunos??

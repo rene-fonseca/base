@@ -94,13 +94,13 @@ public:
   */
   inline explicit CapacityAllocator(unsigned int _granularity) throw(OutOfRange)
     : capacity(0), granularity(_granularity) {
-    assert(granularity >= MINIMUM_GRANULARITY, OutOfRange());
+    assert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
   }
 
   /**
     Initializes an allocator of the specified size without initializing the
     elements. Throws 'MemoryException' if unable to allocate enough memory to
-    hold the requested number of elements. Throws 'OutOfRange' if granularity
+    hold the requested number of elements. Raises OutOfRange if granularity
     is less than MINIMUM_GRANULARITY.
 
     @param size Specifies the initial size of the allocator.
@@ -108,8 +108,7 @@ public:
   */
   inline CapacityAllocator(unsigned int size, unsigned int _granularity) throw(OutOfRange, MemoryException)
     : capacity(0), granularity(_granularity) {
-    ASSERT(granularity >= MINIMUM_GRANULARITY);
-    assert(granularity >= MINIMUM_GRANULARITY, OutOfRange());
+    assert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
     setSize(size);
   }
 
@@ -201,7 +200,7 @@ public:
     Sets the number of elements of the allocator. If the size is increased the
     original elements are not modified and the newly allocated elements are not
     initialized. Throws 'MemoryException' if unable to allocate additional
-    memory (does not throw an exception when the size is decreased or
+    memory (does not raise an exception when the size is decreased or
     unchanged). If the size is reduced the elements up to the new size are
     unchanged.
   */
@@ -219,7 +218,7 @@ public:
   */
   inline void setGranularity(unsigned int granularity) throw(OutOfRange) {
     if (granularity != this->granularity) {
-      assert(granularity >= MINIMUM_GRANULARITY, OutOfRange());
+      assert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
       this->granularity = granularity;
     }
   }
@@ -247,7 +246,7 @@ public:
     that the allocated memory is not going to be resized for a "long time".
   */
   inline void optimizeCapacity() throw() {
-    // internal knowledge: does not throw an exception 'cause we do not expand the buffer
+    // internal knowledge: does not raise an exception 'cause we do not expand the buffer
     Allocator<TYPE>::setSize(capacity);
   }
 };

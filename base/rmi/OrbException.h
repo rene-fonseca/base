@@ -29,11 +29,22 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class OrbException : public RMIException {
 public:
-  
+
+  /** Exception causes. */
   enum Causes {
-    INVALID_PROTOCOL, /**< Invalid protocol. */
+    OUT_OF_MEMORY, /**< Out of memory. */
+    NOT_SUPPORTED, /**< Operation is not supported. */
+    INVALID_ENCODING_NAMESPACE, /**< Invalid encoding scheme namespace. */
+    INVALID_PROTOCOL_NAMESPACE, /**< Invalid protocol namespace. */
+    SCHEME_NOT_REGISTERED, /**< Scheme has not been registered. */
+    SCHEME_MISSING, /**< Scheme is missing within URI. */
+    NOT_AN_END_POINT, /**< URI does not specify an end point. */
+    INVALID_SCHEME, /**< Scheme may be known but is invalid in context. */
+    SCHEME_MISMATCH, /**< Scheme is not as expected. */
     UNABLE_TO_ESTABLISH_CONNECTION, /**< Unable to establish connection. */
-    INVALID_ENCODING /**< Violation of encoding scheme. */
+    INVALID_ENCODING, /**< Violation of encoding scheme. */
+    UNABLE_TO_INITIALIZE_FACTORY, /**< Unable to initialize factory. */
+    INVALID_METHOD /**< Method not found. */
   };
   
   /**

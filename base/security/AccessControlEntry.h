@@ -27,8 +27,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   An entry within an Access Control List (ACL) describing the access rights for
   a single trustee.
   
-  @ingroup security
   @short Entry of access control list (ACL).
+  @ingroup security
+  @see AccessControlList
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
@@ -36,47 +37,55 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class AccessControlEntry : public Object {
 public:
 
-  /** The permissions. */
-  enum Permission {
+  /** The fundamental permissions. */
+  enum ExplicitPermission {
+    EXECUTE = 1, /**< Execute permission. */
+
+    READ_DATA = EXECUTE << 1, /**< Read content permission. */
+    READ_ATTRIBUTES = READ_DATA << 1, /**< Read basic attributes permission. */
+    READ_EXTENDED_ATTRIBUTES = READ_ATTRIBUTES << 1, /**< Read extended attributes permission. */
+    READ_PERMISSIONS = READ_EXTENDED_ATTRIBUTES << 1, /**< Permissions to read permissions. */
+    
+    WRITE_DATA = READ_PERMISSIONS << 1, /**< Permission to change content of object. */
+    ADD_CONTENT = WRITE_DATA << 1, /**< Permission to add content to object. */
+    CHANGE_ATTRIBUTES = ADD_CONTENT << 1, /**< Permissions to change basic attributes. */
+    CHANGE_EXTENDED_ATTRIBUTES = CHANGE_ATTRIBUTES << 1, /**< Permission to change extended attributes. */
+    CHANGE_PERMISSIONS = CHANGE_EXTENDED_ATTRIBUTES << 1, /**< Permission to change permissions of object. */
+    CHANGE_OWNER = CHANGE_PERMISSIONS << 1, /**< Permission to change owner of object. */
+    
+    REMOVE = CHANGE_OWNER << 1, /**< Permission to change the owner of the object. */
+    REMOVE_COMPONENT = REMOVE << 1, /**< Permission to remove subcomponent. */
+    
+    SYNCHRONIZE = REMOVE_COMPONENT << 1, /**< Synchronization permission. */
+    
+    APPEND_DATA = ADD_CONTENT, /**< Permission to append data to file. */
+    
+    TRAVERSE_FOLDER = EXECUTE, /**< Permission to traverse folder. */
+    LIST_FOLDER = READ_DATA, /**< Permission to read content of folder. */
+    ADD_FILE = WRITE_DATA, /**< Permission to add file in folder. */
+    CREATE_FOLDERS = APPEND_DATA, /**< Permission to add subfolder. */
+  };
+  
+  /** Composite permissions. */
+  enum CompositePermission {
     NO = 0, /**< Trustee does not have any access. */
-    READ = 1 << 0, /**< Read permission. */
-    WRITE = 1 << 1, /**< Write permission. */
-    EXECUTE = 1 << 2, /**< Execute permission. */
-    
-    TRAVERSE_FOLDER = 1 << 3,
-    EXECUTE_FILE = TRAVERSE_FOLDER,
-    LIST_FOLDER = 1 << 4,
-    READ_DATA = LIST_FOLDER,
-    READ_ATTRIBUTES = 1 << 5,
-    READ_EXTENDED_ATTRIBUTES = 1 << 6,
-    
-    CREATE_FILES = 1 << 7,
-    WRITE_DATA = CREATE_FILES,
-    CREATE_FOLDERS = 1 << 8,
-    APPEND_DATA = CREATE_FOLDERS,
-    WRITE_ATTRIBUTES = 1 << 9,
-    WRITE_EXTENDED_ATTRIBUTES = 1 << 10,
-    
-    DELETE_SUBFOLDERS_AND_FILES = 1 << 11,
-    DELETE = 1 << 12,
-    READ_PERMISSIONS = 1 << 13,
-    CHANGE_PERMISSIONS = 1 << 14,
-    TAKE_OWNERSHIP = 1 << 15,
-    
-    READ_AND_EXECUTE = READ|EXECUTE, // TAG: FIXME: +TRAVERSE_FOLDER EXECUTE_FILE, +LIST_FOLDER/READ_DATA, +READ_ATTRIBUTES, +READ_EXTENDED_ATTRIBUTES, +READ_PERMISSIONS
-    MODIFY = READ|WRITE, // TAG: FIXME: -DELETE_SUBFOLDERS_AND_FILES, -CHANGE_PERMISSIONS, -TAKE_OWNERSHIP
-    FULL = READ|WRITE|EXECUTE, /**< Trustee has full access. */
+    READ = READ_DATA|READ_ATTRIBUTES|READ_EXTENDED_ATTRIBUTES|READ_PERMISSIONS, /**< Permission to read object. */
+    WRITE = WRITE_DATA|APPEND_DATA|CHANGE_ATTRIBUTES|CHANGE_EXTENDED_ATTRIBUTES|CHANGE_PERMISSIONS|CHANGE_OWNER|REMOVE|REMOVE_COMPONENT, /**< Permission to change object. */
+    READ_AND_EXECUTE = READ|EXECUTE, /**< Permission to read and execute object. */
+    LIST_AND_TRAVERSE = READ_AND_EXECUTE, /**< Permission to list and traverse a folder. */
+    MODIFY = READ_DATA|READ_ATTRIBUTES|READ_EXTENDED_ATTRIBUTES|READ_PERMISSIONS|WRITE_DATA|APPEND_DATA|CHANGE_ATTRIBUTES|CHANGE_EXTENDED_ATTRIBUTES|REMOVE|EXECUTE, /** Permission to modify object. */
+    FULL = READ|WRITE|EXECUTE /**< Trustee has full access. */
   };
   
   /** The access mask. */
-  typedef uint64 AccessMask;
+  typedef uint32 AccessMask;
   
   /** Access masks. */
   struct Permissions {
     /** The allowed permissions. */
-    uint64 allowed;
+    AccessMask allowed;
     /** The denied permissions. */
-    uint64 denied;
+    AccessMask denied;
   };
 private:
   
@@ -140,9 +149,9 @@ public:
   void replace(const Permissions& permissions) throw();
   
   /**
-    Revokes the
+    Filters out any permissions missing from the specified mask.
   */
-  void revoke(unsigned int permissions) throw();
+  void filter(AccessMask permissions) throw();
   
   /**
     Grants the specified permissions.
@@ -156,7 +165,7 @@ public:
 
     @param denied The permissions to deny.
   */
-  void deny(AccessMask denied) throw();
+  void revoke(AccessMask denied) throw();
   
   /**
     Combines the specified permissions with the ACE.
@@ -171,6 +180,11 @@ public:
   inline Trustee getTrustee() const throw() {
     return trustee;
   }
+
+  /**
+    Returns a string representation of the access mask.
+  */
+  static String maskToString(AccessMask mask) throw();
 };
 
 /**

@@ -15,37 +15,40 @@ include $(top_srcdir)/common.am
 
 noinst_LTLIBRARIES = libconcurrency.la
 
-libconcurrency_la_SOURCES = SpinLock.cpp \
-                            ReadWriteLock.cpp \
-                            Synchronizeable.cpp \
-                            Synchronize.cpp \
-                            ExclusiveSynchronize.cpp \
-                            SharedSynchronize.cpp \
-                            ThreadKey.cpp \
-                            Thread.cpp \
-                            Semaphore.cpp \
-                            MutualExclusion.cpp \
-                            Event.cpp \
-                            Lock.cpp \
-                            AtomicCounter.cpp \
-                            ThreadPool.cpp \
-                            Process.cpp
+libconcurrency_la_SOURCES = \
+  AtomicCounter.cpp \
+  Event.cpp \
+  ExclusiveSynchronize.cpp \
+  Lock.cpp \
+  LockException.cpp \
+  MutualExclusion.cpp \
+  Thread.cpp \
+  ThreadKey.cpp \
+  ThreadPool.cpp \
+  Process.cpp \
+  ReadWriteLock.cpp \
+  Semaphore.cpp \
+  SharedSynchronize.cpp \
+  SpinLock.cpp \
+  Synchronize.cpp \
+  Synchronizeable.cpp
 
 sectiondir = $(includedir)/base/concurrency
 section_HEADERS = \
   AtomicCounter.h \
   Event.h \
+  ExclusiveSynchronize.h \
+  Lock.h \
+  LockException.h \
   MutualExclusion.h \
-  Runnable.h \
-  Semaphore.h \
   Thread.h \
   ThreadKey.h \
-  Synchronize.h \
-  ExclusiveSynchronize.h \
+  ThreadPool.h \
+  Process.h \
+  ReadWriteLock.h \
+  Runnable.h \
+  Semaphore.h \
   SharedSynchronize.h \
   SpinLock.h \
-  Synchronizeable.h \
-  Lock.h \
-  ReadWriteLock.h \
-  ThreadPool.h \
-  Process.h
+  Synchronize.h \
+  Synchronizeable.h

@@ -16,6 +16,7 @@
 #include <base/SystemLogger.h>
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
+#include <base/UnexpectedFailure.h>
 #include <stdlib.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
@@ -27,54 +28,6 @@
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
-class ApplicationInitialization {
-public:
-
-  static void terminationExceptionHandler() throw() {
-    // TAG: need some way to extract the raised exception object
-    Trace::message("Exception was raised during application initialization or cleanup.");
-    SystemLogger::write(SystemLogger::ERROR, MESSAGE("Exception was raised during application initialization or cleanup."));
-    // ferr must not be used
-    exit(Application::EXIT_CODE_INITIALIZATION);
-  }
-
-  static void unexpectedExceptionHandler() throw() {
-    // TAG: does not work!
-    // TAG: make sure base library is initialized
-    StringOutputStream stream;
-    try {
-      throw;
-    } catch(Exception& e) {
-      stream << MESSAGE("Internal error: exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
-      if (e.getType().isInitialized()) {
-        stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
-      }
-      if (e.getMessage()) {
-        stream << MESSAGE(" with message '") << e.getMessage() << '\'';
-      }
-      stream << MESSAGE(" in violation with exception specification during application initialization or cleanup.") << FLUSH;
-    } catch(...) {
-      stream << MESSAGE("Internal error: unsupported exception was raised in violation with exception specification during application initialization or cleanup.") << FLUSH;
-    }
-    Trace::message(stream.getString().getElements());
-    SystemLogger::write(SystemLogger::ERROR, stream.getString().getElements());
-    // TAG: force stack to be unfolded and exit
-    exit(Application::EXIT_CODE_INITIALIZATION); // TAG: is abort() or terminate() better
-  }
-  
-  ApplicationInitialization() throw() {
-    // install exception handlers
-    std::set_terminate(ApplicationInitialization::terminationExceptionHandler);
-    std::set_unexpected(ApplicationInitialization::unexpectedExceptionHandler);
-  }
-
-  // TAG: restore previous exception handlers in destructor
-};
-
-ApplicationInitialization applicationInitialization;
-
-Application* Application::application = 0; // initialize application as uninitialized
 
 class ApplicationImpl {
 public:
@@ -131,6 +84,25 @@ public:
     return FALSE;
   }
 
+  static LRESULT CALLBACK messageHandler(HWND window, UINT message, WPARAM primaryParameter, LPARAM secondaryParameter) {
+    // TAG: we should destroy window in destructor
+    StringOutputStream stream;
+    stream << MESSAGE("messageHandler: message=") << message << " primary=" << primaryParameter << " second=" << secondaryParameter << FLUSH;
+    Trace::message(stream.getString().getElements());
+    switch (message) {
+    case WM_QUIT:
+      Trace::message("Quit");
+      if (Application::application) {
+        Application::application->terminate();
+      }
+      return 0;
+    default:
+      // TAG: what should we do here
+      return ::DefWindowProc(window, message, primaryParameter, secondaryParameter);
+    }
+    return 0;
+  }
+  
 #else // unix
 
   static void signalHandler(int signal) throw() {
@@ -193,14 +165,43 @@ public:
 
 void Application::initialize() throw() {
   static unsigned int singleton = 0;
-  assert(singleton == 0, SingletonException("Application has been instantiated"));
+  assert(singleton == 0, SingletonException("Application has been instantiated", this));
   ++singleton;
 
   // install signal handler
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   if (!::SetConsoleCtrlHandler((PHANDLER_ROUTINE)ApplicationImpl::signalHandler, TRUE)) {
-    throw Exception("Unable to install signal handler");
+    throw UnexpectedFailure("Unable to install signal handler", this);
   }
+
+  WNDCLASSEX windowClass;
+  clear(windowClass);
+  windowClass.cbSize = sizeof(windowClass);
+  windowClass.lpfnWndProc = /*(WNDPROC)*/ApplicationImpl::messageHandler;
+  windowClass.lpszClassName = "mip.sdu.dk/~fonseca/base";
+  ATOM result = ::RegisterClassEx(&windowClass);
+  ASSERT(result != 0);
+
+  OSVERSIONINFO versionInfo;
+  versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
+  ::GetVersionEx(&versionInfo); // never fails
+  bool isWindows2000OrLater = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) && (versionInfo.dwMajorVersion >= 5);
+
+  HWND messageWindow = ::CreateWindowEx(
+    0, // no extended window style
+    "mip.sdu.dk/~fonseca/base", // registered class name
+    0, // no window name // TAG: should I use ""
+    WS_DISABLED, // window style // TAG: or just 0
+    0, // horizontal position of window
+    0, // vertical position of window
+    0, // window width
+    0, // window height
+    isWindows2000OrLater ? ((HWND)-3) : ((HWND)0), // no parent or owner window - (HWND(-3)) ~ HWND_MESSAGE
+    HMENU(0), // use class menu
+    HINSTANCE(0), // ignored for Windows NT or later
+    0 // no window-creation data
+  );
+  
 #else // unix
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
     if (!((bsd_signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR) &&
@@ -209,7 +210,7 @@ void Application::initialize() throw() {
           (bsd_signal(SIGQUIT, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (bsd_signal(SIGINT, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (bsd_signal(SIGABRT, ApplicationImpl::signalHandler) != SIG_ERR))) {
-      throw Exception("Unable to install signal handler");
+      throw UnexpectedFailure("Unable to install signal handler", this);
     }
   #else
     /* use sigaction */
@@ -219,7 +220,7 @@ void Application::initialize() throw() {
           (signal(SIGQUIT, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (signal(SIGINT, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (signal(SIGABRT, ApplicationImpl::signalHandler) != SIG_ERR))) {
-      throw Exception("Unable to install signal handler");
+      throw UnexpectedFailure("Unable to install signal handler", this);
     }
   #endif
 #endif
@@ -290,6 +291,28 @@ bool Application::isHangingup() throw() {
 
 void Application::onTermination() throw() {
   exit(exitCode);
+}
+
+namespace internal {
+  
+  void terminationExceptionHandler() throw();
+
+  void unexpectedExceptionHandler() throw();
+};
+
+Application::~Application() throw() {
+#if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+//   if (::DestroyWindow(windowHandle) == 0) {
+//     // failed but we do not care
+//   }
+//   if (::UnregisterClass("mip.sdu.dk/~fonseca/base", HINSTANCE(0)) == 0) { // TAG: should be done automatically
+//     // failed but we do not care
+//   }
+#endif // flavour
+  
+  std::set_terminate(internal::terminationExceptionHandler);
+  std::set_unexpected(internal::unexpectedExceptionHandler);
+  application = 0;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -15,6 +15,7 @@
 #include <base/TypeInfo.h>
 #include <base/SystemLogger.h>
 #include <base/concurrency/Thread.h>
+#include <base/string/StringOutputStream.h>
 #include <stdlib.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
@@ -32,15 +33,34 @@ public:
 
   static void terminationExceptionHandler() throw() {
     // TAG: need some way to extract the raised exception object
-    Trace::message("Exception was raised during application initialization or cleanup");
-    //SystemLogger::write(SystemLogger::ERROR, MESSAGE("Application failed to initialize or cleanup  properly."));
+    Trace::message("Exception was raised during application initialization or cleanup.");
+    SystemLogger::write(SystemLogger::ERROR, MESSAGE("Exception was raised during application initialization or cleanup."));
+    // ferr must not be used
     exit(Application::EXIT_CODE_INITIALIZATION);
   }
 
   static void unexpectedExceptionHandler() throw() {
-    Trace::message("Exception was raised during application initialization or cleanup");
-    //SystemLogger::write(SystemLogger::ERROR, MESSAGE("Application failed to initialize or cleanup properly."));
-    exit(Application::EXIT_CODE_INITIALIZATION);
+    // TAG: does not work!
+    // TAG: make sure base library is initialized
+    StringOutputStream stream;
+    try {
+      throw;
+    } catch(Exception& e) {
+      stream << MESSAGE("Internal error: exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
+      if (e.getType().isInitialized()) {
+        stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
+      }
+      if (e.getMessage()) {
+        stream << MESSAGE(" with message '") << e.getMessage() << '\'';
+      }
+      stream << MESSAGE(" in violation with exception specification during application initialization or cleanup.") << FLUSH;
+    } catch(...) {
+      stream << MESSAGE("Internal error: unsupported exception was raised in violation with exception specification during application initialization or cleanup.") << FLUSH;
+    }
+    Trace::message(stream.getString().getElements());
+    SystemLogger::write(SystemLogger::ERROR, stream.getString().getElements());
+    // TAG: force stack to be unfolded and exit
+    exit(Application::EXIT_CODE_INITIALIZATION); // TAG: is abort() or terminate() better
   }
   
   ApplicationInitialization() throw() {
@@ -48,6 +68,8 @@ public:
     std::set_terminate(ApplicationInitialization::terminationExceptionHandler);
     std::set_unexpected(ApplicationInitialization::unexpectedExceptionHandler);
   }
+
+  // TAG: restore previous exception handlers in destructor
 };
 
 ApplicationInitialization applicationInitialization;
@@ -58,21 +80,35 @@ class ApplicationImpl {
 public:
 
   static void terminationExceptionHandler() {
-    Trace::message("Termination due to exception");
-    ferr << MESSAGE("Internal error: Exception handling abandoned") << ENDL;
+    StringOutputStream stream;
+    stream << MESSAGE("Internal error: exception handling abandoned.") << FLUSH;
+    Trace::message(stream.getString().getElements());
+    // TAG: only if ferr is valid
+    ferr << stream.getString() << ENDL;
     exit(Application::EXIT_CODE_ERROR); // TAG: is abort() better
   }
 
   static void unexpectedExceptionHandler() {
-    Trace::message("Termination due to unexpected exception");
+    StringOutputStream stream;
     try {
       throw;
     } catch(Exception& e) {
-      ferr << MESSAGE("Internal error: Violation of exception specification with") << EOL
-           << MESSAGE("  ") << TypeInfo::getTypename(e) << MESSAGE(": ") << e.getMessage() << ENDL;
+      stream << MESSAGE("Internal error: exception '") << TypeInfo::getTypename(e) << MESSAGE("' was raised");
+      if (e.getType().isInitialized()) {
+        stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
+      }
+      if (e.getMessage()) {
+        stream << MESSAGE(" with message '") << e.getMessage() << '\'';
+      }
+      stream << MESSAGE(" in violation with exception specification.") << FLUSH;
     } catch(...) {
-      ferr << MESSAGE("Internal error: Exception violates exception specification") << ENDL;
+      stream << MESSAGE("Internal error: unsupported exception was raised in violation with exception specification.") << FLUSH;
     }
+    Trace::message(stream.getString().getElements());
+    // TAG: either use SystemLogger or ferr but not both
+    SystemLogger::write(SystemLogger::ERROR, stream.getString().getElements());
+    // TAG: only if ferr is valid
+    ferr << stream.getString() << ENDL;
     exit(Application::EXIT_CODE_ERROR); // TAG: is abort() or terminate() better
   }
 
@@ -223,12 +259,12 @@ Application::Application(const String& name, int numberOfArguments, const char* 
 }
 
 int Application::exceptionHandler(const Exception& e) const throw() {
-  ferr << TypeInfo::getTypename(e) << MESSAGE(": ") << e.getMessage() << ENDL;
+  ferr << MESSAGE("Exception: ") << TypeInfo::getTypename(e) << MESSAGE(": ") << e.getMessage() << ENDL;
   return Application::EXIT_CODE_ERROR;
 }
 
 int Application::exceptionHandler() const throw() {
-  ferr << MESSAGE("Internal error: Unspecified exception") << ENDL;
+  ferr << MESSAGE("Internal error: unspecified exception.") << ENDL;
   return Application::EXIT_CODE_ERROR;
 }
 

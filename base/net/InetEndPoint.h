@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -65,7 +65,8 @@ public:
     @param address The address.
     @param service The service (e.g. 'http' or '80').
   */
-  InetEndPoint(const InetAddress& address, const String& service) throw(ServiceNotFound);
+  InetEndPoint(
+    const InetAddress& address, const String& service) throw(ServiceNotFound);
 
   /**
     Initializes end point from string representations of host and service.
@@ -73,7 +74,8 @@ public:
     @param host The host (e.g. '127.0.0.1' or 'www.mip.sdu.dk').
     @param service The service (e.g. 'http' or '80').
   */
-  InetEndPoint(const String& host, const String& service) throw(ServiceNotFound);
+  InetEndPoint(
+    const String& host, const String& service) throw(ServiceNotFound);
 
   /**
     Initialize object from other object.
@@ -133,7 +135,8 @@ public:
   Writes a string representation of the InetEndPoint object to a format stream
   (e.g. "127.0.0.1:1234" or "[::1]:1234").
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const InetEndPoint& value) throw(IOException);
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const InetEndPoint& value) throw(IOException);
 
 class Hash<InetEndPoint> {
 public:

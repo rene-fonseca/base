@@ -2363,7 +2363,7 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
     case DestroyNotify:
       break;
     default:
-      fout << MESSAGE("Event: unhandled") << ENDL;
+      fout << "Event: unhandled" << ENDL;
     }
   }
 #endif // flavor

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -49,7 +49,8 @@ public:
 
     @return 0 if the service was not found.
   */
-  static unsigned short getByName(const String& name, const String& protocol) throw();
+  static unsigned short getByName(
+    const String& name, const String& protocol) throw();
 
   /**
     Returns the name of the service given by the specified port and protocol.
@@ -67,7 +68,9 @@ public:
     @param name Specifies the name of the service.
     @param protocol Specifies the name of the protocol. Default is "tcp".
   */
-  explicit InetService(const String& name, const String& protocol = MESSAGE("tcp")) throw(ServiceNotFound);
+  explicit InetService(
+    const String& name,
+    const String& protocol = Literal("tcp")) throw(ServiceNotFound);
 
   /**
     Initializes a service object by specified port number and protocol.
@@ -75,7 +78,9 @@ public:
     @param port The port number.
     @param protocol Specifies the name of the protocol. Default is "tcp".
   */
-  explicit InetService(unsigned short port, const String& protocol = MESSAGE("tcp")) throw(ServiceNotFound);
+  explicit InetService(
+    unsigned short port,
+    const String& protocol = Literal("tcp")) throw(ServiceNotFound);
 
   /**
     Copy constructor.
@@ -105,13 +110,15 @@ public:
   /**
     Writes a string representation of a InetService object to a format stream.
   */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const InetService& value) throw(IOException);
+  friend FormatOutputStream& operator<<(
+    FormatOutputStream& stream, const InetService& value) throw(IOException);
 };
 
 /**
   Writes a string representation of a InetService object to a format stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const InetService& value) throw(IOException);
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const InetService& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

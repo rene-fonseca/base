@@ -615,8 +615,9 @@ inline FormatOutputStream::Indent indent(unsigned int length) throw() {
 
 
 /**
-  This class describes a seqence of elements to be written to a format output stream.
-
+  This class describes a seqence of elements to be written to a format output
+  stream.
+  
   @code
   class MyClass : public Object {
   private:
@@ -626,7 +627,7 @@ inline FormatOutputStream::Indent indent(unsigned int length) throw() {
   
     void myMethod() throw() {
       if (debugLevel >= VERY_VERBOSE) {
-        fout << HEX << ZEROPAD << NOPREFIX << Sequence<unsigned char>(guid, sizeof(guid), MESSAGE(":")) << ENDL;
+        fout << HEX << ZEROPAD << NOPREFIX << Sequence<unsigned char>(guid, sizeof(guid), ":") << ENDL;
       }
       // do something
     }
@@ -653,7 +654,7 @@ public:
     @param size The number of elements in the sequence.
   */
   Sequence(const TYPE* _value, unsigned int _size) throw()
-    : value(_value), size(_size), separator(MESSAGE("")) {
+    : value(_value), size(_size), separator("") {
   }
   
   /**

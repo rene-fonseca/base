@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,15 +19,18 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 InetEndPoint::InetEndPoint() throw() : port(0) {
 }
 
-InetEndPoint::InetEndPoint(const InetAddress& _address, unsigned short _port) throw()
+InetEndPoint::InetEndPoint(
+  const InetAddress& _address, unsigned short _port) throw()
   : address(_address), port(_port) {
 }
 
-InetEndPoint::InetEndPoint(const InetAddress& _address, const InetService& service) throw()
+InetEndPoint::InetEndPoint(
+  const InetAddress& _address, const InetService& service) throw()
   : address(_address), port(service.getPort()) {
 }
 
-InetEndPoint::InetEndPoint(const InetAddress& _address, const String& service) throw(ServiceNotFound)
+InetEndPoint::InetEndPoint(
+  const InetAddress& _address, const String& service) throw(ServiceNotFound)
   : address(_address), port(0) {
   try {
     Integer integer(service);
@@ -40,7 +43,8 @@ InetEndPoint::InetEndPoint(const InetAddress& _address, const String& service) t
   }
 }
 
-InetEndPoint::InetEndPoint(const String& host, const String& service) throw(ServiceNotFound)
+InetEndPoint::InetEndPoint(
+  const String& host, const String& service) throw(ServiceNotFound)
   : address(host), port(0) {
   try {
     Integer integer(service);
@@ -77,7 +81,8 @@ void InetEndPoint::setPort(unsigned short value) throw() {
   port = value;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const InetEndPoint& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const InetEndPoint& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);
   const InetAddress::Family family = value.getAddress().getFamily();
   if (family == InetAddress::IP_VERSION_6) {

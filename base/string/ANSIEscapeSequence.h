@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -199,7 +199,7 @@ public:
 
 /** Moves the cursor to the home position. */
 inline ANSIEscapeSequence::Escape home() throw() {
-  return ANSIEscapeSequence::Escape(MESSAGE("ESC[H"));
+  return ANSIEscapeSequence::Escape(Literal("ESC[H"));
 }
 
 /** Set the cursor position. */
@@ -234,62 +234,62 @@ inline ANSIEscapeSequence::MoveCursor backward(unsigned int count = 1) throw() {
 
 /** Saves the position. */
 inline ANSIEscapeSequence::Escape savePosition() throw() {
-  return ANSIEscapeSequence::Escape(MESSAGE("\033[s"));
+  return ANSIEscapeSequence::Escape(Literal("\033[s"));
 }
 
 /** Restores the position. */
 inline ANSIEscapeSequence::Escape restorePosition() throw() {
-  return ANSIEscapeSequence::Escape(MESSAGE("\033[u"));
+  return ANSIEscapeSequence::Escape(Literal("\033[u"));
 }
 
 /** Erases the display. */
 inline ANSIEscapeSequence::Escape clearDisplay() throw() {
-  return ANSIEscapeSequence::Escape(MESSAGE("\033[2J"));
+  return ANSIEscapeSequence::Escape(Literal("\033[2J"));
 }
 
 /** Erases the current line. */
 inline ANSIEscapeSequence::Escape clearLine() throw() {
-  return ANSIEscapeSequence::Escape(MESSAGE("\033[K"));
+  return ANSIEscapeSequence::Escape(Literal("\033[K"));
 }
 
 /** Enables wrapping. */
 inline ANSIEscapeSequence::Escape wrap() throw() {
-  return ANSIEscapeSequence::Escape(MESSAGE("\033[=7h"));
+  return ANSIEscapeSequence::Escape(Literal("\033[=7h"));
 }
 
 /** Disables wrapping. */
 inline ANSIEscapeSequence::Escape nowrap() throw() {
-  return ANSIEscapeSequence::Escape(MESSAGE("\033[=7l"));
+  return ANSIEscapeSequence::Escape(Literal("\033[=7l"));
 }
 
 /** Deactivates all the text attributes. */
 inline ANSIEscapeSequence::Escape normal() throw() {
-  return ANSIEscapeSequence::Escape(MESSAGE("\033[0m"));
+  return ANSIEscapeSequence::Escape(Literal("\033[0m"));
 }
 
 /** Activates the bold attribute. */
 inline ANSIEscapeSequence::Escape bold() throw() {
-  return ANSIEscapeSequence::Escape(MESSAGE("\033[1m"));
+  return ANSIEscapeSequence::Escape(Literal("\033[1m"));
 }
 
 /** Activates the underscore attribute. */
 inline ANSIEscapeSequence::Escape underscore() throw() {
-  return ANSIEscapeSequence::Escape(MESSAGE("\033[4m"));
+  return ANSIEscapeSequence::Escape(Literal("\033[4m"));
 }
 
 /** Activates the blink attribute. */
 inline ANSIEscapeSequence::Escape blink() throw() {
-  return ANSIEscapeSequence::Escape(MESSAGE("\033[5m"));
+  return ANSIEscapeSequence::Escape(Literal("\033[5m"));
 }
 
 /** Activates the reverse attribute. */
 inline ANSIEscapeSequence::Escape reverse() throw() {
-  return ANSIEscapeSequence::Escape(MESSAGE("\033[7m"));
+  return ANSIEscapeSequence::Escape(Literal("\033[7m"));
 }
 
 /** Activates the conceal attribute. */
 inline ANSIEscapeSequence::Escape conceal() throw() {
-  return ANSIEscapeSequence::Escape(MESSAGE("\033[8m"));
+  return ANSIEscapeSequence::Escape(Literal("\033[8m"));
 }
 
 /** Sets the text attributes. */

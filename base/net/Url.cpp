@@ -386,7 +386,7 @@ String Url::getUrl() const throw(MemoryException) {
 
   if (!scheme.isEmpty()) {
     result += scheme; // no need to encode
-    result += MESSAGE("://"); // scheme separator + indicate common Internet scheme syntax
+    result += Literal("://"); // scheme separator + indicate common Internet scheme syntax
   }
 
   if (!user.isEmpty() || !password.isEmpty()) { // has user or password - allows blank user

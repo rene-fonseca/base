@@ -18,6 +18,14 @@
 #include <base/configuration.h>
 #include <base/platforms/platform.h>
 
+#define _DK_SDU_MIP__BASE__MAJOR_VERSION 0
+#define _DK_SDU_MIP__BASE__MINOR_VERSION 9
+#define _DK_SDU_MIP__BASE__VERSION "0.9"
+
+#if !defined(_DK_SDU_MIP__BASE__CPP_BOOL)
+  #error Compiler does not support the bool primitive
+#endif
+
 #if !defined(_DK_SDU_MIP__BASE__CPP_CONST)
   #error Compiler does not support the const keyword  
 #endif

@@ -20,6 +20,7 @@ libmathematics_la_SOURCES = \
   ExpressionException.cpp \
   ExpressionParser.cpp \
   IncompatibleOperands.cpp \
+  MarsagliaRandomNumberGenerator.cpp \
   Math.cpp \
   Matrix.cpp \
   Matrix4x4.cpp \
@@ -36,6 +37,7 @@ section_HEADERS = \
   ExpressionException.h \
   ExpressionParser.h \
   IncompatibleOperands.h \
+  MarsagliaRandomNumberGenerator.h \
   Math.h \
   Matrix.h \
   Matrix4x4.h \

@@ -45,7 +45,7 @@ public:
           stream << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
         }
         if (e.getMessage()) {
-          stream << MESSAGE(" with message '") << e.getMessage() << '\'';
+          stream << MESSAGE(" with message '") << e.getMessage() << MESSAGE("'.");
         }
         stream << FLUSH;
       } catch(...) {
@@ -90,7 +90,10 @@ public:
     SystemLogger::write(SystemLogger::ERROR, stream.getString().getElements());
     // TAG: only if ferr is valid
     ferr << stream.getString() << ENDL;
+#if !defined(_DK_SDU_MIP__BASE__DEBUG) // TAG: must be a setting in some operating mode class - e.g. setDebugMode(unsigned int flags)
+    // continue search for exception handler in debug mode
     exit(Application::EXIT_CODE_ERROR); // TAG: is abort() or terminate() better
+#endif
   }
 
   /* The application signal handler. */
@@ -270,8 +273,15 @@ Application::Application(const String& name, int numberOfArguments, const char* 
   exitCode(EXIT_CODE_NORMAL), formalName(name), terminated(false), hangingup(false) {
   initialize();
 
-  assert((numberOfArguments > 0) && (arguments), OutOfDomain());
-  path = arguments[0];
+  assert((numberOfArguments > 0) && (arguments), OutOfDomain(this));
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  char buffer[MAX_PATH + 1]; // what if path starts with "\\?\"
+  DWORD length = ::GetModuleName(0, buffer, sizeof(buffer));
+  ASSERT(length > 0);
+  path = String(buffer, length);
+#else
+  path = arguments[0]; // TAG: fixme
+#endif
   for (unsigned int i = 1; i < numberOfArguments; ++i) {
     this->arguments.append(arguments[i]);
   }

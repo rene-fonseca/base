@@ -1459,8 +1459,19 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Exception& e) t
   if (e.getType().isInitialized()) {
     s << MESSAGE(" by '") << TypeInfo::getTypename(e.getType()) << '\'';
   }
-  if (e.getMessage()) {
-    s << MESSAGE(" with message '") << e.getMessage() << '\'';
+  const char* message = e.getMessage();
+  unsigned int cause = e.getCause();
+  if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
+    s << MESSAGE(" with");
+  }
+  if (message) {
+    s << MESSAGE(" message '") << message << '\'';
+  }
+  if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
+    s << MESSAGE(" and");
+  }
+  if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
+    s << MESSAGE(" cause ") << HEX << setWidth(10) << ZEROPAD << cause;
   }
   s << '.' << FLUSH;
   return stream << s.getString();

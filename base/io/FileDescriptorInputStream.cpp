@@ -16,21 +16,20 @@
 #endif
 
 FileDescriptorInputStream::FileDescriptorInputStream() throw() :
-  FileDescriptor() {
+  FileDescriptor(), eof(true) {
 }
 
 FileDescriptorInputStream::FileDescriptorInputStream(const FileDescriptor& fd) throw() :
-  FileDescriptor(fd),
-  eof(false) {
+  FileDescriptor(fd), eof(false) {
 }
 
-FileDescriptorInputStream::FileDescriptorInputStream(FileDescriptorInputStream& copy) throw() :
-  FileDescriptor(copy),
-  eof(copy.eof) {
+FileDescriptorInputStream::FileDescriptorInputStream(const FileDescriptorInputStream& copy) throw() :
+  FileDescriptor(copy), eof(copy.eof) {
 }
 
-FileDescriptorInputStream& FileDescriptorInputStream::operator=(FileDescriptorInputStream& eq) throw() {
-  if (&eq == this) { // protect against self assignment
+FileDescriptorInputStream& FileDescriptorInputStream::operator=(const FileDescriptorInputStream& eq) throw() {
+  if (&eq != this) { // protect against self assignment
+    fd = eq.fd;
     eof = eq.eof;
   }
   return *this;

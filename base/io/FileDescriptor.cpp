@@ -19,23 +19,6 @@ FileDescriptor FileDescriptor::bin(0);
 FileDescriptor FileDescriptor::bout(1);
 FileDescriptor FileDescriptor::berr(2);
 
-FileDescriptor::Descriptor::Descriptor() throw() {
-  handle = -1; // invalid handle
-}
-
-FileDescriptor::Descriptor::Descriptor(int handle) throw() {
-  this->handle = handle;
-}
-
-void FileDescriptor::Descriptor::close() throw(IOException) {
-  if (handle != -1) {
-    if (::close(handle) != 0) {
-      throw IOException("Unable to close file descriptor");
-    }
-    handle = -1;
-  }
-}
-
 int FileDescriptor::Descriptor::getFlags() const throw(IOException) {
   int result;
   if ((result = ::fcntl(handle, F_GETFL)) < 0) {
@@ -64,7 +47,11 @@ void FileDescriptor::Descriptor::setNonBlocking(bool value) throw(IOException) {
 }
 
 FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
-  close();
+  if (handle != -1) {
+    if (::close(handle) != 0) {
+      throw IOException("Unable to close file descriptor");
+    }
+  }
 }
 
 
@@ -75,15 +62,15 @@ FileDescriptor::FileDescriptor(int handle) throw() : fd(new Descriptor(handle)) 
 FileDescriptor::FileDescriptor(const FileDescriptor& copy) throw() : fd(copy.fd) {
 }
 
-FileDescriptor& FileDescriptor::operator=(FileDescriptor& eq) throw() {
-  if (&eq == this) { // protect against self assignment
+FileDescriptor& FileDescriptor::operator=(const FileDescriptor& eq) throw() {
+  if (&eq != this) { // protect against self assignment
     fd = eq.fd;
   }
   return *this;
 }
 
 void FileDescriptor::close() throw(IOException) {
-  fd->close();
+  fd = new Descriptor();
 }
 
 int FileDescriptor::getFlags() const throw(IOException) {

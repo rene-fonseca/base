@@ -38,12 +38,12 @@ public:
   /**
     Initializes file descriptor input stream from other file descriptor input stream.
   */
-  FileDescriptorInputStream(FileDescriptorInputStream& copy) throw();
+  FileDescriptorInputStream(const FileDescriptorInputStream& copy) throw();
 
   /**
     Assignment of file descriptor input stream to this file descriptor input stream.
   */
-  FileDescriptorInputStream& operator=(FileDescriptorInputStream& eq) throw();
+  FileDescriptorInputStream& operator=(const FileDescriptorInputStream& eq) throw();
 
   /**
     Returns true if the end of the file descriptor has been reached.

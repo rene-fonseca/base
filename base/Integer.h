@@ -48,6 +48,13 @@ public:
   inline Integer(int value) throw() : value(value) {}
 
   /**
+    Initializes integer from string.
+
+    @param str The string.
+  */
+  Integer(String<> str) throw(InvalidFormat);
+
+  /**
     Copy constructor. Initializes a new Integer from other Integer object.
   */
   inline Integer(const Integer& copy) throw() : value(copy.value) {}

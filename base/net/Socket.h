@@ -39,10 +39,8 @@ private:
   InetAddress localAddress;
   /** Specifies the local port (in host byte order) to which the socket is bound (unbound if 0). */
   unsigned short localPort;
-
+  /** Handle to the socket. */
   FileDescriptor fd;
-  FileDescriptorInputStream inputStream;
-  FileDescriptorOutputStream outputStream;
 protected:
 
   /** Returns true if socket has been created. */
@@ -63,7 +61,8 @@ public:
   Socket() throw();
 
   /**
-    Accepts a connection from specified socket.
+    Accepts a connection from specified socket. This is not allowed with a
+    stream socket.
 
     @param socket Specifies the socket to accept a connection from.
 
@@ -128,7 +127,8 @@ public:
 
   /**
     Sets the maximum length the queue of pending connections may grow to. The
-    backlog argument may be silently reduced.
+    backlog argument may be silently reduced. This is not allowed with a stream
+    socket.
 
     @param backlog The maxium length of the queue.
   */
@@ -137,12 +137,12 @@ public:
   /**
     Returns the input stream of socket.
   */
-  FileDescriptorInputStream& getInputStream() const throw();
+  FileDescriptorInputStream getInputStream() throw();
 
   /**
     Returns the output stream of socket.
   */
-  FileDescriptorOutputStream& getOutputStream() const throw();
+  FileDescriptorOutputStream getOutputStream() throw();
 
   /**
     Disables the input stream for this socket.
@@ -153,12 +153,6 @@ public:
     Disables the output stream for this socket.
   */
   void shutdownOutputStream() throw(IOException);
-
-  /**
-    Destroys the socket object.
-  */
-  ~Socket() throw(IOException);
-
 
   /**
     Returns true if 'bind' allows local addresses to be reused.
@@ -219,6 +213,29 @@ public:
     Sets the size of the send buffer.
   */
   void setSendBufferSize(int size) throw(IOException);
+
+  /**
+    Sends the contents of the buffer to the specified address using an unconnected socket.
+
+    @param buffer The buffer.
+    @param size The size of the buffer.
+    @param address The address.
+    @param port The port.
+    @return The number of bytes sent.
+  */
+  unsigned int sendTo(const char* buffer, unsigned int size, InetAddress address, unsigned short port) throw(IOException);
+
+  /**
+    Receives data from any address using an unconnected socket.
+
+    @param buffer The buffer.
+    @param size The size of the buffer.
+    @param address The address.
+    @param port The port.
+
+    @return The number of bytes received.
+  */
+  unsigned int receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(IOException);
 
   /**
     Writes a string representation of a Socket object to a format stream.

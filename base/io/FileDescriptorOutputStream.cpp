@@ -6,6 +6,7 @@
 #include <base/io/FileDescriptorOutputStream.h>
 #include <base/io/EndOfFile.h>
 #include <sys/types.h>
+#include <stropts.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -23,12 +24,12 @@ FileDescriptorOutputStream::FileDescriptorOutputStream(const FileDescriptor& fd)
   FileDescriptor(fd) {
 }
 
-FileDescriptorOutputStream::FileDescriptorOutputStream(FileDescriptorOutputStream& copy) throw() :
+FileDescriptorOutputStream::FileDescriptorOutputStream(const FileDescriptorOutputStream& copy) throw() :
   FileDescriptor(copy) {
 }
 
-FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(FileDescriptorOutputStream& eq) throw() {
-  if (&eq == this) { // protect against self assignment
+FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDescriptorOutputStream& eq) throw() {
+  if (&eq != this) { // protect against self assignment
     fd = eq.fd;
   }
   return *this;
@@ -41,6 +42,11 @@ void FileDescriptorOutputStream::flush() throw(IOException) {
 //    throw IOException("Unable to flush file descriptor");
 //  }
 //#endif
+
+  fsync(fd->getHandle());
+//  if (ioctl(fd->getHandle(), I_FLUSH, FLUSHRW) != 0) {
+//    throw IOException("Unable to flush stream");
+//  }
 }
 
 unsigned int FileDescriptorOutputStream::write(const char* buffer, unsigned int size) throw(IOException) {

@@ -20,22 +20,61 @@
 class FileDescriptor : public virtual Object, public virtual Stream {
 protected:
 
-  /** Reference counted handle to file descriptor. */
+  /**
+    Reference counted handle to file descriptor.
+
+    @author René Møller Fonseca
+    @version 1.0
+  */
   class Descriptor : public ReferenceCountedObject {
   private:
 
     /** Handle to file descriptor. */
     int handle;
   public:
-    Descriptor() throw();
-    Descriptor(const Descriptor& copy) throw() : handle(copy.handle) {}
-    Descriptor(int handle) throw();
-    void close() throw(IOException);
+
+    /**
+      Initializes invalid descriptor.
+    */
+    inline Descriptor() throw() : handle(-1) {}
+
+    /**
+      Initializes descriptor.
+
+      @param handle The handle.
+    */
+    inline explicit Descriptor(int handle) throw() : handle(handle) {}
+
+    /**
+      Initializes descriptor from other descriptor.
+    */
+    inline Descriptor(const Descriptor& copy) throw() : handle(copy.handle) {}
+
+    /**
+      Returns the flags of the descriptor.
+    */
     int getFlags() const throw(IOException);
+
+    /**
+      Sets the flags of the descriptor.
+    */
     void setFlags(int flags) throw(IOException);
+
+    /**
+      Returns the handle.
+    */
     inline int getHandle() const throw() {return handle;}
-    inline void setHandle(int handle) throw() {this->handle = handle;}
+
+    /**
+      Sets the non blocking flags.
+
+      @param value The desired state.
+    */
     void setNonBlocking(bool value) throw(IOException);
+
+    /**
+      Destroys the descriptor.
+    */
     ~Descriptor() throw(IOException);
   };
 
@@ -58,7 +97,7 @@ public:
   /**
     Assignment operator.
   */
-  FileDescriptor& operator=(FileDescriptor& eq) throw();
+  FileDescriptor& operator=(const FileDescriptor& eq) throw();
 
   /**
     Closes the file descriptor.

@@ -58,6 +58,11 @@ public:
   /**
     Returns pointer to socket address.
   */
+  struct sockaddr* getValue() throw() {return (struct sockaddr*)&sa;}
+
+  /**
+    Returns pointer to socket address.
+  */
   const struct sockaddr* getValue() const throw() {return (struct sockaddr*)&sa;}
 
   /**
@@ -110,7 +115,7 @@ bool Socket::accept(Socket& socket) throw(IOException) {
 
 #if defined(__win32__)
 #else
-  if ((handle = ::accept(socket.fd.getHandle(), (struct sockaddr*)&sa, &sl)) != 0) {
+  if ((handle = ::accept(socket.fd.getHandle(), (struct sockaddr*)&sa, &sl)) == -1) {
     switch (errno) {
     case EAGAIN: // EWOULDBLOCK
       return false;
@@ -134,8 +139,8 @@ bool Socket::accept(Socket& socket) throw(IOException) {
 
 void Socket::bind(const InetAddress& addr, unsigned short port) throw(IOException) {
   SynchronizeExclusively();
-  const SocketAddress sa(addr, port);
-  if (::bind(fd.getHandle(), (struct sockaddr*)sa.getValue(), sa.getSize())) {
+  SocketAddress sa(addr, port);
+  if (::bind(fd.getHandle(), sa.getValue(), sa.getSize())) {
     throw NetworkException("Unable to associate name with socket");
   }
   localAddress = addr;
@@ -148,12 +153,13 @@ void Socket::close() throw(IOException) {
   if (::closesocket(fd.getHandle())) {
     throw NetworkException("Unable to close socket");
   }
+//  fd.setHandle(INVALID_SOCKET); // invalidate socket handle
 #else
-  if (::close(fd.getHandle())) {
-    throw NetworkException("Unable to close socket");
-  }
+  fd.close();
+//  if (::close(fd.getHandle())) {
+//    throw NetworkException("Unable to close socket");
+//  }
 #endif
-  fd.setHandle(INVALID_SOCKET); // invalidate socket handle
   remotePort = 0; // make unconnected
   localPort = 0; // make unbound
 }
@@ -232,9 +238,8 @@ unsigned short Socket::getLocalPort() const throw() {
   return localPort;
 }
 
-FileDescriptorInputStream& Socket::getInputStream() const throw() {
-  SynchronizeExclusively();
-//  return inputStream;
+FileDescriptorInputStream Socket::getInputStream() throw() {
+  return FileDescriptorInputStream(fd);
 }
 
 void Socket::shutdownInputStream() throw(IOException) {
@@ -244,9 +249,8 @@ void Socket::shutdownInputStream() throw(IOException) {
   }
 }
 
-FileDescriptorOutputStream& Socket::getOutputStream() const throw() {
-  SynchronizeExclusively();
-//  return &outputStream;
+FileDescriptorOutputStream Socket::getOutputStream() throw() {
+  return FileDescriptorOutputStream(fd);
 }
 
 void Socket::shutdownOutputStream() throw(IOException) {
@@ -254,9 +258,6 @@ void Socket::shutdownOutputStream() throw(IOException) {
   if (::shutdown(fd.getHandle(), 1)) { // disallow further sends
     throw IOException();
   }
-}
-
-Socket::~Socket() throw(IOException) {
 }
 
 bool Socket::getBooleanOption(int option) const throw(IOException) {
@@ -335,6 +336,41 @@ int Socket::getSendBufferSize() const throw(IOException) {
 void Socket::setSendBufferSize(int size) throw(IOException) {
   int buffer = size;
   setSocketOption(fd.getHandle(), SO_SNDBUF, &buffer, sizeof(buffer));
+}
+
+unsigned int Socket::sendTo(const char* buffer, unsigned int size, InetAddress address, unsigned short port) throw(IOException) {
+  unsigned int result = 0;
+  const SocketAddress sa(address, port);
+  if ((result = ::sendto(fd.getHandle(), buffer, size, 0, sa.getValue(), sa.getSize())) == -1) {
+    throw IOException("Unable to send to");
+  }
+  return result;
+}
+
+unsigned int Socket::receiveFrom(char* buffer, unsigned int size, InetAddress& address, unsigned short& port) throw(IOException) {
+  unsigned int result = 0;
+
+#if defined(HAVE_INET_IPV6)
+  struct sockaddr_in6 sa;
+#else
+  struct sockaddr_in sa;
+#endif // HAVE_INET_IPV6
+  socklen_t sl = sizeof(sa);
+
+  if ((result = ::recvfrom(fd.getHandle(),  buffer, size, 0, (struct sockaddr*)&sa, &sl)) == -1) {
+    throw IOException("Unable to receive from");
+  }
+
+#if defined(HAVE_INET_IPV6)
+  // check if really an IPv4 address
+  address.setAddress((char*)&(sa.sin6_addr), InetAddress::IPv6);
+  port = ntohs(sa.sin6_port);
+#else
+  address.setAddress((char*)&(sa.sin_addr), InetAddress::IPv4);
+  port = ntohs(sa.sin_port);
+#endif // HAVE_INET_IPV6
+
+  return result;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& value) {

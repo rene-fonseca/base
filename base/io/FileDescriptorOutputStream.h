@@ -36,12 +36,12 @@ public:
   /**
     Initializes file descriptor output stream from other file descriptor output stream.
   */
-  FileDescriptorOutputStream(FileDescriptorOutputStream& copy) throw();
+  FileDescriptorOutputStream(const FileDescriptorOutputStream& copy) throw();
 
   /**
     Assignment of file descriptor output stream to this file descriptor output stream.
   */
-  FileDescriptorOutputStream& operator=(FileDescriptorOutputStream& eq) throw();
+  FileDescriptorOutputStream& operator=(const FileDescriptorOutputStream& eq) throw();
 
   /**
     Forces any buffered bytes to be written out.

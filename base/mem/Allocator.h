@@ -117,8 +117,9 @@ public:
 //
 //      @param allocator The Allocator being enumerated.
 //    */
-//    Enumerator(Allocator& allocator) throw() :
-//      AllocatorEnumerator<Traits>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
+//    Enumerator(Allocator& allocator) throw()
+//      : AllocatorEnumerator<Traits>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {
+//    }
 //  };
 //
 //  /**
@@ -132,19 +133,21 @@ public:
 //
 //      @param allocator The Allocator being enumerated.
 //    */
-//    ReadEnumerator(const Allocator& allocator) throw() :
-//      AllocatorEnumerator<Traits>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
+//    ReadEnumerator(const Allocator& allocator) throw()
+//      : AllocatorEnumerator<Traits>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {
+//    }
 //  };
 public:
 
   /**
     Initializes an empty allocator.
   */
-  inline explicit Allocator() throw() : elements(0), size(0) {}
+  inline explicit Allocator() throw() : elements(0), size(0) {
+  }
 
   /**
     Initializes an allocator of the specified size without initializing the
-    elements. Throws 'MemoryException' if unable to allocate enough memory to
+    elements. Raises MemoryException if unable to allocate enough memory to
     hold the requested number of elements.
 
     @param size Specifies the initial size of the allocator.
@@ -255,7 +258,7 @@ public:
   /**
     Sets the number of elements of the allocator. If the size is increased the
     original elements are not modified and the newly allocated elements are not
-    initialized. Throws 'MemoryException' if unable to allocate additional
+    initialized. Raises MemoryException if unable to allocate additional
     memory (does not throw an exception when the size is decreased or
     unchanged). If the size is reduced the elements up to the new size are
     unchanged.

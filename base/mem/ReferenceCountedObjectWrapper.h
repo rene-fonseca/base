@@ -32,14 +32,14 @@ template<class TYPE>
 class ReferenceCountedObjectWrapper : public ReferenceCountedObject {
 public:
 
-  /** Pointer to objcet. */
+  /** Type of pointer to reference counted object. */
   typedef TYPE* Pointer;
-  /** Reference to object. */
+  /** Type of teference to reference counted object. */
   typedef TYPE& Reference;
 private:
 
   /** Ordinary object. */
-  Pointer obj;
+  Pointer object;
 public:
 
   /**
@@ -47,34 +47,40 @@ public:
 
     @param value The object to be reference counted.
   */
-  inline ReferenceCountedObjectWrapper(Pointer value) : obj(value) {}
+  inline ReferenceCountedObjectWrapper(Pointer value)
+    : object(value) {
+  }
 
   /**
     Returns the object.
   */
-  inline Pointer operator->() throw() {return obj;}
+  inline Pointer operator->() throw() {
+    return object;
+  }
 
   /**
     Returns the object.
   */
   inline Reference operator*() throw(NullPointer) {
-    if (!obj) {
+    if (!object) {
       throw NullPointer();
     }
-    return *obj;
+    return *object;
   }
 
   /**
     Type cast to Pointer.
   */
   inline operator Pointer() const {
-    return obj;
+    return object;
   }
 
   /**
     Destroys the wrapper.
   */
-  inline ~ReferenceCountedObjectWrapper() {delete obj;}
+  inline ~ReferenceCountedObjectWrapper() {
+    delete object;
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -104,7 +104,8 @@ public:
   /**
     Initializes an automation pointer as invalid (i.e. null).
   */
-  inline ReferenceCountedObjectPointer() throw() : pointer(0) {}
+  inline ReferenceCountedObjectPointer() throw() : pointer(0) {
+  }
 
   /**
     Initializes an automation pointer with the specified pointer value. The

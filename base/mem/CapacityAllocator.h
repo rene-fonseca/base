@@ -62,7 +62,8 @@ public:
 //      @param allocator The Allocator being enumerated.
 //    */
 //    Enumeration(CapacityAllocator& allocator) throw()
-//      : AllocatorEnumeration<TYPE, TYPE&, TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
+//      : AllocatorEnumeration<TYPE, TYPE&, TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {
+//    }
 //  };
 //
 //  /**
@@ -77,17 +78,20 @@ public:
 //      @param allocator The Allocator being enumerated.
 //    */
 //    ReadOnlyEnumeration(const CapacityAllocator& allocator) throw()
-//      : AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {}
+//      : AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {
+//    }
 //  };
 public:
 
   /**
     Initializes an empty allocator with the default granularity.
   */
-  inline explicit CapacityAllocator() throw() : capacity(0), granularity(DEFAULT_GRANULARITY) {}
+  inline explicit CapacityAllocator() throw()
+    : capacity(0), granularity(DEFAULT_GRANULARITY) {
+  }
 
   /**
-    Initializes an empty allocator. Throws 'OutOfRange' if granularity is less
+    Initializes an empty allocator. Raises OutOfRange if granularity is less
     than MINIMUM_GRANULARITY.
 
     @param granularity Specifies the number of elements to allocate at a time.
@@ -99,7 +103,7 @@ public:
 
   /**
     Initializes an allocator of the specified size without initializing the
-    elements. Throws 'MemoryException' if unable to allocate enough memory to
+    elements. Raises MemoryException if unable to allocate enough memory to
     hold the requested number of elements. Raises OutOfRange if granularity
     is less than MINIMUM_GRANULARITY.
 
@@ -199,7 +203,7 @@ public:
   /**
     Sets the number of elements of the allocator. If the size is increased the
     original elements are not modified and the newly allocated elements are not
-    initialized. Throws 'MemoryException' if unable to allocate additional
+    initialized. Raises MemoryException if unable to allocate additional
     memory (does not raise an exception when the size is decreased or
     unchanged). If the size is reduced the elements up to the new size are
     unchanged.
@@ -213,7 +217,7 @@ public:
 
   /**
     Sets the block size. This does, however, not influence the allocated amount
-    of memory until the 'size' is adjusted. Throws 'OutOfRange' if granularity
+    of memory until the 'size' is adjusted. Raises OutOfRange if granularity
     is less than MINIMUM_GRANULARITY.
   */
   inline void setGranularity(unsigned int granularity) throw(OutOfRange) {
@@ -226,7 +230,9 @@ public:
   /**
     Returns the capacity of the allocator.
   */
-  inline unsigned int getCapacity() const throw() {return Allocator<TYPE>::getSize();}
+  inline unsigned int getCapacity() const throw() {
+    return Allocator<TYPE>::getSize();
+  }
 
   /**
     Ensures that the capacity of the allocator is at least equal to the

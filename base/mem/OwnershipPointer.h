@@ -46,12 +46,15 @@ public:
 
     @param value The pointer to be automated.
   */
-  explicit inline OwnershipPointer(Pointer value = 0) throw() : ptr(value) {}
+  explicit inline OwnershipPointer(Pointer value = 0) throw() : ptr(value) {
+  }
 
   /**
     Copy constructor. Transfers ownership from copy to this object (copy loses ownership).
   */
-  inline OwnershipPointer(OwnershipPointer& copy) throw() : ptr(copy.relinquishOwnership()) {}
+  inline OwnershipPointer(OwnershipPointer& copy) throw()
+    : ptr(copy.relinquishOwnership()) {
+  }
 
   /**
     Assignment operator.
@@ -86,7 +89,9 @@ public:
   }
 
   /**
-    Makes the automation pointer relinquish its ownership. Please note that the pointer may not have the ownership to begin with. Throws any exceptions that the destructor of the real object throws.
+    Makes the automation pointer relinquish its ownership. Please note that the
+    pointer may not have the ownership to begin with. Raises any exceptions that
+    the destructor of the real object raises.
 
     @return Pointer to object.
   */

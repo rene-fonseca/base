@@ -47,13 +47,16 @@ public:
     @param begin Specifies the beginning of the enumeration.
     @param end Specifies the end of the enumeration.
   */
-  inline AllocatorEnumerator(Pointer begin, Pointer end) throw() : current(begin), end(end) {
+  inline AllocatorEnumerator(Pointer begin, Pointer _end) throw()
+    : current(begin), end(_end) {
   }
 
   /**
     Initializes enumeration from other enumeration.
   */
-  inline AllocatorEnumerator(const AllocatorEnumerator& copy) throw() : current(copy.current), end(copy.end) {}
+  inline AllocatorEnumerator(const AllocatorEnumerator& copy) throw()
+    : current(copy.current), end(copy.end) {
+  }
 
   /**
     Returns true if the enumeration still contains elements.

@@ -46,7 +46,8 @@ public:
     
     @param type The identity of the type.
   */
-  MemoryCorruption(Type type) throw() : MemoryException(type) {}
+  inline MemoryCorruption(Type type) throw() : MemoryException(type) {
+  }
   
   /**
     Initializes the exception object.
@@ -54,7 +55,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  MemoryCorruption(const char* message, Type type) throw() : MemoryException(message, type) {}
+  inline MemoryCorruption(const char* message, Type type) throw()
+    : MemoryException(message, type) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

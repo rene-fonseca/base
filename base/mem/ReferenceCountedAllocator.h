@@ -46,22 +46,27 @@ public:
   /**
     Initializes an empty allocator.
   */
-  inline explicit ReferenceCountedAllocator() throw() {}
+  inline explicit ReferenceCountedAllocator() throw() {
+  }
 
   /**
     Initializes an allocator of the specified size without initializing the
-    elements. Throws 'MemoryException' if unable to allocate enough memory to
+    elements. Raises MemoryException if unable to allocate enough memory to
     hold the requested number of elements.
 
     @param size Specifies the initial size of the allocator.
   */
-  inline explicit ReferenceCountedAllocator(unsigned int size) throw(MemoryException) : Allocator<TYPE>(size) {}
+  inline explicit ReferenceCountedAllocator(unsigned int size) throw(MemoryException)
+    : Allocator<TYPE>(size) {
+  }
 
   /**
-    Initializes the allocator by copying from the specified allocator. Throws
-    'MemoryException' if unable to allocate the required memory.
+    Initializes the allocator by copying from the specified allocator. Raises
+    MemoryException if unable to allocate the required memory.
   */
-  ReferenceCountedAllocator(const ReferenceCountedAllocator& copy) throw(MemoryException) : Allocator<TYPE>(copy) {}
+  ReferenceCountedAllocator(const ReferenceCountedAllocator& copy) throw(MemoryException)
+    : Allocator<TYPE>(copy) {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -54,17 +54,29 @@ public:
 
     SharedMemoryImpl(const File& file, const FileRegion& region, unsigned int access) throw(MemoryException);
     
-    inline char* getBytes() const throw() {return address;}
+    inline char* getBytes() const throw() {
+      return address;
+    }
     
-    inline const File& getFile() const throw() {return file;}
+    inline const File& getFile() const throw() {
+      return file;
+    }
     
-    inline long long getOffset() const throw() {return region.getOffset();}
+    inline long long getOffset() const throw() {
+      return region.getOffset();
+    }
     
-    inline unsigned int getSize() const throw() {return region.getSize();}
+    inline unsigned int getSize() const throw() {
+      return region.getSize();
+    }
     
-    inline const FileRegion& getRegion() const throw() {return region;}
+    inline const FileRegion& getRegion() const throw() {
+      return region;
+    }
     
-    inline unsigned int getAccess() throw() {return access;}
+    inline unsigned int getAccess() throw() {
+      return access;
+    }
     
     void lock() throw(MemoryException);
     

@@ -60,8 +60,8 @@ public:
 
   /**
     Initializes an allocator of the specified size without initializing the
-    elements. Throws 'MemoryException' if unable to allocate enough memory to
-    hold the requested number of elements. Throws 'OutOfRange' if granularity
+    elements. Raises MemoryException if unable to allocate enough memory to
+    hold the requested number of elements. Raises OutOfRange if granularity
     is less than MINIMUM_GRANULARITY.
 
     @param size Specifies the initial size of the allocator.
@@ -72,8 +72,8 @@ public:
   }
 
   /**
-    Initializes the allocator by copying from the specified allocator. Throws
-    'MemoryException' if unable to allocate the required memory.
+    Initializes the allocator by copying from the specified allocator. Raises
+    MemoryException if unable to allocate the required memory.
   */
   ReferenceCountedCapacityAllocator(const ReferenceCountedCapacityAllocator& copy) throw(MemoryException)
     : CapacityAllocator<TYPE>(copy) {

@@ -31,15 +31,15 @@ class HeapImpl {
 protected:
 
   /**
-    Allocates the specified number of bytes on the heap. Throws
-    'MemoryException' if unable to allocate the memory block.
+    Allocates the specified number of bytes on the heap. Raises
+    MemoryException if unable to allocate the memory block.
 
     @param size The desired size of the memory block in number of bytes.
   */
   static void* allocate(unsigned int size) throw(MemoryException);
 
   /**
-    Resizes the specified memory block. Throws 'MemoryException' if unable
+    Resizes the specified memory block. Raises MemoryException if unable
     allocate memory block.
 
     @param heap The memory block.
@@ -48,8 +48,8 @@ protected:
   static void* resize(void* heap, unsigned int size) throw(MemoryException);
 
   /**
-    Tries to resizes the specified memory block without movement. Throws
-    'MemoryException' on allocation failure.
+    Tries to resizes the specified memory block without movement. Raises
+    MemoryException on allocation failure.
 
     @param heap The memory block.
     @param size The desired size of the memory block in number of bytes.
@@ -59,7 +59,7 @@ protected:
 
   /**
     Frees the specified memory block previously allocated by 'allocate' or
-    'reallocate'. Throws 'MemoryException' if unable to free the memory.
+    'reallocate'. Raises MemoryException if unable to free the memory.
 
     @param heap The memory block.
   */
@@ -77,8 +77,8 @@ class Heap : private HeapImpl {
 public:
 
   /**
-    Allocates the specified number of bytes on the heap. Throws
-    'MemoryException' if unable to allocate the memory block.
+    Allocates the specified number of bytes on the heap. Raises
+    MemoryException if unable to allocate the memory block.
 
     @param size The desired size of the memory block in number of elements.
   */
@@ -88,7 +88,7 @@ public:
   }
 
   /**
-    Resizes the specified memory block. Throws 'MemoryException' if unable
+    Resizes the specified memory block. Raises MemoryException if unable
     allocate memory block.
 
     @param heap The memory block.
@@ -100,8 +100,8 @@ public:
   }
 
   /**
-    Tries to resizes the specified memory block without movement. Throws
-    'MemoryException' on allocation failure.
+    Tries to resizes the specified memory block without movement. Raises
+    MemoryException on allocation failure.
 
     @param heap The memory block.
     @param size The desired size of the memory block in number of elements.
@@ -118,7 +118,7 @@ public:
 
   /**
     Frees the specified memory block previously allocated by 'allocate' or
-    'reallocate'. Throws 'MemoryException' if unable to free the memory.
+    'reallocate'. Raises MemoryException if unable to free the memory.
 
     @param heap The memory block.
   */

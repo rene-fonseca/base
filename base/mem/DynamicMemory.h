@@ -69,12 +69,16 @@ namespace alloc {
   /**
     Dynamic memory placement operator.
   */
-  inline void* operator new(MemorySize, void* place) throw() {return place;}
+  inline void* operator new(MemorySize, void* place) throw() {
+    return place;
+  }
 
   /**
     Dynamic memory placement operator for arrays.
   */
-  inline void* operator new[](MemorySize, void* place) throw() {return place;}
+  inline void* operator new[](MemorySize, void* place) throw() {
+    return place;
+  }
 
   /**
     Allocates a block of dynamic memory of the specified size in bytes. Raises
@@ -118,9 +122,13 @@ namespace alloc {
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #if (!defined(_DK_SDU_MIP__BASE__DEFAULT_MEMORY) && defined(_DK_SDU_MIP__BASE__NAMESPACE))
-inline void* operator new(base::MemorySize, void* place) throw() {return place;}
+inline void* operator new(base::MemorySize, void* place) throw() {
+  return place;
+}
 
-inline void* operator new[](base::MemorySize, void* place) throw() {return place;}
+inline void* operator new[](base::MemorySize, void* place) throw() {
+  return place;
+}
 
 inline void* operator new(base::MemorySize size) throw(base::MemoryException) {
   return base::alloc::operator new(size);

@@ -46,7 +46,8 @@ private:
 public:
 
   /**
-    Initializes the buffer of given size and does not clear the memory. Throws 'MemoryException' if unable to allocate the required memory.
+    Initializes the buffer of given size and does not clear the memory. Raises
+    MemoryException if unable to allocate the required memory.
 
     @param size Specifies the initial size of the buffer. Default is 0.
     @param granularity Specifies the granularity of the size. Default is given by DEFAULT_GRANULARITY.
@@ -54,27 +55,37 @@ public:
   explicit Buffer(unsigned int size = 0, unsigned int granularity = DEFAULT_GRANULARITY) throw(MemoryException);
 
   /**
-    Copy constructor. Throws 'MemoryException' if unable to allocate the required memory.
+    Copy constructor. Raises MemoryException if unable to allocate the required
+    memory.
   */
   Buffer(const Buffer& copy) throw(MemoryException);
 
   /**
     Returns the bytes of the buffer.
   */
-  inline char* getBytes() throw() {return bytes;}
+  inline char* getBytes() throw() {
+    return bytes;
+  }
 
   /**
     Returns the bytes of the buffer.
   */
-  inline const char* getBytes() const throw() {return bytes;}
+  inline const char* getBytes() const throw() {
+    return bytes;
+  }
 
   /**
     Returns the size of the buffer.
   */
-  inline unsigned int getSize() const throw() {return size;}
+  inline unsigned int getSize() const throw() {
+    return size;
+  }
 
   /**
-    Sets the size of the buffer. The original bytes of the buffer are not changed. If the buffer is expanded the bytes are not initialized. Throws 'MemoryException' if unable to adjust the size of the buffer or the buffer is externally managed.
+    Sets the size of the buffer. The original bytes of the buffer are not changed.
+    If the buffer is expanded the bytes are not initialized. Raises
+    MemoryException if unable to adjust the size of the buffer or the buffer is
+    externally managed.
 
     @param size The desired size.
   */

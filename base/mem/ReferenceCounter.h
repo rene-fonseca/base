@@ -62,7 +62,8 @@ public:
   /**
     Initializes automation pointer as invalid (i.e. null).
   */
-  inline ReferenceCounter() throw() : ptr(0), references(new Counter(1)) {}
+  inline ReferenceCounter() throw() : ptr(0), references(new Counter(1)) {
+  }
 
   /**
     Initializes automation pointer with the specified pointer value. The
@@ -74,7 +75,9 @@ public:
 
     @param value The desired pointer value.
   */
-  inline ReferenceCounter(Pointer value) throw() : ptr(value), references(new Counter(1)) {}
+  inline ReferenceCounter(Pointer value) throw()
+    : ptr(value), references(new Counter(1)) {
+  }
 
   /**
     Initialization of automation pointer from other automation pointer.

@@ -15,9 +15,12 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-ServerSocket::ServerSocket(const InetAddress& addr, unsigned short port, unsigned int backlog) throw(IOException) {
+ServerSocket::ServerSocket(
+  const InetAddress& address,
+  unsigned short port,
+  unsigned int backlog) throw(IOException) {
   create(true);
-  bind(addr, port);
+  bind(address, port);
   listen(backlog);
 }
 

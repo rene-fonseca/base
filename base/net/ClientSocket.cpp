@@ -24,7 +24,11 @@ StreamSocket::StreamSocket(const InetAddress& addr, unsigned short port) throw(I
   connect(addr, port);
 }
 
-StreamSocket::StreamSocket(const InetAddress& addr, unsigned short port, InetAddress& localAddr, unsigned short localPort) throw(IOException) {
+StreamSocket::StreamSocket(
+  const InetAddress& addr,
+  unsigned short port,
+  InetAddress& localAddr,
+  unsigned short localPort) throw(IOException) {
   create(true);
   bind(localAddr, localPort);
   connect(addr, port);

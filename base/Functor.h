@@ -54,13 +54,13 @@ extern "C" {
 /**
   Returns true if the type is void. Do NOT add specializations for this function.
 */
-template<typename TYPE> inline bool isVoid() {return false;}
+template<class TYPE> inline bool isVoid() {return false;}
 template<> inline bool isVoid<void>() {return true;}
 
 /**
   Returns true if the type is an integer type. Do NOT add specializations for this function.
 */
-template<typename TYPE> inline bool isInteger() {return false;}
+template<class TYPE> inline bool isInteger() {return false;}
 template<> inline bool isInteger<bool>() {return true;}
 template<> inline bool isInteger<char>() {return true;}
 template<> inline bool isInteger<signed char>() {return true;}
@@ -76,7 +76,7 @@ template<> inline bool isInteger<unsigned long long>() {return true;}
 /**
   Returns true if the type is a float, double, or long double. Do NOT add specializations for this function.
 */
-template<typename TYPE> inline bool isFloating() {return false;}
+template<class TYPE> inline bool isFloating() {return false;}
 template<> inline bool isFloating<float>() {return true;}
 template<> inline bool isFloating<double>() {return true;}
 template<> inline bool isFloating<long double>() {return true;}
@@ -84,22 +84,24 @@ template<> inline bool isFloating<long double>() {return true;}
 /**
   Returns true if the type is an arithmetic (integer or floating) type. Do NOT add specializations for this function.
 */
-template<typename TYPE> inline bool isArithmetic() {return isInteger<TYPE>() || isFloating<TYPE>();}
+template<class TYPE> inline bool isArithmetic() {return isInteger<TYPE>() || isFloating<TYPE>();}
 
 /**
   Returns true if the type is a primitive (built-in) type. Do NOT add specializations for this function.
   @see isRelocateable
 */
-template<typename TYPE> inline bool isPrimitive() {return isVoid<TYPE>() || isArithmetic<TYPE>();}
+template<class TYPE> inline bool isPrimitive() {return isVoid<TYPE>() || isArithmetic<TYPE>();}
 
 /**
   Returns true if objects of the specified type are relocateable (i.e. objects
-  may be moved directly from one memory location to another). If this function
-  returns false the objects have to be copy constructed (new location) and then
-  destoyed (old location). Adding specializations for your own types will
-  increase performance for large arrays.
+  may be moved directly from one memory location to another). This function
+  most only return true if the objects of the specified type are not required
+  to be initialized and destroyed. If this function returns false the objects
+  have to be copy constructed (new location) and then destoyed (old location).
+  This function is primarily used by allocators to avoid operations on their
+  elements. Be very careful when adding your own specializations.
 */
-template<typename TYPE> inline bool isRelocateable() {return isPrimitive<TYPE>();}
+template<class TYPE> inline bool isRelocateable() {return isPrimitive<TYPE>();}
 
 
 

@@ -33,7 +33,7 @@ email=fonseca@mip.sdu.dk
 kdevprj_version=1.2
 lfv_open_groups=
 make_options=-j1
-makefiles=Makefile.am,ellert/Makefile.am,ellert/docs/Makefile.am,ellert/docs/en/Makefile.am,ellert/base/Makefile.am,ellert/vehicle/Makefile.am,ellert/base/concurrency/Makefile.am,ellert/base/mathematics/Makefile.am,ellert/io/Makefile.am,ellert/base/io/Makefile.am,ellert/base/string/Makefile.am,ellert/base/mem/Makefile.am,ellert/base/net/Makefile.am,ellert/control/Makefile.am,ellert/base/collection/Makefile.am,ellert/test/Makefile.am,ellert/base/filesystem/Makefile.am
+makefiles=Makefile.am,ellert/Makefile.am,ellert/docs/Makefile.am,ellert/docs/en/Makefile.am,ellert/base/Makefile.am,ellert/vehicle/Makefile.am,ellert/base/concurrency/Makefile.am,ellert/base/mathematics/Makefile.am,ellert/io/Makefile.am,ellert/base/io/Makefile.am,ellert/base/string/Makefile.am,ellert/base/mem/Makefile.am,ellert/base/net/Makefile.am,ellert/control/Makefile.am,ellert/base/collection/Makefile.am,ellert/test/Makefile.am,ellert/base/filesystem/Makefile.am,ellert/base/iterator/Makefile.am
 modifyMakefiles=false
 project_name=Ellert
 project_type=normal_cpp
@@ -260,8 +260,8 @@ install_location=
 type=HEADER
 
 [ellert/base/Makefile.am]
-files=ellert/base/Dimension.cpp,ellert/base/Dimension.h,ellert/base/Exception.cpp,ellert/base/Exception.h,ellert/base/Object.cpp,ellert/base/Object.h,ellert/base/Range2D.cpp,ellert/base/Range2D.h,ellert/base/Underflow.cpp,ellert/base/Underflow.h,ellert/base/Overflow.cpp,ellert/base/Overflow.h,ellert/base/Construct.cpp,ellert/base/Construct.h,ellert/base/Destruct.cpp,ellert/base/Destruct.h,ellert/base/DeviceException.cpp,ellert/base/DeviceException.h,ellert/base/MemoryException.cpp,ellert/base/OutOfRange.cpp,ellert/base/OutOfBounds.cpp,ellert/base/OutOfDomain.cpp,ellert/base/OutOfBounds.h,ellert/base/MemoryException.h,ellert/base/ResourceException.h,ellert/base/ResourceException.cpp,ellert/base/OutOfDomain.h,ellert/base/OutOfRange.h,ellert/base/Iterator.h,ellert/base/ForwardIterator.h,ellert/base/RandomIterator.h,ellert/base/Integer.h,ellert/base/Integer.cpp,ellert/base/Character.cpp,ellert/base/Character.h,ellert/base/ShortInteger.h,ellert/base/ShortInteger.cpp,ellert/base/LongInteger.h,ellert/base/LongInteger.cpp,ellert/base/Functor.h,ellert/base/Base.h,ellert/base/Trace.cpp,ellert/base/Trace.h,ellert/base/Date.cpp,ellert/base/Date.h,ellert/base/DateException.cpp,ellert/base/DateException.h,ellert/base/Listener.cpp,ellert/base/Listener.h,ellert/base/Timer.cpp,ellert/base/Timer.h
-sub_dirs=concurrency,mathematics,io,string,mem,net,collection,filesystem
+files=ellert/base/Dimension.cpp,ellert/base/Dimension.h,ellert/base/Exception.cpp,ellert/base/Exception.h,ellert/base/Object.cpp,ellert/base/Object.h,ellert/base/Range2D.cpp,ellert/base/Range2D.h,ellert/base/Underflow.cpp,ellert/base/Underflow.h,ellert/base/Overflow.cpp,ellert/base/Overflow.h,ellert/base/Construct.cpp,ellert/base/Construct.h,ellert/base/Destruct.cpp,ellert/base/Destruct.h,ellert/base/DeviceException.cpp,ellert/base/DeviceException.h,ellert/base/MemoryException.cpp,ellert/base/OutOfRange.cpp,ellert/base/OutOfBounds.cpp,ellert/base/OutOfDomain.cpp,ellert/base/OutOfBounds.h,ellert/base/MemoryException.h,ellert/base/ResourceException.h,ellert/base/ResourceException.cpp,ellert/base/OutOfDomain.h,ellert/base/OutOfRange.h,ellert/base/Iterator.h,ellert/base/ForwardIterator.h,ellert/base/RandomIterator.h,ellert/base/Integer.h,ellert/base/Integer.cpp,ellert/base/Character.cpp,ellert/base/Character.h,ellert/base/ShortInteger.h,ellert/base/ShortInteger.cpp,ellert/base/LongInteger.h,ellert/base/LongInteger.cpp,ellert/base/Functor.h,ellert/base/Base.h,ellert/base/Trace.cpp,ellert/base/Trace.h,ellert/base/Date.cpp,ellert/base/Date.h,ellert/base/DateException.cpp,ellert/base/DateException.h,ellert/base/Listener.cpp,ellert/base/Listener.h,ellert/base/Timer.cpp,ellert/base/Timer.h,ellert/base/Type.h
+sub_dirs=concurrency,mathematics,io,string,mem,net,collection,filesystem,iterator
 type=static_library
 
 [ellert/base/MemoryException.cpp]
@@ -397,6 +397,12 @@ install_location=
 type=SOURCE
 
 [ellert/base/Trace.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[ellert/base/Type.h]
 dist=true
 install=false
 install_location=
@@ -969,6 +975,18 @@ install=false
 install_location=
 type=HEADER
 
+[ellert/base/io/FileReader.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ellert/base/io/FileReader.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [ellert/base/io/FilterInputStream.cpp]
 dist=true
 install=false
@@ -1018,9 +1036,21 @@ install_location=
 type=HEADER
 
 [ellert/base/io/Makefile.am]
-files=ellert/base/io/BufferedInputStream.h,ellert/base/io/BufferedInputStream.cpp,ellert/base/io/BufferedOutputStream.cpp,ellert/base/io/Externalizable.h,ellert/base/io/FilterOutputStream.cpp,ellert/base/io/FilterInputStream.h,ellert/base/io/FileDescriptor.h,ellert/base/io/FileDescriptor.cpp,ellert/base/io/FileOutputStream.h,ellert/base/io/FileOutputStream.cpp,ellert/base/io/FileInputStream.h,ellert/base/io/FileInputStream.cpp,ellert/base/io/BufferedOutputStream.h,ellert/base/io/PrimitiveInputStream.cpp,ellert/base/io/PrimitiveOutputStream.cpp,ellert/base/io/PrimitiveInputStream.h,ellert/base/io/PrimitiveOutputStream.h,ellert/base/io/FilterInputStream.cpp,ellert/base/io/OutputStream.cpp,ellert/base/io/OutputStream.h,ellert/base/io/InputStream.h,ellert/base/io/InputStream.cpp,ellert/base/io/FilterOutputStream.h,ellert/base/io/EOFException.cpp,ellert/base/io/EOFException.h,ellert/base/io/EndOfFile.cpp,ellert/base/io/EndOfFile.h,ellert/base/io/IOException.h,ellert/base/io/IOException.cpp,ellert/base/io/FileNotFound.h,ellert/base/io/FileNotFound.cpp,ellert/base/io/Stream.h,ellert/base/io/Stream.cpp,ellert/base/io/FileDescriptorInputStream.h,ellert/base/io/FileDescriptorOutputStream.h,ellert/base/io/FileDescriptorOutputStream.cpp,ellert/base/io/FileDescriptorInputStream.cpp,ellert/base/io/BindException.h,ellert/base/io/BindException.cpp,ellert/base/io/AccessDenied.h,ellert/base/io/AccessDenied.cpp,ellert/base/io/TimedOut.cpp,ellert/base/io/TimedOut.h,ellert/base/io/Pipe.cpp,ellert/base/io/Pipe.h,ellert/base/io/File.h,ellert/base/io/File.cpp,ellert/base/io/FileException.h,ellert/base/io/PipeException.h
+files=ellert/base/io/BufferedInputStream.h,ellert/base/io/BufferedInputStream.cpp,ellert/base/io/BufferedOutputStream.cpp,ellert/base/io/Externalizable.h,ellert/base/io/FilterOutputStream.cpp,ellert/base/io/FilterInputStream.h,ellert/base/io/FileDescriptor.h,ellert/base/io/FileDescriptor.cpp,ellert/base/io/FileOutputStream.h,ellert/base/io/FileOutputStream.cpp,ellert/base/io/FileInputStream.h,ellert/base/io/FileInputStream.cpp,ellert/base/io/BufferedOutputStream.h,ellert/base/io/PrimitiveInputStream.cpp,ellert/base/io/PrimitiveOutputStream.cpp,ellert/base/io/PrimitiveInputStream.h,ellert/base/io/PrimitiveOutputStream.h,ellert/base/io/FilterInputStream.cpp,ellert/base/io/OutputStream.cpp,ellert/base/io/OutputStream.h,ellert/base/io/InputStream.h,ellert/base/io/InputStream.cpp,ellert/base/io/FilterOutputStream.h,ellert/base/io/EOFException.cpp,ellert/base/io/EOFException.h,ellert/base/io/EndOfFile.cpp,ellert/base/io/EndOfFile.h,ellert/base/io/IOException.h,ellert/base/io/IOException.cpp,ellert/base/io/FileNotFound.h,ellert/base/io/FileNotFound.cpp,ellert/base/io/Stream.h,ellert/base/io/Stream.cpp,ellert/base/io/FileDescriptorInputStream.h,ellert/base/io/FileDescriptorOutputStream.h,ellert/base/io/FileDescriptorOutputStream.cpp,ellert/base/io/FileDescriptorInputStream.cpp,ellert/base/io/BindException.h,ellert/base/io/BindException.cpp,ellert/base/io/AccessDenied.h,ellert/base/io/AccessDenied.cpp,ellert/base/io/TimedOut.cpp,ellert/base/io/TimedOut.h,ellert/base/io/Pipe.cpp,ellert/base/io/Pipe.h,ellert/base/io/File.h,ellert/base/io/File.cpp,ellert/base/io/FileException.h,ellert/base/io/PipeException.h,ellert/base/io/MappedFile.h,ellert/base/io/MappedFile.cpp,ellert/base/io/FileReader.h,ellert/base/io/FileReader.cpp
 sub_dirs=
 type=static_library
+
+[ellert/base/io/MappedFile.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ellert/base/io/MappedFile.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [ellert/base/io/OutputStream.cpp]
 dist=true
@@ -1095,6 +1125,59 @@ install_location=
 type=SOURCE
 
 [ellert/base/io/TimedOut.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[ellert/base/iterator/InterleavedIterator.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ellert/base/iterator/InterleavedIterator.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[ellert/base/iterator/Makefile.am]
+files=ellert/base/iterator/SequenceIterator.cpp,ellert/base/iterator/SequenceIterator.h,ellert/base/iterator/InterleavedIterator.cpp,ellert/base/iterator/InterleavedIterator.h,ellert/base/iterator/MatrixRowIterator.cpp,ellert/base/iterator/MatrixRowIterator.h,ellert/base/iterator/MatrixColumnIterator.cpp,ellert/base/iterator/MatrixColumnIterator.h
+sub_dirs=
+type=static_library
+
+[ellert/base/iterator/MatrixColumnIterator.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ellert/base/iterator/MatrixColumnIterator.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[ellert/base/iterator/MatrixRowIterator.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ellert/base/iterator/MatrixRowIterator.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[ellert/base/iterator/SequenceIterator.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ellert/base/iterator/SequenceIterator.h]
 dist=true
 install=false
 install_location=
@@ -1506,9 +1589,21 @@ install_location=
 type=HEADER
 
 [ellert/base/string/Makefile.am]
-files=ellert/base/string/String.cpp,ellert/base/string/String.h,ellert/base/string/InvalidFormat.h,ellert/base/string/InvalidFormat.cpp,ellert/base/string/FormatInputStream.cpp,ellert/base/string/FormatInputStream.h,ellert/base/string/FormatOutputStream.cpp,ellert/base/string/FormatOutputStream.h,ellert/base/string/StringInputStream.h,ellert/base/string/StringOutputStream.h,ellert/base/string/StringOutputStream.cpp,ellert/base/string/StringInputStream.cpp,ellert/base/string/Locale.cpp,ellert/base/string/Locale.h
+files=ellert/base/string/String.cpp,ellert/base/string/String.h,ellert/base/string/InvalidFormat.h,ellert/base/string/InvalidFormat.cpp,ellert/base/string/FormatInputStream.cpp,ellert/base/string/FormatInputStream.h,ellert/base/string/FormatOutputStream.cpp,ellert/base/string/FormatOutputStream.h,ellert/base/string/StringInputStream.h,ellert/base/string/StringOutputStream.h,ellert/base/string/StringOutputStream.cpp,ellert/base/string/StringInputStream.cpp,ellert/base/string/Locale.cpp,ellert/base/string/Locale.h,ellert/base/string/RegExp.h,ellert/base/string/RegExp.cpp
 sub_dirs=
 type=static_library
+
+[ellert/base/string/RegExp.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[ellert/base/string/RegExp.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [ellert/base/string/String.cpp]
 dist=true

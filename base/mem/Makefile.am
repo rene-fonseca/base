@@ -17,6 +17,7 @@ noinst_LTLIBRARIES = libmem.la
 
 libmem_la_SOURCES = \
   Allocator.cpp \
+  ArrayOwnershipPointer.cpp \
   CheckedPointer.cpp \
   DebugDynamicMemory.cpp \
   DynamicMemory.cpp \
@@ -35,6 +36,7 @@ sectiondir = $(includedir)/base/mem
 section_HEADERS = \
   Allocator.h \
   AllocatorEnumeration.h \
+  ArrayOwnershipPointer.h \
   Buffer.h \
   CapacityAllocator.h \
   CheckedPointer.h \

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__OWNERSHIP_POINTER_H
-#define _DK_SDU_MIP__BASE_MEM__OWNERSHIP_POINTER_H
+#ifndef _DK_SDU_MIP__BASE_MEM__ARRAY_OWNERSHIP_POINTER_H
+#define _DK_SDU_MIP__BASE_MEM__ARRAY_OWNERSHIP_POINTER_H
 
 #include <base/AutomationObject.h>
 #include <base/mem/NullPointer.h>
@@ -21,9 +21,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
   Automation pointer that allows transfer of ownership and automatic deletion
-  of the object. Do not construct more than one automation pointer from the
+  of an array. Do not construct more than one automation pointer from the
   'normal' pointer.
-
+  
   @code
   void MyOtherClass::myOtherMethod(MyResource resource) throw(MyException) {
     // ...
@@ -32,23 +32,23 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   }
   
   void MyClass::myMethod() throw(MemoryException, MyException) {
-    OwnershipPointer<MyResource> resource = new MyResource();
+    ArrayOwnershipPointer<int> buffer = new int[BUFFER_SIZE];
     MyOtherClass* myOtherObject = getOtherObject();
     myOtherObject->myOtherMethod(resource);
-    MyResource* result = resource.relinquishOwnership();
+    int* direct = buffer.relinquishOwnership();
     // ...
   }
   @endcode
   
-  @short Ownership automation pointer.
+  @short Array ownership automation pointer.
   @ingroup memory
-  @see ArrayOwnershipPointer
+  @see OwnershipPointer
   @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
 template<class TYPE>
-class OwnershipPointer : public AutomationObject {
+class ArrayOwnershipPointer : public AutomationObject {
 private:
 
   /** Pointer to object. */
@@ -58,7 +58,7 @@ public:
   /**
     Initializes the ownership pointer as 0.
   */
-  inline OwnershipPointer() throw() : object(0) {
+  inline ArrayOwnershipPointer() throw() : object(0) {
   }
   
   /**
@@ -66,24 +66,25 @@ public:
     
     @param object The object pointer to be automated.
   */
-  inline OwnershipPointer(TYPE* _object) throw() : object(_object) {
+  inline ArrayOwnershipPointer(TYPE* _object) throw() : object(_object) {
   }
   
   /**
     Copy constructor. Transfers ownership from copy to this object. The
     original owner loses the ownership.
   */
-  inline OwnershipPointer(OwnershipPointer& copy) throw()
+  inline ArrayOwnershipPointer(ArrayOwnershipPointer& copy) throw()
     : object(copy.relinquishOwnership()) {
   }
   
   /**
     Assignment operator.
   */
-  inline OwnershipPointer& operator=(OwnershipPointer& eq) /*throw(...)*/ {
+  inline ArrayOwnershipPointer& operator=(
+    ArrayOwnershipPointer& eq) /*throw(...)*/ {
     if (&eq != this) { // protect against self assignment
       if (object) {
-        delete object;
+        delete[] object;
       }
       object = eq.relinquishOwnership();
     }
@@ -94,11 +95,11 @@ public:
     Assignment operator.
   */
   template<class POLY>
-  inline OwnershipPointer& operator=(
-    OwnershipPointer<POLY>& eq) /*throw(...)*/ {
+  inline ArrayOwnershipPointer& operator=(
+    ArrayOwnershipPointer<POLY>& eq) /*throw(...)*/ {
     if (eq.object != object) { // protect against self assignment
       if (object) {
-        delete object;
+        delete[] object;
       }
       object = eq.relinquishOwnership();
     }
@@ -108,9 +109,9 @@ public:
   /**
     Assignment operator.
   */
-  inline OwnershipPointer& operator=(TYPE* object) /*throw(...)*/ {
+  inline ArrayOwnershipPointer& operator=(TYPE* object) /*throw(...)*/ {
     if (this->object) {
-      delete this->object;
+      delete[] this->object;
     }
     this->object = object;
     return *this;
@@ -179,9 +180,9 @@ public:
   /**
     Destroys the ownership pointer (and the object).
   */
-  inline ~OwnershipPointer() /*throw(...)*/ {
+  inline ~ArrayOwnershipPointer() /*throw(...)*/ {
     if (object) {
-      delete object;
+      delete[] object;
     }
   }
 };

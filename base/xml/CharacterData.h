@@ -37,9 +37,15 @@ protected:
   }
 public:
   
-  inline CharacterData(Node node) throw(CastException) : Node(node) {
+  inline CharacterData(Node node) throw(CastException)
+    : Node(node) {
     NodeType type = node.getType();
-    assert((type == COMMENT_NODE) || (type == TEXT_NODE), CastException(this));
+    assert(
+      (type == COMMENT_NODE) ||
+      (type == TEXT_NODE) ||
+      (type == CDATA_SECTION_NODE),
+      CastException(this)
+    );
   }
   
   /**

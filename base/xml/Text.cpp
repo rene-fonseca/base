@@ -19,7 +19,7 @@
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
- 
+
 Text Text::splitText(unsigned int index) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
@@ -51,7 +51,7 @@ Text Text::splitText(unsigned int index) throw(DOMException) {
   
   return newNode;
 #else
-  return String();
+  return 0;
 #endif
 }
 

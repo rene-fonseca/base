@@ -52,11 +52,20 @@ public:
   
   inline Text(Node node) throw(CastException)
     : CharacterData(node) {
-    assert(node.getType() == TEXT_NODE, CastException(this));
+    NodeType type = node.getType();
+    assert(
+      (type == TEXT_NODE) || (type == CDATA_SECTION_NODE),
+      CastException(this)
+    );
   }
   
-  inline Text(CharacterData node) throw(CastException) : CharacterData(node) {
-    assert(node.getType() == TEXT_NODE, CastException(this));
+  inline Text(CharacterData node) throw(CastException)
+    : CharacterData(node) {
+    NodeType type = node.getType();
+    assert(
+      (type == TEXT_NODE) || (type == CDATA_SECTION_NODE),
+      CastException(this)
+    );
   }
   
   /**

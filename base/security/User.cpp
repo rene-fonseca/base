@@ -11,16 +11,17 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
 #include <base/security/User.h>
 #include <base/concurrency/Thread.h>
 #include <base/NotImplemented.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
-#include <windows.h>
+  #include <windows.h>
 #else // unix
-#include <sys/types.h>
-#include <pwd.h>
-#include <unistd.h>
+  #include <sys/types.h>
+  #include <pwd.h>
+  #include <unistd.h>
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -44,19 +45,21 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 User User::getCurrentUser() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
+  return User(-1);
 #else // unix
   uid_t uid = ::getuid();
   return User(uid);
 #endif // flavor
 }
 
-User::User(unsigned long long _id) throw() : id(_id) {
+User::User(unsigned long long _id) throw(OutOfDomain) : id(_id) {
+  assert(id <= PrimitiveTraits<uid_t>::MAXIMUM, OutOfDomain("Invalid user id"));
 }
 
 User::User(const User& copy) throw() : id(copy.id) {
 }
 
-User::User(const String& name) throw(Exception) {
+User::User(const String& name) throw(UserException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 #else // unix
   //long sysconf(_SC_GETPW_R_SIZE_MAX);
@@ -64,38 +67,36 @@ User::User(const String& name) throw(Exception) {
   struct passwd pw;
   struct passwd* entry;
   int result = ::getpwnam_r(name.getElements(), &pw, buffer->getElements(), buffer->getSize(), &entry);
-  assert(result, Exception(this));
+  assert(result, UserException(this));
   id = entry->pw_uid;
 #endif // flavor
 }
 
-String User::getName() const throw(Exception) {
+String User::getName() const throw(UserException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 #else // unix
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-//  assert(id < Maximum<uid_t>(), Exception("Invalid user"));
   int result = ::getpwuid_r(id, &pw, buffer->getElements(), buffer->getSize(), &entry);
-  assert(result, Exception(this));
+  assert(result, UserException(this));
   return String(entry->pw_name);
 #endif // flavor
 }
 
-String User::getHomeFolder() const throw() {
+String User::getHomeFolder() const throw(UserException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
 #else // unix
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-//  assert(id < Maximum<uid_t>(), Exception("Invalid user"));
   int result = ::getpwuid_r(id, &pw, buffer->getElements(), buffer->getSize(), &entry);
-  assert(result, Exception(this));
+  assert(result, UserException(this));
   return String(entry->pw_dir);
 #endif // flavor
 }
 
-bool User::isMemberOf(const Group& group) throw(Exception) {
+bool User::isMemberOf(const Group& group) throw(UserException) {
 #if (_DK_SDU_MIP__BASE__FLAVOUR == _DK_SDU_MIP__BASE__WIN32)
   throw NotImplemented(this);
 #else // unix

@@ -73,15 +73,13 @@ Document Transformer::transform(
   }
   *i++ = 0; // terminate
   
-  xmlDoc* nativeResult = xsltApplyStylesheet(
+  xmlDoc* doc = xsltApplyStylesheet(
     Cast::pointer<xsltStylesheet*>(stylesheet.stylesheet->getContext()),
-    Cast::pointer<xmlDoc*>(document.document->getContext()),
+    Cast::pointer<xmlDoc*>(document.getContext()),
     temp.getElements()
   );
-  assert(nativeResult, TransformerException(this));
-  Document result;
-  result.document = new Document::DocumentImpl(nativeResult);
-  return result;
+  assert(doc, TransformerException(this));
+  return doc;
 #else
   throw TransformerException(this);
 #endif
@@ -89,7 +87,7 @@ Document Transformer::transform(
 
 void Transformer::save(const String& filename, const Document& document) throw(DOMException, IOException) {
 #if 0 && defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  xmlDoc* doc = (xmlDoc*)document.document->getContext();
+  xmlDoc* doc = (xmlDoc*)document.getContext();
   int bytesWritten = xsltSaveResultToFilename(
     filename.getElements(),
     doc,

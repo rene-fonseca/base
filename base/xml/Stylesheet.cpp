@@ -78,7 +78,7 @@ Stylesheet::Stylesheet(const Document& document) throw() {
   ::xmlSubstituteEntitiesDefault(1); // FIXME
   xmlLoadExtDtdDefaultValue = 1; // FIXME
 
-  xmlDocPtr doc = Cast::pointer<xmlDocPtr>(document.document->getContext());
+  xmlDocPtr doc = Cast::pointer<xmlDocPtr>(document.getContext());
   xmlDocPtr newDoc = xmlCopyDoc(doc, 1);
   assert(newDoc, Exception(this)); // FIXME
   

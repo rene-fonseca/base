@@ -148,7 +148,7 @@ namespace internal {
         stream << " with";
       }
       if (message) {
-        stream << " message '" << message << '\'';
+        stream << " message '" << NativeString(message) << '\'';
       }
       if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
         stream << " and";

@@ -62,7 +62,7 @@ public:
           stream << " with";
         }
         if (message) {
-          stream << " message '" << message << '\'';
+          stream << " message '" << NativeString(message) << '\'';
         }
         if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
           stream << " and";
@@ -112,7 +112,7 @@ public:
           stream << " with";
         }
         if (message) {
-          stream << " message '" << message << '\'';
+          stream << " message '" << NativeString(message) << '\'';
         }
         if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
           stream << " and";
@@ -152,7 +152,7 @@ public:
 #if 0 // disabled
   // TAG: we should destroy window in destructor
   StringOutputStream stream;
-  stream << "messageHandler: message=" << message << " primary="
+  stream << "messageHandler: message=" << NativeString(message) << " primary="
          << primaryParameter << " second=" << secondaryParameter << FLUSH;
   Trace::message(stream.getString().getElements());
   if (::InSendMessage()) {

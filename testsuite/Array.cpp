@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,66 +30,66 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[]) throw()
-    : Application(MESSAGE("Array"), numberOfArguments, arguments, environment) {
+    : Application("Array", numberOfArguments, arguments, environment) {
   }
   
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ")
+    fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
-    fout << MESSAGE("Initializing array") << ENDL;
+    fout << "Initializing array" << ENDL;
     
     Array<int> ai;
     
-    fout << MESSAGE("Appending values (1, 2, 3, 4, and 5)") << ENDL;
+    fout << "Appending values (1, 2, 3, 4, and 5)" << ENDL;
     ai.append(1);
     ai.append(2);
     ai.append(3);
     ai.append(4);
     ai.append(5);
-    fout << MESSAGE("ai: ") << ai << ENDL;
+    fout << "ai: " << ai << ENDL;
 
-    fout << MESSAGE("Prepending (10, and 11)") << ENDL;
+    fout << "Prepending (10, and 11)" << ENDL;
     ai.prepend(10);
     ai.prepend(11);
-    fout << MESSAGE("ai: ") << ai << ENDL;
+    fout << "ai: " << ai << ENDL;
 
-    fout << MESSAGE("Inserting 21 at index 0") << ENDL;
+    fout << "Inserting 21 at index 0" << ENDL;
     ai.insert(0, 21);
-    fout << MESSAGE("Inserting 22 at index 4") << ENDL;
+    fout << "Inserting 22 at index 4" << ENDL;
     ai.insert(4, 22);
-    fout << MESSAGE("Inserting 23 at index 9") << ENDL;
+    fout << "Inserting 23 at index 9" << ENDL;
     ai.insert(9, 23);
-    fout << MESSAGE("ai: ") << ai << ENDL;
+    fout << "ai: " << ai << ENDL;
 
-    fout << MESSAGE("Invalid insert (expecting OutOfRange)") << ENDL;
+    fout << "Invalid insert (expecting OutOfRange)" << ENDL;
     try {
       ai.insert(11, 123);
     } catch (Exception& e) {
-      fout << indent(2) << MESSAGE("Catched exception: ") << TypeInfo::getTypename(e) << ENDL;
+      fout << indent(2) << "Catched exception: " << TypeInfo::getTypename(e) << ENDL;
     }
 
-    fout << MESSAGE("Removing element at index 2") << ENDL;
+    fout << "Removing element at index 2" << ENDL;
     ai.remove(2);
-    fout << MESSAGE("ai: ") << ai << ENDL;
+    fout << "ai: " << ai << ENDL;
 
-    fout << MESSAGE("Modifying enumeration of elements (multiply values by 2)") << ENDL;
+    fout << "Modifying enumeration of elements (multiply values by 2)" << ENDL;
     transform(ai, bind2First(Multiply<int>(), 2));
-    fout << MESSAGE("ai: ") << ai << ENDL;
+    fout << "ai: " << ai << ENDL;
 
-    fout << MESSAGE("Non-modifying enumerating elements of list (calculating sum)") << ENDL;
+    fout << "Non-modifying enumerating elements of list (calculating sum)" << ENDL;
     Sum<int> sum;
     forEach(ai, sum);
-    fout << MESSAGE("Sum: ") << sum.getResult() << ENDL;
+    fout << "Sum: " << sum.getResult() << ENDL;
 
-    fout << MESSAGE("Size: ") << ai.getSize() << ENDL;
-    fout << MESSAGE("Removing all the elements") << ENDL;
+    fout << "Size: " << ai.getSize() << ENDL;
+    fout << "Removing all the elements" << ENDL;
     ai.removeAll();
-    fout << MESSAGE("Size: ") << ai.getSize() << ENDL;
+    fout << "Size: " << ai.getSize() << ENDL;
   }
 };
 

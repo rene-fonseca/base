@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -75,8 +75,11 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ExceptionApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("Exception"), numberOfArguments, arguments, environment) {
+  ExceptionApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("Exception", numberOfArguments, arguments, environment) {
   }
 
   void myInnerFunction() throw(OutOfRange) {
@@ -92,17 +95,18 @@ public:
       try {
         myInnerFunction();
       } catch (const Exception& e) {
-        fout << MESSAGE("Handled exception") << ENDL;
+        fout << "Handled exception" << ENDL;
       }
     }
   }
 
-  void testDemangling(const StringLiteral& mangled, const String& expected) throw() {
+  void testDemangling(
+    const StringLiteral& mangled, const String& expected) throw() {
     String demangled = TypeInfo::demangleName(mangled);
     if (demangled == expected) {
-      fout << MESSAGE("Demangling ") << mangled << MESSAGE(": ") << demangled << MESSAGE(" <OK>") << ENDL;
+      fout << "Demangling " << mangled << ": " << demangled << " <OK>" << ENDL;
     } else {
-      fout << MESSAGE("Demangling ") << mangled << MESSAGE(": ") << demangled << MESSAGE(" <ERROR>: ") << expected << ENDL;
+      fout << "Demangling " << mangled << ": " << demangled << " <ERROR>: " << expected << ENDL;
     }
   }
 
@@ -146,17 +150,22 @@ public:
     testDemangling(MESSAGE("NSt3_In4wardE"), MESSAGE("std::_In::ward"));
     testDemangling(MESSAGE("St5state"), MESSAGE("std::state"));
 
-    fout << MESSAGE("Demangling of String: ") << TypeInfo::getTypename<String>() << ENDL;
-    fout << MESSAGE("Demangling of Semaphore: ") << TypeInfo::getTypename<Semaphore>() << ENDL;
-    fout << MESSAGE("Demangling of Array<int>: ") << TypeInfo::getTypename<Array<int> >() << ENDL;
-    fout << MESSAGE("Demangling of Map<String, long long>: ") << TypeInfo::getTypename<Map<String, long long> >() << ENDL;
+    fout << "Demangling of String: "
+         << TypeInfo::getTypename<String>() << ENDL;
+    fout << "Demangling of Semaphore: "
+         << TypeInfo::getTypename<Semaphore>() << ENDL;
+    fout << "Demangling of Array<int>: "
+         << TypeInfo::getTypename<Array<int> >() << ENDL;
+    fout << "Demangling of Map<String, long long>: "
+         << TypeInfo::getTypename<Map<String, long long> >() << ENDL;
   }
 
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
 
     testDemangling();

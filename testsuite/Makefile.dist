@@ -2,7 +2,6 @@ default: all
 
 all:
 	aclocal
-	autoheader
 	automake
 	autoconf
 	rm -f config.cache
@@ -21,3 +20,6 @@ lendum-gcc-2.96: all
 
 lendum-gcc-3.0: all
 	CXX=/usr/local/gcc-3.0/bin/g++ CXXFLAGS="-O0 -g3" ./configure --prefix=/usr/local/base --with-base-include=../.. --with-base-lib=..
+
+falster-gcc-3.0: all
+	CXXFLAGS="-O0 -g3" ./configure --prefix=/tmp/fonseca/base --with-base-include=../.. --with-base-lib=..

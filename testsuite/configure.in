@@ -3,9 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(Makefile.am)
 
-dnl AM_CONFIG_HEADER(config.h)
-
-AM_INIT_AUTOMAKE(base_test, 1.0)
+AM_INIT_AUTOMAKE()
 AM_PROG_LIBTOOL()
 
 AC_PREREQ(2.13)

@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/Application.h>
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/net/InetInterface.h>
@@ -69,8 +70,8 @@ void server(String a, String servicename) {
            << "  port=" << service.getPort()
            << "  protocol=" << service.getProtocol() << ENDL;
     } catch(ServiceNotFound& e) {
-      fout << "Warning: " << e.getMessage() << ENDL;
-      fout << "Service: port=" << port << ENDL;
+      fout << "Error: " << e.getMessage() << ENDL;
+      return;
     }
   }
 
@@ -141,37 +142,37 @@ void server(String a, String servicename) {
   serverSocket.close();
 }
 
-int main(int argc, char* argv[]) {
-  fout << "Testing ServerSocket..." << ENDL;
+int main(int argc, const char* argv[], const char* envp[]) {
+  Application app("server", argc, argv, envp);
+
+  Array<String> arguments = Application::getApplication()->getArguments();
 
   String address; // default address
   String service = "1234"; // default service
 
-  switch (argc) {
-  case 1:
+  switch (arguments.getSize()) {
+  case 0:
     // use defaults
     break;
-  case 2:
-    address = argv[1]; // the address
+  case 1:
+    service = arguments[0]; // the service
     break;
-  case 3:
-    address = argv[1]; // the address
-    service = argv[2]; // the service
+  case 2:
+    address = arguments[0]; // the address
+    service = arguments[1]; // the service
     break;
   default:
     fout << "server [address] [service]" << ENDL;
-    return 0; // stop
+    return Application::EXIT_CODE_NORMAL; // stop
   }
 
   try {
+    fout << "Testing ServerSocket..." << ENDL;
     server(address, service);
   } catch(Exception& e) {
-    ferr << getTypename(e) << ": "<< e.getMessage() << ENDL;
-    return 1;
+    return Application::getApplication()->exceptionHandler(e);
   } catch(...) {
-    ferr << "Unknown exception" << ENDL;
-    return 1;
+    return Application::getApplication()->exceptionHandler();
   }
-  fout << "Completed" << ENDL;
-  return 0;
+  return Application::EXIT_CODE_NORMAL;
 }

@@ -74,7 +74,7 @@ void test() {
   fout << "ffff::127.0.0.1 - " << InetAddress("ffff::127.0.0.1", InetAddress::IP_VERSION_6) << ENDL;
   fout << "::ffff:127.0.0.1 - " << InetAddress("::ffff:127.0.0.1") << ENDL;
 
-  fout << FIXED << setPrecision(24) << 0.30102999566398119521373889472449L << ' '
+  fout << FIXED << setPrecision(48) << 0.30102999566398119521373889472449L << ' '
        << FIXED << 1.0 << ' '
        << FIXED << 10.5 << ' '
        << FIXED << 149.9 << ENDL;

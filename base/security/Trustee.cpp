@@ -17,6 +17,12 @@
 #include <base/string/StringOutputStream.h>
 #include <base/NotImplemented.h>
 
+// TAG: need static method to set id space
+// TAG: space is used for mapping id's into short/local integral id's
+// TAG: void Trustee::setDomain(const Trustee& trustee) throw();
+// TAG: Trustee Trustee::getDomain() throw();
+// TAG: at init call Trustee::setDomain(User::getCurrentUser());
+
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <windows.h>
 #  include <aclapi.h>
@@ -83,15 +89,24 @@ Trustee::Trustee(TrusteeType type, const void* _id) throw(OutOfDomain) {
   copy(id->getElements(), Cast::pointer<const uint8*>(_id), size);
 #else // unix
   assert(
-    ((type == Trustee::USER) || (type == Trustee::GROUP) || (type == Trustee::EVERYONE)) &&
-    ((unsigned long)_id <= PrimitiveTraits<uid_t>::MAXIMUM),
+    (type == Trustee::USER) ||
+    (type == Trustee::GROUP) ||
+    (type == Trustee::EVERYONE),
     OutOfDomain("Invalid trustee", this)
   );
+//   assert(
+//     ((type == Trustee::USER) ||
+//      (type == Trustee::GROUP) ||
+//      (type == Trustee::EVERYONE)) &&
+//     ((unsigned long)_id <= PrimitiveTraits<uid_t>::MAXIMUM),
+//     OutOfDomain("Invalid trustee", this)
+//   );
   integralId = (unsigned long)_id;
 #endif // flavor
 }
 
-Trustee::Trustee(const Trustee& copy) throw() : type(copy.type), integralId(copy.integralId), id(copy.id) {
+Trustee::Trustee(const Trustee& copy) throw()
+  : type(copy.type), integralId(copy.integralId), id(copy.id) {
 }
 
 Trustee& Trustee::operator=(const Trustee& eq) throw() {
@@ -112,7 +127,10 @@ bool Trustee::operator==(const Trustee& eq) const throw() {
   return (id->getSize() == eq.id->getSize()) &&
     (compare(id->getElements(), eq.id->getElements(), id->getSize()) == 0);
 #else // unix
-  return integralId == eq.integralId; // id is dont-care
+  // id attribute is dont-care
+  if (Constraint<sizeof(uid_t) == sizeof(gid_t)>::UNSPECIFIED);
+  return Cast::extract<uid_t>(integralId) ==
+    Cast::extract<uid_t>(eq.integralId);
 #endif
 }
 
@@ -142,7 +160,13 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
   char buffer[4096];
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwnam_r(name.getElements(), &pw, buffer, sizeof(buffer), &entry);
+  int result = ::getpwnam_r(
+    name.getElements(),
+    &pw,
+    buffer,
+    sizeof(buffer),
+    &entry
+  );
   if (result == 0) {
     type = Trustee::USER;
     integralId = entry->pw_uid;
@@ -150,7 +174,13 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
   #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRNAM_R)
     struct group grp;
     struct group* entry;
-    int result = ::getgrnam_r(name.getElements(), &grp, buffer, sizeof(buffer), &entry);
+    int result = ::getgrnam_r(
+      name.getElements(),
+      &grp,
+      buffer,
+      sizeof(buffer),
+      &entry
+    );
   #else
     #warning Trustee::Trustee(const String& name) uses non-reentrant getgrnam
     struct group* entry = ::getgrnam(name.getElements());
@@ -270,7 +300,13 @@ String Trustee::getName() const throw(TrusteeException) {
       Allocator<char>* buffer = Thread::getLocalStorage();
       struct group grp;
       struct group* entry;
-      int result = ::getgrgid_r((gid_t)integralId, &grp, buffer->getElements(), buffer->getSize(), &entry);
+      int result = ::getgrgid_r(
+        (gid_t)integralId,
+        &grp,
+        buffer->getElements(),
+        buffer->getSize(),
+        &entry
+      );
       assert(result == 0, TrusteeException(this));
       return String(entry->gr_name);
 #else
@@ -285,7 +321,13 @@ String Trustee::getName() const throw(TrusteeException) {
       Allocator<char>* buffer = Thread::getLocalStorage();
       struct passwd pw;
       struct passwd* entry;
-      int result = ::getpwuid_r((uid_t)integralId, &pw, buffer->getElements(), buffer->getSize(), &entry);
+      int result = ::getpwuid_r(
+        (uid_t)integralId,
+        &pw,
+        buffer->getElements(),
+        buffer->getSize(),
+        &entry
+      );
       assert(result == 0, TrusteeException("Unable to lookup name", this));
       return String(entry->pw_name);
     }

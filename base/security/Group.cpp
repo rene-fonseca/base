@@ -39,10 +39,10 @@ Group::Group(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   throw OutOfDomain("Invalid user id", this);
 #else // unix
-  assert(
-    static_cast<uid_t>(integralId) <= PrimitiveTraits<uid_t>::MAXIMUM,
-    OutOfDomain("Invalid group id", this)
-  );
+//   assert(
+//     static_cast<gid_t>(integralId) <= PrimitiveTraits<gid_t>::MAXIMUM,
+//     OutOfDomain("Invalid group id", this)
+//   );
 #endif // flavor
 }
 
@@ -62,7 +62,8 @@ Group::Group(const void* _id) throw(OutOfDomain) {
 #endif // flavor
 }
 
-Group::Group(const Group& copy) throw() : integralId(copy.integralId), id(copy.id) {
+Group::Group(const Group& copy) throw()
+  : integralId(copy.integralId), id(copy.id) {
 }
 
 Group& Group::operator=(const Group& eq) throw() {
@@ -78,7 +79,8 @@ bool Group::operator==(const Group& eq) const throw() {
   }
   return ::EqualSid((PSID)id->getElements(), (PSID)eq.id->getElements()) != 0;
 #else // unix
-  return integralId == eq.integralId;
+  return Cast::extract<gid_t>(integralId) ==
+    Cast::extract<gid_t>(eq.integralId);
 #endif
 }
 
@@ -111,7 +113,13 @@ Group::Group(const User& user) throw(GroupException) {
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwuid_r(Cast::extract<uid_t>(user.getIntegralId()), &pw, buffer->getElements(), buffer->getSize(), &entry);
+  int result = ::getpwuid_r(
+    Cast::extract<uid_t>(user.getIntegralId()),
+    &pw,
+    buffer->getElements(),
+    buffer->getSize(),
+    &entry
+  );
   assert(result == 0, GroupException(this));
   integralId = Cast::container<unsigned long>(entry->pw_gid);
 #endif // flavor
@@ -147,7 +155,13 @@ String Group::getName() const throw(GroupException) {
     Allocator<char>* buffer = Thread::getLocalStorage();
     struct group grp;
     struct group* entry;
-    int result = ::getgrgid_r(Cast::extract<gid_t>(integralId), &grp, buffer->getElements(), buffer->getSize(), &entry);
+    int result = ::getgrgid_r(
+      Cast::extract<gid_t>(integralId),
+      &grp,
+      buffer->getElements(),
+      buffer->getSize(),
+      &entry
+    );
     assert(result == 0, GroupException(this));
     return String(entry->gr_name);
   #else
@@ -207,7 +221,13 @@ Array<String> Group::getMembers() const throw(GroupException) {
     Allocator<char>* buffer = Thread::getLocalStorage();
     struct group grp;
     struct group* entry;
-    int result = ::getgrgid_r(Cast::extract<gid_t>(integralId), &grp, buffer->getElements(), buffer->getSize(), &entry);
+    int result = ::getgrgid_r(
+      Cast::extract<gid_t>(integralId),
+      &grp,
+      buffer->getElements(),
+      buffer->getSize(),
+      &entry
+    );
     assert(result == 0, GroupException(this));
     Array<String> members;
     char** memberName = entry->gr_mem;

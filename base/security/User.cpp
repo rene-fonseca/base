@@ -65,7 +65,10 @@ User::User(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   throw OutOfDomain("Invalid user id", this);
 #else
-  assert(integralId <= PrimitiveTraits<uid_t>::MAXIMUM, OutOfDomain("Invalid user id", this));
+//   assert(
+//     integralId <= PrimitiveTraits<uid_t>::MAXIMUM,
+//     OutOfDomain("Invalid user id", this)
+//   );
 #endif
 }
 
@@ -85,7 +88,8 @@ User::User(const void* _id) throw(OutOfDomain) {
 #endif // flavor
 }
 
-User::User(const User& copy) throw() : integralId(copy.integralId), id(copy.id) {
+User::User(const User& copy) throw()
+  : integralId(copy.integralId), id(copy.id) {
 }
 
 User& User::operator=(const User& eq) throw() {
@@ -101,7 +105,8 @@ bool User::operator==(const User& eq) const throw() {
   }
   return ::EqualSid((PSID)id->getElements(), (PSID)eq.id->getElements()) != 0;
 #else // unix
-  return integralId == eq.integralId;
+  return Cast::extract<uid_t>(integralId) ==
+    Cast::extract<uid_t>(eq.integralId);
 #endif
 }
 
@@ -128,7 +133,13 @@ User::User(const String& name) throw(UserException) {
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwnam_r(name.getElements(), &pw, buffer->getElements(), buffer->getSize(), &entry);
+  int result = ::getpwnam_r(
+    name.getElements(),
+    &pw,
+    buffer->getElements(),
+    buffer->getSize(),
+    &entry
+  );
   assert(result == 0, UserException(this));
   integralId = Cast::container<unsigned long>(entry->pw_uid);
 #endif // flavor
@@ -158,7 +169,7 @@ String User::getName(bool fallback) const throw(UserException) {
     return s.getString();
   }
   if (domainName[0] != 0) {
-    return String(domainName) + MESSAGE("\\") + String(name);
+    return String(domainName) + MESSAGE("/") + String(name);
   } else {
     return String(name); // TAG: does nameSize hold length of name
   }
@@ -166,7 +177,13 @@ String User::getName(bool fallback) const throw(UserException) {
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwuid_r(Cast::extract<uid_t>(integralId), &pw, buffer->getElements(), buffer->getSize(), &entry);
+  int result = ::getpwuid_r(
+    Cast::extract<uid_t>(integralId),
+    &pw,
+    buffer->getElements(),
+    buffer->getSize(),
+    &entry
+  );
   if (result != 0) {
     assert(fallback, UserException("Unable to lookup name", this));
     StringOutputStream s;
@@ -178,14 +195,26 @@ String User::getName(bool fallback) const throw(UserException) {
 }
 
 String User::getHomeFolder() const throw(UserException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   assert(isValid(), UserException(this));
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  // TAG: fixme
+//   BOOL GetUserProfileDirectory(
+//     HANDLE hToken,
+//     LPTSTR lpProfileDir,
+//     LPDWORD lpcchSize
+//   );
   throw NotImplemented(this);
 #else // unix  
   Allocator<char>* buffer = Thread::getLocalStorage();
   struct passwd pw;
   struct passwd* entry;
-  int result = ::getpwuid_r(Cast::extract<uid_t>(integralId), &pw, buffer->getElements(), buffer->getSize(), &entry);
+  int result = ::getpwuid_r(
+    Cast::extract<uid_t>(integralId),
+    &pw,
+    buffer->getElements(),
+    buffer->getSize(),
+    &entry
+  );
   assert(result == 0, UserException(this));
   return String(entry->pw_dir);
 #endif // flavor
@@ -265,7 +294,8 @@ Array<String> User::getGroups() throw(UserException) {
   return result;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const User& value) throw(IOException) {
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream, const User& value) throw(IOException) {
   if (!value.isValid()) {
     return stream << MESSAGE("<unknown>");
   }

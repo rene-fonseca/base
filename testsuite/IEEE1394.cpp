@@ -432,13 +432,11 @@ public:
   unsigned short getNodeId(const String& string) const throw(InvalidFormat) {
     unsigned int busId = IEEE1394::LOCAL_BUS;
     unsigned int physicalId;
+    String physical = string;
     int index = string.indexOf(':');
     if (index >= 0) { // format "bus:physical"
       String bus = string.substring(0, index);
-      physicalId = UnsignedInteger::parse(
-        string.substring(index + 1),
-        UnsignedLongInteger::ANY
-      );
+      physical = string.substring(index + 1);
       if (bus != "local") {
         busId = UnsignedInteger::parse(
           string.substring(0, index),
@@ -446,8 +444,11 @@ public:
         );
         assert(busId <= IEEE1394::LOCAL_BUS, InvalidFormat("Invalid bus id", this));
       }
-    } else { // physical
-      physicalId = UnsignedInteger::parse(string, UnsignedLongInteger::ANY);
+    }
+    if (physical == "broadcast") {
+      physicalId = IEEE1394::BROADCAST;
+    } else {
+      physicalId = UnsignedInteger::parse(physical, UnsignedLongInteger::ANY);
     }
     assert(physicalId <= IEEE1394::BROADCAST, InvalidFormat("Invalid physical id", this));
     return IEEE1394::makeNodeId(physicalId, busId);

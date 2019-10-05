@@ -2641,7 +2641,7 @@ int compare<WideString>(
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
   const WideString& value) throw(MultibyteException, IOException) {
-  // TAG: need support for \uXXXXX, ...
+  // TAG: need support for selected style (e.g. \uXXXXX)
   // TAG: FormatOutputStream - select between \uXXXXX and UTF8, UTF8LE, and UTF8BE, or other UTF
   return stream << value.getMultibyteString();
 }

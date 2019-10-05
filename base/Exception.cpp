@@ -18,6 +18,8 @@
   #include <base/platforms/compiler/v3mv/exception.h> // includes private features
 #endif
 
+#include <base/string/String.h>
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 bool Exception::isUnwinding() throw() {
@@ -29,6 +31,9 @@ bool Exception::isUnwinding() throw() {
     const abi::__cxa_eh_globals* globals = abi::__cxa_get_globals_fast(); // __cxa_get_globals is invoked in Thread.cpp
 #  endif
   const abi::__cxa_exception* caughtException = globals->caughtExceptions;
+  if (caughtException) {
+    // ferr << caughtException->nextException << ENDL;
+  }
   return caughtException != 0;
 #else
   return false;
@@ -45,6 +50,7 @@ Type Exception::getExceptionType() throw() {
 #  endif
   const abi::__cxa_exception* caughtException = globals->caughtExceptions;
   if (caughtException) {
+    // ferr << caughtException->nextException << ENDL;
     return Type(caughtException->exceptionType);
   } else {
     return Type();

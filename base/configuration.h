@@ -8,7 +8,7 @@
 
 #if defined(__clang__)
 #  define _DK_SDU_MIP__BASE__COMPILER _DK_SDU_MIP__BASE__COMPILER_CLANG
-#elif defined(_MFC_VER)
+#elif defined(_MSC_VER)
 #  define _DK_SDU_MIP__BASE__COMPILER _DK_SDU_MIP__BASE__COMPILER_MSC
 #elif defined(__GNUG__)
 #  define _DK_SDU_MIP__BASE__COMPILER _DK_SDU_MIP__BASE__GCC

@@ -4,4 +4,7 @@ trigger:
 pool:
   vmImage: 'windows-latest'
 
+steps:
 - task: CMake@1
+  inputs:
+    cmakeArgs: '--build . --config Debug'

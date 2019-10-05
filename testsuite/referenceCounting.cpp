@@ -88,6 +88,9 @@ public:
     Reference<Child> child; // ok
     Reference<OtherChild> otherChild; // ok
 
+    ConstReference<Base> constBase = base;
+    constBase = child;
+    
     fout << "Checking whether base is valid (expecting false): "
          << base.isValid() << EOL;
 

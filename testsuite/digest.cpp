@@ -52,8 +52,11 @@ public:
     };
   };
   
-  DigestApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("digest"), numberOfArguments, arguments, environment) {
+  DigestApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("digest", numberOfArguments, arguments, environment) {
     job = Job::SHA1;
   }  
   

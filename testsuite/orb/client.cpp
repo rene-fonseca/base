@@ -2,7 +2,7 @@
     The Base Framework (Test Suite)
     A framework for developing platform independent applications
 
-    Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,29 +13,165 @@
 
 #include <base/Application.h>
 #include <base/string/FormatOutputStream.h>
-#include <base/Version.h>
+#include <base/rmi/Orb.h>
+#include <base/rmi/LisaEncoding.h>
+#include <base/rmi/LocalScheme.h>
+#include <base/rmi/TCPIPProtocol.h>
+#include <base/rmi/OrbObject.h>
+#include <base/rmi/OrbStub.h>
+#include <base/rmi/OrbSkeleton.h>
+#include <base/concurrency/Thread.h>
 
-using namespace base;
+#include <base/rmi/OrbRequest.h>
 
-class VersionApplication : public Application {
+using namespace dk::sdu::mip::base;
+
+class ClientApplication : public Application, public Runnable {
 private:
 
   static const unsigned int MAJOR_VERSION = 1;
   static const unsigned int MINOR_VERSION = 0;
+  
+  Orb orb;
 public:
 
-  VersionApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
-    : Application(MESSAGE("Version"), numberOfArguments, arguments, environment) {
+  ClientApplication(
+    int numberOfArguments,
+    const char* arguments[],
+    const char* environment[]) throw()
+    : Application("client", numberOfArguments, arguments, environment) {
   }
 
+  class DateInterface {
+  public:
+    
+    virtual int getDate() const throw(OrbException) = 0;
+  };
+
+  class DateSkeleton;
+  
+  class DateStub : public OrbStub, public DateInterface {
+  public:
+    
+    DateStub(
+      ProtectedPointer<Orb> orb,
+      Reference<OrbConnection> connection,
+      Reference<OrbDecoder> decoder,
+      Reference<OrbEncoder> encoder,
+      const OrbReference& reference) throw()
+      : OrbStub(orb, connection, decoder, encoder, reference) {
+      
+//       DateSkeleton* result = dynamic_cast<DateSkeleton*>(
+//         Cast::getPointer<OrbSkeleton*>(reference.getId())
+//       );
+//       assert(result, CastException(this));
+    }
+    
+    int getDate() const throw(OrbException) {
+//       const DateInterface* self =
+//         Cast::getPointer<const DateInterface*>(reference.getId());
+
+      int methodId = getMethodId("getDate");
+      assert(
+        methodId >= 0,
+        bindCause(OrbException("No such method"), OrbException::INVALID_METHOD)
+      );
+      
+      // marshaling
+      
+      DateSkeleton* skeleton = Cast::getPointer<DateSkeleton*>(
+        reference.getId()
+      );
+      assert(skeleton, NullPointer(this));
+      // assert(skeleton, CastException(this));
+      return skeleton->getDate();
+    }
+  };
+
+  class DateSkeleton : public OrbSkeleton, public DateInterface {
+  public:
+    
+    // association with 
+    
+    inline DateSkeleton() throw(OrbException)
+      : OrbSkeleton("Date", 1) {
+      registerMethod("getDate");
+    }
+
+    void unmarshal(int methodId) throw() {
+      switch (methodId) {
+      case 0:
+        {
+          // TAG: unmarshal parameters
+          int result = getDate();
+          // return result
+        }
+        break;
+      default:
+        // return OrbException... INVALID_METHOD
+        break;
+      }
+    }
+  };
+
+  class DateServlet : public DateSkeleton {
+  private:
+
+    mutable int value;
+  public:
+    
+    DateServlet() throw() : value(1234) {
+    }
+
+    int getDate() const throw() {
+      return value++;
+    }
+  };
+  
+  void run() throw() {
+    orb.run();
+  }
+
+  void dump() throw() {
+    fout << "ORB:" << EOL
+         << indent(2) << "number of encoding schemes: " << orb.getNumberOfEncodings() << EOL
+         << indent(2) << "encoding schemes: " << orb.getEncodings() << EOL
+         << indent(2) << "number of schemes: " << orb.getNumberOfSchemes() << EOL
+         << indent(2) << "schemes: " << orb.getSchemes() << EOL
+         << indent(2) << "number of factories: " << orb.getNumberOfFactories() << EOL
+         << indent(2) << "skeletons: " << orb.getNumberOfSkeletons() << EOL
+         << indent(2) << "stubs: " << orb.getNumberOfStubs() << EOL
+         << indent(2) << "connections: " << orb.getNumberOfConnections() << EOL
+         << ENDL;
+  }
+  
   void main() throw() {
-    fout << getFormalName() << MESSAGE(" version ") << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << MESSAGE("The Base Framework (Test Suite)") << EOL
-         << MESSAGE("http://www.mip.sdu.dk/~fonseca/base") << EOL
-         << MESSAGE("Copyright (C) 2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>") << EOL
-         << EOL
-         << Version().getBanner() << ENDL;
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
+         << ENDL;
+
+    orb.registerEncoding(new LisaEncoding(), Orb::OUTGOING|Orb::INCOMING);
+    orb.registerScheme(new LocalScheme());
+    
+    orb.registerSkeleton("Date", new DateServlet());
+    
+    dump();
+    
+    Reference<DateStub> date = orb.getObject<DateStub>("local:///Date");
+    ferr << "stub.getDate(): " << date->getDate() << ENDL;
+    
+//     Thread thread(this);
+//     thread.start();
+//     thread.join();
+  }
+
+  // TAG: add terminate
+  
+  virtual ~ClientApplication() throw() {
   }
 };
 
-STUB(VersionApplication);
+STUB(ClientApplication);

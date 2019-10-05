@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -90,10 +90,11 @@ protected:
   
   template<class TRAITS>
   class StackReadEnumerator : public Enumerator<TRAITS> {
-  protected:
+  public:
     
     typedef typename Enumerator<TRAITS>::Value Value;
     typedef typename Enumerator<TRAITS>::Pointer Pointer;
+  private:
     
     /** The current position in the enumeration. */
     const StackNode* current;
@@ -149,7 +150,10 @@ protected:
   
   
   
+public:
   typedef StackReadEnumerator<ReadEnumeratorTraits<TYPE> > ReadEnumerator;
+
+protected:
   
   
   
@@ -418,6 +422,8 @@ public:
     elements = new StackImpl(); // no need to copy
   }
 };
+
+#include <base/string/FormatOutputStream.h>
 
 /**
   Writes a string representation of a stack to a format output stream.

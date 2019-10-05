@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -128,35 +128,28 @@ public:
     /**
       Returns the key of the node.
     */
-    inline const Association<Key, Value>* getKeyValue() const throw() {
-      return &value;
+    inline const Association<Key, Value>& getKeyValue() const throw() {
+      return value;
     }
     
     /**
       Returns the key of the node.
     */
-    inline Key* getKey() throw() {
-      return value.getKey();
-    }
-    
-    /**
-      Returns the key of the node.
-    */
-    inline const Key* getKey() const throw() {
+    inline const Key& getKey() const throw() {
       return value.getKey();
     }
     
     /**
       Returns the value of the node.
     */
-    inline Value* getValue() throw() {
+    inline Value& getValue() throw() {
       return value.getValue();
     }
     
     /**
       Returns the value of the node.
     */
-    inline const Value* getValue() const throw() {
+    inline const Value& getValue() const throw() {
       return value.getValue();
     }
 
@@ -260,15 +253,15 @@ public:
         if (srcNode) {
           Node* firstNode = new Node(
             srcNode->getHash(),
-            *srcNode->getKey(),
-            *srcNode->getValue()
+            srcNode->getKey(),
+            srcNode->getValue()
           );
           *dest++ = firstNode;
           Node* destNode = firstNode;
           srcNode = srcNode->getNext();
           while (srcNode) {
             destNode->setNext(
-              new Node(srcNode->getHash(), *srcNode->getKey(), *srcNode->getValue())
+              new Node(srcNode->getHash(), srcNode->getKey(), srcNode->getValue())
             );
             destNode = destNode->getNext();
             srcNode = srcNode->getNext();
@@ -426,13 +419,13 @@ public:
       Node* parent = 0;
       Node* child = *bucket;
       if (child) {
-        if ((child->getHash() == hash) && (*child->getKey() == key)) {
+        if ((child->getHash() == hash) && (child->getKey() == key)) {
           return true; // this case should be fairly likely
         }
         parent = child;
         child = child->getNext();
         while (child &&
-               ((child->getHash() != hash) || (*child->getKey() != key))) {
+               ((child->getHash() != hash) || (child->getKey() != key))) {
           parent = child;
           child = child->getNext();
         }
@@ -455,7 +448,7 @@ public:
       const Node* const* bucket = getBuckets() + (hash & mask);
       const Node* child = *bucket;
       while (child &&
-             ((child->getHash() != hash) || (*child->getKey() != key))) {
+             ((child->getHash() != hash) || (child->getKey() != key))) {
         child = child->getNext();
       }
       return child;
@@ -470,7 +463,7 @@ public:
       Node* grandparent = 0;
       Node* parent = 0;
       Node* child = *bucket;
-      while (child && ((child->getHash() != hash) || (*child->getKey() != key))) {
+      while (child && ((child->getHash() != hash) || (child->getKey() != key))) {
         grandparent = parent;
         parent = child;
         child = child->getNext();
@@ -501,11 +494,11 @@ public:
       const Node* const* bucket = getBuckets() + (hash & mask);
       const Node* child = *bucket;
       while (child &&
-             ((child->getHash() != hash) || (*child->getKey() != key))) {
+             ((child->getHash() != hash) || (child->getKey() != key))) {
         child = child->getNext();
       }
       assert(child, InvalidKey(this));
-      return *child->getValue();
+      return child->getValue();
     }
     
     /**
@@ -517,7 +510,7 @@ public:
       if (*buckets) {
         Node* parent = 0;
         Node* child = *buckets;
-        while (child && ((child->getHash() != hash) || (*child->getKey() != key))) {
+        while (child && ((child->getHash() != hash) || (child->getKey() != key))) {
           parent = child;
           child = child->getNext();
         }
@@ -567,12 +560,12 @@ public:
       Node** bucket = getBuckets() + (hash & mask);
       Node* child = *bucket;
       assert(child, InvalidKey(this));
-      if ((child->getHash() == hash) && (*child->getKey() == key)) {
+      if ((child->getHash() == hash) && (child->getKey() == key)) {
         *bucket = child->getNext(); // unlink first node (next could be 0)
       } else {
         Node* parent = child;
         child = child->getNext();
-        while (child && ((child->getHash() != hash) || (*child->getKey() != key))) {
+        while (child && ((child->getHash() != hash) || (child->getKey() != key))) {
           parent = child;
           child = child->getNext();
         }
@@ -661,10 +654,10 @@ public:
         ++bucket;
         node = *bucket;
       }
-      Pointer result = node->getKeyValue();
+      const Value& result = node->getKeyValue();
       node = node->getNext();
       --numberOfElements;
-      return result;
+      return &result; // TAG: change type
     }
 
     inline ~HashTableEnumerator() throw() {
@@ -727,10 +720,10 @@ public:
         ++bucket;
         node = *bucket;
       }
-      Pointer result = node->getValue();
+      Value& result = node->getValue();
       node = node->getNext();
       --numberOfElements;
-      return result;
+      return &result; // TAG: change result type
     }
     
     inline ~HashTableValueEnumerator() throw() {

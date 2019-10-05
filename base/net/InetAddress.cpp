@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -66,7 +66,7 @@ String InetAddress::getLocalHost() throw(NetworkException) {
     throw NetworkException("Unable to get local host name", Type::getType<InetAddress>());
   }
 #endif // flavor
-  return String(name);
+  return NativeString(name);
 }
 
 List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(HostNotFound) {
@@ -475,7 +475,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
   addr.sin6_family = AF_INET6;
   copy<uint8>(
     Cast::getAddress(addr.sin6_addr),
-    Cast::getAddress(address),
+    (const uint8*)&address, // TAG: Cast::getAddress(address),
     sizeof(address)
   );
   char hostname[NI_MAXHOST]; // includes space for terminator
@@ -492,7 +492,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
     throw HostNotFound("Unable to resolve IP address", this);
   }
 
-  return String(hostname);
+  return NativeString(hostname);
 #else // use ordinary BSD sockets - IPv4
   struct hostent* hp;
 
@@ -548,7 +548,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
     }
 #  endif
 
-  return String(hp->h_name);
+  return NativeString(hp->h_name);
 #endif // _DK_SDU_MIP__BASE__INET_IPV6
 }
 

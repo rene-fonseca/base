@@ -2,7 +2,7 @@ dnl ***************************************************************************
 dnl    The Base Framework
 dnl    A framework for developing platform independent applications
 dnl
-dnl    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+dnl    Copyright (C) 2001-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 dnl
 dnl    This framework is distributed in the hope that it will be useful,
 dnl    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -123,7 +123,7 @@ echo "/* This is an automatically generated file. Do NOT edit. */" > $ac_base_pr
 
 
 dnl AC_BASE_DEFINE(symbol name, value)
-AC_DEFUN(AC_BASE_DEFINE, [dnl
+AC_DEFUN([AC_BASE_DEFINE], [dnl
 ifelse([$2], , ac_base_temp="${base_symbol_prefix}$1", ac_base_temp="${base_symbol_prefix}$1 $2")
 cat >> $ac_base_public_config << EOF
 [#define] $ac_base_temp
@@ -131,7 +131,7 @@ EOF
 ])
 
 dnl AC_BASE_DEFINE_PRIVATE(symbol name, value)
-AC_DEFUN(AC_BASE_DEFINE_PRIVATE, [dnl
+AC_DEFUN([AC_BASE_DEFINE_PRIVATE], [dnl
 ifelse([$2], , ac_base_temp="${base_symbol_prefix}$1", ac_base_temp="${base_symbol_prefix}$1 $2")
 cat >> $ac_base_private_config << EOF
 [#define] $ac_base_temp
@@ -139,7 +139,7 @@ EOF
 ])
 
 dnl AC_BASE_DEFINE_FEATURE(symbol name, value)
-AC_DEFUN(AC_BASE_DEFINE_FEATURE, [dnl
+AC_DEFUN([AC_BASE_DEFINE_FEATURE], [dnl
 ifelse([$2], , ac_base_temp="$1", ac_base_temp="$1 $2")
 cat >> $ac_base_private_config << EOF
 [#define] $ac_base_temp
@@ -147,31 +147,31 @@ EOF
 ])
 
 dnl AC_BASE_DEFINE_FUNCTION(function name)
-AC_DEFUN(AC_BASE_DEFINE_FUNCTION, [dnl
+AC_DEFUN([AC_BASE_DEFINE_FUNCTION], [dnl
 AC_BASE_DEFINE(["HAVE_`echo $1 | tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ`"])
 ])
 
 dnl AC_BASE_DEFINE_FUNCTION_PRIVATE(function name)
-AC_DEFUN(AC_BASE_DEFINE_FUNCTION_PRIVATE, [dnl
+AC_DEFUN([AC_BASE_DEFINE_FUNCTION_PRIVATE], [dnl
 AC_BASE_DEFINE_PRIVATE(["HAVE_`echo $1 | tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ`"])
 ])
 
 dnl AC_BASE_EQUAL(left value, right value, equal action)
-AC_DEFUN(AC_BASE_EQUAL, [dnl
+AC_DEFUN([AC_BASE_EQUAL], [dnl
 if test "$1" = "$2"; then
   $3
 fi
 ])
 
 dnl AC_BASE_NOTEQUAL(left value, right value, not equal action)
-AC_DEFUN(AC_BASE_NOTEQUAL, [dnl
+AC_DEFUN([AC_BASE_NOTEQUAL], [dnl
 if test "$1" != "$2"; then
   $3
 fi
 ])
 
 dnl AC_BASE_COMPARE(left value, right value, equal action, unequal action)
-AC_DEFUN(AC_BASE_COMPARE, [dnl
+AC_DEFUN([AC_BASE_COMPARE], [dnl
 if test "$1" = "$2"; then
   $3
 else
@@ -180,30 +180,30 @@ fi
 ])
 
 dnl AC_BASE_MKYESNO(variable)
-AC_DEFUN(AC_BASE_MKYESNO, [dnl
+AC_DEFUN([AC_BASE_MKYESNO], [dnl
 if test x$ac_base_status = x0; then $1=yes; else $1=no; fi dnl
 ])
 
 dnl AC_BASE_YES(variable, yes action)
-AC_DEFUN(AC_BASE_YES, [dnl
+AC_DEFUN([AC_BASE_YES], [dnl
 AC_BASE_EQUAL([$]$1, yes, $2)
 ])
 
 dnl AC_BASE_NO(variable, no action)
-AC_DEFUN(AC_BASE_NO, [dnl
+AC_DEFUN([AC_BASE_NO], [dnl
 AC_BASE_NOTEQUAL([$]$1, yes, $2)
 ])
 
 dnl AC_BASE_YESNO(variable, yes action, no action)
-AC_DEFUN(AC_BASE_YESNO, [AC_BASE_COMPARE([$]$1, yes, $2, $3)])
+AC_DEFUN([AC_BASE_YESNO], [AC_BASE_COMPARE([$]$1, yes, $2, $3)])
 
 dnl AC_BASE_NOT(dest variable, source variable)
-AC_DEFUN(AC_BASE_NOT, [dnl
+AC_DEFUN([AC_BASE_NOT], [dnl
 if test "[$]$2" = no; then $1=yes; else $1=no; fi dnl
 ])
 
 dnl AC_BASE_CHECK_ARG(result variable, valid argument values, error message)
-AC_DEFUN(AC_BASE_CHECK_ARG, [dnl
+AC_DEFUN([AC_BASE_CHECK_ARG], [dnl
 ac_base_arg_valid=yes
 for ac_base_temp in $2; do
   ac_base_arg_valid=no
@@ -220,24 +220,24 @@ fi
 ])
 
 dnl AC_BASE_PREPEND(variable, value)
-AC_DEFUN(AC_BASE_PREPEND, [dnl
+AC_DEFUN([AC_BASE_PREPEND], [dnl
 $1="$2[$]{$1:+ }[$]{$1}"
 ])
 
 dnl AC_BASE_APPEND(variable, value)
-AC_DEFUN(AC_BASE_APPEND, [dnl
+AC_DEFUN([AC_BASE_APPEND], [dnl
 $1="[$]{$1}[$]{$1:+ }$2"
 ])
 
 dnl AC_BASE_ADDLIB(library list) e.g. AC_BASE_ADDLIB(-lxml2 -ldl)
-dnl AC_DEFUN(AC_BASE_ADDLIB, [dnl
+dnl AC_DEFUN([AC_BASE_ADDLIB], [dnl
 dnl for ac_base_temp in [$1]; do
 dnl   AC_BASE_APPEND(BASE_LIBS, [$]ac_base_temp)
 dnl done
 dnl ])
 
 dnl AC_BASE_ADDLIB(library list) e.g. AC_BASE_ADDLIB(-lxml2 -ldl)
-AC_DEFUN(AC_BASE_ADDLIB, [dnl
+AC_DEFUN([AC_BASE_ADDLIB], [dnl
 BASE_LIBS="[$]BASE_LIBS $1"
 ac_base_system_libs=
 for ac_base_lib in [$]ac_base_system_lib_order; do
@@ -598,7 +598,7 @@ AC_ARG_ENABLE(
 dnl Checks for libraries.
 
 dnl AC_BASE_CHECK(check message, action, result variable [, extra variable])
-AC_DEFUN(AC_BASE_CHECK, [dnl
+AC_DEFUN([AC_BASE_CHECK], [dnl
 ac_base_temp="$1"
 AC_MSG_CHECKING($ac_base_temp)
 $2
@@ -613,7 +613,7 @@ dnl if test "[$]$3" = yes; then
 ])
 
 dnl AC_BASE_CACHE(variable list, action that sets all the specified variables)
-AC_DEFUN(AC_BASE_CACHE, [dnl
+AC_DEFUN([AC_BASE_CACHE], [dnl
 ac_temp_cached=yes
 for ac_base_temp in $1; do
   if eval "test \"`echo '$''{'$ac_base_temp'+set}'`\" != set"; then
@@ -625,7 +625,7 @@ AC_BASE_YESNO(ac_temp_cached, [echo ${ECHO_N} "(static) ${ECHO_C}" >&AC_FD_MSG],
 ])
 
 dnl AC_BASE_ATTEMPT(result variable, value variable, value list, action setting result)
-AC_DEFUN(AC_BASE_ATTEMPT, [dnl
+AC_DEFUN([AC_BASE_ATTEMPT], [dnl
 for $2 in $3; do
   $4
   test "[$]$1" = yes && break
@@ -648,16 +648,16 @@ base_cxx_compile='$CXX -o $base_obj_temp -c -I. -I$srcdir $CPPFLAGS $CXXFLAGS $s
 base_cxx_link='$CXX -o $base_app_temp -I. -I$srcdir $CPPFLAGS $CXXFLAGS $srcdir/config/$base_cxx_src $base_cxx_opts $LDFLAGS $LIBS $BASE_LIBS'
 
 dnl AC_BASE_TRIM(string)
-AC_DEFUN(AC_BASE_TRIM, [`echo $1`])
+AC_DEFUN([AC_BASE_TRIM], [`echo $1`])
 
 dnl AC_BASE_TRY_EXEC(variable)
-AC_DEFUN(AC_BASE_TRY_EXEC, [ { eval [$]$1 >&AC_FD_CC 2>&AC_FD_CC; ac_base_status=`echo $?`; } ])
+AC_DEFUN([AC_BASE_TRY_EXEC], [ { eval [$]$1 >&AC_FD_CC 2>&AC_FD_CC; ac_base_status=`echo $?`; } ])
 
 dnl AC_BASE_TRY_CMD(command)
-AC_DEFUN(AC_BASE_TRY_CMD, [ { ac_base_temp='$1'; AC_BASE_TRY_EXEC(ac_base_temp); } ])
+AC_DEFUN([AC_BASE_TRY_CMD], [ { ac_base_temp='$1'; AC_BASE_TRY_EXEC(ac_base_temp); } ])
 
 dnl AC_BASE_TRY_CXX_COMPILE(result variable, source file, additional options)
-AC_DEFUN(AC_BASE_TRY_CXX_COMPILE, [dnl
+AC_DEFUN([AC_BASE_TRY_CXX_COMPILE], [dnl
 if (test ! -r $srcdir/config/[$2]); then
   AC_MSG_ERROR(The source file cannot be read.)
 fi
@@ -668,7 +668,7 @@ AC_BASE_MKYESNO([$1])
 ])
 
 dnl AC_BASE_TRY_CXX_LINK(result variable, source file, additional options)
-AC_DEFUN(AC_BASE_TRY_CXX_LINK, [dnl
+AC_DEFUN([AC_BASE_TRY_CXX_LINK], [dnl
 if (test ! -r $srcdir/config/[$2]); then
   AC_MSG_ERROR(The source file cannot be read.)
 fi
@@ -722,7 +722,7 @@ AC_BASE_YESNO(
 
 
 dnl AC_BASE_CHECK_CFUNCTION(name)
-AC_DEFUN(AC_BASE_CHECK_CFUNCTION, [dnl
+AC_DEFUN([AC_BASE_CHECK_CFUNCTION], [dnl
 AC_BASE_CHECK(
   whether API function $1 is available,
   AC_BASE_CACHE(
@@ -734,7 +734,7 @@ AC_BASE_YES(base_cv_function_$1, AC_BASE_DEFINE_FUNCTION($1))
 ])
 
 dnl AC_BASE_CHECK_CFUNCTION_PRIVATE(name)
-AC_DEFUN(AC_BASE_CHECK_CFUNCTION_PRIVATE, [dnl
+AC_DEFUN([AC_BASE_CHECK_CFUNCTION_PRIVATE], [dnl
 AC_BASE_CHECK(
   whether API function $1 is available,
   AC_BASE_CACHE(
@@ -1125,7 +1125,7 @@ AC_BASE_DEFINE(WCHAR_SIZE, $base_cv_wchar_size)
 
 
 dnl AC_BASE_VALUE2BYTEORDER(result variable, value)
-AC_DEFUN(AC_BASE_VALUE2BYTEORDER, [dnl
+AC_DEFUN([AC_BASE_VALUE2BYTEORDER], [dnl
   if test "x[$2]" = x1; then
     [$1]="BIG_ENDIAN"
   elif test "x[$2]" = x2; then
@@ -1136,7 +1136,7 @@ AC_DEFUN(AC_BASE_VALUE2BYTEORDER, [dnl
 ])
 
 dnl AC_BASE_BYTEORDER2MSG(result variable, value)
-AC_DEFUN(AC_BASE_BYTEORDER2MSG, [dnl
+AC_DEFUN([AC_BASE_BYTEORDER2MSG], [dnl
   if test "x[$]$2" = xBIG_ENDIAN; then
     [$1]="big endian"
   elif test "x[$]$2" = xLITTLE_ENDIAN; then
@@ -1182,7 +1182,7 @@ AC_BASE_DEFINE(FLOAT_WORD_ORDER, ${base_symbol_prefix}${base_cv_word_order})
 
 
 
-AC_DEFUN(AC_BASE_VALUE2FLOATING, [dnl
+AC_DEFUN([AC_BASE_VALUE2FLOATING], [dnl
   if test "x[$2]" = x1; then
     [$1]="IEEE_754_SINGLE_PRECISION"
   elif test "x[$2]" = x2; then
@@ -1198,7 +1198,7 @@ AC_DEFUN(AC_BASE_VALUE2FLOATING, [dnl
   fi
 ])
 
-AC_DEFUN(AC_BASE_FLOATING2MSG, [dnl
+AC_DEFUN([AC_BASE_FLOATING2MSG], [dnl
   if test "x[$]$2" = xIEEE_754_SINGLE_PRECISION; then
     [$1]="ieee 754 single"
   elif test "x[$]$2" = xIEEE_754_DOUBLE_PRECISION; then

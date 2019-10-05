@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,7 +17,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-template Matrix<double>;
+template class Matrix<double>;
 
 template<class TYPE>
 class MultiplySubtract : public BinaryOperation<TYPE, TYPE, TYPE> {
@@ -769,14 +769,14 @@ Matrix<TYPE> operator/(const TYPE& left, const Matrix<TYPE>& right) throw(Memory
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);
-  const TYPE* element = getReadOnlyElements();
+  const TYPE* element = value.getReadOnlyElements();
   stream << '[';
-  for (unsigned int row = 0; row < value.rows; ++row) {
+  for (unsigned int row = 0; row < value.getRows(); ++row) {
     stream << '[';
-    for (unsigned int column = 0; column < value.columns; ++column) {
+    for (unsigned int column = 0; column < value.getColumns(); ++column) {
       stream << *element;
       ++element;
-      if (column < (columns - 1)) {
+      if (column < (value.getColumns() - 1)) {
         stream << ',';
       }
     }

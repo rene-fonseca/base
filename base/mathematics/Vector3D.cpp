@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,8 +15,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-template Vector3D<float>;
-template Vector3D<double>;
-template Vector3D<long double>;
+template class Vector3D<float>;
+template class Vector3D<double>;
+template class Vector3D<long double>;
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

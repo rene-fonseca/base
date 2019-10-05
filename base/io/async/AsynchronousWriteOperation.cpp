@@ -15,8 +15,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-AsynchronousWriteCompletion
-  AsynchronousWriteOperation::getCompletion() const throw(NullPointer) {
+AsynchronousWriteCompletion AsynchronousWriteOperation::getCompletion() const throw(NullPointer) {
   return context->getCompletion();
 }
 

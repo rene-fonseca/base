@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,6 +24,13 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+typedef AsynchronousWriteOperation A;
+
+/**
+  Asynchronous IO stream.
+
+  @author Rene Fonseca
+*/
 class AsynchronousIOStream : public virtual AsynchronousStream {
   friend class AsynchronousReadOperation;
   friend class AsynchronousReadContext;
@@ -43,6 +50,7 @@ public:
     @param buffer The bytes to be read.
     @param bytesToRead The number of bytes to be read.
     @param offset The offset.
+    @param listener The event listener.
   */
   virtual AsynchronousReadOperation read(
     uint8* buffer,
@@ -56,6 +64,7 @@ public:
     @param buffer The bytes to be written.
     @param bytesToWrite The number of bytes to be written.
     @param offset The offset.
+    @param listener The event listener.
   */
   virtual AsynchronousWriteOperation write(
     const uint8* buffer,

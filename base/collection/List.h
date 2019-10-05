@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -93,10 +93,11 @@ public:
 
 template<class TRAITS>
 class ListEnumerator : public Enumerator<TRAITS> {
-protected:
+public:
 
   typedef typename Enumerator<TRAITS>::Value Value;
   typedef typename Enumerator<TRAITS>::Pointer Pointer;
+private:
   
   /** The current position in the enumeration. */
   ListNode<Value>* current;

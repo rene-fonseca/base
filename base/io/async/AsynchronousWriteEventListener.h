@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE_IO_ASYNC__ASYNCHRONOUS_WRITE_EVENT_LISTENER_H
 
 #include <base/io/async/AsynchronousWriteCompletion.h>
+#include <base/DynamicObject.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -25,9 +26,9 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class AsynchronousWriteEventListener {
+class AsynchronousWriteEventListener : public virtual DynamicObject {
 public:
-  
+
   virtual void asynchronousCompletion(
     const AsynchronousWriteCompletion& completion) throw() = 0;
 };

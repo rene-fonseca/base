@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -87,6 +87,8 @@ public:
 //    }
 //  };
 
+  using BinaryTree<TYPE>::getRoot;
+
   /**
     Initializes an empty ordered binary tree.
   */
@@ -130,7 +132,7 @@ public:
     @return The node with the matching value. 0 if not found.
   */
   Node* find(const Value& value) throw() {
-    Node* node = BinaryTree<Value>::getRoot();
+    Node* node = getRoot();
 
     while (node) {
       int result = compare(value, *node->getValue());
@@ -210,7 +212,7 @@ public:
     Node* node = BinaryTree<Value>::getRoot();
 
     if (!node) {
-      elements = new typename BinaryTree<Value>::BinaryTreeImpl(new Node(0, 0, 0, value)); // attach root node
+      this->elements = new typename BinaryTree<Value>::BinaryTreeImpl(new Node(0, 0, 0, value)); // attach root node
       return 0;
     }
 
@@ -247,7 +249,7 @@ public:
       throw InvalidNode();
     }
 
-    elements.copyOnWrite();
+    this->elements.copyOnWrite();
 
     if (node == BinaryTree<Value>::getRoot()) { // set new root
       if (node->getLeft()) {
@@ -259,9 +261,9 @@ public:
 
     while (true) {
       if (node->getLeft()) {
-        elements->rotateRight(node);
+        this->elements->rotateRight(node);
       } else if (node->getRight()) {
-        elements->rotateLeft(node);
+        this->elements->rotateLeft(node);
       } else {
         break; // stop when the node is a leave in the tree
       }

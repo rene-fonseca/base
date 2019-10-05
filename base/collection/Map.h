@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -95,7 +95,7 @@ public:
     }
 
     inline Pointer next() throw(EndOfEnumeration) {
-      return enu.next()->getValue()->getValue();
+      return &enu.next()->getValue()->getValue();
     }
   };
 
@@ -192,13 +192,13 @@ public:
 
     @param key The key of the value.
   */
-  Value getValue(const Key& key) const throw(InvalidKey) {
+  const Value& getValue(const Key& key) const throw(InvalidKey) {
     const typename OrderedBinaryTree<Association<Key, Value> >::Node* node =
       elements.find(Association<Key, Value>(key));
     if (!node) {
       throw InvalidKey();
     }
-    return *node->getValue()->getValue();
+    return node->getValue()->getValue();
   }
 
   /**

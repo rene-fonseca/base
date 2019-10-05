@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_H
 
 #include <base/Primitives.h>
+#include <base/DynamicObject.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -47,7 +48,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class ReferenceCountedObject {
+class ReferenceCountedObject : public DynamicObject {
   friend class ReferenceImpl;
 private:
 

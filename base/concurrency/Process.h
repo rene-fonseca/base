@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -152,7 +152,7 @@ public:
     @return The child process.
   */
   static Process execute(const String& app) throw(ProcessException);
-private:
+public:
 
   class ProcessHandle : public Handle {
     friend class Initialization;
@@ -170,7 +170,8 @@ private:
     /** Releases the resources used by the process. */
     ~ProcessHandle() throw();
   };
-  
+private:
+
   /** The host local id of the process. */
   unsigned long id;
   /** Handle to the process. */

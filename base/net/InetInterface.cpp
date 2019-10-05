@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -291,7 +291,7 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
         flags |= (current->ifr_flags & IFF_BROADCAST) ? InetInterface::BROADCAST : 0;
         flags |= (current->ifr_flags & IFF_MULTICAST) ? InetInterface::MULTICAST : 0;
 #if (defined(IFF_DYNAMIC))
-        flags |= (req.ifr_flags & IFF_DYNAMIC) ? InetInterface::DYNAMIC : 0;
+        flags |= (current->ifr_flags & IFF_DYNAMIC) ? InetInterface::DYNAMIC : 0;
 #endif
         interface.flags = flags;
       }

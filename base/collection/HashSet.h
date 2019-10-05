@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -355,7 +355,7 @@ public:
     /**
       Returns true if the specified value is in the hash set.
     */
-    inline bool hasValue(const Value& value) throw() {
+    inline bool hasValue(const Value& key) throw() {
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
       

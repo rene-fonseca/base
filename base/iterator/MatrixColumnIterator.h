@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -50,7 +50,7 @@ public:
     Prefix increment.
   */
   inline MatrixColumnIterator& operator++() throw() {
-    ++element;
+    ++this->element;
     return *this;
   }
 
@@ -59,7 +59,7 @@ public:
   */
   inline MatrixColumnIterator operator++(int) throw() {
     MatrixColumnIterator result(*this);
-    ++element;
+    ++this->element;
     return result;
   }
 
@@ -67,7 +67,7 @@ public:
     Prefix decrement.
   */
   inline MatrixColumnIterator& operator--() throw() {
-    --element;
+    --this->element;
     return *this;
   }
 
@@ -76,7 +76,7 @@ public:
   */
   inline MatrixColumnIterator operator--(int) throw() {
     MatrixColumnIterator result(*this);
-    --element;
+    --this->element;
     return result;
   }
 
@@ -84,7 +84,7 @@ public:
     Move the specified distance forward.
   */
   inline MatrixColumnIterator& operator+=(Distance distance) throw() {
-    element += distance;
+    this->element += distance;
     return *this;
   }
 
@@ -92,20 +92,20 @@ public:
     Move the specified distance backwards.
   */
   inline MatrixColumnIterator& operator-=(Distance distance) throw() {
-    element -= distance;
+    this->element -= distance;
     return *this;
   }
 
   inline ElementIterator getFirst() const throw() {
-    return ElementIterator(element, dimension.getWidth());
+    return ElementIterator(this->element, dimension.getWidth());
   }
 
   inline ElementIterator getEnd() const throw() {
-    return ElementIterator(element + dimension.getSize(), dimension.getWidth());
+    return ElementIterator(this->element + dimension.getSize(), dimension.getWidth());
   }
 
   inline ElementIterator operator[](unsigned int index) const throw() {
-    return ElementIterator(element + columns * index, dimension.getWidth());
+    return ElementIterator(this->element + this->columns * index, dimension.getWidth());
   }
 };
 

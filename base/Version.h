@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2003-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,6 +14,7 @@
 #ifndef _DK_SDU_MIP__BASE__VERSION_H
 #define _DK_SDU_MIP__BASE__VERSION_H
 
+#include <base/DynamicObject.h>
 #include <base/string/String.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -27,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Version : public Object {
+class Version : public DynamicObject {
 private:
 
   /** Banner. */

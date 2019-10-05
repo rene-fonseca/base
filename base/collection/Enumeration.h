@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,7 +19,8 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**
-  Defines the types of a modifying (has write access to the elements) enumerator.
+  Defines the types of a modifying (has write access to the elements)
+  enumerator.
 
   @short Descriptor for modifying enumerator.
   @ingroup collections
@@ -31,7 +32,6 @@ class EnumeratorTraits {
 public:
 
   typedef EnumeratorTraits SelfEnumeratorTraits;
-public:
 
   typedef VALUE Value;
   typedef VALUE* Pointer;
@@ -52,7 +52,6 @@ class ReadEnumeratorTraits {
 public:
 
   typedef ReadEnumeratorTraits SelfEnumeratorTraits;
-public:
 
   typedef VALUE Value;
   typedef const VALUE* Pointer;

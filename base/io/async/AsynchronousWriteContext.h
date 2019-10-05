@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,11 +15,16 @@
 #define _DK_SDU_MIP__BASE_IO_ASYNC__ASYNCHRONOUS_WRITE_CONTEXT_H
 
 #include <base/io/async/AsynchronousWriteEventListener.h>
-#include <base/io/async/AsynchronousIOStream.h>
+#include <base/io/async/AsynchronousException.h>
 #include <base/mem/Reference.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+/**
+  Asynchronous write context.
+
+  @author Rene Fonseca
+*/
 class AsynchronousWriteContext : public Object, public ReferenceCountedObject {
 protected:
   

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2003-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,6 +16,7 @@
 
 #include <base/AutomationObject.h>
 #include <base/InvalidException.h>
+#include <base/Base.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -70,7 +71,7 @@ public:
   /**
     Returns the value. Raises InvalidException if result is invalid.
   */
-  inline TYPE getValue() const throw(InvalidException) {
+  inline const TYPE& getValue() const throw(InvalidException) {
     assert(valid, InvalidException(this));
     return value;
   }

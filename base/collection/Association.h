@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -70,29 +70,31 @@ public:
   /**
     Returns the key value of the association.
   */
-  inline KEY* getKey() throw() {
-    return &key;
+  /*
+  inline const KEY& getKey() throw() {
+    return key;
   }
+  */
 
   /**
     Returns the key value of the association.
   */
-  inline const KEY* getKey() const throw() {
-    return &key;
+  inline const KEY& getKey() const throw() {
+    return key;
   }
 
   /**
     Returns the value of the association.
   */
-  inline VALUE* getValue() throw() {
-    return &value;
+  inline VALUE& getValue() throw() {
+    return value;
   }
 
   /**
     Returns the value of the association.
   */
-  inline const VALUE* getValue() const throw() {
-    return &value;
+  inline const VALUE& getValue() const throw() {
+    return value;
   }
 
   /**
@@ -128,7 +130,7 @@ template<class KEY, class VALUE>
 inline int compare(
   const Association<KEY, VALUE>& left,
   const Association<KEY, VALUE>& right) throw() {
-  return compare(left.key, right.key);
+  return compare(left.getKey(), right.getKey());
 }
 
 /**
@@ -138,7 +140,7 @@ template<class KEY, class VALUE>
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
   const Association<KEY, VALUE>& value) throw(IOException) {
-  return stream << '[' << *value.getKey() << ']' << '=' << *value.getValue();
+  return stream << '[' << value.getKey() << ']' << '=' << value.getValue();
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

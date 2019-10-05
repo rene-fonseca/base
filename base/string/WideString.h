@@ -734,7 +734,7 @@ public:
     assert(string, StringException(Type::getType<String>()));
     const wchar* terminator = find<wchar>(string, maximum, 0);
     assert(terminator, StringException(Type::getType<String>()));
-    return terminator - string;
+    return static_cast<unsigned int>(terminator - string);
   }
 
   /**

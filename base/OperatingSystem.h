@@ -40,7 +40,7 @@ public:
   typedef void* Handle;
 
   /** This constants indicates an invalid handle. */
-  static const Handle INVALID_HANDLE = static_cast<char*>(0) - 1;
+  static const Handle INVALID_HANDLE;
 #else
   /**
     The type of an ordinary resource handle (do NOT assume anything about this

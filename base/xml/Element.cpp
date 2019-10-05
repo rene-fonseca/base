@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -52,12 +52,12 @@ Attribute Element::getFirstAttribute() throw() {
 #endif
 }
 
-bool Element::hasAttribute(const String& name) const throw() {
+bool Element::hasAttribute(const char* name) const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlAttr* attribute = xmlHasProp(
     node,
-    (const xmlChar*)name.getElements()
+    (const xmlChar*)name
   );
   return attribute != 0;
 #else
@@ -65,7 +65,7 @@ bool Element::hasAttribute(const String& name) const throw() {
 #endif
 }
 
-String Element::getAttribute(const String& name) const throw(DOMException) {
+String Element::getAttribute(const char* name) const throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   char* value = (char*)xmlGetProp(node, (const xmlChar*)name.getElements());
@@ -79,7 +79,7 @@ String Element::getAttribute(const String& name) const throw(DOMException) {
 }
 
 void Element::setAttribute(
-  const String& name, const String& value) throw(DOMException) {
+  const char* name, const char* value) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlAttr* attribute = xmlSetProp(
@@ -93,7 +93,7 @@ void Element::setAttribute(
 #endif
 }
 
-void Element::removeAttribute(const String& name) throw(DOMException) {
+void Element::removeAttribute(const char* name) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   int result = xmlUnsetProp(
@@ -106,7 +106,7 @@ void Element::removeAttribute(const String& name) throw(DOMException) {
 #endif
 }
 
-Attribute Element::getAttributeNode(const String& name) throw(DOMException) {
+Attribute Element::getAttributeNode(const char* name) throw(DOMException) {
   throw DOMException(this);
 }
 
@@ -119,8 +119,8 @@ Attribute Element::removeAttributeNode(Attribute attribute) throw(DOMException) 
 }
 
 Attribute Element::getAttributeNodeNS(
-  const String& namespaceURI,
-  const String& localName) throw(DOMException) {
+  const char* namespaceURI,
+  const char* localName) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   throw DOMException(this);
 //   xmlNode* node = (xmlNode*)getContext();
@@ -139,7 +139,7 @@ Attribute Element::getAttributeNodeNS(
 }
 
 String Element::getAttributeNS(
-  const String& namespaceURI, const String& localName) throw(DOMException) {
+  const char* namespaceURI, const char* localName) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   return NativeString(
@@ -155,14 +155,14 @@ String Element::getAttributeNS(
 }
 
 void Element::setAttributeNS(
-  const String& namespaceURI,
-  const String& qualifiedName,
-  const String& value) throw(DOMException) {
+  const char* namespaceURI,
+  const char* qualifiedName,
+  const char* value) throw(DOMException) {
 }
 
 void Element::removeAttributeNS(
-  const String& namespaceURI,
-  const String& localName) throw(DOMException) {
+  const char* namespaceURI,
+  const char* localName) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   int result = xmlUnsetNsProp(
@@ -182,7 +182,7 @@ Attribute Element::setAttributeNodeNS(
 }
 
 bool Element::hasAttributeNS(
-  const String& namespaceURI, const String& localName) const throw() {
+  const char* namespaceURI, const char* localName) const throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlAttr* attribute = xmlHasNsProp(

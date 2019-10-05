@@ -151,6 +151,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+OperatingSystem::Handle OperatingSystem::INVALID_HANDLE = static_cast<char*>(nullptr) - 1;
+
 long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
   // TAG: need to cache all cacheable variables
   

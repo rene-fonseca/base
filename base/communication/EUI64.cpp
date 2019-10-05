@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -89,7 +89,7 @@ uint64 EUI64::getExtensionId() const throw() {
 }
 
 void EUI64::setExtensionId(uint64 extensionId) throw(OutOfDomain) {
-  assert(extensionId <= 0xffffffffff, OutOfDomain(this));
+  assert(extensionId <= 0xffffffff, OutOfDomain(this));
   id[3] = extensionId >> 32;
   id[4] = extensionId >> 24;
   id[5] = extensionId >> 16;

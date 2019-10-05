@@ -260,7 +260,7 @@ public:
     assert(string, StringException(Type::getType<String>()));
     const char* terminator = find(string, maximum, Traits::TERMINATOR);
     assert(terminator, StringException(Type::getType<String>()));
-    return terminator - string;
+    return static_cast<unsigned int>(terminator - string);
   }
 
   /**
@@ -279,7 +279,7 @@ public:
       return 0;
     }
     const char* terminator = find(string, maximum, Traits::TERMINATOR);
-    return terminator ? (terminator - string) : maximum;
+    return terminator ? static_cast<unsigned int>(terminator - string) : maximum;
   }
   
   /**
@@ -360,7 +360,7 @@ public:
   template<MemorySize SIZE>
   inline String& operator=(const char (&literal)[SIZE])
     throw(MemoryException) {
-    if (Constraint<(SIZE < (MAXIMUM_LENGTH + 1))>::UNSPECIFIED);
+    if (Constraint<(SIZE < (MAXIMUM_LENGTH + 1))>::UNSPECIFIED) {}
     return operator=(Literal(literal));
   }
   

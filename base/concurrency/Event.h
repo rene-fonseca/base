@@ -91,7 +91,7 @@ public:
   /**
     Destroys the event object.
   */
-  ~Event() throw(EventException);
+  ~Event();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

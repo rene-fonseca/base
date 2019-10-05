@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -457,20 +457,36 @@ inline void fill<uint8>(uint8* dest, unsigned int count, uint8 value) throw() {
 */
 template<class TYPE>
 inline void clear(TYPE& value) throw() {
+  // TAG: move to cpp?
   long* p = Cast::pointer<long*>(&value);
-  for (unsigned int i = 0; i < sizeof(TYPE)/sizeof(long); ++i) {
+  const long* end = p + sizeof(value)/sizeof(long);
+  while (p != end) {
     *p++ = 0;
   }
   uint8* q = Cast::pointer<uint8*>(p);
-  unsigned int rest = sizeof(TYPE)%sizeof(long);
+  MemorySize rest = sizeof(value) % sizeof(long);
   if (rest == 0) {
     return;
   }
   switch (rest) {
+  case 7:
+    *q++ = 0;
+  case 6:
+    *q++ = 0;
+  case 5:
+    *q++ = 0;
+  case 4:
+    *q++ = 0;
+  case 3:
+    *q++ = 0;
+  case 2:
+    *q++ = 0;
+  case 1:
+    *q++ = 0;
   case 0:
     break;
   default:
-    for (unsigned int i = 0; i < rest; ++i) {
+    for (MemorySize i = 0; i < rest; ++i) {
       *q++ = 0;
     }
   }
@@ -507,7 +523,7 @@ public:
   @short Binds to a value to the first operand of a binary operation.
 */
 template<class BINOPR>
-class Binder2First : UnaryOperation<typename BINOPR::SecondArgument, typename BINOPR::Result> {
+class Binder2First : public UnaryOperation<typename BINOPR::SecondArgument, typename BINOPR::Result> {
 protected:
 
   typedef typename BINOPR::FirstArgument FirstArgument;
@@ -543,7 +559,7 @@ inline Binder2First<BINOPR> bind2First(
   @short Binds to a value to the second operand of a binary operation.
 */
 template<class BINOPR>
-class Binder2Second : UnaryOperation<typename BINOPR::FirstArgument, typename BINOPR::Result> {
+class Binder2Second : public UnaryOperation<typename BINOPR::FirstArgument, typename BINOPR::Result> {
 protected:
   
   typedef typename BINOPR::FirstArgument FirstArgument;
@@ -579,7 +595,7 @@ inline Binder2Second<BINOPR> bind2Second(
   @short Addition function object.
 */
 template<class TYPE>
-class Add : BinaryOperation<TYPE, TYPE, TYPE> {
+class Add : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
   
   inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
@@ -591,7 +607,7 @@ public:
   @short Subtraction function object.
 */
 template<class TYPE>
-class Subtract : BinaryOperation<TYPE, TYPE, TYPE> {
+class Subtract : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
   
   inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
@@ -603,7 +619,7 @@ public:
   @short Arithmetic multiplication function object.
 */
 template<class TYPE>
-class Multiply : BinaryOperation<TYPE, TYPE, TYPE> {
+class Multiply : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
   
   inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
@@ -615,7 +631,7 @@ public:
   @short Arithmetic division function object.
 */
 template<class TYPE>
-class Divide : BinaryOperation<TYPE, TYPE, TYPE> {
+class Divide : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
   
   inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
@@ -627,7 +643,7 @@ public:
   @short Arithmetic negation function object.
 */
 template<class TYPE>
-class Negate : UnaryOperation<TYPE, TYPE> {
+class Negate : public UnaryOperation<TYPE, TYPE> {
 public:
   
   inline TYPE operator()(const TYPE& left) const throw() {
@@ -639,7 +655,7 @@ public:
   @short Absolute value function object.
 */
 template<class TYPE>
-class Absolute : UnaryOperation<TYPE, TYPE> {
+class Absolute : public UnaryOperation<TYPE, TYPE> {
 public:
   
   inline TYPE operator()(const TYPE& left) const throw() {
@@ -1009,16 +1025,72 @@ public:
   }
 };
 
+/**
+  Class responsible for invocating const member functions that takes no
+   arguments.
+
+  @short Member invocation function object.
+  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+  @version 1.0
+*/
+
+template<class TYPE, class RESULT>
+class InvokeConstMember : public UnaryOperation<TYPE*, RESULT> {
+private:
+
+  /** The type of the member function. */
+  typedef RESULT (TYPE::*Member)() const;
+  /** The member function of the object. */
+  Member member;
+
+  /** Disable default assignment. */
+  InvokeConstMember& operator=(const InvokeConstMember& eq) throw();
+public:
+
+  /**
+    Initializes the object.
+
+    @param member The member function to be invocated.
+  */
+  explicit inline InvokeConstMember(Member _member) throw()
+    : member(_member) {
+  }
+
+  /**
+    Initializes object from other object.
+  */
+  inline InvokeConstMember(const InvokeConstMember& copy) throw()
+    : member(copy.member) {
+  }
+
+  /**
+    Invocate member function.
+  */
+  inline RESULT operator()(TYPE* object) const /*throw(...)*/ {
+    return (object->*member)();
+  }
+};
+
 
 
 /**
-  Returns an InvocateMember object for the specified member function.
+  Returns an InvokeMember object for the specified member function.
 
   @param member The member function to be invocated.
 */
 template<class TYPE, class RESULT>
 inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) /*throw(...)*/ {
   return InvokeMember<TYPE, RESULT>(member);
+}
+
+/**
+  Returns an InvokeConstMember object for the specified member function.
+
+  @param member The member function to be invocated.
+*/
+template<class TYPE, class RESULT>
+inline InvokeConstMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)() const) /*throw(...)*/ {
+  return InvokeConstMember<TYPE, RESULT>(member);
 }
 
 

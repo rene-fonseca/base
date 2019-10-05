@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -85,12 +85,12 @@ struct nothing {
 
 // TAG: typeof is a GCC extension
 /** The resulting integral type of pointer subtraction. */
-typedef typeof(static_cast<char*>(0) - static_cast<char*>(0)) MemoryDiff;
+typedef decltype(static_cast<char*>(0) - static_cast<char*>(0)) MemoryDiff;
 /**
   The integral type used to represent any memory offset and any size of memory
   block.
 */
-typedef typeof(sizeof(void*)) MemorySize;
+typedef decltype(sizeof(void*)) MemorySize;
 
 
 
@@ -118,11 +118,13 @@ typedef MemorySize ULargestInt; // TAG: could be different
 #define WIDEMESSAGE(message) WideLiteral(L ## message)
 
 
-
+/**
+  Native string.
+*/
 class NativeString {
 private:
 
-  const char* value;
+  const char* value = nullptr;
 public:
 
   inline NativeString(const char* _value) throw() : value(_value) {
@@ -131,18 +133,29 @@ public:
   inline const char* getValue() const throw() {
     return value;
   }
+
+  inline operator const char*() const throw() {
+    return value;
+  }
 };
 
+/**
+  Native wide string.
+*/
 class NativeWideString {
 private:
 
-  const wchar* value;
+  const wchar* value = nullptr;
 public:
 
   inline NativeWideString(const wchar* _value) throw() : value(_value) {
   }
   
   inline const wchar* getValue() const throw() {
+    return value;
+  }
+
+  inline operator const wchar*() const throw() {
     return value;
   }
 };
@@ -248,7 +261,7 @@ inline uint8 getHighWordOf16(uint16 value) throw() {
   Returns the lower half-word of the specified value.
 */
 inline uint8 getLowWordOf16(uint16 value) throw() {
-  return value;
+  return static_cast<uint8>(value & 0xff);
 }
 
 /**
@@ -276,7 +289,7 @@ inline uint32 getHighWordOf64(uint64 value) throw() {
   Returns the lower half-word of the specified value.
 */
 inline uint32 getLowWordOf64(uint64 value) throw() {
-  return value;
+  return static_cast<uint32>(value & 0xfffffff);
 }
 
 /**
@@ -306,9 +319,9 @@ inline bool isAligned(const TYPE& value) throw() {
 template<class TYPE>
 inline TYPE& getAligned(char* buffer) throw() {
   unsigned int alignment;
-  if (sizeof(value) <= sizeof(long)) {
+  if (sizeof(buffer) <= sizeof(long)) {
     alignment = sizeof(long);
-  } else if (sizeof(value) <= 2 * sizeof(long)) {
+  } else if (sizeof(buffer) <= 2 * sizeof(long)) {
     alignment = 2 * sizeof(long);
   } else {
     alignment = 4 * sizeof(long);
@@ -548,8 +561,8 @@ public:
   typedef bool Signed;
   typedef bool Unsigned;
   
-  static const bool MINIMUM = false;
-  static const bool MAXIMUM = true;
+  static constexpr bool MINIMUM = false;
+  static constexpr bool MAXIMUM = true;
 };
 
 template<>
@@ -560,8 +573,8 @@ public:
   typedef unsigned char Unsigned;
   
 #if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
-  static const signed char MAXIMUM = 127;
-  static const signed char MINIMUM = -MAXIMUM - 1;
+  static constexpr signed char MAXIMUM = 127;
+  static constexpr signed char MINIMUM = -MAXIMUM - 1;
 #endif
 };
 
@@ -573,8 +586,8 @@ public:
   typedef unsigned char Unsigned;
   
 #if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
-  static const unsigned char MAXIMUM = 255;
-  static const unsigned char MINIMUM = 0;
+  static constexpr unsigned char MAXIMUM = 255;
+  static constexpr unsigned char MINIMUM = 0;
 #endif
 };
 
@@ -586,11 +599,11 @@ public:
   typedef unsigned short Unsigned;
   
 #if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
-  static const short MAXIMUM = 32767;
+  static constexpr short MAXIMUM = 32767;
 #elif (_DK_SDU_MIP__BASE__SHORT_SIZE = 4)
-  static const short MAXIMUM = 2147483647;
+  static constexpr short MAXIMUM = 2147483647;
 #endif
-  static const short MINIMUM = -MAXIMUM - 1;
+  static constexpr short MINIMUM = -MAXIMUM - 1;
 };
 
 template<>
@@ -601,11 +614,11 @@ public:
   typedef unsigned short Unsigned;
   
 #if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
-  static const unsigned short MAXIMUM = 65535U;
+  static constexpr unsigned short MAXIMUM = 65535U;
 #elif (_DK_SDU_MIP__BASE__SHORT_SIZE = 4)
-  static const unsigned short MAXIMUM = 4294967295U;
+  static constexpr unsigned short MAXIMUM = 4294967295U;
 #endif
-  static const unsigned short MINIMUM = 0;
+  static constexpr unsigned short MINIMUM = 0;
 };
 
 template<>
@@ -616,11 +629,11 @@ public:
   typedef unsigned int Unsigned;
   
 #if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
-  static const int MAXIMUM = 2147483647;
+  static constexpr int MAXIMUM = 2147483647;
 #elif (_DK_SDU_MIP__BASE__INT_SIZE == 8)
-  static const int MAXIMUM = 9223372036854775807;
+  static constexpr int MAXIMUM = 9223372036854775807;
 #endif
-  static const int MINIMUM = -MAXIMUM - 1L;
+  static constexpr int MINIMUM = -MAXIMUM - 1L;
 };
 
 template<>
@@ -631,11 +644,11 @@ public:
   typedef unsigned int Unsigned;
   
 #if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
-  static const unsigned int MAXIMUM = 4294967295U;
+  static constexpr unsigned int MAXIMUM = 4294967295U;
 #elif (_DK_SDU_MIP__BASE__INT_SIZE == 8)
-  static const unsigned int MAXIMUM = 18446744073709551615U;
+  static constexpr unsigned int MAXIMUM = 18446744073709551615U;
 #endif
-  static const unsigned int MINIMUM = 0;
+  static constexpr unsigned int MINIMUM = 0;
 };
 
 template<>
@@ -646,11 +659,11 @@ public:
   typedef unsigned long Unsigned;
   
 #if (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
-  static const long MAXIMUM = 2147483647L;
+  static constexpr long MAXIMUM = 2147483647L;
 #elif (_DK_SDU_MIP__BASE__LONG_SIZE == 8)
-  static const long MAXIMUM = 9223372036854775807L;
+  static constexpr long MAXIMUM = 9223372036854775807L;
 #endif
-  static const long MINIMUM = -MAXIMUM - 1L;
+  static constexpr long MINIMUM = -MAXIMUM - 1L;
 };
 
 template<>
@@ -661,11 +674,11 @@ public:
   typedef unsigned long Unsigned;
   
 #if (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
-  static const unsigned long MAXIMUM = 4294967295UL;
+  static constexpr unsigned long MAXIMUM = 4294967295UL;
 #elif (_DK_SDU_MIP__BASE__LONG_SIZE == 8)
-  static const unsigned long MAXIMUM = 18446744073709551615UL;
+  static constexpr unsigned long MAXIMUM = 18446744073709551615UL;
 #endif
-  static const unsigned long MINIMUM = 0;
+  static constexpr unsigned long MINIMUM = 0;
 };
 
 template<>
@@ -676,9 +689,9 @@ public:
   typedef unsigned long long Unsigned;
   
 #if (_DK_SDU_MIP__BASE__LONG_LONG_SIZE == 8)
-  static const long long MAXIMUM = 9223372036854775807LL;
+  static constexpr long long MAXIMUM = 9223372036854775807LL;
 #endif
-  static const long long MINIMUM = -MAXIMUM - 1LL;
+  static constexpr long long MINIMUM = -MAXIMUM - 1LL;
 };
 
 template<>
@@ -689,33 +702,33 @@ public:
   typedef unsigned long long Unsigned;
   
 #if (_DK_SDU_MIP__BASE__LONG_LONG_SIZE == 8)
-  static const unsigned long long MAXIMUM = 18446744073709551615ULL;
+  static constexpr unsigned long long MAXIMUM = 18446744073709551615ULL;
 #endif
-  static const unsigned long long MINIMUM = 0;
+  static constexpr unsigned long long MINIMUM = 0;
 };
 
 template<>
 class PrimitiveTraits<float> {
 public:  
   
-  static const float MAXIMUM = 0;
-  static const float MINIMUM = -MAXIMUM;
+  static constexpr float MAXIMUM = 0;
+  static constexpr float MINIMUM = -MAXIMUM;
 };
 
 template<>
 class PrimitiveTraits<double> {
 public:
   
-  static const double MAXIMUM = 0;
-  static const double MINIMUM = -MAXIMUM;
+  static constexpr double MAXIMUM = 0;
+  static constexpr double MINIMUM = -MAXIMUM;
 };
 
 template<>
 class PrimitiveTraits<long double> {
 public:
   
-  static const long double MAXIMUM = 0;
-  static const long double MINIMUM = -MAXIMUM;
+  static constexpr long double MAXIMUM = 0;
+  static constexpr long double MINIMUM = -MAXIMUM;
 };
 
 /**

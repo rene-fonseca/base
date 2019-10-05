@@ -41,7 +41,7 @@ public:
   template<MemorySize SIZE>
   inline Literal(const char (&value)[SIZE]) throw()
     : literal(value), length(SIZE - 1) {
-    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
   }
   
   /**

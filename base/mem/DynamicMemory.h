@@ -20,12 +20,14 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+/*
 namespace alloc {
   void* operator new(MemorySize) throw(MemoryException);
   void operator delete(void*) throw(MemoryException);
   void* operator new[](MemorySize) throw(MemoryException);
   void operator delete[](void*) throw(MemoryException);
 };
+*/
 
 /**
   This class provides support for dynamic memory allocation/deallocation.
@@ -38,10 +40,12 @@ namespace alloc {
 */
 
 class DynamicMemory {
+/*
   friend void* alloc::operator new(MemorySize) throw(MemoryException);
   friend void alloc::operator delete(void*) throw(MemoryException);
   friend void* alloc::operator new[](MemorySize) throw(MemoryException);
   friend void alloc::operator delete[](void*) throw(MemoryException);
+*/
 private:
 
   /**
@@ -65,6 +69,7 @@ private:
   static bool release(void* memory) throw();
 };
 
+#if 0
 namespace alloc {
   
   /**
@@ -119,6 +124,7 @@ namespace alloc {
     assert(memory && DynamicMemory::release(memory), MemoryException());
   }
 }; // end of namespace - alloc
+#endif
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

@@ -52,7 +52,8 @@ public:
     Acquires an exclusive lock.
   */
   inline void exclusiveLock() const throw() {
-#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
+#if 1
+#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
     register unsigned int previous;
     asm (
       "        xchgl %0, %1\n"
@@ -63,6 +64,7 @@ public:
       acquireExclusiveLock();
     }
 #elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64)
+    // TAG: use intrinsic
     register unsigned int previous;
     asm (
       "        xchgl %0, %1\n"
@@ -99,7 +101,8 @@ public:
     @return True on success.
   */
   inline bool tryExclusiveLock() const throw() {
-#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
+#if 1
+#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
     register unsigned int previous;
     asm volatile (
       "        xchgl %0, %1\n"

@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -130,7 +130,7 @@ bool FileSystem::isSubPathOf(const String& root, const String& path) throw() {
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
 // TAG: GLIBC: st_size is not 64bit aligned
 struct packedStat64 { // temporary fix for unaligned st_size
   __dev_t st_dev;
@@ -452,7 +452,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
   return flags;
 #else // unix
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  #if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
     int result = stat64(path.getElements(), (struct stat64*)&status);
   #else
@@ -518,7 +518,7 @@ uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
   return static_cast<uint64>(information.nFileSizeHigh) | information.nFileSizeLow;
 #else // unix
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  #if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
     int result = stat64(path.getElements(), (struct stat64*)&status);
   #else
@@ -549,7 +549,7 @@ bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
   return true;
 #else // unix
 #  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-#    if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#    if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
   int result = stat64(path.getElements(), (struct stat64*)&status);
 #    else
@@ -595,7 +595,7 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
   // we ignore FILE_ATTRIBUTE_REPARSE_POINT
 #else // unix
 #  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-#    if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#    if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
   int result = stat64(path.getElements(), (struct stat64*)&status);
 #    else
@@ -640,7 +640,7 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
   return ((result & FILE_ATTRIBUTE_DIRECTORY) != 0); // we ignore FILE_ATTRIBUTE_REPARSE_POINT
 #else // unix
 #  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-#    if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#    if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
   int result = stat64(path.getElements(), (struct stat64*)&status);
 #    else
@@ -1782,7 +1782,7 @@ String FileSystem::getFolder(Folder folder) throw() {
     {
       char buffer[3]; // large enough for "C:\0"
       ::GetWindowsDirectory(buffer, sizeof(buffer));
-      return String(buffer);
+      return NativeString(buffer);
     }
   case FileSystem::DEVICES:
     return Literal("\\\\.");
@@ -1791,7 +1791,7 @@ String FileSystem::getFolder(Folder folder) throw() {
     {
       char buffer[MAX_PATH + 1];
       ::GetWindowsDirectory(buffer, sizeof(buffer));
-      return String(buffer) + MESSAGE("\\temp");
+      return String(NativeString(buffer)) + MESSAGE("\\temp");
     }
   }
 #else // unix

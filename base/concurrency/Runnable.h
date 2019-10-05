@@ -74,7 +74,7 @@ public:
   /**
     Destroys the runnable object.
   */
-  virtual ~Runnable() /*throw(...)*/ {
+  virtual ~Runnable() {
   }
 };
 

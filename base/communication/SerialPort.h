@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,8 +19,7 @@
 #include <base/NotSupported.h>
 #include <base/collection/List.h>
 #include <base/io/Handle.h>
-#include <base/io/async/AsynchronousInputStream.h>
-#include <base/io/async/AsynchronousOutputStream.h>
+#include <base/io/async/AsynchronousIOStream.h>
 #include <base/mem/Reference.h>
 #include <base/string/String.h>
 

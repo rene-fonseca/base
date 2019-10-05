@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2001-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -62,7 +62,7 @@ public:
           stream << " with";
         }
         if (message) {
-          stream << " message '" << NativeString(message) << '\'';
+          stream << " message '" << message << '\'';
         }
         if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
           stream << " and";
@@ -112,7 +112,7 @@ public:
           stream << " with";
         }
         if (message) {
-          stream << " message '" << NativeString(message) << '\'';
+          stream << " message '" << message << '\'';
         }
         if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
           stream << " and";
@@ -152,7 +152,7 @@ public:
 #if 0 // disabled
   // TAG: we should destroy window in destructor
   StringOutputStream stream;
-  stream << "messageHandler: message=" << NativeString(message) << " primary="
+  stream << "messageHandler: message=" << message << " primary="
          << primaryParameter << " second=" << secondaryParameter << FLUSH;
   Trace::message(stream.getString().getElements());
   if (::InSendMessage()) {
@@ -289,7 +289,7 @@ public:
       }
       ferr << "Internal error: floating-point exception";
       if (error) {
-        ferr << SP << '(' << NativeString(error) << ')';
+        ferr << SP << '(' << error << ')';
       }
       ferr << " at address " << setWidth(2 + 2 * sizeof(void*))
            << instructionAddress << '.' << ENDL;
@@ -310,7 +310,7 @@ public:
       }
       ferr << "Internal error: bus error ";
       if (error) {
-        ferr << '(' << NativeString(error) << ')';
+        ferr << '(' << error << ')';
       }
       ferr << ENDL;
       break;
@@ -342,7 +342,7 @@ public:
       }
       ferr << "Internal error: illegal instruction";
       if (error) {
-        ferr << SP << '(' << NativeString(error) << ')';
+        ferr << SP << '(' << error << ')';
       }
       ferr << " at address " << setWidth(2 + 2 * sizeof(void*))
            << info->si_addr << '.' << ENDL;
@@ -720,7 +720,7 @@ Application::Application(
   path = arguments[0]; // TAG: fixme
 #endif
   for (int i = 1; i < numberOfArguments; ++i) {
-    this->arguments.append(NativeString(arguments[i]));
+    this->arguments.append(arguments[i]);
   }
 
   if (environment) {

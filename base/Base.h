@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2000-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2000-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -109,7 +109,7 @@ template<class TYPE> inline TYPE absolute(const TYPE& value) throw() {
   @see Assertion
 */
 template<class EXCEPTION>
-inline void assert(bool assertion, EXCEPTION exception) throw(EXCEPTION) {
+inline void assert(bool assertion, const EXCEPTION& exception) throw(EXCEPTION) {
   if (!assertion) {
     throw exception;
   }

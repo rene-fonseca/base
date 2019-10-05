@@ -77,7 +77,7 @@ public:
   /**
     Destroy lock.
   */
-  virtual ~Lock() throw(LockException);
+  virtual ~Lock();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

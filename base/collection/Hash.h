@@ -49,10 +49,10 @@ public:
       static_cast<const uint8*>(value) - static_cast<const uint8*>(0);
     // TAG: least significant bits are likely to be 0
     if (sizeof(unsigned long) >= sizeof(offset)) {
-      return 1500450271 * ((offset >> 8) + (offset << 8));
+      return static_cast<unsigned long>(1500450271 * ((offset >> 8) + (offset << 8)));
     } else {
-      return 1500450271 * ((offset >> 8) + (offset << 8)) +
-        (offset >> (sizeof(offset) * 8/2));
+      return static_cast<unsigned long>(1500450271 * ((offset >> 8) + (offset << 8)) +
+        (offset >> (sizeof(offset) * 8/2)));
     }
   }
 };

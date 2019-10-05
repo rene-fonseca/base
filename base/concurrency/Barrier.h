@@ -90,7 +90,7 @@ public:
   /**
     Destroys the barrier.
   */
-  ~Barrier() throw(LockException);
+  ~Barrier();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

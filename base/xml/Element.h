@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -71,23 +71,40 @@ public:
   /**
     Retrieves an attribute value by name.
   */
-  String getAttribute(const String& name) const throw(DOMException);
+  inline String getAttribute(const String& name) const throw(DOMException) {
+    return getAttribute(name.native());
+  }
+
+  String getAttribute(const char* name) const throw(DOMException);
   
   /**
     Adds a new attribute.
   */
+  inline void setAttribute(
+    const String& name, const String& value) throw(DOMException) {
+    setAttribute(name.native(), value.native());
+  }
+
   void setAttribute(
-    const String& name, const String& value) throw(DOMException);
+    const char* name, const char* value) throw(DOMException);
   
   /**
     Removes an attribute by name.
   */
-  void removeAttribute(const String& name) throw(DOMException);
+  inline void removeAttribute(const String& name) throw(DOMException) {
+    removeAttribute(name.native());
+  }
+
+  void removeAttribute(const char* name) throw(DOMException);
   
   /**
     Retrieves an attribute node by name.
   */
-  Attribute getAttributeNode(const String& name) throw(DOMException);
+  inline Attribute getAttributeNode(const String& name) throw(DOMException) {
+    return getAttributeNode(name.native());
+  }
+
+  Attribute getAttributeNode(const char* name) throw(DOMException);
   
   /**
     Adds a new attribute node.
@@ -102,30 +119,54 @@ public:
   /**
     Retrieves an Attribute node by local name and namespace URI.
   */
-  Attribute getAttributeNodeNS(
+  inline Attribute getAttributeNodeNS(
     const String& namespaceURI,
-    const String& localName) throw(DOMException);
+    const String& localName) throw(DOMException) {
+    return getAttributeNodeNS(namespaceURI.native(), localName.native());
+  }
+
+  Attribute getAttributeNodeNS(
+    const char* namespaceURI,
+    const char* localName) throw(DOMException);
   
   /**
     Retrieves an attribute value by local name and namespace URI.
   */
+  inline String getAttributeNS(
+    const String& namespaceURI, const String& localName) throw(DOMException) {
+    return getAttributeNS(namespaceURI.native(), localName.native());
+  }
+
   String getAttributeNS(
-    const String& namespaceURI, const String& localName) throw(DOMException);
-  
+    const char* namespaceURI, const char* localName) throw(DOMException);
+
   /**
     Adds a new attribute.
   */
-  void setAttributeNS(
+  inline void setAttributeNS(
     const String& namespaceURI,
     const String& qualifiedName,
-    const String& value) throw(DOMException);
+    const String& value) throw(DOMException) {
+    setAttributeNS(namespaceURI.native(), qualifiedName.native(), value.native());
+  }
+
+  void setAttributeNS(
+    const char* namespaceURI,
+    const char* qualifiedName,
+    const char* value) throw(DOMException);
   
   /**
     Removes an attribute by local name and namespace URI.
   */
-  void removeAttributeNS(
+  inline void removeAttributeNS(
     const String& namespaceURI,
-    const String& localName) throw(DOMException);
+    const String& localName) throw(DOMException) {
+    removeAttributeNS(namespaceURI.native(), localName.native());
+  }
+
+  void removeAttributeNS(
+    const char* namespaceURI,
+    const char* localName) throw(DOMException);
   
   /**
     Adds a new attribute.
@@ -137,18 +178,27 @@ public:
   */
   bool hasAttributes() const throw();
   
+  bool hasAttribute(const char* name) const throw();
+
   /**
     Returns true when an attribute with a given name is specified on this
     element or has a default value, false otherwise.
   */
-  bool hasAttribute(const String& name) const throw();
-  
+  inline bool hasAttribute(const String& name) const throw() {
+    return hasAttribute(name.native());
+  }
+
+  bool hasAttributeNS(
+    const char* namespaceURI, const char* localName) const throw();
+
   /**
     Returns true when an attribute with a given local name and namespace URI is
     specified on this element or has a default value, false otherwise.
   */
-  bool hasAttributeNS(
-    const String& namespaceURI, const String& localName) const throw();
+  inline bool hasAttributeNS(
+    const String& namespaceURI, const String& localName) const throw() {
+    return hasAttributeNS(namespaceURI.native(), localName.native());
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

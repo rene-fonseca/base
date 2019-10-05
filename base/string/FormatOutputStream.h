@@ -530,7 +530,7 @@ public:
   template<MemorySize SIZE>
   inline FormatOutputStream& operator<<(
     const char (&literal)[SIZE]) throw(IOException) {
-    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     addCharacterField(literal, SIZE - 1);
     return *this;
   }
@@ -578,7 +578,7 @@ public:
   */
   inline FormatOutputStream& operator<<(
     const Literal& literal) throw(IOException) {
-    addCharacterField(literal.getValue(), literal.getLength());
+    addCharacterField(literal.getValue(), static_cast<unsigned int>(literal.getLength()));
     return *this;
   }
   
@@ -590,7 +590,7 @@ public:
   /**
     Destroy format output stream.
   */
-  ~FormatOutputStream() throw(IOException);
+  ~FormatOutputStream();
 };
 
 /**

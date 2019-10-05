@@ -55,7 +55,7 @@ public:
     return string;
   }
   
-  inline ~StringOutputStreamWrapper() throw(IOException) {
+  inline ~StringOutputStreamWrapper() {
   }
 };
 
@@ -120,7 +120,7 @@ public:
   /**
     Destroy stream object.
   */
-  inline ~StringOutputStream() throw(IOException) {
+  ~StringOutputStream() {
   }
 };
 

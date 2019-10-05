@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 template<class VALUE>
 class EnumeratorTraits {
-protected:
+public:
 
   typedef EnumeratorTraits SelfEnumeratorTraits;
 public:
@@ -49,7 +49,7 @@ public:
 */
 template<class VALUE>
 class ReadEnumeratorTraits {
-protected:
+public:
 
   typedef ReadEnumeratorTraits SelfEnumeratorTraits;
 public:

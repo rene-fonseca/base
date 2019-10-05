@@ -1165,17 +1165,17 @@ WideString Date::format(
 #if defined(_DK_SDU_MIP__BASE__HAVE_WCSFTIME)
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   Allocator<uint8>* buffer = Thread::getLocalStorage();
-  time_t nativeTime = internal::dateToNative(date);
+  time_t nativeTime = (date + 500)/1000; // internal::dateToNative(date);
   struct tm time;
   if (local) {
-    localtime_r(&nativeTime, &time);
+    localtime_s(&time, &nativeTime);
   } else {
-    gmtime_r(&nativetime, &time); // MT-safe
+    gmtime_s(&time, &nativeTime); // MT-safe
   }
   size_t result = wcsftime(
     Cast::pointer<wchar*>(buffer->getElements()),
     buffer->getSize()/sizeof(wchar),
-    format.getElements(),
+    nullptr, // TAG: FIXME? format.getElements(),
     &time
   );
   return WideString(

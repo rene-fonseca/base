@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2006 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,14 +32,14 @@ class Float : public Object {
 public:
 
   /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-  static const long double MINIMUM = FloatingPoint::ToFloat::MINIMUM;
+  static const long double MINIMUM; // TAG = FloatingPoint::ToFloat::MINIMUM;
   /** Maximum representable finite floating-point number (2^e_max). */
-  static const long double MAXIMUM = FloatingPoint::ToFloat::MAXIMUM;
+  static const long double MAXIMUM; // TAG = FloatingPoint::ToFloat::MAXIMUM;
   /**
     The difference between 1 and the least value greater than 1 that is
     representable in the given floating point type.
   */
-  static const long double EPSILON = FloatingPoint::ToFloat::EPSILON;
+  static const long double EPSILON; // TAG = FloatingPoint::ToFloat::EPSILON;
 protected:
   
   /** The value. */

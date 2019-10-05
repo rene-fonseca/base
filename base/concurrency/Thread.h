@@ -461,7 +461,7 @@ public:
     resources associated with the thread context may linger for some time until
     the operating system desides its time to release them.
   */
-  ~Thread() throw(ThreadException);
+  ~Thread();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

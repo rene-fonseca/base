@@ -4,10 +4,10 @@ Version:        1.0 (prerelease)
 Entered-date:   
 Description:    A framework for developing platform independent applications.
 Keywords:       base c++
-Author:         René Møller Fonseca <fonseca@mip.sdu.dk>
-Maintained-by:  René Møller Fonseca <fonseca@mip.sdu.dk>
+Author:         RenÃ© MÃ¸ller Fonseca <rene.m.fonseca@gmail.com>
+Maintained-by:  RenÃ© MÃ¸ller Fonseca <rene.m.fonseca@gmail.com>
 Primary-site:   
-BHome-page:     http://www.mip.sdu.dk/~fonseca/base
+Homepage:       https://dev.azure.com/renefonseca/base
 Original-site:  
 Platforms:      Linux (x86), Irix (mips), Solaris (sparc), and Windows NT (x86).
 Copying-policy: GNU General Public License Version 2, June 1991

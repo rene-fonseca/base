@@ -37,20 +37,19 @@
     BEGIN
       BLOCK "040904e4"
       BEGIN
-        VALUE "Comments", "Written by René Møller Fonseca <fonseca@mip.sdu.dk>. This framework is distributed under the GNU General Public License Version 2, June 1991.\0"
-        VALUE "CompanyName", "René Møller Fonseca <http://www.mip.sdu.dk/~fonseca/base>\0"
+        VALUE "Comments", "Written by Renï¿½ Mï¿½ller Fonseca <fonseca@mip.sdu.dk>. This framework is distributed under the GNU General Public License Version 2, June 1991.\0"
+        VALUE "CompanyName", "Renï¿½ Mï¿½ller Fonseca <https://dev.azure.com/renefonseca>\0"
         VALUE "FileDescription", "A framework for developing platform independent applications\0"
         VALUE "FileVersion",  _DK_SDU_MIP__BASE__VERSION "\0"
         VALUE "InternalName", "base\0"
-        VALUE "LegalCopyright", "Copyright © 2000-2002 by René Møller Fonseca\0"
+        VALUE "LegalCopyright", "Copyright ï¿½ 2000-2019 by Renï¿½ Mï¿½ller Fonseca\0"
         VALUE "LegalTrademarks", "Currently not available\0"
         VALUE "OriginalFilename", "base.dll\0"
 #if defined(_DK_SDU_MIP__BASE__DEBUG)
-        VALUE "PrivateBuild", _DK_SDU_MIP__BASE__MAKE_PRIVATE_BUILD(_DK_SDU_MIP__BASE__BUILD_DATE, _DK_SDU_MIP__BASE__BUILD_USER, _DK_SDU_MIP__BASE__BUILD_HOST, _DK_SDU_MIP__BASE__BUILD_SYSTEM, _DK_SDU_MIP__BASE__TARGET_SYSTEM)
+        VALUE "PrivateBuild", _DK_SDU_MIP__BASE__MAKE_PRIVATE_BUILD(_DK_SDU_MIP__BASE__BUILD_DATE, "", "", "", "")
 #endif
         VALUE "ProductName", "The Base Framework\0"
         VALUE "ProductVersion", _DK_SDU_MIP__BASE__VERSION "\0"
-//        VALUE "SpecialBuild", "This is a special build\0"
       END
     END
     BLOCK "VarFileInfo"

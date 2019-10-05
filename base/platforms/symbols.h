@@ -84,7 +84,8 @@
 #define _DK_SDU_MIP__BASE__COMPILER_INTEL 4
 #define _DK_SDU_MIP__BASE__COMPILER_BORLAND 5
 #define _DK_SDU_MIP__BASE__COMPILER_MSC 6
-#define _DK_SDU_MIP__BASE__COMPILER_DOXYGEN 7
+#define _DK_SDU_MIP__BASE__COMPILER_CLANG 7
+#define _DK_SDU_MIP__BASE__COMPILER_DOXYGEN 8
 
 // Specific ABIs
 #define _DK_SDU_MIP__BASE__ABI_V3MV 1 // V3 multi vendor ABI
@@ -120,6 +121,7 @@
 #define _DK_SDU_MIP__BASE__WXP 7 // only WIN32
 #define _DK_SDU_MIP__BASE__BEOS 8
 #define _DK_SDU_MIP__BASE__AIX 9
+#define _DK_SDU_MIP__BASE__MACOS 10 // only Unix
 
 // Major architecture groups
 #define _DK_SDU_MIP__BASE__X86 1

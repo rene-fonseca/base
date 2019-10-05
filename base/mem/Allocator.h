@@ -56,7 +56,8 @@ public:
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
       const TYPE* end = dest + count;
       while (dest != end) {
-        new(dest) TYPE();
+        *dest = TYPE();
+        // TAG: new(dest) TYPE();
         ++dest;
       }
     }
@@ -69,14 +70,15 @@ public:
   static inline void initializeByCopy(
     TYPE* restrict dest,
     const TYPE* restrict src,
-    unsigned int count) /*throw(...)*/ {
+    unsigned int count) {
     if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE ||
         Relocateable<TYPE>::IS_RELOCATEABLE) {
       copy<TYPE>(dest, src, count); // blocks do not overlap
     } else {
       const TYPE* end = dest + count;
       while (dest != end) {
-        new(dest) TYPE(*src); // copy object
+        *dest = *src;
+// TAG: ::operator new (dest) TYPE(*src); // copy object
         ++dest;
         ++src;
       }
@@ -90,12 +92,13 @@ public:
   static inline void initializeByMove(
     TYPE* dest,
     const TYPE* src,
-    unsigned int count) /*throw(...)*/ {
+    unsigned int count) {
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE &&
         !Relocateable<TYPE>::IS_RELOCATEABLE) {
       const TYPE* end = dest + count;
       while (dest != end) {
-        new(dest) TYPE(*src); // copy object
+        *dest = *src;
+        // TAG: new(dest) TYPE(*src); // copy object
         src->~TYPE(); // destroy old object
         ++dest;
         ++src;
@@ -107,7 +110,7 @@ public:
     Destroys the elements of the sequence. Does nothing for uninitializeable
     objects.
   */
-  static inline void destroy(TYPE* dest, unsigned int count) /*throw(...)*/ {
+  static inline void destroy(TYPE* dest, unsigned int count) {
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
       const TYPE* end = dest + count;
       while (dest != end) {

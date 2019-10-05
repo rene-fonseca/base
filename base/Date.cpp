@@ -26,6 +26,7 @@
 #  include <windows.h>
 #  include <time.h>
 #else // unix
+#  include <wchar.h>
 #  include <sys/time.h>
 #  include <time.h>
 #  include <unistd.h>
@@ -52,9 +53,7 @@ namespace internal {
   inline int64 getTimezone() throw() {
     return _timezone * 1000000LL;
   }
-#else
-  extern "C" long timezone;
-  
+#else 
   inline int64 getTimezone() throw() {
     return timezone * 1000000LL;
   }
@@ -1194,7 +1193,7 @@ WideString Date::format(
   size_t result = wcsftime(
     Cast::pointer<wchar*>(buffer->getElements()),
     buffer->getSize()/sizeof(wchar),
-    format.getElements(),
+    nullptr, // TAG: FIXME format.getElements(),
     &time
   );
   return WideString(

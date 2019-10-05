@@ -305,7 +305,7 @@ inline bool isAligned(const TYPE& value) throw() {
   } else {
     alignment = 4 * sizeof(long);
   }
-  return (reinterpret_cast<const char*>(&value) - static_cast<const char*>(0)) & (alignment - 1) == 0;
+  return (reinterpret_cast<const char*>(&value) - static_cast<const char*>(0)) && ((alignment - 1) == 0);
 }
 
 /**

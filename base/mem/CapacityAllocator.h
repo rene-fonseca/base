@@ -42,9 +42,9 @@ public:
 private:
   
   /** The number of elements in the block. */
-  unsigned int capacity;
+  unsigned int capacity = 0;
   /** The granularity of the allocated block memory. */
-  unsigned int granularity;
+  unsigned int granularity = DEFAULT_GRANULARITY;
 public:
   
   typedef typename Allocator<TYPE>::Iterator Iterator;
@@ -56,8 +56,7 @@ public:
   /**
     Initializes an empty allocator with the default granularity.
   */
-  inline explicit CapacityAllocator() throw()
-    : capacity(0), granularity(DEFAULT_GRANULARITY) {
+  inline explicit CapacityAllocator() throw() {
   }
 
   /**
@@ -67,7 +66,7 @@ public:
     @param granularity Specifies the number of elements to allocate at a time.
   */
   inline explicit CapacityAllocator(unsigned int _granularity) throw(OutOfRange)
-    : capacity(0), granularity(_granularity) {
+    : granularity(_granularity) {
     assert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
   }
 
@@ -81,7 +80,7 @@ public:
     @param granularity Specifies the number of elements to allocate at a time.
   */
   inline CapacityAllocator(unsigned int size, unsigned int _granularity) throw(OutOfRange, MemoryException)
-    : capacity(0), granularity(_granularity) {
+    : granularity(_granularity) {
     assert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
     setSize(size);
   }
@@ -135,42 +134,42 @@ public:
     Returns the first element of the allocator as a modifying iterator.
   */
   inline Iterator getBeginIterator() throw() {
-    return Iterator(getElements());
+    return Iterator(Allocator<TYPE>::getElements());
   }
 
   /**
     Returns the end of the allocator as a modifying iterator.
   */
   inline Iterator getEndIterator() throw() {
-    return Iterator(getElements() + getSize());
+    return Iterator(Allocator<TYPE>::getElements() + getSize());
   }
 
   /**
     Returns the first element of the allocator as a non-modifying iterator.
   */
   inline ReadIterator getBeginReadIterator() const throw() {
-    return ReadIterator(getElements());
+    return ReadIterator(Allocator<TYPE>::getElements());
   }
 
   /**
     Returns the end of the allocator as a non-modifying iterator.
   */
   inline ReadIterator getEndReadIterator() const throw() {
-    return ReadIterator(getElements() + getSize());
+    return ReadIterator(Allocator<TYPE>::getElements() + getSize());
   }
 
   /**
     Returns a modifying enumerator of the allocator.
   */
   inline Enumerator getEnumerator() throw() {
-    return Enumerator(getElements(), getElements() + getSize());
+    return Enumerator(Allocator<TYPE>::getElements(), Allocator<TYPE>::getElements() + getSize());
   }
 
   /**
     Returns a non-modifying enumerator of the allocator.
   */
   inline ReadEnumerator getReadEnumerator() const throw() {
-    return ReadEnumerator(getElements(), getElements() + getSize());
+    return ReadEnumerator(Allocator<TYPE>::getElements(), Allocator<TYPE>::getElements() + getSize());
   }
 
   /**

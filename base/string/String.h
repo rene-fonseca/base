@@ -312,7 +312,7 @@ public:
   template<MemorySize SIZE>
   inline String(const char (&literal)[SIZE]) throw(MemoryException)
     : elements(0) {
-    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     initialize(literal, SIZE - 1);
   }
   
@@ -884,7 +884,7 @@ public:
   
   template<MemorySize SIZE>
   inline bool operator==(const char (&literal)[SIZE]) const throw() {
-    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) == 0;
   }
   
@@ -904,7 +904,7 @@ public:
   
   template<MemorySize SIZE>
   inline bool operator!=(const char (&literal)[SIZE]) const throw() {
-    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) != 0;
   }
   
@@ -917,7 +917,7 @@ public:
 
   template<MemorySize SIZE>
   inline bool operator<(const char (&literal)[SIZE]) const throw() {
-    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) < 0;
   }
   
@@ -930,7 +930,7 @@ public:
 
   template<MemorySize SIZE>
   inline bool operator<=(const char (&literal)[SIZE]) const throw() {
-    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) <= 0;
   }
   
@@ -955,7 +955,7 @@ public:
 
   template<MemorySize SIZE>
   inline bool operator>(const char (&literal)[SIZE]) const throw() {
-    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) > 0;
   }
   

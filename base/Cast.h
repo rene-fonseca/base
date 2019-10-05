@@ -58,7 +58,7 @@ private:
   public:
     
     inline RESULT operator()(RESULT value) const throw() {
-      Constraint<false, Cast>::NOT_A_POINTER;
+      // Constraint<false, Cast>::NOT_A_POINTER;
     }
   };
   
@@ -118,7 +118,7 @@ private:
   public:
     
     static inline RESULT cast(ORIGINAL value) throw() {
-      Constraint<false, Cast>::NOT_A_POINTER;
+      // Constraint<false, Cast>::NOT_A_POINTER;
     }
   };
   
@@ -184,7 +184,7 @@ private:
   public:
     
     static inline RESULT cast(ORIGINAL value) throw() {
-      Constraint<false, Cast>::NOT_A_POINTER;
+      // Constraint<false, Cast>::NOT_A_POINTER;
     }
   };
   
@@ -456,13 +456,13 @@ public:
     
     template<class ARGUMENT>
     static inline RESULT& cast(ARGUMENT& value) throw() {
-      if (Constraint<sizeof(RESULT) == sizeof(ARGUMENT), Cast>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT);
+      if (Constraint<sizeof(RESULT) == sizeof(ARGUMENT), Cast>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT) {}
       return *reinterpret_cast<RESULT*>(&value);
     }
     
     template<class ARGUMENT>
     static inline const RESULT& cast(const ARGUMENT& value) throw() {
-      if (Constraint<sizeof(RESULT) == sizeof(ARGUMENT), Cast>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT);
+      if (Constraint<sizeof(RESULT) == sizeof(ARGUMENT), Cast>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT) {}
       return *reinterpret_cast<const RESULT*>(&value);
     }
   };
@@ -484,7 +484,7 @@ public:
     
     template<class ARGUMENT>
     static inline RESULT cast(ARGUMENT& value) throw() {
-      if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL);
+      if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL) {}
       union {
         ARGUMENT argument;
         RESULT result; // make sure we do not get an access violation in the cast
@@ -495,7 +495,7 @@ public:
     
     template<class ARGUMENT>
     static inline const RESULT cast(const ARGUMENT& value) throw() {
-      if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL);
+      if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL) {}
       union {
         const ARGUMENT argument;
         const RESULT result; // make sure we do not get an access violation in the cast
@@ -522,13 +522,13 @@ public:
     
     template<class ARGUMENT>
     static inline RESULT cast(ARGUMENT& value) throw() {
-      if (Constraint<sizeof(RESULT) <= sizeof(ARGUMENT), Cast>::ELEMENT_FOOTPRINT_TOO_LARGE);
+      if (Constraint<sizeof(RESULT) <= sizeof(ARGUMENT), Cast>::ELEMENT_FOOTPRINT_TOO_LARGE) {}
       return *reinterpret_cast<RESULT*>(&value);
     }
     
     template<class ARGUMENT>
     static inline const RESULT cast(const ARGUMENT& value) throw() {
-      if (Constraint<sizeof(RESULT) <= sizeof(ARGUMENT), Cast>::ELEMENT_FOOTPRINT_TOO_LARGE);
+      if (Constraint<sizeof(RESULT) <= sizeof(ARGUMENT), Cast>::ELEMENT_FOOTPRINT_TOO_LARGE) {}
       return *reinterpret_cast<const RESULT*>(&value);
     }
   };

@@ -170,7 +170,7 @@ inline int compare<uint8>(
   operation).
 */
 template<class TYPE, class UNOPR>
-inline unsigned int count(const TYPE* left, unsigned int c, UNOPR& predicate) /*throw(...)*/ {
+inline unsigned int count(const TYPE* left, unsigned int c, UNOPR& predicate) {
   unsigned int result = 0;
   while (c) {
     if (predicte(*left)) {
@@ -188,7 +188,7 @@ inline unsigned int count(const TYPE* left, unsigned int c, UNOPR& predicate) /*
 */
 template<class TYPE, class UNOPR>
 inline void forEach(
-  const TYPE* element, unsigned int count, UNOPR& function) /*throw(...)*/ {
+  const TYPE* element, unsigned int count, UNOPR& function) {
   const TYPE* const end = element + count;
   --element;
   while (++element != end) {
@@ -202,7 +202,7 @@ inline void forEach(
 */
 template<class TYPE, class BINOPR>
 inline void forEach(
-  const TYPE* left, const TYPE* right, unsigned int count, BINOPR& function) /*throw(...)*/ {
+  const TYPE* left, const TYPE* right, unsigned int count, BINOPR& function) {
   while (count) {
     function(*left, *right);
     ++left;
@@ -217,7 +217,7 @@ inline void forEach(
 */
 template<class TYPE, class BINOPR>
 inline void forEachDoBinary(
-  const TYPE* left, unsigned int count, BINOPR& function) /*throw(...)*/ {
+  const TYPE* left, unsigned int count, BINOPR& function) {
   while (count) {
     function(*left, *left);
     ++left;
@@ -231,7 +231,7 @@ inline void forEachDoBinary(
   @return A pointer to the value if it is present in the sequence otherwise 0.
 */
 template<class TYPE>
-inline const TYPE* find(const TYPE* element, unsigned int count, TYPE value) /*throw(...)*/ {
+inline const TYPE* find(const TYPE* element, unsigned int count, TYPE value) {
   const TYPE* const end = element + count;
   while (element != end) {
     if (*element == value) { // do we have a match
@@ -244,7 +244,7 @@ inline const TYPE* find(const TYPE* element, unsigned int count, TYPE value) /*t
 
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCHR)
 template<>
-inline const char* find(const char* element, unsigned int count, char value) throw() {
+inline const char* find(const char* element, unsigned int count, char value) {
   return Cast::pointer<const char*>(isoc::memchr(element, value, count));
 }
 #endif
@@ -255,7 +255,7 @@ inline const char* find(const char* element, unsigned int count, char value) thr
   @return Pointer to the value if found else 0.
 */
 template<class TYPE, class UNOPR>
-inline const TYPE* findPredicate(const TYPE* left, unsigned int count, const UNOPR& predicate) /*throw(...)*/ {
+inline const TYPE* findPredicate(const TYPE* left, unsigned int count, const UNOPR& predicate) {
   while (count) {
     if (predicate(*left)) { // do we have a match
       return left;
@@ -273,7 +273,7 @@ inline const TYPE* findPredicate(const TYPE* left, unsigned int count, const UNO
   @return -1 is not found.
 */
 template<class TYPE>
-inline int indexOf(const TYPE* element, unsigned int count, TYPE value) /*throw(...)*/ {
+inline int indexOf(const TYPE* element, unsigned int count, TYPE value) {
   const TYPE* current = element;
   const TYPE* const end = element + count;
   while (current != end) {
@@ -293,7 +293,7 @@ inline int indexOf(const TYPE* element, unsigned int count, TYPE value) /*throw(
 
 /** Apply an operation to every element in the sequence. */
 template<class TYPE, class UNOPR>
-inline void transform(TYPE* element, unsigned int count, const UNOPR& function) /*throw(...)*/ {
+inline void transform(TYPE* element, unsigned int count, const UNOPR& function) {
   const TYPE* const end = element + count;
   while (element != end) {
     *element = function(*element);
@@ -314,7 +314,7 @@ inline void transformByUnary(TYPE* restrict result, const TYPE* restrict left, u
 
 /** The sequences are expected not to overlap. */
 template<class TYPE, class BINOPR>
-inline void transformByBinary(TYPE* restrict left, const TYPE* restrict right, unsigned int count, const BINOPR& function) /*throw(...)*/ {
+inline void transformByBinary(TYPE* restrict left, const TYPE* restrict right, unsigned int count, const BINOPR& function) {
   while (count) {
     *left = function(*left, *right);
     ++left;
@@ -325,7 +325,7 @@ inline void transformByBinary(TYPE* restrict left, const TYPE* restrict right, u
 
 /** The sequences are expected not to overlap. */
 template<class TYPE, class BINOPR>
-inline void transformByBinary(TYPE* restrict result, const TYPE* restrict left, const TYPE* restrict right, unsigned int count, const BINOPR& function) /*throw(...)*/ {
+inline void transformByBinary(TYPE* restrict result, const TYPE* restrict left, const TYPE* restrict right, unsigned int count, const BINOPR& function) {
   while (count) {
     *result = function(*left, *right);
     ++result;
@@ -346,7 +346,7 @@ inline void transformByBinary(TYPE* restrict result, const TYPE* restrict left, 
   @see move
 */
 template<class TYPE>
-inline void copy(TYPE* restrict dest, const TYPE* restrict src, unsigned int count) /*throw(...)*/ {
+inline void copy(TYPE* restrict dest, const TYPE* restrict src, unsigned int count) {
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMCPY)
     isoc::memcpy(dest, src, count * sizeof(TYPE));
@@ -383,7 +383,7 @@ inline void copy(TYPE* restrict dest, const TYPE* restrict src, unsigned int cou
   the sequences may overlap).
 */
 template<class TYPE>
-inline void move(TYPE* dest, const TYPE* src, unsigned int count) /*throw(...)*/ {
+inline void move(TYPE* dest, const TYPE* src, unsigned int count) {
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
     uint64 bytesToMove = static_cast<uint64>(count) * sizeof(TYPE);
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMMOVE)
@@ -421,7 +421,7 @@ inline void move(TYPE* dest, const TYPE* src, unsigned int count) /*throw(...)*/
   overlap.
 */
 template<class TYPE>
-inline void swap(TYPE* restrict left, TYPE* restrict right, unsigned int count) /*throw(...)*/ {
+inline void swap(TYPE* restrict left, TYPE* restrict right, unsigned int count) {
   const TYPE* const end = left + count;
   while (left != end) {
     swapper(*left++, *right++);
@@ -430,7 +430,7 @@ inline void swap(TYPE* restrict left, TYPE* restrict right, unsigned int count) 
 
 /** Sets every element in the sequence to a specified value. */
 template<class TYPE>
-inline void fill(TYPE* dest, unsigned int count, TYPE value) /*throw(...)*/ {
+inline void fill(TYPE* dest, unsigned int count, TYPE value) {
   const TYPE* const end = dest + count;
   while (dest != end) {
     *dest++ = value;
@@ -439,12 +439,12 @@ inline void fill(TYPE* dest, unsigned int count, TYPE value) /*throw(...)*/ {
 
 #if defined(_DK_SDU_MIP__BASE__HAVE_MEMSET)
 template<>
-inline void fill<char>(char* dest, unsigned int count, char value) throw() {
+inline void fill<char>(char* dest, unsigned int count, char value) {
   isoc::memset(dest, value, count);
 }
 
 template<>
-inline void fill<uint8>(uint8* dest, unsigned int count, uint8 value) throw() {
+inline void fill<uint8>(uint8* dest, unsigned int count, uint8 value) {
   isoc::memset(dest, value, count);
 }
 #endif
@@ -1020,7 +1020,7 @@ public:
   /**
     Invocate member function.
   */
-  inline RESULT operator()(TYPE* object) const /*throw(...)*/ {
+  inline RESULT operator()(TYPE* object) const {
     return (object->*member)();
   }
 };
@@ -1066,7 +1066,7 @@ public:
   /**
     Invocate member function.
   */
-  inline RESULT operator()(TYPE* object) const /*throw(...)*/ {
+  inline RESULT operator()(TYPE* object) const {
     return (object->*member)();
   }
 };
@@ -1079,7 +1079,7 @@ public:
   @param member The member function to be invocated.
 */
 template<class TYPE, class RESULT>
-inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) /*throw(...)*/ {
+inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) {
   return InvokeMember<TYPE, RESULT>(member);
 }
 
@@ -1089,7 +1089,7 @@ inline InvokeMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)()) /*throw
   @param member The member function to be invocated.
 */
 template<class TYPE, class RESULT>
-inline InvokeConstMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)() const) /*throw(...)*/ {
+inline InvokeConstMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)() const) {
   return InvokeConstMember<TYPE, RESULT>(member);
 }
 
@@ -1177,12 +1177,12 @@ public:
       : object(_object), prefix(_prefix), suffix(_suffix) {
     }
 
-    inline TYPE* operator->() /*throw(...)*/ {
+    inline TYPE* operator->() {
       prefix();
       return object;
     }
 
-    inline ~Invoke() /*throw(...)*/ {
+    inline ~Invoke() {
       suffix();
     }
   };
@@ -1211,13 +1211,13 @@ public:
 */
 template<class TYPE, class PREFIX, class SUFFIX>
 inline InvokeOutfix<TYPE, PREFIX, SUFFIX> invokeOutfix(
-  TYPE& object, PREFIX prefix, SUFFIX suffix) /*throw(...)*/ {
+  TYPE& object, PREFIX prefix, SUFFIX suffix) {
   return InvokeOutfix<TYPE, PREFIX, SUFFIX>(&object, prefix, suffix);
 }
 
 template<class TYPE, class PREFIX, class SUFFIX>
 inline InvokeOutfix<TYPE, PREFIX, SUFFIX> invokeOutfix(
-  TYPE* object, PREFIX prefix, SUFFIX suffix) /*throw(...)*/ {
+  TYPE* object, PREFIX prefix, SUFFIX suffix) {
   return InvokeOutfix<TYPE, PREFIX, SUFFIX>(object, prefix, suffix);
 }
 

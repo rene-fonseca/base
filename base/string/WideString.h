@@ -785,7 +785,7 @@ public:
   template<MemorySize SIZE>
   inline WideString(const wchar (&string)[SIZE]) throw(MemoryException)
     : elements(0) {
-    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     initialize(string, SIZE - 1);
   }
   
@@ -819,7 +819,7 @@ public:
   inline WideString(const char (&string)[SIZE])
     throw(MultibyteException, MemoryException)
     : elements(0) {
-    if (Constraint<(SIZE > 0)>::UNSPECIFIED);
+    if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     initialize(string, SIZE - 1);
   }
   

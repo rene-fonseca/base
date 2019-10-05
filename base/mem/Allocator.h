@@ -37,9 +37,9 @@ class Allocator {
 private:
 
   /** The allocated memory block. */
-  TYPE* elements;
+  TYPE* elements = nullptr;
   /** The number of elements in the block. */
-  unsigned int size;
+  unsigned int size = 0;
 public:
 
   typedef SequenceIterator<IteratorTraits<TYPE> > Iterator;
@@ -153,7 +153,7 @@ public:
   /**
     Initializes an empty allocator.
   */
-  inline explicit Allocator() throw() : elements(0), size(0) {
+  inline explicit Allocator() throw() {
   }
 
   /**

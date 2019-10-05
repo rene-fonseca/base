@@ -105,8 +105,8 @@ public:
   /**
     Sets the index of the first invalid octet.
   */
-  inline void setOctetIndex(unsigned int octetIndex) throw() {
-    this->octetIndex = octetIndex;
+  inline void setOctetIndex(unsigned int _octetIndex) throw() {
+    octetIndex = _octetIndex;
   }
   
   /**
@@ -121,8 +121,8 @@ public:
     Sets the index of the first invalid octet within the first invalid
     character.
   */
-  inline void setSuboctetIndex(uint8 octet) throw() {
-    this->suboctetIndex = suboctetIndex;
+  inline void setSuboctetIndex(uint8 _suboctetIndex) throw() {
+    suboctetIndex = _suboctetIndex;
   }
 };
 

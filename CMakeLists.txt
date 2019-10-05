@@ -15,6 +15,9 @@ set (base_VERSION_MINOR 9)
 if (MSVC)
   # TAG: need to fix all exception specifications
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4290 /wd4838 /wd4244 /wd4267")
+else ()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-value")
 endif ()
 
 include_directories ("${PROJECT_SOURCE_DIR}")

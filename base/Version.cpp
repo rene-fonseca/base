@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    Copyright (C) 2002-2019 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,19 +17,15 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 const char Version::banner[] =
-"The Base Framework release "_DK_SDU_MIP__BASE__RELEASE"\n"
+"The Base Framework release " _DK_SDU_MIP__BASE__RELEASE "\n"
 "A framework for developing platform independent applications\n"
 "Copyright (C) 2000-2003 by Rene Moeller Fonseca\n\n"
 "This framework is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 "Please report bugs to <fonseca@mip.sdu.dk>.\n\n"
-"configure: "_DK_SDU_MIP__BASE__CONFIGURE"\n"
-"build data: "_DK_SDU_MIP__BASE__BUILD_DATE"\n"
-"build user: "_DK_SDU_MIP__BASE__BUILD_USER"\n"
-"build host: "_DK_SDU_MIP__BASE__BUILD_HOST"\n"
-"build system: "_DK_SDU_MIP__BASE__BUILD_SYSTEM"\n"
-"target system: "_DK_SDU_MIP__BASE__TARGET_SYSTEM"\n";
+"configure: " _DK_SDU_MIP__BASE__CONFIGURE "\n"
+"build data: " _DK_SDU_MIP__BASE__BUILD_DATE "\n";
 
 unsigned int Version::getMajorVersion() const throw() {
   return _DK_SDU_MIP__BASE__MAJOR_VERSION;

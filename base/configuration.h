@@ -2,6 +2,14 @@
 
 /* This is an automatically generated file. Do NOT edit. */
 
+#define _DK_SDU_MIP__BASE__CONFIGURE "aaa"
+#define _DK_SDU_MIP__BASE__BUILD_DATE "bbb"
+#define _DK_SDU_MIP__BASE__BUILD_USER "ccc"
+#define _DK_SDU_MIP__BASE__BUILD_HOST "ddd"
+#define _DK_SDU_MIP__BASE__BUILD_SYSTEM "eee"
+#define _DK_SDU_MIP__BASE__TARGET_SYSTEM "fff"
+// #define _DK_SDU_MIP__BASE__RELEASE "ggg"
+
 #define _DK_SDU_MIP__BASE__COMPILER _DK_SDU_MIP__BASE__COMPILER_MSC
 #define _DK_SDU_MIP__BASE__DEFAULT_MEMORY
 

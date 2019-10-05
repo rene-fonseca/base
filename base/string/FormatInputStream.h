@@ -118,7 +118,7 @@ public:
   /**
     Destroys the format input stream.
   */
-  ~FormatInputStream() throw(IOException);
+  ~FormatInputStream();
 };
 
 /**

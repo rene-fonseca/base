@@ -19,4 +19,4 @@ endif ()
 
 include_directories ("${PROJECT_SOURCE_DIR}")
 
-add_library(base base/Date.cpp)
+add_library(base base/Date.cpp base/UnsignedInteger.cpp base/UnsignedLongInteger.cpp base/ValidifiedResult.cpp base/Version.cpp)

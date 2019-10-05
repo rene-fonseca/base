@@ -1,0 +1,62 @@
+/***************************************************************************
+    The Base Framework
+    A framework for developing platform independent applications
+
+    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+
+    This framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    For the licensing terms refer to the file 'LICENSE'.
+ ***************************************************************************/
+
+#include <base/rmi/DateSkeleton.h>
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+// on connection between stub and skeleton:
+//   stub: get ids from the skeleton
+
+DateSkeleton::DateSkeleton() throw(OrbException) {
+  OrbInterface interface(MESSAGE("DateSkeleton/1.0"), 1, 0);
+  OrbMethod method(MESSAGE("getDate"), OrbPrimitive(OrbPrimitive::LONG_LONG_INTEGER));
+  method.addArgument();
+  method.addRaises();
+  interface.addMethod(method);
+}
+
+// TAG: need support for runtime checking for availability of method/interface/any type really
+// Stub::hasMethod(const String& name));
+// Stub::importMethod(const String& name));
+
+void DateSkeleton::dispatch(OrbChannel* channel, unsigned int method) throw(IOException) {
+  // TAG: the component invoking dispatch could handle OrbException
+  switch (method) {
+  case DateSkeleton::METHOD_GET_DATE:
+    {
+      // read arguments
+      long long result;
+      try {
+        result = getDate();
+        // catch any exceptions specified in the idl document for the method
+      } catch (OrbException& e) {
+        // send response: server side exception was raised
+        OrbExceptionResponse response(e);
+      }
+      OrbResponse response(OrbPrimitive::LONG_LONG_INTEGER);
+      channel->writeResponse(response);
+    }
+    break;
+  default:
+    OrbExceptionResponse response(OrbException::INVALID_METHOD, "Invocation of invalid method");
+    channel->writeResponse(response);
+  }
+}
+
+virtual long long DateSkeleton::getDate() const throw(OrbException) = 0;
+
+DateSkeleton::~DateSkeleton() throw() {
+}
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

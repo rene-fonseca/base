@@ -30,19 +30,19 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class Privilege : public Object {
 public:
 
-  enum Privilege {
+  enum PrivilegeType {
     BACKUP /**< Backup privilege. */
   };
 
   /**
     Returns the name of the specified privilege.
   */
-  static String getName(Privilege privilege) const throw();
+  static String getName(PrivilegeType privilege) throw();
 
   /**
     Returns the value of the specified privilege.
   */
-  static Privilege getValue(const String& name) const throw();
+  static PrivilegeType getValue(const String& name) throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

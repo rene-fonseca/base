@@ -59,13 +59,13 @@ public:
 private:
 
   /** Message digest buffer. */
-  uint32 messageDigest[8];
+  uint32 messageDigest[8] = {0, 0, 0, 0, 0, 0, 0, 0};
   /** The total number of bytes pushed. */
-  uint64 totalSize;
+  uint64 totalSize = 0;
   /** Temporary container for incomplete 16 word block. */
   uint8 buffer[BLOCK_SIZE];
   /** The number of bytes in the buffer. */
-  unsigned int bytesInBuffer;
+  unsigned int bytesInBuffer = 0;
 
   /** Push one block (16 words). */
   void pushBlock(const uint8* block) throw();

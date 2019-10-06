@@ -128,11 +128,11 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descrip
       // 24 bit quantum
       unsigned int bitBuffer =
         (static_cast<unsigned int>(src[2]) << 16) + (static_cast<unsigned int>(src[1]) << 8) + src[0];
-      *i++ = Base64::valueToDigit(bitBuffer & (1 << BITS_PER_CHARACTER - 1));
+      *i++ = Base64::valueToDigit(bitBuffer & ((1 << BITS_PER_CHARACTER) - 1));
       bitBuffer >>= BITS_PER_CHARACTER;
-      *i++ = Base64::valueToDigit(bitBuffer & (1 << BITS_PER_CHARACTER - 1));
+      *i++ = Base64::valueToDigit(bitBuffer & ((1 << BITS_PER_CHARACTER) - 1));
       bitBuffer >>= BITS_PER_CHARACTER;
-      *i++ = Base64::valueToDigit(bitBuffer & (1 << BITS_PER_CHARACTER - 1));
+      *i++ = Base64::valueToDigit(bitBuffer & ((1 << BITS_PER_CHARACTER) - 1));
       src += 3;
     }
     stream.addCharacterField(line, CHARACTERS_PER_LINE);
@@ -148,11 +148,11 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descrip
       // 24 bit quantum
       unsigned int bitBuffer =
         (static_cast<unsigned int>(src[2]) << 16) + (static_cast<unsigned int>(src[1]) << 8) + src[0];
-      *i++ = Base64::valueToDigit(bitBuffer & (1 << BITS_PER_CHARACTER - 1));
+      *i++ = Base64::valueToDigit(bitBuffer & ((1 << BITS_PER_CHARACTER) - 1));
       bitBuffer >>= BITS_PER_CHARACTER;
-      *i++ = Base64::valueToDigit(bitBuffer & (1 << BITS_PER_CHARACTER - 1));
+      *i++ = Base64::valueToDigit(bitBuffer & ((1 << BITS_PER_CHARACTER) - 1));
       bitBuffer >>= BITS_PER_CHARACTER;
-      *i++ = Base64::valueToDigit(bitBuffer & (1 << BITS_PER_CHARACTER - 1));
+      *i++ = Base64::valueToDigit(bitBuffer & ((1 << BITS_PER_CHARACTER) - 1));
       src += 3;
     }
 
@@ -161,7 +161,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descrip
     case 1: // last 8 bit
       {
         unsigned int bitBuffer = src[0];
-        *i++ = Base64::valueToDigit(bitBuffer & (1 << BITS_PER_CHARACTER - 1));
+        *i++ = Base64::valueToDigit(bitBuffer & ((1 << BITS_PER_CHARACTER) - 1));
         *i++ = Base64::PAD;
         *i++ = Base64::PAD;
       }
@@ -169,9 +169,9 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descrip
     case 2: // last 16 bit
       {
         unsigned int bitBuffer = (static_cast<unsigned int>(src[1]) << 8) + src[0];
-        *i++ = Base64::valueToDigit(bitBuffer & (1 << BITS_PER_CHARACTER - 1));
+        *i++ = Base64::valueToDigit(bitBuffer & ((1 << BITS_PER_CHARACTER) - 1));
         bitBuffer >>= BITS_PER_CHARACTER;
-        *i++ = Base64::valueToDigit(bitBuffer & (1 << BITS_PER_CHARACTER - 1));
+        *i++ = Base64::valueToDigit(bitBuffer & ((1 << BITS_PER_CHARACTER) - 1));
         *i++ = Base64::PAD;
       }
       break;

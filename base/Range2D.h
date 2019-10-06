@@ -30,9 +30,9 @@ class Range2D : public virtual Object {
 protected:
 
   /** The minimum value. */
-  double minimum;
+  double minimum = 0;
   /** The maximum value. */
-  double maximum;
+  double maximum = 0;
 public:
 
   /**

@@ -30,9 +30,9 @@ class Timer : public Object {
 private:
 
   /** The start time in platform specific resolution. */
-  uint64 startTime;
+  uint64 startTime = 0;
   /** The stop time in platform specific resolution. */
-  uint64 stopTime;
+  uint64 stopTime = 0;
 public:
 
   /**

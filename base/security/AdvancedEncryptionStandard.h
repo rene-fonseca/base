@@ -124,13 +124,13 @@ private:
   /** Cipher. */
   Cipher cipher;
   /** Specifies if the inverse cipher should be used. */
-  bool inverse;
+  bool inverse = false;
   /** The key schedule. */
   uint8 schedule[4 * Cipher256Traits::Nb * (Cipher256Traits::Nr + 1)]; // worst
   /** Temporary container for incomplete 16 word block. */
   uint8 buffer[Cipher256Traits::BLOCK_SIZE]; // worst case
   /** The number of bytes in the buffer. */
-  unsigned int bytesInBuffer;
+  unsigned int bytesInBuffer = 0;
   
   template<class CIPHER>
   inline unsigned int cipherPush(

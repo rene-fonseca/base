@@ -128,7 +128,7 @@ bool Trustee::operator==(const Trustee& eq) const throw() {
     (compare(id->getElements(), eq.id->getElements(), id->getSize()) == 0);
 #else // unix
   // id attribute is dont-care
-  if (Constraint<sizeof(uid_t) == sizeof(gid_t)>::UNSPECIFIED);
+  if (Constraint<sizeof(uid_t) == sizeof(gid_t)>::UNSPECIFIED) {}
   return Cast::extract<uid_t>(integralId) ==
     Cast::extract<uid_t>(eq.integralId);
 #endif

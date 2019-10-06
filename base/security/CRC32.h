@@ -34,9 +34,9 @@ class CRC32 : public Object, public PushInterface {
 private:
 
   /** The current checksum. */
-  uint32 checksum;
+  uint32 checksum = 0;
   /** The total number of bytes pushed. */
-  unsigned long long totalSize;
+  unsigned long long totalSize = 0;
 public:
 
   /** Lookup table of CRCs of all 8-bit messages. */

@@ -40,7 +40,7 @@ public:
 protected:
 
   /** The value. */
-  int value;
+  int value = 0;
 public:
 
   /**

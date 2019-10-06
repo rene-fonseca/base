@@ -23,12 +23,12 @@ public:
 
   static inline unsigned int F(
     unsigned int X, unsigned int Y, unsigned int Z) throw() {
-    return X & Y | ~X & Z;
+    return (X & Y) | (~X & Z);
   }
 
   static inline unsigned int G(
     unsigned int X, unsigned int Y, unsigned int Z) throw() {
-    return X & Z | Y & ~Z;
+    return (X & Z) | (Y & ~Z);
   }
 
   static inline unsigned int H(

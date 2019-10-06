@@ -37,9 +37,9 @@ class ListNode {
 protected:
 
   /** The next node in the list. */
-  ListNode* next;
+  ListNode* next = nullptr;
   /** The previous node in the list. */
-  ListNode* previous;
+  ListNode* previous = nullptr;
   /** The value associated with the node. */
   TYPE value;
 public:

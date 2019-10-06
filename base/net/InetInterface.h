@@ -36,11 +36,11 @@ class InetInterface : public virtual Object {
 private:
 
   /** Specifies the index of the network interface. */
-  unsigned int index;
+  unsigned int index = 0;
   /** Specifies the name of the network interface. */
   String name;
   /** Flags. */
-  unsigned int flags;
+  unsigned int flags = 0;
   /** Address. */
   InetAddress address;
   /** Netmask. */
@@ -50,7 +50,7 @@ private:
   /** Destination address. */
   InetAddress destination;
   /** Metric. */
-  unsigned int metric;
+  unsigned int metric = 0;
   /** Ethernet address. */
   EUI64 ethernet;
 public:

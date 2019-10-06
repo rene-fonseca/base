@@ -36,7 +36,7 @@ private:
   class Handle : public ReferenceCountedObject {
   private:
     
-    void* handle;
+    void* handle = nullptr;
   public:
 
     inline Handle(void* _handle) throw() 

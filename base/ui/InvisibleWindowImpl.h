@@ -85,17 +85,17 @@ private:
   /** The current keyboard state. */
   uint8 keyboardState[256];
   /** The modifiers. */
-  unsigned int modifiers;
+  unsigned int modifiers = 0;
   /** The autopreat flag. */
-  bool autorepeat;
+  bool autorepeat = false;
   /** Flag specifying whether the mouse is in the scope of the client area of the window. */
-  bool scope;
+  bool scope = false;
   /** Flag specifying whether the window is active. */
-  bool active;
+  bool active = false;
   /** Specifies whether to window is visible or not. */
   Visibility visibility;
   /** Specifies whether to window is enabled or not. */
-  bool enabled;
+  bool enabled = false;
   /** The current cursor. */
   Cursor cursor;
 

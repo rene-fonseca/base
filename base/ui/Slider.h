@@ -30,13 +30,13 @@ class Slider : public Widget {
 private:
 
   /** Offset of the left or top of the splitting field. */
-  int offset;
-  unsigned int flags;
+  int offset = 0;
+  unsigned int flags = 0;
   // Picture
   
-  bool drag;
-  int originalOffset;
-  int originalPosition;
+  bool drag = false;
+  int originalOffset = 0;
+  int originalPosition = 0;
 
   Brush background;
   Brush split;

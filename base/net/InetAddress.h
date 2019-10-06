@@ -90,7 +90,7 @@ public:
 private:
 
   /** The family of the address. */
-  Family family;
+  Family family = IP_VERSION_4;
   /** Internal structure holding the IP address in network byte order. */
   union {
     uint32 words[4]; // enough for IPv6 and IPv4 addresses

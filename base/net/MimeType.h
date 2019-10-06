@@ -50,7 +50,7 @@ private:
   /** The subtype. */
   String subtype;
   /** The cached identifier of the media type. */
-  mutable MediaType mediaType;
+  mutable MediaType mediaType = UNINITIALIZED;
 public:
   
   /**

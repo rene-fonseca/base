@@ -52,7 +52,7 @@ private:
   /** Handle to the sound device. */
   FileDescriptor deviceDescriptor;
   /** The current access to the device.*/
-  unsigned int access;
+  unsigned int access = 0;
   /** Synchronization object. */
   ReadWriteLock guard;
   

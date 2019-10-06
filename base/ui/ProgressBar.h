@@ -41,8 +41,8 @@ private:
   Pen lightPen;
   Pen darkPen;
   TextMode textMode;
-  unsigned int currentValue;
-  unsigned int maximumValue;
+  unsigned int currentValue = 0;
+  unsigned int maximumValue = 0;
 public:
 
   /**

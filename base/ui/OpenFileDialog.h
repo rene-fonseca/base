@@ -33,7 +33,7 @@ class OpenFileDialog : public Dialog {
 private:
 
   /** Flags. */
-  unsigned int flags;
+  unsigned int flags = 0;
   /** Specifies the title of the dialog. */
   String title;
   /** Specifies the current file name. */
@@ -45,7 +45,7 @@ private:
   /** Filters. */
   Map<String, String> filters;
   /** The default filter. */
-  unsigned int defaultFilter;
+  unsigned int defaultFilter = 0;
 public:
 
   enum Flag {

@@ -34,7 +34,7 @@ private:
   /** Host. */
   InetAddress address;
   /** Port. */
-  unsigned short port;
+  unsigned short port = 0;
 public:
 
   /**

@@ -46,11 +46,11 @@ private:
   /** Buffer holding decompressed data. */
   Allocator<uint8> buffer;
   /** Specifies the number of decompressed bytes currently available. */
-  unsigned int availableBytes;
+  unsigned int availableBytes = 0;
   /** Opaque context. */
-  void* context;
+  void* context = nullptr;
   /** The current state. */
-  State state;
+  State state = ENDED;
 public:
   
   /**

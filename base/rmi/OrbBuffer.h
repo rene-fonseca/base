@@ -31,17 +31,17 @@ class OrbBuffer : public Object {
 private:
 
   /** The next buffer in the linked list. */
-  OrbBuffer* next;
+  OrbBuffer* next = nullptr;
   /** The storage. */
   Allocator<uint8> buffer;
   /** The first element of the buffer. */
-  uint8* first;
+  uint8* first = nullptr;
   /** The end of the buffer. */
-  const uint8* end;
+  const uint8* end = nullptr;
   /** The read head. */
-  const uint8* readHead;
+  const uint8* readHead = nullptr;
   /** The write head. */
-  uint8* writeHead;
+  uint8* writeHead = nullptr;
 public:
   
   /**

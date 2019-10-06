@@ -108,9 +108,9 @@ public:
   /* Access masks. */
   struct Permissions {
     /** The allowed permissions. */
-    AccessMask allowed;
+    AccessMask allowed = 0;
     /** The denied permissions. */
-    AccessMask denied;
+    AccessMask denied = 0;
   };
 private:
   

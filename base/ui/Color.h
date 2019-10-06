@@ -30,7 +30,7 @@ class Color {
 private:
 
   /** The color value (red, green, and blue). */
-  uint32 value;
+  uint32 value = 0;
 public:
 
   /** Named color. */

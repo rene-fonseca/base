@@ -29,15 +29,15 @@ class Position : public Object {
 private:
   
   /** The x coordinate. */
-  int x;
+  int x = 0;
   /** The y coordinate. */
-  int y;
+  int y = 0;
 public:
 
   /**
     Initializes position as (0, 0).
   */
-  inline Position() throw() : x(0), y(0) {
+  inline Position() throw() {
   }
 
   /**

@@ -29,16 +29,15 @@ class Dimension {
 protected:
 
   /** The width. */
-  unsigned int width;
+  unsigned int width = 0;
   /** The height. */
-  unsigned int height;
+  unsigned int height = 0;
 public:
 
   /**
     Initializes object with width and height set to zero.
   */
-  inline Dimension() throw()
-    : width(0), height(0) {
+  inline Dimension() throw() {
   }
 
   /**

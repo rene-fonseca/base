@@ -37,12 +37,12 @@ namespace win32 {
     };
   private:
     
-    AsynchronousWriteEventListener* listener;
+    AsynchronousWriteEventListener* listener = nullptr;
     CallbackInfo callbackInfo;
-    const uint8* buffer;
-    unsigned int bytesToWrite;
-    unsigned int bytesWritten;
-    unsigned int flags;
+    const uint8* buffer = nullptr;
+    unsigned int bytesToWrite = 0;
+    unsigned int bytesWritten = 0;
+    unsigned int flags = 0;
     
     inline void notifyAsynchronousCompletionListener() throw() {
       listener->asynchronousCompletion(

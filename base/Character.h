@@ -27,13 +27,13 @@ class Character : public virtual Object {
 protected:
 
   /** The value. */
-  char value;
+  char value = '\0';
 public:
 
   /**
     Initializes the character as '\0'.
   */
-  inline Character() throw() : value('\0') {
+  inline Character() throw() {
   }
 
   /**

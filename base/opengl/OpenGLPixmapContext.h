@@ -30,7 +30,7 @@ class OpenGLPixmapContext : public OpenGLContextImpl {
 private:
 
   nothing prefixInitialization;
-  void* screenHandle;
+  void* screenHandle = nullptr;
   
   /**
     Initializes the pixmap rendering context.

@@ -42,9 +42,9 @@ public:
   private:
 
     /** The bytes to be encoded. */
-    const char* buffer;
+    const char* buffer = nullptr;
     /** The size of the buffer. */
-    unsigned int size;
+    unsigned int size = 0;
   public:
 
     /**

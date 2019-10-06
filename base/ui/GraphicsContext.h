@@ -59,7 +59,7 @@ public:
   private:
     
     /** Opaque handle to the graphics context object. */
-    void* handle;
+    void* handle = nullptr;
   public:
     
     inline GraphicsContextObjectHandle(void* _handle) throw()

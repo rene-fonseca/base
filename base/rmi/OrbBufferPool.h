@@ -115,9 +115,9 @@ private:
   /** The buffer pool. */
   Reference<OrbBufferPool> pool;
   /** The first buffer in the linked list. */
-  OrbBuffer* first;
+  OrbBuffer* first = nullptr;
   /** The last buffer in the linked list. */
-  OrbBuffer* last;
+  OrbBuffer* last = nullptr;
 public:
 
   /**

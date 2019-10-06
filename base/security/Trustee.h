@@ -45,9 +45,9 @@ public:
 private:
   
   /** Cached type of trustee. */
-  mutable TrusteeType type;
+  mutable TrusteeType type = UNSPECIFIED;
   /** Identifier of the trustee represented as an integral. */
-  unsigned long integralId;
+  unsigned long integralId = PrimitiveTraits<unsigned long>::MAXIMUM;
   /** Opaque identifier of the trustee. */
   Reference<ReferenceCountedAllocator<uint8> > id;
 public:

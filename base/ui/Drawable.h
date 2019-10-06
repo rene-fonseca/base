@@ -30,7 +30,7 @@ class Drawable {
 protected:
 
   /** Opaque handle to the object. */
-  void* drawableHandle;
+  void* drawableHandle = nullptr;
 public:
 
   inline Drawable() throw()

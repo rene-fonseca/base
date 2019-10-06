@@ -39,7 +39,7 @@ void* DebugDynamicMemory::allocate(unsigned int size) throw() {
     return 0;
   }
 
-  unsigned int* result;
+  unsigned int* result = nullptr;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   result = static_cast<unsigned int*>(::HeapAlloc(internal::specific::processHeap, 0, newSize));
 #else // unix

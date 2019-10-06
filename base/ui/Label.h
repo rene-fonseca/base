@@ -32,7 +32,7 @@ private:
   String text;
   Color background;
   Color foreground;
-  unsigned int textFormat;
+  unsigned int textFormat = 0;
 public:
   
   enum Flag {

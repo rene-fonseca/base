@@ -47,9 +47,9 @@ public:
     /** Handle to the shared memory object. */
     OperatingSystem::Handle handle;
     /** Specifies the access to the shared memory. */
-    unsigned int access;
+    unsigned int access = 0;
     /** The base address of the shared memory block. */
-    uint8* address;
+    uint8* address = nullptr;
   public:
 
     SharedMemoryImpl(

@@ -38,7 +38,7 @@ private:
     Microseconds elapsed since epoch (i.e. 00:00:00 on January 1, 1970,
     Coordinated Universal Time (UTC)).
   */
-  int64 date;
+  int64 date = 0;
 public:
 
   enum Constants {

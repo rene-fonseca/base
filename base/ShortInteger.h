@@ -40,7 +40,7 @@ public:
 protected:
 
   /** The value. */
-  short value;
+  short value = 0;
 public:
   
   /**

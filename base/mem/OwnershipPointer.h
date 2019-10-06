@@ -51,13 +51,13 @@ class OwnershipPointer : public AutomationObject {
 private:
 
   /** Pointer to object. */
-  TYPE* object;
+  TYPE* object = nullptr;
 public:
 
   /**
-    Initializes the ownership pointer as 0.
+    Initializes the ownership pointer as nullptr.
   */
-  inline OwnershipPointer() throw() : object(0) {
+  inline OwnershipPointer() throw() {
   }
   
   /**

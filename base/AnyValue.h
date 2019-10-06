@@ -58,7 +58,7 @@ public:
 private:
 
   /** Specifies the representation of the value. */
-  Representation representation;
+  Representation representation = VOID;
   
   /** Container for primitives. */
   union {

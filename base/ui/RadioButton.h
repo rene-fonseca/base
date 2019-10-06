@@ -29,8 +29,8 @@ private:
   Brush brush;
   Color background;
   Color textColor;
-  unsigned int mode;
-  bool pressed;
+  unsigned int mode = 0;
+  bool pressed = false;
 public:
   
   /** The button state. */

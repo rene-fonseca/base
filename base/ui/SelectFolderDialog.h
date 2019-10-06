@@ -33,7 +33,7 @@ class SelectFolderDialog : public Dialog {
 private:
 
   /** Flags. */
-  unsigned int flags;
+  unsigned int flags = 0;
   /** Specifies the title of the dialog. */
   String title;
   /** Specifies the current folder. */

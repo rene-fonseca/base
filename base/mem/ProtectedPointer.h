@@ -34,7 +34,7 @@ class ProtectedPointer {
 private:
 
   /** Pointer to object. */
-  TYPE* value;
+  TYPE* value = nullptr;
 public:
   
   /**

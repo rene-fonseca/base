@@ -37,12 +37,12 @@ namespace win32 {
     };
   private:
     
-    AsynchronousReadEventListener* listener;
+    AsynchronousReadEventListener* listener = nullptr;
     CallbackInfo callbackInfo;
-    uint8* buffer;
-    unsigned int bytesToRead;
-    unsigned int bytesRead;
-    unsigned int flags;
+    uint8* buffer = nullptr;
+    unsigned int bytesToRead = 0;
+    unsigned int bytesRead = 0;
+    unsigned int flags = 0;
     
     inline void notifyAsynchronousCompletionListener() throw() {
       listener->asynchronousCompletion(

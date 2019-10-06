@@ -37,7 +37,7 @@ class Group : public Object {
 private:
 
   /** Identifier of the group represented as an integral if possible. */
-  unsigned long integralId;
+  unsigned long integralId = 0;
   /** Opaque identifier of the group. */
   Reference<ReferenceCountedAllocator<uint8> > id;
 public:

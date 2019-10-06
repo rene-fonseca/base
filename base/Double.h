@@ -31,24 +31,24 @@ class Double : public Object {
 public:
 
   /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-  static const double MINIMUM = FloatingPoint::ToDouble::MINIMUM;
+  static constexpr double MINIMUM = FloatingPoint::ToDouble::MINIMUM;
   /** Maximum representable finite floating-point number (2^e_max). */
-  static const double MAXIMUM = FloatingPoint::ToDouble::MAXIMUM;
+  static const double MAXIMUM; // TAG: = FloatingPoint::ToDouble::MAXIMUM;
   /**
     The difference between 1 and the least value greater than 1 that is
     representable in the given floating point type.
   */
-  static const double EPSILON = FloatingPoint::ToDouble::EPSILON;
+  static constexpr double EPSILON = FloatingPoint::ToDouble::EPSILON;
 protected:
   
   /** The value. */
-  double value;
+  double value = 0;
 public:
   
   /**
     Initializes the value as zero.
   */
-  inline Double() throw() : value(0) {
+  inline Double() throw() {
   }
 
   /**

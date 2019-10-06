@@ -31,10 +31,10 @@ template<class TYPE>
 class Scope : public AutomationObject {
 private:
 
-  TYPE* object;
+  TYPE* object = nullptr;
 public:
 
-  inline Scope() throw() : object(0) {
+  inline Scope() throw() {
   }
 
   inline Scope(TYPE* _object) throw() : object(_object) {
@@ -52,7 +52,7 @@ public:
     return object;
   }
 
-  inline TYPE& operator*() throws(NullPointer) {
+  inline TYPE& operator*() throw(NullPointer) {
     assert(object, NullPointer(this));
     return *object;
   }
@@ -75,7 +75,7 @@ public:
   inline void destroy() throw(...) {
     if (object) {
       delete object;
-      object = 0;
+      object = nullptr;
     }
   }
 

@@ -63,7 +63,7 @@ public:
     }
     
     /** Releases the resources taken up by the descriptor. */
-    ~Descriptor() throw(IOException);
+    ~Descriptor();
   };
 protected:
 
@@ -131,7 +131,7 @@ public:
   /**
     Destroys the file descriptor.
   */
-  ~FileDescriptor() throw(IOException);
+  ~FileDescriptor();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -35,7 +35,7 @@ class Handle : public ReferenceCountedObject {
 private:
 
   /** Handle to resource. */
-  OperatingSystem::Handle handle;
+  OperatingSystem::Handle handle = OperatingSystem::INVALID_HANDLE;
 
   /* Disable the default copy constructor. */
   Handle(const Handle& copy) throw();
@@ -73,7 +73,7 @@ public:
   /**
     Destroys the handle.
   */
-  virtual ~Handle() throw(IOException);
+  virtual ~Handle();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

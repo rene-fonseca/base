@@ -31,6 +31,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+Handle* FileDescriptor::invalid = nullptr;
+
 FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
   if (isValid()) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)

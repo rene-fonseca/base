@@ -32,7 +32,7 @@ class Type {
   friend class Exception;
 private:
 
-  const std::type_info* type;
+  const std::type_info* type = nullptr;
 
   class Uninitialized {
   };

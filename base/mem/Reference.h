@@ -42,13 +42,13 @@ class Reference {
 private:
   
   /** Pointer to shared reference counted object. */
-  TYPE* value;
+  TYPE* value = nullptr;
 public:
 
   /**
     Initializes an automation pointer as invalid (i.e. 0).
   */
-  inline Reference() throw() : value(0) {
+  inline Reference() throw() {
   }
 
   /**
@@ -101,7 +101,7 @@ public:
     is invalid or the reference cannot be cast to the specified type.
   */
   template<class POLY>
-  inline Reference<POLY> cast() throw(CastException) {
+  inline Reference<POLY> cast() const throw(CastException) {
     POLY* temp = dynamic_cast<POLY*>(value);
     assert(temp, CastException(this));
     return temp;

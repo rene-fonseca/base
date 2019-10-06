@@ -179,7 +179,7 @@ private:
   private:
     
     String& string;
-    unsigned int index;
+    unsigned int index = 0;
     
     Element(const Element& copy) throw();
     Element& operator=(const Element& eq) throw();
@@ -323,7 +323,15 @@ public:
     with no characters in it.
   */
   String(const NativeString& string) throw(MemoryException);
-  
+
+  /**
+    Initializes the string from a NULL-terminated string.
+
+    @param string NULL-terminated string. If NULL, the string is initialized
+    with no characters in it.
+  */
+  String(const char* string) throw(MemoryException);
+
   /**
     Initializes the string from a NULL-terminated string. If the length of the
     specified string (string) exceeds the maximum length (n) only the first n
@@ -370,6 +378,12 @@ public:
   String& operator=(const NativeString& string)
     throw(StringException, MemoryException);
   
+    /**
+    Assignment of string to NULL-terminated string.
+  */
+  String& operator=(const char* string)
+    throw(StringException, MemoryException);
+
   /**
     Returns the number of characters in the string.
   */
@@ -570,7 +584,7 @@ public:
   */
   inline String& append(
     const NativeString& string) throw(StringException, MemoryException) {
-    return insert(getLength(), string.getValue());
+    return insert(getLength(), string);
   }
   
   /**
@@ -963,42 +977,42 @@ public:
     Equality operator.
   */
   inline bool operator==(const NativeString& string) const throw() {
-    return compareTo(string.getValue()) == 0;
+    return compareTo(string) == 0;
   }
 
   /**
     Inequality operator.
   */
   inline bool operator!=(const NativeString& string) const throw() {
-    return compareTo(string.getValue()) != 0;
+    return compareTo(string) != 0;
   }
 
   /**
     Less than operator.
   */
   inline bool operator<(const NativeString& string) const throw() {
-    return compareTo(string.getValue()) < 0;
+    return compareTo(string) < 0;
   }
 
   /**
     Less than or equal operator.
   */
   inline bool operator<=(const NativeString& string) const throw() {
-    return compareTo(string.getValue()) <= 0;
+    return compareTo(string) <= 0;
   }
 
   /**
     Greater than or equal operator.
   */
   inline bool operator>=(const NativeString& string) const throw() {
-    return compareTo(string.getValue()) >= 0;
+    return compareTo(string) >= 0;
   }
 
   /**
     Greater than operator.
   */
   inline bool operator>(const NativeString& string) const throw() {
-    return compareTo(string.getValue()) > 0;
+    return compareTo(string) > 0;
   }
 
 // *************************************************************************

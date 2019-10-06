@@ -13,6 +13,8 @@
 
 #include <base/Object.h>
 
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 //  Object::~Object() throw() {

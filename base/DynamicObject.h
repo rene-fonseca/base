@@ -30,7 +30,7 @@ class DynamicObject /*: public Object*/ {
 private:
 
 #if defined(DEBUG)
-  bool valid;
+  bool valid = true;
 #endif
 public:
 
@@ -38,9 +38,6 @@ public:
     Initializes the object.
   */
   inline DynamicObject() throw() {
-#if defined(DEBUG)
-    valid = true;
-#endif
   }
 
   /**
@@ -51,7 +48,7 @@ public:
   /**
     Destroys the object.
   */
-  virtual inline ~DynamicObject() /*throw(...)*/ {
+  virtual inline ~DynamicObject() {
 #if defined(DEBUG)
     ASSERT(valid);
     valid = false;

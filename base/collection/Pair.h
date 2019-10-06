@@ -122,7 +122,7 @@ public:
     Returns true if this pair is less than the specified pair.
   */
   inline bool operator<(const Pair& eq) const throw() {
-    return (first < eq.first) || (first == eq.first) && (second < eq.second);
+    return (first < eq.first) || ((first == eq.first) && (second < eq.second));
   }
 
   /**

@@ -41,13 +41,13 @@ class Exception {
 private:
 
   /** The message associated with the exception (ASCII format). This may not be available. */
-  const char* message;
+  const char* message = nullptr;
   /** The identity of the type which raised the exception (may not be available). */
   Type type;
   /** The associated cause (0 by default). */
-  unsigned int cause;
+  unsigned int cause = 0;
   /** The associated system error code. */
-  unsigned int error;
+  unsigned int error = 0;
 public:
   
   /**

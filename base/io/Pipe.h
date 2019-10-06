@@ -51,7 +51,7 @@ public:
     }
     
     /** Releases the resources used by the pipe. */
-    ~PipeHandle() throw(PipeException);
+    ~PipeHandle();
   };
 protected:
 
@@ -150,7 +150,7 @@ public:
   /**
     Destroys the pipe.
   */
-  ~Pipe() throw(IOException);
+  ~Pipe();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

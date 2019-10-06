@@ -33,7 +33,7 @@ public:
   
   virtual AsynchronousReadCompletion getCompletion() const throw() = 0;
 
-  virtual ~AsynchronousReadContext() throw(AsynchronousException);
+  virtual ~AsynchronousReadContext();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

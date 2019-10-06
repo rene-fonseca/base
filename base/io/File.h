@@ -117,7 +117,7 @@ public:
     }
     
     /** Releases the resources used by the file. */
-    ~FileHandle() throw(FileException);
+    ~FileHandle();
   };
 private:
 
@@ -360,7 +360,7 @@ public:
   /**
     Destroys the file handle.
   */
-  ~File() throw(FileException);
+  ~File();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

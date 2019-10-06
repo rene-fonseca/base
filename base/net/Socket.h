@@ -165,7 +165,7 @@ private:
     }
     
     /** Releases the resources use by the socket. */
-    ~SocketImpl() throw(IOException);
+    ~SocketImpl();
   };
 protected:
   
@@ -625,7 +625,7 @@ public:
   /**
     Releases the socket.
   */
-  ~Socket() throw(IOException);
+  ~Socket();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

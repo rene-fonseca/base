@@ -31,24 +31,24 @@ class LongDouble : public Object {
 public:
 
   /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-  static const long double MINIMUM; // TAG: = FloatingPoint::ToLongDouble::MINIMUM;
+  static constexpr long double MINIMUM = FloatingPoint::ToLongDouble::MINIMUM;
   /** Maximum representable finite floating-point number (2^e_max). */
-  static const long double MAXIMUM; // TAG: = FloatingPoint::ToLongDouble::MAXIMUM;
+  static constexpr long double MAXIMUM = FloatingPoint::ToLongDouble::MAXIMUM;
   /**
     The difference between 1 and the least value greater than 1 that is
     representable in the given floating point type.
   */
-  static const long double EPSILON; // TAG: = FloatingPoint::ToLongDouble::EPSILON;
+  static constexpr long double EPSILON = FloatingPoint::ToLongDouble::EPSILON;
 protected:
   
   /** The value. */
-  long double value;
+  long double value = 0;
 public:
   
   /**
     Initializes the value as zero.
   */
-  inline LongDouble() throw() : value(0) {
+  inline LongDouble() throw() {
   }
 
   /**

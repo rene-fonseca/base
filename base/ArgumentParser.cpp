@@ -224,7 +224,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
     throw bindCause(ArgumentException(this), ArgumentException::VALUE_PRESENT);
   } else { // options which take a value
     if (option.isType<BooleanOption>()) {
-      ConstReference<BooleanOption> temp = option.cast<BooleanOption>();
+      Reference<BooleanOption> temp = option.cast<BooleanOption>();
       assert(
         temp.isValid(),
         bindCause(
@@ -244,7 +244,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
         occured ? Argument::EARLIER : 0
       );
     } else if (option.isType<CardinalOption>()) {
-      ConstReference<CardinalOption> temp = option.cast<CardinalOption>();
+      Reference<CardinalOption> temp = option.cast<CardinalOption>();
       assert(
         temp->isValid(value),
         bindCause(
@@ -258,7 +258,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
         occured ? Argument::EARLIER : 0
       );
     } else if (option.isType<RealOption>()) {
-      ConstReference<RealOption> temp = option.cast<RealOption>();
+      Reference<RealOption> temp = option.cast<RealOption>();
       assert(
         temp->isValid(value),
         bindCause(
@@ -272,7 +272,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
         occured ? Argument::EARLIER : 0
       );
     } else if (option.isType<EnumOption>()) {
-      ConstReference<EnumOption> temp = option.cast<EnumOption>();
+      Reference<EnumOption> temp = option.cast<EnumOption>();
       assert(
         temp->isValid(value),
         bindCause(

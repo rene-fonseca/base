@@ -48,6 +48,8 @@ template<class KEY, class VALUE>
 class Cache : public Collection {
 public:
 
+  typedef KEY Key;
+  typedef VALUE Value;
   /** The values in the cache. */
   HashTable<KEY, VALUE> elements;
 public:

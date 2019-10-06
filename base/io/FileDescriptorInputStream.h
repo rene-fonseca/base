@@ -113,7 +113,7 @@ public:
   /**
     Releases the file descriptor.
   */
-  ~FileDescriptorInputStream() throw(IOException);
+  ~FileDescriptorInputStream();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

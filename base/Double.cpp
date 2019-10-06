@@ -15,4 +15,6 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+const double Double::MAXIMUM = FloatingPoint::ToDouble::MAXIMUM;
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

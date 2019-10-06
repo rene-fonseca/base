@@ -90,7 +90,7 @@ public:
     Destroys the read-write lock object. The lock must be in the unlocked
     state prior to destruction. Raises ReadWriteLockException on failure. 
   */
-  ~ReadWriteLock() throw(ReadWriteLockException);
+  ~ReadWriteLock();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

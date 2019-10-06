@@ -221,8 +221,8 @@ public:
     @param caseSensitive Specifies the case sensitivity. True selects case
     sensitive matching.
   */
-  inline void setCaseSensitivity(bool value) throw() {
-    this->caseSensitive = caseSensitive;
+  inline void setCaseSensitivity(bool _caseSensitive) throw() {
+    caseSensitive = _caseSensitive;
   }
 
   /**

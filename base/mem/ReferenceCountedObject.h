@@ -53,7 +53,7 @@ class ReferenceCountedObject : public DynamicObject {
 private:
 
   /** The current number of references to the object. */
-  mutable MemorySize references; // out of memory before overflow
+  mutable MemorySize references = 0; // out of memory before overflow
 public:
 
   /*
@@ -110,7 +110,7 @@ public:
   /**
     Initializes reference counted object with zero references.
   */
-  inline ReferenceCountedObject() throw() : references(0) {
+  inline ReferenceCountedObject() throw() {
   }
 
   /**
@@ -119,8 +119,8 @@ public:
     copy constructor but makes sense since a new object cannot have any
     references.
   */
-  inline ReferenceCountedObject(const ReferenceCountedObject& copy) throw()
-    : references(0) {
+  inline ReferenceCountedObject(const ReferenceCountedObject& copy) throw() {
+    // do not copy state
   }
 
   /**

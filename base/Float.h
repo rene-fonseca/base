@@ -32,24 +32,24 @@ class Float : public Object {
 public:
 
   /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-  static const long double MINIMUM; // TAG = FloatingPoint::ToFloat::MINIMUM;
+  static constexpr float MINIMUM = FloatingPoint::ToFloat::MINIMUM;
   /** Maximum representable finite floating-point number (2^e_max). */
-  static const long double MAXIMUM; // TAG = FloatingPoint::ToFloat::MAXIMUM;
+  static const float MAXIMUM; // TAG: = FloatingPoint::ToFloat::MAXIMUM;
   /**
     The difference between 1 and the least value greater than 1 that is
     representable in the given floating point type.
   */
-  static const long double EPSILON; // TAG = FloatingPoint::ToFloat::EPSILON;
+  static constexpr float EPSILON = FloatingPoint::ToFloat::EPSILON;
 protected:
   
   /** The value. */
-  float value;
+  float value = 0;
 public:
   
   /**
     Initializes the value as zero.
   */
-  inline Float() throw() : value(0) {
+  inline Float() throw() {
   }
 
   /**

@@ -151,7 +151,9 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 OperatingSystem::Handle OperatingSystem::INVALID_HANDLE = static_cast<char*>(nullptr) - 1;
+#endif
 
 long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
   // TAG: need to cache all cacheable variables

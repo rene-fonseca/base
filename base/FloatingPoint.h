@@ -37,13 +37,13 @@ public:
     Specifies the maximum explicit exponent for string representations in
     decimal format.
   */
-  static const unsigned int MAXIMUM_DECIMAL_EXPONENT = 9999;
+  static constexpr unsigned int MAXIMUM_DECIMAL_EXPONENT = 9999;
   
   /**
     Specifies the maximum explicit exponent for string representations in
     hexadecimal format.
   */
-  static const unsigned int MAXIMUM_BINARY_EXPONENT = 9999;
+  static constexpr unsigned int MAXIMUM_BINARY_EXPONENT = 9999;
   
   /**
     Converts hex representation to a float.
@@ -332,14 +332,14 @@ public:
     Representation::IEEE754SinglePrecision value;
 
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-    static const long double MINIMUM = 1.1754943508222875079687365372222456778186655567720875215087517062784172594547271728515625e-38L;
+    static constexpr long double MINIMUM = 1.1754943508222875079687365372222456778186655567720875215087517062784172594547271728515625e-38L;
     /** Maximum representable finite floating-point number (2^e_max). */
-    static const long double MAXIMUM = 3.40282366920938463463374607431768211456e38L;
+    static constexpr long double MAXIMUM = 3.40282366920938463463374607431768211456e38L;
     /**
       The difference between 1 and the least value greater than 1 that is
       representable in the given floating point type.
     */
-    static const long double EPSILON = 1.1920928955078125e-7L;
+    static constexpr long double EPSILON = 1.1920928955078125e-7L;
     
     inline void setValue(
       const Representation::IEEE754SinglePrecision& value) throw() {
@@ -370,7 +370,7 @@ public:
       value.exponent = exponent; // possible overflow and underflow
       // both representations have implied one
       value.mantissa0 = (static_cast<uint32>(_value.mantissa3) << (23 - 16)) |
-        (_value.mantissa2 >> 32 - 23 + 16 + 1);
+        (_value.mantissa2 >> (32 - 23 + 16 + 1));
     }
     
     inline void setValue(float value) throw() {
@@ -495,14 +495,14 @@ public:
     Representation::IEEE754DoublePrecision value;
 
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-    static const long double MINIMUM = 2.225073858507201383090232717332404064219215980462331830553327416887204434813918195854283159012511021e-308L;
+    static constexpr long double MINIMUM = 2.225073858507201383090232717332404064219215980462331830553327416887204434813918195854283159012511021e-308L;
     /** Maximum representable finite floating-point number (2^e_max). */
-    static const long double MAXIMUM = 1.79769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536e308L;
+    static constexpr long double MAXIMUM = 1.79769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536e308L;
     /**
       The difference between 1 and the least value greater than 1 that is
       representable in the given floating point type.
     */
-    static const long double EPSILON = 1.1102230246251565404236316680908203125e-16L;
+    static constexpr long double EPSILON = 1.1102230246251565404236316680908203125e-16L;
     
     inline void setValue(
       const Representation::IEEE754SinglePrecision& _value) throw() {
@@ -652,14 +652,15 @@ public:
     Representation::IEEEExtendedDoublePrecision96 value;
 
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-    static const long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
+    static constexpr long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
     /** Maximum representable finite floating-point number (2^e_max). */
-    static const long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
+    static constexpr long double MAXIMUM = 1.18973149535723176502e+4932L;
+    // TAG: static constexpr long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
     /**
       The difference between 1 and the least value greater than 1 that is
       representable in the given floating point type.
     */
-    static const long double EPSILON = 1.08420217248550443400745280086994171142578125e-19L;
+    static constexpr long double EPSILON = 1.08420217248550443400745280086994171142578125e-19L;
     
     inline void setValue(
       const Representation::IEEE754SinglePrecision& _value) throw() {
@@ -820,14 +821,15 @@ public:
     Representation::IEEEExtendedDoublePrecision128 value;
 
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-    static const long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
+    static constexpr long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
     /** Maximum representable finite floating-point number (2^e_max). */
-    static const long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
+    static constexpr long double MAXIMUM = 1.18973149535723176502e+4932L;
+    // TAG: static constexpr long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
     /**
       The difference between 1 and the least value greater than 1 that is
       representable in the given floating point type.
     */
-    static const long double EPSILON = 1.08420217248550443400745280086994171142578125e-19L;
+    static constexpr long double EPSILON = 1.08420217248550443400745280086994171142578125e-19L;
     
     inline void setValue(
       const Representation::IEEE754SinglePrecision& _value) throw() {
@@ -988,14 +990,15 @@ public:
     Representation::IEEEQuadruplePrecision value;
 
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-    static const long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
+    static constexpr long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
     /** Maximum representable finite floating-point number (2^e_max). */
-    static const long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
+    static constexpr long double MAXIMUM = 1.18973149535723176502e+4932L;
+    // TAG: FIXME static constexpr long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
     /**
       The difference between 1 and the least value greater than 1 that is
       representable in the given floating point type.
     */
-    static const long double EPSILON = 1.925929944387235853055977942584927318538101648215388195239938795566558837890625e-34L;
+    static constexpr long double EPSILON = 1.925929944387235853055977942584927318538101648215388195239938795566558837890625e-34L;
     
     inline void setValue(
       const Representation::IEEE754SinglePrecision& _value) throw() {

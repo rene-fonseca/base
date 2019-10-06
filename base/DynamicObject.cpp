@@ -16,8 +16,12 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 bool DynamicObject::isValidObject() const throw() {
-  // TAG: fixme
-  return (this != 0) && valid;
+#if defined(DEBUG)
+  const void* _this = this;
+  return (_this != nullptr) && valid;
+#else
+  return true;
+#endif
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

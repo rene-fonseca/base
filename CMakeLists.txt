@@ -18,8 +18,19 @@ if (MSVC)
 else ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-value")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-exceptions") # FIXME
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-format-security") # FIXME
 endif ()
 
 include_directories ("${PROJECT_SOURCE_DIR}")
 
-add_library(base base/Date.cpp base/UnsignedInteger.cpp base/UnsignedLongInteger.cpp base/ValidifiedResult.cpp base/Version.cpp)
+file(GLOB base_SRC
+  "base/*.h"
+  "base/*.cpp"
+  "base/collection/*.h"
+  "base/collection/*.cpp"
+)
+
+# message(${base_SRC})
+
+add_library(base ${base_SRC} base/Date.cpp base/UnsignedInteger.cpp base/UnsignedLongInteger.cpp base/ValidifiedResult.cpp base/Version.cpp)

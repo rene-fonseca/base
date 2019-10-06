@@ -15,7 +15,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-Stream::~Stream() throw(IOException) {
+Stream::~Stream() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -78,7 +78,7 @@ namespace win32 {
       );
     }
 
-    ~AsyncReadFileContext() throw(AsynchronousException);
+    ~AsyncReadFileContext();
   };
 
 }; // win32 namespace

@@ -91,7 +91,7 @@ void BufferedOutputStream::unfoldValue(
   }
 }
 
-BufferedOutputStream::~BufferedOutputStream() throw(IOException) {
+BufferedOutputStream::~BufferedOutputStream() {
   flush();
 }
 

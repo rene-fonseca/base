@@ -87,7 +87,7 @@ void MappedFile::MappedFileImpl::synchronize() throw(FileException) {
 #endif // flavor
 }
 
-MappedFile::MappedFileImpl::~MappedFileImpl() throw(FileException) {
+MappedFile::MappedFileImpl::~MappedFileImpl() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!::UnmapViewOfFile(bytes)) {
     throw FileException("Unable to unmap file", this);

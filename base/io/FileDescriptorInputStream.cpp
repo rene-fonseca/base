@@ -252,7 +252,7 @@ bool FileDescriptorInputStream::wait(
 #endif // flavor
 }
 
-FileDescriptorInputStream::~FileDescriptorInputStream() throw(IOException) {
+FileDescriptorInputStream::~FileDescriptorInputStream() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

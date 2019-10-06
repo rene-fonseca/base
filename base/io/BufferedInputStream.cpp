@@ -124,7 +124,7 @@ bool BufferedInputStream::wait(unsigned int timeout) const throw(IOException) {
   }
 }
 
-BufferedInputStream::~BufferedInputStream() throw(IOException) {
+BufferedInputStream::~BufferedInputStream() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

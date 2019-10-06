@@ -106,7 +106,7 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
 
 
 
-Pipe::PipeHandle::~PipeHandle() throw(PipeException) {
+Pipe::PipeHandle::~PipeHandle() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (isValid()) {
     if (::CloseHandle(getHandle())) {
@@ -335,7 +335,7 @@ bool Pipe::wait(unsigned int timeout) const throw(PipeException) {
 #endif
 }
 
-Pipe::~Pipe() throw(IOException) {
+Pipe::~Pipe() {
   flush();
 }
 

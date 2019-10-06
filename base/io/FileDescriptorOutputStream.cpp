@@ -106,7 +106,7 @@ unsigned int FileDescriptorOutputStream::write(
   return bytesWritten;
 }
 
-FileDescriptorOutputStream::~FileDescriptorOutputStream() throw(IOException) {
+FileDescriptorOutputStream::~FileDescriptorOutputStream() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

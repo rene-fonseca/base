@@ -72,7 +72,7 @@ namespace win32 {
       return AsynchronousWriteCompletion(buffer, bytesToWrite, offset, bytesWritten, flags);
     }
 
-    ~AsyncWriteFileContext() throw(AsynchronousException);
+    ~AsyncWriteFileContext();
   };
 
 }; // win32 namespace

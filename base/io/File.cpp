@@ -96,7 +96,7 @@ struct packedStat64 { // temporary fix for unaligned st_size
   }
 #endif // flavor
 
-File::FileHandle::~FileHandle() throw(FileException) {
+File::FileHandle::~FileHandle() {
   // TAG: throw exception if region of file is still locked
   if (isValid()) { // dont try to close if handle is invalidated
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -135,7 +135,7 @@ File::File(const String& path, Access access, unsigned int options) throw(Access
   
   bool error = false;
   OperatingSystem::Handle handle = ::CreateFile( // TAG: check out FILE_FLAG_POSIX_SEMANTICS
-    path.getElements(), // file name
+    toWide(path.getElements()).c_str(), // file name
     (access == READ) ? GENERIC_READ : ((access == WRITE) ? GENERIC_WRITE : (GENERIC_READ | GENERIC_WRITE)), // access mode
     (options & EXCLUSIVE) ? 0 : (FILE_SHARE_READ | FILE_SHARE_WRITE), // share mode
     0, // security descriptor
@@ -147,7 +147,7 @@ File::File(const String& path, Access access, unsigned int options) throw(Access
   unsigned int linkLevel = 0;
   const unsigned int maximumLinkLevel = 16;
   while ((handle == OperatingSystem::INVALID_HANDLE) && (++linkLevel <= maximumLinkLevel)) {    
-    OperatingSystem::Handle link = ::CreateFile(path.getElements(), // file name
+    OperatingSystem::Handle link = ::CreateFile(toWide(path.getElements()).c_str(), // file name
                                                 0 | READ_CONTROL, // access mode
                                                 FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
                                                 0, // security descriptor
@@ -1448,7 +1448,7 @@ AsynchronousWriteOperation File::write(
 #endif // flavor
 }
 
-File::~File() throw(FileException) {
+File::~File() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

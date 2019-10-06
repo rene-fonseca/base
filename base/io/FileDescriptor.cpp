@@ -33,7 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 Handle* FileDescriptor::invalid = nullptr;
 
-FileDescriptor::Descriptor::~Descriptor() throw(IOException) {
+FileDescriptor::Descriptor::~Descriptor() {
   if (isValid()) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     if (!::CloseHandle(getHandle())) {
@@ -181,7 +181,7 @@ FileDescriptor FileDescriptor::getStandardError() throw() {
 #endif // flavor
 }
 
-FileDescriptor::~FileDescriptor() throw(IOException) {
+FileDescriptor::~FileDescriptor() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

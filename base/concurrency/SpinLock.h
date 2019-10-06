@@ -32,7 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class SpinLock : public Lock {
 private:
   
-  volatile mutable unsigned int value;
+  volatile mutable unsigned int value = 0;
   // TAG: reduce crosstalk through cache line
   
   /**
@@ -44,7 +44,7 @@ public:
   /**
     Initializes spin lock to unlocked state.
   */
-  inline SpinLock() throw() : value(0) {
+  inline SpinLock() throw() {
   }
   
   /**

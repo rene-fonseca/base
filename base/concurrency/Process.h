@@ -40,9 +40,9 @@ public:
   /* Structure holding the user and system times. */
   struct Times {
     /** The user mode time in nanoseconds. */
-    uint64 user;
+    uint64 user = 0;
     /** The system mode time in nanoseconds. */
-    uint64 system;
+    uint64 system = 0;
   };
 
   /**

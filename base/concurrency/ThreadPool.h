@@ -88,7 +88,7 @@ private:
   private:
 
     /** The thread pool. */
-    ThreadPool* pool;
+    ThreadPool* pool = nullptr;
   public:
 
     /**
@@ -110,15 +110,15 @@ private:
   /** Runnable. */
   Wrapper runnable;
   /** Job provider. */
-  JobProvider* provider;
+  JobProvider* provider = nullptr;
   /** The number of desired threads. */
-  unsigned int desiredThreads;
+  unsigned int desiredThreads = 0;
   /** Specifies that the thread pool has been terminated. */
-  bool terminated;
+  bool terminated = false;
   /** Specifies that a thread should be terminated. */
-  bool terminateOne;
+  bool terminateOne = false;
   /** The last terminated thread. */
-  Thread* terminatedThread;
+  Thread* terminatedThread = nullptr;
   /** Collection holding the thread objects. */
   Set<Thread*> pool;
   /** Synchronization object. */

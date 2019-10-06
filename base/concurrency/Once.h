@@ -46,11 +46,11 @@ private:
   /** Guard. */
   Guard guard;
   /** Event. */
-  Event* event;
+  Event* event = nullptr;
   /** The number of waiting threads. */
-  unsigned int waiting;
+  unsigned int waiting = 0;
   /** Specifies, when false, that the token has been relinquished. */
-  bool mask;
+  bool mask = false;
   
   /**
     Internal implementation for the getToken() method.

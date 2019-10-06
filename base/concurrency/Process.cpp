@@ -268,8 +268,7 @@ Process Process::execute(const String& command) throw(ProcessException) {
   if (pid == 0) { // is this the child
     // setup arguments list
     // first argument must be the module path
-    char* argv[1];
-    argv[1] = 0;
+    char* argv[2] = {nullptr, nullptr};
     ::execve(command.getElements(), argv, environ);
     // we only get here if exec failed
     ::exit(Application::EXIT_CODE_INITIALIZATION); // child must never return from this method

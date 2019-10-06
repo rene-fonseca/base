@@ -33,7 +33,7 @@ class NISpinLock : public Lock {
 private:
   
   /** Lock. */
-  volatile mutable unsigned int value;
+  volatile mutable unsigned int value = 0;
 public:
   
   /**

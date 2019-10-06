@@ -34,13 +34,13 @@ class Runnable : public virtual Object {
 protected:
 
   /** Specifies that the active object should be terminated. */
-  bool terminated;
+  bool terminated = false;
 public:
   
   /**
     Initializes runnable object.
   */
-  inline Runnable() throw() : terminated(false) {
+  inline Runnable() throw() {
   }
   
   /**

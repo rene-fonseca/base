@@ -36,7 +36,7 @@ class Semaphore : public virtual Object {
 private:
 
   /** Internal semaphore state. */
-  void* semaphore;
+  void* semaphore = nullptr;
 public:
   
   /**

@@ -199,15 +199,15 @@ public:
 private:
 
   /** The parent thread of the thread. */
-  Thread* parent;
+  Thread* parent = nullptr;
   /** The runnable object. */
-  Runnable* runnable;
+  Runnable* runnable = nullptr;
   /** Specifies that the thread should be terminated. */
-  volatile bool terminated;
+  volatile bool terminated = false;
   /** State. */
-  volatile State state;
+  volatile State state = NOTSTARTED;
   /** Identifier for the thread. */
-  Identifier identifier;
+  Identifier identifier = nullptr;
   /** Termination synchronization object. */
   Event terminationEvent;
   

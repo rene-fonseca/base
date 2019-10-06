@@ -40,9 +40,9 @@ private:
   /** Lock. */
   Lock lock;
   /** The owner holding the exclusive lock or the scheduled writer. */
-  mutable Thread::Identifier writer;
+  mutable Thread::Identifier writer = 0;
   /** The number of readers currently holding the lock. */
-  mutable unsigned int numberOfReaders;
+  mutable unsigned int numberOfReaders = 0;
 public:
   
   /**

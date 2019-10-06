@@ -63,7 +63,7 @@ void NISpinLock::exclusiveLock() const throw() {
 
 bool NISpinLock::tryExclusiveLock() const throw() {
 #if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
-  register unsigned int previous;
+  unsigned int previous;
   asm volatile (
     "        xchgl %0, %1\n"
     : "=&r" (previous), "=m" (value)
@@ -71,7 +71,7 @@ bool NISpinLock::tryExclusiveLock() const throw() {
   );
   return (previous & 1) == 0;
 #elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64)
-  register unsigned int previous;
+  unsigned int previous;
   asm volatile (
     "        xchgl %0, %1\n"
     : "=&r" (previous), "=m" (value)
@@ -103,7 +103,7 @@ bool NISpinLock::tryExclusiveLock() const throw() {
   );
   return !previous;
 #elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__MIPS) // MIPS II - R4000 processors
-  register unsigned int success;
+  unsigned int success;
   asm volatile (
     "1:      ll %0, %1\n\t" // get state of lock: 0 (unlocked), or 1 (locked)
     "        xor %0, %0, 1\n\t" // flip bit

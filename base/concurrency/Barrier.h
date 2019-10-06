@@ -44,9 +44,9 @@ protected:
   /** Mutual exclusion. */
   MutualExclusion mutex;
   /** The barrier count. */
-  unsigned int count;
+  unsigned int count = 0;
   /** The number of waiting threads. */
-  unsigned int waiting;
+  unsigned int waiting = 0;
 public:
   
   /**

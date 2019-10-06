@@ -38,9 +38,9 @@ private:
   /** Lock. */
   Lock lock;
   /** The current owner. */
-  mutable Thread::Identifier owner;
+  mutable Thread::Identifier owner = 0;
   /** The number of locks held by the owner. */
-  mutable unsigned int numberOfLocks;
+  mutable unsigned int numberOfLocks = 0;
 public:
   
   /**

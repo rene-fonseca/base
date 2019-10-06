@@ -253,11 +253,11 @@ bool Semaphore::tryWait() const throw(SemaphoreException) {
   return ::sem_trywait(sem) == 0; // did we decrement?
 #else
   SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
-  bool result;
   if (pthread_mutex_lock(&(sem->mutex))) {
     throw SemaphoreException(this);
   }
-  if (result = sem->value > 0) {
+  bool result = sem->value > 0;
+  if (result) {
     sem->value--;
   }
   if (pthread_mutex_unlock(&(sem->mutex))) {

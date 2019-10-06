@@ -36,7 +36,7 @@ private:
   /** The type of the guard. */
   typedef SpinLock Guard;
   /** The value of the counter. */
-  TYPE value;
+  TYPE value = 0;
   /** The guard. */
   Guard guard;
 public:
@@ -44,7 +44,7 @@ public:
   /**
     Initializes counter with zero.
   */
-  inline AtomicCounter() throw() : value(0) {
+  inline AtomicCounter() throw() {
   }
 
   /**

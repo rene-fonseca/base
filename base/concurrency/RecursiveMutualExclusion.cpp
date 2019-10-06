@@ -20,8 +20,7 @@ RecursiveMutualExclusion::RecursiveMutualExclusion() throw(ResourceException)
   : owner(0), numberOfLocks(0) {
 }
 
-void RecursiveMutualExclusion::exclusiveLock() const
-  throw(MutualExclusionException) {
+void RecursiveMutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
   Thread::Identifier id = Thread::getIdentifier();
   {
     ExclusiveSynchronize<Guard> _guard(guard);
@@ -38,8 +37,7 @@ void RecursiveMutualExclusion::exclusiveLock() const
   }
 }
 
-bool RecursiveMutualExclusion::tryExclusiveLock() const
-  throw(MutualExclusionException) {
+bool RecursiveMutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
   Thread::Identifier id = Thread::getIdentifier();
   ExclusiveSynchronize<Guard> _guard(guard);
   if (owner == id) {
@@ -54,8 +52,7 @@ bool RecursiveMutualExclusion::tryExclusiveLock() const
   }
 }
 
-void RecursiveMutualExclusion::releaseLock() const
-  throw(MutualExclusionException) {
+void RecursiveMutualExclusion::releaseLock() const throw(MutualExclusionException) {
   // Thread::Identifier id = Thread::getIdentifier();
   ExclusiveSynchronize<Guard> _guard(guard);
   // bassert(owner == id, ConcurrencyException(this));
@@ -65,8 +62,7 @@ void RecursiveMutualExclusion::releaseLock() const
   }
 }
 
-RecursiveMutualExclusion::~RecursiveMutualExclusion()
-  throw(MutualExclusionException) {
+RecursiveMutualExclusion::~RecursiveMutualExclusion() {
   bassert(
     guard.tryExclusiveLock() && lock.tryExclusiveLock(),
     MutualExclusionException(this)

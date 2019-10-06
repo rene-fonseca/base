@@ -35,7 +35,7 @@ class Event : public virtual Object {
 private:
 
   /** Internal data. */
-  void* context;
+  void* context = nullptr;
 public:
 
   /**

@@ -12,3 +12,5 @@
  ***************************************************************************/
 
 #include <base/collection/PriorityQueue.h>
+
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL

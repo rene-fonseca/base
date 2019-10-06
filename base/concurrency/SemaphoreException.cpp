@@ -13,6 +13,8 @@
 
 #include <base/concurrency/SemaphoreException.h>
 
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

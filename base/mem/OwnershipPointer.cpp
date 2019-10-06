@@ -12,3 +12,5 @@
  ***************************************************************************/
 
 #include <base/mem/OwnershipPointer.h>
+
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL

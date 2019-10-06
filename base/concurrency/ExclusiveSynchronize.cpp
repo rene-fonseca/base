@@ -12,3 +12,5 @@
  ***************************************************************************/
 
 #include <base/concurrency/ExclusiveSynchronize.h>
+
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL

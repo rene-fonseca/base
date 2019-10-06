@@ -13,9 +13,8 @@
 
 #include <base/iterator/SequenceIterator.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL
 
-void myfix() throw() {
-}
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

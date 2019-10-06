@@ -12,3 +12,5 @@
  ***************************************************************************/
 
 #include <base/mem/Lifetime.h>
+
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL

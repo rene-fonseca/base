@@ -20,6 +20,7 @@
 #include <base/Date.h>
 #include <base/string/StringOutputStream.h>
 #include <base/TypeInfo.h>
+#include <vector>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -589,7 +590,7 @@ void FormatOutputStream::addDateField(const Date& date) throw(IOException) {
   context = defaultContext;  
 }
 
-FormatOutputStream::~FormatOutputStream() throw(IOException) {
+FormatOutputStream::~FormatOutputStream() {
 }
 
 FormatOutputStream& FormatOutputStream::operator<<(
@@ -1311,11 +1312,13 @@ public:
     const unsigned int* dividend,
     const unsigned int* restrict divisor,
     unsigned int size) throw() {
-    unsigned int temp[size];
+
+    std::vector<unsigned int> temp;
+    temp.resize(size);
     clear(quotient, size);
     unsigned int* tempDividend = remainder;
     assign(tempDividend, dividend, size);
-    assign(temp, divisor, size);
+    assign(&temp[0], divisor, size);
 
     if (lessThan(tempDividend, divisor, size)) {
       return;
@@ -1323,30 +1326,41 @@ public:
 
     unsigned int divisorBitSize = getBitSize(divisor, size);
     unsigned int positionOfDivisor = getBitSize(tempDividend, size) - divisorBitSize;
-    leftShift(temp, size, positionOfDivisor);
+    leftShift(&temp[0], size, positionOfDivisor);
 
     unsigned int reducedSize = size;
 
     while (!lessThan(tempDividend, divisor, reducedSize)) {
       // assert temp >= divisor
       unsigned int newPosition = getBitSize(tempDividend, reducedSize) - divisorBitSize; // 0 <= newPosition < positionOfDivisor
-      rightShift(temp, reducedSize, positionOfDivisor - newPosition);
+      rightShift(&temp[0], reducedSize, positionOfDivisor - newPosition);
       positionOfDivisor = newPosition;
 
-      if (lessThan(tempDividend, temp, reducedSize)) { // shift = 0 => return value is false
-        rightShift(temp, reducedSize, 1);
+      if (lessThan(tempDividend, &temp[0], reducedSize)) { // shift = 0 => return value is false
+        rightShift(&temp[0], reducedSize, 1);
         --positionOfDivisor;
       }
 
       addBit(quotient, size, positionOfDivisor); // must be size - is any carrier possible when divisor > 0
 
-      subtract(tempDividend, temp, reducedSize);
+      subtract(tempDividend, &temp[0], reducedSize);
     }
     // tempDividend is remainder now
   }
 
 }; // LargeInteger
 
+template<class TYPE>
+class Buffer : public std::vector<TYPE> {
+public:
+
+  inline Buffer(size_t size) : std::vector<TYPE>(size) {
+  }
+
+  inline operator TYPE* () {
+    return &operator[](0);
+  }
+};
 
 
 enum CutMode {
@@ -1383,7 +1397,7 @@ void convertFloatingPoint(
     return;
   }
 
-  const unsigned int shiftS = maximum<int>(-(base2Exponent - significant), 0); // max(0, -(e-p))
+  const unsigned int shiftS = maximum<int>(-(base2Exponent - static_cast<int>(significant)), 0); // max(0, -(e-p))
   const unsigned int shiftR = maximum<int>(base2Exponent - significant, 0); // max(e-p, 0)
 
   // TAG: in debug mode use worst case size
@@ -1396,11 +1410,11 @@ void convertFloatingPoint(
   ASSERT((integerSize > 0) && (integerSize <= 513));
 
   // allocate integers on stack (potentially 10kb)
-  unsigned int S[integerSize];
-  unsigned int R[integerSize];
-  unsigned int Mminus[integerSize];
-  unsigned int Mdouble[integerSize]; // 2 * M- (only initialized if required)
-  unsigned int temp[integerSize];
+  Buffer<unsigned int> S(integerSize);
+  Buffer<unsigned int> R(integerSize);
+  Buffer<unsigned int> Mminus(integerSize);
+  Buffer<unsigned int> Mdouble(integerSize); // 2 * M- (only initialized if required)
+  Buffer<unsigned int> temp(integerSize);
 
   LargeInteger::clear(R, integerSize);
   LargeInteger::assign(R, mantissa, mantissaSize);
@@ -1693,12 +1707,12 @@ void FormatOutputStream::writeFloatingPointType(
   unsigned int mantissaSize,
   int base2Exponent,
   unsigned int valueFlags) throw(IOException) {
-  char buffer[128 + 2 + significant/3]; // N = 2 + floor[n/log2(10)] => N < 2 + n/3 // TAG: 128 should be calculated
+  Buffer<char> buffer(128 + 2 + significant/3); // N = 2 + floor[n/log2(10)] => N < 2 + n/3 // TAG: 128 should be calculated
   char* output = buffer;
   const char* radix = 0;
   unsigned int flags = context.flags;
 
-  if ((valueFlags & FloatingPoint::FP_NAN) != 0) {
+  if ((valueFlags & FloatingPoint::FP_ANY_NAN) != 0) {
     if ((flags & Symbols::UPPER) == 0) {
       copy(output, "nan", sizeof("nan") - 1); // TAG: I guess this should be locale specific
       output += sizeof("nan") - 1;
@@ -1730,10 +1744,11 @@ void FormatOutputStream::writeFloatingPointType(
       }
     } else {
 
-      uint8 digitBuffer[(significant + 1)/3]; // N = 2 + floor[n/log2(10)] => N < 3 + n/3 // TAG: check if stack is aligned
-      unsigned int numberOfDigits;
-      int exponent;
-      CutMode cutMode;
+      Buffer<uint8> digitBuffer((significant + 1)/3); // N = 2 + floor[n/log2(10)] => N < 3 + n/3 // TAG: check if stack is aligned
+      unsigned int numberOfDigits = 0;
+      int exponent = 0;
+      CutMode cutMode = CUT_MODE_NOGARBAGE;
+;
       if ((flags & Symbols::NECESSARY) != 0) {
         cutMode = CUT_MODE_NOGARBAGE;
       } else {
@@ -1757,7 +1772,7 @@ void FormatOutputStream::writeFloatingPointType(
       int adjustedExponent = exponent;
       switch (context.realStyle) {
       case Symbols::SCIENTIFIC: // one digit before radix character
-        if ((valueFlags & FloatingPoint::FP_ZERO) == 0) {
+        if ((valueFlags & FloatingPoint::FP_ANY_ZERO) == 0) {
           adjustedExponent = exponent - 1;
         }
         break;
@@ -1787,7 +1802,7 @@ void FormatOutputStream::writeFloatingPointType(
 
       const uint8* digit = digitBuffer;
       const uint8* endDigit = digit + numberOfDigits;
-      int digitsBeforeRadix = ((valueFlags & FloatingPoint::FP_ZERO) == 0) ? maximum(exponent - adjustedExponent, 0) : 1;
+      int digitsBeforeRadix = ((valueFlags & FloatingPoint::FP_ANY_ZERO) == 0) ? maximum(exponent - adjustedExponent, 0) : 1;
       int denormalizingZeros = minimum(maximum(adjustedExponent - exponent, 0), context.precision);
 
       if (digitsBeforeRadix > 0) {
@@ -1814,7 +1829,7 @@ void FormatOutputStream::writeFloatingPointType(
       }
 
       unsigned int digitsAfterRadix =
-        (numberOfDigits > digitsBeforeRadix) ? (numberOfDigits - digitsBeforeRadix) : 0;
+        (static_cast<int>(numberOfDigits) > digitsBeforeRadix) ? (numberOfDigits - digitsBeforeRadix) : 0;
       unsigned int totalDigitsAfterRadix = digitsAfterRadix + denormalizingZeros;
       int trailingZeros = 0;
 

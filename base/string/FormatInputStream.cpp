@@ -172,7 +172,7 @@ unsigned int FormatInputStream::read(
   return bytesRead;
 }
 
-FormatInputStream::~FormatInputStream() throw(IOException) {
+FormatInputStream::~FormatInputStream() {
 }
 
 
@@ -207,7 +207,7 @@ FormatInputStream& operator>>(
       value = ch + 10 * value;
       try {
         ch = stream.getCharacter(); // TAG: must accept eof
-      } catch (EndOfFile& e) {
+      } catch (EndOfFile&) {
         break;
       }
       continue;

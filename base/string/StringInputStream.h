@@ -84,7 +84,7 @@ public:
   /**
     Destroys the string input stream.
   */
-  ~StringInputStream() throw(IOException);
+  ~StringInputStream();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

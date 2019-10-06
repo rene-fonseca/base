@@ -89,7 +89,7 @@ CharacterSet CharacterSet::load(
     // ignore any other data
     
     return characterSet;
-  } catch (IOException& e) {
+  } catch (IOException&) {
     throw FileException(Type::getType<CharacterSet>());
   }
 }
@@ -107,7 +107,7 @@ CharacterSet CharacterSet::load(
       if (FileSystem::fileExists(absolutePath)) {
         try {
           return load(absolutePath);
-        } catch (Exception& e) {
+        } catch (Exception&) {
         }
       }
     }
@@ -163,7 +163,7 @@ void CharacterSet::save(const String& path, Architecture::ByteOrder byteOrder) c
       }
     }
     file.write(buffer, sizeof(buffer));
-  } catch (IOException& e) {
+  } catch (IOException&) {
     throw FileException(Type::getType<CharacterSet>());
   }
 }

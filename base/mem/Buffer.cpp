@@ -23,7 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 Buffer::Buffer(unsigned int size, unsigned int granularity) throw(MemoryException) {
   this->granularity = (granularity > 0) ? granularity : 1;
 //  this->size = NUMBER_TO_GRAN(size, granularity);
-  bytes = static_cast<char*>(malloc(this->size));
+  bytes = static_cast<uint8*>(malloc(this->size));
   if ((bytes == 0) && (this->size != 0)) { // was memory allocated
     throw MemoryException(this);
   }
@@ -32,7 +32,7 @@ Buffer::Buffer(unsigned int size, unsigned int granularity) throw(MemoryExceptio
 Buffer::Buffer(const Buffer& copy) throw(MemoryException) {
   granularity = copy.granularity;
   size = copy.size;
-  bytes = static_cast<char*>(malloc(size));
+  bytes = static_cast<uint8*>(malloc(size));
   if ((bytes == 0) && (size != 0)) { // was memory allocated
     throw MemoryException(this);
   }
@@ -43,7 +43,7 @@ void Buffer::setSize(unsigned int size) throw(MemoryException) {
 //  size = NUMBER_TO_GRAN(size, granularity);
   if (size != this->size) { // do we really have to
     this->size = size;
-    char* result = static_cast<char*>(realloc(bytes, size));
+    uint8* result = static_cast<uint8*>(realloc(bytes, size));
     if ((result == 0) && (size > 0)) { // was memory allocated
       throw MemoryException(this);
     }

@@ -15,6 +15,7 @@
 #define _DK_SDU_MIP__BASE_STRING__MULTIBYTE_EXCEPTION_H
 
 #include <base/Exception.h>
+#include <base/Primitives.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -32,11 +33,11 @@ class MultibyteException : public Exception {
 private:
   
   /** Index of first invalid character. */
-  int index;
+  int index = -1;
   /** Index of first invalid octet. */
-  int octetIndex;
+  int octetIndex = -1;
   /** Index of first invalid octet within first invalid character. */
-  int suboctetIndex;
+  int suboctetIndex = -1;
 public:
 
   enum Cause {
@@ -47,8 +48,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline MultibyteException() throw()
-    : index(-1), octetIndex(-1), suboctetIndex(-1) {
+  MultibyteException() throw() {
   }
 
   /**
@@ -56,8 +56,7 @@ public:
 
     @param message The message.
   */
-  inline MultibyteException(const char* message) throw()
-    : Exception(message), index(-1), octetIndex(-1), suboctetIndex(-1) {
+  MultibyteException(const char* message) throw() : Exception(message) {
   }
 
   /**
@@ -65,8 +64,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline MultibyteException(Type type) throw()
-    : Exception(type), index(-1), octetIndex(-1), suboctetIndex(-1) {
+  MultibyteException(Type type) throw() : Exception(type) {
   }
   
   /**
@@ -78,7 +76,7 @@ public:
   inline MultibyteException(
     const char* message,
     Type type) throw()
-    : Exception(message, type), index(-1), octetIndex(-1), suboctetIndex(-1) {
+    : Exception(message, type) {
   }
   
   /**

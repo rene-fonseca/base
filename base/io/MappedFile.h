@@ -64,7 +64,7 @@ private:
 
     void synchronize() throw(FileException);
 
-    ~MappedFileImpl() throw(FileException);
+    ~MappedFileImpl();
   };
 
   friend class MappedFileImpl;

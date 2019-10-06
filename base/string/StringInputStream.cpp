@@ -63,7 +63,7 @@ unsigned int StringInputStream::skip(unsigned int count) throw(IOException) {
   return count;
 }
 
-StringInputStream::~StringInputStream() throw(IOException) {
+StringInputStream::~StringInputStream() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

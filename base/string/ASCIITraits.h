@@ -54,9 +54,9 @@ public:
     /** Character flags. */
     unsigned short flags;
     /** The corresponding lower case character. */
-    char lower;
+    unsigned char lower;
     /** The corresponding upper case character. */
-    char upper;
+    unsigned char upper;
     /** The numerical value of the character (hexadecimal). */
     unsigned char value;
   };

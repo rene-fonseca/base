@@ -15,6 +15,7 @@
 #include <base/mem/VirtualMemory.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/NotImplemented.h>
+#include <base/string/WideString.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <windows.h>
@@ -26,10 +27,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 String VirtualMemory::Module::getPath() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  char buffer[4096]; // TAG: limit
+  wchar buffer[4096]; // TAG: limit
   unsigned int length = ::GetModuleFileName((HMODULE)context, buffer, sizeof(buffer));
   buffer[length] = 0;
-  return String(buffer, length);
+  return toUTF8(WideString(buffer, length));
 #else // unix
   throw NotImplemented(this);
 #endif // flavor
@@ -37,7 +38,7 @@ String VirtualMemory::Module::getPath() const throw() {
 
 VirtualMemory::Module VirtualMemory::Module::getProcessModule() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return Module((HMODULE)::GetModuleHandle(0));
+  return Module((HMODULE)::GetModuleHandle(nullptr));
 #else // unix
   throw NotImplemented(Type::getType<VirtualMemory>());
 #endif // flavor
@@ -45,7 +46,7 @@ VirtualMemory::Module VirtualMemory::Module::getProcessModule() throw() {
 
 bool VirtualMemory::Module::isModule() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  char buffer[1];
+  wchar buffer[1];
   unsigned int length = ::GetModuleFileName((HMODULE)context, buffer, sizeof(buffer));
   return length > 0;
 #else // unix
@@ -61,7 +62,7 @@ MemorySize VirtualMemory::Module::getSize() const throw() {
   
   MEMORY_BASIC_INFORMATION info;
   const uint8* address = Cast::pointer<const uint8*>(context);
-  while (address < (const uint8*)0x80000000) { // TAG: OS limit
+  while (false /*address < (const uint8*)0x80000000*/) { // TAG: OS limit
     if (::VirtualQuery(address, &info, sizeof(info)) == 0) {
       address += pageSize;
       continue;
@@ -85,13 +86,13 @@ Array<VirtualMemory::Module> VirtualMemory::getModules() throw() {
   const unsigned int pageSize = systemInformation.dwPageSize;
   const uint8* address = 0;
   MEMORY_BASIC_INFORMATION info;
-  while (address < (const uint8*)0x80000000) { // TAG: OS limit
+  while (false /*address < (const uint8*)0x80000000*/) { // TAG: OS limit
     if (::VirtualQuery(address, &info, sizeof(info)) == 0) {
       address += pageSize;
       continue;
     }
     if (info.Type & MEM_IMAGE) {
-      char buffer[1];
+      wchar buffer[1];
       unsigned int length = ::GetModuleFileName((HMODULE)address, buffer, sizeof(buffer));
       if (length > 0) {
         result.append(Module(address));
@@ -122,7 +123,7 @@ void VirtualMemory::dump() throw() {
   const unsigned int pageSize = info.dwPageSize;
   
   const uint8* address = 0;
-  while (address < (const uint8*)0x80100000) {
+  while (false /*address < (const uint8*)0x80100000*/) { // TAG: OS limit
     MEMORY_BASIC_INFORMATION info;
     DWORD result = ::VirtualQuery(address, &info, sizeof(info));
     if (result == 0) {

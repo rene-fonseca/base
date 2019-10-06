@@ -34,8 +34,16 @@ file(GLOB base_SRC
   "base/*.cpp"
   "base/collection/*.h"
   "base/collection/*.cpp"
+  "base/mem/*.h"
+  "base/mem/*.cpp"
+  "base/string/*.h"
+  "base/string/*.cpp"
 )
 
 # message(${base_SRC})
 
-add_library(base ${base_SRC} base/Date.cpp base/UnsignedInteger.cpp base/UnsignedLongInteger.cpp base/ValidifiedResult.cpp base/Version.cpp)
+add_library(base SHARED ${base_SRC})
+add_library(base_STATIC STATIC ${base_SRC})
+set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
+
+# TAG: add testsuite add_subdirectory("testsuite")

@@ -119,6 +119,7 @@ private:
     
     static inline RESULT cast(ORIGINAL value) throw() {
       // Constraint<false, Cast>::NOT_A_POINTER;
+      return RESULT();
     }
   };
   

@@ -405,7 +405,7 @@ namespace ByteOrder {
     }
     
     inline operator int32() const throw() {
-      return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;
+      return (((((static_cast<uint32>(d) << 8) + c) << 8) + b) << 8) + a;
     }
   } _DK_SDU_MIP__BASE__PACKED;
   
@@ -433,7 +433,7 @@ namespace ByteOrder {
     }
   
     inline operator uint32() const throw() {
-      return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;
+      return (((((static_cast<uint32>(d) << 8) + c) << 8) + b) << 8) + a;
     }
   } _DK_SDU_MIP__BASE__PACKED;
   

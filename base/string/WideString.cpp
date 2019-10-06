@@ -825,8 +825,8 @@ unsigned int WideString::UCS4ToUTF16BE(uint8* dest, const ucs4* src, unsigned in
   const ucs4* const end = src + size;
   if (dest) {
     if (flags & ADD_BOM) {
-      *dest++ = static_cast<uint8>(BOM >> 8); // most significant
-      *dest++ = static_cast<uint8>(BOM >> 0);
+      *dest++ = static_cast<uint8>((BOM >> 8) & 0xff); // most significant
+      *dest++ = static_cast<uint8>((BOM >> 0) & 0xff);
     }
     while (src < end) {
       unsigned int value = *src++;
@@ -878,8 +878,8 @@ unsigned int WideString::UCS4ToUTF16LE(uint8* dest, const ucs4* src, unsigned in
   const ucs4* const end = src + size;
   if (dest) {
     if (flags & ADD_BOM) {
-      *dest++ = static_cast<uint8>(BOM >> 8); // most significant
-      *dest++ = static_cast<uint8>(BOM >> 0);
+      *dest++ = static_cast<uint8>((BOM >> 8) & 0xff); // most significant
+      *dest++ = static_cast<uint8>((BOM >> 0) & 0xff);
     }
     while (src < end) {
       unsigned int value = *src++;

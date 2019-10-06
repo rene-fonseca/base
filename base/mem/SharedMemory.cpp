@@ -151,11 +151,11 @@ void SharedMemory::SharedMemoryImpl::setProtection(
   DWORD protection = 0;
   if (access == 0) {
     protection = PAGE_NOACCESS;
-  } else if (access & SharedMemory::READ == SharedMemory::READ) {
+  } else if ((access & SharedMemory::READ) == SharedMemory::READ) {
     protection = PAGE_READONLY;
-  } else if (access & SharedMemory::WRITE == SharedMemory::WRITE) {
+  } else if ((access & SharedMemory::WRITE) == SharedMemory::WRITE) {
     protection = PAGE_READWRITE;
-  } else if (access & (SharedMemory::READ|SharedMemory::WRITE) == (SharedMemory::READ|SharedMemory::WRITE)) {
+  } else if ((access & (SharedMemory::READ|SharedMemory::WRITE)) == (SharedMemory::READ|SharedMemory::WRITE)) {
     protection = PAGE_READWRITE;
   } else if (access & SharedMemory::EXECUTE) {
     if (access & SharedMemory::WRITE) {

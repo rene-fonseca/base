@@ -15,9 +15,11 @@
 #define _DK_SDU_MIP__BASE_COLLECTION__STACK_H
 
 #include <base/collection/Collection.h>
+#include <base/collection/Enumeration.h>
 #include <base/OutOfRange.h>
 #include <base/MemoryException.h>
 #include <base/mem/Reference.h>
+#include <base/string/FormatOutputStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -41,8 +43,8 @@ protected:
   class StackNode {
   protected:
     
-    StackNode* next;
-    StackNode* previous;
+    StackNode* next = nullptr;
+    StackNode* previous = nullptr;
     TYPE value;
   public:
     
@@ -78,8 +80,6 @@ protected:
     }
   };
 
-
-
   /*
     Enumerator of elements of a stack.
     
@@ -97,7 +97,7 @@ protected:
   private:
     
     /** The current position in the enumeration. */
-    const StackNode* current;
+    const StackNode* current = nullptr;
   public:
     
     /**
@@ -120,7 +120,7 @@ protected:
       Returns true if the enumeration still contains elements.
     */
     inline bool hasNext() const throw() {
-      return current != 0;
+      return current != nullptr;
     }
 
     /**
@@ -167,24 +167,23 @@ protected:
   protected:
 
     /** The node on the top of the stack. */
-    StackNode* top;
+    StackNode* top = nullptr;
     /** The node at the bottom of the stack. */
-    StackNode* bottom;
+    StackNode* bottom = nullptr;
     /** The number of elements on the stack. */
-    unsigned int size;
+    unsigned int size = 0;
   public:
 
     /**
       Initialize an empty stack.
     */
-    inline StackImpl() throw() : top(0), bottom(0), size(0) {
+    inline StackImpl() throw() {
     }
     
     /**
       Initialize stack from other stack.
     */
-    inline StackImpl(const StackImpl& copy) throw(MemoryException)
-      : top(0), bottom(0), size(0) {
+    inline StackImpl(const StackImpl& copy) throw(MemoryException) {
       const StackNode* node = copy.bottom;
       while (node) {
         push(*node->getValue());
@@ -238,12 +237,12 @@ protected:
     */
     void push(const TYPE& value) throw(MemoryException) {
       if (!isEmpty()) {
-        StackNode* node = new StackNode(top, 0, value);
+        StackNode* node = new StackNode(top, nullptr, value);
         top->setPrevious(node); // top is not null
         top = node;
         ++size;
       } else {
-        top = new StackNode(0, 0, value);
+        top = new StackNode(nullptr, nullptr, value);
         bottom = top;
         ++size;
       }
@@ -263,9 +262,9 @@ protected:
       top = top->getNext();
       --size;
       if (isEmpty()) {
-        bottom = 0;
+        bottom = nullptr;
       } else {
-        top->setPrevious(0);
+        top->setPrevious(nullptr);
       }
       TYPE result = *temp->getValue();
       delete temp;
@@ -290,9 +289,9 @@ protected:
         --count;
       }
       if (isEmpty()) {
-        bottom = 0;
+        bottom = nullptr;
       } else {
-        top->setPrevious(0);
+        top->setPrevious(nullptr);
       }
     }
     
@@ -306,7 +305,7 @@ protected:
         --size;
         delete temp;
       }
-      bottom = 0;
+      bottom = nullptr;
     }
     
     /**
@@ -422,8 +421,6 @@ public:
     elements = new StackImpl(); // no need to copy
   }
 };
-
-#include <base/string/FormatOutputStream.h>
 
 /**
   Writes a string representation of a stack to a format output stream.

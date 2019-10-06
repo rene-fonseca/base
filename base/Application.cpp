@@ -18,6 +18,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
 #include <base/UnexpectedFailure.h>
+#include <base/string/WideString.h>
 #include <stdlib.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -175,7 +176,7 @@ public:
     return 0;
   }
   
-  windowClass.lpszClassName = "mip.sdu.dk/~fonseca/base?message handler";
+  windowClass.lpszClassName = "https://dev.azure.com/renefonseca/base?message handler";
   OSVERSIONINFO versionInfo;
   versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
   ::GetVersionEx(&versionInfo); // never fails
@@ -185,7 +186,7 @@ public:
 //   ::GetVersionEx(&versionInfo); // never fails
 //   bool isWindows2000OrLater = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) && (versionInfo.dwMajorVersion >= 5);
 // we do not use message-only window 'cause it cannot be enumerated
-  "mip.sdu.dk/~fonseca/base?message handler", // registered class name
+  "https://dev.azure.com/renefonseca/base?message handler", // registered class name
     isWindows2000OrLater ? ((HWND)-3) : ((HWND)0), // no parent or owner window - (HWND(-3)) ~ HWND_MESSAGE
     ((HWND)0), // no parent or owner window
                                         //isWindows2000OrLater ? ((HWND)-3) : ((HWND)0), // (HWND(-3)) ~ HWND_MESSAGE
@@ -599,7 +600,7 @@ void Application::initialize() throw() {
   static unsigned int singleton = 0;
   assert(
     singleton == 0,
-    SingletonException("Application has been instantiated", this)
+    SingletonException("Application has been initialized", this)
   );
   ++singleton;
 
@@ -613,7 +614,7 @@ void Application::initialize() throw() {
   clear(windowClass);
   windowClass.cbSize = sizeof(windowClass);
   windowClass.lpfnWndProc = /*(WNDPROC)*/ApplicationImpl::messageHandler;
-  windowClass.lpszClassName = "mip.sdu.dk/~fonseca/base";
+  windowClass.lpszClassName = L"https://dev.azure.com/renefonseca/base";
   ATOM result = ::RegisterClassEx(&windowClass);
   ASSERT(result != 0);
 
@@ -626,7 +627,7 @@ void Application::initialize() throw() {
 
   HWND messageWindow = ::CreateWindowEx(
     0, // no extended window style
-    "mip.sdu.dk/~fonseca/base", // registered class name
+    L"https://dev.azure.com/renefonseca/base", // registered class name
     0, // no window name // TAG: should I use ""
     WS_DISABLED, // window style // TAG: or just 0
     0, // horizontal position of window
@@ -712,10 +713,12 @@ Application::Application(
   
   assert((numberOfArguments > 0) && (arguments), OutOfDomain(this));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  char buffer[MAX_PATH + 1]; // what if path starts with "\\?\"
-  DWORD length = ::GetModuleFileName(0, buffer, sizeof(buffer));
+  wchar buffer[MAX_PATH + 1]; // what if path starts with "\\?\"
+  DWORD length = ::GetModuleFileName(0, buffer, MAX_PATH /*lengthOf(buffer)*/);
   ASSERT(length > 0);
-  path = String(buffer, length);
+  if (length > 0) { // TAG: need inline assert
+    path = toUTF8(WideString(buffer, length));
+  }
 #else
   path = arguments[0]; // TAG: fixme
 #endif
@@ -785,7 +788,7 @@ Application::~Application() throw() {
 //   if (::DestroyWindow(windowHandle) == 0) {
 //     // failed but we do not care
 //   }
-//   if (::UnregisterClass("mip.sdu.dk/~fonseca/base", HINSTANCE(0)) == 0) { // TAG: should be done automatically
+//   if (::UnregisterClass("https://dev.azure.com/renefonseca/base", HINSTANCE(0)) == 0) { // TAG: should be done automatically
 //     // failed but we do not care
 //   }
 #endif // flavor

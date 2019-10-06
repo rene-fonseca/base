@@ -32,9 +32,9 @@ class FileDescriptorInputStream : public virtual InputStream, public FileDescrip
 private:
 
   /** Specifies that the end of the stream has been reached. */
-  bool end;
+  bool end = false;
 public:
-
+  
   /**
     Initializes file descriptor input stream as invalid.
   */
@@ -56,6 +56,14 @@ public:
     Assignment of file descriptor input stream to this file descriptor input stream.
   */
   FileDescriptorInputStream& operator=(const FileDescriptorInputStream& eq) throw();
+
+  /**
+    Closes the stream and releases any system resources associated with the
+    stream.
+  */
+  void close() throw(IOException) {
+    FileDescriptor::close();
+  }
 
   /**
     Returns true if the end of the file descriptor has been reached.

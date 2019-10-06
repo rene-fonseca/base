@@ -137,10 +137,13 @@ namespace win32 {
   }
 
   /* Initialize service. */
-  void WINAPI serviceEntry(DWORD numberOfArguments, LPSTR* argumentVector) {
+  void WINAPI serviceEntry(DWORD numberOfArguments, LPWSTR* argumentVector) {
     DaemonImpl::dispatched = true;
     // register the service control handler
-    DaemonImpl::serviceStatusHandle = ::RegisterServiceCtrlHandler(Application::getApplication()->getFormalName().getElements(), serviceControlHandler);
+    DaemonImpl::serviceStatusHandle = ::RegisterServiceCtrlHandler(
+      toWide(Application::getApplication()->getFormalName()).c_str(),
+      serviceControlHandler
+    );
 
     //Array<String> arguments;
     //for (unsigned int i = 1; i < numberOfArguments; ++i) { // ignore first arg which is name of service
@@ -192,7 +195,7 @@ Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) 
   // TAG: check whether a console is attached
 
   SERVICE_TABLE_ENTRY dispatchTable[] = {
-    {"", &win32::serviceEntry}, // name is ignored 'cause using SERVICE_WIN32_OWN_PROCESS
+    {L"", &win32::serviceEntry}, // name is ignored 'cause using SERVICE_WIN32_OWN_PROCESS
     {0, 0} // termination entry
   };
   
@@ -256,8 +259,8 @@ void Daemon::install() {
   if (manager) {
     SC_HANDLE service = ::CreateService(
       manager,
-      Application::getApplication()->getFormalName().getElements(), // name of service
-      Application::getApplication()->getFormalName().getElements(), // name to display
+      toWide(Application::getApplication()->getFormalName()).c_str(), // name of service
+      toWide(Application::getApplication()->getFormalName()).c_str(), // name to display
       SERVICE_ALL_ACCESS, // desired access
       SERVICE_WIN32_OWN_PROCESS, // service type
       SERVICE_DEMAND_START, // start type

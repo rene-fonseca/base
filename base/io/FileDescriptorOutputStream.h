@@ -58,6 +58,14 @@ public:
   FileDescriptorOutputStream& operator=(const FileDescriptorOutputStream& eq) throw();
 
   /**
+    Closes the stream and releases any system resources associated with the
+    stream.
+  */
+  void close() throw(IOException) {
+    FileDescriptor::close();
+  }
+
+  /**
     Forces any buffered bytes to be written out.
   */
   void flush() throw(IOException);

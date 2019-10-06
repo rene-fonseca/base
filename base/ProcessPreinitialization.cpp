@@ -59,13 +59,12 @@ public:
 };
     
     // handle to the global process heap
-    OperatingSystem::Handle processHeap;
+    OperatingSystem::Handle processHeap = nullptr;
     
     // the original unhandled exception filter
-    LPTOP_LEVEL_EXCEPTION_FILTER originalExceptionFilter;
+    LPTOP_LEVEL_EXCEPTION_FILTER originalExceptionFilter = nullptr;
     
-    LONG _DK_SDU_MIP__BASE__CALL_PASCAL exceptionFilter(
-      EXCEPTION_POINTERS* exception) {
+    LONG exceptionFilter(EXCEPTION_POINTERS* exception) {
       char errorMessage[sizeof("Internal error: System exception 0x################ (access violation) while reading from 0x################ at 0x################")]; // worst case
       char* dest = errorMessage;
       
@@ -345,7 +344,7 @@ ProcessPreinitialization::ProcessPreinitialization() throw() {
 #endif
   if (!compatible) {
     Trace::message("Operating system is not supported.");
-    ::MessageBox(0, "Operating system is not supported.", 0, MB_OK);
+    ::MessageBox(0, L"Operating system is not supported.", 0, MB_OK);
     exit(Application::EXIT_CODE_INITIALIZATION);
   }
   

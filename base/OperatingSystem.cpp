@@ -14,9 +14,9 @@
 #include <base/OperatingSystem.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  include <windows.h>
+// #  include <windows.h>
+#  include <Ws2tcpip.h>
 #  include <lmaccess.h>
-#  include <ws2tcpip.h>
 #else // unix
 #  include <limits.h>
 #  include <unistd.h>
@@ -152,7 +152,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-OperatingSystem::Handle OperatingSystem::INVALID_HANDLE = static_cast<char*>(nullptr) - 1;
+const OperatingSystem::Handle OperatingSystem::INVALID_HANDLE = static_cast<char*>(nullptr) - 1;
 #endif
 
 long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
@@ -223,7 +223,7 @@ long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
       unsigned long result = 0;
       unsigned int count = information.dwNumberOfProcessors;
       for (unsigned int bit = 0; (count > 0) && (bit < sizeof(DWORD) * 8); ++bit, --count) {
-        if (information.dwActiveProcessorMask & (1 << bit)) {
+        if (information.dwActiveProcessorMask & (1ULL << bit)) {
           ++result;
         }
       }
@@ -353,7 +353,8 @@ long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
 int64 OperatingSystem::getResourceLimit(
   Resource resource, LimitType type) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  throw NotSupported(Type::getType<OperatingSystem>());
+  return 0;
+  // throw NotSupported(Type::getType<OperatingSystem>());
 #else // unix
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
   static const __rlimit_resource_t RESOURCES[] =

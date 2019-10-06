@@ -24,6 +24,7 @@
 #include <base/Primitives.h>
 #include <base/collection/Hash.h>
 #include <base/Literal.h>
+#include <string>
 #include <ctype.h> // TAG: alien header
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -1186,6 +1187,18 @@ inline String operator-(
     return String(left); // return copy of left
   }
 }
+
+/** Converts wstring to UTF-8 string. */
+std::string toUTF8(const std::wstring& s);
+
+/** Converts UTF-8 string to wstring. */
+std::wstring toWide(const std::string& s);
+
+/** Converts String to wstring. */
+std::wstring toWide(const String& s);
+
+/** Converts UTF-8 (const char*) to wstring. */
+std::wstring toWide(const char* s);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 

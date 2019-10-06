@@ -16,6 +16,8 @@
 #include <base/Base.h>
 #include <base/Type.h>
 #include <base/mem/NullPointer.h>
+#include <base/string/WideString.h>
+#include <vector>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <windows.h>
@@ -31,7 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
 namespace win32 {
-  extern "C" void _DK_SDU_MIP__BASE__CALL_PASCAL OutputDebugStringA(const char*);
+  extern "C" void OutputDebugStringA(const char*);
 #define OutputDebugString OutputDebugStringA
 };
 #endif // cygwin
@@ -39,7 +41,7 @@ namespace win32 {
 void Trace::message(const char* message) throw() {
   assert(message, NullPointer(Type::getType<Trace>()));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::OutputDebugString(message);
+  ::OutputDebugString(toWide(message).c_str());
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN) // special case
   win32::OutputDebugString(message);
 #else // unix
@@ -57,14 +59,15 @@ void Trace::member(const void* pointer, const char* message) throw() {
     ++src;
   }
   unsigned int length = src - message;
-  char buffer[sizeof("0x1234567812345678 >> ") + length];
+  std::vector<char> buffer;
+  buffer.resize(22 + length + 1);
   // TAG: remove sprintf dependency
-  sprintf(buffer, "%p >> %s", pointer, message); // sprintf must be MT-safe
+  sprintf(&buffer[0], "%p >> %s", pointer, message); // sprintf must be MT-safe
 #if (_DK_SDU_MIP__BASE__INT_SIZE > 8)
 #  error pointer type not supported
 #endif
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::OutputDebugString(buffer);
+  ::OutputDebugString(toWide(&buffer[0]).c_str());
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN) // special case
   win32::OutputDebugString(buffer);
 #else // unix

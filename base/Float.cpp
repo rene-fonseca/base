@@ -12,9 +12,10 @@
  ***************************************************************************/
 
 #include <base/Float.h>
+#include <float.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-const float Float::MAXIMUM = FloatingPoint::ToFloat::MAXIMUM;
+const float Float::MAXIMUM = FLT_MAX; // TAG: FloatingPoint::ToFloat::MAXIMUM;
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

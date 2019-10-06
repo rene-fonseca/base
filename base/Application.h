@@ -86,11 +86,11 @@ private:
   /** Container for the environment variables. */
   Map<String, String> environment;
   /** The exit code. */
-  int exitCode;
+  int exitCode = 0;
   /** Specifies whether the application should be terminated. */
-  bool terminated;
+  bool terminated = false;
   /** Specifies whether the application should reload its configuration. */
-  bool hangingup;
+  bool hangingup = false;
   /** Synchronization object. */
   SpinLock lock;
 

@@ -22,7 +22,44 @@
 #  include <syslog.h>
 #endif // flavor
 
+#include <locale>
+#include <codecvt>
+#include <base/string/WideString.h>
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+// convert utf8* to wchar*
+// convert wchar* to utf8*
+// TAG: add support for \0 in strings!
+
+/** Converts wstring to UTF-8 string. */
+std::string toUTF8(const std::wstring& s) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+  return convert.to_bytes(s);
+}
+
+/** Converts UTF-8 string to wstring. */
+std::wstring toWide(const std::string& s) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+  return convert.from_bytes(s);
+}
+
+/** Converts String to wstring. */
+std::wstring toWide(const String& s) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+  return convert.from_bytes(s.getElements(), s.getElements() + s.getLength());
+}
+
+/** Converts WideString to wstring. */
+std::wstring toWide(const WideString& s) {
+  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> convert;
+  std::string r = convert.to_bytes((const char32_t*)s.getElements(), (const char32_t*)s.getElements() + s.getLength());
+  return toWide(r);
+}
+
+// std::u32string
+
+// TAG: need to figure out String and WideString API - use string and wstring instead?
 
 void SystemLogger::write(MessageType type, const String& message) throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -35,15 +72,16 @@ void SystemLogger::write(MessageType type, const String& message) throw() {
   Application* application = Application::getApplication();
   if (application) {
     eventSource = ::RegisterEventSource(
-      0,
-      application->getFormalName().getElements()
+      nullptr,
+      toWide(application->getFormalName()).c_str()
     );
   } else {
-    eventSource = ::RegisterEventSource(0, "Unspecified");
+    eventSource = ::RegisterEventSource(nullptr, L"Unspecified");
   }
   if (eventSource != 0) {
     LPCTSTR strings[1];
-    strings[0] = message.getElements();
+    std::wstring w = toWide(message);
+    strings[0] = w.c_str();
     ::ReportEvent(eventSource, messageType[type], 0, 0, 0, 1, 0, strings, 0);
     ::DeregisterEventSource(eventSource);
   }

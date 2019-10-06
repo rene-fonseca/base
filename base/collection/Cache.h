@@ -32,7 +32,7 @@ class CacheProvider {
 public:
   
   /** Returns the value for the specified key. */
-  virtual Value getValue(Key key) throw(CacheException) = 0;
+  virtual VALUE getValue(KEY key) throw(CacheException) = 0;
 };
 
 /**
@@ -141,7 +141,8 @@ public:
   inline void removeAll() throw() {
     elements = HashTable();
   }
-  
+
+#if 0
   /**
     Returns a enumerator of the cache for non-modifying access.
   */
@@ -162,12 +163,13 @@ public:
   inline ReadValueEnumerator getReadValueEnumerator() const throw() {
     return elements.getReadValueEnumerator();
   }
-  
+#endif
+
   /**
     Returns the value associated with the specified key when used as 'rvalue'.
     When used as 'lvalue' the key is associated with the specified value.
   */
-  inline Element operator[](const Key& key) throw(InvalidKey, MemoryException) {
+  inline typename HashTable<KEY, VALUE>::Element operator[](const Key& key) throw(InvalidKey, MemoryException) {
     return elements[key];
   }
   

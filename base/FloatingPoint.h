@@ -76,9 +76,9 @@ public:
     /** Specifies that the value is a signaling NaN. */
     FP_SIGNALING_NAN = 8,
     /** Specifies that the value is a NaN. */
-    FP_NAN = FP_QUITE_NAN | FP_SIGNALING_NAN,
+    FP_ANY_NAN = FP_QUITE_NAN | FP_SIGNALING_NAN,
     /** Value is zero (the sign is determined by the FP_NEGATIVE flag). */
-    FP_ZERO = 16,
+    FP_ANY_ZERO = 16,
     /** Value is infinity (the sign is determined by the FP_NEGATIVE flag). */
     FP_INFINITY = 32,
     /** Specifies an ordinary value representable in [-]d.ddde[-]dd form. */
@@ -396,7 +396,7 @@ public:
       @param size The number of mantissa digits.
       @param exponent The exponent (power of 2).
     */
-    IEEE754SinglePrecision(bool negative, const uint8* mantissa, unsigned int size, int exponent) throw();
+    IEEE754SinglePrecision(bool negative, const uint8* mantissa, unsigned int size, int exponent) throw(InvalidFormat);
     
     inline IEEE754SinglePrecision(
       const Representation::IEEE754SinglePrecision& value) throw() {
@@ -497,7 +497,8 @@ public:
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
     static constexpr long double MINIMUM = 2.225073858507201383090232717332404064219215980462331830553327416887204434813918195854283159012511021e-308L;
     /** Maximum representable finite floating-point number (2^e_max). */
-    static constexpr long double MAXIMUM = 1.79769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536e308L;
+    static constexpr long double MAXIMUM = 1.7976931348623158e308L;
+    // static constexpr long double MAXIMUM = 1.79769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536e308L;
     /**
       The difference between 1 and the least value greater than 1 that is
       representable in the given floating point type.
@@ -654,7 +655,7 @@ public:
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
     static constexpr long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
     /** Maximum representable finite floating-point number (2^e_max). */
-    static constexpr long double MAXIMUM = 1.18973149535723176502e+4932L;
+    static constexpr long double MAXIMUM = 0; // TAG: cannot set for MSC since long double is the same as double
     // TAG: static constexpr long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
     /**
       The difference between 1 and the least value greater than 1 that is
@@ -823,7 +824,7 @@ public:
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
     static constexpr long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
     /** Maximum representable finite floating-point number (2^e_max). */
-    static constexpr long double MAXIMUM = 1.18973149535723176502e+4932L;
+    static constexpr long double MAXIMUM = 0; // TAG: cannot set since long double is the same as double for MSC
     // TAG: static constexpr long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
     /**
       The difference between 1 and the least value greater than 1 that is
@@ -992,7 +993,7 @@ public:
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
     static constexpr long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
     /** Maximum representable finite floating-point number (2^e_max). */
-    static constexpr long double MAXIMUM = 1.18973149535723176502e+4932L;
+    static constexpr long double MAXIMUM = 0; // TAG: cannot set since long double is the same as double for MSC
     // TAG: FIXME static constexpr long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
     /**
       The difference between 1 and the least value greater than 1 that is

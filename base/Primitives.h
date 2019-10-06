@@ -85,7 +85,7 @@ struct nothing {
 
 // TAG: typeof is a GCC extension
 /** The resulting integral type of pointer subtraction. */
-typedef decltype(static_cast<char*>(0) - static_cast<char*>(0)) MemoryDiff;
+typedef decltype(static_cast<char*>(nullptr) - static_cast<char*>(nullptr)) MemoryDiff;
 /**
   The integral type used to represent any memory offset and any size of memory
   block.
@@ -137,6 +137,9 @@ public:
   inline operator const char*() const throw() {
     return value;
   }
+
+  /** Returns the length of the string. */
+  size_t getLength() const throw();
 };
 
 /**
@@ -158,6 +161,9 @@ public:
   inline operator const wchar*() const throw() {
     return value;
   }
+
+  /** Returns the length of the string. */
+  size_t getLength() const throw();
 };
 
 
@@ -175,7 +181,7 @@ inline MemorySize getArraySize(TYPE (&)[SIZE]) throw() {
 */
 template<class TYPE>
 inline MemorySize getAddressOf(const TYPE& value) throw() {
-  return reinterpret_cast<const char*>(&value) - static_cast<const char*>(0);
+  return reinterpret_cast<const char*>(&value) - static_cast<const char*>(nullptr);
 }
 
 /**
@@ -183,7 +189,7 @@ inline MemorySize getAddressOf(const TYPE& value) throw() {
 */
 template<class TYPE>
 inline const TYPE* getNullPointerOf() throw() {
-  return static_cast<const TYPE*>(0);
+  return static_cast<const TYPE*>(nullptr);
 }
 
 /**
@@ -191,8 +197,8 @@ inline const TYPE* getNullPointerOf() throw() {
 */
 template<class STRUCT, class FIELD>
 inline unsigned int getFieldOffset(const FIELD STRUCT::* field) throw() {
-  return reinterpret_cast<const char*>(&(static_cast<const STRUCT*>(0)->*field))
-    - static_cast<const char*>(0);
+  return reinterpret_cast<const char*>(&(static_cast<const STRUCT*>(nullptr)->*field))
+    - static_cast<const char*>(nullptr);
 }
 
 /**
@@ -305,7 +311,7 @@ inline bool isAligned(const TYPE& value) throw() {
   } else {
     alignment = 4 * sizeof(long);
   }
-  return (reinterpret_cast<const char*>(&value) - static_cast<const char*>(0)) && ((alignment - 1) == 0);
+  return (reinterpret_cast<const char*>(&value) - static_cast<const char*>(nullptr)) && ((alignment - 1) == 0);
 }
 
 /**
@@ -327,8 +333,8 @@ inline TYPE& getAligned(char* buffer) throw() {
     alignment = 4 * sizeof(long);
   }
   return reinterpret_cast<TYPE*>(
-    (((buffer - static_cast<char*>(0)) + alignment - 1) & ~(alignment - 1)) +
-    static_cast<char*>(0)
+    (((buffer - static_cast<char*>(nullptr)) + alignment - 1) & ~(alignment - 1)) +
+    static_cast<char*>(nullptr)
   );
 }
 
@@ -711,24 +717,24 @@ template<>
 class PrimitiveTraits<float> {
 public:  
   
-  static constexpr float MAXIMUM = 0;
-  static constexpr float MINIMUM = -MAXIMUM;
+  static const float MAXIMUM;
+  static const float MINIMUM;
 };
 
 template<>
 class PrimitiveTraits<double> {
 public:
   
-  static constexpr double MAXIMUM = 0;
-  static constexpr double MINIMUM = -MAXIMUM;
+  static const double MAXIMUM;
+  static const double MINIMUM;
 };
 
 template<>
 class PrimitiveTraits<long double> {
 public:
   
-  static constexpr long double MAXIMUM = 0;
-  static constexpr long double MINIMUM = -MAXIMUM;
+  static const long double MAXIMUM;
+  static const long double MINIMUM;
 };
 
 /**

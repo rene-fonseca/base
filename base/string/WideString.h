@@ -1489,6 +1489,12 @@ inline WideString operator-(const WideString& left, const WideString& right) thr
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, WideString::UnicodeCharacter character) throw(IOException);
 
+/** Converts WideString to wstring. */
+std::wstring toWide(const WideString& s);
+
+/** Converts WideString to String. */
+String toUTF8(const WideString& s);
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #endif

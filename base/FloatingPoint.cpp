@@ -188,13 +188,13 @@ FloatingPoint::IEEE754SinglePrecision::IEEE754SinglePrecision(
   bool negative,
   const uint8* mantissa,
   unsigned int size,
-  int exponent) throw() {
+  int exponent) throw(InvalidFormat) {
   static const int EXPLICIT_SIGNIFICANT =
     value.HAS_IMPLIED_ONE ? (value.SIGNIFICANT - 1) : value.SIGNIFICANT;
   value.negative = negative;
   
   assert(
-    (exponent >= -MAXIMUM_BINARY_EXPONENT) && (exponent <= MAXIMUM_BINARY_EXPONENT),
+    (exponent >= -static_cast<int>(MAXIMUM_BINARY_EXPONENT)) && (exponent <= MAXIMUM_BINARY_EXPONENT),
     InvalidFormat("Invalid exponent", Type::getType<FloatingPoint>())
   );
   
@@ -701,14 +701,14 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEE754SinglePrecision>
       flags |= FloatingPoint::FP_INFINITY;
     } else {
       flags &= ~FloatingPoint::FP_NEGATIVE;
-      flags |= FloatingPoint::FP_NAN;
+      flags |= FloatingPoint::FP_ANY_NAN;
     }
     precision = 0;
     exponent = 0;
   } else {
     flags |= FloatingPoint::FP_VALUE; // ordinary value
     if ((fieldExponent == 0) && (mantissa[0] == 0)) { // check for zero
-      flags |= FloatingPoint::FP_ZERO;
+      flags |= FloatingPoint::FP_ANY_ZERO;
       exponent = 0;
       precision = Representation::SIGNIFICANT;
     } else {
@@ -749,14 +749,14 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEE754DoublePrecision>
       flags |= FloatingPoint::FP_INFINITY;
     } else {
       flags &= ~FloatingPoint::FP_NEGATIVE;
-      flags |= FloatingPoint::FP_NAN;
+      flags |= FloatingPoint::FP_ANY_NAN;
     }
     precision = 0;
     exponent = 0;
   } else {
     flags |= FloatingPoint::FP_VALUE; // ordinary value
     if ((fieldExponent == 0) && (mantissa[1] == 0) && (mantissa[0] == 0)) { // check for zero
-      flags |= FloatingPoint::FP_ZERO;
+      flags |= FloatingPoint::FP_ANY_ZERO;
       exponent = 0;
       precision = Representation::SIGNIFICANT;
     } else {
@@ -797,14 +797,14 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePreci
       flags |= FloatingPoint::FP_INFINITY;
     } else {
       flags &= ~FloatingPoint::FP_NEGATIVE;
-      flags |= FloatingPoint::FP_NAN;
+      flags |= FloatingPoint::FP_ANY_NAN;
     }
     precision = 0;
     exponent = 0;
   } else {
     flags |= FloatingPoint::FP_VALUE; // ordinary value
     if ((fieldExponent == 0) && (mantissa[1] == 0) && (mantissa[0] == 0)) { // check for zero
-      flags |= FloatingPoint::FP_ZERO;
+      flags |= FloatingPoint::FP_ANY_ZERO;
       exponent = 0;
       precision = Representation::SIGNIFICANT;
     } else {
@@ -845,14 +845,14 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePreci
       flags |= FloatingPoint::FP_INFINITY;
     } else {
       flags &= ~FloatingPoint::FP_NEGATIVE;
-      flags |= FloatingPoint::FP_NAN;
+      flags |= FloatingPoint::FP_ANY_NAN;
     }
     precision = 0;
     exponent = 0;
   } else {
     flags |= FloatingPoint::FP_VALUE; // ordinary value
     if ((fieldExponent == 0) && (mantissa[1] == 0) && (mantissa[0] == 0)) { // check for zero
-      flags |= FloatingPoint::FP_ZERO;
+      flags |= FloatingPoint::FP_ANY_ZERO;
       exponent = 0;
       precision = Representation::SIGNIFICANT;
     } else {
@@ -895,7 +895,7 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEQuadruplePrecision>
       flags |= FloatingPoint::FP_INFINITY;
     } else {
       flags &= ~FloatingPoint::FP_NEGATIVE;
-      flags |= FloatingPoint::FP_NAN;
+      flags |= FloatingPoint::FP_ANY_NAN;
     }
     precision = 0;
     exponent = 0;
@@ -903,7 +903,7 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEQuadruplePrecision>
     flags |= FloatingPoint::FP_VALUE; // ordinary value
     if ((fieldExponent == 0) &&
         (mantissa[3] == 0) && (mantissa[2] == 0) && (mantissa[1] == 0) && (mantissa[0] == 0)) { // check for zero
-      flags |= FloatingPoint::FP_ZERO;
+      flags |= FloatingPoint::FP_ANY_ZERO;
       exponent = 0;
       precision = Representation::SIGNIFICANT;
     } else {

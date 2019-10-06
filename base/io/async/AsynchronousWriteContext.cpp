@@ -15,7 +15,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-AsynchronousWriteContext::~AsynchronousWriteContext() throw(AsynchronousException) {
+AsynchronousWriteContext::~AsynchronousWriteContext() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

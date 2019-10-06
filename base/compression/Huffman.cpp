@@ -136,7 +136,7 @@ public:
     }
   }
   
-  ~FixedBlockOutputStream() throw(IOException) {
+  ~FixedBlockOutputStream() {
     flush();
   }
 };

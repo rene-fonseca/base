@@ -431,7 +431,7 @@ Socket::SocketImpl::SocketImpl(
     localPort(0) {
 }
 
-Socket::SocketImpl::~SocketImpl() throw(IOException) {
+Socket::SocketImpl::~SocketImpl() {
   if (isValid()) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     if (::closesocket((int)getHandle())) {
@@ -1866,7 +1866,7 @@ bool Socket::wait(unsigned int microseconds) const throw(NetworkException) {
 #endif // flavor
 }
 
-Socket::~Socket() throw(IOException) {
+Socket::~Socket() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

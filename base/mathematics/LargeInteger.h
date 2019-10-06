@@ -13,7 +13,8 @@
 
 #pragma once
 
-#include <base/features.h>
+#include <base/MemoryException.h>
+#include <base/string/FormatOutputStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -28,12 +29,12 @@ class LargeInteger {
 private:
 
   /** The value. */
-  unsigned int* value;
+  unsigned int* value = nullptr;
   /** The size of the integer. */
-  unsigned int size;
+  unsigned int size = 0;
 public:
 
-  inline LargeInteger() throw() : value(0), size(0) {
+  inline LargeInteger() throw() {
   }
   
   inline LargeInteger(const LargeInteger& copy) throw()

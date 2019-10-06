@@ -179,7 +179,7 @@ public:
   /**
     Destroys the ownership pointer (and the object).
   */
-  inline ~ArrayOwnershipPointer() /*throw(...)*/ {
+  inline ~ArrayOwnershipPointer() {
     if (object) {
       delete[] object;
     }

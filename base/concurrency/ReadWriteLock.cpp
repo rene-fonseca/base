@@ -279,7 +279,7 @@ void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
 #endif
 }
 
-ReadWriteLock::~ReadWriteLock() throw(ReadWriteLockException) {
+ReadWriteLock::~ReadWriteLock() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   delete static_cast<ReadWriteLockImpl*>(representation);
 #elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)

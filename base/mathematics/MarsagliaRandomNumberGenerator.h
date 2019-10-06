@@ -33,13 +33,13 @@ private:
   /** State size. */
   static const unsigned int STATE_SIZE = 8;
   /** Internal state. */
-  uint16 x1[STATE_SIZE];
+  uint16 x1[STATE_SIZE] = {0, 0, 0, 0, 0, 0, 0, 0};
   /** Carry. */
-  uint16 carry1;
+  uint16 carry1 = 0;
   /** Internal state. */
-  uint16 x2[STATE_SIZE];
+  uint16 x2[STATE_SIZE] = {0, 0, 0, 0, 0, 0, 0, 0};
   /** Carry. */
-  uint16 carry2;
+  uint16 carry2 = 0;
 public:
 
   /**

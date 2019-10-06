@@ -30,7 +30,7 @@ void LockableRegion::lock(
   file.lock(this->region, exclusive);
 }
 
-LockableRegion::~LockableRegion() throw(FileException) {
+LockableRegion::~LockableRegion() {
   file.unlock(region);
 }
 

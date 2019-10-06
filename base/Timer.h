@@ -264,7 +264,7 @@ public:
 
   void dump() const throw(IOException);
 
-  inline ~TimeScope() throw(IOException) {
+  inline ~TimeScope() {
     stop();
     dump();
   }

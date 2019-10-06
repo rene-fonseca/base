@@ -31,7 +31,7 @@ namespace extension {
 
     Reference<RegistryKey::Handle> RegistryKey::invalid;
     
-    RegistryKey::Handle::~Handle() throw(RegistryException) {
+    RegistryKey::Handle::~Handle() {
       if (handle) {
         bassert(
           ::RegCloseKey((HKEY)handle) == ERROR_SUCCESS,

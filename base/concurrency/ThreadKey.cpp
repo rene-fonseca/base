@@ -83,7 +83,7 @@ void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
 #endif // flavor
 }
 
-ThreadKeyImpl::~ThreadKeyImpl() throw(ThreadKeyException) {
+ThreadKeyImpl::~ThreadKeyImpl() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!::TlsFree(Cast::extract<DWORD>(key))) {
     throw ThreadKeyException(this);

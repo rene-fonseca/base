@@ -79,7 +79,7 @@ namespace win32 {
     }
   }
 
-  AsyncReadFileContext::~AsyncReadFileContext() throw(AsynchronousException) {
+  AsyncReadFileContext::~AsyncReadFileContext() {
     bassert(
       (flags & AsynchronousReadCompletion::COMPLETED) != 0,
       AsynchronousException(this)

@@ -267,7 +267,7 @@ public:
   /**
     Destroys the automation pointer.
   */
-  inline ~Reference() /*throw(...)*/ {
+  inline ~Reference() {
     if (value) { // skip if pointer is invalid
       if (ReferenceCountedObject::ReferenceImpl(*value).removeReference()) {
         delete value;

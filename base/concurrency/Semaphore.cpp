@@ -267,7 +267,7 @@ bool Semaphore::tryWait() const throw(SemaphoreException) {
 #endif
 }
 
-Semaphore::~Semaphore() throw(SemaphoreException) {
+Semaphore::~Semaphore() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!::CloseHandle((HANDLE)semaphore)) {
     throw SemaphoreException(this);

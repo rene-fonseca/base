@@ -125,7 +125,7 @@ public:
   /**
     Closes the module.
   */
-  ~DynamicLinker() throw(LinkerException);
+  ~DynamicLinker();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

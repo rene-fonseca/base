@@ -618,7 +618,7 @@ void Thread::terminate() throw() {
   }
 }
 
-Thread::~Thread() throw(ThreadException) {
+Thread::~Thread() {
   if (getParent() != 0) {
     if (state != Thread::NOTSTARTED) {
       terminationEvent.wait(); // allows multiple contexts to wait for thread to terminate

@@ -78,7 +78,7 @@ public:
     }
   }
 
-  inline ~Scope() throw(...) {
+  inline ~Scope() {
     destroy();
   }
 };

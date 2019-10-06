@@ -41,7 +41,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-SerialPort::SerialPortHandle::~SerialPortHandle() throw(CommunicationsException) {
+SerialPort::SerialPortHandle::~SerialPortHandle() {
   if (isValid()) { // dont try to close if handle is invalidated
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     if (!::CloseHandle(getHandle())) {
@@ -465,7 +465,7 @@ unsigned int SerialPort::write(
   return bytesWritten;
 }
 
-SerialPort::~SerialPort() throw(CommunicationsException) {
+SerialPort::~SerialPort() {
   close();
 }
 

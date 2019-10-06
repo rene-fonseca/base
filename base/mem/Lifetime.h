@@ -76,7 +76,7 @@ public:
   /**
     Destroys the automation pointer (and the object).
   */
-  inline ~Lifetime() /*throw(...)*/ {
+  inline ~Lifetime() {
     delete object;
   }
 };

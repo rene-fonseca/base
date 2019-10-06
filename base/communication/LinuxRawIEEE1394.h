@@ -241,7 +241,7 @@ public:
   /**
     Destroys the IEEE 1394 implementation.
   */
-  ~LinuxRawIEEE1394() throw(IEEE1394Exception);
+  ~LinuxRawIEEE1394();
 
   /**
     Wait for an event or until the timeout period expires.

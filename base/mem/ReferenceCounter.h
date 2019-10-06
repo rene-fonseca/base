@@ -233,7 +233,7 @@ public:
   /**
     Destroys the automation pointer.
   */
-  inline ~ReferenceCounter() /*throw(...)*/ {
+  inline ~ReferenceCounter() {
     if (!--*references) { // remove reference
       if (value) { // skip if pointer is invalid
         delete value; // could throw exception if RCO is destroyed unsuccessfully

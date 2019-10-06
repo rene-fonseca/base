@@ -83,13 +83,13 @@ public:
   class Operation {
   private:
     
-    unsigned int id;
-    unsigned int arguments;
-    unsigned int precedence;
-    Glue glue;
-    bool builtin;
-    bool popable;
-    bool function;
+    unsigned int id = 0;
+    unsigned int arguments = 0;
+    unsigned int precedence = 0;
+    Glue glue = LEFT;
+    bool builtin = false;
+    bool popable = false;
+    bool function = false;
   public:
     
     inline Operation(

@@ -62,7 +62,7 @@ namespace win32 {
       return AsynchronousReadCompletion(buffer, bytesToRead, 0, bytesRead, flags);
     }
 
-    ~AsyncReadStreamContext() throw(AsynchronousException);
+    ~AsyncReadStreamContext();
   };
   
 }; // win32 namespace

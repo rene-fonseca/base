@@ -15,7 +15,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-Lock::~Lock() throw(LockException) {
+Lock::~Lock() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

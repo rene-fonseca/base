@@ -303,7 +303,7 @@ public:
     }
   }
 
-  ~Allocator() /*throw(...)*/ {
+  ~Allocator() {
     destroy(elements, size);
     Heap::release(elements);
   }

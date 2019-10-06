@@ -32,15 +32,15 @@ class Vector2D {
 protected:
 
   /** The X coordinate. */
-  TYPE x;
+  TYPE x = 0;
   /** The Y coordinate. */
-  TYPE y;
+  TYPE y = 0;
 public:
 
   /**
     Initializes vector as the origin (0,0).
   */
-  inline Vector2D() throw() : x(0), y(0) {
+  inline Vector2D() throw() {
   }
 
   /**

@@ -192,7 +192,7 @@ public:
   /**
     Destroys the IEEE 1394 implementation.
   */
-  virtual ~IEEE1394Impl() throw(IEEE1394Exception);
+  virtual ~IEEE1394Impl();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

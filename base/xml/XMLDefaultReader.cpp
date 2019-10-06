@@ -717,7 +717,7 @@ public:
   /**
     Destroys the automation object.
   */
-  inline ~FinalValue() /*throw(...)*/ {
+  inline ~FinalValue() {
     attribute = value;
   }
 };

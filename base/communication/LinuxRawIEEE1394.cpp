@@ -650,7 +650,7 @@ IEEE1394Common::IsochronousWriteChannel LinuxRawIEEE1394::getWriteChannel(unsign
   throw IEEE1394Exception("getWriteChannel is not impl", this);
 }
 
-LinuxRawIEEE1394::~LinuxRawIEEE1394() throw(IEEE1394Exception) {
+LinuxRawIEEE1394::~LinuxRawIEEE1394() {
   ::close(handle);
 }
 

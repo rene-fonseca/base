@@ -1395,11 +1395,11 @@ void convertFloatingPoint(
   ASSERT((integerSize > 0) && (integerSize <= 513));
 
   // allocate integers on stack (potentially 10kb)
-  Buffer<unsigned int> S(integerSize);
-  Buffer<unsigned int> R(integerSize);
-  Buffer<unsigned int> Mminus(integerSize);
-  Buffer<unsigned int> Mdouble(integerSize); // 2 * M- (only initialized if required)
-  Buffer<unsigned int> temp(integerSize);
+  SimpleBuffer<unsigned int> S(integerSize);
+  SimpleBuffer<unsigned int> R(integerSize);
+  SimpleBuffer<unsigned int> Mminus(integerSize);
+  SimpleBuffer<unsigned int> Mdouble(integerSize); // 2 * M- (only initialized if required)
+  SimpleBuffer<unsigned int> temp(integerSize);
 
   LargeInteger::clear(R, integerSize);
   LargeInteger::assign(R, mantissa, mantissaSize);
@@ -1692,7 +1692,7 @@ void FormatOutputStream::writeFloatingPointType(
   unsigned int mantissaSize,
   int base2Exponent,
   unsigned int valueFlags) throw(IOException) {
-  Buffer<char> buffer(128 + 2 + significant/3); // N = 2 + floor[n/log2(10)] => N < 2 + n/3 // TAG: 128 should be calculated
+  SimpleBuffer<char> buffer(128 + 2 + significant/3); // N = 2 + floor[n/log2(10)] => N < 2 + n/3 // TAG: 128 should be calculated
   char* output = buffer;
   const char* radix = 0;
   unsigned int flags = context.flags;
@@ -1729,7 +1729,7 @@ void FormatOutputStream::writeFloatingPointType(
       }
     } else {
 
-      Buffer<uint8> digitBuffer((significant + 1)/3); // N = 2 + floor[n/log2(10)] => N < 3 + n/3 // TAG: check if stack is aligned
+      SimpleBuffer<uint8> digitBuffer((significant + 1)/3); // N = 2 + floor[n/log2(10)] => N < 3 + n/3 // TAG: check if stack is aligned
       unsigned int numberOfDigits = 0;
       int exponent = 0;
       CutMode cutMode = CUT_MODE_NOGARBAGE;

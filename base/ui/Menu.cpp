@@ -22,7 +22,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 // TAG: check out menu flag MNS_MODELESS
-Menu::MenuHandle::~MenuHandle() throw(MenuException) {
+Menu::MenuHandle::~MenuHandle() {
   if (isValid()) { // dont try to close if handle is invalidated
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     // TAG: only if unassigned to window

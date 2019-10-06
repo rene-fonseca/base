@@ -123,9 +123,9 @@ public:
 private:
 
   /** The real part of the complex number. */
-  long double real;
+  long double real = 0;
   /** The imaginary part the complex number. */
-  long double imaginary;
+  long double imaginary = 0;
 
   inline _Complex long double getNative() const throw() {
     return real + imaginary * 1i;

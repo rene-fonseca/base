@@ -53,7 +53,7 @@ private:
     }
     
     /** Releases the resources used by the serial port. */
-    ~SerialPortHandle() throw(CommunicationsException);
+    ~SerialPortHandle();
   };
 public:
 
@@ -288,7 +288,7 @@ public:
   /**
     Destroys the serial port object.
   */
-  virtual ~SerialPort() throw(CommunicationsException);
+  virtual ~SerialPort();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

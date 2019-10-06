@@ -119,7 +119,7 @@ private:
     /**
       Releases the resources used by the menu.
     */
-    virtual ~MenuHandle() throw(MenuException);
+    virtual ~MenuHandle();
   };
 
   /** The opaque handle to the menu. */

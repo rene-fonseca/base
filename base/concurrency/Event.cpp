@@ -198,7 +198,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
 #endif
 }
 
-Event::~Event() throw(EventException) {
+Event::~Event() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (::CloseHandle(context) == 0) {
     throw EventException("Unable to destroy event", this);

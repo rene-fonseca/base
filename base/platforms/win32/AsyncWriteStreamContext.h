@@ -74,7 +74,7 @@ namespace win32 {
       );
     }
 
-    ~AsyncWriteStreamContext() throw(AsynchronousException);
+    ~AsyncWriteStreamContext();
   };
   
 }; // win32 namespace

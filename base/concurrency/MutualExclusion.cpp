@@ -95,7 +95,7 @@ void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
 #endif
 }
 
-MutualExclusion::~MutualExclusion() throw(MutualExclusionException) {
+MutualExclusion::~MutualExclusion() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::DeleteCriticalSection((CRITICAL_SECTION*)mutex);
   delete[] (CRITICAL_SECTION*)mutex;

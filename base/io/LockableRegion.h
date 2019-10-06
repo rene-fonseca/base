@@ -67,7 +67,7 @@ public:
   /**
     Destroys the file region lock (unlocks the region).
   */
-  ~LockableRegion() throw(FileException);
+  ~LockableRegion();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

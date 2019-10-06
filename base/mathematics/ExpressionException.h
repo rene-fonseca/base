@@ -32,7 +32,7 @@ class ExpressionException : public Exception {
 protected:
 
   /** Specifies the index the error in the expression representation. */
-  unsigned int index;
+  unsigned int index = 0;
 public:
 
   /**

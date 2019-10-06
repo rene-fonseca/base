@@ -31,19 +31,19 @@ class Quaternion {
 protected:
 
   /** X coordinate. */
-  TYPE x;
+  TYPE x = 0;
   /** Y coordinate. */
-  TYPE y;
+  TYPE y = 0;
   /** Z coordinate. */
-  TYPE z;
+  TYPE z = 0;
   /** w coordinate. */
-  TYPE w;
+  TYPE w = 0;
 public:
 
   /**
     Initializes quaternion as origin (0, 0, 0, 0).
   */
-  inline Quaternion() throw() : x(0), y(0), z(0), w(0) {
+  inline Quaternion() throw() {
   }
 
   /**

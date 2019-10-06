@@ -100,7 +100,7 @@ public:
     unlocked state prior to destruction. Raises MutualExclusionException on
     failure.
   */
-  ~RecursiveMutualExclusion() throw(MutualExclusionException);
+  ~RecursiveMutualExclusion();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -74,7 +74,7 @@ void Barrier::reset() throw(LockException) {
   wait(true);
 }
 
-Barrier::~Barrier() throw(LockException) {
+Barrier::~Barrier() {
   reset();
 }
 

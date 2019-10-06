@@ -73,7 +73,7 @@ public:
   /**
     Destroys the wrapper.
   */
-  inline ~ReferenceCountedObjectWrapper() /*throw(...)*/ {
+  inline ~ReferenceCountedObjectWrapper() {
     if (object) {
       delete object;
     }

@@ -178,7 +178,7 @@ public:
   /**
     Destroys the ownership pointer (and the object).
   */
-  inline ~OwnershipPointer() /*throw(...)*/ {
+  inline ~OwnershipPointer() {
     if (object) {
       delete object;
     }

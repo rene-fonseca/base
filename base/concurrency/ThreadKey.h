@@ -84,7 +84,7 @@ public:
   /**
     Destroys the key object.
   */
-  ~ThreadKeyImpl() throw(ThreadKeyException);
+  ~ThreadKeyImpl();
 };
 
 

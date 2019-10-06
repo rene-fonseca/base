@@ -155,7 +155,7 @@ bool DynamicLinker::import(
   return result;
 }
 
-DynamicLinker::~DynamicLinker() throw(LinkerException) {
+DynamicLinker::~DynamicLinker() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   bassert(
     ::FreeLibrary((HMODULE)handle),

@@ -33,18 +33,17 @@ class Vector3D {
 protected:
 
   /** X coordinate. */
-  TYPE x;
+  TYPE x = 0;
   /** Y coordinate. */
-  TYPE y;
+  TYPE y = 0;
   /** Z coordinate. */
-  TYPE z;
+  TYPE z = 0;
 public:
 
   /**
     Initializes vector as origin (0, 0, 0).
   */
-  inline Vector3D() throw()
-    : x(0), y(0), z(0) {
+  inline Vector3D() throw() {
   }
 
   /**

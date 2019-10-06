@@ -38,9 +38,9 @@ private:
   static const long long LIMIT = PrimitiveTraits<long long>::MAXIMUM;
   
   /** The offset of the region from the beginning of the file. */
-  long long offset;
+  long long offset = 0;
   /** The size of the region (in bytes). */
-  unsigned int size;
+  unsigned int size = 0;
 public:
 
   /**
@@ -116,7 +116,7 @@ public:
 inline FileRegion::FileRegion(
   long long _offset, unsigned int _size) throw(OutOfDomain)
   : offset(_offset), size(_size) {
-  bassert(offset < LIMIT - size, OutOfDomain(this));
+  bassert(offset < (LIMIT - size), OutOfDomain(this));
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

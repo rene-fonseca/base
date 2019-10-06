@@ -37,7 +37,7 @@ protected:
   /** The position of the iterator. */
   Pointer element;
   /** The fixed distance between "consecutive" elements. */
-  unsigned int step;
+  unsigned int step = 0;
 public:
 
   /**

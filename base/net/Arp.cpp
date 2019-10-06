@@ -44,11 +44,13 @@ namespace internal {
   class InetInterface {
   public:
 
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     struct ASTAT {
       ADAPTER_STATUS status;
       NAME_BUFFER nameBuffer[NCBNAMSZ];
     };
-    
+#endif
+
     static inline InetAddress getAddress(const struct sockaddr& address) throw() {
 #if defined(_DK_SDU_MIP__BASE__INET_IPV6)
       switch (address.sa_family) {
@@ -140,7 +142,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
   try {
     struct ifconf ifc;
     ifc.ifc_len = Thread::getLocalStorage()->getSize();
-    ifc.ifc_buf = Thread::getLocalStorage()->getElements();
+    ifc.ifc_buf = reinterpret_cast<char*>(Thread::getLocalStorage()->getElements());
     if (ioctl(handle, SIOCGIFCONF, &ifc)) {
       close(handle);
       throw NetworkException(

@@ -77,7 +77,7 @@ public:
     Prefix increment.
   */
   inline MatrixRowIterator& operator++() throw() {
-    element += step;
+    InterleavedIterator<TRAITS>::element += InterleavedIterator<TRAITS>::step;
     return *this;
   }
 
@@ -86,7 +86,7 @@ public:
   */
   inline MatrixRowIterator operator++(int) throw() {
     MatrixRowIterator result(*this);
-    element += step;
+    InterleavedIterator<TRAITS>::element += InterleavedIterator<TRAITS>::step;
     return result;
   }
 
@@ -94,7 +94,7 @@ public:
     Prefix decrement.
   */
   inline MatrixRowIterator& operator--() throw() {
-    element -= step;
+    InterleavedIterator<TRAITS>::element -= InterleavedIterator<TRAITS>::step;
     return *this;
   }
 
@@ -103,7 +103,7 @@ public:
   */
   inline MatrixRowIterator operator--(int) throw() {
     MatrixRowIterator result(*this);
-    element -= step;
+    InterleavedIterator<TRAITS>::element -= InterleavedIterator<TRAITS>::step;
     return result;
   }
 
@@ -111,7 +111,7 @@ public:
     Move the specified distance forward.
   */
   inline MatrixRowIterator& operator+=(Distance distance) throw() {
-    element += step * distance;
+    InterleavedIterator<TRAITS>::element += InterleavedIterator<TRAITS>::step * distance;
     return *this;
   }
 
@@ -119,20 +119,20 @@ public:
     Move the specified distance backwards.
   */
   inline MatrixRowIterator& operator-=(Distance distance) throw() {
-    element -= step * distance;
+    InterleavedIterator<TRAITS>::element -= InterleavedIterator<TRAITS>::step * distance;
     return *this;
   }
   
   inline ElementIterator getFirst() const throw() {
-    return ElementIterator(element);
+    return ElementIterator(InterleavedIterator<TRAITS>::element);
   }
 
   inline ElementIterator getEnd() const throw() {
-    return ElementIterator(element + step);
+    return ElementIterator(InterleavedIterator<TRAITS>::element + InterleavedIterator<TRAITS>::step);
   }
 
   inline Element operator[](unsigned int index) const throw() {
-    return Element(ElementIterator(element + index));
+    return Element(ElementIterator(InterleavedIterator<TRAITS>::element + index));
   }
 };
 

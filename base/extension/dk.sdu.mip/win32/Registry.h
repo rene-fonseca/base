@@ -111,7 +111,7 @@ namespace extension {
       }
 
       /** Destroys the handle. */
-      ~Handle() throw(RegistryException);
+      ~Handle();
     };
 
     /** Invalid handle. */

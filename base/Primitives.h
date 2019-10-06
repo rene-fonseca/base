@@ -11,10 +11,10 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__PRIMITIVES_H
-#define _DK_SDU_MIP__BASE__PRIMITIVES_H
+#pragma once
 
 #include <base/features.h>
+#include <vector>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -139,7 +139,7 @@ public:
   }
 
   /** Returns the length of the string. */
-  size_t getLength() const throw();
+  MemorySize getLength() const throw();
 };
 
 /**
@@ -163,7 +163,7 @@ public:
   }
 
   /** Returns the length of the string. */
-  size_t getLength() const throw();
+  MemorySize getLength() const throw();
 };
 
 
@@ -753,6 +753,18 @@ inline TYPE getMinimum(TYPE value) throw() {
   return PrimitiveTraits<TYPE>::MINIMUM;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+/** Simple buffer. */
+template<class TYPE>
+class SimpleBuffer : public std::vector<TYPE> {
+public:
 
-#endif
+  inline SimpleBuffer(MemorySize size) : std::vector<TYPE>(size) {
+    // bassert(size > 0);
+  }
+
+  inline operator TYPE* () {
+    return &std::vector<TYPE>::operator[](0);
+  }
+};
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

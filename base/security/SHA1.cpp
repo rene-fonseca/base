@@ -137,7 +137,7 @@ void SHA1::pushBlock(const uint8* block) throw() {
 }
 
 unsigned int SHA1::push(const uint8* buffer, unsigned int size) throw(OutOfRange) {
-  assert(size < MAXIMUM_SIZE - totalSize, OutOfRange());
+  bassert(size < MAXIMUM_SIZE - totalSize, OutOfRange());
   unsigned int result = size;
   totalSize += size;
   if (size + bytesInBuffer >= BLOCK_SIZE) { // do we have a complete block

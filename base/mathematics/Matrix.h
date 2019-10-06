@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MATHEMATICS__MATRIX_H
-#define _DK_SDU_MIP__BASE_MATHEMATICS__MATRIX_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/Dimension.h>
@@ -912,5 +911,3 @@ FormatOutputStream& operator<<(
   FormatOutputStream& stream, const Matrix<TYPE>& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

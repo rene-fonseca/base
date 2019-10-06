@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_WIN32__ASYNC_WRITE_STREAM_CONTEXT_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_WIN32__ASYNC_WRITE_STREAM_CONTEXT_H
+#pragma once
 
 #if !(_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  error inclusion of platform specific header file
@@ -81,5 +80,3 @@ namespace win32 {
 }; // win32 namespace
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

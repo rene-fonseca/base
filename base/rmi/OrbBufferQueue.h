@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_RMI__ORB_BUFFER_QUEUE_H
-#define _DK_SDU_MIP__BASE_RMI__ORB_BUFFER_QUEUE_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/concurrency/SpinLock.h>
@@ -97,5 +96,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_IO__PULL_INTERFACE_H
-#define _DK_SDU_MIP__BASE_IO__PULL_INTERFACE_H
+#pragma once
 
 #include <base/io/IOException.h>
 #include <base/Primitives.h>
@@ -43,5 +42,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COLLECTION__ARRAY_H
-#define _DK_SDU_MIP__BASE_COLLECTION__ARRAY_H
+#pragma once
 
 #include <base/collection/Collection.h>
 #include <base/collection/Enumeration.h>
@@ -260,7 +259,7 @@ public:
     @param value The value to be inserted.
   */
   void insert(unsigned int index, const Value& value) throw(OutOfRange, MemoryException) {
-    assert(index <= getSize(), OutOfRange(this));
+    bassert(index <= getSize(), OutOfRange(this));
     setSize(getSize() + 1);
     Value* elements = getElements(); // size must be set before
     move(elements + index + 1, elements + index, getSize() - index);
@@ -274,7 +273,7 @@ public:
     @param index The index of the element to be removed.
   */
   void remove(unsigned int index) throw(OutOfRange) {
-    assert(index < getSize(), OutOfRange(this));
+    bassert(index < getSize(), OutOfRange(this));
     Value* elements = getElements(); // size must be set after
     move(elements + index, elements + index + 1, getSize() - index - 1);
     setSize(getSize() - 1);
@@ -295,7 +294,7 @@ public:
     @param index The index of the element.
   */
   Value getAt(unsigned int index) const throw(OutOfRange) {
-    assert(index < getSize(), OutOfRange(this));
+    bassert(index < getSize(), OutOfRange(this));
     return getElements()[index];
   }
 
@@ -307,7 +306,7 @@ public:
     @param value The desired value.
   */
   void setAt(unsigned int index, const Value& value) throw(OutOfRange) {
-    assert(index < getSize(), OutOfRange(this));
+    bassert(index < getSize(), OutOfRange(this));
     getElements()[index] = value;
   }
 
@@ -353,5 +352,3 @@ FormatOutputStream& operator<<(
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

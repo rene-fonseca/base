@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_STRING__FORMAT_INPUT_STREAM_H
-#define _DK_SDU_MIP__BASE_STRING__FORMAT_INPUT_STREAM_H
+#pragma once
 
 #include <base/io/BufferedInputStream.h>
 #include <base/io/BindException.h>
@@ -85,7 +84,7 @@ public:
   */
   inline char getCharacter() throw(IOException) {
     if (tail == head) {
-      assert(overwriteFromSource(), EndOfFile());
+      bassert(overwriteFromSource(), EndOfFile());
     }
     return *tail++;
   }
@@ -156,5 +155,3 @@ FormatInputStream& operator>>(
 //FormatInputStream& operator>>(FormatInputStream& stream, long double& value);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

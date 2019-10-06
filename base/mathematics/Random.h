@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MATHEMATICS__RANDOM_H
-#define _DK_SDU_MIP__BASE_MATHEMATICS__RANDOM_H
+#pragma once
 
 #include <base/concurrency/SpinLock.h>
 
@@ -82,5 +81,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

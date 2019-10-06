@@ -24,7 +24,7 @@ unsigned int WaitForObjects::getMaximumNumberOfObjects() const throw() {
 }
   
 void WaitForObjects::registerObject(Object* object) throw(OutOfDomain) { // FIXME: exception name
-  assert(handles.getSize() == MAXIMUM_WAIT_OBJECTS, OutOfDomain());
+  bassert(handles.getSize() == MAXIMUM_WAIT_OBJECTS, OutOfDomain());
   // throw exception if object already in array
   objects.append(object);
   handles.append(object.getHandle());

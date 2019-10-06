@@ -26,7 +26,7 @@ unsigned int UnsignedInteger::parse(
     ++i; // eat space
   }
   
-  assert(
+  bassert(
     i < end,
     InvalidFormat("Not an integer", Type::getType<UnsignedInteger>())
   ); // do not accept empty strings
@@ -72,7 +72,7 @@ unsigned int UnsignedInteger::parse(
     }
 
     // check if base is allowed
-    assert(
+    bassert(
       ((base == 2) && (accept & BIN)) ||
       ((base == 8) && (accept & OCT)) ||
       ((base == 10) && (accept & DEC)) ||
@@ -84,7 +84,7 @@ unsigned int UnsignedInteger::parse(
   unsigned int highLimit = MAXIMUM/base;
   unsigned int lowLimit = MAXIMUM%base;
   unsigned int temp = 0;
-  assert( // make sure we have at least one digit
+  bassert( // make sure we have at least one digit
     ASCIITraits::isHexDigit(*i),
     InvalidFormat("Not an integer", Type::getType<UnsignedInteger>())
   );
@@ -94,7 +94,7 @@ unsigned int UnsignedInteger::parse(
       break;
     }
     unsigned char digitValue = ASCIITraits::digitToValue(ch); // unspecified for non-digit
-    assert(
+    bassert(
       ASCIITraits::isHexDigit(ch) &&
       (digitValue < base) &&
       ((temp < highLimit) || ((temp == highLimit) && (digitValue <= lowLimit))),
@@ -108,7 +108,7 @@ unsigned int UnsignedInteger::parse(
     ++i;
   }
   
-  assert(i == end, InvalidFormat("Not an integer", Type::getType<UnsignedInteger>()));
+  bassert(i == end, InvalidFormat("Not an integer", Type::getType<UnsignedInteger>()));
   
   return temp;
 }

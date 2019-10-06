@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_RMI__ORB_CONNECTION_FACTORY_H
-#define _DK_SDU_MIP__BASE_RMI__ORB_CONNECTION_FACTORY_H
+#pragma once
 
 #include <base/rmi/OrbConnection.h>
 #include <base/mem/ProtectedPointer.h>
@@ -63,5 +62,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

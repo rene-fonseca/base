@@ -39,9 +39,9 @@ Menu::Menu() throw(MenuException)
   : handle(new MenuHandle()) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HMENU handle = ::CreatePopupMenu();
-  assert(handle != 0, MenuException("Unable to create menu", this));
+  bassert(handle != 0, MenuException("Unable to create menu", this));
   this->handle = new MenuHandle((OperatingSystem::Handle)handle); // TAG: could raise exception
-  assert(this->handle.isValid(), MenuException("Unable to create menu", this));
+  bassert(this->handle.isValid(), MenuException("Unable to create menu", this));
 #else // unix
   // TAG: fixme
 #endif // flavor
@@ -54,7 +54,7 @@ unsigned int Menu::getNumberOfItems() const throw(MenuException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   int result = ::GetMenuItemCount(menu);
-  assert(result >= 0, MenuException(this));
+  bassert(result >= 0, MenuException(this));
   return result;
 #else // unix
   // TAG: fixme
@@ -64,12 +64,12 @@ unsigned int Menu::getNumberOfItems() const throw(MenuException) {
 
 unsigned int Menu::getIdentifier(unsigned int index) const throw(MenuException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(index <= PrimitiveTraits<int>::MAXIMUM, MenuException(this));
+  bassert(index <= PrimitiveTraits<int>::MAXIMUM, MenuException(this));
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
   info.fMask = MIIM_ID;
-  assert(::GetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
+  bassert(::GetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
   return info.wID;
 #else // unix
   // TAG: fixme
@@ -83,7 +83,7 @@ int Menu::getIndex(unsigned int identifier) const throw(MenuException) {
 //   MENUITEMINFO info;
 //   info.cbSize = sizeof(info);
 //   info.fMask = MIIM_ID;
-//   assert(::GetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
+//   bassert(::GetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
   int index = -1; // TAG: fixme
   return index;
 #else // unix
@@ -99,7 +99,7 @@ unsigned int Menu::getFlags(unsigned int index) const throw(MenuException) {
   info.cbSize = sizeof(info);
   info.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_TYPE | MIIM_SUBMENU;
   info.dwTypeData = 0;
-  assert(::GetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
+  bassert(::GetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
   unsigned int flags = 0;
   flags |= (info.fType & MFT_SEPARATOR) ? Menu::SEPARATOR : 0;
   flags |= (info.fType & MFT_STRING) ? Menu::STRING : 0;
@@ -119,8 +119,8 @@ Menu Menu::getMenu(unsigned int index) throw(MenuException) {
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
   info.fMask = MIIM_SUBMENU;
-  assert(::GetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
-  assert(info.hSubMenu, MenuException(this));
+  bassert(::GetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
+  bassert(info.hSubMenu, MenuException(this));
   Menu result;
   result.handle = new MenuHandle((OperatingSystem::Handle)info.hSubMenu);
   return result;
@@ -137,7 +137,7 @@ void Menu::setEnabled(unsigned int index, bool enabled) throw(MenuException) {
   info.cbSize = sizeof(info);
   info.fMask = MIIM_STATE;
   info.fState = enabled ? MFS_ENABLED : MFS_DISABLED;
-  assert(::SetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
+  bassert(::SetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
 #else // unix
   // TAG: fixme
 #endif // flavor
@@ -150,7 +150,7 @@ void Menu::setChecked(unsigned int index, bool checked) throw(MenuException) {
   info.cbSize = sizeof(info);
   info.fMask = MIIM_STATE;
   info.fState = checked ? MFS_CHECKED : MFS_UNCHECKED;
-  assert(::SetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
+  bassert(::SetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
 #else // unix
   // TAG: fixme
 #endif // flavor
@@ -163,7 +163,7 @@ void Menu::setHighlighted(unsigned int index, bool highlighted) throw(MenuExcept
   info.cbSize = sizeof(info);
   info.fMask = MIIM_STATE;
   info.fState = highlighted ? MFS_HILITE : MFS_UNHILITE;
-  assert(::SetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
+  bassert(::SetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
 #else // unix
   // TAG: fixme
 #endif // flavor
@@ -178,7 +178,7 @@ void Menu::setName(unsigned int index, const String& name) throw(MenuException) 
   info.fType = MFT_STRING;
   const char* temp = name.getElements();
   info.dwTypeData = (char*)temp;
-  assert(::SetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
+  bassert(::SetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
 #else // unix
    // TAG: fixme 
 #endif // flavor
@@ -191,7 +191,7 @@ void Menu::setSubmenu(unsigned int identifier, const Menu& menu) throw(MenuExcep
   info.cbSize = sizeof(info);
   info.fMask = MIIM_SUBMENU;
   info.hSubMenu = (HMENU)menu.getHandle(); // TAG: need  to get lock on menu
-  assert(::SetMenuItemInfo(nativeMenu, identifier, FALSE, &info), MenuException(this));
+  bassert(::SetMenuItemInfo(nativeMenu, identifier, FALSE, &info), MenuException(this));
 #else // unix
   // TAG: fixme
 #endif // flavor
@@ -204,7 +204,7 @@ void Menu::insertSeparator(unsigned int index) throw(MenuException) {
   info.cbSize = sizeof(info);
   info.fMask = MIIM_FTYPE;
   info.fType = MFT_SEPARATOR;
-  assert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
+  bassert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
 #else // unix
   // TAG: fixme
 #endif // flavor
@@ -214,12 +214,12 @@ void Menu::appendSeparator() throw(MenuException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   int index = ::GetMenuItemCount(menu);
-  assert(index >= 0, MenuException(this));
+  bassert(index >= 0, MenuException(this));
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
   info.fMask = MIIM_FTYPE;
   info.fType = MFT_SEPARATOR;
-  assert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
+  bassert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
 #else // unix
   // TAG: fixme
 #endif // flavor
@@ -227,7 +227,7 @@ void Menu::appendSeparator() throw(MenuException) {
 
 void Menu::insert(unsigned int index, const String& name, unsigned int identifier, unsigned int flags) throw(MenuException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(identifier <= PrimitiveTraits<uint16>::MAXIMUM, MenuException(this));
+  bassert(identifier <= PrimitiveTraits<uint16>::MAXIMUM, MenuException(this));
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
@@ -240,7 +240,7 @@ void Menu::insert(unsigned int index, const String& name, unsigned int identifie
   info.wID = identifier;
   const char* temp = name.getElements();
   info.dwTypeData = (char*)temp;
-  assert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
+  bassert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
 #else // unix
   // TAG: fixme
 #endif // flavor
@@ -248,10 +248,10 @@ void Menu::insert(unsigned int index, const String& name, unsigned int identifie
 
 void Menu::append(const String& name, unsigned int identifier, unsigned int flags) throw(MenuException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(identifier <= PrimitiveTraits<uint16>::MAXIMUM, MenuException(this));
+  bassert(identifier <= PrimitiveTraits<uint16>::MAXIMUM, MenuException(this));
   HMENU menu = (HMENU)handle->getHandle();
   int index = ::GetMenuItemCount(menu);
-  assert(index >= 0, MenuException(this));
+  bassert(index >= 0, MenuException(this));
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
   info.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_STRING;
@@ -263,7 +263,7 @@ void Menu::append(const String& name, unsigned int identifier, unsigned int flag
   info.wID = identifier;
   const char* temp = name.getElements();
   info.dwTypeData = (char*)temp;
-  assert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
+  bassert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
 #else // unix
   // TAG: fixme
 #endif // flavor
@@ -274,7 +274,7 @@ void Menu::appendMenu(const String& name, const Menu& menu, unsigned int flags) 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HMENU nativeMenu = (HMENU)handle->getHandle();
   int index = ::GetMenuItemCount(nativeMenu);
-  assert(index >= 0, MenuException(this));
+  bassert(index >= 0, MenuException(this));
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
   info.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_STRING | MIIM_SUBMENU;
@@ -286,7 +286,7 @@ void Menu::appendMenu(const String& name, const Menu& menu, unsigned int flags) 
   info.hSubMenu = (HMENU)menu.getHandle(); // TAG: need to get lock on menu
   const char* temp = name.getElements();
   info.dwTypeData = (char*)temp;
-  assert(::InsertMenuItem(nativeMenu, index, TRUE, &info), MenuException(this));
+  bassert(::InsertMenuItem(nativeMenu, index, TRUE, &info), MenuException(this));
 #else // unix
   // TAG: fixme
 #endif // flavor
@@ -295,7 +295,7 @@ void Menu::appendMenu(const String& name, const Menu& menu, unsigned int flags) 
 void Menu::remove(unsigned int index) throw(MenuException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
-  assert(::DeleteMenu(menu, index, MF_BYPOSITION), MenuException(this));
+  bassert(::DeleteMenu(menu, index, MF_BYPOSITION), MenuException(this));
 #else // unix
   // TAG: fixme
 #endif // flavor

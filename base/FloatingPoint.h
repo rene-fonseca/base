@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__FLOATING_POINT_H
-#define _DK_SDU_MIP__BASE__FLOATING_POINT_H
+#pragma once
 
 #include <base/Primitives.h>
 #include <base/string/InvalidFormat.h>
@@ -1373,5 +1372,3 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEQuadruplePrecision>
   unsigned int& flags) throw();
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_STRING__STRING_H
-#define _DK_SDU_MIP__BASE_STRING__STRING_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/OutOfRange.h>
@@ -234,7 +233,7 @@ protected:
   */
   inline void setLength(
     unsigned int length) throw(StringException, MemoryException) {
-    assert(
+    bassert(
       length <= MAXIMUM_LENGTH,
       StringException(Type::getType<String>())
     );
@@ -258,9 +257,9 @@ public:
   static inline unsigned int getLengthOfMustBeTerminated(
     const char* string,
     unsigned int maximum = MAXIMUM_LENGTH) throw(StringException) {
-    assert(string, StringException(Type::getType<String>()));
+    bassert(string, StringException(Type::getType<String>()));
     const char* terminator = find(string, maximum, Traits::TERMINATOR);
-    assert(terminator, StringException(Type::getType<String>()));
+    bassert(terminator, StringException(Type::getType<String>()));
     return static_cast<unsigned int>(terminator - string);
   }
 
@@ -1201,5 +1200,3 @@ std::wstring toWide(const String& s);
 std::wstring toWide(const char* s);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

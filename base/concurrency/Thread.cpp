@@ -64,7 +64,7 @@ void* Thread::entry(Thread* thread) throw() {
       thread->getRunnable()->run();
       thread->state = TERMINATED;
       Thread* parent = thread->getParent();
-      assert(parent, ThreadException(Type::getType<Thread>()));
+      bassert(parent, ThreadException(Type::getType<Thread>()));
       parent->onChildTermination(thread); // signal parent
       // TAG: problem if parent is destroyed before child
     } catch (...) {
@@ -97,7 +97,7 @@ Allocator<uint8>* Thread::getLocalStorage() throw() {
 }
 
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
-  assert(nanoseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
+  bassert(nanoseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: use select (but test if better)
   HANDLE timer = ::CreateWaitableTimer(0, TRUE, 0);
@@ -145,7 +145,7 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
 }
 
 void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
-  assert(microseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
+  bassert(microseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::Sleep((microseconds+999)/1000); // round up
 #else // unix
@@ -183,7 +183,7 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
 }
 
 void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
-  assert(milliseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
+  bassert(milliseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::Sleep(milliseconds);
 #else // unix
@@ -221,7 +221,7 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
 }
 
 void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
-  assert(seconds < 1000000, OutOfDomain(Type::getType<Thread>()));
+  bassert(seconds < 1000000, OutOfDomain(Type::getType<Thread>()));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::Sleep(seconds * 1000);
 #else // unix
@@ -307,7 +307,7 @@ Thread::Thread(Runnable* _runnable) throw(NullPointer, ResourceException)
     terminated(false),
     state(NOTSTARTED),
     identifier(0) {  
-  assert(runnable, NullPointer(this));
+  bassert(runnable, NullPointer(this));
   parent = Thread::getThread();
   ASSERT(parent); // a parent must always exist
 }
@@ -578,7 +578,7 @@ void Thread::run() /*throw(...)*/ {
 
 void Thread::start() throw(ThreadException) {
   // TAG: don't forget the thread priority
-  assert(state == NOTSTARTED, ThreadException(this));
+  bassert(state == NOTSTARTED, ThreadException(this));
   state = STARTING;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   DWORD id;
@@ -590,7 +590,7 @@ void Thread::start() throw(ThreadException) {
     0,
     &id
   );
-  assert(handle, ResourceException("Unable to create thread", this));
+  bassert(handle, ResourceException("Unable to create thread", this));
   identifier = Cast::container<Identifier>(id);
   ::CloseHandle(handle); // detach
   // TAG: does this always work or must this be postponed until entry function

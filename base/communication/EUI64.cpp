@@ -38,15 +38,15 @@ EUI64::EUI64(const String& value) throw(InvalidFormat) {
   unsigned int index = 0;
   while (i < end) {
     char first = *i++;
-    assert(i < end, InvalidFormat(this));
+    bassert(i < end, InvalidFormat(this));
     char second = *i++;
-    assert(ASCIITraits::isHexDigit(first) && ASCIITraits::isHexDigit(second), InvalidFormat(this));
+    bassert(ASCIITraits::isHexDigit(first) && ASCIITraits::isHexDigit(second), InvalidFormat(this));
     id[index++] = (ASCIITraits::digitToValue(first) << 4) | ASCIITraits::digitToValue(second);
     if (index < getArraySize(id)) {
-      assert(*i++ == SEPARATORS[index], InvalidFormat(this));
+      bassert(*i++ == SEPARATORS[index], InvalidFormat(this));
     }
   }
-  assert(i == end, InvalidFormat(this));
+  bassert(i == end, InvalidFormat(this));
 }
 
 EUI64::EUI64(const EUI64& _copy) throw() {
@@ -78,7 +78,7 @@ unsigned int EUI64::getCompanyId() const throw() {
 }
 
 void EUI64::setCompanyId(unsigned int companyId) throw(OutOfDomain) {
-  assert(companyId <= 0xffffff, OutOfDomain(this));
+  bassert(companyId <= 0xffffff, OutOfDomain(this));
   id[0] = companyId >> 16;
   id[1] = companyId >> 8;
   id[2] = companyId;
@@ -89,7 +89,7 @@ uint64 EUI64::getExtensionId() const throw() {
 }
 
 void EUI64::setExtensionId(uint64 extensionId) throw(OutOfDomain) {
-  assert(extensionId <= 0xffffffff, OutOfDomain(this));
+  bassert(extensionId <= 0xffffffff, OutOfDomain(this));
   id[3] = extensionId >> 32;
   id[4] = extensionId >> 24;
   id[5] = extensionId >> 16;

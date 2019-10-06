@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_SECURITY__MD5SUM_H
-#define _DK_SDU_MIP__BASE_SECURITY__MD5SUM_H
+#pragma once
 
 #include <base/string/String.h>
 #include <base/OutOfRange.h>
@@ -105,5 +104,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -36,7 +36,7 @@ GraphicsContext::GraphicsContextObjectHandle::~GraphicsContextObjectHandle() thr
 GraphicsContext::Pen::Pen(Color color) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HPEN pen = ::CreatePen(PS_SOLID, 1, color.getValue());
-  assert(pen, UserInterfaceException(this));
+  bassert(pen, UserInterfaceException(this));
   setHandle(pen);
 #else // unix
 #endif // flavor
@@ -63,7 +63,7 @@ GraphicsContext::Pen::Pen(
     width,
     color.getValue()
   );
-  assert(pen, UserInterfaceException(this));
+  bassert(pen, UserInterfaceException(this));
   setHandle(pen);
 #else // unix
 #endif // flavor
@@ -83,7 +83,7 @@ GraphicsContext::Brush::Brush(
     COLOR_HIGHLIGHTTEXT // HIGHLIGHTED_TEXT
   };
   HBRUSH brush = ::GetSysColorBrush(NATIVE_COLORS[color]);
-  assert(brush, UserInterfaceException(this));
+  bassert(brush, UserInterfaceException(this));
   setHandle(brush);
   // prevent destruction of object
   ReferenceCountedObject::ReferenceImpl(*handle).addReference();
@@ -95,7 +95,7 @@ GraphicsContext::Brush::Brush(
 GraphicsContext::Brush::Brush(Color color) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HBRUSH brush = ::CreateSolidBrush(color.getValue());
-  assert(brush, UserInterfaceException(this));
+  bassert(brush, UserInterfaceException(this));
   setHandle(brush);
 #else // unix
 #endif // flavor
@@ -105,7 +105,7 @@ GraphicsContext::Brush::Brush(
   unsigned int color) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HBRUSH brush = ::CreateSolidBrush(color & 0xffffff);
-  assert(brush, UserInterfaceException(this));
+  bassert(brush, UserInterfaceException(this));
   setHandle(brush);
 #else // unix
 #endif // flavor
@@ -180,7 +180,7 @@ GraphicsContext::Font::Font(
     DEFAULT_PITCH, // pitch and family
     name.getElements() // typeface name
   );
-  assert(font, UserInterfaceException(this));
+  bassert(font, UserInterfaceException(this));
   setHandle(font);
 #else // unix
 //   fs = ::XCreateFontSet(
@@ -190,7 +190,7 @@ GraphicsContext::Font::Font(
 //     &missingCount,
 //     &string
 //   );
-//   assert(fs, UserInterfaceException(this));
+//   bassert(fs, UserInterfaceException(this));
 #endif // flavor
 }
 
@@ -291,7 +291,7 @@ void GraphicsContext::clear() throw(UserInterfaceException) {
   rect.top = 0;
   rect.right = dimension.getWidth(); // do not subtract 1
   rect.bottom = dimension.getHeight(); // do not subtract 1
-  assert(
+  bassert(
     ::FillRect(
       (HDC)graphicsContextHandle,
       &rect,
@@ -316,7 +316,7 @@ void GraphicsContext::clear(
   rect.top = position.getY();
   rect.right = rect.left + dimension.getWidth(); // do not subtract 1
   rect.bottom = rect.bottom + dimension.getHeight(); // do not subtract 1
-  assert(
+  bassert(
     ::FillRect(
       (HDC)graphicsContextHandle,
       &rect,
@@ -342,7 +342,7 @@ void GraphicsContext::setPixel(
   Color color,
   unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::SetPixel(
       (HDC)graphicsContextHandle,
       position.getX(),
@@ -352,7 +352,7 @@ void GraphicsContext::setPixel(
     UserInterfaceException(this)
   );
 #else // unix
-  assert(
+  bassert(
     ::XDrawPoint(
       (Display*)displayHandle,
       (::Window)drawableHandle,
@@ -373,7 +373,7 @@ Color GraphicsContext::getPixel(
     position.getX(),
     position.getY()
   );
-  assert(result != CLR_INVALID, UserInterfaceException(this));
+  bassert(result != CLR_INVALID, UserInterfaceException(this));
   return Color((unsigned int)result);
 #else // unix
   // TAG: fixme
@@ -389,7 +389,7 @@ void GraphicsContext::setPixels(
   Array<Position>::ReadIterator i = positions.getBeginReadIterator();
   const Array<Position>::ReadIterator end = positions.getEndReadIterator();
   while (i != end) {
-    assert(
+    bassert(
       ::SetPixel(
         (HDC)graphicsContextHandle,
         i->getX(),
@@ -403,7 +403,7 @@ void GraphicsContext::setPixels(
   Array<Position>::ReadIterator i = positions.getBeginReadIterator();
   const Array<Position>::ReadIterator end = positions.getEndReadIterator();
   while (i != end) {
-    assert(
+    bassert(
       ::XDrawPoint(
         (Display*)displayHandle,
         (::Window)drawableHandle,
@@ -429,7 +429,7 @@ void GraphicsContext::setPixels(
 void GraphicsContext::moveTo(
   const Position& position) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::MoveToEx(
       (HDC)graphicsContextHandle,
       position.getX(),
@@ -447,7 +447,7 @@ void GraphicsContext::lineTo(
   const Position& position,
   unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::LineTo(
       (HDC)graphicsContextHandle,
       position.getX(),
@@ -471,7 +471,7 @@ void GraphicsContext::line(
   points[1].x = lowerRight.getX();
   points[1].y = lowerRight.getY();
   points[2] = points[1];
-  assert(
+  bassert(
     ::Polyline(
       (HDC)graphicsContextHandle,
       points,
@@ -480,7 +480,7 @@ void GraphicsContext::line(
     UserInterfaceException(this)
   );
 #else // unix
-  assert(
+  bassert(
     ::XDrawLine(
       (Display*)displayHandle,
       (::Window)drawableHandle,
@@ -568,7 +568,7 @@ void GraphicsContext::arc(
 
 // void GraphicsContext::arc(const Position& position, const Dimension& dimension, int start, int stop, unsigned int flags) throw(UserInterfaceException) {
 // #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-// assert(::AngleArc(
+// bassert(::AngleArc(
 //   H(HDC)graphicsContextHandle,
 //   position.getX(),
 //   position.getY(),
@@ -584,7 +584,7 @@ void GraphicsContext::rectangle(
   const Position& lowerRight,
   unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::Rectangle(
       (HDC)graphicsContextHandle,
       upperLeft.getX(),
@@ -596,7 +596,7 @@ void GraphicsContext::rectangle(
   );
 #else // unix
   // TAG: use current pen and brush
-  assert(
+  bassert(
     ::XDrawRectangle(
       (Display*)displayHandle,
       (::Window)drawableHandle,
@@ -616,7 +616,7 @@ void GraphicsContext::rectangle(
   const Dimension& dimension,
   unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::Rectangle(
       (HDC)graphicsContextHandle,
       position.getX(),
@@ -662,7 +662,7 @@ void GraphicsContext::rectangle(
   rect.top = upperLeft.getY();
   rect.right = lowerRight.getX() + 1;
   rect.bottom = lowerRight.getY() + 1;
-  assert(
+  bassert(
     ::FillRect(
       (HDC)graphicsContextHandle,
       &rect,
@@ -685,7 +685,7 @@ void GraphicsContext::rectangle(
   rect.top = position.getY();
   rect.right = rect.left + dimension.getWidth(); // do not subtract 1
   rect.bottom = rect.top + dimension.getHeight(); // do not subtract 1
-  assert(
+  bassert(
     ::FillRect(
       (HDC)graphicsContextHandle,
       &rect,
@@ -739,7 +739,7 @@ void GraphicsContext::ellipse(
   const Position& lowerRight,
   unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::Ellipse(
       (HDC)graphicsContextHandle,
       upperLeft.getX(),
@@ -761,7 +761,7 @@ void GraphicsContext::ellipse(
     return;
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::Ellipse(
       (HDC)graphicsContextHandle,
       position.getX(),
@@ -782,7 +782,7 @@ void GraphicsContext::pie(
   const Position& radialB,
   unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::Pie(
       (HDC)graphicsContextHandle,
       upperLeft.getX(),
@@ -804,7 +804,7 @@ unsigned int GraphicsContext::getWidthOf(
   char ch) const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   INT width;
-  assert(
+  bassert(
     ::GetCharWidth32(
       (HDC)graphicsContextHandle,
       ch,
@@ -823,7 +823,7 @@ Dimension GraphicsContext::getDimensionOf(
   const String& text) const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SIZE size;
-  assert(
+  bassert(
     ::GetTextExtentPoint(
       (HDC)graphicsContextHandle,
       text.getElements(),
@@ -880,7 +880,7 @@ void GraphicsContext::text(
   rect.top = position.getY();
   rect.right = rect.left + dimension.getWidth() - 1;
   rect.bottom = rect.top + dimension.getHeight() - 1;
-  assert(
+  bassert(
     ::DrawTextEx(
       (HDC)graphicsContextHandle,
       (char*)text.getElements(), // not allowed to change string
@@ -911,7 +911,7 @@ void GraphicsContext::putBitmap(
   // TAG: COPY, AND, OR, XOR, INVERT
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (bitmap.handle.isValid()) {
-    assert(
+    bassert(
       ::BitBlt(
         (HDC)graphicsContextHandle,
         position.getX(),
@@ -928,7 +928,7 @@ void GraphicsContext::putBitmap(
   }
 #else // unix
   if (bitmap.handle.isValid()) {
-    assert(
+    bassert(
       !XPutImage(
         (Display*)displayHandle,
         (::Window)drawableHandle,
@@ -952,7 +952,7 @@ Bitmap GraphicsContext::getBitmap(
   const Dimension& dimension) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HDC deviceContext = ::CreateCompatibleDC((HDC)graphicsContextHandle);
-  assert(deviceContext, UserInterfaceException(this));
+  bassert(deviceContext, UserInterfaceException(this));
   HBITMAP bitmap = ::CreateCompatibleBitmap(
     (HDC)deviceContext,
     dimension.getWidth(),
@@ -984,7 +984,7 @@ Bitmap GraphicsContext::getBitmap(
     1, // TAG: depth of image
     ZPixmap
   );
-  assert(image, UserInterfaceException(this));
+  bassert(image, UserInterfaceException(this));
   Bitmap result;
   result.handle = new Bitmap::Handle(image);
   return result;

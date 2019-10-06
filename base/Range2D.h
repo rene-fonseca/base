@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__RANGE2D_H
-#define _DK_SDU_MIP__BASE__RANGE2D_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
@@ -130,5 +129,3 @@ public:
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

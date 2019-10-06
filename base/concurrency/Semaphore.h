@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__SEMAPHORE_H
-#define _DK_SDU_MIP__BASE_CONCURRENCY__SEMAPHORE_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/concurrency/SemaphoreException.h>
@@ -89,5 +88,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

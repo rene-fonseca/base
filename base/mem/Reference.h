@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_H
-#define _DK_SDU_MIP__BASE_MEM__REFERENCE_H
+#pragma once
 
 #include <base/CastException.h>
 #include <base/Functor.h>
@@ -103,7 +102,7 @@ public:
   template<class POLY>
   inline Reference<POLY> cast() const throw(CastException) {
     POLY* temp = dynamic_cast<POLY*>(value);
-    assert(temp, CastException(this));
+    bassert(temp, CastException(this));
     return temp;
   }
 
@@ -295,5 +294,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

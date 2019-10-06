@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__APPLICATION_H
-#define _DK_SDU_MIP__BASE__APPLICATION_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/string/String.h>
@@ -241,5 +240,3 @@ int main(int argc, const char* argv[], const char* env[]) throw() { \
 #endif
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

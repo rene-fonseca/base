@@ -22,7 +22,7 @@ long long OrbDateStub::getDate() const throw(OrbException) {
   OrbRequest getDateRequest(skeleton, MESSAGE("getDate"));
   channel->writeRequest(request);
   OrbResponse response = channel->readResponse();
-  assert(response.isLongLongType(), OrbException(this));
+  bassert(response.isLongLongType(), OrbException(this));
   return response.getLongLongValue();
 }
 

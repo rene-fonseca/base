@@ -80,7 +80,7 @@ namespace win32 {
   }
 
   AsyncReadFileContext::~AsyncReadFileContext() throw(AsynchronousException) {
-    assert(
+    bassert(
       (flags & AsynchronousReadCompletion::COMPLETED) != 0,
       AsynchronousException(this)
     );

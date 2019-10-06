@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__OWNERSHIP_POINTER_H
-#define _DK_SDU_MIP__BASE_MEM__OWNERSHIP_POINTER_H
+#pragma once
 
 #include <base/AutomationObject.h>
 #include <base/mem/NullPointer.h>
@@ -27,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @code
   void MyOtherClass::myOtherMethod(MyResource resource) throw(MyException) {
     // ...
-    assert(condition, MyException(this));
+    bassert(condition, MyException(this));
     // ...
   }
   
@@ -187,5 +186,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

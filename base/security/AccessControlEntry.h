@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_SECURITY__ACCESS_CONTROL_ENTRY_H
-#define _DK_SDU_MIP__BASE_SECURITY__ACCESS_CONTROL_ENTRY_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/string/String.h>
@@ -223,5 +222,3 @@ FormatOutputStream& operator<<(
   const AccessControlEntry& ace) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

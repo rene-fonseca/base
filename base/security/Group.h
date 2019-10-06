@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_SECURITY__GROUP_H
-#define _DK_SDU_MIP__BASE_SECURITY__GROUP_H
+#pragma once
 
 #include <base/security/User.h>
 #include <base/string/String.h>
@@ -37,7 +36,7 @@ class Group : public Object {
 private:
 
   /** Identifier of the group represented as an integral if possible. */
-  unsigned long integralId = 0;
+  unsigned long integralId = PrimitiveTraits<unsigned long>::MAXIMUM;
   /** Opaque identifier of the group. */
   Reference<ReferenceCountedAllocator<uint8> > id;
 public:
@@ -90,7 +89,7 @@ public:
   /**
     Initializes group as invalid.
   */
-  inline Group() throw() : integralId(getMaximum(integralId)) {
+  inline Group() throw() {
   }
   
   /**
@@ -189,5 +188,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

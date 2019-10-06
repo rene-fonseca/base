@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_NET__SERVICE_NOT_FOUND_H
-#define _DK_SDU_MIP__BASE_NET__SERVICE_NOT_FOUND_H
+#pragma once
 
 #include <base/net/NetworkException.h>
 
@@ -65,5 +64,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

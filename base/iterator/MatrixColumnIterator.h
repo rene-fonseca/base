@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_ITERATOR__MATRIX_COLUMN_ITERATOR_H
-#define _DK_SDU_MIP__BASE_ITERATOR__MATRIX_COLUMN_ITERATOR_H
+#pragma once
 
 #include <base/iterator/InterleavedIterator.h>
 #include <base/iterator/SequenceIterator.h>
@@ -122,5 +121,3 @@ inline MatrixColumnIterator<TRAITS> operator-(const MatrixColumnIterator<TRAITS>
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

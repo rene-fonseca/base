@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_XML__CDATA_SECTION_H
-#define _DK_SDU_MIP__BASE_XML__CDATA_SECTION_H
+#pragma once
 
 #include <base/xml/Text.h>
 
@@ -53,7 +52,7 @@ public:
 
   inline CDATASection(Node node) throw(CastException)
     : Text(node) {
-    assert(
+    bassert(
       node.isInvalid() || (node.getType() == CDATA_SECTION_NODE),
       CastException(this)
     );
@@ -61,7 +60,7 @@ public:
   
   inline CDATASection(Text node) throw(CastException)
     : Text(node) {
-    assert(
+    bassert(
       node.isInvalid() || (node.getType() == CDATA_SECTION_NODE),
       CastException(this)
     );
@@ -69,5 +68,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

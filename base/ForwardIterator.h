@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__FORWARDITERATOR_H
-#define _DK_SDU_MIP__BASE__FORWARDITERATOR_H
+#pragma once
 
 #include <base/Iterator.h>
 
@@ -35,5 +34,3 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 //};
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

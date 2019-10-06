@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__EVENT_DISPATCHER_H
-#define _DK_SDU_MIP__BASE__EVENT_DISPATCHER_H
+#pragma once
 
 #include <base/Listener.h>
 #include <base/collection/Set.h>
@@ -79,5 +78,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

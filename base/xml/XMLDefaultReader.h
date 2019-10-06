@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_XML__XML_DEFAULT_READER_H
-#define _DK_SDU_MIP__BASE_XML__XML_DEFAULT_READER_H
+#pragma once
 
 #include <base/io/File.h>
 #include <base/xml/XMLReader.h>
@@ -188,5 +187,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

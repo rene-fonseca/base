@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTER_H
-#define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTER_H
+#pragma once
 
 #include <base/mem/NullPointer.h>
 #include <base/Base.h>
@@ -49,15 +48,15 @@ public:
 private:
 
   /** Pointer to shared reference counted object. */
-  TYPE* value; // protect pointer value from the evil programmers
+  TYPE* value = nullptr; // protect pointer value from the evil programmers
   /** Holds the total number of references. */
-  Counter* references;
+  Counter* references = nullptr;
 public:
 
   /**
     Initializes automation pointer as invalid (i.e. null).
   */
-  inline ReferenceCounter() throw() : value(0), references(new Counter(1)) {
+  inline ReferenceCounter() throw() : references(new Counter(1)) {
   }
 
   /**
@@ -203,7 +202,7 @@ public:
         delete value;
       }
     }
-    value = 0;
+    value = nullptr;
   }
   
   /**
@@ -211,7 +210,7 @@ public:
     object).
   */
   inline bool isValid() const throw() {
-    return value != 0;
+    return value != nullptr;
   }
 
   /**
@@ -220,7 +219,7 @@ public:
     @deprecated
   */
   inline TYPE& operator*() const throw(NullPointer) {
-    assert(value, NullPointer(this));
+    bassert(value, NullPointer(this));
     return *value;
   }
 
@@ -245,5 +244,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

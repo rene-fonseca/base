@@ -493,29 +493,29 @@ public:
     const uint8* end = src + size;
     totalNumberOfSymbols = 0;
     
-    assert(src < end, InvalidFormat("Invalid header", this));
+    bassert(src < end, InvalidFormat("Invalid header", this));
     minimumLength = *src++;
-    assert(src < end, InvalidFormat("Invalid header", this));
+    bassert(src < end, InvalidFormat("Invalid header", this));
     maximumLength = *src++;
-    assert(
+    bassert(
       (minimumLength <= maximumLength) &&
       (maximumLength <= (ALPHABET_SIZE - 1)),
       InvalidFormat(this)
     );
 
     for (unsigned int length = minimumLength; length <= maximumLength; ++length) {
-      assert(src < end, InvalidFormat("Invalid header", this));
+      bassert(src < end, InvalidFormat("Invalid header", this));
       numberOfSymbols[length] = *src++;
-      assert((src + numberOfSymbols[length]) < end, InvalidFormat("Invalid header", this));
+      bassert((src + numberOfSymbols[length]) < end, InvalidFormat("Invalid header", this));
       totalNumberOfSymbols += numberOfSymbols[length];
       for (unsigned int i = numberOfSymbols[length]; i > 0; --i) {
         unsigned int symbol = *src++;
-        assert(symbols[symbol].length == 0, InvalidFormat("Invalid header", this)); // is symbol already read
+        bassert(symbols[symbol].length == 0, InvalidFormat("Invalid header", this)); // is symbol already read
         symbols[symbol].length = length;
       }
     }
 
-    assert(src < end, InvalidFormat("Invalid header", this));
+    bassert(src < end, InvalidFormat("Invalid header", this));
     garbageBits = *src++;
     
     // reduce code length range if stupid
@@ -571,7 +571,7 @@ public:
     const uint8* wordEnd = src + (((end - src) * 8 - garbageBits)/(sizeof(bitBuffer) * 8)) * sizeof(bitBuffer);
     
     ASSERT(minimumLength <= 8);
-    assert(minimumLength <= 8, UnexpectedFailure());
+    bassert(minimumLength <= 8, UnexpectedFailure());
     
     // TAG: should be optimized (use initial 8 bit lookup table to predict length of code - garbage does not matter)
     while (true) {
@@ -592,7 +592,7 @@ public:
           if ((src == end) && (count == length)) {
             return; // we are done
           }
-          assert(src < end, InvalidFormat("Invalid Huffman code", this));
+          bassert(src < end, InvalidFormat("Invalid Huffman code", this));
           while (src < end) {
             bitBuffer <<= 8;
             bitBuffer |= *src++;
@@ -600,7 +600,7 @@ public:
           }
           bitBuffer >>= garbageBits;
           availableBits -= garbageBits;
-          assert(availableBits >= count, InvalidFormat("Invalid Huffman code", this));
+          bassert(availableBits >= count, InvalidFormat("Invalid Huffman code", this));
         } else {
           for (unsigned int i = sizeof(bitBuffer); i > 0; --i) { // fill buffer
             bitBuffer <<= 8;
@@ -621,7 +621,7 @@ public:
         
         if (availableBits == 0) { // do we need to fill the bit buffer
           if (src >= wordEnd) {
-            assert(src < end, InvalidFormat("Invalid Huffman code", this));
+            bassert(src < end, InvalidFormat("Invalid Huffman code", this));
             while (src < end) {
               bitBuffer <<= 8;
               bitBuffer |= *src++;
@@ -629,7 +629,7 @@ public:
             }
             bitBuffer >>= garbageBits;
             availableBits -= garbageBits;
-            assert(availableBits, InvalidFormat("Invalid Huffman code", this));
+            bassert(availableBits, InvalidFormat("Invalid Huffman code", this));
           } else {
             for (unsigned int i = sizeof(bitBuffer); i > 0; --i) {
               bitBuffer <<= 8;
@@ -642,7 +642,7 @@ public:
         code = (code << 1) | (bitBuffer >> availableBits) & 1; // get one bit
         
         ++length;
-        assert(length <= maximumLength, InvalidFormat("Invalid Huffman code", this));
+        bassert(length <= maximumLength, InvalidFormat("Invalid Huffman code", this));
       }
     }
   }

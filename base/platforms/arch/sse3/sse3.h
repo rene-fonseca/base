@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_ARCH_SSE3__SSE3_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_ARCH_SSE3__SSE3_H
+#pragma once
 
 namespace base {
   

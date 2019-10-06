@@ -45,7 +45,7 @@ Stylesheet::StylesheetImpl::~StylesheetImpl() throw() {
 Stylesheet::Stylesheet() throw() {
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp = ::xsltNewStylesheet();
-  assert(temp, Exception(this)); // FIXME
+  bassert(temp, Exception(this)); // FIXME
   try {
     stylesheet = new StylesheetImpl(temp);
   } catch (...) {
@@ -63,7 +63,7 @@ Stylesheet::Stylesheet(const String& filename) throw() {
   xsltStylesheetPtr temp = ::xsltParseStylesheetFile(
     Cast::pointer<const xmlChar*>(filename.getElements())
   );
-  assert(temp, Exception(this)); // FIXME
+  bassert(temp, Exception(this)); // FIXME
   try {
     stylesheet = new StylesheetImpl(temp);
   } catch (...) {
@@ -80,10 +80,10 @@ Stylesheet::Stylesheet(const Document& document) throw() {
 
   xmlDocPtr doc = Cast::pointer<xmlDocPtr>(document.getContext());
   xmlDocPtr newDoc = xmlCopyDoc(doc, 1);
-  assert(newDoc, Exception(this)); // FIXME
+  bassert(newDoc, Exception(this)); // FIXME
   
   xsltStylesheetPtr temp = ::xsltParseStylesheetDoc(newDoc);
-  assert(temp, Exception(this)); // FIXME
+  bassert(temp, Exception(this)); // FIXME
   try {
     stylesheet = new StylesheetImpl(temp);
   } catch (...) {
@@ -97,7 +97,7 @@ String Stylesheet::getOutputMethod() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
-  assert(temp, Exception(this));
+  bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->method));
 #endif
 }
@@ -106,7 +106,7 @@ String Stylesheet::getNamespace() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
-  assert(temp, Exception(this));
+  bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->methodURI));
 #endif
 }
@@ -115,7 +115,7 @@ String Stylesheet::getVersion() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
-  assert(temp, Exception(this));
+  bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->version));
 #endif
 }
@@ -124,7 +124,7 @@ String Stylesheet::getEncoding() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
-  assert(temp, Exception(this));
+  bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->encoding));
 #endif
 }
@@ -133,7 +133,7 @@ bool Stylesheet::omitXmlDeclaration() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
-  assert(temp, Exception(this));
+  bassert(temp, Exception(this));
   return temp->omitXmlDeclaration != 0;
 #endif
 }
@@ -142,7 +142,7 @@ String Stylesheet::getPublicId() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
-  assert(temp, Exception(this));
+  bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->doctypePublic));
 #endif
 }
@@ -151,7 +151,7 @@ String Stylesheet::getSystemId() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
-  assert(temp, Exception(this));
+  bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->doctypeSystem));
 #endif
 }
@@ -160,7 +160,7 @@ String Stylesheet::getMediaType() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
-  assert(temp, Exception(this));
+  bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->mediaType));
 #endif
 }
@@ -169,7 +169,7 @@ bool Stylesheet::isStandalone() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
-  assert(temp, Exception(this));
+  bassert(temp, Exception(this));
   return temp->standalone != 0;
 #endif
 }
@@ -178,7 +178,7 @@ bool Stylesheet::isStandalone() const throw() {
 // #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
 //   xsltStylesheetPtr temp =
 //     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
-//   assert(temp, Exception(this));
+//   bassert(temp, Exception(this));
 //   return temp->stripAll != 0;
 // #endif
 // }
@@ -187,7 +187,7 @@ bool Stylesheet::indent() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
-  assert(temp, Exception(this));
+  bassert(temp, Exception(this));
   return temp->indent != 0;
 #endif
 }
@@ -196,7 +196,7 @@ Array<String> Stylesheet::getExcludedPrefixes() const throw() {
 #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
-  assert(temp, Exception(this));
+  bassert(temp, Exception(this));
   Array<String> result;
   xmlChar** current = temp->exclPrefixTab;
   while (*current) { // FIXME

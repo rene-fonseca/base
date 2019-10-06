@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__RANDOM_ITERATOR_H
-#define _DK_SDU_MIP__BASE__RANDOM_ITERATOR_H
+#pragma once
 
 #include <base/BidirectionalIterator.h>
 
@@ -34,5 +33,3 @@ class ReadRandomIterator : public RandomIterator<TYPE, ReadIteratorTraits<TYPE> 
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

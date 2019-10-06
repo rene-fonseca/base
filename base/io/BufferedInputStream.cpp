@@ -77,7 +77,7 @@ unsigned int BufferedInputStream::peek(
   unsigned int count) throw(OutOfDomain, IOException) {
   unsigned int unreadBytes = this->count - position;
   if (count > unreadBytes) { // request for more than currently available in this buffer
-    assert(count <= buffer.getSize(), OutOfDomain());
+    bassert(count <= buffer.getSize(), OutOfDomain());
     move(buffer.getElements(), buffer.getElements() + position, unreadBytes); // move unread elements to beginning of buffer
     position = 0;
     this->count -= position;

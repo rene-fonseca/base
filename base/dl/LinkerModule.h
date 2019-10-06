@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_DL__LINKER_MODULE_H
-#define _DK_SDU_MIP__BASE_DL__LINKER_MODULE_H
+#pragma once
 
 #include <base/SingletonException.h>
 #include <base/string/String.h>
@@ -78,5 +77,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_RMI_IDL__IDL_NAMED_TYPE_H
-#define _DK_SDU_MIP__BASE_RMI_IDL__IDL_NAMED_TYPE_H
+#pragma once
 
 #include <base/rmi/idl/IDLObject.h>
 
@@ -53,5 +52,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

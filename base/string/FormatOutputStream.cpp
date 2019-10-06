@@ -20,7 +20,6 @@
 #include <base/Date.h>
 #include <base/string/StringOutputStream.h>
 #include <base/TypeInfo.h>
-#include <vector>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -1313,8 +1312,7 @@ public:
     const unsigned int* restrict divisor,
     unsigned int size) throw() {
 
-    std::vector<unsigned int> temp;
-    temp.resize(size);
+    SimpleBuffer<unsigned int> temp(size);
     clear(quotient, size);
     unsigned int* tempDividend = remainder;
     assign(tempDividend, dividend, size);
@@ -1349,19 +1347,6 @@ public:
   }
 
 }; // LargeInteger
-
-template<class TYPE>
-class Buffer : public std::vector<TYPE> {
-public:
-
-  inline Buffer(size_t size) : std::vector<TYPE>(size) {
-  }
-
-  inline operator TYPE* () {
-    return &operator[](0);
-  }
-};
-
 
 enum CutMode {
   CUT_MODE_NOGARBAGE,

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__BASE_H
-#define _DK_SDU_MIP__BASE__BASE_H
+#pragma once
 
 #include <base/Trace.h>
 
@@ -109,7 +108,7 @@ template<class TYPE> inline TYPE absolute(const TYPE& value) throw() {
   @see Assertion
 */
 template<class EXCEPTION>
-inline void assert(bool assertion, const EXCEPTION& exception) throw(EXCEPTION) {
+inline void bassert(bool assertion, const EXCEPTION& exception) throw(EXCEPTION) {
   if (!assertion) {
     throw exception;
   }
@@ -204,5 +203,3 @@ inline void deleteCompleteArray(const volatile TYPE* value) /*throw(...)*/ {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__VIRTUAL_MEMORY_H
-#define _DK_SDU_MIP__BASE_MEM__VIRTUAL_MEMORY_H
+#pragma once
 
 #include <base/MemoryException.h>
 #include <base/collection/Array.h>
@@ -100,5 +99,3 @@ public:
 // TAG: Module is relocateable
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

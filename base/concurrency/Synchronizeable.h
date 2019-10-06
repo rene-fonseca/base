@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__SYNCHRONIZEABLE_H
-#define _DK_SDU_MIP__BASE_CONCURRENCY__SYNCHRONIZEABLE_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/concurrency/ReadWriteLock.h>
@@ -141,5 +140,3 @@ protected:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

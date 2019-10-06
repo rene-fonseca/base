@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_SECURITY__USER_H
-#define _DK_SDU_MIP__BASE_SECURITY__USER_H
+#pragma once
 
 #include <base/security/User.h>
 #include <base/string/String.h>
@@ -39,7 +38,7 @@ class User : public Object {
 private:
   
   /** Identifier of the user represented as an integral if possible. */
-  unsigned long integralId;
+  unsigned long integralId = PrimitiveTraits<unsigned long>::MAXIMUM;
   /** Opaque identifier of the user. */
   Reference<ReferenceCountedAllocator<uint8> > id;
 public:
@@ -97,7 +96,7 @@ public:
   /**
     Initializes user as invalid.
   */
-  inline User() throw() : integralId(getMaximum(integralId)) {
+  inline User() throw() {
   }
 
   /**
@@ -213,5 +212,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

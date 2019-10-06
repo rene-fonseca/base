@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COMMUNICATION__IEEE_1394_IMPL_H
-#define _DK_SDU_MIP__BASE_COMMUNICATION__IEEE_1394_IMPL_H
+#pragma once
 
 #include <base/communication/IEEE1394Common.h>
 #include <base/collection/Array.h>

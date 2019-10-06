@@ -283,7 +283,7 @@ unsigned int File::getMode() const throw(FileException) {
                                  OWNER_SECURITY_INFORMATION|GROUP_SECURITY_INFORMATION|DACL_SECURITY_INFORMATION,
                                  &ownerSID, &groupSID, &acl, 0,
                                  &securityDescriptor) != ERROR_SUCCESS;
-  assert(!error, FileException("Not a file", this));
+  bassert(!error, FileException("Not a file", this));
   
   const DWORD ownerSize = ::GetLengthSid((PSID)ownerSID);
   const DWORD groupSize = ::GetLengthSid((PSID)groupSID);
@@ -406,7 +406,7 @@ unsigned int File::getMode() const throw(FileException) {
     struct stat status;
     int error = ::fstat(fd->getHandle(), &status);
   #endif
-  assert(error == 0, FileException(this));
+  bassert(error == 0, FileException(this));
 
 #if defined(S_ISUID) && defined(S_ISGID) && defined(S_ISVTX)
   if ((S_ISUID == File::SET_UID) && (S_ISGID == File::SET_GID) && (S_ISVTX == File::RESTRICT) &&
@@ -471,7 +471,7 @@ AccessControlList File::getACL() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SECURITY_DESCRIPTOR* securityDescriptor;
   PACL acl;
-  assert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
+  bassert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
                            0, 0, &acl, 0, &securityDescriptor) == ERROR_SUCCESS,
          FileException("Unable to get ACL", this)
   );
@@ -619,7 +619,7 @@ AccessControlList File::getACL() const throw(FileException) {
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   aclent_t entries[MAX_ACL_ENTRIES];
   int numberOfEntries = ::facl(fd->getHandle(), GETACL, MAX_ACL_ENTRIES, entries);
-  assert(numberOfEntries >= 0, FileException("Unable to get ACL", this));
+  bassert(numberOfEntries >= 0, FileException("Unable to get ACL", this));
   
   for (int i = 0; i < numberOfEntries; ++i) {
     const unsigned int mode = ((entries[i].a_perm & S_IRGRP) ? AccessControlEntry::READ : 0) |
@@ -645,10 +645,10 @@ AccessControlList File::getACL() const throw(FileException) {
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
-    assert(::fstat64(fd->getHandle(), &status) == 0, FileException(this));
+    bassert(::fstat64(fd->getHandle(), &status) == 0, FileException(this));
   #else
     struct stat status;
-    assert(::fstat(fd->getHandle(), &status) == 0, FileException(this));
+    bassert(::fstat(fd->getHandle(), &status) == 0, FileException(this));
   #endif
     
 //   const unsigned int ownerMode = ((status.st_mode & S_IRUSR) ? AccessControlEntry::READ : 0) |
@@ -677,7 +677,7 @@ Trustee File::getOwner() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SECURITY_DESCRIPTOR* securityDescriptor;
   PSID ownerSID;
-  assert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT,
+  bassert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT,
                            OWNER_SECURITY_INFORMATION, &ownerSID, 0, 0, 0,
                            &securityDescriptor) == ERROR_SUCCESS,
          FileException(this)
@@ -743,7 +743,7 @@ void File::changeOwner(const String& path, const Trustee& owner, const Trustee& 
 
 
 #else // unix
-  assert((owner.getType() == Trustee::USER) && (group.getType() == Trustee::GROUP), FileException(Type::getType<File>()));
+  bassert((owner.getType() == Trustee::USER) && (group.getType() == Trustee::GROUP), FileException(Type::getType<File>()));
   
   uid_t uid = owner.getIntegralId();
   gid_t gid = group.getIntegralId();
@@ -754,7 +754,7 @@ void File::changeOwner(const String& path, const Trustee& owner, const Trustee& 
   } else {
     error = ::lchown(path.getElements(), uid, gid);
   }
-  assert(error == 0, FileException("Unable to change owner", Type::getType<File>()));
+  bassert(error == 0, FileException("Unable to change owner", Type::getType<File>()));
 #endif // flavor
 }
 
@@ -762,7 +762,7 @@ Trustee File::getGroup() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SECURITY_DESCRIPTOR* securityDescriptor;
   PSID groupSID;
-  assert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT,
+  bassert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT,
                            GROUP_SECURITY_INFORMATION, 0, &groupSID, 0, 0,
                            &securityDescriptor) == ERROR_SUCCESS,
          FileException(this)
@@ -815,7 +815,7 @@ long long File::getSize() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   #if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__W2K)
     LARGE_INTEGER size; // TAG: unresolved possible byte order problem for big endian architectures
-    assert(::GetFileSizeEx(fd->getHandle(), &size), FileException("Unable to get file size", this));
+    bassert(::GetFileSizeEx(fd->getHandle(), &size), FileException("Unable to get file size", this));
   #else
     ULARGE_INTEGER size;
     size.LowPart = ::GetFileSize(fd->getHandle(), &size.HighPart);
@@ -837,7 +837,7 @@ long long File::getSize() const throw(FileException) {
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
-    assert(result == 0, FileException("Unable to get file size", this));
+    bassert(result == 0, FileException("Unable to get file size", this));
     return status.st_size;
 #endif
 }
@@ -880,7 +880,7 @@ void File::setPosition(long long position, Whence whence) throw(FileException) {
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
     ::lseek64(fd->getHandle(), position, relativeTo[whence]); // should never fail
   #else
-    assert(position <= PrimitiveTraits<int>::MAXIMUM, FileException("Unable to set position", this));
+    bassert(position <= PrimitiveTraits<int>::MAXIMUM, FileException("Unable to set position", this));
     ::lseek(fd->getHandle(), position, relativeTo[whence]); // should never fail
   #endif
 #endif
@@ -899,7 +899,7 @@ void File::truncate(long long size) throw(FileException) {
       throw FileException("Unable to truncate", this);
     }
   #else
-    assert((size >= 0) && (size <= PrimitiveTraits<int>::MAXIMUM), FileException("Unable to truncate", this));
+    bassert((size >= 0) && (size <= PrimitiveTraits<int>::MAXIMUM), FileException("Unable to truncate", this));
     if (::ftruncate(fd->getHandle(), size)) {
       throw FileException("Unable to truncate", this);
     }
@@ -937,7 +937,7 @@ void File::flush() throw(FileException) {
 void File::lock(
   const FileRegion& region, bool exclusive) throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     (region.getOffset() >= 0) && (region.getSize() >= 0),
     FileException("Unable to lock region", this)
   );
@@ -984,7 +984,7 @@ void File::lock(
       break;
     }
   #else
-    assert(
+    bassert(
       (region.getOffset() >= 0) &&
       (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM) &&
       (region.getSize() >= 0) &&
@@ -1013,7 +1013,7 @@ void File::lock(
 bool File::tryLock(
   const FileRegion& region, bool exclusive) throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region", this));
+  bassert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region", this));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
   OVERLAPPED overlapped;
@@ -1056,7 +1056,7 @@ bool File::tryLock(
     }
     return true;
   #else
-    assert(
+    bassert(
       (region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM) && (region.getSize() >= 0) && (region.getSize() <= PrimitiveTraits<int>::MAXIMUM),
       FileException("Unable to lock region", this)
     );
@@ -1080,7 +1080,7 @@ bool File::tryLock(
 
 void File::unlock(const FileRegion& region) throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region", this));
+  bassert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region", this));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
 
@@ -1102,7 +1102,7 @@ void File::unlock(const FileRegion& region) throw(FileException) {
   ::CloseHandle(overlapped.hEvent);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-    assert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region", this));
+    bassert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region", this));
     struct flock64 lock;
     lock.l_type = F_UNLCK;
     lock.l_whence = SEEK_SET; // offset from beginning of file
@@ -1119,7 +1119,7 @@ void File::unlock(const FileRegion& region) throw(FileException) {
       break;
     }
   #else
-    assert(
+    bassert(
       (region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM) && (region.getSize() >= 0) && (region.getSize() <= PrimitiveTraits<int>::MAXIMUM),
       FileException("Unable to unlock region", this)
     );
@@ -1162,7 +1162,7 @@ Date File::getLastModification() throw(FileException) {
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
-    assert(result == 0, FileException("Unable to get status", this));
+    bassert(result == 0, FileException("Unable to get status", this));
     return Date(status.st_mtime);
 #endif
 }
@@ -1187,7 +1187,7 @@ Date File::getLastAccess() throw(FileException) {
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
-    assert(result == 0, FileException("Unable to get status", this));
+    bassert(result == 0, FileException("Unable to get status", this));
     return Date(status.st_atime);
 #endif
 }
@@ -1212,7 +1212,7 @@ Date File::getLastChange() throw(FileException) {
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
-    assert(result == 0, FileException("Unable to get status", this));
+    bassert(result == 0, FileException("Unable to get status", this));
     return Date(status.st_ctime);
 #endif
 }
@@ -1428,7 +1428,7 @@ AsynchronousReadOperation File::read(
   unsigned long long offset,
   AsynchronousReadEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(listener, AsynchronousException(this)); // TAG: fixme
+  bassert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncReadFileContext(getHandle(), buffer, bytesToRead, offset, listener);
 #else // unix
   return AsynchronousReadOperation(); // TAG: fixme
@@ -1441,7 +1441,7 @@ AsynchronousWriteOperation File::write(
   unsigned long long offset,
   AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(listener, AsynchronousException(this)); // TAG: fixme
+  bassert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncWriteFileContext(getHandle(), buffer, bytesToWrite, offset, listener);
 #else // unix
   return AsynchronousWriteOperation(); // TAG: fixme

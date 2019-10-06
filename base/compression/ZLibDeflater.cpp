@@ -126,8 +126,8 @@ ZLibDeflater::ZLibDeflater(unsigned int compressionLevel) throw(MemoryException)
 
 void ZLibDeflater::flush() throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__ZLIB))
-  assert(state != ENDED, EndOfFile());
-  assert(state == RUNNING, IOException(this)); // TAG: should we accept FLUSHING
+  bassert(state != ENDED, EndOfFile());
+  bassert(state == RUNNING, IOException(this)); // TAG: should we accept FLUSHING
   state = FLUSHING;
 #else
   throw IOException(this);
@@ -136,8 +136,8 @@ void ZLibDeflater::flush() throw(IOException) {
 
 unsigned int ZLibDeflater::push(const uint8* buffer, unsigned int size) throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__ZLIB))
-  assert(state != ENDED, EndOfFile());
-  assert(state == RUNNING, IOException(this));
+  bassert(state != ENDED, EndOfFile());
+  bassert(state == RUNNING, IOException(this));
   if (availableBytes == this->buffer.getSize()) {
     return 0; // no storage available
   }
@@ -149,7 +149,7 @@ unsigned int ZLibDeflater::push(const uint8* buffer, unsigned int size) throw(IO
   context->nextOutput = this->buffer.getElements() + availableBytes;
   context->bytesToRead = this->buffer.getSize() - availableBytes;
   int code = internal::deflate(context, internal::ZLibDeflater::NO_FLUSH);
-  assert(code == internal::ZLibDeflater::OK, IOException(this));
+  bassert(code == internal::ZLibDeflater::OK, IOException(this));
   availableBytes = this->buffer.getSize() - context->bytesToRead;
   return context->totalInput;
 #else
@@ -159,8 +159,8 @@ unsigned int ZLibDeflater::push(const uint8* buffer, unsigned int size) throw(IO
 
 void ZLibDeflater::pushEnd() throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__ZLIB))
-  assert(state != ENDED, EndOfFile());
-  assert(state == RUNNING, IOException(this));
+  bassert(state != ENDED, EndOfFile());
+  bassert(state == RUNNING, IOException(this));
   state = FINISHING;
 #else
   throw IOException(this);
@@ -169,7 +169,7 @@ void ZLibDeflater::pushEnd() throw(IOException) {
 
 unsigned int ZLibDeflater::pull(uint8* buffer, unsigned int size) throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__ZLIB))
-  assert(state != ENDED, EndOfFile());
+  bassert(state != ENDED, EndOfFile());
   
   if ((state == RUNNING) &&
       (availableBytes != this->buffer.getSize())) {

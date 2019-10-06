@@ -67,7 +67,7 @@ namespace win32 {
   }
 
   AsyncWriteStreamContext::~AsyncWriteStreamContext() throw(AsynchronousException) {
-    assert(
+    bassert(
       (flags & AsynchronousWriteCompletion::COMPLETED) != 0,
       AsynchronousException(this)
     );

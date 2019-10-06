@@ -113,7 +113,7 @@ nothing OpenGLWidget::initialize(const Format& format) throw(OpenGLException, Us
       break;
     }
   }
-  assert(formatId != 0, OpenGLException("Requested format not supported", this));
+  bassert(formatId != 0, OpenGLException("Requested format not supported", this));
   
   OpenGLContextImpl::flags = 0;
   OpenGLContextImpl::flags |= (pfd.iPixelType == PFD_TYPE_COLORINDEX) ? OpenGLContextImpl::COLOR_INDEXED : 0;

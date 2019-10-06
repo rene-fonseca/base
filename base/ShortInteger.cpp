@@ -25,7 +25,7 @@ short ShortInteger::parse(
     ++i; // eat space
   }
   
-  assert(i < end, InvalidFormat(Type::getType<ShortInteger>()));
+  bassert(i < end, InvalidFormat(Type::getType<ShortInteger>()));
   
   int value;
   if (withoutSign) {
@@ -35,7 +35,7 @@ short ShortInteger::parse(
       if (!ASCIITraits::isDigit(ch)) {
         break;
       }
-      assert(temp < PrimitiveTraits<unsigned short>::MAXIMUM,
+      bassert(temp < PrimitiveTraits<unsigned short>::MAXIMUM,
              InvalidFormat(Type::getType<ShortInteger>()));
       temp = temp * 10 + ASCIITraits::digitToValue(ch);
     }
@@ -57,7 +57,7 @@ short ShortInteger::parse(
           break;
         }
         value = value * 10 - ASCIITraits::digitToValue(ch);
-        assert(value >= ShortInteger::MINIMUM, InvalidFormat(Type::getType<ShortInteger>()));
+        bassert(value >= ShortInteger::MINIMUM, InvalidFormat(Type::getType<ShortInteger>()));
       }
     } else {
       while (i < end) {
@@ -66,7 +66,7 @@ short ShortInteger::parse(
           break;
         }      
         value = value * 10 + ASCIITraits::digitToValue(ch);
-        assert(value <= ShortInteger::MAXIMUM, InvalidFormat(Type::getType<ShortInteger>()));
+        bassert(value <= ShortInteger::MAXIMUM, InvalidFormat(Type::getType<ShortInteger>()));
       }
     }
   }
@@ -75,7 +75,7 @@ short ShortInteger::parse(
     ++i;
   }
   
-  assert(i == end, InvalidFormat(Type::getType<ShortInteger>()));
+  bassert(i == end, InvalidFormat(Type::getType<ShortInteger>()));
   return value;
 }
 

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__READ_WRITE_LOCK_H
-#define _DK_SDU_MIP__BASE_CONCURRENCY__READ_WRITE_LOCK_H
+#pragma once
 
 #include <base/ResourceException.h>
 #include <base/concurrency/Lock.h>
@@ -94,5 +93,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

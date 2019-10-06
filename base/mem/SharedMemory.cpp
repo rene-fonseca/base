@@ -42,7 +42,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
     region.getSize(), // low word of size
     0 // name of mapping
   );
-  assert(
+  bassert(
     handle != OperatingSystem::INVALID_HANDLE,
     MemoryException("Unable to open shared memory", this)
   );
@@ -88,7 +88,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
       region.getOffset()
     );
   #else
-    assert(
+    bassert(
       (region.getOffset() >= 0) &&
       (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM),
       MemoryException("Unable to open shared memory", this)
@@ -102,7 +102,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
       region.getOffset()
     );
   #endif
-  assert(
+  bassert(
     address !=  MAP_FAILED,
     MemoryException("Unable to open shared memory", this)
   );
@@ -111,7 +111,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
 
 void SharedMemory::SharedMemoryImpl::lock() throw(MemoryException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::VirtualLock(address, region.getSize()),
     MemoryException("Unable to lock process memory", this)
   );
@@ -119,7 +119,7 @@ void SharedMemory::SharedMemoryImpl::lock() throw(MemoryException) {
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
     throw NotSupported(this);
   #else
-    assert(
+    bassert(
       ::mlock(address, region.getSize()) == 0,
       MemoryException("Unable to lock memory", this)
     );
@@ -129,7 +129,7 @@ void SharedMemory::SharedMemoryImpl::lock() throw(MemoryException) {
 
 void SharedMemory::SharedMemoryImpl::unlock() throw(MemoryException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::VirtualUnlock(address, region.getSize()),
     MemoryException("Unable to unlock process memory", this)
   );
@@ -137,7 +137,7 @@ void SharedMemory::SharedMemoryImpl::unlock() throw(MemoryException) {
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
     throw NotSupported(this);
   #else  
-    assert(
+    bassert(
       ::munlock(address, region.getSize()) == 0,
       MemoryException("Unable to unlock process memory", this)
     );
@@ -168,7 +168,7 @@ void SharedMemory::SharedMemoryImpl::setProtection(
   }
   
   DWORD previousProtection;
-  assert(
+  bassert(
     ::VirtualProtect(address, region.getSize(), protection, &previousProtection),
     MemoryException(this)
   );
@@ -189,7 +189,7 @@ void SharedMemory::SharedMemoryImpl::setProtection(
     }
 #endif
   }
-  assert(
+  bassert(
     ::mprotect(address, region.getSize(), protection) == 0,
     MemoryException(
       "Unable to unlock process memory",
@@ -203,7 +203,7 @@ void SharedMemory::SharedMemoryImpl::synchronize(
   bool asynchronous) throw(MemoryException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   BOOL status = ::FlushViewOfFile(address, getSize());
-  assert(
+  bassert(
     status != 0,
     MemoryException(
       "Unable to synchronize memory",
@@ -211,7 +211,7 @@ void SharedMemory::SharedMemoryImpl::synchronize(
   );
 #else // unix
   int flags = (asynchronous) ? (MS_ASYNC) : (MS_SYNC);
-  assert(
+  bassert(
     ::msync(address, region.getSize(), flags) == 0,
     MemoryException(
       "Unable to synchronize memory",

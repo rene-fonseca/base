@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__INDIRECT_H
-#define _DK_SDU_MIP__BASE_MEM__INDIRECT_H
+#pragma once
 
 #include <base/Functor.h>
 #include <base/collection/Hash.h>
@@ -71,13 +70,13 @@ class Indirect {
 private:
   
   /** The value. */
-  TYPE* value;
+  TYPE* value = nullptr;
 public:
   
   /**
-    Initializes an automation pointer as invalid (i.e. 0).
+    Initializes an automation pointer as invalid (i.e. nullptr).
   */
-  inline Indirect() throw() : value(0) {
+  inline Indirect() throw() {
   }
   
   /**
@@ -86,30 +85,44 @@ public:
     
     @param value The desired pointer value.
   */
-  inline Indirect(TYPE _value) /*throw(...)*/
+  inline Indirect(const TYPE& _value)
     : value(new TYPE(_value)) {
   }
   
   /**
     Initialization of automation pointer by automation pointer.
   */
-  inline Indirect(const Indirect& copy) /*throw(...)*/
+  inline Indirect(const Indirect& copy)
     : value(new TYPE(*copy.value)) {
   }
   
   /**
+    Dynamic cast to the specified type.
+
+    @return nullptr if cast is not possible.
+  */
+  template<class POLY>
+  inline Indirect<POLY> cast() throw(CastException) {
+    POLY* temp = dynamic_cast<POLY*>(value);
+    bassert(temp, CastException(this));
+    return *temp;
+  }
+
+  /**
     Initialization of automation pointer from other automation pointer using
     compile time polymorphism.
   */
+#if 0 // TAG: fixme
   template<class POLY>
-  inline Indirect(const Indirect<POLY>& copy) /*throw(...)*/
+  inline Indirect(const Indirect<POLY>& copy)
     : value(new TYPE(*copy.cast<TYPE>().value)) {
   }
+#endif
   
   /**
     Assignment of automation pointer by automation pointer.
   */
-  inline Indirect& operator=(const Indirect& eq) /*throw(...)*/ {
+  inline Indirect& operator=(const Indirect& eq) {
     TYPE* temp = value;
     value = new TYPE(*eq.value);
     if (temp) {
@@ -125,10 +138,14 @@ public:
   template<class POLY>
   inline Indirect& operator=(const Indirect<POLY>& eq) throw() {
     // make sure CastException is not possible
-    TYPE* unused = static_cast<POLY*>(0);
+    TYPE* unused = static_cast<POLY*>(nullptr);
     if (unused) { // avoid compiler warning
     }
+#if 0 // TAG: fixme
     Indirect indirect = eq.cast<TYPE>();
+#else
+    Indirect indirect;
+#endif
     TYPE* temp = value;
     value = new TYPE(*indirect.value);
     if (temp) {
@@ -166,24 +183,12 @@ public:
   inline bool isType() const throw() {
     return dynamic_cast<const POLY*>(value);
   }
-  
-  /**
-    Dynamic cast to the specified type.
-
-    @return 0 if cast is not possible.
-  */
-  template<class POLY>
-  inline Indirect<POLY> cast() const throw(CastException) {
-    const POLY* temp = dynamic_cast<const POLY*>(value);
-    assert(temp, CastException(this));
-    return *temp;
-  }
-  
+    
   /**
     Returns the value.
   */
   inline TYPE getValue() const throw(NullPointer) {
-    assert(value, NullPointer(this));
+    bassert(value, NullPointer(this));
     return *value;
   }
   
@@ -194,7 +199,7 @@ public:
   template<class POLY>
   inline POLY getValue() const throw(CastException) {
     const POLY* result = dynamic_cast<POLY*>(value);
-    assert(result, CastException(this));
+    bassert(result, CastException(this));
     return *result;
   }
   
@@ -230,7 +235,7 @@ public:
   /**
     Destroys the automation pointer.
   */
-  inline ~Indirect() /*throw(...)*/ {
+  inline ~Indirect() {
     if (value) {
       delete value;
     }
@@ -258,5 +263,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

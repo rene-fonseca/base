@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_BACKEND__WINDOW_IMPL_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_BACKEND__WINDOW_IMPL_H
+#pragma once
 
 #include <base/ui/WindowImpl.h>
 
@@ -51,5 +50,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

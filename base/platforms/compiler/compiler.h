@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_COMPILER__COMPILER_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_COMPILER__COMPILER_H
+#pragma once
 
 #if (!defined(_DK_SDU_MIP__BASE__COMPILER) && defined(_DK_SDU_MIP__BASE__DEFAULT_COMPILER))
 #  define _DK_SDU_MIP__BASE__COMPILER _DK_SDU_MIP__BASE__DEFAULT_COMPILER
@@ -50,5 +49,3 @@
 #    define restrict // remove restrict
 #  endif
 #endif // restrict
-
-#endif

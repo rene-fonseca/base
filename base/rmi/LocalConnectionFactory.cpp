@@ -21,7 +21,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 LocalConnectionFactory::LocalConnectionFactory(
   const String& endPoint) throw(InvalidFormat, OrbException) {
-  assert(!endPoint.isProper(), InvalidFormat(this));
+  bassert(!endPoint.isProper(), InvalidFormat(this));
   
   this->identifier = endPoint;
   try {

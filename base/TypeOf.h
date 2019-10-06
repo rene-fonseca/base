@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__TYPE_OF_H
-#define _DK_SDU_MIP__BASE__TYPE_OF_H
+#pragma once
 
 #include <base/features.h>
 
@@ -91,5 +90,3 @@ inline TypeOf<TYPE> type(TYPE) throw() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

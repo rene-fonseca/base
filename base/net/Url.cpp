@@ -78,7 +78,7 @@ public:
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
       char ch = *i;
-      assert(
+      bassert(
         ASCIITraits::isASCII(ch),
         Url::UrlException("Invalid character", Type::getType<UrlImpl>())
       );
@@ -102,20 +102,20 @@ public:
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
       char ch = *i;
       if (ch == '%') {
-        assert(
+        bassert(
           end - i >= 2,
           Url::UrlException("Invalid encoding", Type::getType<UrlImpl>())
         ); // need two digits
         char high = *++i;
         char low = *++i;
-        assert(
+        bassert(
           ASCIITraits::isHexDigit(high) && ASCIITraits::isHexDigit(low),
           Url::UrlException("Invalid encoding", Type::getType<UrlImpl>())
         );
         ch = (ASCIITraits::digitToValue(high) << 4) + ASCIITraits::digitToValue(low); // replace with decoded char
       } else {
         Encode encode = encoding(ch);
-        assert(
+        bassert(
           strict ? (encode == NEVER) : (encode <= RELAXED),
           Url::UrlException("Part contains unencoded character", Type::getType<UrlImpl>())
         );
@@ -194,7 +194,7 @@ String Url::validateUser(const String& str) throw(UrlException) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
     char ch = *i;
-    assert(
+    bassert(
       ASCIITraits::isASCII(ch),
       UrlException("Invalid character", Type::getType<Url>())
     );
@@ -206,7 +206,7 @@ String Url::validatePassword(const String& str) throw(UrlException) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
     char ch = *i;
-    assert(
+    bassert(
       ASCIITraits::isASCII(ch),
       UrlException("Invalid character", Type::getType<Url>())
     );
@@ -428,7 +428,7 @@ void Url::setPassword(const String& value) throw(UrlException, MemoryException) 
 }
 
 void Url::setHost(const String& value) throw(UrlException) {
-  assert(
+  bassert(
     isHost(value.getBeginReadIterator(), value.getEndReadIterator()),
     UrlException("Invalid host part", this)
   );
@@ -436,7 +436,7 @@ void Url::setHost(const String& value) throw(UrlException) {
 }
 
 void Url::setPort(const String& value) throw(UrlException) {
-  assert(
+  bassert(
     isPort(value.getBeginReadIterator(), value.getEndReadIterator()),
     UrlException("Invalid port part", this)
   );

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_EXTENSION_WIN32__REGISTRY_H
-#define _DK_SDU_MIP__BASE_EXTENSION_WIN32__REGISTRY_H
+#pragma once
 
 #include <base/Exception.h>
 #include <base/collection/Array.h>

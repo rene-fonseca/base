@@ -27,7 +27,7 @@ unsigned long long UnsignedLongInteger::parse(
   }
 
   // do not accept empty strings
-  assert(
+  bassert(
     i < end,
     InvalidFormat("String is empty", Type::getType<UnsignedLongInteger>())
   );
@@ -72,7 +72,7 @@ unsigned long long UnsignedLongInteger::parse(
     }
 
     // check if base is allowed
-    assert(
+    bassert(
       ((base == 2) && (accept & BIN)) ||
       ((base == 8) && (accept & OCT)) ||
       ((base == 10) && (accept & DEC)) ||
@@ -84,7 +84,7 @@ unsigned long long UnsignedLongInteger::parse(
   unsigned long long highLimit = MAXIMUM/base;
   unsigned long long lowLimit = MAXIMUM%base;
   unsigned long long temp = 0;
-  assert( // make sure we have at least one digit
+  bassert( // make sure we have at least one digit
     ASCIITraits::isHexDigit(*i),
     InvalidFormat("No digits", Type::getType<UnsignedLongInteger>())
   );
@@ -94,7 +94,7 @@ unsigned long long UnsignedLongInteger::parse(
       break;
     }
     unsigned char digitValue = ASCIITraits::digitToValue(ch); // unspecified for non-digit
-    assert(
+    bassert(
       ASCIITraits::isHexDigit(ch) &&
       (digitValue < base) &&
       ((temp < highLimit) || ((temp == highLimit) && (digitValue <= lowLimit))),
@@ -108,7 +108,7 @@ unsigned long long UnsignedLongInteger::parse(
     ++i;
   }
   
-  assert(i == end, InvalidFormat("Not a digit", Type::getType<UnsignedLongInteger>()));
+  bassert(i == end, InvalidFormat("Not a digit", Type::getType<UnsignedLongInteger>()));
   
   return temp;
 }

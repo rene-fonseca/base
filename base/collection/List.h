@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COLLECTION__LIST_H
-#define _DK_SDU_MIP__BASE_COLLECTION__LIST_H
+#pragma once
 
 #include <base/collection/Collection.h>
 #include <base/collection/Enumeration.h>
@@ -130,7 +129,7 @@ public:
     Returns the next element and advances the position of this enumeration.
   */
   inline Pointer next() throw(EndOfEnumeration) {
-    assert(current != 0, EndOfEnumeration());
+    bassert(current != 0, EndOfEnumeration());
     Pointer temp = current->getValue();
     current = current->getNext();
     return temp;
@@ -197,7 +196,7 @@ public:
     Returns the next element and advances the position of this enumeration.
   */
   inline Pointer next() throw(EndOfEnumeration) {
-    assert(current != 0, EndOfEnumeration());
+    bassert(current != 0, EndOfEnumeration());
     Pointer temp = current->getValue();
     current = current->getNext();
     return temp;
@@ -262,11 +261,11 @@ protected:
   private:
 
     /** The first node in the list. */
-    Node* first;
+    Node* first = nullptr;
     /** The last node in the list. */
-    Node* last;
+    Node* last = nullptr;
     /** The number of elements in the list. */
-    unsigned int size;
+    unsigned int size = 0;
   protected:
 
     /**
@@ -644,5 +643,3 @@ FormatOutputStream& operator<<(
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

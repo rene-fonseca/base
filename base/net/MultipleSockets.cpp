@@ -225,7 +225,7 @@ unsigned int MultipleSockets::getEvents(
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
-  assert(socket.isValid(), InvalidKey(this));
+  bassert(socket.isValid(), InvalidKey(this));
   SingleExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
   for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
@@ -241,7 +241,7 @@ unsigned int MultipleSockets::getEvents(
   }
   throw InvalidKey(this);
 #elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL)) // unix (poll)
-  assert(socket.isValid(), InvalidKey(this));
+  bassert(socket.isValid(), InvalidKey(this));
   SingleExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fd = Cast::pointer<struct pollfd*>(context.getElements());
   for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
@@ -273,7 +273,7 @@ unsigned int MultipleSockets::getEvents(
 #else // unix (select)
   typedef internal::MultipleSockets::pollfd pollfd;
   
-  assert(socket.isValid(), InvalidKey(this));
+  bassert(socket.isValid(), InvalidKey(this));
   SingleExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
   for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {

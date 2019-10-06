@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_IO__FILE_INPUT_STREAM_H
-#define _DK_SDU_MIP__BASE_IO__FILE_INPUT_STREAM_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/io/InputStream.h>
@@ -88,5 +87,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

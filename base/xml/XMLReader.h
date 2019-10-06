@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_XML__XML_READER_H
-#define _DK_SDU_MIP__BASE_XML__XML_READER_H
+#pragma once
 
 #include <base/Polymorphic.h>
 #include <base/xml/SAXNotRecognizedException.h>
@@ -421,5 +420,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -33,7 +33,7 @@ namespace extension {
     
     RegistryKey::Handle::~Handle() throw(RegistryException) {
       if (handle) {
-        assert(
+        bassert(
           ::RegCloseKey((HKEY)handle) == ERROR_SUCCESS,
           RegistryException(this)
         );
@@ -73,7 +73,7 @@ namespace extension {
         throw RegistryException("Invalid root", this);
       }
       
-      assert(
+      bassert(
         ::RegConnectRegistry(machine.getElements(), regRoot, &rootKey) == ERROR_SUCCESS,
         RegistryException("Unable to connect to Registry", this)
       );
@@ -139,7 +139,7 @@ namespace extension {
         regKey = HKEY_USERS;
         break;
       }
-      assert(::RegOpenKeyEx((HKEY)key->getHandle(), // handle to open key
+      bassert(::RegOpenKeyEx((HKEY)key->getHandle(), // handle to open key
                             path.getElements(), // subkey name
                             0,   // reserved
                             access, // security access mask
@@ -164,7 +164,7 @@ namespace extension {
       }
       
       HKEY regKey;
-      assert(::RegOpenKeyEx((HKEY)key->getHandle(), // handle to open key
+      bassert(::RegOpenKeyEx((HKEY)key->getHandle(), // handle to open key
                             name.getElements(), // subkey name
                             0,   // reserved
                             regAccess, // security access mask
@@ -179,7 +179,7 @@ namespace extension {
     RegistryKey RegistryKey::addSubkey(const String& name, Access access) throw(RegistryException) {
       HKEY regKey;
       DWORD disposition;
-      assert(::RegCreateKeyEx((HKEY)key->getHandle(), // handle to open key
+      bassert(::RegCreateKeyEx((HKEY)key->getHandle(), // handle to open key
                               name.getElements(), // subkey name
                               0, // reserved
                               0, // class string
@@ -206,7 +206,7 @@ namespace extension {
     Array<String> RegistryKey::getKeys() throw(RegistryException) {
       DWORD maxLength; // excluding terminator
       DWORD numberOfSubkeys;
-      assert(::RegQueryInfoKey((HKEY)key->getHandle(),
+      bassert(::RegQueryInfoKey((HKEY)key->getHandle(),
                                0, // class buffer
                                0, // size of the class buffer
                                0, // reserved
@@ -230,7 +230,7 @@ namespace extension {
       
       while (true) {
         DWORD nameLength = sizeof(name); // input: includes terminator, output: excluding terminator
-        assert(::RegEnumKeyEx((HKEY)key->getHandle(), // handle to key to query
+        bassert(::RegEnumKeyEx((HKEY)key->getHandle(), // handle to key to query
                               index++, // index of subkey to query
                               name, // subkey buffer
                               &nameLength, // size of subkey buffer
@@ -249,7 +249,7 @@ namespace extension {
     Array<String> RegistryKey::getValues() const throw(RegistryException) {
       DWORD maxLength; // excluding terminator
       DWORD numberOfValues;
-      assert(::RegQueryInfoKey((HKEY)key->getHandle(),
+      bassert(::RegQueryInfoKey((HKEY)key->getHandle(),
                                0, // class buffer
                                0, // size of the class buffer
                                0, // reserved
@@ -273,7 +273,7 @@ namespace extension {
       
       while (true) {
         DWORD nameLength = sizeof(name); // input: includes terminator, output: excluding terminator
-        assert(::RegEnumValue((HKEY)key->getHandle(), // handle to key to query
+        bassert(::RegEnumValue((HKEY)key->getHandle(), // handle to key to query
                               index++, // index of value to query
                               name, // value buffer
                               &nameLength, // size of value buffer
@@ -292,7 +292,7 @@ namespace extension {
     bool RegistryKey::isEmpty() const throw(RegistryException) {
       DWORD numberOfSubkeys;
       DWORD numberOfValues;
-      assert(::RegQueryInfoKey((HKEY)key->getHandle(),
+      bassert(::RegQueryInfoKey((HKEY)key->getHandle(),
                                0, // class buffer
                                0, // size of the class buffer
                                0, // reserved
@@ -336,7 +336,7 @@ namespace extension {
 
     Date RegistryKey::getLastModification() const throw(RegistryException) {
       FILETIME modificationTime;
-      assert(::RegQueryInfoKey((HKEY)key->getHandle(),
+      bassert(::RegQueryInfoKey((HKEY)key->getHandle(),
                                0, // class buffer
                                0, // size of the class buffer
                                0, // reserved
@@ -357,7 +357,7 @@ namespace extension {
     Trustee RegistryKey::getOwner() const throw(RegistryException) {
       SECURITY_DESCRIPTOR* securityDescriptor;
       PSID ownerSID;
-      assert(::GetSecurityInfo((HKEY)key->getHandle(), SE_REGISTRY_KEY,
+      bassert(::GetSecurityInfo((HKEY)key->getHandle(), SE_REGISTRY_KEY,
                                OWNER_SECURITY_INFORMATION, 0, &ownerSID, 0, 0,
                                &securityDescriptor) == ERROR_SUCCESS,
              RegistryException(this)
@@ -370,7 +370,7 @@ namespace extension {
     Trustee RegistryKey::getGroup() const throw(RegistryException) {
       SECURITY_DESCRIPTOR* securityDescriptor;
       PSID groupSID;
-      assert(::GetSecurityInfo((HKEY)key->getHandle(), SE_REGISTRY_KEY,
+      bassert(::GetSecurityInfo((HKEY)key->getHandle(), SE_REGISTRY_KEY,
                                GROUP_SECURITY_INFORMATION, 0, &groupSID, 0, 0,
                                &securityDescriptor) == ERROR_SUCCESS,
              RegistryException(this)
@@ -390,7 +390,7 @@ namespace extension {
     AnyValue RegistryKey::getValue(const String& name) const throw(RegistryException) {
       DWORD size;
       DWORD type;
-      assert(::RegQueryValueEx((HKEY)key->getHandle(),
+      bassert(::RegQueryValueEx((HKEY)key->getHandle(),
                                name.getElements(), // value name
                                0, // reserved
                                &type, // type buffer
@@ -435,7 +435,7 @@ namespace extension {
             uint64 integer64;
           } buffer;
           
-          assert(
+          bassert(
             (::RegQueryValueEx((HKEY)key->getHandle(),
                                name.getElements(), // value name
                                0, // reserved
@@ -466,7 +466,7 @@ namespace extension {
       default:
         String buffer;
         buffer.forceToLength(size);
-        assert(
+        bassert(
           (::RegQueryValueEx((HKEY)key->getHandle(),
                              name.getElements(), // value name
                              0, // reserved
@@ -556,7 +556,7 @@ namespace extension {
         break;
       }
       
-      assert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
+      bassert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
                              name.getElements(), // value name
                              0, // reserved
                              REG_DWORD, // value type
@@ -569,7 +569,7 @@ namespace extension {
       uint32 buffer;
       DWORD size = sizeof(buffer);
       DWORD type;
-      assert(::RegQueryValueEx((HKEY)key->getHandle(),
+      bassert(::RegQueryValueEx((HKEY)key->getHandle(),
                                name.getElements(), // value name
                                0, // reserved
                                &type, // type buffer
@@ -588,7 +588,7 @@ namespace extension {
     
     void RegistryKey::setInteger(const String& name, uint32 value) throw(RegistryException) {
       LittleEndian<uint32> buffer = value;
-      assert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
+      bassert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
                              name.getElements(), // value name
                              0, // reserved
                              REG_DWORD, // value type
@@ -600,7 +600,7 @@ namespace extension {
     String RegistryKey::getBinary(const String& name) const throw(RegistryException) {
       DWORD size;
       DWORD type;
-      assert((::RegQueryValueEx((HKEY)key->getHandle(),
+      bassert((::RegQueryValueEx((HKEY)key->getHandle(),
                                 name.getElements(), // value name
                                 0, // reserved
                                 &type, // type buffer
@@ -613,7 +613,7 @@ namespace extension {
       String result; // TAG: use other type than String?
       result.forceToLength(size);
       DWORD secondType;
-      assert((::RegQueryValueEx((HKEY)key->getHandle(),
+      bassert((::RegQueryValueEx((HKEY)key->getHandle(),
                                 name.getElements(), // value name
                                 0, // reserved
                                 &secondType, // type buffer
@@ -626,7 +626,7 @@ namespace extension {
     }
     
     void RegistryKey::setBinary(const String& name, const char* buffer, unsigned int size) throw(RegistryException) {
-      assert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
+      bassert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
                              name.getElements(), // value name
                              0, // reserved
                              REG_BINARY, // value type
@@ -638,7 +638,7 @@ namespace extension {
     String RegistryKey::getString(const String& name) const throw(RegistryException) {
       DWORD size;
       DWORD type;
-      assert((::RegQueryValueEx((HKEY)key->getHandle(),
+      bassert((::RegQueryValueEx((HKEY)key->getHandle(),
                                name.getElements(), // value name
                                0, // reserved
                                &type, // type buffer
@@ -651,7 +651,7 @@ namespace extension {
       String result;
       result.forceToLength(size - 1);
       DWORD secondType;
-      assert((::RegQueryValueEx((HKEY)key->getHandle(),
+      bassert((::RegQueryValueEx((HKEY)key->getHandle(),
                                 name.getElements(), // value name
                                 0, // reserved
                                 &secondType, // type buffer
@@ -664,7 +664,7 @@ namespace extension {
     }
 
     void RegistryKey::setValue(const String& name, const String& value) throw(RegistryException) {
-      assert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
+      bassert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
                              name.getElements(), // value name
                              0, // reserved
                              REG_SZ, // value type
@@ -676,7 +676,7 @@ namespace extension {
     Array<String> RegistryKey::getStringSequence(const String& name) const throw(MemoryException, RegistryException) {
       DWORD size;
       DWORD type;
-      assert((::RegQueryValueEx((HKEY)key->getHandle(),
+      bassert((::RegQueryValueEx((HKEY)key->getHandle(),
                                name.getElements(), // value name
                                0, // reserved
                                &type, // type buffer
@@ -685,7 +685,7 @@ namespace extension {
               ) == ERROR_SUCCESS) && (type == REG_MULTI_SZ), RegistryException(this));
 
       Allocator<char> buffer(size);
-      assert((::RegQueryValueEx((HKEY)key->getHandle(),
+      bassert((::RegQueryValueEx((HKEY)key->getHandle(),
                                 name.getElements(), // value name
                                 0, // reserved
                                 &type, // type buffer
@@ -735,7 +735,7 @@ namespace extension {
       *dest++ = 0; // first terminator
       *dest++ = 0; // second terminator
       
-      assert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
+      bassert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
                              name.getElements(), // value name
                              0, // reserved
                              REG_MULTI_SZ, // value type
@@ -745,7 +745,7 @@ namespace extension {
     }
     
     void RegistryKey::flush() throw(RegistryException) {
-      assert(
+      bassert(
         ::RegFlushKey((HKEY)key->getHandle()) == ERROR_SUCCESS,
         RegistryException("Unable to remove key", this)
       );
@@ -821,7 +821,7 @@ namespace extension {
     }
 
     bool RegistryKey::removeValue(const String& name) throw(RegistryException) {
-      assert(
+      bassert(
         ::RegDeleteValue((HKEY)key->getHandle(), name.getElements()) == ERROR_SUCCESS,
         RegistryException("Unable to remove value", this)
       );
@@ -829,7 +829,7 @@ namespace extension {
     
     RegistryKey::ValueType RegistryKey::getTypeOfValue(const String& name) const throw(RegistryException) {
       DWORD type;
-      assert(
+      bassert(
         ::RegQueryValueEx((HKEY)key->getHandle(),
                           name.getElements(), // value name
                           0, // reserved
@@ -867,7 +867,7 @@ namespace extension {
     
     unsigned int RegistryKey::getSize(const String& name) const throw(RegistryException) {
       DWORD size;
-      assert(::RegQueryValueEx((HKEY)key->getHandle(),
+      bassert(::RegQueryValueEx((HKEY)key->getHandle(),
                                name.getElements(), // value name
                                0, // reserved
                                0, // type buffer

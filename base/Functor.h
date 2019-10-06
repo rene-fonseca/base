@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__FUNCTOR_H
-#define _DK_SDU_MIP__BASE__FUNCTOR_H
+#pragma once
 
 #include <base/Base.h>
 #include <base/Primitives.h>
@@ -1222,5 +1221,3 @@ inline InvokeOutfix<TYPE, PREFIX, SUFFIX> invokeOutfix(
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

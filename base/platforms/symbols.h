@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS__SYMBOLS_H
-#define _DK_SDU_MIP__BASE_PLATFORMS__SYMBOLS_H
+#pragma once
 
 /*
   This header file defines the global symbols that are used to configure the
@@ -157,5 +156,3 @@
 #define _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96 3
 #define _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128 4
 #define _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION 5
-
-#endif

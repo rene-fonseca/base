@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__SHARED_MEMORY_H
-#define _DK_SDU_MIP__BASE_MEM__SHARED_MEMORY_H
+#pragma once
 
 #include <base/MemoryException.h>
 #include <base/OperatingSystem.h>
@@ -206,5 +205,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

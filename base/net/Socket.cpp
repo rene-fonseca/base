@@ -153,7 +153,7 @@ public:
       ipv4.sin_family = AF_INET;
       ipv4.sin_port = ByteOrder::toBigEndian<unsigned short>(port);
       InetAddress temp(address);
-      assert(
+      bassert(
         temp.convertToIPv4(),
         NetworkException(
           "Address not supported",
@@ -169,7 +169,7 @@ public:
 #  else // only IPv4 support
     InetAddress temp(address);
     temp.convertToIPv4();
-    assert(
+    bassert(
       temp.convertToIPv4(),
       NetworkException(
         "Address not supported",
@@ -545,7 +545,7 @@ void Socket::connect(const InetAddress& address, unsigned short port) throw(Netw
 void Socket::create(Kind kind, Domain domain) throw(NetworkException) {
   // TAG: should return new socket not overwrite handle (static method)
   static const int SOCKET_KINDS[] = {SOCK_STREAM, SOCK_DGRAM, SOCK_RAW};
-  assert(
+  bassert(
     !socket->isValid(),
     NetworkException("Unable to create socket", this)
   );
@@ -555,7 +555,7 @@ void Socket::create(Kind kind, Domain domain) throw(NetworkException) {
     SOCKET_KINDS[kind],
     0
   );
-  assert(
+  bassert(
     handle != OperatingSystem::INVALID_HANDLE,
     NetworkException("Unable to create socket", this)
   );
@@ -565,7 +565,7 @@ void Socket::create(Kind kind, Domain domain) throw(NetworkException) {
     kind
   );
 #else
-  assert(
+  bassert(
     (domain == Socket::IPV4) || (domain == Socket::DEFAULT_DOMAIN),
     NetworkException("Domain not supported")
   );
@@ -574,7 +574,7 @@ void Socket::create(Kind kind, Domain domain) throw(NetworkException) {
     SOCKET_KINDS[kind],
     0
   );
-  assert(
+  bassert(
     handle != OperatingSystem::INVALID_HANDLE,
     NetworkException("Unable to create socket", this)
   );
@@ -1094,7 +1094,7 @@ void Socket::setMulticastInterface(const InetAddress& interface) throw(NetworkEx
 #else // unix
   InetAddress i = interface;
   struct in_addr buffer;
-  assert(i.convertToIPv4(), NetworkException(this));
+  bassert(i.convertToIPv4(), NetworkException(this));
   copy<uint8>(Cast::getAddress(buffer), i.getIPv4Address(), sizeof(buffer));
   internal::SocketImpl::setOption(
     (int)socket->getHandle(),
@@ -1156,7 +1156,7 @@ void Socket::setUnicastHops(uint8 value) throw(NetworkException) {
 void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   InetAddress g = group;
-  assert(g.convertToIPv4(), NetworkException(this));
+  bassert(g.convertToIPv4(), NetworkException(this));
   struct ip_mreq mreq;
   copy<uint8>(
     Cast::getAddress(mreq.imr_multiaddr.s_addr),
@@ -1190,7 +1190,7 @@ void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
     );
   } else { // IPv4
     InetAddress g = group;
-    assert(g.convertToIPv4(), NetworkException(this));
+    bassert(g.convertToIPv4(), NetworkException(this));
     struct ip_mreq mreq;
     copy<uint8>(
       Cast::getAddress(mreq.imr_multiaddr.s_addr),
@@ -1208,7 +1208,7 @@ void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
   }
 #  else
   InetAddress g = group;
-  assert(g.convertToIPv4(), NetworkException(this));
+  bassert(g.convertToIPv4(), NetworkException(this));
   struct ip_mreq mreq;
   copy<uint8>(
     Cast::getAddress(mreq.imr_multiaddr.s_addr),
@@ -1231,7 +1231,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   InetAddress i = interface;
   InetAddress g = group;
-  assert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
+  bassert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
   struct ip_mreq mreq;
   copy<uint8>(
     Cast::getAddress(mreq.imr_multiaddr.s_addr),
@@ -1296,7 +1296,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
         ++current;
         offset += sizeof(*current);
       }
-      assert(
+      bassert(
         mreq.ipv6mr_interface > 0,
         NetworkException("Unable to resolve interface", this)
       );
@@ -1316,7 +1316,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
   } else { // IPv4
     InetAddress i = interface;
     InetAddress g = group;
-    assert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
+    bassert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
     struct ip_mreq mreq;
     copy<uint8>(
       Cast::getAddress(mreq.imr_multiaddr.s_addr),
@@ -1339,7 +1339,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
 #  else
   InetAddress i = interface;
   InetAddress g = group;
-  assert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
+  bassert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
   struct ip_mreq mreq;
   copy<uint8>(
     Cast::getAddress(mreq.imr_multiaddr.s_addr),
@@ -1366,7 +1366,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   InetAddress i = interface;
   InetAddress g = group;
-  assert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
+  bassert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
   struct ip_mreq mreq;
   copy<uint8>(
     Cast::getAddress(mreq.imr_multiaddr.s_addr),
@@ -1410,7 +1410,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) 
   } else {
     InetAddress i = interface;
     InetAddress g = group;
-    assert(i.convertToIPv4() && g.convertToIPv4(), bindCause(NetworkException(this), 0));
+    bassert(i.convertToIPv4() && g.convertToIPv4(), bindCause(NetworkException(this), 0));
     struct ip_mreq mreq;
     copy<uint8>(
       Cast::getAddress(mreq.imr_multiaddr.s_addr),
@@ -1433,7 +1433,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) 
 #  else
   InetAddress i = interface;
   InetAddress g = group;
-  assert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
+  bassert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
   struct ip_mreq mreq;
   copy<uint8>(
     Cast::getAddress(mreq.imr_multiaddr.s_addr),
@@ -1783,7 +1783,7 @@ AsynchronousReadOperation Socket::read(
   unsigned int bytesToRead,
   AsynchronousReadEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(listener, AsynchronousException()); // FIXME
+  bassert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncReadStreamContext(
     socket->getHandle(),
     buffer,
@@ -1800,7 +1800,7 @@ AsynchronousWriteOperation Socket::write(
   unsigned int bytesToWrite,
   AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(listener, AsynchronousException()); // FIXME
+  bassert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncWriteStreamContext(
     socket->getHandle(),
     buffer,

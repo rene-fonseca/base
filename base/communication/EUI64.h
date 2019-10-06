@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COMMUNICATION__EUI_64_H
-#define _DK_SDU_MIP__BASE_COMMUNICATION__EUI_64_H
+#pragma once
 
 #include <base/OutOfDomain.h>
 #include <base/string/FormatOutputStream.h>
@@ -184,5 +183,3 @@ public:
 FormatOutputStream& operator<<(FormatOutputStream& stream, const EUI64& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

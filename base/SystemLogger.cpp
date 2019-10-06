@@ -92,10 +92,18 @@ void SystemLogger::write(MessageType type, const String& message) throw() {
   if (application) {
     String formalName = application->getFormalName();
     openlog(formalName.getElements(), LOG_PID, 0);
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+    syslog(LOG_USER | messageType[type], message.getElements(), "");
+#else
     syslog(LOG_USER | messageType[type], message.getElements());
+#endif
   } else {
     openlog("Unspecified", LOG_PID, 0);
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+    syslog(LOG_USER | messageType[type], message.getElements(), "");
+#else
     syslog(LOG_USER | messageType[type], message.getElements());
+#endif
   }
   closelog();
 #endif // flavor

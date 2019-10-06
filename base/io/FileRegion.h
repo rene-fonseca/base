@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_IO__FILE_REGION_H
-#define _DK_SDU_MIP__BASE_IO__FILE_REGION_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/OutOfDomain.h>
@@ -86,7 +85,7 @@ public:
     Sets the offset of the file region.
   */
   inline void setOffset(long long offset) throw(OutOfDomain) {
-    assert(offset < LIMIT - size, OutOfDomain(this));
+    bassert(offset < LIMIT - size, OutOfDomain(this));
     this->offset = offset;
   }
 
@@ -94,7 +93,7 @@ public:
     Sets the size of the file region.
   */
   inline void setSize(unsigned int size) throw(OutOfDomain) {
-    assert(offset < LIMIT - size, OutOfDomain(this));
+    bassert(offset < LIMIT - size, OutOfDomain(this));
     this->size = size;
   }
   
@@ -117,9 +116,7 @@ public:
 inline FileRegion::FileRegion(
   long long _offset, unsigned int _size) throw(OutOfDomain)
   : offset(_offset), size(_size) {
-  assert(offset < LIMIT - size, OutOfDomain(this));
+  bassert(offset < LIMIT - size, OutOfDomain(this));
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

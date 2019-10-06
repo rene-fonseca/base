@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_STRING__LOCALE_H
-#define _DK_SDU_MIP__BASE_STRING__LOCALE_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/string/String.h>
@@ -184,22 +183,22 @@ public:
   }
 
   String getShortNameOfWeekday(unsigned int weekday) const throw(OutOfDomain) {
-    assert(weekday < 7, OutOfDomain(Type::getType<DateFormatSet>()));
+    bassert(weekday < 7, OutOfDomain(Type::getType<DateFormatSet>()));
     return shortNameOfWeekday[weekday];
   }
   
   String getLongNameOfWeekday(unsigned int weekday) const throw(OutOfDomain) {
-    assert(weekday < 7, OutOfDomain(Type::getType<DateFormatSet>()));
+    bassert(weekday < 7, OutOfDomain(Type::getType<DateFormatSet>()));
     return longNameOfWeekday[weekday];
   }
   
   String getShortNameOfMonth(unsigned int month) const throw(OutOfDomain) {
-    assert(month < 12, OutOfDomain(Type::getType<DateFormatSet>()));
+    bassert(month < 12, OutOfDomain(Type::getType<DateFormatSet>()));
     return shortNameOfMonth[month];
   }
   
   String getLongNameOfMonth(unsigned int month) const throw(OutOfDomain) {
-    assert(month < 12, OutOfDomain(Type::getType<DateFormatSet>()));
+    bassert(month < 12, OutOfDomain(Type::getType<DateFormatSet>()));
     return longNameOfMonth[month];
   }
 
@@ -319,5 +318,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

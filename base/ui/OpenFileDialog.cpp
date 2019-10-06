@@ -58,7 +58,7 @@ bool OpenFileDialog::execute() throw(UserInterfaceException) {
   *dest++ = '\0'; // final termination;
   
   Allocator<uint8>* buffer = Thread::getLocalStorage();
-  assert(
+  bassert(
     buffer->getSize() >= 256,
     UnexpectedFailure("Thread local buffer is too small", this)
   );

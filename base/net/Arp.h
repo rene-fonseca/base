@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_NET__ARP_H
-#define _DK_SDU_MIP__BASE_NET__ARP_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/string/String.h>
@@ -47,11 +46,11 @@ class Arp : public Object {
 private:
   
   /** Specifies the index of the network interface. */
-  unsigned int index;
+  unsigned int index = 0;
   /** Specifies the name of the network interface. */
   String name;
   /** Flags. */
-  unsigned int flags;
+  unsigned int flags = 0;
   /** Address. */
   InetAddress address;
   /** Netmask. */
@@ -61,7 +60,7 @@ private:
   /** Destination address. */
   InetAddress destination;
   /** Metric. */
-  unsigned int metric;
+  unsigned int metric = 0;
   /** Ethernet address. */
   EUI64 ethernet;
 public:
@@ -183,5 +182,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

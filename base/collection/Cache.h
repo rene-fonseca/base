@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COLLECTION__CACHE_H
-#define _DK_SDU_MIP__BASE_COLLECTION__CACHE_H
+#pragma once
 
 #include <base/collection/HashTable.h>
 
@@ -139,7 +138,7 @@ public:
     Removes all the keys from the cache.
   */
   inline void removeAll() throw() {
-    elements = HashTable();
+    elements = HashTable<KEY, VALUE>();
   }
 
 #if 0
@@ -189,9 +188,7 @@ public:
 template<class KEY, class VALUE>
 FormatOutputStream& operator<<(
   FormatOutputStream& stream, const Cache<KEY, VALUE>& value) throw(IOException) {
-  return stream << elements;
+  return stream << value;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -409,7 +409,7 @@ void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType
     RLIMIT_AS
   };
 #  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  assert(
+  bassert(
     (limit >= -1) &&
     (limit != RLIM_INFINITY) &&
     (limit != RLIM_SAVED_MAX) &&
@@ -423,12 +423,12 @@ void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType
   } else {
     rlimit.rlim_max = (limit == -1) ? RLIM_INFINITY : limit;
   }
-  assert(
+  bassert(
     ::setrlimit64(RESOURCES[resource], &rlimit) == 0,
     OutOfRange(Type::getType<OperatingSystem>())
   );
 #  else
-  assert(
+  bassert(
     (limit <= PrimitiveTraits<rlim_t>::MAXIMUM) &&
     (limit >= -1) &&
     (limit != RLIM_INFINITY) &&
@@ -443,7 +443,7 @@ void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType
   } else {
     rlimit.rlim_max = (limit == -1) ? RLIM_INFINITY : limit;
   }
-  assert(
+  bassert(
     ::setrlimit(RESOURCES[resource], &rlimit) == 0,
     OutOfRange(Type::getType<OperatingSystem>())
   );

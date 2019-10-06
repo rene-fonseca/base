@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COMMUNICATION__IEEE_1394_H
-#define _DK_SDU_MIP__BASE_COMMUNICATION__IEEE_1394_H
+#pragma once
 
 #include <base/communication/CommunicationsPort.h>
 #include <base/communication/EUI64.h>
@@ -718,7 +717,7 @@ public:
   */
   inline bool isLinkLayerActive(
     unsigned int physicalId) const throw(OutOfDomain) {
-    assert(physicalId < numberOfNodes, OutOfDomain(this));
+    bassert(physicalId < numberOfNodes, OutOfDomain(this));
     return nodes[physicalId].link;
   }
 
@@ -736,7 +735,7 @@ public:
   */
   inline bool isContender(
     unsigned int physicalId) const throw(OutOfDomain) {
-    assert(physicalId < numberOfNodes, OutOfDomain(this));
+    bassert(physicalId < numberOfNodes, OutOfDomain(this));
     return nodes[physicalId].contender;
   }
   
@@ -746,7 +745,7 @@ public:
     @param physicalId The physical id the node.    
   */
   inline bool isTransactionCapable(unsigned int physicalId) const throw() {
-    assert(physicalId < numberOfNodes, OutOfDomain(this));
+    bassert(physicalId < numberOfNodes, OutOfDomain(this));
     return nodes[physicalId].link;
   }
 
@@ -757,7 +756,7 @@ public:
   */
   inline unsigned int getGapCount(
     unsigned int physicalId) const throw(OutOfDomain) {
-    assert(physicalId < numberOfNodes, OutOfDomain(this));
+    bassert(physicalId < numberOfNodes, OutOfDomain(this));
     return nodes[physicalId].gapCount;
   }
 
@@ -768,7 +767,7 @@ public:
   */
   inline unsigned int getNumberOfPorts(
     unsigned int physicalId) const throw(OutOfDomain) {
-    assert(physicalId < numberOfNodes, OutOfDomain(this));
+    bassert(physicalId < numberOfNodes, OutOfDomain(this));
     return nodes[physicalId].numberOfPorts;
   }
 
@@ -780,7 +779,7 @@ public:
   */
   inline PortState getPortState(
     unsigned int physicalId, unsigned int port) const throw(OutOfDomain) {
-    assert(
+    bassert(
       (physicalId < numberOfNodes) && (port < nodes[physicalId].numberOfPorts),
       OutOfDomain(this)
     );
@@ -794,7 +793,7 @@ public:
   */
   inline unsigned int getLocalMaximumPayload(
     unsigned int physicalId) const throw(OutOfDomain) {
-    assert(physicalId < numberOfNodes, OutOfDomain(this));
+    bassert(physicalId < numberOfNodes, OutOfDomain(this));
     return nodes[physicalId].maximumPayload;
   }
   
@@ -805,7 +804,7 @@ public:
   */
   inline PowerClass getPowerClass(
     unsigned int physicalId) const throw(OutOfDomain) {
-    assert(physicalId < numberOfNodes, OutOfDomain(this));
+    bassert(physicalId < numberOfNodes, OutOfDomain(this));
     return nodes[physicalId].powerClass;
   }
   
@@ -940,5 +939,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

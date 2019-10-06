@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_RMI__ORB_RESPONSE_H
-#define _DK_SDU_MIP__BASE_RMI__ORB_RESPONSE_H
+#pragma once
 
 #include <base/string/String.h>
 #include <base/string/WideString.h>
@@ -118,5 +117,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

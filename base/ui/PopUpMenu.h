@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_UI__POP_UP_MENU_H
-#define _DK_SDU_MIP__BASE_UI__POP_UP_MENU_H
+#pragma once
 
 #include <base/ui/PopUpWindow.h>
 
@@ -435,5 +434,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

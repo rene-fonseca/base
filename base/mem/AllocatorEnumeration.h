@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__ALLOCATOR_ENUMERATOR_H
-#define _DK_SDU_MIP__BASE_MEM__ALLOCATOR_ENUMERATOR_H
+#pragma once
 
 #include <base/Base.h>
 #include <base/collection/Enumeration.h>
@@ -71,7 +70,7 @@ public:
     Returns the next element and advances the position of this enumeration.
   */
   inline Pointer next() throw(EndOfEnumeration) {
-    assert(current != end, EndOfEnumeration(this));
+    bassert(current != end, EndOfEnumeration(this));
     return current++;
   }
 
@@ -91,5 +90,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

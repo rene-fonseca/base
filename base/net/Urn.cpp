@@ -101,7 +101,7 @@ Urn::Urn(const String& urn) throw(InvalidFormat, MemoryException) {
   String::ReadIterator end = urn.getEndReadIterator();
   
   // check prefix
-  assert(
+  bassert(
     ((end - i) >= 4) &&
     (ASCIITraits::toLower(*i++) == 'u') &&
     (ASCIITraits::toLower(*i++) == 'r') &&
@@ -118,7 +118,7 @@ Urn::Urn(const String& urn) throw(InvalidFormat, MemoryException) {
       (i[3] == ':')) {
     throw InvalidFormat(this);
   }
-  assert(
+  bassert(
     (i != end) && (ASCIITraits::isAlphaNum(*i++)),
     InvalidFormat(this)
   );
@@ -127,7 +127,7 @@ Urn::Urn(const String& urn) throw(InvalidFormat, MemoryException) {
     (j > 0) && (i != end) && ((ASCIITraits::isAlphaNum(*i)) || (*i == '-'));
     --j, ++i
   );
-  assert(
+  bassert(
     (i != end) && (*i++ == ':'),
     InvalidFormat(this)
   );
@@ -158,7 +158,7 @@ Urn::Urn(const String& urn) throw(InvalidFormat, MemoryException) {
       ++i;
       break;
     case '%': // reserved
-      assert(
+      bassert(
         ((end - i) >= 2) &&
         (ASCIITraits::isHexDigit(i[0])) &&
         (ASCIITraits::isHexDigit(i[1])),
@@ -171,7 +171,7 @@ Urn::Urn(const String& urn) throw(InvalidFormat, MemoryException) {
       throw InvalidFormat(this);
     }
   };
-  assert(i != j, InvalidFormat(this));
+  bassert(i != j, InvalidFormat(this));
 }
 
 Urn::Urn(const String& nid, const String& nss) throw(InvalidFormat) {
@@ -223,13 +223,13 @@ String Urn::getUnescapedNSS() const throw(MemoryException) {
   for (String::ReadIterator i = nss.getBeginReadIterator(); i < end; ++i) {
     char ch = *i;
     if (ch == '%') {
-      assert(
+      bassert(
         end - i >= 2,
         InvalidFormat("Invalid encoding", this)
       );
       char high = *++i;
       char low = *++i;
-      assert(
+      bassert(
         ASCIITraits::isHexDigit(high) && ASCIITraits::isHexDigit(low),
         InvalidFormat("Invalid encoding", this)
       );
@@ -252,7 +252,7 @@ void Urn::setNID(const String& value) throw(InvalidFormat) {
   ) {
     throw InvalidFormat(this);
   }
-  assert(
+  bassert(
     (i != end) && (ASCIITraits::isAlphaNum(*i++)),
     InvalidFormat(this)
   );
@@ -261,7 +261,7 @@ void Urn::setNID(const String& value) throw(InvalidFormat) {
     (j > 0) && (i != end) && ((ASCIITraits::isAlphaNum(*i)) || (*i == '-'));
     --j, ++i
   );
-  assert(i == end, InvalidFormat(this));
+  bassert(i == end, InvalidFormat(this));
   this->nid = nid;
 }
 
@@ -269,7 +269,7 @@ void Urn::setNSS(const String& value) throw(InvalidFormat) {
   String::ReadIterator i = value.getBeginReadIterator();
   const String::ReadIterator end = value.getEndReadIterator();
   
-  assert(i != end, InvalidFormat(this));
+  bassert(i != end, InvalidFormat(this));
   while (i != end) {
     if (ASCIITraits::isAlphaNum(*i)) {
       ++i;
@@ -294,7 +294,7 @@ void Urn::setNSS(const String& value) throw(InvalidFormat) {
       ++i;
       break;
     case '%': // reserved
-      assert(
+      bassert(
         ((end - i) >= 2) &&
         (ASCIITraits::isHexDigit(i[0])) &&
         (ASCIITraits::isHexDigit(i[1])),

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_UI__DIALOG_H
-#define _DK_SDU_MIP__BASE_UI__DIALOG_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/ui/UserInterfaceException.h>

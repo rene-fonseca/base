@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_XML__ENTITY_H
-#define _DK_SDU_MIP__BASE_XML__ENTITY_H
+#pragma once
 
 #include <base/xml/Node.h>
 
@@ -41,7 +40,7 @@ protected:
 public:
   
   inline Entity(Node node) throw(CastException) : Node(node) {
-    assert(
+    bassert(
       node.isInvalid() || (node.getType() == ENTITY_NODE),
       CastException(this)
     );
@@ -67,5 +66,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

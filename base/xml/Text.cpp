@@ -31,7 +31,7 @@ Text Text::splitText(unsigned int index) throw(DOMException) {
   xmlNode* newNode = xmlNewText(
     Cast::pointer<const xmlChar*>(newContent.getElements())
   );
-  assert(newNode, DOMException(this));
+  bassert(newNode, DOMException(this));
   
 	xmlNodeSetContent(node, (const xmlChar*)content.getElements());
   

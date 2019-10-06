@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_NET__SERVER_SOCKET_H
-#define _DK_SDU_MIP__BASE_NET__SERVER_SOCKET_H
+#pragma once
 
 #include <base/net/Socket.h>
 #include <base/net/StreamSocket.h>
@@ -134,5 +133,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

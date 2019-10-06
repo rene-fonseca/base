@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__CAPACITY_ALLOCATOR_H
-#define _DK_SDU_MIP__BASE_MEM__CAPACITY_ALLOCATOR_H
+#pragma once
 
 #include <base/mem/Allocator.h>
 #include <base/OutOfRange.h>
@@ -67,7 +66,7 @@ public:
   */
   inline explicit CapacityAllocator(unsigned int _granularity) throw(OutOfRange)
     : granularity(_granularity) {
-    assert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
+    bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
   }
 
   /**
@@ -81,7 +80,7 @@ public:
   */
   inline CapacityAllocator(unsigned int size, unsigned int _granularity) throw(OutOfRange, MemoryException)
     : granularity(_granularity) {
-    assert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
+    bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
     setSize(size);
   }
 
@@ -196,7 +195,7 @@ public:
   */
   inline void setGranularity(unsigned int granularity) throw(OutOfRange) {
     if (granularity != this->granularity) {
-      assert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
+      bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
       this->granularity = granularity;
     }
   }
@@ -232,5 +231,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

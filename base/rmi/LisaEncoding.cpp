@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__RMI__LISA_ENCODING_H
-#define _DK_SDU_MIP__BASE__RMI__LISA_ENCODING_H
+#pragma once
 
 #include <base/rmi/LisaEncoding.h>
 #include <base/FloatingPoint.h>
@@ -297,5 +296,3 @@ String LisaEncoding::getUrn() const throw() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

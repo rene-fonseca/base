@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_NET__MIME_H
-#define _DK_SDU_MIP__BASE_NET__MIME_H
+#pragma once
 
 #include <base/string/String.h>
 #include <base/string/InvalidFormat.h>
@@ -146,5 +145,3 @@ public:
 FormatOutputStream& operator<<(FormatOutputStream& stream, const MimeType& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

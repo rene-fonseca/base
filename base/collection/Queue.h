@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COLLECTION__QUEUE_H
-#define _DK_SDU_MIP__BASE_COLLECTION__QUEUE_H
+#pragma once
 
 #include <base/collection/Collection.h>
 #include <base/collection/SingleLinkedNode.h>
@@ -196,5 +195,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

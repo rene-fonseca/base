@@ -24,7 +24,7 @@ int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat) {
     ++i; // eat space
   }
   
-  assert(i < end, InvalidFormat(Type::getType<Integer>()));
+  bassert(i < end, InvalidFormat(Type::getType<Integer>()));
   
   long long value;
   if (withoutSign) {
@@ -34,7 +34,7 @@ int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat) {
       if (!ASCIITraits::isDigit(ch)) {
         break;
       }
-      assert(temp < PrimitiveTraits<unsigned int>::MAXIMUM,
+      bassert(temp < PrimitiveTraits<unsigned int>::MAXIMUM,
              InvalidFormat(Type::getType<Integer>()));
       temp = temp * 10 + ASCIITraits::digitToValue(ch);
     }
@@ -56,7 +56,7 @@ int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat) {
           break;
         }
         value = value * 10 - ASCIITraits::digitToValue(ch);
-        assert(value >= Integer::MINIMUM, InvalidFormat(Type::getType<Integer>()));
+        bassert(value >= Integer::MINIMUM, InvalidFormat(Type::getType<Integer>()));
       }
     } else {
       while (i < end) {
@@ -65,7 +65,7 @@ int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat) {
           break;
         }      
         value = value * 10 + ASCIITraits::digitToValue(ch);
-        assert(value <= Integer::MAXIMUM, InvalidFormat(Type::getType<Integer>()));
+        bassert(value <= Integer::MAXIMUM, InvalidFormat(Type::getType<Integer>()));
       }
     }
   }
@@ -74,7 +74,7 @@ int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat) {
     ++i;
   }
   
-  assert(i == end, InvalidFormat(Type::getType<Integer>()));
+  bassert(i == end, InvalidFormat(Type::getType<Integer>()));
   return value;
 }
 

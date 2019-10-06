@@ -37,7 +37,7 @@ CharacterSet CharacterSet::load(
     uint8 minorVersion = *data++;
     uint8 microVersion = *data++;
     uint8 reserved = *data++;
-    assert(
+    bassert(
       (majorVersion == 1) /* && (minorVersion >= 0) && (microVersion >= 0) && (reserved >= 0) */,
       InvalidFormat(Type::getType<CharacterSet>())
     );
@@ -79,7 +79,7 @@ CharacterSet CharacterSet::load(
       const ucs4* src = characterSet.characterSet->getElements();
       for (unsigned int i = 0; i < 256; ++i) {
         // duplicates are allowed
-        assert(
+        bassert(
           WideString::isUCS4(*src++),
           InvalidFormat(Type::getType<CharacterSet>())
         );

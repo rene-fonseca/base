@@ -76,7 +76,7 @@ Widget::Widget(Window& owner) throw(UserInterfaceException) {
 #else // unix
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
-  assert(screenHandle, UserInterfaceException("Unable to open screen", this));
+  bassert(screenHandle, UserInterfaceException("Unable to open screen", this));
   
   int blackPixel = ::XBlackPixelOfScreen((Screen*)screenHandle);
   int whitePixel = ::XWhitePixelOfScreen((Screen*)screenHandle);

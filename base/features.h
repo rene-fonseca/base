@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__FEATURES_H
-#define _DK_SDU_MIP__BASE__FEATURES_H
+#pragma once
 
 #include <base/platforms/symbols.h>
 #include <base/configuration.h>
@@ -106,6 +105,4 @@ namespace dk {
 
 #if (!defined(WRITE_SOURCE_LOCATION))
 #  define WRITE_SOURCE_LOCATION() {fout << GET_SOURCE_LOCATION() << ENDL;}
-#endif
-
 #endif

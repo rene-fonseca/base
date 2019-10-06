@@ -431,7 +431,7 @@ LONG CALL_UI Backend<WindowImpl>::messageHandler(HWND handle, UINT message, WPAR
         mouseEvent.dwFlags = TME_LEAVE;
         mouseEvent.hwndTrack = (HWND)window->drawableHandle;
         mouseEvent.dwHoverTime = 0;
-        assert(
+        bassert(
           ::TrackMouseEvent(&mouseEvent),
           UserInterfaceException(Type::getType<WindowImpl>())
         );
@@ -896,7 +896,7 @@ WindowImpl::WindowImpl() throw(UserInterfaceException)
     graphicsContextHandle(0) {
   // TAG: keyboard state only for windows which accept focus
   fill<uint8>(keyboardState, getArraySize(keyboardState), 0);
-  assert(
+  bassert(
     loadModule(true),
     UserInterfaceException("Unable to load module", this)
   );
@@ -929,7 +929,7 @@ WindowImpl::WindowImpl(
   fill<uint8>(keyboardState, getArraySize(keyboardState), 0);
   lastMousePosition =
     Position(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM);
-  assert(
+  bassert(
     loadModule(true),
     UserInterfaceException("Unable to load module", this)
   );
@@ -1009,7 +1009,7 @@ void WindowImpl::displayMenu(
   point.x = position.getX();
   point.y = position.getY();
   ::ClientToScreen((HWND)drawableHandle, &point);
-  assert(
+  bassert(
     ::TrackPopupMenuEx(
       (HMENU)menu.getHandle(),
       TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON,
@@ -1074,7 +1074,7 @@ void WindowImpl::setPosition(
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (position != this->position) {
     // TAG: take into account difference between upper left corner of window and client area
-    assert(
+    bassert(
       ::MoveWindow(
         (HWND)drawableHandle,
         position.getX(),
@@ -1103,7 +1103,7 @@ void WindowImpl::setDimension(
   const Dimension& dimension) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (dimension != this->dimension) {
-    assert(
+    bassert(
       ::MoveWindow(
         (HWND)drawableHandle,
         position.getX(),
@@ -1138,7 +1138,7 @@ void WindowImpl::setRegion(
   const Position& position,
   const Dimension& dimension) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::MoveWindow(
       (HWND)drawableHandle,
       position.getX(),
@@ -1339,7 +1339,7 @@ void WindowImpl::setCursorPosition(const Position& position) throw(UserInterface
 
 void WindowImpl::releaseCursorConfinement() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(::ClipCursor(0), UserInterfaceException(this));
+  bassert(::ClipCursor(0), UserInterfaceException(this));
 #else // unix
   ::XUngrabPointer((Display*)displayHandle, CurrentTime);
 #endif // flavor
@@ -1358,7 +1358,7 @@ void WindowImpl::setCursorConfinement() throw(UserInterfaceException) {
   offset.y = 0;
   ::ClientToScreen((HWND)drawableHandle, &offset);
   RECT rect;  
-  assert(
+  bassert(
     ::GetClientRect((HWND)drawableHandle, &rect),
     UserInterfaceException(this)
   );
@@ -1366,7 +1366,7 @@ void WindowImpl::setCursorConfinement() throw(UserInterfaceException) {
   rect.top += offset.y;
   rect.right += offset.x;
   rect.bottom += offset.y;
-  assert(::ClipCursor(&rect), UserInterfaceException(this));
+  bassert(::ClipCursor(&rect), UserInterfaceException(this));
 #else // unix
   int result = ::XGrabPointer(
     (Display*)displayHandle,
@@ -1399,7 +1399,7 @@ void WindowImpl::setCursorConfinement(
 
 void WindowImpl::disableClipping() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::SelectClipRgn((HDC)graphicsContextHandle, 0) != ERROR,
     UserInterfaceException(this)
   );
@@ -1426,7 +1426,7 @@ void WindowImpl::setClipping(
   rect.right = rect.left + dimension.getWidth() - 1;
   rect.bottom = rect.top + dimension.getHeight() - 1;
   HRGN region = ::CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
-  assert(::SelectClipRgn((HDC)graphicsContextHandle, region) != ERROR, UserInterfaceException(this));
+  bassert(::SelectClipRgn((HDC)graphicsContextHandle, region) != ERROR, UserInterfaceException(this));
 #else // unix
 #endif // flavor
 }
@@ -1434,7 +1434,7 @@ void WindowImpl::setClipping(
 void WindowImpl::close() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (drawableHandle) {
-    assert(
+    bassert(
       ::DestroyWindow((HWND)drawableHandle),
       UserInterfaceException(this)
     );
@@ -1574,7 +1574,7 @@ void WindowImpl::hide() throw(UserInterfaceException) {
 
 void WindowImpl::enable() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::EnableWindow((HWND)drawableHandle, TRUE),
     UserInterfaceException(this)
   );
@@ -1586,7 +1586,7 @@ void WindowImpl::enable() throw(UserInterfaceException) {
 
 void WindowImpl::disable() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::EnableWindow((HWND)drawableHandle, FALSE),
     UserInterfaceException(this)
   );
@@ -1598,7 +1598,7 @@ void WindowImpl::disable() throw(UserInterfaceException) {
 
 void WindowImpl::raise() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::SetForegroundWindow((HWND)drawableHandle),
     UserInterfaceException(this)
   );
@@ -1610,7 +1610,7 @@ void WindowImpl::raise() throw(UserInterfaceException) {
 
 void WindowImpl::acquireFocus() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(::SetFocus((HWND)drawableHandle), UserInterfaceException(this));
+  bassert(::SetFocus((HWND)drawableHandle), UserInterfaceException(this));
 #else // unix
   // TAG: fixme
   return;
@@ -1812,7 +1812,7 @@ void WindowImpl::onCommand(unsigned int identifier) throw() {
 
 void WindowImpl::invalidate() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::InvalidateRect((HWND)drawableHandle, 0, FALSE) != FALSE,
     UserInterfaceException(this)
   );
@@ -1837,7 +1837,7 @@ void WindowImpl::invalidate() throw(UserInterfaceException) {
 void WindowImpl::update() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: time this implementation and select faster choice (send WM_PAINT directly)
-  assert(
+  bassert(
     ::UpdateWindow((HWND)drawableHandle),
     UserInterfaceException(this)
   );
@@ -2597,7 +2597,7 @@ bool WindowImpl::isResponding(
   if (temp) {
     return result;
   }
-  assert(::GetLastError() == 0, UserInterfaceException(this));
+  bassert(::GetLastError() == 0, UserInterfaceException(this));
   return false;
 #else // unix
   // TAG: use timeout period

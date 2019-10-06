@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_XML__TEXT_H
-#define _DK_SDU_MIP__BASE_XML__TEXT_H
+#pragma once
 
 #include <base/xml/CharacterData.h>
 
@@ -53,7 +52,7 @@ public:
   inline Text(Node node) throw(CastException)
     : CharacterData(node) {
     NodeType type = node.getType();
-    assert(
+    bassert(
       node.isInvalid() || (type == TEXT_NODE) || (type == CDATA_SECTION_NODE),
       CastException(this)
     );
@@ -62,7 +61,7 @@ public:
   inline Text(CharacterData node) throw(CastException)
     : CharacterData(node) {
     NodeType type = node.getType();
-    assert(
+    bassert(
       (type == TEXT_NODE) || (type == CDATA_SECTION_NODE),
       CastException(this)
     );
@@ -83,5 +82,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

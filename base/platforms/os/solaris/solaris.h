@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_OS_SOLARIS__SOLARIS_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_OS_SOLARIS__SOLARIS_H
+#pragma once
 
 #include <base/features.h>
 
@@ -69,5 +68,3 @@
 #define _DK_SDU_MIP__BASE__REDIR_ISOC_TANHL isoc::tanh
 #define _DK_SDU_MIP__BASE__REDIR_ISOC_ATANHL isoc::atanh
 #define _DK_SDU_MIP__BASE__REDIR_ISOC_ATAN2L isoc::atan2
-
-#endif

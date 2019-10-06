@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COMPRESSION__INFLATER_H
-#define _DK_SDU_MIP__BASE_COMPRESSION__INFLATER_H
+#pragma once
 
 #include <base/io/PushInterface.h>
 #include <base/io/PullInterface.h>

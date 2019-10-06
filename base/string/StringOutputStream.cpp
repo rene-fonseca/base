@@ -16,19 +16,19 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 void StringOutputStreamWrapper::close() throw(IOException) {
-  assert(!closed, IOException("Output stream is closed", this));
+  bassert(!closed, IOException("Output stream is closed", this));
   closed = true;
 }
 
 void StringOutputStreamWrapper::flush() throw(IOException) {
-  assert(!closed, IOException("Output stream is closed", this));
+  bassert(!closed, IOException("Output stream is closed", this));
 }
 
 unsigned int StringOutputStreamWrapper::write(
   const uint8* buffer,
   unsigned int size,
   bool nonblocking) throw(IOException) {
-  assert(!closed, IOException("Output stream is closed", this));
+  bassert(!closed, IOException("Output stream is closed", this));
   string.append(NativeString(Cast::pointer<const char*>(buffer)), size);
   return size;
 }

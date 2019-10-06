@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_UI__WIDGET_H
-#define _DK_SDU_MIP__BASE_UI__WIDGET_H
+#pragma once
 
 #include <base/ui/Window.h>
 #include <base/ui/GraphicsContext.h>

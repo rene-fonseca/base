@@ -69,7 +69,7 @@ String Element::getAttribute(const char* name) const throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   char* value = (char*)xmlGetProp(node, (const xmlChar*)name.getElements());
-  assert(value, DOMException(this));
+  bassert(value, DOMException(this));
   String result(value);
   xmlFree(value);
   return result;
@@ -87,7 +87,7 @@ void Element::setAttribute(
     (const xmlChar*)name.getElements(),
     (const xmlChar*)value.getElements()
   );
-  assert(attribute, DOMException(this));
+  bassert(attribute, DOMException(this));
 #else
   throw DOMException(this);
 #endif
@@ -100,7 +100,7 @@ void Element::removeAttribute(const char* name) throw(DOMException) {
     node,
     (const xmlChar*)name.getElements()
   );
-  assert(result == 0, DOMException(this));
+  bassert(result == 0, DOMException(this));
 #else
   throw DOMException(this);
 #endif
@@ -129,7 +129,7 @@ Attribute Element::getAttributeNodeNS(
 //     (const xmlChar*)localName.getElements(),
 //     (const xmlChar*)namespaceURI.getElements(),
 //   );
-//   assert(value, DOMException(this));
+//   bassert(value, DOMException(this));
 //   String result(value);
 //   xmlFree(value);
 //   return result;
@@ -170,7 +170,7 @@ void Element::removeAttributeNS(
     0, // TAG: fixme
     (const xmlChar*)localName.getElements()
   );
-  assert(result, DOMException(this));
+  bassert(result, DOMException(this));
 #else
   throw DOMException(this);
 #endif

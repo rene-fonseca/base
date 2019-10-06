@@ -163,7 +163,7 @@ LinuxRawIEEE1394::LinuxRawIEEE1394() throw(IEEE1394Exception) {
     ).getElements(),
     O_RDWR
   );
-  assert(handle >= 0, IEEE1394Exception("Unable to open device", this));
+  bassert(handle >= 0, IEEE1394Exception("Unable to open device", this));
   
   LinuxRawIEEE1394Impl::Request request;
   clear(request);
@@ -218,7 +218,7 @@ void LinuxRawIEEE1394::resetBus() throw(IEEE1394Exception) {
   clear(request);
   request.type = LinuxRawIEEE1394::REQUEST_RESET_BUS;
   request.generation = generation;
-  assert(::write(handle, &request, sizeof(request)) >= 0, IEEE1394Exception("Unable to reset bus", this));
+  bassert(::write(handle, &request, sizeof(request)) >= 0, IEEE1394Exception("Unable to reset bus", this));
   // dequeue
   // TAG: read new node ids
 }
@@ -280,7 +280,7 @@ void LinuxRawIEEE1394::open() throw(IEEE1394Exception) {
 
 void LinuxRawIEEE1394::open(const EUI64& adapter) throw(IEEE1394Exception) {
   const unsigned char* id = adapter.getBytes();
-  assert(
+  bassert(
     (id[0] == 0xff) && (id[1] == 0xff) && (id[2] == 0xff) && (id[3] == 0x00),
     IEEE1394Exception("Adapter not present", this)
   );
@@ -292,11 +292,11 @@ void LinuxRawIEEE1394::open(const EUI64& adapter) throw(IEEE1394Exception) {
   request.misc = ((((((static_cast<unsigned int>(id[4]) << 8) | id[5]) << 8) | id[6]) << 8) | id[7]) - 1;
   
   // TAG: must be atomic
-  assert(
+  bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
     IEEE1394Exception("Unable to queue request", this)
   );
-  assert(
+  bassert(
     ::read(handle, &request, sizeof(request)) == sizeof(request),
     IEEE1394Exception("Unable to dequeue response", this)
   );
@@ -377,7 +377,7 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
       const unsigned int tcode = (*quadlet >> 4) & 0x0f;
       const unsigned int channel = (*quadlet >> 8) & 0x3f;
       const unsigned int size = *quadlet >> 16;
-      assert(
+      bassert(
         (tcode == IEEE1394Impl::TCODE_ISOCHRONOUS_DATA_BLOCK) &&
         isochronousChannels[channel].listener &&
         (size <= isochronousChannels[channel].buffer.getSize()),
@@ -390,7 +390,7 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
     }
     break;
   case LinuxRawIEEE1394::EVENT_FCP_REQUEST:
-    assert(fcpListener, UnexpectedFailure("Invalid FCP response", this)); // TAG: is this ok
+    bassert(fcpListener, UnexpectedFailure("Invalid FCP response", this)); // TAG: is this ok
     if (fcpListener) {
       unsigned short nodeId = request.misc & 0xffff;
       bool response = (request.misc >> 16) != 0;
@@ -414,7 +414,7 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
     // TAG: possibly ignore response?
     LinuxRawIEEE1394Impl::RequestContext* requestContext =
       Cast::getPointer<LinuxRawIEEE1394Impl::RequestContext*>(request.tag);
-    assert(requestContext, UnexpectedFailure("Invalid response", this));
+    bassert(requestContext, UnexpectedFailure("Invalid response", this));
     switch (requestContext->type) {
     case LinuxRawIEEE1394::REQUEST_ASYNC_READ:
     case LinuxRawIEEE1394::REQUEST_ASYNC_WRITE:
@@ -438,7 +438,7 @@ void LinuxRawIEEE1394::read(
   uint64 address,
   uint8* buffer,
   unsigned int size) throw(IEEE1394Exception) {
-  assert(size % sizeof(IEEE1394Impl::Quadlet) == 0, OutOfDomain(this));
+  bassert(size % sizeof(IEEE1394Impl::Quadlet) == 0, OutOfDomain(this));
   
   // TAG: use maximum async payload?
   LinuxRawIEEE1394Impl::RequestContext requestContext;
@@ -459,7 +459,7 @@ void LinuxRawIEEE1394::read(
     for (unsigned int attempt = 0; ; ++attempt) {
       requestContext.dequeued = false;
       request.generation = generation;
-      assert(
+      bassert(
         ::write(handle, &request, sizeof(request)) == sizeof(request),
         IEEE1394Exception("Unable to request read", this)
       );
@@ -467,7 +467,7 @@ void LinuxRawIEEE1394::read(
         dequeueResponse();
       }
       if (requestContext.status == IEEE1394Impl::STATUS_TIMEOUT) {
-        assert(
+        bassert(
           attempt < IEEE1394Impl::MAXIMUM_ATTEMPTS,
           IEEE1394Exception(this)
         );
@@ -476,7 +476,7 @@ void LinuxRawIEEE1394::read(
         Thread::millisleep(10);
         continue;
       }
-      assert(requestContext.status == IEEE1394Impl::STATUS_OK, IEEE1394Exception(this));
+      bassert(requestContext.status == IEEE1394Impl::STATUS_OK, IEEE1394Exception(this));
       break;
     }
     
@@ -508,7 +508,7 @@ void LinuxRawIEEE1394::write(
     (address & ((static_cast<uint64>(1) << 48) - 1));
   request.size = size;
   request.sendBuffer = Cast::getOffset(buffer);
-  assert(
+  bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
     IEEE1394Exception("Unable to request write", this)
   );
@@ -521,7 +521,7 @@ void LinuxRawIEEE1394::write(
 }
 
 unsigned int LinuxRawIEEE1394::read(unsigned short node, uint64 address, uint32* buffer, unsigned int size, uint32 value) throw(IEEE1394Exception) {
-  // assert((node < IEEE1394::BROADCAST) && (address % sizeof(*buffer) == 0), OutOfDomain(this));
+  // bassert((node < IEEE1394::BROADCAST) && (address % sizeof(*buffer) == 0), OutOfDomain(this));
   LinuxRawIEEE1394Impl::RequestContext requestContext;
   requestContext.type = LinuxRawIEEE1394::REQUEST_ASYNC_READ;
 
@@ -545,7 +545,7 @@ unsigned int LinuxRawIEEE1394::read(unsigned short node, uint64 address, uint32*
     while (++attempt <= IEEE1394Impl::MAXIMUM_ATTEMPTS) {
       requestContext.dequeued = false;
       
-      assert(
+      bassert(
         ::write(handle, &request, sizeof(request)) == sizeof(request),
         IEEE1394Exception("Unable to request read", this)
       );
@@ -575,7 +575,7 @@ unsigned int LinuxRawIEEE1394::read(unsigned short node, uint64 address, uint32*
 }
 
 uint32 LinuxRawIEEE1394::lock(unsigned short node, uint64 address, LockInstruction instruction, uint32 argument, uint32 data) throw(IEEE1394Exception) {
-  assert((getPhysicalId(node) < IEEE1394Impl::BROADCAST) && (address % sizeof(Quadlet) == 0), IEEE1394Exception(this));
+  bassert((getPhysicalId(node) < IEEE1394Impl::BROADCAST) && (address % sizeof(Quadlet) == 0), IEEE1394Exception(this));
 
   LinuxRawIEEE1394Impl::RequestContext requestContext;
   requestContext.type = LinuxRawIEEE1394::REQUEST_LOCK;
@@ -655,7 +655,7 @@ LinuxRawIEEE1394::~LinuxRawIEEE1394() throw(IEEE1394Exception) {
 }
 
 void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception) {
-  assert(listener, NullPointer(this));
+  bassert(listener, NullPointer(this));
   
   LinuxRawIEEE1394Impl::RequestContext requestContext;
   requestContext.type = LinuxRawIEEE1394::REQUEST_FCP_LISTEN;
@@ -671,7 +671,7 @@ void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* list
   request.tag = Cast::getOffset(&requestContext);
   request.size = sizeof(fcpBuffer);
   request.receiveBuffer = Cast::getOffset(fcpBuffer);
-  assert(
+  bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
     IEEE1394Exception("Unable to regiser FCP listener", this)
   );
@@ -694,7 +694,7 @@ void LinuxRawIEEE1394::unregisterFCPListener() throw(IEEE1394Exception) {
   request.generation = generation;
   request.misc = 0; // stop
   request.tag = Cast::getOffset(&requestContext);
-  assert(
+  bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
     IEEE1394Exception("Unable to unregister FCP listener", this)
   );
@@ -706,10 +706,10 @@ void LinuxRawIEEE1394::unregisterFCPListener() throw(IEEE1394Exception) {
 }
 
 void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) {
-  assert(listener, OutOfDomain(this)); // TAG: NullPointer
-  assert((maximumPayload > 0) && ((maximumPayload % sizeof(Quadlet)) == 0), OutOfDomain(this));
-  assert(channel < IEEE1394Impl::ISOCHRONOUS_CHANNELS, OutOfDomain(this));
-  assert(!isochronousChannels[channel].busy, IEEE1394Exception("Isochronous channel conflict", this));
+  bassert(listener, OutOfDomain(this)); // TAG: NullPointer
+  bassert((maximumPayload > 0) && ((maximumPayload % sizeof(Quadlet)) == 0), OutOfDomain(this));
+  bassert(channel < IEEE1394Impl::ISOCHRONOUS_CHANNELS, OutOfDomain(this));
+  bassert(!isochronousChannels[channel].busy, IEEE1394Exception("Isochronous channel conflict", this));
   
   // TAG: need lock for isochronousChannels[channel]
   isochronousChannels[channel].busy = true;
@@ -728,7 +728,7 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
   request.tag = Cast::getOffset(&requestContext);
   request.size = maximumPayload;
   request.receiveBuffer = Cast::getOffset(isochronousChannels[channel].buffer.getElements());
-  assert(
+  bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
     IEEE1394Exception("Unable to enable isochronous channel listener", this)
   );
@@ -736,7 +736,7 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
   while (!requestContext.dequeued) { // TAG: need time out support
     dequeueResponse();
   }
-  assert(
+  bassert(
     requestContext.status == IEEE1394Impl::STATUS_OK,
     IEEE1394Exception("Unable to enable isochronous channel listener", this)
   );
@@ -759,7 +759,7 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
   request.generation = generation;
   request.misc = ~channel; // disable
   request.tag = Cast::getOffset(&requestContext);
-  assert(
+  bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
     IEEE1394Exception("Unable to disable isochronous channel listener", this)
   );
@@ -768,7 +768,7 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
     dequeueResponse();
   }
   status = isochronousChannels[channel].status;
-  assert(
+  bassert(
     requestContext.status == IEEE1394Impl::STATUS_OK,
     IEEE1394Exception("Unable to disable isochronous channel listener", this)
   );
@@ -779,7 +779,7 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
 }
 
 bool LinuxRawIEEE1394::wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) {
-  assert(milliseconds <= 999999999, OutOfDomain(this));
+  bassert(milliseconds <= 999999999, OutOfDomain(this));
   struct pollfd fd;
   fd.fd = handle;
   fd.events = POLLIN;
@@ -796,7 +796,7 @@ void LinuxRawIEEE1394::dequeue() throw(IEEE1394Exception) {
 }
 
 void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed) throw(OutOfDomain, IEEE1394Exception) {
-  assert((channel < IEEE1394Impl::ISOCHRONOUS_CHANNELS) && (speed <= IEEE1394Impl::S400), OutOfDomain(this));
+  bassert((channel < IEEE1394Impl::ISOCHRONOUS_CHANNELS) && (speed <= IEEE1394Impl::S400), OutOfDomain(this));
   
   LinuxRawIEEE1394Impl::RequestContext requestContext;
   requestContext.type = LinuxRawIEEE1394::REQUEST_ISO_SEND;
@@ -811,7 +811,7 @@ void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, 
   request.address = (static_cast<uint64>(channel) << 48) | static_cast<unsigned int>(speed);
   request.size = size;
   request.sendBuffer = Cast::getOffset(buffer);
-  assert(
+  bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
     IEEE1394Exception("Unable to request isochronous write", this)
   );

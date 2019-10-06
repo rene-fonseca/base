@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COLLECTION__HASH_SET_H
-#define _DK_SDU_MIP__BASE_COLLECTION__HASH_SET_H
+#pragma once
 
 #include <base/collection/Collection.h>
 #include <base/collection/InvalidNode.h>
@@ -133,13 +132,13 @@ public:
     /** Lookup table. */
     Allocator<Node*> table;
     /** The current capacity of the set. */
-    unsigned int capacity;
+    unsigned int capacity = 0;
     /** Cache for (capacity - 1). */
-    unsigned int mask;
+    unsigned int mask = 0;
     /** Base 2 logarithm of the capacity. */
-    unsigned int log2OfCapacity;
+    unsigned int log2OfCapacity = 0;
     /** The number of elements in the set. */
-    unsigned int size;
+    unsigned int size = 0;
     
     /**
       Returns the hash value of the value.
@@ -433,7 +432,7 @@ public:
       const unsigned long hash = getHash(value);
       Node** bucket = getBuckets() + (hash & mask);
       Node* child = *bucket;
-      assert(child, InvalidNode(this));      
+      bassert(child, InvalidNode(this));      
       if ((child->getHash() == hash) && (child->getValue() == value)) {
         *bucket = child->getNext(); // unlink first node (next could be 0)
       } else {
@@ -443,7 +442,7 @@ public:
           parent = child;
           child = child->getNext();
         }
-        assert(child, InvalidNode(this));      
+        bassert(child, InvalidNode(this));      
         parent->setNext(child->getNext()); // unlink node from linked list
       }
       --size;
@@ -524,7 +523,7 @@ public:
       EndOfEnumeration if the end has been reached.
     */
     Pointer next() throw(EndOfEnumeration) {
-      assert(numberOfElements, EndOfEnumeration(this));
+      bassert(numberOfElements, EndOfEnumeration(this));
       while (!node) {
         ++bucket;
         node = *bucket;
@@ -671,5 +670,3 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const HashSet<TYPE>& 
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

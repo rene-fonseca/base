@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COLLECTION__FUNCTOR_H
-#define _DK_SDU_MIP__BASE_COLLECTION__FUNCTOR_H
+#pragma once
 
 #include <base/Base.h>
 #include <base/Functor.h>
@@ -57,5 +56,3 @@ inline void transform(COLLECTION& collection, UNOPR function) throw() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

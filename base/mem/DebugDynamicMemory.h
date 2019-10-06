@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__DEBUG_DYNAMIC_MEMORY_H
-#define _DK_SDU_MIP__BASE_MEM__DEBUG_DYNAMIC_MEMORY_H
+#pragma once
 
 #include <base/mem/DynamicMemory.h>
 #include <base/mem/MemoryCorruption.h>
@@ -88,9 +87,9 @@ public:
 //   @return 0 if the requested size is 0.
 // */
 // inline void* operator new(MemorySize size) throw(MemoryException) {
-//   assert(size > 0, MemoryException());
+//   bassert(size > 0, MemoryException());
 //   void* result = DebugDynamicMemory::allocate(size);
-//   assert(result != 0, MemoryException());
+//   bassert(result != 0, MemoryException());
 //   return result;
 // }
 
@@ -99,7 +98,7 @@ public:
 //   MemoryException is memory is 0.
 // */
 // inline void operator delete(void* memory) throw(MemoryException) {
-//   assert(memory && DebugDynamicMemory::release(memory), MemoryException());
+//   bassert(memory && DebugDynamicMemory::release(memory), MemoryException());
 // }
 
 // /**
@@ -108,9 +107,9 @@ public:
 //   @return 0 if the requested size is 0.
 // */
 // inline void* operator new[](MemorySize size) throw(MemoryException) {
-//   assert(size > 0, MemoryException());
+//   bassert(size > 0, MemoryException());
 //   void* result = DebugDynamicMemory::allocate(size);
-//   assert(result, MemoryException());
+//   bassert(result, MemoryException());
 //   return result;
 // }
 
@@ -118,9 +117,7 @@ public:
 //   Releases dynamic memory previously allocated by new[].
 // */
 // inline void operator delete[](void* memory) throw(MemoryException) {
-//   assert(memory && DebugDynamicMemory::release(memory), MemoryException());
+//   bassert(memory && DebugDynamicMemory::release(memory), MemoryException());
 // }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__PROTECTED_REFERENCE_H
-#define _DK_SDU_MIP__BASE_MEM__PROTECTED_REFERENCE_H
+#pragma once
 
 #include <base/Functor.h>
 #include <base/collection/Hash.h>
@@ -42,13 +41,13 @@ class ProtectedReference {
 private:
   
   /** Pointer to shared reference counted object. */
-  TYPE* value;
+  TYPE* value = nullptr;
   
   /**
     Sets the pointer value of this automation pointer. Raises the exceptions
     raised by the destructor of the object.
   */
-  inline void setValue(TYPE* value) /*throw(...)*/ {
+  inline void setValue(TYPE* value) {
     ReferenceCountedObject::ReferenceImpl(*value).addReference();
     if (ReferenceCountedObject::ReferenceImpl(*this->value).removeReference()) {
       delete value;
@@ -65,7 +64,7 @@ public:
     @param value The desired pointer value.
   */
   inline ProtectedReference(TYPE* _value) throw(NullPointer) : value(_value) {
-    assert(value, NullPointer(this));
+    bassert(value, NullPointer(this));
     ReferenceCountedObject::ReferenceImpl(*value).addReference();
   }
   
@@ -93,7 +92,7 @@ public:
   template<class POLY>
   inline ProtectedReference<POLY> cast() throw(CastException) {
     POLY* result = dynamic_cast<POLY*>(value);
-    assert(result, CastException(this));
+    bassert(result, CastException(this));
     return result;
   }
   
@@ -103,7 +102,7 @@ public:
   template<class POLY>
   inline const ProtectedReference<POLY> cast() const throw(CastException) {
     const POLY* result = dynamic_cast<const POLY*>(value);
-    assert(result, CastException(this));
+    bassert(result, CastException(this));
     return result;
   }
   
@@ -113,7 +112,7 @@ public:
     object.
   */
   inline ProtectedReference& operator=(
-    const ProtectedReference& eq) /*throw(...)*/ {
+    const ProtectedReference& eq) {
     setValue(eq.value); // no need to protect against self assignment
     return *this;
   }
@@ -125,7 +124,7 @@ public:
   */
   template<class POLY>
   inline ProtectedReference& operator=(
-    const ProtectedReference<POLY>& eq) /*throw(...)*/ {
+    const ProtectedReference<POLY>& eq) {
     setValue(eq.getValue()); // no need to protect against self assignment
     return *this;
   }
@@ -190,9 +189,9 @@ public:
     Destroys the automation pointer. Raises the exceptions raised by the
     destructor of the object.
   */
-  inline ~ProtectedReference() /*throw(...)*/ {
-    if (ReferenceCountedObject::ReferenceImpl(*pointer).removeReference()) {
-      delete pointer;
+  inline ~ProtectedReference() {
+    if (ReferenceCountedObject::ReferenceImpl(*value).removeReference()) {
+      delete value;
     }
   }
 };
@@ -216,5 +215,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

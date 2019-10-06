@@ -83,7 +83,7 @@ Document DOMImplementation::createDocument(
   xmlDoc* doc = xmlNewDoc(
     Cast::pointer<const xmlChar*>(version.getElements())
   );
-  assert(doc, DOMException(this));
+  bassert(doc, DOMException(this));
   return doc;
 #else
   throw DOMException(this);
@@ -94,14 +94,14 @@ Document DOMImplementation::createDocument(
   DocumentType doctype,
   const String& version) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  assert(
+  bassert(
     Document(doctype.getOwnerDocument()).isInvalid(),
     bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
   );
   xmlDoc* doc = xmlNewDoc(
     Cast::pointer<const xmlChar*>(version.getElements())
   );
-  assert(doc, DOMException(this));
+  bassert(doc, DOMException(this));
   if (doctype.isValid()) {
     String publicId = doctype.getPublicId();
     String systemId = doctype.getSystemId();
@@ -111,7 +111,7 @@ Document DOMImplementation::createDocument(
       publicId.isProper() ? (const xmlChar*)(publicId.getElements()) : 0,
       systemId.isProper() ? (const xmlChar*)(systemId.getElements()) : 0
     );
-    assert(dtd, DOMException(this));
+    bassert(dtd, DOMException(this));
   }
   
   return doc;
@@ -126,14 +126,14 @@ Document DOMImplementation::createDocument(
   DocumentType doctype,
   const String& version) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  assert(
+  bassert(
     Document(doctype.getOwnerDocument()).isInvalid(),
     bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
   );
   xmlDoc* doc = xmlNewDoc(
     Cast::pointer<const xmlChar*>(version.getElements())
   );
-  assert(doc, DOMException(this));
+  bassert(doc, DOMException(this));
   if (doctype.isValid()) {
     String publicId = doctype.getPublicId();
     String systemId = doctype.getSystemId();
@@ -143,7 +143,7 @@ Document DOMImplementation::createDocument(
       publicId.isProper() ? (const xmlChar*)(publicId.getElements()) : 0,
       systemId.isProper() ? (const xmlChar*)(systemId.getElements()) : 0
     );
-    assert(dtd, DOMException(this));
+    bassert(dtd, DOMException(this));
   }
   
   Document document(doc);
@@ -188,7 +188,7 @@ Document DOMImplementation::createFromURI(
   xmlSetGenericErrorFunc(&errorMessage, DOMImplementationImpl::error);
   xmlDoc* doc = xmlParseFile(systemId.getElements());
   ferr << errorMessage << ENDL; // TAG: fixme
-  assert(doc, DOMException(this)); // TAG: use errorMessage
+  bassert(doc, DOMException(this)); // TAG: use errorMessage
   return doc;
 #else
   throw DOMException(this);
@@ -225,7 +225,7 @@ Document DOMImplementation::createDocumentFromString(
 		result = xmlRecoverMemory(value.getElements(), value.getLength());
 		break;
 	}
-  assert(result, DOMException(this));
+  bassert(result, DOMException(this));
   return result;
 #else
   throw DOMException(this);
@@ -243,7 +243,7 @@ DocumentType DOMImplementation::createDocumentType(
     publicId.isProper() ? Cast::pointer<const xmlChar*>(publicId.getElements()) : 0,
     systemId.isProper() ? Cast::pointer<const xmlChar*>(systemId.getElements()) : 0
   );
-  assert(node, DOMException(this));
+  bassert(node, DOMException(this));
   return node;
 #else
   throw DOMException(this);
@@ -256,7 +256,7 @@ void DOMImplementation::saveDocument(
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int bytesWritten =
     xmlSaveFormatFile(filename.getElements(), doc, indent ? 1 : 0);
-  assert(bytesWritten >= 0, DOMException(this));
+  bassert(bytesWritten >= 0, DOMException(this));
 #else
   throw DOMException(this);
 #endif
@@ -275,7 +275,7 @@ void DOMImplementation::saveDocument(
     encoding.getElements(),
     indent ? 1 : 0
   );
-  assert(bytesWritten >= 0, DOMException(this));
+  bassert(bytesWritten >= 0, DOMException(this));
 #else
   throw DOMException(this);
 #endif
@@ -289,7 +289,7 @@ String DOMImplementation::saveDocumentToMemory(
 	int size = 0;
   xmlChar* buffer;
 	xmlDocDumpFormatMemory(doc, &buffer, &size, spaces ? 1 : 0);
-  assert(buffer && (size > 0), DOMException(this));
+  bassert(buffer && (size > 0), DOMException(this));
   String result((const char*)buffer);
   xmlFree(buffer);
   return result;
@@ -312,7 +312,7 @@ String DOMImplementation::saveDocumentToMemory(
     encoding.getElements(),
     spaces ? 1 : 0
   );
-  assert(buffer && (size > 0), DOMException(this));
+  bassert(buffer && (size > 0), DOMException(this));
   String result((const char*)buffer);
   xmlFree(buffer);
   return result;

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_OS_WIN32__GDI_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_OS_Win32__GDI_H
+#pragma once
 
 #include <base/platforms/features.h>
 

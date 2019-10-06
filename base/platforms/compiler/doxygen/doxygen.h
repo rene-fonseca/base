@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_DOXYGEN__DOXYGEN_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_DOXYGEN__DOXYGEN_H
+#pragma once
 
 #define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE nl::stack::doxygen
 
@@ -61,5 +60,3 @@ namespace nl {
 }
 
 using namespace nl::stack::doxygen;
-
-#endif

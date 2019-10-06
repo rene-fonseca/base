@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_XML__DECLARATION_H
-#define _DK_SDU_MIP__BASE_XML__DECLARATION_H
+#pragma once
 
 #include <base/xml/DocumentType.h>
 
@@ -40,7 +39,7 @@ public:
   
   inline Declaration(Node node) throw(CastException) : Node(node) {
     NodeType type = node.getType();
-    assert(
+    bassert(
       node.isInvalid() ||
       (type == ATTRIBUTE_DECL_NODE) ||
       (type == ELEMENT_DECL_NODE) ||
@@ -57,5 +56,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

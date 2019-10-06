@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__PROTECTED_POINTER_H
-#define _DK_SDU_MIP__BASE_MEM__PROTECTED_POINTER_H
+#pragma once
 
 #include <base/collection/Hash.h>
 #include <base/mem/NullPointer.h>
@@ -44,7 +43,7 @@ public:
     @param value The object pointer to be automated.
   */
   inline ProtectedPointer(TYPE* _value) throw(NullPointer) : value(_value) {
-    assert(value, NullPointer(this));
+    bassert(value, NullPointer(this));
   }
   
   /**
@@ -130,5 +129,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

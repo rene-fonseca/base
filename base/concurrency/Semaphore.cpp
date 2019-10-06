@@ -96,7 +96,7 @@ unsigned int Semaphore::getMaximum() throw() {
 }
 
 Semaphore::Semaphore(unsigned int value) throw(OutOfDomain, SemaphoreException) {
-  assert(value <= SemaphoreImpl::MAXIMUM, OutOfDomain(this));
+  bassert(value <= SemaphoreImpl::MAXIMUM, OutOfDomain(this));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!(semaphore = (SemaphoreImpl::Semaphore)::CreateSemaphore(0, value, SemaphoreImpl::MAXIMUM, 0))) {
     throw SemaphoreException(this);

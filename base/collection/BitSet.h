@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COLLECTION__BIT_SET_H
-#define _DK_SDU_MIP__BASE_COLLECTION__BIT_SET_H
+#pragma once
 
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
 #include <base/mem/Reference.h>
@@ -264,7 +263,7 @@ public:
       Returns the next element and advances the position of this enumeration.
     */
     inline Pointer next() throw(EndOfEnumeration) {
-      assert(count != 0, EndOfEnumeration());
+      bassert(count != 0, EndOfEnumeration());
       if (count % (sizeof(unsigned long) * 8) == 0) {
         --word;
       }
@@ -349,7 +348,7 @@ public:
       Returns the next element and advances the position of this enumeration.
     */
     inline Pointer next() throw(EndOfEnumeration) {
-      assert(count != 0, EndOfEnumeration());
+      bassert(count != 0, EndOfEnumeration());
       if (count % (sizeof(unsigned long) * 8) == 0) {
         --word;
       }
@@ -678,5 +677,3 @@ FormatOutputStream& operator<<(
   FormatOutputStream& stream, const BitSet& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -26,7 +26,7 @@ long long LongInteger::parse(
     ++i; // eat space
   }
   
-  assert(
+  bassert(
     i < end,
     InvalidFormat("Not an integer", Type::getType<LongInteger>())
   ); // do not accept empty strings
@@ -39,7 +39,7 @@ long long LongInteger::parse(
       if (!ASCIITraits::isDigit(ch)) {
         break;
       }
-      assert(
+      bassert(
         (temp < PrimitiveTraits<unsigned long long>::MAXIMUM/10) ||
         ((temp == PrimitiveTraits<unsigned long long>::MAXIMUM/10) &&
          (ASCIITraits::digitToValue(ch) <= PrimitiveTraits<unsigned long long>::MAXIMUM%10)),
@@ -63,7 +63,7 @@ long long LongInteger::parse(
         if (!ASCIITraits::isDigit(ch)) {
           break;
         }
-        assert(
+        bassert(
           (value > LongInteger::MINIMUM/10) ||
           ((value == LongInteger::MINIMUM/10) && (-ASCIITraits::digitToValue(ch) >= LongInteger::MINIMUM%10)),
           InvalidFormat(Type::getType<LongInteger>()));
@@ -75,7 +75,7 @@ long long LongInteger::parse(
         if (!ASCIITraits::isDigit(ch)) {
           break;
         }
-        assert(
+        bassert(
           (value < LongInteger::MAXIMUM/10) ||
           ((value == LongInteger::MAXIMUM/10) && (ASCIITraits::digitToValue(ch) <= LongInteger::MAXIMUM%10)),
           InvalidFormat(Type::getType<LongInteger>()));
@@ -88,7 +88,7 @@ long long LongInteger::parse(
     ++i;
   }
 
-  assert(i == end, InvalidFormat(Type::getType<LongInteger>()));
+  bassert(i == end, InvalidFormat(Type::getType<LongInteger>()));
   return value;
 }
 

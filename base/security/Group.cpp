@@ -39,7 +39,7 @@ Group::Group(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   throw OutOfDomain("Invalid user id", this);
 #else // unix
-//   assert(
+//   bassert(
 //     static_cast<gid_t>(integralId) <= PrimitiveTraits<gid_t>::MAXIMUM,
 //     OutOfDomain("Invalid group id", this)
 //   );
@@ -52,7 +52,7 @@ Group::Group(const void* _id) throw(OutOfDomain) {
     integralId = getMaximum(integralId);
     return;
   }
-  assert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid group id", this));
+  bassert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid group id", this));
   unsigned int size = ::GetLengthSid((PSID)_id);
   id = new ReferenceCountedAllocator<uint8>(size);
   copy(id->getElements(), Cast::pointer<const uint8*>(_id), size);
@@ -100,13 +100,13 @@ Group::Group(const String& name) throw(GroupException) {
       buffer->getSize()/sizeof(char),
       &entry
     );
-    assert(result == 0, GroupException(this));
+    bassert(result == 0, GroupException(this));
     integralId = Cast::container<unsigned long>(entry->gr_gid);
   #else
     #warning Group::Group(const String& name) uses non-reentrant getgrnam
     // long sysconf(_SC_GETGR_R_SIZE_MAX);
     struct group* entry = ::getgrnam(name.getElements());
-    assert(entry != 0, GroupException(this));
+    bassert(entry != 0, GroupException(this));
     integralId = Cast::container<unsigned long>(entry->gr_gid);
   #endif
 #endif // flavor
@@ -126,7 +126,7 @@ Group::Group(const User& user) throw(GroupException) {
     buffer->getSize()/sizeof(char),
     &entry
   );
-  assert(result == 0, GroupException(this));
+  bassert(result == 0, GroupException(this));
   integralId = Cast::container<unsigned long>(entry->pw_gid);
 #endif // flavor
 }
@@ -141,7 +141,7 @@ String Group::getName() const throw(GroupException) {
   DWORD nameSize = sizeof(name);
   char domainName[DNLEN+1]; // TAG: what is the maximum size
   DWORD domainNameSize = sizeof(domainName);
-  assert(
+  bassert(
     ::LookupAccountSid(
       0,
       (PSID)id->getElements(),
@@ -171,12 +171,12 @@ String Group::getName() const throw(GroupException) {
       buffer->getSize()/sizeof(char),
       &entry
     );
-    assert(result == 0, GroupException(this));
+    bassert(result == 0, GroupException(this));
     return String(entry->gr_name);
   #else
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     struct group* entry = ::getgrgid(Cast::extract<gid_t>(integralId));
-    assert(entry != 0, GroupException(this));
+    bassert(entry != 0, GroupException(this));
     return String(entry->gr_name);
   #endif
 #endif // flavor
@@ -191,7 +191,7 @@ Array<String> Group::getMembers() const throw(GroupException) {
   DWORD nameSize = sizeof(name);
   WCHAR domainName[DNLEN+1];
   DWORD domainNameSize = sizeof(domainName);
-  assert(
+  bassert(
     ::LookupAccountSidW(
       0,
       (PSID)id->getElements(),
@@ -217,7 +217,7 @@ Array<String> Group::getMembers() const throw(GroupException) {
     &totalEntries,
     0
   );
-  assert(
+  bassert(
     (status == NERR_Success) || (status == ERROR_MORE_DATA),
     GroupException("Unable to get members", this)
   );
@@ -244,7 +244,7 @@ Array<String> Group::getMembers() const throw(GroupException) {
       buffer->getSize()/sizeof(char),
       &entry
     );
-    assert(result == 0, GroupException(this));
+    bassert(result == 0, GroupException(this));
     Array<String> members;
     char** memberName = entry->gr_mem;
     while (memberName) {
@@ -254,7 +254,7 @@ Array<String> Group::getMembers() const throw(GroupException) {
   #else
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     struct group* entry = ::getgrgid(Cast::extract<gid_t>(integralId));
-    assert(entry != 0, GroupException(this));
+    bassert(entry != 0, GroupException(this));
     Array<String> members;
     char** memberName = entry->gr_mem;
     while (memberName) {

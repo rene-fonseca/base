@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_ARCH__ARCHITECTURE_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_ARCH__ARCHITECTURE_H
+#pragma once
 
 #if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
 #  if (_DK_SDU_MIP__BASE__ARCH_MINOR >= _DK_SDU_MIP__BASE__PENTIUM_4)
@@ -31,5 +30,3 @@
 #elif (_DK_SDU_MIP__BASE__POINTER_SIZE == 8)
 #  define _DK_SDU_MIP__BASE__ARCH_ABI _DK_SDU_MIP__BASE__ABI_64
 #endif // abi
-
-#endif

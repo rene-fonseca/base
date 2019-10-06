@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_MIPSPRO__MIPSPRO_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_MIPSPRO__MIPSPRO_H
+#pragma once
 
 namespace base {
 
@@ -33,5 +32,3 @@ namespace base {
   using namespace com::sgi2::mipspro;
   
 } // end of namespace base
-
-#endif

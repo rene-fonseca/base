@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_RMI__BARNIE_ENCODER_H
-#define _DK_SDU_MIP__BASE_RMI__BARNIE_ENCODER_H
+#pragma once
 
 #include <base/rmi/OrbEncoder.h>
 
@@ -23,5 +22,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

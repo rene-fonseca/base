@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__CHECKED_POINTER_H
-#define _DK_SDU_MIP__BASE_MEM__CHECKED_POINTER_H
+#pragma once
 
 #include <base/collection/Hash.h>
 #include <base/mem/NullPointer.h>
@@ -130,7 +129,7 @@ public:
   template<class POLY>
   inline CheckedPointer<POLY> cast() throw(CastException) {
     POLY* temp = dynamic_cast<POLY*>(value);
-    assert(temp, CastException(this));
+    bassert(temp, CastException(this));
     return temp;
   }
   
@@ -138,7 +137,7 @@ public:
     Returns mutable object.
   */
   inline TYPE& operator*() throw(NullPointer) {
-    assert(value, NullPointer(this));
+    bassert(value, NullPointer(this));
     return *value;
   }
   
@@ -146,7 +145,7 @@ public:
     Returns constant object.
   */
   inline const TYPE& operator*() const throw(NullPointer) {
-    assert(value, NullPointer(this));
+    bassert(value, NullPointer(this));
     return *value;
   }
   
@@ -154,7 +153,7 @@ public:
     Returns object for modifying access.
   */
   inline TYPE* operator->() throw(NullPointer) {
-    assert(value, NullPointer(this));
+    bassert(value, NullPointer(this));
     return value;
   }
   
@@ -162,7 +161,7 @@ public:
     Returns object for non-modifying access.
   */
   inline const TYPE* operator->() const throw(NullPointer) {
-    assert(value, NullPointer(this));
+    bassert(value, NullPointer(this));
     return value;
   }
   
@@ -192,5 +191,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

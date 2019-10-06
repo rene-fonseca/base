@@ -102,8 +102,8 @@ ZLibInflater::ZLibInflater() throw(MemoryException)
 
 unsigned int ZLibInflater::push(const uint8* buffer, unsigned int size) throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__ZLIB))
-  assert(state != ENDED, EndOfFile());
-  assert(state == RUNNING, IOException(this));
+  bassert(state != ENDED, EndOfFile());
+  bassert(state == RUNNING, IOException(this));
   if (availableBytes == this->buffer.getSize()) {
     return 0; // no storage available
   }
@@ -132,7 +132,7 @@ unsigned int ZLibInflater::push(const uint8* buffer, unsigned int size) throw(IO
 void ZLibInflater::pushEnd() throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__ZLIB))
   if (state != ENDED) {
-    assert(state == RUNNING, IOException(this));
+    bassert(state == RUNNING, IOException(this));
     state = FINISHING;
   }
 #else
@@ -142,7 +142,7 @@ void ZLibInflater::pushEnd() throw(IOException) {
 
 unsigned int ZLibInflater::pull(uint8* buffer, unsigned int size) throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__ZLIB))
-  assert(state != ENDED, EndOfFile());
+  bassert(state != ENDED, EndOfFile());
   
   if ((state == RUNNING) &&
       (availableBytes != this->buffer.getSize())) {

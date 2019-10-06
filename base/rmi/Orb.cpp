@@ -81,12 +81,12 @@ void Orb::registerEncoding(
   throw(InvalidFormat, OrbException, AmbiguousRegistration, MemoryException) {
   
   String urn = encoding->getUrn();
-  assert(Urn::isUrn(urn), InvalidFormat(this));
-//   assert(
+  bassert(Urn::isUrn(urn), InvalidFormat(this));
+//   bassert(
 //     urn.startsWith(OrbEncoding::getUrnNamespace()),
 //     bindCause(OrbException(this), OrbException::INVALID_ENCODING_NAMESPACE)
 //   );
-  assert(!encodings.isKey(urn), AmbiguousRegistration(this));
+  bassert(!encodings.isKey(urn), AmbiguousRegistration(this));
   encodings.add(urn, encoding);
 }
 
@@ -95,8 +95,8 @@ void Orb::registerScheme(
   throw(InvalidFormat, OrbException, AmbiguousRegistration, MemoryException) {
   
   String urn = scheme->getUrn();
-  assert(Urn::isUrn(urn), InvalidFormat(this));
-  assert(!schemes.isKey(urn), AmbiguousRegistration(this));
+  bassert(Urn::isUrn(urn), InvalidFormat(this));
+  bassert(!schemes.isKey(urn), AmbiguousRegistration(this));
   schemeIds.add(scheme->getScheme(), scheme);
   schemes.add(urn, scheme);
 }
@@ -105,7 +105,7 @@ void Orb::registerFactory(Reference<OrbConnectionFactory> factory)
   throw(OrbException, MemoryException) {
   
   String urn = factory->getUrn();
-  assert(
+  bassert(
     schemes.isKey(urn),
     bindCause(OrbException(this), OrbException::SCHEME_NOT_REGISTERED)
   );
@@ -116,12 +116,12 @@ void Orb::openFactory(const String& identifier)
   throw(InvalidFormat, OrbException, MemoryException) {
   
   const int colon = identifier.indexOf("://");
-  assert(
+  bassert(
     colon > 0,
     bindCause(OrbException(this), OrbException::SCHEME_MISSING)
   );
   const String schemeId = identifier.substring(0, colon);
-  assert(
+  bassert(
     schemeIds.isKey(schemeId),
     bindCause(OrbException(this), OrbException::SCHEME_NOT_REGISTERED)
   );
@@ -157,20 +157,20 @@ Orb::OrbConnectionReference Orb::getConnectionReference(
   // }
   
   const int colon = identifier.indexOf("://");
-  assert(
+  bassert(
     colon >= 0,
     bindCause(OrbException(this), OrbException::SCHEME_MISSING)
   );
   
   const String schemeId = identifier.substring(0, colon);
-  assert(
+  bassert(
     schemeIds.isKey(schemeId),
     bindCause(OrbException(this), OrbException::SCHEME_NOT_REGISTERED)
   );
   Reference<OrbScheme> scheme = schemeIds[schemeId];
   
   int slash = identifier.indexOf('/', colon + Literal("://").getLength());
-  assert(slash >= 0, InvalidFormat("Missing ", this));
+  bassert(slash >= 0, InvalidFormat("Missing ", this));
   String endPoint = identifier.substring(
     colon + Literal("://").getLength(),
     slash
@@ -254,7 +254,7 @@ void Orb::onIncomingConnection(
   fout << "DEBUG: " << "Incoming connection "
        << connection->getEndPoint() << ENDL;
   String urn = connection->getUrn();
-  assert(
+  bassert(
     schemes.isKey(urn),
     bindCause(OrbException(this), OrbException::SCHEME_NOT_REGISTERED)
   );

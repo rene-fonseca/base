@@ -78,7 +78,7 @@ Document Transformer::transform(
     Cast::pointer<xmlDoc*>(document.getContext()),
     temp.getElements()
   );
-  assert(doc, TransformerException(this));
+  bassert(doc, TransformerException(this));
   return doc;
 #else
   throw TransformerException(this);
@@ -94,7 +94,7 @@ void Transformer::save(const String& filename, const Document& document) throw(D
     Cast::pointer<xsltStylesheet*>(stylesheet.stylesheet->getContext()),
     0
   );
-  assert(bytesWritten >= 0, IOException(this));
+  bassert(bytesWritten >= 0, IOException(this));
 #endif
 }
 

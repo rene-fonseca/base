@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__ARGUMENT_PARSER_H
-#define _DK_SDU_MIP__BASE__ARGUMENT_PARSER_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/Polymorphic.h>
@@ -60,9 +59,9 @@ public:
     /** The long name of the option. */
     String name;
     /** The short name of the option. */
-    char shortName;
+    char shortName = 0;
     /** Flags. */
-    unsigned int flags;
+    unsigned int flags = 0;
   public:
     
     Option(const String& name, unsigned int flags = 0) throw(OutOfDomain);
@@ -530,5 +529,3 @@ public:
 // }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

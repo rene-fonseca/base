@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__ARGUMENT_EXCEPTION_H
-#define _DK_SDU_MIP__BASE__ARGUMENT_EXCEPTION_H
+#pragma once
 
 #include <base/Exception.h>
 
@@ -31,7 +30,7 @@ class ArgumentException : public Exception {
 private:
   
   /** Argument number. */
-  int argumentNumber;
+  int argumentNumber = -1;
 public:
 
   /** Causes. */
@@ -58,7 +57,7 @@ public:
     @param message The message.
   */
   inline ArgumentException(const char* message) throw()
-    : Exception(message), argumentNumber(-1) {
+    : Exception(message) {
   }
 
   /**
@@ -67,7 +66,7 @@ public:
     @param type The identity of the type.
   */
   inline ArgumentException(Type type) throw()
-    : Exception(type), argumentNumber(-1) {
+    : Exception(type) {
   }
   
   /**
@@ -77,7 +76,7 @@ public:
     @param type The identity of the type.
   */
   inline ArgumentException(const char* message, Type type) throw()
-    : Exception(message, type), argumentNumber(-1) {
+    : Exception(message, type) {
   }
 
   /**
@@ -89,5 +88,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

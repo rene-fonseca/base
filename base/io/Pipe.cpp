@@ -84,8 +84,8 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
     0
   );
   // FIXME: remember to close before raising an exception
-  assert(ihandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes", Type::getType<Pipe>()));
-  assert(ohandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes", Type::getType<Pipe>()));
+  bassert(ihandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes", Type::getType<Pipe>()));
+  bassert(ohandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes", Type::getType<Pipe>()));
   Pipe p;
   Pipe q;
   p.fd = new PipeHandle(ihandle);
@@ -166,7 +166,7 @@ unsigned int Pipe::available() const throw(PipeException) {
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
-    assert(result == 0, IOException("Unable to get available bytes", this));
+    bassert(result == 0, IOException("Unable to get available bytes", this));
     return status.st_size;
 #endif
 }
@@ -205,7 +205,7 @@ unsigned int Pipe::read(
   bool nonblocking) throw(PipeException) {
   // TAG: currently always blocks
   // select wait mode with SetNamedPipeHandleState for win32
-  assert(!end, EndOfFile(this));
+  bassert(!end, EndOfFile(this));
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)

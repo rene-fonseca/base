@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__LISTENER_H
-#define _DK_SDU_MIP__BASE__LISTENER_H
+#pragma once
 
 #include <base/collection/Functor.h>
 
@@ -96,5 +95,3 @@ inline Signal<SENDER, LISTENER> signal(
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

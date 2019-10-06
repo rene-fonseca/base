@@ -68,7 +68,7 @@ public:
       (xmlParserCtxt*)p->context,
       (const char*)systemId
     );
-    assert(result, SAXException(Type::getType<XMLDefaultReader>()));
+    bassert(result, SAXException(Type::getType<XMLDefaultReader>()));
     return result;
   }
   
@@ -543,7 +543,7 @@ bool XMLDefaultReader::getFeature(const String& name) const
   } else if (name == "http://xml.org/sax/features/namespaces-prefixes") {
     return false; // TAG: fixme
   } else if (name == "http://xml.org/sax/features/is-standalone") {
-    assert(parsing, SAXNotSupportedException(this));
+    bassert(parsing, SAXNotSupportedException(this));
     return standalone;
   } else {
     throw SAXNotRecognizedException(this);
@@ -578,7 +578,7 @@ void XMLDefaultReader::setFeature(const String& name, bool value)
 void XMLDefaultReader::parse(
   File file, const String& uri) throw(IOException, SAXException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  assert(!parsing, SAXException(this));
+  bassert(!parsing, SAXException(this));
   parsing = true;
   
   unsigned int flags =
@@ -604,7 +604,7 @@ void XMLDefaultReader::parse(
     (flags & DOMImplementation::PEDANTIC) ? 1 : 0;
   
   long long size = file.getSize();
-  assert(
+  bassert(
     size >= 4,
     bindCause(
       SAXParseException("Document not well-formed", this),
@@ -620,7 +620,7 @@ void XMLDefaultReader::parse(
     reader.getSize(),
     uri.isProper() ? uri.getElements() : 0
   );
-  assert(context, SAXException("Unable to initialize parsing context", this));
+  bassert(context, SAXException("Unable to initialize parsing context", this));
   reader.skip(reader.getSize());
   int result = 0;
   long long position = 0;
@@ -640,9 +640,9 @@ void XMLDefaultReader::parse(
   bool wellFormed = context->wellFormed;
   xmlFreeParserCtxt(context);
   if (wellFormed) {
-    assert(result == 0, SAXException("Unable to parse buffer", this));
+    bassert(result == 0, SAXException("Unable to parse buffer", this));
   } else {
-    assert(
+    bassert(
       result == 0,
       bindCause(
         SAXParseException("Document not well-formed", this),
@@ -660,10 +660,10 @@ void XMLDefaultReader::parse(
   unsigned int size,
   const String& uri) throw(SAXException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  assert(!parsing, SAXException(this));
+  bassert(!parsing, SAXException(this));
   parsing = true;
   
-  assert(size >= 4, SAXParseException(this));
+  bassert(size >= 4, SAXParseException(this));
   xmlParserCtxt* context = xmlCreatePushParserCtxt(
     &XMLDefaultReaderImpl::SAX_HANDLER,
     this,
@@ -671,14 +671,14 @@ void XMLDefaultReader::parse(
     size, // minimum 4 bytes
     uri.isProper() ? uri.getElements() : 0
   );
-  assert(context, SAXException("Unable to initialize parsing context", this));
+  bassert(context, SAXException("Unable to initialize parsing context", this));
   int result = xmlParseChunk(context, 0, 0, 1); // terminate
   bool wellFormed = context->wellFormed;
   xmlFreeParserCtxt(context);
   if (wellFormed) {
-    assert(result == 0, SAXParseException("Unable to parse buffer", this));
+    bassert(result == 0, SAXParseException("Unable to parse buffer", this));
   } else {
-    assert(
+    bassert(
       result == 0,
       bindCause(
         SAXParseException("Document not well-formed", this),
@@ -724,7 +724,7 @@ public:
 
 void XMLDefaultReader::parse(const String& systemId) throw(SAXException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
-  assert(!parsing, SAXException(this));
+  bassert(!parsing, SAXException(this));
   parsing = true;
   FinalValue<bool> finalValue(parsing, false);
   
@@ -751,7 +751,7 @@ void XMLDefaultReader::parse(const String& systemId) throw(SAXException) {
     (flags & DOMImplementation::PEDANTIC) ? 1 : 0;
   
   xmlParserCtxt* context = xmlCreateFileParserCtxt(systemId.getElements());
-  assert(context, SAXException("Unable to initialize parsing context", this));
+  bassert(context, SAXException("Unable to initialize parsing context", this));
   context->sax = &XMLDefaultReaderImpl::SAX_HANDLER;
 
   XMLDefaultReaderImpl::UserData userData = {this, context};
@@ -766,9 +766,9 @@ void XMLDefaultReader::parse(const String& systemId) throw(SAXException) {
   
   xmlFreeParserCtxt(context);
   if (wellFormed) {
-    assert(result == 0, SAXParseException("Unable to parse buffer", this));
+    bassert(result == 0, SAXParseException("Unable to parse buffer", this));
   } else {
-    assert(
+    bassert(
       result == 0,
       bindCause(
         SAXParseException("Document not well-formed", this),
@@ -784,7 +784,7 @@ void XMLDefaultReader::parse(const String& systemId) throw(SAXException) {
 void XMLDefaultReader::terminate() throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
 // int result = xmlParseChunk(static_cast<xmlParserCtxtPtr>(context), 0, 0, 1);
-// assert(result == 0, SAXException("Unable to terminate parsing"));
+// bassert(result == 0, SAXException("Unable to terminate parsing"));
 #else // no xml support
   throw SAXNotSupportedException(this);
 #endif

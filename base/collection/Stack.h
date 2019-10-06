@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COLLECTION__STACK_H
-#define _DK_SDU_MIP__BASE_COLLECTION__STACK_H
+#pragma once
 
 #include <base/collection/Collection.h>
 #include <base/collection/Enumeration.h>
@@ -127,7 +126,7 @@ protected:
       Returns the next element and advances the position of this enumeration.
     */
     inline Pointer next() throw(EndOfEnumeration) {
-      assert(current != 0, EndOfEnumeration());
+      bassert(current != 0, EndOfEnumeration());
       Pointer temp = current->getValue();
       current = current->getNext();
       return temp;
@@ -445,5 +444,3 @@ FormatOutputStream& operator<<(
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

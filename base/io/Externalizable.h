@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_IO__EXTERNALIZABLE_H
-#define _DK_SDU_MIP__BASE_IO__EXTERNALIZABLE_H
+#pragma once
 
 #include <base/io/InputStream.h>
 #include <base/io/OutputStream.h>
@@ -65,5 +64,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

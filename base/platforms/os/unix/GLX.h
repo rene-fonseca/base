@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_OS_UNIX__GLX_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_OS_UNIX__GLX_H
+#pragma once
 
 #include <base/platforms/features.h>
 
@@ -231,5 +230,3 @@ namespace native {
 }; // end of native namespace
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

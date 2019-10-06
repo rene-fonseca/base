@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__VALIDIFIED_RESULT_H
-#define _DK_SDU_MIP__BASE__VALIDIFIED_RESULT_H
+#pragma once
 
 #include <base/AutomationObject.h>
 #include <base/InvalidException.h>
@@ -72,7 +71,7 @@ public:
     Returns the value. Raises InvalidException if result is invalid.
   */
   inline const TYPE& getValue() const throw(InvalidException) {
-    assert(valid, InvalidException(this));
+    bassert(valid, InvalidException(this));
     return value;
   }
   
@@ -92,5 +91,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

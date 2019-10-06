@@ -32,7 +32,7 @@ FolderMonitor::FolderMonitor(const String& path) throw(ResourceException) {
     FILE_NOTIFY_CHANGE_SIZE |
     FILE_NOTIFY_CHANGE_LAST_WRITE
   );
-  assert(handle != OperatingSystem::INVALID_HANDLE, ResourceException(this));
+  bassert(handle != OperatingSystem::INVALID_HANDLE, ResourceException(this));
 #else // unix
 #endif // flavor
 }

@@ -84,7 +84,7 @@ String AttributeDecl::getDefaultValue() const throw() {
 Array<String> AttributeDecl::getEnumerationValues() const throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
-  assert(
+  bassert(
     attribute->atype == XML_ATTRIBUTE_ENUMERATION,
     bindCause(DOMException(this), DOMException::NOT_SUPPORTED)
   );

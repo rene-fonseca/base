@@ -75,7 +75,7 @@ namespace win32 {
   }
 
   AsyncReadStreamContext::~AsyncReadStreamContext() throw(AsynchronousException) {
-    assert(
+    bassert(
       (flags & AsynchronousReadCompletion::COMPLETED) != 0,
       AsynchronousException(this)
     );

@@ -184,10 +184,10 @@ namespace win32 {
 
 Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) {
   static unsigned int singleton = 0;
-  assert(singleton == 0, SingletonException("Daemon has been instantiated"));
+  bassert(singleton == 0, SingletonException("Daemon has been instantiated"));
   ++singleton;
-  assert(runnable, OutOfDomain());
-  assert(Application::getApplication(), Exception("Application has not been institiated"));
+  bassert(runnable, OutOfDomain());
+  bassert(Application::getApplication(), Exception("Application has not been institiated"));
   DaemonImpl::runnable = runnable;
   DaemonImpl::parentThread = Thread::getThread();
 
@@ -210,9 +210,9 @@ Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) 
 /*
 void Daemon::start(const Array<String>& arguments) throw(DaemonException) {
   SC_HANDLE manager = ::OpenSCManager(0, 0, 0);
-  assert(manager, DaemonException(this));
+  bassert(manager, DaemonException(this));
   SC_HANDLE service = ::OpenService(manager, application->getFormalName(), SERVICE_START);
-  assert(service, DaemonException(this));
+  bassert(service, DaemonException(this));
   const char* argumentBuffer[arguments.getSize()];
   for (unsigned int i = arguments.getSize(); i > 0;) {
     --i;
@@ -225,7 +225,7 @@ void Daemon::start(const Array<String>& arguments) throw(DaemonException) {
 
 void Daemon::stop() throw(DaemonException) {
   SC_HANDLE manager = ::OpenSCManager(0, 0, 0);
-  assert(manager, DaemonException(this));
+  bassert(manager, DaemonException(this));
   SC_HANDLE service = ::OpenService(manager, 0, SERVICE_STOP);
   if (service) {
     SERVICE_STATUS status;
@@ -237,9 +237,9 @@ void Daemon::stop() throw(DaemonException) {
 
 void Daemon::uninstall() throw(DaemonException) {
   SC_HANDLE manager = ::OpenSCManager(0, 0, 0);
-  assert(manager, DaemonException(this));
+  bassert(manager, DaemonException(this));
   SC_HANDLE service = ::OpenService(manager, 0, SERVICE_DELETE);
-  assert(service, DaemonException(this));
+  bassert(service, DaemonException(this));
   ::DeleteService(service);
   ::CloseServiceHandle(service);
   ::CloseServiceHandle(manager);
@@ -290,10 +290,10 @@ void Daemon::install() {
 
 Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) {
   static unsigned int singleton = 0;
-  assert(singleton == 0, SingletonException("Daemon has been instantiated"));
+  bassert(singleton == 0, SingletonException("Daemon has been instantiated"));
   ++singleton;
-  assert(runnable, OutOfDomain());
-  assert(Application::getApplication(), Exception("Application has not been institiated"));
+  bassert(runnable, OutOfDomain());
+  bassert(Application::getApplication(), Exception("Application has not been institiated"));
 
   switch(fork()) {
   case 0:

@@ -40,7 +40,7 @@ public:
   
   inline ReadWriteLockImpl() throw(ResourceException) : readers(0), writers(0) {
     blockReaders = ::CreateEvent(0, TRUE, TRUE, 0); // allow shared locks initially
-    assert(blockReaders != 0, ResourceException(this));
+    bassert(blockReaders != 0, ResourceException(this));
     ::InitializeCriticalSection(&common);
   }
 

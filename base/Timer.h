@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__TIMER_H
-#define _DK_SDU_MIP__BASE__TIMER_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
@@ -281,5 +280,3 @@ public:
 #define stopScopeTimer() _dk_sdu_mip__base__timer.stop()
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

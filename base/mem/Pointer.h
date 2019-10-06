@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__POINTER_H
-#define _DK_SDU_MIP__BASE_MEM__POINTER_H
+#pragma once
 
 #include <base/collection/Hash.h>
 #include <base/mem/NullPointer.h>
@@ -127,7 +126,7 @@ public:
   template<class POLY>
   inline Pointer<POLY> cast() const throw(CastException) {
     const POLY* result = dynamic_cast<const POLY*>(value);
-    assert(result, CastException(this));
+    bassert(result, CastException(this));
     return result;
   }
   
@@ -185,5 +184,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

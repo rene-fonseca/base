@@ -128,7 +128,7 @@ float FloatingPoint::getFloatAsHex(const String& value) throw(InvalidFormat) {
       }
     }
     
-    assert(
+    bassert(
       (i != end) && ASCIITraits::isDigit(*i),
       InvalidFormat("Not a number", Type::getType<FloatingPoint>())
     );
@@ -141,7 +141,7 @@ float FloatingPoint::getFloatAsHex(const String& value) throw(InvalidFormat) {
           break;
         }
         exponent = exponent * 10 - ASCIITraits::digitToValue(ch);
-        assert(
+        bassert(
           exponent <= MAXIMUM_BINARY_EXPONENT,
           InvalidFormat("Invalid exponent", Type::getType<FloatingPoint>())
         );
@@ -153,7 +153,7 @@ float FloatingPoint::getFloatAsHex(const String& value) throw(InvalidFormat) {
           break;
         }
         exponent = exponent * 10 + ASCIITraits::digitToValue(ch);
-        assert(
+        bassert(
           exponent <= MAXIMUM_BINARY_EXPONENT,
           InvalidFormat("Invalid exponent", Type::getType<FloatingPoint>())
         );
@@ -193,7 +193,7 @@ FloatingPoint::IEEE754SinglePrecision::IEEE754SinglePrecision(
     value.HAS_IMPLIED_ONE ? (value.SIGNIFICANT - 1) : value.SIGNIFICANT;
   value.negative = negative;
   
-  assert(
+  bassert(
     (exponent >= -static_cast<int>(MAXIMUM_BINARY_EXPONENT)) && (exponent <= MAXIMUM_BINARY_EXPONENT),
     InvalidFormat("Invalid exponent", Type::getType<FloatingPoint>())
   );
@@ -226,7 +226,7 @@ FloatingPoint::IEEE754SinglePrecision::IEEE754SinglePrecision(
     const int shift = value.MINIMUM_EXPONENT - exponent;
     // TAG: check flags if denormalization is allowed
     // TAG: check flags if we should use zero if shift exceeds EXPLICIT_SIGNIFICANT
-    assert(
+    bassert(
       shift <= EXPLICIT_SIGNIFICANT, // cannot shift out implied one
       InvalidFormat("Underflow", Type::getType<FloatingPoint>())
     );

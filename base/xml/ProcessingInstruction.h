@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_XML__PROCESSING_INSTRUCTION_H
-#define _DK_SDU_MIP__BASE_XML__PROCESSING_INSTRUCTION_H
+#pragma once
 
 #include <base/xml/Node.h>
 #include <base/CastException.h>
@@ -41,7 +40,7 @@ protected:
 public:
 
   inline ProcessingInstruction(Node node) throw(CastException) : Node(node) {
-    assert(
+    bassert(
       node.isInvalid() || (node.getType() == PROCESSING_INSTRUCTION_NODE),
       CastException(this)
     );
@@ -68,5 +67,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

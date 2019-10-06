@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_XML__DOCUMENT_FRAGMENT_H
-#define _DK_SDU_MIP__BASE_XML__DOCUMENT_FRAGMENT_H
+#pragma once
 
 #include <base/xml/Node.h>
 
@@ -46,7 +45,7 @@ protected:
 public:
 
   inline DocumentFragment(Node node) throw(CastException) : Node(node) {
-    assert(
+    bassert(
       node.isInvalid() || (node.getType() == DOCUMENT_FRAGMENT_NODE),
       CastException(this)
     );
@@ -54,5 +53,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

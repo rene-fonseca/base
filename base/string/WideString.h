@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_STRING__WIDE_STRING_H
-#define _DK_SDU_MIP__BASE_STRING__WIDE_STRING_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/OutOfRange.h>
@@ -357,7 +356,7 @@ protected:
   */
   inline void setLength(
     unsigned int length) throw(WideStringException, MemoryException) {
-    assert(length <= MAXIMUM_LENGTH, WideStringException(this));
+    bassert(length <= MAXIMUM_LENGTH, WideStringException(this));
     elements.copyOnWrite(); // we are about to modify the buffer
     elements->setSize(length + 1);
   }
@@ -731,9 +730,9 @@ public:
   static inline unsigned int getLengthOfMustBeTerminated(
     const wchar* string,
     unsigned int maximum = MAXIMUM_LENGTH) throw(StringException) {
-    assert(string, StringException(Type::getType<String>()));
+    bassert(string, StringException(Type::getType<String>()));
     const wchar* terminator = find<wchar>(string, maximum, 0);
-    assert(terminator, StringException(Type::getType<String>()));
+    bassert(terminator, StringException(Type::getType<String>()));
     return static_cast<unsigned int>(terminator - string);
   }
 
@@ -1496,5 +1495,3 @@ std::wstring toWide(const WideString& s);
 String toUTF8(const WideString& s);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

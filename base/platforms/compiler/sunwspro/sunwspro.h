@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_SUNWSPRO__SUNWSPRO_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_SUNWSPRO__SUNWSPRO_H
+#pragma once
 
 namespace base {
 
@@ -33,5 +32,3 @@ namespace base {
   using namespace com::sun2::sunwspro;
   
 } // end of namespace base
-
-#endif

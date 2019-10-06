@@ -59,7 +59,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
                                FILE_FLAG_OPEN_REPARSE_POINT, // file attributes
                                0 // handle to template file
     );
-    assert(link != INVALID_HANDLE_VALUE, FileSystemException("Not a file", this));
+    bassert(link != INVALID_HANDLE_VALUE, FileSystemException("Not a file", this));
     
     // TAG: fix buffer size (protect against buffer overflow)
     char* buffer[17000]; // need alternative - first attempt to get length first failed
@@ -70,7 +70,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
                                reparseHeader, sizeof(buffer), // output
                                &bytesWritten, 0) == 0;
     ::CloseHandle(link);
-    assert(!error, FileSystemException(this));
+    bassert(!error, FileSystemException(this));
     
     wchar* substPath;
     unsigned int substLength;
@@ -135,7 +135,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   ) != ERROR_SUCCESS;
   
   ::CloseHandle(file);
-  assert(!error, FileSystemException("Not a file", this));
+  bassert(!error, FileSystemException("Not a file", this));
   
   owner = User((const void*)ownerSID);
   const DWORD ownerSize = ::GetLengthSid((PSID)ownerSID);

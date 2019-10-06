@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__RECURSIVE_MUTUAL_EXCLUSION_H
-#define _DK_SDU_MIP__BASE_CONCURRENCY__RECURSIVE_MUTUAL_EXCLUSION_H
+#pragma once
 
 #include <base/concurrency/MutualExclusion.h>
 #include <base/concurrency/Thread.h>
@@ -105,5 +104,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

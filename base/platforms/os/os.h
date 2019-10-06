@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_OS__OS_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_OS__OS_H
+#pragma once
 
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
   #include <base/platforms/os/cygwin/cygwin.h>
@@ -20,6 +19,4 @@
   #include <base/platforms/os/winnt4/winnt4.h>
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
   #include <base/platforms/os/solaris/solaris.h>
-#endif
-
 #endif

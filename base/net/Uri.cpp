@@ -148,7 +148,7 @@ public:
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
       String::Character ch = *i++;
-      assert(String::Traits::isASCII(ch), UriException("Invalid character"));
+      bassert(String::Traits::isASCII(ch), UriException("Invalid character"));
       if (encoding(ch) != NEVER) {
         temp += '%';
         temp += ASCIITraits::valueToDigit(ch >> 4);
@@ -166,14 +166,14 @@ public:
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
       String::Character ch = *i++;
       if (ch == '%') {
-        assert(end - i >= 2, UriException("Invalid encoding")); // need two digits
+        bassert(end - i >= 2, UriException("Invalid encoding")); // need two digits
         String::Character highDigit = *i++;
         String::Character lowDigit = *i++;
-        assert(String::Traits::isDigit(highDigit) && String::Traits::isDigit(lowDigit), UriException("Invalid encoding")); // need two digits
+        bassert(String::Traits::isDigit(highDigit) && String::Traits::isDigit(lowDigit), UriException("Invalid encoding")); // need two digits
         ch = static_cast<unsigned int>(highDigit - '0') << 4 + static_cast<unsigned int>(lowDigit - '0'); // replace with decoded char
       } else {
         Encode encode = encoding(ch);
-        assert(strict ? (encode == NEVER) : (encode <= RELAXED), UriException("Part contains unencoded character"));
+        bassert(strict ? (encode == NEVER) : (encode <= RELAXED), UriException("Part contains unencoded character"));
       }
       temp += ch;
     }
@@ -247,7 +247,7 @@ String Uri::validateUser(const String& str) throw(UriException) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
     String::Character ch = *i++;
-    assert(String::Traits::isASCII(ch), UriException("Invalid character"));
+    bassert(String::Traits::isASCII(ch), UriException("Invalid character"));
   }
   return str;
 }
@@ -256,7 +256,7 @@ String Uri::validatePassword(const String& str) throw(UriException) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
     String::Character ch = *i++;
-    assert(String::Traits::isASCII(ch), UriException("Invalid character"));
+    bassert(String::Traits::isASCII(ch), UriException("Invalid character"));
   }
   return str;
 }
@@ -470,7 +470,7 @@ void Uri::setPassword(const String& value) throw(UriException, MemoryException) 
 }
 
 void Uri::setHost(const String& value) throw(UriException) {
-  assert(
+  bassert(
     isHost(value.getBeginReadIterator(), value.getEndReadIterator()),
     UriException("Invalid host part")
   );
@@ -478,7 +478,7 @@ void Uri::setHost(const String& value) throw(UriException) {
 }
 
 void Uri::setPort(const String& value) throw(UriException) {
-  assert(
+  bassert(
     isPort(value.getBeginReadIterator(), value.getEndReadIterator()),
     UriException("Invalid port part")
   );

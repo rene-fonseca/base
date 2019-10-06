@@ -225,7 +225,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) throw() {
 }
 
 int Date::getDaysOfMonth(int month, int year) throw(OutOfDomain) {
-  assert(
+  bassert(
     (month >= 0) && (month < MONTHS_PER_YEAR),
     OutOfDomain(Type::getType<Date>())
   );
@@ -324,19 +324,19 @@ Date Date::getTime(
   SYSTEMTIME time = {0, 0, 0, 0, hour, minute, second, 0};
 #if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__WXP)
   if (local) {
-    assert(
+    bassert(
       ::TzSpecificLocalTimeToSystemTime(0, &time, &time) != 0,
       DateException(Type::getType<Date>())
     );
   }
 #endif
-  assert(
+  bassert(
     ::SystemTimeToFileTime(&time, &nativeTime),
     DateException(Type::getType<Date>())
   );
 #if (_DK_SDU_MIP__BASE__OS < _DK_SDU_MIP__BASE__WXP)
   if (local) {
-    assert(
+    bassert(
       ::LocalFileTimeToFileTime(&nativeTime, &nativeTime) != 0,
       DateException(Type::getType<Date>())
     );
@@ -364,13 +364,13 @@ Date Date::getDate(
   SYSTEMTIME time = {year, month, 0, day, 0, 0, 0, 0};
 #if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__WXP)
   if (local) {
-    assert(
+    bassert(
       ::TzSpecificLocalTimeToSystemTime(0, &time, &time) != 0,
       DateException(Type::getType<Date>())
     );
   }
 #endif
-  assert(
+  bassert(
     ::SystemTimeToFileTime(&time, &nativeTime),
     DateException(Type::getType<Date>())
   );
@@ -407,19 +407,19 @@ Date Date::getDate(
   SYSTEMTIME time = {year, month, 0, day, hour, minute, second, 0};
 #if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__WXP)
   if (local) {
-    assert(
+    bassert(
       ::TzSpecificLocalTimeToSystemTime(0, &time, &time) != 0,
       DateException(Type::getType<Date>())
     );
   }
 #endif
-  assert(
+  bassert(
     ::SystemTimeToFileTime(&time, &nativeTime),
     DateException(Type::getType<Date>())
   );
 #if (_DK_SDU_MIP__BASE__OS < _DK_SDU_MIP__BASE__WXP)
   if (local) {
-    assert(
+    bassert(
       ::LocalFileTimeToFileTime(&nativeTime, &nativeTime) != 0,
       DateException(Type::getType<Date>())
     );
@@ -486,7 +486,7 @@ int Date::getSecond() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
     (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
     DateException(this)
@@ -504,7 +504,7 @@ int Date::getMinute() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
     (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
     DateException(this)
@@ -522,7 +522,7 @@ int Date::getHour() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
     (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
     DateException(this)
@@ -540,7 +540,7 @@ int Date::getDay() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
     (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
     DateException(this)
@@ -558,7 +558,7 @@ int Date::getDayOfWeek() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
     (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
     DateException(this)
@@ -576,7 +576,7 @@ int Date::getDayOfYear() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
     (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
     DateException(this)
@@ -594,7 +594,7 @@ int Date::getMonth() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
     (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
     DateException(this)
@@ -612,7 +612,7 @@ int Date::getYear() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
     (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
     DateException(this)
@@ -630,7 +630,7 @@ int Date::getUTCSecond() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     ::FileTimeToSystemTime(&nativeTime, &time),
     DateException(this)
   );
@@ -647,7 +647,7 @@ int Date::getUTCMinute() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     ::FileTimeToSystemTime(&nativeTime, &time),
     DateException(this)
   );
@@ -664,7 +664,7 @@ int Date::getUTCHour() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     ::FileTimeToSystemTime(&nativeTime, &time),
     DateException(this)
   );
@@ -681,7 +681,7 @@ int Date::getUTCDay() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     ::FileTimeToSystemTime(&nativeTime, &time),
     DateException(this)
   );
@@ -698,7 +698,7 @@ int Date::getUTCDayOfWeek() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     ::FileTimeToSystemTime(&nativeTime, &time),
     DateException(this)
   );
@@ -715,7 +715,7 @@ int Date::getUTCDayOfYear() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
     (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
     DateException(this)
@@ -733,7 +733,7 @@ int Date::getUTCMonth() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     ::FileTimeToSystemTime(&nativeTime, &time),
     DateException(this)
   );
@@ -750,7 +750,7 @@ int Date::getUTCYear() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  assert(
+  bassert(
     ::FileTimeToSystemTime(&nativeTime, &time),
     DateException(this)
   );
@@ -871,7 +871,7 @@ void Date::split(DateTime& result, bool local) const throw() {
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   // TAG: convert to local time when required
-  assert(
+  bassert(
     ::FileTimeToSystemTime(&nativeTime, &time),
     DateException(this)
   );
@@ -923,7 +923,7 @@ String Date::format(
   while (i != end) {
     if (*i == '%') {
       ++i; // skip %
-      assert(i != end, InvalidFormat(this));
+      bassert(i != end, InvalidFormat(this));
       char code = *i;
       unsigned int flags = DEFAULT;
       bool readFlags = true;
@@ -937,7 +937,7 @@ String Date::format(
         }
         if (readFlags) {
           ++i; // skip flag
-          assert(i != end, InvalidFormat(this));
+          bassert(i != end, InvalidFormat(this));
           code = *i; // get code
         }
       }

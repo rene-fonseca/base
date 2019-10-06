@@ -31,7 +31,7 @@ void* DynamicLinker::getGlobalSymbolImpl(
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // GetModuleHandle does not increment reference count
   void* result = (void*)(::GetProcAddress(::GetModuleHandle(0), symbol.getElements()));
-  assert(result != 0, LinkerException("Unable to resolve symbol"));
+  bassert(result != 0, LinkerException("Unable to resolve symbol"));
   return result;
 #else // unix
   #if defined(RTLD_LAZY)
@@ -43,7 +43,7 @@ void* DynamicLinker::getGlobalSymbolImpl(
     throw LinkerException("Unable to open module");
   }
   void* result = ::dlsym(handle, symbol.getElements());
-  assert(dlerror() == 0, LinkerException("Unable to resolve symbol"));
+  bassert(dlerror() == 0, LinkerException("Unable to resolve symbol"));
   ::dlclose(handle); // is this required
   return result;
 #endif // flavor
@@ -98,11 +98,11 @@ void* DynamicLinker::getSymbol(
   const Literal& symbol) const throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getValue()));
-  assert(result != 0, LinkerException("Unable to resolve symbol", this));
+  bassert(result != 0, LinkerException("Unable to resolve symbol", this));
   return result;
 #else // unix
   void* result = ::dlsym(handle, symbol.getValue());
-  assert(dlerror() == 0, LinkerException("Unable to resolve symbol", this));
+  bassert(dlerror() == 0, LinkerException("Unable to resolve symbol", this));
   return result;
 #endif // flavor
 }
@@ -111,11 +111,11 @@ void* DynamicLinker::getSymbol(
   const String& symbol) const throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));
-  assert(result != 0, LinkerException("Unable to resolve symbol", this));
+  bassert(result != 0, LinkerException("Unable to resolve symbol", this));
   return result;
 #else // unix
   void* result = ::dlsym(handle, symbol.getElements());
-  assert(dlerror() == 0, LinkerException("Unable to resolve symbol", this));
+  bassert(dlerror() == 0, LinkerException("Unable to resolve symbol", this));
   return result;
 #endif // flavor
 }
@@ -157,12 +157,12 @@ bool DynamicLinker::import(
 
 DynamicLinker::~DynamicLinker() throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(
+  bassert(
     ::FreeLibrary((HMODULE)handle),
     LinkerException("Unable to close module", this)
   );
 #else // unix
-  assert(
+  bassert(
     ::dlclose(handle) == 0,
     LinkerException("Unable to close module", this)
   );

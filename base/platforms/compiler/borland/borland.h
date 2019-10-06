@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_BORLAND__BORLAND_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_BORLAND__BORLAND_H
+#pragma once
 
 namespace base {
 
@@ -32,5 +31,3 @@ namespace base {
   using namespace com::borland::compiler;
   
 } // end of namespace base
-
-#endif

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COLLECTION__HASH_TABLE_H
-#define _DK_SDU_MIP__BASE_COLLECTION__HASH_TABLE_H
+#pragma once
 
 #include <base/collection/Collection.h>
 #include <base/collection/Association.h>
@@ -184,13 +183,13 @@ public:
     /** Lookup table. */
     Allocator<Node*> table;
     /** The current capacity of the table. */
-    unsigned int capacity; // use size in table attribute
+    unsigned int capacity = 0; // use size in table attribute
     /** Cache for (capacity - 1). */
-    unsigned int mask;
+    unsigned int mask = 0;
     /** Base 2 logarithm of the capacity. */
-    unsigned int log2OfCapacity;
+    unsigned int log2OfCapacity = 0;
     /** The number of elements in the table. */
-    unsigned int size;
+    unsigned int size = 0;
     
     /**
       Returns the hash value of the key.
@@ -482,7 +481,7 @@ public:
           // child is the first node
         }
       }
-      assert(child, InvalidKey(this));
+      bassert(child, InvalidKey(this));
       return *child->getValue();
     }
     
@@ -497,7 +496,7 @@ public:
              ((child->getHash() != hash) || (child->getKey() != key))) {
         child = child->getNext();
       }
-      assert(child, InvalidKey(this));
+      bassert(child, InvalidKey(this));
       return child->getValue();
     }
     
@@ -559,7 +558,7 @@ public:
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
       Node* child = *bucket;
-      assert(child, InvalidKey(this));
+      bassert(child, InvalidKey(this));
       if ((child->getHash() == hash) && (child->getKey() == key)) {
         *bucket = child->getNext(); // unlink first node (next could be 0)
       } else {
@@ -569,7 +568,7 @@ public:
           parent = child;
           child = child->getNext();
         }
-        assert(child, InvalidKey(this));      
+        bassert(child, InvalidKey(this));      
         parent->setNext(child->getNext()); // unlink node from linked list
       }
       --size;
@@ -649,7 +648,7 @@ public:
       EndOfEnumeration if the end has been reached.
     */
     Pointer next() throw(EndOfEnumeration) {
-      assert(numberOfElements, EndOfEnumeration(this));
+      bassert(numberOfElements, EndOfEnumeration(this));
       while (!node) {
         ++bucket;
         node = *bucket;
@@ -715,7 +714,7 @@ public:
       EndOfEnumeration if the end has been reached.
     */
     Pointer next() throw(EndOfEnumeration) {
-      assert(numberOfElements, EndOfEnumeration(this));
+      bassert(numberOfElements, EndOfEnumeration(this));
       while (!node) {
         ++bucket;
         node = *bucket;
@@ -904,5 +903,3 @@ FormatOutputStream& operator<<(
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

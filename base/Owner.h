@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__OWNER_H
-#define _DK_SDU_MIP__BASE__OWNER_H
+#pragma once
 
 #include <base/AutomationObject.h>
 #include <base/mem/NullPointer.h>
@@ -31,11 +30,11 @@ template<class TYPE>
 class Owner : public AutomationObject {
 private:
 
-  mutable TYPE* object;
+  mutable TYPE* object = nullptr;
 
   inline TYPE* detach() const throw() {
     TYPE* object = this->object;
-    this->object = 0;
+    this->object = nullptr;
     return object;
   }
 public:
@@ -66,7 +65,7 @@ public:
   */
   inline TYPE* detach() throw() {
     TYPE* object = this->object;
-    this->object = 0;
+    this->object = nullptr;
     return object;
   }
 
@@ -74,47 +73,45 @@ public:
     Returns true if the object is valid.
   */
   inline bool isValid() const throw() {
-    return object != 0;
+    return object != nullptr;
   }
 
   inline TYPE& operator*() throw(NullPointer) {
-    assert(object, NullPointer(this));
+    bassert(object, NullPointer(this));
     return *object;
   }
 
   inline const TYPE& operator*() const throw(NullPointer) {
-    assert(object, NullPointer(this));
+    bassert(object, NullPointer(this));
     return *object;
   }
 
   inline TYPE* operator->() throw(NullPointer) {
-    assert(object, NullPointer(this));
+    bassert(object, NullPointer(this));
     return object;
   }
 
   inline const TYPE* operator->() const throw(NullPointer) {
-    assert(object, NullPointer(this));
+    bassert(object, NullPointer(this));
     return object;
   }
 
   /**
     Destroys the object.
   */
-  inline void destroy() /*throw(...)*/ {
+  inline void destroy() {
     if (object) {
       delete object;
-      object = 0;
+      object = nullptr;
     }
   }
 
   /**
     Destroys the object.
   */
-  inline ~Owner() /*throw(...)*/ {
+  inline ~Owner() {
     destroy();
   }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

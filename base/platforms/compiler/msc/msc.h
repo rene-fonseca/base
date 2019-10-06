@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_MSC__MSC_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_MSC__MSC_H
+#pragma once
 
 #define _DK_SDU_MIP__BASE__COMPILER_VERSION _MSC_VER
 #define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE com::microsoft::compiler
@@ -31,5 +30,3 @@ namespace com {
 }
 
 using namespace com::microsoft::compiler;
-
-#endif

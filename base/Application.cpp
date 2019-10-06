@@ -598,7 +598,7 @@ public:
 
 void Application::initialize() throw() {
   static unsigned int singleton = 0;
-  assert(
+  bassert(
     singleton == 0,
     SingletonException("Application has been initialized", this)
   );
@@ -652,7 +652,7 @@ void Application::initialize() throw() {
   action.sa_flags = SA_SIGINFO;
   action.sa_sigaction = ApplicationImpl::actionHandler;
   for (unsigned int i = 0; i < getArraySize(SIGNALS); ++i) {
-    assert(
+    bassert(
       sigaction(SIGNALS[i], &action, 0) == 0,
       UnexpectedFailure("Unable to register signal handler", this)
     );
@@ -711,7 +711,7 @@ Application::Application(
     hangingup(false) {
   initialize();
   
-  assert((numberOfArguments > 0) && (arguments), OutOfDomain(this));
+  bassert((numberOfArguments > 0) && (arguments), OutOfDomain(this));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   wchar buffer[MAX_PATH + 1]; // what if path starts with "\\?\"
   DWORD length = ::GetModuleFileName(0, buffer, MAX_PATH /*lengthOf(buffer)*/);

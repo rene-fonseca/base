@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_IO__MAPPED_FILE_H
-#define _DK_SDU_MIP__BASE_IO__MAPPED_FILE_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/io/File.h>
@@ -37,8 +36,8 @@ private:
     
     File file; // ensure that the file is not closed before map has been closed - may not be required
     FileRegion region;
-    bool writeable;
-    void* bytes;
+    bool writeable = false;
+    void* bytes = nullptr;
   public:
 
     MappedFileImpl(
@@ -140,5 +139,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

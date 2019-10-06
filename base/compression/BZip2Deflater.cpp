@@ -88,7 +88,7 @@ BZip2Deflater::BZip2Deflater() throw(MemoryException)
   context->release = internal::BZip2Deflater::release;
   unsigned int compressionLevel = minimum(maximum(DEFAULT_COMPRESSION_LEVEL, 1U), 9U);
   int code = internal::BZ2_bzCompressInit(context, compressionLevel, 0, 30);
-  assert(
+  bassert(
     code == internal::BZip2Deflater::OK,
     MemoryException(this)
   );
@@ -107,7 +107,7 @@ BZip2Deflater::BZip2Deflater(unsigned int compressionLevel) throw(MemoryExceptio
   context->release = internal::BZip2Deflater::release;
   compressionLevel = minimum(maximum(compressionLevel, 1U), 9U);
   int code = internal::BZ2_bzCompressInit(context, compressionLevel, 0, 30);
-  assert(
+  bassert(
     code == internal::BZip2Deflater::OK,
     MemoryException(this)
   );
@@ -118,8 +118,8 @@ BZip2Deflater::BZip2Deflater(unsigned int compressionLevel) throw(MemoryExceptio
 
 void BZip2Deflater::flush() throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__BZ2))
-  assert(state != ENDED, EndOfFile());
-  assert(state == RUNNING, IOException(this));
+  bassert(state != ENDED, EndOfFile());
+  bassert(state == RUNNING, IOException(this));
   state = FLUSHING;
 #else
   throw IOException(this);
@@ -128,8 +128,8 @@ void BZip2Deflater::flush() throw(IOException) {
 
 unsigned int BZip2Deflater::push(const uint8* buffer, unsigned int size) throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__BZ2))
-  assert(state != ENDED, EndOfFile());
-  assert(state == RUNNING, IOException(this));
+  bassert(state != ENDED, EndOfFile());
+  bassert(state == RUNNING, IOException(this));
   if (availableBytes == this->buffer.getSize()) {
     return 0; // no storage available
   }
@@ -142,7 +142,7 @@ unsigned int BZip2Deflater::push(const uint8* buffer, unsigned int size) throw(I
   context->nextOutput = this->buffer.getElements() + availableBytes;
   context->bytesToRead = this->buffer.getSize() - availableBytes;
   int code = internal::BZ2_bzCompress(context, internal::BZip2Deflater::RUN);
-  assert(code == internal::BZip2Deflater::RUN_OK, IOException(this));
+  bassert(code == internal::BZip2Deflater::RUN_OK, IOException(this));
   availableBytes = this->buffer.getSize() - context->bytesToRead;
   return context->totalInputLow;
 #else
@@ -152,8 +152,8 @@ unsigned int BZip2Deflater::push(const uint8* buffer, unsigned int size) throw(I
 
 void BZip2Deflater::pushEnd() throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__BZ2))
-  assert(state != ENDED, EndOfFile());
-  assert(state == RUNNING, IOException(this));
+  bassert(state != ENDED, EndOfFile());
+  bassert(state == RUNNING, IOException(this));
   state = FINISHING;
 #else
   throw IOException(this);
@@ -162,7 +162,7 @@ void BZip2Deflater::pushEnd() throw(IOException) {
 
 unsigned int BZip2Deflater::pull(uint8* buffer, unsigned int size) throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__BZ2))
-  assert(state != ENDED, EndOfFile());
+  bassert(state != ENDED, EndOfFile());
   
   if ((state == RUNNING) &&
       (availableBytes != this->buffer.getSize())) {

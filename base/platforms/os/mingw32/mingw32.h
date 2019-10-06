@@ -11,11 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_OS_MINGW32__MINGW32_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_OS_MINGW32__MINGW32_H
+#pragma once
 
 #include <base/features.h>
 
 #define _DK_SDU_MIP__BASE__REDIR_ISOC_FLOORL isoc::floor
-
-#endif

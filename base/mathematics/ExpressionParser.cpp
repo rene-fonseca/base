@@ -334,7 +334,7 @@ void ExpressionParser::push(Operation operation) throw(ExpressionException) {
 
 void ExpressionParser::readIdentifier() throw(ExpressionException) {
   unsigned int begin = index;
-  assert(
+  bassert(
     (index < length) && ASCIITraits::isAlpha(expression[index]),
     ExpressionException(begin, "Not an identifier")
   );

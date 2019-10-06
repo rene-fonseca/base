@@ -69,7 +69,7 @@ String InetService::getByPort(
 InetService::InetService(
   const String& name, const String& protocol) throw(ServiceNotFound) {
   port = getByName(name, protocol);
-  assert(
+  bassert(
     port != 0,
     ServiceNotFound("Unable to resolve service by name", this)
   );
@@ -80,7 +80,7 @@ InetService::InetService(
 InetService::InetService(
   unsigned short port, const String& protocol) throw(ServiceNotFound) {
   name = getByPort(port, protocol);
-  assert(
+  bassert(
     name.isProper(),
     ServiceNotFound("Unable to resolve service by port", this)
   );

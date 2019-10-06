@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_IO__PIPE_H
-#define _DK_SDU_MIP__BASE_IO__PIPE_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/io/TimedOut.h>
@@ -58,7 +57,7 @@ protected:
   /** The internal pipe representation. */
   Reference<Handle> fd;
   /** Specifies that the end has been reached. */
-  bool end;
+  bool end = false;
 public:
 
   /**
@@ -154,5 +153,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

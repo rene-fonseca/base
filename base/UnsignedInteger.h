@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__UNSIGNED_INTEGER_H
-#define _DK_SDU_MIP__BASE__UNSIGNED_INTEGER_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/Primitives.h>
@@ -50,7 +49,7 @@ public:
 protected:
 
   /** The value. */
-  unsigned int value;
+  unsigned int value = 0;
 public:
 
   /**
@@ -64,7 +63,7 @@ public:
   /**
     Initializes the integer as zero.
   */
-  inline UnsignedInteger() throw() : value(0) {
+  inline UnsignedInteger() throw() {
   }
 
   /**
@@ -134,5 +133,3 @@ inline UnsignedInteger::UnsignedInteger(unsigned int _value) throw() : value(_va
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

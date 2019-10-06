@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_OS_WINNT4__WINNT4_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_OS_WINNT4__WINNT4_H
+#pragma once
 
 #include <base/features.h>
 
@@ -28,5 +27,3 @@
 
 #define _DK_SDU_MIP__BASE__REDIR_ISOC_FLOORL isoc::floor
 #define _DK_SDU_MIP__BASE__REDIR_ISOC_EXPL isoc::exp
-
-#endif

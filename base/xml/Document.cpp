@@ -59,7 +59,7 @@ DocumentType Document::createAndSetDocumentType(
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   
-  assert(
+  bassert(
     doc->intSubset == 0,
     bindCause(DOMException(this), DOMException::HIERARCHY_REQUEST)
   );
@@ -70,7 +70,7 @@ DocumentType Document::createAndSetDocumentType(
     publicId.isProper() ? (const xmlChar*)publicId.getElements() : 0,
     systemId.isProper() ? (const xmlChar*)systemId.getElements() : 0
   );
-  assert(dtd, DOMException(this));
+  bassert(dtd, DOMException(this));
   return dtd;
 #else
   throw DOMException(this);
@@ -85,7 +85,7 @@ Attribute Document::createAttribute(const String& name) throw(DOMException) {
     Cast::pointer<const xmlChar*>(name.getElements()),
     0
   );
-  assert(node, DOMException(this));
+  bassert(node, DOMException(this));
   return node;
 #else
   throw DOMException(this);
@@ -96,13 +96,13 @@ Attribute Document::createAttribute(
   const String& name, const String& value) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
-  assert(doc, DOMException(this));
+  bassert(doc, DOMException(this));
   xmlAttr* node = xmlNewDocProp(
     doc,
     Cast::pointer<const xmlChar*>(name.getElements()),
     Cast::pointer<const xmlChar*>(value.getElements())
   );
-  assert(node, DOMException(this));
+  bassert(node, DOMException(this));
   return node;
 #else
   throw DOMException(this);
@@ -123,7 +123,7 @@ Attribute Document::createAttributeNS(
   if (colon) {
     prefix = qualifiedName.substring(0, colon);
     localName = qualifiedName.substring(colon + 1);
-    assert(
+    bassert(
       prefix.isProper() &&
       localName.isProper() &&
       namespaceURI.isProper() &&
@@ -143,10 +143,10 @@ Attribute Document::createAttributeNS(
       (const xmlChar*)namespaceURI.getElements(),
       (const xmlChar*)prefix.getElements()
     );
-    assert(ns, DOMException(this));
+    bassert(ns, DOMException(this));
   } else {
     localName = qualifiedName;
-    assert(
+    bassert(
       localName.isProper() && !namespaceURI.isProper(),
       bindCause(
         DOMException("Malformed qualified name", this),
@@ -161,7 +161,7 @@ Attribute Document::createAttributeNS(
     (const xmlChar*)localName.getElements(),
     0 // content
   );
-  assert(attribute, DOMException(this));
+  bassert(attribute, DOMException(this));
   if (ns) {
     xmlSetNs((xmlNode*)attribute, ns);
   }
@@ -184,7 +184,7 @@ AttributeDecl Document::createAttributeDecl(
     Cast::pointer<const xmlChar*>(name.getElements()),
     0 // content
   );
-  assert(node, DOMException(this));
+  bassert(node, DOMException(this));
   return node;
 #else
   throw DOMException(this);
@@ -211,7 +211,7 @@ ElementDecl Document::createElementDecl(
     VALUE_TYPES[valueType],
     0 // content
   );
-  assert(element, DOMException(this));
+  bassert(element, DOMException(this));
   return element;
 #else
   throw DOMException(this);
@@ -231,7 +231,7 @@ Notation Document::createNotation(
     publicId.isProper() ? (const xmlChar*)publicId.getElements() : 0,
     privateId.isProper() ? (const xmlChar*)systemId.getElements() : 0
   );
-  assert(notation, DOMException(this));
+  bassert(notation, DOMException(this));
   return notation;
 #else
   throw DOMException(this);
@@ -248,7 +248,7 @@ Element Document::createElement(const String& name) throw(DOMException) {
     Cast::pointer<const xmlChar*>(name.getElements()),
     0 // content
   );
-  assert(node, DOMException(this));
+  bassert(node, DOMException(this));
   return node;
 #else
   throw DOMException(this);
@@ -267,7 +267,7 @@ Element Document::createElementNS(
   if (colon) {
     prefix = qualifiedName.substring(0, colon);
     localName = qualifiedName.substring(colon + 1);
-    assert(
+    bassert(
       prefix.isProper() &&
       localName.isProper() &&
       namespaceURI.isProper() &&
@@ -281,7 +281,7 @@ Element Document::createElementNS(
     );
   } else {
     localName = qualifiedName;
-    assert(
+    bassert(
       localName.isProper(),
       bindCause(
         DOMException("Malformed qualified name", this),
@@ -297,7 +297,7 @@ Element Document::createElementNS(
       (const xmlChar*)namespaceURI.getElements(),
       (const xmlChar*)prefix.getElements()
     );
-    assert(ns, DOMException(this));
+    bassert(ns, DOMException(this));
   }
   xmlNode* node = xmlNewDocNode(
     doc,
@@ -305,7 +305,7 @@ Element Document::createElementNS(
     (const xmlChar*)localName.getElements(),
     0 // content
   );
-  assert(node, DOMException(this));  
+  bassert(node, DOMException(this));  
   return node;
 #else
   throw DOMException(this);
@@ -316,7 +316,7 @@ DocumentFragment Document::createDocumentFragment() throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocFragment(doc);
-  assert(node, DOMException(this));
+  bassert(node, DOMException(this));
   return node;
 #else
   throw DOMException(this);
@@ -330,7 +330,7 @@ Text Document::createText(const String& data) throw(DOMException) {
     doc,
     Cast::pointer<const xmlChar*>(data.getElements())
   );
-  assert(node, DOMException(this));
+  bassert(node, DOMException(this));
   return node;
 #else
   throw DOMException(this);
@@ -343,7 +343,7 @@ Comment Document::createComment(const String& data) throw(DOMException) {
   xmlNode* node = xmlNewComment(
     Cast::pointer<const xmlChar*>(data.getElements())
   );
-  assert(node, DOMException(this));
+  bassert(node, DOMException(this));
   node->doc = doc;
   return node;
 #else
@@ -355,13 +355,13 @@ CDATASection Document::createCDATASection(
   const String& data) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
-  assert(doc, DOMException(this));
+  bassert(doc, DOMException(this));
   xmlNode* node = xmlNewCDataBlock(
     doc,
     Cast::pointer<const xmlChar*>(data.getElements()),
     data.getLength()
   );
-  assert(node, DOMException(this));
+  bassert(node, DOMException(this));
   node->doc = doc;
   return node;
 #else
@@ -378,7 +378,7 @@ ProcessingInstruction Document::createProcessingInstruction(
     Cast::pointer<const xmlChar*>(target.getElements()),
     Cast::pointer<const xmlChar*>(data.getElements())
   );
-  assert(node, DOMException(this));
+  bassert(node, DOMException(this));
   node->doc = doc;
   return node;
 #else
@@ -394,7 +394,7 @@ EntityReference Document::createEntityReference(
     doc,
     Cast::pointer<const xmlChar*>(name.getElements())
   );
-  assert(node, DOMException(this));
+  bassert(node, DOMException(this));
   return node;
 #else
   throw DOMException(this);
@@ -404,7 +404,7 @@ EntityReference Document::createEntityReference(
 Element Document::getElementById(const String& elementId) throw() {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
-  assert(doc, DOMException(this));
+  bassert(doc, DOMException(this));
   void* node = xmlHashLookup(
     (xmlHashTable*)doc->ids,
     (const xmlChar*)elementId.getElements()
@@ -418,7 +418,7 @@ Element Document::getElementById(const String& elementId) throw() {
 Node Document::importNode(Node importedNode, bool deep) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
-  assert(doc, DOMException(this));
+  bassert(doc, DOMException(this));
   xmlNode* node = (xmlNode*)importedNode.context;
 
   switch (node->type) {
@@ -457,7 +457,7 @@ void Document::doXIncludeSubstitution() throw(DOMException) {
   int code = xmlXIncludeProcess(
     Cast::pointer<xmlDoc*>(getContext())
   );
-  assert(code >= 0, DOMException(this));
+  bassert(code >= 0, DOMException(this));
 #else
   throw DOMException(this);
 #endif
@@ -469,7 +469,7 @@ void Document::save(const String& filename) throw(IOException) {
     filename.getElements(),
     Cast::pointer<xmlDocPtr>(getContext())
   );
-  assert(bytesWritten >= 0, Exception(this));
+  bassert(bytesWritten >= 0, Exception(this));
 #else
   throw DOMException(this);
 #endif

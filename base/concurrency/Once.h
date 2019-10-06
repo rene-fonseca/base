@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__ONCE_H
-#define _DK_SDU_MIP__BASE_CONCURRENCY__ONCE_H
+#pragma once
 
 #include <base/AutomationObject.h>
 #include <base/concurrency/Event.h>
@@ -82,5 +81,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

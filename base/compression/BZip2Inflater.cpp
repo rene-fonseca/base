@@ -80,7 +80,7 @@ BZip2Inflater::BZip2Inflater() throw(MemoryException)
   clear(*context);
   context->allocate = internal::BZip2Inflater::allocate;
   context->release = internal::BZip2Inflater::release;
-  assert(
+  bassert(
     internal::BZ2_bzDecompressInit(context, 0, 0) == internal::BZip2Inflater::OK,
     MemoryException(this)
   );
@@ -91,8 +91,8 @@ BZip2Inflater::BZip2Inflater() throw(MemoryException)
 
 unsigned int BZip2Inflater::push(const uint8* buffer, unsigned int size) throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__BZ2))
-  assert(state != ENDED, EndOfFile());
-  assert(state == RUNNING, IOException(this));
+  bassert(state != ENDED, EndOfFile());
+  bassert(state == RUNNING, IOException(this));
   if (availableBytes == this->buffer.getSize()) {
     return 0; // no storage available
   }
@@ -122,7 +122,7 @@ unsigned int BZip2Inflater::push(const uint8* buffer, unsigned int size) throw(I
 void BZip2Inflater::pushEnd() throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__BZ2))
   if (state != ENDED) {
-    assert(state == RUNNING, IOException(this));
+    bassert(state == RUNNING, IOException(this));
     state = FINISHING;
   }
 #else
@@ -132,7 +132,7 @@ void BZip2Inflater::pushEnd() throw(IOException) {
 
 unsigned int BZip2Inflater::pull(uint8* buffer, unsigned int size) throw(IOException) {
 #if (defined(_DK_SDU_MIP__BASE__BZ2))
-  assert(state != ENDED, EndOfFile());
+  bassert(state != ENDED, EndOfFile());
   
   if ((state == RUNNING) &&
       (availableBytes != this->buffer.getSize())) {

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_H
-#define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_OBJECT_H
+#pragma once
 
 #include <base/Primitives.h>
 #include <base/DynamicObject.h>
@@ -65,7 +64,7 @@ public:
     @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
-
+ // TAG: make MT-safe
   class ReferenceImpl {
   private:
     
@@ -132,8 +131,9 @@ public:
   inline ReferenceCountedObject& operator=(const ReferenceCountedObject& copy) throw() {
     return *this;
   }
+
+  inline ~ReferenceCountedObject() {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

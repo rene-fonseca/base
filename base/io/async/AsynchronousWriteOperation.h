@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_IO_ASYNC__ASYNCHRONOUS_WRITE_OPERATION_H
-#define _DK_SDU_MIP__BASE_IO_ASYNC__ASYNCHRONOUS_WRITE_OPERATION_H
+#pragma once
 
 #include <base/io/async/AsynchronousOperation.h>
 #include <base/io/async/AsynchronousWriteContext.h>
@@ -80,5 +79,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

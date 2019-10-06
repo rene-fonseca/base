@@ -41,7 +41,7 @@ User User::getCurrentUser() throw(UserException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SECURITY_DESCRIPTOR* securityDescriptor;
   PSID ownerSID;
-  assert(::GetSecurityInfo(
+  bassert(::GetSecurityInfo(
            ::GetCurrentProcess(),
            SE_KERNEL_OBJECT,
            OWNER_SECURITY_INFORMATION,
@@ -65,7 +65,7 @@ User::User(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   throw OutOfDomain("Invalid user id", this);
 #else
-//   assert(
+//   bassert(
 //     integralId <= PrimitiveTraits<uid_t>::MAXIMUM,
 //     OutOfDomain("Invalid user id", this)
 //   );
@@ -78,7 +78,7 @@ User::User(const void* _id) throw(OutOfDomain) {
     integralId = getMaximum(integralId);
     return;
   }
-  assert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid user id", this));
+  bassert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid user id", this));
   unsigned int size = ::GetLengthSid((PSID)_id);
   id = new ReferenceCountedAllocator<uint8>(size);
   copy(id->getElements(), Cast::pointer<const uint8*>(_id), size);
@@ -115,7 +115,7 @@ User::User(const String& name) throw(UserException) {
   SID_NAME_USE sidType;
   uint8 sid[SECURITY_MAX_SID_SIZE];
   DWORD size = sizeof(sid);
-  assert(::LookupAccountName(0,
+  bassert(::LookupAccountName(0,
                              name.getElements(),
                              &sid,
                              &size,
@@ -124,7 +124,7 @@ User::User(const String& name) throw(UserException) {
                              &sidType) != 0,
          UserException("Unable to lookup name", this)
   );
-  assert(sidType == SidTypeUser, UserException("Not a user", this));
+  bassert(sidType == SidTypeUser, UserException("Not a user", this));
   id = new ReferenceCountedAllocator<uint8>(size);
   copy(id->getElements(), sid, size);
   integralId = 0;
@@ -140,7 +140,7 @@ User::User(const String& name) throw(UserException) {
     buffer->getSize()/sizeof(char),
     &entry
   );
-  assert(result == 0, UserException(this));
+  bassert(result == 0, UserException(this));
   integralId = Cast::container<unsigned long>(entry->pw_uid);
 #endif // flavor
 }
@@ -165,7 +165,7 @@ String User::getName(bool fallback) const throw(UserException) {
         &domainNameSize,
         &sidType) == 0
   ) {
-    assert(fallback, UserException("Unable to lookup name", this));
+    bassert(fallback, UserException("Unable to lookup name", this));
     StringOutputStream s;
     s << *this << FLUSH;
     return s.getString();
@@ -187,7 +187,7 @@ String User::getName(bool fallback) const throw(UserException) {
     &entry
   );
   if (result != 0) {
-    assert(fallback, UserException("Unable to lookup name", this));
+    bassert(fallback, UserException("Unable to lookup name", this));
     StringOutputStream s;
     s << *this << FLUSH;
     return s.getString();
@@ -197,7 +197,7 @@ String User::getName(bool fallback) const throw(UserException) {
 }
 
 String User::getHomeFolder() const throw(UserException) {
-  assert(isValid(), UserException(this));
+  bassert(isValid(), UserException(this));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: fixme
 //   BOOL GetUserProfileDirectory(
@@ -217,7 +217,7 @@ String User::getHomeFolder() const throw(UserException) {
     buffer->getSize()/sizeof(char),
     &entry
   );
-  assert(result == 0, UserException(this));
+  bassert(result == 0, UserException(this));
   return String(entry->pw_dir);
 #endif // flavor
 }
@@ -229,7 +229,7 @@ bool User::isAdmin() const throw(UserException) {
 //   if (id != User::INVALID) {
 //     SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
 //     PSID group;
-//     assert((::AllocateAndInitializeSid(
+//     bassert((::AllocateAndInitializeSid(
 //              &NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,
 //              0, 0, 0, 0, 0, 0, &group) != 0) &&
 //            (::CheckTokenMembership(0, group, &isMember) != 0),
@@ -253,13 +253,13 @@ bool User::isMemberOf(const Group& group) throw(UserException) {
 Array<String> User::getGroups() throw(UserException) {
   Array<String> result;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(isValid(), UserException(this));
+  bassert(isValid(), UserException(this));
   SID_NAME_USE sidType;
   WCHAR name[UNLEN+1];
   DWORD nameSize = sizeof(name);
   WCHAR domainName[DNLEN+1];
   DWORD domainNameSize = sizeof(domainName);
-  assert(::LookupAccountSidW(0,
+  bassert(::LookupAccountSidW(0,
                              (PSID)id->getElements(), // must be valid
                              name,
                              &nameSize,
@@ -279,7 +279,7 @@ Array<String> User::getGroups() throw(UserException) {
                                              MAX_PREFERRED_LENGTH,
                                              &numberOfEntries,
                                              &totalEntries);
-  assert((status == NERR_Success) || (status == ERROR_MORE_DATA), UserException(this));
+  bassert((status == NERR_Success) || (status == ERROR_MORE_DATA), UserException(this));
   if (buffer != 0) {
     const GROUP_USERS_INFO_0* p = buffer;
     const GROUP_USERS_INFO_0* end = p + numberOfEntries;
@@ -290,7 +290,7 @@ Array<String> User::getGroups() throw(UserException) {
     ::NetApiBufferFree(buffer);
   }
 #else // unix
-  assert(isValid(), UserException(this));
+  bassert(isValid(), UserException(this));
   throw NotImplemented(this);
 #endif // flavor
   return result;

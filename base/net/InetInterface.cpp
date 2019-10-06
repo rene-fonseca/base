@@ -361,7 +361,7 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
 unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkException) {
 #if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   unsigned int index = if_nametoindex(name.getElements());
-  assert(
+  bassert(
     index > 0,
     NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
   );
@@ -536,7 +536,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
 String InetInterface::getName(unsigned int index) throw(NetworkException) {
 #if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   char name[IFNAMSIZ];
-  assert(
+  bassert(
     if_indextoname(index, name) != 0,
     NetworkException(
       "Unable to resolve interface",
@@ -569,7 +569,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
       Thread::getLocalStorage()->getElements()
     );
   const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
-  assert(
+  bassert(
     index < numberOfInterfaces,
     NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
   );
@@ -642,7 +642,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
 InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException) {
 #if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
   struct ifreq req;
-  assert(
+  bassert(
     if_indextoname(index, req.ifr_name) != 0,
     NetworkException(
       "Unable to resolve interface",
@@ -684,7 +684,7 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
       Thread::getLocalStorage()->getElements()
     );
   const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
-  assert(
+  bassert(
     index < numberOfInterfaces,
     NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
   );
@@ -836,7 +836,7 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
     ++current;
   }
 #else
-  assert(name.getLength() <= IFNAMSIZ, NetworkException(this));
+  bassert(name.getLength() <= IFNAMSIZ, NetworkException(this));
   struct ifreq req;
   copy(req.ifr_name, name.getElements(), name.getLength()); // TAG how to init this
   int handle = socket(PF_INET, SOCK_STREAM, 0);

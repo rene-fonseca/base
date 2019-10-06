@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_NET__INET_SERVICE_H
-#define _DK_SDU_MIP__BASE_NET__INET_SERVICE_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/string/String.h>
@@ -36,7 +35,7 @@ private:
   /** Specifies the official name of the service. */
   String name;
   /** Specifies the port of the service (in host byte order). */
-  unsigned short port;
+  unsigned short port = 0;
   /** Specifies the name of the protocol of the service. */
   String protocol;
 public:
@@ -121,5 +120,3 @@ FormatOutputStream& operator<<(
   FormatOutputStream& stream, const InetService& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -24,21 +24,21 @@ StringInputStream::StringInputStream(String& _string) throw(BindException)
 }
 
 unsigned int StringInputStream::available() throw(IOException) {
-  assert(!closed, IOException(this));
+  bassert(!closed, IOException(this));
   return string.getLength() - index;
 }
 
 void StringInputStream::close() throw(IOException) {
-  assert(!closed, IOException(this));
+  bassert(!closed, IOException(this));
   string = String();
   closed = true;
 }
 
 unsigned int StringInputStream::read(
   uint8* buffer, unsigned int size) throw(IOException) {
-  assert(!closed, IOException(this));
+  bassert(!closed, IOException(this));
   if (index >= string.getLength()) {
-    assert(!eof, EndOfFile(this));
+    bassert(!eof, EndOfFile(this));
     eof = true;
     return 0;
   }
@@ -50,9 +50,9 @@ unsigned int StringInputStream::read(
 }
 
 unsigned int StringInputStream::skip(unsigned int count) throw(IOException) {
-  assert(!closed, IOException(this));
+  bassert(!closed, IOException(this));
   if (index >= string.getLength()) {
-    assert(!eof, EndOfFile(this));
+    bassert(!eof, EndOfFile(this));
     eof = true;
     return 0;
   }

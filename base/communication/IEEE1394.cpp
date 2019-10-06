@@ -56,7 +56,7 @@ IEEE1394::IEEE1394() throw(IEEE1394Exception) {
 }
 
 void IEEE1394::IsochronousRequestImpl::setOptions(unsigned int options) throw(IEEE1394Exception) {
-  assert(
+  bassert(
     status == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
@@ -64,7 +64,7 @@ void IEEE1394::IsochronousRequestImpl::setOptions(unsigned int options) throw(IE
 }
 
 void IEEE1394::IsochronousRequestImpl::reset() throw(IEEE1394Exception) {
-  assert(
+  bassert(
     status != PENDING,
     bindCause(IEEE1394Exception("Request is pending", this), IEEE1394::REQUEST_NOT_PENDING)
   );
@@ -85,17 +85,17 @@ IEEE1394::IsochronousReadRequestImpl::IsochronousReadRequestImpl() throw()
 
 void IEEE1394::IsochronousReadRequestImpl::setSubchannel(
   unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception) {
-  assert(
+  bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
-  assert(subchannel <= IEEE1394::BROADCAST, OutOfDomain(this));
+  bassert(subchannel <= IEEE1394::BROADCAST, OutOfDomain(this));
   this->subchannel = subchannel;
 }
 
 void IEEE1394::IsochronousReadRequestImpl::setBuffer(
   uint8* buffer, unsigned int size) throw(IEEE1394Exception) {
-  assert(
+  bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
@@ -104,16 +104,16 @@ void IEEE1394::IsochronousReadRequestImpl::setBuffer(
 }
 
 void IEEE1394::IsochronousReadFixedPacketsRequestImpl::setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
-  assert(
+  bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
-  assert(payload % sizeof(Quadlet) == 0, OutOfDomain(this));
+  bassert(payload % sizeof(Quadlet) == 0, OutOfDomain(this));
   this->payload = payload;
 }
 
 void IEEE1394::IsochronousReadFixedDataRequestImpl::setNumberOfPackets(unsigned int packets) throw(OutOfDomain, IEEE1394Exception) {
-  assert(
+  bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
@@ -121,20 +121,20 @@ void IEEE1394::IsochronousReadFixedDataRequestImpl::setNumberOfPackets(unsigned 
 }
 
 void IEEE1394::IsochronousReadFixedDataRequestImpl::setHeaderSize(unsigned int size) throw(OutOfDomain, IEEE1394Exception) {
-  assert(
+  bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
-  assert(payload % sizeof(Quadlet) == 0, OutOfDomain(this));
+  bassert(payload % sizeof(Quadlet) == 0, OutOfDomain(this));
   this->headerSize = size;
 }
 
 void IEEE1394::IsochronousReadFixedDataRequestImpl::setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
-  assert(
+  bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
-  assert(payload % sizeof(Quadlet) == 0, OutOfDomain(this));
+  bassert(payload % sizeof(Quadlet) == 0, OutOfDomain(this));
   this->payload = payload;
 }
 
@@ -158,7 +158,7 @@ void IEEE1394::IsochronousWriteRequestImpl::setBuffer(
   const uint8* buffer,
   unsigned int size,
   unsigned int numberOfPackets) throw(IEEE1394Exception) {
-  assert(getStatus() == READY, bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY));
+  bassert(getStatus() == READY, bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY));
   this->buffer = buffer;
   this->bufferSize = size;
   this->numberOfPackets = numberOfPackets;
@@ -187,7 +187,7 @@ void IEEE1394::IsochronousWriteRequestImpl::setBuffer(
 // }
 
 void IEEE1394::IsochronousWriteRequestImpl::setSpeed(unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
-  assert(
+  bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
@@ -233,7 +233,7 @@ void IEEE1394::open(const EUI64& adapter) throw(IEEE1394Exception) {
 }
 
 EUI64 IEEE1394::getLocalIdentifier(unsigned int physicalId) const throw(OutOfDomain) {
-  assert(physicalId < numberOfNodes, OutOfDomain(this));
+  bassert(physicalId < numberOfNodes, OutOfDomain(this));
   return nodes[physicalId].guid;
 }
 
@@ -263,12 +263,12 @@ IEEE1394::Standard IEEE1394::getCompliance(unsigned short node) throw(IEEE1394Ex
 
 EUI64 IEEE1394::getIdentifier(unsigned short node) throw(IEEE1394Exception) {
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
-  assert(
+  bassert(
     (crc >> 24) >= 4,  // minimum size for general format
     bindCause(IEEE1394Exception("No general configuration ROM", this), IEEE1394::NO_GENERAL_CONFIGURATION_ROM)
   );
   uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
-  assert(
+  bassert(
     name == 0x31333934, // "1394"
     bindCause(IEEE1394Exception("No general configuration ROM", this), IEEE1394::NO_GENERAL_CONFIGURATION_ROM)    
   );
@@ -279,12 +279,12 @@ EUI64 IEEE1394::getIdentifier(unsigned short node) throw(IEEE1394Exception) {
 unsigned int IEEE1394::getMaximumPayload(unsigned short node) throw(IEEE1394Exception) {
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   // minimum size for general format
-  assert(
+  bassert(
     ((crc >> 24) * sizeof(Quadlet)) >= sizeof(BusInfo),
     bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
   uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
-  assert(
+  bassert(
     name == 0x31333934, // "1394"
     bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
@@ -322,7 +322,7 @@ unsigned int IEEE1394::getVendorId(unsigned short node) throw(IEEE1394Exception)
 
   uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
   
-  assert(
+  bassert(
     ((crc >> 24) * sizeof(Quadlet) >= sizeof(BusInfo)) && // check for general ROM format
     (name == 0x31333934), // "1394"
     bindCause(IEEE1394Exception("Invalid configuration ROM", this), IEEE1394::INVALID_BUS_INFORMATION_BLOCK)
@@ -357,12 +357,12 @@ int IEEE1394::getPhysicalId(const EUI64& guid) throw() {
 String IEEE1394::getDescription(unsigned short node) throw(IEEE1394Exception) {
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   // minimum size for general format
-  assert(
+  bassert(
     ((crc >> 24) * sizeof(Quadlet)) >= sizeof(BusInfo),
     bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
   uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
-  assert(
+  bassert(
     name == 0x31333934, // "1394"
     bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
@@ -405,12 +405,12 @@ String IEEE1394::getKeywords(unsigned short node) throw(IEEE1394Exception) {
   // TAG: also search subdirectories?
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   // minimum size for general format
-  assert(
+  bassert(
     ((crc >> 24) * sizeof(Quadlet)) >= sizeof(BusInfo),
     bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
   uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
-  assert(
+  bassert(
     name == 0x31333934, // "1394"
     bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
@@ -479,7 +479,7 @@ void IEEE1394::checkResetGeneration() throw(IEEE1394Exception) {
 }
 
 unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDomain, IEEE1394Exception) {
-  assert(busId <= IEEE1394::LOCAL_BUS, OutOfDomain(this));
+  bassert(busId <= IEEE1394::LOCAL_BUS, OutOfDomain(this));
   switch (role) {
   case IEEE1394::CYCLE_MASTER: // must/should be root eventually
     for (int id = IEEE1394::BROADCAST; id > 0;) {
@@ -600,7 +600,7 @@ void IEEE1394::reload() throw(IEEE1394Exception) {
     
     numberOfNodes = ieee1394impl->getNumberOfNodes();
     localId = ieee1394impl->getLocalId();
-    assert((numberOfNodes > 0) && (attempts > 0), IEEE1394Exception("Unable to query local bus", this));
+    bassert((numberOfNodes > 0) && (attempts > 0), IEEE1394Exception("Unable to query local bus", this));
     
     // TAG: could check topology map of local node if present
     
@@ -697,14 +697,14 @@ void IEEE1394::loadTopologyMap() throw(IEEE1394Exception) {
   uint32 crc = getQuadlet(node, IEEE1394::TOPOLOGY_MAP);
   
   const unsigned int length = crc >> 16;
-  assert(length >= 3, IEEE1394Exception(this));
+  bassert(length >= 3, IEEE1394Exception(this));
   
   uint32 count = getQuadlet(node, IEEE1394::TOPOLOGY_MAP + 2 * sizeof(Quadlet));
   // numberOfNodes = count >> 16;
   const unsigned int selfIds = count & 0xffff;
   
-  assert(numberOfNodes < IEEE1394::BROADCAST, IEEE1394Exception(this));
-  assert(
+  bassert(numberOfNodes < IEEE1394::BROADCAST, IEEE1394Exception(this));
+  bassert(
     (selfIds >= 1) && (selfIds <= (63 * 9) && (selfIds <= length - 2)),
     IEEE1394Exception(this)
   );
@@ -719,14 +719,14 @@ void IEEE1394::loadTopologyMap() throw(IEEE1394Exception) {
   
   // get crc
   uint32 quadlet = getQuadlet(node, IEEE1394::TOPOLOGY_MAP); 
-  assert(quadlet == crc, IEEE1394Exception("Unable to load topology map", this));
+  bassert(quadlet == crc, IEEE1394Exception("Unable to load topology map", this));
   
   // copy to internal representation
   unsigned int physicalId = 0; // the current physical id
   for (unsigned int i = 0; i < selfIds;) {
     uint32 current = ids[i++];
     
-    assert(
+    bassert(
       (getBits(current, 30, 2) == 2) && // self-id identifier
       (getBits(current, 24, 6) == physicalId) && // same node
       (getBits(current, 23, 1) == 0), // initial self-id
@@ -874,7 +874,7 @@ void IEEE1394::loadSpeedMap() throw(IEEE1394Exception) {
   
   // get crc
   uint32 quadlet = getQuadlet(node, IEEE1394::SPEED_MAP);
-  assert(quadlet == crc, IEEE1394Exception("Unable to load speed map", this));
+  bassert(quadlet == crc, IEEE1394Exception("Unable to load speed map", this));
   
   static const unsigned int SHIFTS[4] = {24, 16, 8, 0};
 
@@ -901,13 +901,13 @@ void IEEE1394::loadSpeedMap() throw(IEEE1394Exception) {
 
 IEEE1394::Speed IEEE1394::getMaximumSpeed(
   unsigned int physicalId) const throw(OutOfDomain) {
-  assert(physicalId < numberOfNodes, OutOfDomain(this));
+  bassert(physicalId < numberOfNodes, OutOfDomain(this));
   return nodes[physicalId].speed; // physical speed
 }
 
 IEEE1394::Speed IEEE1394::getMaximumLinkSpeed(
   unsigned int physicalId) const throw(OutOfDomain) {
-  assert(physicalId < numberOfNodes, OutOfDomain(this));  
+  bassert(physicalId < numberOfNodes, OutOfDomain(this));  
   return nodes[physicalId].linkSpeed;
 }
 
@@ -923,12 +923,12 @@ IEEE1394::Speed IEEE1394::getMaximumSpeed(uint64 nodes) const throw() {
 
 IEEE1394::Speed IEEE1394::getMaximumSpeedBetweenNodes(
   unsigned int a, unsigned int b) const throw(OutOfDomain) {
-  assert((a < numberOfNodes) && (b < numberOfNodes), OutOfDomain(this));
+  bassert((a < numberOfNodes) && (b < numberOfNodes), OutOfDomain(this));
   return speedMap[a][b]; // or speedMap[b][a]
 }
 
 IEEE1394::Speed IEEE1394::getBroadcastSpeed() const throw(OutOfDomain) {
-  assert(localId < numberOfNodes, OutOfDomain(this));
+  bassert(localId < numberOfNodes, OutOfDomain(this));
   return speedMap[localId][IEEE1394::BROADCAST];
 }
 
@@ -990,13 +990,13 @@ IEEE1394::IsochronousReadRequest
 unsigned int IEEE1394::IsochronousReadChannelImpl::dequeue(
   unsigned int requests,
   unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
-  assert(microseconds <= 999999999, OutOfDomain(this));
+  bassert(microseconds <= 999999999, OutOfDomain(this));
   throw IEEE1394Exception("Channel is closed", this);
 }
 
 bool IEEE1394::IsochronousReadChannelImpl::wait(
   unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
-  assert(microseconds <= 999999999, OutOfDomain(this));
+  bassert(microseconds <= 999999999, OutOfDomain(this));
   throw IEEE1394Exception("Channel is closed", this);
 }
 
@@ -1059,7 +1059,7 @@ IEEE1394::IsochronousWriteRequest
     
 bool IEEE1394::IsochronousWriteChannelImpl::wait(
   unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
-  assert(microseconds <= 999999999, OutOfDomain(this));
+  bassert(microseconds <= 999999999, OutOfDomain(this));
   throw IEEE1394Exception("Channel is closed", this);
 }
 

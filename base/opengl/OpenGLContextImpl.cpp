@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 void OpenGLContextImpl::loadModule() throw(OpenGLException) {
   // TAG: never release ui component?
-  assert(
+  bassert(
     Backend<WindowImpl>::loadModule(true),
     OpenGLException(
       "Unable to load module",
@@ -42,7 +42,7 @@ void OpenGLContextImpl::loadModule() throw(OpenGLException) {
   bool success = native::GLX::import();
 #endif // flavor
   spinLock.releaseLock();
-  assert(
+  bassert(
     success,
     OpenGLException(
       "Unable to load module",
@@ -172,7 +172,7 @@ void OpenGLContextImpl::makeCurrent() throw(OpenGLException) {
     (HDC)graphicsContextHandle,
     (HGLRC)renderingContextHandle
   );
-  assert(
+  bassert(
     native::GDI::wglMakeCurrent(
       (HDC)graphicsContextHandle,
       (HGLRC)renderingContextHandle
@@ -180,7 +180,7 @@ void OpenGLContextImpl::makeCurrent() throw(OpenGLException) {
     OpenGLException(this)
   );
 #else // unix
-  assert(
+  bassert(
     native::GLX::glXMakeCurrent(
       (Display*)Backend<WindowImpl>::getDisplay(),
       (native::GLX::GLXDrawable)drawableHandle,
@@ -202,7 +202,7 @@ void OpenGLContextImpl::deselect() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   native::GDI::wglMakeCurrent(0, 0);
 #else // unix
-  assert(
+  bassert(
     native::GLX::glXMakeCurrent(
       (Display*)Backend<WindowImpl>::getDisplay(),
       (native::GLX::GLXDrawable)None,
@@ -223,7 +223,7 @@ void OpenGLContextImpl::deselect() throw() {
 void OpenGLContextImpl::swap() throw(OpenGLException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   native::GDI::wglSwapBuffers((HDC)graphicsContextHandle); // ignore errors
-//   assert(
+//   bassert(
 //     native::GDI::wglSwapBuffers((HDC)graphicsContextHandle),
 //     OpenGLException("Unable to swap buffers", this)
 //   );
@@ -236,7 +236,7 @@ void OpenGLContextImpl::swap() throw(OpenGLException) {
 }
 
 void OpenGLContextImpl::swap(int plane) throw(OutOfRange, OpenGLException) {
-  assert(
+  bassert(
     (plane >= -static_cast<int>(numberOfUnderlayPlanes)) &&
     (plane <= numberOfOverlayPlanes),
     OutOfRange(this)
@@ -275,7 +275,7 @@ void OpenGLContextImpl::swap(int plane) throw(OutOfRange, OpenGLException) {
     WGL_SWAP_OVERLAY14,
     WGL_SWAP_OVERLAY15
   };
-  assert(
+  bassert(
     native::GDI::wglSwapLayerBuffers(
       (HDC)graphicsContextHandle,
       NATIVE_PLANES[plane + 15]

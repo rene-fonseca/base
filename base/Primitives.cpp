@@ -25,8 +25,8 @@ const double PrimitiveTraits<double>::MAXIMUM = DBL_MAX;
 const long double PrimitiveTraits<long double>::MINIMUM = DBL_MIN;
 const long double PrimitiveTraits<long double>::MAXIMUM = DBL_MAX;
 
-size_t NativeString::getLength() const throw() {
-  size_t length = 0;
+MemorySize NativeString::getLength() const throw() {
+  MemorySize length = 0;
   if (value) {
     const char* src = value;
     while (*src++) {
@@ -37,8 +37,8 @@ size_t NativeString::getLength() const throw() {
   return length;
 }
 
-size_t NativeWideString::getLength() const throw() {
-  size_t length = 0;
+MemorySize NativeWideString::getLength() const throw() {
+  MemorySize length = 0;
   if (value) {
     const wchar* src = value;
     while (*src++) {

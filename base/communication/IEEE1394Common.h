@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COMMUNICATION__IEEE_1394_COMMON_H
-#define _DK_SDU_MIP__BASE_COMMUNICATION__IEEE_1394_COMMON_H
+#pragma once
 
 #include <base/communication/EUI64.h>
 #include <base/communication/IEEE1394Exception.h>
@@ -2007,7 +2006,7 @@ public:
     inline IsochronousReadChannel(
       IsochronousReadChannelImpl* _readChannel) throw()
       : readChannel(_readChannel) {
-      assert(_readChannel, NullPointer(this));
+      bassert(_readChannel, NullPointer(this));
     }
     
     /**
@@ -2167,7 +2166,7 @@ public:
     inline IsochronousWriteChannel(
       IsochronousWriteChannelImpl* _writeChannel) throw()
       : writeChannel(_writeChannel) {
-      assert(_writeChannel, NullPointer(this));
+      bassert(_writeChannel, NullPointer(this));
     }
 
     /**

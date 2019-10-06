@@ -236,7 +236,7 @@ Process Process::execute(const String& command) throw(ProcessException) {
 //   startInfo.hStdInput
 //   startInfo.hStdOutput
 //   startInfo.hStdError
-  assert(
+  bassert(
     ::CreateProcess(0,
                     commandLine.getElements(), // command line (may need quotes)
                     0, // process security attributes
@@ -302,7 +302,7 @@ bool Process::isAlive() const throw(ProcessException) {
   // use SYNCHRONIZE
   DWORD exitCode;
   HANDLE handle = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, static_cast<DWORD>(id));
-  assert(handle != 0, ProcessException("Unable to query process", this));
+  bassert(handle != 0, ProcessException("Unable to query process", this));
   BOOL result = ::GetExitCodeProcess(handle, &exitCode);
   ::CloseHandle(handle);
   if (result != 0) {
@@ -314,14 +314,14 @@ bool Process::isAlive() const throw(ProcessException) {
   
   int status;
   pid_t result = ::waitpid(id, &status, WNOHANG);
-  assert(result >= 0, ProcessException("Unable to query process", this));
+  bassert(result >= 0, ProcessException("Unable to query process", this));
 
   /**
     GCC 3.0.4 bug
     
     For some reason this exception cannot be caught
     
-    assert(result >= 0, ProcessException("Unable to query process", this));
+    bassert(result >= 0, ProcessException("Unable to query process", this));
   */
   if (result == (pid_t)id) {
     return false;
@@ -352,10 +352,10 @@ bool Process::isAlive() const throw(ProcessException) {
 String Process::getName() const throw(NotSupported, ProcessException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HANDLE process = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, id);
-  assert(process, ProcessException(this));
+  bassert(process, ProcessException(this));
   char buffer[MAX_PATH + 1];
   DWORD length = ::GetModuleFileNameEx(process, 0, buffer, sizeof(buffer));
-  assert(length > 0, ProcessException(this));
+  bassert(length > 0, ProcessException(this));
   ::CloseHandle(process);
   return String(buffer, length - 1);
 #else // unix
@@ -367,7 +367,7 @@ void Process::lock() throw(ProcessException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (!handle->isValid()) {
     HANDLE result = ::OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(id));
-    assert(result != 0, ProcessException("Unable to acquire lock", this));
+    bassert(result != 0, ProcessException("Unable to acquire lock", this));
     handle = new ProcessHandle(result);
   }
 #else // unix
@@ -501,7 +501,7 @@ bool Process::terminate(bool force) throw(ProcessException) {
   if (force) {
     // TAG: ask nicely first
     HANDLE handle = ::OpenProcess(PROCESS_TERMINATE, FALSE, static_cast<DWORD>(id));
-    assert(handle != 0, ProcessException("Unable to terminate process", this));
+    bassert(handle != 0, ProcessException("Unable to terminate process", this));
     ::TerminateProcess(handle, Application::EXIT_CODE_EXTERNAL);
     ::CloseHandle(handle);
     return true;
@@ -509,7 +509,7 @@ bool Process::terminate(bool force) throw(ProcessException) {
     // TAG: if service then ask to stop
 
     HANDLE handle = ::OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(id));
-    assert(handle != 0, ProcessException("Unable to terminate process", this));
+    bassert(handle != 0, ProcessException("Unable to terminate process", this));
     KillImpl kill(id);
     kill.signal();
     ::CloseHandle(handle);

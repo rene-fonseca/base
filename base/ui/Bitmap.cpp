@@ -62,7 +62,7 @@ Bitmap::Bitmap(
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HDC h = ::GetDCEx(0, 0, 0); // TAG: destroy this?
   HDC deviceContextHandle = ::CreateCompatibleDC(h);
-  assert(
+  bassert(
     deviceContextHandle,
     UserInterfaceException("Unable to create bitmap", this)
   );
@@ -87,7 +87,7 @@ Bitmap::Bitmap(
     ::DeleteObject(previous); // TAG: is this required
   }
   
-  assert(
+  bassert(
     (format == Bitmap::RGB) && (encoding == Bitmap::RGB_32),
     UserInterfaceException(this)
   );
@@ -105,7 +105,7 @@ Bitmap::Bitmap(
   info.bmiHeader.biClrUsed = 0;
   info.bmiHeader.biClrImportant = 0;
   
-  assert(
+  bassert(
     ::SetDIBits(
       (HDC)deviceContextHandle,
       (HBITMAP)bitmapHandle,
@@ -119,11 +119,11 @@ Bitmap::Bitmap(
   );
   handle = new Handle(deviceContextHandle);
 #else // unix
-  assert( // TAG: what is the dimension limit
+  bassert( // TAG: what is the dimension limit
     (dimension.getWidth() < 65536) && (dimension.getHeight() < 65536),
     UserInterfaceException(this)
   );
-  assert(
+  bassert(
     (format == Bitmap::RGB) && (encoding == Bitmap::RGB_32),
     UserInterfaceException(this)
   );
@@ -169,7 +169,7 @@ void Bitmap::encode(Format format, Encoding encoding, void* data) throw() {
 // TAG: use Color
 uint32 Bitmap::getPixel(
   const Position& position) const throw(UserInterfaceException) {
-  assert(handle.isValid(), NullPointer(this));
+  bassert(handle.isValid(), NullPointer(this));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return 0; // TAG: fixme
 #else // unix
@@ -186,7 +186,7 @@ uint32 Bitmap::getPixel(
 void Bitmap::setPixel(
   const Position& position,
   uint32 value) const throw(UserInterfaceException) {
-  assert(handle.isValid(), NullPointer(this));
+  bassert(handle.isValid(), NullPointer(this));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: fixme
 #else // unix

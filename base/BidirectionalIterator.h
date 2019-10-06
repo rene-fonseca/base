@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__BIDIRECTIONAL_ITERATOR_H
-#define _DK_SDU_MIP__BASE__BIDIRECTIONAL_ITERATOR_H
+#pragma once
 
 #include <base/ForwardIterator.h>
 
@@ -49,5 +48,3 @@ class ReadOnlyBidirectionalIterator : public BidirectionalIterator<TYPE, ReadOnl
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

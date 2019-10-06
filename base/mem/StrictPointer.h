@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__STRICT_POINTER_H
-#define _DK_SDU_MIP__BASE_MEM__STRICT_POINTER_H
+#pragma once
 
 #include <base/mem/NullPointer.h>
 #include <base/NotCopyable.h>
@@ -35,7 +34,7 @@ class StrictPointer : public NotCopyable {
 private:
 
   /** Pointer to object. */
-  TYPE* value;
+  TYPE* value = nullptr;
 public:
   
   /**
@@ -44,7 +43,7 @@ public:
     @param value The object pointer to be automated.
   */
   inline StrictPointer(TYPE* _value) throw(NullPointer) : value(_value) {
-    assert(value, NullPointer(this));
+    bassert(value, NullPointer(this));
   }
   
   /**
@@ -77,5 +76,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

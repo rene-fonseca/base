@@ -398,11 +398,11 @@ public:
 
     // check links from parent to node
     if (parent) {
-      assert(
+      bassert(
         parent->children,
         DOMException("Link to first child of parent not set")
       );
-      assert(
+      bassert(
         parent->last,
         DOMException("Link to last child of parent not set")
       );
@@ -412,7 +412,7 @@ public:
           temp = child;
         }
       }
-      assert(
+      bassert(
         temp,
         DOMException("Link to node missing from children of parent")
       );
@@ -420,12 +420,12 @@ public:
     
     // check links from previous sibling to node
     if (node->prev) {
-      assert(
+      bassert(
         node->prev->next == node,
         DOMException("Link from previous sibling to node is invalid")
       );
     } else {
-      assert(
+      bassert(
         !parent || (parent->children == node),
         DOMException("Link from first child of parent to node is invalid")
       );
@@ -433,12 +433,12 @@ public:
     
     // check links from next sibling to node
     if (node->next) {
-      assert(
+      bassert(
         node->next->prev == node,
         DOMException("Link from next sibling to node is invalid")
       );
     } else {
-      assert(
+      bassert(
         !parent || (parent->last == node),
         DOMException("Link from last child of parent to node is invalid")
       );
@@ -447,21 +447,21 @@ public:
     // check links from children to node
     if (node->children) {
       for (const xmlNode* child = node->children; child; child = child->next) {
-        assert(
+        bassert(
           child->parent == node,
           DOMException("Link from child to node is invalid")
         );
       }
-      assert(
+      bassert(
         node->children->prev == 0,
         DOMException("First child has invalid link to previous sibling")
       );
-      assert(
+      bassert(
         node->last->next == 0,
         DOMException("Last child has invalid link to next sibling")
       );
     } else { // no children
-      assert(
+      bassert(
         node->last == 0,
         DOMException("Last child is not 0")
       );
@@ -503,14 +503,14 @@ Node Node::appendChild(Node _child) throw(DOMException) {
   xmlNode* node = (xmlNode*)context;
   xmlNode* child = (xmlNode*)_child.context;
   
-  assert(node && child, NullPointer(Type::getType<NodeImpl>()));
+  bassert(node && child, NullPointer(Type::getType<NodeImpl>()));
   
-  assert(
+  bassert(
     child->doc == node->doc,
     bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
   );
   
-  assert(
+  bassert(
     NodeImpl::isAppendAble(*this, _child),
     bindCause(DOMException(this), DOMException::HIERARCHY_REQUEST)
   );
@@ -563,16 +563,16 @@ Node Node::insertBefore(Node _newChild, Node _refChild) throw(DOMException) {
     return appendChild(newChild);
   }
   
-  assert(node && newChild, NullPointer(Type::getType<NodeImpl>()));
+  bassert(node && newChild, NullPointer(Type::getType<NodeImpl>()));
   
-  assert(refChild->parent == node, DOMException(this));
+  bassert(refChild->parent == node, DOMException(this));
   
-  assert(
+  bassert(
     newChild->doc == node->doc,
     bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
   );
   
-  assert(
+  bassert(
     NodeImpl::isAppendAble(*this, newChild),
     bindCause(DOMException(this), DOMException::HIERARCHY_REQUEST)
   );
@@ -620,7 +620,7 @@ Node Node::removeChild(Node _oldChild) throw(DOMException) {
 #if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   xmlNode* oldChild = (xmlNode*)_oldChild.context;
-  assert(oldChild->parent == node, DOMException(this));
+  bassert(oldChild->parent == node, DOMException(this));
   NodeImpl::unlink(oldChild);
   return oldChild;
 #else
@@ -791,7 +791,7 @@ Node Node::cloneNode(bool deep) throw(DOMException) {
   case XML_DOCUMENT_NODE:
     {
       xmlDoc* result = xmlCopyDoc((xmlDoc*)node, deep ? 1 : 0);
-      assert(result, DOMException(this));
+      bassert(result, DOMException(this));
       return result;
     }
   case XML_ATTRIBUTE_NODE:
@@ -806,7 +806,7 @@ Node Node::cloneNode(bool deep) throw(DOMException) {
     throw bindCause(DOMException(this), DOMException::NOT_SUPPORTED);
 	default:
     xmlNode* result = xmlDocCopyNode(node, node->doc, deep ? 1 : 0);
-    assert(result, DOMException(this));
+    bassert(result, DOMException(this));
     return result;
   }
 #else

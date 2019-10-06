@@ -53,7 +53,7 @@ void Pixmap::destroy() throw() {
 Pixmap::Pixmap(const Dimension& dimension, unsigned int flags) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HDC pixmap = ::CreateCompatibleDC(0 /*::GetDCEx(0, 0, 0)*/);
-  assert(pixmap, UserInterfaceException("Unable to create pixmap", this));
+  bassert(pixmap, UserInterfaceException("Unable to create pixmap", this));
   HBITMAP bitmap = ::CreateCompatibleBitmap((HDC)pixmap, dimension.getWidth(), dimension.getHeight());
   if (!bitmap) {
     ::DeleteDC((HDC)pixmap);

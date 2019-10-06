@@ -101,7 +101,7 @@ MimeType::MimeType(MediaType _mediaType, const String& _subtype) throw(OutOfDoma
 
 MimeType::MimeType(const String& value) throw(InvalidFormat) : mediaType(UNINITIALIZED) {
   const int index = value.indexOf('/');
-  assert(index >= 0, InvalidFormat(this));
+  bassert(index >= 0, InvalidFormat(this));
   type = value.substring(0, index - 1);
   subtype = value.substring(index + 1);
 }
@@ -127,7 +127,7 @@ bool MimeType::isValid() const throw() {
     while (i < end) {
       char ch = *i++;
       
-      assert(!ASCIITraits::isControl(ch), InvalidFormat(this));
+      bassert(!ASCIITraits::isControl(ch), InvalidFormat(this));
       switch (ch) {
       case ' ':
 	// tspecials
@@ -150,7 +150,7 @@ bool MimeType::isValid() const throw() {
     while (i < end) {
       char ch = *i++;
       
-      assert(!ASCIITraits::isControl(ch), InvalidFormat(this));
+      bassert(!ASCIITraits::isControl(ch), InvalidFormat(this));
       switch (ch) {
       case ' ':
 	// tspecials

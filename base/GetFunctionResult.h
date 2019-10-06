@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__GET_FUNCTION_RESULT_H
-#define _DK_SDU_MIP__BASE__GET_FUNCTION_RESULT_H
+#pragma once
 
 #include <base/Unspecified.h>
 
@@ -79,5 +78,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

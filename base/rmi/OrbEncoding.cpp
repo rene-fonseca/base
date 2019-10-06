@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__RMI__ORB_ENCODING_H
-#define _DK_SDU_MIP__BASE__RMI__ORB_ENCODING_H
+#pragma once
 
 #include <base/rmi/OrbEncoding.h>
 
@@ -26,5 +25,3 @@ OrbEncoding::~OrbEncoding() throw() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -31,7 +31,7 @@ ArgumentParser::Option::Option(
   : name(_name),
     shortName(_shortName),
     flags(_flags) {
-  assert(ASCIITraits::isAlphaNum(shortName), OutOfDomain(this));
+  bassert(ASCIITraits::isAlphaNum(shortName), OutOfDomain(this));
 }
 
 ArgumentParser::FlagOption::FlagOption(
@@ -153,7 +153,7 @@ ArgumentParser::ArgumentParser(unsigned int _flags) throw(MemoryException)
 
 void ArgumentParser::addOption(
   const Reference<Option>& option) throw(AlreadyKeyException) {
-  assert(
+  bassert(
     !names.isKey(option->getName()),
     AlreadyKeyException("name already registered", this)
   );
@@ -161,7 +161,7 @@ void ArgumentParser::addOption(
   if (option->hasShortName()) {
     unsigned int* lookup = shortNames.getElements();
     const uint8 shortNameIndex = getIndexOfShortName(option->getShortName());
-    assert(
+    bassert(
       lookup[shortNameIndex] == PrimitiveTraits<unsigned int>::MAXIMUM,
       AlreadyKeyException("short name already registered", this)
     );
@@ -178,7 +178,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
     argument =
       new NamedArgument(option->getName(), occured ? Argument::EARLIER : 0);
   } else { // options which take a value
-    assert(
+    bassert(
       !(option->getFlags() & Option::EXPLICIT),
       bindCause(
         ArgumentException(this),
@@ -225,7 +225,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
   } else { // options which take a value
     if (option.isType<BooleanOption>()) {
       Reference<BooleanOption> temp = option.cast<BooleanOption>();
-      assert(
+      bassert(
         temp.isValid(),
         bindCause(
           ArgumentException(this),
@@ -245,7 +245,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
       );
     } else if (option.isType<CardinalOption>()) {
       Reference<CardinalOption> temp = option.cast<CardinalOption>();
-      assert(
+      bassert(
         temp->isValid(value),
         bindCause(
           ArgumentException(this),
@@ -259,7 +259,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
       );
     } else if (option.isType<RealOption>()) {
       Reference<RealOption> temp = option.cast<RealOption>();
-      assert(
+      bassert(
         temp->isValid(value),
         bindCause(
           ArgumentException(this),
@@ -273,7 +273,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
       );
     } else if (option.isType<EnumOption>()) {
       Reference<EnumOption> temp = option.cast<EnumOption>();
-      assert(
+      bassert(
         temp->isValid(value),
         bindCause(
           ArgumentException(this),
@@ -314,7 +314,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
           name = argument.substring(2);
         }
         
-        assert(
+        bassert(
           names.isKey(name),
           bindCause(
             ArgumentException(this),
@@ -323,7 +323,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
         );
         Reference<Option> option = options[names[name]];
         const bool o = occured.hasValue(name);
-        assert(
+        bassert(
           !(option->getFlags() & Option::STRICT) || !o,
           bindCause(
             ArgumentException(this),
@@ -367,7 +367,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
           argument.getEndReadIterator();
         ++j; // skip -
         while (j != endShortName) {
-          assert(
+          bassert(
             ASCIITraits::isAlphaNum(*j),
             bindCause(
               ArgumentException(this),
@@ -375,7 +375,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
             )
           );
           const uint8 shortNameIndex = getIndexOfShortName(*j);
-          assert(
+          bassert(
             lookup[shortNameIndex] != PrimitiveTraits<unsigned int>::MAXIMUM,
             bindCause(
               ArgumentException(this),
@@ -384,7 +384,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
           );
           Reference<Option> option = options[lookup[shortNameIndex]];
           const bool o = occured.hasValue(option->getName());
-          assert(
+          bassert(
             !(option->getFlags() & Option::STRICT) || !o,
             bindCause(
               ArgumentException(this),
@@ -424,7 +424,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
       
     } else {
       // TAG: prefix options?
-      assert(
+      bassert(
         this->flags & ORPHANS,
         bindCause(ArgumentException(this), ArgumentException::ORPHAN)
       );
@@ -438,7 +438,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
       while (enu.hasNext()) {
         Reference<Option> option = *enu.next();
         if (option->getFlags() & Option::MANDATORY) {
-          assert(
+          bassert(
             occured.hasValue(option->getName()),
             bindCause(
               ArgumentException(this),

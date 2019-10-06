@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__UNSIGNED_LONG_INTEGER_H
-#define _DK_SDU_MIP__BASE__UNSIGNED_LONG_INTEGER_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/Primitives.h>
@@ -53,7 +52,7 @@ public:
 protected:
 
   /** The value. */
-  unsigned long long value;
+  unsigned long long value = 0;
 public:
 
   /**
@@ -67,7 +66,7 @@ public:
   /**
     Initializes the integer as zero.
   */
-  inline UnsignedLongInteger() throw() : value(0) {
+  inline UnsignedLongInteger() throw() {
   }
 
   /**
@@ -143,5 +142,3 @@ inline UnsignedLongInteger::UnsignedLongInteger(unsigned long long _value) throw
 FormatInputStream& operator>>(FormatInputStream& stream, unsigned long long& value) throw(InvalidFormat, IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

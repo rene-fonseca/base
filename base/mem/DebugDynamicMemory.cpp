@@ -89,7 +89,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
   }
   
   // check alignment
-  assert(
+  bassert(
     (Cast::getOffset(memory) % sizeof(unsigned int)) == 0,
     MemoryCorruption(Type::getType<DebugDynamicMemory>())
   );
@@ -111,7 +111,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
   
   // check descriptor
   {
-    assert(
+    bassert(
       descriptor->magic == 0/*&allocate*/,
       MemoryCorruption(Type::getType<DebugDynamicMemory>())
     );
@@ -119,7 +119,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
     unsigned int allocated = descriptor->allocated;
     descriptor->allocated = false;
     spinLock.releaseLock();
-    assert(allocated, MemoryCorruption(Type::getType<DebugDynamicMemory>()));
+    bassert(allocated, MemoryCorruption(Type::getType<DebugDynamicMemory>()));
     size = descriptor->size;
   }
   
@@ -131,7 +131,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
       for (unsigned int i = 0; i < (size % sizeof(unsigned int)); ++i) {
         Cast::pointer<char*>(&mask)[i] = 0; // filter out dont cares
       }
-      assert(
+      bassert(
         (*src & mask) == (Cast::getOffset(src) & mask),
         MemoryCorruption(Type::getType<DebugDynamicMemory>())
       );

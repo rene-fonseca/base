@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_IO_ASYNC__ASYNCHRONOUS_READ_CONTEXT_H
-#define _DK_SDU_MIP__BASE_IO_ASYNC__ASYNCHRONOUS_READ_CONTEXT_H
+#pragma once
 
 #include <base/io/async/AsynchronousReadEventListener.h>
 #include <base/io/async/AsynchronousReadCompletion.h>
@@ -37,5 +36,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

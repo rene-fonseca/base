@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COLLECTION__BINARY_TREE_H
-#define _DK_SDU_MIP__BASE_COLLECTION__BINARY_TREE_H
+#pragma once
 
 #include <base/collection/Collection.h>
 #include <base/collection/BinaryNode.h>
@@ -66,7 +65,7 @@ public:
     EndOfEnumeration if the end has been reached.
   */
   Pointer next() throw(EndOfEnumeration) {
-    assert(more, EndOfEnumeration());
+    bassert(more, EndOfEnumeration());
 
     Pointer result = node;
 
@@ -411,7 +410,7 @@ public:
   private:
 
     /** The root node of the binary tree. */
-    Node* root;
+    Node* root = nullptr;
   protected:
 
     /**
@@ -676,5 +675,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

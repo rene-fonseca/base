@@ -22,7 +22,7 @@ LocalConnection::LocalConnection(
   ProtectedPointer<Orb> orb,
   const String& _identifier) throw(InvalidFormat, OrbException)
   : OrbConnection(orb, 0), identifier(_identifier) {
-  assert(!identifier.isProper(), InvalidFormat(this));
+  bassert(!identifier.isProper(), InvalidFormat(this));
 }
 
 String LocalConnection::getUrn() const throw() {

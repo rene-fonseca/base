@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_XML__COMMENT_H
-#define _DK_SDU_MIP__BASE_XML__COMMENT_H
+#pragma once
 
 #include <base/xml/CharacterData.h>
 
@@ -43,7 +42,7 @@ public:
   
   inline Comment(Node node) throw(CastException)
     : CharacterData(node) {
-    assert(
+    bassert(
       node.isInvalid() || (node.getType() == COMMENT_NODE),
       CastException(this)
     );
@@ -51,7 +50,7 @@ public:
   
   inline Comment(CharacterData node) throw(CastException)
     : CharacterData(node) {
-    assert(
+    bassert(
       node.isInvalid() || (node.getType() == COMMENT_NODE),
       CastException(this)
     );
@@ -59,5 +58,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

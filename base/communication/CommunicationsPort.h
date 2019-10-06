@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COMMUNICATION__COMMUNICATIONS_PORT_H
-#define _DK_SDU_MIP__BASE_COMMUNICATION__COMMUNICATIONS_PORT_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/communication/CommunicationsException.h>
@@ -37,5 +36,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

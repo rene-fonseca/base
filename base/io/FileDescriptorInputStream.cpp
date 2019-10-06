@@ -125,7 +125,7 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException) {
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
-    assert(result == 0, IOException("Unable to get available bytes", this));
+    bassert(result == 0, IOException("Unable to get available bytes", this));
     return status.st_size;
 #endif // flavor
 }
@@ -135,7 +135,7 @@ unsigned int FileDescriptorInputStream::read(
   unsigned int bytesToRead,
   bool nonblocking) throw(IOException) {
   // TAG: currently always blocks
-  assert(!end, EndOfFile(this));
+  bassert(!end, EndOfFile(this));
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)

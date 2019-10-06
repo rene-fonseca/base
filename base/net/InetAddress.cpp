@@ -444,11 +444,11 @@ InetAddress::InetAddress(const uint8* address, Family family) throw() {
 }
 
 InetAddress::InetAddress(const String& address) throw(InvalidFormat) {
-  assert(parse(address), InvalidFormat("Not an Internet address", this));
+  bassert(parse(address), InvalidFormat("Not an Internet address", this));
 }
 
 InetAddress::InetAddress(const String& address, Family family) throw(InvalidFormat) {
-  assert(
+  bassert(
     parse(address) && (this->family == family),
     InvalidFormat("Not an Internet address", this)
   );
@@ -510,7 +510,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
       sizeof(address.words[3]),
       AF_INET
     ); // MT-safe
-    assert(hp, HostNotFound("Unable to resolve IP address", this));
+    bassert(hp, HostNotFound("Unable to resolve IP address", this));
 #  elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
          (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
     struct hostent result;
@@ -525,7 +525,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
       sizeof(buffer),
       &error
     );
-    assert(hp, HostNotFound("Unable to resolve IP address", this));
+    bassert(hp, HostNotFound("Unable to resolve IP address", this));
 #  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be

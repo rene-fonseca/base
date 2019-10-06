@@ -38,7 +38,7 @@ String::String(
   const Literal& literal) throw(StringException, MemoryException)
   : elements(0) {
   const unsigned int length = literal.getLength();
-  // assert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
+  // bassert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
   elements =
     new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
   copy<char>(
@@ -68,7 +68,7 @@ String::String(
   unsigned int maximum) throw(StringException, MemoryException)
   : elements(0) {
   if (string.getValue()) {
-    assert(maximum <= MAXIMUM_LENGTH, StringException(this));
+    bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
     const char* terminator =
       find(string.getValue(), maximum, Traits::TERMINATOR);
     int numberOfCharacters =
@@ -86,7 +86,7 @@ String::String(
 String& String::operator=(
   const Literal& literal) throw(StringException, MemoryException) {
   const unsigned int length = literal.getLength();
-  // assert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
+  // bassert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
   elements =
     new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
   copy<char>(
@@ -149,12 +149,12 @@ void String::forceToLength(
 }
 
 char String::getAt(unsigned int index) const throw(OutOfRange) {
-  assert(index < getLength(), OutOfRange(this));
+  bassert(index < getLength(), OutOfRange(this));
   return getBuffer()[index];
 }
 
 void String::setAt(unsigned int index, char value) throw(OutOfRange) {
-  assert(index < getLength(), OutOfRange(this));
+  bassert(index < getLength(), OutOfRange(this));
   if (value != TERMINATOR) {
     getBuffer()[index] = value;
   } else {
@@ -255,7 +255,7 @@ String& String::insert(
       MAXIMUM_LENGTH,
       Traits::TERMINATOR
     );
-    assert(terminator, StringException(this));
+    bassert(terminator, StringException(this));
     strlength = terminator - string.getValue();
   }
   unsigned int length = getLength();
@@ -284,7 +284,7 @@ String& String::append(
 String& String::append(
   const Literal& literal,
   unsigned int maximum) throw(StringException, MemoryException) {
-  assert(maximum <= MAXIMUM_LENGTH, StringException(this));
+  bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
   const unsigned int length = getLength();
   setLength(length + minimum<MemorySize>(literal.getLength(), maximum));
   char* buffer = elements->getElements();
@@ -299,7 +299,7 @@ String& String::append(
 String& String::append(
   const NativeString& string,
   unsigned int maximum) throw(StringException, MemoryException) {
-  assert(maximum <= MAXIMUM_LENGTH, StringException(this));
+  bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
   const unsigned int suffixLength =
     getLengthOfTerminated(string.getValue(), maximum);
   const unsigned int length = getLength();
@@ -484,7 +484,7 @@ int String::compareToIgnoreCase(const String& string) const throw() {
 
 int String::compareToIgnoreCase(
   const NativeString& string) const throw(StringException) {
-  assert(string.getValue(), StringException(this));
+  bassert(string.getValue(), StringException(this));
   return compareToIgnoreCase(getElements(), string.getValue());
 }
 

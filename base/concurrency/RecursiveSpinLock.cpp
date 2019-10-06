@@ -55,7 +55,7 @@ bool RecursiveSpinLock::tryExclusiveLock() const throw() {
 void RecursiveSpinLock::releaseLock() const throw() {
   // Thread::Identifier id = Thread::getIdentifier();
   ExclusiveSynchronize<Guard> _guard(guard);
-  // assert(owner == id, ConcurrencyException(this));
+  // bassert(owner == id, ConcurrencyException(this));
   if (--numberOfLocks == 0) {
     owner = 0; // relinquish ownership
     lock.releaseLock();

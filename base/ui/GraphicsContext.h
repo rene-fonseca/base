@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_UI__GRAPHICS_CONTEXT_H
-#define _DK_SDU_MIP__BASE_UI__GRAPHICS_CONTEXT_H
+#pragma once
 
 #include <base/ui/Bitmap.h>
 #include <base/ui/Color.h>
@@ -91,7 +90,7 @@ public:
     }
 
     inline void* getHandle() throw(UserInterfaceException) {
-      assert(handle.isValid(), UserInterfaceException(this));
+      bassert(handle.isValid(), UserInterfaceException(this));
       return handle->getHandle();
     }
 

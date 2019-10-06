@@ -26,10 +26,10 @@ OrbRequest::OrbRequest(
   
   unsigned int methodId;
   // channel->read(methodId);
-  // assert(methodId != 0, OrbException("Invalid method", this));
+  // bassert(methodId != 0, OrbException("Invalid method", this));
   
   bool compatible = true;
-  assert(compatible, OrbException("Incompatible methods", this));
+  bassert(compatible, OrbException("Incompatible methods", this));
 }
 
 OrbRequest::~OrbRequest() throw() {

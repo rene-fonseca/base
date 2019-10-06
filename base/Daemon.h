@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__DAEMON_H
-#define _DK_SDU_MIP__BASE__DAEMON_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/ResourceException.h>
@@ -45,5 +44,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__DYNAMIC_MEMORY_H
-#define _DK_SDU_MIP__BASE_MEM__DYNAMIC_MEMORY_H
+#pragma once
 
 #include <base/Primitives.h>
 #include <base/Base.h>
@@ -91,9 +90,9 @@ namespace alloc {
     MemoryException if the requested size is 0.
   */
   inline void* operator new(MemorySize size) throw(MemoryException) {
-    assert(size > 0, MemoryException()); // removed by compiler
+    bassert(size > 0, MemoryException()); // removed by compiler
     void* result = DynamicMemory::allocate(size);
-    assert(result != 0, MemoryException());
+    bassert(result != 0, MemoryException());
     return result;
   }
   
@@ -102,7 +101,7 @@ namespace alloc {
     MemoryException if memory is 0.
   */
   inline void operator delete(void* memory) throw(MemoryException) {
-    assert(memory && DynamicMemory::release(memory), MemoryException());
+    bassert(memory && DynamicMemory::release(memory), MemoryException());
   }
   
   /**
@@ -110,9 +109,9 @@ namespace alloc {
     bytes. Raises MemoryException if the requested size is 0.
   */
   inline void* operator new[](MemorySize size) throw(MemoryException) {
-    assert(size > 0, MemoryException()); // removed by compiler
+    bassert(size > 0, MemoryException()); // removed by compiler
     void* result = DynamicMemory::allocate(size);
-    assert(result != 0, MemoryException());
+    bassert(result != 0, MemoryException());
     return result;
   }
 
@@ -121,7 +120,7 @@ namespace alloc {
     MemoryException is memory is 0.
   */
   inline void operator delete[](void* memory) throw(MemoryException) {
-    assert(memory && DynamicMemory::release(memory), MemoryException());
+    bassert(memory && DynamicMemory::release(memory), MemoryException());
   }
 }; // end of namespace - alloc
 #endif
@@ -153,6 +152,4 @@ inline void* operator new[](base::MemorySize size) throw(base::MemoryException) 
 inline void operator delete[](void* memory) throw(base::MemoryException) {
   base::alloc::operator delete[](memory);
 }
-#endif
-
 #endif

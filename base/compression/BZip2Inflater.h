@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COMPRESSION__BZIP2_INFLATER_H
-#define _DK_SDU_MIP__BASE_COMPRESSION__BZIP2_INFLATER_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/compression/Inflater.h>

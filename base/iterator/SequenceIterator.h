@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_ITERATOR__SEQUENCE_ITERATOR_H
-#define _DK_SDU_MIP__BASE_ITERATOR__SEQUENCE_ITERATOR_H
+#pragma once
 
 #include <base/Iterator.h>
 #include <base/Primitives.h>
@@ -218,5 +217,3 @@ inline SequenceIterator<TYPE> operator+(
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

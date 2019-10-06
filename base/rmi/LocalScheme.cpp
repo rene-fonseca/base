@@ -41,7 +41,7 @@ Reference<OrbConnection> LocalScheme::open(
   fout << "DEBUG: "
        << "LocalScheme::open(" << '"' << endPoint << '"' << ')' << ENDL;
   
-  assert(
+  bassert(
     !endPoint.isProper(),
     InvalidFormat("Invalid local end-point", this)
   );

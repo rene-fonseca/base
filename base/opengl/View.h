@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_UI__REGION_H
-#define _DK_SDU_MIP__BASE_UI__REGION_H
+#pragma once
 
 #include <base/ui/Position.h>
 #include <base/Dimension.h>
@@ -115,5 +114,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

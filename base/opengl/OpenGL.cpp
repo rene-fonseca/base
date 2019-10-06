@@ -639,7 +639,7 @@ OpenGL::OpenGL(unsigned int latest) throw(OpenGLException) {
   opengl::dynamicLinker = new DynamicLinker(
     Literal(_DK_SDU_MIP__BASE__OPENGL_LIBRARY)
   );
-  assert(
+  bassert(
     opengl::dynamicLinker,
     OpenGLException("Unable to load OpenGL module", this)
   );
@@ -663,7 +663,7 @@ OpenGL::OpenGL(unsigned int latest) throw(OpenGLException) {
     method_cast<GetString>(
       opengl::dynamicLinker->getUncertainSymbol(MESSAGE("glGetString"))
     );
-  assert(glGetString, OpenGLException(this));
+  bassert(glGetString, OpenGLException(this));
   
   const GLubyte* version = glGetString(OpenGL::VERSION); // loaded above
   
@@ -729,7 +729,7 @@ OpenGL::OpenGL(unsigned int latest) throw(OpenGLException) {
 }
 
 bool OpenGL::isSupported(const String& name) throw(OpenGLException) {
-  assert(
+  bassert(
     name.isProper() && (name.indexOf(' ') < 0),
     OpenGLException(Type::getType<OpenGL>())
   );
@@ -832,7 +832,7 @@ Vector3D<double> OpenGL::project(Vector3D<double> object, const Matrix4x4<double
   Quaternion<double> in(object.getX(), object.getY(), object.getZ(), 1);
   Quaternion<double> out = model * in;
   in = projection * out;
-  assert(in.getW() != 0, OpenGLException(Type::getType<OpenGL>()));
+  bassert(in.getW() != 0, OpenGLException(Type::getType<OpenGL>()));
   in /= in.getW();
   return Vector3D<double>(
     viewport[0] + (1 + in.getX()) * 0.5 * viewport[2],
@@ -884,7 +884,7 @@ Vector3D<double> OpenGL::unProject(
   );
   
   Quaternion<double> object = matrix * in;
-  assert(object.getW() != 0, OpenGLException(Type::getType<OpenGL>()));
+  bassert(object.getW() != 0, OpenGLException(Type::getType<OpenGL>()));
   return Vector3D<double>(
     object.getX()/object.getW(),
     object.getY()/object.getW(),

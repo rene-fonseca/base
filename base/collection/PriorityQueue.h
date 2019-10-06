@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_COLLECTION__PRIORITY_QUEUE_H
-#define _DK_SDU_MIP__BASE_COLLECTION__PRIORITY_QUEUE_H
+#pragma once
 
 #include <base/collection/OrderedBinaryTree.h>
 #include <base/collection/Association.h>
@@ -48,20 +47,20 @@ protected:
   /** The elements of the priority queue. */
   OrderedBinaryTree<Node> elements;
   /** The number of elements in the priority queue. */
-  unsigned int size;
+  unsigned int size = 0;
 public:
 
   /**
     Initializes an empty priority queue.
   */
-  PriorityQueue() throw() : elements(), size(0) {
+  PriorityQueue() throw() {
   }
 
   /**
     Initializes a priority queue from other priority queue.
   */
   PriorityQueue(const PriorityQueue& copy) throw(MemoryException)
-    : elements(copy.elements), size(0) {
+    : elements(copy.elements) {
   }
 
   /**
@@ -85,7 +84,7 @@ public:
     @param value The value to be added to the queue.
   */
   void push(const Priority& priority, const Value& value) throw(MemoryException) {
-    OrderedBinaryTree<Node>::Node* node = elements.find(Node(priority));
+    auto node = elements.find(Node(priority));
     if (node) { // does the priority already exist in the tree
       node->getValue()->getValue()->push(value);
     } else {
@@ -101,9 +100,9 @@ public:
     InvalidNode if the priority queue is empty.
   */
   Value pop() throw(InvalidNode) {
-    assert(size, InvalidNode("Priority queue is empty", this));
+    bassert(size, InvalidNode("Priority queue is empty", this));
 
-    OrderedBinaryTree<Node>::Node* node = elements.getLast();
+    auto node = elements.getLast();
     Queue<Value>* queue = node->getValue()->getValue();
     Value result = queue->pop(); // queue is never empty
     if (queue->isEmpty()) {
@@ -115,5 +114,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

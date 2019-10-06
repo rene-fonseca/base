@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_CAPACITY_ALLOCATOR_H
-#define _DK_SDU_MIP__BASE_MEM__REFERENCE_COUNTED_CAPACITY_ALLOCATOR_H
+#pragma once
 
 #include <base/Base.h>
 #include <base/MemoryException.h>
@@ -86,5 +85,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

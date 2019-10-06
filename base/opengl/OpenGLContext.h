@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_OPENGL__OPEN_GL_CONTEXT_H
-#define _DK_SDU_MIP__BASE_OPENGL__OPEN_GL_CONTEXT_H
+#pragma once
 
 #include <base/ui/WindowImpl.h>
 #include <base/opengl/OpenGLContextImpl.h>
@@ -71,5 +70,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

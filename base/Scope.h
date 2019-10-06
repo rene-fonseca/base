@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__SCOPE_H
-#define _DK_SDU_MIP__BASE__SCOPE_H
+#pragma once
 
 #include <base/AutomationObject.h>
 #include <base/mem/NullPointer.h>
@@ -53,22 +52,22 @@ public:
   }
 
   inline TYPE& operator*() throw(NullPointer) {
-    assert(object, NullPointer(this));
+    bassert(object, NullPointer(this));
     return *object;
   }
 
   inline const TYPE& operator*() const throw(NullPointer) {
-    assert(object, NullPointer(this));
+    bassert(object, NullPointer(this));
     return *object;
   }
 
   inline TYPE* operator->() throw(NullPointer) {
-    assert(object, NullPointer(this));
+    bassert(object, NullPointer(this));
     return object;
   }
 
   inline const TYPE* operator->() const throw(NullPointer) {
-    assert(object, NullPointer(this));
+    bassert(object, NullPointer(this));
     return object;
   }
 
@@ -85,5 +84,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

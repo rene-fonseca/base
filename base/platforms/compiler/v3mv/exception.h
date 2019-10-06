@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_V3MV__EXCEPTION_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_V3MV__EXCEPTION_H
+#pragma once
 
 #include <base/platforms/features.h>
 #include <base/Primitives.h>

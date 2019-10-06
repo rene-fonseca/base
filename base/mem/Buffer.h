@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__BUFFER_H
-#define _DK_SDU_MIP__BASE_MEM__BUFFER_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/MemoryException.h>
@@ -38,11 +37,11 @@ public:
 protected:
 
   /** The bytes of the buffer. */
-  uint8* bytes;
+  uint8* bytes = nullptr;
   /** The size of the buffer. */
-  unsigned int size;
+  unsigned int size = 0;
   /** The granularity of the size. */
-  unsigned int granularity;
+  unsigned int granularity = 0;
 private:
 
   Buffer& operator=(const Buffer& eq) throw();
@@ -104,5 +103,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

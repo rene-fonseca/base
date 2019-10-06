@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__LIFETIME_H
-#define _DK_SDU_MIP__BASE_MEM__LIFETIME_H
+#pragma once
 
 #include <base/mem/NullPointer.h>
 #include <base/NotCopyable.h>
@@ -34,7 +33,7 @@ class Lifetime : public NotCopyable {
 private:
 
   /** Pointer to object. */
-  TYPE* object;
+  TYPE* object = nullptr;
 public:
   
   /**
@@ -43,7 +42,7 @@ public:
     @param object The object pointer to be automated.
   */
   inline Lifetime(TYPE* _object) throw(NullPointer) : object(_object) {
-    assert(object, NullPointer(this));
+    bassert(object, NullPointer(this));
   }
   
   /**
@@ -83,5 +82,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

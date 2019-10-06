@@ -82,19 +82,19 @@ Trustee::Trustee(TrusteeType type, const void* _id) throw(OutOfDomain) {
     return;
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid trustee", this));
+  bassert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid trustee", this));
   unsigned int size = ::GetLengthSid((PSID)_id);
   integralId = 0;
   id = new ReferenceCountedAllocator<uint8>(size);
   copy(id->getElements(), Cast::pointer<const uint8*>(_id), size);
 #else // unix
-  assert(
+  bassert(
     (type == Trustee::USER) ||
     (type == Trustee::GROUP) ||
     (type == Trustee::EVERYONE),
     OutOfDomain("Invalid trustee", this)
   );
-//   assert(
+//   bassert(
 //     ((type == Trustee::USER) ||
 //      (type == Trustee::GROUP) ||
 //      (type == Trustee::EVERYONE)) &&
@@ -139,7 +139,7 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
   SID_NAME_USE sidType;
   uint8 sid[SECURITY_MAX_SID_SIZE];
   DWORD size = sizeof(sid);
-  assert(::LookupAccountName(0,
+  bassert(::LookupAccountName(0,
                              name.getElements(),
                              &sid,
                              &size,
@@ -148,7 +148,7 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
                              &sidType) != 0,
          TrusteeException("Unable to lookup name", this)
   );
-  assert(sidType != SidTypeInvalid, TrusteeException("Not a trustee", this));
+  bassert(sidType != SidTypeInvalid, TrusteeException("Not a trustee", this));
   unsigned int sidSize = ::GetLengthSid((PSID)sid);
   integralId = getMaximum(integralId);
   id = new ReferenceCountedAllocator<uint8>(sidSize);
@@ -211,12 +211,12 @@ bool Trustee::isInitialized() const throw() {
 
 Trustee::TrusteeType Trustee::getType() const throw(TrusteeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  assert(id.isValid(), TrusteeException("Invalid", this));
+  bassert(id.isValid(), TrusteeException("Invalid", this));
   if (type == UNSPECIFIED) {
     DWORD nameSize = 0;
     DWORD domainNameSize = 0;
     SID_NAME_USE sidType = SidTypeInvalid;
-    assert(::LookupAccountSid(0,
+    bassert(::LookupAccountSid(0,
                               (PSID)id->getElements(), // must be valid
                               0,
                               &nameSize,
@@ -279,7 +279,7 @@ String Trustee::getName() const throw(TrusteeException) {
   DWORD nameSize = sizeof(name);
   char domainName[DNLEN+1];
   DWORD domainNameSize = sizeof(domainName);
-  assert(::LookupAccountSid(0, (PSID)id->getElements(), // must be valid
+  bassert(::LookupAccountSid(0, (PSID)id->getElements(), // must be valid
                             name, &nameSize,
                             domainName, &domainNameSize,
                             &sidType) != 0,
@@ -307,12 +307,12 @@ String Trustee::getName() const throw(TrusteeException) {
         buffer->getSize()/sizeof(char),
         &entry
       );
-      assert(result == 0, TrusteeException(this));
+      bassert(result == 0, TrusteeException(this));
       return String(entry->gr_name);
 #else
       //long sysconf(_SC_GETGR_R_SIZE_MAX);
       struct group* entry = ::getgrgid((gid_t)integralId);
-      assert(entry != 0, TrusteeException(this));
+      bassert(entry != 0, TrusteeException(this));
       return String(entry->gr_name);
 #endif // HAVE_GETGRNAM_R
     }
@@ -328,7 +328,7 @@ String Trustee::getName() const throw(TrusteeException) {
         buffer->getSize()/sizeof(char),
         &entry
       );
-      assert(result == 0, TrusteeException("Unable to lookup name", this));
+      bassert(result == 0, TrusteeException("Unable to lookup name", this));
       return String(entry->pw_name);
     }
   case Trustee::EVERYONE:

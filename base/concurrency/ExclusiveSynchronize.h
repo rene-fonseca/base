@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__EXCLUSIVE_SYNCHRONIZE_H
-#define _DK_SDU_MIP__BASE_CONCURRENCY__EXCLUSIVE_SYNCHRONIZE_H
+#pragma once
 
 #include <base/concurrency/Synchronizeable.h>
 
@@ -35,7 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
       if (earlyReturn) {
         return; // no need to explicitly release guard
       }
-      assert(!somethingWentWrong, MyResourceException()); // no need to explicitly release guard
+      bassert(!somethingWentWrong, MyResourceException()); // no need to explicitly release guard
     }
 
     void mySecondMethod() throw(MyResourceException) {
@@ -44,7 +43,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
       if (earlyReturn) {
         return; // no need to explicitly release guard
       }
-      assert(!somethingWentWrong, MyResourceException()); // no need to explicitly release guard
+      bassert(!somethingWentWrong, MyResourceException()); // no need to explicitly release guard
     }
   };
   @endcode
@@ -118,5 +117,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

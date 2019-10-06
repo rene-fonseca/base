@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_INTEL__INTEL_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_COMPILER_INTEL__INTEL_H
+#pragma once
 
 #define _DK_SDU_MIP__BASE__ALIGNED(alignment) __attribute__ ((aligned (alignment)))
 #define _DK_SDU_MIP__BASE__DEPRECATED __attribute__ ((deprecated))
@@ -39,5 +38,3 @@
   using namespace com::intel::compiler;
   
 } // end of namespace base
-
-#endif

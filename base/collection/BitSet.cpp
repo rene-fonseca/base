@@ -55,12 +55,12 @@ BitSet::BitSet(unsigned int _size, bool value) throw(MemoryException)
 }
 
 bool BitSet::getAt(unsigned int index) const throw(OutOfRange) {
-  assert(index < size, OutOfRange(this));
+  bassert(index < size, OutOfRange(this));
   return getElements()[getElementIndex(index)] & getBitMask(index);
 }
 
 void BitSet::setAt(unsigned int index, bool value) throw(OutOfRange) {
-  assert(index < size, OutOfRange(this));
+  bassert(index < size, OutOfRange(this));
   if (value) {
     getElements()[getElementIndex(index)] |= getBitMask(index); // set
   } else {
@@ -75,7 +75,7 @@ BitSet& BitSet::set() throw() {
 }
 
 BitSet& BitSet::set(unsigned int index) throw(OutOfRange) {
-  assert(index < size, OutOfRange(this));
+  bassert(index < size, OutOfRange(this));
   getElements()[getElementIndex(index)] |= getBitMask(index);
   return *this;
 }
@@ -87,7 +87,7 @@ BitSet& BitSet::reset() throw() {
 }
 
 BitSet& BitSet::reset(unsigned int index) throw(OutOfRange) {
-  assert(index < size, OutOfRange(this));
+  bassert(index < size, OutOfRange(this));
   getElements()[getElementIndex(index)] &= ~getBitMask(index);
   return *this;
 }
@@ -103,7 +103,7 @@ BitSet& BitSet::flip() throw() {
 }
 
 BitSet& BitSet::flip(unsigned int index) throw(OutOfRange) {
-  assert(index < size, OutOfRange(this));
+  bassert(index < size, OutOfRange(this));
   getElements()[getElementIndex(index)] ^= getBitMask(index);
   return *this;
 }
@@ -162,7 +162,8 @@ BitSet& BitSet::operator<<=(unsigned int shift) throw() {
   } else {
     unsigned int invBitShift = (sizeof(unsigned long) * 8) - bitShift;
     while (src > begin) {
-      *dest = (*src << bitShift) | (*--src >> invBitShift);
+      *dest = (*src << bitShift) | (src[-1] >> invBitShift);
+      --src;
       --dest;
     }
     *dest = *src << bitShift; // final (shift in zeros)

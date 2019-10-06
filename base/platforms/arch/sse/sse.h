@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_PLATFORMS_ARCH_SSE__SSE_H
-#define _DK_SDU_MIP__BASE_PLATFORMS_ARCH_SSE__SSE_H
+#pragma once
 
 // TAG: watch out for accuracy
 // FAST/APPROX must be enabled explicitly

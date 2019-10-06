@@ -3256,9 +3256,9 @@ public:
       : openGL(_openGL),
         numberOfLists(_numberOfLists),
         objects(_numberOfLists) {
-      assert(numberOfLists > 0, OutOfDomain(this));
+      bassert(numberOfLists > 0, OutOfDomain(this));
       offset = openGL.glGenLists(numberOfLists);
-      assert(offset > 0, OpenGLException("Display lists exhausted", this));
+      bassert(offset > 0, OpenGLException("Display lists exhausted", this));
       unsigned int* dest = objects.getElements();
       const unsigned int* end = dest + numberOfLists;
       for (unsigned int id = offset; dest < end; ++id, ++dest) {

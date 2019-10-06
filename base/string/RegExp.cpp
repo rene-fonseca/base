@@ -82,8 +82,8 @@ void RegExp::setPattern(const String& pattern) throw(MemoryException) {
 RegExp::Substring RegExp::match(
   const String& value,
   unsigned int start) const throw(RegExpException, OutOfRange) {
-  assert(compiled, RegExpException("Regular expression is invalid", this));
-  assert(start < value.getLength(), OutOfRange(this));
+  bassert(compiled, RegExpException("Regular expression is invalid", this));
+  bassert(start < value.getLength(), OutOfRange(this));
   #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
     regmatch_t pmatch[1];
     int code = regexec(
@@ -122,8 +122,8 @@ RegExp::Substring RegExp::match(
   const String& value,
   Array<Substring>& result,
   unsigned int start) const throw(RegExpException, OutOfRange) {
-  assert(compiled, RegExpException("Regular expression is invalid", this));
-  assert(start < value.getLength(), OutOfRange(this));
+  bassert(compiled, RegExpException("Regular expression is invalid", this));
+  bassert(start < value.getLength(), OutOfRange(this));
   #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
     regmatch_t pmatch[result.getSize()];
     int code = regexec(

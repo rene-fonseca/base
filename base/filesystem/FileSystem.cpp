@@ -395,7 +395,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
       0,
       0
     );
-    assert(find != INVALID_HANDLE_VALUE, FileSystemException(Type::getType<FileSystem>()));
+    bassert(find != INVALID_HANDLE_VALUE, FileSystemException(Type::getType<FileSystem>()));
     ::FindClose(find);
     if (information.dwFileAttributes & FILE_ATTRIBUTE_DEVICE) {
       flags |= FileSystem::DEVICE;
@@ -417,7 +417,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
   if (error) {
     ::CloseHandle(file);
   }
-  assert(!error, FileSystemException(Type::getType<FileSystem>()));
+  bassert(!error, FileSystemException(Type::getType<FileSystem>()));
   
   if (information.dwFileAttributes & FILE_ATTRIBUTE_DEVICE) {
     flags |= FileSystem::DEVICE;
@@ -463,7 +463,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
   struct stat status;
   int result = stat(path.getElements(), &status);
 #endif
-  assert(result == 0, FileSystemException("Unable to query entry", Type::getType<FileSystem>()));
+  bassert(result == 0, FileSystemException("Unable to query entry", Type::getType<FileSystem>()));
   unsigned int flags = 0;
   if (S_ISBLK(status.st_mode)) {
     flags |= FileSystem::BLOCK;
@@ -510,7 +510,7 @@ uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   WIN32_FIND_DATA information;
   HANDLE handle = ::FindFirstFile(path.getElements(), &information);
-  assert(
+  bassert(
     handle != INVALID_HANDLE_VALUE,
     FileSystemException("Unable to get size of file", Type::getType<FileSystem>())
   );
@@ -529,7 +529,7 @@ uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
   struct stat status;
   int result = stat(path.getElements(), &status);
 #endif
-  assert(result == 0, FileSystemException("Unable to get size of file", Type::getType<FileSystem>()));
+  bassert(result == 0, FileSystemException("Unable to get size of file", Type::getType<FileSystem>()));
   return status.st_size;
 #endif // flavor
 }
@@ -539,7 +539,7 @@ bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
   WIN32_FIND_DATA information;
   HANDLE handle = ::FindFirstFile(path.getElements(), &information);
   if (handle == INVALID_HANDLE_VALUE) {
-    assert(
+    bassert(
       ::GetLastError() == ERROR_FILE_NOT_FOUND,
       FileSystemException("Unable to examine if entry exists", Type::getType<FileSystem>())
     );
@@ -816,7 +816,7 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
   if (cachedSupportsLinks == -1) {
     supportsLinks();
   }
-  assert(cachedSupportsLinks == 1, NotSupported(Type::getType<FileSystem>()));
+  bassert(cachedSupportsLinks == 1, NotSupported(Type::getType<FileSystem>()));
 
   const char* elements = path.getElements();
   if ((elements[0] == '.') && ((elements[1] == 0) || ((elements[1] == '.') && (elements[2] == 0)))) { // "." or ".."
@@ -967,7 +967,7 @@ public:
 //     if (cachedSupportsLinks == -1) {
 //       supportsLinks();
 //     }
-//     assert(
+//     bassert(
 //       cachedSupportsLinks == 1,
 //       NotSupported("Symbolic link", Type::getType<FileSystem>())
 //     );
@@ -1154,7 +1154,7 @@ public:
 void FileSystem::makeHardLink(const String& target, const String& path) throw(NotSupported, FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__W2K)
-  assert(::CreateHardLink(path.getElements(), target.getElements(), 0) != 0,
+  bassert(::CreateHardLink(path.getElements(), target.getElements(), 0) != 0,
          FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
 #else
   typedef BOOL (*PCreateHardLink)(LPCSTR, LPCSTR, LPSECURITY_ATTRIBUTES);
@@ -1170,10 +1170,10 @@ void FileSystem::makeHardLink(const String& target, const String& path) throw(No
   } else {
     error = !FileSystemImpl::makeHardLink(target, path);
   }
-  assert(!error, FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
+  bassert(!error, FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
 #endif // w2k or later
 #else // unix
-  assert(::link(target.getElements(), path.getElements()) == 0, FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
+  bassert(::link(target.getElements(), path.getElements()) == 0, FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
 #endif // flavor
 }
 
@@ -1183,12 +1183,12 @@ void FileSystem::makeLink(const String& target, const String& path)
   if (cachedSupportsLinks == -1) {
     supportsLinks();
   }
-  assert(cachedSupportsLinks == 1, NotSupported(Type::getType<FileSystem>()));
+  bassert(cachedSupportsLinks == 1, NotSupported(Type::getType<FileSystem>()));
   
   char* fileNameComponent;
   
 	char fullTargetPath[MAX_PATH];
-  assert(
+  bassert(
     ::GetFullPathName(
       target.getElements(),
       MAX_PATH,
@@ -1203,7 +1203,7 @@ void FileSystem::makeLink(const String& target, const String& path)
   nativePath += NativeString(fullTargetPath);
   
   DWORD attributes = ::GetFileAttributes(target.getElements());
-  assert(
+  bassert(
     attributes != INVALID_FILE_ATTRIBUTES,
     FileSystemException(Type::getType<FileSystem>())
   );
@@ -1215,13 +1215,13 @@ void FileSystem::makeLink(const String& target, const String& path)
     if (!nativePath.endsWith(":\\")) {
       nativePath -= Literal("\\");
     }
-    assert(
+    bassert(
       nativePath.getLength() <= MAX_PATH,
       FileSystemException(Type::getType<FileSystem>())
     ); // watch out for buffer overflow
     // we do not care whether or not it already exists
     directoryCreated = ::CreateDirectory(path.getElements(), 0) != 0;
-    assert(directoryCreated, FileSystemException(Type::getType<FileSystem>()));
+    bassert(directoryCreated, FileSystemException(Type::getType<FileSystem>()));
     link = ::CreateFile(
       path.getElements(),
       GENERIC_WRITE,
@@ -1232,11 +1232,11 @@ void FileSystem::makeLink(const String& target, const String& path)
       0
     );
   } else {
-    assert(
+    bassert(
       !nativePath.endsWith("\\"),
       FileSystemException(Type::getType<FileSystem>())
     );
-    assert(
+    bassert(
       nativePath.getLength() <= MAX_PATH,
       FileSystemException(Type::getType<FileSystem>())
     ); // watch out for buffer overflow
@@ -1250,7 +1250,7 @@ void FileSystem::makeLink(const String& target, const String& path)
       0
     );
   }
-  assert(
+  bassert(
     link != INVALID_HANDLE_VALUE,
     FileSystemException(Type::getType<FileSystem>())
   );
@@ -1297,9 +1297,9 @@ void FileSystem::makeLink(const String& target, const String& path)
       ::DeleteFile(path.getElements()); // clean up // TAG: can we use FILE_FLAG_DELETE_ON_CLOSE
     }
   }
-  assert(!error, FileSystemException("Unable to make link", Type::getType<FileSystem>()));
+  bassert(!error, FileSystemException("Unable to make link", Type::getType<FileSystem>()));
 #else // unix
-  assert(
+  bassert(
     !::symlink(target.getElements(), path.getElements()),
     FileSystemException("Unable to make link", Type::getType<FileSystem>())
   );
@@ -1312,7 +1312,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
   if (cachedSupportsLinks == -1) {
     supportsLinks();
   }
-  assert(cachedSupportsLinks == 1, NotSupported("Symbolic link", Type::getType<FileSystem>()));
+  bassert(cachedSupportsLinks == 1, NotSupported("Symbolic link", Type::getType<FileSystem>()));
   
   HANDLE link = ::CreateFile(
     path.getElements(),
@@ -1597,7 +1597,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
 #else // unix
   char buffer[PATH_MAX + 1];
   ssize_t length = ::readlink(path.getElements(), buffer, sizeof(buffer));
-  assert(length >= 0, FileSystemException(Type::getType<FileSystem>()));
+  bassert(length >= 0, FileSystemException(Type::getType<FileSystem>()));
   return String(buffer, length);
 #endif
 }

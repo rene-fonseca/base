@@ -69,7 +69,7 @@ void SoundDevice::reacquireAccess(unsigned int access) throw(NotSupported) {
         break;
       }
       OperatingSystem::Handle handle = ::open("/dev/audio", flags); // linux and solaris
-      assert(handle != OperatingSystem::INVALID_HANDLE, NotSupported());
+      bassert(handle != OperatingSystem::INVALID_HANDLE, NotSupported());
       deviceDescriptor.setHandle(handle);
     }
   #endif // os

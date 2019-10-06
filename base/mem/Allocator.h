@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__ALLOCATOR_H
-#define _DK_SDU_MIP__BASE_MEM__ALLOCATOR_H
+#pragma once
 
 #include <base/mem/DynamicMemory.h>
 #include <base/Functor.h>
@@ -311,5 +310,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

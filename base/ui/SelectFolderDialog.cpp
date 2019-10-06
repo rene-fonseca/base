@@ -39,7 +39,7 @@ bool SelectFolderDialog::execute() throw(UserInterfaceException) {
   }
   
   HRESULT r = ::CoInitializeEx(0, COINIT_APARTMENTTHREADED);
-  assert(r == S_OK, UserInterfaceException(this));
+  bassert(r == S_OK, UserInterfaceException(this));
   
   char buffer[MAX_PATH];
   BROWSEINFO browseInfo;

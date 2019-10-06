@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MATHEMATICS__VECTOR_3D_H
-#define _DK_SDU_MIP__BASE_MATHEMATICS__VECTOR_3D_H
+#pragma once
 
 #include <base/string/FormatOutputStream.h>
 #include <base/mathematics/Math.h>
@@ -458,5 +457,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_RMI___H
-#define _DK_SDU_MIP__BASE_RMI___H
+#pragma once
 
 #include <base/features.h>
 
@@ -37,5 +36,3 @@ namespace orb {
 }; // end of namespace orb
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

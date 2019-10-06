@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_MEM__MEMORY_DUMP_H
-#define _DK_SDU_MIP__BASE_MEM__MEMORY_DUMP_H
+#pragma once
 
 #include <base/string/FormatOutputStream.h>
 #include <base/OutOfDomain.h>
@@ -68,7 +67,7 @@ public:
     Sets the word size (1, 2, 4, or 8).
   */
   inline void setWordSize(unsigned int value) throw(OutOfDomain) {
-//     assert(
+//     bassert(
 //       (size % value == 0) && (Cast::getOffset(memory) % value == 0) &&
 //       ((value == sizeof(uint8)) || (value == sizeof(uint16)) ||
 //        (value == sizeof(uint32)) || (value == sizeof(uint64))),
@@ -81,7 +80,7 @@ public:
     Sets the global offset.
   */
   void setOffsetDigits(unsigned int digits) throw(OutOfDomain) {
-    assert((digits >= 4) && (digits <= 16), OutOfDomain(this));
+    bassert((digits >= 4) && (digits <= 16), OutOfDomain(this));
     offsetDigits = digits;
   }
   
@@ -89,7 +88,7 @@ public:
     Sets the global offset.
   */
   void setGlobalOffset(uint64 offset) throw(OutOfDomain) {
-    assert(offset % 16 == 0, OutOfDomain(this));
+    bassert(offset % 16 == 0, OutOfDomain(this));
     this->offset = offset;
   }
   
@@ -106,5 +105,3 @@ inline MemoryDump::MemoryDump(const uint8* _memory, unsigned int _size, unsigned
 FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& value) throw(IOException);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

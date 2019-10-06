@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_IO__HANDLE_H
-#define _DK_SDU_MIP__BASE_IO__HANDLE_H
+#pragma once
 
 #include <base/mem/Reference.h>
 #include <base/OperatingSystem.h>
@@ -46,7 +45,7 @@ public:
   /**
     Initializes an invalid handle.
   */
-  inline Handle() throw() : handle(OperatingSystem::INVALID_HANDLE) {
+  inline Handle() throw() {
   }
 
   /**
@@ -77,5 +76,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

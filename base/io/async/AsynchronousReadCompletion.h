@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_IO_ASYNC__ASYNCHRONOUS_READ_COMPLETION_H
-#define _DK_SDU_MIP__BASE_IO_ASYNC__ASYNCHRONOUS_READ_COMPLETION_H
+#pragma once
 
 #include <base/Object.h>
 
@@ -40,15 +39,15 @@ public:
 protected:
   
   /** The buffer associated with the operation. */
-  uint8* buffer;
+  uint8* buffer = nullptr;
   /** The desired number of bytes to be read. */
-  unsigned int bytesToRead;
+  unsigned int bytesToRead = 0;
   /** The offset. */
-  unsigned long long offset;
+  unsigned long long offset = 0;
   /** Specified the number of bytes read. */
-  unsigned int bytesRead;
+  unsigned int bytesRead = 0;
   /** Flags. */
-  unsigned int flags;
+  unsigned int flags = 0;
 public:
 
   /**
@@ -115,5 +114,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

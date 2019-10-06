@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__EXCEPTION_H
-#define _DK_SDU_MIP__BASE__EXCEPTION_H
+#pragma once
 
 #include <base/Type.h>
 
@@ -214,5 +213,3 @@ inline void raise(EXCEPTION e) throw(EXCEPTION) {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -31,7 +31,7 @@ LinkerManager* LinkerManager::getManager() throw() {
 
 LinkerManager::LinkerManager() throw(SingletonException)
   : registratedModule(0) {
-  assert(linkerManager == 0, SingletonException(this));
+  bassert(linkerManager == 0, SingletonException(this));
   linkerManager = this;
 }
 

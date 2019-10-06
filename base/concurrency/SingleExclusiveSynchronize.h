@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE_CONCURRENCY__SINGLE_EXCLUSIVE_SYNCHRONIZE_H
-#define _DK_SDU_MIP__BASE_CONCURRENCY__SINGLE_EXCLUSIVE_SYNCHRONIZE_H
+#pragma once
 
 #include <base/concurrency/Synchronizeable.h>
 #include <base/concurrency/ConcurrencyException.h>
@@ -53,7 +52,7 @@ public:
   inline explicit SingleExclusiveSynchronize(
     const Guard& _guard) throw(ConcurrencyException)
     : guard(_guard) {
-    assert(guard.tryExclusiveLock(), ConcurrencyException(this));
+    bassert(guard.tryExclusiveLock(), ConcurrencyException(this));
   }
   
   /**
@@ -96,5 +95,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

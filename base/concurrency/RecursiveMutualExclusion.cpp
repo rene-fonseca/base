@@ -58,7 +58,7 @@ void RecursiveMutualExclusion::releaseLock() const
   throw(MutualExclusionException) {
   // Thread::Identifier id = Thread::getIdentifier();
   ExclusiveSynchronize<Guard> _guard(guard);
-  // assert(owner == id, ConcurrencyException(this));
+  // bassert(owner == id, ConcurrencyException(this));
   if (--numberOfLocks == 0) {
     owner = 0; // relinquish ownership
     lock.releaseLock();
@@ -67,7 +67,7 @@ void RecursiveMutualExclusion::releaseLock() const
 
 RecursiveMutualExclusion::~RecursiveMutualExclusion()
   throw(MutualExclusionException) {
-  assert(
+  bassert(
     guard.tryExclusiveLock() && lock.tryExclusiveLock(),
     MutualExclusionException(this)
   );

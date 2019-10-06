@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__BASE__INTEGER_H
-#define _DK_SDU_MIP__BASE__INTEGER_H
+#pragma once
 
 #include <base/Object.h>
 #include <base/Primitives.h>
@@ -125,5 +124,3 @@ inline Integer::Integer(int _value) throw()
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

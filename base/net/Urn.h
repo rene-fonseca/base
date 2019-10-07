@@ -87,14 +87,14 @@ public:
   /**
     Returns the namespace identifier.
   */
-  inline String getNID() const throw() {
+  inline const String& getNID() const throw() {
     return nid;
   }
   
   /**
     Returns the namespace specific string.
   */
-  inline String getNSS() const throw() {
+  inline const String& getNSS() const throw() {
     return nss;
   }
   

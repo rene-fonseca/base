@@ -262,7 +262,7 @@ void Urn::setNID(const String& value) throw(InvalidFormat) {
     --j, ++i
   );
   bassert(i == end, InvalidFormat(this));
-  this->nid = nid;
+  this->nid = value;
 }
 
 void Urn::setNSS(const String& value) throw(InvalidFormat) {
@@ -307,7 +307,7 @@ void Urn::setNSS(const String& value) throw(InvalidFormat) {
       throw InvalidFormat(this);
     }
   };
-  this->nss = nss;
+  this->nss = value;
 }
 
 String Urn::getUrn() const throw(MemoryException) {

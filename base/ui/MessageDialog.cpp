@@ -46,7 +46,7 @@ bool MessageDialog::execute() throw(UserInterfaceException) {
     MB_OK | MB_ICONEXCLAMATION, // EXCLAMATION
     MB_OK | MB_ICONINFORMATION, // INFORMATION
   };
-  int result = ::MessageBox(0, message.getElements(), title.getElements(), MB_TOPMOST | MB_SETFOREGROUND | NATIVE_TYPES[category]);
+  int result = ::MessageBox(0, toWide(message).c_str(), toWide(title).c_str(), MB_TOPMOST | MB_SETFOREGROUND | NATIVE_TYPES[category]);
   switch (result) {
   case IDABORT:
     answer = MessageDialog::ABORT;

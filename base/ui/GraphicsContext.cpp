@@ -124,7 +124,7 @@ int CALLBACK EnumFontFamExProc(
 Array<String> GraphicsContext::Font::getFonts() throw(UserInterfaceException) {
   Array<String> result;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  LOGFONT logFont;
+//  LOGFONT logFont;
 //   logFont.lfHeight = 0;
 //   logFont.lfWidth = 0;
 //   logFont.lfEscapement = 0;
@@ -178,7 +178,7 @@ GraphicsContext::Font::Font(
     CLIP_DEFAULT_PRECIS, // clipping precision
     ANTIALIASED_QUALITY, // quality
     DEFAULT_PITCH, // pitch and family
-    name.getElements() // typeface name
+    toWide(name).c_str() // typeface name
   );
   bassert(font, UserInterfaceException(this));
   setHandle(font);

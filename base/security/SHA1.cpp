@@ -184,10 +184,6 @@ void SHA1::pushEnd() throw() {
   bytesInBuffer = 0;
 }
 
-uint64 SHA1::getTotalSize() const throw() {
-  return totalSize;
-}
-
 String SHA1::getValue() const throw() { 
   String result(sizeof(messageDigest) * 2);
   result.forceToLength(sizeof(messageDigest) * 2);

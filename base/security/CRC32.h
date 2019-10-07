@@ -36,7 +36,7 @@ private:
   /** The current checksum. */
   uint32 checksum = 0;
   /** The total number of bytes pushed. */
-  unsigned long long totalSize = 0;
+  uint64 totalSize = 0;
 public:
 
   /** Lookup table of CRCs of all 8-bit messages. */
@@ -59,7 +59,9 @@ public:
   /**
     Returns the total size of the original message.
   */
-  unsigned long long getTotalSize() const throw();
+  inline uint64 getTotalSize() const throw() {
+    return totalSize;
+  }
   
   /**
     Returns the checksum.

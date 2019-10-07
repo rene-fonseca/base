@@ -153,10 +153,6 @@ void SHA512::pushEnd() throw() {
   bytesInBuffer = 0;
 }
 
-uint64 SHA512::getTotalSize() const throw() {
-  return totalSize;
-}
-
 String SHA512::getValue() const throw() {
   String result(sizeof(messageDigest) * 2);
   result.forceToLength(sizeof(messageDigest) * 2);

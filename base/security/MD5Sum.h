@@ -48,13 +48,13 @@ public:
   /** Internal block size in bytes. */
   static const unsigned int BLOCK_SIZE = 64;
   /** Specifies the maximum length (in bytes) of the original message. */
-  static const unsigned long long MAXIMUM_SIZE = (1ULL << (64 - 3)) - 1;
+  static const uint64 MAXIMUM_SIZE = (1ULL << (64 - 3)) - 1;
 private:
 
   /** Message digest buffer. */
   unsigned int messageDigest[4] = {0, 0, 0, 0};
   /** The total number of bytes pushed. */
-  unsigned long long totalSize = 0;
+  uint64 totalSize = 0;
   /** Temporary container for incomplete 16 word block. */
   uint8 buffer[BLOCK_SIZE];
   /** The number of bytes in the buffer. */
@@ -88,7 +88,9 @@ public:
   /**
     Returns the total size of the original message.
   */
-  unsigned long long getTotalSize() const throw();
+  inline uint64 getTotalSize() const throw() {
+    return totalSize;
+  }
   
   /**
     Returns the message digest encoded in hex. This is only valid after

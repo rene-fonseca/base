@@ -33,9 +33,9 @@ class Adler32 : public Object, public PushInterface {
 private:
   
   /** The current checksum. */
-  uint32 checksum = 0;
+  uint32 checksum = 1;
   /** The total number of bytes pushed. */
-  unsigned long long totalSize = 0;
+  uint64 totalSize = 0;
 public:
   
   /** The largest prime smaller than 65536. */
@@ -58,7 +58,9 @@ public:
   /**
     Returns the total size of the original message.
   */
-  unsigned long long getTotalSize() const throw();
+  inline uint64 getTotalSize() const throw() {
+    return totalSize;
+  }
   
   /**
     Returns the checksum.

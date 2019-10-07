@@ -153,10 +153,6 @@ void SHA384::pushEnd() throw() {
   bytesInBuffer = 0;
 }
 
-uint64 SHA384::getTotalSize() const throw() {
-  return totalSize;
-}
-
 String SHA384::getValue() const throw() {
   String result(sizeof(uint64) * (getArraySize(messageDigest) - 2) * 2);
   result.forceToLength(sizeof(uint64) * (getArraySize(messageDigest) - 2) * 2);

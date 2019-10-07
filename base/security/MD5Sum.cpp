@@ -61,7 +61,7 @@ public:
   }
 };
 
-MD5Sum::MD5Sum() throw() : totalSize(0), bytesInBuffer(0) {
+MD5Sum::MD5Sum() throw() {
   messageDigest[0] = 0x67452301;
   messageDigest[1] = 0xefcdab89;
   messageDigest[2] = 0x98badcfe;
@@ -204,10 +204,6 @@ void MD5Sum::pushEnd() throw() {
   }
   pushBlock(buffer);
   bytesInBuffer = 0;
-}
-
-unsigned long long MD5Sum::getTotalSize() const throw() {
-  return totalSize;
 }
 
 String MD5Sum::getValue() const throw() {

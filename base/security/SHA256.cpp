@@ -148,10 +148,6 @@ void SHA256::pushEnd() throw() {
   bytesInBuffer = 0;
 }
 
-uint64 SHA256::getTotalSize() const throw() {
-  return totalSize;
-}
-
 String SHA256::getValue() const throw() {
   String result(sizeof(messageDigest) * 2);
   result.forceToLength(sizeof(messageDigest) * 2);

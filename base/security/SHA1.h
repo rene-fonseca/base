@@ -118,7 +118,9 @@ public:
   /**
     Returns the total size of the original message.
   */
-  uint64 getTotalSize() const throw();
+  inline uint64 getTotalSize() const throw() {
+    return totalSize;
+  }
 
   /**
     Returns the message digest encoded in hex. This is only valid after

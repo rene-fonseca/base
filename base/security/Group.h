@@ -35,8 +35,9 @@ class Group : public Object {
   friend class Trustee;
 private:
 
+  static constexpr unsigned long INVALID = PrimitiveTraits<unsigned long>::MAXIMUM;
   /** Identifier of the group represented as an integral if possible. */
-  unsigned long integralId = PrimitiveTraits<unsigned long>::MAXIMUM;
+  unsigned long integralId = INVALID;
   /** Opaque identifier of the group. */
   Reference<ReferenceCountedAllocator<uint8> > id;
 public:
@@ -147,7 +148,7 @@ public:
     exists.
   */
   inline bool isValid() const throw() {
-    return integralId != getMaximum(integralId);
+    return integralId != INVALID;
   }
 
   /**

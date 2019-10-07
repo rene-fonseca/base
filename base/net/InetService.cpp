@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 unsigned short InetService::getByName(
   const String& name, const String& protocol) throw() {
-  struct servent* sp;
+  struct servent* sp = nullptr;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   sp = getservbyname(name.getElements(), protocol.getElements()); // MT-safe
 #elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
@@ -39,7 +39,7 @@ unsigned short InetService::getByName(
   char buffer[1024]; // how big should this buffer be
   getservbyname_r(name.getElements(), protocol.getElements(), &result, buffer, sizeof(buffer), &sp);
 #else
-  #warning Using MT-unsafe getservbyname
+//  #warning Using MT-unsafe getservbyname
   sp = getservbyname(name.getElements(), protocol.getElements());
 #endif
   return sp ? ByteOrder::fromBigEndian<unsigned short>(sp->s_port) : 0;
@@ -47,7 +47,7 @@ unsigned short InetService::getByName(
 
 String InetService::getByPort(
   unsigned short port, const String& protocol) throw() {
-  struct servent* sp;
+  struct servent* sp = nullptr;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   sp = getservbyport(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements()); // MT-safe
 #elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
@@ -60,7 +60,7 @@ String InetService::getByPort(
   char buffer[1024]; // how big should this buffer be
   getservbyport_r(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements(), &result, buffer, sizeof(buffer), &sp);
 #else
-  #warning Using MT-unsafe getservbyport
+//  #warning Using MT-unsafe getservbyport
   sp = getservbyport(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements());
 #endif
   return sp ? String(sp->s_name) : String();

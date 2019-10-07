@@ -136,7 +136,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
       throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
 #  else
-    #warning gethostbyname is not MT-safe
+//    #warning gethostbyname is not MT-safe
     if (!(hp = gethostbyname(name.getElements()))) {
       throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
@@ -198,7 +198,7 @@ InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound
       throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
 #  else
-    #warning gethostbyname is not MT-safe
+//    #warning gethostbyname is not MT-safe
     if (!(hp = gethostbyname(name.getElements()))) {
       throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
@@ -498,8 +498,8 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
   if ((family == IP_VERSION_6) &&
       ((address.words[0] != 0) ||
        (address.words[1] != 0) ||
-       (address.words[2] != ByteOrder::toBigEndian<uint32>(0xffffU)) &&
-       (address.words[3] != 0))) {
+       ((address.words[2] != ByteOrder::toBigEndian<uint32>(0xffffU)) &&
+        (address.words[3] != 0)))) {
     throw HostNotFound("Unable to resolve IP address", this);
   }
   
@@ -528,7 +528,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 #  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
-    int error;
+    int error = 0;
     if (gethostbyaddr_r(
           Cast::getCharAddress(address.words[3]),
           sizeof(address.words[3]),
@@ -541,7 +541,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
       throw HostNotFound("Unable to resolve IP address", this);
     }
 #  else
-    #warning gethostbyaddr is not MT-safe
+//    #warning gethostbyaddr is not MT-safe
     if (!(hp = gethostbyaddr(Cast::getCharAddress(address.words[3]), sizeof(address.words[3]), AF_INET))) {
       throw HostNotFound("Unable to resolve IP address", this);
     }
@@ -613,8 +613,8 @@ bool InetAddress::isLoopback() const throw() {
 }
 
 bool InetAddress::isMulticast() const throw() {
-  return (family == IP_VERSION_6) && (address.octets[0] == 0xff) ||
-    (family == IP_VERSION_4) && ((address.octets[12] & 0xf0) == 0xe0); // class d
+  return ((family == IP_VERSION_6) && (address.octets[0] == 0xff)) ||
+    ((family == IP_VERSION_4) && ((address.octets[12] & 0xf0) == 0xe0)); // class d
 }
 
 bool InetAddress::isLinkLocal() const throw() {

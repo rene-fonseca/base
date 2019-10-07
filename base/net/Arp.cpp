@@ -16,6 +16,8 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
 
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL
+
 #if 0
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)

@@ -28,7 +28,8 @@
      (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K) || \
      (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WXP) || \
      (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__BEOS) || \
-     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__AIX))
+     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__AIX) || \
+     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS))
 #else
 #  error Invalid operating system (OS) specification
 #endif
@@ -92,6 +93,8 @@
 #  warning Unsupported architecture ABI
 #endif
 #endif
+
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

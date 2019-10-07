@@ -16,7 +16,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-InetEndPoint::InetEndPoint() throw() : port(0) {
+InetEndPoint::InetEndPoint() throw() {
 }
 
 InetEndPoint::InetEndPoint(
@@ -31,7 +31,7 @@ InetEndPoint::InetEndPoint(
 
 InetEndPoint::InetEndPoint(
   const InetAddress& _address, const String& service) throw(ServiceNotFound)
-  : address(_address), port(0) {
+  : address(_address) {
   try {
     Integer integer(service);
     if ((integer < 0) || (integer > 0xffff)) {
@@ -45,7 +45,7 @@ InetEndPoint::InetEndPoint(
 
 InetEndPoint::InetEndPoint(
   const String& host, const String& service) throw(ServiceNotFound)
-  : address(host), port(0) {
+  : address(host) {
   try {
     Integer integer(service);
     if ((integer < 0) || (integer > 0xffff)) {

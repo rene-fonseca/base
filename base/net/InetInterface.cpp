@@ -177,7 +177,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
   }
   close(handle);
 #else
-#  warning InetInterface::getInterfaceNames() not supported
+// #  warning InetInterface::getInterfaceNames() not supported
 #endif
   return interfaces;
 }
@@ -353,7 +353,7 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
   }
   close(handle);
 #else
-#  warning InetInterface::getInterfaces() not supported
+// #  warning InetInterface::getInterfaces() not supported
 #endif
   return interfaces;
 }

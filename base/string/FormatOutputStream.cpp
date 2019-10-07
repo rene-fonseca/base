@@ -1134,7 +1134,8 @@ public:
     if (bitShift != 0) {
       unsigned int invBitShift = (sizeof(unsigned int) * 8) - bitShift;
       while (src > value) {
-        *dest = (*src << bitShift) | (*--src >> invBitShift);
+        *dest = (*src << bitShift) | (src[-1] >> invBitShift);
+        --src;
         --dest;
       }
       *dest = *src << bitShift; // final (shift in zeros)

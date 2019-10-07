@@ -88,4 +88,4 @@ if (MSVC)
 target_link_libraries(base Ws2_32 Netapi32 Winmm)
 endif ()
 
-# add_subdirectory("testsuite")
+add_subdirectory("testsuite")

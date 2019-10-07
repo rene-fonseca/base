@@ -182,7 +182,7 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
       &entry
     );
   #else
-    #warning Trustee::Trustee(const String& name) uses non-reentrant getgrnam
+//    #warning Trustee::Trustee(const String& name) uses non-reentrant getgrnam
     struct group* entry = ::getgrnam(name.getElements());
     int result = entry ? 0 : -1;
   #endif

@@ -13,6 +13,8 @@
 
 #include <base/platforms/features.h>
 
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL
+
 // include platform specific source files
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -23,14 +25,5 @@
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
-namespace {
-
-  // TAG: this function prevents an empty archive (temporary fix)
-  // TAG: binutils does not access empty archives on some platforms
-  void denyEmtpyArchive() throw() {
-  }
-  
-}
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

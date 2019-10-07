@@ -120,13 +120,15 @@ unsigned int SoundOutputStream::getChannels() const throw() {
   SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    int channels;
+    int channels = 0;
     bassert(::ioctl(handle, SOUND_PCM_READ_CHANNELS, &channels) == 0, UnexpectedFailure());
     return channels;
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     audio_info_t info;
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.play.channels;
+  #else
+    return 0;
   #endif // os
 #endif // flavor
 }
@@ -138,13 +140,15 @@ unsigned int SoundOutputStream::getRate() const throw() {
   SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    int rate;
+    int rate = 0;
     bassert(::ioctl(handle, SOUND_PCM_READ_RATE, &rate) == 0, UnexpectedFailure());
     return rate;
   #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
     audio_info_t info;
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.play.sample_rate;
+  #else
+    return 0;
   #endif // os
 #endif // flavor
 }
@@ -166,6 +170,8 @@ unsigned int SoundOutputStream::getPosition() const throw() {
     audio_info_t info;
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.play.samples;
+  #else
+    return 0;
   #endif // os
 #endif // flavor
 }
@@ -259,9 +265,9 @@ unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) thr
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   unsigned int bytesWritten = 0;
   while (bytesWritten < size) {
-    int result;
+    int result = 0;
     do {
-      result = ::write(handle, buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
+      result = ::write(handle, buffer, ((size_t)size <= SSIZE_MAX) ? size : SSIZE_MAX);
       if (result < 0) { // has an error occured
         bassert(errno == EINTR, IOException());
       }

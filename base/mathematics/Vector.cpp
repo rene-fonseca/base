@@ -16,6 +16,8 @@
 #include <base/mathematics/Math.h>
 #include <base/Functor.h>
 
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 template<class TYPE>

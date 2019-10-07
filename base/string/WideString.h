@@ -775,9 +775,9 @@ public:
   */
   WideString(const WideLiteral& string) throw(WideStringException, MemoryException);
 
-  WideString(const wchar* string) throw(StringException, MemoryException);
+  WideString(const wchar* string) throw(MemoryException);
 
-  WideString(const std::string& string) throw(StringException, MemoryException);
+  WideString(const std::string& string) throw(WideStringException, MemoryException);
 
   WideString(const std::wstring& string) throw(WideStringException, MemoryException);
 

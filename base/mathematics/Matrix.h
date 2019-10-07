@@ -802,7 +802,7 @@ public:
   // Friend section
 
 
-
+#if 0
   /**
     Returns the product of the matrices.
   */
@@ -844,6 +844,7 @@ public:
   */
   friend FormatOutputStream& operator<< <>(
     FormatOutputStream& stream, const Matrix& value) throw(IOException);
+#endif
 };
 
 /**

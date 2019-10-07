@@ -381,7 +381,7 @@ unsigned int WideString::UCS2ToUTF8(
         *dest++ = code;
       } else if (code <= 0x000007ffU) {
         *dest++ = 0xc0 | (code >> 6); // 5 bit - most significant
-        *dest++ = 0x80 | (code >> 0) & ((1 << 6) - 1); // 6 bit
+        *dest++ = 0x80 | ((code >> 0) & ((1 << 6) - 1)); // 6 bit
       } else {
         bassert(
           !((code >= 0xdc00) && (code <= 0xdfff)),
@@ -398,13 +398,13 @@ unsigned int WideString::UCS2ToUTF8(
             (static_cast<ucs4>(code) - 0xd800) * 0x0400 +
             (static_cast<ucs4>(lowSurrogate) - 0xdc00);
           *dest++ = 0xf0 | (ch >> 18); // 3 bit - most significant
-          *dest++ = 0x80 | (ch >> 12) & ((1 << 6) - 1); // 6 bit
-          *dest++ = 0x80 | (ch >> 6) & ((1 << 6) - 1); // 6 bit
-          *dest++ = 0x80 | (ch >> 0) & ((1 << 6) - 1); // 6 bit
+          *dest++ = 0x80 | ((ch >> 12) & ((1 << 6) - 1)); // 6 bit
+          *dest++ = 0x80 | ((ch >> 6) & ((1 << 6) - 1)); // 6 bit
+          *dest++ = 0x80 | ((ch >> 0) & ((1 << 6) - 1)); // 6 bit
         } else {
           *dest++ = 0xe0 | (code >> 12); // 4 bit - most significant
-          *dest++ = 0x80 | (code >> 6) & ((1 << 6) - 1); // 6 bit
-          *dest++ = 0x80 | (code >> 0) & ((1 << 6) - 1); // 6 bit
+          *dest++ = 0x80 | ((code >> 6) & ((1 << 6) - 1)); // 6 bit
+          *dest++ = 0x80 | ((code >> 0) & ((1 << 6) - 1)); // 6 bit
         }
       }
     }
@@ -464,29 +464,29 @@ unsigned int WideString::UCS4ToUTF8(
         *dest++ = value;
       } else if (value <= 0x000007ffU) {
         *dest++ = 0xc0 | (value >> 6); // 5 bit - most significant
-        *dest++ = 0x80 | (value >> 0) & ((1 << 6) - 1); // 6 bit
+        *dest++ = 0x80 | ((value >> 0) & ((1 << 6) - 1)); // 6 bit
       } else if (value <= 0x0000ffffU) { // TAG: 0000fffe must never appear?
         *dest++ = 0xe0 | (value >> 12); // 4 bit - most significant
-        *dest++ = 0x80 | (value >> 6) & ((1 << 6) - 1); // 6 bit
-        *dest++ = 0x80 | (value >> 0) & ((1 << 6) - 1); // 6 bit
+        *dest++ = 0x80 | ((value >> 6) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 0) & ((1 << 6) - 1)); // 6 bit
       } else if (value <= 0x001fffffU) {
         *dest++ = 0xf0 | (value >> 18); // 3 bit - most significant
-        *dest++ = 0x80 | (value >> 12) & ((1 << 6) - 1); // 6 bit
-        *dest++ = 0x80 | (value >> 6) & ((1 << 6) - 1); // 6 bit
-        *dest++ = 0x80 | (value >> 0) & ((1 << 6) - 1); // 6 bit
+        *dest++ = 0x80 | ((value >> 12) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 6) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 0) & ((1 << 6) - 1)); // 6 bit
       } else if (value <= 0x03ffffffU) {
         *dest++ = 0xf8 | (value >> 24); // 3 bit - most significant
-        *dest++ = 0x80 | (value >> 18) & ((1 << 6) - 1); // 6 bit
-        *dest++ = 0x80 | (value >> 12) & ((1 << 6) - 1); // 6 bit
-        *dest++ = 0x80 | (value >> 6) & ((1 << 6) - 1); // 6 bit
-        *dest++ = 0x80 | (value >> 0) & ((1 << 6) - 1); // 6 bit
+        *dest++ = 0x80 | ((value >> 18) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 12) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 6) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 0) & ((1 << 6) - 1)); // 6 bit
       } else if (value <= 0x7fffffffU) {
         *dest++ = 0xfc | (value >> 30); // 1 bit - most significant
-        *dest++ = 0x80 | (value >> 24) & ((1 << 6) - 1); // 6 bit
-        *dest++ = 0x80 | (value >> 18) & ((1 << 6) - 1); // 6 bit
-        *dest++ = 0x80 | (value >> 12) & ((1 << 6) - 1); // 6 bit
-        *dest++ = 0x80 | (value >> 6) & ((1 << 6) - 1); // 6 bit
-        *dest++ = 0x80 | (value >> 0) & ((1 << 6) - 1); // 6 bit
+        *dest++ = 0x80 | ((value >> 24) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 18) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 12) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 6) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 0) & ((1 << 6) - 1)); // 6 bit
       } else {
         throw WideStringException("Invalid UCS-4 character", Type::getType<WideString>());
       }
@@ -1097,7 +1097,8 @@ unsigned int WideString::UTF16ToUCS4(ucs4* dest, const uint8* src, unsigned int 
           validBe = true;
         } else if (be <= 0xdbff) {
           if (src < end) {
-            uint16 temp = (static_cast<unsigned int>(*src++) << 8) | (static_cast<unsigned int>(*src++) << 0);
+            const uint16 temp = (static_cast<unsigned int>(src[0]) << 8) | (static_cast<unsigned int>(src[1]) << 0);
+            src += 2;
             if ((temp >= 0xdc00) && (temp <= 0xdfff)) {
               be = (be - 0xd800) * 0x0400 + (static_cast<unsigned int>(temp) - 0xdc00); // not final ucs4 value
               if ((be <= 0x0000ffff) && ((be & 0xf) < 0xe)) {
@@ -1115,7 +1116,8 @@ unsigned int WideString::UTF16ToUCS4(ucs4* dest, const uint8* src, unsigned int 
           validLe = true;
         } else if (le <= 0xdbff) {
           if (src < end) {
-            uint16 temp = (static_cast<unsigned int>(*src++) << 8) | (static_cast<unsigned int>(*src++) << 0);
+            const uint16 temp = (static_cast<unsigned int>(src[0]) << 8) | (static_cast<unsigned int>(src[1]) << 0);
+            src += 2;
             if ((temp >= 0xdc00) && (temp <= 0xdfff)) {
               le = (le - 0xd800) * 0x0400 + (static_cast<unsigned int>(temp) - 0xdc00); // not final ucs4 value
               if ((le <= 0x0000ffff) && ((le & 0xf) < 0xe)) {
@@ -1159,12 +1161,14 @@ unsigned int WideString::UTF16ToUCS4(ucs4* dest, const uint8* src, unsigned int 
   case UTF16BE:
     if (dest != 0) {
       while (src < end) {
-        unsigned int code = (static_cast<unsigned int>(*src++) << 8) | (static_cast<unsigned int>(*src++) << 0);
+        unsigned int code = (static_cast<unsigned int>(src[0]) << 8) | (static_cast<unsigned int>(src[1]) << 0);
+        src += 2;
         if (code <= 0xd7ff) {
           *dest++ = code; // always valid
         } else if (code <= 0xdbff) {
           bassert(src < end, MultibyteException("Invalid UTF-16 encoding", Type::getType<WideString>()));
-          uint16 temp = (static_cast<unsigned int>(*src++) << 8) | (static_cast<unsigned int>(*src++) << 0);
+          const uint16 temp = (static_cast<unsigned int>(src[0]) << 8) | (static_cast<unsigned int>(src[1]) << 0);
+          src += 2;
           bassert(
             (temp >= 0xdc00) && (temp <= 0xdfff),
             MultibyteException("Invalid UTF-16 encoding", Type::getType<WideString>())
@@ -1185,11 +1189,13 @@ unsigned int WideString::UTF16ToUCS4(ucs4* dest, const uint8* src, unsigned int 
     } else {
       unsigned int length = 0;
       while (src < end) {
-        unsigned int code = (static_cast<unsigned int>(*src++) << 8) | (static_cast<unsigned int>(*src++) << 0);
+        uint16 code = (static_cast<unsigned int>(src[0]) << 8) | (static_cast<unsigned int>(src[1]) << 0);
+        src += 2;
         if (code <= 0xd7ff) {
         } else if (code <= 0xdbff) {
           bassert(src < end, MultibyteException("Invalid UTF-16 encoding", Type::getType<WideString>()));
-          uint16 temp = (static_cast<unsigned int>(*src++) << 8) | (static_cast<unsigned int>(*src++) << 0);
+          const uint16 temp = (static_cast<unsigned int>(src[0]) << 8) | (static_cast<unsigned int>(src[1]) << 0);
+          src += 2;
           bassert(
             (temp >= 0xdc00) && (temp <= 0xdfff),
             MultibyteException("Invalid UTF-16 encoding", Type::getType<WideString>())
@@ -1213,12 +1219,14 @@ unsigned int WideString::UTF16ToUCS4(ucs4* dest, const uint8* src, unsigned int 
   case UTF16LE:
     if (dest != 0) {
       while (src < end) {
-        unsigned int code = (static_cast<unsigned int>(*src++) << 0) | (static_cast<unsigned int>(*src++) << 8);
+        unsigned int code = (static_cast<unsigned int>(src[0]) << 8) | (static_cast<unsigned int>(src[1]) << 0);
+        src += 2;
         if (code <= 0xd7ff) {
           *dest++ = code; // always valid
         } else if (code <= 0xdbff) {
           bassert(src < end, MultibyteException("Invalid UTF-16 encoding", Type::getType<WideString>()));
-          uint16 temp = (static_cast<unsigned int>(*src++) << 0) | (static_cast<unsigned int>(*src++) << 8);
+          const uint16 temp = (static_cast<unsigned int>(src[0]) << 8) | (static_cast<unsigned int>(src[1]) << 0);
+          src += 2;
           bassert(
             (temp >= 0xdc00) && (temp <= 0xdfff),
             MultibyteException("Invalid UTF-16 encoding", Type::getType<WideString>())
@@ -1239,11 +1247,13 @@ unsigned int WideString::UTF16ToUCS4(ucs4* dest, const uint8* src, unsigned int 
     } else {
       unsigned int length = 0;
       while (src < end) {
-        unsigned int code = (static_cast<unsigned int>(*src++) << 0) | (static_cast<unsigned int>(*src++) << 8);
+        unsigned int code = (static_cast<unsigned int>(src[0]) << 8) | (static_cast<unsigned int>(src[1]) << 0);
+        src += 2;
         if (code <= 0xd7ff) {
         } else if (code <= 0xdbff) {
           bassert(src < end, MultibyteException("Invalid UTF-16 encoding", Type::getType<WideString>()));
-          uint16 temp = (static_cast<unsigned int>(*src++) << 0) | (static_cast<unsigned int>(*src++) << 8);
+          const uint16 temp = (static_cast<unsigned int>(src[0]) << 8) | (static_cast<unsigned int>(src[1]) << 0);
+          src += 2;
           bassert(
             (temp >= 0xdc00) && (temp <= 0xdfff),
             MultibyteException("Invalid UTF-16 encoding", Type::getType<WideString>())
@@ -1366,8 +1376,8 @@ WideString::MultibyteEncoding WideString::getMultibyteEncoding(const uint8* src,
           (static_cast<unsigned int>(s[1]) << 8) |
           (static_cast<unsigned int>(s[2]) << 16) |
           (static_cast<unsigned int>(s[3]) << 24);
-        bool validBe = (be <= 0x0000ffff) || (be <= 0x0010ffff) && ((be & 0xf) < 0xe);
-        bool validLe = (le <= 0x0000ffff) || (le <= 0x0010ffff) && ((le & 0xf) < 0xe);
+        bool validBe = (be <= 0x0000ffff) || ((be <= 0x0010ffff) && ((be & 0xf) < 0xe));
+        bool validLe = (le <= 0x0000ffff) || ((le <= 0x0010ffff) && ((le & 0xf) < 0xe));
         if (validBe && !validLe) {
           return UTF32BE;
         } else if (!validBe && validLe) {
@@ -1432,8 +1442,8 @@ unsigned int WideString::UTF32ToUCS4(ucs4* dest, const uint8* src, unsigned int 
           (static_cast<unsigned int>(s[2]) << 16) |
           (static_cast<unsigned int>(s[3]) << 24);
 
-        bool validBe = (be <= 0x0000ffff) || (be <= 0x0010ffff) && ((be & 0xf) < 0xe);
-        bool validLe = (le <= 0x0000ffff) || (le <= 0x0010ffff) && ((le & 0xf) < 0xe);
+        bool validBe = (be <= 0x0000ffff) || ((be <= 0x0010ffff) && ((be & 0xf) < 0xe));
+        bool validLe = (le <= 0x0000ffff) || ((le <= 0x0010ffff) && ((le & 0xf) < 0xe));
         
         if (validBe && !validLe) {
           encoding = UTF32BE;
@@ -1467,7 +1477,7 @@ unsigned int WideString::UTF32ToUCS4(ucs4* dest, const uint8* src, unsigned int 
         code |= static_cast<unsigned int>(*src++) << 8;
         code |= static_cast<unsigned int>(*src++) << 0;
         bassert(
-          (code <= 0x0000ffff) || (code <= 0x0010ffff) && ((code & 0xf) < 0xe),
+          (code <= 0x0000ffff) || ((code <= 0x0010ffff) && ((code & 0xf) < 0xe)),
           MultibyteException("Invalid UTF-32 encoding")
         );
         if (!((flags & EAT_BOM) && (code == BOM))) {
@@ -1484,7 +1494,7 @@ unsigned int WideString::UTF32ToUCS4(ucs4* dest, const uint8* src, unsigned int 
         code |= static_cast<unsigned int>(*src++) << 8;
         code |= static_cast<unsigned int>(*src++) << 0;
         bassert(
-          (code <= 0x0000ffff) || (code <= 0x0010ffff) && ((code & 0xf) < 0xe),
+          (code <= 0x0000ffff) || ((code <= 0x0010ffff) && ((code & 0xf) < 0xe)),
           MultibyteException("Invalid UTF-32 encoding")
         );
         if (!((flags & EAT_BOM) && (code == BOM))) {
@@ -1503,7 +1513,7 @@ unsigned int WideString::UTF32ToUCS4(ucs4* dest, const uint8* src, unsigned int 
         code |= static_cast<unsigned int>(*src++) << 16;
         code |= static_cast<unsigned int>(*src++) << 24;
         bassert(
-          (code <= 0x0000ffff) || (code <= 0x0010ffff) && ((code & 0xf) < 0xe),
+          (code <= 0x0000ffff) || ((code <= 0x0010ffff) && ((code & 0xf) < 0xe)),
           MultibyteException("Invalid UTF-32 encoding")
         );
         if (!((flags & EAT_BOM) && (code == BOM))) {
@@ -1520,7 +1530,7 @@ unsigned int WideString::UTF32ToUCS4(ucs4* dest, const uint8* src, unsigned int 
         code |= static_cast<unsigned int>(*src++) << 16;
         code |= static_cast<unsigned int>(*src++) << 24;
         bassert(
-          (code <= 0x0000ffff) || (code <= 0x0010ffff) && ((code & 0xf) < 0xe),
+          (code <= 0x0000ffff) || ((code <= 0x0010ffff) && ((code & 0xf) < 0xe)),
           MultibyteException("Invalid UTF-32 encoding")
         );
         if (!((flags & EAT_BOM) && (code == BOM))) {
@@ -1587,7 +1597,7 @@ WideString::WideString(unsigned int capacity) throw(MemoryException) {
   elements->ensureCapacity(capacity + 1);
 }
 
-WideString::WideString(const wchar* string) throw(StringException, MemoryException) {
+WideString::WideString(const wchar* string) throw(MemoryException) {
   if (string) {
     const size_t size = wcslen(string);
     initialize(string, size);
@@ -2762,8 +2772,11 @@ std::wstring toWide(const WideString& s) {
 
 std::string toUTF8(const WideString& s) {
   // TAG: not tested
+#if 0
   std::wstring_convert<std::codecvt_utf8<ucs4>, ucs4> convert;
   return convert.to_bytes(s.getElements(), s.getElements() + s.getLength());
+#endif
+return std::string();
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

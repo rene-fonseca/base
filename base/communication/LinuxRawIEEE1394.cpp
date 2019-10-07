@@ -19,6 +19,8 @@
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/filesystem/FileSystem.h>
 
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL
+
 #if 0
 
 #if (_DK_SDU_MIP__BASE__FLAVOR != _DK_SDU_MIP__BASE__UNIX)

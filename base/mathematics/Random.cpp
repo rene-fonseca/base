@@ -123,7 +123,7 @@ unsigned int Random::getInteger() throw() {
   unsigned int bits;
   Random::spinLock.exclusiveLock();
     unsigned int i = (nextWord + Traits::m < Traits::n) ? (nextWord + Traits::m) : (nextWord + Traits::m - Traits::n);
-    unsigned int y = state[i] & ~((1 << Traits::r) - 1) | state[i + 1] & ((1 << Traits::r) - 1);
+    unsigned int y = (state[i] & ~((1 << Traits::r) - 1)) | (state[i + 1] & ((1 << Traits::r) - 1));
     bits = state[nextWord] = state[i] ^ (y >> 1) ^ ((y & 0x1) ? Traits::a : 0);
     nextWord = ++nextWord % Traits::n;
   Random::spinLock.releaseLock();

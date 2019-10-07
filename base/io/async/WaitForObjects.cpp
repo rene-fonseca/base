@@ -14,6 +14,8 @@
 #include <base/platforms/features.h>
 #include <base/io/async/WaitForObjects.h>
 
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL
+
 #if 0
 
 #include <windows.h>

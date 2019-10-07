@@ -40,7 +40,8 @@
 #  include <errno.h>
 #  include <sys/time.h> // defines timeval on Linux systems
 
-#  if (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__CYGWIN)
+#  if (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__CYGWIN) && \
+      (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__MACOS)
 #    include <stropts.h> // defines FLUSH macros
 #  endif
 
@@ -53,6 +54,10 @@
 #  endif
 #  include <sys/ioctl.h> // defines FIONREAD
 #endif // flavor
+
+#if (_DK_SDU_MIP__BASE__FLAVOR != _DK_SDU_MIP__BASE__WIN32)
+typedef int SOCKET;
+#endif
 
 // do we need to repair bad header file
 #if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) && defined(bind))
@@ -97,6 +102,7 @@
 
 #if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
      (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__SOLARIS) && \
+     (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__MACOS) && \
      !defined(_DK_SDU_MIP__BASE__SOCKLEN_T))
   typedef int socklen;
 #else
@@ -1643,7 +1649,7 @@ unsigned int Socket::read(
     int result = ::recv(
       (SOCKET)socket->getHandle(),
       buffer,
-      minimum<unsigned int>(bytesToRead, SSIZE_MAX),
+      minimum<size_t>(bytesToRead, SSIZE_MAX),
       0
     );
     if (result < 0) { // has an error occured
@@ -1702,7 +1708,7 @@ unsigned int Socket::write(
     int result = ::send(
       (SOCKET)socket->getHandle(),
       buffer,
-      minimum<unsigned int>(bytesToWrite, SSIZE_MAX),
+      minimum<size_t>(bytesToWrite, SSIZE_MAX),
       0
     );
     if (result < 0) { // has an error occured

@@ -36,7 +36,7 @@ String::String(unsigned int capacity) throw(MemoryException) {
   elements->ensureCapacity(capacity + 1);
 }
 
-String::String(const char* string) throw(StringException, MemoryException) {
+String::String(const char* string) throw(MemoryException) {
   if (string) {
     const size_t size = strlen(string);
     initialize(string, size);

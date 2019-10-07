@@ -41,7 +41,7 @@ file(GLOB base_SRC
   "base/communication/*.h"
   "base/communication/*.cpp"
   "base/compression/*.h"
-#  "base/compression/*.cpp"
+  "base/compression/*.cpp"
   "base/dl/*.h"
   "base/dl/*.cpp"
   "base/filesystem/*.h"
@@ -88,4 +88,4 @@ if (MSVC)
 target_link_libraries(base Ws2_32 Netapi32 Winmm)
 endif ()
 
-# TAG: add testsuite add_subdirectory("testsuite")
+# add_subdirectory("testsuite")

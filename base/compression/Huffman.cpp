@@ -191,7 +191,7 @@ public:
     
     // insert nodes in sorted list (frequency)
     int lastNode = ALPHABET_SIZE - 1;
-    for (; (lastNode >= 0) && (nodes[lastNode].frequency == 0); --lastNode); // find non-zero frequency
+    for (; (lastNode >= 0) && (nodes[lastNode].frequency == 0); --lastNode) {} // find non-zero frequency
     ASSERT(lastNode >= 0); // size > 0 => lastNode >= 0
     
     unsigned int lastList = 0; // the index of the last linked list
@@ -639,7 +639,7 @@ public:
           }
         }
         --availableBits;
-        code = (code << 1) | (bitBuffer >> availableBits) & 1; // get one bit
+        code = (code << 1) | ((bitBuffer >> availableBits) & 1); // get one bit
         
         ++length;
         bassert(length <= maximumLength, InvalidFormat("Invalid Huffman code", this));

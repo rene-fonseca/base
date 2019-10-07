@@ -420,7 +420,7 @@ public:
     const uint32 virtualAddress,
     const unsigned int rawOffset,
     const unsigned int rawSize) throw(IOException) {
-    assert((virtualAddress & 3) == 0, OutOfDomain(this));
+    bassert((virtualAddress & 3) == 0, OutOfDomain(this));
     
     Allocator<uint8> buffer(rawSize);
     
@@ -532,7 +532,7 @@ public:
     const uint32 virtualAddress,
     const unsigned int rawOffset,
     const unsigned int rawSize) throw(IOException) {
-    assert((virtualAddress & 3) == 0, OutOfDomain(this));
+    bassert((virtualAddress & 3) == 0, OutOfDomain(this));
     
     Allocator<uint8> buffer(rawSize);
     
@@ -605,7 +605,7 @@ public:
         } else {
           fout << "import by name" << SP;
           uint32 addressRVA = *importLookupTable & 0x7fffffff;
-          assert((addressRVA & 1) == 0, InvalidFormat(this));
+          bassert((addressRVA & 1) == 0, InvalidFormat(this));
           const void* hintTable =
             buffer.getElements() + addressRVA - virtualAddress;
           const LittleEndian<uint16>* hint =
@@ -628,7 +628,7 @@ public:
     const uint32 virtualAddress,
     const unsigned int rawOffset,
     const unsigned int rawSize) throw(IOException) {
-    assert((virtualAddress & 3) == 0, OutOfDomain(this));
+    bassert((virtualAddress & 3) == 0, OutOfDomain(this));
     
     Allocator<uint8> buffer(rawSize);
     

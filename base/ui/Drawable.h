@@ -33,11 +33,8 @@ protected:
   void* drawableHandle = nullptr;
 public:
 
-  inline Drawable() throw()
-    : drawableHandle(0) {
+  inline Drawable() throw() {
   }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

@@ -189,7 +189,7 @@ void Pipe::flush() throw(PipeException) {
   }
 #else // unix
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
-    #warning Pipe::flush() not supported (CYGWIN)
+//    #warning Pipe::flush() not supported (CYGWIN)
   #else
     int command = FLUSHW;
     if (::ioctl(fd->getHandle(), I_FLUSH, &command)) {

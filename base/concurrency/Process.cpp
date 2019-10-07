@@ -382,11 +382,11 @@ int Process::wait(unsigned int microseconds) throw() {
   if (::WaitForSingleObject(handle->getHandle(), (microseconds+999)/1000) == WAIT_TIMEOUT) {
     return Application::EXIT_CODE_INVALID;
   }
-  DWORD exitCode;
+  DWORD exitCode = 0;
   ::GetExitCodeProcess(handle->getHandle(), &exitCode);
   return (exitCode != static_cast<unsigned int>(Application::EXIT_CODE_INVALID)) ? exitCode : Application::EXIT_CODE_CONFLICT;
 #else // unix
-#  warning Process::wait(unsigned int microseconds) not implemented
+// #  warning Process::wait(unsigned int microseconds) not implemented
   return Application::EXIT_CODE_INVALID;
 #endif // flavor
 }
@@ -396,12 +396,12 @@ int Process::wait() throw(ProcessException) {
   if (!handle->isValid()) {
     lock();
   }
-  DWORD exitCode;
+  DWORD exitCode = 0;
   ::WaitForSingleObject(handle->getHandle(), INFINITE);
   ::GetExitCodeProcess(handle->getHandle(), &exitCode);
   return exitCode;
 #else // unix
-  int status;
+  int status = 0;
   pid_t result = ::waitpid((pid_t)id, &status, 0);
   if (result != (pid_t)id) {
     if (errno == EINTR) {

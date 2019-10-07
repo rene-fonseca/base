@@ -1422,7 +1422,7 @@ unsigned int File::write(
 #else // unix
     int result;
     do {
-      result = ::write(fd->getHandle(), buffer, minimum<unsigned int>(bytesToWrite, SSIZE_MAX));
+      result = ::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
       if (result < 0) { // has an error occured
         switch (errno) {
         case EINTR: // interrupted by signal before any data was written

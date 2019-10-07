@@ -1348,7 +1348,7 @@ unsigned int File::read(
 #else // unix
     int result;
     do {
-      result = ::read(fd->getHandle(), buffer, minimum<unsigned int>(bytesToRead, SSIZE_MAX));
+      result = ::read(fd->getHandle(), buffer, minimum<size_t>(bytesToRead, SSIZE_MAX));
       if (result < 0) { // has an error occured
         switch (errno) { // remember that errno is local to the thread
         case EINTR: // interrupted by signal before any data was read

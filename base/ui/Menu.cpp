@@ -169,6 +169,35 @@ void Menu::setHighlighted(unsigned int index, bool highlighted) throw(MenuExcept
 #endif // flavor
 }
 
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+
+// TAG: put in windows mapping header
+
+class SystemString {
+private:
+
+  std::wstring buffer;
+public:
+
+  inline SystemString() {
+  }
+
+  inline SystemString(const String& s) : buffer(toWide(s)) {
+  }
+
+  inline SystemString(const std::string& s) : buffer(toWide(s)) {
+  }
+
+  inline operator wchar*() noexcept {
+    return const_cast<wchar*>(buffer.c_str());
+  }
+
+  inline operator const wchar*() const noexcept {
+    return buffer.c_str();
+  }
+};
+#endif
+
 void Menu::setName(unsigned int index, const String& name) throw(MenuException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
@@ -176,8 +205,8 @@ void Menu::setName(unsigned int index, const String& name) throw(MenuException) 
   info.cbSize = sizeof(info);
   info.fMask = MIIM_FTYPE | MIIM_STRING;
   info.fType = MFT_STRING;
-  const char* temp = name.getElements();
-  info.dwTypeData = (char*)temp;
+  SystemString _name(name);
+  info.dwTypeData = _name;
   bassert(::SetMenuItemInfo(menu, index, TRUE, &info), MenuException(this));
 #else // unix
    // TAG: fixme 
@@ -238,8 +267,8 @@ void Menu::insert(unsigned int index, const String& name, unsigned int identifie
   info.fState |= (flags & Menu::CHECKED) ? MFS_CHECKED : MFS_UNCHECKED;
   info.fState |= (flags & Menu::HIGHLIGHTED) ? MFS_HILITE : MFS_UNHILITE;
   info.wID = identifier;
-  const char* temp = name.getElements();
-  info.dwTypeData = (char*)temp;
+  SystemString _name(name);
+  info.dwTypeData = _name;
   bassert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
 #else // unix
   // TAG: fixme
@@ -261,8 +290,8 @@ void Menu::append(const String& name, unsigned int identifier, unsigned int flag
   info.fState |= (flags & Menu::CHECKED) ? MFS_CHECKED : MFS_UNCHECKED;
   info.fState |= (flags & Menu::HIGHLIGHTED) ? MFS_HILITE : MFS_UNHILITE;
   info.wID = identifier;
-  const char* temp = name.getElements();
-  info.dwTypeData = (char*)temp;
+  SystemString _name(name);
+  info.dwTypeData = _name;
   bassert(::InsertMenuItem(menu, index, TRUE, &info), MenuException(this));
 #else // unix
   // TAG: fixme

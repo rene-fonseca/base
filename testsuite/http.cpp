@@ -182,9 +182,9 @@ public:
     String::ReadIterator name = i;
     for (; (i < end) && HTTPTraits::isToken(*i); ++i) { // skip name
     }
-    assert(name < i, HTTPException("Invalid message header"));
+    bassert(name < i, HTTPException("Invalid message header"));
     this->name = line.substring(name - begin, i - begin);
-    assert(*i++ == ':', HTTPException("Invalid message header"));
+    bassert(*i++ == ':', HTTPException("Invalid message header"));
     for (; (i < end) && HTTPTraits::isLWS(*i); ++i) { // skip LWS
     }
     String::ReadIterator value = i;
@@ -202,7 +202,7 @@ public:
       for (; (i < endValue) && (*i != '"') && HTTPTraits::isText(*i); ++i) { // skip quoted string
         // TAG: need support for '\\'
       }
-      assert(
+      bassert(
         (i == --endValue) && (*i++ == '"'),
         HTTPException("Invalid message header")
       );
@@ -477,7 +477,7 @@ protected:
       }
     }
 
-    assert(valid && validVersion && validCode && validPhrase, HTTPException("Invalid response"));
+    bassert(valid && validVersion && validCode && validPhrase, HTTPException("Invalid response"));
   }
 
   /* See chapter 5 of RFC */
@@ -494,7 +494,7 @@ protected:
       METHOD_CONNECT
     };
 
-    assert(resourceUri != "", HTTPException("Empty resourceUri"));
+    bassert(resourceUri != "", HTTPException("Empty resourceUri"));
     
     StringOutputStream stream;
     stream << methods[method] << Traits::SP << resourceUri << Traits::SP
@@ -580,7 +580,7 @@ protected:
         while ((i < end) && (*i == Traits::SP)) { // skip spaces
           ++i;
         }
-        assert(
+        bassert(
           (i < end) && ASCIITraits::isHexDigit(*i),
           InvalidResponse("Chunk size invalid")
         );

@@ -273,7 +273,7 @@ public:
     fout << "Connection from: "
          << InetEndPoint(streamSocket.getAddress(), streamSocket.getPort())
          << ENDL;
-    assert(hostAllowed(streamSocket.getAddress()), OutOfDomain());
+    bassert(hostAllowed(streamSocket.getAddress()), OutOfDomain());
   }
 
   void client() throw() {
@@ -429,33 +429,33 @@ public:
       const String* argument = enu.next();
       if (*argument == "--help") {
       } else if (*argument == "--loopback") {
-        assert(!loopbackSpecified && !hostSpecified && !portSpecified, OutOfDomain());
+        bassert(!loopbackSpecified && !hostSpecified && !portSpecified, OutOfDomain());
         loopbackSpecified = true;
         loopback = true;
       } else if (*argument == "--stereo") {
-        assert(!stereoSpecified, OutOfDomain());
+        bassert(!stereoSpecified, OutOfDomain());
         stereoSpecified = true;
         channels = 2;
       } else if (*argument == "--host") {
-        assert(!hostSpecified && !loopbackSpecified, OutOfDomain("Already specified"));
-        assert(enu.hasNext(), OutOfDomain("Host value missing"));
+        bassert(!hostSpecified && !loopbackSpecified, OutOfDomain("Already specified"));
+        bassert(enu.hasNext(), OutOfDomain("Host value missing"));
         host = *enu.next();
         hostSpecified = true;
         isServer = false;
       } else if (*argument == "--port") {
-        assert(!portSpecified && !loopbackSpecified, OutOfDomain());
-        assert(enu.hasNext(), OutOfDomain("Port value missing"));
+        bassert(!portSpecified && !loopbackSpecified, OutOfDomain());
+        bassert(enu.hasNext(), OutOfDomain("Port value missing"));
         const String* rateString = enu.next();
         unsigned int temp = UnsignedInteger(*rateString).getValue();
-        assert((temp > 0) && (temp <= 0xffff), OutOfDomain("Port is invalid"));
+        bassert((temp > 0) && (temp <= 0xffff), OutOfDomain("Port is invalid"));
         portSpecified = true;
         port = temp;
       } else if (*argument == "--rate") {
-        assert(!rateSpecified, OutOfDomain());
-        assert(enu.hasNext(), OutOfDomain("Rate value missing"));
+        bassert(!rateSpecified, OutOfDomain());
+        bassert(enu.hasNext(), OutOfDomain("Rate value missing"));
         const String* rateString = enu.next();
         unsigned int temp = UnsignedInteger(*rateString).getValue();
-        assert((temp >= 1000) && (temp <= 44100), OutOfDomain("Sampling rate is invalid"));
+        bassert((temp >= 1000) && (temp <= 44100), OutOfDomain("Sampling rate is invalid"));
         rateSpecified = true;
         samplingRate = temp;
       } else {

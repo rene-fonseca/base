@@ -64,7 +64,7 @@ public:
 //       DateSkeleton* result = dynamic_cast<DateSkeleton*>(
 //         Cast::getPointer<OrbSkeleton*>(reference.getId())
 //       );
-//       assert(result, CastException(this));
+//       bassert(result, CastException(this));
     }
     
     int getDate() const throw(OrbException) {
@@ -72,7 +72,7 @@ public:
 //         Cast::getPointer<const DateInterface*>(reference.getId());
 
       int methodId = getMethodId("getDate");
-      assert(
+      bassert(
         methodId >= 0,
         bindCause(OrbException("No such method"), OrbException::INVALID_METHOD)
       );
@@ -82,8 +82,8 @@ public:
       DateSkeleton* skeleton = Cast::getPointer<DateSkeleton*>(
         reference.getId()
       );
-      assert(skeleton, NullPointer(this));
-      // assert(skeleton, CastException(this));
+      bassert(skeleton, NullPointer(this));
+      // bassert(skeleton, CastException(this));
       return skeleton->getDate();
     }
   };

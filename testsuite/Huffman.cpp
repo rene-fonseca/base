@@ -49,7 +49,7 @@ public:
     File sourceFile(source, File::READ, 0);
     
     unsigned long long size = sourceFile.getSize();
-    assert(
+    bassert(
       size <= PrimitiveTraits<unsigned int>::MAXIMUM,
       IOException("File is too big for me", this)
     );
@@ -73,7 +73,7 @@ public:
     File sourceFile(source, File::READ, 0);
     
     unsigned long long size = sourceFile.getSize();
-    assert(
+    bassert(
       size <= PrimitiveTraits<unsigned int>::MAXIMUM,
       IOException("File is too big for me", this)
     );

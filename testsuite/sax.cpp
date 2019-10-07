@@ -1074,7 +1074,7 @@ public:
     Traverses the specified document.
   */
   void traverse(const Document& document) throw(SAXException) {
-    assert(!parsing, SAXException(this));
+    bassert(!parsing, SAXException(this));
     parsing = true;
     // TAG: fixme
     

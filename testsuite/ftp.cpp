@@ -232,7 +232,7 @@ protected:
       while (true) { // read line
         char ch;
         instream >> ch;
-        assert(
+        bassert(
           String::Traits::isASCII(ch),
           FTPException("Reply contains invalid character")
         );
@@ -272,7 +272,7 @@ protected:
       }
     }
     responsePending = false;
-    assert(replyCode.valid, FTPException("Failed to get reply"));
+    bassert(replyCode.valid, FTPException("Failed to get reply"));
   }
 
   /** Sends password to server. */
@@ -367,21 +367,21 @@ public:
   }
 
   int sendUser(const String& username) throw(InvalidFormat, FTPException) {
-    assert(isValidString(username), InvalidFormat("Invalid FTP string"));
+    bassert(isValidString(username), InvalidFormat("Invalid FTP string"));
     request(CMD_USER, username);
     getResponse();
     return replyCode.reply;
   }
 
   int sendPassword(const String& password) throw(InvalidFormat, FTPException) {
-    assert(isValidString(password), InvalidFormat("Invalid FTP string"));
+    bassert(isValidString(password), InvalidFormat("Invalid FTP string"));
     requestPassword(password);
     getResponse();
     return replyCode.reply;
   }
 
   int sendAccount(const String& account) throw(InvalidFormat, FTPException) {
-    assert(isValidString(account), InvalidFormat("Invalid FTP string"));
+    bassert(isValidString(account), InvalidFormat("Invalid FTP string"));
     request(CMD_ACCOUNT, account);
     getResponse();
     return replyCode.reply;
@@ -545,7 +545,7 @@ public:
     if (verbosity >= DEBUG) {
       fout << "DEBUG: Restarting..." << ENDL;
     }
-    assert(isValidPrintableString(marker), InvalidFormat("Invalid marker"));
+    bassert(isValidPrintableString(marker), InvalidFormat("Invalid marker"));
     request(CMD_RESTART, marker);
     getResponse();
   }
@@ -556,7 +556,7 @@ public:
     if (verbosity >= DEBUG) {
       fout << "DEBUG: Renaming file system object..." << ENDL;
     }
-    assert(isValidString(from) && isValidString(to), InvalidFormat("Invalid path"));
+    bassert(isValidString(from) && isValidString(to), InvalidFormat("Invalid path"));
     request(CMD_RENAME_FROM, from);
     request(CMD_RENAME_TO, to);
     getResponse();
@@ -566,7 +566,7 @@ public:
     if (verbosity >= DEBUG) {
       fout << "DEBUG: Deleting file system object..." << ENDL;
     }
-    assert(isValidString(path), InvalidFormat("Invalid path"));
+    bassert(isValidString(path), InvalidFormat("Invalid path"));
     request(CMD_DELETE, path);
     getResponse();
   }
@@ -589,7 +589,7 @@ public:
       request(CMD_CDUP);
       getResponse();
     } else {
-      assert(isValidString(path), InvalidFormat("Invalid path"));
+      bassert(isValidString(path), InvalidFormat("Invalid path"));
       request(CMD_CWD, path);
       getResponse();
     }
@@ -599,7 +599,7 @@ public:
     if (verbosity >= DEBUG) {
       fout << "DEBUG: Creating new directory..." << ENDL;
     }
-    assert(isValidString(path), InvalidFormat("Invalid path"));
+    bassert(isValidString(path), InvalidFormat("Invalid path"));
     request(CMD_MAKE_DIRECTORY);
     getResponse();
   }
@@ -608,7 +608,7 @@ public:
     if (verbosity >= DEBUG) {
       fout << "DEBUG: Removing directory..." << ENDL;
     }
-    assert(isValidString(path), InvalidFormat("Invalid path"));
+    bassert(isValidString(path), InvalidFormat("Invalid path"));
     request(CMD_REMOVE_DIRECTORY);
     getResponse();
   }
@@ -619,7 +619,7 @@ private:
     for (int count = 3; count && (index < response.getLength()) && (response[index] >= '0') && (response[index] <= '9'); --count) {
       result += response[index++];
     }
-    assert(!result.isEmpty(), FTPException("Invalid reply"));
+    bassert(!result.isEmpty(), FTPException("Invalid reply"));
     return result;
   }
 public:
@@ -670,9 +670,9 @@ public:
     getResponse();
 
     int i = response.indexOf(" byte", 4);
-    assert(i >= 0, FTPException("Invalid reply"));
+    bassert(i >= 0, FTPException("Invalid reply"));
     --i; // possible last digit
-    assert(
+    bassert(
       (response[i] >= '0') && (response[i] <= '9'),
       FTPException("Invalid reply")
     );
@@ -744,12 +744,12 @@ public:
 
     int i;
     for (i = 4; (i < response.getLength()) && ((response[i] < '0') || (response[i] > '9')); ++i); // find first digit of addr
-    assert(i < response.getLength(), FTPException("Invalid reply"));
+    bassert(i < response.getLength(), FTPException("Invalid reply"));
 
     String address(15);
     for (unsigned int number = 0; number < 4; ++number) { // read address
       String result = clipPassiveResponse(response, i);
-      assert(response[i++] == ',', FTPException("Invalid reply"));  // skip ','
+      bassert(response[i++] == ',', FTPException("Invalid reply"));  // skip ','
       address += result;
       if (number < 3) {
         address += '.';
@@ -757,7 +757,7 @@ public:
     }
 
     String portHigh = clipPassiveResponse(response, i);
-    assert(response[i++] == ',', FTPException("Invalid reply"));  // skip ','
+    bassert(response[i++] == ',', FTPException("Invalid reply"));  // skip ','
     String portLow = clipPassiveResponse(response, i);
     unsigned short port = UnsignedInteger(portHigh).getValue() * 256 + UnsignedInteger(portLow).getValue(); // TAG: make UnsignedInteger class and use this here
 

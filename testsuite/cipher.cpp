@@ -71,7 +71,7 @@ public:
     uint8 cipherText[16];
     unsigned int cipherBytes =
       forward.push(cipherText, CLEAR_TEXT, sizeof(CLEAR_TEXT));
-    assert(cipherBytes == sizeof(CLEAR_TEXT), UnexpectedFailure(this));
+    bassert(cipherBytes == sizeof(CLEAR_TEXT), UnexpectedFailure(this));
     
     fout << indent(2) << "cipher text: ";
     for (unsigned int i = 0; i < 16; i++) {
@@ -79,7 +79,7 @@ public:
     }
     fout << ENDL;
     
-    assert(
+    bassert(
       compare(cipherText, CIPHER_TEXT, sizeof(CIPHER_TEXT)) == 0,
       UnexpectedFailure(this)
     );
@@ -97,7 +97,7 @@ public:
     }
     fout << ENDL;
     
-    assert(
+    bassert(
       compare(clearText, CLEAR_TEXT, sizeof(CLEAR_TEXT)) == 0,
       UnexpectedFailure(this)
     );
@@ -131,7 +131,7 @@ public:
     uint8 cipherText[16];
     unsigned int cipherBytes =
       forward.push(cipherText, CLEAR_TEXT, sizeof(CLEAR_TEXT));
-    assert(cipherBytes == sizeof(CLEAR_TEXT), UnexpectedFailure(this));
+    bassert(cipherBytes == sizeof(CLEAR_TEXT), UnexpectedFailure(this));
     
     fout << indent(2) << "cipher text: ";
     for (unsigned int i = 0; i < 16; i++) {
@@ -139,7 +139,7 @@ public:
     }
     fout << ENDL;
     
-    assert(
+    bassert(
       compare(cipherText, CIPHER_TEXT, sizeof(CIPHER_TEXT)) == 0,
       UnexpectedFailure(this)
     );
@@ -157,7 +157,7 @@ public:
     }
     fout << ENDL;
     
-    assert(
+    bassert(
       compare(clearText, CLEAR_TEXT, sizeof(CLEAR_TEXT)) == 0,
       UnexpectedFailure(this)
     );
@@ -193,7 +193,7 @@ public:
     unsigned int cipherBytes =
       forward.push(cipherText, CLEAR_TEXT, sizeof(CLEAR_TEXT));
     fout << "cipherBytes: " << cipherBytes << ENDL;
-    assert(cipherBytes == sizeof(CLEAR_TEXT), UnexpectedFailure(this));
+    bassert(cipherBytes == sizeof(CLEAR_TEXT), UnexpectedFailure(this));
     
     fout << indent(2) << "cipher text: ";
     for (unsigned int i = 0; i < 16; i++) {
@@ -201,7 +201,7 @@ public:
     }
     fout << ENDL;
     
-    assert(
+    bassert(
       compare(cipherText, CIPHER_TEXT, sizeof(CIPHER_TEXT)) == 0,
       UnexpectedFailure(this)
     );
@@ -219,7 +219,7 @@ public:
     }
     fout << ENDL;
     
-    assert(
+    bassert(
       compare(clearText, CLEAR_TEXT, sizeof(CLEAR_TEXT)) == 0,
       UnexpectedFailure(this)
     );
@@ -261,7 +261,7 @@ public:
     unsigned int cipherBytes =
       forward.push(cipherText, CLEAR_TEXT, sizeof(CLEAR_TEXT));
     fout << "cipherBytes: " << cipherBytes << ENDL;
-    assert(cipherBytes == sizeof(CLEAR_TEXT), UnexpectedFailure(this));
+    bassert(cipherBytes == sizeof(CLEAR_TEXT), UnexpectedFailure(this));
     
     fout << indent(2) << "cipher text: ";
     for (unsigned int i = 0; i < 16; i++) {
@@ -269,7 +269,7 @@ public:
     }
     fout << ENDL;
     
-    assert(
+    bassert(
       compare(cipherText, CIPHER_TEXT, sizeof(CIPHER_TEXT)) == 0,
       UnexpectedFailure(this)
     );
@@ -287,7 +287,7 @@ public:
     }
     fout << ENDL;
     
-    assert(
+    bassert(
       compare(clearText, CLEAR_TEXT, sizeof(CLEAR_TEXT)) == 0,
       UnexpectedFailure(this)
     );

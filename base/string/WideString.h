@@ -775,6 +775,10 @@ public:
   */
   WideString(const WideLiteral& string) throw(WideStringException, MemoryException);
 
+  WideString(const wchar* string) throw(StringException, MemoryException);
+
+  WideString(const std::string& string) throw(StringException, MemoryException);
+
   WideString(const std::wstring& string) throw(WideStringException, MemoryException);
 
   /**
@@ -826,8 +830,7 @@ public:
     @param string NULL-terminated string. If NULL, the string is initialized
     with no characters in it.
   */
-  WideString(const NativeString& string)
-    throw(MultibyteException, MemoryException);
+  WideString(const NativeString& string) throw(MultibyteException, MemoryException);
   
   /**
     Initializes string from a NULL-terminated multibyte string.
@@ -1486,10 +1489,7 @@ inline WideString operator-(const WideString& left, const WideString& right) thr
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, WideString::UnicodeCharacter character) throw(IOException);
 
-/** Converts WideString to wstring. */
-std::wstring toWide(const WideString& s);
-
 /** Converts WideString to String. */
-String toUTF8(const WideString& s);
+std::string toUTF8(const WideString& s);
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

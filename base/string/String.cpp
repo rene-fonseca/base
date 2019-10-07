@@ -16,6 +16,8 @@
 #include <base/Functor.h>
 #include <base/mem/DynamicMemory.h>
 #include <base/collection/Array.h>
+#include <locale>
+#include <codecvt>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -34,6 +36,13 @@ String::String(unsigned int capacity) throw(MemoryException) {
   elements->ensureCapacity(capacity + 1);
 }
 
+String::String(const char* string) throw(StringException, MemoryException) {
+  if (string) {
+    const size_t size = strlen(string);
+    initialize(string, size);
+  }
+}
+
 String::String(const std::string& string) throw(StringException, MemoryException) {
   initialize(string.c_str(), string.size());
 }
@@ -41,6 +50,14 @@ String::String(const std::string& string) throw(StringException, MemoryException
 String::String(const std::wstring& string) throw(StringException, MemoryException) {
   const std::string utf8 = toUTF8(string);
   initialize(utf8.c_str(), utf8.size());
+}
+
+String& String::operator=(const char* string) throw(StringException, MemoryException)
+{
+  const unsigned int length = string ? strlen(string) : 0;
+  elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
+  copy<char>(elements->getElements(), string, length); // no overlap
+  return *this;
 }
 
 String::String(const Literal& literal) throw(StringException, MemoryException) {
@@ -87,12 +104,11 @@ String::String(
   }
 }
 
-String& String::operator=(
-  const Literal& literal) throw(StringException, MemoryException) {
+String& String::operator=(const Literal& literal) throw(StringException, MemoryException) 
+{
   const unsigned int length = literal.getLength();
   // bassert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
-  elements =
-    new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
+  elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
   copy<char>(
     elements->getElements(),
     literal.getValue(),
@@ -101,10 +117,10 @@ String& String::operator=(
   return *this;
 }
 
-String& String::operator=(
-  const NativeString& string) throw(StringException, MemoryException) {
+String& String::operator=(const NativeString& string) throw(StringException, MemoryException)
+{
   if (string.getValue()) {
-    int numberOfCharacters = getLengthOfMustBeTerminated(string.getValue());
+    const int numberOfCharacters = getLengthOfMustBeTerminated(string.getValue());
     elements = new ReferenceCountedCapacityAllocator<char>(
       numberOfCharacters + 1,
       GRANULARITY
@@ -811,6 +827,41 @@ FormatOutputStream& operator<<(
   FormatOutputStream& stream, const String& value) throw(IOException) {
   stream.addCharacterField(value.getBytes(), value.getLength());
   return stream;
+}
+
+/** Converts wstring to UTF-8 string. */
+std::string toUTF8(const String& s) {
+  return std::string(s.getBytes(), s.getLength());
+}
+
+/** Converts wstring to UTF-8 string. */
+std::string toUTF8(const std::wstring& s) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+  return convert.to_bytes(s.c_str(), s.c_str() + s.size());
+}
+
+/** Converts wstring to UTF-8 string. */
+std::string toUTF8(const wchar* s) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+  return convert.to_bytes(s);
+}
+
+/** Converts UTF-8 string to wstring. */
+std::wstring toWide(const std::string& s) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+  return convert.from_bytes(s.c_str(), s.c_str() + s.size());
+}
+
+/** Converts String to wstring. */
+std::wstring toWide(const String& s) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+  return convert.from_bytes(s.getBytes(), s.getBytes() + s.getLength());
+}
+
+/** Converts UTF-8 (const char*) to wstring. */
+std::wstring toWide(const char* s) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+  return convert.from_bytes(s);
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

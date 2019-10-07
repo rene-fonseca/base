@@ -275,11 +275,11 @@ String Trustee::getName() const throw(TrusteeException) {
     return Literal("<unknown>");
   }
   SID_NAME_USE sidType;
-  char name[UNLEN+1];
-  DWORD nameSize = sizeof(name);
-  char domainName[DNLEN+1];
-  DWORD domainNameSize = sizeof(domainName);
-  bassert(::LookupAccountSid(0, (PSID)id->getElements(), // must be valid
+  wchar name[UNLEN+1];
+  DWORD nameSize = getArraySize(name);
+  wchar domainName[DNLEN+1];
+  DWORD domainNameSize = getArraySize(domainName);
+  bassert(::LookupAccountSid(nullptr, (PSID)id->getElements(), // must be valid
                             name, &nameSize,
                             domainName, &domainNameSize,
                             &sidType) != 0,

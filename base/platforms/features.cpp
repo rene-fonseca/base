@@ -83,12 +83,14 @@
 #  error Compiler does not support exception specifications
 #endif
 
+#if 0
 #if (_DK_SDU_MIP__BASE__COMPILER_ABI != _DK_SDU_MIP__BASE__ABI)
 #  warning ABI of compiler is different from configured ABI
 #endif
 
 #if (!defined(_DK_SDU_MIP__BASE__ARCH_ABI))
 #  warning Unsupported architecture ABI
+#endif
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

@@ -42,90 +42,178 @@ namespace isoc {
   extern "C" float truncf(float);
   extern "C" double trunc(double);
   extern "C" long double truncl(long double);
-  
+
   extern "C" float sqrtf(float);
   extern "C" double sqrt(double);
-  extern "C" long double sqrtl(long double);
 
   extern "C" float cbrtf(float);
   extern "C" double cbrt(double);
-  extern "C" long double cbrtl(long double);
 
   extern "C" float hypotf(float, float);
   extern "C" double hypot(double, double);
-  extern "C" long double hypotl(long double, long double);
 
   extern "C" float expf(float);
   extern "C" double exp(double);
-  extern "C" long double expl(long double);
 
   extern "C" float logf(float);
   extern "C" double log(double);
-  extern "C" long double logl(long double);
 
   extern "C" float log2f(float);
   extern "C" double log2(double);
-  extern "C" long double log2l(long double);
 
   extern "C" float log10f(float);
   extern "C" double log10(double);
-  extern "C" long double log10l(long double);
 
   extern "C" float powf(float, float);
   extern "C" double pow(double, double);
-  extern "C" long double powl(long double, long double);
 
   extern "C" float sinf(float);
   extern "C" double sin(double);
-  extern "C" long double sinl(long double);
 
   extern "C" float cosf(float);
   extern "C" double cos(double);
-  extern "C" long double cosl(long double);
 
   extern "C" float asinf(float);
   extern "C" double asin(double);
-  extern "C" long double asinl(long double);
 
   extern "C" float acosf(float);
   extern "C" double acos(double);
-  extern "C" long double acosl(long double);
 
   extern "C" float sinhf(float);
   extern "C" double sinh(double);
-  extern "C" long double sinhl(long double);
 
   extern "C" float coshf(float);
   extern "C" double cosh(double);
-  extern "C" long double coshl(long double);
 
   extern "C" float asinhf(float);
   extern "C" double asinh(double);
-  extern "C" long double asinhl(long double);
 
   extern "C" float acoshf(float);
   extern "C" double acosh(double);
-  extern "C" long double acoshl(long double);
 
   extern "C" float tanf(float);
   extern "C" double tan(double);
-  extern "C" long double tanl(long double);
 
   extern "C" float atanf(float);
   extern "C" double atan(double);
-  extern "C" long double atanl(long double);
 
   extern "C" float tanhf(float);
   extern "C" double tanh(double);
-  extern "C" long double tanhl(long double);
 
   extern "C" float atanhf(float);
   extern "C" double atanh(double);
-  extern "C" long double atanhl(long double);
 
   extern "C" float atan2f(float, float);
   extern "C" double atan2(double, double);
+
+#if 1
+  inline long double sqrtl(long double x) {
+    return sqrt(static_cast<double>(x));
+  }
+
+  inline long double cbrtl(long double x) {
+    return cbrt(static_cast<double>(x));
+  }
+
+  inline long double hypotl(long double x, long double y) {
+    return hypot(static_cast<double>(x), static_cast<double>(y));
+  }
+
+  inline long double expl(long double x) {
+    return exp(static_cast<double>(x));
+  }
+
+  inline long double logl(long double x) {
+    return log(static_cast<double>(x));
+  }
+
+  inline long double log2l(long double x) {
+    return log2(static_cast<double>(x));
+  }
+
+  inline long double log10l(long double x) {
+    return log10(static_cast<double>(x));
+  }
+
+  inline long double powl(long double x, long double y) {
+    return pow(static_cast<double>(x), static_cast<double>(y));
+  }
+
+  inline long double sinl(long double x) {
+    return sin(static_cast<double>(x));
+  }
+
+  inline long double cosl(long double x) {
+    return cos(static_cast<double>(x));
+  }
+
+  inline long double asinl(long double x) {
+    return asin(static_cast<double>(x));
+  }
+
+  inline long double acosl(long double x) {
+    return acos(static_cast<double>(x));
+  }
+
+  inline long double sinhl(long double x) {
+    return sinh(static_cast<double>(x));
+  }
+
+  inline long double coshl(long double x) {
+    return cosh(static_cast<double>(x));
+  }
+
+  inline long double asinhl(long double x) {
+    return asinh(static_cast<double>(x));
+  }
+
+  inline long double acoshl(long double x) {
+    return acosh(static_cast<double>(x));
+  }
+
+  inline long double tanl(long double x) {
+    return tan(static_cast<double>(x));
+  }
+
+  inline long double atanl(long double x) {
+    return atan(static_cast<double>(x));
+  }
+
+  inline long double tanhl(long double x) {
+    return tanh(static_cast<double>(x));
+  }
+
+  inline long double atanhl(long double x) {
+    return atanh(static_cast<double>(x));
+  }
+
+  inline long double atan2l(long double x, long double y) {
+    return atan2(static_cast<double>(x), static_cast<double>(y));
+  }
+
+#else
+  extern "C" long double sqrtl(long double);
+  extern "C" long double cbrtl(long double);
+  extern "C" long double hypotl(long double, long double);
+  extern "C" long double expl(long double);
+  extern "C" long double logl(long double);
+  extern "C" long double log2l(long double);
+  extern "C" long double log10l(long double);
+  extern "C" long double powl(long double, long double);
+  extern "C" long double sinl(long double);
+  extern "C" long double cosl(long double);
+  extern "C" long double asinl(long double);
+  extern "C" long double acosl(long double);
+  extern "C" long double sinhl(long double);
+  extern "C" long double coshl(long double);
+  extern "C" long double asinhl(long double);
+  extern "C" long double acoshl(long double);
+  extern "C" long double tanl(long double);
+  extern "C" long double atanl(long double);
+  extern "C" long double tanhl(long double);
+  extern "C" long double atanhl(long double);
   extern "C" long double atan2l(long double, long double);
+#endif
 };
 
 /**

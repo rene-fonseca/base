@@ -377,14 +377,12 @@ public:
   /**
     Assignment of string to NULL-terminated string.
   */
-  String& operator=(const NativeString& string)
-    throw(StringException, MemoryException);
+  String& operator=(const NativeString& string) throw(StringException, MemoryException);
   
     /**
     Assignment of string to NULL-terminated string.
   */
-  String& operator=(const char* string)
-    throw(StringException, MemoryException);
+  String& operator=(const char* string) throw(StringException, MemoryException);
 
   /**
     Returns the number of characters in the string.
@@ -1189,8 +1187,14 @@ inline String operator-(
   }
 }
 
+/** Converts String to UTF-8 string. */
+std::string toUTF8(const String& s);
+
 /** Converts wstring to UTF-8 string. */
 std::string toUTF8(const std::wstring& s);
+
+/** Converts wstring to UTF-8 string. */
+std::string toUTF8(const wchar* s);
 
 /** Converts UTF-8 string to wstring. */
 std::wstring toWide(const std::string& s);

@@ -22,46 +22,9 @@
 #  include <syslog.h>
 #endif // flavor
 
-#include <locale>
-#include <codecvt>
-#include <base/string/WideString.h>
-
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-// convert utf8* to wchar*
-// convert wchar* to utf8*
 // TAG: add support for \0 in strings!
-
-/** Converts wstring to UTF-8 string. */
-std::string toUTF8(const std::wstring& s) {
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-  return convert.to_bytes(s);
-}
-
-/** Converts UTF-8 string to wstring. */
-std::wstring toWide(const std::string& s) {
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-  return convert.from_bytes(s);
-}
-
-/** Converts wstring to UTF-8 string. */
-std::string toUTF8(const wchar* s) {
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-  return convert.to_bytes(s);
-}
-
-/** Converts String to wstring. */
-std::wstring toWide(const String& s) {
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-  return convert.from_bytes(s.getElements(), s.getElements() + s.getLength());
-}
-
-/** Converts WideString to wstring. */
-std::wstring toWide(const WideString& s) {
-  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> convert;
-  std::string r = convert.to_bytes((const char32_t*)s.getElements(), (const char32_t*)s.getElements() + s.getLength());
-  return toWide(r);
-}
 
 // std::u32string
 

@@ -18,6 +18,8 @@
 #include <base/string/unicode/UnicodeLookup.cpp>
 #include <base/string/unicode/UnicodeFolding.cpp>
 #include <base/UnexpectedFailure.h>
+#include <locale>
+#include <codecvt>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -1585,12 +1587,19 @@ WideString::WideString(unsigned int capacity) throw(MemoryException) {
   elements->ensureCapacity(capacity + 1);
 }
 
-String::String(const std::string& string) throw(WideStringException, MemoryException) {
+WideString::WideString(const wchar* string) throw(StringException, MemoryException) {
+  if (string) {
+    const size_t size = wcslen(string);
+    initialize(string, size);
+  }
+}
+
+WideString::WideString(const std::string& string) throw(WideStringException, MemoryException) {
   const std::wstring wide = toWide(string);
   initialize(wide.c_str(), wide.size());
 }
 
-String::String(const std::wstring& string) throw(WideStringException, MemoryException) {
+WideString::WideString(const std::wstring& string) throw(WideStringException, MemoryException) {
   initialize(string.c_str(), string.size());
 }
 
@@ -2741,6 +2750,20 @@ FormatOutputStream& operator<<(
   
   stream.addCharacterField(buffer, dest - buffer);
   return stream;
+}
+
+#if 0
+std::wstring toWide(const WideString& s) {
+  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> convert;
+  std::string r = convert.to_bytes((const char32_t*)s.getElements(), (const char32_t*)s.getElements() + s.getLength());
+  return toWide(r);
+}
+#endif
+
+std::string toUTF8(const WideString& s) {
+  // TAG: not tested
+  std::wstring_convert<std::codecvt_utf8<ucs4>, ucs4> convert;
+  return convert.to_bytes(s.getElements(), s.getElements() + s.getLength());
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

@@ -41,7 +41,7 @@ const uint64 SHA384::K[MESSAGE_SCHEDULE] = {
   0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
-SHA384::SHA384() throw() : totalSize(0), bytesInBuffer(0) {
+SHA384::SHA384() throw() {
   messageDigest[0] = 0xcbbb9d5dc1059ed8; // H0
   messageDigest[1] = 0x629a292a367cd507; // H1
   messageDigest[2] = 0x9159015a3070dd17; // H2

@@ -761,6 +761,8 @@ public:
 class ByteIO {
 public:
 
+// TAG: need separate methods for byte order
+
   static inline uint16 readUInt16(const uint8* src) noexcept {
     const uint16 result = (static_cast<uint32>(src[0]) << 8) |
       (static_cast<uint32>(src[1]) << 0);

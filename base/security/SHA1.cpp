@@ -18,7 +18,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-SHA1::SHA1() throw() : totalSize(0), bytesInBuffer(0) {
+SHA1::SHA1() throw() {
   messageDigest[0] = 0x67452301; // H0
   messageDigest[1] = 0xefcdab89; // H1
   messageDigest[2] = 0x98badcfe; // H2

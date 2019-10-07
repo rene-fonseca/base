@@ -44,7 +44,7 @@ const uint32 SHA256::K[SHA256::MESSAGE_SCHEDULE] = {
   0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-SHA256::SHA256() throw() : totalSize(0), bytesInBuffer(0) {
+SHA256::SHA256() throw() {
   messageDigest[0] = 0x6a09e667; // H0
   messageDigest[1] = 0xbb67ae85; // H1
   messageDigest[2] = 0x3c6ef372; // H2

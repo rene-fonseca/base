@@ -41,7 +41,7 @@ const uint64 SHA512::K[MESSAGE_SCHEDULE] = {
   0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
-SHA512::SHA512() throw() : totalSize(0), bytesInBuffer(0) {
+SHA512::SHA512() throw() {
   messageDigest[0] = 0x6a09e667f3bcc908; // H0
   messageDigest[1] = 0xbb67ae8584caa73b; // H1
   messageDigest[2] = 0x3c6ef372fe94f82b; // H2

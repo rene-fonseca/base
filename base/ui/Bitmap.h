@@ -81,7 +81,7 @@ public:
   /**
     Initializes bitmap as invalid.
   */
-  inline Bitmap() throw() : handle(0) {
+  inline Bitmap() throw() {
   }
 
   /**

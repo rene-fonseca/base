@@ -40,7 +40,7 @@ public:
 protected:
 
   /** The value. */
-  long long value;
+  long long value = 0;
 public:
   
   /**
@@ -54,7 +54,7 @@ public:
   /**
     Initializes the long integer as zero.
   */
-  inline LongInteger() throw() : value(0) {
+  inline LongInteger() throw() {
   }
   
   /**

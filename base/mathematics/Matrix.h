@@ -277,7 +277,7 @@ public:
   /**
     Initializes a matrix with no elements.
   */
-  inline Matrix() throw() : elements(0), rows(0), columns(0) {
+  inline Matrix() throw() {
     setSize(0, 0);
   }
   

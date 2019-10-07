@@ -39,6 +39,8 @@
 #include <base/Literal.h>
 #include <stdlib.h>
 
+int _DUMMY_SYMBOL = 0;
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /*

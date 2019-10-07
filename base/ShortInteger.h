@@ -54,7 +54,7 @@ public:
   /**
     Initializes the short integer as zero.
   */
-  inline ShortInteger() throw() : value(0) {
+  inline ShortInteger() throw() {
   }
   
   /**

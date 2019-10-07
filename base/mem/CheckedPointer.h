@@ -34,13 +34,13 @@ class CheckedPointer {
 private:
 
   /** Pointer to object. */
-  TYPE* value;
+  TYPE* value = nullptr;
 public:
   
   /**
     Initializes the automation pointer as 0.
   */
-  inline CheckedPointer() throw() : value(0) {
+  inline CheckedPointer() throw() {
   }
   
   /**

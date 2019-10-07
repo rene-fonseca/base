@@ -45,7 +45,7 @@ private:
   /** The associations of the map. */
   OrderedBinaryTree<Node> elements;
   /** The number of associations in the map. */
-  unsigned int size;
+  unsigned int size = 0;
 public:
 
   /**
@@ -128,7 +128,7 @@ public:
   /**
     Initializes an empty map.
   */
-  Map() throw() : size(0) {
+  Map() throw() {
   }
 
   /**

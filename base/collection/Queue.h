@@ -56,23 +56,23 @@ protected:
   private:
 
     /** The first node in the queue. */
-    Node* first;
+    Node* first = nullptr;
     /** The last node in the queue. */
-    Node* last;
+    Node* last = nullptr;
     /** The number of elements in the queue. */
-    unsigned int size;
+    unsigned int size = 0;
   public:
 
     /**
       Initializes an empty queue.
     */
-    QueueImpl() throw() : first(0), last(0), size(0) {
+    QueueImpl() throw() {
     }
 
     /**
       Initializes queue from other queue.
     */
-    QueueImpl(const QueueImpl& copy) throw() : first(0), last(0), size(0) {
+    QueueImpl(const QueueImpl& copy) throw() {
       const Node* node = copy.first;
       while (node) {
         push(*node->getValue());

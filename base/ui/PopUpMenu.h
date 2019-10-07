@@ -114,10 +114,10 @@ public:
 class CommandMenuItem : public BitmapMenuItem {
 private:
 
-  unsigned int command;
+  unsigned int command = 0;
 public:
   
-  inline CommandMenuItem() throw() : command(0) {
+  inline CommandMenuItem() throw() {
   }
   
   inline CommandMenuItem(unsigned int _command) throw() 

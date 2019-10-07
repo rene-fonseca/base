@@ -68,7 +68,7 @@ namespace dk {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  define _DK_SDU_MIP__BASE__DUMMY_SYMBOL
 #else
-#  define _DK_SDU_MIP__BASE__DUMMY_SYMBOL extern "C" const int _DUMMY_SYMBOL = 0;
+#  define _DK_SDU_MIP__BASE__DUMMY_SYMBOL extern int _DUMMY_SYMBOL;
 #endif
 
 #define _DK_SDU_MIP__BASE__STRINGIFY(value) #value

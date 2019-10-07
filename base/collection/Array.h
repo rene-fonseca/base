@@ -87,7 +87,7 @@ private:
   /** The elements of the array. */
   Reference<ReferenceCountedCapacityAllocator<Value> > elements;
   /** The number of elements in the array. */
-  unsigned int size;
+  unsigned int size = 0;
 protected:
 
   /**
@@ -123,8 +123,7 @@ public:
   /**
     Initializes an empty array.
   */
-  Array() throw()
-    : elements(new ReferenceCountedCapacityAllocator<Value>()), size(0) {
+  Array() throw() : elements(new ReferenceCountedCapacityAllocator<Value>()) {
   }
 
   /**

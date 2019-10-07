@@ -244,7 +244,7 @@ private:
     
     static inline TYPE* cast(MemorySize value) throw() {
       return static_cast<TYPE*>(
-        static_cast<void*>(static_cast<char*>(0) + value)
+        static_cast<void*>(static_cast<char*>(nullptr) + value)
       );
     }
   };

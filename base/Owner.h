@@ -39,7 +39,7 @@ private:
   }
 public:
 
-  inline Owner() throw() : object(0) {
+  inline Owner() throw() {
   }
 
   inline Owner(const Owner& value) throw() : object(value.detach()) {

@@ -70,7 +70,7 @@ public:
   class ShadowDocument : public AutomationObject {
   private:
     
-    void* context;
+    void* context = nullptr;
   public:
     
     inline ShadowDocument(void* _context) throw() : context(_context) {
@@ -93,7 +93,7 @@ public:
   class ShadowElement : public AutomationObject {
   private:
     
-    void* context;
+    void* context = nullptr;
   public:
     
     inline ShadowElement(void* _context) throw() : context(_context) {
@@ -115,9 +115,9 @@ public:
 private:
 
   /** Context. */
-  void* context;
+  void* context = nullptr;
   /** Specifies if access is confined to read-only access. */
-  bool readonly; // TAG: fixme
+  bool readonly = false; // TAG: fixme
 protected:
   
   /**
@@ -144,7 +144,7 @@ public:
   /**
     Initializes XML node as invalid.
   */
-  inline Node() throw() : context(0) {
+  inline Node() throw() {
   }
   
   /**

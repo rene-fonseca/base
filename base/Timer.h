@@ -47,13 +47,13 @@ public:
   private:
 
     /** The elapsed time in nanoseconds. */
-    uint64 nanoseconds;
+    uint64 nanoseconds = 0;
   public:
     
     /**
       Initializes time as 0.
     */
-    inline ElapsedTime() throw() : nanoseconds(0) {
+    inline ElapsedTime() throw() {
     }
 
     /**

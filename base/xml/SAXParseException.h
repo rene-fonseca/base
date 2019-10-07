@@ -44,9 +44,9 @@ private:
   */
   String systemId;
   /** The line number. */
-  unsigned int line;
+  unsigned int line = 0;
   /** The column number. */
-  unsigned int column;
+  unsigned int column = 0;
 public:
   
   /** Exception causes. */
@@ -57,14 +57,14 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline SAXParseException() throw() : line(0), column(0) {
+  inline SAXParseException() throw() {
   }
 
   /**
     Initializes the exception with the specified message.
   */
   inline SAXParseException(const char* message) throw()
-    : SAXException(message), line(0), column(0) {
+    : SAXException(message) {
   }
   
   /**
@@ -73,7 +73,7 @@ public:
     @param type The identity of the type.
   */
   inline SAXParseException(Type type) throw()
-    : SAXException(type), line(0), column(0) {
+    : SAXException(type) {
   }
   
   /**
@@ -83,7 +83,7 @@ public:
     @param type The identity of the type.
   */
   inline SAXParseException(const char* message, Type type) throw()
-    : SAXException(message, type), line(0), column(0) {
+    : SAXException(message, type) {
   }
   
   /**

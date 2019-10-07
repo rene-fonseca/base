@@ -54,7 +54,7 @@ public:
   /**
     Initializes the integer as zero.
   */
-  inline Integer() throw() : value(0) {
+  inline Integer() throw() {
   }
 
   /**

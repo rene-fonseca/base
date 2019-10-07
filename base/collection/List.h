@@ -306,13 +306,13 @@ protected:
     /**
       Initializes an empty list.
     */
-    inline ListImpl() throw() : first(0), last(0), size(0) {
+    inline ListImpl() throw() {
     }
     
     /**
       Initializes list from other list.
     */
-    ListImpl(const ListImpl& copy) throw() : first(0), last(0), size(0) {
+    ListImpl(const ListImpl& copy) throw() {
       const Node* node = copy.getFirst();
       while (node) {
         append(*node->getValue());

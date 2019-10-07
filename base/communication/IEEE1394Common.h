@@ -220,9 +220,9 @@ public:
   private:
 
     /** Options. */
-    unsigned int options;
+    unsigned int options = 0;
     /** The current status of the request. */
-    IsochronousRequestStatus status;
+    IsochronousRequestStatus status = READY;
   protected:
 
     /** Reset any context information. */
@@ -235,11 +235,11 @@ public:
     }
   public:
 
-    inline IsochronousRequestImpl() throw() : options(0), status(READY) {
+    inline IsochronousRequestImpl() throw() {
     }
     
     inline IsochronousRequestImpl(unsigned int _options) throw()
-      : options(_options), status(READY) {
+      : options(_options) {
     }
     
     /**

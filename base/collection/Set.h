@@ -70,7 +70,7 @@ public:
   /**
     Initializes an empty set.
   */
-  inline Set() throw() : size(0) {
+  inline Set() throw() {
   }
 
   /**

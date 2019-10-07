@@ -250,7 +250,7 @@ public:
   /**
     Initializes the date as 00:00:00 on January 1, 1970.
   */
-  inline Date() throw() : date(0) {
+  inline Date() throw() {
   }
   
   /**

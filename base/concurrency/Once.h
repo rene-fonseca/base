@@ -50,7 +50,7 @@ private:
   /** The number of waiting threads. */
   unsigned int waiting = 0;
   /** Specifies, when false, that the token has been relinquished. */
-  bool mask = false;
+  bool mask = true;
   
   /**
     Internal implementation for the getToken() method.
@@ -61,7 +61,7 @@ public:
   /**
     Initializes the synchronization object.
   */
-  inline Once() throw() : event(0), waiting(0), mask(true) {
+  inline Once() throw() {
   }
   
   /**

@@ -34,13 +34,13 @@ class Pointer {
 private:
   
   /** Pointer to object. */
-  TYPE* value;
+  TYPE* value = nullptr;
 public:
   
   /**
     Initializes the automation pointer as invalid (i.e. 0).
   */
-  inline Pointer() throw() : value(0) {
+  inline Pointer() throw() {
   }
   
   /**

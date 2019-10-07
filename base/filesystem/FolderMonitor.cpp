@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 FolderMonitor::FolderMonitor(const String& path) throw(ResourceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   handle = ::FindFirstChangeNotification(
-    path.getElements(),
+    toWide(path).c_str(),
     FALSE, // do not watch subfolders
     FILE_NOTIFY_CHANGE_FILE_NAME |
     FILE_NOTIFY_CHANGE_DIR_NAME |

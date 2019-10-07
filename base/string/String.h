@@ -1193,8 +1193,11 @@ std::string toUTF8(const String& s);
 /** Converts wstring to UTF-8 string. */
 std::string toUTF8(const std::wstring& s);
 
-/** Converts wstring to UTF-8 string. */
+/** Converts const wchar* to UTF-8 string. */
 std::string toUTF8(const wchar* s);
+
+/** Converts const wchar* to UTF-8 string. */
+std::string toUTF8(const wchar* s, MemorySize length);
 
 /** Converts UTF-8 string to wstring. */
 std::wstring toWide(const std::string& s);

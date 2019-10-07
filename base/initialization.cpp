@@ -234,4 +234,10 @@ FormatOutputStream ferr(standardErrorStream);
 
 SoundDevice SoundDevice::soundDevice;
 
+void moduleEntry() {
+}
+
+void moduleCleanUp() {
+}
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

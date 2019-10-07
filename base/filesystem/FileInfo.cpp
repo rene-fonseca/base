@@ -16,10 +16,42 @@
 #include <base/security/Trustee.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define _WIN32_WINNT 0x0400
+#  define _WIN32_WINNT _WIN32_WINNT_WINXP // TAG: 0x0400
 #  include <windows.h>
 #  include <aclapi.h>
-#  include <winioctl.h>
+// #  include <winioctl.h>
+
+ // #  include <ntifs.h>
+typedef struct _REPARSE_DATA_BUFFER {
+  ULONG  ReparseTag;
+  USHORT ReparseDataLength;
+  USHORT Reserved;
+  union {
+    struct {
+      USHORT SubstituteNameOffset;
+      USHORT SubstituteNameLength;
+      USHORT PrintNameOffset;
+      USHORT PrintNameLength;
+      ULONG  Flags;
+      WCHAR  PathBuffer[1];
+    } SymbolicLinkReparseBuffer;
+    struct {
+      USHORT SubstituteNameOffset;
+      USHORT SubstituteNameLength;
+      USHORT PrintNameOffset;
+      USHORT PrintNameLength;
+      WCHAR  PathBuffer[1];
+    } MountPointReparseBuffer;
+    struct {
+      UCHAR DataBuffer[1];
+    } GenericReparseBuffer;
+  } DUMMYUNIONNAME;
+} REPARSE_DATA_BUFFER, * PREPARSE_DATA_BUFFER;
+
+#if !defined(IO_REPARSE_TAG_SYMBOLIC_LINK)
+#  define IO_REPARSE_TAG_SYMBOLIC_LINK 0
+#endif
+
 #else // unix
 #  include <sys/types.h>
 #  include <sys/stat.h>
@@ -32,7 +64,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   : path(_path), mode(0), links(0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   bool error = false;
-  HANDLE file = ::CreateFile(path.getElements(), // file name
+  HANDLE file = ::CreateFile(toWide(path).c_str(), // file name
                              0 | READ_CONTROL, // access mode
                              FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
                              0, // security descriptor
@@ -51,7 +83,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   unsigned int linkLevel = 0;
   const unsigned int maximumLinkLevel = 16;
   while ((file == INVALID_HANDLE_VALUE) && (++linkLevel <= maximumLinkLevel)) {    
-    HANDLE link = ::CreateFile(path.getElements(), // file name
+    HANDLE link = ::CreateFile(toWide(path).c_str(), // file name
                                0 | READ_CONTROL, // access mode
                                FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
                                0, // security descriptor
@@ -119,10 +151,10 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   BY_HANDLE_FILE_INFORMATION information;
   error |= ::GetFileInformationByHandle(file, &information) == 0;
   
-  SECURITY_DESCRIPTOR* securityDescriptor;
-  PSID ownerSID;
-  PSID groupSID;
-  PACL acl;
+  PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
+  PSID ownerSID = nullptr;
+  PSID groupSID = nullptr;
+  PACL acl = nullptr;
   error |= ::GetSecurityInfo(
     file,
     SE_FILE_OBJECT,
@@ -159,11 +191,11 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
   trustee.TrusteeForm = TRUSTEE_IS_SID;
   trustee.TrusteeType = TRUSTEE_IS_UNKNOWN;
-  trustee.ptstrName = (char*)ownerSID;
+  trustee.ptstrName = (wchar*)ownerSID;
   ::GetEffectiveRightsFromAcl(acl, &trustee, &ownerAccessMask); // ERROR_SUCCESS expected
-  trustee.ptstrName = (char*)groupSID;
+  trustee.ptstrName = (wchar*)groupSID;
   ::GetEffectiveRightsFromAcl(acl, &trustee, &groupAccessMask); // ERROR_SUCCESS expected
-  trustee.ptstrName = (char*)&EVERYONE_SID;
+  trustee.ptstrName = (wchar*)&EVERYONE_SID;
   ::GetEffectiveRightsFromAcl(acl, &trustee, &everyoneAccessMask); // ERROR_SUCCESS expected
   
   ACL_SIZE_INFORMATION aclInfo;

@@ -29,30 +29,30 @@ class WideLiteral {
 private:
 
   /** The literal. */
-  const wchar* literal;
+  const wchar* literal = nullptr;
   /** The length of the literal. */
-  const MemorySize length;
+  const MemorySize length = 0;
 public:
   
   /**
     Initializes the literal.
   */
   template<MemorySize SIZE>
-  inline WideLiteral(const wchar (&value)[SIZE]) throw()
+  inline WideLiteral(const wchar (&value)[SIZE]) noexcept
     : literal(value), length(SIZE - 1) {
   }
   
   /**
     Returns the literal.
   */
-  inline const wchar* getValue() const throw() {
+  inline const wchar* getValue() const noexcept {
     return literal;
   }
 
   /**
     Returns the length of the literal.
   */
-  inline MemorySize getLength() const throw() {
+  inline MemorySize getLength() const noexcept {
     return length;
   }
 };

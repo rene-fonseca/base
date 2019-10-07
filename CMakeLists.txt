@@ -45,7 +45,7 @@ file(GLOB base_SRC
   "base/dl/*.h"
   "base/dl/*.cpp"
   "base/filesystem/*.h"
-#  "base/filesystem/*.cpp"
+  "base/filesystem/*.cpp"
   "base/io/*.h"
   "base/io/*.cpp"
   "base/io/async/*.h"

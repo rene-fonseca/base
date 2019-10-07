@@ -846,6 +846,11 @@ std::string toUTF8(const wchar* s) {
   return convert.to_bytes(s);
 }
 
+std::string toUTF8(const wchar* s, MemorySize length) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+  return convert.to_bytes(s, s + length);
+}
+
 /** Converts UTF-8 string to wstring. */
 std::wstring toWide(const std::string& s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;

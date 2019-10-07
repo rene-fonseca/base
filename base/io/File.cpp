@@ -34,7 +34,6 @@
 #  include <aclapi.h>
 #  include <winioctl.h>
 
- 
 // #  include <ntifs.h>
 typedef struct _REPARSE_DATA_BUFFER {
   ULONG  ReparseTag;

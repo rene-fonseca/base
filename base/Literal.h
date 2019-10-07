@@ -29,16 +29,16 @@ class Literal {
 private:
 
   /** The literal. */
-  const char* literal;
+  const char* literal = nullptr;
   /** The length of the literal. */
-  const MemorySize length;
+  const MemorySize length = 0;
 public:
   
   /**
     Initializes the literal.
   */
   template<MemorySize SIZE>
-  inline Literal(const char (&value)[SIZE]) throw()
+  inline Literal(const char (&value)[SIZE]) noexcept
     : literal(value), length(SIZE - 1) {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
   }
@@ -46,14 +46,14 @@ public:
   /**
     Returns the literal.
   */
-  inline const char* getValue() const throw() {
+  inline const char* getValue() const noexcept {
     return literal;
   }
   
   /**
     Returns the length of the literal.
   */
-  inline MemorySize getLength() const throw() {
+  inline MemorySize getLength() const noexcept {
     return length;
   }
 };

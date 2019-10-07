@@ -107,6 +107,38 @@ bool FileSystem::isSubPathOf(const String& root, const String& path) throw() {
 #  define _WIN32_WINNT 0x500
 #  include <windows.h>
 #  include <winioctl.h>
+
+// #  include <ntifs.h>
+typedef struct _REPARSE_DATA_BUFFER {
+  ULONG  ReparseTag;
+  USHORT ReparseDataLength;
+  USHORT Reserved;
+  union {
+    struct {
+      USHORT SubstituteNameOffset;
+      USHORT SubstituteNameLength;
+      USHORT PrintNameOffset;
+      USHORT PrintNameLength;
+      ULONG  Flags;
+      WCHAR  PathBuffer[1];
+    } SymbolicLinkReparseBuffer;
+    struct {
+      USHORT SubstituteNameOffset;
+      USHORT SubstituteNameLength;
+      USHORT PrintNameOffset;
+      USHORT PrintNameLength;
+      WCHAR  PathBuffer[1];
+    } MountPointReparseBuffer;
+    struct {
+      UCHAR DataBuffer[1];
+    } GenericReparseBuffer;
+  } DUMMYUNIONNAME;
+} REPARSE_DATA_BUFFER, * PREPARSE_DATA_BUFFER;
+
+#if !defined(IO_REPARSE_TAG_SYMBOLIC_LINK)
+#  define IO_REPARSE_TAG_SYMBOLIC_LINK 0
+#endif
+
 #else // unix
 #  include <sys/types.h>
 #  include <sys/stat.h> // lstat
@@ -328,18 +360,16 @@ String FileSystem::toUrl(const String& path) throw(FileSystemException) {
 
 String FileSystem::getCurrentFolder() throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
-  DWORD length = ::GetCurrentDirectory(
-    buffer->getSize()/sizeof(char),
-    (char*)buffer->getElements()
-  );
+  DWORD length = ::GetCurrentDirectory(0, NULL);
   if (length == 0) {
-    throw FileSystemException(
-      "Unable to get current folder",
-      Type::getType<FileSystem>()
-    );
+    throw FileSystemException("Unable to get current folder", Type::getType<FileSystem>());
   }
-  return String((char*)buffer->getElements());
+  SimpleBuffer<wchar> buffer(length);
+  length = ::GetCurrentDirectory(length, buffer);
+  if (length == 0) {
+    throw FileSystemException("Unable to get current folder", Type::getType<FileSystem>());
+  }
+  return toUTF8(buffer, length);
 #else // unix
   Allocator<uint8>* buffer = Thread::getLocalStorage();
   ASSERT(buffer->getSize() > PATH_MAX);
@@ -355,7 +385,7 @@ String FileSystem::getCurrentFolder() throw(FileSystemException) {
 
 void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (!::SetCurrentDirectory(path.getElements())) {
+  if (!::SetCurrentDirectory(toWide(path).c_str())) {
    throw FileSystemException("Unable to set current folder", Type::getType<FileSystem>());
   }
 #else // unix
@@ -370,7 +400,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
   // TAG: follow link
   unsigned int flags = 0;
   HANDLE file = ::CreateFile(
-    path.getElements(), // file name
+    toWide(path).c_str(), // file name
     FILE_READ_ATTRIBUTES | FILE_READ_EA /*| READ_CONTROL*/, // access mode
     FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
     0, // security descriptor
@@ -387,8 +417,8 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
 //     }
     
     WIN32_FIND_DATA information;
-    HANDLE find = ::FindFirstFileExA(
-      path.getElements(),
+    HANDLE find = ::FindFirstFileEx(
+      toWide(path).c_str(),
       FindExInfoStandard,
       &information,
       FindExSearchNameMatch,
@@ -509,7 +539,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
 uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   WIN32_FIND_DATA information;
-  HANDLE handle = ::FindFirstFile(path.getElements(), &information);
+  HANDLE handle = ::FindFirstFile(toWide(path).c_str(), &information);
   bassert(
     handle != INVALID_HANDLE_VALUE,
     FileSystemException("Unable to get size of file", Type::getType<FileSystem>())
@@ -537,7 +567,7 @@ uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
 bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   WIN32_FIND_DATA information;
-  HANDLE handle = ::FindFirstFile(path.getElements(), &information);
+  HANDLE handle = ::FindFirstFile(toWide(path).c_str(), &information);
   if (handle == INVALID_HANDLE_VALUE) {
     bassert(
       ::GetLastError() == ERROR_FILE_NOT_FOUND,
@@ -585,7 +615,7 @@ bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
 
 bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  DWORD result = ::GetFileAttributes(path.getElements());
+  DWORD result = ::GetFileAttributes(toWide(path).c_str());
   if (result == INVALID_FILE_ATTRIBUTES) {
     // TAG: need support for no access
     return false;
@@ -631,7 +661,7 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 
 bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  DWORD result = ::GetFileAttributes(path.getElements());
+  DWORD result = ::GetFileAttributes(toWide(path).c_str());
   if (result == INVALID_FILE_ATTRIBUTES) {
     // TAG: need support for no access
     return false;
@@ -677,7 +707,7 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
 void FileSystem::removeFile(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 //  ::SetFileAttributes(file, FILE_ATTRIBUTE_NORMAL);
-  if (!::DeleteFile(path.getElements())) {
+  if (!::DeleteFile(toWide(path).c_str())) {
     throw FileSystemException("Unable to remove file", Type::getType<FileSystem>());
   }
 #else // unix
@@ -689,10 +719,10 @@ void FileSystem::removeFile(const String& path) throw(FileSystemException) {
 
 void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  DWORD attributes = ::GetFileAttributes(path.getElements());
+  DWORD attributes = ::GetFileAttributes(toWide(path).c_str());
   if ((attributes != INVALID_FILE_ATTRIBUTES) && (attributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
     HANDLE link = ::CreateFile(
-      path.getElements(),
+      toWide(path).c_str(),
       FILE_ALL_ACCESS,
       0,
       0,
@@ -739,7 +769,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
         throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
       }
       ::CloseHandle(link);
-      if (!::RemoveDirectory(path.getElements())) {
+      if (!::RemoveDirectory(toWide(path).c_str())) {
         throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
       }
       // } else if (reparseHeader->ReparseTag == 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK) {
@@ -749,7 +779,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
       throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
     }
   } else {
-    if (!::RemoveDirectory(path.getElements())) {
+    if (!::RemoveDirectory(toWide(path).c_str())) {
       throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
     }
   }
@@ -762,7 +792,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
 
 void FileSystem::makeFolder(const String& path) throw(FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (!::CreateDirectory(path.getElements(), 0)) { // use default security descriptor
+  if (!::CreateDirectory(toWide(path).c_str(), NULL)) { // use default security descriptor
     throw FileSystemException("Unable to make folder", Type::getType<FileSystem>());
   }
 #else // unix
@@ -823,12 +853,12 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
     return false;
   }
   
-  DWORD attributes = ::GetFileAttributes(path.getElements());
+  DWORD attributes = ::GetFileAttributes(toWide(path).c_str());
   if (attributes == INVALID_FILE_ATTRIBUTES) {
     return false;
   }
   if ((attributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0) {
-    HANDLE link = ::CreateFile(path.getElements(),
+    HANDLE link = ::CreateFile(toWide(path).c_str(),
                                0,
                                FILE_SHARE_READ | FILE_SHARE_WRITE,
                                0,
@@ -917,7 +947,7 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
       HAS_ICON = 1 << 6
     };
     HANDLE link = ::CreateFile(
-      path.getElements(),
+      toWide(path).c_str(),
       GENERIC_READ,
       FILE_SHARE_READ | FILE_SHARE_WRITE,
       0,
@@ -936,7 +966,7 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
     return !error &&
       (header.identifier == static_cast<unsigned int>('L')) &&
       (result == sizeof(header)) &&
-      ((header.flags & POINTS_TO_FILE_OR_FOLDER|HAS_RELATIVE_PATH) == POINTS_TO_FILE_OR_FOLDER|HAS_RELATIVE_PATH) &&
+      ((header.flags & POINTS_TO_FILE_OR_FOLDER|HAS_RELATIVE_PATH) == (POINTS_TO_FILE_OR_FOLDER|HAS_RELATIVE_PATH)) &&
       (compare(header.guid, GUID, sizeof(GUID)) == 0);
   } else {
     return false;
@@ -973,7 +1003,7 @@ public:
 //     );
     
     HANDLE link = ::CreateFile(
-      path.getElements(),
+      toWide(path).c_str(),
       0,
       FILE_SHARE_READ | FILE_SHARE_WRITE,
       0,
@@ -1084,14 +1114,14 @@ public:
       elevatedPrivileges = true;
     }
     
-    HANDLE handle = ::CreateFile(path.getElements(), 0, 0, 0, OPEN_EXISTING, 0, 0);
+    HANDLE handle = ::CreateFile(toWide(path).c_str(), 0, 0, 0, OPEN_EXISTING, 0, 0);
     if (handle != INVALID_HANDLE_VALUE) { // make path does not exist
       ::CloseHandle(handle);
       return false;
     }
     
     handle = ::CreateFile(
-      target.getElements(),
+      toWide(target).c_str(),
       GENERIC_WRITE,
       0,
       0,
@@ -1103,9 +1133,9 @@ public:
       return false;
     }
     
-    char fullPath[MAX_PATH];
-    char* filename;
-    ::GetFullPathName(path.getElements(), MAX_PATH, fullPath, &filename);
+    wchar fullPath[MAX_PATH];
+    wchar* filename = nullptr;
+    ::GetFullPathName(toWide(path).c_str(), MAX_PATH, fullPath, &filename);
     WideString wideFullPath(fullPath);
     
     WIN32_STREAM_ID stream; // setup hard link
@@ -1154,7 +1184,7 @@ public:
 void FileSystem::makeHardLink(const String& target, const String& path) throw(NotSupported, FileSystemException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__W2K)
-  bassert(::CreateHardLink(path.getElements(), target.getElements(), 0) != 0,
+  bassert(::CreateHardLink(toWide(path).c_str(), toWide(target).c_str(), NULL) != 0,
          FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
 #else
   typedef BOOL (*PCreateHardLink)(LPCSTR, LPCSTR, LPSECURITY_ATTRIBUTES);
@@ -1185,12 +1215,12 @@ void FileSystem::makeLink(const String& target, const String& path)
   }
   bassert(cachedSupportsLinks == 1, NotSupported(Type::getType<FileSystem>()));
   
-  char* fileNameComponent;
+  wchar* fileNameComponent = nullptr;
   
-	char fullTargetPath[MAX_PATH];
+	wchar fullTargetPath[MAX_PATH];
   bassert(
     ::GetFullPathName(
-      target.getElements(),
+      toWide(target).c_str(),
       MAX_PATH,
       fullTargetPath,
       &fileNameComponent
@@ -1199,10 +1229,10 @@ void FileSystem::makeLink(const String& target, const String& path)
   );
   
 	// make the native target name
-	String nativePath("\\??\\");
-  nativePath += NativeString(fullTargetPath);
+	WideString nativePath(L"\\??\\");
+  nativePath += NativeWideString(fullTargetPath);
   
-  DWORD attributes = ::GetFileAttributes(target.getElements());
+  DWORD attributes = ::GetFileAttributes(toWide(target).c_str());
   bassert(
     attributes != INVALID_FILE_ATTRIBUTES,
     FileSystemException(Type::getType<FileSystem>())
@@ -1212,18 +1242,18 @@ void FileSystem::makeLink(const String& target, const String& path)
   
   HANDLE link;
   if (isDirectory) {
-    if (!nativePath.endsWith(":\\")) {
-      nativePath -= Literal("\\");
+    if (!nativePath.endsWith(WIDEMESSAGE(":\\"))) {
+      nativePath -= WIDEMESSAGE("\\");
     }
     bassert(
       nativePath.getLength() <= MAX_PATH,
       FileSystemException(Type::getType<FileSystem>())
     ); // watch out for buffer overflow
     // we do not care whether or not it already exists
-    directoryCreated = ::CreateDirectory(path.getElements(), 0) != 0;
+    directoryCreated = ::CreateDirectory(toWide(path).c_str(), 0) != 0;
     bassert(directoryCreated, FileSystemException(Type::getType<FileSystem>()));
     link = ::CreateFile(
-      path.getElements(),
+      toWide(path).c_str(),
       GENERIC_WRITE,
       0,
       0,
@@ -1241,7 +1271,7 @@ void FileSystem::makeLink(const String& target, const String& path)
       FileSystemException(Type::getType<FileSystem>())
     ); // watch out for buffer overflow
     link = ::CreateFile(
-      path.getElements(),
+      toWide(path).c_str(),
       GENERIC_WRITE,
       0,
       0,
@@ -1277,7 +1307,8 @@ void FileSystem::makeLink(const String& target, const String& path)
   );
   
 	// set the link
-  DWORD returnedLength;
+  DWORD returnedLength = 0;
+#if 0 // TAG: FIXME
   bool error = ::DeviceIoControl(
     link,
     FSCTL_SET_REPARSE_POINT,
@@ -1287,14 +1318,17 @@ void FileSystem::makeLink(const String& target, const String& path)
     0,
     &returnedLength,
     0) == 0;
+#else
+  bool error = true;
+#endif
   ::CloseHandle(link);
   if (error) {
     if (isDirectory) {
       if (directoryCreated) {
-        ::RemoveDirectory(path.getElements()); // clean up
+        ::RemoveDirectory(toWide(path).c_str()); // clean up
       }
     } else {
-      ::DeleteFile(path.getElements()); // clean up // TAG: can we use FILE_FLAG_DELETE_ON_CLOSE
+      ::DeleteFile(toWide(path).c_str()); // clean up // TAG: can we use FILE_FLAG_DELETE_ON_CLOSE
     }
   }
   bassert(!error, FileSystemException("Unable to make link", Type::getType<FileSystem>()));
@@ -1315,7 +1349,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
   bassert(cachedSupportsLinks == 1, NotSupported("Symbolic link", Type::getType<FileSystem>()));
   
   HANDLE link = ::CreateFile(
-    path.getElements(),
+    toWide(path).c_str(),
     0,
     FILE_SHARE_READ | FILE_SHARE_WRITE,
     0,
@@ -1445,7 +1479,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
   };
   
   while (true) {
-    link = ::CreateFile(path.getElements(),
+    link = ::CreateFile(toWide(path).c_str(),
                         GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
                         0, OPEN_EXISTING, 0, 0);
     if (link == INVALID_HANDLE_VALUE) { // fails if directory
@@ -1780,18 +1814,21 @@ String FileSystem::getFolder(Folder folder) throw() {
   switch (folder) {
   case FileSystem::ROOT:
     {
-      char buffer[3]; // large enough for "C:\0"
-      ::GetWindowsDirectory(buffer, sizeof(buffer));
-      return NativeString(buffer);
+      wchar buffer[2 + 1]; // large enough for "C:\0"
+      buffer[0] = L'\0';
+      buffer[1] = L'\0';
+      buffer[2] = L'\0';
+      ::GetWindowsDirectory(buffer, getArraySize(buffer));
+      return toUTF8(buffer);
     }
   case FileSystem::DEVICES:
     return Literal("\\\\.");
   case FileSystem::TEMP:
   default:
     {
-      char buffer[MAX_PATH + 1];
-      ::GetWindowsDirectory(buffer, sizeof(buffer));
-      return String(NativeString(buffer)) + MESSAGE("\\temp");
+      wchar buffer[MAX_PATH + 1];
+      ::GetWindowsDirectory(buffer, getArraySize(buffer));
+      return toUTF8(WideString(buffer) + WIDEMESSAGE("\\temp"));
     }
   }
 #else // unix

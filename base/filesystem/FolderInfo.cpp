@@ -20,6 +20,38 @@
 #  include <windows.h>
 #  include <aclapi.h>
 #  include <winioctl.h>
+
+ // #  include <ntifs.h>
+typedef struct _REPARSE_DATA_BUFFER {
+  ULONG  ReparseTag;
+  USHORT ReparseDataLength;
+  USHORT Reserved;
+  union {
+    struct {
+      USHORT SubstituteNameOffset;
+      USHORT SubstituteNameLength;
+      USHORT PrintNameOffset;
+      USHORT PrintNameLength;
+      ULONG  Flags;
+      WCHAR  PathBuffer[1];
+    } SymbolicLinkReparseBuffer;
+    struct {
+      USHORT SubstituteNameOffset;
+      USHORT SubstituteNameLength;
+      USHORT PrintNameOffset;
+      USHORT PrintNameLength;
+      WCHAR  PathBuffer[1];
+    } MountPointReparseBuffer;
+    struct {
+      UCHAR DataBuffer[1];
+    } GenericReparseBuffer;
+  } DUMMYUNIONNAME;
+} REPARSE_DATA_BUFFER, * PREPARSE_DATA_BUFFER;
+
+#if !defined(IO_REPARSE_TAG_SYMBOLIC_LINK)
+#  define IO_REPARSE_TAG_SYMBOLIC_LINK 0
+#endif
+
 #else // unix
 #  include <sys/types.h>
 #  include <sys/stat.h>
@@ -34,7 +66,7 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
   : path(_path), mode(0), links(0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   bool error = false;
-  HANDLE folder = ::CreateFile(path.getElements(), // file name
+  HANDLE folder = ::CreateFile(toWide(path).c_str(), // file name
                                0 | READ_CONTROL, // access mode
                                FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
                                0, // security descriptor
@@ -53,7 +85,7 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
   unsigned int linkLevel = 0;
   const unsigned int maximumLinkLevel = 16;
   while ((folder == INVALID_HANDLE_VALUE) && (++linkLevel <= maximumLinkLevel)) {    
-    HANDLE link = ::CreateFile(path.getElements(), // file name
+    HANDLE link = ::CreateFile(toWide(path).c_str(), // file name
                                0 | READ_CONTROL, // access mode
                                FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
                                0, // security descriptor
@@ -66,16 +98,18 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
     // TAG: fix buffer size (protect against buffer overflow)
     char* buffer[17000]; // need alternative - first attempt to get length first failed
     REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)&buffer;
-    DWORD bytesWritten;
+    DWORD bytesWritten = 0;
+#if 0 // TAG: FIXME
     error |= ::DeviceIoControl(link, FSCTL_GET_REPARSE_POINT, // handle and ctrl
                                0, 0, // input
                                reparseHeader, sizeof(buffer), // output
                                &bytesWritten, 0) == 0;
+#endif
     ::CloseHandle(link);
     bassert(!error, FileSystemException(this));
     
-    wchar* substPath;
-    unsigned int substLength;
+    wchar* substPath = nullptr;
+    unsigned int substLength = 0;
     switch (reparseHeader->ReparseTag) {
     case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
       substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer + reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset;
@@ -114,10 +148,10 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
   BY_HANDLE_FILE_INFORMATION information;
   error |= ::GetFileInformationByHandle(folder, &information) == 0;
   
-  SECURITY_DESCRIPTOR* securityDescriptor;
-  PSID ownerSID;
-  PSID groupSID;
-  PACL acl;
+  PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
+  PSID ownerSID = nullptr;
+  PSID groupSID = nullptr;
+  PACL acl = nullptr;
   error |= ::GetSecurityInfo(folder,
                              SE_FILE_OBJECT,
                              OWNER_SECURITY_INFORMATION|GROUP_SECURITY_INFORMATION|DACL_SECURITY_INFORMATION,
@@ -151,11 +185,11 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
   trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
   trustee.TrusteeForm = TRUSTEE_IS_SID;
   trustee.TrusteeType = TRUSTEE_IS_UNKNOWN;
-  trustee.ptstrName = (char*)ownerSID;
+  trustee.ptstrName = (wchar*)ownerSID;
   ::GetEffectiveRightsFromAcl(acl, &trustee, &ownerAccessMask); // ERROR_SUCCESS expected
-  trustee.ptstrName = (char*)groupSID;
+  trustee.ptstrName = (wchar*)groupSID;
   ::GetEffectiveRightsFromAcl(acl, &trustee, &groupAccessMask); // ERROR_SUCCESS expected
-  trustee.ptstrName = (char*)&EVERYONE_SID;
+  trustee.ptstrName = (wchar*)&EVERYONE_SID;
   ::GetEffectiveRightsFromAcl(acl, &trustee, &everyoneAccessMask); // ERROR_SUCCESS expected
   
   ACL_SIZE_INFORMATION aclInfo;
@@ -356,9 +390,9 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   WIN32_FIND_DATA entry;
 
   if (path.endsWith("\\")) {
-    handle = ::FindFirstFile((path + Literal("*")).getElements(), &entry);
+    handle = ::FindFirstFile((toWide(path) + L"*").c_str(), &entry);
   } else {
-    handle = ::FindFirstFile((path + Literal("\\*")).getElements(), &entry);
+    handle = ::FindFirstFile((toWide(path) + L"\\*").c_str(), &entry);
   }
   
   if (handle == INVALID_HANDLE_VALUE) {

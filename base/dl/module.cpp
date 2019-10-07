@@ -13,8 +13,12 @@
 
 #include <base/platforms/features.h>
 
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
 extern void moduleEntry();
 extern void moduleCleanUp();
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 
@@ -22,9 +26,9 @@ extern void moduleCleanUp();
 
 extern "C" BOOL DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
   if (fdwReason == DLL_PROCESS_ATTACH) {
-    moduleEntry();
+    base::moduleEntry();
   } else if (fdwReason == DLL_PROCESS_DETACH) {
-    moduleCleanUp();
+    base::moduleCleanUp();
   }
   return TRUE;
 }
@@ -32,11 +36,11 @@ extern "C" BOOL DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 #else // unix
 
 extern "C" void _init() {
-  moduleEntry();
+  base::moduleEntry();
 }
 
 extern "C" void _fini() {
-  moduleCleanUp();
+  base::moduleCleanUp();
 }
 
 #endif // flavor

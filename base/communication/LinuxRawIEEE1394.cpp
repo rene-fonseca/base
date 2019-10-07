@@ -19,6 +19,8 @@
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/filesystem/FileSystem.h>
 
+#if 0
+
 #if (_DK_SDU_MIP__BASE__FLAVOR != _DK_SDU_MIP__BASE__UNIX)
 #  error LinuxRawIEEE1394Impl not supported by flavor
 #endif
@@ -822,3 +824,5 @@ void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, 
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+
+#endif

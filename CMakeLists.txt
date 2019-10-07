@@ -39,7 +39,7 @@ file(GLOB base_SRC
   "base/concurrency/*.h"
   "base/concurrency/*.cpp"
   "base/communication/*.h"
-#  "base/communication/*.cpp"
+  "base/communication/*.cpp"
   "base/compression/*.h"
 #  "base/compression/*.cpp"
   "base/dl/*.h"
@@ -72,8 +72,6 @@ file(GLOB base_SRC
   "base/sound/*.cpp" # TAG: rename to audio?
   "base/string/*.h"
   "base/string/*.cpp"
-  "base/string/unicode/*.h"
-  "base/string/unicode/*.cpp"
   "base/ui/*.h"
 #  "base/ui/*.cpp"
   "base/xml/*.h"

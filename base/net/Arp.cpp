@@ -16,6 +16,8 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
 
+#if 0
+
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <winsock2.h>
 #  include <ws2tcpip.h>
@@ -822,3 +824,5 @@ InetInterface::InetInterface(const InetInterface& copy) throw()
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+
+#endif

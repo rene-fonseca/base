@@ -255,7 +255,7 @@ IEEE1394::Standard IEEE1394::getCompliance(unsigned short node) throw(IEEE1394Ex
     if (generation == 0) {
       return IEEE1394::STANDARD_IEEE_1394;
     }
-  } catch (IEEE1394Exception& e) {
+  } catch (IEEE1394Exception&) {
     return IEEE1394::STANDARD_IEEE_1394;
   }
   return IEEE1394::STANDARD_IEEE_1394A;
@@ -309,7 +309,7 @@ unsigned int IEEE1394::getCapabilities(unsigned short node) throw(IEEE1394Except
         capabilities |= ((flags >> 27) & 1) ? POWER_MANAGER_CAPABLE : 0;
       }
     }
-  } catch (IEEE1394Exception& e) {
+  } catch (IEEE1394Exception&) {
   }
   return capabilities;
 }
@@ -383,7 +383,7 @@ String IEEE1394::getDescription(unsigned short node) throw(IEEE1394Exception) {
         uint32 leafOffset = entryOffset + (quadlet & 0x00ffffff) * sizeof(Quadlet);
         const unsigned int leafSize = getQuadlet(node, leafOffset) >> 16;
         if (leafSize > 2) {
-          Quadlet leaf[leafSize]; // must be big endian
+          SimpleBuffer<Quadlet> leaf(leafSize); // must be big endian
           for (unsigned int i = 0; i < leafSize; ++i) {
             leafOffset += sizeof(Quadlet);
             leaf[i] = getQuadlet(node, leafOffset);
@@ -430,7 +430,7 @@ String IEEE1394::getKeywords(unsigned short node) throw(IEEE1394Exception) {
         (keyValue == IEEE1394::KEY_KEYWORD)) { // Keyword_Leaf
       uint32 leafOffset = entryOffset + (quadlet & 0x00ffffff) * sizeof(Quadlet);
       const unsigned int leafSize = getQuadlet(node, leafOffset) >> 16;
-      Quadlet leafWords[leafSize]; // must be big endian
+      SimpleBuffer<Quadlet> leafWords(leafSize); // must be big endian
       for (unsigned int i = 0; i < leafSize; ++i) {
         leafOffset += sizeof(Quadlet);
         leafWords[i] = getQuadlet(node, leafOffset);
@@ -473,7 +473,7 @@ void IEEE1394::checkResetGeneration() throw(IEEE1394Exception) {
         }
       }
     }
-  } catch (IEEE1394Exception& e) {
+  } catch (IEEE1394Exception&) {
   }
   reload(); // responsible for setting the new generation number
 }
@@ -498,7 +498,7 @@ unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDoma
             }
           }
         }
-      } catch (IEEE1394Exception& e) {
+      } catch (IEEE1394Exception&) {
       }
     }
     break;
@@ -524,7 +524,7 @@ unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDoma
 //          if (IEEE1394Common::getPhysicalId(temp) == id) {
 //            return node;
 //          }
-      } catch (IEEE1394Exception& e) {
+      } catch (IEEE1394Exception&) {
       }
     }
     break;
@@ -551,7 +551,7 @@ unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDoma
         if (IEEE1394Common::getPhysicalId(temp) == id) {
           return node;
         }
-      } catch (IEEE1394Exception& e) {
+      } catch (IEEE1394Exception&) {
       }
     }
     break;
@@ -563,7 +563,7 @@ unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDoma
         if (temp == static_cast<uint32>(makeNodeId(id, IEEE1394::LOCAL_BUS) << 16)) {
           return makeNodeId(id, busId);
         }
-      } catch (IEEE1394Exception& e) {
+      } catch (IEEE1394Exception&) {
       }
     }
     // all nodes could be transaction incapable or non present
@@ -619,7 +619,7 @@ void IEEE1394::reload() throw(IEEE1394Exception) {
             }
           }
         }
-      } catch (IEEE1394Exception& e) {
+      } catch (IEEE1394Exception&) {
         break; // not an irm candidate
       }
     }
@@ -641,7 +641,7 @@ void IEEE1394::reload() throw(IEEE1394Exception) {
             }
           }
         }
-      } catch (IEEE1394Exception& e) {
+      } catch (IEEE1394Exception&) {
         break; // not an cycle master candidate
       }
     }
@@ -669,7 +669,7 @@ void IEEE1394::reload() throw(IEEE1394Exception) {
           }
         }
       }
-    } catch (IEEE1394Exception& e) {
+    } catch (IEEE1394Exception&) {
       break; // not a bus manager candidate
     }
     
@@ -685,7 +685,7 @@ void IEEE1394::reload() throw(IEEE1394Exception) {
       }
       resetGeneration = generation;
       break; // success
-    } catch (IEEE1394Exception& e) {
+    } catch (IEEE1394Exception&) {
       break;
     }
   }
@@ -710,7 +710,7 @@ void IEEE1394::loadTopologyMap() throw(IEEE1394Exception) {
   );
   
   // get topology map
-  uint32 ids[selfIds];
+  SimpleBuffer<uint32> ids(selfIds);
   uint32 offset = IEEE1394::TOPOLOGY_MAP + 3 * sizeof(Quadlet);
   for (unsigned int i = 0; i < selfIds; ++i) {
     ids[i] = getQuadlet(node, offset);
@@ -765,7 +765,7 @@ void IEEE1394::loadTopologyMap() throw(IEEE1394Exception) {
         }
       }
       nodes[physicalId].guid = getEUI64(makeNodeId(physicalId));
-    } catch (IEEE1394Exception& e) {
+    } catch (IEEE1394Exception&) {
       // guid already invalid
     }
     
@@ -865,7 +865,7 @@ void IEEE1394::loadSpeedMap() throw(IEEE1394Exception) {
       Cast::getAddress(speeds),
       (numberOfSpeeds + sizeof(Quadlet) - 1)/sizeof(Quadlet)*sizeof(Quadlet)
     );
-  } catch (IEEE1394Exception& e) {
+  } catch (IEEE1394Exception&) {
     for (unsigned int i = 0; i < (numberOfSpeeds + sizeof(Quadlet) - 1)/sizeof(Quadlet); ++i) {
       read(node, address, Cast::getAddress(speeds[i]), sizeof(speeds[i]));
       address += sizeof(speeds[i]);

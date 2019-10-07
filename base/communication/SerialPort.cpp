@@ -63,7 +63,7 @@ List<String> SerialPort::getPorts() throw() {
   for (unsigned int i = 1; i <= 256; ++i) { // only the first 256 ports
     StringOutputStream stream;
     stream << "com" << i << FLUSH;
-    HANDLE handle = ::CreateFile(stream.getString().getElements(),
+    HANDLE handle = ::CreateFile(toWide(stream.getString()).c_str(),
                                  0, // query only
                                  0, // comm devices must be opened w/exclusive-access
                                  0, // no security attributes
@@ -106,7 +106,7 @@ List<String> SerialPort::getPorts() throw() {
 
 SerialPort::SerialPort(const String& _name) throw(CommunicationsException) : name(_name) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  HANDLE handle = ::CreateFile(name.getElements(),
+  HANDLE handle = ::CreateFile(toWide(name).c_str(),
                                GENERIC_READ | GENERIC_WRITE,
                                0, // comm devices must be opened w/exclusive-access
                                0, // no security attributes

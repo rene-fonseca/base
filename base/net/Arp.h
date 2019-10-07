@@ -21,6 +21,7 @@
 #include <base/communication/EUI64.h>
 #include <base/collection/HashTable.h>
 
+#if 0
 win32
 CreateIpNetEntry, DeleteIpNetEntry, MIB_IPNETTABLE, SetIpNetEntry GetIpNetTable, MIB_IPNETROW
 DWORD SendARP(
@@ -29,7 +30,7 @@ DWORD SendARP(
   PULONG pMacAddr,
   PULONG PhyAddrLen
 );
-
+#endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -127,7 +128,7 @@ public:
   /**
     Returns the name of the network interface.
   */
-  inline String getName() const throw() {
+  inline const String& getName() const throw() {
     return name;
   }
   
@@ -141,35 +142,35 @@ public:
   /**
     Returns the address.
   */
-  inline InetAddress getAddress() const throw() {
+  inline const InetAddress& getAddress() const throw() {
     return address;
   }
   
   /**
     Returns the network mask.
   */
-  inline InetAddress getNetmask() const throw() {
+  inline const InetAddress& getNetmask() const throw() {
     return netmask;
   }
   
   /**
     Returns the broadcast address. Only valid if BROADCAST is set.
   */
-  inline InetAddress getBroadcast() const throw() {
+  inline const InetAddress& getBroadcast() const throw() {
     return broadcast;
   }
   
   /**
     Returns the destination address. Only valid if POINT_TO_POINT is set.
   */
-  inline InetAddress getDestination() const throw() {
+  inline const InetAddress& getDestination() const throw() {
     return destination;
   }
   
   /**
     Returns the ethernet address.
   */
-  inline EUI64 getEthernetAddress() const throw() {
+  inline const EUI64& getEthernetAddress() const throw() {
     return ethernet;
   }
 

@@ -75,9 +75,9 @@ void MD5Sum::pushBlock(const uint8* block) throw() {
   unsigned int d = messageDigest[3];
 
   unsigned int words[16];
-  --block;
   for (unsigned int i = 0; i < 16; ++i) {
-    words[i] = (*++block << 0) | (*++block << 8) | (*++block << 16) | (*++block << 24);
+    words[i] = ByteIO::readUInt32(block);
+    block += 4;
   }
 
   // round 1

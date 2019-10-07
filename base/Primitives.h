@@ -744,33 +744,47 @@ public:
   static const long double MINIMUM;
 };
 
-/**
-  Returns the maximum value of the type of the specified primitive object.
-*/
-template<class TYPE>
-inline TYPE getMaximum(TYPE value) throw() {
-  return PrimitiveTraits<TYPE>::MAXIMUM;
-}
-
-/**
-  Returns the minimum value of the type of the specified primitive object.
-*/
-template<class TYPE>
-inline TYPE getMinimum(TYPE value) throw() {
-  return PrimitiveTraits<TYPE>::MINIMUM;
-}
-
 /** Simple buffer. */
 template<class TYPE>
-class SimpleBuffer : public std::vector<TYPE> {
+class SimpleBuffer : public std::vector<TYPE> { // TAG: rename Array
 public:
 
   inline SimpleBuffer(MemorySize size) : std::vector<TYPE>(size) {
-    // bassert(size > 0);
   }
 
   inline operator TYPE* () {
     return &std::vector<TYPE>::operator[](0);
+  }
+};
+
+/** Byte IO. */
+class ByteIO {
+public:
+
+  static inline uint16 readUInt16(const uint8* src) noexcept {
+    const uint16 result = (static_cast<uint32>(src[0]) << 8) |
+      (static_cast<uint32>(src[1]) << 0);
+    return result;
+  }
+
+  static inline uint32 readUInt32(const uint8* src) noexcept {
+    const uint32 result = (static_cast<uint32>(src[0]) << 24) |
+      (static_cast<uint32>(src[1]) << 16) |
+      (static_cast<uint32>(src[2]) << 8) |
+      (static_cast<uint32>(src[3]) << 0);
+    return result;
+  }
+
+  static inline uint64 readUInt64(const uint8* src) noexcept {
+    const uint64 result = (static_cast<uint64>(src[0]) << 56) |
+      (static_cast<uint64>(src[1]) << 48) |
+      (static_cast<uint64>(src[2]) << 40) |
+      (static_cast<uint64>(src[3]) << 32) |
+      (static_cast<uint64>(src[4]) << 24) |
+      (static_cast<uint64>(src[5]) << 16) |
+      (static_cast<uint64>(src[6]) << 8) |
+      (static_cast<uint64>(src[7]) << 0);
+    return result;
   }
 };
 

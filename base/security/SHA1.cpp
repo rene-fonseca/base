@@ -34,12 +34,9 @@ void SHA1::pushBlock(const uint8* block) throw() {
   uint32 e = messageDigest[4]; // E = H4
 
   uint32 words[MESSAGE_SCHEDULE];
-  --block;
   for (unsigned int t = 0; t < 16; ++t) { // Copy M into W0 to W15
-    words[t] = (static_cast<uint32>(*++block) << 24) |
-      (static_cast<uint32>(*++block) << 16) |
-      (static_cast<uint32>(*++block) << 8) |
-      (static_cast<uint32>(*++block) << 0);
+    words[t] = ByteIO::readUInt32(block);
+    block += 4;
   }
   for (unsigned int t = 16; t < MESSAGE_SCHEDULE; ++t) {
     words[t] = rotate(words[t-3] ^ words[t-8] ^ words[t-14] ^ words[t-16], 1);

@@ -13,6 +13,10 @@
 
 #include <base/mathematics/Complex.h>
 
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL
+
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 const Complex Complex::II(0, 1);
@@ -24,3 +28,5 @@ FormatOutputStream& operator<<(
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+
+#endif

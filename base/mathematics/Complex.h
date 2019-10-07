@@ -19,13 +19,14 @@
 
 // see std::complex instead
 
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+
 #define _DK_SDU_MIP__BASE__COMPLEX_ISOC
 
 // TAG: need typedef for complex types
-#if 0
-typedef _Dcomplex dcomplex;
-typedef double complex dcomplex;
-#endif
+// typedef float complex _Fcomplex;
+// typedef double complex _Dcomplex;
+// typedef long double complex _Lcomplex;
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -40,76 +41,75 @@ namespace isoc {
   extern "C" double cimag(_Dcomplex);
   extern "C" long double cimagl(_Lcomplex);
 
-
   extern "C" _Fcomplex cabsf(_Fcomplex);
   extern "C" _Dcomplex cabs(_Dcomplex);
-  extern "C" _Lcomplex  cabsl(_Lcomplex );
+  extern "C" _Lcomplex  cabsl(_Lcomplex);
 
   extern "C" _Fcomplex csqrtf(_Fcomplex);
   extern "C" _Dcomplex csqrt(_Dcomplex);
-  extern "C" _Lcomplex  csqrtl(_Lcomplex );
+  extern "C" _Lcomplex  csqrtl(_Lcomplex);
 
   extern "C" _Fcomplex cexpf(_Fcomplex);
   extern "C" _Dcomplex cexp(_Dcomplex);
-  extern "C" _Lcomplex  cexpl(_Lcomplex );
+  extern "C" _Lcomplex  cexpl(_Lcomplex);
 
   extern "C" _Fcomplex clogf(_Fcomplex);
   extern "C" _Dcomplex clog(_Dcomplex);
-  extern "C" _Lcomplex  clogl(_Lcomplex );
+  extern "C" _Lcomplex  clogl(_Lcomplex);
 
   extern "C" _Fcomplex cpowf(float, _Fcomplex);
   extern "C" _Dcomplex cpow(double, _Dcomplex);
-  extern "C" _Lcomplex  cpowl(_Lcomplex , _Lcomplex );
+  extern "C" _Lcomplex  cpowl(_Lcomplex, _Lcomplex);
 
 
   extern "C" _Fcomplex csinf(_Fcomplex);
   extern "C" _Dcomplex csin(_Dcomplex);
-  extern "C" _Lcomplex  csinl(_Lcomplex );
+  extern "C" _Lcomplex  csinl(_Lcomplex);
 
   extern "C" _Fcomplex ccosf(_Fcomplex);
   extern "C" _Dcomplex ccos(_Dcomplex);
-  extern "C" _Lcomplex  ccosl(_Lcomplex );
+  extern "C" _Lcomplex  ccosl(_Lcomplex);
 
   extern "C" _Fcomplex casinf(_Fcomplex);
   extern "C" _Dcomplex casin(_Dcomplex);
-  extern "C" _Lcomplex  casinl(_Lcomplex );
+  extern "C" _Lcomplex  casinl(_Lcomplex);
 
   extern "C" _Fcomplex cacosf(_Fcomplex);
   extern "C" _Dcomplex cacos(_Dcomplex);
-  extern "C" _Lcomplex  cacosl(_Lcomplex );
+  extern "C" _Lcomplex  cacosl(_Lcomplex);
 
   extern "C" _Fcomplex ctanf(_Fcomplex);
   extern "C" _Dcomplex ctan(_Dcomplex);
-  extern "C" _Lcomplex  ctanl(_Lcomplex );
+  extern "C" _Lcomplex  ctanl(_Lcomplex);
 
   extern "C" _Fcomplex catanf(_Fcomplex);
   extern "C" _Dcomplex catan(_Dcomplex);
-  extern "C" _Lcomplex  catanl(_Lcomplex );
+  extern "C" _Lcomplex  catanl(_Lcomplex);
 
 
   extern "C" _Fcomplex csinhf(_Fcomplex);
   extern "C" _Dcomplex csinh(_Dcomplex);
-  extern "C" _Lcomplex  csinhl(_Lcomplex );
+  extern "C" _Lcomplex  csinhl(_Lcomplex);
 
   extern "C" _Fcomplex ccoshf(_Fcomplex);
   extern "C" _Dcomplex ccosh(_Dcomplex);
-  extern "C" _Lcomplex  ccoshl(_Lcomplex );
+  extern "C" _Lcomplex  ccoshl(_Lcomplex);
 
   extern "C" _Fcomplex casinhf(_Fcomplex);
   extern "C" _Dcomplex casinh(_Dcomplex);
-  extern "C" _Lcomplex  casinhl(_Lcomplex );
+  extern "C" _Lcomplex  casinhl(_Lcomplex);
 
   extern "C" _Fcomplex cacoshf(_Fcomplex);
   extern "C" _Dcomplex cacosh(_Dcomplex);
-  extern "C" _Lcomplex  cacoshl(_Lcomplex );
+  extern "C" _Lcomplex  cacoshl(_Lcomplex);
 
   extern "C" _Fcomplex ctanhf(_Fcomplex);
   extern "C" _Dcomplex ctanh(_Dcomplex);
-  extern "C" _Lcomplex  ctanhl(_Lcomplex );
+  extern "C" _Lcomplex  ctanhl(_Lcomplex);
 
   extern "C" _Fcomplex catanhf(_Fcomplex);
   extern "C" _Dcomplex catanh(_Dcomplex);
-  extern "C" _Lcomplex  catanhl(_Lcomplex );
+  extern "C" _Lcomplex  catanhl(_Lcomplex);
 };
 #endif
 
@@ -569,3 +569,5 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+
+#endif

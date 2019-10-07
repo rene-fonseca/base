@@ -84,6 +84,8 @@ add_library(base SHARED ${base_SRC})
 add_library(base_STATIC STATIC ${base_SRC})
 set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
 
+if (MSVC)
 target_link_libraries(base Ws2_32 Netapi32 Winmm)
+endif ()
 
 # TAG: add testsuite add_subdirectory("testsuite")

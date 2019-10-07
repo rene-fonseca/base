@@ -386,7 +386,7 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
 //   }
   struct ifconf ifc;
   ifc.ifc_len = Thread::getLocalStorage()->getSize();
-  ifc.ifc_buf = Thread::getLocalStorage()->getElements();
+  ifc.ifc_buf = (char*)Thread::getLocalStorage()->getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
@@ -593,7 +593,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
 //   }
   struct ifconf ifc;
   ifc.ifc_len = Thread::getLocalStorage()->getSize();
-  ifc.ifc_buf = Thread::getLocalStorage()->getElements();
+  ifc.ifc_buf = (char*)Thread::getLocalStorage()->getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
@@ -707,7 +707,7 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
 //   }
   struct ifconf ifc;
   ifc.ifc_len = Thread::getLocalStorage()->getSize();
-  ifc.ifc_buf = Thread::getLocalStorage()->getElements();
+  ifc.ifc_buf = (char*)Thread::getLocalStorage()->getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
@@ -883,8 +883,10 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
   if (ioctl(handle, SIOCGIFMETRIC, &req) == 0) {
     metric = req.ifr_metric;
   }
-#if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || \
-     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN))
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+  // TAG: FIXMD
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || \
+      (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN))
   if (ioctl(handle, SIOCGIFHWADDR, &req) == 0) {
     ethernet.setMAC48(Cast::getAddress(req.ifr_hwaddr));
   }

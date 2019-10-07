@@ -288,14 +288,14 @@ void SerialPort::setRTS(bool state) throw(CommunicationsException) {
 
 bool SerialPort::isReadTimeoutSupported() const throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return true;
 #endif // flavor
+  return true;
 }
 
 bool SerialPort::isWriteTimeoutSupported() const throw(CommunicationsException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return true;
 #endif // flavor
+  return true;
 }
 
 unsigned int SerialPort::getReadTimeout() const throw(CommunicationsException) {
@@ -303,6 +303,8 @@ unsigned int SerialPort::getReadTimeout() const throw(CommunicationsException) {
   COMMTIMEOUTS timeouts;
   bassert(::GetCommTimeouts(handle->getHandle(), &timeouts) != 0, CommunicationsException());
   return timeouts.ReadTotalTimeoutConstant;
+#else
+  return 0;
 #endif // flavor
 }
 
@@ -311,6 +313,8 @@ unsigned int SerialPort::getWriteTimeout() const throw(CommunicationsException) 
   COMMTIMEOUTS timeouts;
   bassert(::GetCommTimeouts(handle->getHandle(), &timeouts) != 0, CommunicationsException());
   return timeouts.WriteTotalTimeoutConstant;
+#else
+  return 0;
 #endif // flavor
 }
 
@@ -337,6 +341,8 @@ unsigned int SerialPort::getInputBufferSize() const throw(CommunicationsExceptio
   COMMPROP properties;
   bassert(::GetCommProperties(handle->getHandle(), &properties) != 0, CommunicationsException());
   return properties.dwCurrentRxQueue;
+#else
+  return 0;
 #endif // flavor
 }
 
@@ -353,6 +359,8 @@ unsigned int SerialPort::getOutputBufferSize() const throw(CommunicationsExcepti
   COMMPROP properties;
   bassert(::GetCommProperties(handle->getHandle(), &properties) != 0, CommunicationsException());
   return properties.dwCurrentTxQueue;
+#else
+  return 0;
 #endif // flavor
 }
 
@@ -378,6 +386,8 @@ AsynchronousReadOperation SerialPort::read(
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   bassert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncReadStreamContext(handle->getHandle(), buffer, bytesToRead, listener);
+#else
+  return AsynchronousReadOperation();
 #endif // flavor
 }
 
@@ -388,6 +398,8 @@ AsynchronousWriteOperation SerialPort::write(
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   bassert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncWriteStreamContext(handle->getHandle(), buffer, bytesToWrite, listener);
+#else
+  return AsynchronousWriteOperation();
 #endif // flavor
 }
 
@@ -408,7 +420,7 @@ unsigned int SerialPort::read(
       }
     }
 #else // unix
-    int result = ::read(handle->getHandle(), buffer, minimum<unsigned int>(bytesToRead, SSIZE_MAX));
+    int result = ::read(handle->getHandle(), buffer, minimum<size_t>(bytesToRead, SSIZE_MAX));
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
       case EINTR: // interrupted by signal before any data was read
@@ -446,7 +458,7 @@ unsigned int SerialPort::write(
       throw IOException("Unable to write to object", this);
     }
 #else // unix
-    int result = ::write(handle->getHandle(), buffer, minimum<unsigned int>(bytesToWrite, SSIZE_MAX));
+    int result = ::write(handle->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
     if (result < 0) { // has an error occured
       switch (errno) {
       case EINTR: // interrupted by signal before any data was written

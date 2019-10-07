@@ -488,15 +488,15 @@ public:
   private:
 
     /** The buffer. */
-    const uint8* buffer;
+    const uint8* buffer = nullptr;
     /** The size of the buffer in bytes. */
-    unsigned int bufferSize;
+    unsigned int bufferSize = 0;
     /** The number of packets in the buffer. */
-    unsigned int numberOfPackets;
+    unsigned int numberOfPackets = 0;
     /** The transmission speed. */
-    unsigned int speed;
+    unsigned int speed = 0;
     /** The number of transmitted packets. */
-    unsigned int transmittedPackets;
+    unsigned int transmittedPackets = 0;
   protected:
 
     void setTransmittedPackets(unsigned int transmittedPackets) throw() {
@@ -2344,5 +2344,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

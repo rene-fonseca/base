@@ -158,7 +158,7 @@ unsigned int FileDescriptorInputStream::read(
     int result = ::read(
       fd->getHandle(),
       buffer,
-      minimum<unsigned int>(bytesToRead, SSIZE_MAX)
+      minimum<size_t>(bytesToRead, SSIZE_MAX)
     );
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
@@ -200,11 +200,11 @@ void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
 #else // unix
   int flags = getFlags();
   if (value) {
-    if (flags & O_NONBLOCK == 0) { // do we need to set flag
+    if ((flags & O_NONBLOCK) == 0) { // do we need to set flag
       setFlags(flags | O_NONBLOCK);
     }
   } else {
-    if (flags & O_NONBLOCK != 0) { // do we need to clear flag
+    if ((flags & O_NONBLOCK) != 0) { // do we need to clear flag
       setFlags(flags & ~O_NONBLOCK);
     }
   }

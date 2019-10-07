@@ -126,6 +126,8 @@ unsigned int SoundInputStream::available() const throw() {
     bassert(::ioctl(handle, I_NREAD, &available) == 0, UnexpectedFailure()); // should not fail
     return available;
 //    return available & ~(channels * 2 - 1); // align to sample frame (channels * bitsPerSample/8)
+  #else
+    return 0;
   #endif // os
 #endif // flavor
 }
@@ -144,6 +146,8 @@ unsigned int SoundInputStream::getChannels() const throw() {
     audio_info_t info;
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.record.channels;
+  #else
+    return 0;
   #endif // os
 #endif // flavor
 }
@@ -162,6 +166,8 @@ unsigned int SoundInputStream::getRate() const throw() {
     audio_info_t info;
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.record.sample_rate;
+  #else
+    return 0;
   #endif // os
 #endif // flavor
 }
@@ -183,6 +189,8 @@ unsigned int SoundInputStream::getPosition() const throw() {
     audio_info_t info;
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.record.samples;
+  #else
+    return 0;
   #endif // os
 #endif // flavor
 }
@@ -271,7 +279,7 @@ unsigned int SoundInputStream::read(void* buffer, unsigned int size) throw() {
   while (bytesRead < size) {
     int result;
     do {
-      result = ::read(handle, buffer, (size <= SSIZE_MAX) ? size : SSIZE_MAX);
+      result = ::read(handle, buffer, (static_cast<size_t>(size) <= SSIZE_MAX) ? size : SSIZE_MAX);
       if (result < 0) { // has an error occured
         bassert(errno == EINTR, IOException());
       }

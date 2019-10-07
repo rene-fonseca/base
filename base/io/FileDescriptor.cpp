@@ -31,7 +31,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-Handle* FileDescriptor::invalid = nullptr;
+Handle* FileDescriptor::Descriptor::invalid = nullptr;
 
 FileDescriptor::Descriptor::~Descriptor() {
   if (isValid()) {
@@ -71,7 +71,7 @@ int FileDescriptor::getFlags() const throw(IOException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return 0;
 #else // unix
-  int result;
+  int result = 0;
   if ((result = ::fcntl(fd->getHandle(), F_GETFL)) < 0) {
     throw IOException("Unable to get flags of file descriptor", this);
   }
@@ -107,11 +107,11 @@ void FileDescriptor::setNonBlocking(bool value) throw(IOException) {
 #else // unix
   int flags = getFlags();
   if (value) {
-    if (flags & O_NONBLOCK == 0) { // do we need to set flag
+    if ((flags & O_NONBLOCK) == 0) { // do we need to set flag
       setFlags(flags | O_NONBLOCK);
     }
   } else {
-    if (flags & O_NONBLOCK != 0) { // do we need to clear flag
+    if ((flags & O_NONBLOCK) != 0) { // do we need to clear flag
       setFlags(flags & ~O_NONBLOCK);
     }
   }
@@ -122,7 +122,7 @@ FileDescriptor FileDescriptor::getStandardInput() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   OperatingSystem::Handle handle = ::GetStdHandle(STD_INPUT_HANDLE); // should never fail
 
-  DWORD dontCare;
+  DWORD dontCare = 0;
   if (::GetNumberOfConsoleMouseButtons(&dontCare) == 0) { // services start without a console
     handle = OperatingSystem::INVALID_HANDLE; // prevent use of fin, fout, and ferr
   } else if (!::GetHandleInformation(handle, &dontCare)) {
@@ -140,7 +140,7 @@ FileDescriptor FileDescriptor::getStandardOutput() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   OperatingSystem::Handle handle = ::GetStdHandle(STD_OUTPUT_HANDLE); // should never fail
   
-  DWORD dontCare;
+  DWORD dontCare = 0;
   if (::GetNumberOfConsoleMouseButtons(&dontCare) == 0) { // services start without a console
     handle = OperatingSystem::INVALID_HANDLE; // prevent use of fin, fout, and ferr
   } else if (!::GetHandleInformation(handle, &dontCare)) {
@@ -167,7 +167,7 @@ FileDescriptor FileDescriptor::getStandardError() throw() {
   }
 */
   
-  DWORD dontCare;
+  DWORD dontCare = 0;
   if (::GetNumberOfConsoleMouseButtons(&dontCare) == 0) { // services start without a console
     handle = OperatingSystem::INVALID_HANDLE; // prevent use of fin, fout, and ferr
   } else if (!::GetHandleInformation(handle, &dontCare)) {

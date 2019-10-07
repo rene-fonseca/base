@@ -12,3 +12,5 @@
  ***************************************************************************/
 
 #include <base/io/InputStream.h>
+
+_DK_SDU_MIP__BASE__DUMMY_SYMBOL

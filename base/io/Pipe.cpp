@@ -31,7 +31,7 @@
 #  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
 #    warning ioctl is not supported (CYGWIN)
 #  else
-#    include <stropts.h> // defines FLUSH macros
+// #    include <stropts.h> // defines FLUSH macros
 #  endif
 #endif
 
@@ -188,7 +188,7 @@ void Pipe::flush() throw(PipeException) {
     throw PipeException("Unable to flush pipe", this);
   }
 #else // unix
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
     #warning Pipe::flush() not supported (CYGWIN)
   #else
     int command = FLUSHW;
@@ -231,7 +231,7 @@ unsigned int Pipe::read(
     int result = ::read(
       fd->getHandle(),
       buffer,
-      minimum<unsigned int>(bytesToRead, SSIZE_MAX)
+      minimum<size_t>(bytesToRead, SSIZE_MAX)
     );
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
@@ -277,7 +277,7 @@ unsigned int Pipe::write(
       throw PipeException("Unable to write to pipe", this);
     }
 #else // unix
-    int result = ::write(fd->getHandle(), buffer, minimum<unsigned int>(bytesToWrite, SSIZE_MAX));
+    int result = ::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
     if (result < 0) { // has an error occured
       switch (errno) {
       case EINTR: // interrupted by signal before any data was written

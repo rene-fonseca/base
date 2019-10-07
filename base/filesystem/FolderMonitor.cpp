@@ -45,6 +45,7 @@ bool FolderMonitor::isSignaled() const throw() {
   }
   return result == WAIT_OBJECT_0;
 #else // unix
+  return false;
 #endif // flavor
 }
 
@@ -62,6 +63,7 @@ bool FolderMonitor::wait(unsigned int milliseconds) const throw() {
   ::FindNextChangeNotification(handle); // should never fail
   return result == WAIT_OBJECT_0;
 #else // unix
+  return false;
 #endif // flavor
 }
 

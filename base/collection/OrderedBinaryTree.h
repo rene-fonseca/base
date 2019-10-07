@@ -272,10 +272,10 @@ public:
     if (parent) {
       if (parent->getLeft() == node) {
         // node if left child node of parent
-        parent->setLeft(0); // detach node
+        parent->setLeft(nullptr); // detach node
       } else {
         // node if right child node of parent
-        parent->setRight(0); // detach node
+        parent->setRight(nullptr); // detach node
       }
       delete node;
     } else { // node is the only element of the tree

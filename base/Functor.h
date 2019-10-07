@@ -832,10 +832,10 @@ template<class TYPE, class RESULT = TYPE>
 class Sum : public UnaryOperation<TYPE, RESULT> {
 protected:
   
-  RESULT result;
+  RESULT result = 0;
 public:
   
-  inline Sum() throw() : result(0) {
+  inline Sum() throw() {
   }
   
   inline void operator()(const TYPE& value) throw() {
@@ -857,11 +857,10 @@ template<class TYPE, class RESULT = TYPE>
 class AbsoluteSum : public UnaryOperation<TYPE, RESULT> {
 protected:
   
-  RESULT result;
+  RESULT result = 0;
 public:
   
-  inline AbsoluteSum() throw()
-    : result(0) {
+  inline AbsoluteSum() throw() {
   }
   
   inline void operator()(const TYPE& value) throw() {
@@ -883,10 +882,10 @@ template<class TYPE, class RESULT = TYPE>
 class SquareSum : public UnaryOperation<TYPE, RESULT> {
 protected:
   
-  RESULT result;
+  RESULT result = 0;
 public:
   
-  inline SquareSum() throw() : result(0) {
+  inline SquareSum() throw() {
   }
 
   inline void operator()(const TYPE& value) throw() {
@@ -907,10 +906,10 @@ template<class TYPE, class RESULT = TYPE>
 class DotProduct : public BinaryOperation<TYPE, TYPE, RESULT> {
 protected:
   
-  RESULT result;
+  RESULT result = 0;
 public:
   
-  inline DotProduct() throw() : result(0) {
+  inline DotProduct() throw() {
   }
   
   inline void operator()(const TYPE& left, const TYPE& right) throw() {
@@ -932,7 +931,7 @@ template<class TYPE>
 class Minimum : public UnaryOperation<TYPE, TYPE> {
 protected:
 
-  TYPE result;
+  TYPE result = 0;
 public:
 
   inline Minimum(const TYPE& value) throw() : result(value) {
@@ -959,7 +958,7 @@ template<class TYPE>
 class Maximum : public UnaryOperation<TYPE, TYPE> {
 protected:
 
-  TYPE result;
+  TYPE result = 0;
 public:
   
   inline Maximum(const TYPE& value) throw()

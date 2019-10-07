@@ -117,12 +117,12 @@ private:
   /** The type of the guard. */
   typedef SpinLock Guard;
   /** The value. */
-  int value;
+  int value = 0;
   /** The guard. */
   Guard guard;
 public:
 
-  inline AtomicCounter() throw() : value(0) {
+  inline AtomicCounter() throw() {
   }
 
   inline AtomicCounter(int _value) throw() : value(_value) {

@@ -36,7 +36,7 @@ double ExpressionEvaluator::onFunction(
 
 double ExpressionEvaluator::evaluate() const throw(ExpressionException) {
   List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
-  SimpleBuffer<double> stack(nodes.getSize());
+  PrimitiveArray<double> stack(nodes.getSize());
   int index = -1;
   while (enu.hasNext()) {
     Node node = *enu.next();
@@ -107,7 +107,7 @@ double ExpressionEvaluator::evaluate() const throw(ExpressionException) {
   
 double ExpressionEvaluator::evaluate(const double* variables) const throw(ExpressionException) {
   List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
-  SimpleBuffer<double> stack(nodes.getSize());
+  PrimitiveArray<double> stack(nodes.getSize());
   int index = -1;
   while (enu.hasNext()) {
     Node node = *enu.next();
@@ -177,7 +177,7 @@ double ExpressionEvaluator::evaluate(const double* variables) const throw(Expres
 }
 
 void ExpressionEvaluator::evaluate(const double* variables, double* results, unsigned int count) const throw(ExpressionException) {
-  SimpleBuffer<double> stack(nodes.getSize());
+  PrimitiveArray<double> stack(nodes.getSize());
   for (unsigned int i = 0; i < count; ++i) {
     List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
     int index = -1;

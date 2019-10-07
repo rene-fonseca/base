@@ -60,7 +60,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline ExpressionException(Type type) throw() : Exception(type), index(0) {
+  inline ExpressionException(Type type) throw() : Exception(type) {
   }
   
   /**
@@ -70,7 +70,7 @@ public:
     @param type The identity of the type.
   */
   inline ExpressionException(const char* message, Type type) throw()
-    : Exception(message, type), index(0) {
+    : Exception(message, type) {
   }
   
   /**

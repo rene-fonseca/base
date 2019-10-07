@@ -33,17 +33,17 @@ class MemoryDump : public Object {
 private:
 
   /** The address of the memory block. */
-  const uint8* memory;
+  const uint8* memory = nullptr;
   /** Specifies the size of the memory block. */
-  MemorySize size;
+  MemorySize size = 0;
   /** The options. */
-  unsigned int options;
+  unsigned int options = 0;
   /** Specifies the size of a word. */
-  unsigned int wordSize;
+  unsigned int wordSize = 0;
   /** The number of significat digits in the offset. */
-  unsigned int offsetDigits;
+  unsigned int offsetDigits = 0;
   /** Specifies the global offset. */
-  uint64 offset;
+  uint64 offset = 0;
 public:
   
   enum Option {

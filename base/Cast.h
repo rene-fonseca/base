@@ -403,7 +403,7 @@ public:
   */
   static inline MemorySize getOffset(const volatile void* value) throw() {
     return static_cast<const volatile char*>(value) -
-      static_cast<const volatile char*>(0);
+      static_cast<const volatile char*>(nullptr);
   }
 
   /**

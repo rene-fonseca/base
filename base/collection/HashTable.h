@@ -92,11 +92,11 @@ public:
   private:
     
     /** The hash of the element. */
-    unsigned long hash;
+    unsigned long hash = 0;
     /** The key and value of the element. */
     Association<Key, Value> value;
     /** The next node in the single linked list. */
-    Node* next;
+    Node* next = nullptr;
   public:
     
     /**
@@ -104,8 +104,7 @@ public:
     */
     inline Node(unsigned long _hash, const Key& _key, const Value& _value) throw()
       : hash(_hash),
-        value(_key, _value),
-        next(0) {
+        value(_key, _value) {
     }
     
     /**

@@ -59,10 +59,10 @@ public:
   class Module {
   private:
     
-    const void* context;
+    const void* context = nullptr;
   public:
 
-    inline Module() throw() : context(0) {
+    inline Module() throw() {
     }
     
     inline Module(const void* _context) throw() : context(_context) {

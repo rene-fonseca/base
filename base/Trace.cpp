@@ -62,7 +62,7 @@ void Trace::member(const void* pointer, const char* message) throw() {
     ++src;
   }
   unsigned int length = src - message;
-  SimpleBuffer<char> buffer(22 + length + 1);
+  PrimitiveArray<char> buffer(22 + length + 1);
   // TAG: remove sprintf dependency
   sprintf(buffer, "%p >> %s", pointer, message); // sprintf must be MT-safe
 #if (_DK_SDU_MIP__BASE__INT_SIZE > 8)

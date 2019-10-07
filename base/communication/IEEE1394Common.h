@@ -911,7 +911,7 @@ public:
     /**
       Initializes invalid request.
     */
-    inline IsochronousReadFixedDataRequest() throw() : context(0) {
+    inline IsochronousReadFixedDataRequest() throw() {
     }
     
     /**

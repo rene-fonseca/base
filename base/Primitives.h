@@ -744,12 +744,12 @@ public:
   static const long double MINIMUM;
 };
 
-/** Simple buffer. */
+/** Primitive array. */
 template<class TYPE>
-class SimpleBuffer : public std::vector<TYPE> { // TAG: rename Array
+class PrimitiveArray : public std::vector<TYPE> {
 public:
 
-  inline SimpleBuffer(MemorySize size) : std::vector<TYPE>(size) {
+  inline PrimitiveArray(MemorySize size) : std::vector<TYPE>(size) {
   }
 
   inline operator TYPE* () {

@@ -132,8 +132,7 @@ public:
     @param granularity The desired granularity.
   */
   explicit Array(unsigned int granularity) throw()
-    : elements(new ReferenceCountedCapacityAllocator<Value>(granularity)),
-      size(0) {
+    : elements(new ReferenceCountedCapacityAllocator<Value>(granularity)) {
   }
 
   /**

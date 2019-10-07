@@ -383,7 +383,7 @@ String IEEE1394::getDescription(unsigned short node) throw(IEEE1394Exception) {
         uint32 leafOffset = entryOffset + (quadlet & 0x00ffffff) * sizeof(Quadlet);
         const unsigned int leafSize = getQuadlet(node, leafOffset) >> 16;
         if (leafSize > 2) {
-          SimpleBuffer<Quadlet> leaf(leafSize); // must be big endian
+          PrimitiveArray<Quadlet> leaf(leafSize); // must be big endian
           for (unsigned int i = 0; i < leafSize; ++i) {
             leafOffset += sizeof(Quadlet);
             leaf[i] = getQuadlet(node, leafOffset);
@@ -430,7 +430,7 @@ String IEEE1394::getKeywords(unsigned short node) throw(IEEE1394Exception) {
         (keyValue == IEEE1394::KEY_KEYWORD)) { // Keyword_Leaf
       uint32 leafOffset = entryOffset + (quadlet & 0x00ffffff) * sizeof(Quadlet);
       const unsigned int leafSize = getQuadlet(node, leafOffset) >> 16;
-      SimpleBuffer<Quadlet> leafWords(leafSize); // must be big endian
+      PrimitiveArray<Quadlet> leafWords(leafSize); // must be big endian
       for (unsigned int i = 0; i < leafSize; ++i) {
         leafOffset += sizeof(Quadlet);
         leafWords[i] = getQuadlet(node, leafOffset);
@@ -710,7 +710,7 @@ void IEEE1394::loadTopologyMap() throw(IEEE1394Exception) {
   );
   
   // get topology map
-  SimpleBuffer<uint32> ids(selfIds);
+  PrimitiveArray<uint32> ids(selfIds);
   uint32 offset = IEEE1394::TOPOLOGY_MAP + 3 * sizeof(Quadlet);
   for (unsigned int i = 0; i < selfIds; ++i) {
     ids[i] = getQuadlet(node, offset);

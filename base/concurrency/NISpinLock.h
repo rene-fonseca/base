@@ -39,7 +39,7 @@ public:
   /**
     Initializes spin lock to unlocked state.
   */
-  inline NISpinLock() throw() : value(0) {
+  inline NISpinLock() throw() {
   }
   
   /**

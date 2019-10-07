@@ -432,7 +432,7 @@ public:
         }
         return result;
       } else {
-        return 0;
+        return nullptr;
       }
     }
 
@@ -454,7 +454,7 @@ public:
     /**
       Initialize an empty binary tree.
     */
-    explicit inline BinaryTreeImpl() throw() : root(0) {
+    explicit inline BinaryTreeImpl() throw() {
     }
 
     /**
@@ -476,7 +476,7 @@ public:
       Returns true if the binary tree is empty.
     */
     inline bool isEmpty() const throw() {
-      return root == 0;
+      return root == nullptr;
     }
 
     /**

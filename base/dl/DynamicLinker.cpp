@@ -72,9 +72,9 @@ void* DynamicLinker::getGlobalSymbolImpl(
 //}
 
 DynamicLinker::DynamicLinker(
-  const String& module, unsigned int options) throw(LinkerException) {
+  const String& path, unsigned int options) throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if ((handle = ::LoadLibraryEx(module.getElements(), 0, 0)) == 0) {
+  if ((handle = ::LoadLibraryEx(toWide(path).c_str(), 0, 0)) == nullptr) {
     throw LinkerException("Unable to open module", this);
   }
 #else // unix
@@ -88,7 +88,7 @@ DynamicLinker::DynamicLinker(
   #else
     flags |= RTLD_GLOBAL;
   #endif
-  if ((handle = ::dlopen(module.getElements(), flags)) == 0) {
+  if ((handle = ::dlopen(path.getElements(), flags)) == 0) {
     throw LinkerException("Unable to open module", this);
   }
 #endif // flavor
@@ -98,7 +98,7 @@ void* DynamicLinker::getSymbol(
   const Literal& symbol) const throw(LinkerException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getValue()));
-  bassert(result != 0, LinkerException("Unable to resolve symbol", this));
+  bassert(result != nullptr, LinkerException("Unable to resolve symbol", this));
   return result;
 #else // unix
   void* result = ::dlsym(handle, symbol.getValue());

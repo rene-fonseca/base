@@ -14,7 +14,9 @@
 #pragma once
 
 #include <base/Object.h>
-#include <base/mem/Allocator.h>
+#include <base/collection/List.h>
+#include <base/collection/Array.h>
+#include <base/net/Socket.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -23,8 +25,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class WaitForObjects : public Object {
 private:
   
-  Allocater<Object*> objects;
-  Allocater<OperatingSystem::Handle> handles;
+  List<Object*> objects;
+  Array<OperatingSystem::Handle> handles;
 public:
 
   /**
@@ -37,6 +39,10 @@ public:
   */
   unsigned int getMaximumNumberOfObjects() const throw();
   
+  void registerObject(Object* object) throw(OutOfDomain);
+
+  void deregisterObject(Object* object) throw(OutOfDomain);
+
   /**
   */
   void registerObject(Socket socket) throw(OutOfDomain);

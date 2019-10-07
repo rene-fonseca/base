@@ -39,16 +39,16 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 User User::getCurrentUser() throw(UserException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  SECURITY_DESCRIPTOR* securityDescriptor;
-  PSID ownerSID;
+  PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
+  PSID ownerSID = nullptr;
   bassert(::GetSecurityInfo(
            ::GetCurrentProcess(),
            SE_KERNEL_OBJECT,
            OWNER_SECURITY_INFORMATION,
            &ownerSID,
-           0,
-           0,
-           0,
+           nullptr,
+           nullptr,
+           nullptr,
            &securityDescriptor
          ) == ERROR_SUCCESS,
          UserException(Type::getType<User>())
@@ -115,8 +115,8 @@ User::User(const String& name) throw(UserException) {
   SID_NAME_USE sidType;
   uint8 sid[SECURITY_MAX_SID_SIZE];
   DWORD size = sizeof(sid);
-  bassert(::LookupAccountName(0,
-                             name.getElements(),
+  bassert(::LookupAccountName(nullptr,
+                             toWide(name).c_str(),
                              &sid,
                              &size,
                              0,
@@ -152,12 +152,12 @@ String User::getName(bool fallback) const throw(UserException) {
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SID_NAME_USE sidType;
-  char name[UNLEN+1];
-  DWORD nameSize = sizeof(name);
-  char domainName[DNLEN+1];
-  DWORD domainNameSize = sizeof(domainName);
+  wchar name[UNLEN+1];
+  DWORD nameSize = getArraySize(name);
+  wchar domainName[DNLEN+1];
+  DWORD domainNameSize = getArraySize(domainName);
   if (::LookupAccountSid(
-        0,
+        nullptr,
         (PSID)id->getElements(),
         name,
         &nameSize,
@@ -170,10 +170,10 @@ String User::getName(bool fallback) const throw(UserException) {
     s << *this << FLUSH;
     return s.getString();
   }
-  if (domainName[0] != 0) {
-    return String(domainName) + MESSAGE("/") + String(name);
+  if (domainName[0] != L'\0') {
+    return toUTF8(WideString(domainName) + WIDEMESSAGE("/") + WideString(name));
   } else {
-    return String(name); // TAG: does nameSize hold length of name
+    return String(toUTF8(static_cast<const wchar*>(name))); // TAG: does nameSize hold length of name
   }
 #else // unix
   Allocator<uint8>* buffer = Thread::getLocalStorage();

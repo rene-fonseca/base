@@ -11,6 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/Primitives.h>
 #include <base/string/WideString.h>
 #include <base/Functor.h>
 #include <base/Architecture.h>
@@ -32,6 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 // getArraySize(characters);
 
 bool WideTraits::isControl(ucs4 character) throw() {
+#if 0 // TAG: FIXME
   if (getArraySize(controlCharacters) > 0) {
     unsigned int begin = 0;
     unsigned int last = getArraySize(controlCharacters) - 1;
@@ -46,10 +48,12 @@ bool WideTraits::isControl(ucs4 character) throw() {
       }
     }
   }
+#endif
   return false;
 }
 
 bool WideTraits::isUpper(ucs4 character) throw() {
+#if 0 // TAG: FIXME
   if (getArraySize(upperCharacters) > 0) {
     unsigned int begin = 0;
     unsigned int last = getArraySize(upperCharacters) - 1;
@@ -64,10 +68,12 @@ bool WideTraits::isUpper(ucs4 character) throw() {
       }
     }
   }
+#endif
   return false;
 }
 
 bool WideTraits::isLower(ucs4 character) throw() {
+#if 0 // TAG: FIXME
   if (getArraySize(lowerCharacters) > 0) {
     unsigned int begin = 0;
     unsigned int last = getArraySize(lowerCharacters) - 1;
@@ -82,10 +88,12 @@ bool WideTraits::isLower(ucs4 character) throw() {
       }
     }
   }
+#endif
   return false;
 }
 
 bool WideTraits::isTitle(ucs4 character) throw() {
+#if 0 // TAG: FIXME
   if (getArraySize(titleCharacters) > 0) {
     unsigned int begin = 0;
     unsigned int last = getArraySize(titleCharacters) - 1;
@@ -100,10 +108,12 @@ bool WideTraits::isTitle(ucs4 character) throw() {
       }
     }
   }
+#endif
   return false;
 }
 
 unsigned int WideTraits::getFlags(ucs4 character) throw() {
+#if 0 // TAG: FIXME
   if (getArraySize(characters) > 0) {
     unsigned int begin = 0;
     unsigned int last = getArraySize(characters) - 1;
@@ -119,10 +129,12 @@ unsigned int WideTraits::getFlags(ucs4 character) throw() {
       }
     }
   }
+#endif
   return 0;
 }
 
 ucs4 WideTraits::toLower(ucs4 character) throw() {
+#if 0 // TAG: FIXME
   if (getArraySize(characters) > 0) {
     unsigned int begin = 0;
     unsigned int last = getArraySize(characters) - 1;
@@ -141,10 +153,12 @@ ucs4 WideTraits::toLower(ucs4 character) throw() {
       }
     }
   }
+#endif
   return character;
 }
 
 ucs4 WideTraits::toUpper(ucs4 character) throw() {
+#if 0 // TAG: FIXME
   if (getArraySize(characters) > 0) {
     unsigned int begin = 0;
     unsigned int last = getArraySize(characters) - 1;
@@ -163,10 +177,12 @@ ucs4 WideTraits::toUpper(ucs4 character) throw() {
       }
     }
   }
-  return character;
+#endif
+    return character;
 }
 
 ucs4 WideTraits::toTitle(ucs4 character) throw() {
+#if 0 // TAG: FIXME
   if (getArraySize(characters) > 0) {
     unsigned int begin = 0;
     unsigned int last = getArraySize(characters) - 1;
@@ -185,6 +201,7 @@ ucs4 WideTraits::toTitle(ucs4 character) throw() {
       }
     }
   }
+#endif
   return character;
 }
 
@@ -192,6 +209,7 @@ bool WideTraits::isSpace(ucs4 character) throw() {
   if (character == ' ') {
     return true;
   }
+#if 0 // TAG: FIXME
   if (getArraySize(spaceCharacters) > 0) {
     unsigned int begin = 0;
     unsigned int last = getArraySize(spaceCharacters) - 1;
@@ -206,10 +224,12 @@ bool WideTraits::isSpace(ucs4 character) throw() {
       }
     }
   }
+#endif
   return false;
 }
 
 bool WideTraits::isDigit(ucs4 character) throw() {
+#if 0 // TAG: FIXME
   if (getArraySize(digitCharacters) > 0) {
     unsigned int begin = 0;
     unsigned int last = getArraySize(digitCharacters) - 1;
@@ -224,10 +244,12 @@ bool WideTraits::isDigit(ucs4 character) throw() {
       }
     }
   }
+#endif
   return false;
 }
 
 int WideTraits::digitToValue(ucs4 character) throw() {
+#if 0 // TAG: FIXME
   if (getArraySize(digitCharacters) > 0) {
     unsigned int begin = 0;
     unsigned int last = getArraySize(digitCharacters) - 1;
@@ -242,6 +264,7 @@ int WideTraits::digitToValue(ucs4 character) throw() {
       }
     }
   }
+#endif
   return -1;
 }
 
@@ -1557,15 +1580,21 @@ String WideString::getMultibyteString(const wchar* string)
 WideString::WideString() throw() : elements(DEFAULT_STRING.elements) {
 }
 
-WideString::WideString(unsigned int capacity) throw(MemoryException)
-  : elements(0) {
+WideString::WideString(unsigned int capacity) throw(MemoryException) {
   elements = new ReferenceCountedCapacityAllocator<ucs4>(1, GRANULARITY);
   elements->ensureCapacity(capacity + 1);
 }
 
-WideString::WideString(const WideLiteral& literal)
-  throw(WideStringException, MemoryException)
-  : elements(0) {
+String::String(const std::string& string) throw(WideStringException, MemoryException) {
+  const std::wstring wide = toWide(string);
+  initialize(wide.c_str(), wide.size());
+}
+
+String::String(const std::wstring& string) throw(WideStringException, MemoryException) {
+  initialize(string.c_str(), string.size());
+}
+
+WideString::WideString(const WideLiteral& literal) throw(WideStringException, MemoryException) {
   MemorySize nativeLength = literal.getLength();
   if (sizeof(wchar) == sizeof(ucs2)) {
     MemorySize length = UCS2ToUCS4(
@@ -1602,9 +1631,7 @@ WideString::WideString(const WideLiteral& literal)
   }
 }
 
-WideString::WideString(const NativeWideString& string)
-  throw(WideStringException, MemoryException)
-  : elements(0) {
+WideString::WideString(const NativeWideString& string) throw(WideStringException, MemoryException) {
   
   if (!string.getValue()) {
     elements = DEFAULT_STRING.elements;
@@ -1648,9 +1675,7 @@ WideString::WideString(const NativeWideString& string)
   }
 }
 
-WideString::WideString(const NativeWideString& string, unsigned int maximum)
-  throw(OutOfDomain, WideStringException, MemoryException)
-  : elements(0) {
+WideString::WideString(const NativeWideString& string, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException) {
   bassert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this));
 
   if (!string.getValue()) {
@@ -1718,9 +1743,7 @@ WideString::WideString(
   }
 }
 
-WideString::WideString(
-  const NativeString& string) throw(MultibyteException, MemoryException)
-  : elements(0) {
+WideString::WideString(const NativeString& string) throw(MultibyteException, MemoryException) {
   if (!string.getValue()) { // is string null
     elements = DEFAULT_STRING.elements;
     return;
@@ -1753,9 +1776,7 @@ WideString::WideString(
 }
 
 WideString::WideString(
-  const NativeString& string, unsigned int maximum)
-  throw(OutOfDomain, MultibyteException, MemoryException)
-  : elements(0) {
+  const NativeString& string, unsigned int maximum) throw(OutOfDomain, MultibyteException, MemoryException) {
   bassert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this));
   
   if (!string.getValue()) { // is string null

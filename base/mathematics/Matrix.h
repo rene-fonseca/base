@@ -145,9 +145,9 @@ protected:
   Reference<ReferenceCountedAllocator<TYPE> > elements;
   
   /** The number of rows in the matrix. */
-  unsigned int rows;
+  unsigned int rows = 0;
   /** The number of columns in the matrix. */
-  unsigned int columns;
+  unsigned int columns = 0;
   
   /**
     Returns the elements of the matrix for modification. May copy all elements
@@ -323,7 +323,12 @@ public:
 
     @param eq The matrix containing the desired elements.
   */
-  Matrix& operator=(const Matrix& eq) throw(MemoryException);
+  Matrix& operator=(const Matrix& eq) throw(MemoryException) {
+    this->elements = eq.elements;
+    this->rows = eq.rows;
+    this->columns = eq.columns;
+    return *this;
+  }
 
 
 

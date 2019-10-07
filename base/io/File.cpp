@@ -33,6 +33,43 @@
 #  include <windows.h>
 #  include <aclapi.h>
 #  include <winioctl.h>
+
+ 
+// #  include <ntifs.h>
+typedef struct _REPARSE_DATA_BUFFER {
+  ULONG  ReparseTag;
+  USHORT ReparseDataLength;
+  USHORT Reserved;
+  union {
+    struct {
+      USHORT SubstituteNameOffset;
+      USHORT SubstituteNameLength;
+      USHORT PrintNameOffset;
+      USHORT PrintNameLength;
+      ULONG  Flags;
+      WCHAR  PathBuffer[1];
+    } SymbolicLinkReparseBuffer;
+    struct {
+      USHORT SubstituteNameOffset;
+      USHORT SubstituteNameLength;
+      USHORT PrintNameOffset;
+      USHORT PrintNameLength;
+      WCHAR  PathBuffer[1];
+    } MountPointReparseBuffer;
+    struct {
+      UCHAR DataBuffer[1];
+    } GenericReparseBuffer;
+  } DUMMYUNIONNAME;
+} REPARSE_DATA_BUFFER, *PREPARSE_DATA_BUFFER;
+
+#if !defined(IO_REPARSE_TAG_SYMBOLIC_LINK)
+#  define IO_REPARSE_TAG_SYMBOLIC_LINK 0
+#endif
+
+#if defined(READ_ATTRIBUTES)
+#  undef READ_ATTRIBUTES
+#endif
+
 #  ifdef SYNCHRONIZE
 #    undef SYNCHRONIZE
      enum {SYNCHRONIZE = 0x100000};
@@ -274,10 +311,10 @@ bool File::isClosed() const throw() {
 
 unsigned int File::getMode() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  SECURITY_DESCRIPTOR* securityDescriptor;
-  PSID ownerSID;
-  PSID groupSID;
-  PACL acl;
+  PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
+  PSID ownerSID = nullptr;
+  PSID groupSID = nullptr;
+  PACL acl = nullptr;
   bool error = ::GetSecurityInfo(fd->getHandle(),
                                  SE_FILE_OBJECT,
                                  OWNER_SECURITY_INFORMATION|GROUP_SECURITY_INFORMATION|DACL_SECURITY_INFORMATION,
@@ -305,11 +342,11 @@ unsigned int File::getMode() const throw(FileException) {
   trustee.MultipleTrusteeOperation = NO_MULTIPLE_TRUSTEE;
   trustee.TrusteeForm = TRUSTEE_IS_SID;
   trustee.TrusteeType = TRUSTEE_IS_UNKNOWN;
-  trustee.ptstrName = (char*)ownerSID;
+  trustee.ptstrName = (wchar*)ownerSID;
   ::GetEffectiveRightsFromAcl(acl, &trustee, &ownerAccessMask); // ERROR_SUCCESS expected
-  trustee.ptstrName = (char*)groupSID;
+  trustee.ptstrName = (wchar*)groupSID;
   ::GetEffectiveRightsFromAcl(acl, &trustee, &groupAccessMask); // ERROR_SUCCESS expected
-  trustee.ptstrName = (char*)&EVERYONE_SID;
+  trustee.ptstrName = (wchar*)&EVERYONE_SID;
   ::GetEffectiveRightsFromAcl(acl, &trustee, &everyoneAccessMask); // ERROR_SUCCESS expected
   
   ACL_SIZE_INFORMATION aclInfo;
@@ -469,15 +506,15 @@ unsigned int File::getMode() const throw(FileException) {
 AccessControlList File::getACL() const throw(FileException) {
   AccessControlList result;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  SECURITY_DESCRIPTOR* securityDescriptor;
-  PACL acl;
+  PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
+  PACL acl = nullptr;
   bassert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
                            0, 0, &acl, 0, &securityDescriptor) == ERROR_SUCCESS,
-         FileException("Unable to get ACL", this)
+     FileException("Unable to get ACL", this)
   );
 
   SECURITY_DESCRIPTOR_CONTROL control;
-  DWORD revision;
+  DWORD revision = 0;
 	if (::GetSecurityDescriptorControl(securityDescriptor, &control, &revision) == 0) {
     ::LocalFree(securityDescriptor);
 		throw FileException("Unable to get ACL", this);
@@ -675,8 +712,8 @@ AccessControlList File::getACL() const throw(FileException) {
 
 Trustee File::getOwner() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  SECURITY_DESCRIPTOR* securityDescriptor;
-  PSID ownerSID;
+  PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
+  PSID ownerSID = nullptr;
   bassert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT,
                            OWNER_SECURITY_INFORMATION, &ownerSID, 0, 0, 0,
                            &securityDescriptor) == ERROR_SUCCESS,
@@ -760,8 +797,8 @@ void File::changeOwner(const String& path, const Trustee& owner, const Trustee& 
 
 Trustee File::getGroup() const throw(FileException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  SECURITY_DESCRIPTOR* securityDescriptor;
-  PSID groupSID;
+  PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
+  PSID groupSID = nullptr;
   bassert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT,
                            GROUP_SECURITY_INFORMATION, 0, &groupSID, 0, 0,
                            &securityDescriptor) == ERROR_SUCCESS,

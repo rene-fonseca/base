@@ -23,8 +23,10 @@
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <base/platforms/win32/AsyncReadStreamContext.h> // platform specific
 #  include <base/platforms/win32/AsyncWriteStreamContext.h> // platform specific
-#  include <winsock2.h>
-#  include <ws2tcpip.h>
+#  include <windows.h>
+#  include <winsock.h>
+// #  include <winsock2.h>
+// #  include <ws2tcpip.h>
 #  undef interface
 #else // unix
 #  include <sys/types.h>
@@ -434,7 +436,7 @@ Socket::SocketImpl::SocketImpl(
 Socket::SocketImpl::~SocketImpl() {
   if (isValid()) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-    if (::closesocket((int)getHandle())) {
+    if (::closesocket((SOCKET)getHandle())) {
 #else // unix
     if (::close((int)getHandle())) {
 #endif // flavor
@@ -466,7 +468,7 @@ bool Socket::accept(Socket& socket) throw(NetworkException) {
   SocketAddress sa;
   socklen sl = sa.getAnySize();
   OperatingSystem::Handle handle =
-    (OperatingSystem::Handle)::accept((int)socket.socket->getHandle(), sa.getValue(), &sl);
+    (OperatingSystem::Handle)::accept((SOCKET)socket.socket->getHandle(), sa.getValue(), &sl);
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (handle == OperatingSystem::INVALID_HANDLE) {
     switch (::WSAGetLastError()) {
@@ -495,11 +497,11 @@ bool Socket::accept(Socket& socket) throw(NetworkException) {
 void Socket::bind(const InetAddress& address, unsigned short port) throw(NetworkException) {
   SocketAddress sa(address, port, socket->getDomain());
   
-  if (::bind((int)socket->getHandle(), sa.getValue(), sa.getSize())) {
+  if (::bind((SOCKET)socket->getHandle(), sa.getValue(), sa.getSize())) {
     internal::SocketImpl::raiseNetwork("Unable to assign name to socket");
   }
   if (address.isUnspecified() || (port == 0)) {
-    sa.setSocket((int)socket->getHandle());
+    sa.setSocket((SOCKET)socket->getHandle());
     socket->setLocalAddress(sa.getAddress());
     socket->setLocalPort(sa.getPort());
   } else {
@@ -514,7 +516,7 @@ void Socket::close() throw(NetworkException) {
 
 void Socket::connect(const InetAddress& address, unsigned short port) throw(NetworkException) {
   SocketAddress sa(address, port, socket->getDomain());
-  if (::connect((int)socket->getHandle(), sa.getValue(), sa.getSize())) {
+  if (::connect((SOCKET)socket->getHandle(), sa.getValue(), sa.getSize())) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     switch (::WSAGetLastError()) {
     case WSAECONNREFUSED:
@@ -535,7 +537,7 @@ void Socket::connect(const InetAddress& address, unsigned short port) throw(Netw
     }
 #endif // flavor
   }
-//  sa.setSocket((int)socket->getHandle());
+//  sa.setSocket((SOCKET)socket->getHandle());
 //  socket->setLocalAddress(sa.getAddress());
 //  socket->setLocalPort(sa.getPort());
   socket->setRemoteAddress(address);
@@ -585,14 +587,14 @@ void Socket::create(Kind kind, Domain domain) throw(NetworkException) {
 void Socket::listen(unsigned int backlog) throw(NetworkException) {
   // silently reduce the backlog argument
   backlog = minimum<unsigned int>(backlog, PrimitiveTraits<int>::MAXIMUM);
-  if (::listen((int)socket->getHandle(), backlog)) { // may also silently limit backlog
+  if (::listen((SOCKET)socket->getHandle(), backlog)) { // may also silently limit backlog
     internal::SocketImpl::raiseNetwork("Unable to set queue limit for incoming connections");
   }
 }
 
 void Socket::getName() throw() {
   SocketAddress sa;
-  sa.setSocket((int)socket->getHandle());
+  sa.setSocket((SOCKET)socket->getHandle());
   socket->setLocalAddress(sa.getAddress());
   socket->setLocalPort(sa.getPort());
 }
@@ -615,11 +617,11 @@ unsigned short Socket::getLocalPort() const throw() {
 
 void Socket::shutdownInputStream() throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (::shutdown((int)socket->getHandle(), SD_RECEIVE)) { // disallow further receives
+  if (::shutdown((SOCKET)socket->getHandle(), 0 /*SD_RECEIVE*/)) { // disallow further receives
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading");
   }
 #else // unix
-  if (::shutdown((int)socket->getHandle(), 0)) { // disallow further receives
+  if (::shutdown((SOCKET)socket->getHandle(), 0)) { // disallow further receives
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading");
   }
 #endif // flavor
@@ -627,11 +629,11 @@ void Socket::shutdownInputStream() throw(NetworkException) {
 
 void Socket::shutdownOutputStream() throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  if (::shutdown((int)socket->getHandle(), SD_SEND)) { // disallow further sends
+  if (::shutdown((SOCKET)socket->getHandle(), 1 /*SD_SEND*/)) { // disallow further sends
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing");
   }
 #else // unix
-  if (::shutdown((int)socket->getHandle(), 1)) { // disallow further sends
+  if (::shutdown((SOCKET)socket->getHandle(), 1)) { // disallow further sends
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing");
   }
 #endif // flavor
@@ -641,7 +643,7 @@ bool Socket::getBooleanOption(int option) const throw(NetworkException) {
   int buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_SOCKET,
     option,
     &buffer,
@@ -653,7 +655,7 @@ bool Socket::getBooleanOption(int option) const throw(NetworkException) {
 void Socket::setBooleanOption(int option, bool value) throw(NetworkException) {
   int buffer = value;
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_SOCKET,
     option,
     &buffer,
@@ -665,7 +667,7 @@ int Socket::getErrorState() const throw(NetworkException) {
   int buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_SOCKET,
     SO_ERROR,
     &buffer,
@@ -701,7 +703,7 @@ void Socket::setBroadcast(bool value) throw(NetworkException) {
 int Socket::getLinger() const throw(NetworkException) {
   struct linger buffer;
   unsigned int length = sizeof(buffer);
-  internal::SocketImpl::getOption((int)socket->getHandle(), SOL_SOCKET, SO_LINGER, &buffer, &length);
+  internal::SocketImpl::getOption((SOCKET)socket->getHandle(), SOL_SOCKET, SO_LINGER, &buffer, &length);
   return (buffer.l_onoff != 0) ? buffer.l_linger : -1;
 }
 
@@ -714,7 +716,7 @@ void Socket::setLinger(int seconds) throw(NetworkException) {
     buffer.l_linger = seconds;
   }
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_SOCKET,
     SO_LINGER,
     &buffer,
@@ -726,7 +728,7 @@ int Socket::getReceiveBufferSize() const throw(NetworkException) {
   int buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_SOCKET,
     SO_RCVBUF,
     &buffer,
@@ -738,7 +740,7 @@ int Socket::getReceiveBufferSize() const throw(NetworkException) {
 void Socket::setReceiveBufferSize(int size) throw(NetworkException) {
   int buffer = size;
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_SOCKET,
     SO_RCVBUF,
     &buffer,
@@ -749,14 +751,14 @@ void Socket::setReceiveBufferSize(int size) throw(NetworkException) {
 int Socket::getSendBufferSize() const throw(NetworkException) {
   int buffer;
   unsigned int length = sizeof(buffer);
-  internal::SocketImpl::getOption((int)socket->getHandle(), SOL_SOCKET, SO_SNDBUF, &buffer, &length);
+  internal::SocketImpl::getOption((SOCKET)socket->getHandle(), SOL_SOCKET, SO_SNDBUF, &buffer, &length);
   return buffer;
 }
 
 void Socket::setSendBufferSize(int size) throw(NetworkException) {
   int buffer = size;
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_SOCKET,
     SO_SNDBUF,
     &buffer,
@@ -775,7 +777,7 @@ bool Socket::getDontRoute() const throw(NetworkException) {
   int buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_SOCKET,
     SO_DONTROUTE,
     &buffer,
@@ -787,7 +789,7 @@ bool Socket::getDontRoute() const throw(NetworkException) {
 void Socket::setDontRoute(bool value) throw(NetworkException) {
   int buffer = value;
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_SOCKET,
     SO_DONTROUTE,
     &buffer,
@@ -799,7 +801,7 @@ uint64 Socket::getReceiveTimeout() const throw(NetworkException) {
   struct timeval buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_SOCKET,
     SO_RCVTIMEO,
     &buffer,
@@ -818,7 +820,7 @@ void Socket::setReceiveTimeout(uint64 nanoseconds) throw(NetworkException) {
     buffer.tv_usec = 0;
   }
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_SOCKET,
     SO_RCVTIMEO,
     &buffer,
@@ -830,7 +832,7 @@ uint64 Socket::getSendTimeout() const throw(NetworkException) {
   struct timeval buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_SOCKET,
     SO_SNDTIMEO,
     &buffer,
@@ -849,7 +851,7 @@ void Socket::setSendTimeout(uint64 nanoseconds) throw(NetworkException) {
     buffer.tv_usec = 0;
   }
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_SOCKET,
     SO_SNDTIMEO,
     &buffer,
@@ -861,7 +863,7 @@ bool Socket::getTcpNoDelay() const throw(NetworkException) {
   int buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     IPPROTO_TCP,
     TCP_NODELAY,
     &buffer,
@@ -873,7 +875,7 @@ bool Socket::getTcpNoDelay() const throw(NetworkException) {
 void Socket::setTcpNoDelay(bool value) throw(NetworkException) {
   int buffer = value;
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     IPPROTO_TCP,
     TCP_NODELAY,
     &buffer,
@@ -886,7 +888,7 @@ uint64 Socket::getTcpDeferAccept() const throw(NetworkException) {
   int buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_TCP,
     TCP_DEFER_ACCEPT,
     &buffer,
@@ -902,7 +904,7 @@ void Socket::setTcpDeferAccept(uint64 value) throw(NetworkException) {
 #if (defined(TCP_DEFER_ACCEPT))
   int buffer = value;
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     SOL_TCP,
     TCP_DEFER_ACCEPT,
     &buffer,
@@ -917,7 +919,7 @@ unsigned int Socket::getTimeToLive() const throw(NetworkException) {
   int buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     IPPROTO_IP,
     IP_TTL,
     &buffer,
@@ -929,7 +931,7 @@ unsigned int Socket::getTimeToLive() const throw(NetworkException) {
 void Socket::setTimeToLive(unsigned int value) throw(NetworkException) {
   int buffer = value;
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     IPPROTO_IP,
     IP_TTL,
     &buffer,
@@ -943,7 +945,7 @@ uint8 Socket::getMulticastHops() const throw(NetworkException) {
     unsigned int buffer;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
       IPV6_MULTICAST_HOPS,
       &buffer,
@@ -955,7 +957,7 @@ uint8 Socket::getMulticastHops() const throw(NetworkException) {
     u_char buffer;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IP,
       IP_MULTICAST_TTL,
       &buffer,
@@ -972,7 +974,7 @@ void Socket::setMulticastHops(uint8 value) throw(NetworkException) {
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = value;
     internal::SocketImpl::setOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
       IPV6_MULTICAST_HOPS,
       &buffer,
@@ -982,7 +984,7 @@ void Socket::setMulticastHops(uint8 value) throw(NetworkException) {
 #endif
     u_char buffer = value;
     internal::SocketImpl::setOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IP,
       IP_MULTICAST_TTL,
       &buffer,
@@ -999,7 +1001,7 @@ bool Socket::getMulticastLoopback() const throw(NetworkException) {
     u_char buffer;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
       IPV6_MULTICAST_LOOP,
       &buffer,
@@ -1011,7 +1013,7 @@ bool Socket::getMulticastLoopback() const throw(NetworkException) {
     u_char buffer;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IP,
       IP_MULTICAST_LOOP,
       &buffer,
@@ -1028,7 +1030,7 @@ void Socket::setMulticastLoopback(bool value) throw(NetworkException) {
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = value;
     internal::SocketImpl::setOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
       IPV6_MULTICAST_LOOP,
       &buffer,
@@ -1038,7 +1040,7 @@ void Socket::setMulticastLoopback(bool value) throw(NetworkException) {
 #endif
     u_char buffer = value;
     internal::SocketImpl::setOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IP,
       IP_MULTICAST_LOOP,
       &buffer,
@@ -1055,7 +1057,7 @@ InetAddress Socket::getMulticastInterface() const throw(NetworkException) {
     unsigned int buffer;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
       IPV6_MULTICAST_IF,
       &buffer,
@@ -1067,7 +1069,7 @@ InetAddress Socket::getMulticastInterface() const throw(NetworkException) {
     int buffer;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IP,
       IP_MULTICAST_IF,
       &buffer,
@@ -1079,7 +1081,7 @@ InetAddress Socket::getMulticastInterface() const throw(NetworkException) {
   u_char buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     IPPROTO_IP,
     IP_MULTICAST_IF,
     &buffer,
@@ -1097,7 +1099,7 @@ void Socket::setMulticastInterface(const InetAddress& interface) throw(NetworkEx
   bassert(i.convertToIPv4(), NetworkException(this));
   copy<uint8>(Cast::getAddress(buffer), i.getIPv4Address(), sizeof(buffer));
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     IPPROTO_IP,
     IP_MULTICAST_IF,
     &buffer,
@@ -1113,7 +1115,7 @@ uint8 Socket::getUnicastHops() const throw(NetworkException) {
     int buffer;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
       IPV6_UNICAST_HOPS,
       &buffer,
@@ -1136,7 +1138,7 @@ void Socket::setUnicastHops(uint8 value) throw(NetworkException) {
   if (socket->getDomain() == Socket::IPV6) {
     int buffer;
     internal::SocketImpl::setOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
       IPV6_UNICAST_HOPS,
       &buffer,
@@ -1165,7 +1167,7 @@ void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
   );
   clear(mreq.imr_interface.s_addr); // unspecified
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     IPPROTO_IP,
     IP_ADD_MEMBERSHIP,
     &mreq,
@@ -1182,7 +1184,7 @@ void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
       sizeof(mreq.ipv6mr_multiaddr)
     );
     internal::SocketImpl::setOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
       IPV6_JOIN_GROUP,
       &mreq,
@@ -1199,7 +1201,7 @@ void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
     );
     clear(mreq.imr_interface.s_addr); // unspecified
     internal::SocketImpl::setOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IP,
       IP_ADD_MEMBERSHIP,
       &mreq,
@@ -1217,7 +1219,7 @@ void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
   );
   clear(mreq.imr_interface.s_addr); // unspecified
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     IPPROTO_IP,
     IP_ADD_MEMBERSHIP,
     &mreq,
@@ -1244,7 +1246,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
     sizeof(mreq.imr_interface.s_addr)
   );
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     IPPROTO_IP,
     IP_ADD_MEMBERSHIP,
     &mreq,
@@ -1259,13 +1261,13 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
       struct ifconf ifc;
       ifc.ifc_len = Thread::getLocalStorage()->getSize()/sizeof(char);
       ifc.ifc_buf = (char*)Thread::getLocalStorage()->getElements();
-      if (ioctl((int)socket->getHandle(), SIOCGIFCONF, &ifc)) {
+      if (ioctl((SOCKET)socket->getHandle(), SIOCGIFCONF, &ifc)) {
         internal::SocketImpl::raiseNetwork("Unable to resolve interface");
       }
       const struct ifreq* current = ifc.ifc_req;
       int offset = 0;
       while (offset < ifc.ifc_len) {
-        if (ioctl((int)socket->getHandle(), SIOCGIFADDR, current) != 0) {
+        if (ioctl((SOCKET)socket->getHandle(), SIOCGIFADDR, current) != 0) {
           continue;
         }
         bool isSynonymous = false;
@@ -1307,7 +1309,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
       sizeof(mreq.ipv6mr_multiaddr)
     );
     internal::SocketImpl::setOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
       IPV6_JOIN_GROUP,
       &mreq,
@@ -1329,7 +1331,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
       sizeof(mreq.imr_interface.s_addr)
     );
     internal::SocketImpl::setOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IP,
       IP_ADD_MEMBERSHIP,
       &mreq,
@@ -1352,7 +1354,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
     sizeof(mreq.imr_interface.s_addr)
   );
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     IPPROTO_IP,
     IP_ADD_MEMBERSHIP,
     &mreq,
@@ -1379,7 +1381,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) 
     sizeof(mreq.imr_interface.s_addr)
   );
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     IPPROTO_IP,
     IP_ADD_MEMBERSHIP,
     &mreq,
@@ -1401,7 +1403,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) 
       sizeof(mreq.ipv6mr_multiaddr)
     );    
     internal::SocketImpl::setOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
       IPV6_LEAVE_GROUP,
       &mreq,
@@ -1423,7 +1425,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) 
       sizeof(mreq.imr_interface.s_addr)
     );
     internal::SocketImpl::setOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IP,
       IP_DROP_MEMBERSHIP,
       &mreq,
@@ -1446,7 +1448,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) 
     sizeof(mreq.imr_interface.s_addr)
   );
   internal::SocketImpl::setOption(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     IPPROTO_IP,
     IP_DROP_MEMBERSHIP,
     &mreq,
@@ -1462,7 +1464,7 @@ bool Socket::getIPv6Restriction() const throw(NetworkException) {
     int buffer;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
       IPV6_V6ONLY,
       &buffer,
@@ -1483,7 +1485,7 @@ void Socket::setIPv6Restriction(bool value) throw(NetworkException) {
   if (socket->getDomain() == Socket::IPV6) {
     int buffer;
     internal::SocketImpl::setOption(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
       IPV6_V6ONLY,
       &buffer,
@@ -1503,25 +1505,25 @@ void Socket::setIPv6Restriction(bool value) throw(NetworkException) {
 void Socket::setNonBlocking(bool value) throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int buffer = value; // set to zero to disable nonblocking
-  if (ioctlsocket((int)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
+  if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
     internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
   }
 #else // unix
   int flags;
-  if ((flags = fcntl((int)socket->getHandle(), F_GETFL)) == -1) {
+  if ((flags = fcntl((SOCKET)socket->getHandle(), F_GETFL)) == -1) {
     internal::SocketImpl::raiseNetwork("Unable to get flags for socket");
   }
   if (value) {
     if ((flags & O_NONBLOCK) == 0) { // do we need to set flag
       flags |= O_NONBLOCK;
-      if (fcntl((int)socket->getHandle(), F_SETFL, flags) != 0) {
+      if (fcntl((SOCKET)socket->getHandle(), F_SETFL, flags) != 0) {
         internal::SocketImpl::raiseNetwork("Unable to set flags of socket");
       }
     }
   } else {
     if ((flags & O_NONBLOCK) != 0) { // do we need to clear flag
       flags &= ~O_NONBLOCK;
-      if (fcntl((int)socket->getHandle(), F_SETFL, flags) != 0) {
+      if (fcntl((SOCKET)socket->getHandle(), F_SETFL, flags) != 0) {
         internal::SocketImpl::raiseNetwork("Unable to set flags of socket");
       }
     }
@@ -1533,12 +1535,12 @@ void Socket::setNonBlocking(bool value) throw(NetworkException) {
 bool Socket::getAsynchronous() throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 //   unsigned int buffer = value; // set to zero to disable nonblocking
-//   if (ioctlsocket((int)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
+//   if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
 //     internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
 //   }
 #else // unix
   int flags;
-  if ((flags = fcntl((int)socket->getHandle(), F_GETFL)) == -1) {
+  if ((flags = fcntl((SOCKET)socket->getHandle(), F_GETFL)) == -1) {
     internal::SocketImpl::raiseNetwork("Unable to get flags for socket");
   }
   return flags & FASYNC;
@@ -1548,25 +1550,25 @@ bool Socket::getAsynchronous() throw(NetworkException) {
 void Socket::setAsynchronous(bool value) throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 //   unsigned int buffer = value; // set to zero to disable nonblocking
-//   if (ioctlsocket((int)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
+//   if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
 //     internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
 //   }
 #else // unix
   int flags;
-  if ((flags = fcntl((int)socket->getHandle(), F_GETFL)) == -1) {
+  if ((flags = fcntl((SOCKET)socket->getHandle(), F_GETFL)) == -1) {
     internal::SocketImpl::raiseNetwork("Unable to get flags for socket");
   }
   if (value) {
     if ((flags & FASYNC) == 0) { // do we need to set flag
       flags |= FASYNC;
-      if (fcntl((int)socket->getHandle(), F_SETFL, flags) != 0) {
+      if (fcntl((SOCKET)socket->getHandle(), F_SETFL, flags) != 0) {
         internal::SocketImpl::raiseNetwork("Unable to set flags of socket");
       }
     }
   } else {
     if ((flags & FASYNC) != 0) { // do we need to clear flag
       flags &= ~FASYNC;
-      if (fcntl((int)socket->getHandle(), F_SETFL, flags) != 0) {
+      if (fcntl((SOCKET)socket->getHandle(), F_SETFL, flags) != 0) {
         internal::SocketImpl::raiseNetwork("Unable to set flags of socket");
       }
     }
@@ -1578,14 +1580,14 @@ void Socket::setAsynchronous(bool value) throw(NetworkException) {
 unsigned int Socket::available() const throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int result;
-  if (ioctlsocket((int)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
+  if (ioctlsocket((SOCKET)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer");
   }
   return result;
 #else // unix
   // this implementation is not very portable?
   int result;
-  if (ioctl((int)socket->getHandle(), FIONREAD, &result)) {
+  if (ioctl((SOCKET)socket->getHandle(), FIONREAD, &result)) {
     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the incoming queue");
   }
   return result;
@@ -1596,14 +1598,14 @@ unsigned int Socket::available() const throw(NetworkException) {
 unsigned int Socket::pending() const throw(NetworkException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   unsigned int result = 0;
-//   if (ioctlsocket((int)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
+//   if (ioctlsocket((SOCKET)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
 //     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer");
 //   }
   return result;
 #else // unix
   // this implementation is not very portable?
   int result;
-  if (ioctl((int)socket->getHandle(), TIOCOUTQ, &result)) {
+  if (ioctl((SOCKET)socket->getHandle(), TIOCOUTQ, &result)) {
     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the outgoing queue");
   }
   return result;
@@ -1622,7 +1624,7 @@ unsigned int Socket::read(
   while (bytesToRead > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     int result = ::recv(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       (char*)buffer,
       minimum<unsigned int>(bytesToRead, PrimitiveTraits<int>::MAXIMUM),
       0
@@ -1639,7 +1641,7 @@ unsigned int Socket::read(
     }
 #else // unix
     int result = ::recv(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       buffer,
       minimum<unsigned int>(bytesToRead, SSIZE_MAX),
       0
@@ -1679,7 +1681,7 @@ unsigned int Socket::write(
   while (bytesToWrite > 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
     int result = ::send(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       (const char*)buffer,
       minimum<unsigned int>(bytesToWrite, PrimitiveTraits<int>::MAXIMUM),
       0
@@ -1698,7 +1700,7 @@ unsigned int Socket::write(
     }
 #else // unix
     int result = ::send(
-      (int)socket->getHandle(),
+      (SOCKET)socket->getHandle(),
       buffer,
       minimum<unsigned int>(bytesToWrite, SSIZE_MAX),
       0
@@ -1735,7 +1737,7 @@ unsigned int Socket::receiveFrom(
   socklen sl = sa.getAnySize();
   size = minimum<unsigned int>(size, PrimitiveTraits<int>::MAXIMUM); // silently reduce
   int result = ::recvfrom(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     (char*)buffer,
     size,
     0,
@@ -1758,7 +1760,7 @@ unsigned int Socket::sendTo(
   const SocketAddress sa(address, port, socket->getDomain());
   size = minimum<unsigned int>(size, PrimitiveTraits<int>::MAXIMUM); // silently reduce
   int result = ::sendto(
-    (int)socket->getHandle(),
+    (SOCKET)socket->getHandle(),
     (const char*)buffer,
     size,
     0,
@@ -1818,16 +1820,16 @@ void Socket::wait() const throw(NetworkException) {
   FD_ZERO(&rfds);
   FD_SET((SOCKET)socket->getHandle(), &rfds);
   
-  int result = ::select((int)socket->getHandle() + 1, &rfds, 0, 0, 0);
+  int result = ::select((SOCKET)socket->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == SOCKET_ERROR) {
     internal::SocketImpl::raiseNetwork("Unable to wait for input");
   }
 #else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
-  FD_SET((int)socket->getHandle(), &rfds);
+  FD_SET((SOCKET)socket->getHandle(), &rfds);
   
-  int result = ::select((int)socket->getHandle() + 1, &rfds, 0, 0, 0);
+  int result = ::select((SOCKET)socket->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
     internal::SocketImpl::raiseNetwork("Unable to wait for input");
   }
@@ -1844,7 +1846,7 @@ bool Socket::wait(unsigned int microseconds) const throw(NetworkException) {
   tv.tv_sec = microseconds/1000000;
   tv.tv_usec = microseconds % 1000000;
   
-  int result = ::select((int)socket->getHandle() + 1, &rfds, 0, 0, &tv);
+  int result = ::select((SOCKET)socket->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == SOCKET_ERROR) {
     internal::SocketImpl::raiseNetwork("Unable to wait for input");
   }
@@ -1852,13 +1854,13 @@ bool Socket::wait(unsigned int microseconds) const throw(NetworkException) {
 #else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
-  FD_SET((int)socket->getHandle(), &rfds);
+  FD_SET((SOCKET)socket->getHandle(), &rfds);
 
   struct timeval tv;
   tv.tv_sec = microseconds/1000000;
   tv.tv_usec = microseconds % 1000000;
 
-  int result = ::select((int)socket->getHandle() + 1, &rfds, 0, 0, &tv);
+  int result = ::select((SOCKET)socket->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
     internal::SocketImpl::raiseNetwork("Unable to wait for input");
   }

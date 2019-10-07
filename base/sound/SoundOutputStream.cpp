@@ -68,7 +68,7 @@ SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int cha
   format.nBlockAlign = channels * format.wBitsPerSample/8;
   format.nAvgBytesPerSec = samplingRate * format.nBlockAlign;
 
-  unsigned int result = waveOutOpen((HWAVEOUT*)&handle, WAVE_MAPPER, &format, (DWORD)event.getHandle(), 0, CALLBACK_EVENT);
+  unsigned int result = waveOutOpen((HWAVEOUT*)&handle, WAVE_MAPPER, &format, (DWORD_PTR)event.getHandle(), 0, CALLBACK_EVENT);
   bassert(result == MMSYSERR_NOERROR, NotSupported());
   event.reset();
 #else

@@ -24,6 +24,7 @@
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Primitives.h>
 #include <base/WideLiteral.h>
+#include <string>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -772,8 +773,9 @@ public:
 
     @param string String literal.
   */
-  WideString(const WideLiteral& string)
-    throw(WideStringException, MemoryException);
+  WideString(const WideLiteral& string) throw(WideStringException, MemoryException);
+
+  WideString(const std::wstring& string) throw(WideStringException, MemoryException);
 
   /**
     Initializes the string from a string literal. Implicit initialization is
@@ -782,8 +784,7 @@ public:
     @param string String literal.
   */
   template<MemorySize SIZE>
-  inline WideString(const wchar (&string)[SIZE]) throw(MemoryException)
-    : elements(0) {
+  inline WideString(const wchar (&string)[SIZE]) throw(MemoryException) {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     initialize(string, SIZE - 1);
   }
@@ -794,8 +795,7 @@ public:
     @param string NULL-terminated string. If NULL, the string is initialized
     with no characters in it.
   */
-  WideString(const NativeWideString& string)
-    throw(WideStringException, MemoryException);
+  WideString(const NativeWideString& string) throw(WideStringException, MemoryException);
   
   /**
     Initializes the string from a NULL-terminated string. If the length of the
@@ -815,9 +815,7 @@ public:
     @param string The NULL-terminated string.
   */
   template<MemorySize SIZE>
-  inline WideString(const char (&string)[SIZE])
-    throw(MultibyteException, MemoryException)
-    : elements(0) {
+  inline WideString(const char (&string)[SIZE]) throw(MultibyteException, MemoryException) {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     initialize(string, SIZE - 1);
   }

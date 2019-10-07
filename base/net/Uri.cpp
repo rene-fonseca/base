@@ -13,6 +13,7 @@
 
 #include <base/features.h>
 #include <base/net/Uri.h>
+#include <base/string/ASCIITraits.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -104,9 +105,9 @@ public:
     ALWAYS // character must always be encoded
   } Encode;
 
-  typedef Encode (*Encoding)(String::Character);
+  typedef Encode (*Encoding)(char);
 
-  static inline Encode defaultEncoding(String::Character ch) throw() {
+  static inline Encode defaultEncoding(char ch) throw() {
     switch (ch) {
     case 0x00: case 0x01: case 0x02: case 0x03: case 0x04: case 0x05: case 0x06: case 0x07:
     case 0x08: case 0x09: case 0x0a: case 0x0b: case 0x0c: case 0x0d: case 0x0e: case 0x0f:
@@ -135,11 +136,11 @@ public:
     }
   }
 
-  static inline Encode userEncoding(String::Character ch) throw() {
+  static inline Encode userEncoding(char ch) throw() {
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
-  static inline Encode passwordEncoding(String::Character ch) throw() {
+  static inline Encode passwordEncoding(char ch) throw() {
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
@@ -147,7 +148,7 @@ public:
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
-      String::Character ch = *i++;
+      char ch = *i++;
       bassert(String::Traits::isASCII(ch), UriException("Invalid character"));
       if (encoding(ch) != NEVER) {
         temp += '%';
@@ -164,13 +165,13 @@ public:
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
-      String::Character ch = *i++;
+      char ch = *i++;
       if (ch == '%') {
         bassert(end - i >= 2, UriException("Invalid encoding")); // need two digits
-        String::Character highDigit = *i++;
-        String::Character lowDigit = *i++;
+        char highDigit = *i++;
+        char lowDigit = *i++;
         bassert(String::Traits::isDigit(highDigit) && String::Traits::isDigit(lowDigit), UriException("Invalid encoding")); // need two digits
-        ch = static_cast<unsigned int>(highDigit - '0') << 4 + static_cast<unsigned int>(lowDigit - '0'); // replace with decoded char
+        ch = (static_cast<unsigned int>(highDigit - '0') << 4) + static_cast<unsigned int>(lowDigit - '0'); // replace with decoded char
       } else {
         Encode encode = encoding(ch);
         bassert(strict ? (encode == NEVER) : (encode <= RELAXED), UriException("Part contains unencoded character"));
@@ -227,7 +228,7 @@ String Uri::validateScheme(const String& value) throw(UriException, MemoryExcept
   String::ReadIterator end = value.getEndReadIterator();
 
   for (String::ReadIterator i = value.getBeginReadIterator(); i < end; ++i) {
-    String::Character ch = *i;
+    char ch = *i;
     if ((ch >= 'a') && (ch <= 'z')) {
     } else if ((ch >= '0') && (ch <= '9')) {
     } else if (ch == '+') {
@@ -246,7 +247,7 @@ String Uri::validateScheme(const String& value) throw(UriException, MemoryExcept
 String Uri::validateUser(const String& str) throw(UriException) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
-    String::Character ch = *i++;
+    char ch = *i++;
     bassert(String::Traits::isASCII(ch), UriException("Invalid character"));
   }
   return str;
@@ -255,7 +256,7 @@ String Uri::validateUser(const String& str) throw(UriException) {
 String Uri::validatePassword(const String& str) throw(UriException) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
-    String::Character ch = *i++;
+    char ch = *i++;
     bassert(String::Traits::isASCII(ch), UriException("Invalid character"));
   }
   return str;

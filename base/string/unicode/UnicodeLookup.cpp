@@ -2,6 +2,8 @@
 // This source was generated from the file ../unicode/UnicodeData-3.2.0.txt
 // At 25-Aug-2002 08:21:05
 
+#if 0
+
 namespace base {
 
   const WideTraits::Range WideTraits::controlCharacters[2] = {
@@ -4270,3 +4272,5 @@ namespace base {
     {0x1d7f6, 0x1d7ff, 0} // 238-247
   }; // end of digitCharacters
 }; // end of base namespace
+
+#endif

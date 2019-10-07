@@ -186,11 +186,11 @@ namespace internal {
 
 SpinLock Random::spinLock;
 
-Handle* FileDescriptor::Descriptor::invalid; // uninitialized
-Handle* Process::ProcessHandle::invalid; // uninitialized
-Handle* File::FileHandle::invalid; // uninitialized
-Handle* Pipe::PipeHandle::invalid; // uninitialized
-Socket::SocketImpl* Socket::SocketImpl::invalid; // uninitialized
+Handle* FileDescriptor::Descriptor::invalid = nullptr; // uninitialized
+Handle* Process::ProcessHandle::invalid = nullptr; // uninitialized
+Handle* File::FileHandle::invalid = nullptr; // uninitialized
+Handle* Pipe::PipeHandle::invalid = nullptr; // uninitialized
+Socket::SocketImpl* Socket::SocketImpl::invalid = nullptr; // uninitialized
 
 class Initialization {
 private:

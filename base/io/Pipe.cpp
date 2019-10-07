@@ -66,7 +66,7 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // create two named pipes with unique names (one for input and one for output - may be the same handle)
   HANDLE ihandle = ::CreateFile(
-    String("\\\\.\\pipe\\???i").getElements(), // file name
+    L"\\\\.\\pipe\\???i", // file name
     GENERIC_READ | SYNCHRONIZE, // access mode FIXME
     FILE_SHARE_DELETE, // share mode
     0, // security descriptor
@@ -75,7 +75,7 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
     0
   );
   HANDLE ohandle = ::CreateFile(
-    String("\\\\.\\pipe\\???o").getElements(), // file name - generate unique name - formal name - time - prefix
+    L"\\\\.\\pipe\\???o", // file name - generate unique name - formal name - time - prefix
     GENERIC_WRITE | SYNCHRONIZE, // access mode FIXME
     FILE_SHARE_DELETE, // share mode
     0, // security descriptor

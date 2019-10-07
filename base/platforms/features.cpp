@@ -47,10 +47,6 @@
 #  error Invalid architecture (ARCH) specification
 #endif
 
-#if (defined(_DK_SDU_MIP__BASE__EXPERIMENTAL))
-#  warning Experimental components have been enabled
-#endif
-
 #if (!defined(_DK_SDU_MIP__BASE__CPP_BOOL))
 #  error Compiler does not support the bool primitive
 #endif

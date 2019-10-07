@@ -102,7 +102,7 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
   // TAG: use select (but test if better)
   HANDLE timer = ::CreateWaitableTimer(0, TRUE, 0);
   if (timer) {
-    long long timeout = -(nanoseconds+99)/100; // "-" selects relative mode
+    long long timeout = -(static_cast<long long>(nanoseconds) + 99)/100; // "-" selects relative mode
     ::SetWaitableTimer(timer, (const LARGE_INTEGER*)&timeout, 0, 0, 0, FALSE);
     ::WaitForSingleObjectEx(timer, INFINITE, TRUE);
     // either WAIT_OBJECT_0 or WAIT_IO_COMPLETION
@@ -357,7 +357,7 @@ bool Thread::isParent() const throw() {
 
 bool Thread::isSelf() const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  return ::GetCurrentThreadId() == (DWORD)identifier;
+  return ::GetCurrentThreadId() == getAddressOf(identifier);
 #else // pthread
   return ::pthread_self() == Cast::extract<pthread_t>(identifier);
 #endif
@@ -581,7 +581,7 @@ void Thread::start() throw(ThreadException) {
   bassert(state == NOTSTARTED, ThreadException(this));
   state = STARTING;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  DWORD id;
+  DWORD id = 0;
   HANDLE handle = ::CreateThread(
     0,
     0,

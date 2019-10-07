@@ -138,9 +138,9 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SID_NAME_USE sidType;
   uint8 sid[SECURITY_MAX_SID_SIZE];
-  DWORD size = sizeof(sid);
+  DWORD size = getArraySize(sid);
   bassert(::LookupAccountName(0,
-                             name.getElements(),
+                             toWide(name).c_str(),
                              &sid,
                              &size,
                              0,
@@ -263,7 +263,7 @@ bool Trustee::isMemberOf(const Trustee& trustee) const throw(TrusteeException) {
   if (type == Trustee::GROUP) {
     // check if member
     return true; // TAG: implement me
-    #warning bool Trustee::isMemberOf(const Trustee& trustee) const throw(TrusteeException) not implemented
+// #warning bool Trustee::isMemberOf(const Trustee& trustee) const throw(TrusteeException) not implemented
   }
   return false;
 }

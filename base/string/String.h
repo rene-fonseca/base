@@ -209,8 +209,7 @@ protected:
   /**
     Initializes string.
   */
-  void initialize(
-    const char* string, unsigned int length) throw(MemoryException);
+  void initialize(const char* string, unsigned int length) throw(MemoryException);
   
   /**
     Returns a modifiable buffer. Forces copy of internal buffer if shared by
@@ -303,6 +302,10 @@ public:
   */
   String(const Literal& string) throw(StringException, MemoryException);
 
+  String(const std::string& string) throw(StringException, MemoryException);
+
+  String(const std::wstring& string) throw(StringException, MemoryException);
+
   /**
     Initializes the string from a string literal. Implicit initialization is
     allowed.
@@ -310,8 +313,7 @@ public:
     @param literal String literal.
   */
   template<MemorySize SIZE>
-  inline String(const char (&literal)[SIZE]) throw(MemoryException)
-    : elements(0) {
+  inline String(const char (&literal)[SIZE]) throw(MemoryException) {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     initialize(literal, SIZE - 1);
   }

@@ -15,7 +15,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-const Complex Complex::I(0, 1);
+const Complex Complex::II(0, 1);
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream, const Complex& value) throw(IOException) {

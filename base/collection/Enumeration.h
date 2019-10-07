@@ -98,7 +98,7 @@ public:
   /**
     Destroys the enumerator.
   */
-  virtual inline ~Enumerator() throw() {
+  virtual inline ~Enumerator() {
   }
 };
 

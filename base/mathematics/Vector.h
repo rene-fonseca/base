@@ -364,7 +364,8 @@ public:
 
 
 
-  /**
+#if 0
+/**
     Returns the product of the vector and the value.
   */
   friend Vector operator* <>(const Vector& left, const TYPE& right) throw(MemoryException);
@@ -388,6 +389,7 @@ public:
     Writes a string representation of a vector object to a format stream.
   */
   friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Vector<TYPE>& value) throw(IOException);
+#endif
 };
 
 /**

@@ -44,6 +44,12 @@ std::wstring toWide(const std::string& s) {
   return convert.from_bytes(s);
 }
 
+/** Converts wstring to UTF-8 string. */
+std::string toUTF8(const wchar* s) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+  return convert.to_bytes(s);
+}
+
 /** Converts String to wstring. */
 std::wstring toWide(const String& s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;

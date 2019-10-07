@@ -127,19 +127,19 @@ private:
   const char* value = nullptr;
 public:
 
-  inline NativeString(const char* _value) throw() : value(_value) {
+  inline NativeString(const char* _value) noexcept : value(_value) {
   }
   
-  inline const char* getValue() const throw() {
+  inline const char* getValue() const noexcept {
     return value;
   }
 
-  inline operator const char*() const throw() {
+  inline operator const char*() const noexcept {
     return value;
   }
 
   /** Returns the length of the string. */
-  MemorySize getLength() const throw();
+  MemorySize getLength() const noexcept;
 };
 
 /**
@@ -151,19 +151,19 @@ private:
   const wchar* value = nullptr;
 public:
 
-  inline NativeWideString(const wchar* _value) throw() : value(_value) {
+  inline NativeWideString(const wchar* _value) noexcept : value(_value) {
   }
   
-  inline const wchar* getValue() const throw() {
+  inline const wchar* getValue() const noexcept {
     return value;
   }
 
-  inline operator const wchar*() const throw() {
+  inline operator const wchar*() const noexcept {
     return value;
   }
 
   /** Returns the length of the string. */
-  MemorySize getLength() const throw();
+  MemorySize getLength() const noexcept;
 };
 
 
@@ -172,7 +172,7 @@ public:
   Returns the number of elements in the specified built-in array.
 */
 template<class TYPE, MemorySize SIZE>
-inline MemorySize getArraySize(TYPE (&)[SIZE]) throw() {
+inline constexpr MemorySize getArraySize(const TYPE (&)[SIZE]) noexcept {
   return SIZE;
 }
 
@@ -180,15 +180,22 @@ inline MemorySize getArraySize(TYPE (&)[SIZE]) throw() {
   Returns the address of the specified variable.
 */
 template<class TYPE>
-inline MemorySize getAddressOf(const TYPE& value) throw() {
+inline MemorySize getAddressOf(const TYPE& value) noexcept {
   return reinterpret_cast<const char*>(&value) - static_cast<const char*>(nullptr);
+}
+
+/**
+  Returns the address of the specified pointer.
+*/
+inline MemorySize getAddressOf(const void* value) noexcept {
+  return reinterpret_cast<const char*>(value) - static_cast<const char*>(nullptr);
 }
 
 /**
   Returns a null pointer of the specified type.
 */
 template<class TYPE>
-inline const TYPE* getNullPointerOf() throw() {
+inline const TYPE* getNullPointerOf() noexcept {
   return static_cast<const TYPE*>(nullptr);
 }
 
@@ -196,7 +203,7 @@ inline const TYPE* getNullPointerOf() throw() {
   Returns the offset the specified field within the specified structure.
 */
 template<class STRUCT, class FIELD>
-inline unsigned int getFieldOffset(const FIELD STRUCT::* field) throw() {
+inline unsigned int getFieldOffset(const FIELD STRUCT::* field) noexcept {
   return reinterpret_cast<const char*>(&(static_cast<const STRUCT*>(nullptr)->*field))
     - static_cast<const char*>(nullptr);
 }

@@ -181,7 +181,7 @@ String SHA384::getValue() const throw() {
 }
 
 String SHA384::getBase64() const throw() {
-  uint8 temp[sizeof(uint64) * (getArraySize(messageDigest) - 2)];
+  uint8 temp[sizeof(uint64) * (8 /*getArraySize(messageDigest)*/ - 2)];
   uint8* p = temp;
   for (unsigned int j = 0; j < (getArraySize(messageDigest) - 2); ++j) {
     uint64 word = messageDigest[j];

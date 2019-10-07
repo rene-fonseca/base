@@ -31,7 +31,7 @@ class ServerSocket;
   @version 1.0
 */
 
-class StreamSocket : protected Socket,
+class StreamSocket : public Socket,
                      public virtual InputStream,
                      public virtual OutputStream {
 public:

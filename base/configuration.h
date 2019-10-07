@@ -13,7 +13,7 @@
 #elif defined(__GNUG__)
 #  define _DK_SDU_MIP__BASE__COMPILER _DK_SDU_MIP__BASE__GCC
 #else
-#  error "Unsupported compiler."
+#  error Unsupported compiler.
 #endif
 
 #define _DK_SDU_MIP__BASE__DEFAULT_MEMORY
@@ -23,7 +23,7 @@
 #elif defined(__APPLE__)
 #  define _DK_SDU_MIP__BASE__FLAVOR _DK_SDU_MIP__BASE__UNIX
 #else
-#  error "Unsupported flavor."
+#  error Unsupported flavor.
 #endif
 
 #if defined(_WIN32)
@@ -33,13 +33,12 @@
 #elif defined(__linux__)
 #  define _DK_SDU_MIP__BASE__OS _DK_SDU_MIP__BASE__GNULINUX
 #else
-#  error "Unsupported OS."
+#  error Unsupported OS.
 #endif
 #  define _DK_SDU_MIP__BASE__OS_MINOR 0
 
 #define _DK_SDU_MIP__BASE__ARCH _DK_SDU_MIP__BASE__X86_64
 // #define _DK_SDU_MIP__BASE__ARCH_MINOR _DK_SDU_MIP__BASE__xxx
-#define _DK_SDU_MIP__BASE__EXPERIMENTAL
 #define _DK_SDU_MIP__BASE__EXTENSIONS
 #define _DK_SDU_MIP__BASE__NAMESPACE
 #define _DK_SDU_MIP__BASE__CPP_BOOL

@@ -16,6 +16,7 @@
 #include <base/Type.h>
 #include <base/Application.h>
 #include <base/Cast.h>
+#include <base/string/WideString.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <windows.h>
@@ -238,13 +239,13 @@ Process Process::execute(const String& command) throw(ProcessException) {
 //   startInfo.hStdError
   bassert(
     ::CreateProcess(0,
-                    commandLine.getElements(), // command line (may need quotes)
-                    0, // process security attributes
-                    0, // primary thread security attributes
+                    const_cast<wchar*>(toWide(commandLine).c_str()), // command line (may need quotes)
+                    nullptr, // process security attributes
+                    nullptr, // primary thread security attributes
                     TRUE, // handles are inherited
                     0, // creation flags
-                    0, // use parent's environment
-                    0, // use parent's current directory
+                    nullptr, // use parent's environment
+                    nullptr, // use parent's current directory
                     &startInfo, // STARTUPINFO
                     &processInformation // receives PROCESS_INFORMATION
     ) != 0,
@@ -352,11 +353,11 @@ String Process::getName() const throw(NotSupported, ProcessException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   HANDLE process = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, id);
   bassert(process, ProcessException(this));
-  char buffer[MAX_PATH + 1];
-  DWORD length = ::GetModuleFileNameEx(process, 0, buffer, sizeof(buffer));
+  wchar buffer[MAX_PATH + 1];
+  DWORD length = ::GetModuleFileNameEx(process, 0, buffer, getArraySize(buffer));
   bassert(length > 0, ProcessException(this));
   ::CloseHandle(process);
-  return String(buffer, length - 1);
+  return toUTF8(WideString(buffer, length - 1));
 #else // unix
   throw NotSupported(this);
 #endif
@@ -455,16 +456,13 @@ public:
     
     if (processId == kill->getProcess().getId()) {
       static const char messageHandlerIdentity[] = "mip.sdu.dk/~fonseca/base?message handler";
-      char className[sizeof(messageHandlerIdentity) + 1];
-      int length = ::GetClassName(window, className, sizeof(className)); // excludes terminator
-      if (length > 0) {
-        Trace::message(className);
-      }
+      wchar className[sizeof(messageHandlerIdentity) + 1];
+      int length = ::GetClassName(window, className, getArraySize(className)); // excludes terminator
 //      if ((length == (sizeof(messageHandlerIdentity) - 1)) &&
 //          (compare(className, messageHandlerIdentity, sizeof(messageHandlerIdentity) - 1) == 0)) {
-      DWORD dispatchResult;
+      DWORD_PTR dispatchResult = 0;
       // TAG: WM_QUIT is normally not posted - is this ok
-      DWORD processId;
+      DWORD processId = 0;
       DWORD threadId = ::GetWindowThreadProcessId(window, &processId);
       fout << "threadId=" << threadId << " processId=" << processId << ENDL;
       
@@ -692,12 +690,14 @@ FormatOutputStream& operator<<(
          << "  type: " << HEX << information.Type << EOL;
 
   CONTEXT context;
-  unsigned short ss;
-  unsigned int current;
+  unsigned short ss = 0;
+  unsigned int current = 0;
+#if 0 // TAG: FIXME
   asm (
     "movl %%ss,%0; \n\t"
     : "=m" (ss) // output
   );
+#endif
 
   LDT_ENTRY ldt;
   /* BOOL xxx =*/ ::GetThreadSelectorEntry(::GetCurrentThread(), ss, &ldt);
@@ -706,7 +706,7 @@ FormatOutputStream& operator<<(
   //::GetThreadContext(::GetCurrentThread(), &context);
   stream << "  esp: " << HEX << current << EOL;
 
-  ::VirtualQuery((void*)context.Esp, &information, sizeof(information));
+  ::VirtualQuery((void*)context.Rsp, &information, sizeof(information));
   stream << "  stack base address: " << information.BaseAddress << EOL
          << "  stack allocation base: " << information.AllocationBase << EOL
          << "  stack region size: " << information.RegionSize << EOL

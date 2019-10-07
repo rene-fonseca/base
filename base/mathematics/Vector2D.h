@@ -313,7 +313,7 @@ public:
   }
 
 
-
+#if 0
   /**
     Returns the product of the vector and the value.
   */
@@ -328,6 +328,7 @@ public:
     Returns the result of the vector divided by the value.
   */
   friend Vector2D operator/ <>(const Vector2D& left, const TYPE& right) throw();
+#endif
 };
 
 template<class TYPE>

@@ -29,18 +29,24 @@ void String::initialize(
 String::String() throw() : elements(DEFAULT_STRING.elements) {
 }
 
-String::String(unsigned int capacity) throw(MemoryException) : elements(0) {
+String::String(unsigned int capacity) throw(MemoryException) {
   elements = new ReferenceCountedCapacityAllocator<char>(1, GRANULARITY);
   elements->ensureCapacity(capacity + 1);
 }
 
-String::String(
-  const Literal& literal) throw(StringException, MemoryException)
-  : elements(0) {
+String::String(const std::string& string) throw(StringException, MemoryException) {
+  initialize(string.c_str(), string.size());
+}
+
+String::String(const std::wstring& string) throw(StringException, MemoryException) {
+  const std::string utf8 = toUTF8(string);
+  initialize(utf8.c_str(), utf8.size());
+}
+
+String::String(const Literal& literal) throw(StringException, MemoryException) {
   const unsigned int length = literal.getLength();
   // bassert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
-  elements =
-    new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
+  elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
   copy<char>(
     elements->getElements(),
     literal.getValue(),
@@ -48,8 +54,7 @@ String::String(
   ); // no overlap
 }
 
-String::String(const NativeString& string) throw(MemoryException)
-  : elements(0) {
+String::String(const NativeString& string) throw(MemoryException) {
   if (string.getValue()) {
     int numberOfCharacters = getLengthOfMustBeTerminated(string.getValue());
     elements = new ReferenceCountedCapacityAllocator<char>(
@@ -65,8 +70,7 @@ String::String(const NativeString& string) throw(MemoryException)
 
 String::String(
   const NativeString& string,
-  unsigned int maximum) throw(StringException, MemoryException)
-  : elements(0) {
+  unsigned int maximum) throw(StringException, MemoryException) {
   if (string.getValue()) {
     bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
     const char* terminator =

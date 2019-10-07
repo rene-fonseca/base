@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/collection/OrderedBinaryTree.h>
+#include <base/collection/Enumeration.h>
 #include <base/string/FormatOutputStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -34,12 +35,12 @@ private:
   /** The elements of the set. */
   OrderedBinaryTree<KEY> elements;
   /** The number of elements in the set. */
-  unsigned int size;
+  unsigned int size = 0;
 public:
 
   /* Enumerator of set. */
   template<class TRAITS, class ENU>
-  class SetEnumerator : public Enumerator<TRAITS> {
+  class SetEnumerator : public base::Enumerator<TRAITS> {
   private:
 
     typedef typename Enumerator<TRAITS>::Pointer Pointer;
@@ -48,7 +49,7 @@ public:
     ENU enu;
   public:
 
-    inline SetEnumerator(ENU _enu) throw() : enu(_enu) {
+    inline SetEnumerator(const ENU& _enu) throw() : enu(_enu) {
     }
     
     inline bool hasNext() const throw() {

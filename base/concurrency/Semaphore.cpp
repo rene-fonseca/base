@@ -40,11 +40,11 @@ namespace ntapi {
     unsigned int maximum;
   };
 
-  typedef NTSTATUS (_DK_SDU_MIP__BASE__CALL_PASCAL *PNtQuerySemaphore)(HANDLE, unsigned int /*INFOCLASS*/, SemaphoreInformation*, unsigned long, unsigned long*);
+  typedef NTSTATUS (__stdcall *PNtQuerySemaphore)(HANDLE, unsigned int /*INFOCLASS*/, SemaphoreInformation*, unsigned long, unsigned long*);
 
   template<class API>
   inline API getAddress(const char* identifier) throw() {
-    return (API)::GetProcAddress(::GetModuleHandle("ntdll"), identifier);
+    return (API)::GetProcAddress(::GetModuleHandle(L"ntdll"), identifier);
   }
 };
 #endif
@@ -148,11 +148,10 @@ int Semaphore::getValue() const throw(SemaphoreException) {
   #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || \
       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K) || \
       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WXP)
-    static ntapi::PNtQuerySemaphore NtQuerySemaphore = 0; // 0~unsupported if resolved
+    static ntapi::PNtQuerySemaphore NtQuerySemaphore = nullptr; // 0~unsupported if resolved
     static bool isResolved = false;
     if (!isResolved) {
-      ntapi::PNtQuerySemaphore NtQuerySemaphore =
-        ntapi::getAddress<ntapi::PNtQuerySemaphore>("NtQuerySemaphore");
+      NtQuerySemaphore = ntapi::getAddress<ntapi::PNtQuerySemaphore>("NtQuerySemaphore");
       isResolved = true;
     }
     if (NtQuerySemaphore) {

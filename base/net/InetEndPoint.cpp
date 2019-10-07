@@ -38,7 +38,7 @@ InetEndPoint::InetEndPoint(
       throw ServiceNotFound("Port is out of range", this);
     }
     port = integer;
-  } catch (InvalidFormat& e) {
+  } catch (InvalidFormat&) {
     port = InetService(service).getPort();
   }
 }
@@ -52,7 +52,7 @@ InetEndPoint::InetEndPoint(
       throw ServiceNotFound("Port is out of range", this);
     }
     port = integer;
-  } catch (InvalidFormat& e) {
+  } catch (InvalidFormat&) {
     port = InetService(service).getPort();
   }
 }

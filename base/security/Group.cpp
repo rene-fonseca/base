@@ -137,10 +137,10 @@ String Group::getName() const throw(GroupException) {
   }
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   SID_NAME_USE sidType;
-  char name[UNLEN+1]; // TAG: what is the maximum size
-  DWORD nameSize = sizeof(name);
-  char domainName[DNLEN+1]; // TAG: what is the maximum size
-  DWORD domainNameSize = sizeof(domainName);
+  wchar name[UNLEN+1]; // TAG: what is the maximum size
+  DWORD nameSize = getArraySize(name);
+  wchar domainName[DNLEN+1]; // TAG: what is the maximum size
+  DWORD domainNameSize = getArraySize(domainName);
   bassert(
     ::LookupAccountSid(
       0,
@@ -153,10 +153,10 @@ String Group::getName() const throw(GroupException) {
     ) != 0,
     GroupException("Unable to lookup name", this)
   );
-  if (domainName[0] != 0) {
-    return String(domainName) + MESSAGE("\\") + String(name);
+  if (domainName[0] != L'\0') {
+    return toUTF8(WideString(domainName) + WIDEMESSAGE("\\") + WideString(name));
   } else {
-    return String(name); // TAG: does nameSize hold length of name
+    return toUTF8(static_cast<const wchar*>(name)); // TAG: does nameSize hold length of name
   }
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRNAM_R)

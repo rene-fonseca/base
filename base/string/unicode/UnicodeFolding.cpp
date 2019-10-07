@@ -2,6 +2,8 @@
 // This source was generated from the file ../unicode/CaseFolding-3.2.0.txt
 // At 24-Aug-2002 20:23:31
 
+#include <base/string/WideString.h>
+
 namespace base {
 
   const WideString::HashEntry WideString::hashTable[] = {

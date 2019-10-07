@@ -150,7 +150,7 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
   );
   bassert(sidType != SidTypeInvalid, TrusteeException("Not a trustee", this));
   unsigned int sidSize = ::GetLengthSid((PSID)sid);
-  integralId = getMaximum(integralId);
+  integralId = INVALID;
   id = new ReferenceCountedAllocator<uint8>(sidSize);
   copy(id->getElements(), Cast::pointer<const uint8*>(sid), sidSize);
 #else // unix

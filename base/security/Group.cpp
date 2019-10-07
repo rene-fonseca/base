@@ -49,7 +49,7 @@ Group::Group(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
 Group::Group(const void* _id) throw(OutOfDomain) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   if (_id == 0) {
-    integralId = getMaximum(integralId);
+    integralId = INVALID;
     return;
   }
   bassert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid group id", this));

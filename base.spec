@@ -24,7 +24,7 @@ Version: 0.9.1
 Release: 1
 License: GPL
 Source: %{name}-%{version}.tar.bz2
-Url: http://www.mip.sdu.dk/~fonseca/base
+Url: https://www.fonseca.dk/base
 Vendor: Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 Packager: Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 Distribution: The Base Framework

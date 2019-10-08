@@ -482,7 +482,7 @@ protected:
 
   /* See chapter 5 of RFC */
   String makeRequest(Method method, const String& host, const String& resourceUri) throw(IOException) {
-    static const Literal AGENT = MESSAGE("http/0.1 (http://www.mip.sdu.dk/~fonseca/base)");
+    static const Literal AGENT = MESSAGE("http/0.1 (https://www.fonseca.dk/base)");
     static const Literal methods[] = {
       METHOD_OPTIONS,
       METHOD_GET,
@@ -831,13 +831,13 @@ public:
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "https://www.fonseca.dk/base" << EOL
          << "Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     
     Array<String> arguments = getArguments();
 
-    String url = MESSAGE("www.mip.sdu.dk/~fonseca/index.html"); // default url
+    String url = MESSAGE("www.fonseca.dk/index.html"); // default url
     String file; // default file
 
     switch (arguments.getSize()) {

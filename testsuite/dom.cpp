@@ -148,11 +148,11 @@ public:
 // <!ENTITY fdl SYSTEM "fdl-appendix.xml">
 // <!ENTITY bookindex SYSTEM "index.xml">
 
-// <!ENTITY HOMEPAGE "http://www.mip.sdu.dk/~fonseca/base">
-// <!ENTITY DISTRIBUTION "http://www.mip.sdu.dk/~fonseca/distribution">
-// <!ENTITY NIGHTLY "http://www.mip.sdu.dk/~fonseca/distribution/base-framework/nightly">
-// <!ENTITY PRERELEASE "http://www.mip.sdu.dk/~fonseca/distribution/base-framework/prerelease">
-// <!ENTITY RELEASE "http://www.mip.sdu.dk/~fonseca/distribution/base-framework/release">
+// <!ENTITY HOMEPAGE "https://www.fonseca.dk/base">
+// <!ENTITY DISTRIBUTION "https://www.fonseca.dk/base/distribution">
+// <!ENTITY NIGHTLY "https://www.fonseca.dk/base/distribution/base-framework/nightly">
+// <!ENTITY PRERELEASE "https://www.fonseca.dk/base/distribution/base-framework/prerelease">
+// <!ENTITY RELEASE "https://www.fonseca.dk/base/distribution/base-framework/release">
 // <!ENTITY VERSION "0.9.1">
 // %ISOlat1;
 
@@ -218,7 +218,7 @@ public:
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "http://www.mip.sdu.dk/~fonseca/base" << EOL
+         << "https://www.fonseca.dk/base" << EOL
          << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
          << ENDL;
     

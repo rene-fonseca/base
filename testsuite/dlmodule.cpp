@@ -20,7 +20,7 @@ using namespace dk::sdu::mip::base;
 
 void moduleEntry() throw() {
   Trace::message("Module entry function");
-  LinkerManager::getManager()->registrate(new MyLinkerModule("mip.sdu.dk/~fonseca/base/MyLinkerModule", "MyLinkerModule", "0.1"));
+  LinkerManager::getManager()->registrate(new MyLinkerModule("https://www.fonseca.dk/base/MyLinkerModule", "MyLinkerModule", "0.1"));
 }
 
 void moduleCleanUp() throw() {

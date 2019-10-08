@@ -97,7 +97,7 @@ CharacterSet CharacterSet::load(
 CharacterSet CharacterSet::load(
   const Array<String>& searchPaths,
   const String& path) throw(FileException, InvalidFormat) {
-  // TAG: default path "/usr/share/mip.sdu.dk/base/charset/" and name "8859-1"
+  // TAG: default path "/usr/share/base/charset/" and name "8859-1"
   if (FileSystem::isAbsolutePath(path)) {
     return load(path);
   } else {

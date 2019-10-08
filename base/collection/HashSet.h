@@ -482,7 +482,7 @@ public:
   */
   
   template<class TRAITS>
-  class HashSetEnumerator : public Enumerator<TRAITS> {
+  class HashSetEnumerator : public base::Enumerator<TRAITS> {
     friend class HashSetImpl;
   private:
     

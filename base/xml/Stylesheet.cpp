@@ -99,6 +99,8 @@ String Stylesheet::getOutputMethod() const throw() {
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->method));
+#else
+  return String();
 #endif
 }
 
@@ -108,6 +110,8 @@ String Stylesheet::getNamespace() const throw() {
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->methodURI));
+#else
+  return String();
 #endif
 }
 
@@ -117,6 +121,8 @@ String Stylesheet::getVersion() const throw() {
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->version));
+#else
+  return String();
 #endif
 }
 
@@ -126,6 +132,8 @@ String Stylesheet::getEncoding() const throw() {
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->encoding));
+#else
+  return String();
 #endif
 }
 
@@ -135,6 +143,8 @@ bool Stylesheet::omitXmlDeclaration() const throw() {
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
   return temp->omitXmlDeclaration != 0;
+#else
+  return false;
 #endif
 }
 
@@ -144,6 +154,8 @@ String Stylesheet::getPublicId() const throw() {
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->doctypePublic));
+#else
+  return String();
 #endif
 }
 
@@ -153,6 +165,8 @@ String Stylesheet::getSystemId() const throw() {
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->doctypeSystem));
+#else
+  return String();
 #endif
 }
 
@@ -162,6 +176,8 @@ String Stylesheet::getMediaType() const throw() {
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
   return NativeString(Cast::pointer<const char*>(temp->mediaType));
+#else
+  return String();
 #endif
 }
 
@@ -171,6 +187,8 @@ bool Stylesheet::isStandalone() const throw() {
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
   return temp->standalone != 0;
+#else
+  return false;
 #endif
 }
 
@@ -180,6 +198,8 @@ bool Stylesheet::isStandalone() const throw() {
 //     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
 //   bassert(temp, Exception(this));
 //   return temp->stripAll != 0;
+//#else
+//   return false;
 // #endif
 // }
 
@@ -189,6 +209,8 @@ bool Stylesheet::indent() const throw() {
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
   return temp->indent != 0;
+#else
+  return false;
 #endif
 }
 
@@ -204,6 +226,8 @@ Array<String> Stylesheet::getExcludedPrefixes() const throw() {
     ++current;
   }
   return result;
+#else
+  return Array<String>();
 #endif
 }
 

@@ -56,13 +56,12 @@ public:
     // --help
     // --version
     
-    DateTime time;
-
-    if no creation then => options
-            
+#if 0
+    // DateTime time;
+    File file(arguments[0]);
     file.setCreationTime();
     file.setModificationTime;
-    
+#endif
     
     try {
     } catch (Exception& e) {

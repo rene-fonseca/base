@@ -60,8 +60,8 @@ void myFunction2(MyDataMemberType) {
 
 typedef int (MyFunctionType)(int);
 
-template foo::bar<int, MyMemberType>;
-template foo::bar<int, MyFunctionType>;
+template class foo::bar<int, MyMemberType>;
+template class foo::bar<int, MyFunctionType>;
 
 int test(MyFunctionType, MyFunctionType, MyFunctionType* const) {
   return 0;

@@ -144,7 +144,7 @@ private:
   StreamSocket activeDataConnection;
 
   /** Specifies that a new response is pending. */
-  bool responsePending;
+  bool responsePending = false;
   /** The last line of the last response. */
   String response;
   /** The last control code. */
@@ -153,9 +153,9 @@ private:
   Verbosity verbosity;
 
   /** The retry delay in seconds. */
-  unsigned int retryDelay;
+  unsigned int retryDelay = 0;
   /** The number of retry attempts. */
-  unsigned int retryAttempts;
+  unsigned int retryAttempts = 0;
 protected:
 
   static bool translateReplyCode(
@@ -428,6 +428,10 @@ public:
       break;
     case BINARY:
       request(CMD_REPRESENTATION, "I");
+      break;
+    case EBCDIC:
+      break;
+    case LOCALSIZE:
       break;
     }
     getResponse();

@@ -49,12 +49,12 @@ private:
     METHOD_ZLIB
   };
 
-  bool debug;
-  Command command;
-  Method method;
-  unsigned int level;
-  bool force;
-  bool progress;
+  bool debug = false;
+  Command command = COMMAND_HELP;
+  Method method = METHOD_ZLIB;
+  unsigned int level = 0;
+  bool force = false;
+  bool progress = false;
   String sourceFile;
   String destinationFile;
 public:

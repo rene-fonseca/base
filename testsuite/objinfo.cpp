@@ -37,6 +37,7 @@ private:
   
   Command command;
   String path;
+  bool progress = false;
 
   // byte order?
   struct ElfHeader {
@@ -152,59 +153,63 @@ public:
   }
   
   void dump() throw() {
-    if (!FileSystem::fileExists(source)) {
-      ferr << "Error: " << "Source does not exist" << ENDL;
+    if (!FileSystem::fileExists(path)) {
+      ferr << "Error: " << "Source does not exist." << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
     
     try {
-      unsigned int type = FileSystem::getType(source);
+      unsigned int type = FileSystem::getType(path);
       unsigned int previousLength = 0;
       
       if (type & FileSystem::REGULAR) {
         Timer timer;
         Timer updateTimer;
         try {
-          File sourceFile(source, File::READ, 0);
+          File sourceFile(path, File::READ, 0);
           FileReader reader(sourceFile, 0);
           long long position = 0;
           const long long size = sourceFile.getSize();
           
+#if 0
           if (progress) {
             String temp = getProgress(position, size, timer.getLiveMicroseconds());
             fout << setWidth(previousLength) << temp << '\r' << FLUSH;
             previousLength = temp.getLength();
           }
+#endif
 
           ElfHeader header;
-          if (file.getSize() < sizeof(header)) {
+          if (sourceFile.getSize() < sizeof(header)) {
             ferr << "not elf object" << ENDL;
             return; // TAG: fixme
           }
 
           // check if valid ELF header
-          header.identification[0] == 0x7f;
-          header.identification[1] == 'E';
-          header.identification[2] == 'L';
-          header.identification[3] == 'F';
+          header.identifier[0] == 0x7f;
+          header.identifier[1] == 'E';
+          header.identifier[2] == 'L';
+          header.identifier[3] == 'F';
           
           while (position < size) {
             reader.seek(position);
             position += reader.getSize();
           }
           
+#if 0
           if (progress) {
             String temp = getProgress(size, size, timer.getLiveMicroseconds());
             fout << setWidth(previousLength) << temp << '\r' << ENDL;
           }
+#endif
         } catch (FileSystemException& e) {
-          ferr << source << ": " << e << ENDL; // ignore exception
+          ferr << path << ": " << e << ENDL; // ignore exception
           setExitCode(EXIT_CODE_ERROR);
           return;
         }
       } else if (type & FileSystem::FOLDER) {
-        ferr << "Error: " << "Folder not supported" << ENDL;
+        ferr << "Error: " << "Folder not supported." << ENDL;
         setExitCode(EXIT_CODE_ERROR);
         return;
       } else { // unknown entry type
@@ -213,7 +218,7 @@ public:
         return;
       }
     } catch (IOException& e) {
-      ferr << source << ": " << e << ENDL; // ignore exception
+      ferr << path << ": " << e << ENDL; // ignore exception
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
@@ -230,7 +235,7 @@ public:
       version();
       break;
     case COMMAND_DUMP:
-      copy();
+      dump();
       break;
     default:
       break;

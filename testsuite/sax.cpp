@@ -955,6 +955,18 @@ protected:
         );
       }
       break;
+    case Node::ATTRIBUTE_NODE:
+      break;
+    case Node::DOCUMENT_NODE:
+      break;
+    case Node::DOCUMENT_FRAGMENT_NODE:
+      break;
+    case Node::ATTRIBUTE_DECL_NODE:
+      break;
+    case Node::ELEMENT_DECL_NODE:
+      break;
+    case Node::ENTITY_DECL_NODE:
+      break;
     }
   }
 public:
@@ -977,7 +989,9 @@ public:
     Returns the value of the specified feature.
   */
   bool getFeature(const String& name) const
-    throw(SAXNotRecognizedException, SAXNotSupportedException) {
+    throw(SAXNotRecognizedException, SAXNotSupportedException)
+  {
+    return false;
   }
   
   /**

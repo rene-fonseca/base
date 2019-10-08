@@ -669,6 +669,10 @@ public:
       ferr << "For help: " << getFormalName() << " --help" << ENDL;
       setExitCode(Application::EXIT_CODE_ERROR);
       break;
+    case COMMAND_DUMP_TOPOLOGY:
+      break;
+    case COMMAND_DUMP_SPEEDS:
+      break;
     }
   }
 };

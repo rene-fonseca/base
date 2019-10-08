@@ -205,6 +205,12 @@ public:
         fout << '>' << EOL;
       }
       break;
+    case Node::ATTRIBUTE_DECL_NODE:
+      break;
+    case Node::ELEMENT_DECL_NODE:
+      break;
+    case Node::ENTITY_DECL_NODE:
+      break;
     }
   }
   

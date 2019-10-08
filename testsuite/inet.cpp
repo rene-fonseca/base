@@ -57,7 +57,7 @@ public:
         fout << "Interfaces:" << ENDL;
         while (enu.hasNext()) {
           const HashTable<String, unsigned int>::HashTableAssociation* node = enu.next();
-          fout << indent(2) << *node->getKey() << ' ' << *node->getValue() << EOL;
+          fout << indent(2) << node->getKey() << ' ' << node->getValue() << EOL;
         }
       }
       

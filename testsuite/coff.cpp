@@ -390,7 +390,7 @@ public:
     while (bytesToRead) {
       unsigned int bytesRead = file.read(
         buffer,
-        minimum(sizeof(buffer), bytesToRead)
+        minimum<unsigned int>(sizeof(buffer), bytesToRead)
       );
       MemoryDump dump(buffer, bytesRead);
       dump.setGlobalOffset(globalPosition);

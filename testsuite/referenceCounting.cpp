@@ -27,30 +27,30 @@ using namespace dk::sdu::mip::base;
 class Base : public virtual ReferenceCountedObject {
 private:
 
-  int state;
+  int state = 0;
 public:
 
-  Base() throw() : state(0) {
+  Base() throw() {
   }
 };
 
 class Child : public Base {
 private:
 
-  int childState;
+  int childState = 0;
 public:
 
-  Child() throw() : childState(0) {
+  Child() throw() {
   }
 };
 
 class OtherChild : public Child {
 private:
 
-  int otherState;
+  int otherState = 0;
 public:
 
-  OtherChild() throw() : otherState(0) {
+  OtherChild() throw() {
   }
 };
 
@@ -88,8 +88,8 @@ public:
     Reference<Child> child; // ok
     Reference<OtherChild> otherChild; // ok
 
-    ConstReference<Base> constBase = base;
-    constBase = child;
+    // ConstReference<Base> constBase = base;
+    // constBase = child;
     
     fout << "Checking whether base is valid (expecting false): "
          << base.isValid() << EOL;

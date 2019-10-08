@@ -360,7 +360,7 @@ public:
         unknowns.getReadEnumerator();
       fout << "The expression contains the following unknowns:";
       while (enu.hasNext()) {
-        fout << ' ' << *enu.next()->getKey();
+        fout << ' ' << enu.next()->getKey();
       }
       fout << ENDL;
     } else {

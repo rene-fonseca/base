@@ -60,7 +60,7 @@ public:
       Map<int, int>::ReadEnumerator enu = mii.getReadEnumerator();
       int sum = 0;
       while (enu.hasNext()) {
-        sum += *enu.next()->getValue();
+        sum += enu.next()->getValue();
       }
       fout << "sum: " << sum << ENDL;
     }

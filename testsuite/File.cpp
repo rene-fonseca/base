@@ -80,7 +80,7 @@ public:
       while (!eof && !stop) {
         try {
           file.read(buffer.getElements(), buffer.getSize(), offset, this);
-        } catch (IOException& e) {
+        } catch (IOException&) {
           fout << "Unable to read from file." << ENDL;
           file.asyncCancel();
           Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
@@ -95,7 +95,7 @@ public:
         }
         fout << "Read operation completed with: counter=" << counter << ENDL;
       }
-    } catch (IOException& e) {
+    } catch (IOException&) {
       ferr << "Unable to open file." << ENDL;
       Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
       return;
@@ -113,7 +113,7 @@ public:
     File destFile;
     try {
       sourceFile = File(sourcePath, File::READ, File::ASYNCHRONOUS);
-    } catch (IOException& e) {
+    } catch (IOException&) {
       ferr << "Unable to open source file." << ENDL;
       Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
       return;
@@ -142,7 +142,7 @@ public:
           offset,
           this
         );
-      } catch (IOException& e) {
+      } catch (IOException&) {
         ferr << "Unable to read from file." << ENDL;
         stop = true;
         Application::getApplication()->setExitCode(
@@ -158,7 +158,7 @@ public:
       fout << "Read operation completed with: counter=" << counter << ENDL;
       try {
         writeOperation = destFile.write(buffer.getElements(), bytesRead, offset, this);
-      } catch (IOException& e) {
+      } catch (IOException&) {
         ferr << "Unable to write to file." << ENDL;
         stop = true;
         Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);

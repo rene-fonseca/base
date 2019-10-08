@@ -8,7 +8,8 @@ project (testsuite)
 file( GLOB TEST_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}" *.cpp )
 # TAG: add recursive
 # TAG: fix all builds
-list(REMOVE_ITEM TEST_SOURCES "validate.cpp" "sax.cpp" "objinfo.cpp" "inet.cpp" "touch.cpp" "dlapp.cpp" "dom.cpp" "referenceCounting.cpp" "coff.cpp" "xsltprocessor.cpp" "eval.cpp" "MyLinkerModule.cpp" "Function.cpp" "Map.cpp" "HashTable.cpp" "dlmodule.cpp")
+list(REMOVE_ITEM TEST_SOURCES "validate.cpp" "sax.cpp" "dom.cpp" "xsltprocessor.cpp" "MyLinkerModule.cpp" "Function.cpp" "dlapp.cpp" "dlmodule.cpp")
+# TAG: MyLinkerModule
 
 foreach( sourcefile ${TEST_SOURCES} )
   string( REPLACE ".cpp" "" name ${sourcefile} )

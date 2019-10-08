@@ -1,6 +1,6 @@
 NAME: Registry
-AUTHOR: Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-DOMAIN: dk.sdu.mip
+AUTHOR: Rene Moeller Fonseca
+DOMAIN: dk.fonseca
 COMPONENT: Base Framework
 DESCRIPTION: Provides support for the Registry on Windows platforms
 LANGUAGE: C++

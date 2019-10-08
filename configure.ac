@@ -24,7 +24,7 @@ ac_base_build_user=`whoami`
 ac_base_build_host=`uname -n`
 
 AC_PREREQ(2.52)
-AC_COPYRIGHT([Copyright (C) 2001-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>])
+AC_COPYRIGHT([Copyright (C) 2001-2019 by Rene Moeller Fonseca])
 dnl AC_REVISION
 
 AC_CANONICAL_SYSTEM()

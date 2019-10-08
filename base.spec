@@ -2,7 +2,7 @@
 #    The Base Framework
 #    A framework for developing platform independent applications
 #
-#    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+#    See COPYRIGHT.txt for details.
 #
 #    This framework is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,8 @@ Release: 1
 License: GPL
 Source: %{name}-%{version}.tar.bz2
 Url: https://www.fonseca.dk/base
-Vendor: Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-Packager: Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+Vendor: Rene Moeller Fonseca
+Packager: Rene Moeller Fonseca
 Distribution: The Base Framework
 Prefix: /usr
 BuildRoot: %{_builddir}/%{name}-%{version}-%{release}-root
@@ -111,11 +111,3 @@ make DESTDIR=%{buildroot} install-strip
 
 # clean up source tree
 rm -rf %{_builddir}/%{name}
-
-
-
-%changelog
-* Sat Apr 20 2002 Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-- created a subpackage for development specific files
-- added external package dependencies
-- moved from tar.gz to tar.bz2

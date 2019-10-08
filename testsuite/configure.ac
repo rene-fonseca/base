@@ -2,7 +2,7 @@ dnl ***************************************************************************
 dnl    The Base Framework (Test Suite)
 dnl    A framework for developing platform independent applications
 dnl
-dnl    Copyright (C) 2001-2002 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+dnl    See COPYRIGHT.txt for details.
 dnl
 dnl    This framework is distributed in the hope that it will be useful,
 dnl    but WITHOUT ANY WARRANTY; without even the implied warranty of

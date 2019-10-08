@@ -6,3 +6,4 @@ Makefile
 *.a
 *.dylib
 testsuite/
+.DS_Store

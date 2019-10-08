@@ -1,10 +1,4 @@
-// TAG: temporary solution until automatic conguration works
-
-/* This is an automatically generated file. Do NOT edit. */
-
-#define _DK_SDU_MIP__BASE__CONFIGURE "aaa"
 #define _DK_SDU_MIP__BASE__BUILD_DATE "bbb"
-// #define _DK_SDU_MIP__BASE__RELEASE "ggg"
 
 #if defined(__clang__)
 #  define _DK_SDU_MIP__BASE__COMPILER _DK_SDU_MIP__BASE__COMPILER_CLANG
@@ -73,3 +67,19 @@
 #define _DK_SDU_MIP__BASE__HAVE_WCSFTIME
 
 #define _DK_SDU_MIP__BASE__PACKED
+
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if defined(_DK_SDU_MIP__BASE__SHARED_LIBRARY)
+#if defined(_DK_SDU_MIP__BASE__SHARED_LIBRARY_BUILD)
+#  define _DK_SDU_MIP__BASE__API __declspec(dllexport)
+#else
+#  define _DK_SDU_MIP__BASE__API __declspec(dllimport)
+#endif
+#endif
+#else
+// TAG: add other platform
+#endif
+
+#if !defined(_DK_SDU_MIP__BASE__API)
+#  define _DK_SDU_MIP__BASE__API
+#endif

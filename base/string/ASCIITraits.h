@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short ASCII character traits.
   @version 1.2
 */
-class ASCIITraits {
+class _DK_SDU_MIP__BASE__API ASCIITraits {
 public:
   
   /** Character characteristics. */

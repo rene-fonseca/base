@@ -81,22 +81,24 @@ public:
   };
 
   /* Format descriptor. */
-  struct Format {
-    unsigned int id;
-    unsigned int flags;
-    uint8 colorBits;
-    uint8 redBits;
-    uint8 greenBits;
-    uint8 blueBits;
-    uint8 alphaBits;
-    uint8 accumulatorBits;
-    uint8 accumulatorRedBits;
-    uint8 accumulatorGreenBits;
-    uint8 accumulatorBlueBits;
-    uint8 accumulatorAlphaBits;
-    uint8 depthBits;
-    uint8 stencilBits;
-    uint8 auxBuffers;
+  class Format {
+  public:
+
+    unsigned int id = 0;
+    unsigned int flags = 0;
+    uint8 colorBits = 0;
+    uint8 redBits = 0;
+    uint8 greenBits = 0;
+    uint8 blueBits = 0;
+    uint8 alphaBits = 0;
+    uint8 accumulatorBits = 0;
+    uint8 accumulatorRedBits = 0;
+    uint8 accumulatorGreenBits = 0;
+    uint8 accumulatorBlueBits = 0;
+    uint8 accumulatorAlphaBits = 0;
+    uint8 depthBits = 0;
+    uint8 stencilBits = 0;
+    uint8 auxBuffers = 0;
   };
   
   /**

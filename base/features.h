@@ -23,7 +23,6 @@
 #define _DK_SDU_MIP__BASE__MINOR_VERSION 9
 #define _DK_SDU_MIP__BASE__MICRO_VERSION 1
 #define _DK_SDU_MIP__BASE__VERSION "0.9.1"
-#define _DK_SDU_MIP__BASE__RELEASE "1.0 prerelease 1"
 
 #define _DK_SDU_MIP__BASE__REQUIRE(major, minor, micro) \
   ((major <= _DK_SDU_MIP__BASE__MAJOR_VERSION) && \

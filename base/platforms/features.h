@@ -14,7 +14,7 @@
 #pragma once
 
 #include <base/platforms/symbols.h> // must be first
-#include <base/platforms/configuration.h>
+#include <base/configuration.h>
 
 #if defined(_DK_SDU_MIP__BASE__DEBUG)
 #  define DEBUG // enable ASSERT and ASSERTION

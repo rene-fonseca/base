@@ -117,7 +117,7 @@ public:
     StreamSocket socket;
     try {
       socket.connect(endPoint.getAddress(), endPoint.getPort());
-    } catch (IOException& e) {
+    } catch (IOException&) {
       ferr << "Error: " << "Unable to connect" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;

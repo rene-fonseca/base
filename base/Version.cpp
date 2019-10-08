@@ -17,14 +17,13 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 const char Version::banner[] =
-"The Base Framework release " _DK_SDU_MIP__BASE__RELEASE "\n"
+"The Base Framework release " _DK_SDU_MIP__BASE__VERSION "\n"
 "A framework for developing platform independent applications\n"
 "Copyright (C) 2000-2003 by Rene Moeller Fonseca\n\n"
 "This framework is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 "Please report bugs to <fonseca@mip.sdu.dk>.\n\n"
-"configure: " _DK_SDU_MIP__BASE__CONFIGURE "\n"
 "build data: " _DK_SDU_MIP__BASE__BUILD_DATE "\n";
 
 unsigned int Version::getMajorVersion() const throw() {
@@ -40,7 +39,7 @@ unsigned int Version::getMicroVersion() const throw() {
 }
 
 String Version::getRelease() const throw() {
-  return Literal(_DK_SDU_MIP__BASE__RELEASE);
+  return Literal(_DK_SDU_MIP__BASE__VERSION);
 }
 
 String Version::getVersion() const throw() {

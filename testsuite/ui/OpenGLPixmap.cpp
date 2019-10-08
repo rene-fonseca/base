@@ -347,7 +347,7 @@ public:
       : OpenGLContext(
         position,
         dimension,
-        OpenGLContext::DOUBLE_BUFFERED|OpenGLContext::DEPTH
+        OpenGLContext::Format() // OpenGLContext::DOUBLE_BUFFERED | OpenGLContext::DEPTH
       ) {
       setTitle(title);
       setIconTitle(title);

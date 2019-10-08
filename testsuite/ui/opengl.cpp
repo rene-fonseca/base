@@ -776,7 +776,7 @@ public:
         fout << "Mouse button event: "
              << getMouseButtonName(button) << ' ';
         
-        if (event < getArraySize(EVENT_STRING)) {
+        if (static_cast<unsigned int>(event) < getArraySize(EVENT_STRING)) {
           fout << EVENT_STRING[event];
         } else {
           fout << "[UNNAMED EVENT]" << ' ' << static_cast<unsigned int>(event);
@@ -807,6 +807,12 @@ public:
         if (event == Mouse::PRESSED) {
           displayMenu(position, menu);
         }
+        break;
+      case Mouse::WHEEL:
+        break;
+      case Mouse::EXTRA:
+        break;
+      case Mouse::EXTRA2:
         break;
       }
       mouseButtonPosition = position;

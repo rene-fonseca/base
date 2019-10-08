@@ -133,7 +133,7 @@ public:
       
       fout << "Event: mouse button " << getMouseButtonName(button) << SP;
       
-      if (event < getArraySize(EVENT_STRING)) {
+      if (static_cast<unsigned int>(event) < getArraySize(EVENT_STRING)) {
         fout << EVENT_STRING[event];
       } else {
         fout << "[UNNAMED EVENT]" << ' ' << static_cast<unsigned int>(event);

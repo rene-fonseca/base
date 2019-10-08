@@ -51,15 +51,15 @@ enum {
   PointerMotionMask
 };
 
-void XDestroyWindow(Display*, Window) {}
-int XDefaultScreen(Display*) {return 0;}
-void* XScreenOfDisplay(Display*, int screenId) {return 0;}
-int XBlackPixelOfScreen(Screen*) {return 0;}
-int XWhitePixelOfScreen(Screen*) {return 0;}
-void* DefaultRootWindow(Display*) {return 0;}
-void XFree(XVisualInfo*) {}
+inline void XDestroyWindow(Display*, Window) {}
+inline int XDefaultScreen(Display*) {return 0;}
+inline void* XScreenOfDisplay(Display*, int screenId) {return 0;}
+inline int XBlackPixelOfScreen(Screen*) {return 0;}
+inline int XWhitePixelOfScreen(Screen*) {return 0;}
+inline void* DefaultRootWindow(Display*) {return 0;}
+inline void XFree(XVisualInfo*) {}
 
-void* XCreateSimpleWindow(
+inline void* XCreateSimpleWindow(
     Display*,
     void*,
     int,
@@ -70,10 +70,10 @@ void* XCreateSimpleWindow(
     int, // border color
     int) {return 0;}
 
-void XSelectInput(Display*, Window, int) {}
-int XScreenNumberOfScreen(Screen*) {return 0;}
-void* XCreatePixmap(Display*, void*, int, int, int) {return 0;}
-void XFreePixmap(Display*, Pixmap) {}
+inline void XSelectInput(Display*, Window, int) {}
+inline int XScreenNumberOfScreen(Screen*) {return 0;}
+inline void* XCreatePixmap(Display*, void*, int, int, int) {return 0;}
+inline void XFreePixmap(Display*, Pixmap) {}
 
 #elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
 #  include <X11/Xlib.h>

@@ -65,7 +65,6 @@ using namespace commands;
   This exception is raised by the HTTP class.
 
   @short HTTP exception.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -349,7 +348,6 @@ public:
   Hypertext Transfer Protocol (HTTP/1.1) client (uses a subset of RFC 2616).
 
   @short HTTP client.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

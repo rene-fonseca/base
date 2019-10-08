@@ -75,7 +75,6 @@ const Literal CMD_NOOP = MESSAGE("NOOP"); // no operation
   This exception is raised by the FTP class.
 
   @short FTP exception.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -103,7 +102,6 @@ public:
   File Transfer Protocol (FTP) client (uses a subset of RFC 959).
 
   @short FTP client.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

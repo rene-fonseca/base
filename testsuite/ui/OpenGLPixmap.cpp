@@ -481,6 +481,8 @@ public:
         case ShadingModel::FLAT:
           openGL.glShadeModel(OpenGL::FLAT);
           break;
+        case ShadingModel::INVALID:
+          break;
         }
       }
     }
@@ -498,6 +500,8 @@ public:
           break;
         case PolygonMode::POINT:
           openGL.glPolygonMode(OpenGL::FRONT_AND_BACK, OpenGL::POINT);
+          break;
+        case PolygonMode::INVALID:
           break;
         }
       }
@@ -777,7 +781,7 @@ public:
         fout << "Mouse button event: "
              << getMouseButtonName(button) << ' ';
         
-        if (event < getArraySize(EVENT_STRING)) {
+        if (static_cast<unsigned int>(event) < getArraySize(EVENT_STRING)) {
           fout << EVENT_STRING[event];
         } else {
           fout << "[UNNAMED EVENT]" << ' ' << static_cast<unsigned int>(event);
@@ -819,6 +823,12 @@ public:
         if (event == Mouse::PRESSED) {
           displayMenu(position, menu);
         }
+        break;
+      case Mouse::WHEEL:
+        break;
+      case Mouse::EXTRA:
+        break;
+      case Mouse::EXTRA2:
         break;
       }
       mouseButtonPosition = position;

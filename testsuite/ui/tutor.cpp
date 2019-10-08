@@ -18,15 +18,15 @@ public:
   private:
     
     Vector3D<double> rotation;
-    double scale;
+    double scale = 0;
     
     Vector3D<double> rotationBegin;
-    double scaleBegin;
+    double scaleBegin = 0;
     
     Position mouseButtonPosition;
-    bool mouseLeftButtonPressed;
-    bool mouseMiddleButtonPressed;
-    bool mouseRightButtonPressed;
+    bool mouseLeftButtonPressed = false;
+    bool mouseMiddleButtonPressed = false;
+    bool mouseRightButtonPressed = false;
   public:
     
     MyOpenGLContext(
@@ -141,6 +141,12 @@ public:
       case Mouse::RIGHT:        
         mouseRightButtonPressed = event == Mouse::PRESSED;
         setCapture(false);
+        break;
+      case Mouse::WHEEL:
+        break;
+      case Mouse::EXTRA:
+        break;
+      case Mouse::EXTRA2:
         break;
       }
       mouseButtonPosition = position;

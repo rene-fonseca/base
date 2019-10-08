@@ -18,7 +18,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 OrbSkeletonManager::OrbSkeletonManager() throw(MemoryException) {
 }
 
-void OrbSkeletonManager::add(Reference<OrbSkeleton> skeleton) throw(AmbiguousRegistration, MemoryException) {
+void OrbSkeletonManager::add(Reference<OrbSkeleton> skeleton) throw(MemoryException) {
   const OrbReference reference(Cast::getOffset(skeleton.getValue()));
   const String name = skeleton->getOrbName();
   names.add(name, skeleton);

@@ -15,7 +15,6 @@
 
 #include <base/Object.h>
 #include <base/collection/HashTable.h>
-#include <base/mathematics/AmbiguousRegistration.h>
 #include <base/mem/Reference.h>
 #include <base/rmi/OrbException.h>
 #include <base/rmi/OrbReference.h>
@@ -92,7 +91,7 @@ public:
   /**
     Registers the specified skeleton.
   */
-  void add(Reference<OrbSkeleton> skeleton) throw(AmbiguousRegistration, MemoryException);
+  void add(Reference<OrbSkeleton> skeleton) throw(MemoryException);
   
   /**
     Deregisters the specified skeleton.

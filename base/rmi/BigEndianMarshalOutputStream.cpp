@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/rmi/.h>
+#include <base/rmi/BigEndianMarshalOutputStream.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

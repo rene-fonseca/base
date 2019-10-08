@@ -18,21 +18,7 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 namespace orb {
-  
-  /**
-    .
-    
-    @short .
-    @ingroup rmi
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
-    @version 1.0
-  */
-  
-  class  : public Object {
-  public:
-    
-  };
-  
+ 
 }; // end of namespace orb
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

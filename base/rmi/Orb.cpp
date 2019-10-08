@@ -21,6 +21,10 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+class AmbiguousRegistration : public Exception {
+public:
+};
+
 Reference<OrbEncoding> Orb::getDefaultEncoding() throw() {
   return new LisaEncoding();
 }

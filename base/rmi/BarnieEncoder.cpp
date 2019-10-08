@@ -13,9 +13,11 @@
 
 #pragma once
 
-#include <base/rmi/OrbEncoder.h>
+#include <base/rmi/BarnieEncoder.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+#if 0
 
 void BarnieEncoder::write(const char* buffer, unsigned int size) throw(IOException) {
 }
@@ -128,5 +130,7 @@ void BarnieEncoder::write(long double value) throw(IOException) {
   FloatingPoint::IEEEQuadruplePrecision buffer = value;
   write(Cast::getCharAddress(buffer), sizeof(buffer));
 }
+
+#endif
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

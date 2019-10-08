@@ -34,7 +34,7 @@ public:
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
          << "https://www.fonseca.dk/base" << EOL
-         << "Copyright (C) 2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
+         << "Copyright (C) 2003-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
     static uint8 DATA[5][256];

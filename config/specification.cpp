@@ -41,7 +41,7 @@ int main() {
   MyClass object;
   try {
     object.myMethod();
-  } catch (MyException& e) {
+  } catch (MyException&) {
   }
   return 0;
 }

@@ -1145,6 +1145,17 @@ public:
   inline const char* getBytes() const throw() {
     return elements->getElements();
   }
+
+  /**
+    Returns the characters of the string for non-modifying access. The elements
+    may not be NULL-terminated. Avoid this method if you can.
+  */
+  inline const char* native() const throw() {
+    // special case: no need to copy on write 'cause we only add terminator
+    char* result = const_cast<char*>(elements->getElements()); // TAG: fix cast
+    result[getLength()] = Traits::TERMINATOR;
+    return result;
+  }
 };
 
 template<>

@@ -38,6 +38,9 @@ public:
     invoked.
   */
   virtual bool atEnd() const throw() = 0;  
+
+  virtual ~Inflater() {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

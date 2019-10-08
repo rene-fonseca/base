@@ -44,6 +44,9 @@ public:
     may only be invoked hereafter.
   */
   virtual void flush() throw(IOException) = 0;
+
+  virtual ~Deflater() {
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

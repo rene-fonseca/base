@@ -751,7 +751,7 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
     while (!isochronousChannels[channel].completed) { // TAG: need time out support
       dequeueResponse();
     }
-  } catch (IEEE1394Exception& e) { // still need to disable listener
+  } catch (IEEE1394Exception&) { // still need to disable listener
   }
 
   isochronousChannels[channel].listener = 0; // prevent invocation of listener method

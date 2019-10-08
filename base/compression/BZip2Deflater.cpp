@@ -46,7 +46,7 @@ namespace internal {
       }
       try {
         return new uint8[size];
-      } catch (MemoryException& e) {
+      } catch (MemoryException&) {
         return 0;
       }
     }

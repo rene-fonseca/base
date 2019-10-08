@@ -121,7 +121,7 @@ private:
     unsigned int size) throw(OrbException) {
 //     try {
 //       connection->push(buffers, size);
-//     } catch (IOException& e) {
+//     } catch (IOException&) {
 //       fout << "DEBUG: " << "Write to connection failed "
 //            << connection->getEndPoint() << ENDL;
 //       // release connection and open new if client connection

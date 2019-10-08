@@ -126,7 +126,7 @@ public:
     fout << "Map<int, int>: " << mss << ENDL;
 
     fout << "Url: "
-         << Url("http://fonseca:password@www.mip.sdu.dk:80/~fonseca/base/", false) << ENDL;
+         << Url("http://username:password@www.microsoft.com:80/", false) << ENDL;
 
     fout << "127.0.0.1 - "
          << InetAddress("127.0.0.1", InetAddress::IP_VERSION_4) << ENDL;

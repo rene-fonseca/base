@@ -121,14 +121,14 @@ public:
   /**
     Returns the IP addresses associated with the specified host name.
 
-    @param name The name of the host (e.g. 'www.mip.sdu.dk').
+    @param name The name of the host (e.g. 'www.google.com').
   */
   static List<InetAddress> getAddressesByName(const String& name) throw(HostNotFound);
 
   /**
     Returns the first IP address found for the specified host name.
 
-    @param name The name of the host (e.g. 'www.mip.sdu.dk').
+    @param name The name of the host (e.g. 'www.google.com').
   */
   static InetAddress getAddressByName(const String& name) throw(HostNotFound);
   

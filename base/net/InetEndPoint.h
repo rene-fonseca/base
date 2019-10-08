@@ -69,7 +69,7 @@ public:
   /**
     Initializes end point from string representations of host and service.
 
-    @param host The host (e.g. '127.0.0.1' or 'www.mip.sdu.dk').
+    @param host The host (e.g. '127.0.0.1' or 'www.google.com').
     @param service The service (e.g. 'http' or '80').
   */
   InetEndPoint(

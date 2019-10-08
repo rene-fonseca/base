@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   components of the url are stored internally in decoded format.
   
   @code
-  Url url("http://www.mip.sdu.dk")
+  Url url("http://www.google.com")
   Url url("ftp://ftp.gnu.org")
   @endcode
 

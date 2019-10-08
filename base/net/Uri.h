@@ -51,7 +51,7 @@ public:
   abstract or physical resource.
 
   <pre>
-  Uri uri("http://www.mip.sdu.dk")
+  Uri uri("http://www.google.com")
   Uri uri("ftp://ftp.gnu.org")
   </pre>
 

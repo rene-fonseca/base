@@ -50,7 +50,7 @@ public:
   
   /**
     Returns the global identifier of the encoding scheme (e.g.
-    "urn:rmi:orb:encoding-scheme:fonseca@mip.sdu.dk:Lisa").
+    "urn:rmi:orb:encoding-scheme:username@somedomain:Lisa").
   */
   virtual String getUrn() const throw() = 0;
   

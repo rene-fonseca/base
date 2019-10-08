@@ -124,7 +124,7 @@ public:
         File::WRITE,
         File::CREATE | File::EXCLUSIVE | File::ASYNCHRONOUS
       );
-    } catch (IOException& e) {
+    } catch (IOException&) {
       ferr << "Unable to create destination file (make sure it does not exist)." << ENDL;
       Application::getApplication()->setExitCode(Application::EXIT_CODE_ERROR);
       return;

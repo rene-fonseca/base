@@ -164,7 +164,7 @@ public:
         try {
           IEEE1394::Standard standard = ieee1394.getCompliance(node);
           fout << indent(2) << "standard: " << STANDARDS[standard] << EOL;
-        } catch (IEEE1394Exception& e) {
+        } catch (IEEE1394Exception&) {
         }
 
         if (!ieee1394.getLocalIdentifier(id).isInvalid()) {
@@ -178,7 +178,7 @@ public:
                << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 16) & 0xff) << ':'
                << HEX << setWidth(2) << ZEROPAD << NOPREFIX << ((vendor >> 8) & 0xff) << ':'
                << HEX << setWidth(2) << ZEROPAD << NOPREFIX << (vendor & 0xff) << EOL;        
-        } catch (IEEE1394Exception& e) {
+        } catch (IEEE1394Exception&) {
         }
         
         try {
@@ -191,13 +191,13 @@ public:
           if (keywords.isProper()) {
             fout << indent(2) << "keywords: " << keywords << EOL;
           }
-        } catch (IEEE1394Exception& e) {
+        } catch (IEEE1394Exception&) {
         }
         
         try {
           unsigned int max = ieee1394.getMaximumPayload(node);
           fout << indent(2) << "maximum asynchronous payload: " << max << EOL;
-        } catch (IEEE1394Exception& e) {
+        } catch (IEEE1394Exception&) {
         }
 
         fout << indent(2) << "is contender: " << ieee1394.isContender(id)
@@ -247,14 +247,14 @@ public:
           try {
             unsigned int busTime = ieee1394.getBusTime(node);
             fout << indent(2) << "bus time: " << busTime << EOL;            
-          } catch (IEEE1394Exception& e) {
+          } catch (IEEE1394Exception&) {
           }
         }
         if (capabilities & IEEE1394::ISOCHRONOUS_TRANSACTION_CAPABLE) {
           try {
             unsigned int cycleTime = ieee1394.getCycleTime(node);
             fout << indent(2) << "cycle time: " << cycleTime << EOL;
-          } catch (IEEE1394Exception& e) {
+          } catch (IEEE1394Exception&) {
           }
         }
       }
@@ -608,7 +608,7 @@ public:
     if ((command != COMMAND_ERROR) && guid.isProper()) {
       try {
         id = EUI64(guid);
-      } catch (InvalidFormat& e) {
+      } catch (InvalidFormat&) {
         command = COMMAND_ERROR;
       }
       if (id.isInvalid()) {

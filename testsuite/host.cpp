@@ -64,7 +64,7 @@ public:
         InetAddress address;
         try {
           address = InetAddress::getAddressByName(host);
-        } catch (HostNotFound& e) {
+        } catch (HostNotFound&) {
           ferr << "Error: " << "Unable to resolve host" << ENDL;
           setExitCode(EXIT_CODE_ERROR);
           return;

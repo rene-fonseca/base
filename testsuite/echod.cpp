@@ -73,7 +73,7 @@ public:
         }
         socket.shutdownOutputStream();
         socket.close();
-      } catch (IOException& e) {
+      } catch (IOException&) {
       }
     }
   }

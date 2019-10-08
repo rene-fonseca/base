@@ -113,7 +113,7 @@ public:
         }
         try {
           level = UnsignedInteger::parse(*enu.next(), UnsignedInteger::DEC);
-        } catch (InvalidFormat& e) {
+        } catch (InvalidFormat&) {
           level = 0; // force error
         }
         if ((level < 1) || (level > 9)) {

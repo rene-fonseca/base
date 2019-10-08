@@ -79,7 +79,7 @@ public:
 
     try {
       load(module);
-    } catch (Exception& e) {
+    } catch (Exception&) {
       setExitCode(EXIT_CODE_ERROR);
     }
   }

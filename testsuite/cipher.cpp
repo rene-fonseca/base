@@ -403,7 +403,7 @@ public:
     unsigned int type;
     try {
       type = FileSystem::getType(srcPath);
-    } catch (FileSystemException& e) {
+    } catch (FileSystemException&) {
       ferr << "Error: " << "File does not exist" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
@@ -464,7 +464,7 @@ public:
     
     try {
       cipher(srcPath, destPath);
-    } catch (Exception& e) {
+    } catch (Exception&) {
       setExitCode(Application::EXIT_CODE_ERROR);
     }
   }

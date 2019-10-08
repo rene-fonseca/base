@@ -183,7 +183,7 @@ public:
     unsigned int type;
     try {
       type = FileSystem::getType(path);
-    } catch (FileSystemException& e) {
+    } catch (FileSystemException&) {
       ferr << "Error: " << "File or folder does not exist" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
@@ -206,7 +206,7 @@ public:
           } else if (type & FileSystem::FOLDER) {
             // ignore or recursive
           }
-        } catch (Exception& e) {
+        } catch (Exception&) {
         }
       }
     } else {
@@ -262,7 +262,7 @@ public:
     
     try {
       digest(path);
-    } catch (Exception& e) {
+    } catch (Exception&) {
       setExitCode(Application::EXIT_CODE_ERROR);
     }
   }

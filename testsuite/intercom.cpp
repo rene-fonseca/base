@@ -241,7 +241,7 @@ public:
             Cast::pointer<uint8*>(buffer->getElements()),
             buffer->getByteSize()
           );
-        } catch (EndOfFile& e) {
+        } catch (EndOfFile&) {
           fout << "Connection terminated by remote host" << ENDL;
           Application::getApplication()->terminate();
           break;

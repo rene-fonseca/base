@@ -40,7 +40,7 @@ OrbBuffer* OrbBufferPool::acquire(unsigned int holding) throw(OrbException) {
     OrbBuffer* node = 0;
     try {
       node = new OrbBuffer(BUFFER_SIZE);
-    } catch (MemoryException& e) {
+    } catch (MemoryException&) {
       ExclusiveSynchronize<Guard> _guard(guard);
       --numberOfBuffers; // undo
       if (numberOfBuffers == holding) {

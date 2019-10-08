@@ -164,7 +164,7 @@ public:
         } else {
           // ignore
         }
-      } catch (FileSystemException& e) {
+      } catch (FileSystemException&) {
         // remember problem
       }
     }

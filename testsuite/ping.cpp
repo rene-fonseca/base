@@ -91,7 +91,7 @@ public:
     
     try {
       address = InetAddress::getAddressByName(host); // the address of the remote host
-    } catch (HostNotFound& e) {
+    } catch (HostNotFound&) {
       ferr << "Error: " << "Unable to resolve host" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
@@ -238,7 +238,7 @@ public:
               return;
             }
             port = value;
-          } catch (InvalidFormat& e) {
+          } catch (InvalidFormat&) {
             try {
               InetService service(temp);
               port = service.getPort();

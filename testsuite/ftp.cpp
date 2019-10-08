@@ -922,7 +922,7 @@ public:
     try {
       fout << "Testing File Transfer Protocol (FTP) class..." << ENDL;
       ftpclient(url, file);
-    } catch (Exception& e) {
+    } catch (Exception&) {
       setExitCode(EXIT_CODE_ERROR);
     }
   }

@@ -428,7 +428,7 @@ public:
     file.setPosition(rawOffset);
     try {
       file.read(buffer.getElements(), buffer.getSize());
-    } catch (IOException& e) {
+    } catch (IOException&) {
       file.setPosition(originalPosition);
       throw;
     }
@@ -540,7 +540,7 @@ public:
     file.setPosition(rawOffset);
     try {
       file.read(buffer.getElements(), buffer.getSize());
-    } catch (IOException& e) {
+    } catch (IOException&) {
       file.setPosition(originalPosition);
       throw;
     }
@@ -636,7 +636,7 @@ public:
     file.setPosition(rawOffset);
     try {
       file.read(buffer.getElements(), buffer.getSize());
-    } catch (IOException& e) {
+    } catch (IOException&) {
       file.setPosition(originalPosition);
       throw;
     }

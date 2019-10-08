@@ -69,7 +69,7 @@ public:
         throw OutOfRange("Port is out of range");
       }
       port = integer;
-    } catch (InvalidFormat& e) {
+    } catch (InvalidFormat&) {
       try {
         InetService s(service);
         port = s.getPort();

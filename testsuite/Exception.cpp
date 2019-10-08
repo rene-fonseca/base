@@ -94,7 +94,7 @@ public:
     } else {
       try {
         myInnerFunction();
-      } catch (const Exception& e) {
+      } catch (const Exception&) {
         fout << "Handled exception" << ENDL;
       }
     }

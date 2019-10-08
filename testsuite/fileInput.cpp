@@ -318,7 +318,7 @@ public:
 
     try {
       entry(job, filePath);
-    } catch (Exception& e) {
+    } catch (Exception&) {
       setExitCode(Application::EXIT_CODE_ERROR);
     }
   }

@@ -49,7 +49,7 @@ OrbReference LocalConnection::getReference(const String& identifier) throw() {
     encoder->write(identifier);
     encoder->flush();
     encoder->release();
-  } catch (OrbException& e) {
+  } catch (OrbException&) {
     encoder->release();
     throw;
   }

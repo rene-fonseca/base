@@ -1738,7 +1738,7 @@ File FileSystem::getTempFile(unsigned int options) throw(IOException) {
     try {
       file = File(path, opts);
       return file;
-    } catch (FileNotFound& e) {
+    } catch (FileNotFound&) {
     }
   }
 */

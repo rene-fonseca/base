@@ -1245,12 +1245,12 @@ public:
 
     try {
       parser.setFeature("http://xml.org/sax/features/validation", true);
-    } catch (SAXException& e) {
+    } catch (SAXException&) {
     }
     
     try {
       parser.setFeature("http://xml.org/sax/features/namespaces", true);
-    } catch (SAXException& e) {
+    } catch (SAXException&) {
     }
     
     try {
@@ -1258,7 +1258,7 @@ public:
         "http://xml.org/sax/features/namespaces-prefixes",
         true
       );
-    } catch (SAXException& e) {
+    } catch (SAXException&) {
     }
     
     // parser.setFeature("http://apache.org/xml/features/validation/schema", true);

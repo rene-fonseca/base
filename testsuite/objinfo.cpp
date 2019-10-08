@@ -187,10 +187,14 @@ public:
           }
 
           // check if valid ELF header
-          header.identifier[0] == 0x7f;
-          header.identifier[1] == 'E';
-          header.identifier[2] == 'L';
-          header.identifier[3] == 'F';
+          if (header.identifier[0] == 0x7f) {
+          }
+          if (header.identifier[1] == 'E') {
+          }
+          if (header.identifier[2] == 'L') {
+          }
+          if (header.identifier[3] == 'F') {
+          }
           
           while (position < size) {
             reader.seek(position);

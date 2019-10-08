@@ -620,7 +620,7 @@ private:
 
   String clipPassiveResponse(const String& response, int& index) throw(FTPException) {
     String result(3);
-    for (int count = 3; count && (index < response.getLength()) && (response[index] >= '0') && (response[index] <= '9'); --count) {
+    for (int count = 3; count && (index < static_cast<int>(response.getLength())) && (response[index] >= '0') && (response[index] <= '9'); --count) {
       result += response[index++];
     }
     bassert(!result.isEmpty(), FTPException("Invalid reply"));
@@ -746,9 +746,9 @@ public:
     request(CMD_PASSIVE);
     getResponse();
 
-    int i;
-    for (i = 4; (i < response.getLength()) && ((response[i] < '0') || (response[i] > '9')); ++i); // find first digit of addr
-    bassert(i < response.getLength(), FTPException("Invalid reply"));
+    int i = 0;
+    for (i = 4; (i < static_cast<int>(response.getLength())) && ((response[i] < '0') || (response[i] > '9')); ++i); // find first digit of addr
+    bassert(i < static_cast<int>(response.getLength()), FTPException("Invalid reply"));
 
     String address(15);
     for (unsigned int number = 0; number < 4; ++number) { // read address

@@ -98,7 +98,7 @@ public:
     fout << "String<char>: " << String("This is a String object") << ENDL;
     fout << "Date (now): " << Date::getNow() << ENDL;
   
-    Pair<float, float> myFloatPair(1.23456789, 1.23456789);
+    Pair<float, float> myFloatPair(1.23456789f, 1.23456789f);
     fout << "Pair<float, float>: " << setPrecision(3) << myFloatPair << ENDL;
     Pair<double, double> myDoublePair(1.23456789, 1.23456789);
     fout << "Pair<double, double>: " << setPrecision(3) << myDoublePair << ENDL;

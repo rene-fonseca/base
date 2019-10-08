@@ -32,7 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class _DK_SDU_MIP__BASE__API SpinLock : public Lock {
 private:
 
-  mutable std::atomic<unsigned long> value;  
+  mutable std::atomic<unsigned long> value;
 public:
   
   /**

@@ -18,7 +18,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 NISpinLock::NISpinLock() throw() {
   atomic_init(&value, 0);
 }
-  
+
 void NISpinLock::exclusiveLock() const throw() {
   unsigned long expected = 0;
   while (!atomic_compare_exchange_strong(&value, &expected, 1)) {

@@ -15,6 +15,7 @@
 
 #include <base/rmi/OrbConnection.h>
 #include <base/rmi/Orb.h>
+#include <base/mem/ProtectedPointer.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

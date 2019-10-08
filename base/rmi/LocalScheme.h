@@ -17,6 +17,7 @@
 #include <base/collection/HashTable.h>
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/SpinLock.h>
+#include <base/mem/ProtectedPointer.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

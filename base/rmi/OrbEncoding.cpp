@@ -11,8 +11,6 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#pragma once
-
 #include <base/rmi/OrbEncoding.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

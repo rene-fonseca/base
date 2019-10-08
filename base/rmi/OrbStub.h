@@ -40,6 +40,11 @@ public:
   /**
     Initializes the ORB stub.
   */
+  OrbStub() throw();
+  
+  /**
+    Initializes the ORB stub.
+  */
   inline OrbStub(Reference<OrbChannel> _channel, const OrbReference& _reference) throw()
     : channel(_channel), reference(_reference) {
   }

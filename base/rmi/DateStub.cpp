@@ -15,6 +15,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if 0
 OrbDateStub::OrbDateStub() throw(OrbException) {
 }
 
@@ -28,5 +29,6 @@ long long OrbDateStub::getDate() const throw(OrbException) {
 
 OrbDateStub::~OrbDateStub() throw() {
 }
+#endif
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

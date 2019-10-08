@@ -20,8 +20,8 @@ void BarnieDecoder::read(unsigned int* buffer, unsigned int size) throw(IOExcept
   LittleEndian<uint32> encodedBuffer[BUFFER_SIZE];
   while (size) {
     const unsigned int partialSize = minimum<unsigned int>(size, getArraySize(encodedBuffer));
-    read(Cast::getAddress(buffer), partialSize * sizeof(LittleEndian<int>));
-    move<unsigned int>(buffer, encodedBuffer, partialSize);
+    read(reinterpret_cast<unsigned int*>(buffer), partialSize * sizeof(LittleEndian<int>));
+    move<unsigned int>(buffer, reinterpret_cast<const uint32*>(encodedBuffer), partialSize);
     size -= partialSize;
   }
 }

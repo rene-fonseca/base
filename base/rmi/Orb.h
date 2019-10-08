@@ -16,6 +16,7 @@
 #include <base/collection/HashSet.h>
 #include <base/collection/HashTable.h>
 #include <base/collection/Queue.h>
+#include <base/collection/AmbiguousRegistration.h>
 #include <base/concurrency/Semaphore.h>
 #include <base/mem/Reference.h>
 #include <base/rmi/OrbBufferPool.h>
@@ -289,8 +290,8 @@ public:
     return new POLY(
       this,
       temp.getConnection(),
-      encoding->getDecoder(this),
-      encoding->getEncoder(this),
+      encoding->getDecoder(),
+      encoding->getEncoder(),
       temp.getReference()
     );
   }
@@ -298,20 +299,20 @@ public:
   /**
     Registers the specified skeleton.
   */
-  inline void registerSkeleton(void* skeleton)
+  inline void registerSkeleton(Reference<OrbSkeleton> skeleton)
     throw(AmbiguousRegistration, MemoryException) {
     skeletons.add(skeleton);
   }
 
-  inline void registerSkeleton(const String& name, void* skeleton)
+  inline void registerSkeleton(const String& name, Reference<base::OrbSkeleton> skeleton)
     throw(AmbiguousRegistration, MemoryException) {
-    skeletons.add(name, skeleton);
+    skeletons.add(/*name,*/ skeleton);
   }
   
   /**
     Unregisters the specified skeleton.
   */
-  inline void unregisterSkeleton(void* skeleton)
+  inline void unregisterSkeleton(Reference<OrbSkeleton> skeleton)
     throw(InvalidKey) {
     skeletons.remove(skeleton);
   }

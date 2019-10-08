@@ -21,6 +21,7 @@
 #include <base/rmi/OrbException.h>
 #include <base/string/InvalidFormat.h>
 #include <base/CastException.h>
+#include <base/mem/ProtectedPointer.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

@@ -141,7 +141,7 @@ public:
       Date::getDaysOfMonth(decomposed.month, decomposed.year);
 
     // TAG: 3 to 6 weeks per month
-    for (int day = 0; day < daysOfMonth;) {
+    for (int day = 0; day < static_cast<int>(daysOfMonth);) {
       fout << RIGHT << setWidth(FIELD_WIDTH) << (day + 1);
       dayOfWeek = getSucceedingDayOfWeek(dayOfWeek);
       ++day;

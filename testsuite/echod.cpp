@@ -208,7 +208,7 @@ public:
               return;
             }
             port = value;
-          } catch (InvalidFormat& e) {
+          } catch (InvalidFormat&) {
             try {
               InetService service(temp);
               port = service.getPort();

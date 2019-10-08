@@ -16,6 +16,14 @@
 #include <base/Primitives.h>
 #include <base/mathematics/Constants.h>
 
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  define _DK_SDU_MIP__BASE__REDIR_ISOC_HYPOTF(x, y) _hypotf(x, y)
+#  define _DK_SDU_MIP__BASE__REDIR_ISOC_FABSF(x) (float)fabs(x)
+#  define _DK_SDU_MIP__BASE__REDIR_ISOC_FABSL(x) fabs((double)x)
+#  define _DK_SDU_MIP__BASE__REDIR_ISOC_CEILL(x) ceil((double)x)
+#  define _DK_SDU_MIP__BASE__REDIR_ISOC_FLOORL(x) floor((double)x)
+#endif
+
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 /**

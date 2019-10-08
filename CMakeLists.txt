@@ -58,8 +58,8 @@ file(GLOB base_SRC
   "base/mem/*.cpp"
   "base/net/*.h"
   "base/net/*.cpp"
-#  "base/opengl/*.h"
-#  "base/opengl/*.cpp"
+  "base/opengl/*.h"
+  "base/opengl/*.cpp"
   "base/platforms/*.h"
   "base/platforms/*.cpp"
   "base/rmi/*.h"
@@ -73,19 +73,21 @@ file(GLOB base_SRC
   "base/string/*.h"
   "base/string/*.cpp"
   "base/ui/*.h"
-#  "base/ui/*.cpp"
+  "base/ui/*.cpp"
   "base/xml/*.h"
-#  "base/xml/*.cpp"
+  "base/xml/*.cpp"
 )
 
 # message(${base_SRC})
 
 add_library(base SHARED ${base_SRC})
-add_library(base_STATIC STATIC ${base_SRC})
-set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
-
 if (MSVC)
+target_compile_definitions(base PUBLIC _DK_SDU_MIP__BASE__SHARED_LIBRARY_BUILD)
+# set_target_properties(base PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS true)
 target_link_libraries(base Ws2_32 Netapi32 Winmm)
 endif ()
+
+add_library(base_STATIC STATIC ${base_SRC})
+set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
 
 add_subdirectory("testsuite")

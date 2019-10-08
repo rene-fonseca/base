@@ -8,11 +8,22 @@ project (testsuite)
 file( GLOB TEST_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}" *.cpp )
 # TAG: add recursive
 # TAG: fix all builds
-list(REMOVE_ITEM TEST_SOURCES "validate.cpp" "sax.cpp" "dom.cpp" "xsltprocessor.cpp" "MyLinkerModule.cpp" "Function.cpp" "dlapp.cpp" "dlmodule.cpp")
+list(REMOVE_ITEM TEST_SOURCES "sax.cpp" "dom.cpp" "xsltprocessor.cpp" "MyLinkerModule.cpp" "Function.cpp" "dlapp.cpp" "dlmodule.cpp")
 # TAG: MyLinkerModule
+
+message ("${CMAKE_CURRENT_BINARY_DIR}/../base" )
 
 foreach( sourcefile ${TEST_SOURCES} )
   string( REPLACE ".cpp" "" name ${sourcefile} )
   add_executable( ${name} ${sourcefile} )
-  target_link_libraries( ${name} base )
+  # add_dependencies( ${name} base )
+  # target_compile_definitions( ${name} PUBLIC _DK_SDU_MIP__BASE__SHARED_LIBRARY )
+  # target_link_libraries( ${name} "${CMAKE_CURRENT_BINARY_DIR}/../DEBUG/base.lib" )
+  add_dependencies( ${name} base_STATIC )
+  target_link_libraries( ${name} "${CMAKE_CURRENT_BINARY_DIR}/../DEBUG/base_static.lib" )
+if (MSVC)
+  target_link_libraries( ${name} Ws2_32 Netapi32 Winmm)
+endif ()
 endforeach()
+
+add_subdirectory(ui)

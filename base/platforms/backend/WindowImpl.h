@@ -21,13 +21,14 @@
 #endif
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define CALL_UI _DK_SDU_MIP__BASE__CALL_PASCAL
+#  define CALL_UI __stdcall
 #else
 #  define CALL_UI
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+template<>
 class Backend<WindowImpl> {
 public:
 

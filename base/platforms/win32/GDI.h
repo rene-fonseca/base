@@ -25,7 +25,7 @@
 #endif // flavor
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define CALL_GDI _DK_SDU_MIP__BASE__CALL_PASCAL
+#  define CALL_GDI __stdcall
 #else
 #  define CALL_GDI
 #endif
@@ -113,5 +113,3 @@ namespace native {
 }; // end of native namespace
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

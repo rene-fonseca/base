@@ -15,6 +15,7 @@
 
 #include <base/Primitives.h>
 #include <base/DynamicObject.h>
+#include <atomic>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -51,7 +52,7 @@ class _DK_SDU_MIP__BASE__API ReferenceCountedObject : public DynamicObject {
 private:
 
   /** The current number of references to the object. */
-  mutable MemorySize references = 0; // out of memory before overflow
+  mutable std::atomic<MemorySize> references; // out of memory before overflow
 public:
 
   /*
@@ -62,7 +63,6 @@ public:
     @see Reference
     @version 1.0
   */
- // TAG: make MT-safe
   class ReferenceImpl {
   private:
     
@@ -107,7 +107,7 @@ public:
   /**
     Initializes reference counted object with zero references.
   */
-  inline ReferenceCountedObject() throw() {
+  inline ReferenceCountedObject() throw() : references(0) {
   }
 
   /**

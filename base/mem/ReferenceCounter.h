@@ -15,6 +15,7 @@
 
 #include <base/mem/NullPointer.h>
 #include <base/Base.h>
+#include <atomic>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -43,7 +44,7 @@ class _DK_SDU_MIP__BASE__API ReferenceCounter {
 public:
 
   /** The type of the reference counter. */
-  typedef MemorySize Counter; // out of memory before counter overflow
+  typedef std::atomic<MemorySize> Counter; // out of memory before counter overflow
 private:
 
   /** Pointer to shared reference counted object. */

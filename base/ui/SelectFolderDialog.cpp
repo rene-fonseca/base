@@ -51,7 +51,7 @@ bool SelectFolderDialog::execute() throw(UserInterfaceException) {
   browseInfo.lpszTitle = _title;
   browseInfo.ulFlags = BIF_RETURNONLYFSDIRS | BIF_BROWSEFORCOMPUTER | BIF_USENEWUI | BIF_SHAREABLE; // TAG: fixme
   
-  LPITEMIDLIST result = SHBrowseForFolderA(&browseInfo);
+  LPITEMIDLIST result = SHBrowseForFolderW(&browseInfo);
   if (result != 0) {
     // BOOL SHGetPathFromIDList(LPCITEMIDLIST pidl, LPTSTR pszPath);
     folder = toUTF8(buffer);

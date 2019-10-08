@@ -16,6 +16,9 @@
 #include <base/ui/WindowImpl.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if !defined(_WIN32_WINNT)
+#  define _WIN32_WINNT _WIN32_WINNT_WINXP
+#endif
 #  include <windows.h>
 #  undef DELETE // yikes
 #endif
@@ -45,7 +48,7 @@ public:
   }
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  static LONG CALL_UI messageHandler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) throw();
+  static LRESULT CALLBACK messageHandler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) throw();
 #endif // flavor
   
 };

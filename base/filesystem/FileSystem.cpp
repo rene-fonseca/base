@@ -104,7 +104,7 @@ bool FileSystem::isSubPathOf(const String& root, const String& path) throw() {
 
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define _WIN32_WINNT 0x500
+#  define _WIN32_WINNT _WIN32_WINNT_WINXP
 #  include <windows.h>
 #  include <winioctl.h>
 

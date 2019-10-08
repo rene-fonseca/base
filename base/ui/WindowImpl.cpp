@@ -17,6 +17,9 @@
 #include <base/platforms/backend/WindowImpl.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if !defined(_WIN32_WINNT)
+#  define _WIN32_WINNT _WIN32_WINNT_WINXP
+#endif
 #  include <windows.h>
 #  undef DELETE // yikes
 #else // unix (X11)
@@ -248,7 +251,7 @@ namespace windowImpl {
 }; // end of windowImpl namespace
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-LONG CALL_UI Backend<WindowImpl>::messageHandler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) throw() {
+LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) noexcept {
   WindowImpl* window = windowImpl::getWindow(handle); // should be atomic
   if (window == 0) {
     return ::DefWindowProc(handle, message, wParam, lParam);
@@ -801,7 +804,7 @@ bool WindowImpl::loadModule(bool load) throw() {
         (HCURSOR)::LoadImage(0, MAKEINTRESOURCE(OCR_NORMAL), IMAGE_CURSOR, 0, 0, LR_DEFAULTCOLOR|LR_SHARED), // cursor
         0, // background
         0, // menu
-        "http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
+        L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
         0 // small icon
       };
       windowClass = ::RegisterClassEx(&temp); // zero if fails
@@ -863,8 +866,8 @@ bool WindowImpl::loadModule(bool load) throw() {
     if (--numberOfLocks == 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
       ::UnregisterClass(
-        "http://mip.sdu.dk/~fonseca/base/ui/WindowImpl",
-        ::GetModuleHandle(0)
+        L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl",
+        ::GetModuleHandle(NULL)
       );
 #else // unix
       ::XCloseDisplay((Display*)displayHandle);
@@ -1031,7 +1034,7 @@ String WindowImpl::getTitle() const throw(UserInterfaceException) {
 
 void WindowImpl::setTitle(const String& title) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  ::SetWindowText((HWND)drawableHandle, title.getElements());
+  ::SetWindowText((HWND)drawableHandle, toWide(title).c_str());
 #else // unix
   ::XChangeProperty(
     (Display*)displayHandle,

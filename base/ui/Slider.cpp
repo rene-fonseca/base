@@ -22,12 +22,13 @@ Slider::Slider(Window& owner) throw(UserInterfaceException)
     split(0x808080) { // normal
 }
 
-void Slider::setOffset(unsigned int offset) throw() {
+void Slider::setOffset(int offset) throw() {
   const Dimension dimension = getDimension();
   this->offset = offset;
   invalidate();
 }
 
+#if 0
 void Split::onResize(const Dimension& dimension) throw() {
   fout << "Split: Event: resize " << dimension << ENDL;
   setOffset(offset, FIRST); // keep but honor limit
@@ -83,7 +84,9 @@ void Split::onMouseButton(
     invalidate();
   }
 }
+#endif
 
+#if 0
 void Slider::onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
   if (flags & Key::PRESSED) {
     if (flags & Key::DEAD) {
@@ -105,7 +108,9 @@ void Slider::onKey(unsigned int key, unsigned int flags, unsigned int modifiers)
     }
   }
 }
+#endif
 
+#if 0
 void Slider::onDisplay() throw() {
   Dimension dimension = getDimension();
   // left picture
@@ -122,6 +127,10 @@ void Slider::onDisplay() throw() {
     Position(offset + widthOfSplit, getDimension().getHeight()),
     split
   );
+}
+#endif
+
+Slider::~Slider() throw() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

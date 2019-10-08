@@ -54,6 +54,10 @@ public:
     return buffer.empty();
   }
 
+  inline size_t size() const noexcept {
+    return buffer.size();
+  }
+
   inline size_t getLength() const noexcept {
     return buffer.size();
   }

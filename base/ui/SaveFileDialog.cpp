@@ -18,6 +18,7 @@
 #include <base/dl/DynamicLinker.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  include <base/platforms/win32/Helpers.h>
 #  include <windows.h>
 #else // unix
 #endif // flavor
@@ -73,15 +74,16 @@ bool SaveFileDialog::execute() throw(UserInterfaceException) {
   *dest++ = L'\0'; // final termination;
   *dest++ = L'\0'; // final termination;
   
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
+  PrimitiveArray<wchar> buffer(4096);
   bassert(
-    buffer->getSize() >= 256,
+    buffer.size() >= 256,
     UnexpectedFailure("Thread local buffer is too small", this)
   );
+  const std::wstring _filename(toWide(filename));
   copy(
-    Cast::pointer<char*>(buffer->getElements()),
-    filename.getElements(),
-    filename.getLength() + 1
+    static_cast<wchar*>(buffer),
+    _filename.c_str(),
+    _filename.size() + 1
   ); // includes terminator
   
   OPENFILENAME saveFile;
@@ -90,17 +92,19 @@ bool SaveFileDialog::execute() throw(UserInterfaceException) {
   saveFile.lpstrFilter = filters;
   saveFile.nFilterIndex = defaultFilter; // select custom
   
-  saveFile.lpstrFile = Cast::pointer<char*>(buffer->getElements());
-  saveFile.nMaxFile = buffer->getSize()/sizeof(char);
-  saveFile.lpstrInitialDir = folder.isProper() ? folder.getElements() : 0;
-  saveFile.lpstrTitle = title.isProper() ? title.getElements() : 0;
+  saveFile.lpstrFile = buffer;
+  saveFile.nMaxFile = buffer.size();
+  OSString _folder(folder);
+  saveFile.lpstrInitialDir = !_folder.empty() ? _folder : 0;
+  OSString _title(title);
+  saveFile.lpstrTitle = !_title.empty() ? _title : 0;
   saveFile.Flags |= (flags & SaveFileDialog::ASK_TO_OVERWRITE) ? OFN_OVERWRITEPROMPT : 0;
   saveFile.Flags |= (flags & SaveFileDialog::ASK_TO_CREATE) ? OFN_CREATEPROMPT : 0;
   
   BOOL result = GetSaveFileNameW(&saveFile);
   if (result != 0) {
-    folder = String(saveFile.lpstrFile, saveFile.nFileOffset);
-    filename = String(saveFile.lpstrFile); // preserved folder
+    folder = toUTF8(saveFile.lpstrFile, saveFile.nFileOffset);
+    filename = toUTF8(saveFile.lpstrFile); // preserved folder
     defaultFilter = saveFile.nFilterIndex;
   }
   return result != 0;

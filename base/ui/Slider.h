@@ -44,7 +44,7 @@ public:
   
   Slider(Window& owner) throw(UserInterfaceException);
   
-  unsigned int getOffset() const throw() {
+  inline int getOffset() const throw() {
     return offset;
   }
   
@@ -63,8 +63,7 @@ public:
   /**
     Destroys the split.
   */
-  inline ~Slider() throw() {
-  }
+  ~Slider() throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

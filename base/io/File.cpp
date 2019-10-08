@@ -28,7 +28,7 @@
 #  include <base/platforms/win32/AsyncReadFileContext.h> // platform specific
 #  include <base/platforms/win32/AsyncWriteFileContext.h> // platform specific
 #  if !defined(_WIN32_WINNT)
-#    define _WIN32_WINNT 0x0400
+#    define _WIN32_WINNT _WIN32_WINNT_WINXP
 #  endif
 #  include <windows.h>
 #  include <aclapi.h>

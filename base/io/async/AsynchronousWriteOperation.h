@@ -25,7 +25,6 @@ class AsynchronousWriteContext;
   Asynchronous writing operation returned by an asynchronous IO stream.
 
   @short Asynchronous write operation.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

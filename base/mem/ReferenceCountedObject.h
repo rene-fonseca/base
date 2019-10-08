@@ -43,7 +43,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Reference counted object.
   @ingroup memory
   @see Reference ReferenceCounter
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
 
@@ -61,7 +60,6 @@ public:
     
     @short Reference counting automation pointer implementation class.
     @see Reference
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
  // TAG: make MT-safe

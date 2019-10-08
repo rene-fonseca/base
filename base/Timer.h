@@ -22,7 +22,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Timer wrapper class.
   
   @short Timer.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -40,7 +39,6 @@ public:
     units.
     
     @short Elapsed time conversion.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class ElapsedTime {

@@ -28,7 +28,6 @@ typedef AsynchronousWriteOperation A;
 /**
   Asynchronous IO stream.
 
-  @author Rene Fonseca
 */
 class AsynchronousIOStream : public virtual AsynchronousStream {
   friend class AsynchronousReadOperation;

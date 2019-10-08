@@ -28,7 +28,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short Encapsulate an XML parse error or warning.
   @ingroup exceptions xml
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

@@ -27,7 +27,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short A communications port.
   @see Communications port.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

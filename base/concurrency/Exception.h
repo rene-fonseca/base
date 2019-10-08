@@ -23,7 +23,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Barrier synchronization object exception.
   @ingroup concurrency exceptions
   @see Barrier
-  @author Rene Moeller Fonseca
   @version 1.0
 */
 class BarrierException : public LockException {

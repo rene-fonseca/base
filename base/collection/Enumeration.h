@@ -23,7 +23,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short Descriptor for modifying enumerator.
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 template<class VALUE>
@@ -43,7 +42,6 @@ public:
   
   @short Descriptor for non-modifying enumerator.
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 template<class VALUE>
@@ -64,7 +62,6 @@ public:
 
   @short Enumeration interface for modifying access
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

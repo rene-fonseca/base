@@ -22,7 +22,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   This class provides on-demand loading of (shared) objects.
 
   @short Dynamic linker loader.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
 

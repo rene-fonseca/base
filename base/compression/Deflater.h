@@ -25,7 +25,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short Deflater push stream interface.
   @ingroup compression
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 class Deflater : public virtual PushInterface, public virtual PullInterface {

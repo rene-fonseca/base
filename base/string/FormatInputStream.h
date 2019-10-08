@@ -26,7 +26,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @see FormatOutputStream
   @short Reader of formatted input.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

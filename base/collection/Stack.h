@@ -28,7 +28,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short Stack collection.
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */
 
@@ -83,7 +82,6 @@ protected:
     Enumerator of elements of a stack.
     
     @short Non-modifying enumerator of elements of a stack.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   
@@ -159,7 +157,6 @@ protected:
   /*
     Internal stack implementation.
 
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class StackImpl : public ReferenceCountedObject {

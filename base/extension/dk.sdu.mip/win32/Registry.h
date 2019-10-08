@@ -32,7 +32,6 @@ namespace extension {
     
     @short Registry exception
     @ingroup exceptions extensions
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
 
@@ -78,7 +77,6 @@ namespace extension {
     
     @short Registry key.
     @ingroup extensions
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   
@@ -90,7 +88,6 @@ namespace extension {
       
       @short Handle of Registry key.
       @ingroup extensions
-      @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
       @version 1.0
     */
     

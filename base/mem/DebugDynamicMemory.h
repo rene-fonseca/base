@@ -27,7 +27,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Debug dynamic memory.
   @ingroup memory
   @see DynamicMemory
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

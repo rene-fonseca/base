@@ -29,7 +29,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Entry of access control list (ACL).
   @ingroup security
   @see AccessControlList
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

@@ -25,7 +25,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @ingroup concurrency
   @short Spin lock (non-inlined)
   @see MutualExclusion SpinLock
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

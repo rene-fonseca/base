@@ -24,7 +24,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Signed integer (32 bits or more).
 
   @short Signed integer.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
 

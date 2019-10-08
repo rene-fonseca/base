@@ -26,7 +26,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   @short Support for reading an XML document using callbacks.
   @ingroup xml
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -43,7 +42,6 @@ public:
     
     @short Receive notification of basic DTD-related events.
     @ingroup xml
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class DTDHandler {
@@ -203,7 +201,6 @@ public:
   /**
     @short Basic interface for resolving entities.
     @ingroup xml
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class EntityResolver {
@@ -219,7 +216,6 @@ public:
   /**
     @short Basic interface for SAX error handlers.
     @ingroup xml
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class ErrorHandler {
@@ -250,7 +246,6 @@ public:
   /**
     @short Basic interface for SAX error handlers.
     @ingroup xml
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class ContentHandler {

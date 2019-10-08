@@ -21,7 +21,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   This class prevents copy construction and default assignment.
   
   @short Not copyable.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

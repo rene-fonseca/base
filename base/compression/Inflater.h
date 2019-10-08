@@ -26,7 +26,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short Inflater push stream interface.
   @ingroup compression
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 class Inflater : public virtual PushInterface, public virtual PullInterface {

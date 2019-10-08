@@ -22,7 +22,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short Dummy IEEE 1394 implementation.
   @ingroup communications
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

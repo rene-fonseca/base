@@ -23,7 +23,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Implementation used by the ThreadKey class.
   @ingroup concurrency
   @see ThreadKey
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */
 
@@ -44,7 +43,6 @@ public:
     
     @short Thread key exception.
     @ingroup concurrency exceptions
-    @author Rene Moeller Fonseca
     @version 1.0
   */
   class ThreadKeyException : public Exception {
@@ -94,7 +92,6 @@ public:
 
   @short Thread local variable
   @ingroup concurrency
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
 

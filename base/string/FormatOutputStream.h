@@ -99,7 +99,6 @@ enum Action {
   Stream used to stringify types.
 
   @short Format output stream.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.4
 */
 
@@ -278,7 +277,6 @@ public:
     @endcode
     
     @short Push and pop default context of format output stream
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   
@@ -634,7 +632,6 @@ inline FormatOutputStream::Indent indent(unsigned int length) throw() {
   @endcode
 
   @short Sequence descriptor
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 template<class TYPE>

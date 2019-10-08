@@ -23,7 +23,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short Ordered binary tree
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -49,7 +48,6 @@ public:
 //  /**
 //    Enumeration of all the elements of an ordered binary tree.
 //
-//    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 //    @version 1.0
 //  */
 //  class Enumeration : public InfixOrderEnumeration<Value, Value&, Value*, Node*> {
@@ -69,7 +67,6 @@ public:
 //  /**
 //    Non-modifying enumeration of all the elements of an ordered binary tree.
 //
-//    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 //    @version 1.0
 //  */
 //  class ReadOnlyEnumeration : public InfixOrderEnumeration<Value, const Value&, const Value*, const Node*> {

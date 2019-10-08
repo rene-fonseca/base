@@ -28,7 +28,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short Internet Protocol network interface.
   @ingroup net
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

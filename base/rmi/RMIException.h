@@ -22,7 +22,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short Remote Method Invocation (RMI) exception
   @ingroup exceptions rmi
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

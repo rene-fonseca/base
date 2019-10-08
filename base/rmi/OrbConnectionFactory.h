@@ -27,7 +27,6 @@ class Orb;
   
   @short ORB connection factory.
   @ingroup rmi
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

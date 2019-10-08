@@ -21,7 +21,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   This exception indicates that an invalid value has been accessed.
   
   @short Invalid exception.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

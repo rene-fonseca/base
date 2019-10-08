@@ -426,7 +426,6 @@ namespace opengl {
   
   @short OpenGL exception
   @ingroup opengl ui exceptions
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -470,7 +469,6 @@ public:
   
   @short OpenGL implementation.
   @ingroup opengl ui
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

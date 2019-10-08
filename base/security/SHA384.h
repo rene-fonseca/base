@@ -42,7 +42,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short SHA-384 message-digest.
   @ingroup security
   @see MD5Sum SHA1 SHA256 SHA512
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

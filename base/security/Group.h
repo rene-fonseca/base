@@ -26,7 +26,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short Group trustee.
   @ingroup security
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
 
@@ -47,7 +46,6 @@ public:
 
     @short Group exception
     @ingroup exceptions
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.1
   */
 

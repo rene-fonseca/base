@@ -22,7 +22,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short General communications exception
   @ingroup exceptions communications
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

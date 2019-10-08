@@ -27,7 +27,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short Process.
   @ingroup concurrency
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
 
@@ -50,7 +49,6 @@ public:
 
     @short Exception raised by Process.
     @ingroup exceptions concurrency
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.1
   */
   class ProcessException : public Exception {

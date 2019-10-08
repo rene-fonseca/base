@@ -21,7 +21,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   The base class of polymorphic objects. Objects are not copyable by default.
   
   @short Polymorphic object.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

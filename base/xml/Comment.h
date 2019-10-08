@@ -28,7 +28,6 @@ class Document;
   
   @short DOM comment node.
   @ingroup xml
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

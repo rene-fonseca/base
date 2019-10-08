@@ -22,7 +22,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 /**
   Asynchronous write context.
 
-  @author Rene Fonseca
 */
 class AsynchronousWriteContext : public Object, public ReferenceCountedObject {
 protected:

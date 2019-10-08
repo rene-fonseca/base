@@ -29,7 +29,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short Queue.
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -49,7 +48,6 @@ protected:
     Internal queue implementation.
     
     @short Queue implementation.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class QueueImpl : public ReferenceCountedObject {

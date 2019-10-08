@@ -32,7 +32,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short IEEE-1394 (FireWire)
   @ingroup communications
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */
 
@@ -213,7 +212,6 @@ public:
     
     @short IEEE 1394 bus reset exception.
     @ingroup exceptions communication
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class BusReset {

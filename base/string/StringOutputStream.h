@@ -78,7 +78,6 @@ public:
   into a string.
 
   @short String output stream.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

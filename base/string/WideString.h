@@ -35,7 +35,6 @@ class FormatOutputStream;
 
   @short Wide-character description.
   @ingroup string
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 class WideTraits {
@@ -196,7 +195,6 @@ public:
 
   @short Wide-character string.
   @ingroup string
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

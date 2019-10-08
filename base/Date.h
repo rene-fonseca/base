@@ -27,7 +27,6 @@ class FormatOutputStream;
   Representation of date/time in Coordinated Universal Time (UTC).
 
   @short Date and time.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.3
 */
 

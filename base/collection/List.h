@@ -28,7 +28,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short A node in a list.
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -86,7 +85,6 @@ public:
   
   @short Enumerator of list with modification access.
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -154,7 +152,6 @@ public:
   Enumeration of elements in a list.
 
   @short Non-modifying enumerator of list.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -234,7 +231,6 @@ public:
 
   @short List collection.
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -254,7 +250,6 @@ protected:
   /*
     Internal list implementation.
     
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class ListImpl : public ReferenceCountedObject {

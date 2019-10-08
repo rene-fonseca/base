@@ -23,7 +23,6 @@ class XMLDefaultReaderImpl;
 /**
   @short Support for reading an XML document using callbacks.
   @ingroup xml
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

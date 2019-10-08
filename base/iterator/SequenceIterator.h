@@ -23,7 +23,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Array collection).
 
   @short Iterator of elements of a sequence
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version  1.0
 */
 template<class TRAITS>

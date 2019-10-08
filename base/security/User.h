@@ -28,7 +28,6 @@ class Group;
   
   @short User trustee.
   @ingroup security
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
 
@@ -49,7 +48,6 @@ public:
 
     @short User exception
     @ingroup exceptions security
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.1
   */
 

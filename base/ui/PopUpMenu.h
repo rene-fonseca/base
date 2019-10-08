@@ -299,7 +299,6 @@ public:
   
   @short Pop up window.
   @ingroup ui
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

@@ -21,7 +21,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   This class binds together a native string literal and its length.
   
   @short A string literal.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

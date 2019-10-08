@@ -24,7 +24,6 @@ class Element;
 /**
   @short XML attribute.
   @ingroup xml
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

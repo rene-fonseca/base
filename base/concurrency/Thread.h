@@ -66,7 +66,6 @@ class Runnable;
   @short Thread
   @ingroup concurrency
   @see Runnable
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.3
 */
 
@@ -121,7 +120,6 @@ public:
     
     @short Thread exception
     @ingroup concurrency exceptions
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class ThreadException : public Exception {
@@ -165,7 +163,6 @@ public:
 
     @short Exception raised by Thread.
     @ingroup concurrency exceptions
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class Self : public ThreadException {

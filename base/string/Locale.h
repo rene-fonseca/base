@@ -253,7 +253,6 @@ public:
   This class provides multi-language support.
 
   @short Multi-language support
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */
 

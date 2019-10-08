@@ -29,7 +29,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Expression evaluator
   @see ExpressionParser
   @ingroup mathematics
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -312,7 +311,6 @@ public:
 
   @short Expression provider.
   @see ExpressionParser
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -417,7 +415,6 @@ public:
   @see ExpressionProvider
   @see ExpressionEvaluator
   @ingroup mathematics
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

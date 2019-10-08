@@ -27,7 +27,6 @@ class Document;
   
   @short DOM entity node.
   @ingroup xml
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

@@ -32,7 +32,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short Uniform Resource Locator (URL)
   @ingroup net
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -59,7 +58,6 @@ public:
 
     @short URL exception
     @ingroup exceptions
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.1
   */
 

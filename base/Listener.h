@@ -21,7 +21,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Base class for listeners.
   
   @short Base class for listeners.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -35,7 +34,6 @@ public:
   Class responsible for dispatching a signal to a listener.
 
   @short Signal dispatcher.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

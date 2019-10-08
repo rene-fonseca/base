@@ -982,7 +982,6 @@ public:
   Class responsible for invocating member functions that takes no arguments.
 
   @short Member invocation function object.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -1028,7 +1027,6 @@ public:
    arguments.
 
   @short Member invocation function object.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -1153,7 +1151,6 @@ inline InvokeConstMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)() con
   @endcode
   
   @short Outfix invocation.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 template<class TYPE, class PREFIX, class SUFFIX>

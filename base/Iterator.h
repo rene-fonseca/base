@@ -54,7 +54,6 @@ public:
   The base class of all iterators.
   
   @short Iterator interface.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 template<class TRAITS>

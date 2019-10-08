@@ -51,7 +51,6 @@ typedef Unsafe DefaultLock;
   @short Wrapper for a synchronization object.
   @ingroup concurrency
   @see Synchronize Lock ReadWriteLock MutualExclusion Unsafe
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -112,7 +111,6 @@ protected:
   single threaded appliances.
   
   @short Unsafe synchronizeable.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

@@ -35,7 +35,6 @@ class FormatOutputStream;
   Default character manipulators.
 
   @short ASCII character characteristics
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 class CharTraits {
@@ -136,7 +135,6 @@ public:
   buffer to be duplicated. The implementation is currently NOT MT-safe.
 
   @short String
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

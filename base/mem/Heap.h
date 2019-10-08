@@ -28,7 +28,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Heap implementation.
   @see Heap
   @ingroup memory
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -76,7 +75,6 @@ protected:
 
   @short Heap provider.
   @ingroup memory
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

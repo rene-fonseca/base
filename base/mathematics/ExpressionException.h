@@ -24,7 +24,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Expression exception.
   @see ExpressionParser
   @ingroup exceptions mathematics
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

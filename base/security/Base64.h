@@ -24,7 +24,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
   @short Base64 encoding support.
   @ingroup security
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.1
 */
 
@@ -35,7 +34,6 @@ public:
     Base64 encode descriptor.
     
     @short Base64 encode descriptor.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class Descriptor : public Object {

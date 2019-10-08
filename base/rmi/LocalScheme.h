@@ -27,7 +27,6 @@ class LocalConnection;
   
   @short Process local object request broker scheme.
   @ingroup rmi
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

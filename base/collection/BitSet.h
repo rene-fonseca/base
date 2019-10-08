@@ -30,7 +30,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short Set of bits collection.
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -218,7 +217,6 @@ public:
     Enumerator of elements of a bit set.
     
     @short Non-modifying enumerator of elements of a bit set.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class BitSetEnumerator : public Enumerator<EnumeratorTraits> {
@@ -303,7 +301,6 @@ public:
     Enumerator of elements of a bit set.
     
     @short Non-modifying enumerator of elements of a bit set.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class BitSetReadEnumerator : public Enumerator<ReadEnumeratorTraits> {

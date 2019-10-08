@@ -41,7 +41,6 @@ class MultipleSockets;
   @short Socket.
   @see StreamSocket ServerSocket
   @ingroup net
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.2
 */
 

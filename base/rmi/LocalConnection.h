@@ -26,7 +26,6 @@ class LocalScheme;
   @short Local connection.
   @see LocalConnectionFactory
   @ingroup rmi
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

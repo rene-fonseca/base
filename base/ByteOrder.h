@@ -23,7 +23,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   endian and little endian.
 
   @short Byte order manipulation functions
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
 */
 
 namespace ByteOrder {
@@ -95,7 +94,6 @@ namespace ByteOrder {
     independently of the native byte order of the platform.
     
     @short Little endian representation.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 2.0
   */
 
@@ -260,7 +258,6 @@ namespace ByteOrder {
     independently of the native byte order of the platform.
     
     @short Big endian representation.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 2.0
   */
 
@@ -294,7 +291,6 @@ namespace ByteOrder {
     independently of the native byte order of the platform.
     
     @short Little endian representation.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 2.0
   */
   
@@ -324,7 +320,6 @@ namespace ByteOrder {
     independently of the native byte order of the platform.
     
     @short Big endian representation.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 2.0
   */
 

@@ -26,7 +26,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short Common IEEE 1394 types.
   @ingroup communications
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -213,7 +212,6 @@ public:
     
     @ingroup communications
     @short Isochronous request descriptor.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousRequestImpl : public ReferenceCountedObject {
@@ -281,7 +279,6 @@ public:
     
     @ingroup communications
     @short Isochronous read request context.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousReadRequestImpl : public IsochronousRequestImpl {
@@ -359,7 +356,6 @@ public:
     
     @ingroup communications
     @short Isochronous read packets request context.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousReadPacketsRequestImpl : public IsochronousReadRequestImpl {
@@ -370,7 +366,6 @@ public:
     
     @ingroup communications
     @short Isochronous read packets request context.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousReadFixedPacketsRequestImpl : public IsochronousReadRequestImpl {
@@ -399,7 +394,6 @@ public:
     
     @ingroup communications
     @short Isochronous read fixed data request context.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousReadFixedDataRequestImpl : public IsochronousReadRequestImpl {
@@ -481,7 +475,6 @@ public:
     
     @ingroup communications
     @short Isochronous write request.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousWriteRequestImpl : public IsochronousRequestImpl {
@@ -568,7 +561,6 @@ public:
     
     @ingroup communications
     @short Isochronous write packets request context.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousWritePacketsRequestImpl : public IsochronousWriteRequestImpl {
@@ -579,7 +571,6 @@ public:
     
     @ingroup communications
     @short Isochronous write fixed packets request context.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousWriteFixedPacketsRequestImpl : public IsochronousWriteRequestImpl {
@@ -590,7 +581,6 @@ public:
     
     @ingroup communications
     @short Isochronous write data request context.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousWriteDataRequestImpl : public IsochronousWriteRequestImpl {
@@ -631,7 +621,6 @@ public:
     
     @ingroup communications
     @short Isochronous read packets request.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousReadPacketsRequest : public Object {
@@ -756,7 +745,6 @@ public:
     
     @ingroup communications
     @short Isochronous read fixed packets request.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousReadFixedPacketsRequest : public Object {
@@ -896,7 +884,6 @@ public:
     
     @ingroup communications
     @short Isochronous read fixed data request.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousReadFixedDataRequest : public Object {
@@ -1084,7 +1071,6 @@ public:
     
     @ingroup communications
     @short Isochronous read request.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousReadRequest : public Object {
@@ -1240,7 +1226,6 @@ public:
     
     @ingroup communications
     @short Isochronous write packets request.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousWritePacketsRequest : public Object {
@@ -1355,7 +1340,6 @@ public:
     
     @ingroup communications
     @short Isochronous write fixed packets request.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousWriteFixedPacketsRequest : public Object {
@@ -1470,7 +1454,6 @@ public:
     
     @ingroup communications
     @short Isochronous write data request.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousWriteDataRequest : public Object {
@@ -1585,7 +1568,6 @@ public:
 
     @ingroup communications
     @short Isochronous write request.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousWriteRequest : public Object {
@@ -1736,7 +1718,6 @@ public:
     
     @ingroup communications
     @short Isochronous read channel.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousReadChannelImpl : public ReferenceCountedObject {
@@ -1836,7 +1817,6 @@ public:
     
     @ingroup communications
     @short Isochronous write channel.
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class IsochronousWriteChannelImpl : public ReferenceCountedObject {

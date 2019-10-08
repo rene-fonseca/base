@@ -25,7 +25,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Exclusive synchronization.
   @ingroup concurrency
   @see SharedSynchronize
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -71,7 +70,6 @@ public:
   applications.
   
   @short Unsafe exclusive synchronization.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

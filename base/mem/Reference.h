@@ -32,7 +32,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short Automation pointer that counts the number of references to an object.
   @ingroup memory
   @see ReferenceCountedObject ReferenceCounter
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

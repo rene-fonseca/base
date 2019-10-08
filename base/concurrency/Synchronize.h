@@ -97,7 +97,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short A stack based wrapper of a synchronize able class.
   @ingroup concurrency
   @see Synchronizeable
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
   @deprecated
 */
@@ -151,7 +150,6 @@ public:
 /*
   Optimized version of Synchronize intended for single threaded appliances.
   
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
   @deprecated
 */

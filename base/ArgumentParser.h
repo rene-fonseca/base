@@ -33,7 +33,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Argument parser.
   
   @short Argument parser.
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 

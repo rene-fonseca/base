@@ -26,7 +26,6 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   
   @short Prefix order enumerator
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 template<class TRAITS>
@@ -98,7 +97,6 @@ public:
 
   @short Infix order enumerator
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 template<class TRAITS>
@@ -235,7 +233,6 @@ public:
 
   @short Postfix order enumerator
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 template<class TRAITS>
@@ -384,7 +381,6 @@ public:
 
   @short Binary tree
   @ingroup collections
-  @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
   @version 1.0
 */
 
@@ -403,7 +399,6 @@ public:
   /*
     Internal binary tree implementation.
 
-    @author Rene Moeller Fonseca <fonseca@mip.sdu.dk>
     @version 1.0
   */
   class BinaryTreeImpl : public ReferenceCountedObject {

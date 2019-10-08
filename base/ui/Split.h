@@ -79,14 +79,9 @@ public:
 
   unsigned int getOffset(Field field) throw() {
     const Dimension dimension = getDimension();
-    unsigned int total;
-    if (flags & VERTICAL_SPLIT) {
-      total = dimension.getWidth();
-    } else {
-      total = dimension.getHeight();
-    }
+    const unsigned int total = (flags & VERTICAL_SPLIT) ? dimension.getWidth() : dimension.getHeight();
     unsigned int limit = total - widthOfSplit;
-    if (offset > limit) {
+    if (offset > static_cast<int>(limit)) {
       offset = limit;
     }
     switch (field) {

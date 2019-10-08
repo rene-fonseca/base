@@ -50,6 +50,10 @@ public:
     return buffer.c_str();
   }
 
+  inline bool empty() const noexcept {
+    return buffer.empty();
+  }
+
   inline size_t getLength() const noexcept {
     return buffer.size();
   }

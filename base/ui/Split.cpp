@@ -86,7 +86,7 @@ void Split::onMouseMove(const Position& position, unsigned int state) throw() {
     setOffset(originalOffset + position.getX() - originalPosition, FIRST);
   } else {
     if ((position.getX() >= offset) &&
-        (position.getX() < (offset + widthOfSplit))) {
+        (position.getX() < static_cast<int>(offset + widthOfSplit))) {
       split = Brush(0xb0b0b0); // highlight
       setCursor(WEST_EAST);
     } else {
@@ -107,7 +107,7 @@ void Split::onMouseButton(
   if (button == Mouse::LEFT) {
     if (event == Mouse::PRESSED) {
       if ((position.getX() >= offset) &&
-          (position.getX() < (offset + widthOfSplit))) {
+          (position.getX() < static_cast<int>(offset + widthOfSplit))) {
         drag = true;
         split = Brush(0x404040); // select
         setCapture(true);
@@ -118,7 +118,7 @@ void Split::onMouseButton(
     } else if (event == Mouse::RELEASED) {
       drag = false;
       setCapture(false);
-      if ((position.getX() < offset) || (position.getX() >= (offset + widthOfSplit))) {
+      if ((position.getX() < offset) || (position.getX() >= static_cast<int>(offset + widthOfSplit))) {
         split = Brush(0x808080); // normal
         setCursor(HAND);
       } else {

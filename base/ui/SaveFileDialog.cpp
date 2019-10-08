@@ -41,35 +41,37 @@ void SaveFileDialog::setFilters(const Map<String, String>& filters) throw() {
 
 bool SaveFileDialog::execute() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  typedef BOOL (WINAPI *FGetSaveFileNameA)(LPOPENFILENAME);
-  static FGetSaveFileNameA GetSaveFileNameA = 0;
-  if (!GetSaveFileNameA) { // TAG: need to be atomic
+  typedef BOOL (WINAPI *FGetSaveFileNameW)(LPOPENFILENAME);
+  static FGetSaveFileNameW GetSaveFileNameW = 0;
+  if (!GetSaveFileNameW) { // TAG: need to be atomic
     DynamicLinker* dynamicLinker = new DynamicLinker("comdlg32.dll");
-    GetSaveFileNameA = (FGetSaveFileNameA)dynamicLinker->getSymbol(
-      Literal("GetSaveFileNameA")
+    GetSaveFileNameW = (FGetSaveFileNameW)dynamicLinker->getSymbol(
+      Literal("GetSaveFileNameW")
     ); // TAG: fix cast
   }
 
-  char filters[4096]; // TAG: fixme
-  char* dest = filters;
+  wchar filters[4096]; // TAG: fixme
+  wchar* dest = filters;
   Map<String, String>::ReadEnumerator enu = this->filters.getReadEnumerator();
   while (enu.hasNext()) {
     const Map<String, String>::Node* node = enu.next();
+    const std::wstring value(toWide(node->getValue()));
+    const std::wstring key(toWide(node->getKey()));
     copy(
       dest,
-      node->getValue()->getElements(),
-      node->getValue()->getLength() + 1
+      value.c_str(),
+      value.size() + 1
     ); // include terminator
-    dest += node->getValue()->getLength() + 1;
+    dest += value.size() + 1;
     copy(
       dest,
-      node->getKey()->getElements(),
-      node->getKey()->getLength() + 1
+      key.c_str(),
+      key.size() + 1
     ); // include terminator
-    dest += node->getKey()->getLength() + 1;
+    dest += key.size() + 1;
   }
-  *dest++ = '\0'; // final termination;
-  *dest++ = '\0'; // final termination;
+  *dest++ = L'\0'; // final termination;
+  *dest++ = L'\0'; // final termination;
   
   Allocator<uint8>* buffer = Thread::getLocalStorage();
   bassert(
@@ -95,7 +97,7 @@ bool SaveFileDialog::execute() throw(UserInterfaceException) {
   saveFile.Flags |= (flags & SaveFileDialog::ASK_TO_OVERWRITE) ? OFN_OVERWRITEPROMPT : 0;
   saveFile.Flags |= (flags & SaveFileDialog::ASK_TO_CREATE) ? OFN_CREATEPROMPT : 0;
   
-  BOOL result = GetSaveFileNameA(&saveFile);
+  BOOL result = GetSaveFileNameW(&saveFile);
   if (result != 0) {
     folder = String(saveFile.lpstrFile, saveFile.nFileOffset);
     filename = String(saveFile.lpstrFile); // preserved folder

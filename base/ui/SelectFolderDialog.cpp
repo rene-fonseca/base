@@ -18,6 +18,7 @@
 #include <base/dl/DynamicLinker.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  include <base/platforms/win32/Helpers.h>
 #  include <windows.h>
 #  include <objbase.h>
 #  include <shlobj.h>
@@ -26,33 +27,34 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-SelectFolderDialog::SelectFolderDialog() throw() : flags(0) {
+SelectFolderDialog::SelectFolderDialog() throw() {
 }
 
 bool SelectFolderDialog::execute() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  typedef LPITEMIDLIST (WINAPI *FSHBrowseForFolderA)(LPBROWSEINFO);
-  static FSHBrowseForFolderA SHBrowseForFolderA = 0;
-  if (!SHBrowseForFolderA) { // TAG: need to be atomic
+  typedef LPITEMIDLIST (WINAPI *FSHBrowseForFolderW)(LPBROWSEINFO);
+  static FSHBrowseForFolderW SHBrowseForFolderW = nullptr;
+  if (!SHBrowseForFolderW) { // TAG: need to be atomic
     DynamicLinker* dynamicLinker = new DynamicLinker(MESSAGE("shell32.dll"));
-    SHBrowseForFolderA = (FSHBrowseForFolderA)dynamicLinker->getSymbol(MESSAGE("SHBrowseForFolderA"));
+    SHBrowseForFolderW = (FSHBrowseForFolderW)dynamicLinker->getSymbol(MESSAGE("SHBrowseForFolderW"));
   }
   
-  HRESULT r = ::CoInitializeEx(0, COINIT_APARTMENTTHREADED);
+  HRESULT r = ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
   bassert(r == S_OK, UserInterfaceException(this));
   
-  char buffer[MAX_PATH];
+  wchar buffer[MAX_PATH];
   BROWSEINFO browseInfo;
   clear(browseInfo);
   browseInfo.pszDisplayName = buffer;
   browseInfo.pidlRoot = 0; // start folder
-  browseInfo.lpszTitle = title.getElements();
+  OSString _title(title);
+  browseInfo.lpszTitle = _title;
   browseInfo.ulFlags = BIF_RETURNONLYFSDIRS | BIF_BROWSEFORCOMPUTER | BIF_USENEWUI | BIF_SHAREABLE; // TAG: fixme
   
   LPITEMIDLIST result = SHBrowseForFolderA(&browseInfo);
   if (result != 0) {
     // BOOL SHGetPathFromIDList(LPCITEMIDLIST pidl, LPTSTR pszPath);
-    folder = buffer;
+    folder = toUTF8(buffer);
     LPMALLOC malloc;
     /*HRESULT r =*/ ::CoGetMalloc(1, &malloc);
     malloc->Free(result);

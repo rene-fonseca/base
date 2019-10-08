@@ -18,6 +18,7 @@
 #include <base/dl/DynamicLinker.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  include <base/platforms/win32/Helpers.h>
 #  include <windows.h>
 #else // unix
 #endif // flavor
@@ -35,37 +36,40 @@ void OpenFileDialog::setFilter(
 
 bool OpenFileDialog::execute() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  typedef BOOL (WINAPI *FGetOpenFileNameA)(LPOPENFILENAME);
-  static FGetOpenFileNameA GetOpenFileNameA = 0;
-  if (!GetOpenFileNameA) { // TAG: need to be atomic
+  typedef BOOL (WINAPI *FGetOpenFileNameW)(LPOPENFILENAME);
+  static FGetOpenFileNameW GetOpenFileNameW = nullptr;
+  if (!GetOpenFileNameW) { // TAG: need to be atomic
     DynamicLinker* dynamicLinker = new DynamicLinker("comdlg32.dll");
-    GetOpenFileNameA = (FGetOpenFileNameA)dynamicLinker->getSymbol(
-      Literal("GetOpenFileNameA")
+    GetOpenFileNameW = (FGetOpenFileNameW)dynamicLinker->getSymbol(
+      Literal("GetOpenFileNameW")
     ); // TAG: fix cast
   }
   
-  char filters[4096]; // TAG: fixme
-  char* dest = filters;
+  wchar filters[4096]; // TAG: fixme
+  wchar* dest = filters;
   Map<String, String>::ReadEnumerator enu = this->filters.getReadEnumerator();
   while (enu.hasNext()) {
     const Map<String, String>::Node* node = enu.next();
-    copy(dest, node->getValue()->getElements(), node->getValue()->getLength() + 1); // include terminator
-    dest += node->getValue()->getLength() + 1;
-    copy(dest, node->getKey()->getElements(), node->getKey()->getLength() + 1); // include terminator
-    dest += node->getKey()->getLength() + 1;
+    const std::wstring value = toWide(node->getValue());
+    const std::wstring key = toWide(node->getKey());
+    copy(dest, value.c_str(), value.size() + 1); // include terminator
+    dest += value.size() + 1;
+    copy(dest, key.c_str(), key.size() + 1); // include terminator
+    dest += key.size() + 1;
   }
-  *dest++ = '\0'; // final termination;
-  *dest++ = '\0'; // final termination;
+  *dest++ = L'\0'; // final termination;
+  *dest++ = L'\0'; // final termination;
   
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
+  PrimitiveArray<wchar> buffer(4096);
   bassert(
-    buffer->getSize() >= 256,
+    buffer.size() >= 256,
     UnexpectedFailure("Thread local buffer is too small", this)
   );
+  const std::wstring _filename(toWide(filename));
   copy(
-    Cast::pointer<char*>(buffer->getElements()),
-    filename.getElements(),
-    filename.getLength() + 1
+    static_cast<wchar*>(buffer),
+    _filename.c_str(),
+    _filename.size() + 1
   ); // includes terminator
   
   OPENFILENAME openFile;
@@ -74,19 +78,21 @@ bool OpenFileDialog::execute() throw(UserInterfaceException) {
   openFile.lpstrFilter = filters;
   openFile.nFilterIndex = defaultFilter; // select custom
   
-  openFile.lpstrFile = Cast::pointer<char*>(buffer->getElements());
-  openFile.nMaxFile = buffer->getSize()/sizeof(char);
-  openFile.lpstrInitialDir = folder.isProper() ? folder.getElements() : 0;
-  openFile.lpstrTitle = title.isProper() ? title.getElements() : 0;
+  openFile.lpstrFile = (wchar*)buffer;
+  openFile.nMaxFile = buffer.size();
+  OSString _folder(folder);
+  openFile.lpstrInitialDir = !_folder.empty() ? _folder : nullptr;
+  OSString _title(title);
+  openFile.lpstrTitle = !_title.empty() ? _title : nullptr;
   openFile.Flags |= (flags & OpenFileDialog::MUST_EXIST) ? OFN_FILEMUSTEXIST : 0; // OFN_PATHMUSTEXIST
   openFile.Flags |= (flags & OpenFileDialog::ALLOW_MULTIPLE) ? OFN_ALLOWMULTISELECT : 0;
   
-  BOOL result = GetOpenFileNameA(&openFile);
+  BOOL result = GetOpenFileNameW(&openFile);
   if (result != 0) {
     filenames.removeAll();
     if (flags & OpenFileDialog::ALLOW_MULTIPLE) {
-      const char* src = openFile.lpstrFile;
-      folder = src;
+      const wchar* src = openFile.lpstrFile;
+      folder = toUTF8(src);
       src += openFile.nFileOffset;
       while (*src) {
         String temp(src);
@@ -94,8 +100,8 @@ bool OpenFileDialog::execute() throw(UserInterfaceException) {
         filenames.append(temp);
       }
     } else {
-      folder = String(openFile.lpstrFile, openFile.nFileOffset);
-      filename = String(openFile.lpstrFile); // preserved folder
+      folder = String(toUTF8(openFile.lpstrFile, openFile.nFileOffset));
+      filename = String(toUTF8(openFile.lpstrFile)); // preserved folder
     }
     defaultFilter = openFile.nFilterIndex;
   }

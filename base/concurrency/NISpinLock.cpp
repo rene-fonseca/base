@@ -15,27 +15,25 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+NISpinLock::NISpinLock() throw() {
+  atomic_init(&value, 0);
+}
+  
 void NISpinLock::exclusiveLock() const throw() {
-  // TAG: use intrinsic
-#if 0 && (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
-#elif 0 && (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64)
-#elif 0 && (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__IA64)
-#else
-  while (!tryExclusiveLock());
-#endif // architecture
+  unsigned long expected = 0;
+  while (!atomic_compare_exchange_strong(&value, &expected, 1)) {
+    // yield
+  }
+  // while (!tryExclusiveLock());
 }
 
 bool NISpinLock::tryExclusiveLock() const throw() {
-  // TAG: use intrinsic
-/*
-#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
-#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64)
-#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__IA64)
-#else
-#  error Architecture is not supported
-#endif // architecture
-*/
-  return false;
+  unsigned long expected = 0;
+  return atomic_compare_exchange_strong(&value, &expected, 1);
+}
+
+void NISpinLock::releaseLock() const throw() {
+  atomic_store(&value, 0);
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

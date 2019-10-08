@@ -13,9 +13,8 @@
 
 #pragma once
 
-#include <base/concurrency/SpinLock.h>
-#include <base/concurrency/ExclusiveSynchronize.h>
-#include <base/concurrency/SharedSynchronize.h>
+#include <base/features.h>
+#include <atomic>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -32,18 +31,14 @@ template<class TYPE>
 class _DK_SDU_MIP__BASE__API AtomicCounter {
 private:
 
-  /** The type of the guard. */
-  typedef SpinLock Guard;
   /** The value of the counter. */
-  TYPE value = 0;
-  /** The guard. */
-  Guard guard;
+  std::atomic<TYPE> value;
 public:
 
   /**
     Initializes counter with zero.
   */
-  inline AtomicCounter() throw() {
+  inline AtomicCounter() throw() : value(0) {
   }
 
   /**
@@ -58,7 +53,6 @@ public:
     Returns the value of the counter.
   */
   inline operator TYPE() const throw() {
-    ExclusiveSynchronize<Guard> _guard(guard);
     return value;
   }
 
@@ -66,176 +60,39 @@ public:
     Increments the counter.
   */
   inline TYPE operator++() throw() {
-    ExclusiveSynchronize<Guard> _guard(guard);
-    ++value;
-    return value;
+    return ++value;
   }
 
   /**
     Decrements the counter.
   */
   inline TYPE operator--() throw() {
-    ExclusiveSynchronize<Guard> _guard(guard);
-    --value;
-    return value;
+    return --value;
   }
 
   /**
     Increment counter by value.
   */
-  inline TYPE operator+=(TYPE value) throw() {
-    ExclusiveSynchronize<Guard> _guard(guard);
-    this->value += value;
+  inline TYPE operator+=(TYPE _value) throw() {
+    value += _value;
     return value;
   }
 
   /**
     Decrement counter by value.
   */
-  inline TYPE operator-=(TYPE value) throw() {
-    ExclusiveSynchronize<Guard> _guard(guard);
-    this->value -= value;
+  inline TYPE operator-=(TYPE _value) throw() {
+    value -= _value;
     return value;
   }
 
   /**
     Assign value to counter.
   */
-  inline TYPE operator=(const TYPE& value) throw() {
-    ExclusiveSynchronize<Guard> _guard(guard);
-    this->value = value;
-    return value;
+  inline AtomicCounter& operator=(TYPE _value) throw() {
+    value = _value;
+    return *this;
   }
-
-};
-
-template<>
-class AtomicCounter<int> {
-private:
-
-  /** The type of the guard. */
-  typedef SpinLock Guard;
-  /** The value. */
-  int value = 0;
-  /** The guard. */
-  Guard guard;
-public:
-
-  inline AtomicCounter() throw() {
-  }
-
-  inline AtomicCounter(int _value) throw() : value(_value) {
-  }
-
-  inline operator int() const throw() {
-    return value;
-  }
-
-  inline int operator++() throw() {
-#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__I386)
-    asm volatile (
-      "lock; incl %0 \n\t"
-      : "=m" (value) // output
-      : "0" (value) // input
-    );
-#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__IA64)
-    asm volatile (
-      "fetchadd4.acq r2 = %0, 1 \n\t"
-      : "=m" (value) // output
-      : "0" (value) // input
-      : "r2" // clobbered
-    );
-#else
-    ExclusiveSynchronize<Guard> _guard(guard);
-    ++value;
-    return value;
-#endif // architecture
-  }
-
-  inline int operator--() throw() {
-#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__I386)
-    asm volatile (
-      "lock; decl %0 \n\t"
-      : "=m" (value) // output
-      : "0" (value) // input
-    );
-#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__IA64)
-    asm volatile (
-      "fetchadd4.acq r2 = %0, -1 \n\t"
-      : "=m" (value) // output
-      : "0" (value) // input
-      : "r2" // clobbered
-    );
-#else
-    ExclusiveSynchronize<Guard> _guard(guard);
-    --value;
-    return value;
-#endif // architecture
-  }
-
-  inline int operator+=(int value) throw() {
-#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__IA64)
-    asm volatile (
-      "1: \n\t"
-      "ld4 r14 = %0 ;; \n\t" // get current value
-      "mov ar.ccv = r14 \n\t"
-      "add r15 = %1, r14 ;; \n\t" // add values
-      "cmpxchg4.acq r2 = %0, r15, ar.ccv ;; \n\t" // acquire the lock
-      "cmp.eq p0, p6 = r14, r2 \n\t" // did the add succeed
-      "(p6) br.cond.dpnt 1b ;; \n\t" // try again
-      : "=m" (this->value) // output
-      : "0" (this->value), "r" (value) // input
-      : "r2", "r14", "r15" // clobbered
-    );
-#else
-    ExclusiveSynchronize<Guard> _guard(guard);
-    this->value += value;
-    return value;
-#endif // architecture
-  }
-
-  inline int operator-=(int value) throw() {
-#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__IA64)
-    asm volatile (
-      "1: \n\t"
-      "ld4 r14 = %0 ;; \n\t" // get current value
-      "mov ar.ccv = r14 \n\t"
-      "sub r15 = r14, %1 ;; \n\t" // subtract values
-      "cmpxchg4.acq r2 = %0, r15, ar.ccv ;; \n\t" // acquire the lock
-      "cmp.eq p0, p6 = r14, r2 \n\t" // did the store succeed
-      "(p6) br.cond.dpnt 1b ;; \n\t" // try again
-      : "=m" (this->value) // output
-      : "0" (this->value), "r" (value) // input
-      : "r2", "r14", "r15" // clobbered
-    );
-#else
-    ExclusiveSynchronize<Guard> _guard(guard);
-    this->value -= value;
-    return value;
-#endif // architecture
-  }
-
-  inline int operator=(int value) throw() {
-#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__IA64)
-    asm volatile (
-      "1: \n\t"
-      "ld4 r14 = %0 ;; \n\t" // get current value
-      "mov ar.ccv = r14 \n\t"
-      "sub r15 = r14, %1 ;; \n\t" // subtract values
-      "cmpxchg4.acq r2 = %0, r15, ar.ccv ;; \n\t" // acquire the lock
-      "cmp.eq p0, p6 = r14, r2 \n\t" // did the store succeed
-      "(p6) br.cond.dpnt 1b ;; \n\t" // try again
-      : "=m" (this->value) // output
-      : "0" (this->value), "r" (value) // input
-      : "r2", "r14", "r15" // clobbered
-    );
-#else
-    ExclusiveSynchronize<Guard> _guard(guard);
-    this->value = value;
-    return value;
-#endif
-  }
-
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

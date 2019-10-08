@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/concurrency/Lock.h>
+#include <stdatomic.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -32,14 +33,13 @@ class _DK_SDU_MIP__BASE__API NISpinLock : public Lock {
 private:
   
   /** Lock. */
-  volatile mutable unsigned int value = 0;
+  _Atomic volatile mutable unsigned long value = 0;
 public:
   
   /**
     Initializes spin lock to unlocked state.
   */
-  inline NISpinLock() throw() {
-  }
+  NISpinLock() throw();
   
   /**
     Acquires an exclusive lock.
@@ -73,9 +73,7 @@ public:
   /**
     Releases the spin lock.
   */
-  inline void releaseLock() const throw() {
-    value = 0; // atomic operation
-  }
+  void releaseLock() const throw();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

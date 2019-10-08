@@ -15,9 +15,23 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-void SpinLock::acquireExclusiveLock() const throw() {
-  // TAG: use intrinsic
-  while (!tryExclusiveLock());
+SpinLock::SpinLock() throw() : value(0) {
+}
+
+void SpinLock::exclusiveLock() const throw() {
+  unsigned long expected = 0;
+  while (!value.compare_exchange_strong(expected, 1)) {
+    // yield
+  }
+}
+
+bool SpinLock::tryExclusiveLock() const throw() {
+  unsigned long expected = 0;
+  return value.compare_exchange_strong(expected, 1);
+}
+
+void SpinLock::releaseLock() const throw() {
+  value = 0;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

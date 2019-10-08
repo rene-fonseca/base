@@ -31,14 +31,14 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class ReadWriteLockImpl {
 private:
 
-  unsigned int readers;
-  unsigned int writers;
+  unsigned int readers = 0;
+  unsigned int writers = 0;
   SpinLock spinLock;
   CRITICAL_SECTION common;
   HANDLE blockReaders;
 public:
   
-  inline ReadWriteLockImpl() throw(ResourceException) : readers(0), writers(0) {
+  inline ReadWriteLockImpl() throw(ResourceException) {
     blockReaders = ::CreateEvent(0, TRUE, TRUE, 0); // allow shared locks initially
     bassert(blockReaders != 0, ResourceException(this));
     ::InitializeCriticalSection(&common);

@@ -16,8 +16,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-ReadWriteSpinLock::ReadWriteSpinLock() throw()
-  : writer(0), numberOfReaders(0) {
+ReadWriteSpinLock::ReadWriteSpinLock() throw() {
 }
 
 void ReadWriteSpinLock::exclusiveLock() const throw() {

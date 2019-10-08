@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/concurrency/Lock.h>
+#include <atomic>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -30,42 +31,26 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 class _DK_SDU_MIP__BASE__API SpinLock : public Lock {
 private:
-  
-  volatile mutable unsigned int value = 0;
-  // TAG: reduce crosstalk through cache line
-  
-  /**
-    Acquires the exclusive lock.
-  */
-  void acquireExclusiveLock() const throw();
+
+  mutable std::atomic<unsigned long> value;  
 public:
   
   /**
     Initializes spin lock to unlocked state.
   */
-  inline SpinLock() throw() {
-  }
+  SpinLock() throw();
   
   /**
     Acquires an exclusive lock.
   */
-  inline void exclusiveLock() const throw() {
-    // TAG: use intrinsic
-    if (!tryExclusiveLock()) {
-      acquireExclusiveLock();
-    }
-  }
+  void exclusiveLock() const throw();
   
   /**
     Tries to acquire an exclusive lock.
 
     @return True on success.
   */
-  inline bool tryExclusiveLock() const throw() {
-    // TAG: use intrinsic
-    return false;
-    // #error Architecture is not supported
-  }
+  bool tryExclusiveLock() const throw();
   
   /**
     Acquires a shared lock. For some lock implementations this will acquire an
@@ -87,8 +72,10 @@ public:
   /**
     Releases the spin lock.
   */
-  inline void releaseLock() const throw() {
-    value = 0; // atomic operation
+  void releaseLock() const throw();
+
+  inline ~SpinLock() {
+    releaseLock();
   }
 };
 

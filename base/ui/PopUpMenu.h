@@ -18,6 +18,10 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 #if 0
+
+class MenuItem;
+
+#if 0
 class MenuItem : public ReferenceCountedObject {
 public:
   
@@ -299,7 +303,7 @@ public:
   @version 1.0
 */
 
-class PopUpWindow : public GraphicsContext {
+class PopUpMenu : public GraphicsContext {
 private:
   
   /** The menu items. */
@@ -432,5 +436,7 @@ public:
   virtual Bitmap getCheckedBitmap() const throw();
   virtual Bitmap getSelectedBitmap() const throw();
 };
+
+#endif
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

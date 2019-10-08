@@ -28,20 +28,19 @@ void Slider::setOffset(int offset) throw() {
   invalidate();
 }
 
-#if 0
-void Split::onResize(const Dimension& dimension) throw() {
+void Slider::onResize(const Dimension& dimension) throw() {
   fout << "Split: Event: resize " << dimension << ENDL;
-  setOffset(offset, FIRST); // keep but honor limit
+  setOffset(offset); // keep but honor limit
   invalidate();
 }
 
-void Split::onMouseMove(const Position& position, unsigned int state) throw() {
+void Slider::onMouseMove(const Position& position, unsigned int state) throw() {
   fout << "Split: Mouse motion event: " << position << ENDL;
   if (drag) {
-    setOffset(originalOffset + position.getX() - originalPosition, FIRST);
+    setOffset(originalOffset + position.getX() - originalPosition);
   } else {
     if ((position.getX() >= offset) &&
-        (position.getX() < (offset + widthOfSplit))) {
+        (position.getX() < offset)) {
       split = Brush(0xb0b0b0); // highlight
       setCursor(WEST_EAST);
     } else {
@@ -52,7 +51,7 @@ void Split::onMouseMove(const Position& position, unsigned int state) throw() {
   }
 }
 
-void Split::onMouseButton(
+void Slider::onMouseButton(
   const Position& position,
   Mouse::Button button,
   Mouse::Event event,
@@ -61,7 +60,7 @@ void Split::onMouseButton(
   if (button == Mouse::LEFT) {
     if (event == Mouse::PRESSED) {
       if ((position.getX() >= offset) &&
-          (position.getX() < (offset + widthOfSplit))) {
+          (position.getX() < offset)) {
         drag = true;
         split = Brush(0x404040); // select
         setCapture(true);
@@ -73,7 +72,7 @@ void Split::onMouseButton(
       drag = false;
       setCapture(false);
       if ((position.getX() < offset) ||
-          (position.getX() >= (offset + widthOfSplit))) {
+          (position.getX() >= offset)) {
         split = Brush(0x808080); // normal
         setCursor(HAND);
       } else {
@@ -84,9 +83,7 @@ void Split::onMouseButton(
     invalidate();
   }
 }
-#endif
 
-#if 0
 void Slider::onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
   if (flags & Key::PRESSED) {
     if (flags & Key::DEAD) {
@@ -103,14 +100,12 @@ void Slider::onKey(unsigned int key, unsigned int flags, unsigned int modifiers)
       if (drag) {
         drag = false;
         setCapture(false);
-        setOffset(originalOffset, FIRST);
+        setOffset(originalOffset);
       }
     }
   }
 }
-#endif
 
-#if 0
 void Slider::onDisplay() throw() {
   Dimension dimension = getDimension();
   // left picture
@@ -124,11 +119,10 @@ void Slider::onDisplay() throw() {
   // slider
   rectangle(
     Position(offset, 0),
-    Position(offset + widthOfSplit, getDimension().getHeight()),
+    Position(offset, getDimension().getHeight()),
     split
   );
 }
-#endif
 
 Slider::~Slider() throw() {
 }

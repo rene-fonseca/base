@@ -1219,7 +1219,7 @@ void WindowImpl::setCursor(Cursor cursor) throw(UserInterfaceException) {
       );
     }
     
-    ::SetClassLong((HWND)drawableHandle, GCL_HCURSOR, (LONG)handle);
+    ::SetClassLongPtr((HWND)drawableHandle, GCLP_HCURSOR, (LONG_PTR)handle);
     POINT point;
     ::GetCursorPos(&point);
     ::SetCursorPos(point.x, point.y);

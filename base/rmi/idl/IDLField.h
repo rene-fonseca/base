@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class IDLField : public IDLObject {
+class _DK_SDU_MIP__BASE__API IDLField : public IDLObject {
 private:
 
   /** Type of the field. */

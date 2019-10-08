@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class BZip2Inflater : public Object, public virtual Inflater {
+class _DK_SDU_MIP__BASE__API BZip2Inflater : public Object, public virtual Inflater {
 public:
   
   /** The size of the decompression buffer. */

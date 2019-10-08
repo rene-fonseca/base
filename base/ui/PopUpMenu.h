@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class MenuItem;
 
 #if 0
-class MenuItem : public ReferenceCountedObject {
+class _DK_SDU_MIP__BASE__API MenuItem : public ReferenceCountedObject {
 public:
   
   static const unsigned int MINIMUM_WIDTH = 1;

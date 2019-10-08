@@ -40,10 +40,10 @@ class Orb;
   @version 1.0
 */
 
-class OrbConnection : public Polymorphic,
-                      public ReferenceCountedObject,
-                      public PushInterface,
-                      public PullInterface {
+class _DK_SDU_MIP__BASE__API OrbConnection : public Polymorphic,
+                                             public ReferenceCountedObject,
+                                             public PushInterface,
+                                             public PullInterface {
 protected:
 
   ProtectedPointer<Orb> orb;

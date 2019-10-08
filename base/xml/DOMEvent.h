@@ -26,7 +26,7 @@ class EventTarget;
   @version 1.0
 */
 
-class DOMEvent : public Object {
+class _DK_SDU_MIP__BASE__API DOMEvent : public Object {
 public:
 
   /** The phase of the event flow which is being processed. */

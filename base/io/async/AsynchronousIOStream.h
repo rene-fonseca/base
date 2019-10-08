@@ -29,7 +29,7 @@ typedef AsynchronousWriteOperation A;
   Asynchronous IO stream.
 
 */
-class AsynchronousIOStream : public virtual AsynchronousStream {
+class _DK_SDU_MIP__BASE__API AsynchronousIOStream : public virtual AsynchronousStream {
   friend class AsynchronousReadOperation;
   friend class AsynchronousReadContext;
   friend class AsynchronousWriteOperation;

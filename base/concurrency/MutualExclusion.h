@@ -31,11 +31,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class MutualExclusion : public Lock {
+class _DK_SDU_MIP__BASE__API MutualExclusion : public Lock {
 protected:
 
   /** Internal representation of mutex. */
-  void* mutex;
+  void* mutex = nullptr;
 public:
   
   /**

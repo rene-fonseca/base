@@ -25,7 +25,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class SocketListener : public Listener {
+class _DK_SDU_MIP__BASE__API SocketListener : public Listener {
 public:
   
   virtual void onSocketEvent(
@@ -40,7 +40,7 @@ public:
   @version 1.0
 */
 
-class MultipleSockets : public Object {
+class _DK_SDU_MIP__BASE__API MultipleSockets : public Object {
 private:
   
   typedef SpinLock Guard;

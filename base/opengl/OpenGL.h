@@ -429,7 +429,7 @@ namespace opengl {
   @version 1.0
 */
 
-class OpenGLException : public Exception {
+class _DK_SDU_MIP__BASE__API OpenGLException : public Exception {
 public:
 
   /**
@@ -472,7 +472,7 @@ public:
   @version 1.0
 */
 
-class OpenGL {
+class _DK_SDU_MIP__BASE__API OpenGL {
 public:
 
   typedef void (*Function)();

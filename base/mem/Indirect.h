@@ -65,7 +65,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class Indirect {
+class _DK_SDU_MIP__BASE__API Indirect {
 private:
   
   /** The value. */

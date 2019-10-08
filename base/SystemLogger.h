@@ -23,7 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SystemLogger : public Object {
+class _DK_SDU_MIP__BASE__API SystemLogger : public Object {
 public:
 
   /** Specifies the type of the message. */

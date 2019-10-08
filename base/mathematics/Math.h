@@ -224,7 +224,7 @@ namespace isoc {
   @version 1.0
 */
 
-class Math {
+class _DK_SDU_MIP__BASE__API Math {
 private:
 
   /** Bit reversal lookup table (8 bit). */

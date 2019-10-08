@@ -32,7 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class OrbSkeletonManager : public Object {
+class _DK_SDU_MIP__BASE__API OrbSkeletonManager : public Object {
 private:
 
   /** Mapping of fully qualified names to skeleton objects. */

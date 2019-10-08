@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class Group : public Object {
+class _DK_SDU_MIP__BASE__API Group : public Object {
   friend class Hash<Group>;
   friend class Trustee;
 private:
@@ -49,7 +49,7 @@ public:
     @version 1.1
   */
 
-  class GroupException : public Exception {
+  class _DK_SDU_MIP__BASE__API GroupException : public Exception {
   public:
 
     /**

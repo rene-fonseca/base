@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Buffer : public Object {
+class _DK_SDU_MIP__BASE__API Buffer : public Object {
 public:
 
   /** Specifies the granularity of the buffer size. Guaranteed to be greater than 16 bytes. */

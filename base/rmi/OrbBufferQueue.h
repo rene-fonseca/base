@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class BufferQueue : public Object {
+class _DK_SDU_MIP__BASE__API BufferQueue : public Object {
 private:
 
   typedef SpinLock Guard;
@@ -37,9 +37,9 @@ private:
   /** The buffer pool. */
   Reference<OrbBufferPool> pool;
   /** The first buffer in the linked list. */
-  OrbBuffer* first;
+  OrbBuffer* first = nullptr;
   /** The last buffer in the linked list. */
-  OrbBuffer* last;
+  OrbBuffer* last = nullptr;
 public:
   
   /**

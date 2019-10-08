@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Split : public Widget {
+class _DK_SDU_MIP__BASE__API Split : public Widget {
 private:
 
   /** Offset of the left or top of the splitting field. */
@@ -88,7 +88,10 @@ public:
       return offset; // |--F->|s|  S  |
     case SECOND:
       return limit - offset; // |  F  |s|<-S--|
+    case RELATIVE:
+      return 0;
     }
+    return 0;
   }
   
   void setOffset(int offset, Field field) throw();

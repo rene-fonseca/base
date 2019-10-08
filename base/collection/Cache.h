@@ -21,13 +21,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Raised if unable to load the value from CacheProvider.
 */
 
-class CacheException : public Exception {
+class _DK_SDU_MIP__BASE__API CacheException : public Exception {
 public:
   
 };
 
 template<class KEY, class VALUE>
-class CacheProvider {
+class _DK_SDU_MIP__BASE__API CacheProvider {
 public:
   
   /** Returns the value for the specified key. */
@@ -43,7 +43,7 @@ public:
 */
 
 template<class KEY, class VALUE>
-class Cache : public Collection {
+class _DK_SDU_MIP__BASE__API Cache : public Collection {
 public:
 
   typedef KEY Key;

@@ -27,7 +27,7 @@ class ElementDecl;
   @version 1.0
 */
 
-class AttributeDecl : public Declaration {
+class _DK_SDU_MIP__BASE__API AttributeDecl : public Declaration {
   friend class Document;
   friend class ElementDecl;
 protected:

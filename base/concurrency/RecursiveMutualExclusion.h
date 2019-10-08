@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class RecursiveMutualExclusion : public Lock {
+class _DK_SDU_MIP__BASE__API RecursiveMutualExclusion : public Lock {
 private:
   
   typedef SpinLock Guard;

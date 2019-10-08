@@ -36,8 +36,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SerialPort : public CommunicationsPort,
-                   public virtual AsynchronousIOStream {
+class _DK_SDU_MIP__BASE__API SerialPort : public CommunicationsPort,
+                                          public virtual AsynchronousIOStream {
 private:
 
   Reference<Handle> handle;

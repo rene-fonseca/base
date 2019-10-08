@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 // TAG: must support sockets and events
 
-class WaitForObjects : public Object {
+class _DK_SDU_MIP__BASE__API WaitForObjects : public Object {
 private:
   
   List<Object*> objects;

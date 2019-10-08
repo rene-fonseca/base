@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class NetworkException : public IOException {
+class _DK_SDU_MIP__BASE__API NetworkException : public IOException {
 public:
 
   /** Cause. */

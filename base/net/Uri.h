@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class UriException : public InvalidFormat {
+class _DK_SDU_MIP__BASE__API UriException : public InvalidFormat {
 public:
 
   /**
@@ -59,7 +59,7 @@ public:
   @version 1.0
 */
 
-class Uri : public Object {
+class _DK_SDU_MIP__BASE__API Uri : public Object {
 private:
 
   /** The protocol part. */

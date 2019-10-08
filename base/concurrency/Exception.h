@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @see Barrier
   @version 1.0
 */
-class BarrierException : public LockException {
+class _DK_SDU_MIP__BASE__API BarrierException : public LockException {
 public:
   
   /**

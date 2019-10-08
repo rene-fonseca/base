@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class ZLibDeflater : public Object, public virtual Deflater {
+class _DK_SDU_MIP__BASE__API ZLibDeflater : public Object, public virtual Deflater {
 public:
   
   /** The size of the compression buffer. */

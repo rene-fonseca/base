@@ -30,7 +30,7 @@ class Document;
   @version 1.0
 */
 
-class Entity : public Node {
+class _DK_SDU_MIP__BASE__API Entity : public Node {
   friend class Document;
 protected:
   

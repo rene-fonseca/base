@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class Event : public virtual Object {
+class _DK_SDU_MIP__BASE__API Event : public virtual Object {
 private:
 
   /** Internal data. */

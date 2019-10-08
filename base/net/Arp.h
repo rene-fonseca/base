@@ -42,7 +42,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Arp : public Object {
+class _DK_SDU_MIP__BASE__API Arp : public Object {
 private:
   
   /** Specifies the index of the network interface. */

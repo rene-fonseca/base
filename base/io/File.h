@@ -39,7 +39,7 @@ class SharedMemory;
   @version 1.0
 */
 
-class File : public Object, public AsynchronousIOStream {
+class _DK_SDU_MIP__BASE__API File : public Object, public AsynchronousIOStream {
   friend class MappedFile;
   friend class SharedMemory;
 public:

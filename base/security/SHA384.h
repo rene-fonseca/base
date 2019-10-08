@@ -45,7 +45,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SHA384 : public Object, public PushInterface {
+class _DK_SDU_MIP__BASE__API SHA384 : public Object, public PushInterface {
 public:
   
   /** Internal block size in bytes. */

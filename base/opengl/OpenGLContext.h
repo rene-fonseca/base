@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class OpenGLContext : public WindowImpl, public OpenGLContextImpl {
+class _DK_SDU_MIP__BASE__API OpenGLContext : public WindowImpl, public OpenGLContextImpl {
 private:
 
   nothing prefixInitialization;

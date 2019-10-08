@@ -18,7 +18,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class AsynchronousOperation : public Object {
+class _DK_SDU_MIP__BASE__API AsynchronousOperation : public Object {
 public:
 };
 

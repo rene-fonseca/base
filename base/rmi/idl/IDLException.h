@@ -27,11 +27,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class IDLException : public IDLNamedType {
+class _DK_SDU_MIP__BASE__API IDLException : public IDLNamedType {
 private:
   
   /** The version of the exception. */
-  unsigned int version;
+  unsigned int version = 0;
   /** The attributes of the exception. */
   Array<IDLAttribute> attributes;
 public:

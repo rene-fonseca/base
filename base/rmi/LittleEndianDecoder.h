@@ -17,7 +17,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class LittleEndianDecoder : public Decoder {
+class _DK_SDU_MIP__BASE__API LittleEndianDecoder : public Decoder {
 private:
 
   // input stream

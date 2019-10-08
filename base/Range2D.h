@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Range2D : public virtual Object {
+class _DK_SDU_MIP__BASE__API Range2D : public virtual Object {
 protected:
 
   /** The minimum value. */

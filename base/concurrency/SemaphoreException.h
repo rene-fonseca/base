@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SemaphoreException : public LockException {
+class _DK_SDU_MIP__BASE__API SemaphoreException : public LockException {
 public:
 
   /**

@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class Collection : public Object {
+class _DK_SDU_MIP__BASE__API Collection : public Object {
 public:
 
 };

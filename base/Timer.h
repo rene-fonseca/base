@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Timer : public Object {
+class _DK_SDU_MIP__BASE__API Timer : public Object {
 private:
 
   /** The start time in platform specific resolution. */
@@ -41,7 +41,7 @@ public:
     @short Elapsed time conversion.
     @version 1.0
   */
-  class ElapsedTime {
+  class _DK_SDU_MIP__BASE__API ElapsedTime {
   private:
 
     /** The elapsed time in nanoseconds. */

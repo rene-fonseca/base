@@ -29,11 +29,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class ReferenceCountedObjectWrapper : public ReferenceCountedObject {
+class _DK_SDU_MIP__BASE__API ReferenceCountedObjectWrapper : public ReferenceCountedObject {
 private:
 
   /** Ordinary object. */
-  TYPE* object;
+  TYPE* object = nullptr;
 public:
 
   /**

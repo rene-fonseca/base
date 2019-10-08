@@ -36,7 +36,7 @@ class OrbConnectionFactory;
   @version 1.0
 */
 
-class OrbScheme : public Polymorphic, public ReferenceCountedObject {
+class _DK_SDU_MIP__BASE__API OrbScheme : public Polymorphic, public ReferenceCountedObject {
 public:
   
   /**

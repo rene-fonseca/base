@@ -35,7 +35,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class Exception {
+class _DK_SDU_MIP__BASE__API Exception {
 private:
 
   /** The message associated with the exception (ASCII format). This may not be available. */

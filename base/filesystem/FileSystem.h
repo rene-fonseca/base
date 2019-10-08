@@ -34,7 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class FileSystem : public Object {
+class _DK_SDU_MIP__BASE__API FileSystem : public Object {
 private:
 
   /** Internal attribute specifying whether or not file system links are supported by the platform. */

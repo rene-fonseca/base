@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SingletonException : public Exception {
+class _DK_SDU_MIP__BASE__API SingletonException : public Exception {
 public:
 
   /**

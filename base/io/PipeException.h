@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class PipeException : public IOException {
+class _DK_SDU_MIP__BASE__API PipeException : public IOException {
 public:
 
   /**

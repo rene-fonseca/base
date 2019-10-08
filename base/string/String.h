@@ -37,7 +37,7 @@ class FormatOutputStream;
   @short ASCII character characteristics
   @version 1.0
 */
-class CharTraits {
+class _DK_SDU_MIP__BASE__API CharTraits {
 public:
   
   /** Specifies the terminator for NULL-terminated strings. */
@@ -138,7 +138,7 @@ public:
   @version 1.0
 */
 
-class String : public virtual Object {
+class _DK_SDU_MIP__BASE__API String : public virtual Object {
 public:
 
   /** Character specific properties and manipulators. */
@@ -172,7 +172,7 @@ private:
   /*
     Reference to an element within a string.
   */
-  class Element {
+  class _DK_SDU_MIP__BASE__API Element {
     friend class String;
   private:
     

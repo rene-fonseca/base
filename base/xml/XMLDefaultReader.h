@@ -26,30 +26,30 @@ class XMLDefaultReaderImpl;
   @version 1.0
 */
 
-class XMLDefaultReader : public XMLReader {
+class _DK_SDU_MIP__BASE__API XMLDefaultReader : public XMLReader {
   friend class XMLDefaultReaderImpl;
 private:
   
   /** Internal parser context. */
-  void* context;
+  void* context = nullptr;
   /** The registered content handler. */
-  ContentHandler* contentHandler;
+  ContentHandler* contentHandler = nullptr;
   /** The registered DTD handler. */
-  DTDHandler* dtdHandler;
+  DTDHandler* dtdHandler = nullptr;
   /** The registered entity resolver. */
-  EntityResolver* entityResolver;
+  EntityResolver* entityResolver = nullptr;
   /** The registered error handler. */
-  ErrorHandler* errorHandler;
+  ErrorHandler* errorHandler = nullptr;
   /** Specifies whether or not to validate the document. */
-  bool validate;
+  bool validate = false;
   /** Recovery flag. */
-  bool recover;
+  bool recover = false;
   /** Specifies whether or not the parsing should be terminated. */
-  bool terminated;
+  bool terminated = false;
   /** Specifies whether or not the parsing is in progress. */
-  bool parsing;
+  bool parsing = false;
   /** Specifies whether or not the document is standalone. */
-  bool standalone;
+  bool standalone = false;
 public:
   
   /**

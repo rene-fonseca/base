@@ -39,7 +39,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class ReferenceCounter {
+class _DK_SDU_MIP__BASE__API ReferenceCounter {
 public:
 
   /** The type of the reference counter. */

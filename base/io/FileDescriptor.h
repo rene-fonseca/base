@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class FileDescriptor : public virtual Object, public virtual Stream {
+class _DK_SDU_MIP__BASE__API FileDescriptor : public virtual Object, public virtual Stream {
 public:
 
   /** Returns the standard input file descriptor. */
@@ -46,7 +46,7 @@ public:
     @short File descriptor
     @version 1.0
   */
-  class Descriptor : public Handle {
+  class _DK_SDU_MIP__BASE__API Descriptor : public Handle {
     friend class Initialization;
     friend class FileDescriptor;
   private:

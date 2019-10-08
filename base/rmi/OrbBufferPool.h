@@ -31,18 +31,18 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class OrbBufferPool : public ReferenceCountedObject {
+class _DK_SDU_MIP__BASE__API OrbBufferPool : public ReferenceCountedObject {
 private:
   
   /** The guard. */
   typedef SpinLock Guard;
   
   /** The available buffers. */
-  OrbBuffer* buffers;
+  OrbBuffer* buffers = nullptr;
   /** The total number of buffers. */
-  unsigned int numberOfBuffers;
+  unsigned int numberOfBuffers = 0;
   /** The maximum number of buffers. */
-  unsigned int maximumNumberOfBuffers;
+  unsigned int maximumNumberOfBuffers = 0;
   /** Semaphore. */
   Semaphore semaphore;
   /** The guard. */

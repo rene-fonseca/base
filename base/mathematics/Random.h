@@ -36,7 +36,7 @@ namespace RandomImpl {
   @version 1.0
 */
 
-class Random {
+class _DK_SDU_MIP__BASE__API Random {
   friend class Initialization;
 public:
 

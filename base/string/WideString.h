@@ -37,7 +37,7 @@ class FormatOutputStream;
   @ingroup string
   @version 1.0
 */
-class WideTraits {
+class _DK_SDU_MIP__BASE__API WideTraits {
 public:
   
   /** Specifies the terminator for NULL-terminated strings. */
@@ -158,7 +158,7 @@ public:
   */
   int digitToValue(ucs4 character) throw();
   
-  class ToLowerCase {
+  class _DK_SDU_MIP__BASE__API ToLowerCase {
   public:
     
     inline ucs4 operator()(ucs4 character) const throw() {
@@ -166,7 +166,7 @@ public:
     }
   };
 
-  class ToUpperCase {
+  class _DK_SDU_MIP__BASE__API ToUpperCase {
   public:
     
     inline ucs4 operator()(ucs4 character) const throw() {
@@ -174,7 +174,7 @@ public:
     }
   };
 
-  class ToTitleCase {
+  class _DK_SDU_MIP__BASE__API ToTitleCase {
   public:
     
     inline ucs4 operator()(ucs4 character) const throw() {
@@ -198,7 +198,7 @@ public:
   @version 1.0
 */
 
-class WideString : public virtual Object {
+class _DK_SDU_MIP__BASE__API WideString : public virtual Object {
 public:
 
   /** Character specific properties and manipulators. */
@@ -284,7 +284,7 @@ private:
   /*
     Reference to an element within a wide string.
   */
-  class Element {
+  class _DK_SDU_MIP__BASE__API Element {
     friend class WideString;
   private:
     
@@ -385,7 +385,7 @@ public:
     STYLE_PERL
   };
 
-  class UnicodeCharacter {
+  class _DK_SDU_MIP__BASE__API UnicodeCharacter {
   private:
     
     static const Style DEFAULT_STYLE = STYLE_CPP;

@@ -30,7 +30,7 @@ class LocalConnection;
   @version 1.0
 */
 
-class LocalScheme : public OrbScheme {
+class _DK_SDU_MIP__BASE__API LocalScheme : public OrbScheme {
 private:
 
   typedef SpinLock Guard;

@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class IDLStructure : public IDLNamedType {
+class _DK_SDU_MIP__BASE__API IDLStructure : public IDLNamedType {
 private:
   
   /** The fields of the structure. */

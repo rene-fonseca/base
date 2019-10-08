@@ -23,7 +23,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   Asynchronous write context.
 
 */
-class AsynchronousWriteContext : public Object, public ReferenceCountedObject {
+class _DK_SDU_MIP__BASE__API AsynchronousWriteContext : public Object, public ReferenceCountedObject {
 protected:
   
   /** Self-reference used to protect the object from premature destruction. */

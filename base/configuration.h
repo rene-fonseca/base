@@ -69,12 +69,10 @@
 #define _DK_SDU_MIP__BASE__PACKED
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#if defined(_DK_SDU_MIP__BASE__SHARED_LIBRARY)
 #if defined(_DK_SDU_MIP__BASE__SHARED_LIBRARY_BUILD)
 #  define _DK_SDU_MIP__BASE__API __declspec(dllexport)
-#else
+#elif defined(_DK_SDU_MIP__BASE__SHARED_LIBRARY)
 #  define _DK_SDU_MIP__BASE__API __declspec(dllimport)
-#endif
 #endif
 #else
 // TAG: add other platform

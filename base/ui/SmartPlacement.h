@@ -42,7 +42,7 @@ VerticalAlignment getVerticalAlignment() const throw();
 // [0; 9]?
 int getAlignment() const throw();
 
-class PlacementOperator : public UIObject {
+class _DK_SDU_MIP__BASE__API PlacementOperator : public UIObject {
 public:
 
   void disable() throw();
@@ -50,7 +50,7 @@ public:
   bool isEnabled() const throw();
 };
 
-class VerticalPlacement : public Object {
+class _DK_SDU_MIP__BASE__API VerticalPlacement : public Object {
 public:
 
   VerticalPlacement() throw();
@@ -62,12 +62,12 @@ public:
   void add(UIObject object, const Position& position) throw();
 };
 
-class HorizontalPlacement : public Object {
+class _DK_SDU_MIP__BASE__API HorizontalPlacement : public Object {
 public:
   
 };
 
-class CheckboardPlacement : public Object {
+class _DK_SDU_MIP__BASE__API CheckboardPlacement : public Object {
 public:
   
   CheckboardPlacement() throw();

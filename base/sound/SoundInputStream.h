@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SoundInputStream : public Object {
+class _DK_SDU_MIP__BASE__API SoundInputStream : public Object {
 private:
 
   /** Handle to the sound input device. */

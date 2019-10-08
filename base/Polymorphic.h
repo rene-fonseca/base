@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Polymorphic {
+class _DK_SDU_MIP__BASE__API Polymorphic {
 private:
 
   /* Disable the default copy constructor. */

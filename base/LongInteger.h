@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class LongInteger : public virtual Object {
+class _DK_SDU_MIP__BASE__API LongInteger : public virtual Object {
 public:
 
   /** True if the integer type is signed. */

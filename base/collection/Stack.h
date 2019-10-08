@@ -159,7 +159,7 @@ protected:
 
     @version 1.0
   */
-  class StackImpl : public ReferenceCountedObject {
+  class _DK_SDU_MIP__BASE__API StackImpl : public ReferenceCountedObject {
   protected:
 
     /** The node on the top of the stack. */

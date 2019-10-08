@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class FilterOutputStream : public virtual Object, public virtual OutputStream {
+class _DK_SDU_MIP__BASE__API FilterOutputStream : public virtual Object, public virtual OutputStream {
 protected:
 
   /** Output stream to be filtered. */

@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class FolderInfo : public Object {
+class _DK_SDU_MIP__BASE__API FolderInfo : public Object {
 public:
   
   /** Sticky bit. */

@@ -26,15 +26,15 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class BinaryNode {
+class _DK_SDU_MIP__BASE__API BinaryNode {
 private:
 
   /** The parent node of this node. */
-  BinaryNode* parent;
+  BinaryNode* parent = nullptr;
   /** The left child node. */
-  BinaryNode* left;
+  BinaryNode* left = nullptr;
   /** The right child node. */
-  BinaryNode* right;
+  BinaryNode* right = nullptr;
   /** The value associated with the node. */
   TYPE value;
 public:

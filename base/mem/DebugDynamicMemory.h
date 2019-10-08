@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class DebugDynamicMemory {
+class _DK_SDU_MIP__BASE__API DebugDynamicMemory {
 //   friend void* operator new(MemorySize) throw(MemoryException);
 //   friend void operator delete(void*) throw(MemoryException);
 //   friend void* operator new[](MemorySize) throw(MemoryException);

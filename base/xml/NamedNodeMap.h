@@ -22,11 +22,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 class Node;
 class DocumentType;
 
-class ShadowNode {
+class _DK_SDU_MIP__BASE__API ShadowNode {
   friend class Node;
 private:
 
-  void* context;
+  void* context = nullptr;
   
   inline ShadowNode(void* _context) throw() : context(_context) {
   }
@@ -41,7 +41,7 @@ public:
   @version 1.0
 */
 
-class NamedNodeMap : public Object {
+class _DK_SDU_MIP__BASE__API NamedNodeMap : public Object {
   friend class DocumentType;
 private:
   

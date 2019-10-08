@@ -29,7 +29,7 @@ class LocalScheme;
   @version 1.0
 */
 
-class LocalConnection : public OrbConnection {
+class _DK_SDU_MIP__BASE__API LocalConnection : public OrbConnection {
   friend class LocalScheme;
 private:
   

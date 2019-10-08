@@ -27,7 +27,7 @@ class AsynchronousReadContext;
   @short Asynchronous read operation.
   @version 1.0
 */
-class AsynchronousReadOperation : public AsynchronousOperation {
+class _DK_SDU_MIP__BASE__API AsynchronousReadOperation : public AsynchronousOperation {
 private:
 
   /** Context of operation. */

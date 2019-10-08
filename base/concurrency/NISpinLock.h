@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class NISpinLock : public Lock {
+class _DK_SDU_MIP__BASE__API NISpinLock : public Lock {
 private:
   
   /** Lock. */

@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class FileReader : public Object {
+class _DK_SDU_MIP__BASE__API FileReader : public Object {
 public:
 
   /**
@@ -39,19 +39,19 @@ public:
 private:
 
   /** The size of the file. */
-  const long long fileSize;
+  const long long fileSize = 0;
   /** The required granularity of the file region offset. */
-  unsigned int granularity;
+  unsigned int granularity = 0;
   /** The preferred window size. */
-  unsigned int preferredWindowSize;
+  unsigned int preferredWindowSize = 0;
   /** The current mapping. */
   MappedFile mapping;
   /** The beginning of the window. */
-  uint8* begin;
+  uint8* begin = nullptr;
   /** The end of the window. */
-  uint8* end;
+  uint8* end = nullptr;
   /** The current position in the window. */
-  uint8* current;
+  uint8* current = nullptr;
 protected:
   
   inline FileRegion fixRegion(const FileRegion& region) throw() {

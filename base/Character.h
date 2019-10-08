@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Character : public virtual Object {
+class _DK_SDU_MIP__BASE__API Character : public virtual Object {
 protected:
 
   /** The value. */

@@ -31,11 +31,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.4
 */
 
-class ReadWriteLock : public Lock {
+class _DK_SDU_MIP__BASE__API ReadWriteLock : public Lock {
 protected:
 
   /** Internal representation of object. */
-  void* representation;
+  void* representation = nullptr;
 public:
   
   /**

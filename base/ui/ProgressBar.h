@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class ProgressBar : public Widget {
+class _DK_SDU_MIP__BASE__API ProgressBar : public Widget {
 public:
 
   enum TextMode {

@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class AsynchronousWriteEventListener : public virtual DynamicObject {
+class _DK_SDU_MIP__BASE__API AsynchronousWriteEventListener : public virtual DynamicObject {
 public:
 
   virtual void asynchronousCompletion(

@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class HostNotFound : public NetworkException {
+class _DK_SDU_MIP__BASE__API HostNotFound : public NetworkException {
 public:
 
   /**

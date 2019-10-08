@@ -32,7 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class KEY, class VALUE>
-class HashTable : public Collection {
+class _DK_SDU_MIP__BASE__API HashTable : public Collection {
 public:
   
   /** The type of the key. */

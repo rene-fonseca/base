@@ -17,7 +17,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class Button : public Widget {
+class _DK_SDU_MIP__BASE__API Button : public Widget {
 private:
 
   // 0: enabled, disabled (ignore all other)

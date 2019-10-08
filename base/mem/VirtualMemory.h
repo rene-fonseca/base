@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class VirtualMemory {
+class _DK_SDU_MIP__BASE__API VirtualMemory {
 public:
 
   enum State {
@@ -55,7 +55,7 @@ public:
     MemorySize size;
   };
 
-  class Module {
+  class _DK_SDU_MIP__BASE__API Module {
   private:
     
     const void* context = nullptr;

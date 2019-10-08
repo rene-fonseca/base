@@ -27,7 +27,7 @@ class Element;
   @version 1.0
 */
 
-class Attribute : public Node {
+class _DK_SDU_MIP__BASE__API Attribute : public Node {
   friend class Document;
   friend class Element;
 protected:

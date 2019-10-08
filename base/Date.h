@@ -30,7 +30,7 @@ class FormatOutputStream;
   @version 1.3
 */
 
-class Date {
+class _DK_SDU_MIP__BASE__API Date {
 private:
 
   /**

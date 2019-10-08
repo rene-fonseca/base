@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class Allocator {
+class _DK_SDU_MIP__BASE__API Allocator {
 private:
 
   /** The allocated memory block. */

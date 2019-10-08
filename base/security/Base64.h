@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class Base64 : public Object {
+class _DK_SDU_MIP__BASE__API Base64 : public Object {
 public:
 
   /**
@@ -36,7 +36,7 @@ public:
     @short Base64 encode descriptor.
     @version 1.0
   */
-  class Descriptor : public Object {
+  class _DK_SDU_MIP__BASE__API Descriptor : public Object {
   private:
 
     /** The bytes to be encoded. */

@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class OrbObject : public Object {
+class _DK_SDU_MIP__BASE__API OrbObject : public Object {
 public:
   
   /**

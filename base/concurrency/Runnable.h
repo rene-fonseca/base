@@ -29,7 +29,7 @@ class Thread;
   @version 1.0
 */
 
-class Runnable : public virtual Object {
+class _DK_SDU_MIP__BASE__API Runnable : public virtual Object {
 protected:
 
   /** Specifies that the active object should be terminated. */

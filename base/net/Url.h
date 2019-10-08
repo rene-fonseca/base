@@ -35,7 +35,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Url : public Object {
+class _DK_SDU_MIP__BASE__API Url : public Object {
 private:
 
   /** The protocol. */

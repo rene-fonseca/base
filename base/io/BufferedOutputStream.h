@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class BufferedOutputStream : public FilterOutputStream {
+class _DK_SDU_MIP__BASE__API BufferedOutputStream : public FilterOutputStream {
 public:
 
   /** The default size of the buffer. */
@@ -40,9 +40,9 @@ protected:
   /** The buffer. */
   Allocator<uint8> buffer;
   /** The write head. */
-  unsigned int writeHead;
+  unsigned int writeHead = 0;
   /** The read head. */
-  unsigned int readHead;
+  unsigned int readHead = 0;
 public:
 
   /**

@@ -41,7 +41,7 @@ class Document;
   @version 1.0
 */
 
-class CDATASection : public Text {
+class _DK_SDU_MIP__BASE__API CDATASection : public Text {
   friend class Document;
 protected:
 

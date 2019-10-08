@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class DynamicLinker {
+class _DK_SDU_MIP__BASE__API DynamicLinker {
 private:
 
   /** Opaque handle to the module. */

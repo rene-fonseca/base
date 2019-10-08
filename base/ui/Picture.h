@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Picture : public Widget {
+class _DK_SDU_MIP__BASE__API Picture : public Widget {
 private:
 
   /** The bitmap. */

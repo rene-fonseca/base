@@ -31,7 +31,7 @@ class Group;
   @version 1.2
 */
 
-class User : public Object {
+class _DK_SDU_MIP__BASE__API User : public Object {
   friend class Hash<User>;
   friend class Trustee;
 private:
@@ -51,7 +51,7 @@ public:
     @version 1.1
   */
 
-  class UserException : public Exception {
+  class _DK_SDU_MIP__BASE__API UserException : public Exception {
   public:
 
     /**

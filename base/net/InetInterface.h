@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class InetInterface : public virtual Object {
+class _DK_SDU_MIP__BASE__API InetInterface : public virtual Object {
 private:
 
   /** Specifies the index of the network interface. */

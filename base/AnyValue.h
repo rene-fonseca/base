@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class AnyValue : public Object {
+class _DK_SDU_MIP__BASE__API AnyValue : public Object {
   friend FormatOutputStream& operator<<(
     FormatOutputStream& stream, const AnyValue& value) throw(IOException);
 public:

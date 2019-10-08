@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class Integer : public Object {
+class _DK_SDU_MIP__BASE__API Integer : public Object {
 public:
 
   /** True if the integer type is signed. */

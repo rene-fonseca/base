@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class CharacterSet : public Object {
+class _DK_SDU_MIP__BASE__API CharacterSet : public Object {
 private:
   
   /** Container type for the character set. */

@@ -35,7 +35,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class InetAddress : public virtual Object {
+class _DK_SDU_MIP__BASE__API InetAddress : public virtual Object {
 public:
 
   /** Family of internet addresses. */

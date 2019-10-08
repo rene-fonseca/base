@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class OrbSkeleton : public Object, public virtual ReferenceCountedObject {
+class _DK_SDU_MIP__BASE__API OrbSkeleton : public Object, public virtual ReferenceCountedObject {
 private:
 
   /** The fully qualified name of the skeleton. */

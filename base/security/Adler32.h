@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Adler32 : public Object, public PushInterface {
+class _DK_SDU_MIP__BASE__API Adler32 : public Object, public PushInterface {
 private:
   
   /** The current checksum. */

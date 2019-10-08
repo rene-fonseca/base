@@ -22,7 +22,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Unspecified {
+class _DK_SDU_MIP__BASE__API Unspecified {
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

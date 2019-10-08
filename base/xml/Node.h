@@ -36,7 +36,7 @@ class NodeImpl;
   @version 1.0
 */
 
-class Node : public AutomationObject {
+class _DK_SDU_MIP__BASE__API Node : public AutomationObject {
   friend class Document;
   friend class NodeImpl;
 public:
@@ -66,7 +66,7 @@ public:
   struct Context {
   };
   
-  class ShadowDocument : public AutomationObject {
+  class _DK_SDU_MIP__BASE__API ShadowDocument : public AutomationObject {
   private:
     
     void* context = nullptr;
@@ -89,7 +89,7 @@ public:
     }
   };
   
-  class ShadowElement : public AutomationObject {
+  class _DK_SDU_MIP__BASE__API ShadowElement : public AutomationObject {
   private:
     
     void* context = nullptr;

@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class FormatInputStream : public FilterInputStream {
+class _DK_SDU_MIP__BASE__API FormatInputStream : public FilterInputStream {
 public:
 
   /** Specifies the default line granularity. */
@@ -123,7 +123,7 @@ public:
   Format input stream linked to the standard input stream. This variable
   corresponds to 'cin' from the Standard Template Library.
 */
-extern FormatInputStream fin;
+extern _DK_SDU_MIP__BASE__API FormatInputStream fin;
 
 /**
   Reads one character from the format input stream.

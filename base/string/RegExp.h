@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class RegExp : public Object {
+class _DK_SDU_MIP__BASE__API RegExp : public Object {
 public:
 
   /**
@@ -38,7 +38,7 @@ public:
     @see RegExp
     @version 1.0
   */
-  class RegExpException : public Exception {
+  class _DK_SDU_MIP__BASE__API RegExpException : public Exception {
   public:
     
     /**
@@ -77,7 +77,7 @@ public:
   /**
     @short Substring descriptor.
   */
-  class Substring : public Object {
+  class _DK_SDU_MIP__BASE__API Substring : public Object {
     friend class RegExp;
   private:
 

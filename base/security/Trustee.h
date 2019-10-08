@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class Trustee : public Object {
+class _DK_SDU_MIP__BASE__API Trustee : public Object {
   friend class Hash<Trustee>;
 public:
 
@@ -61,7 +61,7 @@ public:
     @version 1.0
   */
   
-  class TrusteeException : public Exception {
+  class _DK_SDU_MIP__BASE__API TrusteeException : public Exception {
   public:
     
     /**

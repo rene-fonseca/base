@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class DOMImplementation : public Object {
+class _DK_SDU_MIP__BASE__API DOMImplementation : public Object {
 public:
 
   enum Flag {

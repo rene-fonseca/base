@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
     @version 1.1
   */
   
-class Position : public Object {
+class _DK_SDU_MIP__BASE__API Position : public Object {
 private:
   
   /** The x coordinate. */

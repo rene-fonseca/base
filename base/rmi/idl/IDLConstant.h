@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class IDLConstant : public IDLObject {
+class _DK_SDU_MIP__BASE__API IDLConstant : public IDLObject {
 private:
 
   /** The fully qualified name of the constant. */

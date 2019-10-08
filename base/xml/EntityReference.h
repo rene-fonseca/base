@@ -44,7 +44,7 @@ class Document;
   @version 1.0
 */
 
-class EntityReference : public Node {
+class _DK_SDU_MIP__BASE__API EntityReference : public Node {
   friend class Document;
 protected:
   

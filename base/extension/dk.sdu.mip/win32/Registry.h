@@ -35,7 +35,7 @@ namespace extension {
     @version 1.0
   */
 
-  class RegistryException : public Exception {
+  class _DK_SDU_MIP__BASE__API RegistryException : public Exception {
   public:
     
     /**

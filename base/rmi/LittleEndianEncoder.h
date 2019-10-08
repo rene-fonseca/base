@@ -19,7 +19,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 // TAG: need low-level push pull interface
 
-class LittleEndianEncoder : public Encoder {
+class _DK_SDU_MIP__BASE__API LittleEndianEncoder : public Encoder {
 private:
   
   // output stream

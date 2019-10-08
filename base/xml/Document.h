@@ -42,7 +42,7 @@ class DOMImplementation;
   @version 1.0
 */
 
-class Document : public Node {
+class _DK_SDU_MIP__BASE__API Document : public Node {
   friend class Stylesheet;
   friend class Transformer;
   friend class DOMImplementation;

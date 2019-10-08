@@ -37,7 +37,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Property : public AutomationObject {
+class _DK_SDU_MIP__BASE__API Property : public AutomationObject {
 public:
 };
 

@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @ingroup compression
   @version 1.0
 */
-class Inflater : public virtual PushInterface, public virtual PullInterface {
+class _DK_SDU_MIP__BASE__API Inflater : public virtual PushInterface, public virtual PullInterface {
 public:
   
   /**

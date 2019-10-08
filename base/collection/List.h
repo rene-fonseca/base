@@ -32,7 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class ListNode {
+class _DK_SDU_MIP__BASE__API ListNode {
 protected:
 
   /** The next node in the list. */
@@ -89,7 +89,7 @@ public:
 */
 
 template<class TRAITS>
-class ListEnumerator : public Enumerator<TRAITS> {
+class _DK_SDU_MIP__BASE__API ListEnumerator : public Enumerator<TRAITS> {
 public:
 
   typedef typename Enumerator<TRAITS>::Value Value;
@@ -156,7 +156,7 @@ public:
 */
 
 template<class TRAITS>
-class ListReadEnumerator : public Enumerator<TRAITS> {
+class _DK_SDU_MIP__BASE__API ListReadEnumerator : public Enumerator<TRAITS> {
 protected:
 
   typedef typename Enumerator<TRAITS>::Value Value;
@@ -235,7 +235,7 @@ public:
 */
 
 template<class TYPE>
-class List : public Collection {
+class _DK_SDU_MIP__BASE__API List : public Collection {
 public:
 
   /** The type of a value. */
@@ -252,7 +252,7 @@ protected:
     
     @version 1.0
   */
-  class ListImpl : public ReferenceCountedObject {
+  class _DK_SDU_MIP__BASE__API ListImpl : public ReferenceCountedObject {
   private:
 
     /** The first node in the list. */

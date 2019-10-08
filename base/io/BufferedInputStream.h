@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class BufferedInputStream : public FilterInputStream {
+class _DK_SDU_MIP__BASE__API BufferedInputStream : public FilterInputStream {
 public:
 
   /** The default size of the buffer. */
@@ -41,9 +41,9 @@ protected:
   /** The internal buffer used to store data temporarily. */
   Allocator<uint8> buffer;
   /** The current number of bytes in the buffer. */
-  unsigned int count;
+  unsigned int count = 0;
   /** The current position in the buffer. */
-  unsigned int position;
+  unsigned int position = 0;
 public:
 
   /**

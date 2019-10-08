@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class GraphicsContext : public WindowImpl {
+class _DK_SDU_MIP__BASE__API GraphicsContext : public WindowImpl {
 public:
 
   /** System color. */
@@ -54,7 +54,7 @@ public:
     DASH_DOT_DOT /**< Dash dot dot. */
   };
 
-  class GraphicsContextObjectHandle : public ReferenceCountedObject {
+  class _DK_SDU_MIP__BASE__API GraphicsContextObjectHandle : public ReferenceCountedObject {
   private:
     
     /** Opaque handle to the graphics context object. */
@@ -75,7 +75,7 @@ public:
   /**
     @short Handle to a graphics context object (e.g. pen, brush, and font).
   */
-  class GraphicsContextObject {
+  class _DK_SDU_MIP__BASE__API GraphicsContextObject {
   protected:
     
     Reference<GraphicsContextObjectHandle> handle;
@@ -101,7 +101,7 @@ public:
   /**
     @short Handle to a pen.
   */
-  class Pen : GraphicsContextObject {
+  class _DK_SDU_MIP__BASE__API Pen : GraphicsContextObject {
     friend class GraphicsContext;
   private:
     
@@ -138,7 +138,7 @@ public:
   /**
     @short Handle to a brush.
   */
-  class Brush : GraphicsContextObject {
+  class _DK_SDU_MIP__BASE__API Brush : GraphicsContextObject {
     friend class GraphicsContext;
   private:
     
@@ -184,7 +184,7 @@ public:
   /**
     @short Handle to a font.
   */
-  class Font : GraphicsContextObject {
+  class _DK_SDU_MIP__BASE__API Font : GraphicsContextObject {
     friend class GraphicsContext;
   private:
     
@@ -221,7 +221,7 @@ public:
   };
 
   /* Alignment. */
-  class Alignment {
+  class _DK_SDU_MIP__BASE__API Alignment {
   public:
     
     /** Align to the left. */
@@ -239,7 +239,7 @@ public:
   };
 
   /* Text format. */
-  class TextFormat {
+  class _DK_SDU_MIP__BASE__API TextFormat {
   public:
 
     /** Align to the left. */

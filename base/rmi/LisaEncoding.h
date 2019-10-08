@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class LisaEncoding : public OrbEncoding {
+class _DK_SDU_MIP__BASE__API LisaEncoding : public OrbEncoding {
 public:
   
   class LisaDecoder : public OrbDecoder {

@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class Process : public Object {
+class _DK_SDU_MIP__BASE__API Process : public Object {
 public:
 
   /** Value which specifies an invalid process id. */
@@ -51,7 +51,7 @@ public:
     @ingroup exceptions concurrency
     @version 1.1
   */
-  class ProcessException : public Exception {
+  class _DK_SDU_MIP__BASE__API ProcessException : public Exception {
   public:
     
     inline ProcessException() throw() {

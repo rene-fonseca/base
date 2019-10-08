@@ -46,7 +46,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class ReferenceCountedObject : public DynamicObject {
+class _DK_SDU_MIP__BASE__API ReferenceCountedObject : public DynamicObject {
   friend class ReferenceImpl;
 private:
 

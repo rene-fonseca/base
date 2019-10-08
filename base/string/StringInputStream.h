@@ -28,17 +28,17 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class StringInputStream : public InputStream, protected String {
+class _DK_SDU_MIP__BASE__API StringInputStream : public InputStream, protected String {
 protected:
 
   /** String providing the data stream. */
   String& string;
   /** The current position. */
-  unsigned int index;
+  unsigned int index = 0;
   /** Specifies that the end has been reached. */
-  bool eof;
+  bool eof = false;
   /** Specifies that the stream has been closed. */
-  bool closed;
+  bool closed = false;
 public:
 
   /**

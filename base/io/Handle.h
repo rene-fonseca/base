@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Handle : public ReferenceCountedObject {
+class _DK_SDU_MIP__BASE__API Handle : public ReferenceCountedObject {
 private:
 
   /** Handle to resource. */

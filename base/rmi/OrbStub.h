@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class OrbStub : public Object, public virtual ReferenceCountedObject {
+class _DK_SDU_MIP__BASE__API OrbStub : public Object, public virtual ReferenceCountedObject {
 protected:
   
   /** The ORB channel. */

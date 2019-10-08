@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class Lifetime : public NotCopyable {
+class _DK_SDU_MIP__BASE__API Lifetime : public NotCopyable {
 private:
 
   /** Pointer to object. */

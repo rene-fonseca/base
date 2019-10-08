@@ -37,7 +37,7 @@ namespace alloc {
   @version 1.0
 */
 
-class DynamicMemory {
+class _DK_SDU_MIP__BASE__API DynamicMemory {
 /*
   friend void* alloc::operator new(MemorySize) throw(MemoryException);
   friend void alloc::operator delete(void*) throw(MemoryException);

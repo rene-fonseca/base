@@ -20,7 +20,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class AsynchronousReadContext : public Object, public ReferenceCountedObject {
+class _DK_SDU_MIP__BASE__API AsynchronousReadContext : public Object, public ReferenceCountedObject {
 protected:  
 
   /** Self-reference used to protect the object from premature destruction. */

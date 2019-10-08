@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class PopUpWindow : public GraphicsContext {
+class _DK_SDU_MIP__BASE__API PopUpWindow : public GraphicsContext {
 private:
   
   /**

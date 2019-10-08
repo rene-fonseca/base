@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class MimeType : public Object {
+class _DK_SDU_MIP__BASE__API MimeType : public Object {
 public:
   
   /** Top-level media types. */

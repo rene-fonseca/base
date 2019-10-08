@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class Matrix4x4 {
+class _DK_SDU_MIP__BASE__API Matrix4x4 {
 protected:
 
   /** The elements of the matrix (row by column). */

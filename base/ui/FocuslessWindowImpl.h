@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class WindowImpl : public Object, virtual public Drawable {
+class _DK_SDU_MIP__BASE__API WindowImpl : public Object, virtual public Drawable {
   friend class Backend<WindowImpl>;
 public:
 

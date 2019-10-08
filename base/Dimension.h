@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class Dimension {
+class _DK_SDU_MIP__BASE__API Dimension {
 protected:
 
   /** The width. */

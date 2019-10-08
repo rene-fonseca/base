@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class Semaphore : public virtual Object {
+class _DK_SDU_MIP__BASE__API Semaphore : public virtual Object {
 private:
 
   /** Internal semaphore state. */

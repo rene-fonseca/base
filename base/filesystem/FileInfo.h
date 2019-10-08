@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class FileInfo : public Object {
+class _DK_SDU_MIP__BASE__API FileInfo : public Object {
 public:
 
   /** Sticky bit. */

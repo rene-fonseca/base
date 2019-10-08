@@ -20,7 +20,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class AsynchronousOutputStream : public virtual AsynchronousStream {
+class _DK_SDU_MIP__BASE__API AsynchronousOutputStream : public virtual AsynchronousStream {
 public:
 
   /**

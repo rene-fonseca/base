@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Color {
+class _DK_SDU_MIP__BASE__API Color {
 private:
 
   /** The color value (red, green, and blue). */

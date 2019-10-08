@@ -40,7 +40,7 @@ class Document;
   @version 1.0
 */
 
-class Text : public CharacterData {
+class _DK_SDU_MIP__BASE__API Text : public CharacterData {
   friend class Document;
 protected:
 

@@ -25,13 +25,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class IDLInterface : public IDLNamedType {
+class _DK_SDU_MIP__BASE__API IDLInterface : public IDLNamedType {
 private:
 
   /** The methods of the interface. */
   HashSet<IDLMethod> methods;
   /** The version of the interface. */
-  unsigned int version;
+  unsigned int version = 0;
 public:
   
   /**

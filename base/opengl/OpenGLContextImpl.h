@@ -25,34 +25,34 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class OpenGLContextImpl : virtual public Drawable {
+class _DK_SDU_MIP__BASE__API OpenGLContextImpl : virtual public Drawable {
 protected:
 
-  void* graphicsContextHandle;
+  void* graphicsContextHandle = nullptr;
   /** Opaque handle to OpenGL rendering context. */
-  void* renderingContextHandle;
-  unsigned int flags;
-  uint8 colorBits;
-  uint8 redBits;
-  uint8 redShift;
-  uint8 greenBits;
-  uint8 greenShift;
-  uint8 blueBits;
-  uint8 blueShift;
-  uint8 alphaBits;
-  uint8 alphaShift;
-  uint8 accumulatorBits;
-  uint8 accumulatorRedBits;
-  uint8 accumulatorGreenBits;
-  uint8 accumulatorBlueBits;
-  uint8 accumulatorAlphaBits;
-  uint8 depthBits;
-  uint8 stencilBits;
-  uint8 auxBuffers;
+  void* renderingContextHandle = nullptr;
+  unsigned int flags = 0;
+  uint8 colorBits = 0;
+  uint8 redBits = 0;
+  uint8 redShift = 0;
+  uint8 greenBits = 0;
+  uint8 greenShift = 0;
+  uint8 blueBits = 0;
+  uint8 blueShift = 0;
+  uint8 alphaBits = 0;
+  uint8 alphaShift = 0;
+  uint8 accumulatorBits = 0;
+  uint8 accumulatorRedBits = 0;
+  uint8 accumulatorGreenBits = 0;
+  uint8 accumulatorBlueBits = 0;
+  uint8 accumulatorAlphaBits = 0;
+  uint8 depthBits = 0;
+  uint8 stencilBits = 0;
+  uint8 auxBuffers = 0;
   /** The number of overlay planes. */
-  unsigned int numberOfOverlayPlanes;
+  unsigned int numberOfOverlayPlanes = 0;
   /** The number of underlay planes. */
-  unsigned int numberOfUnderlayPlanes;
+  unsigned int numberOfUnderlayPlanes = 0;
 
   /**
     Loads the OpenGL module.
@@ -81,7 +81,7 @@ public:
   };
 
   /* Format descriptor. */
-  class Format {
+  class _DK_SDU_MIP__BASE__API Format {
   public:
 
     unsigned int id = 0;

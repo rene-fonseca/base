@@ -69,7 +69,7 @@ class Runnable;
   @version 1.3
 */
 
-class Thread : public Runnable {
+class _DK_SDU_MIP__BASE__API Thread : public Runnable {
   friend class ThreadImpl;
   friend class DaemonImpl;
 public:

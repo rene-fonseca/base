@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class IDLMethod : public IDLObject {
+class _DK_SDU_MIP__BASE__API IDLMethod : public IDLObject {
 private:
   
   /** The result type of the method. */

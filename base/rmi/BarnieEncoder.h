@@ -17,7 +17,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class BarnieEncoder : public OrbEncoder {
+class _DK_SDU_MIP__BASE__API BarnieEncoder : public OrbEncoder {
 public:
 };
 

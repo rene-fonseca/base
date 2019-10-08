@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Float : public Object {
+class _DK_SDU_MIP__BASE__API Float : public Object {
 public:
 
   /** Minimum normalized positive floating-point number (2^(e_min-1)). */

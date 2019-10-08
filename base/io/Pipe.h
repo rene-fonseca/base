@@ -33,7 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class Pipe : public virtual Object, public virtual InputStream, public virtual OutputStream {
+class _DK_SDU_MIP__BASE__API Pipe : public virtual Object, public virtual InputStream, public virtual OutputStream {
 public:
 
   class PipeHandle : public Handle {

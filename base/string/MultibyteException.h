@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class MultibyteException : public Exception {
+class _DK_SDU_MIP__BASE__API MultibyteException : public Exception {
 private:
   
   /** Index of first invalid character. */

@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SaveFileDialog : public Dialog {
+class _DK_SDU_MIP__BASE__API SaveFileDialog : public Dialog {
 private:
 
   /** Flags. */

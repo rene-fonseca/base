@@ -27,7 +27,7 @@ class Document;
   @version 1.0
 */
 
-class ElementDecl : public Declaration {
+class _DK_SDU_MIP__BASE__API ElementDecl : public Declaration {
   friend class Document;
 protected:
   

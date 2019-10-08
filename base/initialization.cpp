@@ -59,7 +59,7 @@ private:
 public:
   
   ThreadImpl() throw()
-    : thread(static_cast<Thread*>(0)),
+    : thread(static_cast<Thread*>(nullptr)),
       threadLocal(&thread) { // no parent for main thread
   }
 };
@@ -222,17 +222,17 @@ const Locale Locale::POSIX;
 FileDescriptorInputStream standardInputStream(
   FileDescriptor::getStandardInput()
 );
-FormatInputStream fin(standardInputStream);
+FormatInputStream _DK_SDU_MIP__BASE__API fin(standardInputStream);
 
 FileDescriptorOutputStream standardOutputStream(
   FileDescriptor::getStandardOutput()
 );
-FormatOutputStream fout(standardOutputStream);
+_DK_SDU_MIP__BASE__API FormatOutputStream fout(standardOutputStream);
 
 FileDescriptorOutputStream standardErrorStream(
   FileDescriptor::getStandardError()
 );
-FormatOutputStream ferr(standardErrorStream);
+FormatOutputStream _DK_SDU_MIP__BASE__API ferr(standardErrorStream);
 
 SoundDevice SoundDevice::soundDevice;
 

@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class OrbDecoder : public Object, public virtual ReferenceCountedObject {
+class _DK_SDU_MIP__BASE__API OrbDecoder : public Object, public virtual ReferenceCountedObject {
 private:
   
   // OrbInputStream stream;

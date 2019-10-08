@@ -34,7 +34,7 @@ class Document;
   @version 1.0
 */
 
-class Notation : public Node { // TAG: should be Declaration
+class _DK_SDU_MIP__BASE__API Notation : public Node { // TAG: should be Declaration
   friend class Document;
 protected:
   

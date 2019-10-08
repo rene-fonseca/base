@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class FilterInputStream : public virtual Object, public virtual InputStream {
+class _DK_SDU_MIP__BASE__API FilterInputStream : public virtual Object, public virtual InputStream {
 protected:
 
   /** Input stream to be filtered. */

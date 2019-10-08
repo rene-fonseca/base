@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class Scope : public AutomationObject {
+class _DK_SDU_MIP__BASE__API Scope : public AutomationObject {
 private:
 
   TYPE* object = nullptr;

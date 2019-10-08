@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class MappedFile : public Object {
+class _DK_SDU_MIP__BASE__API MappedFile : public Object {
 private:
 
   class MappedFileImpl : public ReferenceCountedObject {

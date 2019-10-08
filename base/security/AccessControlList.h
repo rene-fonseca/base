@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class AccessControlList : public Object {
+class _DK_SDU_MIP__BASE__API AccessControlList : public Object {
 private:
   
   /** The ACL entries. */

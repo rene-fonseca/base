@@ -48,7 +48,7 @@ class OrbEncoding;
   @version 1.0
 */
 
-class Orb : public Object {
+class _DK_SDU_MIP__BASE__API Orb : public Object {
   friend class TCPIPConnection; // TAG: remove
   friend class OrbDecoder;
   friend class OrbEncoder;

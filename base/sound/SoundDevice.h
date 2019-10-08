@@ -34,7 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SoundDevice : public virtual Object {
+class _DK_SDU_MIP__BASE__API SoundDevice : public virtual Object {
   friend class SoundInputStream;
   friend class SoundOutputStream;
 private:

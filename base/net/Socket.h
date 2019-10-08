@@ -44,9 +44,9 @@ class MultipleSockets;
   @version 1.2
 */
 
-class Socket : public virtual Object,
-               public virtual AsynchronousInputStream,
-               public virtual AsynchronousOutputStream {
+class _DK_SDU_MIP__BASE__API Socket : public virtual Object,
+                                      public virtual AsynchronousInputStream,
+                                      public virtual AsynchronousOutputStream {
   friend class Initialization;
   friend class MultipleSockets;
 public:
@@ -67,7 +67,7 @@ public:
   };  
 private:
   
-  class SocketImpl : public Handle {
+  class _DK_SDU_MIP__BASE__API SocketImpl : public Handle {
   private:
 
     /** The socket domain. */

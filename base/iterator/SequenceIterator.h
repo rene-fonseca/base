@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version  1.0
 */
 template<class TRAITS>
-class SequenceIterator : public Iterator<TRAITS> {
+class _DK_SDU_MIP__BASE__API SequenceIterator : public Iterator<TRAITS> {
 protected:
 
   typedef typename Iterator<TRAITS>::Pointer Pointer;

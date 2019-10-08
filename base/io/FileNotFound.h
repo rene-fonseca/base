@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class FileNotFound : public FileException {
+class _DK_SDU_MIP__BASE__API FileNotFound : public FileException {
 public:
 
   /**

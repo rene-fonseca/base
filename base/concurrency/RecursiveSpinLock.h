@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class RecursiveSpinLock : public Lock {
+class _DK_SDU_MIP__BASE__API RecursiveSpinLock : public Lock {
 private:
 
   typedef SpinLock Guard;
@@ -39,9 +39,9 @@ private:
   /** Lock. */
   Lock lock;
   /** The current owner. */
-  mutable Thread::Identifier owner;
+  mutable Thread::Identifier owner = 0;
   /** The number of locks held by the owner. */
-  mutable unsigned int numberOfLocks;
+  mutable unsigned int numberOfLocks = 0;
 public:
   
   /**

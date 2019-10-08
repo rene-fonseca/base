@@ -38,7 +38,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Once : public AutomationObject {
+class _DK_SDU_MIP__BASE__API Once : public AutomationObject {
 private:
   
   typedef SpinLock Guard;

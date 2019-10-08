@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class OrbBuffer : public Object {
+class _DK_SDU_MIP__BASE__API OrbBuffer : public Object {
 private:
 
   /** The next buffer in the linked list. */

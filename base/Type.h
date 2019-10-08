@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0.2
 */
 
-class Type {
+class _DK_SDU_MIP__BASE__API Type {
   friend class Exception;
 private:
 

@@ -34,7 +34,7 @@ class DOMImplementation;
   @version 1.0
 */
 
-class DocumentType : public Node {
+class _DK_SDU_MIP__BASE__API DocumentType : public Node {
   friend class Declaration;
   friend class Document;
   friend class DOMImplementation;

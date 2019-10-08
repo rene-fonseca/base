@@ -27,7 +27,7 @@ class Document;
   @version 1.0
 */
 
-class CharacterData : public Node {
+class _DK_SDU_MIP__BASE__API CharacterData : public Node {
   friend class Document;
 protected:
 

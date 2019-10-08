@@ -20,8 +20,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class StringOutputStreamWrapper : public virtual Object,
-                                  public virtual OutputStream {
+class _DK_SDU_MIP__BASE__API StringOutputStreamWrapper : public virtual Object,
+                                                         public virtual OutputStream {
 private:
 
   /** The string holding the stream data. */
@@ -61,7 +61,7 @@ public:
 
 
 // Helper class used by StringOutputStream.
-class StringOutputStreamImpl {
+class _DK_SDU_MIP__BASE__API StringOutputStreamImpl {
 protected:
 
   StringOutputStreamWrapper stream;
@@ -81,7 +81,7 @@ public:
   @version 1.0
 */
 
-class StringOutputStream : protected StringOutputStreamImpl, public FormatOutputStream {
+class _DK_SDU_MIP__BASE__API StringOutputStream : protected StringOutputStreamImpl, public FormatOutputStream {
 public:
 
   /** Specifies the default amount of memory by which the capacity is increased. */

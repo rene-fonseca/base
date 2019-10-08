@@ -30,7 +30,7 @@ namespace internal {
   @version 1.0
 */
 
-class ProcessPreinitialization {
+class _DK_SDU_MIP__BASE__API ProcessPreinitialization {
   friend class internal::ProcessInitialization;
 private:
 

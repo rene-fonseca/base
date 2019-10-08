@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Listener {
+class _DK_SDU_MIP__BASE__API Listener {
 public:
 };
 
@@ -38,7 +38,7 @@ public:
 */
 
 template<class SENDER, class LISTENER>
-class Signal : public UnaryOperation<LISTENER*, void> {
+class _DK_SDU_MIP__BASE__API Signal : public UnaryOperation<LISTENER*, void> {
 private:
 
   /** The type of the sender. */

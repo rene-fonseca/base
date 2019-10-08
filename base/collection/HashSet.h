@@ -32,7 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class HashSet : public Collection {
+class _DK_SDU_MIP__BASE__API HashSet : public Collection {
 public:
   
   /** The type of the value. */
@@ -53,11 +53,11 @@ public:
   private:
 
     /** The hash of the element. */
-    unsigned long hash;
+    unsigned long hash = 0;
     /** The value of the element. */
     Value value;
     /** The next node in the single linked list. */
-    Node* next;
+    Node* next = nullptr;
     // TAG: could have been bidirectional
   public:
     

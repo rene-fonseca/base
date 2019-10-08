@@ -30,7 +30,7 @@ class Orb;
   @version 1.0
 */
 
-class OrbConnectionFactory : public Object, public virtual ReferenceCountedObject {
+class _DK_SDU_MIP__BASE__API OrbConnectionFactory : public Object, public virtual ReferenceCountedObject {
 public:
   
   /**

@@ -121,7 +121,7 @@ typedef MemorySize ULargestInt; // TAG: could be different
 /**
   Native string.
 */
-class NativeString {
+class _DK_SDU_MIP__BASE__API NativeString {
 private:
 
   const char* value = nullptr;
@@ -145,7 +145,7 @@ public:
 /**
   Native wide string.
 */
-class NativeWideString {
+class _DK_SDU_MIP__BASE__API NativeWideString {
 private:
 
   const wchar* value = nullptr;

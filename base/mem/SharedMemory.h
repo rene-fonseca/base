@@ -29,14 +29,14 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SharedMemory : public Object {
+class _DK_SDU_MIP__BASE__API SharedMemory : public Object {
 public:
   
   static inline OperatingSystem::Handle getHandle(const File& file) throw() {
     return file.getHandle();
   }
   
-  class SharedMemoryImpl : public ReferenceCountedObject {
+  class _DK_SDU_MIP__BASE__API SharedMemoryImpl : public ReferenceCountedObject {
   private:
 
     /** The file object. */

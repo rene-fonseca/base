@@ -102,7 +102,7 @@ enum Action {
   @version 1.4
 */
 
-class FormatOutputStream : public BufferedOutputStream {
+class _DK_SDU_MIP__BASE__API FormatOutputStream : public BufferedOutputStream {
 public:
   
   /** The type of the guard. */
@@ -594,13 +594,13 @@ public:
   Format output stream linked to the standard output stream. This variable
   corresponds to 'cout' from the Standard Template Library.
 */
-extern FormatOutputStream fout;
+extern _DK_SDU_MIP__BASE__API FormatOutputStream fout;
 
 /**
   Format output stream linked to the standard error stream. This variable
   corresponds to 'cerr' from the Standard Template Library.
 */
-extern FormatOutputStream ferr;
+extern _DK_SDU_MIP__BASE__API FormatOutputStream ferr;
 
 /**
   Indent.

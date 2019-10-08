@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class CapacityAllocator : public Allocator<TYPE> {
+class _DK_SDU_MIP__BASE__API CapacityAllocator : public Allocator<TYPE> {
 public:
 
   /** Specifies the minimum block size in number of elements. */

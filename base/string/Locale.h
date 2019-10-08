@@ -19,15 +19,15 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-class NumericFormatSet : public Object {
+class _DK_SDU_MIP__BASE__API NumericFormatSet : public Object {
 private:
 
   /** The number of digits in a group (0 ~ disables grouping). */
-  unsigned int groupingDigits;
+  unsigned int groupingDigits = 0;
   /** The grouping symbol. */
-  char groupingSymbol;
+  char groupingSymbol = 0;
   /** Decimal point symbol. */
-  char decimalSymbol;
+  char decimalSymbol = 0;
 public:
 
   NumericFormatSet() throw() {
@@ -38,7 +38,7 @@ public:
   
 };
 
-class MonetaryFormatSet : public Object {
+class _DK_SDU_MIP__BASE__API MonetaryFormatSet : public Object {
 public:
 
   /** Relative currency positions. */
@@ -110,7 +110,7 @@ public:
   }
 };
 
-class DateFormatSet : public Object {
+class _DK_SDU_MIP__BASE__API DateFormatSet : public Object {
 private:
 
   /** The abbreviated name of weekdays. */
@@ -256,7 +256,7 @@ public:
   @version 1.1
 */
 
-class Locale : public DateFormatSet {
+class _DK_SDU_MIP__BASE__API Locale : public DateFormatSet {
 public:
 
   static const Locale POSIX;

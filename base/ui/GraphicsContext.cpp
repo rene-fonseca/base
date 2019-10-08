@@ -16,6 +16,7 @@
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <base/platforms/win32/Helpers.h>
 #  include <windows.h>
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix (X11)
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
@@ -300,6 +301,7 @@ void GraphicsContext::clear() throw(UserInterfaceException) {
     ),
     UserInterfaceException(this)
   );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   ::XClearWindow(
     (Display*)displayHandle,
@@ -325,6 +327,7 @@ void GraphicsContext::clear(
     ),
     UserInterfaceException(this)
   );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   ::XClearArea(
     (Display*)displayHandle,
@@ -352,6 +355,7 @@ void GraphicsContext::setPixel(
     ) != (COLORREF)(-1),
     UserInterfaceException(this)
   );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   bassert(
     ::XDrawPoint(
@@ -400,6 +404,7 @@ void GraphicsContext::setPixels(
       UserInterfaceException(this)
     );
   }
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   Array<Position>::ReadIterator i = positions.getBeginReadIterator();
   const Array<Position>::ReadIterator end = positions.getEndReadIterator();
@@ -480,6 +485,7 @@ void GraphicsContext::line(
     ),
     UserInterfaceException(this)
   );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   bassert(
     ::XDrawLine(
@@ -538,6 +544,7 @@ void GraphicsContext::arc(
 //     int nXEndArc,    // x-coord of second radial ending point
 //     int nYEndArc     // y-coord of second radial ending point
 //   );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   if (flags & GraphicsContext::FILLED) {
     ::XFillArc(
@@ -595,6 +602,7 @@ void GraphicsContext::rectangle(
     ),
     UserInterfaceException(this)
   );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   // TAG: use current pen and brush
   bassert(
@@ -627,6 +635,7 @@ void GraphicsContext::rectangle(
     ),
     UserInterfaceException(this)
   );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   if (flags & GraphicsContext::FILLED) {
     ::XFillRectangle(
@@ -894,6 +903,7 @@ void GraphicsContext::text(
     ),
     UserInterfaceException(this)
   );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
 	::XDrawString(
     (Display*)displayHandle,
@@ -929,6 +939,7 @@ void GraphicsContext::putBitmap(
       UserInterfaceException(this)
     );
   }
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   if (bitmap.handle.isValid()) {
     bassert(
@@ -976,6 +987,8 @@ Bitmap GraphicsContext::getBitmap(
   Bitmap result;
   result.handle = new Bitmap::Handle(deviceContext);
   return result;
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+  return Bitmap();
 #else // unix
   XImage* image = ::XGetImage(
     (Display*)displayHandle,

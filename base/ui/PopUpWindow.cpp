@@ -16,6 +16,7 @@
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <windows.h>
 #  undef DELETE // yikes
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix (X11)
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
@@ -33,6 +34,7 @@ void PopUpWindow::destroy() throw() {
     // nothing to destroy
   }
   ASSERT(screenHandle == 0);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   if (graphicsContextHandle) {
     // nothing to destroy
@@ -72,6 +74,7 @@ PopUpWindow::PopUpWindow(unsigned int flags) throw(UserInterfaceException)
     drawableHandle = 0;
     throw UserInterfaceException("Unable to connect to device context", this);
   }
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
@@ -153,6 +156,7 @@ PopUpWindow::PopUpWindow(const Position& position, const Dimension& dimension, u
     drawableHandle = 0;
     throw UserInterfaceException("Unable to connect to device context", this);
   }
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);

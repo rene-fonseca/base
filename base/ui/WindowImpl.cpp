@@ -22,6 +22,7 @@
 #endif
 #  include <windows.h>
 #  undef DELETE // yikes
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix (X11)
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
@@ -126,7 +127,8 @@ namespace windowImpl {
     delete entry;
   }
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
 
   void (*XBlackPixel)();
   void (*XBlackPixelOfScreen)();
@@ -766,6 +768,7 @@ void WindowImpl::construct() throw() {
   mouseEvent.hwndTrack = (HWND)drawableHandle;
   mouseEvent.dwHoverTime = 0;
   ::TrackMouseEvent(&mouseEvent);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   ::XSetWMProtocols(
     (Display*)displayHandle,
@@ -809,6 +812,7 @@ bool WindowImpl::loadModule(bool load) throw() {
       };
       windowClass = ::RegisterClassEx(&temp); // zero if fails
       success = windowClass != 0;
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
       // TAG: fix display handle support (DISPLAY variable could have been changed)
       // TAG: need support for connection to any server (e.g. "localhost:0.0")
@@ -869,6 +873,7 @@ bool WindowImpl::loadModule(bool load) throw() {
         L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl",
         ::GetModuleHandle(NULL)
       );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
       ::XCloseDisplay((Display*)displayHandle);
       displayHandle = 0;
@@ -980,6 +985,7 @@ Position WindowImpl::getBindingOffset(Binding binding) const throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
 void WindowImpl::flush() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   ::XFlush((Display*)displayHandle);
 #endif // flavor
@@ -990,6 +996,8 @@ void WindowImpl::flush() throw(UserInterfaceException) {
 String WindowImpl::getServerVendor() const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return Literal("UNSPECIFIED");
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+  return String();
 #else // unix
   return NativeString(::XServerVendor((Display*)displayHandle));
 #endif // flavor
@@ -998,6 +1006,8 @@ String WindowImpl::getServerVendor() const throw(UserInterfaceException) {
 unsigned int WindowImpl::getServerRelease() const
   throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+  return 0;
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
   return 0;
 #else // unix
   return ::XVendorRelease((Display*)displayHandle);
@@ -1035,6 +1045,7 @@ String WindowImpl::getTitle() const throw(UserInterfaceException) {
 void WindowImpl::setTitle(const String& title) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::SetWindowText((HWND)drawableHandle, toWide(title).c_str());
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   ::XChangeProperty(
     (Display*)displayHandle,
@@ -1058,6 +1069,7 @@ void WindowImpl::setIconTitle(
   this->iconTitle = iconTitle;
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: fixme
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   ::XChangeProperty(
     (Display*)displayHandle,
@@ -1089,6 +1101,7 @@ void WindowImpl::setPosition(
       UserInterfaceException(this)
     );
   }
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   XWindowChanges changes;
   changes.x = position.getX();
@@ -1118,6 +1131,7 @@ void WindowImpl::setDimension(
       UserInterfaceException(this)
     );
   }
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   XWindowChanges changes;
   changes.width = dimension.getWidth();
@@ -1152,6 +1166,7 @@ void WindowImpl::setRegion(
     ),
     UserInterfaceException(this)
   );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   XWindowChanges changes;
   changes.x = position.getX();
@@ -1225,6 +1240,7 @@ void WindowImpl::setCursor(Cursor cursor) throw(UserInterfaceException) {
     ::SetCursorPos(point.x, point.y);
     this->cursor = cursor;
   }
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   if (cursor != this->cursor) {
     static const int NATIVE_GLYPH[] = {
@@ -1273,9 +1289,11 @@ Position WindowImpl::toGlobalPosition(
   const Position& position) const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return this->position + position;
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+  return Position();
 #else // unix
-  int x;
-  int y;
+  int x = 0;
+  int y = 0;
   ::Window child;
   Bool result = ::XTranslateCoordinates(
     (Display*)displayHandle,
@@ -1297,12 +1315,14 @@ Position WindowImpl::getCursorPosition() const throw(UserInterfaceException) {
   POINT point;
   ::GetCursorPos(&point);
   return Position(point.x, point.y);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+  return Position();
 #else // unix
-  int rootX;
-  int rootY;
-  int x;
-  int y;
-  unsigned int nativeState;
+  int rootX = 0;
+  int rootY = 0;
+  int x = 0;
+  int y = 0;
+  unsigned int nativeState = 0;
   ::Window root;
   ::Window child;
   Bool result = ::XQueryPointer(
@@ -1325,6 +1345,7 @@ Position WindowImpl::getCursorPosition() const throw(UserInterfaceException) {
 void WindowImpl::setCursorPosition(const Position& position) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::SetCursorPos(position.getX(), position.getY()); // screen coordinates
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   ::XWarpPointer(
     (Display*)displayHandle,
@@ -1343,6 +1364,7 @@ void WindowImpl::setCursorPosition(const Position& position) throw(UserInterface
 void WindowImpl::releaseCursorConfinement() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   bassert(::ClipCursor(0), UserInterfaceException(this));
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   ::XUngrabPointer((Display*)displayHandle, CurrentTime);
 #endif // flavor
@@ -1370,6 +1392,7 @@ void WindowImpl::setCursorConfinement() throw(UserInterfaceException) {
   rect.right += offset.x;
   rect.bottom += offset.y;
   bassert(::ClipCursor(&rect), UserInterfaceException(this));
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   int result = ::XGrabPointer(
     (Display*)displayHandle,
@@ -1442,6 +1465,7 @@ void WindowImpl::close() throw(UserInterfaceException) {
       UserInterfaceException(this)
     );
   }
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   if (drawableHandle) {
     XClientMessageEvent event;
@@ -1494,11 +1518,12 @@ bool WindowImpl::isMinimized() throw(UserInterfaceException) {
 void WindowImpl::maximize() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_MAXIMIZE);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   // store current position and dimension
   // what is the decoration frame size?
-  int x;
-  int y;
+  int x = 0;
+  int y = 0;
   ::Window child;
   Bool result = ::XTranslateCoordinates(
     (Display*)displayHandle,
@@ -1529,6 +1554,7 @@ void WindowImpl::maximize() throw(UserInterfaceException) {
 void WindowImpl::minimize() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_MINIMIZE);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   // WM_CHANGE_STATE ClientMessage event with a format of 32 and a first data element of IconicSlate
   ::XIconifyWindow(
@@ -1542,6 +1568,7 @@ void WindowImpl::minimize() throw(UserInterfaceException) {
 void WindowImpl::normalize() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_RESTORE);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   Position originalPosition = position; // TAG: fixme - must be attribute
   Dimension originalDimension = dimension; // TAG: fixme - must be attribute
@@ -1562,6 +1589,7 @@ void WindowImpl::normalize() throw(UserInterfaceException) {
 void WindowImpl::show() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_SHOW);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   ::XMapWindow((Display*)displayHandle, (::Window)drawableHandle);
 #endif // flavor
@@ -1570,6 +1598,7 @@ void WindowImpl::show() throw(UserInterfaceException) {
 void WindowImpl::hide() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_HIDE);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   ::XUnmapWindow((Display*)displayHandle, (::Window)drawableHandle);
 #endif // flavor
@@ -1581,6 +1610,7 @@ void WindowImpl::enable() throw(UserInterfaceException) {
     ::EnableWindow((HWND)drawableHandle, TRUE),
     UserInterfaceException(this)
   );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   // TAG: is there a better alternative
   ::XMapWindow((Display*)displayHandle, (::Window)drawableHandle);
@@ -1593,6 +1623,7 @@ void WindowImpl::disable() throw(UserInterfaceException) {
     ::EnableWindow((HWND)drawableHandle, FALSE),
     UserInterfaceException(this)
   );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   // TAG: is there a better alternative
   ::XUnmapWindow((Display*)displayHandle, (::Window)drawableHandle);
@@ -1605,6 +1636,7 @@ void WindowImpl::raise() throw(UserInterfaceException) {
     ::SetForegroundWindow((HWND)drawableHandle),
     UserInterfaceException(this)
   );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   ::XMapRaised((Display*)displayHandle, (::Window)drawableHandle);
   // TAG: what about focus
@@ -1614,6 +1646,7 @@ void WindowImpl::raise() throw(UserInterfaceException) {
 void WindowImpl::acquireFocus() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   bassert(::SetFocus((HWND)drawableHandle), UserInterfaceException(this));
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   // TAG: fixme
   return;
@@ -1642,6 +1675,7 @@ void WindowImpl::setCapture(bool state) throw(UserInterfaceException) {
   } else {
     ::ReleaseCapture();
   }
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   if (state) {
     int result = ::XGrabPointer(
@@ -1819,6 +1853,7 @@ void WindowImpl::invalidate() throw(UserInterfaceException) {
     ::InvalidateRect((HWND)drawableHandle, 0, FALSE) != FALSE,
     UserInterfaceException(this)
   );
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   XExposeEvent event;
   event.type = Expose;
@@ -1853,6 +1888,7 @@ void WindowImpl::update() throw(UserInterfaceException) {
 void WindowImpl::exit() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::PostQuitMessage(0);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   XClientMessageEvent event;
   event.type = ClientMessage;
@@ -1872,6 +1908,7 @@ void WindowImpl::exit() throw() {
 void WindowImpl::wait() throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   ::WaitMessage();
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   XEvent event;
   ::XPeekEvent((Display*)displayHandle, &event);
@@ -1886,6 +1923,7 @@ bool WindowImpl::wait(unsigned int milliseconds) throw(UserInterfaceException) {
   return ::MsgWaitForMultipleObjects(0, 0, FALSE, INFINITE, QS_ALLEVENTS) != WAIT_TIMEOUT;
 #else // unix
   // TAG: wait with timeout
+  return false;
 #endif // flavor
 }
 
@@ -1927,6 +1965,7 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
       ::WaitMessage(); // TAG: fixme
     }
   }
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   while (true) {
 //     while (!::XPending((Display*)displayHandle)) {
@@ -2521,6 +2560,8 @@ unsigned int WindowImpl::getMouseButtons() throw() {
     result |= Mouse::WHEEL;
   }
   return result;
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+  return 0;
 #else // unix
   return Mouse::LEFT|Mouse::MIDDLE|Mouse::RIGHT|Mouse::EXTRA|Mouse::EXTRA2; // TAG: fixme
 #endif // flavor
@@ -2539,6 +2580,8 @@ Dimension WindowImpl::getDisplayDimension() throw() {
   unsigned int width = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
   unsigned int height = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
   return Dimension(width, height);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+  return Dimension();
 #else // unix
   unsigned int width = ::XWidthOfScreen((Screen*)screenHandle);
   unsigned int height = ::XHeightOfScreen((Screen*)screenHandle);
@@ -2602,6 +2645,8 @@ bool WindowImpl::isResponding(
   }
   bassert(::GetLastError() == 0, UserInterfaceException(this));
   return false;
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+  return false;
 #else // unix
   // TAG: use timeout period
   XClientMessageEvent event;
@@ -2628,6 +2673,7 @@ WindowImpl::~WindowImpl() throw() {
   if (drawableHandle) {
     ::DestroyWindow((HWND)drawableHandle);
   }
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   if (drawableHandle) {
     XClientMessageEvent event;

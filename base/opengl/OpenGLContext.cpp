@@ -18,7 +18,10 @@
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #  include <base/platforms/win32/GDI.h>
 #else // unix
+#if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#else
 #  include <base/platforms/os/unix/GLX.h>
+#endif
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE

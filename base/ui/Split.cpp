@@ -60,6 +60,8 @@ void Split::setOffset(int offset, Field field) throw() {
   case SECOND:
     this->offset = limit - offset; // translate to FIRST
     break;
+  case RELATIVE:
+    break;
   }
   // first widget setDimension();
   // second widget setDimension();

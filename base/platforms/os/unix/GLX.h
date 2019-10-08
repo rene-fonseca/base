@@ -19,7 +19,63 @@
 #  error native GLX interface requires unix flavor
 #endif
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+
+// fake types
+
+typedef void* XID;
+typedef unsigned int XVisualInfo;
+typedef unsigned int Display;
+typedef unsigned int Bool;
+typedef void* Pixmap;
+typedef void* Window;
+typedef unsigned int Screen;
+typedef unsigned int Font;
+
+enum {
+  None = 0,
+  Success = 1,
+  False = 0,
+  True = 1,
+
+  StructureNotifyMask = 0x1000,
+  KeymapStateMask,
+  FocusChangeMask,
+  ButtonReleaseMask,
+  ButtonPressMask,
+  KeyReleaseMask,
+  KeyPressMask,
+  VisibilityChangeMask,
+  EnterWindowMask,
+  LeaveWindowMask,
+  PointerMotionMask
+};
+
+void XDestroyWindow(Display*, Window) {}
+int XDefaultScreen(Display*) {return 0;}
+void* XScreenOfDisplay(Display*, int screenId) {return 0;}
+int XBlackPixelOfScreen(Screen*) {return 0;}
+int XWhitePixelOfScreen(Screen*) {return 0;}
+void* DefaultRootWindow(Display*) {return 0;}
+void XFree(XVisualInfo*) {}
+
+void* XCreateSimpleWindow(
+    Display*,
+    void*,
+    int,
+    int,
+    int,
+    int,
+    int, // border width
+    int, // border color
+    int) {return 0;}
+
+void XSelectInput(Display*, Window, int) {}
+int XScreenNumberOfScreen(Screen*) {return 0;}
+void* XCreatePixmap(Display*, void*, int, int, int) {return 0;}
+void XFreePixmap(Display*, Pixmap) {}
+
+#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
 #endif // flavor

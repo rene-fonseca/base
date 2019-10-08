@@ -19,10 +19,13 @@
 #  include <windows.h>
 #  undef DELETE // yikes
 #else // unix (X11)
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#else
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
 #  include <X11/Xatom.h>
 #  include <stdlib.h>
+#endif
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -43,6 +46,7 @@ Bitmap::Handle::~Handle() throw() {
   if (handle) {
     ::DeleteObject((HGDIOBJ)handle);
   }
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   if (handle) {
     XDestroyImage((XImage*)handle);
@@ -118,6 +122,7 @@ Bitmap::Bitmap(
     UserInterfaceException(this)
   );
   handle = new Handle(deviceContextHandle);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   bassert( // TAG: what is the dimension limit
     (dimension.getWidth() < 65536) && (dimension.getHeight() < 65536),
@@ -172,6 +177,8 @@ uint32 Bitmap::getPixel(
   bassert(handle.isValid(), NullPointer(this));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   return 0; // TAG: fixme
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+  return 0;
 #else // unix
   unsigned long pixel = XGetPixel(
     (XImage*)handle->getHandle(),
@@ -189,6 +196,7 @@ void Bitmap::setPixel(
   bassert(handle.isValid(), NullPointer(this));
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   // TAG: fixme
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
 #else // unix
   XPutPixel(
     (XImage*)handle->getHandle(),
@@ -215,6 +223,8 @@ Dimension Bitmap::getDimension() const throw(UserInterfaceException) {
     &info
   );
   return Dimension(info.bmWidth, info.bmHeight);
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+  return Dimension();
 #else // unix
   XImage* image = (XImage*)handle->getHandle();
   return Dimension(image->width, image->height);

@@ -14,6 +14,7 @@
 #include <base/ui/GraphicsContext.h>
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  include <base/platforms/win32/Helpers.h>
 #  include <windows.h>
 #else // unix (X11)
 #  include <X11/Xlib.h>
@@ -311,7 +312,7 @@ void GraphicsContext::clear(
   const Position& position,
   const Dimension& dimension) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  RECT rect;
+  RECT rect = {0, 0, 0, 0};
   rect.left = position.getX();
   rect.top = position.getY();
   rect.right = rect.left + dimension.getWidth(); // do not subtract 1
@@ -822,12 +823,13 @@ unsigned int GraphicsContext::getWidthOf(
 Dimension GraphicsContext::getDimensionOf(
   const String& text) const throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  SIZE size;
+  SIZE size = {0, 0};
+  OSString _text(text);
   bassert(
     ::GetTextExtentPoint(
       (HDC)graphicsContextHandle,
-      text.getElements(),
-      text.getLength(),
+      _text,
+      _text.getLength(),
       &size
     ),
     UserInterfaceException(this)
@@ -880,11 +882,12 @@ void GraphicsContext::text(
   rect.top = position.getY();
   rect.right = rect.left + dimension.getWidth() - 1;
   rect.bottom = rect.top + dimension.getHeight() - 1;
+  OSString _text(text);
   bassert(
     ::DrawTextEx(
       (HDC)graphicsContextHandle,
-      (char*)text.getElements(), // not allowed to change string
-      text.getLength(),
+      _text, // not allowed to change string
+      _text.getLength(),
       &rect,
       nativeTextFormat,
       0

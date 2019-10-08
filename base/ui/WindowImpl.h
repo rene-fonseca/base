@@ -79,28 +79,28 @@ private:
   static SpinLock spinLock;
   
   /** The display mode. */
-  DisplayMode displayMode;
+  DisplayMode displayMode = MODE_WINDOW;
   Position lastMousePosition;
   
   /** The current keyboard state. */
   uint8 keyboardState[256];
   /** The modifiers. */
-  unsigned int modifiers;
+  unsigned int modifiers = 0;
   /** The autopreat flag. */
-  bool autorepeat;
+  bool autorepeat = false;
   /**
     Flag specifying whether the mouse is in the scope of the client area of the
     window.
   */
-  bool scope;
+  bool scope = false;
   /** Flag specifying whether the window is active. */
-  bool active;
+  bool active = false;
   /** Specifies whether to window is visible or not. */
-  Visibility visibility;
+  Visibility visibility = VISIBLE;
   /** Specifies whether to window is enabled or not. */
-  bool enabled;
+  bool enabled = true;
   /** The current cursor. */
-  Cursor cursor;
+  Cursor cursor = ARROW;
 
   /** The current number of locks on the user interface component. */
   static unsigned int numberOfLocks;
@@ -120,7 +120,7 @@ protected:
   /** The dimension of the window. */
   Dimension dimension;
   /** Flags. */
-  unsigned int flags;
+  unsigned int flags = 0;
   /** The minimum dimension of the window. */
   Dimension minimumSize;
   /** The maximum dimension of the window. */
@@ -128,9 +128,9 @@ protected:
   /** Opaque handle to the display. */
   static void* displayHandle;
   /** Opaque handle to the screen. */
-  void* screenHandle;
+  void* screenHandle = nullptr;
   /** Opaque handle to the graphics context of the window. */
-  void* graphicsContextHandle;
+  void* graphicsContextHandle = nullptr;
   
   /**
     Invoked after initial context specific initialization to finalize the

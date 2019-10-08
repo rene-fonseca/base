@@ -52,8 +52,8 @@ PopUpWindow::PopUpWindow(unsigned int flags) throw(UserInterfaceException)
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   drawableHandle = ::CreateWindowEx(
     WS_EX_APPWINDOW | WS_EX_WINDOWEDGE, // extended style
-    "http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
-    "", // window title
+    L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
+    L"", // window title
     WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // window style
     CW_USEDEFAULT, // x position
     0, // y position (ignored)
@@ -132,8 +132,8 @@ PopUpWindow::PopUpWindow(const Position& position, const Dimension& dimension, u
   
   drawableHandle = ::CreateWindowEx(
     extendedStyle, // extended style
-    "http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
-    "", // window title
+    L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
+    L"", // window title
     style | // window style
     WS_DISABLED | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
     rect.left, // x position

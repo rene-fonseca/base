@@ -31,12 +31,12 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 SpinLock WindowImpl::spinLock;
 // TAG: should be separate reference counted class
-void* WindowImpl::displayHandle = 0;
+void* WindowImpl::displayHandle = nullptr;
 unsigned int WindowImpl::numberOfLocks = 0;
 
 namespace windowImpl {
 
-  DynamicLinker* dynamicLinker = 0;
+  DynamicLinker* dynamicLinker = nullptr;
 
   typedef void (CALL_UI *UIFunction)();
   

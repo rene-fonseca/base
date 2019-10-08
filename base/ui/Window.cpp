@@ -54,7 +54,7 @@ Window::Window(unsigned int flags) throw(UserInterfaceException)
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   drawableHandle = ::CreateWindowEx(
     WS_EX_APPWINDOW | WS_EX_WINDOWEDGE, // extended style
-    L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
+    _DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
     L"", // window title
     WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // window style - required for OpenGL // TAG: what should this be
     CW_USEDEFAULT, // x position
@@ -159,7 +159,7 @@ Window::Window(
   
   drawableHandle = ::CreateWindowEx(
     extendedStyle, // extended style
-    L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
+    _DK_SDU_MIP__BASE__ID_PREFIX L"ui/WindowImpl", // class name
     L"", // window title
     style | // window style
     WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // required for OpenGL // TAG: what should this be

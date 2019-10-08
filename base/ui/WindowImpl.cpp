@@ -807,7 +807,7 @@ bool WindowImpl::loadModule(bool load) throw() {
         (HCURSOR)::LoadImage(0, MAKEINTRESOURCE(OCR_NORMAL), IMAGE_CURSOR, 0, 0, LR_DEFAULTCOLOR|LR_SHARED), // cursor
         0, // background
         0, // menu
-        L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
+        _DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
         0 // small icon
       };
       windowClass = ::RegisterClassEx(&temp); // zero if fails
@@ -849,13 +849,13 @@ bool WindowImpl::loadModule(bool load) throw() {
         windowImpl::atoms[PING_MESSAGE] =
           ::XInternAtom(
             display,
-            "http://www.mip.sdu.dk/~fonseca/base/ui/WindowImpl/PING_MESSAGE",
+            toUTF8(_DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl/PING_MESSAGE").c_str(),
             False
           );
         windowImpl::atoms[QUIT_MESSAGE] =
           ::XInternAtom(
             display,
-            "http://www.mip.sdu.dk/~fonseca/base/ui/WindowImpl/QUIT_MESSAGE",
+            toUTF8(_DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl/QUIT_MESSAGE").c_str(),
             False
           );
       }
@@ -870,7 +870,7 @@ bool WindowImpl::loadModule(bool load) throw() {
     if (--numberOfLocks == 0) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
       ::UnregisterClass(
-        L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl",
+        _DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl",
         ::GetModuleHandle(NULL)
       );
 #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)

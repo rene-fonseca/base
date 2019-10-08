@@ -70,6 +70,8 @@ namespace dk {
 #  define _DK_SDU_MIP__BASE__DUMMY_SYMBOL extern int _DUMMY_SYMBOL;
 #endif
 
+#define _DK_SDU_MIP__BASE__ID_PREFIX L"https://www.fonseca.dk/base"
+
 #define _DK_SDU_MIP__BASE__STRINGIFY(value) #value
 #define _DK_SDU_MIP__BASE__INDIRECT_STRINGIFY(value) _DK_SDU_MIP__BASE__STRINGIFY(value)
 

@@ -54,8 +54,7 @@ Widget::Widget(Window& owner) throw(UserInterfaceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
   drawableHandle = ::CreateWindowEx(
     0, // extended style
-    L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
-    // TAG: "mip.sdu.dk/~fonseca/base/ui/Widget"
+    _DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
     L"", // window title
     WS_CHILD | WS_VISIBLE, // window style // TAG: what should this be
     0, // x

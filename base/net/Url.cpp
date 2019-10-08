@@ -299,7 +299,7 @@ bool Url::isPort(String::ReadIterator i, const String::ReadIterator& end) throw(
 }
 
 void Url::parse(const String& url, bool strict) throw(UrlException, MemoryException) {
-  // example url: http://fonseca:password@www.mip.sdu.dk:80/~fonseca/base/
+  // example url: http://username:password@server:80/folder/
 
   int index = 0; // current position in the url
   int end = url.getLength();

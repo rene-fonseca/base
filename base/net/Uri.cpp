@@ -341,7 +341,7 @@ void Uri::parse(const String& uri, bool strict) throw(UriException, MemoryExcept
   // "scheme:path"
   // reserved characters: %, /, #, ?, *, !, ".", ".."
   // unsafe characters:
-  // example uri: http://fonseca:password@www.mip.sdu.dk:80/~fonseca/base/
+  // example uri: http://username:password@server:80/folder/
   // isAbsolute: return indexOf(':') < indexOf('/');
 
   int index = 0; // current position in the uri

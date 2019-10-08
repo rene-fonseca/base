@@ -34,7 +34,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   drawableHandle = ::CreateWindowEx(
     0, // extended style
-    L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
+    _DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
     L"", // window title
     WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // required for OpenGL - style
     0, // x position

@@ -455,7 +455,7 @@ public:
     /*DWORD threadId =*/ ::GetWindowThreadProcessId(window, &processId);
     
     if (processId == kill->getProcess().getId()) {
-      static const char messageHandlerIdentity[] = "mip.sdu.dk/~fonseca/base?message handler";
+      static const wchar messageHandlerIdentity[] = _DK_SDU_MIP__BASE__ID_PREFIX L"?message handler";
       wchar className[sizeof(messageHandlerIdentity) + 1];
       int length = ::GetClassName(window, className, getArraySize(className)); // excludes terminator
 //      if ((length == (sizeof(messageHandlerIdentity) - 1)) &&

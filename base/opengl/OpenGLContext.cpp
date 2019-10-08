@@ -194,7 +194,7 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
   
   drawableHandle = ::CreateWindowEx(
     extendedStyle, // extended style
-    L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
+    _DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
     L"", // window title
     style | // window style
     WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // required for OpenGL

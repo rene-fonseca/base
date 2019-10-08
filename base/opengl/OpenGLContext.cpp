@@ -87,10 +87,10 @@ BOOL CALLBACK enumerateMonitor(HMONITOR monitor, HDC hdc, LPRECT rect, LPARAM co
       candidate &= pfd.iPixelType == PFD_TYPE_RGBA;
     }
     if (temp->flags & OpenGLContext::DOUBLE_BUFFERED) {
-      candidate &= pfd.dwFlags & PFD_DOUBLEBUFFER;
+      candidate &= (pfd.dwFlags & PFD_DOUBLEBUFFER) != 0;
     }
     if (temp->flags & OpenGLContext::STEREO) {
-      candidate &= pfd.dwFlags & PFD_STEREO;
+      candidate &= (pfd.dwFlags & PFD_STEREO) != 0;
     }
     if (temp->flags & OpenGLContext::DIRECT) {
       candidate &= (pfd.dwFlags & PFD_GENERIC_FORMAT) == 0;
@@ -191,8 +191,8 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
   
   drawableHandle = ::CreateWindowEx(
     extendedStyle, // extended style
-    "http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
-    "", // window title
+    L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
+    L"", // window title
     style | // window style
     WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // required for OpenGL
     rect.left, // x position,
@@ -232,13 +232,13 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
       candidate &= pfd.iPixelType == PFD_TYPE_RGBA;
     }
     if (format.flags & OpenGLContext::GENERIC) {
-      candidate &= pfd.dwFlags & PFD_GENERIC_FORMAT;
+      candidate &= (pfd.dwFlags & PFD_GENERIC_FORMAT) != 0;
     }
     if (format.flags & OpenGLContext::DOUBLE_BUFFERED) {
-      candidate &= pfd.dwFlags & PFD_DOUBLEBUFFER;
+      candidate &= (pfd.dwFlags & PFD_DOUBLEBUFFER) != 0;
     }
     if (format.flags & OpenGLContext::STEREO) {
-      candidate &= pfd.dwFlags & PFD_STEREO;
+      candidate &= (pfd.dwFlags & PFD_STEREO) != 0;
     }
     candidate &= pfd.cColorBits == format.colorBits;
     candidate &= pfd.cRedBits == format.redBits;

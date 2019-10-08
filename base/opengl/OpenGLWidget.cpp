@@ -87,13 +87,13 @@ nothing OpenGLWidget::initialize(const Format& format) throw(OpenGLException, Us
       candidate &= pfd.iPixelType == PFD_TYPE_RGBA;
     }
     if (format.flags & OpenGLContextImpl::GENERIC) {
-      candidate &= pfd.dwFlags & PFD_GENERIC_FORMAT;
+      candidate &= (pfd.dwFlags & PFD_GENERIC_FORMAT) != 0;
     }
     if (format.flags & OpenGLContextImpl::DOUBLE_BUFFERED) {
-      candidate &= pfd.dwFlags & PFD_DOUBLEBUFFER;
+      candidate &= (pfd.dwFlags & PFD_DOUBLEBUFFER) != 0;
     }
     if (format.flags & OpenGLContextImpl::STEREO) {
-      candidate &= pfd.dwFlags & PFD_STEREO;
+      candidate &= (pfd.dwFlags & PFD_STEREO) != 0;
     }
     candidate &= pfd.cColorBits == format.colorBits;
     candidate &= pfd.cRedBits == format.redBits;

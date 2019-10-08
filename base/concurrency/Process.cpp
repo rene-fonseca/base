@@ -58,7 +58,7 @@ namespace ntapi {
     unsigned long inheritedFromUniqueProcessId; // TAG: is the type correct
   };
 
-  typedef NTSTATUS (_DK_SDU_MIP__BASE__CALL_PASCAL *PNtQueryInformationProcess)(HANDLE, unsigned int /*PROCESSINFOCLASS*/, void*, unsigned long, unsigned long*);
+  typedef NTSTATUS (__stdcall *PNtQueryInformationProcess)(HANDLE, unsigned int /*PROCESSINFOCLASS*/, void*, unsigned long, unsigned long*);
 };
 #endif
 

@@ -238,7 +238,7 @@ void OpenGLContextImpl::swap() throw(OpenGLException) {
 void OpenGLContextImpl::swap(int plane) throw(OutOfRange, OpenGLException) {
   bassert(
     (plane >= -static_cast<int>(numberOfUnderlayPlanes)) &&
-    (plane <= numberOfOverlayPlanes),
+    (plane <= static_cast<int>(numberOfOverlayPlanes)),
     OutOfRange(this)
   );
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  

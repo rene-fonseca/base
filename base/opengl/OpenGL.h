@@ -19,8 +19,10 @@
 #include <base/mathematics/Matrix4x4.h>
 #include <base/NotSupported.h>
 
+#undef DOMAIN
+
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define CALL_OPENGL _DK_SDU_MIP__BASE__CALL_PASCAL
+#  define CALL_OPENGL __stdcall
 #else
 #  define CALL_OPENGL
 #endif

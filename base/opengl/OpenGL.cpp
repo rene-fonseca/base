@@ -30,7 +30,7 @@
 #endif // flavor
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define CALL_OPENGL _DK_SDU_MIP__BASE__CALL_PASCAL
+#  define CALL_OPENGL __stdcall
 #else
 #  define CALL_OPENGL
 #endif
@@ -58,7 +58,7 @@ namespace opengl {
 
   // TAG: pthread_once functionality is better
   SpinLock spinLock;
-  DynamicLinker* dynamicLinker = 0;
+  DynamicLinker* dynamicLinker = nullptr;
   
   typedef OpenGL::Function (CALL_OPENGL *GetFunction)(const char* name);
   GetFunction getFunction = 0;  

@@ -24,18 +24,18 @@
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int flags) throw(OpenGLException) {
-  screenHandle = 0;
-  drawableHandle = 0;
-  graphicsContextHandle = 0;
-  renderingContextHandle = 0;
+  screenHandle = nullptr;
+  drawableHandle = nullptr;
+  graphicsContextHandle = nullptr;
+  renderingContextHandle = nullptr;
   
   OpenGLContextImpl::loadModule();  
   
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
   drawableHandle = ::CreateWindowEx(
     0, // extended style
-    "http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
-    "", // window title
+    L"http://mip.sdu.dk/~fonseca/base/ui/WindowImpl", // class name
+    L"", // window title
     WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // required for OpenGL - style
     0, // x position
     0, // y position

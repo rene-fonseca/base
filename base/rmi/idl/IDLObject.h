@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/rmi/OrbException.h>
+#include <base/Object.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

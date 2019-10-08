@@ -15,25 +15,23 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-NISpinLock::NISpinLock() throw() {
-  atomic_init(&value, 0);
+NISpinLock::NISpinLock() throw() : value(0) {
 }
 
 void NISpinLock::exclusiveLock() const throw() {
   unsigned long expected = 0;
-  while (!atomic_compare_exchange_strong(&value, &expected, 1)) {
+  while (!value.compare_exchange_strong(expected, 1)) {
     // yield
   }
-  // while (!tryExclusiveLock());
 }
 
 bool NISpinLock::tryExclusiveLock() const throw() {
   unsigned long expected = 0;
-  return atomic_compare_exchange_strong(&value, &expected, 1);
+  return value.compare_exchange_strong(expected, 1);
 }
 
 void NISpinLock::releaseLock() const throw() {
-  atomic_store(&value, 0);
+  value = 0;
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

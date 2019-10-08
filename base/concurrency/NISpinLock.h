@@ -14,7 +14,7 @@
 #pragma once
 
 #include <base/concurrency/Lock.h>
-#include <stdatomic.h>
+#include <atomic>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -33,7 +33,7 @@ class _DK_SDU_MIP__BASE__API NISpinLock : public Lock {
 private:
   
   /** Lock. */
-  _Atomic volatile mutable unsigned long value = 0;
+  mutable std::atomic<unsigned long> value;
 public:
   
   /**

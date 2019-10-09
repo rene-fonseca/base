@@ -146,7 +146,7 @@ public:
     unsigned int _size,
     Value value,
     unsigned int granularity = ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY) throw(MemoryException)
-    : elements(new ReferenceCountedCapacityAllocator<Value>(size, granularity)),
+    : elements(new ReferenceCountedCapacityAllocator<Value>(_size, granularity)),
       size(_size) {
     fill(getElements(), size, value);
   }

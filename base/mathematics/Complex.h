@@ -20,13 +20,8 @@
 // see std::complex instead
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-
-#define _DK_SDU_MIP__BASE__COMPLEX_ISOC
-
-// TAG: need typedef for complex types
-// typedef float complex _Fcomplex;
-// typedef double complex _Dcomplex;
-// typedef long double complex _Lcomplex;
+#  define _DK_SDU_MIP__BASE__COMPLEX_ISOC
+#endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
@@ -135,14 +130,18 @@ private:
   /** The imaginary part the complex number. */
   double imaginary = 0;
 
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
   inline _Dcomplex getNative() const throw() {
     return _DCOMPLEX_(real, imaginary);
     // return real + imaginary * 1i;
   }
+#endif
 
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
   static inline Complex getComplex(const _Dcomplex value) throw() {
     return Complex(isoc::creal(value), isoc::cimag(value));
   }
+#endif
 public:
 
   /**
@@ -193,69 +192,133 @@ public:
   }
 
   inline Complex sqrt() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::csqrt(getNative()));
+#else
+    return Complex();
+#endif
   }
 
   inline Complex exp() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cexp(getNative()));
+#else
+    return Complex();
+#endif
   }
 
   inline Complex log() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::clog(getNative()));
+#else
+    return Complex();
+#endif
   }
 
   inline Complex pow(const double x, const Complex& y) const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cpow(x, y.getNative()));
+#else
+    return Complex();
+#endif
   }
 
 
   inline Complex sin() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::csin(getNative()));
+#else
+    return Complex();
+#endif
   }
 
   inline Complex asin() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::casin(getNative()));
+#else
+    return Complex();
+#endif
   }
 
   inline Complex cos() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::ccos(getNative()));
+#else
+    return Complex();
+#endif
   }
 
   inline Complex acos() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cacos(getNative()));
+#else
+    return Complex();
+#endif
   }
 
   inline Complex tan() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::ctan(getNative()));
+#else
+    return Complex();
+#endif
   }
 
   inline Complex atan() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::catan(getNative()));
+#else
+    return Complex();
+#endif
   }
 
 
   inline Complex sinh() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::csinh(getNative()));
+#else
+    return Complex();
+#endif
   }
 
   inline Complex asinh() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::casinh(getNative()));
+#else
+    return Complex();
+#endif
   }
 
   inline Complex cosh() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::ccosh(getNative()));
+#else
+    return Complex();
+#endif
   }
 
   inline Complex acosh() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cacosh(getNative()));
+#else
+    return Complex();
+#endif
   }
 
   inline Complex tanh() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::ctanh(getNative()));
+#else
+    return Complex();
+#endif
   }
 
   inline Complex atanh() const throw() {
+#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
     return getComplex(isoc::catanh(getNative()));
+#else
+    return Complex();
+#endif
   }
 
 
@@ -568,5 +631,3 @@ public:
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
-
-#endif

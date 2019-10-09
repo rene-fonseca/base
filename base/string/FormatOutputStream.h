@@ -157,29 +157,31 @@ public:
   static const int DEFAULT_PRECISION = 6;
   
   /** @short Context of format output stream object. */
-  struct Context { // TAG: need to compress structure using bit-fields
+  class Context { // TAG: need to compress structure using bit-fields
+  public:
+
     /** The format flags. */
-    unsigned int flags;
+    unsigned int flags = DEFAULT_FLAGS;
     /** The eol. */
-    Symbols::EndOfLine endOfLine;
+    Symbols::EndOfLine endOfLine = DEFAULT_EOL;
     /** The integer base. */
-    Symbols::Base integerBase;
+    Symbols::Base integerBase = DEFAULT_INTEGER_BASE;
     /** The floating-point base. */
-    Symbols::Base realBase;
+    Symbols::Base realBase = DEFAULT_REAL_BASE;
     /** The floating-point style. */
-    Symbols::RealStyle realStyle;
+    Symbols::RealStyle realStyle = DEFAULT_REAL_STYLE;
     /** The desired radix position. */
-    int radixPosition;
+    int radixPosition = DEFAULT_RADIX_POSITION;
     /** The major date/time format. */
-    Symbols::MajorDateFormat majorDateFormat;
+    Symbols::MajorDateFormat majorDateFormat = DEFAULT_MAJOR_DATE_FORMAT;
     /** Selects named subformat. */
-    Symbols::NamedDateFormat namedDateFormat;
+    Symbols::NamedDateFormat namedDateFormat = DEFAULT_NAMED_DATE_FORMAT;
     /** Justification within field. */
-    Symbols::Justification justification;
+    Symbols::Justification justification = DEFAULT_JUSTIFICATION;
     /** Specifies the field width. */
-    int width;
+    int width = DEFAULT_WIDTH;
     /** Specifies the number of digits to be written after the radix character. */
-    int precision;
+    int precision = DEFAULT_PRECISION;
     /** The date format. */
     String dateFormat;
   };
@@ -260,8 +262,8 @@ public:
     class Composite : public Object {
     private:
 
-      int x;
-      int y;
+      int x = 0;
+      int y = 0;
     public:
 
       Composite(int _x, int _y) throw() : x(_x), y(_y) {
@@ -312,7 +314,7 @@ public:
   private:
     
     static unsigned int counter; // TAG: need atomic access
-    unsigned int count;
+    unsigned int count = 0;
     Literal location;
   public:
     
@@ -450,7 +452,7 @@ public:
   class Indent {
   private:
     
-    unsigned int length;
+    unsigned int length = 0;
   public:
     
     inline Indent(unsigned int _length) throw()

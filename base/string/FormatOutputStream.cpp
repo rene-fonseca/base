@@ -31,19 +31,7 @@ FormatOutputStream& FormatOutputStream::operator<<(
                << '[' << DEC << debug.getCount() << ']';
 }
 
-const FormatOutputStream::Context FormatOutputStream::DEFAULT_CONTEXT = {
-  DEFAULT_FLAGS,
-  DEFAULT_EOL,
-  DEFAULT_INTEGER_BASE,
-  DEFAULT_REAL_BASE,
-  DEFAULT_REAL_STYLE,
-  DEFAULT_RADIX_POSITION,
-  DEFAULT_MAJOR_DATE_FORMAT,
-  DEFAULT_NAMED_DATE_FORMAT,
-  DEFAULT_JUSTIFICATION,
-  DEFAULT_WIDTH,
-  DEFAULT_PRECISION
-};
+const FormatOutputStream::Context FormatOutputStream::DEFAULT_CONTEXT = FormatOutputStream::Context();
 
 FormatOutputStream::FormatOutputStream(
   OutputStream& out, unsigned int size) throw(BindException)

@@ -199,7 +199,7 @@ public:
     }
     
     inline FormatOutputStream& operator()(
-      FormatOutputStream& stream) /*throw(...)*/ {
+      FormatOutputStream& stream) {
       return (stream.*method)(value);
     }
   };
@@ -218,7 +218,7 @@ public:
       : method(_method), value(_value) {
     }
     
-    inline FormatOutputStream& operator()(FormatOutputStream& stream) /*throw(...)*/ {
+    inline FormatOutputStream& operator()(FormatOutputStream& stream) {
       return (stream.*method)(value);
     }
   };

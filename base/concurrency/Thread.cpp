@@ -573,7 +573,7 @@ bool Thread::join() const throw(ThreadException) {
   return true;
 }
 
-void Thread::run() /*throw(...)*/ {
+void Thread::run() {
 }
 
 void Thread::start() throw(ThreadException) {

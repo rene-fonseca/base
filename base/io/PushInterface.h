@@ -42,7 +42,7 @@ public:
     @param size The number of bytes to be pushed.
     @return The number of bytes pushed.
   */
-  virtual unsigned int push(const uint8* buffer, unsigned int size) /*throw(...)*/ = 0;
+  virtual unsigned int push(const uint8* buffer, unsigned int size) = 0;
   
   /**
     This method should be invoked when the end has been reached. This method may

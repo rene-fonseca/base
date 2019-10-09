@@ -79,7 +79,7 @@ public:
     Assignment operator.
   */
   inline ArrayOwnershipPointer& operator=(
-    ArrayOwnershipPointer& eq) /*throw(...)*/ {
+    ArrayOwnershipPointer& eq) {
     if (&eq != this) { // protect against self assignment
       if (object) {
         delete[] object;
@@ -94,7 +94,7 @@ public:
   */
   template<class POLY>
   inline ArrayOwnershipPointer& operator=(
-    ArrayOwnershipPointer<POLY>& eq) /*throw(...)*/ {
+    ArrayOwnershipPointer<POLY>& eq) {
     if (eq.object != object) { // protect against self assignment
       if (object) {
         delete[] object;
@@ -107,7 +107,7 @@ public:
   /**
     Assignment operator.
   */
-  inline ArrayOwnershipPointer& operator=(TYPE* object) /*throw(...)*/ {
+  inline ArrayOwnershipPointer& operator=(TYPE* object) {
     if (this->object) {
       delete[] this->object;
     }

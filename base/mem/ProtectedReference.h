@@ -160,7 +160,7 @@ public:
     the default copy constructor for this to work. Raises the exceptions raised
     by the default copy constructor of the object.
   */
-  inline void copyOnWrite() /*throw(...)*/ {
+  inline void copyOnWrite() {
     if (isMultiReferenced()) { // do we have the object for our self
       // remove one reference (no need to delete object since multi-referenced)
       TYPE* temp = new TYPE(*value);

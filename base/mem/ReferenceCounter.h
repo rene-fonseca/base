@@ -110,7 +110,7 @@ public:
   /**
     Assignment of automation pointer to this automation pointer.
   */
-  inline ReferenceCounter& operator=(const ReferenceCounter& eq) /*throw(...)*/ {
+  inline ReferenceCounter& operator=(const ReferenceCounter& eq) {
     if (&eq != this) { // protect against self assignment
       if (!--*references) { // remove reference and possible destroy object
         if (value) { // skip if pointer is invalid
@@ -130,7 +130,7 @@ public:
     time polymorphism.
   */
   template<class POLY>
-  inline ReferenceCounter& operator=(const ReferenceCounter<POLY>& eq) /*throw(...)*/ {
+  inline ReferenceCounter& operator=(const ReferenceCounter<POLY>& eq) {
     ASSERT(&eq != this); // no need to protect against self assignment
     if (!--*references) { // remove reference and possible destroy object
       if (value) { // skip if pointer is invalid
@@ -156,7 +156,7 @@ public:
   /**
     Sets the pointer value of this automation pointer.
   */
-  inline void setValue(TYPE* _value) /*throw(...)*/ {
+  inline void setValue(TYPE* _value) {
     if (!--*references) { // remove reference and possible destroy object
       if (value) { // skip if pointer is invalid
         delete value; // could throw exception if RCO is destroyed unsuccessfully
@@ -196,7 +196,7 @@ public:
   /**
     Invalidates the reference.
   */
-  inline void invalidate() /*throw(...)*/ {
+  inline void invalidate() {
     if (value) { // skip if pointer is invalid
       if (--*references) {
         delete value;

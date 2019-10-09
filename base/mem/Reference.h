@@ -108,7 +108,7 @@ public:
   /**
     Assignment of automation pointer to this automation pointer.
   */
-  inline Reference& operator=(const Reference& eq) /*throw(...)*/ {
+  inline Reference& operator=(const Reference& eq) {
     setValue(eq.value); // no need to protect against self assignment
     return *this;
   }
@@ -118,7 +118,7 @@ public:
     time polymorphism.
   */
   template<class POLY>
-  inline Reference& operator=(const Reference<POLY>& eq) /*throw(...)*/ {
+  inline Reference& operator=(const Reference<POLY>& eq) {
     setValue(eq.getValue()); // no need to protect against self assignment
     return *this;
   }
@@ -158,7 +158,7 @@ public:
   /**
     Sets the pointer value of this automation pointer.
   */
-  inline void setValue(TYPE* _value) /*throw(...)*/ {
+  inline void setValue(TYPE* _value) {
     if (_value) { // skip if pointer is invalid
       ReferenceCountedObject::ReferenceImpl(*_value).addReference();
     }
@@ -187,7 +187,7 @@ public:
     before a object is modified. The reference counted object must implement
     the default copy constructor for this to work.
   */
-  inline void copyOnWrite() /*throw(...)*/ {
+  inline void copyOnWrite() {
     if (isMultiReferenced()) { // do we have the object for our self
       // remove one reference (no need to delete object since multi-referenced)
       TYPE* temp = new TYPE(*value);
@@ -200,7 +200,7 @@ public:
   /**
     Invalidates the reference.
   */
-  inline void invalidate() /*throw(...)*/ {
+  inline void invalidate() {
     if (value) { // skip if pointer is invalid
       if (ReferenceCountedObject::ReferenceImpl(*value).removeReference()) {
         delete value;

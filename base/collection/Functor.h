@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   operation).
 */
 template<class COLLECTION, class UNOPR>
-void forEach(COLLECTION collection, UNOPR function) /*throw(...)*/ {
+void forEach(COLLECTION collection, UNOPR function) {
   typename COLLECTION::ReadEnumerator enu = collection.getReadEnumerator();
   while (enu.hasNext()) {
     function(*enu.next());

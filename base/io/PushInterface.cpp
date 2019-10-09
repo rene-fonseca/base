@@ -15,10 +15,10 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-void PushInterface::flush() /*throw(...)*/ {
+void PushInterface::flush() {
 }
 
-void PushInterface::pushEnd() /*throw(...)*/ {
+void PushInterface::pushEnd() {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

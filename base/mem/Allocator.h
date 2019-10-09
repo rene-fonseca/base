@@ -50,7 +50,7 @@ public:
     Initializes the elements of the sequence using the default constructor.
     Uninitializeable objects are not initialized.
   */
-  static inline void initialize(TYPE* dest, unsigned int count) /*throw(...)*/ {
+  static inline void initialize(TYPE* dest, unsigned int count) {
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
       const TYPE* end = dest + count;
       while (dest != end) {
@@ -278,7 +278,7 @@ public:
 
     @param size The desired size.
   */
-  void setSize(unsigned int size) /*throw(...)*/ {
+  void setSize(unsigned int size) {
     if (size != this->size) {
       if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
         // no need to destroy or initialize elements

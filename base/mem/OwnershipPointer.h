@@ -78,7 +78,7 @@ public:
   /**
     Assignment operator.
   */
-  inline OwnershipPointer& operator=(OwnershipPointer& eq) /*throw(...)*/ {
+  inline OwnershipPointer& operator=(OwnershipPointer& eq) {
     if (&eq != this) { // protect against self assignment
       if (object) {
         delete object;
@@ -93,7 +93,7 @@ public:
   */
   template<class POLY>
   inline OwnershipPointer& operator=(
-    OwnershipPointer<POLY>& eq) /*throw(...)*/ {
+    OwnershipPointer<POLY>& eq) {
     if (eq.object != object) { // protect against self assignment
       if (object) {
         delete object;
@@ -106,7 +106,7 @@ public:
   /**
     Assignment operator.
   */
-  inline OwnershipPointer& operator=(TYPE* object) /*throw(...)*/ {
+  inline OwnershipPointer& operator=(TYPE* object) {
     if (this->object) {
       delete this->object;
     }

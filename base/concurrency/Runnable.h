@@ -45,7 +45,7 @@ public:
   /**
     Entry point for the thread.
   */
-  virtual void run() /*throw(...)*/ = 0;
+  virtual void run() = 0;
   
   /**
     Returns true if the active object should be terminated.

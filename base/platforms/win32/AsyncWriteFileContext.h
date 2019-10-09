@@ -38,7 +38,7 @@ namespace win32 {
     };
   private:
     
-    AsynchronousWriteEventListener* listener;
+    AsynchronousWriteEventListener* listener = nullptr;
     CallbackInfo callbackInfo;
     const uint8* buffer = nullptr;
     unsigned int bytesToWrite = 0;

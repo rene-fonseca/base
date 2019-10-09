@@ -31,7 +31,7 @@ class SingleLinkedNode {
 protected:
 
   /** The next node in the container. */
-  SingleLinkedNode* next;
+  SingleLinkedNode* next = nullptr;
   /** The value associated with the node. */
   TYPE value;
 public:

@@ -48,7 +48,7 @@ private:
   /** The type of the member function. */
   typedef void (Listener::*Member)(const Sender*);
   /** The sender. */
-  const Sender* sender;
+  const Sender* sender = nullptr;
   /** The end-point of the signal. */
   Member member;
 

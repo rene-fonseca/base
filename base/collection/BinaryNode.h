@@ -142,7 +142,7 @@ public:
 //private:
 //
 //  /** Pointer to binary node. */
-//  Node* ptr;
+//  Node* ptr = nullptr;
 //public:
 //
 //  /**

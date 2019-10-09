@@ -34,7 +34,7 @@ class Trace {
 private:
 
   /** The message to be written. */
-  const char* msg;
+  const char* msg = nullptr;
 public:
 
   /**

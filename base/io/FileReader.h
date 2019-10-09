@@ -174,7 +174,7 @@ public:
 //
 //  /** The file map. */
 //  MappedFile map;
-//  const TYPE* elements;
+//  const TYPE* elements = nullptr;
 //public:
 //
 //  /**

@@ -47,9 +47,9 @@ public:
   private:
     
     /** The word containing the bit. */
-    unsigned long* word;
+    unsigned long* word = nullptr;
     /** The bit within the word. */
-    unsigned long mask;
+    unsigned long mask = 0;
     
     inline BitReference(unsigned long* _word, unsigned long _mask) throw()
       : word(_word), mask(_mask) {
@@ -127,9 +127,9 @@ public:
   private:
     
     /** The word containing the bit. */
-    const unsigned long* word;
+    const unsigned long* word = nullptr;
     /** The bit within the word. */
-    unsigned long mask;
+    unsigned long mask = 0;
     
     inline BitReadReference(
       const unsigned long* _word, unsigned long _mask) throw()

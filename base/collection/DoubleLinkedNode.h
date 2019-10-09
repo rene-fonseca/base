@@ -30,9 +30,9 @@ class DoubleLinkedNode {
 protected:
 
   /** The next node in the container. */
-  DoubleLinkedNode* next;
+  DoubleLinkedNode* next = nullptr;
   /** The previous node in the container. */
-  DoubleLinkedNode* previous;
+  DoubleLinkedNode* previous = nullptr;
   /** The value associated with the node. */
   TYPE value;
 public:

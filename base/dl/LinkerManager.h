@@ -27,7 +27,7 @@ private:
   /** All the modules of the manager. */
   Map<LinkerModule*, DynamicLinker*> modules;
   /** Used temporarily during module self-registration.*/
-  LinkerModule* registratedModule;
+  LinkerModule* registratedModule = nullptr;
 
   /** Read enumerator of modules. */
   typedef Map<LinkerModule*, DynamicLinker*>::ReadEnumerator ReadEnumerator;

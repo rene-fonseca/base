@@ -97,7 +97,7 @@ public:
 private:
   
   /** The current position in the enumeration. */
-  ListNode<Value>* current;
+  ListNode<Value>* current = nullptr;
 public:
 
   /**
@@ -163,7 +163,7 @@ protected:
   typedef typename Enumerator<TRAITS>::Pointer Pointer;
 
   /** The current position in the enumeration. */
-  const ListNode<Value>* current;
+  const ListNode<Value>* current = nullptr;
 public:
 
   /**

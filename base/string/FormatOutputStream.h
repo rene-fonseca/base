@@ -641,7 +641,7 @@ class Sequence {
 private:
 
   const TYPE* value;
-  const unsigned int size;
+  const unsigned int size = 0;
   const Literal separator;
 public:
 

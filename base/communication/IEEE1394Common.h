@@ -587,7 +587,7 @@ public:
   private:
 
     /** The secondary buffer for header data. */
-    const uint8* secondaryBuffer;
+    const uint8* secondaryBuffer = nullptr;
   public:
     
     /**

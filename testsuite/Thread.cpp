@@ -17,7 +17,7 @@
 #include <base/concurrency/ExclusiveSynchronize.h>
 #include <base/string/String.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 SpinLock lock;
 

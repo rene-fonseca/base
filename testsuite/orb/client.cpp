@@ -24,7 +24,7 @@
 
 #include <base/rmi/OrbRequest.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class ClientApplication : public Application, public Runnable {
 private:

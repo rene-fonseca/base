@@ -16,7 +16,7 @@
 #include <base/filesystem/FileSystem.h>
 #include <base/filesystem/FolderInfo.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class RemoveApplication : public Application {
 private:

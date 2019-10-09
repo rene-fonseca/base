@@ -15,7 +15,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/xml/DOMImplementation.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class ValidateApplication : public Application {
 private:

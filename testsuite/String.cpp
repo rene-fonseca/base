@@ -19,7 +19,7 @@
 #include <base/string/String.h>
 #include <base/collection/Functor.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 template<class TYPE>
 class Validate {

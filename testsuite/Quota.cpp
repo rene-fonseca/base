@@ -17,7 +17,7 @@
 #include <base/TypeInfo.h>
 #include <base/security/User.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class QuotaApplication : public Application {
 private:

@@ -16,7 +16,7 @@
 #include <base/dl/LinkerManager.h>
 #include "MyLinkerModule.h"
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class DynamicLinkerApplication : public Application {
 private:

@@ -17,7 +17,7 @@
 #include <base/Date.h>
 #include <base/Literal.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class CalendarApplication : public Application {
 private:

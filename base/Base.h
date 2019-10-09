@@ -191,14 +191,14 @@ class Backend {
 /** Destroys a complete object. */
 template<class TYPE>
 inline void deleteComplete(const volatile TYPE* value) {
-  sizeof(TYPE);
+  if (sizeof(TYPE) > 0) {}
   delete value;
 }
 
 /** Destroys a complete array. */
 template<class TYPE>
 inline void deleteCompleteArray(const volatile TYPE* value) {
-  sizeof(TYPE);
+  if (sizeof(TYPE) > 0) {}
   delete[] value;
 }
 

@@ -19,7 +19,7 @@
 #include <base/mathematics/Random.h>
 #include <base/Cast.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class HuffmanApplication : public Application {
 private:

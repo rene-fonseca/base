@@ -19,7 +19,7 @@
 #include <base/mathematics/Math.h>
 #include <base/mathematics/Random.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class EvaluateApplication : public Application {
 private:
@@ -27,8 +27,8 @@ private:
   static const unsigned int MAJOR_VERSION = 1;
   static const unsigned int MINOR_VERSION = 0;  
   
-  bool simple;
-  bool parsed;
+  bool simple = false;
+  bool parsed = false;
   
   enum Command {
     COMMAND_VERSION,

@@ -17,7 +17,7 @@
 #include <base/filesystem/FolderInfo.h>
 #include <base/string/StringOutputStream.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class SpaceApplication : public Application {
 private:

@@ -17,7 +17,7 @@
 #include <base/concurrency/Semaphore.h>
 #include <base/collection/Array.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class Hello {
 public:

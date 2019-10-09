@@ -15,7 +15,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/FloatingPoint.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class FloatingPointApplication : public Application {
 private:

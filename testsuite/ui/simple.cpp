@@ -15,7 +15,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/ui/Window.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class WindowApplication : public Application {
 private:

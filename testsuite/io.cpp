@@ -27,7 +27,7 @@
 #include <base/mathematics/Constants.h>
 #include <base/mathematics/Math.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,

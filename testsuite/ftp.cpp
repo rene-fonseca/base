@@ -27,7 +27,7 @@
 #include <base/io/File.h>
 #include <base/net/Url.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 // prepend with FileTransferProtocolClient::
 

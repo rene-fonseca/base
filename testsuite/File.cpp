@@ -19,7 +19,7 @@
 #include <base/io/File.h>
 #include <base/io/async/AsynchronousStream.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class AsyncTransfer : public AsynchronousReadEventListener,
                       public AsynchronousWriteEventListener {

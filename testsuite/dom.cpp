@@ -21,7 +21,7 @@
 #include <base/collection/Stack.h>
 #include <base/collection/Array.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class DOMApplication : public Application {
 private:

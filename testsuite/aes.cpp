@@ -14,7 +14,7 @@
 #include <base/Application.h>
 #include <base/string/FormatOutputStream.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class AesApplication : public Application {
 public:

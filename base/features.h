@@ -49,9 +49,9 @@
 namespace base {
 }
 
-namespace dk {
-  namespace sdu {
-    namespace mip {
+namespace com {
+  namespace azure {
+    namespace dev {
       namespace base {
         using namespace ::base;
       }

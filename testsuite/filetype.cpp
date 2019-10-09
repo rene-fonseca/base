@@ -20,7 +20,7 @@
 #include <base/string/StringOutputStream.h>
 #include <base/io/FileReader.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class FileTypeApplication : public Application {
 private:

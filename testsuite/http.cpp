@@ -28,7 +28,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 namespace commands {
   

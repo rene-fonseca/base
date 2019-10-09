@@ -16,7 +16,7 @@
 #include <base/collection/Functor.h>
 #include <base/Functor.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class SetApplication : public Application {
 private:

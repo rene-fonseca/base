@@ -21,7 +21,7 @@
 #include <base/net/InetEndPoint.h>
 #include <base/concurrency/Thread.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class ClientApplication : public Application {
 private:

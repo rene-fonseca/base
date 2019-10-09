@@ -19,7 +19,7 @@
 #include <base/ui/OpenFileDialog.h>
 #include <base/ui/SaveFileDialog.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 /** Verbosity levels. */
 class Verbosity {

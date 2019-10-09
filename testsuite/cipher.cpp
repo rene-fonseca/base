@@ -20,7 +20,7 @@
 #include <base/UnexpectedFailure.h>
 #include <base/Timer.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class CipherApplication : public Application {
 private:

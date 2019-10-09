@@ -20,7 +20,7 @@
 #include <base/string/StringOutputStream.h>
 #include <base/collection/HashTable.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class FileSystemApplication : public Application {
 private:

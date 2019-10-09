@@ -2,7 +2,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/opengl/OpenGLContext.h>
 
-using namespace dk::sdu::mip::base;
+using namespace com::azure::dev::base;
 
 class TorusApplication : public Application {
 public:

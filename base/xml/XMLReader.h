@@ -188,7 +188,7 @@ public:
   class InputSource {
   private:
 
-    void* context;
+    void* context = nullptr;
   public:
     
     inline InputSource() throw() {

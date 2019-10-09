@@ -35,7 +35,7 @@ private:
   private:
 
     /** The context. */
-    void* context;
+    void* context = nullptr;
   public:
     
     /**

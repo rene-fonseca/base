@@ -116,7 +116,7 @@ protected:
   /** The dimension of the window. */
   Dimension dimension;
   /** Flags. */
-  unsigned int flags;
+  unsigned int flags = 0;
   /** The minimum dimension of the window. */
   Dimension minimumSize;
   /** The maximum dimension of the window. */
@@ -124,9 +124,9 @@ protected:
   /** Opaque handle to the display. */
   static void* displayHandle;
   /** Opaque handle to the screen. */
-  void* screenHandle;
+  void* screenHandle = nullptr;
   /** Opaque handle to the graphics context of the window. */
-  void* graphicsContextHandle;
+  void* graphicsContextHandle = nullptr;
   
   /**
     Invoked after initial context specific initialization to finalize the

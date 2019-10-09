@@ -80,9 +80,9 @@ public:
   /* Structure holding the user and system times. */
   struct Times {
     /** The user mode time in nanoseconds. */
-    unsigned long long user;
+    unsigned long long user = 0;
     /** The system mode time in nanoseconds. */
-    unsigned long long system;
+    unsigned long long system = 0;
   };
   
   /** Scheduling policy type. */

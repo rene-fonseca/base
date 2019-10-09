@@ -47,11 +47,11 @@ private:
   /** Buffer holding compressed data. */
   Allocator<uint8> buffer;
   /** Specifies the number of compressed bytes currently available. */
-  unsigned int availableBytes;
+  unsigned int availableBytes = 0;
   /** Opaque context. */
-  void* context;
+  void* context = nullptr;
   /** The current state. */
-  State state;
+  State state = RUNNING;
 public:
   
   /**

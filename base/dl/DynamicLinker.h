@@ -29,7 +29,7 @@ class _DK_SDU_MIP__BASE__API DynamicLinker {
 private:
 
   /** Opaque handle to the module. */
-  void* handle;
+  void* handle = nullptr;
   
   /** Returns a pointer to the global symbol. */
   static void* getGlobalSymbolImpl(

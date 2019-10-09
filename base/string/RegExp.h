@@ -166,9 +166,9 @@ private:
   /** The pattern. */
   String pattern;
   /** Internal compilation data. */
-  void* compiled;
+  void* compiled = nullptr;
   /** Specifies the case sensitivity. */
-  bool caseSensitive;
+  bool caseSensitive = false;
 protected:
 
   /** Compiles the regular expression. */

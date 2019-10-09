@@ -45,7 +45,7 @@ class _DK_SDU_MIP__BASE__API NamedNodeMap : public Object {
   friend class DocumentType;
 private:
   
-  void* context;
+  void* context = nullptr;
   
   /**
     Initializes the node map.

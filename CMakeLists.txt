@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 3.1)
 
 # see https://cmake.org/cmake-tutorial/
 
+# set(CMAKE_VERBOSE_MAKEFILE 1)
+
 project (base)
 
 set (base_VERSION_MAJOR 0)
@@ -86,8 +88,6 @@ file(GLOB base_SRC
   "base/xml/*.cpp"
 )
 
-# message(${base_SRC})
-
 add_library(base SHARED ${base_SRC})
 if (MSVC)
 target_compile_definitions(base PUBLIC _DK_SDU_MIP__BASE__SHARED_LIBRARY_BUILD)
@@ -99,5 +99,11 @@ endif ()
 
 add_library(base_STATIC STATIC ${base_SRC})
 set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
+
+# avoid no symbols warnings
+if (APPLE)
+set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+endif ()
 
 add_subdirectory("testsuite")

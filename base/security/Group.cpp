@@ -92,7 +92,7 @@ Group::Group(const String& name) throw(GroupException) {
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     Allocator<uint8>* buffer = Thread::getLocalStorage();
     struct group grp;
-    struct group* entry;
+    struct group* entry = nullptr;
     int result = ::getgrnam_r(
       name.getElements(),
       &grp,
@@ -101,13 +101,13 @@ Group::Group(const String& name) throw(GroupException) {
       &entry
     );
     bassert(result == 0, GroupException(this));
-    integralId = Cast::container<unsigned long>(entry->gr_gid);
+    integralId = static_cast<unsigned long>(entry->gr_gid);
   #else
     #warning Group::Group(const String& name) uses non-reentrant getgrnam
     // long sysconf(_SC_GETGR_R_SIZE_MAX);
     struct group* entry = ::getgrnam(name.getElements());
     bassert(entry != 0, GroupException(this));
-    integralId = Cast::container<unsigned long>(entry->gr_gid);
+    integralId = static_cast<unsigned long>(entry->gr_gid);
   #endif
 #endif // flavor
 }
@@ -127,7 +127,7 @@ Group::Group(const User& user) throw(GroupException) {
     &entry
   );
   bassert(result == 0, GroupException(this));
-  integralId = Cast::container<unsigned long>(entry->pw_gid);
+  integralId = static_cast<unsigned long>(entry->pw_gid);
 #endif // flavor
 }
 

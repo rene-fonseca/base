@@ -57,7 +57,7 @@ User User::getCurrentUser() throw(UserException) {
   ::LocalFree(securityDescriptor);
   return result;
 #else // unix
-  return User(Cast::container<unsigned long>(::getuid()));
+  return User(static_cast<unsigned long>(::getuid()));
 #endif // flavor
 }
 
@@ -141,7 +141,7 @@ User::User(const String& name) throw(UserException) {
     &entry
   );
   bassert(result == 0, UserException(this));
-  integralId = Cast::container<unsigned long>(entry->pw_uid);
+  integralId = static_cast<unsigned long>(entry->pw_uid);
 #endif // flavor
 }
 

@@ -520,7 +520,7 @@ public:
   /**
     Builds string expression from internal representation.
   */
-  String getString() const throw();  
+  String getString() const throw(ExpressionException);  
   
   /**
     Destroys the expression parser.

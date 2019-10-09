@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  DWORD key;
+  DWORD key = 0;
   if ((key = ::TlsAlloc()) == TLS_OUT_OF_INDEXES) {
     throw ResourceException(this);
   }

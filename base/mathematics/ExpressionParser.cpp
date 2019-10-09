@@ -702,7 +702,7 @@ void ExpressionParser::parse() throw(ExpressionException) {
   }
 }
 
-String ExpressionParser::getString() const throw() {
+String ExpressionParser::getString() const throw(ExpressionException) {
   List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
   Stack<String> stack;
   while (enu.hasNext()) {

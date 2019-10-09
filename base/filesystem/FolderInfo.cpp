@@ -280,33 +280,8 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
   links = information.nNumberOfLinks;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    struct packedStat64 { // temporary fix for unaligned st_size
-      __dev_t st_dev;
-      unsigned int __pad1;
-      __ino_t __st_ino;
-      __mode_t st_mode;
-      __nlink_t st_nlink;
-      __uid_t st_uid;
-      __gid_t st_gid;
-      __dev_t st_rdev;
-      unsigned int __pad2;
-      __off64_t st_size;
-      __blksize_t st_blksize;
-      __blkcnt64_t st_blocks;
-      __time_t st_atime;
-      unsigned long int __unused1;
-      __time_t st_mtime;
-      unsigned long int __unused2;
-      __time_t st_ctime;
-      unsigned long int __unused3;
-      __ino64_t st_ino;
-    } _DK_SDU_MIP__BASE__PACKED;
-    struct packedStat64 status; // TAG: GLIBC: st_size is not 64 bit aligned
-  #else
     struct stat64 status;
-  #endif // GNU Linux
-    if (::stat64(path.getElements(), (struct stat64*)&status) || (!S_ISDIR(status.st_mode))) {
+    if (::stat64(path.getElements(), &status) || (!S_ISDIR(status.st_mode))) {
       throw FileSystemException("Not a folder", this);
     }
   #else

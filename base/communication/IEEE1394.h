@@ -261,16 +261,20 @@ public:
     unsigned int sy : 4; /** Synchronization code. */
   };
 
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct BusInfo {
     BigEndian<uint32> name; // "1394"
     BigEndian<uint32> flags;
     uint8 guid[8];
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct ConfigurationIntro {
     BigEndian<uint32> crc;
     BusInfo busInfo;
   } _DK_SDU_MIP__BASE__PACKED;
+_DK_SDU_MIP__BASE__PACKED__END
 private:
 
   /** The IEEE 1394 implementation. */

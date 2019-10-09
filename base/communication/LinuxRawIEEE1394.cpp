@@ -39,6 +39,7 @@ namespace LinuxRawIEEE1394Impl {
   
   const Literal DEVICE_NAME = Literal("raw1394");
   
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct Request {
     uint32 type;
     int32 error;
@@ -50,6 +51,7 @@ namespace LinuxRawIEEE1394Impl {
     uint64 sendBuffer;
     uint64 receiveBuffer;
   } _DK_SDU_MIP__BASE__PACKED;
+_DK_SDU_MIP__BASE__PACKED__END
 
   enum Error {
     ERROR_NONE = 0,

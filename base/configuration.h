@@ -1,4 +1,4 @@
-#define _DK_SDU_MIP__BASE__BUILD_DATE "bbb"
+#define _DK_SDU_MIP__BASE__BUILD_DATE "JAN 1, 1970" // TAG: set
 
 #if defined(__clang__)
 #  define _DK_SDU_MIP__BASE__COMPILER _DK_SDU_MIP__BASE__COMPILER_CLANG
@@ -66,7 +66,25 @@
 #define _DK_SDU_MIP__BASE__HAVE_MEMSET
 #define _DK_SDU_MIP__BASE__HAVE_WCSFTIME
 
-#define _DK_SDU_MIP__BASE__PACKED
+// defines for packing
+#if (_DK_SDU_MIP__BASE__COMPILER == _DK_SDU_MIP__BASE__COMPILER_MSC)
+#  define _DK_SDU_MIP__BASE__PACKED__BEGIN __pragma(pack(push, 1))
+#  define _DK_SDU_MIP__BASE__PACKED__END __pragma(pack(pop))
+#else
+#  define _DK_SDU_MIP__BASE__PACKED __attribute__((packed))
+#endif
+
+#if !defined(_DK_SDU_MIP__BASE__PACKED)
+#  define _DK_SDU_MIP__BASE__PACKED
+#endif
+#if !defined(_DK_SDU_MIP__BASE__PACKED__BEGIN)
+#  define _DK_SDU_MIP__BASE__PACKED__BEGIN
+#endif
+#if !defined(_DK_SDU_MIP__BASE__PACKED__END)
+#  define _DK_SDU_MIP__BASE__PACKED__END
+#endif
+
+
 
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
 #if defined(_DK_SDU_MIP__BASE__SHARED_LIBRARY_BUILD)

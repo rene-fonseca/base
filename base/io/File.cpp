@@ -693,33 +693,8 @@ Trustee File::getOwner() const throw(FileException) {
   return owner;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    struct packedStat64 { // temporary fix for unaligned st_size
-      __dev_t st_dev;
-      unsigned int __pad1;
-      __ino_t __st_ino;
-      __mode_t st_mode;
-      __nlink_t st_nlink;
-      __uid_t st_uid;
-      __gid_t st_gid;
-      __dev_t st_rdev;
-      unsigned int __pad2;
-      __off64_t st_size;
-      __blksize_t st_blksize;
-      __blkcnt64_t st_blocks;
-      __time_t st_atime;
-      unsigned long int __unused1;
-      __time_t st_mtime;
-      unsigned long int __unused2;
-      __time_t st_ctime;
-      unsigned long int __unused3;
-      __ino64_t st_ino;
-    } _DK_SDU_MIP__BASE__PACKED;
-    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-  #else
     struct stat64 status;
-  #endif // GNU Linux
-    if (::fstat64(fd->getHandle(), (struct stat64*)&status) || (!S_ISREG(status.st_mode))) {
+    if (::fstat64(fd->getHandle(), &status) || (!S_ISREG(status.st_mode))) {
       throw FileException("Not a file", this);
     }
   #else
@@ -778,33 +753,8 @@ Trustee File::getGroup() const throw(FileException) {
   return group;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    struct packedStat64 { // temporary fix for unaligned st_size
-      __dev_t st_dev;
-      unsigned int __pad1;
-      __ino_t __st_ino;
-      __mode_t st_mode;
-      __nlink_t st_nlink;
-      __uid_t st_uid;
-      __gid_t st_gid;
-      __dev_t st_rdev;
-      unsigned int __pad2;
-      __off64_t st_size;
-      __blksize_t st_blksize;
-      __blkcnt64_t st_blocks;
-      __time_t st_atime;
-      unsigned long int __unused1;
-      __time_t st_mtime;
-      unsigned long int __unused2;
-      __time_t st_ctime;
-      unsigned long int __unused3;
-      __ino64_t st_ino;
-    } _DK_SDU_MIP__BASE__PACKED;
-    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-  #else
     struct stat64 status;
-  #endif // GNU Linux
-    if (::fstat64(fd->getHandle(), (struct stat64*)&status) || (!S_ISREG(status.st_mode))) {
+    if (::fstat64(fd->getHandle(), &status) || (!S_ISREG(status.st_mode))) {
       throw FileException("Not a file", this);
     }
   #else
@@ -832,13 +782,8 @@ long long File::getSize() const throw(FileException) {
   return size.QuadPart;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    struct packedStat64 status; // TAG: GLIBC: st_size is not 64 bit aligned
-    int result = ::fstat64(fd->getHandle(), (struct stat64*)&status);
-  #else
     struct stat64 status;
     int result = ::fstat64(fd->getHandle(), &status);
-  #endif // GNU Linux
   #else
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);
@@ -1157,13 +1102,8 @@ Date File::getLastModification() throw(FileException) {
   return FileTimeToDate(time);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    struct packedStat64 status; // TAG: GLIBC: st_size is not 64 bit aligned
-    int result = ::fstat64(fd->getHandle(), (struct stat64*)&status);
-  #else
     struct stat64 status;
     int result = ::fstat64(fd->getHandle(), &status);
-  #endif // GNU Linux
   #else
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);
@@ -1182,13 +1122,8 @@ Date File::getLastAccess() throw(FileException) {
   return FileTimeToDate(time);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-    int result = fstat64(fd->getHandle(), (struct stat64*)&status);
-  #else
     struct stat64 status;
     int result = fstat64(fd->getHandle(), &status);
-  #endif // GNU Linux
   #else
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);
@@ -1207,13 +1142,8 @@ Date File::getLastChange() throw(FileException) {
   return FileTimeToDate(time);
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-    int result = fstat64(fd->getHandle(), (struct stat64*)&status);
-  #else
     struct stat64 status;
     int result = fstat64(fd->getHandle(), &status);
-  #endif // GNU Linux
   #else
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);

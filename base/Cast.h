@@ -126,10 +126,12 @@ private:
   public:
     
     static inline RESULT* cast(ORIGINAL* value) throw() {
+_DK_SDU_MIP__BASE__PACKED__BEGIN
       union {
         ORIGINAL* original;
         RESULT* result;
       } _DK_SDU_MIP__BASE__PACKED temp;
+_DK_SDU_MIP__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -140,10 +142,12 @@ private:
   public:
     
     static inline const RESULT* cast(const ORIGINAL* value) throw() {
+_DK_SDU_MIP__BASE__PACKED__BEGIN
       union {
         const ORIGINAL* original;
         const RESULT* result;
       } _DK_SDU_MIP__BASE__PACKED temp;
+_DK_SDU_MIP__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -154,10 +158,12 @@ private:
   public:
     
     static inline volatile RESULT* cast(volatile ORIGINAL* value) throw() {
+_DK_SDU_MIP__BASE__PACKED__BEGIN
       union {
         volatile ORIGINAL* original;
         volatile RESULT* result;
       } _DK_SDU_MIP__BASE__PACKED temp;
+_DK_SDU_MIP__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -169,10 +175,12 @@ private:
     
     static inline volatile const RESULT* cast(
       volatile const ORIGINAL* value) throw() {
+_DK_SDU_MIP__BASE__PACKED__BEGIN
       union {
         volatile const ORIGINAL* original;
         volatile const RESULT* result;
       } _DK_SDU_MIP__BASE__PACKED temp;
+_DK_SDU_MIP__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -192,10 +200,12 @@ private:
   public:
     
     static inline RESULT* cast(ORIGINAL* value) throw() {
+_DK_SDU_MIP__BASE__PACKED__BEGIN
       union {
         ORIGINAL* original;
         RESULT* result;
       } _DK_SDU_MIP__BASE__PACKED temp;
+_DK_SDU_MIP__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -210,10 +220,12 @@ private:
   public:
     
     inline RESULT* operator()(ORIGINAL* value) const throw() {
+_DK_SDU_MIP__BASE__PACKED__BEGIN
       union {
         ORIGINAL* original;
         RESULT* result;
       } _DK_SDU_MIP__BASE__PACKED temp;
+_DK_SDU_MIP__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -224,10 +236,12 @@ private:
   public:
     
     inline const RESULT* operator()(const ORIGINAL* value) const throw() {
+_DK_SDU_MIP__BASE__PACKED__BEGIN
       union {
         const ORIGINAL* original;
         const RESULT* result;
       } _DK_SDU_MIP__BASE__PACKED temp;
+_DK_SDU_MIP__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -484,10 +498,12 @@ public:
     template<class ARGUMENT>
     static inline RESULT cast(ARGUMENT& value) throw() {
       if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL) {}
+_DK_SDU_MIP__BASE__PACKED__BEGIN
       union {
         ARGUMENT argument;
         RESULT result; // make sure we do not get an access violation in the cast
       } _DK_SDU_MIP__BASE__PACKED temp;
+_DK_SDU_MIP__BASE__PACKED__END
       temp.argument = value;
       return *reinterpret_cast<RESULT*>(&temp.argument); // partial garbage
     }
@@ -495,10 +511,12 @@ public:
     template<class ARGUMENT>
     static inline const RESULT cast(const ARGUMENT& value) throw() {
       if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL) {}
+_DK_SDU_MIP__BASE__PACKED__BEGIN
       union {
         const ARGUMENT argument;
         const RESULT result; // make sure we do not get an access violation in the cast
       } _DK_SDU_MIP__BASE__PACKED temp;
+_DK_SDU_MIP__BASE__PACKED__END
       temp.argument = value;
       return *reinterpret_cast<const RESULT*>(&temp.argument); // partial garbage
     }

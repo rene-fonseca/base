@@ -25,6 +25,7 @@ using namespace dk::sdu::mip::base;
 class CommonObjectFileFormat {
 public:
 
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   /** DOS EXE header. */
   struct ImageDosHeader {
     LittleEndian<uint16> magic; // 0x5a4d ~ "MZ"
@@ -47,7 +48,9 @@ public:
     LittleEndian<uint16> reserved1[10];
     LittleEndian<uint32> exeHeaderOffset; // PE header offset
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct COFFHeader {
     LittleEndian<uint16> machine;
     LittleEndian<uint16> numberOfSections;
@@ -57,6 +60,7 @@ public:
     LittleEndian<uint16> sizeOfOptionalHeader;
     LittleEndian<uint16> characteristics;
   } _DK_SDU_MIP__BASE__PACKED;
+_DK_SDU_MIP__BASE__PACKED__END
 
   /** Architecture. */
   enum MachineType {
@@ -104,7 +108,8 @@ public:
     MAGIC_PE32 = 0x010b,
     MAGIC_PE32_PLUS = 0x020b
   };
-  
+
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct PEHeader32 {
     LittleEndian<uint16> magic;
     uint8 majorLinkerVersion;
@@ -116,7 +121,9 @@ public:
     LittleEndian<uint32> baseOfCode;
     LittleEndian<uint32> baseOfData;
   } _DK_SDU_MIP__BASE__PACKED;
+_DK_SDU_MIP__BASE__PACKED__END
 
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct PEHeader64 {
     LittleEndian<uint16> magic;
     uint8 majorLinkerVersion;
@@ -127,7 +134,9 @@ public:
     LittleEndian<uint32> addressOfEntryPoint;
     LittleEndian<uint64> baseOfCode;
   } _DK_SDU_MIP__BASE__PACKED;
+_DK_SDU_MIP__BASE__PACKED__END
 
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct PEWindowsHeader32 {
     LittleEndian<uint32> imageBase;
     LittleEndian<uint32> sectionAlignment;
@@ -151,7 +160,9 @@ public:
     LittleEndian<uint32> flags;
     LittleEndian<uint32> numberOfDirectoryEntries;
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct PEWindowsHeader64 {
     LittleEndian<uint64> imageBase;
     LittleEndian<uint32> sectionAlignment;
@@ -175,6 +186,7 @@ public:
     LittleEndian<uint32> flags;
     LittleEndian<uint32> numberOfDirectoryEntries;
   } _DK_SDU_MIP__BASE__PACKED;
+_DK_SDU_MIP__BASE__PACKED__END
 
   /** Subsystem. */
   enum Subsystem {
@@ -233,12 +245,15 @@ public:
     DLL_CHARACTERISTIC_TERMINAL_SERVER_AWARE = 0x8000
   };
 
+ _DK_SDU_MIP__BASE__PACKED__BEGIN
   /** Directory entry. */
   struct DirectoryEntry {
     LittleEndian<uint32> rva;
     LittleEndian<uint32> size;
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct DirectoryHeader {
     DirectoryEntry exportTable;
     DirectoryEntry importTable;
@@ -257,7 +272,9 @@ public:
     DirectoryEntry runtimeHeader;
     DirectoryEntry reserved;
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct SectionHeader {
     char name[8];
     LittleEndian<uint32> virtualSize;
@@ -270,6 +287,7 @@ public:
     LittleEndian<uint16> numberOfLineNumbers;
     LittleEndian<uint32> characteristics;
   } _DK_SDU_MIP__BASE__PACKED;
+_DK_SDU_MIP__BASE__PACKED__END
 
   static String getMachineDescription(uint32 machine) throw() {
     switch (machine) {
@@ -312,6 +330,7 @@ public:
     }
   }
 
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct SymbolEntry {
     char name[8];
     LittleEndian<uint32> value;
@@ -320,7 +339,8 @@ public:
     uint8 storageClass;
     uint8 numberOfAuxSymbols;
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
   static bool isCOFF(const String& file) throw() {
     return false;
   }
@@ -401,6 +421,7 @@ public:
     file.setPosition(originalPosition);
   }
 
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct ExportTableDirectory {
     LittleEndian<uint32> flags;
     LittleEndian<uint32> timeStamp;
@@ -414,7 +435,8 @@ public:
     LittleEndian<uint32> namePointerRVA;
     LittleEndian<uint32> ordinalTableRVA;
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
   void dumpExportSection(
     File file,
     const uint32 virtualAddress,
@@ -519,6 +541,7 @@ public:
     }
   }
 
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct ImportTableDirectory {
     LittleEndian<uint32> importLookupTableRVA;
     LittleEndian<uint32> timeStamp;
@@ -526,7 +549,8 @@ public:
     LittleEndian<uint32> nameRVA;
     LittleEndian<uint32> importAddressTableRVA;
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
   void dumpImportSection(
     File file,
     const uint32 virtualAddress,

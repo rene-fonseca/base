@@ -39,6 +39,7 @@ private:
   String path;
   bool progress = false;
 
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   // byte order?
   struct ElfHeader {
     uint8 identifier[16];
@@ -56,6 +57,7 @@ private:
     uint16 shnum;
     uint16 shstrndx;
   } _DK_SDU_MIP__BASE__PACKED;
+_DK_SDU_MIP__BASE__PACKED__END
 
   // type
   enum {

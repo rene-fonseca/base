@@ -25,6 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
+_DK_SDU_MIP__BASE__PACKED__BEGIN
 class _DK_SDU_MIP__BASE__API Color {
 private:
 
@@ -183,6 +184,7 @@ public:
     return value;
   }
 } _DK_SDU_MIP__BASE__PACKED;
+_DK_SDU_MIP__BASE__PACKED__END
 
 /**
   Writes a string representation of the color object to the specified format stream.

@@ -42,10 +42,12 @@ template<class RESULT>
 inline RESULT method_cast(void* value) throw() {
   // sizeof(RESULT) == sizeof(void*)
   // static_cast<bool>(static_cast<RESULT>(0))
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   union {
     void* value;
     RESULT method;
   } _DK_SDU_MIP__BASE__PACKED temp;
+_DK_SDU_MIP__BASE__PACKED__END
   temp.method = 0;
   temp.value = value;
   return temp.method;

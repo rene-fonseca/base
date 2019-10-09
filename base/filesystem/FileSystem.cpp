@@ -162,31 +162,6 @@ typedef struct _REPARSE_DATA_BUFFER {
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-#if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-// TAG: GLIBC: st_size is not 64bit aligned
-struct packedStat64 { // temporary fix for unaligned st_size
-  __dev_t st_dev;
-  unsigned int __pad1;
-  __ino_t __st_ino;
-  __mode_t st_mode;
-  __nlink_t st_nlink;
-  __uid_t st_uid;
-  __gid_t st_gid;
-  __dev_t st_rdev;
-  unsigned int __pad2;
-  __off64_t st_size;
-  __blksize_t st_blksize;
-  __blkcnt64_t st_blocks;
-  __time_t st_atime;
-  unsigned long int __unused1;
-  __time_t st_mtime;
-  unsigned long int __unused2;
-  __time_t st_ctime;
-  unsigned long int __unused3;
-  __ino64_t st_ino;
-} _DK_SDU_MIP__BASE__PACKED;
-#endif // GNU Linux
-
 unsigned int FileSystem::counter = 0;
 int FileSystem::cachedSupportsLinks = -1; // -1 not cached, 0 false, and 1 true
 
@@ -482,13 +457,8 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
   return flags;
 #else // unix
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-    int result = stat64(path.getElements(), (struct stat64*)&status);
-  #else
-    struct stat64 status;
-    int result = stat64(path.getElements(), &status);
-  #endif // GNU Linux
+  struct stat64 status;
+  int result = stat64(path.getElements(), &status);
 #else
   struct stat status;
   int result = stat(path.getElements(), &status);
@@ -548,13 +518,8 @@ uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
   return static_cast<uint64>(information.nFileSizeHigh) | information.nFileSizeLow;
 #else // unix
 #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-    int result = stat64(path.getElements(), (struct stat64*)&status);
-  #else
-    struct stat64 status;
-    int result = stat64(path.getElements(), &status);
-  #endif // GNU Linux
+  struct stat64 status;
+  int result = stat64(path.getElements(), &status);
 #else
   struct stat status;
   int result = stat(path.getElements(), &status);
@@ -579,13 +544,8 @@ bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
   return true;
 #else // unix
 #  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-#    if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-  struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-  int result = stat64(path.getElements(), (struct stat64*)&status);
-#    else
   struct stat64 status;
   int result = stat64(path.getElements(), &status);
-#    endif // GNU Linux
   if (result == 0) {
     return true;
   } else {
@@ -625,13 +585,8 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
   // we ignore FILE_ATTRIBUTE_REPARSE_POINT
 #else // unix
 #  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-#    if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-  struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-  int result = stat64(path.getElements(), (struct stat64*)&status);
-#    else
   struct stat64 status;
   int result = stat64(path.getElements(), &status);
-#    endif // GNU Linux
   if (result == 0) {
     return S_ISREG(status.st_mode);
   } else {
@@ -670,13 +625,8 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
   return ((result & FILE_ATTRIBUTE_DIRECTORY) != 0); // we ignore FILE_ATTRIBUTE_REPARSE_POINT
 #else // unix
 #  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-#    if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-  struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-  int result = stat64(path.getElements(), (struct stat64*)&status);
-#    else
   struct stat64 status;
   int result = stat64(path.getElements(), &status);
-#    endif // GNU Linux
   if (result == 0) {
     return S_ISDIR(status.st_mode);
   } else {
@@ -921,7 +871,8 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
     static const unsigned char GUID[16] = {
       0x01, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46
     };
-    
+
+_DK_SDU_MIP__BASE__PACKED__BEGIN
     struct ShortcutHeader {
       LittleEndian<uint32> identifier; // 'L'
       unsigned char guid[16];
@@ -936,7 +887,8 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
       LittleEndian<uint32> hotKey;
       LittleEndian<uint32> reserved[2];
     } _DK_SDU_MIP__BASE__PACKED;
-    
+_DK_SDU_MIP__BASE__PACKED__END
+
     enum Flags {
       SHELL_ITEM_ID_PRESENT = 1 << 0,
       POINTS_TO_FILE_OR_FOLDER = 1 << 1,
@@ -1426,6 +1378,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
   // check if shell symbolic link
   static const unsigned char GUID[16] = {0x01, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46};
   
+  _DK_SDU_MIP__BASE__PACKED__BEGIN
   struct ShortcutHeader {
     LittleEndian<uint32> identifier; // 'L'
     unsigned char guid[16];
@@ -1440,7 +1393,9 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
     LittleEndian<uint32> hotKey;
     LittleEndian<uint32> reserved[2];
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct FileLocationInfo {
     LittleEndian<uint32> size; // size of structure and data
     LittleEndian<uint32> offset; // 0x1c
@@ -1450,7 +1405,9 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
     LittleEndian<uint32> networkVolumeOffset;
     LittleEndian<uint32> remainingPathOffset;
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct LocalVolume {
     LittleEndian<uint32> size; // size of structure
     LittleEndian<uint32> type;
@@ -1458,7 +1415,9 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
     LittleEndian<uint32> labelOffset;
     char label;
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct NetworkVolume {
     LittleEndian<uint32> size; // size of structure
     LittleEndian<uint32> reserved0;
@@ -1467,7 +1426,8 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
     LittleEndian<uint32> reserved2;
     char share;
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
   enum Flags {
     SHELL_ITEM_ID_PRESENT = 1 << 0,
     POINTS_TO_FILE_OR_FOLDER = 1 << 1,

@@ -100,7 +100,8 @@ typedef int SOCKET;
   }
 #endif
 
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
+#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32) || \
+    (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)    
   typedef int socklen;
 #else
   typedef socklen_t socklen;

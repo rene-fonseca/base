@@ -128,14 +128,14 @@ public:
   /**
     Returns the public identifier of the entity where the exception occurred.
   */
-  inline String getPublicId() const throw() {
+  inline const String& getPublicId() const throw() {
     return publicId;
   }
   
   /**
     Returns the system identifier of the entity where the exception occurred.
   */
-  inline String getSystemId() const throw() {
+  inline const String& getSystemId() const throw() {
     return systemId;
   }
 

@@ -69,7 +69,7 @@ public:
   /**
     Returns the scheme of the identifier.
   */
-  inline String getScheme() const throw() {
+  inline const String& getScheme() const throw() {
     return scheme;
   }
 
@@ -83,7 +83,7 @@ public:
   /**
     Returns the end-point of the identifier.
   */
-  inline String getEndPoint() const throw() {
+  inline const String& getEndPoint() const throw() {
     return endPoint;
   }
 
@@ -97,7 +97,7 @@ public:
   /**
     Returns the end-point of the identifier.
   */
-  inline String getPath() const throw() {
+  inline const String& getPath() const throw() {
     return path;
   }
   

@@ -98,7 +98,7 @@ public:
     return wideCharacter;
   }
   
-  inline String getString() const throw() {
+  inline const String& getString() const throw() {
     return string;
   }
   

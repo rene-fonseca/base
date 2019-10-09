@@ -47,7 +47,7 @@ public:
   /**
     Returns the text.
   */
-  inline String getText() const throw(UserInterfaceException) {
+  inline const String& getText() const throw(UserInterfaceException) {
     return text;
   }
 

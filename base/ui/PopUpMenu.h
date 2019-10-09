@@ -172,7 +172,7 @@ public:
     this->alignment = alignment;
   }
   
-  inline String getText() const throw() {
+  inline const String& getText() const throw() {
     return text;
   }
   
@@ -180,7 +180,7 @@ public:
     this->text = text;
   }
 
-  inline String getShortcut() const throw() {
+  inline const String& getShortcut() const throw() {
     return shortcut;
   }
 
@@ -282,7 +282,7 @@ public:
   EditMenuItem(const String& _text) throw() : text(_text) {
   }
   
-  inline String getText() const throw() {
+  inline const String& getText() const throw() {
     return text;
   }
   

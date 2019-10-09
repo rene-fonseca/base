@@ -47,7 +47,7 @@ public:
   /**
     Returns the fully qualified name of the skeleton.
   */
-  inline String getOrbName() const throw() {
+  inline const String& getOrbName() const throw() {
     return name;
   }
   

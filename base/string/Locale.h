@@ -202,47 +202,47 @@ public:
     return longNameOfMonth[month];
   }
 
-  inline String getPM() const throw() {
+  inline const String& getPM() const throw() {
     return pm;
   }
 
-  inline String getAM() const throw() {
+  inline const String& getAM() const throw() {
     return am;
   }
   
 
 
-  inline String getShortDateFormat() const throw() {
+  inline const String& getShortDateFormat() const throw() {
     return shortDateFormat;
   }
   
   void setShortDateFormat(const String& format) throw();
   
-  inline String getMediumDateFormat() const throw() {
+  inline const String& getMediumDateFormat() const throw() {
     return mediumDateFormat;
   }
   
   void setMediumDateFormat(const String& format) throw();
   
-  inline String getLongDateFormat() const throw() {
+  inline const String& getLongDateFormat() const throw() {
     return longDateFormat;
   }
   
   void setLongDateFormat(const String& format) throw();
 
-  inline String getShortTimeFormat() const throw() {
+  inline const String& getShortTimeFormat() const throw() {
     return shortTimeFormat;
   }
   
   void setShortTimeFormat(const String& format) throw();
   
-  inline String getMediumTimeFormat() const throw() {
+  inline const String& getMediumTimeFormat() const throw() {
     return mediumTimeFormat;
   }
   
   void setMediumTimeFormat(const String& format) throw();
   
-  inline String getLongTimeFormat() const throw() {
+  inline const String& getLongTimeFormat() const throw() {
     return longTimeFormat;
   }
   

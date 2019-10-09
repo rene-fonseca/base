@@ -112,14 +112,14 @@ public:
   /**
     Returns the type.
   */
-  inline String getType() const throw() {
+  inline const String& getType() const throw() {
     return type;
   }
   
   /**
     Returns the subtype.
   */
-  inline String getSubtype() const throw() {
+  inline const String& getSubtype() const throw() {
     return subtype;
   }
   

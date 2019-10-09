@@ -123,7 +123,7 @@ public:
   /**
     Returns the name of the network interface.
   */
-  inline String getName() const throw() {
+  inline const String& getName() const throw() {
     return name;
   }
   

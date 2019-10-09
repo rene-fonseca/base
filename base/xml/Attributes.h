@@ -75,14 +75,14 @@ public:
     /**
       Returns the name of the attribute.
     */
-    inline String getName() const throw() {
+    inline const String& getName() const throw() {
       return name;
     }
     
     /**
       Returns the value of the attribute.
     */
-    inline String getValue() const throw() {
+    inline const String& getValue() const throw() {
       return value;
     }
   };

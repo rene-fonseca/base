@@ -208,7 +208,7 @@ public:
   /**
     Returns the pattern.
   */
-  inline String getPattern() const throw() {
+  inline const String& getPattern() const throw() {
     return pattern;
   }
 

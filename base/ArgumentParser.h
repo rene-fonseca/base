@@ -87,7 +87,7 @@ public:
     /**
       Returns the long name of the option.
     */
-    inline String getName() const throw() {
+    inline const String& getName() const throw() {
       return name;
     }
     
@@ -131,7 +131,7 @@ public:
       return defaultValue.isValid();
     }
     
-    inline String getDefaultValue() const throw() {
+    inline const String& getDefaultValue() const throw() {
       return defaultValue.getValue();
     }
     
@@ -399,7 +399,7 @@ public:
         value(_value) {
     }
 
-    inline String getValue() const throw() {
+    inline const String& getValue() const throw() {
       return value;
     }
     
@@ -421,7 +421,7 @@ public:
         name(_name) {
     }
     
-    inline String getName() const throw() {
+    inline const String& getName() const throw() {
       return name;
     }
     
@@ -443,7 +443,7 @@ public:
         value(_value) {
     }
     
-    inline String getValue() const throw() {
+    inline const String& getValue() const throw() {
       return value;
     }
     

@@ -61,7 +61,7 @@ public:
   /**
     Returns the title of the dialog window.
   */
-  inline String getTitle() const throw() {
+  inline const String& getTitle() const throw() {
     return title;
   }
 
@@ -75,7 +75,7 @@ public:
   /**
     Returns the folder.
   */
-  inline String getFolder() const throw() {
+  inline const String& getFolder() const throw() {
     return folder;
   }
   

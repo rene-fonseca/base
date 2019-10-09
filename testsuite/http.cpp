@@ -72,13 +72,13 @@ class HTTPException : public IOException {
 private:
 
   /** Specifies that the exception cannot be resolved. */
-  bool permanent;
+  bool permanent = true;
 public:
 
   /**
     Initializes the exception object with no message.
   */
-  inline HTTPException() : permanent(true) {
+  inline HTTPException() {
   }
   
   /**
@@ -299,12 +299,11 @@ private:
 
   File file;
   Timer timer;
-  long long bytesWritten;
-  long long totalSize;
+  long long bytesWritten = 0;
+  long long totalSize = 0;
 public:
 
   PushToFile(File _file) throw() : file(_file) {
-    bytesWritten = 0;
   }
 
   bool pushBegin(long long totalSize) throw() {
@@ -389,8 +388,8 @@ public:
   enum ContentType {TEXT, IMAGE, UNSPECIFIED}; // FIXME: need mime-type support
   
   struct Status {
-    StatusClass statusClass;
-    int code;
+    StatusClass statusClass = CLIENT_ERROR;
+    int code = 0;
   };
 private:
 

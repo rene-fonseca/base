@@ -141,13 +141,15 @@ public:
   };
   
   /* Quota. */
-  struct Quota {
+  class Quota {
+  public:
+
     /** Hard limit. */
-    uint64 softLimit;
+    uint64 softLimit = 0;
     /** Soft limit. */
-    uint64 hardLimit;
+    uint64 hardLimit = 0;
     /** Current usage. */
-    uint64 currentUsage;
+    uint64 currentUsage = 0;
   };
   
   /**

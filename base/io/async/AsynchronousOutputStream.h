@@ -34,6 +34,9 @@ public:
     const uint8* buffer,
     unsigned int bytesToWrite,
     AsynchronousWriteEventListener* listener) throw(AsynchronousException) = 0;
+
+  inline ~AsynchronousOutputStream() noexcept(false) { // MSC doesnt inherit noexcept
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

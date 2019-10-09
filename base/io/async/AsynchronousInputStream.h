@@ -34,6 +34,9 @@ public:
     uint8* buffer,
     unsigned int bytesToRead,
     AsynchronousReadEventListener* listener) throw(AsynchronousException) = 0;
+
+  inline ~AsynchronousInputStream() noexcept(false) { // MSC doesnt inherit noexcept
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

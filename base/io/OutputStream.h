@@ -48,6 +48,9 @@ public:
     const uint8* buffer,
     unsigned int size,
     bool nonblocking) throw(IOException) = 0;
+
+  inline ~OutputStream() noexcept(false) { // MSC doesnt inherit noexcept
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

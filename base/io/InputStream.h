@@ -77,6 +77,9 @@ public:
     @return True, if data is available. False, if the timeout periode expired.
   */
   virtual bool wait(unsigned int timeout) const throw(IOException) = 0;
+
+  inline ~InputStream() noexcept(false) { // MSC doesnt inherit noexcept
+  }
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

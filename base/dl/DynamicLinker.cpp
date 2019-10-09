@@ -18,10 +18,11 @@
 #  include <windows.h>
 #else // unix
 #  include <dlfcn.h>
-// #include <link.h> // TAG: is this required for Solaris
+#if 0
 #  if !defined(RDLD_LAZY) || !defined(RDLD_NOW) || !defined(RTLD_GLOBAL) || !defined(RTDL_LOCAL)
 #    warning dlfcn.h is not compliant with IEEE Std 1003.1-2001
 #  endif
+#endif
 #endif // flavor
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
@@ -35,9 +36,9 @@ void* DynamicLinker::getGlobalSymbolImpl(
   return result;
 #else // unix
   #if defined(RTLD_LAZY)
-    void* handle = ::dlopen(0, RTLD_LAZY);
+    void* handle = ::dlopen(nullptr, RTLD_LAZY);
   #else
-    void* handle = ::dlopen(0, 0); // use unspecified linking
+    void* handle = ::dlopen(nullptr, 0); // use unspecified linking
   #endif
   if (handle == 0) {
     throw LinkerException("Unable to open module");

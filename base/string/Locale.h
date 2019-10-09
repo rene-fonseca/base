@@ -105,7 +105,7 @@ public:
     decimalSymbol = '.';
     negative.currencyPosition = PRECEDES_QUANTITY_WITH_SPACE;
     negative.signPosition = SIGN_SUCCEEDS_SYMBOL;
-    positive.currencyPosition = PRECEDES_QUANTITY_WITH_SPACE;    
+    positive.currencyPosition = PRECEDES_QUANTITY_WITH_SPACE;
     positive.signPosition = SIGN_SUCCEEDS_SYMBOL;
   }
 };

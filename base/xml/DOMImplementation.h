@@ -143,7 +143,7 @@ public:
     const String& systemId,
     Mode mode = VALIDATING,
     unsigned int flags = WARNINGS|PEDANTIC|DETECT_IDS|COMPLETE_ATTRIBUTE_LISTS)
-    throw(DOMException);  
+    throw(DOMException);
 
   /**
     Creates the document from a string.

@@ -32,7 +32,7 @@ public:
   /**
     Initializes the IDL object.
   */
-  IDLObject() throw();  
+  IDLObject() throw();
   
   /**
     Destroys the IDL object.

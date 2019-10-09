@@ -64,7 +64,7 @@ public:
     STREAM, /**< Stream socket. */
     DATAGRAM, /**< Datagram socket. */
     RAW /**< Raw socket. */
-  };  
+  };
 private:
   
   class _DK_SDU_MIP__BASE__API SocketImpl : public Handle {
@@ -532,7 +532,7 @@ public:
   /**
     Forces any buffered bytes to be written out.
   */
-  void flush() throw(NetworkException); 
+  void flush() throw(NetworkException);
 
   /**
     Fills the buffer with bytes from the socket input stream. Blocks if asked

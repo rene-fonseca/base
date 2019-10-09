@@ -467,7 +467,7 @@ public:
     void setBuffer(
       uint8* buffer,
       unsigned int size,
-      uint8* secondaryBuffer) throw(IEEE1394Exception);    
+      uint8* secondaryBuffer) throw(IEEE1394Exception);
   };
 
   /**

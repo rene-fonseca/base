@@ -88,7 +88,7 @@ public:
   /**
     Returns the identifier of the end point (e.g. "tcpip://host:1234").
   */
-  virtual String getEndPoint() const throw() = 0;  
+  virtual String getEndPoint() const throw() = 0;
 
   /**
     Returns the reference for the specified connection local identifier.

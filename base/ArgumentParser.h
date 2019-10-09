@@ -307,7 +307,7 @@ public:
     EnumOption(
       const String& name,
       char shortName,
-      unsigned int flags = 0) throw(OutOfDomain);    
+      unsigned int flags = 0) throw(OutOfDomain);
 
     /** Registers a value. */
     inline void addValue(const String& value) throw(MemoryException) {

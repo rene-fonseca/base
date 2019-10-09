@@ -39,7 +39,7 @@ public:
   /**
     Initializes the IDL exception.
   */
-  IDLException(const String& name, unsigned int version) throw();  
+  IDLException(const String& name, unsigned int version) throw();
 
   /**
     Adds the specified atttribute.

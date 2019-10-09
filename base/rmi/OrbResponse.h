@@ -53,7 +53,7 @@ public:
 private:
 
   /** The type of the response. */
-  ResponseType responseType;
+  ResponseType responseType = OCTET;
   union {
     uint64 reference;
     uint8 octetValue;

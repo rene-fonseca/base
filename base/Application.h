@@ -125,7 +125,7 @@ public:
 
     @param name The formal name.
   */
-  Application(const String& name) throw(SingletonException); 
+  Application(const String& name) throw(SingletonException);
 
   /**
     Initializes application.

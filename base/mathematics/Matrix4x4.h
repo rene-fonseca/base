@@ -67,7 +67,7 @@ public:
     *dest++ = zero;
     *dest++ = zero;
     *dest++ = zero;
-    *dest++ = one;  
+    *dest++ = one;
     return result;
   }
   
@@ -101,7 +101,7 @@ public:
     *dest++ = zero;
     *dest++ = zero;
     *dest++ = zero;
-    *dest++ = one;  
+    *dest++ = one;
     return result;
   }
   
@@ -135,7 +135,7 @@ public:
     *dest++ = zero;
     *dest++ = zero;
     *dest++ = zero;
-    *dest++ = one;  
+    *dest++ = one;
     return result;
   }
   

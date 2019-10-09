@@ -100,7 +100,7 @@ public:
   */
   Attribute createAttributeNS(
     const String& namespaceURI,
-    const String& qualifiedName) throw(DOMException);  
+    const String& qualifiedName) throw(DOMException);
   
   /**
     Creates an element of the type specified.
@@ -140,7 +140,7 @@ public:
   */
   ProcessingInstruction createProcessingInstruction(
     const String& target,
-    const String& data) throw(DOMException);  
+    const String& data) throw(DOMException);
   
   /**
     Creates an EntityReference node.
@@ -164,7 +164,7 @@ public:
     has no parent. The source node is not altered or removed from the original
     document; this method creates a new copy of the source node.
   */
-  Node importNode(Node importedNode, bool deep) throw(DOMException);  
+  Node importNode(Node importedNode, bool deep) throw(DOMException);
   
   /**
     Do XInclude substitution.

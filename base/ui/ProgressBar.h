@@ -83,7 +83,7 @@ public:
   /**
     Sets the maximum value.
   */
-  void setMaximumValue(unsigned int value) throw();  
+  void setMaximumValue(unsigned int value) throw();
 
   /**
     Invoked when the button must be updated.

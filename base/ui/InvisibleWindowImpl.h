@@ -339,7 +339,7 @@ public:
   /**
     Returns the release of the server.
   */
-  unsigned int getServerRelease() const throw(UserInterfaceException);  
+  unsigned int getServerRelease() const throw(UserInterfaceException);
   
   /**
     Returns the window flags.
@@ -575,7 +575,7 @@ public:
   /**
     Disable the window.
   */
-  void disable() throw(UserInterfaceException);  
+  void disable() throw(UserInterfaceException);
 
   /**
     Raises the window.
@@ -718,7 +718,7 @@ public:
   /**
     Invoked when a command is send to the window.
   */
-  virtual void onCommand(unsigned int identifier) throw();  
+  virtual void onCommand(unsigned int identifier) throw();
   
   /**
     Requests the window to be updated.

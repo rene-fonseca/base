@@ -193,7 +193,7 @@ public:
   /**
     Returns a duplicate of this node.
   */
-  Node cloneNode(bool deep) throw(DOMException);  
+  Node cloneNode(bool deep) throw(DOMException);
   
   /**
     Returns the local part of the qualified name of this node.
@@ -203,7 +203,7 @@ public:
   /**
     The namespace URI of this node, or an improper string if it is unspecified.
   */
-  String getNamespaceURI() const throw();  
+  String getNamespaceURI() const throw();
   
   /**
     Returns the name of the node.

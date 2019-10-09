@@ -275,7 +275,7 @@ public:
       ASSUME_NATIVE_BYTE_ORDER or ASSUME_BE are set).
     */
     ASSUME_LE = 32
-  };  
+  };
 private:
 
   /** The default wide string. This is used to avoid multiple allocations of empty string buffers. */

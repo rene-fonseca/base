@@ -116,7 +116,7 @@ public:
   void parse(
     const char* buffer,
     unsigned int size,
-    const String& uri) throw(SAXException);  
+    const String& uri) throw(SAXException);
   
   /**
     Parses an XML document from a system identifier (URI).

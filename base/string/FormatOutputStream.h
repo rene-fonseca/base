@@ -390,7 +390,7 @@ public:
 
     @param precision The desired precision.
   */
-  FormatOutputStream& setPrecision(unsigned int precision) throw();  
+  FormatOutputStream& setPrecision(unsigned int precision) throw();
 
   /**
     Sets the date format.
@@ -447,7 +447,7 @@ public:
   /**
     Send action to stream.
   */
-  FormatOutputStream& operator<<(Action action) throw(IOException);  
+  FormatOutputStream& operator<<(Action action) throw(IOException);
 
   class Indent {
   private:

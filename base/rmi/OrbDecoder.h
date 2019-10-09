@@ -52,7 +52,7 @@ public:
   /**
     Decodes a wide string.
   */
-  virtual void read(WideString& value) throw(IOException) = 0;  
+  virtual void read(WideString& value) throw(IOException) = 0;
   
   /**
     Decodes an array of chars.

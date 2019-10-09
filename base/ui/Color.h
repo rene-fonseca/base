@@ -42,7 +42,7 @@ public:
     AQUAMARINE_MED,
     BEIGE
     // TAG: fixme
-  };  
+  };
   
   /**
     Initializes color with unspecified value.

@@ -566,7 +566,7 @@ public:
           parent = child;
           child = child->getNext();
         }
-        bassert(child, InvalidKey(this));      
+        bassert(child, InvalidKey(this));
         parent->setNext(child->getNext()); // unlink node from linked list
       }
       --size;

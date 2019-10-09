@@ -39,7 +39,7 @@ public:
     
     @param path Specifies the folder to monitor.
   */
-  FolderMonitor(const String& path) throw(ResourceException);  
+  FolderMonitor(const String& path) throw(ResourceException);
 
   /**
     Returns true if the an event has occured.

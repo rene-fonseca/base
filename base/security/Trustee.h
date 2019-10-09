@@ -180,7 +180,7 @@ public:
   /**
     Returns the full name of the trustee.
   */
-  String getFullName() const throw(TrusteeException); 
+  String getFullName() const throw(TrusteeException);
   
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value) throw(IOException);
 };

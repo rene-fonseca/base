@@ -378,7 +378,7 @@ public:
   /**
     Returns the year in UTC.
   */
-  int getUTCYear() const throw();  
+  int getUTCYear() const throw();
 
   /**
     Returns the Julian day.

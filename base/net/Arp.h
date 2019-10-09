@@ -105,7 +105,7 @@ public:
   /**
     Initializes interface by name.
   */
-  InetInterface(const String& name) throw(NetworkException);  
+  InetInterface(const String& name) throw(NetworkException);
   
   /**
     Initializes interface by address.

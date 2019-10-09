@@ -52,7 +52,7 @@ public:
     @param buffer The buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  unsigned int push(const uint8* buffer, unsigned int size) throw();  
+  unsigned int push(const uint8* buffer, unsigned int size) throw();
   
   /**
     Returns the total size of the original message.

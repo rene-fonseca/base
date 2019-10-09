@@ -53,7 +53,7 @@ private:
   };
   
   /** Specifies the maximum number of adapters. */
-  static const unsigned int MAXIMUM_NUMBER_OF_ADAPTERS = 256;  
+  static const unsigned int MAXIMUM_NUMBER_OF_ADAPTERS = 256;
   
   struct IsochronousContext {
     Allocator<uint8> buffer;

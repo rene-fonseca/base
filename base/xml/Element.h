@@ -112,7 +112,7 @@ public:
   /**
     Removes the specified attribute node.
   */
-  Attribute removeAttributeNode(Attribute attribute) throw(DOMException);  
+  Attribute removeAttributeNode(Attribute attribute) throw(DOMException);
   
   /**
     Retrieves an Attribute node by local name and namespace URI.

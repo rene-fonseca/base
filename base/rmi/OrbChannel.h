@@ -43,7 +43,7 @@ public:
   /**
     Initializes the channel.
   */
-  OrbChannel(Reference<OrbEncoder> encoder, Reference<OrbDecoder> decoder) throw();  
+  OrbChannel(Reference<OrbEncoder> encoder, Reference<OrbDecoder> decoder) throw();
   
   /**
     Returns the fully qualified name of the specified stub.

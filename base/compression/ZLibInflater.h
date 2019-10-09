@@ -55,7 +55,7 @@ public:
   /**
     Initializes the inflater.
   */
-  ZLibInflater() throw(MemoryException);  
+  ZLibInflater() throw(MemoryException);
   
   /**
     Returns true if the end has been reached. This may return true before

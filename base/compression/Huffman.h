@@ -71,7 +71,7 @@ public:
     @param buffer The buffer.
     @param size The size of the buffer in bytes.
   */
-  void decode(OutputStream& stream, const uint8* buffer, unsigned int size) throw(InvalidFormat);  
+  void decode(OutputStream& stream, const uint8* buffer, unsigned int size) throw(InvalidFormat);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

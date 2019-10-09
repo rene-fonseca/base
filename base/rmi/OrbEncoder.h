@@ -62,7 +62,7 @@ public:
   /**
     Encodes the specified value.
   */
-  virtual void write(char value) throw(IOException) = 0;  
+  virtual void write(char value) throw(IOException) = 0;
   
   /**
     Encodes the elements of the specified array.

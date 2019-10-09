@@ -55,7 +55,7 @@ public:
   /**
     Initializes the mime type as "application/octet-stream".
   */
-  MimeType() throw(MemoryException);  
+  MimeType() throw(MemoryException);
   
   /**
     Initializes the mime object with specified values. Use the isValid() method

@@ -55,7 +55,7 @@ public:
     /**
       Decodes a wide string.
     */
-    void read(WideString& value) throw(IOException);  
+    void read(WideString& value) throw(IOException);
   
     /**
       Decodes an array of chars.
@@ -235,7 +235,7 @@ public:
     /**
       Encodes the specified value.
     */
-    void write(char value) throw(IOException);  
+    void write(char value) throw(IOException);
     
     /**
       Encodes the elements of the specified array.

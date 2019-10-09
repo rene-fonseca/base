@@ -79,7 +79,7 @@ namespace base {
         /** Vector of 4 32 bit floating point values (SSE2). */
         typedef int v4sf __attribute__ ((mode (V4SF)));
         /** Vector of 4 32 bit integers (SSE2). */
-        typedef int v4si __attribute__ ((mode (V4SI)));    
+        typedef int v4si __attribute__ ((mode (V4SI)));
         /** Streaming SIMD Extensions (SSE2) data type. */
         typedef int sse128 __attribute__ ((mode (V4SF)));
 #endif

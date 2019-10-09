@@ -385,7 +385,7 @@ namespace extension {
       
       @param name The name of the value.
     */
-    unsigned int getSize(const String& name) const throw(RegistryException);    
+    unsigned int getSize(const String& name) const throw(RegistryException);
   };
   
 }; // end of namespace extension

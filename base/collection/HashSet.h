@@ -431,7 +431,7 @@ public:
       const unsigned long hash = getHash(value);
       Node** bucket = getBuckets() + (hash & mask);
       Node* child = *bucket;
-      bassert(child, InvalidNode(this));      
+      bassert(child, InvalidNode(this));
       if ((child->getHash() == hash) && (child->getValue() == value)) {
         *bucket = child->getNext(); // unlink first node (next could be 0)
       } else {
@@ -441,7 +441,7 @@ public:
           parent = child;
           child = child->getNext();
         }
-        bassert(child, InvalidNode(this));      
+        bassert(child, InvalidNode(this));
         parent->setNext(child->getNext()); // unlink node from linked list
       }
       --size;

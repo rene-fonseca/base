@@ -91,6 +91,7 @@ public:
       Representation of single precision (32-bit) floating point type as
       specified by IEEE 754.
     */
+_DK_SDU_MIP__BASE__PACKED__BEGIN
     struct IEEE754SinglePrecision {
       static const bool HAS_IMPLIED_ONE = true;
       static const int MINIMUM_EXPONENT = -125;
@@ -119,11 +120,13 @@ public:
       uint32 negative : 1;
 #endif // bit allocation
     } _DK_SDU_MIP__BASE__PACKED;
-    
+_DK_SDU_MIP__BASE__PACKED__END
+
     /*
       Representation of double precision (64-bit) floating point type as
       specified by IEEE 754.
     */
+_DK_SDU_MIP__BASE__PACKED__BEGIN
     struct IEEE754DoublePrecision {
       static const bool HAS_IMPLIED_ONE = true;
       static const int MINIMUM_EXPONENT = -1021;
@@ -156,10 +159,12 @@ public:
       uint32 mantissa0 : 32;
 #endif // bit allocation
     } _DK_SDU_MIP__BASE__PACKED;
-    
+_DK_SDU_MIP__BASE__PACKED__END
+
     /*
       Representation of double-extended precision (96-bit) floating point type.
     */
+_DK_SDU_MIP__BASE__PACKED__BEGIN
     struct IEEEExtendedDoublePrecision96 {
       static const bool HAS_IMPLIED_ONE = false;
       static const int MINIMUM_EXPONENT = -16381;
@@ -196,11 +201,13 @@ public:
       uint32 mantissa0 : 32;
 #endif // bit allocation
     } _DK_SDU_MIP__BASE__PACKED;
-    
+_DK_SDU_MIP__BASE__PACKED__END
+
     /*
       Representation of double-extended precision (128-bit) floating point
       type.
     */
+_DK_SDU_MIP__BASE__PACKED__BEGIN
     struct IEEEExtendedDoublePrecision128 {
       static const bool HAS_IMPLIED_ONE = false;
       static const int BIAS = 0x3fff;
@@ -239,8 +246,10 @@ public:
       uint32 mantissa0 : 32;
 #endif // bit allocation
     } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
     /* Representation of quadruple precision (128-bit) floating point type. */
+_DK_SDU_MIP__BASE__PACKED__BEGIN
     struct IEEEQuadruplePrecision {
       static const bool HAS_IMPLIED_ONE = true;
       static const int MINIMUM_EXPONENT = -16381;
@@ -281,6 +290,7 @@ public:
       uint32 mantissa0 : 32;
 #endif // bit allocation
     } _DK_SDU_MIP__BASE__PACKED;
+_DK_SDU_MIP__BASE__PACKED__END
   };
 
 #if (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
@@ -326,6 +336,7 @@ public:
 #endif
   
   /** @short IEEE 754 single precision conversion support. */
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct IEEE754SinglePrecision {
     Representation::IEEE754SinglePrecision value;
 
@@ -487,8 +498,10 @@ public:
     
     operator long double() const throw();
   } _DK_SDU_MIP__BASE__PACKED;
+_DK_SDU_MIP__BASE__PACKED__END
 
   /** @short IEEE 754 double precision conversion support. */
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct IEEE754DoublePrecision {
     Representation::IEEE754DoublePrecision value;
 
@@ -645,8 +658,10 @@ public:
     
     operator long double() const throw();
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
   /** @short IEEE extended double precision (96 bit) conversion support. */
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct IEEEExtendedDoublePrecision96 {
     Representation::IEEEExtendedDoublePrecision96 value;
 
@@ -814,8 +829,10 @@ public:
     
     operator long double() const throw();
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
   /** @short IEEE extended double precision (128 bit) conversion support. */
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct IEEEExtendedDoublePrecision128 {
     Representation::IEEEExtendedDoublePrecision128 value;
 
@@ -983,8 +1000,10 @@ public:
     
     operator long double() const throw();
   } _DK_SDU_MIP__BASE__PACKED;
-  
+_DK_SDU_MIP__BASE__PACKED__END
+
   /** @short IEEE quadruple precision conversion support. */
+_DK_SDU_MIP__BASE__PACKED__BEGIN
   struct IEEEQuadruplePrecision {
     Representation::IEEEQuadruplePrecision value;
 
@@ -1147,6 +1166,7 @@ public:
     
     operator long double() const throw();
   } _DK_SDU_MIP__BASE__PACKED;
+_DK_SDU_MIP__BASE__PACKED__END
 
 #if (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
   typedef IEEE754SinglePrecision ToFloat;

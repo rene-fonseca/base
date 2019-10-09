@@ -211,18 +211,18 @@ public:
 //protected:
 //
 //  /** The granularity of the position. */
-//  unsigned int granularity;
+//  unsigned int granularity = 0;
 //  /** Granularity mask. */
-//  unsigned long long highMask;
-//  unsigned int lowMask;
+//  unsigned long long highMask = 0;
+//  unsigned int lowMask = 0;
 //  /** The file. */
 //  File file;
 //  /** The file providing the stream. */
 //  MappedFile mapping;
 //  /** The beginning of the internal buffer. */
-//  uint8* begin;
+//  uint8* begin = nullptr;
 //  /** The end of the internal buffer. */
-//  uint8* end;
+//  uint8* end = nullptr;
 //protected:
 //
 //  /**

@@ -71,7 +71,7 @@ private:
   /** The path of the file. */
   String path;
   /** The size of the file in bytes. */
-  long long size;
+  long long size = 0;
   /** The last modification time. */
   Date modification;
   /** The last access time. */
@@ -83,9 +83,9 @@ private:
   /** The group associated with the file. */
   Group group;
   /** The mode of the file. */
-  unsigned int mode;
+  unsigned int mode = 0;
   /** Number of links to the file. */
-  unsigned int links;
+  unsigned int links = 0;
 public:
 
   /**

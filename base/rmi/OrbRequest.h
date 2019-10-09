@@ -39,7 +39,7 @@ private:
   /** The stub. */
   Reference<OrbStub> stub;
   /** The id of the method. */
-  int methodId;
+  int methodId = 0;
 public:
   
   /**

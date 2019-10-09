@@ -36,9 +36,9 @@ private:
   Pen darkPen;
   Color normalTextColor;
   Color pressedTextColor;
-  bool grayed;
-  bool pressed;
-  bool highlighted;
+  bool grayed = false;
+  bool pressed = false;
+  bool highlighted = false;
 public:
 
   enum {

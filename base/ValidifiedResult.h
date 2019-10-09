@@ -34,7 +34,7 @@ private:
   /** The value. */
   TYPE value;
   /** The validity. */
-  bool valid;
+  bool valid = false;
 public:
 
   /**

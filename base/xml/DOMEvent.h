@@ -45,27 +45,27 @@ private:
     Used to indicate the EventTarget to which the event was originally
     dispatched.
   */
-  EventTarget* target;
+  EventTarget* target = nullptr;
   /**
     Used to indicate the EventTarget whose EventListeners are currently being
     processed. This is particularly useful during capturing and bubbling.
   */
-  EventTarget* currentTarget;
+  EventTarget* currentTarget = nullptr;
   /**
     Used to indicate which phase of event flow is currently being evaluated.
   */
-  PhaseType phase;
+  PhaseType phase = CAPTURING_PHASE;
   /**
     Used to indicate whether or not an event is a bubbling event. If the event
     can bubble the value is true, else the value is false.
   */
-  bool bubbles;
+  bool bubbles = false;
   /**
     Used to indicate whether or not an event can have its default action
     prevented. If the default action can be prevented the value is true, else
     the value is false.
   */
-  bool cancelable;
+  bool cancelable = false;
   /**
     Used to specify the time at which the event was created. Due to the fact
     that some systems may not provide this information the value of timeStamp
@@ -78,7 +78,7 @@ public:
   DOMEvent() throw() {
   }
 
-  inline String getType() const throw() {
+  inline const String& getType() const throw() {
     return type;
   }
 

@@ -33,7 +33,7 @@ private:
   /** The fully qualified name of the skeleton. */
   String name;
   /** The version of the skeleton. */
-  unsigned int version;
+  unsigned int version = 0;
 public:
   
   /**

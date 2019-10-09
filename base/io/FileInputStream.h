@@ -33,7 +33,7 @@ protected:
   /** The file providing the stream. */
   File file;
   /** Specifies that the end of the file has been reached. */
-  bool end;
+  bool end = false;
 public:
 
   /**

@@ -68,7 +68,7 @@ public:
 class BitmapMenuItem : public MenuItem {
 private:
   
-  bool grayed;
+  bool grayed = false;
   Bitmap bitmap;
 public:
   
@@ -207,7 +207,7 @@ public:
 class CheckableMenuItem : public TextMenuItem {
 private:
 
-  bool checked;
+  bool checked = false;
 public:
 
   inline CheckableMenuItem() throw() : checked(false) {
@@ -233,7 +233,7 @@ public:
 class RadioMenuItem : public TextMenuItem {
 private:
 
-  bool selected;
+  bool selected = false;
 public:
 
   inline RadioMenuItem() throw() : selected(false) {

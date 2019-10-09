@@ -310,7 +310,7 @@ inline uint32 getLowWordOf64(uint64 value) throw() {
 */
 template<class TYPE>
 inline bool isAligned(const TYPE& value) throw() {
-  unsigned int alignment;
+  unsigned int alignment = 0;
   if (sizeof(value) <= sizeof(long)) {
     alignment = sizeof(long);
   } else if (sizeof(value) <= 2 * sizeof(long)) {
@@ -331,7 +331,7 @@ inline bool isAligned(const TYPE& value) throw() {
 */
 template<class TYPE>
 inline TYPE& getAligned(char* buffer) throw() {
-  unsigned int alignment;
+  unsigned int alignment = 0;
   if (sizeof(buffer) <= sizeof(long)) {
     alignment = sizeof(long);
   } else if (sizeof(buffer) <= 2 * sizeof(long)) {

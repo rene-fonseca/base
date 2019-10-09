@@ -329,25 +329,25 @@ protected:
   };
 
   /** Holds the reset generation number. */
-  uint32 resetGeneration;
+  uint32 resetGeneration = 0;
   /** The number of nodes of the local bus. */
-  unsigned int numberOfNodes;
+  unsigned int numberOfNodes = 0;
   /** Description of the nodes of the local bus. */
   NodeDescriptor nodes[63];
   /** The physical id of the adapter. */
-  unsigned int localId;
+  unsigned int localId = 0;
   /** The physical id of the current bus manager. */
-  unsigned int busManagerId;
+  unsigned int busManagerId = 0;
   /** The physical id of the current isochronous resource manager. */
-  unsigned int isochronousResourceManagerId;
+  unsigned int isochronousResourceManagerId = 0;
   /** The physical id of the current cycle master. */
-  unsigned int cycleMasterId;
+  unsigned int cycleMasterId = 0;
   /** The maximum speeds of the nodes. */
   Speed speedMap[63][64];
   /** Mask specifying the nodes with the link layer activated. */
-  uint64 linkActiveNodes;
+  uint64 linkActiveNodes = 0;
   /** Mask specifying the contenders. */
-  uint64 contenderNodes;
+  uint64 contenderNodes = 0;
 
   /**
     Returns the guid of the specified node.

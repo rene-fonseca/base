@@ -338,7 +338,7 @@ public:
   private:
     
     /** Flags. */
-    unsigned int flags;
+    unsigned int flags = 0;
   public:
 
     /**
@@ -453,7 +453,7 @@ public:
 private:
 
   /** Flags. */
-  unsigned int flags;
+  unsigned int flags = 0;
   /** Map of long names into option descriptor index. */
   HashTable<String, unsigned int> names;
   /** Map of short names into option descriptor index. */

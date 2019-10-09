@@ -27,7 +27,7 @@ private:
   /** The string holding the stream data. */
   String string;
   /** Specifies whether the stream has been closed. */
-  bool closed;
+  bool closed = false;
 public:
 
   inline explicit StringOutputStreamWrapper() throw() : closed(false) {

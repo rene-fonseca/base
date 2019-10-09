@@ -490,11 +490,11 @@ public:
     /** The hash set implementation. */
     Reference<HashSetImpl> impl;
     /** The current bucket. */
-    Node** bucket;
+    Node** bucket = nullptr;
     /** The current position of the enumeration. */
-    Node* node;
+    Node* node = nullptr;
     /** The number of elements. */
-    unsigned int numberOfElements;
+    unsigned int numberOfElements = 0;
   public:
       
     /**

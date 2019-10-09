@@ -227,9 +227,9 @@ public:
     typedef Enumerator<EnumeratorTraits>::Pointer Pointer;
     
     /** The current position in the enumeration. */
-    unsigned long* word;
+    unsigned long* word = nullptr;
     /** The number of bits left. */
-    unsigned int count;
+    unsigned int count = 0;
     
     /**
       Initializes an enumeration of all the elements of a bit set.
@@ -311,9 +311,9 @@ public:
     typedef Enumerator<ReadEnumeratorTraits>::Pointer Pointer;
     
     /** The current position in the enumeration. */
-    const unsigned long* word;
+    const unsigned long* word = nullptr;
     /** The number of bits left. */
-    unsigned int count;
+    unsigned int count = 0;
     
     /**
       Initializes an enumeration of all the elements of a bit set.
@@ -381,7 +381,7 @@ public:
   private:
     
     BitSet& bitset; // use reference to avoid 'copy on write'
-    unsigned int index;
+    unsigned int index = 0;
     
     Element(const Element& copy) throw();
     Element& operator=(const Element& eq) throw();
@@ -406,7 +406,7 @@ private:
   /** The elements of the bit set. */
   Reference<ReferenceCountedCapacityAllocator<unsigned long> > elements;
   /** The number of bits in the bit set. */
-  unsigned int size;
+  unsigned int size = 0;
 protected:
   
   /**

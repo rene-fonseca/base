@@ -47,7 +47,7 @@ public:
   private:
     
     Vector& vector; // use reference to avoid 'copy on write'
-    unsigned int index;
+    unsigned int index = 0;
     Element(const Element& copy) throw();
     Element& operator=(const Element& eq) throw();
     

@@ -425,7 +425,7 @@ protected:
   typedef ExpressionEvaluator::Operation Operation;
 
   /** The auto-register mode. Default is disabled. */
-  bool autoRegister;
+  bool autoRegister = false;
   /** Unknowns. */
   HashTable<String, Node> unknowns;
   /** Lookup of the unknowns by id. */
@@ -439,13 +439,13 @@ protected:
   /** List holding the parsed expression. */
   List<Node> nodes;
   /** Specifies the current number of operands. */
-  unsigned int operands;
+  unsigned int operands = 0;
   /** Specifies that an unary expression is expected. */
-  bool unary;
+  bool unary = false;
   /** The current position in the representation. */
-  unsigned int index;
+  unsigned int index = 0;
   /** The length of the expression. */
-  unsigned int length;
+  unsigned int length = 0;
   
   /**
     Pops one operation from the stack.

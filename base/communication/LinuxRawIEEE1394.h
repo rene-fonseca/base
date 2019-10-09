@@ -66,15 +66,15 @@ private:
   /** Device handle. */
   OperatingSystem::Handle handle;
   /** The protocol (API). */
-  Protocol protocol;
+  Protocol protocol = PROTOCOL_DEFAULT;
   /** The current status. */
-  unsigned int status;
+  unsigned int status = 0;
   /** The number of nodes of the local bus. */
-  unsigned int numberOfNodes;
+  unsigned int numberOfNodes = 0;
   /** The physical id of the local node. */
-  unsigned int localId;
+  unsigned int localId = 0;
   /** Request identification. */
-  uint32 generation;
+  uint32 generation = 0;
   /** FCP listener. */
   FunctionControlProtocolListener* fcpListener;
   /** FCP transaction buffer. */

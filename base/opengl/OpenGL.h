@@ -487,7 +487,7 @@ public:
 private:  
   
   /** Specification supported. */
-  unsigned int specification;  
+  unsigned int specification = 0;
   
   /**
     Returns the extension function.
@@ -3247,8 +3247,8 @@ public:
   private:
     
     OpenGL& openGL;
-    unsigned int offset;
-    unsigned int numberOfLists;
+    unsigned int offset = 0;
+    unsigned int numberOfLists = 0;
     Allocator<unsigned int> objects;
   public:
     
@@ -3283,7 +3283,7 @@ public:
   private:
     
     OpenGL& openGL;
-    unsigned int name;
+    unsigned int name = 0;
   public:
     
     inline ReserveTexture(OpenGL& _openGL) throw(OutOfDomain)

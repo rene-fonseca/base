@@ -40,7 +40,7 @@ private:
   /** The current position of the enumeration. */
   Pointer node;
   /** Specifies whether more elements are available. */
-  bool more;
+  bool more = false;
 public:
 
   /**
@@ -113,7 +113,7 @@ private:
   /** The current position in the enumeration. */
   Pointer node;
   /** Specifies that more elements are available. */
-  bool more;
+  bool more = false;
   /** Specifies that subtree should be traversed. */
   Traverse traverse;
 public:
@@ -247,7 +247,7 @@ private:
   /** The current position in the enumeration. */
   Pointer node;
   /** Specifies that more elements are available. */
-  bool more;
+  bool more = false;
 public:
 
   /**

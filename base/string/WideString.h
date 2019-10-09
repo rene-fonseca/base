@@ -289,7 +289,7 @@ private:
   private:
     
     WideString& string;
-    unsigned int index;
+    unsigned int index = 0;
     
     Element(const Element& copy) throw();
     Element& operator=(const Element& eq) throw();

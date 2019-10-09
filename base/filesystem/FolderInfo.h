@@ -82,9 +82,9 @@ private:
   /** The group associated with the folder. */
   Group group;
   /** The mode of the folder. */
-  unsigned int mode;
+  unsigned int mode = 0;
   /** Number of links to the folder. */
-  unsigned int links;
+  unsigned int links = 0;
 public:
 
   /**

@@ -39,7 +39,7 @@ class Runnable;
   class MyActiveObject : public Runnable {
   protected:
 
-    unsigned int count;
+    unsigned int count = 0;
   public:
 
     MyThread(unsigned int _count) throw() : count(_count) {

@@ -38,9 +38,9 @@ public:
 private:
   
   /** Flags. */
-  unsigned int flags;
+  unsigned int flags = 0;
   /** The cause of the invocation failure. */
-  unsigned int cause;
+  unsigned int cause = 0;
 public:
   
   /**

@@ -82,9 +82,9 @@ public:
   private:
 
     /** The offset of the substring. */
-    int offset;
+    int offset = 0;
     /** The end of the substring. */
-    int end;
+    int end = 0;
 
     /**
       Initializes substring descriptor.

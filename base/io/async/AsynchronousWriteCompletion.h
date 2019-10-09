@@ -37,15 +37,15 @@ public:
 protected:
   
   /** The buffer associated with the operation. */
-  const uint8* buffer;
+  const uint8* buffer = nullptr;
   /** The desired number of bytes to be written. */
-  unsigned int bytesToWrite;
+  unsigned int bytesToWrite = 0;
   /** The offset. */
-  unsigned long long offset;
+  unsigned long long offset = 0;
   /** Specifies the number of bytes written. */
-  unsigned int bytesWritten;
+  unsigned int bytesWritten = 0;
   /** Flags. */
-  unsigned int flags;
+  unsigned int flags = 0;
 public:
 
   /**

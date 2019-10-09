@@ -285,13 +285,13 @@ public:
   private:
 
     /** The subchannel. */
-    unsigned int subchannel;
+    unsigned int subchannel = 0;
     /** The buffer. */
-    uint8* buffer;
+    uint8* buffer = nullptr;
     /** The size of the buffer in bytes. */
-    unsigned int bufferSize;
+    unsigned int bufferSize = 0;
     /** The number of received packets. */
-    unsigned int receivedPackets;
+    unsigned int receivedPackets = 0;
   protected:
     
     /**
@@ -372,7 +372,7 @@ public:
   private:
 
     /** The maximum payload in bytes per packet. */
-    unsigned int payload;
+    unsigned int payload = 0;
   public:
 
     /**
@@ -400,13 +400,13 @@ public:
   private:
 
     /** The desired number of packets to be received. */
-    unsigned int numberOfPackets;
+    unsigned int numberOfPackets = 0;
     /** The size of the header in bytes per packet. */
-    unsigned int headerSize;
+    unsigned int headerSize = 0;
     /** The maximum payload in bytes per packet. */
-    unsigned int payload;
+    unsigned int payload = 0;
     /** The secondary buffer for header data. */
-    uint8* secondaryBuffer;
+    uint8* secondaryBuffer = nullptr;
   public:
     
     /**

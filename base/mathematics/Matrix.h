@@ -50,8 +50,8 @@ public:
   private:
     
     Matrix& matrix; // use reference to avoid 'copy on write'
-    unsigned int row;
-    unsigned int column;
+    unsigned int row = 0;
+    unsigned int column = 0;
 
     inline ElementReference(
       Matrix& _matrix, unsigned int _row, unsigned int _column) throw()
@@ -80,7 +80,7 @@ public:
   private:
     
     Matrix& matrix; // use reference to avoid 'copy on write'
-    unsigned int row;
+    unsigned int row = 0;
     inline RowReference(Matrix& _matrix, unsigned int _row) throw()
       : matrix(_matrix),
         row(_row) {

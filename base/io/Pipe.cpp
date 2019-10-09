@@ -24,43 +24,19 @@
 #  include <sys/types.h>
 #  include <sys/time.h> // defines timeval on Linux systems
 #  include <sys/stat.h>
+#  include <sys/ioctl.h>
 #  include <limits.h> // defines PIPE_BUF...
 #  include <unistd.h>
 #  include <errno.h>
 #  include <string.h> // required on solaris 'cause FD_ZERO uses memset
 #  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
 #    warning ioctl is not supported (CYGWIN)
-#  else
-// #    include <stropts.h> // defines FLUSH macros
+#  elif (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__MACOS)
+#    include <stropts.h> // defines FLUSH macros
 #  endif
 #endif
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-// TAG: GLIBC: st_size is not 64bit aligned
-struct packedStat64 { // temporary fix for unaligned st_size
-  __dev_t st_dev;
-  unsigned int __pad1;
-  __ino_t __st_ino;
-  __mode_t st_mode;
-  __nlink_t st_nlink;
-  __uid_t st_uid;
-  __gid_t st_gid;
-  __dev_t st_rdev;
-  unsigned int __pad2;
-  __off64_t st_size;
-  __blksize_t st_blksize;
-  __blkcnt64_t st_blocks;
-  __time_t st_atime;
-  unsigned long int __unused1;
-  __time_t st_mtime;
-  unsigned long int __unused2;
-  __time_t st_ctime;
-  unsigned long int __unused3;
-  __ino64_t st_ino;
-} _DK_SDU_MIP__BASE__PACKED;
-#endif // GNU Linux
 
 Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
@@ -155,13 +131,8 @@ unsigned int Pipe::available() const throw(PipeException) {
   return bytesAvailable;
 #else // unix
   #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-    struct packedStat64 status; // TAG: GLIBC: st_size is not 64bit aligned
-    int result = fstat64(fd->getHandle(), (struct stat64*)&status);
-  #else
     struct stat64 status;
     int result = fstat64(fd->getHandle(), &status);
-  #endif // GNU Linux
   #else
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);

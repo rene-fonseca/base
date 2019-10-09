@@ -30,6 +30,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated") # exception specifications
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-overflow") # FIXME
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated-declarations") # FIXME
 endif ()
 
 endif ()
@@ -92,6 +93,8 @@ if (MSVC)
 target_compile_definitions(base PUBLIC _DK_SDU_MIP__BASE__SHARED_LIBRARY_BUILD)
 # set_target_properties(base PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS true)
 target_link_libraries(base Ws2_32 Netapi32 Winmm)
+elseif (UNIX AND NOT APPLE)
+target_link_libraries(base pthread X11)
 endif ()
 
 add_library(base_STATIC STATIC ${base_SRC})

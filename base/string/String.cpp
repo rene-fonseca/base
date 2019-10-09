@@ -18,6 +18,7 @@
 #include <base/collection/Array.h>
 #include <locale>
 #include <codecvt>
+#include <string.h>
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 

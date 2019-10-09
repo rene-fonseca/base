@@ -33,6 +33,16 @@ extern "C" BOOL DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
   return TRUE;
 }
 
+#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+
+void __attribute__ ((constructor)) moduleInit() {
+  base::moduleEntry();
+}
+
+void __attribute__ ((destructor)) moduleFini() {
+  base::moduleCleanUp();
+}
+
 #else // unix
 
 extern "C" void _init() {

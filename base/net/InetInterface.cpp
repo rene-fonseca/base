@@ -134,9 +134,10 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
        (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN))
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   try {
+    PrimitiveArray<char> buffer(1024);
     struct ifconf ifc;
-    ifc.ifc_len = Thread::getLocalStorage()->getSize();
-    ifc.ifc_buf = Thread::getLocalStorage()->getElements();
+    ifc.ifc_len = buffer.size();
+    ifc.ifc_buf = buffer;
     if (ioctl(handle, SIOCGIFCONF, &ifc)) {
       close(handle);
       throw NetworkException(
@@ -885,8 +886,8 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
   }
 #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
   // TAG: FIXMD
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || \
-      (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN))
+#elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || \
+       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN))
   if (ioctl(handle, SIOCGIFHWADDR, &req) == 0) {
     ethernet.setMAC48(Cast::getAddress(req.ifr_hwaddr));
   }

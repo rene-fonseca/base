@@ -100,10 +100,7 @@ typedef int SOCKET;
   }
 #endif
 
-#if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
-     (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__SOLARIS) && \
-     (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__MACOS) && \
-     !defined(_DK_SDU_MIP__BASE__SOCKLEN_T))
+#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
   typedef int socklen;
 #else
   typedef socklen_t socklen;
@@ -259,7 +256,7 @@ public:
       return 0; // TAG: or should we raise an exception
     }
   }
-  
+
   /** Sets the socket name from the specified socket. */
   inline void setSocket(int handle) throw() {
     socklen length = getAnySize();
@@ -268,10 +265,10 @@ public:
 };
 
 namespace internal {
-  
+
   class SocketImpl {
   public:
-    
+
     static inline int getNativeError() throw() {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
       return ::WSAGetLastError();
@@ -279,7 +276,7 @@ namespace internal {
       return errno;
 #endif // flavor
     }
-    
+
     static unsigned int getCause(unsigned int error) throw() {
       switch (error) {
 #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)

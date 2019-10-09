@@ -708,9 +708,7 @@ public:
     @param attribute The attribute.
     @param value The final value.
   */
-  inline FinalValue(
-    TYPE& _attribute,
-    TYPE _value) /*throw(...)*/
+  inline FinalValue(TYPE& _attribute, TYPE _value)
     : attribute(_attribute), value(_value) {
   }
 

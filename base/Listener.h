@@ -46,7 +46,7 @@ private:
   /** The type of the listener. */
   typedef LISTENER Listener;
   /** The type of the member function. */
-  typedef void (Listener::*Member)(const Sender*) /*throw(...)*/;
+  typedef void (Listener::*Member)(const Sender*);
   /** The sender. */
   const Sender* sender;
   /** The end-point of the signal. */
@@ -76,7 +76,7 @@ public:
   /**
     Sends the signal.
   */
-  inline void operator()(Listener* listener) const /*throw(...)*/ {
+  inline void operator()(Listener* listener) const {
     (listener->*member)(sender);
   }
 };

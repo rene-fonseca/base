@@ -70,7 +70,7 @@ public:
     return object;
   }
 
-  inline void destroy() throw(...) {
+  inline void destroy() {
     if (object) {
       delete object;
       object = nullptr;

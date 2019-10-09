@@ -33,7 +33,7 @@ public:
     Forces any buffered bytes to be written out. This method is ignored by
     unbuffered streams.
   */
-  virtual void flush() /*throw(...)*/;
+  virtual void flush();
   
   /**
     Pushes the specified number of bytes onto the stream.
@@ -48,7 +48,7 @@ public:
     This method should be invoked when the end has been reached. This method may
     be ignored by some implementations.
   */
-  virtual void pushEnd() /*throw(...)*/;
+  virtual void pushEnd();
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

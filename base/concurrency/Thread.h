@@ -436,7 +436,7 @@ public:
   /**
     Entry point for the thread.
   */
-  void run() /*throw(...)*/;
+  void run();
   
   /**
     Starts the thread. The underlying context of execution is allocated here

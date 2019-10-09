@@ -37,7 +37,7 @@ void WaitForObjects::registerObject(Object* object) throw(OutOfDomain) { // FIXM
   // TAG: handles.append(object->getHandle());
 }
 
-void WaitForObjects::deregisterObject(Object* object) throw(...) {
+void WaitForObjects::deregisterObject(Object* object) {
 // throw exception if not present
 // handles.remove(i);
 // objects.remove(i);

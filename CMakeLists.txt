@@ -24,7 +24,10 @@ else ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-value")
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  message( ${CMAKE_CXX_COMPILER_ID} )
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+#-Wexceptions
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-exceptions") # FIXME
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-format-security") # FIXME
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")

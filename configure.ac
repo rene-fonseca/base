@@ -591,7 +591,7 @@ AC_ARG_ENABLE(
 
 AC_ARG_ENABLE(
   ,[
-  Please report any errors to <fonseca@mip.sdu.dk>.])
+  Please report any errors to https://dev.azure.com/renefonseca/base.])
 
 
 

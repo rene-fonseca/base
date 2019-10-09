@@ -40,7 +40,7 @@ public:
   */
   //virtual void asyncCancel() throw(AsynchronousException) = 0;
 
-  virtual ~AsynchronousStream();
+  virtual ~AsynchronousStream() noexcept(false);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

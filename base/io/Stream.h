@@ -38,7 +38,7 @@ public:
   /**
     Destroy stream object.
   */
-  virtual ~Stream();
+  virtual ~Stream() noexcept(false);
 };
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

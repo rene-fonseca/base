@@ -46,7 +46,7 @@ public:
   /**
     Destroys the object.
   */
-  virtual inline ~DynamicObject() {
+  virtual inline ~DynamicObject() noexcept(false) {
 #if defined(DEBUG)
     ASSERT(valid);
     valid = false;

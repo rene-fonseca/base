@@ -29,7 +29,7 @@ bool AsynchronousStream::asyncTest() throw() {
 #endif // flavor
 }
 
-AsynchronousStream::~AsynchronousStream() {
+AsynchronousStream::~AsynchronousStream() noexcept(false) {
 }
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

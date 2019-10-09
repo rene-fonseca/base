@@ -14,7 +14,7 @@
 
 #if defined(_WIN32)
 #  define _DK_SDU_MIP__BASE__FLAVOR _DK_SDU_MIP__BASE__WIN32
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) or defined(__linux__)
 #  define _DK_SDU_MIP__BASE__FLAVOR _DK_SDU_MIP__BASE__UNIX
 #else
 #  error Unsupported flavor.

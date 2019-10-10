@@ -24,7 +24,7 @@ Version: 0.9.1
 Release: 1
 License: GPL
 Source: %{name}-%{version}.tar.bz2
-Url: https://www.fonseca.dk/base
+Url: https://dev.azure.com/renefonseca/base
 Vendor: Rene Moeller Fonseca
 Packager: Rene Moeller Fonseca
 Distribution: The Base Framework

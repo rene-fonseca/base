@@ -70,7 +70,7 @@ namespace com {
 #  define _COM_AZURE_DEV__BASE__DUMMY_SYMBOL extern int _DUMMY_SYMBOL;
 #endif
 
-#define _COM_AZURE_DEV__BASE__ID_PREFIX L"https://www.fonseca.dk/base"
+#define _COM_AZURE_DEV__BASE__ID_PREFIX L"https://dev.azure.com/renefonseca/base"
 
 #define _COM_AZURE_DEV__BASE__STRINGIFY(value) #value
 #define _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(value) _COM_AZURE_DEV__BASE__STRINGIFY(value)

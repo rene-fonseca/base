@@ -12,5 +12,12 @@
  ***************************************************************************/
 
 #include <base/collection/Stack.h>
+#include <string>
 
 _DK_SDU_MIP__BASE__DUMMY_SYMBOL
+
+_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+_DK_SDU_MIP__BASE__INSTANTIATE_CONTAINER_COMMON_TYPE(Stack)
+
+_DK_SDU_MIP__BASE__LEAVE_NAMESPACE

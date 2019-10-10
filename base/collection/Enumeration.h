@@ -17,6 +17,28 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+// instantiate common types
+#define _DK_SDU_MIP__BASE__INSTANTIATE_CONTAINER_COMMON_TYPE(TYPE) \
+  template _DK_SDU_MIP__BASE__API class TYPE<bool>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<short>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<unsigned short>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<int>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<unsigned int>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<long>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<unsigned long>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<int64>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<uint64>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<char>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<unsigned char>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<wchar>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<void*>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<float>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<double>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<long double>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<std::string>; \
+  template _DK_SDU_MIP__BASE__API class TYPE<std::wstring>;
+// TAG: add String and WideString also
+
 /**
   Defines the types of a modifying (has write access to the elements)
   enumerator.

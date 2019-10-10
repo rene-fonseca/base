@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class _DK_SDU_MIP__BASE__API ValidifiedResult : public AutomationObject {
+class ValidifiedResult : public AutomationObject {
 private:
 
   /** The value. */

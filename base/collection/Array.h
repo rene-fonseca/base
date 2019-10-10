@@ -37,7 +37,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class _DK_SDU_MIP__BASE__API Array : public Collection {
+class Array : public Collection {
 public:
 
   /** The type of the values. */
@@ -51,7 +51,7 @@ public:
   /*
     Reference to an element within an array.
   */
-  class _DK_SDU_MIP__BASE__API Element {
+  class Element {
     friend class Array;
   private:
     

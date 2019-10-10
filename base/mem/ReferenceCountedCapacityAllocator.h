@@ -32,7 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class _DK_SDU_MIP__BASE__API ReferenceCountedCapacityAllocator : public ReferenceCountedObject, public CapacityAllocator<TYPE> {
+class ReferenceCountedCapacityAllocator : public ReferenceCountedObject, public CapacityAllocator<TYPE> {
 private:
 
   /**

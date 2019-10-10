@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TRAITS>
-class _DK_SDU_MIP__BASE__API AllocatorEnumerator : public Enumerator<TRAITS> {
+class AllocatorEnumerator : public Enumerator<TRAITS> {
 public:
 
   typedef typename Enumerator<TRAITS>::Pointer Pointer;

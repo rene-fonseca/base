@@ -27,7 +27,7 @@ public:
 };
 
 template<class KEY, class VALUE>
-class _DK_SDU_MIP__BASE__API CacheProvider {
+class CacheProvider {
 public:
   
   /** Returns the value for the specified key. */
@@ -43,7 +43,7 @@ public:
 */
 
 template<class KEY, class VALUE>
-class _DK_SDU_MIP__BASE__API Cache : public Collection {
+class Cache : public Collection {
 public:
 
   typedef KEY Key;

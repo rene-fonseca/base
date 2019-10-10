@@ -36,7 +36,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class _DK_SDU_MIP__BASE__API Reference {
+class Reference {
 private:
   
   /** Pointer to shared reference counted object. */

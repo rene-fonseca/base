@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class KEY, class VALUE>
-class _DK_SDU_MIP__BASE__API Map : public Collection {
+class Map : public Collection {
 public:
 
   /** The type of a key in the map. */

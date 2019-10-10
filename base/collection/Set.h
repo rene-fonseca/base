@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class KEY>
-class _DK_SDU_MIP__BASE__API Set : public Collection {
+class Set : public Collection {
 private:
 
   /** The elements of the set. */

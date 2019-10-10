@@ -38,7 +38,7 @@ public:
 */
 
 template<class SENDER, class LISTENER>
-class _DK_SDU_MIP__BASE__API Signal : public UnaryOperation<LISTENER*, void> {
+class Signal : public UnaryOperation<LISTENER*, void> {
 private:
 
   /** The type of the sender. */

@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class _DK_SDU_MIP__BASE__API Owner : public AutomationObject {
+class Owner : public AutomationObject {
 private:
 
   mutable TYPE* object = nullptr;

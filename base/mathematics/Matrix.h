@@ -35,7 +35,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class _DK_SDU_MIP__BASE__API Matrix : public Object {
+class Matrix : public Object {
 public:
 
   class RowReference;

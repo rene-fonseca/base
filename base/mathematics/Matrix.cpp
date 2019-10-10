@@ -17,7 +17,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-template class Matrix<double>;
+template _DK_SDU_MIP__BASE__API class Matrix<double>;
 
 template<class TYPE>
 class MultiplySubtract : public BinaryOperation<TYPE, TYPE, TYPE> {

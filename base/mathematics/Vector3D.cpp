@@ -15,8 +15,8 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-template class Vector3D<float>;
-template class Vector3D<double>;
-template class Vector3D<long double>;
+template _DK_SDU_MIP__BASE__API class Vector3D<float>;
+template _DK_SDU_MIP__BASE__API class Vector3D<double>;
+template _DK_SDU_MIP__BASE__API class Vector3D<long double>;
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

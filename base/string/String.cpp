@@ -32,7 +32,7 @@ void String::initialize(
 String::String() throw() : elements(DEFAULT_STRING.elements) {
 }
 
-String::String(unsigned int capacity) throw(MemoryException) {
+String::String(MemorySize capacity) throw(MemoryException) {
   elements = new ReferenceCountedCapacityAllocator<char>(1, GRANULARITY);
   elements->ensureCapacity(capacity + 1);
 }
@@ -148,7 +148,7 @@ bool String::isASCII() const throw() {
   return true;
 }
 
-void String::ensureCapacity(unsigned int capacity) throw(MemoryException) {
+void String::ensureCapacity(MemorySize capacity) throw(MemoryException) {
   elements->ensureCapacity(capacity); // no need to do copyOnWrite
 }
 

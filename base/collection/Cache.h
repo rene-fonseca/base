@@ -64,7 +64,7 @@ public:
   /**
     Initializes the cache with the specified initial capacity.
   */
-  Cache(unsigned int capacity) throw(OutOfDomain, MemoryException)
+  Cache(MemorySize capacity) throw(OutOfDomain, MemoryException)
     : elements(capacity) {
   }
 

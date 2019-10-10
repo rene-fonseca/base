@@ -55,7 +55,7 @@ public:
 
     @param size Specifies the initial size of the allocator.
   */
-  inline explicit ReferenceCountedAllocator(unsigned int size) throw(MemoryException)
+  inline explicit ReferenceCountedAllocator(MemorySize size) throw(MemoryException)
     : Allocator<TYPE>(size) {
   }
 

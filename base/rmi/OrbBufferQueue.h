@@ -79,7 +79,7 @@ public:
         last = 0;
       }
     }
-    buffer->setNext(0);
+    buffer->setNext(nullptr);
     return buffer;
   }
   

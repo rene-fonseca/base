@@ -290,7 +290,7 @@ public:
     
     @param capacity The initial capacity.
   */
-  explicit String(unsigned int capacity) throw(MemoryException);
+  explicit String(MemorySize capacity) throw(MemoryException);
 
   /**
     Initializes the string from a string literal. The string literal is not
@@ -411,7 +411,7 @@ public:
   /**
     Returns the capacity of the string.
   */
-  inline unsigned int getCapacity() const throw() {
+  inline MemorySize getCapacity() const throw() {
     return elements->getCapacity();
   }
 
@@ -421,7 +421,7 @@ public:
 
     @param capacity Specifies the minimum capacity of the string.
   */
-  void ensureCapacity(unsigned int capacity) throw(MemoryException);
+  void ensureCapacity(MemorySize capacity) throw(MemoryException);
 
   /**
     Releases any unused capacity of the string. This applies to all shared

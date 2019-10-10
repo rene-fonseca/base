@@ -33,16 +33,16 @@ class _DK_SDU_MIP__BASE__API CapacityAllocator : public Allocator<TYPE> {
 public:
 
   /** Specifies the minimum block size in number of elements. */
-  static const unsigned int MINIMUM_GRANULARITY = 16;
+  static const MemorySize MINIMUM_GRANULARITY = 16;
   /** Specifies the default granularity in number of elements. Guaranteed to be
       greater than or equal to MINIMUM_GRANULARITY. */
-  static const unsigned int DEFAULT_GRANULARITY = MINIMUM_GRANULARITY;
+  static const MemorySize DEFAULT_GRANULARITY = MINIMUM_GRANULARITY;
 private:
   
   /** The number of elements in the block. */
-  unsigned int capacity = 0;
+  MemorySize capacity = 0;
   /** The granularity of the allocated block memory. */
-  unsigned int granularity = DEFAULT_GRANULARITY;
+  MemorySize granularity = DEFAULT_GRANULARITY;
 public:
   
   typedef typename Allocator<TYPE>::Iterator Iterator;
@@ -63,7 +63,7 @@ public:
 
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline explicit CapacityAllocator(unsigned int _granularity) throw(OutOfRange)
+  inline explicit CapacityAllocator(MemorySize _granularity) throw(OutOfRange)
     : granularity(_granularity) {
     bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
   }
@@ -77,7 +77,7 @@ public:
     @param size Specifies the initial size of the allocator.
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline CapacityAllocator(unsigned int size, unsigned int _granularity) throw(OutOfRange, MemoryException)
+  inline CapacityAllocator(MemorySize size, MemorySize _granularity) throw(OutOfRange, MemoryException)
     : granularity(_granularity) {
     bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
     setSize(size);
@@ -110,14 +110,14 @@ public:
   /**
     Returns the number of elements of the allocator.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const throw() {
     return capacity;
   }
 
   /**
     Returns the granularity.
   */
-  inline unsigned int getGranularity() const throw() {
+  inline MemorySize getGranularity() const throw() {
     return granularity;
   }
 
@@ -178,7 +178,7 @@ public:
     unchanged). If the size is reduced the elements up to the new size are
     unchanged.
   */
-  inline void setSize(unsigned int size) throw(MemoryException) {
+  inline void setSize(MemorySize size) throw(MemoryException) {
     if (size != capacity) {
       capacity = size;
       Allocator<TYPE>::setSize(
@@ -192,7 +192,7 @@ public:
     of memory until the 'size' is adjusted. Raises OutOfRange if granularity
     is less than MINIMUM_GRANULARITY.
   */
-  inline void setGranularity(unsigned int granularity) throw(OutOfRange) {
+  inline void setGranularity(MemorySize granularity) throw(OutOfRange) {
     if (granularity != this->granularity) {
       bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
       this->granularity = granularity;
@@ -202,7 +202,7 @@ public:
   /**
     Returns the capacity of the allocator.
   */
-  inline unsigned int getCapacity() const throw() {
+  inline MemorySize getCapacity() const throw() {
     return Allocator<TYPE>::getSize();
   }
 
@@ -212,7 +212,7 @@ public:
 
     @param capacity Specifies the minimum capacity of the allocator.
   */
-  inline void ensureCapacity(unsigned int capacity) throw(MemoryException) {
+  inline void ensureCapacity(MemorySize capacity) throw(MemoryException) {
     if (capacity > Allocator<TYPE>::getSize()) {
       Allocator<TYPE>::setSize(capacity);
     }

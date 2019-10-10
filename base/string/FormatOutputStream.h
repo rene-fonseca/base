@@ -640,7 +640,7 @@ template<class TYPE>
 class Sequence {
 private:
 
-  const TYPE* value;
+  const TYPE* value = nullptr;
   const unsigned int size = 0;
   const Literal separator;
 public:

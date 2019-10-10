@@ -112,7 +112,7 @@ public:
     /**
       Initializes invalid pen.
     */
-    inline Pen() throw() : GraphicsContextObject(0) {
+    inline Pen() throw() : GraphicsContextObject(nullptr) {
     }
 
     /**
@@ -146,7 +146,7 @@ public:
     }
   public:
 
-    inline Brush() throw() : GraphicsContextObject(0) {
+    inline Brush() throw() : GraphicsContextObject(nullptr) {
     }
 
     /**
@@ -192,7 +192,7 @@ public:
     }
   public:
 
-    inline Font() throw() : GraphicsContextObject(0) {
+    inline Font() throw() : GraphicsContextObject(nullptr) {
     }
 
     /**

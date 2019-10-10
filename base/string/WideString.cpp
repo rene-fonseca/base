@@ -1592,7 +1592,7 @@ String WideString::getMultibyteString(const wchar* string)
 WideString::WideString() throw() : elements(DEFAULT_STRING.elements) {
 }
 
-WideString::WideString(unsigned int capacity) throw(MemoryException) {
+WideString::WideString(MemorySize capacity) throw(MemoryException) {
   elements = new ReferenceCountedCapacityAllocator<ucs4>(1, GRANULARITY);
   elements->ensureCapacity(capacity + 1);
 }
@@ -1879,7 +1879,7 @@ bool WideString::isASCII() const throw() {
   return true;
 }
 
-void WideString::ensureCapacity(unsigned int capacity) throw(MemoryException) {
+void WideString::ensureCapacity(MemorySize capacity) throw(MemoryException) {
   elements->ensureCapacity(capacity); // no need to do copyOnWrite
 }
 
@@ -1887,11 +1887,11 @@ void WideString::optimizeCapacity() throw() {
   elements->optimizeCapacity(); // no need to do copyOnWrite
 }
 
-unsigned int WideString::getGranularity() const throw() {
+MemorySize WideString::getGranularity() const throw() {
   return elements->getGranularity();
 }
 
-void WideString::setGranularity(unsigned int granularity) throw() {
+void WideString::setGranularity(MemorySize granularity) throw() {
   elements->setGranularity(granularity);
 }
 

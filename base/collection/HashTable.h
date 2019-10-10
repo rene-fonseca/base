@@ -302,7 +302,7 @@ public:
                 srcNode = srcNode->getNext();
                 
                 Node* destNode = *upperBucket;
-                // destNode->setNext(0); // only set for last node
+                // destNode->setNext(nullptr); // only set for last node
                 
                 while (srcNode) {
                   Node* nextNode = srcNode->getNext();
@@ -310,12 +310,12 @@ public:
                     parentSrcNode->setNext(nextNode); // unlink
                     destNode->setNext(srcNode);
                     destNode = destNode->getNext();
-                    // destNode->setNext(0); // only set for last node
+                    // destNode->setNext(nullptr); // only set for last node
                   }
                   parentSrcNode = srcNode;
                   srcNode = nextNode;
                 }
-                destNode->setNext(0);
+                destNode->setNext(nullptr);
               }
             } else {
               // move from second to first bucket
@@ -334,7 +334,7 @@ public:
                 srcNode = srcNode->getNext();
                 
                 Node* destNode = *lowerBucket;
-                // destNode->setNext(0); // only set for last node
+                // destNode->setNext(nullptr); // only set for last node
                 
                 while (srcNode) {
                   Node* nextNode = srcNode->getNext();
@@ -342,12 +342,12 @@ public:
                     parentSrcNode->setNext(nextNode); // unlink
                     destNode->setNext(srcNode);
                     destNode = destNode->getNext();
-                    // destNode->setNext(0); // only set for last node
+                    // destNode->setNext(nullptr); // only set for last node
                   }
                   parentSrcNode = srcNode;
                   srcNode = nextNode;
                 }
-                destNode->setNext(0); // terminate linked list
+                destNode->setNext(nullptr); // terminate linked list
               }
             }
           } else {
@@ -757,7 +757,7 @@ public:
   /**
     Initializes the hash table with the specified initial capacity.
   */
-  HashTable(unsigned int capacity) throw(OutOfDomain, MemoryException)
+  HashTable(MemorySize capacity) throw(OutOfDomain, MemoryException)
     : impl(new HashTableImpl(capacity)) {
   }
 

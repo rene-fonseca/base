@@ -67,7 +67,7 @@ public:
     inline Node(unsigned long _hash, const Value& _value) throw()
       : hash(_hash),
         value(_value),
-        next(0) {
+        next(nullptr) {
     }
     
     /**
@@ -246,7 +246,7 @@ public:
                 srcNode = srcNode->getNext();
                 
                 Node* destNode = *upperBucket;
-                // destNode->setNext(0); // only set for last node
+                // destNode->setNext(nullptr); // only set for last node
                 
                 while (srcNode) {
                   Node* nextNode = srcNode->getNext();
@@ -254,12 +254,12 @@ public:
                     parentSrcNode->setNext(nextNode); // unlink
                     destNode->setNext(srcNode);
                     destNode = destNode->getNext();
-                    // destNode->setNext(0); // only set for last node
+                    // destNode->setNext(nullptr); // only set for last node
                   }
                   parentSrcNode = srcNode;
                   srcNode = nextNode;
                 }
-                destNode->setNext(0);
+                destNode->setNext(nullptr);
               }
             } else {
               // move from second to first bucket
@@ -278,7 +278,7 @@ public:
                 srcNode = srcNode->getNext();
                 
                 Node* destNode = *lowerBucket;
-                // destNode->setNext(0); // only set for last node
+                // destNode->setNext(nullptr); // only set for last node
                 
                 while (srcNode) {
                   Node* nextNode = srcNode->getNext();
@@ -286,12 +286,12 @@ public:
                     parentSrcNode->setNext(nextNode); // unlink
                     destNode->setNext(srcNode);
                     destNode = destNode->getNext();
-                    // destNode->setNext(0); // only set for last node
+                    // destNode->setNext(nullptr); // only set for last node
                   }
                   parentSrcNode = srcNode;
                   srcNode = nextNode;
                 }
-                destNode->setNext(0); // terminate linked list
+                destNode->setNext(nullptr); // terminate linked list
               }
             }
           } else {
@@ -565,7 +565,7 @@ public:
   /**
     Initializes the hash set with the specified initial capacity.
   */
-  HashSet(unsigned int capacity) throw(MemoryException)
+  HashSet(MemorySize capacity) throw(MemoryException)
     : impl(new HashSetImpl(capacity)) {
   }
   

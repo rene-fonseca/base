@@ -750,10 +750,19 @@ class PrimitiveArray : public std::vector<TYPE> {
 public:
 
   inline PrimitiveArray(MemorySize size) : std::vector<TYPE>(size) {
+    ASSERT(size > 0); // we need to be able to get a valid pointer
   }
 
   inline operator TYPE* () {
     return &std::vector<TYPE>::operator[](0);
+  }
+
+  inline operator const TYPE* () const {
+    return &std::vector<TYPE>::operator[](0);
+  }
+
+  inline MemorySize size() const {
+    return std::vector<TYPE>::size();
   }
 };
 

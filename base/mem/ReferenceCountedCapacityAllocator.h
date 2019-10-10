@@ -55,7 +55,7 @@ public:
     @param granularity Specifies the number of elements to allocate at a time.
   */
   inline explicit ReferenceCountedCapacityAllocator(
-    unsigned int granularity) throw(OutOfRange)
+    MemorySize granularity) throw(OutOfRange)
     : CapacityAllocator<TYPE>(granularity) {
   }
   
@@ -69,8 +69,8 @@ public:
     @param granularity Specifies the number of elements to allocate at a time.
   */
   inline ReferenceCountedCapacityAllocator(
-    unsigned int size,
-    unsigned int granularity) throw(OutOfRange, MemoryException)
+    MemorySize size,
+    MemorySize granularity) throw(OutOfRange, MemoryException)
     : CapacityAllocator<TYPE>(size, granularity) {
   }
 

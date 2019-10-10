@@ -39,7 +39,7 @@ private:
   String path;
   bool progress = false;
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   // byte order?
   struct ElfHeader {
     uint8 identifier[16];
@@ -56,8 +56,8 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     uint16 shentsize;
     uint16 shnum;
     uint16 shstrndx;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   // type
   enum {

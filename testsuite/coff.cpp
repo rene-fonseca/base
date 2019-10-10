@@ -25,7 +25,7 @@ using namespace com::azure::dev::base;
 class CommonObjectFileFormat {
 public:
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   /** DOS EXE header. */
   struct ImageDosHeader {
     LittleEndian<uint16> magic; // 0x5a4d ~ "MZ"
@@ -47,10 +47,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     LittleEndian<uint16> information;
     LittleEndian<uint16> reserved1[10];
     LittleEndian<uint32> exeHeaderOffset; // PE header offset
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct COFFHeader {
     LittleEndian<uint16> machine;
     LittleEndian<uint16> numberOfSections;
@@ -59,8 +59,8 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     LittleEndian<uint32> numberOfSymbols;
     LittleEndian<uint16> sizeOfOptionalHeader;
     LittleEndian<uint16> characteristics;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   /** Architecture. */
   enum MachineType {
@@ -109,7 +109,7 @@ _DK_SDU_MIP__BASE__PACKED__END
     MAGIC_PE32_PLUS = 0x020b
   };
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct PEHeader32 {
     LittleEndian<uint16> magic;
     uint8 majorLinkerVersion;
@@ -120,10 +120,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     LittleEndian<uint32> addressOfEntryPoint;
     LittleEndian<uint32> baseOfCode;
     LittleEndian<uint32> baseOfData;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct PEHeader64 {
     LittleEndian<uint16> magic;
     uint8 majorLinkerVersion;
@@ -133,10 +133,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     LittleEndian<uint32> sizeOfUninitializedData;
     LittleEndian<uint32> addressOfEntryPoint;
     LittleEndian<uint64> baseOfCode;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct PEWindowsHeader32 {
     LittleEndian<uint32> imageBase;
     LittleEndian<uint32> sectionAlignment;
@@ -159,10 +159,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     LittleEndian<uint32> sizeOfComittedHeap;
     LittleEndian<uint32> flags;
     LittleEndian<uint32> numberOfDirectoryEntries;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct PEWindowsHeader64 {
     LittleEndian<uint64> imageBase;
     LittleEndian<uint32> sectionAlignment;
@@ -185,8 +185,8 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     LittleEndian<uint64> sizeOfComittedHeap;
     LittleEndian<uint32> flags;
     LittleEndian<uint32> numberOfDirectoryEntries;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   /** Subsystem. */
   enum Subsystem {
@@ -245,15 +245,15 @@ _DK_SDU_MIP__BASE__PACKED__END
     DLL_CHARACTERISTIC_TERMINAL_SERVER_AWARE = 0x8000
   };
 
- _DK_SDU_MIP__BASE__PACKED__BEGIN
+ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   /** Directory entry. */
   struct DirectoryEntry {
     LittleEndian<uint32> rva;
     LittleEndian<uint32> size;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct DirectoryHeader {
     DirectoryEntry exportTable;
     DirectoryEntry importTable;
@@ -271,10 +271,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     DirectoryEntry delayImportDescriptor;
     DirectoryEntry runtimeHeader;
     DirectoryEntry reserved;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct SectionHeader {
     char name[8];
     LittleEndian<uint32> virtualSize;
@@ -286,8 +286,8 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     LittleEndian<uint16> numberOfRelocations;
     LittleEndian<uint16> numberOfLineNumbers;
     LittleEndian<uint32> characteristics;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   static String getMachineDescription(uint32 machine) throw() {
     switch (machine) {
@@ -330,7 +330,7 @@ _DK_SDU_MIP__BASE__PACKED__END
     }
   }
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct SymbolEntry {
     char name[8];
     LittleEndian<uint32> value;
@@ -338,8 +338,8 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     LittleEndian<uint16> type;
     uint8 storageClass;
     uint8 numberOfAuxSymbols;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   static bool isCOFF(const String& file) throw() {
     return false;
@@ -421,7 +421,7 @@ public:
     file.setPosition(originalPosition);
   }
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct ExportTableDirectory {
     LittleEndian<uint32> flags;
     LittleEndian<uint32> timeStamp;
@@ -434,8 +434,8 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     LittleEndian<uint32> exportAddressTableRVA;
     LittleEndian<uint32> namePointerRVA;
     LittleEndian<uint32> ordinalTableRVA;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   void dumpExportSection(
     File file,
@@ -541,15 +541,15 @@ _DK_SDU_MIP__BASE__PACKED__END
     }
   }
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct ImportTableDirectory {
     LittleEndian<uint32> importLookupTableRVA;
     LittleEndian<uint32> timeStamp;
     LittleEndian<uint32> forwarderChain;
     LittleEndian<uint32> nameRVA;
     LittleEndian<uint32> importAddressTableRVA;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   void dumpImportSection(
     File file,

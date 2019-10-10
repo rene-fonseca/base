@@ -71,9 +71,9 @@ private:
   private:
 
     /** The socket domain. */
-    Domain domain;
+    Domain domain = DEFAULT_DOMAIN;
     /** The socket type. */
-    Kind kind;
+    Kind kind = STREAM;
     /** Specifies the remote address to which the socket is connected. */
     InetAddress remoteAddress;
     /**
@@ -87,7 +87,7 @@ private:
       Specifies the local port (in host byte order) to which the socket is
       bound (unbound if 0).
     */
-    unsigned short localPort;
+    unsigned short localPort = 0;
   public:
 
     /** Invalid socket. */

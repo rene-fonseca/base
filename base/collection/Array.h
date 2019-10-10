@@ -290,7 +290,7 @@ public:
 
     @param index The index of the element.
   */
-  Value getAt(unsigned int index) const throw(OutOfRange) {
+  const Value& getAt(unsigned int index) const throw(OutOfRange) {
     bassert(index < getSize(), OutOfRange(this));
     return getElements()[index];
   }
@@ -323,7 +323,7 @@ public:
 
     @param index The index of the element.
   */
-  inline Value operator[](unsigned int index) const throw(OutOfRange) {
+  inline const Value& operator[](unsigned int index) const throw(OutOfRange) {
     return getAt(index);
   }
 };

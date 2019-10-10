@@ -102,7 +102,7 @@ public:
     return string;
   }
   
-  inline WideString getWideString() const throw() {
+  inline const WideString& getWideString() const throw() {
     return wideString;
   }
   

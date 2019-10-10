@@ -109,7 +109,7 @@ public:
     
     @param key The key of the value.
   */
-  inline Value getValue(const Key& key) const throw(CacheException) {
+  inline const Value& getValue(const Key& key) const throw(CacheException) {
     if (!elements.isKey(key)) {
       // Value value = provider->getValue();
       // elements.add(key, value);
@@ -174,7 +174,7 @@ public:
   /**
     Returns the value associated with the specified key.
   */
-  inline Value operator[](const Key& key) const throw(InvalidKey) {
+  inline const Value& operator[](const Key& key) const throw(InvalidKey) {
     return elements.getValue(key);
   }
 };

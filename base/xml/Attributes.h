@@ -124,8 +124,7 @@ public:
   /**
     Returns a hash table mapping attribute names to indices.
   */
-  inline HashTable<String, unsigned int> getHashTable() const
-    throw(MemoryException) {
+  inline HashTable<String, unsigned int> getHashTable() const throw(MemoryException) {
     HashTable<String, unsigned int> result;
     for (unsigned int i = 0; i < attributes.getSize(); ++i) {
       result.add(attributes[i].getName(), i);
@@ -187,14 +186,14 @@ public:
   /**
     Returns the attributes at the specified index.
   */
-  inline Attribute getAttribute(unsigned int index) const throw() {
+  inline const Attribute& getAttribute(unsigned int index) const throw() {
     return attributes[index];
   }
   
   /**
     Returns the attributes at the specified index.
   */
-  inline Attribute operator[](unsigned int index) const throw() {
+  inline const Attribute& operator[](unsigned int index) const throw() {
     return attributes[index];
   }
   

@@ -290,7 +290,7 @@ public:
   /**
     Returns the current pen.
   */
-  inline Pen getPen() const throw() {
+  inline const Pen& getPen() const throw() {
     return pen;
   }
   
@@ -302,7 +302,7 @@ public:
   /**
     Returns the current brush.
   */
-  inline Brush getBrush() const throw() {
+  inline const Brush& getBrush() const throw() {
     return brush;
   }
 
@@ -314,7 +314,7 @@ public:
   /**
     Returns the current font.
   */
-  inline Font getFont() const throw() {
+  inline const Font& getFont() const throw() {
     return font;
   }
 

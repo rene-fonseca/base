@@ -80,7 +80,7 @@ public:
   /**
     Returns the bitmap data.
   */
-  inline Bitmap getBitmap() const throw() {
+  inline const Bitmap& getBitmap() const throw() {
     return bitmap;
   }
   

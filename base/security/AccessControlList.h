@@ -117,7 +117,7 @@ public:
   /**
     Returns the associated owner.
   */
-  inline Trustee getOwner() throw() {
+  inline const Trustee& getOwner() throw() {
     return owner;
   }
 
@@ -131,7 +131,7 @@ public:
   /**
     Returns the associated primary group.
   */
-  inline Trustee getGroup() throw() {
+  inline const Trustee& getGroup() throw() {
     return group;
   }
   

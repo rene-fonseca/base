@@ -23,6 +23,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class OSString {
 private:
 
+  // TAG: avoid any allocation if we are mapping from wchar*/wstring
   std::wstring buffer;
 public:
 

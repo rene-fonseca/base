@@ -44,9 +44,9 @@ private:
   };
   
   /* The current position within the mangled string. */
-  const char* p;
+  const char* p = nullptr;
   /* The end of the mangled string. */
-  const char* end;
+  const char* end = nullptr;
   /* The current class name. */
   CandidateRange className;
   /* Candidates for normal substitution. */
@@ -936,7 +936,7 @@ public:
     return false;
   }
 
-  inline String getDemangled() const throw() {
+  inline const String& getDemangled() const throw() {
     return demangled;
   }
 };

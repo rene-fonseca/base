@@ -444,7 +444,6 @@ public:
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "https://www.fonseca.dk/base" << EOL
          << "Copyright (C) 2003-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
     

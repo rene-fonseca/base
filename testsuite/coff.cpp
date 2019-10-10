@@ -1176,7 +1176,6 @@ _COM_AZURE_DEV__BASE__PACKED__END
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "https://www.fonseca.dk/base" << EOL
          << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 

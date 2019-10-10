@@ -479,7 +479,7 @@ protected:
 
   /* See chapter 5 of RFC */
   String makeRequest(Method method, const String& host, const String& resourceUri) throw(IOException) {
-    static const Literal AGENT = MESSAGE("http/0.1 (https://www.fonseca.dk/base)");
+    static const Literal AGENT = MESSAGE("http/0.1 (Base Framework)");
     static const Literal methods[] = {
       METHOD_OPTIONS,
       METHOD_GET,
@@ -828,7 +828,6 @@ public:
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "https://www.fonseca.dk/base" << EOL
          << "Copyright (C) 2001-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
     

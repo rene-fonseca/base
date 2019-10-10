@@ -136,26 +136,6 @@ public:
       }
       break;
     case Node::DOCUMENT_TYPE_NODE:
-
-// <!ENTITY % ISOlat1 PUBLIC "ISO 8879:1986//ENTITIES Added Latin 1//EN"
-//                           "C:/local/www.oasis-open.org/docbook/xml/4.2/ent/iso-lat1.ent">
-// <!ENTITY % DocBookEBNFDTD PUBLIC "-//OASIS//DTD DocBook EBNF Module V1.0//EN"
-//                                  "C:/local/www.oasis-open.org/docbook/xml/ebnf/1.0/dbebnf.dtd">
-// <!ENTITY % DocBookMathMLDTD PUBLIC "-//OASIS//DTD DocBook MathML Module V1.0//EN"
-//                                    "C:/local/www.oasis-open.org/docbook/xml/mathml/1.0/dbmathml.dtd">
-
-// <!ENTITY gpl SYSTEM "gpl-appendix.xml">
-// <!ENTITY fdl SYSTEM "fdl-appendix.xml">
-// <!ENTITY bookindex SYSTEM "index.xml">
-
-// <!ENTITY HOMEPAGE "https://www.fonseca.dk/base">
-// <!ENTITY DISTRIBUTION "https://www.fonseca.dk/base/distribution">
-// <!ENTITY NIGHTLY "https://www.fonseca.dk/base/distribution/base-framework/nightly">
-// <!ENTITY PRERELEASE "https://www.fonseca.dk/base/distribution/base-framework/prerelease">
-// <!ENTITY RELEASE "https://www.fonseca.dk/base/distribution/base-framework/release">
-// <!ENTITY VERSION "0.9.1">
-// %ISOlat1;
-
       {
         DocumentType dtd = node;
         fout << "<!DOCTYPE " << dtd.getName();
@@ -218,7 +198,6 @@ public:
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "https://www.fonseca.dk/base" << EOL
          << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
     

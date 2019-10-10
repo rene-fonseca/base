@@ -20,6 +20,9 @@ _DK_SDU_MIP__BASE__DUMMY_SYMBOL
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+// float, long double
+// template _DK_SDU_MIP__BASE__API class Vector<double>;
+
 template<class TYPE>
 Vector<TYPE>::Vector(unsigned int size) throw(OutOfDomain) {
   if (size < 1) {

@@ -13,8 +13,10 @@
 
 #include <base/mathematics/Quaternion.h>
 
-_DK_SDU_MIP__BASE__DUMMY_SYMBOL
-
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
+
+template _DK_SDU_MIP__BASE__API class Quaternion<float>;
+template _DK_SDU_MIP__BASE__API class Quaternion<double>;
+template _DK_SDU_MIP__BASE__API class Quaternion<long double>;
 
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

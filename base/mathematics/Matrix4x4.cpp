@@ -17,4 +17,10 @@ _DK_SDU_MIP__BASE__DUMMY_SYMBOL
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
+#if 0
+template _DK_SDU_MIP__BASE__API class Matrix4x4<float>;
+template _DK_SDU_MIP__BASE__API class Matrix4x4<double>;
+template _DK_SDU_MIP__BASE__API class Matrix4x4<long double>;
+#endif
+
 _DK_SDU_MIP__BASE__LEAVE_NAMESPACE

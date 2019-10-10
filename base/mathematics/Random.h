@@ -74,6 +74,20 @@ public:
   /**
     Returns a random real number in the range [0;1].
   */
+  static inline float getFloat() throw() {
+    return (1.0f/0xffffffff) * getInteger();
+  }
+
+  /**
+    Returns a random real number in the range [0;1].
+  */
+  static inline double getDouble() throw() {
+    return (1.0/0xffffffff) * getInteger();
+  }
+
+  /**
+    Returns a random real number in the range [0;1].
+  */
   static inline long double getLongDouble() throw() {
     return (1.0L/0xffffffff) * getInteger();
   }

@@ -46,14 +46,14 @@ public:
     RECOVERING /**< Recovering mode. */
   };
 
-  class Interface {
+  class _DK_SDU_MIP__BASE__API Interface {
   };
 
-  class EventListener : public Interface {
+  class _DK_SDU_MIP__BASE__API EventListener : public Interface {
   public:
   };
   
-  class DocumentEvent : public Interface {
+  class _DK_SDU_MIP__BASE__API DocumentEvent : public Interface {
   public:
 
     /**
@@ -62,11 +62,11 @@ public:
     virtual DOMEvent createEvent(const String& type) throw(DOMException) = 0;
   };
 
-  class EventException : public Exception {
+  class _DK_SDU_MIP__BASE__API EventException : public Exception {
   public:
   };
   
-  class EventTarget : public Interface {
+  class _DK_SDU_MIP__BASE__API EventTarget : public Interface {
   public:
     
     virtual void addEventListener(const String& type,

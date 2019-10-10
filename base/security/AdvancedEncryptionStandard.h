@@ -38,7 +38,7 @@ public:
     CIPHER_256 /**< 256 bit cipher. */
   };
   
-  class Cipher128Traits {
+  class _DK_SDU_MIP__BASE__API Cipher128Traits {
   public:
     
     /** The key length. */
@@ -51,7 +51,7 @@ public:
     static const unsigned int BLOCK_SIZE = 4 * Nb;
   };
   
-  class Cipher192Traits {
+  class _DK_SDU_MIP__BASE__API Cipher192Traits {
   public:
     
     /** The key length. */
@@ -64,7 +64,7 @@ public:
     static const unsigned int BLOCK_SIZE = 4 * Nb;
   };
 
-  class Cipher256Traits {
+  class _DK_SDU_MIP__BASE__API Cipher256Traits {
   public:
     
     /** The key length. */
@@ -78,42 +78,42 @@ public:
   };
 private:
   
-  class Cipher128 : public Cipher128Traits {
+  class _DK_SDU_MIP__BASE__API Cipher128 : public Cipher128Traits {
   public:
     
     void operator()(
       uint8* dest, const uint8* src, const uint8* schedule) throw();
   };
   
-  class InverseCipher128 : public Cipher128Traits {
+  class _DK_SDU_MIP__BASE__API InverseCipher128 : public Cipher128Traits {
   public:
     
     void operator()(
       uint8* dest, const uint8* src, const uint8* schedule) throw();
   };
 
-  class Cipher192 : public Cipher192Traits {
+  class _DK_SDU_MIP__BASE__API Cipher192 : public Cipher192Traits {
   public:
     
     void operator()(
       uint8* dest, const uint8* src, const uint8* schedule) throw();
   };
 
-  class InverseCipher192 : public Cipher192Traits {
+  class _DK_SDU_MIP__BASE__API InverseCipher192 : public Cipher192Traits {
   public:
     
     void operator()(
       uint8* dest, const uint8* src, const uint8* schedule) throw();
   };
 
-  class Cipher256 : public Cipher256Traits {
+  class _DK_SDU_MIP__BASE__API Cipher256 : public Cipher256Traits {
   public:
     
     void operator()(
       uint8* dest, const uint8* src, const uint8* schedule) throw();
   };
 
-  class InverseCipher256 : public Cipher256Traits {
+  class _DK_SDU_MIP__BASE__API InverseCipher256 : public Cipher256Traits {
   public:
     
     void operator()(

@@ -185,7 +185,7 @@ public:
       const String& notationName) throw();
   };
 
-  class InputSource {
+  class _DK_SDU_MIP__BASE__API InputSource {
   private:
 
     void* context = nullptr;
@@ -239,7 +239,7 @@ public:
       const SAXParseException& exception) throw(SAXException);
   };
 
-  class Locator {
+  class _DK_SDU_MIP__BASE__API Locator {
   public:
   };
   
@@ -248,7 +248,7 @@ public:
     @ingroup xml
     @version 1.0
   */
-  class ContentHandler {
+  class _DK_SDU_MIP__BASE__API ContentHandler {
   public:
 
     /**

@@ -152,7 +152,7 @@ public:
     ACQUIRED_FOCUS
   };
   
-  class Mouse {
+  class _DK_SDU_MIP__BASE__API Mouse {
   public:
 
     /** Mouse button. */
@@ -174,7 +174,7 @@ public:
     };
   };
 
-  class Key {
+  class _DK_SDU_MIP__BASE__API Key {
   public:
 
     /** Key code. */

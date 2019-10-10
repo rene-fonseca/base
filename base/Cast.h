@@ -498,12 +498,12 @@ public:
     template<class ARGUMENT>
     static inline RESULT cast(ARGUMENT& value) throw() {
       if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL) {}
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+// _DK_SDU_MIP__BASE__PACKED__BEGIN
       union {
         ARGUMENT argument;
         RESULT result; // make sure we do not get an access violation in the cast
-      } _DK_SDU_MIP__BASE__PACKED temp;
-_DK_SDU_MIP__BASE__PACKED__END
+      } /*_DK_SDU_MIP__BASE__PACKED*/ temp;
+// _DK_SDU_MIP__BASE__PACKED__END
       temp.argument = value;
       return *reinterpret_cast<RESULT*>(&temp.argument); // partial garbage
     }
@@ -511,12 +511,12 @@ _DK_SDU_MIP__BASE__PACKED__END
     template<class ARGUMENT>
     static inline const RESULT cast(const ARGUMENT& value) throw() {
       if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL) {}
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+// _DK_SDU_MIP__BASE__PACKED__BEGIN
       union {
         const ARGUMENT argument;
         const RESULT result; // make sure we do not get an access violation in the cast
-      } _DK_SDU_MIP__BASE__PACKED temp;
-_DK_SDU_MIP__BASE__PACKED__END
+      } /*_DK_SDU_MIP__BASE__PACKED*/ temp;
+// _DK_SDU_MIP__BASE__PACKED__END
       temp.argument = value;
       return *reinterpret_cast<const RESULT*>(&temp.argument); // partial garbage
     }

@@ -32,7 +32,7 @@ private:
 
   const std::type_info* type = nullptr;
 
-  class Uninitialized {
+  class _DK_SDU_MIP__BASE__API Uninitialized {
   };
 
   inline Type(const std::type_info* _type) throw() : type(_type) {

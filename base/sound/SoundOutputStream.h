@@ -38,7 +38,7 @@ private:
   /** Event. */
   Event event;
 
-  class SoundOutputStreamHelper;
+  class _DK_SDU_MIP__BASE__API SoundOutputStreamHelper;
 public:
 
   /**

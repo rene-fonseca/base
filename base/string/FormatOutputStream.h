@@ -108,7 +108,7 @@ public:
   /** The type of the guard. */
   typedef SpinLock Guard;
   
-  class Symbols {
+  class _DK_SDU_MIP__BASE__API Symbols {
   public:
     
     enum Base {BINARY, OCTAL, DECIMAL, HEXADECIMAL};
@@ -186,7 +186,7 @@ public:
     String dateFormat;
   };
   
-  class Manipulator {
+  class _DK_SDU_MIP__BASE__API Manipulator {
   public:
 
     typedef FormatOutputStream& (FormatOutputStream::*Method)(unsigned int);
@@ -206,7 +206,7 @@ public:
     }
   };
   
-  class StringManipulator {
+  class _DK_SDU_MIP__BASE__API StringManipulator {
   public:
 
     typedef FormatOutputStream& (FormatOutputStream::*Method)(const String&);
@@ -225,7 +225,7 @@ public:
     }
   };
 
-  class GetContext {
+  class _DK_SDU_MIP__BASE__API GetContext {
   private:
 
     Context& context;
@@ -239,7 +239,7 @@ public:
     }
   };
   
-  class SetContext {
+  class _DK_SDU_MIP__BASE__API SetContext {
   private:
 
     const Context& context;
@@ -282,7 +282,7 @@ public:
     @version 1.0
   */
   
-  class PushContext : public Object {
+  class _DK_SDU_MIP__BASE__API PushContext : public Object {
   private:
 
     /** Format output stream. */
@@ -310,7 +310,7 @@ public:
     }
   };
 
-  class Debug {
+  class _DK_SDU_MIP__BASE__API Debug {
   private:
     
     static std::atomic<unsigned int> counter;
@@ -449,7 +449,7 @@ public:
   */
   FormatOutputStream& operator<<(Action action) throw(IOException);
 
-  class Indent {
+  class _DK_SDU_MIP__BASE__API Indent {
   private:
     
     unsigned int length = 0;

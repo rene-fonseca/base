@@ -138,7 +138,7 @@ private:
 //     // write(reference);
 //   }
 
-  class OrbConnectionReference : public AutomationObject {
+  class _DK_SDU_MIP__BASE__API OrbConnectionReference : public AutomationObject {
   private:
 
     Reference<OrbConnection> connection;

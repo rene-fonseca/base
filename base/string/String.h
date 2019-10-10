@@ -113,7 +113,7 @@ public:
     return toupper(character);
   }
 
-  class ToLowerCase {
+  class _DK_SDU_MIP__BASE__API ToLowerCase {
   public:
     
     inline char operator()(char value) const throw() {
@@ -121,7 +121,7 @@ public:
     }
   };
 
-  class ToUpperCase {
+  class _DK_SDU_MIP__BASE__API ToUpperCase {
   public:
     
     inline char operator()(char value) const throw() {

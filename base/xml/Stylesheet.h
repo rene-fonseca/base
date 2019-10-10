@@ -31,7 +31,7 @@ class _DK_SDU_MIP__BASE__API Stylesheet : public Object {
   friend class Transformer;
 private:
 
-  class StylesheetImpl : public ReferenceCountedObject {
+  class _DK_SDU_MIP__BASE__API StylesheetImpl : public ReferenceCountedObject {
   private:
 
     /** The context. */

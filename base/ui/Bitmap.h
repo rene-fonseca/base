@@ -32,7 +32,7 @@ class _DK_SDU_MIP__BASE__API Bitmap : public Object {
   friend class GraphicsContext;
 private:
 
-  class Handle : public ReferenceCountedObject {
+  class _DK_SDU_MIP__BASE__API Handle : public ReferenceCountedObject {
   private:
     
     void* handle = nullptr;

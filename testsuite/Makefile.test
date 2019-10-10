@@ -19,6 +19,7 @@ TEST_RESULTS = $(addprefix $(TEST_RESULTS_PATH)/, $(addsuffix .stdout, $(TESTS))
 all: $(TEST_RESULTS)
 
 $(TEST_RESULTS_PATH)/%.stdout: %
+	mkdir -p $(TEST_RESULTS_PATH)
 	$(TEST_BIN_PATH)/$< > $(TEST_RESULTS_PATH)/$<.stdout 2> $(TEST_RESULTS_PATH)/$<.stderr ; echo $$? > $(TEST_RESULTS_PATH)/$<.status
 
 clean:

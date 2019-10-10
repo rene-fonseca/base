@@ -12,5 +12,12 @@
  ***************************************************************************/
 
 #include <base/collection/Array.h>
+#include <string>
 
 _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
+
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+_COM_AZURE_DEV__BASE__INSTANTIATE_CONTAINER_COMMON_TYPE_LIMITED(Array)
+
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

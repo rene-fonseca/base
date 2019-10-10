@@ -73,7 +73,7 @@ public:
     Returns true if the priority queue is empty.
   */
   inline bool isEmpty() const throw() {
-    return size == 0;
+    return !size;
   }
 
   /**
@@ -85,7 +85,8 @@ public:
   void push(const Priority& priority, const Value& value) throw(MemoryException) {
     auto node = elements.find(Node(priority));
     if (node) { // does the priority already exist in the tree
-      node->getValue()->getValue()->push(value);
+      Queue<Value>& queue = node->getValue()->getValue();
+      queue.push(value);
     } else {
       Queue<Value> queue;
       queue.push(value);
@@ -99,12 +100,17 @@ public:
     InvalidNode if the priority queue is empty.
   */
   Value pop() throw(InvalidNode) {
+    Value result;
     bassert(size, InvalidNode("Priority queue is empty", this));
 
     auto node = elements.getLast();
-    Queue<Value>* queue = node->getValue()->getValue();
-    Value result = queue->pop(); // queue is never empty
-    if (queue->isEmpty()) {
+    bool removeQueue = false;
+    {
+      Queue<Value>& queue = node->getValue()->getValue();
+      result = queue.pop(); // queue is never empty
+      removeQueue = queue.isEmpty();
+    }
+    if (removeQueue) {
       elements.remove(node); // remove node from binary tree
     }
     --size; // always decrement 'cause we always pop a value from some queue

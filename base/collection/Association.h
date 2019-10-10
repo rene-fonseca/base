@@ -65,14 +65,14 @@ public:
     : key(_key), value(_value) {
   }
 
+#if 0 // do not allow key to be changed in-place
   /**
     Returns the key value of the association.
   */
-  /*
-  inline const KEY& getKey() throw() {
+  inline KEY& getKey() throw() {
     return key;
   }
-  */
+#endif
 
   /**
     Returns the key value of the association.

@@ -499,7 +499,7 @@ public:
     Returns true if the list is empty.
   */
   inline bool isEmpty() const throw() {
-    return elements->isEmpty();
+    return elements->getSize() == 0;
   }
 
   /**

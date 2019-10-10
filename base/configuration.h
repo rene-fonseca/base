@@ -1,4 +1,15 @@
-#define _COM_AZURE_DEV__BASE__BUILD_DATE "JAN 1, 1970" // TAG: set
+/***************************************************************************
+    The Base Framework
+    A framework for developing platform independent applications
+
+    See COPYRIGHT.txt for details.
+
+    This framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    For the licensing terms refer to the file 'LICENSE'.
+ ***************************************************************************/
 
 #if defined(__clang__)
 #  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_CLANG

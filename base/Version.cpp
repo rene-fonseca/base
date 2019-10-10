@@ -13,11 +13,14 @@
 
 #include <base/platforms/features.h>
 #include <base/Version.h>
+#include <base/config.h>
+
+#define _COM_AZURE_DEV__BASE__RELEASE ""
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 const char Version::banner[] =
-"The Base Framework release " _COM_AZURE_DEV__BASE__VERSION "\n"
+"The Base Framework release " _COM_AZURE_DEV__BASE__RELEASE "\n"
 "A framework for developing platform independent applications\n"
 "Copyright (C) 2000-2003 by Rene Moeller Fonseca\n\n"
 "This framework is distributed in the hope that it will be useful,\n"
@@ -35,7 +38,11 @@ unsigned int Version::getMinorVersion() const throw() {
 }
 
 unsigned int Version::getMicroVersion() const throw() {
-  return _COM_AZURE_DEV__BASE__MICRO_VERSION;
+  return _COM_AZURE_DEV__BASE__GIT_REVISION; // TAG: FIXME
+}
+
+unsigned int Version::getRevision() const throw() {
+  return _COM_AZURE_DEV__BASE__GIT_REVISION;
 }
 
 String Version::getRelease() const throw() {
@@ -44,6 +51,14 @@ String Version::getRelease() const throw() {
 
 String Version::getVersion() const throw() {
   return Literal(_COM_AZURE_DEV__BASE__VERSION);
+}
+
+String Version::getCommit() const throw() {
+  return Literal(_COM_AZURE_DEV__BASE__GIT_COMMIT_SHORT);
+}
+
+int64 Version::getBuildDate() const throw() {
+  return _COM_AZURE_DEV__BASE__BUILD_DATE_SECONDS;
 }
 
 String Version::getBanner() const throw() {

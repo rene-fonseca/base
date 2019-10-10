@@ -11,8 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#ifndef _DK_SDU_MIP__OPENGL__OPENGL_H
-#define _DK_SDU_MIP__OPENGL__OPENGL_H
+#pragma once
 
 #include <base/string/String.h>
 #include <base/mathematics/Vector3D.h>
@@ -3304,5 +3303,3 @@ public:
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 #undef CALL_OPENGL
-
-#endif

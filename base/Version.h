@@ -50,6 +50,11 @@ public:
   virtual unsigned int getMicroVersion() const throw();
 
   /**
+    Returns the revision of the framework.
+  */
+  virtual unsigned int getRevision() const throw();
+
+  /**
     Returns the release of the framework as a string. The format of the string
     is unspecified.
   */
@@ -60,6 +65,16 @@ public:
     is 'major.minor.micro suffix' where suffix could be anything.
   */
   virtual String getVersion() const throw();
+
+  /**
+    Returns the short commit id.
+  */
+  virtual String getCommit() const throw();
+
+  /*
+    Returns the build date in seconds since epoch.
+  */
+  virtual int64 getBuildDate() const throw();
 
   /**
     Returns a short banner (multiple lines) describing the framework.

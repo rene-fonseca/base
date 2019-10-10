@@ -101,13 +101,13 @@ message("Commit: ${GIT_COMMIT}")
 message("Revision: ${GIT_REVISION}")
 
 # generate configuration header
-configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/generated/config.h)
+configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/generated/base/config.h)
 include_directories(${CMAKE_BINARY_DIR}/generated)
 
 #add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/base_config.h
 #  COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/base_config.h)
 
-add_library(base SHARED ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/config.h)
+add_library(base SHARED ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
 if (MSVC)
 target_compile_definitions(base PUBLIC _DK_SDU_MIP__BASE__SHARED_LIBRARY_BUILD)
 # set_target_properties(base PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS true)
@@ -116,7 +116,7 @@ elseif (UNIX AND NOT APPLE)
 target_link_libraries(base pthread X11)
 endif ()
 
-add_library(base_STATIC STATIC ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/config.h)
+add_library(base_STATIC STATIC ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
 set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
 
 # avoid no symbols warnings

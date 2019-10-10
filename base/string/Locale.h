@@ -79,10 +79,10 @@ public:
 private:
   
   String currencySymbol; /**< Currency symbol. */
-  unsigned int fractionalDigits; /**< Number of fractional digits. */
-  unsigned int groupingDigits; /**< The number of digits in a group (0 ~ disables grouping). */
-  char groupingSymbol; /**< The grouping symbol. */
-  char decimalSymbol; /**< Decimal point symbol. */
+  unsigned int fractionalDigits = 0; /**< Number of fractional digits. */
+  unsigned int groupingDigits = 0; /**< The number of digits in a group (0 ~ disables grouping). */
+  char groupingSymbol = 0; /**< The grouping symbol. */
+  char decimalSymbol = 0; /**< Decimal point symbol. */
   struct {
     /** The position of the currency symbol for negative quantities.*/
     CurrencyPosition currencyPosition;

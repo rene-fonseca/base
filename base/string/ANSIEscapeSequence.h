@@ -74,7 +74,7 @@ public:
   class SetAttributes {
   private:
 
-    const unsigned int attributes;
+    const unsigned int attributes = 0;
   public:
 
     inline SetAttributes(unsigned int _attributes) throw()
@@ -112,8 +112,8 @@ public:
   class SetCursor {
   private:
 
-    const unsigned int line;
-    const unsigned int column;
+    const unsigned int line = 0;
+    const unsigned int column = 0;
   public:
 
     inline SetCursor(unsigned int _line, unsigned int _column) throw()
@@ -133,7 +133,7 @@ public:
 
     typedef void (ANSIEscapeSequence::*Method)(unsigned int count);
     Method method;
-    const unsigned int count;
+    const unsigned int count = 0;
   public:
 
     inline MoveCursor(Method _method, unsigned int _count) throw()

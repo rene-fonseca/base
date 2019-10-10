@@ -23,7 +23,7 @@
 
 _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
-unsigned int FormatOutputStream::Debug::counter = 0;
+std::atomic<unsigned int> FormatOutputStream::Debug::counter(0);
 
 FormatOutputStream& FormatOutputStream::operator<<(
   const Debug& debug) throw(IOException) {

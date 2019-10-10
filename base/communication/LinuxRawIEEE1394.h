@@ -55,11 +55,13 @@ private:
   /** Specifies the maximum number of adapters. */
   static const unsigned int MAXIMUM_NUMBER_OF_ADAPTERS = 256;
   
-  struct IsochronousContext {
+  class IsochronousContext {
+  public:
+
     Allocator<uint8> buffer;
-    IsochronousChannelListener* listener;
-    bool completed;
-    bool busy;
+    IsochronousChannelListener* listener = nullptr;
+    bool completed = false;
+    bool busy = false;
     Status status;
   };
 

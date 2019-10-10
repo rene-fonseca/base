@@ -193,7 +193,7 @@ public:
   private:
     
     Method method;
-    const unsigned int value;
+    const unsigned int value = 0;
   public:
     
     inline Manipulator(Method _method, unsigned int _value) throw()
@@ -313,7 +313,7 @@ public:
   class Debug {
   private:
     
-    static unsigned int counter; // TAG: need atomic access
+    static std::atomic<unsigned int> counter;
     unsigned int count = 0;
     Literal location;
   public:

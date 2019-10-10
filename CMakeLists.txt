@@ -86,7 +86,27 @@ file(GLOB base_SRC
   "base/xml/*.cpp"
 )
 
-add_library(base SHARED ${base_SRC})
+execute_process(OUTPUT_VARIABLE GIT_BRANCH COMMAND git symbolic-ref --short HEAD)
+string(REGEX REPLACE "\n$" "" GIT_BRANCH "${GIT_BRANCH}")
+execute_process(OUTPUT_VARIABLE GIT_COMMIT COMMAND git rev-parse HEAD)
+string(REGEX REPLACE "\n$" "" GIT_COMMIT "${GIT_COMMIT}")
+execute_process(OUTPUT_VARIABLE GIT_COMMIT_SHORT COMMAND git rev-parse --short HEAD)
+string(REGEX REPLACE "\n$" "" GIT_COMMIT_SHORT "${GIT_COMMIT_SHORT}")
+execute_process(OUTPUT_VARIABLE GIT_REVISION COMMAND git rev-list HEAD --count)
+string(REGEX REPLACE "\n$" "" GIT_REVISION "${GIT_REVISION}")
+
+message("Branch: ${GIT_BRANCH}")
+message("Commit: ${GIT_COMMIT}")
+message("Revision: ${GIT_REVISION}")
+
+# generate configuration header
+configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/generated/config.h)
+include_directories(${CMAKE_BINARY_DIR}/generated)
+
+#add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/base_config.h
+#  COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/base_config.h)
+
+add_library(base SHARED ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/config.h)
 if (MSVC)
 target_compile_definitions(base PUBLIC _DK_SDU_MIP__BASE__SHARED_LIBRARY_BUILD)
 # set_target_properties(base PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS true)
@@ -95,7 +115,7 @@ elseif (UNIX AND NOT APPLE)
 target_link_libraries(base pthread X11)
 endif ()
 
-add_library(base_STATIC STATIC ${base_SRC})
+add_library(base_STATIC STATIC ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/config.h)
 set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
 
 # avoid no symbols warnings

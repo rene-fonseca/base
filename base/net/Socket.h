@@ -80,7 +80,7 @@ private:
       Specifies the remote port (in host byte order) to which the socket is
       connected (unconnected if 0).
     */
-    unsigned short remotePort;
+    unsigned short remotePort = 0;
     /** Specifies the local address to which the socket is bound. */
     InetAddress localAddress;
     /**

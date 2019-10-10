@@ -156,7 +156,7 @@ public:
   /**
     Returns the region of the mapped.
   */
-  inline FileRegion getRegion() const throw() {
+  inline const FileRegion& getRegion() const throw() {
     return sharedMemory->getRegion();
   }
   

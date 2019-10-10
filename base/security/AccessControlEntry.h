@@ -203,7 +203,7 @@ public:
   /**
     Returns the trustee.
   */
-  inline Trustee getTrustee() const throw() {
+  inline const Trustee& getTrustee() const throw() {
     return trustee;
   }
 

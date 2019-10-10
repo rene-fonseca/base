@@ -186,7 +186,7 @@ public:
   /**
     Returns the value.
   */
-  inline TYPE getValue() const throw(NullPointer) {
+  inline const TYPE& getValue() const throw(NullPointer) {
     bassert(value, NullPointer(this));
     return *value;
   }

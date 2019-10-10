@@ -39,7 +39,7 @@ private:
   Brush progressBrush;
   Pen lightPen;
   Pen darkPen;
-  TextMode textMode;
+  TextMode textMode = NO_TEXT;
   unsigned int currentValue = 0;
   unsigned int maximumValue = 0;
 public:

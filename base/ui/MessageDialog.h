@@ -52,13 +52,13 @@ public:
 private:
 
   /** Type. */
-  Category category;
+  Category category = ERROR;
   /** Specifies the title of the dialog. */
   String title;
   /** Specifies the message. */
   String message;
   /** Answer. */
-  Answer answer;
+  Answer answer = ABORT;
 public:
   
   /**

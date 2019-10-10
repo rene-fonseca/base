@@ -137,35 +137,35 @@ public:
   /**
     Returns the address.
   */
-  inline InetAddress getAddress() const throw() {
+  inline const InetAddress& getAddress() const throw() {
     return address;
   }
   
   /**
     Returns the network mask.
   */
-  inline InetAddress getNetmask() const throw() {
+  inline const InetAddress& getNetmask() const throw() {
     return netmask;
   }
   
   /**
     Returns the broadcast address. Only valid if BROADCAST is set.
   */
-  inline InetAddress getBroadcast() const throw() {
+  inline const InetAddress& getBroadcast() const throw() {
     return broadcast;
   }
   
   /**
     Returns the destination address. Only valid if POINT_TO_POINT is set.
   */
-  inline InetAddress getDestination() const throw() {
+  inline const InetAddress& getDestination() const throw() {
     return destination;
   }
   
   /**
     Returns the ethernet address.
   */
-  inline EUI64 getEthernetAddress() const throw() {
+  inline const EUI64& getEthernetAddress() const throw() {
     return ethernet;
   }
 
